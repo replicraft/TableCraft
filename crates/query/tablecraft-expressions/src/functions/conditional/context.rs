@@ -8,7 +8,7 @@ impl Selection {
             return None;
         }
         match self.function {
-            ConditionalFunction::Choose if self.position == 0 => Some(Conversion::LongLong),
+            ConditionalFunction::Choose if self.position == 0 => Some(Conversion::Single),
             ConditionalFunction::Switch if self.position.is_multiple_of(2) => {
                 Some(Conversion::Boolean)
             }

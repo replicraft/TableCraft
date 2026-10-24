@@ -1,5 +1,34 @@
 # Implementation status
 
+## Choose Single index admission and rounded selection
+
+Choose now converts indexes to Single before half-even integral rounding, following
+its reviewed formal argument signature. Selected indexes also fit Integer; valid
+Single values outside the choice list retain NULL. Double/Decimal/legacy DATE and
+explicit-policy numeric Text now share that precision boundary. Extremely large
+inputs fail Single conversion instead of being silently changed to NULL. Eager
+choice evaluation, latched semantic versus operational failures and selected
+carrier/Error data remain unchanged. See [model and references](CONDITIONAL_FUNCTIONS.md#single-precision-of-choose-indexes).
+
+Two new expression tests and new reusable-parameter/CLI tests check near-half
+precision differences, finite range, selected Integer bounds, failure reuse and
+later eager errors. An old f64::MAX-to-NULL golden now expects Single overflow;
+the ordinary large out-of-list golden uses representable 1e30. The independent
+runner initially tried constructing CDec(1e30), which exceeds Decimal before
+Choose; the model was corrected to apply that source only within Decimal range.
+No production conversion was relaxed to accommodate that invalid test input.
+
+The batch passes 655 all-feature expression tests plus one doctest, the focused
+selected-Integer assertion rerun, 348 minimal expression tests, nine selected
+query tests and one CLI integration test. The independent runner passes 140
+controls (136 scalar and four sequential/indexed native-row cases), with the
+registered Access example hash unchanged. The reviewed JAR hash is now checked
+before reference execution. Expression/query/CLI all-target/all-feature Clippy,
+CLI build, formatting, Python syntax and diff checks pass. No new dependency,
+stored carrier, clock or write capability is introduced. Full workspace/native
+suites and native Access query-wrapper/return-promotion comparisons were not run.
+
+
 ## QBColor checked Integer argument
 
 QBColor now converts its palette index through the shared Integer conversion,

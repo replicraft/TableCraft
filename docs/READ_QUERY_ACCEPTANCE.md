@@ -237,3 +237,10 @@ Overflow-versus-Domain classification outside Int16 without changing RGB's Long
 channel profile. Native query-wrapper and broader coercion qualification remain
 open; [the color contract](COLOR_FUNCTIONS.md#qbcolor-integer-argument-boundary)
 separates the model from native evidence.
+
+
+Choose now applies its formal Single argument precision before rounded selection,
+including explicit-policy Text and legacy DATE serials. Conversion overflow no
+longer becomes NULL; representable out-of-list values retain NULL. Eager failures
+and selected carriers remain unchanged. [The selector contract](CONDITIONAL_FUNCTIONS.md#single-precision-of-choose-indexes)
+keeps native wrapper/return-promotion qualification separate from this model.

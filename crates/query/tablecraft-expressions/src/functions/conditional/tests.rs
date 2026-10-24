@@ -102,11 +102,17 @@ fn choose_uses_one_based_half_even_index_and_preserves_choice_carriers() {
         Value::Null,
         Value::Int64(i64::MAX),
         Value::Decimal(Decimal::new(Decimal::MAX_COEFFICIENT, 0).unwrap()),
-        Value::Double(Double::from_float(f64::MAX)),
         Value::Boolean(true),
     ] {
         assert_eq!(apply(Choose, vec![index, Value::Int16(1)]), Ok(Value::Null));
     }
+    assert_eq!(
+        apply(
+            Choose,
+            vec![Value::Double(Double::from_float(f64::MAX)), Value::Int16(1)]
+        ),
+        Err(EvalError::Overflow)
+    );
 }
 #[test]
 fn invalid_conditions_are_deferred_and_not_hidden_by_an_earlier_selection() {

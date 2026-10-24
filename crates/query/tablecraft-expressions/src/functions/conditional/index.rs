@@ -10,10 +10,19 @@ pub(super) fn select(value: &ExpressionValue, choices: usize) -> Result<Option<u
             return Err(EvalError::TypeMismatch);
         }
     };
-    match Conversion::LongLong.apply(value) {
-        Ok(Value::Int64(value)) => Ok(usize::try_from(value)
-            .ok()
-            .filter(|index| *index >= 1 && *index <= choices)),
+    let single = Conversion::Single.apply(value)?;
+    match Conversion::LongLong.apply(&single) {
+        Ok(Value::Int64(value)) => {
+            let index = usize::try_from(value)
+                .ok()
+                .filter(|index| *index >= 1 && *index <= choices);
+            if index.is_some() {
+                // The formal selector converts Single to Integer before use.
+                // Out-of-list values retain the documented NULL outcome.
+                Conversion::Integer.apply(&single)?;
+            }
+            Ok(index)
+        }
         Err(EvalError::Overflow) => Ok(None),
         Err(error) => Err(error),
         _ => Err(EvalError::TypeMismatch),

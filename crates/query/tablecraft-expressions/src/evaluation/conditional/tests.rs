@@ -69,7 +69,7 @@ fn text_selectors_use_explicit_policies_without_converting_choice_payloads() {
             ExpressionValue::Value(Value::Text("0,25".into())),
         ),
         (
-            "Choose('1e1000',1,2)",
+            "Choose('1e30',1,2)",
             NumberFormat::Invariant,
             ExpressionValue::Value(Value::Null),
         ),
