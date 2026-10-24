@@ -5,7 +5,7 @@ use crate::{
     InspectError, ReadProfile,
     format::{
         data_type,
-        layout::{CALCULATED_EXT_MASK, UNICODE_COMPRESSION_FLAG, UPDATABLE_FLAG},
+        layout::{CALCULATED_EXT_MASK, HYPERLINK_FLAG, UNICODE_COMPRESSION_FLAG, UPDATABLE_FLAG},
         text::{self, UTF16_UNIT_BYTES},
     },
 };
@@ -26,13 +26,20 @@ pub(in crate::table) fn kind(column: &NativeColumn) -> Option<ScalarType> {
         column.read_profile(),
         ReadProfile::Ace2016 | ReadProfile::Ace2019
     ) || column.fixed()
-        || column.flags() != UPDATABLE_FLAG
     {
         return None;
     }
     if column.native_type() == data_type::LONG_TEXT {
-        return (column.storage_length() == 0 && column.extended_flags() == CALCULATED_EXT_MASK)
+        // The observed Hyperlink bit changes presentation, not the Memo cache
+        // wrapper or its raw Text carrier. It does not admit compressed Memo
+        // declarations, unknown flags or Hyperlink on other calculated types.
+        return (column.storage_length() == 0
+            && column.flags() & !HYPERLINK_FLAG == UPDATABLE_FLAG
+            && column.extended_flags() == CALCULATED_EXT_MASK)
             .then_some(ScalarType::Text);
+    }
+    if column.flags() != UPDATABLE_FLAG {
+        return None;
     }
     if column.native_type() == data_type::SHORT_TEXT {
         let capacity = column.storage_length().checked_sub(WRAPPER_BYTES)?;
