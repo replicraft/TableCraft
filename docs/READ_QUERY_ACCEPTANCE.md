@@ -237,6 +237,13 @@ units. Only U+0020 edges are removed. Work/cancellation, scalar policies, fresh
 result text policy and final Unicode publication stay explicit. Remaining String
 consumers, broader Variant/coercion and native qualification are still open.
 
+[String repetition](TEXT_CONSTRUCTION.md#retained-string-construction) now
+retains selected complete UTF-16 units through output, with the existing NULL,
+count, character/code-page and fresh result-policy rules. Zero results and later
+pair repair can publish; nonempty unpaired final output remains refused. This
+closes a construction-consumer gap, not broader coercion, reversal, native text
+providers or P0 qualification.
+
 ### P0 implementation boundaries reviewed 24 October 2026
 
 | Boundary | Current implementation | Remaining work |

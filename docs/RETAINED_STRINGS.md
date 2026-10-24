@@ -28,6 +28,11 @@ replacement and derived/domain cells can consume isolated units; final Unicode
 publication stays strict. Text result policies and scalar formatting remain at
 their existing boundaries.
 
+[String construction](TEXT_CONSTRUCTION.md#retained-string-construction) now
+retains the selected first unit, including a surrogate, through repetition and
+later raw-aware consumers. Count/NULL admission and numeric code-page policies
+remain explicit; unselected complete source tails require no Unicode publication.
+
 Stored `Value`, source snapshots, parameters and write contracts remain unchanged.
 Core conversion to Value explicitly rejects StringBytes with its own non-storable
 category. Representational equality compares active bytes, without implying SQL

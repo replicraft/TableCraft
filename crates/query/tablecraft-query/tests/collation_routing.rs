@@ -9,6 +9,7 @@ mod collation_routing {
     mod raw_extrema;
     mod raw_keys;
     mod raw_like;
+    mod raw_repetition;
     mod raw_search;
     mod raw_strings;
     mod raw_support;

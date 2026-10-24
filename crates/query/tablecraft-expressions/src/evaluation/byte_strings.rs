@@ -171,6 +171,9 @@ impl Evaluator<'_> {
         if function == TextFunction::Replace {
             return self.replacement_byte_call(arguments, depth);
         }
+        if function == TextFunction::String {
+            return self.string_byte_call(arguments, depth);
+        }
         let (first, rest, count) = self.byte_call_inputs(function, arguments, depth)?;
         self.apply_expression_byte_string(function, first, &rest[..count])
     }
@@ -227,6 +230,9 @@ impl Evaluator<'_> {
         if function == TextFunction::CStr {
             return self.apply_expression_cstr_operand(first);
         }
+        if function == TextFunction::String {
+            return self.apply_retained_string(&first.into_expression_value(), &rest[0]);
+        }
         if function.trims_spaces() {
             return self.apply_trim_source(function, first.into_string()?);
         }
@@ -263,6 +269,10 @@ impl Evaluator<'_> {
         }
         if function == TextFunction::CStr {
             return self.apply_expression_cstr_operand(first.into());
+        }
+        if function == TextFunction::String {
+            let count = ExpressionByteOperand::from(first).into_expression_value();
+            return self.repeat_scalar_character(&count, &rest[0]);
         }
         if function.trims_spaces() {
             return self.apply_trim_source(function, first);

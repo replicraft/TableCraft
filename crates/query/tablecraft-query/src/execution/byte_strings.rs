@@ -112,6 +112,15 @@ impl Runtime<'_, '_> {
         arguments: &[Expr],
         env: Environment<'_>,
     ) -> Result<ByteOperand, QueryError> {
+        if function == TextFunction::String {
+            let count = self
+                .expression_byte_operand(&arguments[0], env)?
+                .into_expression_value();
+            let character = self
+                .expression_byte_operand(&arguments[1], env)?
+                .into_expression_value();
+            return Ok(self.evaluator().apply_retained_string(&count, &character)?);
+        }
         if function == TextFunction::Replace {
             let mut values: [ExpressionValue; TextFunction::MAX_ARGUMENTS] =
                 std::array::from_fn(|_| ExpressionValue::Value(Value::Null));

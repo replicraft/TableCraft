@@ -1,5 +1,31 @@
 # Implementation status
 
+## Retained first-unit String construction
+
+String now retains both operands through its NULL gate and count/character
+admission. The first complete UTF-16 unit can repeat without decoding a raw source
+tail. Scalar units retain the existing UTF-8 construction path; surrogate units
+use bounded byte output. Zero-count results and later pair repair can publish;
+nonempty unpaired final output stays buffered failure. Numeric character code
+pages, scalar formatting and fresh result policies remain explicit. See
+[construction contracts](TEXT_CONSTRUCTION.md#retained-string-construction).
+
+764 all-feature expression tests plus one doctest, 379 minimal expression tests,
+63 focused query tests and four CLI tests pass. Scoped Clippy passes for both
+expression profiles and query/CLI consumers. Controls cover independent unit-list
+properties, NULL/count/state order, complete/odd/unaligned ranges, ignored tails,
+every observed output cancellation checkpoint, quotas, prepared values,
+derived/grouped/correlated/domain cells and comparer separation.
+
+The original runner passes 2,432 independent controls with four unchanged native
+inputs through sequential/selected primary-index reads. Existing repetition-state
+and rounded repetition/search recipes pass 220 and 1,200 controls, retaining
+registered 20,000-row indexed and ScalarSamples inputs. No dependency, stored
+carrier or write gate changed. Full workspace tests, benchmarks and Windows
+Access qualification were not run; reversal, wider coercion, locale providers
+and broader P0 semantics remain unfinished.
+
+
 ## Retained String trimming
 
 LTrim/RTrim/Trim now participate in lossless String production. Raw complete-unit

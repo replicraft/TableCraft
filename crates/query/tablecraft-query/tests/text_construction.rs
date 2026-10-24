@@ -1,3 +1,6 @@
+#[path = "text_construction/raw_string.rs"]
+mod raw_string;
+
 use tablecraft_core::values::Value;
 use tablecraft_expressions::EvalError;
 use tablecraft_query::{
