@@ -36,3 +36,7 @@ Two focused CLI tests cover ranges, required policy selection, maximum acceptanc
 low independent pools and empty stdout on failure. Nine existing General/database
 CLI tests remain passing; scoped CLI Clippy, formatting and build pass. Native
 Access and performance qualification remain separate.
+
+[Qualified Short Text equality hints](TEXT_EQUALITY_SEEKS.md) charge prefix
+generation to the same provider pool as residual comparisons. Index pruning does
+not reset, refund or replace the comparison allowance.

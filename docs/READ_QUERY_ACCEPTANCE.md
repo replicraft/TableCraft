@@ -120,7 +120,9 @@ The engine now offers explicit [Short Text equality candidates](NATIVE_TEXT.md#c
 under the current General model. They conservatively retain primary-prefix
 matches and require full residual equality; 824 independent controls protect
 candidate sets, ordering, completeness of reference matches and pruning failures.
-Non-NULL query integration still requires an explicit comparer/source agreement.
+[Direct Short Text equality](TEXT_EQUALITY_SEEKS.md) now implements explicit
+comparer/source agreement, residual evaluation and source-order/cache controls.
+Inequalities, compound predicates and broader locale qualification remain open.
 This is not native SQL qualification or completion of text predicate pushdown.
 
 [Min/Max and domain extrema](EXPRESSION_AGGREGATES.md#retained-string-extrema)

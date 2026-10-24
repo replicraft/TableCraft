@@ -24,6 +24,7 @@ impl Runtime<'_, '_> {
         constraint: Option<ScanConstraint>,
     ) -> Result<Vec<Vec<CellValue>>, QueryError> {
         self.tick()?;
+        self.check_table_schema(&relation.node)?;
         match &relation.node {
             RelationNode::Unit => {
                 let row = self.allocate_expression_row(0)?;
@@ -35,26 +36,12 @@ impl Runtime<'_, '_> {
             RelationNode::Table {
                 name,
                 columns,
-                unavailable,
-                text_collations,
-                multivalue_text_collations,
-                member_text_collations,
                 projection,
                 multivalues,
                 members,
                 expansion,
+                ..
             } => {
-                if self.source.columns(name)? != columns
-                    || self.source.unavailable_columns(name)? != unavailable
-                    || self.source.text_collations(name)? != text_collations
-                    || self.source.multivalue_text_collations(name)? != multivalue_text_collations
-                    || self.source.collection_member_text_collations(name)?
-                        != member_text_collations
-                    || self.source.multivalue_columns(name)? != multivalues
-                    || self.source.collection_members(name)? != members
-                {
-                    return Err(QueryError::SchemaChanged);
-                }
                 if !expansion.is_empty() {
                     return self.multivalue_rows(
                         name,
@@ -98,6 +85,36 @@ impl Runtime<'_, '_> {
             } => self.join(left, right, Some(*kind), Some(condition), outer),
         }
     }
+    pub(super) fn check_table_schema(&self, node: &RelationNode) -> Result<(), QueryError> {
+        let RelationNode::Table {
+            name,
+            columns,
+            unavailable,
+            text_collations,
+            multivalue_text_collations,
+            member_text_collations,
+            multivalues,
+            members,
+            ..
+        } = node
+        else {
+            return Ok(());
+        };
+
+        if self.source.columns(name)? != columns
+            || self.source.unavailable_columns(name)? != unavailable
+            || self.source.text_collations(name)? != text_collations
+            || self.source.multivalue_text_collations(name)? != multivalue_text_collations
+            || self.source.collection_member_text_collations(name)? != member_text_collations
+            || self.source.multivalue_columns(name)? != multivalues
+            || self.source.collection_members(name)? != members
+        {
+            return Err(QueryError::SchemaChanged);
+        }
+
+        Ok(())
+    }
+
     fn join(
         &mut self,
         left: &Relation,

@@ -1,4 +1,5 @@
 //! Opaque host policy identity, independent of any native locale encoding.
+use super::TextEqualityKey;
 use crate::QueryError;
 use tablecraft_schema::{Column, ScalarType};
 
@@ -73,6 +74,23 @@ impl TextPolicy {
 /// issuing namespace and fail unknown identities without a default fallback.
 /// This callback performs no source discovery on behalf of the query layer.
 pub trait CollationResolver {
+    /// Optionally issue a conservative equality hint for this exact comparer.
+    /// The source must share the policy namespace and payload contract. Return
+    /// None for unsupported policies/inputs; never guess from policy identity.
+    /// Pruning must preserve every match and required semantic failure in the
+    /// admitted domain under resolve(policy), not just physical key equality.
+    /// Only already admitted literal/typed Text is supplied. No source discovery
+    /// or expression evaluation is allowed. Charge shared work/cancellation and
+    /// allocation; semantic failures of unevaluated predicates must not be raised.
+    /// The executor always retains the original predicate and residual comparer.
+    fn equality_key(
+        &self,
+        _policy: TextCollationId,
+        _literal: &str,
+    ) -> Result<Option<TextEqualityKey>, QueryError> {
+        Ok(None)
+    }
+
     /// Borrow the comparer for exactly this host-issued identity.
     fn resolve(
         &self,

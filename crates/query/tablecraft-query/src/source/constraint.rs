@@ -1,3 +1,4 @@
+use super::TextEqualityKey;
 use std::ops::Bound;
 use tablecraft_core::values::{Currency, Guid};
 
@@ -8,6 +9,14 @@ use tablecraft_core::values::{Currency, Guid};
 /// order. Empty/reversed intervals match no rows.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ScanConstraint {
+    /// Conservative Text equality candidates under a resolver/source agreement.
+    /// The source may return extra rows; the original equality remains required.
+    TextEqual {
+        /// Zero-based source column ordinal.
+        column: usize,
+        /// Opaque key issued by the actual selected comparer.
+        key: TextEqualityKey,
+    },
     /// Select NULL values in the specified column.
     Null {
         /// Zero-based source column ordinal.
@@ -71,6 +80,7 @@ impl ScanConstraint {
     pub const fn column(self) -> usize {
         match self {
             Self::Null { column }
+            | Self::TextEqual { column, .. }
             | Self::Guid { column, .. }
             | Self::Byte { column, .. }
             | Self::Int16 { column, .. }

@@ -1,5 +1,23 @@
 # Implementation status
 
+## Comparer-qualified Short Text equality
+
+Direct native Short Text equality can now use automatic or explicit matching
+indexes when the actual database-policy resolver and source agree. Full residual
+filtering, metadata checks before provider activation, cumulative comparison
+budgets, source order and complete-cache isolation remain enforced. AND,
+inequalities, Memo and wider policies remain outside this new hint profile. See
+[contracts and measurements](TEXT_EQUALITY_SEEKS.md).
+
+The independent query runner passes 792 controls across 128 oracle cases; the
+engine candidate runner passes 824 controls. Focused engine, query, adapter and
+CLI tests, scoped Clippy, minimal dependency checks, strict rustdoc, formatting
+and the dependency guard pass. Full workspace and Windows Access checks were
+not run for this batch. Warm-cache debug CLI means on eight 1,000-row Text tables
+were 45.6–51.4 ms sequentially and 8.3–9.8 ms automatically indexed, with identical
+94-row answers. All timing samples are retained. Remaining backend acceptance
+and production writes are unfinished.
+
 ## Explicit General comparison allowances
 
 `query run --comparison-bytes/--comparison-steps` now controls the existing
@@ -24,7 +42,7 @@ index-direction handling and inclusive subtree hulls. A digest-owned bound keeps
 the prefix before physical truncation. Only qualified Short Text is admitted;
 Memo/unknown/wrong profiles refuse. NULL is excluded and false positives require
 the original full comparison. This is an engine/library operation and engineering
-example; ordinary query hints are unchanged. See
+example; the lower-level candidate API remains independently available. See
 [candidate contracts](NATIVE_TEXT.md#conservative-short-text-equality-candidates).
 
 38 focused engine tests pass, including generated hull/string controls and 253,952
@@ -34,9 +52,9 @@ strict engine rustdoc and the dependency guard also pass. The independent runner
 controls across eight unchanged original four-family Text databases, using inert
 Jackcess getters and encoders. Candidate order/sets, inclusion of reference-equal
 rows, projection, actual disjoint-subtree pruning, corrupt-root refusals and
-buffered output limits pass. Full workspace checks, benchmarks and Windows Access
-comparisons were not run. Comparer/source agreement for non-NULL query integration,
-wider text predicates and remaining backend/write acceptance stay open.
+buffered output limits pass. Full workspace checks and Windows Access comparisons were not run. The newer
+query integration and benchmark evidence are recorded above; wider text predicates
+and remaining backend/write acceptance stay open.
 
 
 ## NULL-only Text and Binary index predicates

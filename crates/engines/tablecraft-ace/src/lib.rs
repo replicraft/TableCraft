@@ -62,8 +62,8 @@ pub use table::{
     inspect_multivalue_declarations, read_multivalue_column, read_multivalue_column_with_limits,
 };
 pub use table::{
-    BinaryIndexSelection, GuidIndexSelection, TextIndexSelection, read_table_binary_index_range,
-    read_table_guid_index, read_table_text_index_range,
+    BinaryIndexSelection, GeneralEqualityPrefix, GuidIndexSelection, TextIndexSelection,
+    read_table_binary_index_range, read_table_guid_index, read_table_text_index_range,
 };
 pub use table::{
     ByteIndexSelection, CurrencyIndexSelection, Int16IndexSelection, Int32IndexSelection,

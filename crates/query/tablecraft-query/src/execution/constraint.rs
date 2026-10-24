@@ -1,6 +1,7 @@
 //! Restrict only wholly safe predicates; partial AND extraction could hide eager
 //! evaluation failures on rows discarded by a source. Residual filters remain.
 mod currency;
+mod text;
 use super::Runtime;
 use crate::{QueryError, plan::Expr, source::ScanConstraint};
 use std::ops::Bound::{self, Excluded, Included, Unbounded};
@@ -15,12 +16,23 @@ impl Runtime<'_, '_> {
         expr: &Expr,
         columns: &[Column],
         projection: &[usize],
+        allow_text: bool,
+    ) -> Result<Option<ScanConstraint>, QueryError> {
+        self.scan_constraint_inner(expr, columns, projection, allow_text)
+    }
+
+    fn scan_constraint_inner(
+        &mut self,
+        expr: &Expr,
+        columns: &[Column],
+        projection: &[usize],
+        allow_text: bool,
     ) -> Result<Option<ScanConstraint>, QueryError> {
         self.tick()?;
         Ok(match expr {
             Expr::Binary(B::And, left, right) => {
-                let left = self.scan_constraint(left, columns, projection)?;
-                let right = self.scan_constraint(right, columns, projection)?;
+                let left = self.scan_constraint_inner(left, columns, projection, false)?;
+                let right = self.scan_constraint_inner(right, columns, projection, false)?;
                 left.zip(right)
                     .and_then(|(left, right)| intersect(left, right))
             }
@@ -54,6 +66,18 @@ impl Runtime<'_, '_> {
                     } else {
                         return Ok(None);
                     };
+                if columns[column].data_type() == ScalarType::Text {
+                    return if allow_text && *op == B::Equal {
+                        let field = if reversed {
+                            right.as_ref()
+                        } else {
+                            left.as_ref()
+                        };
+                        self.text_equality_constraint(column, field, constant)
+                    } else {
+                        Ok(None)
+                    };
+                }
                 if columns[column].data_type() == ScalarType::Guid {
                     return if *op == B::Equal {
                         Ok(self
@@ -81,6 +105,7 @@ impl Runtime<'_, '_> {
             _ => None,
         })
     }
+
     fn guid_constant(&mut self, expr: &Expr) -> Result<Option<Guid>, QueryError> {
         self.tick()?;
         let value = match expr {

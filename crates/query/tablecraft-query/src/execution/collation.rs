@@ -231,7 +231,7 @@ impl<'a> Runtime<'a, '_> {
     }
 }
 
-fn predicate_error(error: EvalError) -> QueryError {
+pub(super) fn predicate_error(error: EvalError) -> QueryError {
     match error {
         EvalError::Cancelled => QueryError::Cancelled,
         EvalError::Limit(limit) => QueryError::Limit(limit),

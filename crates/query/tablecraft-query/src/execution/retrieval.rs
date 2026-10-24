@@ -157,13 +157,20 @@ impl Runtime<'_, '_> {
         let constraint = match (&select.source.node, &select.filter) {
             (
                 RelationNode::Table {
+                    name,
                     columns,
                     projection,
                     expansion,
                     ..
                 },
                 Some(filter),
-            ) if expansion.is_empty() => self.scan_constraint(filter, columns, projection)?,
+            ) if expansion.is_empty() && select.parent.is_none() => {
+                let text_hints = self.source.text_equality_hints(name)?;
+                if text_hints {
+                    self.check_table_schema(&select.source.node)?;
+                }
+                self.scan_constraint(filter, columns, projection, text_hints)?
+            }
             _ => None,
         };
         let input = if let Some(parent) = &select.parent {

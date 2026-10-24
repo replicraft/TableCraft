@@ -247,6 +247,11 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
     }
 }
 impl<R: tablecraft_ace::NativeReadSource> Source for NativeSource<'_, R> {
+    fn text_equality_hints(&self, table: &str) -> Result<bool, QueryError> {
+        let entry = self.entry(table)?;
+        Ok(self.auto_indexes || entry.index.is_some())
+    }
+
     fn query(&self, name: &str) -> Result<Option<&tablecraft_sql::query::Query>, QueryError> {
         self.named_query(name)
     }
