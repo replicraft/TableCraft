@@ -1,5 +1,24 @@
 # Candidate Access fixtures
 
+## Retained String repetition controls
+
+The original [runner](testing/compare_raw_repetition.py) passes 2,432 controls.
+Python integer-list repetition supplies exact unit expectations for authored
+boundaries, seeded units, complete source tails and zero/positive counts across
+both CLI evaluators. Binary observations, rounded regional counts, NULL gates,
+odd/empty refusals, budget failures and strict final publication
+remain separate from successful raw observations.
+
+Four registered native-policy inputs supply IDs and character fields through inert
+TableDataOracle getters. TableCraft evaluates sequential/selected primary-index
+queries under stored and explicit General choices. Before/after hashes confirm
+unchanged originals; reviewed JAR identity is checked and no third-party artifact
+is added. Existing repetition-state controls pass 220 checks over registered
+20,000-row indexed inputs; the rounded repetition/search runner passes 1,200
+controls with registered ScalarSamples. These are independent engineering checks,
+not observed Microsoft Access unit/coercion behavior.
+
+
 ## Retained String trimming controls
 
 The original [runner](testing/compare_raw_trimming.py) passes 3,786 controls.

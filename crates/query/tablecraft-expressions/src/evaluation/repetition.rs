@@ -1,4 +1,6 @@
 //! Repetition count normalization retains String's literal character argument.
+mod raw;
+
 use super::{Evaluator, text_arguments};
 use crate::{
     EvalError,
@@ -21,6 +23,10 @@ impl Evaluator<'_> {
             || !function.accepts_arity(arguments.len())
         {
             return Err(EvalError::UnsupportedExpression);
+        }
+        if function == TextFunction::String {
+            let result = self.apply_retained_string(&arguments[0], &arguments[1])?;
+            return self.publish_byte_operand(result);
         }
         self.text_expression_limits(arguments)?;
         self.check(0)?;

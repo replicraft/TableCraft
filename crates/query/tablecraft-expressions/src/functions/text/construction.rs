@@ -73,6 +73,16 @@ pub(crate) fn repeat(
         },
         _ => return Err(EvalError::UnsupportedExpression),
     };
+    repeat_character(character, count)
+}
+
+pub(crate) fn repeat_character(
+    character: char,
+    count: i32,
+) -> Result<TextResult<'static>, EvalError> {
+    if count < 0 {
+        return Err(EvalError::Domain);
+    }
     Ok(TextResult::Construction(Construction {
         operation: Operation::Repeat {
             character,

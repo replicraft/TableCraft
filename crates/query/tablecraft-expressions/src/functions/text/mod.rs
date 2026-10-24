@@ -180,6 +180,7 @@ impl TextFunction {
                 | Self::RTrim
                 | Self::Trim
                 | Self::Replace
+                | Self::String
                 | Self::ChrB
                 | Self::ChrW
                 | Self::Left
@@ -344,7 +345,10 @@ pub fn apply_with_context<'a>(
         return cstr::prepare(&arguments[0], context);
     }
     if (function.produces_bytes()
-        && !matches!(function, TextFunction::ChrW | TextFunction::Replace)
+        && !matches!(
+            function,
+            TextFunction::ChrW | TextFunction::Replace | TextFunction::String
+        )
         && !function.slices_units()
         && !function.trims_spaces())
         || function == TextFunction::InStrB

@@ -2,15 +2,62 @@
 
 The shared text kernel supplies these functions to scalar SELECT evaluation and
 bound retrieval, including grouped/correlated expressions, reusable parameters
-and qualified saved SELECTs. Each returns Text or its documented NULL/error result;
+and qualified saved SELECTs. Each returns a String or its documented NULL/error result;
 no VBA, locale service or application runtime is invoked.
+
+## Retained String construction
+
+The owning evaluators now retain both String operands until the function's NULL
+gate and count/character admission. Count conversion still uses checked Long
+rounding and explicit numeric Text policies; a retained count publishes only when
+conversion is actually required. NULL returns NULL without decoding an unused
+raw operand. Operational failures in written arguments remain eager.
+
+String selects the first complete UTF-16 unit from ordinary Text or an active
+raw String range. The source byte envelope must fit signed Long and have an even
+length. Empty sources are Domain errors and odd ranges are refused, including
+for zero repetitions. Complete source tails are not decoded or copied; an
+unselected isolated unit does not invalidate a BMP first unit. Unaligned active
+ranges retain their little-endian unit interpretation.
+
+A valid scalar unit keeps the existing streamed UTF-8 construction path. A
+surrogate unit uses bounded raw-byte output, with per-append allocation/work/
+cancellation and the existing signed-Long String ceiling. There is no eager
+count-sized allocation. `apply_retained_string` exposes this result explicitly;
+materialized evaluator output remains strict. The legacy parser-free Text recipe
+retains its BMP publication profile. Numeric character operands still use their
+existing Long/modulo-256 and explicit code-page conversion, including at count
+zero. Host Empty characters retain numeric zero rather than empty Text.
+
+For example, `LenB(String(3,ChrW(55296)))` returns 6,
+`AscW(String(2,'😀'))` returns -10179, and
+`String(1,ChrW(55357))&ChrW(56832)` repairs a pair and publishes valid final Text.
+Derived/grouped/correlated cells, prepared values, domain retrieval and String
+inspection can consume retained results. A directly selected unpaired result
+still fails before buffered output reaches the user. String keeps its existing
+fresh result text policy; it does not activate the character source's comparer.
+Stored/source/parameter carriers and write gates are unchanged.
+
+Microsoft's specific [String query example](https://support.microsoft.com/en-us/access/functions/string-function)
+establishes direct query availability and its first-character/modulo/NULL contract.
+The unit, coercion and error-edge profile above remains independent engineering
+behavior pending native Access qualification.
+
+The [original runner](testing/compare_raw_repetition.py) passes 2,432 independent
+controls using Python unit-list repetition, exact binary observations, seeded
+units, complete tails, rounded counts, zero/NULL outcomes and refusals. Four
+unchanged native inputs supply counts and character fields through inert getters;
+TableCraft executes sequential/selected-index queries under stored and explicit
+General choices. Existing state and rounded repetition/search recipes pass 220
+and 1,200 controls. No new dependency, benchmark or Windows Access comparison
+is supplied by these checks.
 
 ## Current arguments and behavior
 
 | Function | Current implementation |
 | --- | --- |
 | Space(number) | Checked half-even numeric-to-Int32 count; nonnegative counts repeat U+0020, zero returns empty Text and NULL returns NULL. |
-| String(number, character) | The same count conversion; repeats the first BMP UTF-16 unit of Text, or a nonnegative numeric character code after checked Int32 conversion and modulo 256. Either NULL argument returns NULL. |
+| String(number, character) | The same count conversion; repeats the first complete UTF-16 unit of Text or a retained String, or a nonnegative numeric character code after checked Int32 conversion and modulo 256. Either NULL argument returns NULL. |
 | StrReverse(expression) | Reverses BMP UTF-16 units of Text. Empty Text stays empty; NULL is InvalidNullConversion; non-Text operands fail. |
 
 Negative counts fail with Domain and conversion overflow/non-finite input remains
@@ -24,10 +71,12 @@ propagation after evaluation and conversion/error precedence remain explicit
 current policies requiring native Access qualification.
 
 Text character selection uses the first UTF-16 unit, not the whole string. Empty
-Text is a Domain error. A supplementary first character would select an unpaired
-surrogate and fails with UnrepresentableText, even for zero repeats under the
-current validation order. A BMP prefix followed by supplementary characters works
-because only the first unit is selected. Numeric codes reduced to 0–127 use the
+Text is a Domain error. A supplementary first character selects its high
+surrogate, which the owning evaluator now retains through raw-aware consumers.
+Zero repetitions produce an empty String after character validation. Direct
+publication of a nonempty unpaired result remains UnrepresentableText. A BMP
+prefix followed by supplementary characters works because only the first unit
+is selected. Numeric codes reduced to 0–127 use the
 explicit ASCII profile, including NUL/control characters; reduced bytes 128–255
 return CharacterPolicyRequired unless an [explicit supported code page](CHARACTER_CODE_PAGES.md)
 is selected. `--character-code-page ID` on query eval/run and matching library
@@ -37,8 +86,8 @@ Latin-1 mapping. Unmapped selected-page bytes fail without replacement.
 Reversal preserves BMP characters, NUL, spaces and controls without normalization.
 Combining marks reverse as independent code units; no grapheme policy is inferred.
 Supplementary input currently fails rather than choosing between native surrogate
-reversal and Rust scalar reversal. Lossless UTF-16 storage and native supplementary
-character qualification remain work to do.
+reversal and Rust scalar reversal. Extending reversal and qualifying native
+supplementary behavior remain work to do.
 
 ```sh
 tablecraft query eval "SELECT Space(3), String(5,42), String(3,'éx'), StrReverse('abc')"
@@ -86,7 +135,7 @@ sequential/indexed native rows. Source database bytes remain unchanged; check to
 are recorded in [implementation status](IMPLEMENTATION.md).
 
 All three remain Partial in the [built-in tracker](ACCESS_BUILTINS.md). Complete
-coercion, broader/native code-page mapping, lossless surrogate results,
+coercion, broader/native code-page mapping, lossless reversal results,
 native Unicode/default/error behavior and Windows Access execution remain open.
 
 ## Contextual repetition counts
@@ -103,7 +152,7 @@ replace a count argument. Normalization, output, cancellation and input ceilings
 share the operation budget. A five-byte budget permits three normalized count
 bytes plus two result bytes while borrowing a six-byte character source. Existing
 NULL propagation occurs before materialized count conversion, while all written
-argument expressions remain eager. Domain/character-page/surrogate checks still
+argument expressions remain eager. Domain/character-page and complete-unit checks still
 apply for zero counts; StrReverse behavior is unchanged.
 
 The corresponding [search-start extension](STRING_SEARCH.md#contextual-search-starts)
