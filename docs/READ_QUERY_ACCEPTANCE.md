@@ -244,3 +244,11 @@ including explicit-policy Text and legacy DATE serials. Conversion overflow no
 longer becomes NULL; representable out-of-list values retain NULL. Eager failures
 and selected carriers remain unchanged. [The selector contract](CONDITIONAL_FUNCTIONS.md#single-precision-of-choose-indexes)
 keeps native wrapper/return-promotion qualification separate from this model.
+
+
+[Query Nz and checked-conversion metadata](QUERY_EXECUTION.md#query-nz-and-checked-conversion-output-metadata)
+now reflect empty-Text defaults, known Text ceilings and non-null successful
+checked numeric conversions without scans. Explicit fallbacks remove nullability
+only when their descriptors establish it. Downstream UNIONs use those descriptors
+under existing conversion policies; eager failures and mixed-carrier Dynamic
+results remain explicit. Native result typing/Variant promotion is still open.

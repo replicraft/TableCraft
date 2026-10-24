@@ -6014,3 +6014,15 @@ Access example. Its SHA-256 remains
 3cd1fc88d70bc93909ae6d190fa9692e709d5641b205fd2f66185c905e42cfbf.
 Only TableCraft evaluates SQL. No new database/tool bytes are introduced or
 tracked; native Access query-wrapper precision and error qualification are unrun.
+
+
+### Query Nz metadata and UNION controls
+
+Original MIT compare_nz_metadata.py reuses the registered maximum-width inputs
+and reviewed Jackcess 5.0.4 JAR, verifying hashes before reference execution.
+Independent Python recipe values are checked against inert getters. Across the
+four priority layouts, 112 controls cover omitted Text fallbacks, explicit numeric
+fallbacks, both UNION arm orders, sequential/selected-index reads, required numeric
+rendering policy and late/eager buffered refusals. Original hashes remain unchanged.
+No new binary fixtures or tools are introduced; only TableCraft evaluates SQL.
+Native Access result typing, query-wrapper/coercion and error equivalence are unrun.

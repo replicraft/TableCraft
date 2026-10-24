@@ -1,5 +1,31 @@
 # Implementation status
 
+## Query Nz and checked numeric conversion metadata
+
+Nz output inference now reflects its implemented query-context empty-Text default,
+retains known Text length ceilings, and combines only non-NULL input possibilities
+with explicit fallbacks. Checked numeric conversions now report non-null successful
+outputs because their actual kernels reject NULL. Mixed carrier/Error possibilities
+remain Dynamic. No source rows or providers run during inference, and eager
+fallback failures remain observable. See [the result contract](QUERY_EXECUTION.md#query-nz-and-checked-conversion-output-metadata).
+
+Known Text metadata now participates in existing downstream UNION rendering:
+Nz(NULL) UNION ALL 7 selects Text and needs an explicit number-format policy for
+7. Original source values, stored schemas and the Nz selection kernel are unchanged.
+New tests cover empty/nonempty and named sources, bounded Text, NULL fallbacks,
+all nine checked numeric conversions, eager failures and atomic CLI output.
+
+The full query batch covered 785 tests plus one doctest. Three old nullable
+metadata assertions failed; after reviewing/updating their expectations, all
+seven affected/related targets pass 43 tests. The new CLI integration test passes.
+Query/CLI all-target/all-feature Clippy, CLI build, formatting, Python syntax and
+diff checks pass. The independent runner passes 112 model/getter/query controls
+over unchanged registered Jet 4, ACE 2007 and both ACE 16 wide-table inputs.
+Only TableCraft evaluates SQL; native result typing/return promotion remains
+unqualified. Full engine/backend/workspace suites and benchmarks were not repeated.
+No dependency, stored carrier, runtime host or write capability was added.
+
+
 ## Choose Single index admission and rounded selection
 
 Choose now converts indexes to Single before half-even integral rounding, following
