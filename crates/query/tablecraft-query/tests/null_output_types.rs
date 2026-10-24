@@ -107,16 +107,16 @@ fn null_union_arms_relax_known_descriptors_without_changing_values() {
 fn selectors_combine_only_value_branches_and_keep_expression_states_dynamic() {
     let source = source();
     for (expression, expected) in [
-        ("IIf(True,N,NULL)", scalar(ScalarType::Int16, true)),
-        ("IIf(False,NULL,N)", scalar(ScalarType::Int16, true)),
-        ("Switch(True,N,False,NULL)", scalar(ScalarType::Int16, true)),
-        ("Choose(1,N,NULL)", scalar(ScalarType::Int16, true)),
+        ("IIf(N=2,N,NULL)", scalar(ScalarType::Int16, true)),
+        ("IIf(N=0,NULL,N)", scalar(ScalarType::Int16, true)),
+        ("Switch(N=2,N,False,NULL)", scalar(ScalarType::Int16, true)),
+        ("Choose(N-1,N,NULL)", scalar(ScalarType::Int16, true)),
         ("Nz(NULL,N)", scalar(ScalarType::Int16, false)),
         ("Nz(N,'unused')", scalar(ScalarType::Int16, false)),
-        ("Nz(IIf(True,N,NULL),N)", scalar(ScalarType::Int16, false)),
-        ("IIf(True,N,CVErr(5))", OutputType::Dynamic),
-        ("Switch(True,N,False,'unused')", OutputType::Dynamic),
-        ("Choose(1,N,CLng(2))", OutputType::Dynamic),
+        ("Nz(IIf(N=2,N,NULL),N)", scalar(ScalarType::Int16, false)),
+        ("IIf(N=2,N,CVErr(5))", OutputType::Dynamic),
+        ("Switch(N=2,N,True,'unused')", OutputType::Dynamic),
+        ("Choose(N-1,N,CLng(2))", OutputType::Dynamic),
     ] {
         let sql = format!("SELECT {expression} FROM T");
         let parsed = parse_query(&sql, ParseLimits::default()).unwrap();
@@ -135,7 +135,7 @@ fn selectors_combine_only_value_branches_and_keep_expression_states_dynamic() {
 fn fixed_crosstab_cells_and_empty_outputs_preserve_nullable_descriptors() {
     let source = source();
     for sql in [
-        "SELECT IIf(True,N,NULL) FROM T WHERE False",
+        "SELECT IIf(N=2,N,NULL) FROM T WHERE False",
         "SELECT N FROM T WHERE False UNION ALL SELECT NULL WHERE False",
     ] {
         let parsed = parse_query(sql, ParseLimits::default()).unwrap();

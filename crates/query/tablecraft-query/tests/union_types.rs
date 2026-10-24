@@ -256,7 +256,11 @@ fn unresolved_families_and_expression_states_keep_their_existing_carriers() {
         Some(QueryError::Evaluation(EvalError::NonScalarExpression))
     );
     // Conditional branch inference and evaluation do not adopt UNION widening.
-    let plan = prepare(&syntax("SELECT IIf(True,CInt(1),CLng(2))"), &source).unwrap();
+    let plan = prepare(
+        &syntax("SELECT IIf(CInt(1)=CInt(1),CInt(1),CLng(2))"),
+        &source,
+    )
+    .unwrap();
     assert_eq!(plan.output_types().unwrap(), [OutputType::Dynamic]);
     assert_eq!(
         plan.execute(&source, &[], Default::default())

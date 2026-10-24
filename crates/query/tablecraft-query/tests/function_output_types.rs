@@ -227,7 +227,7 @@ fn derived_functions_preserve_types_for_empty_results() {
 fn byte_intermediates_and_value_dependent_inputs_remain_dynamic() {
     let source = MetadataOnly(vec![]);
     let parsed = parse_query(
-        "SELECT ChrB(65),LeftB('abc',1),RightB('abc',1),MidB('abc',1),StrConv('abc',64),Abs(IIf(True,CInt(1),CDbl(1)))",
+        "PARAMETERS Pick BIT; SELECT ChrB(65),LeftB('abc',1),RightB('abc',1),MidB('abc',1),StrConv('abc',64),Abs(IIf(Pick,CInt(1),CDbl(1)))",
         ParseLimits::default(),
     ).unwrap();
     assert_eq!(

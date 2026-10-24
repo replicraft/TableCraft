@@ -161,7 +161,7 @@ fn known_conversion_aggregate_and_union_types_do_not_guess_arithmetic_types() {
     );
     assert_eq!(
         source
-            .prepare("SELECT N+CInt(1), CVar(N), IIf(True,N,Label) FROM T")
+            .prepare("SELECT N+CInt(1), CVar(N), IIf(N=2,N,Label) FROM T")
             .output_types()
             .unwrap(),
         [
