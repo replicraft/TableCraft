@@ -16,6 +16,30 @@ The [statistical contract](STATISTICAL_AGGREGATES.md) retains each SQL/domain
 population boundary. This change does not unify those boundaries or change ordinary
 numeric accumulation, precision or rounding policies.
 
+## Counting lossless String expressions
+
+Count and DCount now consume raw String expressions through the shared lossless
+operand service. Complete unpaired UTF-16 units and odd byte ranges count as
+non-NULL Strings without Unicode decoding, numeric conversion or an extra decoded
+payload allocation. For example, `Count(ChrW(Code))` can count surrogate units,
+and `Count(LeftB(ChrW(Code),1))` can count one-byte String ranges. Empty Strings
+count as values; a NULL result such as `ChrW(Code)+NULL` does not count.
+
+Microsoft's [Access SQL Count contract](https://learn.microsoft.com/en-us/office/vba/access/concepts/criteria-expressions/count-function-microsoft-access-sql)
+allows expression inputs, counts text and excludes NULL. Applying that nullness
+contract to TableCraft's lossless intermediates is the implemented profile;
+native Access raw-string execution remains unqualified. Invalid constructors and
+conversion errors still fail: `ChrW(NULL)` and `CStr(NULL)` do not become omitted
+NULL rows. Inputs evaluate normally for every selected row. Filtered/empty groups,
+HAVING, domain criteria, shared quotas and cancellation retain their existing
+contracts. Empty/Missing query cells remain unsupported.
+
+This does not make raw Strings storable, sortable or materializable as derived
+table cells. Other aggregate consumers retain their own admission/publication
+rules. The original [cardinality runner](testing/compare_raw_string_count.py)
+passes 774 independent source-free controls, including seeded unit sequences,
+odd bytes, explicit CStr/CVar identity, filtering, NULL results and failures.
+
 ## Standard Error extrema
 
 An Error-only non-NULL group compares codes in 0 through 65535, using the shared

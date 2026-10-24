@@ -247,7 +247,7 @@ promotion is not complete.
 
 | Built-in | Status | Notes |
 | --- | --- | --- |
-| Count | Partial | Count(*) and Count(expr), grouping and empty/all-NULL behavior. Explicit Error-valued expressions count as non-NULL without code conversion; native cell/error qualification and resource/result limits remain. |
+| Count | Partial | Count(*) and Count(expr), grouping and empty/all-NULL behavior. Explicit Error-valued expressions count as non-NULL without code conversion; [lossless String inputs](EXPRESSION_AGGREGATES.md#counting-lossless-string-expressions) count without Unicode publication. Native cell/error qualification and resource/result limits remain. |
 | Sum | Partial | [Exact floating totals](testing/FLOATING_SUMS.md) and checked integral/Currency/Decimal folds; Currency/integer inputs in floating-selected sums reuse CDbl conversion. Full mixed date/Variant and encounter-order promotion and native accumulation/rounding qualification remain open. |
 | Avg | Partial | [Wider numeric means](AVERAGES.md), including Currency, legacy DATE serials, exact binary floating totals and NULL elimination; fixed-point Double means round once from exact rational totals; wider exact Decimal totals; mixed conversion and native accumulation/promotion gaps remain. |
 | Min | Partial | Supported comparable scalar carriers and provisional standard Error-only extrema retaining Error data; mixed Error/scalar kinds fail. Text requires explicit host collation; native aggregate/locale qualification remains. |
@@ -275,7 +275,7 @@ remain separate; this does not complete any Partial entry.
 | Built-in | Status | Notes |
 | --- | --- | --- |
 | DAvg | Partial | Domain average uses [wider means](AVERAGES.md), including legacy DATE serials. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
-| DCount | Partial | Domain count, including non-NULL expression Error cells without code conversion. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
+| DCount | Partial | Domain count, including non-NULL expression Error cells without code conversion and lossless String nullness without Unicode publication. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
 | DFirst | Partial | First domain value, including explicit Error data. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
 | DLast | Partial | Last domain value, including explicit Error data. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
 | DLookup | Partial | Domain value lookup, including explicit Error endpoint data. See [domain profile](DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |

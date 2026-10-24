@@ -1,5 +1,15 @@
 # Candidate Access fixtures
 
+## Independent raw String counting controls
+
+The original [Count cardinality runner](testing/compare_raw_string_count.py)
+passes 774 source-free controls. Python models selected row membership over fixed
+and seeded unit sequences; TableCraft alone executes SQL. Cases include unpaired
+UTF-16, odd byte ranges, CVar/CStr identity, NULL expression results, filtering,
+empty input and explicit failures. The existing expression-aggregate recipe also
+passes 1,026 source-free controls. Neither run supplied native databases or used
+third-party fixtures. Native Access execution and benchmarks were not run.
+
 ## Independent raw numeric String controls
 
 The original [numeric Text runner](testing/compare_arithmetic_text.py) passes
