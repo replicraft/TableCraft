@@ -49,20 +49,7 @@ pub(crate) fn apply_operands(
         .or_else(|| collation.and_then(Collation::option_compare))
         .ok_or(EvalError::CollationRequired)?;
     let order = match mode {
-        StringCompareMode::Binary => {
-            let mut left = left.encode_utf16();
-            let mut right = right.encode_utf16();
-            loop {
-                step()?;
-                match (left.next(), right.next()) {
-                    (None, None) => break Ordering::Equal,
-                    (None, Some(_)) => break Ordering::Less,
-                    (Some(_), None) => break Ordering::Greater,
-                    (Some(a), Some(b)) if a != b => break a.cmp(&b),
-                    _ => {}
-                }
-            }
-        }
+        StringCompareMode::Binary => binary_units(left.encode_utf16(), right.encode_utf16(), step)?,
         StringCompareMode::Text | StringCompareMode::Database => {
             let collation = collation.ok_or(EvalError::CollationRequired)?;
             for _ in left.encode_utf16().chain(right.encode_utf16()) {
@@ -90,6 +77,24 @@ pub(crate) fn mode(
     default: Option<StringCompareMode>,
 ) -> Result<Option<StringCompareMode>, EvalError> {
     from_code(code(argument)?, default)
+}
+
+pub(crate) fn binary_units(
+    mut left: impl Iterator<Item = u16>,
+    mut right: impl Iterator<Item = u16>,
+    step: &mut impl FnMut() -> Result<(), EvalError>,
+) -> Result<Ordering, EvalError> {
+    loop {
+        step()?;
+        let order = match (left.next(), right.next()) {
+            (None, None) => Ordering::Equal,
+            (None, Some(_)) => Ordering::Less,
+            (Some(_), None) => Ordering::Greater,
+            (Some(a), Some(b)) if a != b => a.cmp(&b),
+            _ => continue,
+        };
+        return Ok(order);
+    }
 }
 
 pub(super) fn code(argument: Option<&Value>) -> Result<Option<i32>, EvalError> {

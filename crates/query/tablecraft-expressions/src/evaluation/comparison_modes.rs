@@ -1,4 +1,6 @@
 //! Numeric Text comparison options retain their owning function's validation order.
+mod bytes;
+
 use super::{Evaluator, text_arguments};
 use crate::{
     EvalError,
