@@ -59,10 +59,11 @@ impl Command {
             Self::Query { command } => {
                 if matches!(
                     &command,
-                    query::Command::Run { .. } | query::Command::Eval { .. }
+                    query::Command::Run(_) | query::Command::Eval { .. }
                 ) {
                     let max_bytes = match &command {
-                        query::Command::Run { large_values, .. } => large_values
+                        query::Command::Run(arguments) => arguments
+                            .large_values
                             .output_bytes
                             .map_or(crate::output::MAX_OUTPUT_BYTES, |bytes| bytes as usize),
                         _ => crate::output::MAX_OUTPUT_BYTES,

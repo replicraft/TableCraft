@@ -23,6 +23,13 @@ pub(crate) fn decode_long(
 ) -> Result<String, InspectError> {
     decode_bounded(bytes, true, MAX_LONG_VALUE_BYTES, budget)
 }
+pub(crate) fn decode_long_with_limit(
+    bytes: &[u8],
+    maximum_bytes: usize,
+    budget: &mut ResourceBudget,
+) -> Result<String, InspectError> {
+    decode_bounded(bytes, true, maximum_bytes, budget)
+}
 fn decode_bounded(
     bytes: &[u8],
     compressed: bool,

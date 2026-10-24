@@ -12,8 +12,10 @@ use crate::output;
 mod args;
 mod parameters;
 mod retrieval;
+mod run_args;
 mod saved;
 pub(crate) use args::Command;
+use run_args::RunArgs;
 use std::fmt;
 use tablecraft_access::template::TemplateError;
 use tablecraft_expressions::EvalError;
@@ -87,37 +89,39 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
                 random_seed,
             },
         ),
-        Command::Run {
-            year_window,
-            character_code_page,
-            number_format,
-            date_format,
-            reference_year,
-            first_day_of_week,
-            first_week_of_year,
-            case_locale,
-            clock,
-            random_seed,
-            sql,
-            saved,
-            parameters,
-            collation,
-            like_mode,
-            database,
-            native_bytes,
-            native_rows,
-            native_steps,
-            execution_limits,
-            declared_integral,
-            large_values,
-            multivalues,
-            collections,
-            decoded_attachments,
-            attachment_bytes,
-            sqlite,
-            index,
-            auto_index,
-        } => {
+        Command::Run(arguments) => {
+            let RunArgs {
+                year_window,
+                character_code_page,
+                number_format,
+                date_format,
+                reference_year,
+                first_day_of_week,
+                first_week_of_year,
+                case_locale,
+                clock,
+                random_seed,
+                sql,
+                saved,
+                parameters,
+                collation,
+                like_mode,
+                database,
+                native_bytes,
+                native_rows,
+                native_steps,
+                execution_limits,
+                declared_integral,
+                large_values,
+                multivalues,
+                collections,
+                decoded_attachments,
+                attachment_bytes,
+                native_value_bytes,
+                sqlite,
+                index,
+                auto_index,
+            } = *arguments;
             let parsed = sql.as_deref().map(parse).transpose()?;
             let input = match (parsed.as_ref(), saved.as_deref()) {
                 (Some(query), None) => retrieval::Input::Sql(query.query()),
@@ -158,6 +162,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
                     collections,
                     decoded_attachments,
                     attachment_bytes,
+                    native_value_bytes,
                     password,
                 }),
                 sqlite.as_deref(),

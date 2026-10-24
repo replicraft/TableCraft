@@ -512,7 +512,8 @@ published only after every child succeeds. A later corrupt payload fails even
 under TOP or a filter that would omit it; errors publish no CLI rows. Failed
 decoding does not invalidate an already cached metadata projection. Shared native budgets
 charge buffers, decoding/copy work and cancellation checkpoints; query/output
-budgets still apply separately. Native decoding retains 2 MiB encoded data,
+budgets still apply separately. Native decoding retains a 2 MiB encoded default
+with an explicit [32 MiB encoded allowance](LARGER_ENCODED_VALUES.md),
 1 MiB default file data and a 4 KiB header. Explicit
 [file allowances](LARGER_DECODED_ATTACHMENTS.md) can raise decoded file bytes to
 16 MiB; they do not raise encoded storage or cumulative pools. Changing an

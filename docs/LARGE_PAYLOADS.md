@@ -1,17 +1,20 @@
 # Larger native stored payloads
 
 The qualified Jet 4 / ACE 2007 / ACE 2016 / ACE 2019 long-value reader now admits
-up to 2 MiB of encoded MEMO or opaque OLE bytes through at most 1,024 LVAL rows.
+a default of 2 MiB encoded MEMO or opaque OLE bytes through at most 1,024 LVAL rows.
+An explicit [encoded-value policy](LARGER_ENCODED_VALUES.md) raises storage to
+32 MiB and 16,384 references without changing cumulative pools.
 Decoded Long Text has a separate 1 MiB UTF-8 ceiling. The encoded bound accounts
 for UTF-16 storage independently of decoded UTF-8 size. Native attachment decoding
 retains defaults of 2 MiB encoded storage, a 1 MiB file and a 4 KiB header, through
 both stored and zlib modes. An explicit [decoded-file allowance](LARGER_DECODED_ATTACHMENTS.md)
-can raise file bytes to 16 MiB while encoded/header bounds remain unchanged.
+can raise file bytes to 16 MiB independently of the encoded-value policy.
+Header bounds remain unchanged.
 These are engineering ceilings, not format maxima.
 
 Exact lengths, LVAL owners, row flags, reference cycles, termination, Unicode and
-attachment checksums remain mandatory. The bounded visited-reference scan charges
-work as chains grow. Text decoding reserves three logical passes over its encoded
+attachment checksums remain mandatory. Default reference scans charge work as chains grow; explicit larger chains use
+a charged visited set and bounded physical batches. Text decoding reserves three logical passes over its encoded
 input; cancellation is checked before and after decoding, not within every Unicode
 conversion loop. Attachment copying/inflation retains its block checkpoints.
 Caller allocations, page reads and cumulative work remain separately limited.

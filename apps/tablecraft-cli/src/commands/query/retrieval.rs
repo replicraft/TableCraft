@@ -4,7 +4,9 @@ use clap::ValueEnum;
 use std::sync::{Arc, atomic::AtomicBool};
 use std::{cell::RefCell, path::Path};
 use tablecraft_access::{NativeSource, template::TemplateSource};
-use tablecraft_ace::{AttachmentDecodeLimits, TableSnapshotLimits};
+use tablecraft_ace::{
+    AttachmentDecodeLimits, LongValueReadLimits, LongValueReadSource, TableSnapshotLimits,
+};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_expressions::comparison::Collation;
 use tablecraft_expressions::functions::error_messages::EnglishErrorMessages;
@@ -61,6 +63,7 @@ pub(super) struct NativeInput<'a> {
     pub collections: bool,
     pub decoded_attachments: bool,
     pub attachment_bytes: Option<u32>,
+    pub native_value_bytes: Option<u32>,
 }
 
 pub(super) struct Controls {
@@ -135,6 +138,7 @@ pub(super) fn run(
                 || input_config.multivalues
                 || input_config.collections
                 || input_config.decoded_attachments
+                || input_config.native_value_bytes.is_some()
                 || matches!(input, Input::Saved(_))
             {
                 return Err(Error::Retrieval(tablecraft_query::QueryError::Unsupported));
@@ -145,6 +149,13 @@ pub(super) fn run(
         } else {
             let file = native::open(input_config.path, input_config.password, &mut budget)
                 .map_err(Error::Input)?;
+            let value_limits = input_config
+                .native_value_bytes
+                .map(LongValueReadLimits::new)
+                .transpose()
+                .map_err(Error::Native)?
+                .unwrap_or_default();
+            let file = LongValueReadSource::new(file, value_limits);
             let source = NativeSource::new_with_snapshot_limits(
                 file,
                 native::CATALOG_SCOPE,
@@ -164,7 +175,9 @@ pub(super) fn run(
                     .map(AttachmentDecodeLimits::new)
                     .transpose()
                     .map_err(Error::Native)?
-                    .unwrap_or_default();
+                    .unwrap_or_default()
+                    .with_encoded_bytes(value_limits.maximum_bytes())
+                    .map_err(Error::Native)?;
                 source.with_decoded_attachment_limits(limits)
             } else if input_config.collections {
                 source.with_collections()

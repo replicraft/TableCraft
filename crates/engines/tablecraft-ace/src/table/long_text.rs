@@ -22,7 +22,11 @@ pub(super) fn read<R: crate::NativeReadSource>(
                     .checked_mul(DECODE_PASSES)
                     .ok_or(InspectError::StructureLimit)?,
             )?;
-            let decoded = text::decode_long(&bytes, reader.budget)?;
+            let decoded = text::decode_long_with_limit(
+                &bytes,
+                reader.source.long_value_limits().maximum_bytes() as usize,
+                reader.budget,
+            )?;
             if decoded.len() > MAX_LONG_TEXT_BYTES {
                 return Err(InspectError::StructureLimit);
             }

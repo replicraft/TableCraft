@@ -19,7 +19,9 @@ mod format;
 mod header;
 mod limits;
 mod source;
-pub use source::{AgileSource, EncryptedSource, NativeReadSource};
+pub use source::{
+    AgileSource, EncryptedSource, LongValueReadLimits, LongValueReadSource, NativeReadSource,
+};
 mod preservation;
 mod properties;
 mod relationships;

@@ -137,3 +137,40 @@ fn a_large_allowance_does_not_preallocate_large_files_or_codec_state() {
     }
     assert!(decoder.budget_mut().remaining(Resource::Bytes) > 32 * 1024);
 }
+
+#[test]
+fn larger_encoded_envelopes_require_an_independent_explicit_allowance() {
+    let data = vec![42; 3_145_728];
+    let bytes = encoded("bin", &data, false);
+    let file_limits = AttachmentDecodeLimits::new(3_145_728).unwrap();
+    assert_eq!(file_limits.maximum_encoded_bytes(), 2_097_152);
+    assert_eq!(
+        decode_attachment_with_limits(&bytes, file_limits, &mut large_budget(), &|| false).err(),
+        Some(InspectError::StructureLimit)
+    );
+    let limits = file_limits.with_encoded_bytes(bytes.len() as u32).unwrap();
+    assert_eq!(
+        decode_attachment_with_limits(&bytes, limits, &mut large_budget(), &|| false)
+            .unwrap()
+            .data(),
+        data
+    );
+    let short = limits.with_encoded_bytes(bytes.len() as u32 - 1).unwrap();
+    assert_eq!(
+        decode_attachment_with_limits(&bytes, short, &mut large_budget(), &|| false).err(),
+        Some(InspectError::StructureLimit)
+    );
+    for size in [0, 33_554_433, u32::MAX] {
+        assert_eq!(
+            file_limits.with_encoded_bytes(size),
+            Err(InspectError::InvalidAttachmentLimits)
+        );
+    }
+    let file_too_small = AttachmentDecodeLimits::default()
+        .with_encoded_bytes(4_194_304)
+        .unwrap();
+    assert_eq!(
+        decode_attachment_with_limits(&bytes, file_too_small, &mut large_budget(), &|| false).err(),
+        Some(InspectError::StructureLimit)
+    );
+}

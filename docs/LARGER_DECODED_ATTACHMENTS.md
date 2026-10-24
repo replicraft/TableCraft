@@ -24,8 +24,9 @@ tablecraft query run \
 
 ## Separate storage, decoder and output bounds
 
-Encoded FileData still has the qualified 2 MiB stored-value ceiling, with existing
-LVAL framing/chain limits. Type headers remain bounded to 4 KiB. The decoder
+Encoded FileData retains a 2 MiB default. An independent explicit
+[encoded-value policy](LARGER_ENCODED_VALUES.md) can admit up to 32 MiB under
+bounded chain/batch and cumulative limits. Type headers remain bounded to 4 KiB. The decoder
 rejects declared bodies above the selected file allowance plus that header cap,
 then validates the actual file length after complete header/codec validation.
 Zlib checksums, exact consumed/produced lengths, output sentinels, encoding/type tags,
@@ -37,7 +38,8 @@ encoded storage fits. It does not admit incompressible/stored wrappers above
 the encoded ceiling. A 16 MiB file allowance also does not imply its hexadecimal
 CLI display fits the separate 16 MiB output ceiling. Full native FileData SQL
 representation remains unqualified: this is the existing explicit TableCraft
-decoded-file view. Broader encoded stored values remain separate work.
+decoded-file view. Raising the encoded-value policy separately now admits
+larger stored/incompressible wrappers.
 
 Sessions retain one lazy reusable codec workspace. A large ceiling allocates
 neither that workspace nor a file-sized buffer at construction; each file uses

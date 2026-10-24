@@ -5,7 +5,6 @@ use crate::{
     InspectError,
     format::{bytes::u32_at, text},
     header::check,
-    limits::MAX_LONG_VALUE_BYTES,
 };
 use flate2::Decompress;
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -57,7 +56,7 @@ pub(super) fn using_inflater(
     let _span =
         tracing::debug_span!("native.attachment.decode", encoded_bytes = encoded.len()).entered();
     check(budget, cancelled)?;
-    if encoded.len() > MAX_LONG_VALUE_BYTES {
+    if encoded.len() > limits.maximum_encoded_bytes() as usize {
         return Err(InspectError::StructureLimit);
     }
     if encoded.len() < OUTER_BYTES {

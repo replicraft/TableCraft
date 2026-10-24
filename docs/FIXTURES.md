@@ -475,7 +475,7 @@ uses the reviewed Jackcess 5.0.4 JAR to create fresh ACE 2016/2019/2007 database
 Each has two parents: one holds a deterministic incompressible 3 MiB file and a
 three-byte file, and the other has no attachments. Public attachment APIs produce
 real encoded wrappers. The large encoded value is 3,146,722 bytes, exceeding the
-current 2 MiB encoded read envelope. Read-only independent getters verify all
+default 2 MiB encoded read envelope (the explicit larger policy is recorded below). Read-only independent getters verify all
 metadata, encoded/decoded lengths and the original decoded SHA-256:
 `e44f145b85dde7ab04a48f7d6fba13bf7fff8a739c39e646d340351f2ee72e68`.
 Expressions and active content do not run. Generated binaries and the JAR remain
@@ -6624,3 +6624,43 @@ native Access SQL qualification.
 ```sh
 python3 docs/testing/compare_attachment_presence.py --cli target/debug/tablecraft --jar path/to/jackcess-5.0.4.jar --directory path/to/attachment-metadata
 ```
+
+## Larger encoded native values
+
+Original MIT [LargerEncodedValueFixture.java](testing/LargerEncodedValueFixture.java)
+creates fresh Jet 4 / ACE 2007/2016/2019 tables containing deterministic 4 MiB and
+20 MiB opaque OLE bytes, empty bytes and NULL. No OLE object, script or expression
+is executed. Read-only Jackcess getters supply lengths and SHA-256 independently
+of TableCraft; Python independently constructs the pattern. The reviewed Jackcess
+5.0.4 JAR is unchanged (`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
+No third-party fixture or implementation was copied. Generated databases stay
+ignored under `.cache/tablecraft-fixtures/larger-encoded-values-20261024`.
+
+| Input | Bytes | SHA-256 |
+| --- | ---: | --- |
+| encoded-jet4.mdb | 25,444,352 | `96ea363f3a59715b8ca025bab2a4ecd0a6c810859f95f2e4c17880b9882e09bc` |
+| encoded-2007.accdb | 25,673,728 | `170c3bebfbab11956e09367af5f51284a35306341a3226b60dded42634a8b74f` |
+| encoded-2016.accdb | 25,710,592 | `08945ddbccd667ef7ec84b01c050423d63ea34de482edaba5adfe0cf9bcb9257` |
+| encoded-2019.accdb | 25,780,224 | `957ddc86bf7f175584bde53173dac48ea5514a773193113ac356e46d175e9ff0` |
+
+Generator SHA-256: `ef44bc40ae7a165d3704e68c032d8501b60ad3b4b0e311ad8ea7dddddba08d3f`.
+Runner SHA-256: `8fef2013c48b75783f0bfdeefd81ca978b81be9e6965d384eb3d0bf9b025f3cf`.
+The registered runner also uses the three unchanged
+[attachment-metadata inputs](#attachment-metadata-without-payload-reads) above.
+Their 3,146,722-byte incompressible encoded values now fit an explicit 4 MiB
+storage allowance and 3 MiB decoded-file policy; existing default failures remain.
+
+```sh
+python3 docs/testing/compare_larger_encoded_values.py \
+  --cli target/debug/tablecraft \
+  --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
+  --directory .cache/tablecraft-fixtures/larger-encoded-values-20261024 \
+  --attachments .cache/tablecraft-fixtures/attachment-metadata
+```
+
+Only `--generate` into a fresh directory creates new candidates; registered replay
+checks exact original hashes before and after reads. The 55 controls cover
+independent getter identities, complete large reads, exact smaller CLI payloads,
+empty/NULL counts, default/lower/storage/work/output refusals and scalar pruning.
+These are independent-reader controls, not Windows Access SQL or native saves.
+See [read policy and remaining limits](LARGER_ENCODED_VALUES.md).

@@ -1,9 +1,11 @@
 //! Explicit native-page decoding, separate from raw byte I/O and preservation.
 mod agile;
 mod encrypted;
+mod long_values;
 use crate::{Header, InspectError};
 pub use agile::AgileSource;
 pub use encrypted::EncryptedSource;
+pub use long_values::{LongValueReadLimits, LongValueReadSource};
 use std::io::{Read, Seek};
 use tablecraft_core::limits::ResourceBudget;
 
@@ -15,6 +17,11 @@ use tablecraft_core::limits::ResourceBudget;
 /// transactions already implement this trait. Custom raw sources can implement it
 /// with an empty impl. Hosts own source stability and I/O timeouts.
 pub trait NativeReadSource: Read + Seek {
+    /// Per-value storage limits, separate from cumulative resource budgets.
+    fn long_value_limits(&self) -> LongValueReadLimits {
+        LongValueReadLimits::default()
+    }
+
     /// Attach qualified read context to this source's original header.
     /// Plain sources retain ordinary encoded-page/profile gates.
     fn qualify_header(&self, header: Header) -> Result<Header, InspectError> {
@@ -40,6 +47,10 @@ impl<T: AsRef<[u8]>> NativeReadSource for std::io::Cursor<T> {}
 impl NativeReadSource for tablecraft_io::SharedFile {}
 impl NativeReadSource for crate::OfflineReadTransaction {}
 impl<S: NativeReadSource + ?Sized> NativeReadSource for &mut S {
+    fn long_value_limits(&self) -> LongValueReadLimits {
+        (**self).long_value_limits()
+    }
+
     fn qualify_header(&self, header: Header) -> Result<Header, InspectError> {
         (**self).qualify_header(header)
     }
