@@ -74,9 +74,9 @@ ACE's `index_columns` benchmark directly compares the already locked ArrayVec
 index-column storage, using the existing ten-column format ceiling and fallible
 insertion. Public access remains a slice. The enlarged NativeIndex object is
 charged in its owning vector; the former separate key allocation charge is
-removed. ACE's direct SmallVec consumer remains development-only; the optional
-ICU text provider also uses SmallVec transitively. Root workspace declarations disable
-both default feature sets; SmallVec explicitly enables `const_generics` for its
+removed. ACE's direct SmallVec consumer remains development-only; normal CLI
+builds also use it transitively through Fluent, ICU and rusqlite. Root workspace
+declarations disable both default feature sets; SmallVec explicitly enables `const_generics` for its
 benchmark inline array. Native limits and on-disk encoding are unchanged.
 
 Both published manifests offer MIT OR Apache-2.0 and include both license files;

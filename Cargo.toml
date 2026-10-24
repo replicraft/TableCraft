@@ -56,9 +56,8 @@ zerocopy = { version = "0.8.63", default-features = false, features = ["derive"]
 wide = { version = "1.7.1", default-features = false }
 bytemuck = { version = "1.25.2", default-features = false }
 
-# Bounded native index metadata and collection experiments
+# Fixed-capacity native index metadata
 arrayvec = { version = "0.7.8", default-features = false }
-smallvec = { version = "1.16.3", default-features = false, features = ["const_generics"] }
 
 # Derived General collation-element dictionaries (not native index storage)
 fst = { version = "0.4.7", default-features = false }
@@ -95,7 +94,7 @@ tempfile = "3.27.0"
 # Explicit legacy character-code decoding (allocation-free consumer)
 encoding_rs = { version = "0.8.42", default-features = false }
 
-# Explicit Unicode casing with compiled data and streamed output
+# Explicit Unicode casing and collation with compiled data
 icu_casemap = { version = "2.3.0", default-features = false, features = ["compiled_data"] }
 icu_collator = { version = "2.3.1", default-features = false, features = ["compiled_data"] }
 icu_locale_core = { version = "2.3.0", default-features = false, features = ["alloc"] }
@@ -104,7 +103,8 @@ writeable = { version = "0.6.4", default-features = false }
 # SQL syntax
 sqlparser = { version = "0.63", default-features = false, features = ["std"] }
 
-# Exact byte-search experiments (development-only consumer)
+# Development benchmark comparisons for index storage and exact byte search
+smallvec = { version = "1.16.3", default-features = false, features = ["const_generics"] }
 memchr = { version = "2.8.3", default-features = false, features = ["std"] }
 
 # Synchronous SQLite storage (bundled native library, bounded read operations)
