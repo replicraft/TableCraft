@@ -42,6 +42,8 @@ pub struct IndexProjection<'a> {
 /// Explicit complete/projected indexed scalar read and retained-row ceiling.
 /// The entry point validates the ceiling before I/O. Selection qualifiers and
 /// native structural/resource checks remain independent of this consumer limit.
+/// Referenced rows use internal batches with separate physical-read quotas and
+/// one cumulative caller budget; no partial batch/snapshot is published.
 pub struct IndexReadRequest<'a> {
     /// Ordinary scalar names, or None for all scalar fields. Empty selects zero-width rows.
     pub columns: Option<&'a [&'a str]>,

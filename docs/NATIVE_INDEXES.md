@@ -1022,3 +1022,16 @@ becomes a complete cache, and no write gate changes.
 `IndexProjectionSelection::Byte` and `::Int16` admit typed ranges through the
 request API. All/NULL still require the exact native key kind; the Int32/Int64
 APIs retain their existing width restrictions. See [selection scope and evidence](NARROW_RANGES.md).
+
+
+## Scattered row fetches under explicit snapshot requests
+
+Explicit IndexReadRequest reads now fetch referenced roots in predetermined
+256-row groups, each with the existing physical-read quota, after complete bounded
+index/map preparation. Every group shares the caller's original cumulative byte,
+row and work budget; no failed read is retried or refunded. All root membership,
+row framing, relocation and hidden-key checks remain. Legacy APIs retain their
+operation-wide quota. [Modern scalar histories](testing/MODERN_SCALAR_HISTORIES.md)
+record the independent input that exhausted the former single quota and the
+successful exact indexed/query comparisons. This adds no cache, streaming index,
+fallback, live-file or write qualification.

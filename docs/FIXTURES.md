@@ -5855,3 +5855,28 @@ No new third-party bytes or generated database artifact is added. Source bytes
 remain unchanged through callback failures and successful interrupted short
 reads. These synthetic layouts verify failure/publication invariants, not new
 native-format or encrypted-provider qualification.
+
+
+## Modern ACE 16 scalar history inputs
+
+The repository-original [recipe](testing/ModernScalarHistoryFixture.java) was run
+with the reviewed Jackcess 5.0.4 JAR, SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`
+and Temurin 21.0.8+9-LTS on 23 October 2026. No third-party
+code/data is copied; generated files and the JAR remain ignored local artifacts.
+Originals live in `.cache/tablecraft-fixtures/modern-scalar-histories/`, with a local
+inventory containing recipe/JAR hashes, sizes and file identities.
+
+| Original | Bytes | SHA-256 |
+| --- | ---: | --- |
+| modern-V2016.accdb | 5,451,776 | d17fa71f3283bb50b6f3571926c18c842024aa8a37c1d28640f980dd23ded1e2 |
+| modern-V2019.accdb | 6,864,896 | 03bc1d98ac89b903dc3d40caa7c65edd6b31f29d93f386a40a26719f36e98acb |
+
+The [history contract](testing/MODERN_SCALAR_HISTORIES.md) records exact Large
+Number/Extended-date values, added fields, deleted/updated roots and scattered
+index references. The original [runner](testing/compare_modern_scalar_histories.py)
+checks all 19,902 retained rows per file and passes 37 independent controls, with
+unchanged original hashes. It verifies the reviewed JAR and registered inputs
+before getters run. Jackcess reads values/order without expression execution;
+TableCraft alone runs SQL. Native Access behavior, save/reopen, live-file coherence
+and general write qualification remain unrun.

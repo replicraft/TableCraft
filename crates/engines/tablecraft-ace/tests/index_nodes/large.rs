@@ -1,10 +1,17 @@
 use super::{fixture, support};
-use std::{io::Cursor, ops::Bound::Included};
+use std::{
+    cell::Cell,
+    io::{self, Cursor, Read, Seek, SeekFrom},
+    ops::Bound::Included,
+};
 use tablecraft_ace::{
     IndexProjectionSelection, IndexReadRequest, InspectError, Int32IndexSelection,
     read_table_index, read_table_index_with_request,
 };
-use tablecraft_core::{limits::ResourceBudget, values::Value};
+use tablecraft_core::{
+    limits::{Resource, ResourceBudget},
+    values::Value,
+};
 use tablecraft_model::CatalogScope;
 
 const PAGE_BYTES: usize = 4096;
@@ -27,6 +34,10 @@ fn budget() -> ResourceBudget {
 }
 
 fn database(code: u8, descending: bool) -> Vec<u8> {
+    database_layout(code, descending, false)
+}
+
+fn database_layout(code: u8, descending: bool, scattered: bool) -> Vec<u8> {
     let mut bytes = fixture::database(
         code,
         &[4, 4],
@@ -59,7 +70,12 @@ fn database(code: u8, descending: bool) -> Vec<u8> {
     for page in DATA_START..LEAF_START {
         let rows = (0..ROWS_PER_PAGE)
             .map(|slot| {
-                let id = ((page - DATA_START) * ROWS_PER_PAGE + slot + 1) as i32;
+                let position = if scattered {
+                    slot * DATA_PAGES + page - DATA_START
+                } else {
+                    (page - DATA_START) * ROWS_PER_PAGE + slot
+                };
+                let id = (position + 1) as i32;
                 let mut row = 2_u16.to_le_bytes().to_vec();
                 row.extend(id.to_le_bytes());
                 row.extend((id * 10).to_le_bytes());
@@ -83,8 +99,13 @@ fn database(code: u8, descending: bool) -> Vec<u8> {
                 .to_be_bytes()
                 .map(|byte| if descending { !byte } else { byte }),
         );
-        let page = (DATA_START + position / ROWS_PER_PAGE) as u32;
-        let slot = (position % ROWS_PER_PAGE) as u32;
+        let physical = if scattered {
+            (position % DATA_PAGES) * ROWS_PER_PAGE + position / DATA_PAGES
+        } else {
+            position
+        };
+        let page = (DATA_START + physical / ROWS_PER_PAGE) as u32;
+        let slot = (physical % ROWS_PER_PAGE) as u32;
         entry.extend(((page << 8) | slot).to_be_bytes());
         entry
     };
@@ -253,5 +274,155 @@ fn small_ranges_in_large_indexes_limit_matches_and_check_hidden_keys() {
                 Some(InspectError::Malformed)
             );
         }
+    }
+}
+
+#[test]
+fn explicit_scattered_index_rows_use_bounded_batches_under_one_cumulative_budget() {
+    for code in [1, 2, 5, 6] {
+        for descending in [false, true] {
+            let bytes = database_layout(code, descending, true);
+            let original = bytes.clone();
+            let mut allowance = ResourceBudget::new(128 * 1024 * 1024, 100_000, 10_000_000);
+            let table = read_table_index_with_request(
+                &mut Cursor::new(&bytes),
+                CatalogScope::new(1),
+                "Items",
+                "Compound",
+                IndexReadRequest {
+                    columns: Some(&["Score"]),
+                    selection: IndexProjectionSelection::All,
+                    maximum_rows: ROWS as u32,
+                },
+                &mut allowance,
+                &|| false,
+            )
+            .unwrap();
+            assert_eq!(table.rows().len(), ROWS);
+            for (position, row) in table.rows().iter().enumerate() {
+                let id = if descending {
+                    ROWS - position
+                } else {
+                    position + 1
+                };
+                assert_eq!(row, &[Value::Int32(id as i32 * 10)]);
+            }
+            assert!(
+                allowance.remaining(Resource::Bytes)
+                    < 128 * 1024 * 1024 - (ROWS * PAGE_BYTES) as u64
+            );
+            assert_eq!(bytes, original);
+
+            // A later row batch must not refill the original byte allowance.
+            assert!(matches!(
+                read_table_index_with_request(
+                    &mut Cursor::new(&bytes),
+                    CatalogScope::new(1),
+                    "Items",
+                    "Compound",
+                    IndexReadRequest {
+                        columns: None,
+                        selection: IndexProjectionSelection::All,
+                        maximum_rows: ROWS as u32,
+                    },
+                    &mut budget(),
+                    &|| false,
+                ),
+                Err(InspectError::Limit(_))
+            ));
+        }
+    }
+}
+
+struct Cancels<'a> {
+    bytes: Cursor<&'a [u8]>,
+    data_reads: usize,
+    stop: usize,
+    flag: &'a Cell<bool>,
+}
+
+impl Read for Cancels<'_> {
+    fn read(&mut self, buffer: &mut [u8]) -> io::Result<usize> {
+        let page = self.bytes.position() / PAGE_BYTES as u64;
+        let count = self.bytes.read(buffer)?;
+        if (DATA_START as u64..LEAF_START as u64).contains(&page) {
+            self.data_reads += 1;
+            if self.data_reads == self.stop {
+                self.flag.set(true);
+            }
+        }
+        Ok(count)
+    }
+}
+
+impl Seek for Cancels<'_> {
+    fn seek(&mut self, position: SeekFrom) -> io::Result<u64> {
+        self.bytes.seek(position)
+    }
+}
+
+impl tablecraft_ace::NativeReadSource for Cancels<'_> {}
+
+#[test]
+fn scattered_batches_discard_late_key_corruption_and_cancel_across_boundaries() {
+    for code in [5, 6] {
+        let bytes = database_layout(code, false, true);
+        for stop in [1, 255, 256, 257, 4097, 19_999, 20_000] {
+            let flag = Cell::new(false);
+            let mut source = Cancels {
+                bytes: Cursor::new(bytes.as_slice()),
+                data_reads: 0,
+                stop,
+                flag: &flag,
+            };
+            let mut allowance = ResourceBudget::new(128 * 1024 * 1024, 100_000, 10_000_000);
+            assert_eq!(
+                read_table_index_with_request(
+                    &mut source,
+                    CatalogScope::new(1),
+                    "Items",
+                    "Compound",
+                    IndexReadRequest {
+                        columns: Some(&["Score"]),
+                        selection: IndexProjectionSelection::All,
+                        maximum_rows: ROWS as u32,
+                    },
+                    &mut allowance,
+                    &|| flag.get(),
+                )
+                .err(),
+                Some(InspectError::Cancelled)
+            );
+            assert_eq!(source.data_reads, stop);
+            assert!(allowance.remaining(Resource::Bytes) < 128 * 1024 * 1024);
+        }
+
+        let mut corrupt = bytes.clone();
+        let page = (DATA_START + DATA_PAGES - 1) * PAGE_BYTES;
+        let slot = ROWS_PER_PAGE - 1;
+        let directory = page + 14 + 2 * slot;
+        let start = u16::from_le_bytes(corrupt[directory..directory + 2].try_into().unwrap())
+            as usize
+            & 0x1fff;
+        // Independent row-framing golden: the two-byte column count precedes ID.
+        corrupt[page + start + 2..page + start + 6].copy_from_slice(&777_i32.to_le_bytes());
+        assert_eq!(
+            read_table_index_with_request(
+                &mut Cursor::new(&corrupt),
+                CatalogScope::new(1),
+                "Items",
+                "Compound",
+                IndexReadRequest {
+                    columns: Some(&["Score"]),
+                    selection: IndexProjectionSelection::All,
+                    maximum_rows: ROWS as u32,
+                },
+                &mut ResourceBudget::new(128 * 1024 * 1024, 100_000, 10_000_000),
+                &|| false,
+            )
+            .err(),
+            Some(InspectError::Malformed)
+        );
+        assert_eq!(bytes, database_layout(code, false, true));
     }
 }
