@@ -1,9 +1,9 @@
 use super::{NativeSource, query_error, schema::ScalarSchema};
 use tablecraft_ace::{
-    ByteIndexSelection, CurrencyIndexSelection, GuidIndexSelection, IndexInspection,
-    IndexProjectionSelection, IndexReadRequest, Int16IndexSelection, Int32IndexSelection,
-    Int64IndexSelection, NativeIndex, inspect_table_indexes, read_table_index_in_table_order,
-    read_table_index_with_request,
+    BinaryIndexSelection, ByteIndexSelection, CurrencyIndexSelection, GuidIndexSelection,
+    IndexInspection, IndexProjectionSelection, IndexReadRequest, Int16IndexSelection,
+    Int32IndexSelection, Int64IndexSelection, NativeIndex, TextIndexSelection,
+    inspect_table_indexes, read_table_index_in_table_order, read_table_index_with_request,
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_query::{QueryError, Source, source::ScanConstraint};
@@ -118,9 +118,18 @@ enum Selection {
     Guid(GuidIndexSelection),
     Int32(Int32IndexSelection),
     Int64(Int64IndexSelection),
+    Text(TextIndexSelection<'static>),
+    Binary(BinaryIndexSelection<'static>),
 }
+
 fn selection(constraint: ScanConstraint, kind: ScalarType) -> Option<Selection> {
     match (constraint, kind) {
+        (ScanConstraint::Null { .. }, ScalarType::Text) => {
+            Some(Selection::Text(TextIndexSelection::Null))
+        }
+        (ScanConstraint::Null { .. }, ScalarType::Binary) => {
+            Some(Selection::Binary(BinaryIndexSelection::Null))
+        }
         (ScanConstraint::Null { .. }, ScalarType::Byte) => {
             Some(Selection::Byte(ByteIndexSelection::Null))
         }
@@ -219,6 +228,8 @@ fn candidate_selection(
         Some(Selection::Guid(selection)) => IndexProjectionSelection::Guid(selection),
         Some(Selection::Int32(selection)) => IndexProjectionSelection::Int32(selection),
         Some(Selection::Int64(selection)) => IndexProjectionSelection::Int64(selection),
+        Some(Selection::Text(selection)) => IndexProjectionSelection::Text(selection),
+        Some(Selection::Binary(selection)) => IndexProjectionSelection::Binary(selection),
         None => IndexProjectionSelection::All,
     }
 }
@@ -237,3 +248,7 @@ pub(super) fn chosen_index<'a>(
     }
     automatic::choose(inspection, declared, constraint, budget, cancelled)
 }
+
+#[cfg(test)]
+#[path = "selection/null_tests.rs"]
+mod null_tests;

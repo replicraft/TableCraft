@@ -6664,3 +6664,54 @@ independent getter identities, complete large reads, exact smaller CLI payloads,
 empty/NULL counts, default/lower/storage/work/output refusals and scalar pruning.
 These are independent-reader controls, not Windows Access SQL or native saves.
 See [read policy and remaining limits](LARGER_ENCODED_VALUES.md).
+
+## NULL-only index predicate inputs
+
+The existing original MIT TextIndexFixture.java and BinaryIndexFixture.java
+recipes generated twelve fresh inert candidates under
+`.cache/tablecraft-fixtures/null-indexes-20261024`. These are newly registered
+identities; earlier source hashes are not reassigned or replaced. Four-family
+Text inputs cover General legacy/2010, NULL, empty, ignored/non-ASCII weights and
+1,000-row multi-page indexes. Binary inputs cover NULL, empty and 1–255-byte
+values with ascending/descending indexes. Additional empty, unique and
+ignore-NULL declarations exercise existing qualification rules.
+
+No third-party fixture/source was copied. The reviewed Jackcess 5.0.4 JAR and its
+existing provenance apply; its SHA-256 remains
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+Text recipe SHA-256: `6397d199928bf8a6d6e7d1ac2c53f160498167886773cf22f96df9988e76bf1e`.
+Binary recipe SHA-256: `d57754f255d164b39dcd24384a10256a355beee222f319407d7912448b7fc392`.
+[Runner](testing/compare_null_indexes.py) SHA-256:
+`b205a2dbfbb39128c8dc5d653fe4740027ad1b82c535843fcb430aaf672797a2`.
+
+| Input stem | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Text-V2000-0 | 438,272 | `5f989e1f46f953680c4a46e6fe3ae2247c5f481a3f519bbb4d2f7d4ae283492e` |
+| Text-V2000-1 | 684,032 | `d0ef874403b899acc8e9cc459ea8def96829c29ed2a84b65af57f5665355d2a5` |
+| Binary-V2000 | 479,232 | `fbe38ca0eae7f201209a1624aca2963f0709eed6b1af72dbb66bc8a0abec513c` |
+| Text-V2007-0 | 667,648 | `4e0c201a212c33a885e7388e5f59e1d98d22d44018f144d0405f77e44665258c` |
+| Text-V2007-1 | 913,408 | `145a7218d837ffcc43d6c2ab9fef961dafa3d2d3cdc3cc1efc694c38d19a2fe3` |
+| Binary-V2007 | 708,608 | `51024e0994d9f62133d0eb99b6648933cbcfbe07224fad14ac14ea5c62542bbd` |
+| Text-V2016-0 | 708,608 | `b80e74b69f36fdd39b53f9b1819941d5c0d237a904ae1d63c091289c57f4e775` |
+| Text-V2016-1 | 954,368 | `7da85ab409ec86076be327c275afd72fc46b826b2e937887226927139a562826` |
+| Binary-V2016 | 745,472 | `1f82f80b8c36a824fdc407da51785a6cfc2e4bfd5bd9cfcbdcdbfa9831d04c14` |
+| Text-V2019-0 | 778,240 | `776d826dd5c2f0c064155ce932ce0dd7a5e9738a17f2a49b774cdd48f280533d` |
+| Text-V2019-1 | 1,024,000 | `d23a10dea54fe2e20e210a4886452ac8db3222f3aa4af98e558dcd7c993328c2` |
+| Binary-V2019 | 819,200 | `6cc2a2b534a133d96d354307dc22431d697edf133a9027a69728215e87faa712` |
+
+V2000 uses `.mdb`; the other profiles use `.accdb`. Registered replay checks
+these exact hashes before/after queries and compares NULL row identities with
+inert read-only sequential getters, without running expressions or SQL in Jackcess.
+Corruption controls alter disposable copies of the independently located chosen
+root. The originals stay unchanged; generated binaries remain ignored.
+
+```sh
+python3 docs/testing/compare_null_indexes.py \
+  --cli target/debug/tablecraft \
+  --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
+  --directory .cache/tablecraft-fixtures/null-indexes-20261024
+```
+
+The 216 controls pass. `--generate` is reserved for a fresh candidate directory;
+its values do not replace the registry automatically. Windows Access comparisons,
+SQL string/binary bounds and native optimizer qualification remain unrun.

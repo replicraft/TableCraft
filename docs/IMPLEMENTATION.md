@@ -1,5 +1,28 @@
 # Implementation status
 
+## NULL-only Text and Binary index predicates
+
+Query constraint extraction now admits wholly safe direct Text/Binary IS NULL
+predicates. The Access adapter maps them to existing typed native NULL selections
+for qualified explicit or automatic indexes. Empty strings/bytes remain separate,
+SQL string comparison is not activated, the residual predicate stays present and
+automatic results retain sequential table order. Partial selected snapshots remain
+ephemeral; ignore-NULL/foreign/compound exclusions and chosen-failure propagation
+are unchanged. IS NOT NULL and non-NULL Text/Binary bounds remain unimplemented
+as seeks. See [NULL selection scope](AUTOMATIC_INDEXES.md#null-only-text-and-binary-selection).
+
+22 focused query constraint tests, two adapter unit tests and six automatic-index
+adapter tests pass. Scoped query/adapter Clippy, minimal query/adapter builds,
+CLI build, formatting, Python compilation and the dependency guard pass. The new
+independent runner passes 216 controls across twelve original Jet 4 and ACE
+2007/2016/2019 inputs, including both General versions. Read-only Jackcess getters
+supply complete sequential NULL identities; CLI controls retain empty distinctions,
+TOP/First/Last, row limits, later complete scans, eager errors and chosen-root
+corruption failures on disposable copies. Original hashes are unchanged. Full
+workspace tests, benchmarks and Windows Access comparisons were not run. Broader
+text predicates, P0 coercion/locale work and write qualification remain open.
+
+
 ## Explicit larger encoded native values
 
 Validated LongValueReadLimits/LongValueReadSource and `query run

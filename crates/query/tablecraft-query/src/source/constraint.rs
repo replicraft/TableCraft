@@ -1,9 +1,11 @@
 use std::ops::Bound;
 use tablecraft_core::values::{Currency, Guid};
 
-/// Optional backend-neutral restriction on one exact integer, Currency or GUID source column.
-/// Ordinals refer to Source::columns; numeric bounds exclude NULL and use
-/// ascending value order. Empty/reversed intervals match no rows.
+/// Optional backend-neutral restriction on one source column.
+/// Typed intervals/equality apply to exact integer, Currency or GUID carriers;
+/// NULL tests may also target other carriers supported by the source. Ordinals
+/// refer to Source::columns. Numeric bounds exclude NULL and use ascending value
+/// order. Empty/reversed intervals match no rows.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ScanConstraint {
     /// Select NULL values in the specified column.

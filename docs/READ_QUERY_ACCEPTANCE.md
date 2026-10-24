@@ -97,18 +97,23 @@ or native result-type qualification. See
 ## Remaining acceptance work
 
 Explicit [decoded attachment allowances](LARGER_DECODED_ATTACHMENTS.md) now admit
-larger file bytes under validated policies and unchanged encoded/header caps.
-Independent native inputs cover 3 MiB compressed and 1.5 MB stored files; pure
-decoder controls cover the 16 MiB consumer ceiling. Metadata pruning, cache policy
-changes and cumulative budget refusals remain explicit. Larger encoded values
-and native FileData query representation remain unfinished.
+larger file bytes under validated policies and an unchanged header cap. Separate
+[encoded-value allowances](LARGER_ENCODED_VALUES.md) now permit up to 32 MiB;
+independent native inputs cover 20 MiB OLE and 3 MiB incompressible attachments,
+plus 3 MiB compressed and 1.5 MB stored files. Pure decoder controls cover the
+16 MiB file ceiling. Metadata pruning, cache policy changes and cumulative budget
+refusals remain explicit. Larger decoded Memo values and native FileData query
+representation remain unfinished.
 
 Opt-in [automatic native indexes](AUTOMATIC_INDEXES.md) now choose matching
 qualified single-key definitions under existing safe constraints. Automatic
 selections preserve sequential encounter order, original predicates and cache
 boundaries; chosen failures remain explicit. Independent four-family controls
 cover all supported key carriers, default-limit selections and TOP/First/Last.
-Cost-based optimization, wider seeks, TOP pushdown and native optimizer
+NULL-only General Text/Short Binary constraints now use the same qualified
+selection paths without activating string comparison; 216 independent controls
+cover both General versions and all four families. Non-NULL Text/Binary bounds,
+cost-based optimization, wider seeks, TOP pushdown and native optimizer
 qualification remain open; this does not complete read/query acceptance.
 
 [Min/Max and domain extrema](EXPRESSION_AGGREGATES.md#retained-string-extrema)

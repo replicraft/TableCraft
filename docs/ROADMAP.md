@@ -500,7 +500,10 @@ contract retains the primary references, algorithms, provenance and exact limits
    Single Short Binary index reads/checks now work;
    typed Binary ranges also work for explicit library hosts. Compound Binary
    reads now share the owned tuple reader and whole-entry digest checks. Automatic
-   binary predicate pushdown, compound seeks and SQL text seeks remain unsupported.
+   non-NULL binary predicate pushdown, compound seeks and SQL text bounds remain
+   unsupported. NULL-only General Text/Short Binary predicates now use qualified
+   explicit or automatic indexes without invoking a string comparator; see
+   [NULL selection scope](AUTOMATIC_INDEXES.md#null-only-text-and-binary-selection).
    Text-bearing compound indexes now support mixed two-to-ten-column reads and
    projections, including per-column General descriptors and whole-entry digests;
    Memo/full-width uniqueness and native text writes remain unqualified. Exact Currency and [Byte/Int16 intervals](NARROW_RANGES.md) now join Int32/Int64 ranges under typed bounds and

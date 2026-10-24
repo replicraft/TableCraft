@@ -47,7 +47,8 @@ the stored database default. Required unknown policies and expression conflicts
 fail explicitly. See [text policy scope](docs/NATIVE_TEXT.md#stored-database-general-policy).
 
 `query run --database example.accdb --auto-index` can choose a qualified single-key
-index for existing safe integer, Currency or GUID filters. It retains original
+index for existing safe integer, Currency or GUID filters, plus qualified
+Text/Binary `IS NULL` predicates. It retains original
 filtering and sequential table order, including TOP/First/Last behavior. See
 [automatic index scope and evidence](docs/AUTOMATIC_INDEXES.md).
 

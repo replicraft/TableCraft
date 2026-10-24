@@ -15,6 +15,8 @@ mod currency;
 mod int64;
 #[path = "constraints/narrow.rs"]
 mod narrow;
+#[path = "constraints/null_strings.rs"]
+mod null_strings;
 
 struct Restricted {
     source: MemorySource,
