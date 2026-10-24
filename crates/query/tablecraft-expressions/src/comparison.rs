@@ -3,7 +3,7 @@ use crate::{EvalError, logic::Truth, numeric};
 use std::{cmp::Ordering, ops::Range};
 mod declared;
 mod like;
-pub use declared::variant_text_numeric;
+pub use declared::{variant_expression_text_numeric, variant_text_numeric};
 mod locale;
 pub use locale::LocaleId;
 mod search;

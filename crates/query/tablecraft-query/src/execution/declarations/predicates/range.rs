@@ -16,9 +16,9 @@ impl Runtime<'_, '_> {
         negated: bool,
         env: Environment<'_>,
     ) -> Result<CellValue, QueryError> {
-        let value = self.expression_operand(expression, env)?;
-        let left = self.expression_operand(first, env)?;
-        let right = self.expression_operand(second, env)?;
+        let value = self.retained_expression_operand(expression, env)?;
+        let left = self.retained_expression_operand(first, env)?;
+        let right = self.retained_expression_operand(second, env)?;
         let declaration = combined(
             combined(value.declaration, left.declaration),
             right.declaration,

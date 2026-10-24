@@ -93,6 +93,23 @@ impl Evaluator<'_> {
                     let value = self.concatenation_call(left, right, depth)?;
                     return self.publish_byte_operand(value);
                 }
+                if matches!(
+                    operator,
+                    BinaryOperator::Equal
+                        | BinaryOperator::NotEqual
+                        | BinaryOperator::Less
+                        | BinaryOperator::LessOrEqual
+                        | BinaryOperator::Greater
+                        | BinaryOperator::GreaterOrEqual
+                ) {
+                    let left = self
+                        .expression_byte_operand(left, depth + 1)?
+                        .into_expression_value();
+                    let right = self
+                        .expression_byte_operand(right, depth + 1)?
+                        .into_expression_value();
+                    return self.apply_expression_binary(*operator, left, right);
+                }
                 let left = self.expression_operand(left, depth + 1)?;
                 let right = self.expression_operand(right, depth + 1)?;
                 self.apply_expression_binary(*operator, left, right)
@@ -110,9 +127,15 @@ impl Evaluator<'_> {
                 second_bound,
                 negated,
             } => {
-                let value = self.expression_operand(expression, depth + 1)?;
-                let first = self.expression_operand(first_bound, depth + 1)?;
-                let second = self.expression_operand(second_bound, depth + 1)?;
+                let value = self
+                    .expression_byte_operand(expression, depth + 1)?
+                    .into_expression_value();
+                let first = self
+                    .expression_byte_operand(first_bound, depth + 1)?
+                    .into_expression_value();
+                let second = self
+                    .expression_byte_operand(second_bound, depth + 1)?
+                    .into_expression_value();
                 predicates::between(&value, &first, &second, *negated, |op, a, b| {
                     self.compare_expression_values(op, a, b)
                 })
@@ -126,10 +149,14 @@ impl Evaluator<'_> {
                 if values.is_empty() {
                     return Err(EvalError::UnsupportedExpression);
                 }
-                let value = self.expression_operand(expression, depth + 1)?;
+                let value = self
+                    .expression_byte_operand(expression, depth + 1)?
+                    .into_expression_value();
                 let mut membership = Membership::new();
                 for item in values {
-                    let candidate = self.expression_operand(item, depth + 1)?;
+                    let candidate = self
+                        .expression_byte_operand(item, depth + 1)?
+                        .into_expression_value();
                     membership.consider(&value, &candidate, |a, b| {
                         self.compare_expression_values(Comparison::Equal, a, b)
                     })?;

@@ -1,5 +1,40 @@
 # Implementation status
 
+## NULL predicates over retained Strings
+
+Relational operators now retain String operands until comparison instead of
+forcing early Unicode publication. Raw String/NULL pairs yield Unknown without
+decoded payload allocation, numeric policy or locale lookup. IN/NOT IN, BETWEEN/
+NOT BETWEEN and qualified subquery membership/ANY/ALL share this boundary;
+empty subqueries retain their existing ANY=False/ALL=True result. WHERE/HAVING,
+groups, projections and retained rows use the same path. Eager failures and
+Error/Missing admission remain explicit. See [predicate contracts](RAW_PREDICATES.md).
+
+The existing both-known-Variant String/numeric exception now recognizes lossless
+String identity under the explicit declared-arithmetic flag, without inspecting
+contents or inferring declarations from returned values. Non-finite numerics
+remain refused. Other non-NULL comparisons publish strictly before the existing
+effective-type and policy-aware comparator, retaining field/runtime policies and
+declarations. No implicit binary comparison or provider fallback was added.
+
+The previous CLI failed a retained String=NULL regression before these changes.
+All 722 all-feature expression tests plus one doctest, 369 minimal expression
+tests, fifty focused query tests and three CLI tests pass. The amended category
+test also verifies non-finite rejection. Coverage includes all six operators,
+lists/ranges, empty sets, filtering/grouping, issued categories, state/eager errors,
+zero decoded-byte allowance and every observed query cancellation checkpoint.
+Expression/query all-target all-feature Clippy, minimal expression Clippy, focused
+CLI Clippy, minimal query compilation, formatting, Python compilation and diff
+checks pass.
+
+Independent runners pass 5,808 predicate, 1,053 retained-cell and 1,844 native-policy
+model/source controls. The four registered native-policy inputs retain their
+hashes. Only TableCraft evaluates SQL; Windows Access and benchmarks were not run.
+No dependency, stored carrier, native decoder, index pushdown or writer changed.
+Full query/engine/workspace suites were not run. Raw LIKE/key semantics, additional
+native locale providers, complete Variant/native qualification and the backend
+roadmap remain unfinished.
+
 ## Lossless Strings through expression and query cells
 
 ExpressionValue::StringBytes now carries the shared core String representation

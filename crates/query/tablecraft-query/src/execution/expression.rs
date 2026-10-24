@@ -65,15 +65,17 @@ impl Runtime<'_, '_> {
                 _,
             ) => Ok(into_scalar(self.expression_operand(expr, env)?)?),
             Expr::Binary(op, left, right) => {
-                let a = self.expression_operand(left, env)?;
-                let b = self.expression_operand(right, env)?;
                 let comparison = relational::operator(*op);
                 if let Some(comparison) = comparison {
+                    let a = self.retained_expression_operand(left, env)?;
+                    let b = self.retained_expression_operand(right, env)?;
                     let policy = self.expression_pair_policy(left, right, &a, &b)?;
                     return Ok(self
                         .compare_expression_predicate_policy(comparison, &a, &b, policy)?
                         .into_value());
                 }
+                let a = self.expression_operand(left, env)?;
+                let b = self.expression_operand(right, env)?;
                 Ok(self
                     .evaluator()
                     .apply_expression_binary(*op, a.value, b.value)?)

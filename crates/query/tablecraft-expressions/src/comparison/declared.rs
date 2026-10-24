@@ -2,7 +2,7 @@
 use super::{Comparison, from_ordering};
 use crate::{EvalError, logic::Truth, numeric::OperandDeclaration};
 use std::cmp::Ordering;
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{ExpressionValue, Value};
 
 /// Apply the reviewed String/numeric ordering only when both declarations are
 /// Variant. Numeric values precede Strings, irrespective of their text contents.
@@ -52,6 +52,36 @@ fn is_numeric(value: &Value) -> Result<bool, EvalError> {
         }
         _ => false,
     })
+}
+
+/// Retain the same both-Variant String/numeric rule for lossless String cells.
+/// String identity needs no decoding; unsupported states never become numbers.
+pub fn variant_expression_text_numeric(
+    operator: Comparison,
+    left: &ExpressionValue,
+    right: &ExpressionValue,
+    left_declaration: OperandDeclaration,
+    right_declaration: OperandDeclaration,
+) -> Result<Option<Truth>, EvalError> {
+    if let (ExpressionValue::Value(left), ExpressionValue::Value(right)) = (left, right) {
+        return variant_text_numeric(operator, left, right, left_declaration, right_declaration);
+    }
+    if left_declaration != OperandDeclaration::Variant
+        || right_declaration != OperandDeclaration::Variant
+    {
+        return Ok(None);
+    }
+
+    let order = match (left, right) {
+        (ExpressionValue::StringBytes(_), ExpressionValue::Value(value)) if is_numeric(value)? => {
+            Ordering::Greater
+        }
+        (ExpressionValue::Value(value), ExpressionValue::StringBytes(_)) if is_numeric(value)? => {
+            Ordering::Less
+        }
+        _ => return Ok(None),
+    };
+    Ok(Some(from_ordering(operator, order)))
 }
 
 #[cfg(test)]

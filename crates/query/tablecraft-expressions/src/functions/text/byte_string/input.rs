@@ -37,6 +37,17 @@ impl TryFrom<ExpressionValue> for ExpressionByteOperand {
     }
 }
 
+impl ExpressionByteOperand {
+    /// Move the evaluated operand into a shared expression cell without Unicode
+    /// publication or payload copying. Consumer admission remains explicit.
+    pub fn into_expression_value(self) -> ExpressionValue {
+        match self {
+            Self::Scalar(value) => value,
+            Self::Bytes(bytes) => ExpressionValue::StringBytes(bytes.into_expression_string()),
+        }
+    }
+}
+
 #[cfg(feature = "sql")]
 impl ExpressionByteOperand {
     /// Observe NULL identity without decoding or allocating a String payload.

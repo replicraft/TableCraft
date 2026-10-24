@@ -1,5 +1,54 @@
 use super::*;
-use tablecraft_core::values::{Currency, Decimal, Double, LegacyDateTime, Single};
+use tablecraft_core::values::{
+    Currency, Decimal, Double, ExpressionString, LegacyDateTime, Single,
+};
+
+#[test]
+fn lossless_variant_strings_keep_category_order_without_decoding() {
+    let raw = ExpressionValue::StringBytes(ExpressionString::from_owned(vec![0, 216, 65]));
+    let number = ExpressionValue::Value(Value::Int32(0));
+    assert_eq!(
+        variant_expression_text_numeric(
+            Comparison::Greater,
+            &raw,
+            &number,
+            OperandDeclaration::Variant,
+            OperandDeclaration::Variant,
+        ),
+        Ok(Some(Truth::True))
+    );
+    assert_eq!(
+        variant_expression_text_numeric(
+            Comparison::Less,
+            &number,
+            &raw,
+            OperandDeclaration::Variant,
+            OperandDeclaration::Variant,
+        ),
+        Ok(Some(Truth::True))
+    );
+    assert_eq!(
+        variant_expression_text_numeric(
+            Comparison::Greater,
+            &raw,
+            &number,
+            OperandDeclaration::Scalar,
+            OperandDeclaration::Variant,
+        ),
+        Ok(None)
+    );
+    let nonfinite = ExpressionValue::Value(Value::Double(Double::from_float(f64::INFINITY)));
+    assert_eq!(
+        variant_expression_text_numeric(
+            Comparison::Equal,
+            &raw,
+            &nonfinite,
+            OperandDeclaration::Variant,
+            OperandDeclaration::Variant,
+        ),
+        Err(EvalError::NonFinite)
+    );
+}
 
 #[test]
 fn all_finite_numeric_types_precede_strings_in_both_directions() {

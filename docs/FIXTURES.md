@@ -1,5 +1,17 @@
 # Candidate Access fixtures
 
+## Raw String predicate controls
+
+The original [predicate runner](testing/compare_raw_string_predicates.py) passes
+5,808 source-free controls. Python supplies Unknown truth for String/NULL pairs,
+empty quantifier outcomes and the issued-Variant type-category rule over fixed
+and seeded raw producers. Both CLI modes cover scalar comparisons/lists/ranges;
+bound runs include retained derived cells, subqueries and explicit declaration
+flags. Eager/state/publication refusals remain checked. Existing retained-cell
+and native-policy recipes pass 1,053 and 1,844 controls over unchanged registered
+native-policy inputs. No third-party artifact/dependency was added. Native Windows
+Access and benchmarks were not run.
+
 ## Retained query String cells
 
 The original [retained-cell runner](testing/compare_retained_string_cells.py)

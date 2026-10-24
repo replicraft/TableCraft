@@ -20,7 +20,7 @@ impl Runtime<'_, '_> {
         plan: &ReadPlan,
         env: Environment<'_>,
     ) -> Result<CellValue, QueryError> {
-        let value = self.expression_operand(expression, env)?;
+        let value = self.retained_expression_operand(expression, env)?;
         let declaration = combined(
             value.declaration,
             *plan.declarations.first().ok_or(QueryError::Width)?,
@@ -34,8 +34,8 @@ impl Runtime<'_, '_> {
             let policy = if matches!(
                 (&value.value, &item.value),
                 (
-                    ExpressionValue::Value(Value::Text(_)),
-                    ExpressionValue::Value(Value::Text(_))
+                    ExpressionValue::Value(Value::Text(_)) | ExpressionValue::StringBytes(_),
+                    ExpressionValue::Value(Value::Text(_)) | ExpressionValue::StringBytes(_)
                 )
             ) {
                 self.text_policy(expression)?
