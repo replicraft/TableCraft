@@ -1,5 +1,9 @@
 # Read-only queries over native scalar tables
 
+Explicit [cached calculation queries](CACHED_CALCULATION_QUERIES.md) extend an
+opted-in source with qualified stored fields. Default eligibility, read-only
+ownership and recomputation/freshness boundaries remain unchanged.
+
 The working `crates/backends/tablecraft-access` package adapts ACE snapshots to the
 existing `tablecraft-query::Source` interface. `NativeSource` accepts a caller-supplied
 NativeReadSource (raw Read + Seek with explicit page interpretation), catalog namespace, cumulative ResourceBudget and cancellation

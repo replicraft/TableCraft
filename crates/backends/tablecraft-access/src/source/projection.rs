@@ -173,6 +173,24 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
         let names = declared
             .selected_names(indices, &mut budget)
             .map_err(query_error)?;
+        if declared.has_cached(Some(indices)) {
+            if entry.index.is_some() {
+                return Err(QueryError::Unsupported);
+            }
+            let snapshot = TableCursor::open_stored_projection(
+                &mut *source,
+                self.scope,
+                &entry.name,
+                &names,
+                &mut budget,
+                self.cancelled,
+            )
+            .and_then(|cursor| {
+                cursor.into_snapshot(self.snapshot_limits, &mut budget, self.cancelled)
+            })
+            .map_err(query_error)?;
+            return Ok((snapshot, true));
+        }
         let inspection = if constraint.is_some() && (entry.index.is_some() || self.auto_indexes) {
             Some(
                 inspect_table_indexes(

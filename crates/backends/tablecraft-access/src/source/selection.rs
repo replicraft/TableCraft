@@ -25,6 +25,9 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
         }
         self.schema_columns(table)?;
         let declared = entry.columns.get().ok_or(QueryError::Source)?;
+        if declared.has_cached(None) {
+            return self.scan(table, visitor);
+        }
         if entry.table.get().is_some() {
             return self.scan(table, visitor);
         }

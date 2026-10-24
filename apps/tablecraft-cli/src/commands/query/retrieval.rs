@@ -63,6 +63,7 @@ pub(super) struct NativeInput<'a> {
     pub multivalues: bool,
     pub collections: bool,
     pub decoded_attachments: bool,
+    pub stored_calculations: bool,
     pub attachment_bytes: Option<u32>,
     pub native_value_bytes: Option<u32>,
     pub native_text_bytes: Option<u32>,
@@ -142,6 +143,7 @@ pub(super) fn run(
                 || input_config.multivalues
                 || input_config.collections
                 || input_config.decoded_attachments
+                || input_config.stored_calculations
                 || input_config.native_value_bytes.is_some()
                 || input_config.native_text_bytes.is_some()
                 || matches!(input, Input::Saved(_))
@@ -175,6 +177,11 @@ pub(super) fn run(
                 snapshot_limits,
             )
             .map_err(Error::Native)?;
+            let source = if input_config.stored_calculations {
+                source.with_stored_calculations().map_err(Error::Native)?
+            } else {
+                source
+            };
             let source = if input_config.auto_index {
                 source.with_auto_indexes()
             } else {
