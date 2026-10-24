@@ -1,7 +1,52 @@
 use super::support::*;
-use std::cell::Cell;
+use std::{cell::Cell, cmp::Ordering};
 use tablecraft_core::limits::ResourceBudget;
-use tablecraft_expressions::EvalError;
+use tablecraft_expressions::{EvalError, comparison::Collation, predicates::LikeMode};
+
+#[test]
+fn cancellation_inside_comparison_callbacks_aborts_all_result_consumers() {
+    struct Cancelling(Cell<bool>);
+
+    impl Collation for Cancelling {
+        fn compare(&self, _: &str, _: &str) -> Result<Ordering, EvalError> {
+            self.0.set(true);
+            Ok(Ordering::Equal)
+        }
+    }
+
+    let source = Fixture::new();
+    for sql in [
+        "SELECT A='a' FROM T WHERE Id=1",
+        "SELECT StrComp(A,'a',2) FROM T WHERE Id=1",
+        "SELECT A FROM T ORDER BY A",
+        "SELECT DISTINCT A FROM T",
+        "SELECT A,Count(*) FROM T GROUP BY A",
+        "SELECT A LIKE 'a' FROM T WHERE Id=1",
+    ] {
+        let parsed = parse_query(sql, ParseLimits::default()).unwrap();
+        let plan = prepare(parsed.query(), &source).unwrap();
+        let collation = Cancelling(Cell::new(false));
+        let cancelled = || collation.0.get();
+        assert!(
+            matches!(
+                plan.execute(
+                    &source,
+                    &[],
+                    ExecutionOptions {
+                        collation: Some(&collation),
+                        cancelled: Some(&cancelled),
+                        like_mode: Some(LikeMode::Ansi89),
+                        ..Default::default()
+                    }
+                ),
+                Err(QueryError::Cancelled | QueryError::Evaluation(EvalError::Cancelled))
+            ),
+            "{sql}"
+        );
+        assert!(collation.0.get(), "provider was not reached: {sql}");
+    }
+}
+
 #[test]
 fn callback_cancellation_and_cumulative_provider_limits_do_not_publish_results() {
     let source = Fixture::new();

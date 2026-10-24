@@ -1,5 +1,28 @@
 # Implementation status
 
+## Text comparison callback completion checks
+
+Direct evaluator text predicates and the shared StrComp kernel now recheck
+cancellation/work after successful host comparison callbacks, before returning
+their results. A provider that requests cancellation just before returning cannot
+publish success through those APIs. Provider errors retain their original
+precedence. NULL/numeric comparisons leave text providers untouched, and search,
+replacement and both LIKE profiles retain their existing guards. See
+[comparison bounds](STRING_COMPARISON.md) and [native text scope](NATIVE_TEXT.md#text-provider-completion-checks).
+
+Four new evaluator tests cover ordinary comparisons, both StrComp APIs and modes,
+provider errors, LCID/reverse search, replacement, scalar/weighted LIKE and inert
+NULL/numeric paths. A parser-independent kernel test covers the post-callback
+host step; a query test covers cancellation during predicates, StrComp, sorting,
+DISTINCT, grouping and LIKE without publishing a result. All 662 all-feature
+expression tests plus one doctest, 349 minimal tests, 41 focused query tests,
+21 Access collation tests and eleven CLI tests pass. Expression all-target/
+all-feature and focused query Clippy, formatting and diff checks pass. The
+existing StrComp runner passes 85 independent controls with the example hash
+unchanged. This adds no dependency, locale provider or native weight change.
+Native text-policy precedence, wider locales and native Access qualification
+remain unfinished; full engine/workspace suites and benchmarks were not repeated.
+
 ## Ordinary Date and numeric predicates
 
 Ordinary materialized predicates now reuse the Date/numeric effective-type service

@@ -890,3 +890,21 @@ The extended original runner passes 1,460 independent short-key model/source
 controls on the same four unchanged registered inputs, including each domain
 selector with unique row criteria and selected-index reads. This adds no concrete
 Text/LCID provider or qualification of native Access domain-result collation.
+
+
+## Text-provider completion checks
+
+Standalone evaluator predicates and the shared StrComp kernel now recheck host
+cancellation/work after successful collation callbacks. This closes two paths
+that could previously return a success after a provider requested cancellation
+immediately before returning. Query predicates, sorting/set/group keys and
+search/replacement/LIKE retain their existing operation-boundary checks.
+Provider errors keep their original precedence; the post-call success check does
+not reinterpret them. NULL and numeric comparisons do not activate providers.
+
+Synthetic host tests cover direct predicates, both StrComp evaluator APIs,
+text/database modes, explicit LCID search dispatch, reverse search, replacement,
+and scalar/weighted LIKE profiles. Query controls reject publication when a
+comparison callback cancels during predicates, StrComp, sorting, DISTINCT,
+grouping or LIKE. This does not add a native Text/LCID provider, change General
+weight tables or qualify Windows NLS/native Access policy precedence.

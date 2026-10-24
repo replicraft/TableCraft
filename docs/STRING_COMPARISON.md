@@ -34,7 +34,11 @@ construct unpaired surrogates. This is an explicit current binary profile,
 Library callers use `functions::text::apply_with_collation`; the existing `apply`
 API remains available without a host. Binary scans charge work per compared pair.
 Host modes scan/charge both inputs before calling the provider; the provider owns
-its callback work/cancellation bounds. Evaluator inputs retain normal text-size,
+its callback work/cancellation bounds. After a successful text/database callback,
+the kernel invokes the host step check again before returning the comparison.
+Cancellation or an exhausted shared step allowance at that boundary therefore
+refuses the result. A callback error still propagates before this success check.
+Evaluator inputs retain normal text-size,
 step-budget and cancellation limits. The comparison result allocates no Text
 payload; evaluator-backed scalar operands may allocate bounded formatting intermediates.
 
