@@ -71,12 +71,17 @@ impl Evaluator<'_> {
         }
         let converted_left = self.converted_comparison_operand(left, right)?;
         let converted_right = self.converted_comparison_operand(right, left)?;
-        comparison::compare(
+        let result = comparison::compare(
             operator,
             converted_left.as_ref().unwrap_or(left),
             converted_right.as_ref().unwrap_or(right),
             self.collation,
-        )
+        )?;
+        if matches!((left, right), (Value::Text(_), Value::Text(_))) {
+            self.check(0)?;
+        }
+
+        Ok(result)
     }
 }
 

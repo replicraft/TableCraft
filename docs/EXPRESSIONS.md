@@ -137,7 +137,13 @@ constructed trees. Callers can lower either limit; cumulative allocation/work
 budgets remain independent. See [larger payloads](LARGE_PAYLOADS.md).
 An optional host cancellation callback runs before every node, before bindings.
 Hosts own the boundedness and side effects of resolver/collation/cancellation
-callbacks; the evaluator cannot interrupt a callback while it runs.
+callbacks; the evaluator cannot interrupt a callback while it runs. Successful
+text ordering callbacks are checked again before a predicate result returns;
+StrComp likewise checks after text/database callbacks before returning Int16.
+Existing search, replacement and LIKE success paths retain their callback guards.
+These checks do not bound or preempt the callback's internal work. Provider
+failures propagate as failures, while NULL/numeric paths do not activate a
+collation merely to check cancellation.
 
 ## References and verification
 

@@ -52,6 +52,27 @@ impl Collation for Host {
         Ok(left.to_ascii_lowercase().cmp(&right.to_ascii_lowercase()))
     }
 }
+
+#[test]
+fn host_step_rechecks_cancellation_after_successful_comparison_callbacks() {
+    for mode in [1, 2] {
+        let host = Host {
+            option: None,
+            database: Cell::new(0),
+            text: Cell::new(0),
+        };
+        let arguments = [text("a"), text("a"), Value::Int16(mode)];
+        let result = apply_with_collation(TextFunction::StrComp, &arguments, Some(&host), || {
+            if host.database.get() + host.text.get() > 0 {
+                return Err(EvalError::Cancelled);
+            }
+            Ok(())
+        });
+        assert_eq!(result, Err(EvalError::Cancelled));
+        assert_eq!(host.database.get() + host.text.get(), 1);
+    }
+}
+
 #[test]
 fn default_text_and_database_modes_select_separate_explicit_host_contracts() {
     let host = Host {

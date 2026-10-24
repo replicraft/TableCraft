@@ -69,11 +69,13 @@ pub(crate) fn apply_operands(
                 step()?;
             }
             step()?;
-            if mode == StringCompareMode::Text {
+            let order = if mode == StringCompareMode::Text {
                 collation.compare_text(left, right)?
             } else {
                 collation.compare(left, right)?
-            }
+            };
+            step()?;
+            order
         }
     };
     Ok(TextResult::Comparison(match order {
