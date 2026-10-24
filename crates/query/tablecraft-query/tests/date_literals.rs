@@ -127,6 +127,7 @@ fn prepared_dates_capture_the_lexical_year_while_text_conversions_use_execution_
         &source,
         PreparationOptions {
             reference_year: Some(ReferenceYear::new(2024).unwrap()),
+            ..Default::default()
         },
     )
     .unwrap();
@@ -184,6 +185,7 @@ fn staged_preparation_captures_an_explicit_year_and_rejects_invalid_tokens_befor
                 &source,
                 PreparationOptions {
                     reference_year: Some(ReferenceYear::new(2023).unwrap()),
+                    ..Default::default()
                 }
             ),
             Err(QueryError::Evaluation(EvalError::UnsupportedLiteral))

@@ -30,6 +30,7 @@ pub(crate) fn bind_update(query: &Query, source: &dyn Source) -> Result<BoundUpd
         materialized: &[],
         discover: false,
         reference_year: None,
+        declared_arithmetic: false,
         pending_schema: None,
         parameters: Vec::new(),
         parameter_scope: Vec::new(),

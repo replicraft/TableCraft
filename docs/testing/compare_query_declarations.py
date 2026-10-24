@@ -110,12 +110,14 @@ def main():
 
     # Unknown aggregate provenance cannot affect these fixed Int64 results.
     # Python integers model range/quotient/remainder independently of Rust.
+    # Explicit numeric Text keeps these Int64 controls independent of the newly
+    # captured unsuffixed literal widths (large bare tokens select Double).
     low, high = -(1 << 63), (1 << 63) - 1
     for left, right in itertools.product([low, -32768, -1, 0, 1, 32767, high], [low, -1, 0, 1, high]):
         for operator in ["+", "-", "*", "\\", "Mod"]:
-            expression = f"First(CLngLng({left})) {operator} CLngLng({right})"
+            expression = f"First(CLngLng('{left}')) {operator} CLngLng('{right}')"
             if operator in ["\\", "Mod"] and right == 0:
-                check(expression, None, error="division by zero")
+                check(expression, None, error="division by zero", number_format="en-us")
                 continue
             if operator in ["\\", "Mod"]:
                 quotient = (abs(left) // abs(right)) * (-1 if (left < 0) != (right < 0) else 1)
@@ -123,15 +125,15 @@ def main():
             else:
                 expected = {"+": left + right, "-": left - right, "*": left * right}[operator]
             if low <= expected <= high:
-                check(expression, expected, 20)
+                check(expression, expected, 20, number_format="en-us")
             else:
-                check(expression, None, error="numeric overflow")
+                check(expression, None, error="numeric overflow", number_format="en-us")
     for value in [low, -1, 0, 1, high]:
-        expression = f"-First(CLngLng({value}))"
+        expression = f"-First(CLngLng('{value}'))"
         if value == low:
-            check(expression, None, error="numeric overflow")
+            check(expression, None, error="numeric overflow", number_format="en-us")
         else:
-            check(expression, -value, 20)
+            check(expression, -value, 20, number_format="en-us")
     check("First(CInt(-32768)) Mod CInt(-1)", 0, 2)
     check("First(CByte(255))\\CByte(2)", 127, 17)
     check("-First(CByte(255))", -255, 2)
@@ -214,7 +216,8 @@ def main():
             rounded = int(Decimal(text).to_integral_value(rounding=ROUND_HALF_EVEN))
             for operator, compare in comparisons:
                 for reverse in [False, True]:
-                    a, b = f"{cast}({number})", f"'{text}'"
+                    a = f"{cast}('{number}')" if cast == "CLngLng" else f"{cast}({number})"
+                    b = f"'{text}'"
                     if reverse:
                         a, b = b, a
                     expression = f"{a}{operator}{b}"
@@ -229,14 +232,14 @@ def main():
         ("CSng(1)", "CDbl(1.0000000000000002)", 1.0, single(1.0000000000000002)),
         ("CSng(16777216)", "CDbl(16777217)", 16777216.0, single(16777217.0)),
         ("CSng(16777216)", "CLng(16777217)", 16777216.0, 16777217.0),
-        ("CLngLng(9007199254740993)", "CDbl(9007199254740992)",
+        ("CLngLng('9007199254740993')", "CDbl(9007199254740992)",
          float(9007199254740993), 9007199254740992.0),
     ]:
         for operator, compare in comparisons:
             for reverse in [False, True]:
                 expression = f"{b}{operator}{a}" if reverse else f"{a}{operator}{b}"
                 truth = compare(right, left) if reverse else compare(left, right)
-                check(expression, "TRUE" if truth else "FALSE", 11)
+                check(expression, "TRUE" if truth else "FALSE", 11, number_format="en-us")
 
     for variant, expressions in [
         (True, ["Len('a')", "LenB('a')", "Chr(65)", "ChrW(65)", "ChrB(65)",
@@ -524,13 +527,14 @@ def main():
     check("CInt(-32768)\\(Count(*)=CInt(1))",None,error="declaration")
     check("CInt(-32768)\\(Count(*)=CVar(CInt(1)))",32768,3)
     for number in ["CByte(255)", "CInt(-32768)", "CLng(2147483647)",
-                   "CLngLng(9223372036854775807)", "CSng(-0.0)", "CDbl(1e308)",
+                   "CLngLng('9223372036854775807')", "CSng(-0.0)", "CDbl(1e308)",
                    "CCur(-0.0001)", "CDec(0.0000000000000000000000000001)"]:
         for text in ["''", "'1'", "'-99999999999999999999'", "'bad'", "'1,5'"]:
             for operator, compare in comparisons.items():
                 # Compare independent category ranks, not the payload spellings.
                 for left, right, wanted in [(number, text, compare(0, 1)), (text, number, compare(1, 0))]:
-                    check(f"CVar({left}){operator}CVar({right})","TRUE" if wanted else "FALSE",11)
+                    check(f"CVar({left}){operator}CVar({right})","TRUE" if wanted else "FALSE",11,
+                          number_format="en-us" if number.startswith("CLngLng") else None)
     for expression in ["CVar(1)='1'", "1=CVar('1')", "1='1'", "CVar(True)=CVar('-1')"]:
         check(expression,None,error="number-format")
         check(expression,"TRUE",11,number_format="en-us")

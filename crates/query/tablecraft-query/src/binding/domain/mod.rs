@@ -16,6 +16,7 @@ pub(crate) struct DomainContext<'a> {
     pub budget: &'a mut ResourceBudget,
     pub discover: bool,
     pub reference_year: Option<ReferenceYear>,
+    pub declared_arithmetic: bool,
     pub cancelled: Option<&'a dyn Fn() -> bool>,
 }
 
@@ -37,6 +38,7 @@ pub(crate) fn bind_domain(
         cancelled,
         discover,
         reference_year,
+        declared_arithmetic,
     } = context;
     let (syntax, value, filter) = {
         let mut text = text::Text { budget, cancelled };
@@ -57,6 +59,7 @@ pub(crate) fn bind_domain(
         materialized,
         discover,
         reference_year,
+        declared_arithmetic,
         pending_schema: None,
         budget: Some(budget),
         cancelled,

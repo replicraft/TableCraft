@@ -38,6 +38,10 @@ impl Runtime<'_, '_> {
                 self.tick()?;
                 Ok(Value::DateTime(*value))
             }
+            Expr::NumericLiteral(value) => {
+                self.tick()?;
+                Ok(value.clone())
+            }
             Expr::Literal(literal) => Ok(self.evaluator().evaluate(literal)?),
             Expr::Field { .. } | Expr::CollectionItem { .. } | Expr::Output(..) => {
                 Ok(into_scalar(self.expression_operand(expr, env)?)?)

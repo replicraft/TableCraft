@@ -197,9 +197,11 @@ impl Runtime<'_, '_> {
                 self.eval(expression, env)
                     .map(|value| CellValue::scalar(value).with_declaration(Some(declaration)))
             }
-            Expr::Literal(_) | Expr::DateLiteral(..) => self.eval(expression, env).map(|value| {
-                CellValue::scalar(value).with_declaration(Some(OperandDeclaration::Scalar))
-            }),
+            Expr::Literal(_) | Expr::NumericLiteral(_) | Expr::DateLiteral(..) => {
+                self.eval(expression, env).map(|value| {
+                    CellValue::scalar(value).with_declaration(Some(OperandDeclaration::Scalar))
+                })
+            }
             Expr::Convert(conversion, _) => {
                 let declaration = if *conversion == Conversion::Decimal {
                     OperandDeclaration::Variant

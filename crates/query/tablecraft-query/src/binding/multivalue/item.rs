@@ -98,6 +98,7 @@ impl Binder<'_> {
             Expr::Clock(_)
             | Expr::CurrentUser
             | Expr::Literal(_)
+            | Expr::NumericLiteral(_)
             | Expr::DateLiteral(..)
             | Expr::Field { .. }
             | Expr::Parameter(_)

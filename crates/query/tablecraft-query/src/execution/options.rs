@@ -77,6 +77,8 @@ pub struct ExecutionOptions<'a> {
     /// Single-selected and legacy Date-envelope arithmetic. Two known Variants use the reviewed String/numeric
     /// comparison exception before reviewed effective numeric predicate coercion.
     /// Other comparison families retain their owning profiles.
+    /// Staged preparation also captures decimal integer-literal widths; execution
+    /// never retypes literals in an already prepared plan.
     pub declared_integral: bool,
     /// Individual materialized Text bytes; omitted uses 64 KiB, clamped to 1 MiB.
     /// Shared allocation/work budgets and parser/binding limits remain separate.

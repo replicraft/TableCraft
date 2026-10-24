@@ -138,6 +138,7 @@ impl<'source> Operation<'_, 'source> {
                 StageOptions {
                     preparation: PreparationOptions {
                         reference_year: self.options.reference_year,
+                        declared_arithmetic: self.options.declared_integral,
                     },
                     discover: true,
                     parameterless: self.parameterless,

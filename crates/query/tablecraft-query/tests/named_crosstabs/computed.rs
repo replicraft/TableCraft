@@ -1,8 +1,9 @@
 use super::*;
+use tablecraft_core::values::ExpressionValue;
 use tablecraft_expressions::functions::{
     conversions::text::NumberFormat, dates::parsing::ReferenceYear,
 };
-use tablecraft_query::{PreparationOptions, prepare_with_options};
+use tablecraft_query::{PreparationOptions, execute_with_schema_discovery, prepare_with_options};
 
 #[test]
 fn computed_integer_headings_declare_schemas_without_scans_and_keep_empty_cells() {
@@ -175,6 +176,7 @@ fn date_derived_integer_headings_capture_the_lexical_year_without_scanning() {
         &source,
         PreparationOptions {
             reference_year: Some(ReferenceYear::new(2024).unwrap()),
+            ..Default::default()
         },
     )
     .unwrap();
@@ -214,6 +216,7 @@ fn runtime_domain_and_dynamic_text_dates_use_the_runtime_year_after_prepared_dat
         &source,
         PreparationOptions {
             reference_year: Some(ReferenceYear::new(2024).unwrap()),
+            ..Default::default()
         },
     )
     .unwrap();
@@ -237,4 +240,51 @@ fn runtime_domain_and_dynamic_text_dates_use_the_runtime_year_after_prepared_dat
             Value::Int16(2030)
         ]]
     );
+}
+
+#[test]
+fn captured_numeric_literals_follow_named_and_runtime_domain_preparation() {
+    let source = Views::new(&[("LiteralQ", "SELECT 32767 AS N")]);
+    let parsed = parse_query(
+        "SELECT VarType(N),CVar(N)+1,DLookup('CVar(32767)+1','Sales') FROM LiteralQ",
+        Default::default(),
+    )
+    .unwrap();
+    let result = execute_with_schema_discovery(
+        parsed.query(),
+        &source,
+        &[],
+        ExecutionOptions {
+            declared_integral: true,
+            ..Default::default()
+        },
+    )
+    .unwrap();
+    assert_eq!(
+        result.rows(),
+        [vec![
+            ExpressionValue::Value(Value::Int16(2)),
+            ExpressionValue::Value(Value::Int32(32768)),
+            ExpressionValue::Value(Value::Int32(32768)),
+        ]]
+    );
+
+    for sql in [
+        "SELECT N+1 FROM LiteralQ",
+        "SELECT DLookup('32767+1','Sales')",
+    ] {
+        let parsed = parse_query(sql, Default::default()).unwrap();
+        assert!(matches!(
+            execute_with_schema_discovery(
+                parsed.query(),
+                &source,
+                &[],
+                ExecutionOptions {
+                    declared_integral: true,
+                    ..Default::default()
+                },
+            ),
+            Err(QueryError::Evaluation(EvalError::Overflow))
+        ));
+    }
 }

@@ -1,5 +1,22 @@
 # Implementation status
 
+## Captured decimal integer literal typing
+
+The explicit `--declared-arithmetic` query profile now captures decimal integer
+literal carriers during preparation: Integer, Long and then Double by unsigned
+magnitude. Plain preparation and default execution retain their existing profile.
+Literal carriers and provenance propagate through named/domain discovery and
+closed crosstab headings; exact integral scan hints remain conservative. A typed
+literal is one plan leaf, preserving the existing structural depth allowance.
+See [the literal contract](DECLARED_ARITHMETIC.md#captured-decimal-integer-literals).
+
+Focused numeric, retrieval, crosstab, declaration and date tests pass 109 controls,
+with five binding-budget/cancellation tests and two closed-heading/runtime
+negation parity tests also passing. The independent literal and declaration
+replays pass 197 and 5,550 controls against one unchanged CLI copy. Scoped Clippy,
+formatting and diff checks pass. This is an opt-in engineering policy; native
+Access literal subtypes and complete Variant promotion remain unqualified.
+
 ## Explicit host locale text providers
 
 `query run --text-locale` now composes optional ICU text comparison/search with

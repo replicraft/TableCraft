@@ -1,0 +1,171 @@
+{
+  "date": "2026-10-24",
+  "scope": "Explicit declared-arithmetic decimal integer-literal engineering profile; source-free SQL replay only",
+  "native_access_qualification": "unrun",
+  "evidence_capture": "Terminal summaries transcribed verbatim from actual tool results; no per-case stdout log was persisted. This report was assembled after the runs without rerunning them.",
+  "binary": {
+    "path": ".cache/declared-literals-r4/tablecraft",
+    "bytes": 40384344,
+    "sha256": "cba6dfcc80424b4eb05c743ceb1c9e33c890b80613485aebb6dd4b96a1e636c5",
+    "literal_runner_before_after_hash_check": "passed",
+    "separate_post_declaration_run_hash_observation": "cba6dfcc80424b4eb05c743ceb1c9e33c890b80613485aebb6dd4b96a1e636c5",
+    "retention": "Ignored local immutable executable copy; not a tracked fixture or portable build artifact"
+  },
+  "runs": [
+    {
+      "command": "python3 docs/testing/compare_numeric_literals.py --cli .cache/declared-literals-r4/tablecraft",
+      "runner": {
+        "path": "docs/testing/compare_numeric_literals.py",
+        "bytes": 3661,
+        "sha256": "64253cef781a806032befd6857f0e283c2f78a7fa4b5ffa60480b78887a2f12e"
+      },
+      "exit_code": 0,
+      "stdout": "PASS: 191 value/subtype controls; 6 refusals; binary SHA256 cba6dfcc80424b4eb05c743ceb1c9e33c890b80613485aebb6dd4b96a1e636c5\n",
+      "value_subtype_controls": 191,
+      "refusal_controls": 6,
+      "expected_results": "Python integers and IEEE binary64 conversions; no production implementation imports"
+    },
+    {
+      "command": "python3 docs/testing/compare_query_declarations.py --cli .cache/declared-literals-r4/tablecraft",
+      "runner": {
+        "path": "docs/testing/compare_query_declarations.py",
+        "bytes": 47371,
+        "sha256": "d2b4d3895f59d69f218072dc728bf9a162478ca565e681220099d2bc2f3aefc8"
+      },
+      "exit_code": 0,
+      "stdout": "Passed 5550 independent SQL declaration controls; native Access remains unqualified\n",
+      "controls": 5550,
+      "case_preservation": "No controls removed. Existing exact LongLong operator cases now use numeric Text operands and explicit en-us format, retaining their original exact-value expectations independently of unsuffixed literal typing. The dedicated literal replay separately checks large bare-token rounding and cast overflow."
+    }
+  ],
+  "total_controls": 5747,
+  "source_hash_capture": "Post-run observations of the changed query implementation slice, not a before-build source attestation. Documentation comments in binding/mod.rs and execution/options.rs were clarified after the fixed binary was built; the recorded replay binary remains the observed executable.",
+  "feature_sources_observed_after_runs": [
+    {
+      "path": "crates/query/tablecraft-query/src/binding/crosstab/constants.rs",
+      "bytes": 6444,
+      "sha256": "87506a4760e238563618f0b08627477bcf1f086d05f557da77705bcefbd14299"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/crosstab/constants/arithmetic.rs",
+      "bytes": 3671,
+      "sha256": "d5f1b0bdb5aa36f21f68ddb60973c488e23ad0b59ccff012dd3c298a19903366"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/crosstab/constants/tests.rs",
+      "bytes": 6129,
+      "sha256": "fccbc2e0848eebb3ae6764b3df01d3a805e03e23e81402b0eee969a5b768223f"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/declarations.rs",
+      "bytes": 3936,
+      "sha256": "a8b5d771e726c083a526964904a98a9316eda78298c8081873cbc61ab091b304"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/domain/mod.rs",
+      "bytes": 5314,
+      "sha256": "1c5b44309d60310a70d193eb96956ce06ce823427e0514f37b629d740e8f8d2e"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/domain/scalar.rs",
+      "bytes": 4259,
+      "sha256": "7366aa0c1f4daa8c7e7ad0964a091f99f261c66b136272999dce3bab35113971"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/editing.rs",
+      "bytes": 2511,
+      "sha256": "5ef047c2e1939a394ccf44e8f5dc95ad023c21ef138e7f428de21c6e45269850"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/expression.rs",
+      "bytes": 8844,
+      "sha256": "8ad80f87e25ed60e59dcde50b994212023bdd8e0fa53ce3bf5aa487df4e1a9b7"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/grouping.rs",
+      "bytes": 4032,
+      "sha256": "ba42c458665143df15fbaa19c43f38cce413096557aad1b14df5deb196e79e57"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/literals.rs",
+      "bytes": 2649,
+      "sha256": "d0f61b7e4d8af100d27c995e10e3d8ca7cb1d997a333f10343fadec9564ee5d1"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/mod.rs",
+      "bytes": 8917,
+      "sha256": "fa40466d074cc1960e00a2ef7b4037677e239fcd5ca6cf9fd823ed7f5fa9a65a"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/multivalue/item.rs",
+      "bytes": 8581,
+      "sha256": "85118883000dd6212cf96d672ce0a1c0c156982677114ab40b17be24c9eb56ea"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/multivalue/presence/children.rs",
+      "bytes": 6118,
+      "sha256": "4c180086761797a750434d852d41c28d963f059a91ccd3cdb3656754c0026498"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/projection/collect.rs",
+      "bytes": 7904,
+      "sha256": "5ea374bf1f2d9873496460dc80e7a58ffdbc9ed97bbc31f1097a017bf16fdeff"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/projection/rewrite.rs",
+      "bytes": 3719,
+      "sha256": "81a820b5a4e5af18665ea1d9df1cba45c45ddf9953e9681a8560d098e3276931"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/result_types.rs",
+      "bytes": 11738,
+      "sha256": "4f278c0e05d2eecd12e86eb708cc94356ca6d1356714b97d1cdf2473d6064b81"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/discovery/mod.rs",
+      "bytes": 8609,
+      "sha256": "cde8c914e07c77f9b2f3df5ea24a2c839d5b34ec090590c89cb14a4433236a01"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/constraint.rs",
+      "bytes": 13859,
+      "sha256": "2125b71437ec2621a5a1f342e719f705123ee2b646ad34900cc3aea046230c48"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/constraint/currency.rs",
+      "bytes": 2686,
+      "sha256": "b0cb86918fe30d381b42443bec82fd3396b1603167dadf1a7b65fd56dab75851"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/domain/mod.rs",
+      "bytes": 3530,
+      "sha256": "98613fdf97e2918eabbe782211762e1eef5604303689801dce8bd944932863ce"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/expression.rs",
+      "bytes": 20760,
+      "sha256": "9b5ee987d518e24f2500874cb5b9030dc78d22400e67aa288dfa61d34db3dcea"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/options.rs",
+      "bytes": 6125,
+      "sha256": "516e6fe6df2ef4d23d16b04b54df29bc759ccae8364ffaabe3b1141167211d6c"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/variants.rs",
+      "bytes": 10900,
+      "sha256": "3d32d3b1aeb6f1aa557769287dc52b00ea23ad89da4f27bd782e26de6e8d4159"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/plan.rs",
+      "bytes": 6747,
+      "sha256": "88de12e50087b3ed61a2c48b8890f6a35de822d3302292d585895aeabd293078"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/plan/identity.rs",
+      "bytes": 9332,
+      "sha256": "5022917b06f966d5e2952340253fdc28316c89120a0e71c0a5988ab703042e2e"
+    }
+  ],
+  "fixtures": "No database fixture, Java runtime or native Access instance used by these source-free commands"
+}

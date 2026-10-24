@@ -41,6 +41,7 @@ impl Runtime<'_, '_> {
     fn currency_numeric_literal(&mut self, expr: &Expr) -> Result<Option<Value>, QueryError> {
         self.tick()?;
         let result = match expr {
+            Expr::NumericLiteral(value @ (Value::Int16(_) | Value::Int32(_))) => Ok(value.clone()),
             Expr::Literal(literal @ (Expression::Integer(_) | Expression::Number(_))) => {
                 if let Expression::Number(text) = literal {
                     self.budget.charge(Resource::Steps, text.len() as u64)?;

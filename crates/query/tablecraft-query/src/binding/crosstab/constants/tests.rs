@@ -30,6 +30,7 @@ fn binder<'a>(
         materialized: &[],
         discover: false,
         reference_year: None,
+        declared_arithmetic: false,
         pending_schema: None,
         parameters: Vec::new(),
         parameter_scope: Vec::new(),
@@ -192,3 +193,6 @@ fn every_conditional_checkpoint_can_cancel_without_source_access() {
         assert_eq!(run(stop), Err(QueryError::Cancelled), "checkpoint {stop}");
     }
 }
+
+#[path = "tests/negation.rs"]
+mod negation;

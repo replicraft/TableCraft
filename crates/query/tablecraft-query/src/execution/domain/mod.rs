@@ -57,6 +57,7 @@ impl Runtime<'_, '_> {
                         cancelled: self.options.cancelled,
                         discover: self.discovery.enabled,
                         reference_year: self.options.reference_year,
+                        declared_arithmetic: self.options.declared_integral,
                     },
                     kind,
                     expression,

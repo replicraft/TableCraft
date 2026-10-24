@@ -26,7 +26,11 @@ impl Binder<'_> {
                     return Err(QueryError::Unsupported);
                 }
             }
-            Expr::Literal(_) | Expr::DateLiteral(..) | Expr::Clock(_) | Expr::CurrentUser => {}
+            Expr::Literal(_)
+            | Expr::NumericLiteral(_)
+            | Expr::DateLiteral(..)
+            | Expr::Clock(_)
+            | Expr::CurrentUser => {}
             Expr::CollectionEmpty(value, _) if criteria => {
                 let Expr::Field {
                     depth: 0, index, ..

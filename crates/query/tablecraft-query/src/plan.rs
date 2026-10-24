@@ -5,7 +5,7 @@ mod statistics;
 use crate::{OutputType, source::TextPolicy};
 pub(crate) use statistics::Statistic;
 use std::ops::{Deref, Range};
-use tablecraft_core::values::LegacyDateTime;
+use tablecraft_core::values::{LegacyDateTime, Value};
 use tablecraft_expressions::arrays::BoundFunction;
 use tablecraft_expressions::functions::{
     conditional::ConditionalFunction,
@@ -132,6 +132,8 @@ pub(crate) struct SelectPlan {
 pub(crate) enum Expr {
     DomainCall(DomainFunction, Vec<Expr>),
     Literal(Expression),
+    // Captured numeric carrier; one source literal remains one plan leaf.
+    NumericLiteral(Value),
     // Written spelling retains structural identity; the checked date is lexical.
     DateLiteral(String, LegacyDateTime),
     Field {
