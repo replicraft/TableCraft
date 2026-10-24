@@ -1,5 +1,25 @@
 # Implementation status
 
+## Stored qualified wildcard projections
+
+Native saved SELECT/crosstab row projections now parse through one guarded owned
+projection boundary. This retains `source.*`, whitespace and trailing comments,
+with aliases kept in their native metadata role. Embedded aliases, modifiers,
+extra projections, sources/clauses, make-table destinations, statement delimiters
+and repaired parentheses remain refused. Scalar filter/group/order guards retain
+their existing expression contract. See [saved projection scope](NATIVE_SAVED_QUERIES.md).
+
+Two focused adapter tests cover reconstruction/refusals and exact execution across
+Jet 4 and ACE 2007/2016/2019-family headers, retaining original bytes/fragments.
+A CLI regression explicitly runs the registered application's Leszynski join,
+compares equivalent SQL output and checks buffered output-limit failure. All 65
+saved-query adapter tests and 29 CLI tests pass, along with focused Clippy,
+formatting and diff checks. The independent saved-join recipe matches all 933
+rows/headers from inert Jackcess getters; example/JAR hashes remain unchanged.
+Native Microsoft Access, full engine/workspace suites and benchmarks were not run.
+No dependency, VBA execution or writer scope changed. Wider query forms and P0
+semantics remain unfinished.
+
 ## Native aggregate value/type probe preparation
 
 An original fixed recipe now prepares 100 aggregate value/carrier probes, with a

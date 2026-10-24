@@ -93,7 +93,8 @@ retained syntax flag, never a grant of authority.
 The current profile supports up to sixteen local named sources/aliases in bounded
 [INNER/LEFT/RIGHT join forests and comma products](NATIVE_SAVED_JOINS.md), including
 [stored derived SELECT/UNION sources](NATIVE_SAVED_DERIVED.md). It retains ordered
-expression projections/aliases, explicit `*` or a flag-appended wildcard, WHERE,
+expression projections/aliases, explicit `*` and qualified `source.*` projections,
+a flag-appended wildcard, WHERE,
 GROUP BY, HAVING and ordered ASC/DESC sort expressions. DISTINCT, DISTINCTROW,
 TOP (including zero), TOP PERCENT and owner-access remain separate owned fields.
 TOP requires an ASCII u32 spelling; PERCENT requires TOP and a count at most 100.
@@ -119,13 +120,20 @@ preserving physical ties; any NULL key preserves the entire physical sequence.
 Original rows/keys remain unchanged. Empty/prefix/non-four-byte keys retain their
 byte meaning within native carrier limits; they are not coerced to counters.
 
-Expressions must parse both as stored and inside adapter-supplied parentheses
-with a newline before the closing delimiter, yielding the same owned expression.
-This rejects malformed parentheses that guard delimiters could otherwise repair.
-Clause/list/statement injection fails; a trailing line
-comment cannot consume the delimiter. Aliases become owned Name values separately.
-No string concatenation can turn a stored alias into a new clause. The SQL parser's
-new consuming `ParsedSelect::into_query` moves owned names without AST cloning.
+Stored projection expressions parse as exactly one unaliased owned projection in
+an explicit `SELECT ALL` with a final guarded FROM source. The modifier/source
+slots and all other clauses must remain unchanged. This admits qualified and
+unqualified wildcards, whitespace and trailing comments, while rejecting embedded
+aliases, extra projections, modifiers, make-table destinations, clauses and
+statement delimiters. No added closing delimiter can repair malformed stored
+parentheses. Wildcards cannot have a stored alias. Native aliases become separate
+owned Name values rather than text appended to the stored expression.
+
+Filter/group/order and other scalar fragments still parse both as stored and
+inside parentheses with a newline before the closing delimiter, yielding the same
+owned expression. Clause/list/statement injection fails; a trailing line comment
+cannot consume the guard. No string concatenation can turn a stored alias into a
+new clause. Consuming parser results move owned names without upstream AST exposure.
 
 The caller supplies ResourceBudget, cancellation and ParseLimits. Expanded
 expression/name/type spellings share the clamped byte ceiling; each parser call also
@@ -470,3 +478,18 @@ correlated HAVING and diagnostic-category refusals are included across the four
 priority format families. [Detailed evidence](GROUPED_SUBQUERIES.md#stored-and-named-definition-comparisons)
 records 328 controls and unchanged input hashes. No reconstruction code, native
 save behavior or Access qualification is changed by this evidence-only batch.
+
+## Registered qualified-wildcard query
+
+The registered ACE 2007 application's `950_Leszynski_Conventions_qry` now
+reconstructs and explicitly executes its `N.*` projection and local integer join.
+CLI regression checks compare its buffered output with the explicit owned SQL,
+refuse partial output under a small output limit and retain original database
+bytes. Authored fixtures exercise execution across Jet 4 and ACE codes 2/5/6.
+
+The original [independent comparison](testing/compare_example_saved_join.py) derives
+all 933 joined rows and their headers from reviewed Jackcess schema/value getters.
+Only TableCraft executes SQL; no VBA/application code runs in the reference reader.
+The immutable example and JAR hashes are checked, and original bytes remain
+unchanged. This is application read/query evidence, not native Access SQL or save
+qualification. Wider query forms and deferred VBA calls remain separate gaps.

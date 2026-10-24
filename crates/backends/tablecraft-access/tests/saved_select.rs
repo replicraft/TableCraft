@@ -28,6 +28,8 @@ mod parameters;
 mod support;
 #[path = "saved_select/unions.rs"]
 mod unions;
+#[path = "saved_select/wildcards.rs"]
+mod wildcards;
 
 use fixture::{Fragment, QUERY_ID, database_with_query_flags};
 use proptest::prelude::*;
@@ -279,18 +281,19 @@ fn metadata_profile_rejects_unhandled_fields_actions_ambiguous_clauses_and_order
 fn expression_and_identifier_boundaries_do_not_allow_fragment_injection_or_loss() {
     for expression in [
         "1, 2",
+        "ALL 1",
+        "DISTINCT 1",
+        "TOP 1 2",
+        "1 AS Hidden",
+        "1 INTO Hidden",
         "1 FROM Hidden",
         "1; SELECT 2",
         "1;",
         "1) FROM Hidden --",
         "1) + (2",
         "True) OR False OR (True",
-        "[src].*",
     ] {
-        assert!(
-            matches!(compile(&[column(expression)]), Err(E::Parse(_))),
-            "{expression}"
-        );
+        assert!(compile(&[column(expression)]).is_err(), "{expression}");
     }
     assert_eq!(
         compile(&[column("1 -- stored comment")]).unwrap().query(),
