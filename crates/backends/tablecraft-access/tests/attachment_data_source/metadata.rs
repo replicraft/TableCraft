@@ -45,7 +45,7 @@ fn metadata_cache_omits_payloads_and_failed_payload_reads_leave_it_available() {
     assert_eq!(child_reads.get(), 0);
     assert_eq!(payload.reads.get(), 0);
     let presence = parse_query(
-        "SELECT Count(*) FROM Items WHERE Score IS NOT NULL",
+        "SELECT DCount('*','Items','Score IS NOT NULL')",
         ParseLimits::default(),
     )
     .unwrap();

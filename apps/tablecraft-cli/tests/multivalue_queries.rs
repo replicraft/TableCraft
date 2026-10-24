@@ -537,3 +537,38 @@ fn attachment_presence_criteria_work_across_priority_profiles_without_payload_de
         assert!(result.stdout.is_empty());
     }
 }
+
+#[test]
+fn domain_presence_counts_parents_and_buffers_errors_across_priority_profiles() {
+    for code in [2, 5, 6] {
+        let mut bytes = attachment_fixture::database();
+        bytes[20] = code;
+        let database = Database::new(bytes);
+        let sql = "SELECT DCount('*','Items','Score IS NULL') AS Missing,DCount('*','Items','Score IS NOT NULL') AS Present,DSum('Id','Items','Score IS NOT NULL') AS Total";
+        let result = run(&[
+            "query",
+            "run",
+            sql,
+            "--database",
+            database.path(),
+            "--collections",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(result.stdout, b"Missing\tPresent\tTotal\n1\t2\t3\n");
+
+        let result = run(&[
+            "query",
+            "run",
+            "SELECT 1,DLookup('Id','Items','Score IS NOT NULL OR 1/0')",
+            "--database",
+            database.path(),
+            "--collections",
+        ]);
+        assert!(!result.status.success());
+        assert!(result.stdout.is_empty());
+    }
+}

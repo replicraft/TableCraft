@@ -86,8 +86,8 @@ pub(crate) fn bind_domain(
     if !binder.parameters.is_empty() {
         return Err(QueryError::Parameter);
     }
-    // The initial domain profile uses scalar declarations. Ordinary scalar
-    // subsets of mixed native tables remain valid without expanding children.
+    // Domain values remain scalar. Criteria can additionally test named
+    // collection presence without turning parent records into child rows.
     let scopes: [&[Slot]; 1] = [&relation.slots];
     let value = value
         .as_ref()
@@ -98,7 +98,7 @@ pub(crate) fn bind_domain(
     }
     let filter = match filter
         .as_ref()
-        .map(|e| binder.expression(e, &scopes, false, 1))
+        .map(|e| binder.filter_expression(e, &scopes, 1))
         .transpose()
     {
         Ok(value) => value,
@@ -111,6 +111,7 @@ pub(crate) fn bind_domain(
     if !binder.parameters.is_empty() {
         return Err(QueryError::Parameter);
     }
+    let (filter, parent) = binder.parent_criteria(&relation, value.iter(), filter, 1)?;
     let argument = value.map(Box::new);
     let expr = Expr::Aggregate(kind.aggregate(), argument);
     let policy = binder.text_policy(&expr)?;
@@ -145,7 +146,7 @@ pub(crate) fn bind_domain(
             having: None,
             aggregate: true,
             record_keys: Vec::new(),
-            parent: None,
+            parent,
         })),
         sort: Vec::new(),
         distinct: false,

@@ -377,3 +377,6 @@ mod ordering;
 
 #[path = "collection_members/presence.rs"]
 mod presence;
+
+#[path = "collection_members/domain_presence.rs"]
+mod domain_presence;

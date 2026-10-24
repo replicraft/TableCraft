@@ -349,3 +349,10 @@ using complete membership views, independently of nullable metadata and FileData
 joined/derived/grouped/crosstab consumers and explicit failures. This closes a
 specific advanced-field query gap; full collection semantics and native Access
 qualification remain open.
+
+
+Runtime domain criteria now reuse typed named-collection presence filters without
+multiplying parent records by attachment count. All twelve domain functions retain
+their owning aggregate contracts and shared budgets; scalar values, missing-field
+NULL behavior and unsupported member syntax remain explicit. [Domain presence](COLLECTION_PRESENCE.md#domain-criteria)
+closes a composition gap without widening native payload or write permissions.

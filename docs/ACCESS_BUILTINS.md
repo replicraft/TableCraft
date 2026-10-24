@@ -261,6 +261,9 @@ promotion is not complete.
 
 ## Domain functions
 
+[Named collection presence criteria](COLLECTION_PRESENCE.md#domain-criteria) now
+filter qualified local parents without child expansion across these functions.
+
 All require explicit domain resolution and criteria execution contracts. Ordinary
 SELECT aggregates and subqueries do not automatically implement these functions.
 

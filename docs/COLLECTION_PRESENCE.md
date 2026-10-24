@@ -51,7 +51,7 @@ large file. Original bytes and source budgets remain unchanged.
 ## Current limits and evidence
 
 Bare collection projection, `IsNull(Files)` calls, comparisons of a presence test,
-function-wrapped tests, direct domain criteria and correlated outer-container tests remain unsupported.
+function-wrapped tests and correlated outer-container tests remain unsupported.
 These forms fail during binding. Presence mixed with a non-Boolean member operand
 that cannot be independently folded also fails before scanning. This adds no
 collection display values, history SQL, lookup execution or writes.
@@ -69,3 +69,29 @@ criteria against Jackcess-decoded parent membership counts on the registered
 It verifies original hashes before and after each run. Only TableCraft executes
 SQL; these controls do not establish native Access execution or coherent reads
 while another application modifies the file.
+
+
+## Domain criteria
+
+Runtime domain criteria now admit the same direct named-container NULL tests and
+Boolean combinations. Domain value expressions remain scalar; child-member and
+bare collection values are still refused. For example:
+
+```sh
+tablecraft query run "SELECT DCount('*','Items','Files IS NOT NULL'),DSum('ID','Items','Files IS NULL')" --database copy.accdb --collections
+```
+
+The predicate filters parent records before the existing domain aggregate. A
+parent with two attachments counts once, and a NULL child filename still counts
+as presence. The twelve domain functions retain their existing numeric,
+encounter-order, NULL/Error and native precision contracts. Dynamic criteria are
+parsed/bound on each explicit execution with the same cumulative budget and
+isolated string scope. Missing criteria fields still return NULL; unsupported
+member syntax remains an error. A failed execution does not poison reused plans.
+
+[Microsoft's DCount contract](https://support.microsoft.com/en-us/access/functions/dcount-function)
+defines criteria as a WHERE-style restriction on the selected domain. Combining
+that contract with the documented attachment emptiness criteria guides this
+engineering profile; it does not establish native Access domain/attachment
+execution equivalence. Native metadata-only caches retain their existing payload
+boundary and no query string opens an external source or activates VBA.

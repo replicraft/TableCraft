@@ -1,15 +1,15 @@
-//! Keep runtime domain strings within scalar expression/name scope.
+//! Scalar domain values and explicitly admitted collection-presence criteria.
 use super::super::Binder;
 use crate::{
     QueryError,
-    plan::{Expr, Slot},
+    plan::{Expr, MemberSlot, Slot},
 };
 impl Binder<'_> {
     pub(super) fn domain_scalar(
         &mut self,
         expr: &Expr,
         slots: &[Slot],
-        domain_calls: bool,
+        criteria: bool,
         depth: usize,
     ) -> Result<(), QueryError> {
         self.tick(depth)?;
@@ -27,9 +27,24 @@ impl Binder<'_> {
                 }
             }
             Expr::Literal(_) | Expr::DateLiteral(..) | Expr::Clock(_) | Expr::CurrentUser => {}
+            Expr::CollectionEmpty(value, _) if criteria => {
+                let Expr::Field {
+                    depth: 0, index, ..
+                } = value.as_ref()
+                else {
+                    return Err(QueryError::Unsupported);
+                };
+                if slots
+                    .iter()
+                    .filter(|slot| slot.available)
+                    .nth(*index)
+                    .is_none_or(|slot| !matches!(slot.member, Some(MemberSlot::Named(_))))
+                {
+                    return Err(QueryError::Unsupported);
+                }
+            }
             Expr::Unary(_, e)
             | Expr::IsNull(e, _)
-            | Expr::CollectionEmpty(e, _)
             | Expr::Convert(_, e)
             | Expr::CVar(e)
             | Expr::CvErr(e)
@@ -41,29 +56,29 @@ impl Binder<'_> {
             | Expr::Inspect(_, e)
             | Expr::ValueInspect(_, e)
             | Expr::DateCall(_, e)
-            | Expr::DateConvert(_, e) => self.domain_scalar(e, slots, domain_calls, depth + 1)?,
+            | Expr::DateConvert(_, e) => self.domain_scalar(e, slots, criteria, depth + 1)?,
             Expr::Binary(_, a, b) | Expr::ArrayBound(_, a, b) | Expr::Like(a, b, _) => {
-                self.domain_scalar(a, slots, domain_calls, depth + 1)?;
-                self.domain_scalar(b, slots, domain_calls, depth + 1)?;
+                self.domain_scalar(a, slots, criteria, depth + 1)?;
+                self.domain_scalar(b, slots, criteria, depth + 1)?;
             }
             Expr::IIf(a, b, c) | Expr::Between(a, b, c, _) | Expr::DateAdd(a, b, c) => {
                 for e in [a, b, c] {
-                    self.domain_scalar(e, slots, domain_calls, depth + 1)?;
+                    self.domain_scalar(e, slots, criteria, depth + 1)?;
                 }
             }
             Expr::DateDiff(a, b, c, options) => {
                 for e in [a, b, c].into_iter().chain(options.iter().flatten()) {
-                    self.domain_scalar(e, slots, domain_calls, depth + 1)?;
+                    self.domain_scalar(e, slots, criteria, depth + 1)?;
                 }
             }
             Expr::DatePart(a, b, options) => {
                 for e in [a, b].into_iter().chain(options.iter().flatten()) {
-                    self.domain_scalar(e, slots, domain_calls, depth + 1)?;
+                    self.domain_scalar(e, slots, criteria, depth + 1)?;
                 }
             }
-            Expr::DomainCall(_, args) if domain_calls => {
+            Expr::DomainCall(_, args) if criteria => {
                 for e in args {
-                    self.domain_scalar(e, slots, domain_calls, depth + 1)?;
+                    self.domain_scalar(e, slots, criteria, depth + 1)?;
                 }
             }
             Expr::TextCall(_, args)
@@ -74,19 +89,19 @@ impl Binder<'_> {
             | Expr::ConstructorCall(_, args)
             | Expr::ConditionalCall(_, args) => {
                 for e in args {
-                    self.domain_scalar(e, slots, domain_calls, depth + 1)?;
+                    self.domain_scalar(e, slots, criteria, depth + 1)?;
                 }
             }
             Expr::Nz(e, other) | Expr::Weekday(e, other) => {
-                self.domain_scalar(e, slots, domain_calls, depth + 1)?;
+                self.domain_scalar(e, slots, criteria, depth + 1)?;
                 if let Some(e) = other {
-                    self.domain_scalar(e, slots, domain_calls, depth + 1)?;
+                    self.domain_scalar(e, slots, criteria, depth + 1)?;
                 }
             }
             Expr::InList(e, list, _) => {
-                self.domain_scalar(e, slots, domain_calls, depth + 1)?;
+                self.domain_scalar(e, slots, criteria, depth + 1)?;
                 for e in list {
-                    self.domain_scalar(e, slots, domain_calls, depth + 1)?;
+                    self.domain_scalar(e, slots, criteria, depth + 1)?;
                 }
             }
             _ => return Err(QueryError::Unsupported),

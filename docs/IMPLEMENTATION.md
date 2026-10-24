@@ -1,5 +1,32 @@
 # Implementation status
 
+## Domain collection-presence criteria
+
+Runtime domain criteria now reuse the qualified named-collection NULL predicate
+and parent filter. Attachment count does not multiply the domain's parent records;
+NULL filenames and zero-byte files still count as membership. Domain value
+expressions remain scalar, member syntax remains refused, missing criteria fields
+still return NULL and dynamic strings keep isolated parameter scope. Existing
+aggregate values/precision, declarations and text policies are unchanged. See
+[domain presence](COLLECTION_PRESENCE.md#domain-criteria).
+
+Four new query tests cover all twelve functions (both DCount forms), parameter-plan
+reuse/recovery, nested calls, explicitly formatted outer criteria construction,
+eager failures, complete-view validation, cumulative limits and every observed
+cancellation checkpoint. All 103 focused query tests, four native adapter tests
+and eight CLI tests pass. The native cache test now starts with a domain presence
+call while external FileData page reads remain forbidden. CLI controls check
+parent counts/sums and buffered failures across ACE 2007/2016/2019-family headers.
+
+Focused query/adapter Clippy, minimal query check, formatting and diff checks pass.
+The independent presence runner passes ninety controls, including sixty new domain
+controls modeled from Jackcess parent identities/memberships on the registered
+valid 3 MiB attachment corpus; original hashes remain unchanged. Microsoft Access,
+full workspace, full engine and benchmarks were not run. No dependency, stored
+format, writer or native qualification changed. Function-wrapped and correlated
+outer-container tests, full collection semantics and P0 value/text work remain
+unfinished.
+
 ## Attachment container NULL criteria
 
 Explicit retrieval now binds bare named collection WHERE IS NULL/IS NOT NULL

@@ -5,6 +5,7 @@ SQL; this does not qualify native Access SQL or coherent shared-file reads.
 """
 import argparse
 import csv
+from decimal import Decimal
 from io import StringIO
 from pathlib import Path
 import subprocess
@@ -51,6 +52,29 @@ def main():
                 rows = list(csv.reader(StringIO(result.stdout), delimiter="\t", strict=True))
                 assert rows[1:] == expected, (profile, sql, rows, expected)
                 controls += 1
+
+            for condition, selected in [("Files IS NULL", empty), ("Files IS NOT NULL", present)]:
+                identities = [int(row[0]) for row in selected]
+                for function, expression, expected in [
+                    ("DCount", "*", len(identities)),
+                    ("DCount", "ID", len(identities)),
+                    ("DSum", "ID", sum(identities) if identities else None),
+                    ("DAvg", "ID", Decimal(sum(identities)) / len(identities) if identities else None),
+                    ("DLookup", "ID", identities[0] if identities else None),
+                ]:
+                    sql = f"SELECT {function}('{expression}','MetadataFiles','{condition}') AS N"
+                    result = subprocess.run([
+                        str(args.cli), "query", "run", sql, "--database", str(path),
+                        "--collections", "--format", "tsv", *options,
+                    ], capture_output=True, text=True, encoding="utf-8", check=False)
+                    assert result.returncode == 0 and not result.stderr, (profile, sql, result)
+                    rows = list(csv.reader(StringIO(result.stdout), delimiter="\t", strict=True))
+                    assert len(rows) == 2 and len(rows[1]) == 1, (sql, rows)
+                    if expected is None:
+                        assert rows[1][0] == "NULL", (sql, rows)
+                    else:
+                        assert Decimal(rows[1][0]) == Decimal(expected), (sql, rows, expected)
+                    controls += 1
 
         assert digest(path) == expected_hash
 
