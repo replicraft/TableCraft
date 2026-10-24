@@ -1,5 +1,31 @@
 # Implementation status
 
+## Arithmetic dispatch independent of widening categories
+
+The explicit engineering profile now asks for Scalar/Variant provenance only
+when it can change selected-width overflow. Unknown aggregate/UNION categories
+no longer block Mod, checked Int64 integral arithmetic/negation, Int64-selected
+quotients, Byte/Byte quotients or Byte/Boolean negation. Query dispatch shares the
+expression library's rounded quotient predicate, including contextual Date/Text
+admission. Unknown result provenance remains unknown; later narrow arithmetic or
+declaration-sensitive predicates still refuse it. The ordinary Count declaration
+is not inferred from its Int64 accumulator. See [the exact scope](DECLARED_ARITHMETIC.md#operations-independent-of-widening-categories).
+
+Two kernel tests compare all four supplied category combinations across signed
+boundaries, quotient/remainder, fractional conversion, zero and overflow cases.
+Four query tests cover aggregate/UNION/derived unknowns, preserved provenance,
+numeric Text policy reuse, signed remainder and eager/checked failures. A CLI
+test checks both flag spellings and empty stdout on overflow; previous broad
+unknown-refusal assertions now retain genuinely declaration-sensitive narrow
+cases. All 671 all-feature expression tests plus one doctest, 353 minimal tests, thirty focused
+query tests and fifteen CLI tests pass. Expression all-target/all-feature and
+focused query Clippy, formatting and diff checks pass. The original declaration
+runner passes 4,954 source-free independent controls, including 185 new exact
+Python integer/range/quotient cases. Native Access and the optional native-corpus
+replay were not run for this change. No dependency, stored carrier, default
+arithmetic value rule or write scope changed; complete Variant/native typing
+remains open.
+
 ## DateAdd source-conversion result metadata
 
 Metadata-only binding now describes DateAdd's existing converted source profile:

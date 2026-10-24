@@ -20,6 +20,118 @@ fn context(left: bool, right: bool) -> ArithmeticDeclarations {
 }
 
 #[test]
+fn fixed_long_long_results_do_not_require_a_scalar_variant_width_decision() {
+    for left in [i64::MIN, -32768, -1, 0, 1, 32767, i64::MAX] {
+        for right in [i64::MIN, -1, 0, 1, i64::MAX] {
+            for operator in [
+                Arithmetic::Add,
+                Arithmetic::Subtract,
+                Arithmetic::Multiply,
+                Arithmetic::IntegerDivide,
+                Arithmetic::Modulo,
+            ] {
+                let left = Value::Int64(left);
+                let right = Value::Int64(right);
+                assert!(!uses_declared_overflow(operator, &left, &right));
+                let expected = promoted_arithmetic(operator, &left, &right);
+
+                for a in [false, true] {
+                    for b in [false, true] {
+                        assert_eq!(
+                            declared_numeric_arithmetic(operator, &left, &right, context(a, b)),
+                            expected
+                        );
+                    }
+                }
+            }
+        }
+    }
+}
+
+#[test]
+fn remainders_and_long_long_quotients_keep_conversion_failures_without_category_dispatch() {
+    for left in [0, 1, 255] {
+        for right in [0, 1, 2, 255] {
+            let left = Value::Byte(left);
+            let right = Value::Byte(right);
+            assert!(!uses_declared_overflow(
+                Arithmetic::IntegerDivide,
+                &left,
+                &right
+            ));
+            let expected = promoted_arithmetic(Arithmetic::IntegerDivide, &left, &right);
+            for a in [false, true] {
+                for b in [false, true] {
+                    assert_eq!(
+                        declared_numeric_arithmetic(
+                            Arithmetic::IntegerDivide,
+                            &left,
+                            &right,
+                            context(a, b)
+                        ),
+                        expected
+                    );
+                }
+            }
+        }
+    }
+
+    for (left, right) in [
+        (Value::Int16(i16::MIN), Value::Int16(-1)),
+        (Value::Int32(i32::MIN), Value::Int32(-1)),
+        (Value::Int64(i64::MIN), Value::Int64(-1)),
+        (single(7.5), Value::Double(Double::from_float(2.5))),
+        (
+            Value::Currency(Currency::from_scaled(75_000)),
+            Value::Byte(2),
+        ),
+        (
+            Value::Decimal(Decimal::new(75, 1).unwrap()),
+            Value::Int16(2),
+        ),
+    ] {
+        assert!(!uses_declared_overflow(Arithmetic::Modulo, &left, &right));
+        let expected = promoted_arithmetic(Arithmetic::Modulo, &left, &right);
+        for a in [false, true] {
+            for b in [false, true] {
+                assert_eq!(
+                    declared_numeric_arithmetic(Arithmetic::Modulo, &left, &right, context(a, b)),
+                    expected
+                );
+            }
+        }
+    }
+
+    let left = Value::Int64(7);
+    for right in [
+        single(2.5),
+        Value::Decimal(Decimal::new(25, 1).unwrap()),
+        Value::Double(Double::from_float(0.5)),
+        Value::Double(Double::from_float(f64::MAX)),
+    ] {
+        assert!(!uses_declared_overflow(
+            Arithmetic::IntegerDivide,
+            &left,
+            &right
+        ));
+        let expected = promoted_arithmetic(Arithmetic::IntegerDivide, &left, &right);
+        for a in [false, true] {
+            for b in [false, true] {
+                assert_eq!(
+                    declared_numeric_arithmetic(
+                        Arithmetic::IntegerDivide,
+                        &left,
+                        &right,
+                        context(a, b)
+                    ),
+                    expected
+                );
+            }
+        }
+    }
+}
+
+#[test]
 fn single_overflow_preserves_original_variant_participation_in_each_operator() {
     for (operation, left, right, expected) in [
         (

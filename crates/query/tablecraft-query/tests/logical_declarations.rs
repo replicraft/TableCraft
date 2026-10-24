@@ -115,10 +115,16 @@ fn binary_logical_returns_use_both_operand_categories() {
 #[test]
 fn nulls_errors_unknown_categories_and_longlong_limits_remain_explicit() {
     for sql in [
-        "SELECT CInt(7)\\(Not Count(*))",
-        "SELECT CInt(7)\\(Count(*) And CInt(-1))",
+        "SELECT CInt(7)\\(Not First(CInt(1)))",
+        "SELECT CInt(7)\\(First(CInt(1)) And CInt(-1))",
     ] {
         assert_eq!(run(sql, true), Err(QueryError::ArithmeticDeclaration));
+    }
+    for (sql, expected) in [
+        ("SELECT CInt(7)\\(Not Count(*))", -3),
+        ("SELECT CInt(7)\\(Count(*) And CInt(-1))", 7),
+    ] {
+        assert_eq!(run(sql, true).unwrap(), vec![vec![Value::Int64(expected)]]);
     }
     let sql = "SELECT CInt(7)\\(Not CVar(Count(*)))";
     assert_eq!(run(sql, true).unwrap(), vec![vec![Value::Int64(-3)]]);

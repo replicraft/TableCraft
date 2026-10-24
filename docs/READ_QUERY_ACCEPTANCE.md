@@ -52,6 +52,14 @@ carriers. They retain explicit syntax and strict carrier matching; see
 [parameter input rules](DEVELOPMENT.md). This closes a host-input gap without
 completing the value-semantics acceptance work below.
 
+The explicit declared-arithmetic profile now permits unknown aggregate/UNION
+categories when the implemented operation cannot vary by category: Mod, fixed
+Int64 integral arithmetic/negation, Byte quotients and Byte/Boolean negation.
+Unknown provenance remains unknown for later consumers; checked conversion,
+overflow, zero-divisor and narrow-width rules remain active. This removes false
+declaration refusals without qualifying native aggregate categories. See
+[dispatch scope](DECLARED_ARITHMETIC.md#operations-independent-of-widening-categories).
+
 Ordinary Date/numeric predicates now reuse checked CDate conversion, or Decimal
 raw-serial selection when Decimal participates, without requiring the engineering
 declaration flag. This does not enable strict set-key coercion or qualify native

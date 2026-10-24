@@ -26,12 +26,40 @@ fn declared_integral_flag_preserves_defaults_and_keeps_failures_buffered() {
     let unknown = run(&[
         "query",
         "run",
-        "SELECT Count(*)+CInt(1)",
+        "SELECT First(CInt(2))+CInt(1)",
         "--declared-integral",
     ]);
     assert_eq!(unknown.status.code(), Some(2));
     assert!(unknown.stdout.is_empty());
     assert!(String::from_utf8_lossy(&unknown.stderr).contains("declaration is unknown"));
+}
+
+#[test]
+fn unknown_fixed_width_results_do_not_need_a_widening_declaration() {
+    for flag in ["--declared-arithmetic", "--declared-integral"] {
+        let result = run(&[
+            "query",
+            "run",
+            "SELECT Count(*)+CInt(1) AS A,First(CInt(-32768)) Mod CInt(-1) AS B,-First(CByte(255)) AS C",
+            flag,
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(result.stdout, b"A\tB\tC\n2\t0\t-255\n");
+
+        let result = run(&[
+            "query",
+            "run",
+            "SELECT 1,First(CLngLng(9223372036854775807))+CInt(1)",
+            flag,
+        ]);
+        assert_eq!(result.status.code(), Some(2));
+        assert!(result.stdout.is_empty());
+        assert!(String::from_utf8_lossy(&result.stderr).contains("numeric overflow"));
+    }
 }
 
 #[test]

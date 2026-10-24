@@ -82,6 +82,36 @@ def main():
         else:
             check(sql, None, error="numeric overflow", **options)
 
+    # Unknown aggregate provenance cannot affect these fixed Int64 results.
+    # Python integers model range/quotient/remainder independently of Rust.
+    low, high = -(1 << 63), (1 << 63) - 1
+    for left, right in itertools.product([low, -32768, -1, 0, 1, 32767, high], [low, -1, 0, 1, high]):
+        for operator in ["+", "-", "*", "\\", "Mod"]:
+            expression = f"First(CLngLng({left})) {operator} CLngLng({right})"
+            if operator in ["\\", "Mod"] and right == 0:
+                check(expression, None, error="division by zero")
+                continue
+            if operator in ["\\", "Mod"]:
+                quotient = (abs(left) // abs(right)) * (-1 if (left < 0) != (right < 0) else 1)
+                expected = quotient if operator == "\\" else left - quotient * right
+            else:
+                expected = {"+": left + right, "-": left - right, "*": left * right}[operator]
+            if low <= expected <= high:
+                check(expression, expected, 20)
+            else:
+                check(expression, None, error="numeric overflow")
+    for value in [low, -1, 0, 1, high]:
+        expression = f"-First(CLngLng({value}))"
+        if value == low:
+            check(expression, None, error="numeric overflow")
+        else:
+            check(expression, -value, 20)
+    check("First(CInt(-32768)) Mod CInt(-1)", 0, 2)
+    check("First(CByte(255))\\CByte(2)", 127, 17)
+    check("-First(CByte(255))", -255, 2)
+    check("-First(CBool(True))", 1, 2)
+    check("Count(*)+CInt(1)", 2, 20)
+
     # Exact integer serials provide an independent Date-envelope overflow model.
     for left, right, operator in [(2958465, 1, "+"), (-657434, 1, "-"),
                                    (2958465, 2958465, "+")]:
@@ -428,7 +458,7 @@ def main():
                         check(expression,None,error="numeric overflow")
                     else:
                         check(expression,value+1,widened_tag if value == high else tag)
-    check("CInt(7)\\(Not Count(*))",None,error="declaration")
+    check("CInt(7)\\(Not Count(*))",-3,20)
     check("CInt(7)\\(Not CVar(Count(*)))",-3,20)
     comparisons = {
         "=": lambda a, b: a == b, "<>": lambda a, b: a != b,
