@@ -263,10 +263,6 @@ fn fixed_point_mixed_admission_and_late_operand_errors_remain_explicit() {
     let source = MemorySource::default();
     for (sql, error) in [
         (
-            "SELECT Sum(IIf(N=1,CDbl(1),CLngLng(9007199254740993))) FROM (SELECT 1 AS N UNION ALL SELECT 2) AS Q",
-            EvalError::PrecisionLoss,
-        ),
-        (
             "SELECT Sum(CLngLng(9223372036854775807)) FROM (SELECT 1 AS N UNION ALL SELECT 2) AS Q",
             EvalError::Overflow,
         ),

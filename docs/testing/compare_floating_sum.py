@@ -89,6 +89,19 @@ def main():
         query(f"SELECT Sum({expression}) FROM (SELECT 1 AS N UNION ALL SELECT 2) AS Inputs",
               [float(Fraction(scaled, 10000))], ["--number-format", "invariant"])
 
+    # LongLong operands need not be exactly representable in binary64. Round
+    # each admitted integer (or checked prefix) before exact floating summation.
+    integers = [-(2 ** 63), 2 ** 63 - 1, -(2 ** 53 + 3), -(2 ** 53 + 1),
+                -(2 ** 53 - 1), -1, 0, 1, 2 ** 53 - 1, 2 ** 53 + 1,
+                2 ** 53 + 3, 2 ** 62 + 513]
+    integers += [generator.randrange(-(2 ** 63), 2 ** 63) for _ in range(32)]
+    for integer, conversion, reverse in itertools.product(integers, ["CSng", "CDbl"], [False, True]):
+        condition = "N=2" if reverse else "N=1"
+        expression = f"IIf({condition},Large,{conversion}(0))"
+        query(f"PARAMETERS Large BIGINT; SELECT Sum({expression}) "
+              "FROM (SELECT 1 AS N UNION ALL SELECT 2) AS Inputs",
+              [float(Fraction(integer))], ["--param", f"Large=bigint:{integer}"])
+
     for suffix, digest in INPUT_HASHES.items():
         path = args.directory / ("index-" + suffix)
         digest = registered_input_hash(path, digest)
@@ -143,6 +156,23 @@ def main():
                 mixed = f"IIf(ID Mod 2=0,[Money],{field})"
                 query(f"SELECT Sum({mixed}),DSum('{mixed}','IndexedRows') FROM IndexedRows",
                       [exact(values), exact(values)], configured)
+
+            if suffix in ["2016.accdb", "2019.accdb"]:
+                for field_index, field, encoding in [(7, "SingleValue", ">f"), (8, "DoubleValue", ">d")]:
+                    values = []
+                    for row in records:
+                        identifier = int(row[1][4:])
+                        tag = row[14] if identifier % 2 == 0 else row[field_index]
+                        if tag == "N":
+                            continue
+                        if identifier % 2 == 0:
+                            assert tag.startswith("I64:")
+                            values.append(float(Fraction(int(tag[4:]))))
+                        else:
+                            values.append(struct.unpack(encoding, bytes.fromhex(tag[1:]))[0])
+                    mixed = f"IIf(ID Mod 2=0,BigValue,{field})"
+                    query(f"SELECT Sum({mixed}),DSum('{mixed}','IndexedRows') FROM IndexedRows",
+                          [exact(values), exact(values)], configured)
         assert path.read_bytes() == before
     print(f"Passed {controls} independent floating-sum Fraction/native-field controls; native Access unrun")
 
