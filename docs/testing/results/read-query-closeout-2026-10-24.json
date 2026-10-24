@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-24",
+  "scope": "Consolidated offline engineering checks; native Access SQL, freshness, concurrency and save qualification remain unrun.",
+  "source_revision": "69b249f61f99ef80486fb421b5031962185ee932",
+  "query_suite": {
+    "command": "cargo test -p tablecraft-query --all-features --locked --no-fail-fast",
+    "targets": 190,
+    "passed": 1041,
+    "failed": 0
+  },
+  "cli": {
+    "path": ".cache/tablecraft-bin/read-query-closeout-20261024",
+    "sha256": "c1cdb70336fd724b0e2ef6bdeffcace8e58dd4eb01c4789743df53e0f52a2b0c"
+  },
+  "replays": {
+    "cached_queries": {
+      "controls": 92
+    },
+    "advanced_evolution": {
+      "controls": 60,
+      "compared_cells": 18584
+    },
+    "mixed_scalar_histories": {
+      "controls": 45,
+      "inputs": {
+        ".cache/tablecraft-fixtures/mixed-scalar-histories/mixed-V2016.accdb": {
+          "rows": 19902,
+          "sha256": "22ae1aa4a504a2540f45946997fdbe9e64703263df3e08068c2855fa7b69d937"
+        },
+        ".cache/tablecraft-fixtures/mixed-scalar-histories/mixed-V2007.accdb": {
+          "rows": 19902,
+          "sha256": "697796edb15b81784e479cb64d0bb144d5182dc0d49b1d10af0856cdb1db32c8"
+        },
+        ".cache/tablecraft-fixtures/mixed-scalar-histories/mixed-V2000.mdb": {
+          "rows": 19902,
+          "sha256": "4fe3db9bdc32b8c552b20d72dcb4438372654adca37e9208850f2811677dc25d"
+        }
+      }
+    }
+  },
+  "runner_sha256": {
+    "compare_cached_queries.py": "f8e150eab4682defd76168bc75b8f0c402219bf154a5217e2fe751d3bf667464",
+    "compare_advanced_evolution.py": "f900b2f3b1a3b8c16c2b4e2bd6757e8264b425c9f96b13092342b58cafbf7fa8",
+    "compare_mixed_scalar_histories.py": "a4639562882fb71336c4a4b7586c0222da9c41843d1b8631d371420c37cc09f2"
+  },
+  "input_hashes_unchanged": true,
+  "normal_incremental_builds": true,
+  "minimal_query_build_passed": true,
+  "workspace_format_check_passed": true
+}
