@@ -3,7 +3,11 @@ use super::{fixture, support};
 // Original synthetic format bytes. Uses a real inline MR2 property carrier from
 // the shared golden builder; no Java or third-party binary fixture is required.
 pub fn database(values: &[Option<i32>]) -> Vec<u8> {
-    let mut bytes = fixture::with_rule("Expression", "[Id]*2");
+    database_with_expression(values, "[Id]*2")
+}
+
+pub fn database_with_expression(values: &[Option<i32>], formula: &str) -> Vec<u8> {
+    let mut bytes = fixture::with_rule("Expression", formula);
     bytes[4..20].copy_from_slice(b"Standard ACE DB\0");
     bytes[20] = 6;
     let start =
@@ -24,7 +28,7 @@ pub fn database(values: &[Option<i32>]) -> Vec<u8> {
         ]
         .concat()
     };
-    let expression = "[Id]*2"
+    let expression = formula
         .encode_utf16()
         .flat_map(u16::to_le_bytes)
         .collect::<Vec<_>>();

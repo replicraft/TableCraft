@@ -489,6 +489,14 @@ pushdown or a stable bookmark across changed files.
 
 ## Explicit cached-calculation pages
 
+`inspect_calculation_declaration` returns an inert `CalculationDeclaration` for
+one qualified ACE 16-family calculated field. It checks the same native geometry,
+carrier and typed Expression/ResultType properties as cached reads, while reading
+no user records or cached wrappers. Accessors expose the original field metadata,
+exact expression text and declared stored carrier; no formula is parsed or
+executed and cache freshness is not inferred. Native budget and cancellation
+checks remain active. Unsupported generations/declarations refuse explicitly.
+
 `read_stored_table_page`/`StoredTablePage` provide a distinct read-only profile
 for qualified ordinary carriers mixed with stored ACE 16 calculation results.
 They reuse the scalar page walker and the existing single-calculation declaration/

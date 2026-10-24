@@ -1,8 +1,10 @@
+mod declaration;
 mod encoding;
 mod page;
 mod read;
 mod snapshot;
 mod wrapper;
+pub use declaration::{CalculationDeclaration, inspect_calculation_declaration};
 pub(super) use encoding::{decode, supported};
 pub use page::{StoredTablePage, read_stored_table_page};
 pub(super) use read::qualified_kind;
