@@ -1,5 +1,21 @@
 # Implementation status
 
+## Explicit row-local calculated-expression previews
+
+The engine exposes inert qualified calculated-field declarations without reading
+records. The Access adapter can separately prepare and execute restricted pure
+same-table arithmetic, concatenation and NULL tests over ordinary fields. A
+prepared preview borrows its original source and returns `Recomputed` values,
+keeping declared stored types and cached results separate. Ordinary query
+eligibility is unchanged. See [calculation previews](CALCULATION_PREVIEWS.md).
+
+Six integration tests and one syntax/dependency test pass, including stale/NULL
+and corrupt unselected caches, metadata-only preparation, inert SQL-like Text,
+unsupported active/nonlocal dependencies, budgets and cancellation. Four existing
+engine cached-calculation tests and scoped adapter Clippy pass. Broader functions,
+calculated dependencies, native carrier promotion/freshness and Access execution
+qualification remain unfinished; no database is updated.
+
 ## Explicit Decimal parameter constraints
 
 The query binder now accepts DECIMAL(p,s)/NUMERIC(p,s) using the existing checked
