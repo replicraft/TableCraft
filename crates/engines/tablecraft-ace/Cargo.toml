@@ -17,6 +17,7 @@ ace16-write-preview = []
 workspace = true
 
 [dependencies]
+arrayvec.workspace = true
 getrandom.workspace = true
 rc4.workspace = true
 md-5.workspace = true
@@ -46,7 +47,6 @@ uuid.workspace = true
 jiff.workspace = true
 
 [dev-dependencies]
-arrayvec.workspace = true
 clap.workspace = true
 proptest.workspace = true
 smallvec.workspace = true

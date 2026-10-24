@@ -1,5 +1,7 @@
 use super::super::schema::TableSchema;
 use super::ForeignIndexReference;
+use crate::format::layout::INDEX_KEY_COLUMNS;
+use arrayvec::ArrayVec;
 use tablecraft_schema::SchemaName;
 
 /// One native key column, in key order.
@@ -28,7 +30,7 @@ pub struct NativeIndex {
     pub(super) kind: u8,
     pub(super) flags: u8,
     pub(super) backing_primary: bool,
-    pub(super) columns: Vec<IndexColumn>,
+    pub(super) columns: ArrayVec<IndexColumn, INDEX_KEY_COLUMNS>,
     pub(super) reference: Option<ForeignIndexReference>,
     pub(super) foreign_checked: bool,
 }

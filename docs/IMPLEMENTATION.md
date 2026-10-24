@@ -1,5 +1,22 @@
 # Implementation status
 
+## Bounded native index metadata storage
+
+Private index-column storage now uses ArrayVec under the existing ten-key native
+ceiling. Public slices, field ordering, raw flags and qualification remain intact.
+The owning NativeIndex vector includes inline capacity in its allocation charge;
+no separate key buffer is allocated. On the measured Darwin arm64 target, retained
+storage falls from 248 to 232 bytes per index and one allocation is removed.
+See [the candidate comparison](testing/INDEX_COLUMN_COLLECTIONS.md).
+
+The production tree passes 49 index unit tests and 42 integration tests, plus
+scoped Clippy and the minimal-feature check. Isolated variants pass 96 integration
+tests and 2,094 independent metadata/constructor controls. All 675 timing samples
+are retained, including ties, noise and a documented potential initial formatter
+overlap. Results do not establish a broad query-speed gain or native Access
+qualification. SmallVec and memchr remain development-only; production InStrB
+retains its existing work/cancellation contract.
+
 ## Explicit row-local calculated-expression previews
 
 The engine exposes inert qualified calculated-field declarations without reading
