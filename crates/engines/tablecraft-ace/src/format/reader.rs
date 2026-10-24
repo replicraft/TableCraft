@@ -50,6 +50,9 @@ impl<R: crate::NativeReadSource> Reader<'_, R> {
         )?;
         self.source
             .decode_native_page(number, &mut page, self.budget, self.cancelled)?;
+        // A host decoder can trigger cancellation while producing its local
+        // buffer. Observe it before interpreting or retaining decoded bytes.
+        self.work(0)?;
         Ok(page)
     }
     // Explicit references may point to relocated/deleted slots. Enumeration skips

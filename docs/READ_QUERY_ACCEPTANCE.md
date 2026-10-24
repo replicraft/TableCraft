@@ -32,6 +32,9 @@ qualification recorded separately.
   SQL results remain buffered with separate row, byte, work and output ceilings.
   Absolute I/O now rejects reported seek-position mismatches before reading or
   writing; failpoints cover scalar, Memo and indexed snapshot publication.
+  [Continuation fault controls](NATIVE_READ_FAILURES.md) now additionally cover
+  each remaining read/seek/page-hook callback after a successful prefix,
+  decoder-triggered cancellation and bounded interrupted short reads.
 - Buffered collection pages now accept explicit native read limits, retaining
   complete parent/child validation and output refusal across `--all` sections.
 - Native CLI reads now use shared OS locks, excluding cooperating exclusive

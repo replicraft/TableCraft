@@ -560,3 +560,10 @@ physical checks and makes query schema drift sensitive to the declaration.
 does not round or rescale values. Cached calculated result types retain their
 separate feature qualification; no declaration is inferred for them. Native
 bytes, supported layouts and encoding rules are unchanged.
+
+
+[Native read-failure checks](NATIVE_READ_FAILURES.md) now cover every continuation
+read/seek/page-hook callback after a successful prefix, terminal failures and
+bounded interrupted short reads. Cancellation is observed immediately after
+page decoding before interpreting the local buffer. No new format, live-file
+coherence or write qualification follows from these synthetic checks.

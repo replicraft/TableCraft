@@ -1,5 +1,31 @@
 # Implementation status
 
+## Page-decoder cancellation and terminal continuation failures
+
+Native page reads now observe cancellation immediately after a successful host
+decoder callback, before interpreting/retaining its local buffer. This fixes a
+fault-injected case where altered decoded bytes caused Malformed to hide pending
+cancellation. It adds no format, write capability, dependency or additional
+page-work charge. Decoder failures still propagate. See
+[read-failure contract and evidence](NATIVE_READ_FAILURES.md).
+
+Three new focused tests exercise all remaining read/seek/page-hook callbacks
+after a delivered prefix across four read profiles, terminal cursor/snapshot
+refusal without further I/O or work, short reads with recurring interruptions,
+and persistent interruption bounded by shared work. The batched validation passes
+600 ACE tests plus two compile-fail doctests, six selected Access adapter tests
+and 25 CLI browsing tests. ACE all-target/all-feature Clippy and CLI build pass;
+the broad native suite was run because the completion check is shared by every
+page consumer. Full workspace/backend tests and benchmarks were not repeated.
+
+The rebuilt table-data engineering reader and CLI also pass 45 independent
+mixed-history controls over 19,902 retained rows per Jet 4/ACE 2007/ACE 2016
+input. All three registered hashes remain unchanged. Formatting, dependency
+boundaries and diff checks pass. Roadmap descriptions now reflect already
+integrated declaration provenance and admitted financial calls, while retaining
+Variant, locale, advanced-field, storage/scale and native qualification gaps.
+No broader write capability is enabled.
+
 ## Partition and hyperlink expression-state admission
 
 Partition now retains eager Error/Empty/Missing operands through its NULL gate
