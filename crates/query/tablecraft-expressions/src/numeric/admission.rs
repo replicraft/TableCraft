@@ -27,6 +27,7 @@ pub(crate) fn materialized(value: &Value) -> Result<(), EvalError> {
     strict(value)
 }
 
+#[cfg(feature = "sql")]
 pub(crate) fn contextual(value: &Value) -> Result<(), EvalError> {
     if matches!(value, Value::Text(_)) {
         return Ok(());

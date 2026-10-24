@@ -1,5 +1,31 @@
 # Implementation status
 
+## Calendar-name numeric Text controls
+
+MonthName and WeekdayName now admit ordinal, abbreviation and first-day Text
+controls through the evaluator's shared metered numeric converter. NumberFormat
+remains explicit and separate from label language and system-first-day context.
+Direct lexical Long half-even conversion avoids floating intermediates; Boolean
+controls retain the existing numeric/True/False profile. Ordered admission,
+NULL/Empty/Error boundaries, eager arguments and the host-free recipe API remain
+unchanged. Argument preparation now has its own feature-local module; SQL-only
+helpers/re-exports are gated in the minimal feature profile. See
+[calendar-name controls](CALENDAR_NAMES.md#numeric-text-controls).
+
+Three new evaluator tests cover both APIs, lexical midpoints, Long overflow,
+validation order, input/allocation limits and every observed cancellation
+checkpoint. Two query tests cover parameter-plan policy reuse/recovery, correlated
+calls, grouping, eager branches and late failure under TOP; a CLI test covers both
+execution modes and buffered failures. All 680 all-feature expression tests plus
+one doctest, 357 minimal tests, ten focused query tests and six CLI tests pass.
+Expression all-target Clippy passes with all features and no default features;
+focused query Clippy, formatting and diff checks pass. The independent Python
+Gregorian/Decimal runner passes 2,666 source-free controls, including 1,200 new
+Text controls across two number profiles and three label profiles. Native corpus,
+Microsoft Access, full workspace and benchmarks were not run for this change.
+No dependency, native format or write scope changed; full Variant/NLS/native
+coercion qualification remains open.
+
 ## RGB Integer channel conversion
 
 RGB now uses the formal Integer argument width for red, green and blue before

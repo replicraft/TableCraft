@@ -2,6 +2,7 @@ use super::*;
 use crate::{
     evaluation::{EvalLimits, NoBindings},
     functions::{
+        conversions::text::NumberFormat,
         dates::{FirstDayOfWeek, parsing::DateTextFormat},
         math::random::RndState,
     },
@@ -122,5 +123,190 @@ fn name_states_keep_output_limits_and_every_successful_cancellation_checkpoint()
             assert_eq!(invoke(stop, 1000), Err(EvalError::Cancelled));
         }
         assert!(matches!(invoke(usize::MAX, 1), Err(EvalError::Limit(_))));
+    }
+}
+
+#[test]
+fn text_controls_share_exact_conversion_in_materialized_and_expression_apis() {
+    for (format, function, controls, expected) in [
+        (
+            NumberFormat::EnUs,
+            TextFunction::MonthName,
+            vec!["10"],
+            "October",
+        ),
+        (
+            NumberFormat::EnUs,
+            TextFunction::MonthName,
+            vec!["2.5000000000000000000000000000000001", "True"],
+            "Mar",
+        ),
+        (
+            NumberFormat::DeDe,
+            TextFunction::MonthName,
+            vec!["2,5", "0"],
+            "February",
+        ),
+        (
+            NumberFormat::EnUs,
+            TextFunction::WeekdayName,
+            vec!["1", "False", "2.5"],
+            "Monday",
+        ),
+        (
+            NumberFormat::EnUs,
+            TextFunction::WeekdayName,
+            vec!["1", "0.00001", "0"],
+            "Mon",
+        ),
+    ] {
+        let arguments: Vec<_> = controls
+            .into_iter()
+            .map(|text| Value::Text(text.into()))
+            .collect();
+        let states: Vec<_> = arguments
+            .iter()
+            .cloned()
+            .map(ExpressionValue::Value)
+            .collect();
+        for expression in [false, true] {
+            let mut budget = ResourceBudget::new(65536, 0, 10000);
+            let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
+                .with_number_format(format)
+                .with_date_format(DateTextFormat::EnUs)
+                .with_first_day_of_week(FirstDayOfWeek::new(2).unwrap());
+            let result = if expression {
+                evaluator.apply_expression_calendar_name(function, &states)
+            } else {
+                evaluator.apply_text_function(function, &arguments)
+            };
+            assert_eq!(result, Ok(Value::Text(expected.into())), "{arguments:?}");
+        }
+    }
+}
+
+#[test]
+fn text_controls_preserve_validation_order_and_exact_long_overflow() {
+    for (function, controls, expected) in [
+        (
+            TextFunction::MonthName,
+            vec!["0", "bad"],
+            EvalError::TypeMismatch,
+        ),
+        (
+            TextFunction::WeekdayName,
+            vec!["0", "False", "bad"],
+            EvalError::Domain,
+        ),
+        (
+            TextFunction::WeekdayName,
+            vec!["1", "False", "bad"],
+            EvalError::TypeMismatch,
+        ),
+        (
+            TextFunction::MonthName,
+            vec!["2147483647.5"],
+            EvalError::Overflow,
+        ),
+        (
+            TextFunction::MonthName,
+            vec!["2147483647.4999999999999999999999999999"],
+            EvalError::Domain,
+        ),
+        (
+            TextFunction::WeekdayName,
+            vec!["1", "False", "2147483647.5"],
+            EvalError::Overflow,
+        ),
+    ] {
+        let arguments: Vec<_> = controls
+            .into_iter()
+            .map(|text| Value::Text(text.into()))
+            .collect();
+        let mut budget = ResourceBudget::new(65536, 0, 10000);
+        let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
+            .with_number_format(NumberFormat::EnUs)
+            .with_date_format(DateTextFormat::EnUs);
+        assert_eq!(
+            evaluator.apply_text_function(function, &arguments),
+            Err(expected)
+        );
+    }
+
+    let mut budget = ResourceBudget::new(65536, 0, 10000);
+    let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())
+        .with_date_format(DateTextFormat::EnUs);
+    assert_eq!(
+        evaluator.apply_text_function(TextFunction::MonthName, &[Value::Text("1".into())]),
+        Err(EvalError::NumberFormatRequired)
+    );
+    assert_eq!(
+        evaluator.apply_text_function(
+            TextFunction::WeekdayName,
+            &[
+                Value::Int32(0),
+                Value::Boolean(false),
+                Value::Text("bad".into())
+            ]
+        ),
+        Err(EvalError::Domain)
+    );
+}
+
+#[test]
+fn text_controls_retain_input_output_budgets_and_all_cancellation_checkpoints() {
+    for expression in [false, true] {
+        let calls = Cell::new(0);
+        let invoke = |stop, bytes, max_text_bytes| {
+            calls.set(0);
+            let cancelled = || {
+                calls.set(calls.get() + 1);
+                calls.get() == stop
+            };
+            let arguments = [
+                Value::Text("1.0000".into()),
+                Value::Text("False".into()),
+                Value::Text("2".into()),
+            ];
+            let states: Vec<_> = arguments
+                .iter()
+                .cloned()
+                .map(ExpressionValue::Value)
+                .collect();
+            let mut budget = ResourceBudget::new(bytes, 0, 10000);
+            let mut evaluator = Evaluator::new(
+                &NoBindings,
+                &mut budget,
+                EvalLimits {
+                    max_text_bytes,
+                    ..Default::default()
+                },
+            )
+            .with_number_format(NumberFormat::EnUs)
+            .with_date_format(DateTextFormat::EnUs)
+            .with_cancellation(&cancelled);
+            if expression {
+                evaluator.apply_expression_calendar_name(TextFunction::WeekdayName, &states)
+            } else {
+                evaluator.apply_text_function(TextFunction::WeekdayName, &arguments)
+            }
+        };
+        assert_eq!(
+            invoke(usize::MAX, 65536, 100),
+            Ok(Value::Text("Monday".into()))
+        );
+        let total = calls.get();
+        for stop in 1..=total {
+            assert_eq!(
+                invoke(stop, 65536, 100),
+                Err(EvalError::Cancelled),
+                "checkpoint {stop}"
+            );
+        }
+        assert!(matches!(
+            invoke(usize::MAX, 1, 100),
+            Err(EvalError::Limit(_))
+        ));
+        assert_eq!(invoke(usize::MAX, 65536, 5), Err(EvalError::TextLimit));
     }
 }

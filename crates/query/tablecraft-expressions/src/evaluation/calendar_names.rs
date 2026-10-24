@@ -2,7 +2,10 @@
 use super::{Evaluator, text_arguments};
 use crate::{
     EvalError,
-    functions::text::{TextContext, TextFunction, TextResult, calendar_names},
+    functions::text::{
+        TextContext, TextFunction, TextResult,
+        calendar_names::{self, CalendarName},
+    },
 };
 use tablecraft_core::values::{ExpressionValue, Value};
 
@@ -24,17 +27,40 @@ impl Evaluator<'_> {
         self.check(0)?;
 
         let empty_number = Value::Int32(0);
-        let recipe = calendar_names::prepare_inputs(
-            function,
-            arguments.len(),
-            TextContext {
-                date_format: self.date_format,
-                first_day_of_week: self.first_day_of_week,
-                ..Default::default()
-            },
-            |index| text_arguments::scalar(&arguments[index], &empty_number),
-        )?;
+        let recipe = self.calendar_name_inputs(function, arguments.len(), |index| {
+            text_arguments::scalar(&arguments[index], &empty_number)
+        })?;
         self.materialize_text_result(TextResult::CalendarName(recipe))
+    }
+
+    pub(super) fn contextual_calendar_name<'a>(
+        &mut self,
+        function: TextFunction,
+        arguments: &'a [Value],
+    ) -> Result<TextResult<'a>, EvalError> {
+        self.check(0)?;
+        self.calendar_name_inputs(function, arguments.len(), |index| Ok(&arguments[index]))
+            .map(TextResult::CalendarName)
+    }
+
+    fn calendar_name_inputs<'a>(
+        &mut self,
+        function: TextFunction,
+        count: usize,
+        argument: impl FnMut(usize) -> Result<&'a Value, EvalError>,
+    ) -> Result<CalendarName, EvalError> {
+        let context = TextContext {
+            date_format: self.date_format,
+            first_day_of_week: self.first_day_of_week,
+            ..Default::default()
+        };
+        calendar_names::prepare_with_inputs(function, count, context, argument, |target, value| {
+            if matches!(value, Value::Text(_)) {
+                self.apply_conversion(target, value)
+            } else {
+                target.apply(value)
+            }
+        })
     }
 }
 
