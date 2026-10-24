@@ -26,11 +26,16 @@ pub fn standard_code(code: i32) -> Result<u16, EvalError> {
     u16::try_from(code).map_err(|_| EvalError::Domain)
 }
 
-/// Explicit numeric conversion of a standard error code. Unknown host HRESULT
-/// mappings are rejected instead of interpreting them as signed or unsigned codes.
+/// Explicit numeric conversion of Empty or a standard error code. CDec retains
+/// ordinary Error Let-coercion refusal; other reviewed numeric calls have an
+/// explicit code-conversion exception. Unknown host HRESULT mappings are refused.
 pub fn convert(conversion: Conversion, value: &ExpressionValue) -> Result<Value, EvalError> {
     match value {
         ExpressionValue::Value(value) => conversion.apply(value),
+        ExpressionValue::Empty => conversion.apply(&Value::Int16(0)),
+        ExpressionValue::Error(_) if conversion == Conversion::Decimal => {
+            Err(EvalError::TypeMismatch)
+        }
         ExpressionValue::Error(code) if *code <= MAX_STANDARD_CODE => {
             conversion.apply(&Value::Int64(i64::from(*code)))
         }
@@ -58,7 +63,59 @@ pub fn into_scalar(value: ExpressionValue) -> Result<Value, EvalError> {
 mod tests {
     use super::*;
     use proptest::prelude::*;
-    use tablecraft_core::values::{Double, ExpressionState, ValueError};
+    use tablecraft_core::values::{Currency, Decimal, Double, ExpressionState, Single, ValueError};
+
+    #[test]
+    fn empty_converts_to_each_destination_zero_without_becoming_storable() {
+        for (conversion, expected) in [
+            (Conversion::Boolean, Value::Boolean(false)),
+            (Conversion::Byte, Value::Byte(0)),
+            (Conversion::Integer, Value::Int16(0)),
+            (Conversion::Long, Value::Int32(0)),
+            (Conversion::LongLong, Value::Int64(0)),
+            (Conversion::Single, Value::Single(Single::from_bits(0))),
+            (Conversion::Double, Value::Double(Double::from_bits(0))),
+            (
+                Conversion::Currency,
+                Value::Currency(Currency::from_scaled(0)),
+            ),
+            (
+                Conversion::Decimal,
+                Value::Decimal(Decimal::new(0, 0).unwrap()),
+            ),
+        ] {
+            assert_eq!(convert(conversion, &ExpressionValue::Empty), Ok(expected));
+            assert_eq!(
+                convert(conversion, &ExpressionValue::Missing),
+                Err(EvalError::TypeMismatch)
+            );
+            assert_eq!(
+                convert(conversion, &ExpressionValue::Value(Value::Null)),
+                Err(EvalError::InvalidNullConversion)
+            );
+        }
+
+        assert_eq!(
+            Value::try_from(ExpressionValue::Empty),
+            Err(ValueError::ExpressionNotStorable(ExpressionState::Empty))
+        );
+    }
+
+    #[test]
+    fn decimal_requires_explicit_numeric_error_code_extraction() {
+        for code in [0, 1, 2001, 65535, 65536, u32::MAX] {
+            assert_eq!(
+                convert(Conversion::Decimal, &ExpressionValue::Error(code)),
+                Err(EvalError::TypeMismatch)
+            );
+        }
+
+        let code = convert(Conversion::Long, &ExpressionValue::Error(2001)).unwrap();
+        assert_eq!(
+            convert(Conversion::Decimal, &ExpressionValue::Value(code)),
+            Ok(Value::Decimal(Decimal::new(2001, 0).unwrap()))
+        );
+    }
 
     #[test]
     fn construction_rounds_as_long_then_checks_the_standard_code_range() {

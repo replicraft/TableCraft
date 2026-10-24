@@ -56,6 +56,12 @@ def main():
               f"(SELECT {expression} AS Problem FROM {source}) AS R",
               [[error_cell(low), error_cell(high)]])
     for mode in ["eval", "run"]:
+        for code in [0, 1, 255, 32767, 32768, 65535]:
+            check(f"SELECT 1,CDec(CVErr({code}))", diagnostic="expression type mismatch", mode=mode)
+            check(f"SELECT CDec(CLng(CVErr({code})))", [[str(code)]], mode=mode)
+        check("SELECT CDec(IIf(True,CVErr(1),1/0))", diagnostic="division by zero", mode=mode)
+        check("SELECT CDec(Nz(Null))", diagnostic="expression type mismatch",
+              options=["--number-format", "invariant"], mode=mode)
         for expression in ["CVErr(0)&''", "''&CVErr(65535)", "CVErr(0)&Null",
                            "Null&CVErr(0)", "CVErr(0)&CVErr(1)"]:
             check("SELECT 1," + expression, diagnostic="expression type mismatch", mode=mode)

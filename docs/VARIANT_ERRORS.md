@@ -32,10 +32,34 @@ unwrap Error codes. SQL array/binary admission is not widened by these changes.
 
 TypeName returns `Error`, VarType returns 10, IsError returns True and IsArray/
 IsEmpty return False. IsNull and IS NULL distinguish Error from SQL NULL, including
-code zero. Explicit numeric conversions consume a standard code through the
-existing destination constructor: CInt(CVErr(65535)) overflows, for example.
+code zero. Reviewed numeric conversions other than CDec consume a standard code
+through the existing destination constructor: CInt(CVErr(65535)) overflows, for example.
 Opaque implementation-defined codes above 65535 require a supplied mapping and
 are rejected by numeric conversion. They are never reinterpreted as signed values.
+
+### Explicit numeric Empty and CDec Error rules
+
+The existing expression API now converts host-supplied Empty to the destination's
+numeric zero or Boolean false, preserving the requested result carrier. NULL still
+fails InvalidNullConversion; Missing stays refused. Empty remains non-storable,
+and query `Nz(NULL)` still returns empty Text rather than constructing Empty.
+This extends explicit conversion, not implicit arithmetic or a VBA runtime.
+
+CDec directly rejects Error with TypeMismatch, including code zero and opaque
+host codes. Its specification uses ordinary Decimal Let-coercion, without the
+explicit Error-code exception defined for the other numeric calls. Request
+`CDec(CLng(CVErr(2001)))` to extract and then convert a standard numeric code.
+Eager operand failures still precede conversion: an unselected division by zero
+is not swallowed by CDec or Error inspection. Operational work/cancellation
+checks apply before every explicit conversion path.
+
+These rules follow [MS-VBAL revision 3.0](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/d5418146-0bd2-45eb-9c7a-fd9502722c74),
+sections 5.5.1.2.9/11 and 6.1.2.3.1.1–12. The reviewed 18 August 2026 DOCX is
+363,552 bytes with SHA-256
+`5a844dc540fd44903019c0e2c5dc90d1b402eef642ae41386478add3b591c262`;
+the original published document remains an ignored local reference, not a tracked
+fixture or implementation source. These are specification-based expression rules;
+native Access admission, exact carriers and error precedence remain unqualified.
 
 ```sh
 tablecraft query eval "SELECT IsError(CVErr(2001)),TypeName(CVErr(2001)),CLng(CVErr(65535))"

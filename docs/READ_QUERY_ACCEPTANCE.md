@@ -98,6 +98,13 @@ Ordinary scalar Len/LenB string-expression sources now use explicit CStr
 policies; raw byte lengths and strict Unicode publication retain their boundaries.
 This does not complete variable/UDT size overloads or native query coercion.
 
+Explicit numeric expression conversion now admits host Empty as destination zero
+or Boolean false. CDec rejects direct Error data according to its distinct
+Let-coercion contract; explicit Long code extraction remains available before
+Decimal conversion. NULL, Missing, storage admission and query Nz empty-Text rules
+remain separate. [Expression-state rules](VARIANT_ERRORS.md#explicit-numeric-empty-and-cdec-error-rules)
+record the reviewed specification and remaining native qualification.
+
 Scalar crosstab heading carriers now include Boolean, floating, fixed-point and
 both date families under explicit policies. Their native spelling/order is still
 unqualified. A built-in marked Partial is not completed by having a callable
