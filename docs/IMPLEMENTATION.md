@@ -1,5 +1,25 @@
 # Implementation status
 
+## Unknown unary negation with agreeing outcomes
+
+Explicit declared-arithmetic execution now permits an unknown Integer, Long or
+legacy Date category when materialized unary minus retains the operand carrier.
+The existing Scalar and Variant branches agree in that case; the result's category
+stays unknown. Widening still requires a declaration, known Scalar overflow still
+fails and known Variant widening remains supported. The operand and operation run
+once, without a second source scan or new allowance. See
+[negation agreement](DECLARED_ARITHMETIC.md#unary-negation-with-unknown-provenance).
+
+Four new query tests cover range boundaries, all four encounter/extrema aggregates,
+derived/UNION/correlated sources, retained unknown provenance, prepared parameter
+rebinding after failure and every observed cancellation checkpoint. CLI controls
+cover both flag spellings, visible Integer/Long/Date results, later unknown-category
+consumers and buffered failures after an earlier successful row. All 26 focused
+query tests and 16 CLI tests pass. Focused query/CLI Clippy, minimal query check,
+formatting and diff checks pass. No dependency, default arithmetic, native format
+or write scope changed. Windows Access, full engine/workspace suites and benchmarks
+were not run. Native declaration inference and full P0 semantics remain unfinished.
+
 ## NULL-only unary math result metadata
 
 All twelve existing NULL-propagating unary math functions now retain NULL-only

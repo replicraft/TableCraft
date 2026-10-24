@@ -32,9 +32,9 @@ narrow operation or declaration-sensitive comparison can still refuse it.
 For example, `Count(*)+CInt(1)` and `First(CInt(-32768)) Mod CInt(-1)` now run under
 `--declared-arithmetic`, while `First(CInt(32767))+CInt(1)` still needs an explicit
 cast/CVar category. The ordinary Count declaration remains unqualified. This
-uses equality of the implemented Scalar/Variant outcomes, not inference from a
-selected value or a native Access type claim. The arithmetic and quotient/Mod
-references below remain the implementation sources; complete native typing and
+uses equality of the implemented Scalar/Variant outcomes, not inference of a
+declaration from a selected value or a native Access type claim. The arithmetic
+and quotient/Mod references below remain the implementation sources; complete native typing and
 promotion remain acceptance work.
 
 ## Integral kernel input and result profile
@@ -940,3 +940,28 @@ overflow. Empty subquery metadata preserves the difference without calling the
 catalog. Default message values are unchanged; signed input support and checked
 provider migration are documented in [Error messages](ERROR_MESSAGES.md#signed-numbers-and-typed-error-identity-23-october-2026).
 This supplies no latest-runtime-error state or native Access qualification.
+
+## Unary negation with unknown provenance
+
+Under the explicit declared-arithmetic policy, Integer, Long and legacy Date
+negation now allows an unknown input declaration when the existing materialized
+result retains the input carrier. For these three admitted families, Scalar and
+Variant rules give the same successful result within that carrier. Negation runs
+once, after ordinary eager operand evaluation. This does not infer a declaration:
+the output retains unknown provenance for every later consumer.
+
+For example, `-First(CInt(2))` now returns Integer -2. Adding a narrow Integer to
+that result still requires declaration provenance under the existing binary
+profile; wrapping the result in CVar explicitly supplies Variant provenance.
+`-First(CInt(-32768))`, `-First(CLng(-2147483648))` and an out-of-envelope Date
+negation still report ArithmeticDeclaration: Scalar would overflow, while Variant
+would widen. Known Scalar inputs retain Overflow and known Variant inputs retain
+widening. Default execution is unchanged.
+
+This is an agreement check within the existing reviewed
+[unary arithmetic and overflow profile](ARITHMETIC_PROMOTION.md#unary-minus-and-division-family-selection),
+not native Access aggregate/UNION declaration inference. Unary minus and its Date
+coercion/Variant exception are specified in MS-VBAL section 5.6.9.3.1, using the
+dated reference recorded above. Prepared executions recheck each input; a prior
+successful value, failure or cancellation never changes the plan's category.
+No extra source scan, operand evaluation, conversion provider or allowance is used.

@@ -394,3 +394,37 @@ fn context_return_categories_reach_empty_subqueries_without_activating_them() {
         assert!(String::from_utf8_lossy(&scalar.stderr).contains("overflow"));
     }
 }
+
+#[test]
+fn unknown_negation_uses_agreement_without_assigning_a_category() {
+    for flag in ["--declared-arithmetic", "--declared-integral"] {
+        let result = run(&[
+            "query",
+            "run",
+            "SELECT -First(CInt(2)) AS I,-First(CLng(-2147483647)) AS L,CDbl(-First(CDate(-0.25))) AS D",
+            flag,
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(result.stdout, b"I\tL\tD\n-2\t2147483647\t0.25\n");
+
+        for sql in [
+            "SELECT 1,-First(CInt(-32768))",
+            "SELECT 1,-First(CLng(-2147483648))",
+            "SELECT 1,-First(CDate(2958465))",
+            "SELECT 1,(-First(CInt(2)))+CInt(1)",
+            "SELECT -Q.N FROM (SELECT CInt(2) AS N UNION ALL SELECT CInt(-32768)) AS Q",
+        ] {
+            let failure = run(&["query", "run", sql, flag]);
+            assert_eq!(failure.status.code(), Some(2), "{sql}");
+            assert!(failure.stdout.is_empty(), "{sql}");
+            assert!(
+                String::from_utf8_lossy(&failure.stderr).contains("declaration is unknown"),
+                "{sql}"
+            );
+        }
+    }
+}

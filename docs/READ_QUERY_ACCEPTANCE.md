@@ -379,3 +379,9 @@ composition and UNION without imposing a numeric conversion on other arms.
 Round control validation and eager failures remain active. This closes another
 [result metadata gap](QUERY_RESULT_TYPES.md#null-only-math-inputs); native declared
 UNION types and full P0 value/text semantics remain unfinished.
+
+Declared unary negation now permits unknown Integer/Long/legacy Date provenance
+when the materialized result retains its carrier and both category rules agree.
+Unknown widening cases remain refused, and successful results retain unknown
+provenance. This removes a false refusal without qualifying native aggregate or
+UNION declarations; see [negation agreement](DECLARED_ARITHMETIC.md#unary-negation-with-unknown-provenance).
