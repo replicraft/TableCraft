@@ -317,8 +317,10 @@ consumers, broader Variant/coercion and native qualification are still open.
 retains selected complete UTF-16 units through output, with the existing NULL,
 count, character/code-page and fresh result-policy rules. Zero results and later
 pair repair can publish; nonempty unpaired final output remains refused. This
-closes a construction-consumer gap, not broader coercion, reversal, native text
-providers or P0 qualification.
+closes a construction-consumer gap, not broader coercion, native text providers
+or P0 qualification. [Retained reversal](TEXT_CONSTRUCTION.md#retained-string-reversal)
+now preserves complete String units through observation and repaired publication;
+native supplementary behavior remains unqualified.
 
 [Full-width Decimal boundary controls](testing/DECIMAL_ARITHMETIC.md#full-width-rational-boundary-checks)
 now independently check 11,560 binary operations over 2,890 operand pairs through

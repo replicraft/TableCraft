@@ -2,6 +2,7 @@
 mod comparison;
 mod input;
 mod observations;
+mod reversal;
 mod search;
 mod trimming;
 mod value;
@@ -9,6 +10,7 @@ mod value;
 pub use comparison::compare_binary_utf16;
 pub use input::ExpressionByteOperand;
 pub(super) use observations::{first_byte, length};
+pub use reversal::write_reversed_units;
 pub use search::find_binary;
 #[cfg(feature = "sql")]
 pub(crate) use search::mode as search_mode;

@@ -1,4 +1,5 @@
 //! Owning byte-string evaluation and strict scalar publication.
+mod reversal;
 mod trimming;
 mod unicode;
 
@@ -236,6 +237,9 @@ impl Evaluator<'_> {
         if function.trims_spaces() {
             return self.apply_trim_source(function, first.into_string()?);
         }
+        if function == TextFunction::StrReverse {
+            return self.apply_reverse_source(first.into_string()?);
+        }
         if function.slices_units() {
             return self.apply_unicode_slice(function, first, rest);
         }
@@ -276,6 +280,9 @@ impl Evaluator<'_> {
         }
         if function.trims_spaces() {
             return self.apply_trim_source(function, first);
+        }
+        if function == TextFunction::StrReverse {
+            return self.apply_reverse_source(first);
         }
         if function.slices_units() {
             return self.unicode_slice(function, first, rest);
