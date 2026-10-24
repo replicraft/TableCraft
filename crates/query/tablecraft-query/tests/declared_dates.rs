@@ -72,6 +72,11 @@ fn contextual_numeric_text_keeps_date_overflow_categories_and_explicit_policies(
         ("CDate(2958465)+CVar(CStr(LeftB('1,0',6)))", Ok(2958466.0)),
         ("CDate(-657434)-'1,0'", Err(EvalError::Overflow.into())),
         ("CDate(-657434)-CVar('1,0')", Ok(-657435.0)),
+        (
+            "CDate(-657434)-CStr(LeftB('1,0',6))",
+            Err(EvalError::Overflow.into()),
+        ),
+        ("CDate(-657434)-LeftB('1,0',6)", Ok(-657435.0)),
         ("'0,0'-CVDate(2958465)", Ok(-2958465.0)),
     ] {
         let parsed = parse_query(&format!("SELECT {expression}"), Default::default()).unwrap();

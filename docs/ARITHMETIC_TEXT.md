@@ -65,6 +65,31 @@ dependency. Metadata-only preparation refuses it without scans; explicit staged
 execution can resolve it. The result must still be an admitted Text/integral
 heading, such as `IN (CLng('1'+1))`.
 
+## Lossless String operands in numeric arithmetic
+
+Subtraction, multiplication, division, integer division, Mod and power now admit
+raw String intermediates before Unicode publication. Both expressions still
+evaluate eagerly in written order. After operand-family/state admission, NULL
+determines the result without decoding the other String or requiring NumberFormat.
+For example, `ChrW(55296)-NULL` returns NULL even though that isolated surrogate
+cannot be published as ordinary Text. An invalid constructor or a later operand's
+division error still fails; unsupported GUID/Binary and Error/Missing states do
+not become NULL.
+
+Non-NULL raw Strings must publish valid Text before the existing checked numeric
+conversion. NumberFormat, integral rounding, Decimal conversion and original-type
+Empty-divisor rules remain authoritative. The bound query path retains each
+operand's declaration category and text policy before existing declaration-aware
+dispatch; decoding does not infer a new category. Parameter rebinding and grouped,
+correlated expressions use the same service. NULL propagation allocates no decoded
+payload; actual publication retains byte quotas and cancellation checks.
+
+This closes an arithmetic admission gap, not general raw relational storage,
+comparison, Variant promotion or native Access qualification. The independent
+runner passes 1,350 source-free Decimal/arithmetic/Text controls, including raw
+regional numeric spellings, all six NULL operators, unsupported families and eager
+failures. Optional native getter inputs were not supplied for this run.
+
 ## References and evidence
 
 Microsoft's [Access operator reference](https://support.microsoft.com/en-us/access/table-of-operators)

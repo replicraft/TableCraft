@@ -74,6 +74,13 @@ source families and native result-type qualification remain separate. See
 
 ## Remaining acceptance work
 
+The six non-addition numeric operators now admit lossless String intermediates
+before NULL propagation. Non-NULL conversion retains strict Unicode publication,
+numeric policies and original declaration categories. Independent arithmetic
+controls and focused expression/query/CLI checks cover the shared path; broader
+Variant, raw relational and native qualification work remains P0. See
+[numeric String admission](ARITHMETIC_TEXT.md#lossless-string-operands-in-numeric-arithmetic).
+
 Len/AscW now inspect [complete raw UTF-16 units](BYTE_STRING_FUNCTIONS.md#complete-utf-16-unit-observations),
 including nested ChrW surrogates, without forcing early Unicode publication.
 Byte lengths, signed unit codes and String inspection remain distinct from

@@ -25,7 +25,7 @@ impl Runtime<'_, '_> {
         self.publish_string_cell(cell)
     }
 
-    pub(super) fn add_cells(
+    pub(in crate::execution) fn add_cells(
         &mut self,
         left: &Expr,
         right: &Expr,

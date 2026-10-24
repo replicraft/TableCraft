@@ -61,6 +61,29 @@ def main():
         assert "division by zero" in result.stderr
         count += 1
 
+        for operator in ["-", "*", "/", "\\", "Mod", "^"]:
+            for raw in ["ChrW(55296)", "ChrB(65)", "LeftB('😀',2)"]:
+                for expression in [f"{raw} {operator} Null", f"Null {operator} {raw}"]:
+                    assert execute(args.cli, mode, "SELECT " + expression, controls=controls) == [["NULL"]]
+                    count += 1
+            guid = "{guid {00112233-4455-6677-8899-aabbccddeeff}}"
+            for expression in [f"ChrW(55296) {operator} {guid}", f"{guid} {operator} ChrW(55296)"]:
+                result = subprocess.run(
+                    [str(args.cli), "query", mode, "SELECT 1," + expression, *controls],
+                    capture_output=True, text=True, check=False,
+                )
+                assert result.returncode == 2 and not result.stdout, (expression, result)
+                assert "expression type mismatch" in result.stderr, (expression, result)
+                count += 1
+            expression = f"(ChrW(55296) {operator} Null)*(1/0)"
+            result = subprocess.run(
+                [str(args.cli), "query", mode, "SELECT 1," + expression, *controls],
+                capture_output=True, text=True, check=False,
+            )
+            assert result.returncode == 2 and not result.stdout, (expression, result)
+            assert "division by zero" in result.stderr, (expression, result)
+            count += 1
+
     values = [Decimal(value) for value in ["-10.5", "-3.5", "-2.5", "-1.25", "-0.5", "0", "0.25", "1.25", "2.5", "3.5", "10.5"]]
     for profile in ["en-us", "de-de"]:
         regional = lambda value: str(value).replace(".", ",") if profile == "de-de" else str(value)
@@ -69,18 +92,21 @@ def main():
             divisor = regional(Decimal("2.5"))
             rounded = int(value.to_integral_value(rounding=ROUND_HALF_EVEN))
             quotient = (abs(rounded) // 2) * (-1 if rounded < 0 else 1)
-            sql = "SELECT " + ",".join([
-                f"'{text}'+3", f"'{text}'-3", f"'{text}'*'2'", f"'{text}'/'2'",
-                f"'{text}'\\'{divisor}'", f"'{text}' Mod '{divisor}'",
-                f"-'{text}'", f"+'{text}'", f"CDec(1)+'{text}'", f"CCur(1)+'{text}'",
-                f"CCur(2)*'{text}'", f"'{text}'^2",
-            ])
             expected = [[value + 3, value - 3, value * 2, value / 2,
                          Decimal(quotient), Decimal(rounded - quotient * 2),
                          -value, value, value + 1, value + 1, value * 2, value * value]]
-            for mode in ["eval", "run"]:
-                numeric(execute(args.cli, mode, sql, controls=("--number-format", profile)), expected)
-                count += len(expected[0])
+            for raw in [False, True]:
+                operand = f"LeftB('{text}',2147483647)" if raw else f"'{text}'"
+                denominator = f"LeftB('{divisor}',2147483647)" if raw else f"'{divisor}'"
+                sql = "SELECT " + ",".join([
+                    f"{operand}+3", f"{operand}-3", f"{operand}*'2'", f"{operand}/'2'",
+                    f"{operand}\\{denominator}", f"{operand} Mod {denominator}",
+                    f"-{operand}", f"+{operand}", f"CDec(1)+{operand}", f"CCur(1)+{operand}",
+                    f"CCur(2)*{operand}", f"{operand}^2",
+                ])
+                for mode in ["eval", "run"]:
+                    numeric(execute(args.cli, mode, sql, controls=("--number-format", profile)), expected)
+                    count += len(expected[0])
         for mode in ["eval", "run"]:
             near = regional(Decimal("2.5000000000000000000000000000000000001"))
             numeric(execute(args.cli, mode, f"SELECT '{near}'\\1,'-{near}' Mod 2",

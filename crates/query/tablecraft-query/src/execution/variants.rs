@@ -154,7 +154,14 @@ impl Runtime<'_, '_> {
                         | BinaryOperator::IntegerDivide
                         | BinaryOperator::Modulo
                         | BinaryOperator::Power
-                        | BinaryOperator::And
+                ) =>
+            {
+                self.numeric_arithmetic_cell(*operator, left, right, env)
+            }
+            Expr::Binary(operator, left, right)
+                if matches!(
+                    operator,
+                    BinaryOperator::And
                         | BinaryOperator::Or
                         | BinaryOperator::Xor
                         | BinaryOperator::Equivalence
