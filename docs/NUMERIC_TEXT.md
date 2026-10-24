@@ -168,3 +168,37 @@ requires TypeMismatch for Error Let-coercion outside Variant; this remains disti
 from explicit numeric conversion functions. No new `$` spelling, stored state,
 error-code mapping or VBA execution is introduced. Native width/error/locale
 qualification and full Variant semantics remain open.
+
+## Retained String numeric rendering
+
+The public evaluator's retained-value `apply_expression_str` and
+`apply_expression_radix` entry points now accept valid retained String ranges
+through the same checked Text conversion as materialized Text. Previously these
+entry points returned NonScalarExpression for every retained String, including
+UTF-16 numeric data that the ordinary bound query path already handled correctly.
+This fixes an API representation inconsistency; it is not a newly discovered
+wrong answer in normal query execution.
+
+The existing strict publication service validates only the active byte range,
+charges decoded Text allocation and work, and checks cancellation. Invalid UTF-16
+or odd-byte ranges remain UnrepresentableText; invalid numeric spellings remain
+TypeMismatch. No lossy decoder, implicit Error-code conversion or ambient number
+format is introduced. Hex/Oct still require checked Long conversion for numeric
+Text, including half-even rounding and overflow; actual Int64 inputs keep their
+separate path. Str still uses the existing numeric Text-to-Double conversion and
+invariant numeric output. Empty, Missing, Error and legacy Date rules are unchanged.
+
+Microsoft's [Hex](https://support.microsoft.com/en-us/access/functions/hex-function)
+and [Oct](https://support.microsoft.com/en-us/access/functions/oct-function)
+references explicitly admit string expressions and include query examples. The
+[Str reference](https://support.microsoft.com/en-us/access/functions/str-function)
+also supplies a query example and numeric output rules. These support the existing
+query functions; retained byte ranges are TableCraft's internal representation,
+not a newly qualified native carrier or an additional query function.
+
+Three focused retained-value tests cover expected decimal/radix output under two
+explicit number formats, active ranges, malformed units, conversion refusals,
+every observed cancellation checkpoint, allocation limits and per-Text limits.
+Two query controls compare the public retained-value kernel with ordinary bound
+Mid/IIf/CVar compositions and retain the normal malformed-range, policy and eager
+error behavior. No native Access comparison is claimed.
