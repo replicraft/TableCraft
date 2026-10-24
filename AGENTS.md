@@ -155,6 +155,10 @@ functionality and keep compatibility claims tied to observed evidence.
 Follow [NATIVE_INDEXES.md](docs/NATIVE_INDEXES.md) for qualified native index
 inspection/reads. Keep physical key interpretation in ACE and reject unsupported
 or corrupt selected indexes without silent sequential fallback.
+Opt-in automatic index selection belongs in the Access adapter, using engine
+metadata and existing safe constraints; retain the original filter and selected-read failures.
+Automatic constrained scans must preserve the source's sequential row order;
+explicit required indexes keep their configured key order.
 Use [native check coverage](docs/NATIVE_CHECKS.md) when adding consistency checks;
 unchecked profiles and native constraint limitations must remain explicit.
 Query constraints must use backend-neutral contracts and retain the original

@@ -170,6 +170,7 @@ pub fn read_table_index_with_request<R: crate::NativeReadSource>(
     if request.maximum_rows == 0 || request.maximum_rows > crate::TableSnapshotLimits::MAX_ROWS {
         return Err(InspectError::InvalidSnapshotLimits);
     }
+
     read_selected(
         source,
         scope,
@@ -180,6 +181,41 @@ pub fn read_table_index_with_request<R: crate::NativeReadSource>(
             columns: request.columns,
             maximum_rows: request.maximum_rows,
             legacy_table_limit: false,
+            table_order: false,
+        },
+        budget,
+        cancelled,
+    )
+}
+
+/// Read a qualified index selection in sequential table root order rather than
+/// key order. Selected references sort by original page/slot before row fetch
+/// and key agreement checks, including roots using overflow payload records.
+/// Sorting uses no scratch allocation and shares work/cancellation limits.
+pub fn read_table_index_in_table_order<R: crate::NativeReadSource>(
+    source: &mut R,
+    scope: CatalogScope,
+    table: &str,
+    index: &str,
+    request: IndexReadRequest<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<TableSnapshot, InspectError> {
+    if request.maximum_rows == 0 || request.maximum_rows > crate::TableSnapshotLimits::MAX_ROWS {
+        return Err(InspectError::InvalidSnapshotLimits);
+    }
+
+    read_selected(
+        source,
+        scope,
+        table,
+        index,
+        ReadOptions {
+            selection: projected_selection(request.selection),
+            columns: request.columns,
+            maximum_rows: request.maximum_rows,
+            legacy_table_limit: false,
+            table_order: true,
         },
         budget,
         cancelled,
@@ -260,6 +296,7 @@ struct ReadOptions<'a> {
     columns: Option<&'a [&'a str]>,
     maximum_rows: u32,
     legacy_table_limit: bool,
+    table_order: bool,
 }
 impl Default for ReadOptions<'_> {
     fn default() -> Self {
@@ -268,6 +305,7 @@ impl Default for ReadOptions<'_> {
             columns: None,
             maximum_rows: MAX_LIVE_ROWS as u32,
             legacy_table_limit: true,
+            table_order: false,
         }
     }
 }
@@ -275,6 +313,7 @@ struct ReadView<'a> {
     projection: &'a RowProjection,
     maximum_rows: usize,
     row_batch_size: Option<usize>,
+    table_order: bool,
 }
 
 fn read_selected<R: crate::NativeReadSource>(
@@ -349,6 +388,7 @@ fn read_selected<R: crate::NativeReadSource>(
         maximum_rows: options.maximum_rows as usize,
         row_batch_size: (!options.legacy_table_limit)
             .then(|| TableSnapshotLimits::default().batch_rows() as usize),
+        table_order: options.table_order,
     };
     let rows = match profile {
         IndexProfile::EncodedTuple(profile) => {
@@ -450,7 +490,16 @@ fn read_rows<R: crate::NativeReadSource, P: KeyProfile, const N: usize>(
     {
         return Err(InspectError::Malformed);
     }
-    let entries = walker.entries;
+    let mut entries = walker.entries;
+    if view.table_order {
+        reader.tick()?;
+        let levels = u64::from(entries.len().checked_ilog2().unwrap_or(0)) + 1;
+        reader
+            .budget
+            .charge(Resource::Steps, entries.len() as u64 * levels)?;
+        entries.sort_unstable_by_key(|entry| entry.row);
+        reader.tick()?;
+    }
     let data_pages = allocation::pages(&mut reader, schema.layout.usage)?;
     let mut rows = Vec::new();
     let mut current_page = None;

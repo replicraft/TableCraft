@@ -455,9 +455,11 @@ scans. Joins/derived relations receive no pushed outer constraint. In particular
 extracting only part of `X > 0 AND 1 / 0 = 0` would hide eager errors and is forbidden.
 TOP, grouping and ORDER BY remain executor operations.
 
-The Access adapter uses a constraint only with the explicitly selected matching
-index. Other predicates retain its complete access path; an unsupported/corrupt
-required index never causes a sequential fallback. Selected snapshots are not
+The Access adapter uses a constraint with an explicitly selected matching index,
+or a compatible definition chosen under opt-in [automatic mode](AUTOMATIC_INDEXES.md).
+Automatic selections retain sequential table root order; explicit required indexes
+retain their configured key order. Other predicates retain the source's complete
+access path; an unsupported/corrupt chosen index never causes a sequential fallback. Selected snapshots are not
 cached as whole tables. Seeks validate visited pages/rows, not skipped integrity;
 see [native index limits](NATIVE_INDEXES.md#native-int32-range-selections) and
 [Int64 selections](NATIVE_INDEXES.md#native-int64-range-selections). Constraint

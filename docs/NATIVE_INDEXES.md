@@ -275,9 +275,21 @@ snapshot access selection without silent fallback. Binding discovers scalar sche
 without user data reads. [Safe Int32 filters](QUERY_EXECUTION.md#safe-source-constraints)
 can select ranges through the required index; other predicates load it completely.
 WHERE, ORDER BY, grouping and TOP still run in the reusable query engine. TOP
-pushdown, index nested-loop joins and automatic index selection remain absent.
+pushdown and index nested-loop joins remain absent. Opt-in
+[automatic selection](AUTOMATIC_INDEXES.md) chooses a matching qualified single-key
+index for existing safe constraints; it does not implement a cost-based optimizer.
 The native API supports the bounded selections below. Trace diagnostics expose the selected
 operation/counts without recording table/index names or keys.
+
+`read_table_index_in_table_order` accepts the same IndexReadRequest but returns
+selected rows in sequential table root order. After normal tree/key-order
+validation, selected references sort by packed original page/slot before record
+fetch and key agreement checks. This keeps relocated payloads at their original
+root position. Sorting uses no scratch allocation, precharges bounded work and
+checks cancellation before and after. The Access adapter uses this entry point
+for automatic selections to preserve the Source order contract; explicit index
+requests retain existing key order. Bounded traversal still leaves skipped
+subtrees unchecked and does not qualify writes or live-file capture.
 
 ## Complete single-Decimal indexes
 

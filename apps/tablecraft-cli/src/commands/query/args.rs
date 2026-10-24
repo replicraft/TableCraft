@@ -160,6 +160,9 @@ pub(crate) enum Command {
         /// Require a supported native index for this table's snapshot.
         #[arg(long, value_names = ["TABLE", "INDEX"], num_args = 2, requires = "database", action = clap::ArgAction::Set)]
         index: Vec<String>,
+        /// Choose a qualified native index for safe scalar filters; unfiltered reads stay sequential.
+        #[arg(long, requires = "database", conflicts_with_all = ["index", "sqlite"])]
+        auto_index: bool,
     },
     /// Apply a bounded single-table UPDATE to a fresh offline Jet 4 copy.
     #[command(

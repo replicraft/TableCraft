@@ -48,6 +48,7 @@ pub struct NativeSource<'a, R> {
     multivalues: bool,
     collections: bool,
     decoded_attachments: bool,
+    auto_indexes: bool,
     text_policy_scope: collation::TextPolicyScope,
 }
 impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
@@ -128,6 +129,7 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
             multivalues: false,
             collections: false,
             decoded_attachments: false,
+            auto_indexes: false,
             text_policy_scope: collation::TextPolicyScope::Unselected,
         })
     }
@@ -156,6 +158,16 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
         self.decoded_attachments = true;
         self
     }
+    /// Opt into metadata-based index selection for safe scalar query constraints.
+    /// Unconstrained reads remain sequential. Explicit table indexes take priority.
+    /// The first matching qualified single-key definition is selected; a selected
+    /// read failure is returned without trying another index or sequential scan.
+    /// Complete cached snapshots remain reusable; partial selections are not cached.
+    pub fn with_auto_indexes(mut self) -> Self {
+        self.auto_indexes = true;
+        self
+    }
+
     /// Require a named native index when the selected table is loaded. Other
     /// tables retain sequential reads. Index choice is explicit; safe matching
     /// query constraints may bound its reads. No sequential fallback occurs;

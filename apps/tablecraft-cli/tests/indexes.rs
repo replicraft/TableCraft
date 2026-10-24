@@ -1,5 +1,45 @@
 mod support;
 use support::run;
+
+#[test]
+fn automatic_index_queries_match_explicit_ordered_results_and_validate_arguments() {
+    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../docs/examples/Access_Example_VBA.accdb");
+    let path = path.to_str().unwrap();
+    let sql = "SELECT TOP 3 ORDR_NBR FROM ROULETTE_TB WHERE ORDR_NBR>4 ORDER BY ORDR_NBR DESC";
+    let normal = run(&["query", "run", "--database", path, sql]);
+    let automatic = run(&[
+        "-v",
+        "query",
+        "run",
+        "--database",
+        path,
+        "--auto-index",
+        sql,
+    ]);
+    assert!(automatic.status.success(), "{:?}", automatic.stderr);
+    assert!(normal.status.success(), "{:?}", normal.stderr);
+    assert_eq!(automatic.stdout, normal.stdout);
+    assert!(String::from_utf8_lossy(&automatic.stderr).contains("native selected scan completed"));
+
+    for args in [
+        vec!["query", "run", "--auto-index", "SELECT 1"],
+        vec![
+            "query",
+            "run",
+            "--database",
+            path,
+            "--auto-index",
+            "--index",
+            "ROULETTE_TB",
+            "ORDR_NBR",
+            sql,
+        ],
+        vec!["query", "run", "--sqlite", path, "--auto-index", "SELECT 1"],
+    ] {
+        assert_eq!(run(&args).status.code(), Some(2));
+    }
+}
 #[test]
 fn index_inspection_is_explicit_bounded_and_inert() {
     let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))

@@ -56,6 +56,7 @@ pub(super) struct NativeInput<'a> {
     pub rows: u64,
     pub steps: u64,
     pub index: &'a [String],
+    pub auto_index: bool,
     pub multivalues: bool,
     pub collections: bool,
     pub decoded_attachments: bool,
@@ -129,6 +130,7 @@ pub(super) fn run(
         {
             if database_policy
                 || !input_config.index.is_empty()
+                || input_config.auto_index
                 || input_config.multivalues
                 || input_config.collections
                 || input_config.decoded_attachments
@@ -150,6 +152,11 @@ pub(super) fn run(
                 snapshot_limits,
             )
             .map_err(Error::Native)?;
+            let source = if input_config.auto_index {
+                source.with_auto_indexes()
+            } else {
+                source
+            };
             let source = if input_config.decoded_attachments {
                 source.with_decoded_attachments()
             } else if input_config.collections {
