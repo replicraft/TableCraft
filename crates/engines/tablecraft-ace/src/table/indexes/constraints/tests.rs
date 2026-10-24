@@ -13,7 +13,7 @@ fn index(kind: u8, flags: u8, backing_primary: bool) -> NativeIndex {
         kind,
         flags,
         backing_primary,
-        columns: Vec::new(),
+        columns: Default::default(),
         reference: None,
         foreign_checked: false,
     }

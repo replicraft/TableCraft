@@ -10,6 +10,7 @@ use crate::{
         text,
     },
 };
+use arrayvec::ArrayVec;
 use tablecraft_schema::SchemaName;
 
 // Jet 4 / initial ACE definition facts: pinned references in NATIVE_INDEXES.md.
@@ -68,13 +69,9 @@ pub(super) fn read<R: crate::NativeReadSource>(
         }
         let start = layout.index_start + data_number as usize * PHYSICAL_BYTES;
         let physical = &page[start..start + PHYSICAL_BYTES];
-        reader
-            .budget
-            .charge_allocation(INDEX_KEY_COLUMNS as u64, size_of::<IndexColumn>() as u64)?;
-        let mut columns = Vec::new();
-        columns
-            .try_reserve_exact(INDEX_KEY_COLUMNS)
-            .map_err(|_| InspectError::Allocation)?;
+        // Inline key storage is already included in the NativeIndex vector's
+        // allocation charge above. Each physical definition has ten key slots.
+        let mut columns = ArrayVec::<IndexColumn, INDEX_KEY_COLUMNS>::new();
         let mut unused = false;
         for key in 0..INDEX_KEY_COLUMNS {
             let at = KEY_START + key * KEY_BYTES;
@@ -92,10 +89,12 @@ pub(super) fn read<R: crate::NativeReadSource>(
             {
                 return Err(InspectError::Malformed);
             }
-            columns.push(IndexColumn {
-                number,
-                descending: physical[at + size_of::<u16>()] & ASCENDING == 0,
-            });
+            columns
+                .try_push(IndexColumn {
+                    number,
+                    descending: physical[at + size_of::<u16>()] & ASCENDING == 0,
+                })
+                .map_err(|_| InspectError::Unsupported)?;
         }
         if columns.is_empty() {
             return Err(InspectError::Unsupported);

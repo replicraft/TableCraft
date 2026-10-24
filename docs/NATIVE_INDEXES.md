@@ -3,6 +3,14 @@
 [Table consistency checks](NATIVE_CHECKS.md) combine complete sequential reads
 with every qualified index and report unverified profiles explicitly.
 
+Each logical index's at-most-ten key columns now use private inline ArrayVec
+storage. The public column slice, native key order, raw flags and qualification
+rules are unchanged. The complete metadata allocation is budgeted before
+construction, including inline capacity; no separate column heap allocation is
+needed. See the [collection comparison and retained measurements](testing/INDEX_COLUMN_COLLECTIONS.md)
+for target-specific memory savings, timing ties and noisy samples. This change
+does not establish a general query speedup or additional format compatibility.
+
 Single-column native Short Binary indexes now support complete ascending/descending
 reads, scalar projections and read-only index checks. Empty Binary, NULL, padding,
 continuation tags and key/root agreement have explicit contracts. This does not

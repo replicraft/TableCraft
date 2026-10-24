@@ -296,7 +296,10 @@ stored Decimal carrier. Mixed-type and native rounding qualification remain open
 The [fourteen-library backend review](DEPENDENCY_REVIEW.md#targeted-backend-review-24-october-2026)
 records current direct/transitive status, concrete consumers and adoption gates
 for binrw, deku, smallvec, arrayvec, dashmap, indexmap, bitvec, winnow, bilge,
-bytes, bitflags, memchr, moka and parking_lot. Prioritize bounded memchr search
-and a measured fixed-capacity index-metadata experiment. Existing selected Moka
+bytes, bitflags, memchr, moka and parking_lot. Measured fixed-capacity index
+metadata now uses ArrayVec under the existing native ceiling; SmallVec remains
+a benchmark consumer. The bounded memchr experiment remains development-only
+because prepaid work changes early-match budget admission. Preserve the
+production search contract until that policy is resolved. Existing selected Moka
 and shared-buffer directions remain prospective until their real consumers exist;
 this review adds no unused dependencies or overlapping parser/cache frameworks.

@@ -22,28 +22,43 @@ dependency/adoption or a speedup claim. See the
 
 ## Native index collection experiment (24 October 2026)
 
-ACE's development-only `index_columns` benchmark now directly consumes the
-already locked ArrayVec 0.7.8 and SmallVec 1.16.3. Root workspace declarations
-disable both default feature sets; SmallVec explicitly enables `const_generics`
-for its inline array. Normal native library builds gain neither direct dependency.
-The experiment does not select a production container or change native limits.
+ACE's `index_columns` benchmark directly compares the already locked ArrayVec
+0.7.8 and SmallVec 1.16.3. The measured decision adopts ArrayVec for private native
+index-column storage, using the existing ten-column format ceiling and fallible
+insertion. Public access remains a slice. The enlarged NativeIndex object is
+charged in its owning vector; the former separate key allocation charge is
+removed. SmallVec remains development-only. Root workspace declarations disable
+both default feature sets; SmallVec explicitly enables `const_generics` for its
+benchmark inline array. Native limits and on-disk encoding are unchanged.
 
 Both published manifests offer MIT OR Apache-2.0 and include both license files;
 MIT is available for this consumer. ArrayVec declares Rust 1.51, while SmallVec
 does not declare a minimum in its published manifest. These profiles are checked
 on the repository toolchain, without claiming an independently tested minimum.
 Neither selected crate has a build script or a required transitive dependency.
-Cargo.lock changes only ACE's development consumer edges; registry versions and
-checksums stay unchanged. Neither serde nor optional integration features are
-requested. Upstream containers use unsafe internals; the benchmark introduces
-no TableCraft unsafe code, native FFI, runtime, network or platform dependency.
+Cargo.lock gained only existing-package consumer edges; promoting ArrayVec to a
+normal dependency retains its same edge. Registry versions/checksums remain
+unchanged. Neither serde nor optional integration features are requested.
+Upstream containers use unsafe internals; this adoption introduces no TableCraft
+unsafe code, native FFI, runtime, network or platform dependency.
 
 Capacity/spill-derived container allocation counts are distinguished from global
 allocator observations. Separate isolated ACE copies allow complete native
-inspection comparisons without changing the working engine. Benchmarks alone
-do not qualify native Access compatibility or authorize production adoption.
+inspection comparisons without changing the working engine. On the measured
+Darwin arm64 build, retained index storage falls from 88 + 160 bytes to 232 bytes
+and eliminates one allocation per index. Timing distributions contain substantial
+noise; no general query-speedup claim is made. Independent getter controls and
+focused mutation/corruption/resource regressions accompany the storage decision.
+See [the complete experiment](testing/INDEX_COLUMN_COLLECTIONS.md). These checks
+do not qualify native Access compatibility.
 Primary APIs: [ArrayVec](https://docs.rs/arrayvec/0.7.8/arrayvec/struct.ArrayVec.html),
 [SmallVec](https://docs.rs/smallvec/1.16.3/smallvec/struct.SmallVec.html).
+
+A targeted [RustSec advisory lookup](https://rustsec.org/advisories/) on 24 October
+2026 found no indexed advisory for the arrayvec package. The matching
+[ArrayVec insertion advisory](https://rustsec.org/advisories/RUSTSEC-2020-0042.html)
+belongs to the different stack package. This is a targeted lookup, not a complete
+lockfile advisory scan or an independent audit of upstream unsafe internals.
 
 ## Localized error messages
 
