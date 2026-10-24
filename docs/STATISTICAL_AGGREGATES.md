@@ -34,6 +34,22 @@ underflow can round very small variance to zero. These are explicit current
 conversion/result rules, not full native Variant promotion or bitwise ACE precision
 qualification. The builtin tracker therefore records these functions as Partial.
 
+Numeric admission is checked before calling the shared converter: explicit CDbl
+accepts a legacy DATE serial, but that does not make an unconverted Date field a
+statistical numeric operand. This closes an accidental DATE admission introduced
+when the general converter gained legacy Date support. Microsoft's
+[query aggregate table](https://support.microsoft.com/en-us/access/sum-data-by-using-a-query)
+lists Number/Currency for variance and deviation. The implementation retains its
+existing numeric/Boolean scalar profile; exact native SQL admission and failure
+ordering remain unqualified.
+
+To compute statistics over stored serials explicitly, use e.g.
+`SELECT VarP(CDbl(Stamp)) FROM T WHERE Stamp IS NOT NULL`. A domain equivalent is
+`DVarP('CDbl(Stamp)','T','Stamp IS NOT NULL')`. NULL elimination by the
+aggregate does not suppress an earlier CDbl(NULL) conversion failure. Metadata
+preparation still does not inspect rows; empty/all-NULL unconverted Date groups
+retain the existing NULL result policy.
+
 Each function requires one expression. Wildcards, missing/additional arguments,
 qualified calls and nested aggregate arguments fail while binding, even for empty
 sources. Unsupported runtime carriers and later argument errors remain visible;
