@@ -37,6 +37,16 @@ impl Mean {
         cancelled: Option<&dyn Fn() -> bool>,
         pool: &mut Vec<Scratch>,
     ) -> Result<(), QueryError> {
+        // Date averages operate on stored Automation serials, independently of
+        // civil formatting and the negative-fraction calendar interpretation.
+        let serial;
+        let value = if let Value::DateTime(date) = value {
+            serial = Value::Double(Double::from_float(date.ole_days()));
+            &serial
+        } else {
+            value
+        };
+
         match value {
             Value::Boolean(_)
             | Value::Byte(_)

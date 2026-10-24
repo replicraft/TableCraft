@@ -197,3 +197,9 @@ empty/derived/set/aggregate/crosstab consumers, quotient widening and eager fail
 preservation. The independent UNION runner now passes 109 controls including
 arithmetic arms in both orders and original native stored integers across four
 priority headers. Windows result-type comparisons remain unrun.
+
+
+Legacy Date Avg inputs now infer nullable Double, matching the implemented
+[serial mean profile](AVERAGES.md#legacy-datetime-means). This is independent of
+source nullability because an empty group still returns NULL. Domain target
+metadata remains conservative; native Access result typing is unqualified.

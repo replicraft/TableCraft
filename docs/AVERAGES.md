@@ -24,7 +24,7 @@ Decimal precedence below. Source values and accumulator kernels are unchanged.
 | --- | --- |
 | Ordinary integral/Boolean values | Bounded exact decimal total; Double mean |
 | Currency, optionally mixed with ordinary integers | Bounded exact decimal total; Double mean |
-| Single/Double without explicit Decimal | Bounded exact binary total once floating input appears; one rounded Double mean |
+| Single/Double or legacy DATE serials without explicit Decimal | Bounded exact binary total once floating input appears; one rounded Double mean |
 | Explicit Decimal, including mixed numeric values | Exact total with wider fallback; bounded Decimal mean |
 
 The existing scalar conversion, Decimal arithmetic and bounded rational services
@@ -45,7 +45,7 @@ explicit result conversion, not a relaxation of integer operators, parameter
 carriers or stored fields. Returned metadata describes the qualified carrier;
 runtime domain targets with unknown expression types can remain Dynamic.
 
-Nonnumeric fields do not acquire implicit numeric/date interpretation. Operational
+Other nonnumeric fields do not acquire implicit numeric/date interpretation. Operational
 failures remain failures, including late invalid operands. No failed operand
 becomes NULL. Decimal-valued quotients whose totals fit Decimal reuse the checked
 promoted-division service.
@@ -172,3 +172,51 @@ control varied by about 60 microseconds. Hyperfine whole-process means were
 [Raw evidence](testing/results/fixed-mean-rounding-2026-10-23.json) retains every
 sample and harness/executable hashes, with no exclusions. Timings include result
 destruction, exclude setup/binding from per-query results and exclude native I/O.
+
+
+## Legacy Date/Time means
+
+Avg/DAvg now admit legacy DateTime values through their stored Automation DATE
+serials. NULL values are omitted before conversion, so direct Avg(Stamp) can
+average nullable Date fields without invoking CDbl(NULL). Empty/all-NULL selections
+return NULL. The existing exact binary accumulator supplies one rounded Double
+mean; Avg over a declared Date field exposes nullable Double result metadata
+without reading rows during preparation. Explicit Decimal in a heterogeneous
+expression retains the existing Decimal-result profile. Date/Time Extended
+remains unsupported as an aggregate numeric operand. Mixed numeric inputs keep
+the existing prefix conversions and encounter-dependent Decimal bridging rules.
+
+Microsoft's [query aggregate table](https://support.microsoft.com/en-us/access/sum-data-by-using-a-query)
+explicitly includes Date/Time for averages. It does not specify the precise
+return carrier, negative-serial treatment, mixed-family promotion or accumulation
+precision. The Double-serial result described here is TableCraft's engineering
+profile, not a native Access result-type claim. Native comparison of Avg/DAvg
+Date results remains pending. Existing Date Sum refusal and statistical numeric
+admission remain separate contracts.
+
+The calculation uses raw serial arithmetic, not elapsed civil time. For example,
+-0.25 and +0.25 can denote the same calendar time under Automation's
+negative-fraction interpretation, yet their serial mean is zero. No intermediate
+civil rounding, timezone lookup or calendar-format policy runs. Call CDate on a
+representable resulting serial when a Date-valued expression is needed.
+
+```sql
+SELECT Avg(Stamp) AS MeanSerial, CDate(Avg(Stamp)) AS MeanDate FROM Events;
+```
+
+CDate(NULL) still fails; callers must handle an empty/all-NULL result explicitly
+before requesting that conversion. Shared query allocations, work, cancellation,
+clock ownership and buffered failure publication retain their existing limits.
+
+
+Six focused date-mean Rust tests include 128 fixed-seed generated quarter-day
+sequences, no-scan metadata, named/derived/grouped/crosstab consumers, negative
+serial aliases, Decimal mixtures, one clock call per row and every observed
+cancellation checkpoint. CLI controls exercise projection and atomic late failures.
+The independent [DATE average runner](testing/compare_date_average.py) passes
+144 controls: 72 source-free exact-rational cases and 72 native query cases on
+unchanged registered four-family large-index inputs. Jackcess supplies inert
+raw DATE bits; Python Fraction supplies expected means. Sequential and both
+ID-index directions cover direct/domain means, derived results, grouping,
+crosstabs, empty groups and mixed Date/Double inputs. Only TableCraft executes
+SQL; native result-type and precision comparison remains pending.

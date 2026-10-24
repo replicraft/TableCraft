@@ -6062,3 +6062,16 @@ controls remain separate from numeric results. Sequential and ascending/descendi
 ID indexes cover direct and domain statistics; original bytes/hashes remain
 unchanged. Only TableCraft executes SQL; native Access admission, error ordering
 and result typing remain unqualified.
+
+
+## Legacy DATE average controls
+
+The original MIT [compare_date_average.py](testing/compare_date_average.py) adds
+no binary fixture or third-party source. It verifies the reviewed Jackcess JAR
+and existing registered large-index inputs before inert raw DATE-bit getters.
+Its 144 controls combine 72 source-free Fraction models and 72 native query
+cases over Jet 4, ACE 2007 and both modern ACE layouts. Sequential and both
+ID-index directions exercise Avg/DAvg, derived/grouped/crosstab means, empty
+inputs and mixed serial/numeric expressions. Source hashes and bytes remain
+unchanged. Only TableCraft executes SQL; no native Access result-carrier,
+rounding, shared-file or save qualification is implied. See [mean scope](AVERAGES.md#legacy-datetime-means).
