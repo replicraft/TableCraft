@@ -25,7 +25,7 @@ unenforced declarations report NotEnforced. Unknown/inherited/conflicting flags,
 unresolved endpoints, unsupported carriers/tables, more than ten columns and
 missing qualified parent unique declarations report Unsupported.
 
-The checked profile has one to ten Byte/Int16/Int32/Int64/Currency/GUID fields per side,
+The checked profile has one to ten Boolean/Byte/Int16/Int32/Int64/Currency/GUID fields per side,
 plus qualified ACE 16 Decimal fields, and a declared
 unique/primary parent index with the same ordered native columns. Each paired
 parent/child field must have the same storage type; mixed-type tuples are allowed
@@ -37,7 +37,7 @@ uniqueness. Entirely NULL tuples are exempt. Partially NULL tuples remain exact
 keys: they require an identical parent tuple, not componentwise matches or an
 implicit exemption. Duplicate partial tuples fail uniqueness. This follows the
 observed independent-reader profile; Microsoft Access comparisons remain unrun.
-Exact nullable integer/Currency/GUID/Decimal tuples are compared without general Value/SQL coercion
+Exact nullable Boolean/integer/Currency/GUID/Decimal tuples are compared without general Value/SQL coercion
 or floating conversion. The CLI labels successful coverage exact key membership.
 
 Fallibly reserved fixed-width key vectors and in-place sorting spend shared
@@ -285,3 +285,27 @@ python3 docs/testing/compare_decimal_relationships.py --jar path/to/jackcess-5.0
 Fresh Jet 4/ACE 12 Decimal relationship fixtures now match the same exact membership
 and malformed-copy checks; see [Jet 4 qualification](NATIVE_JET4.md). Physical legacy
 index ordering never enters foreign-key equality.
+
+## Stored Boolean relationship membership
+
+Boolean fields participate in the same exact stored-key audit, including mixed
+Boolean/nullable integer and Decimal tuples when each paired field has the same
+native type. Private Boolean atoms remain distinct from integers, including numeric
+zero and minus one. A cleared native Boolean mask
+bit represents **false, not NULL**; false therefore participates in parent and
+one-to-one child uniqueness and always requires a matching parent. A tuple such
+as `(false, NULL)` remains a partial key, not an exempt all-NULL tuple.
+
+This is a read-only expansion. An internal explicit allowlist retains the prior
+mutation key-carrier boundary even when a Boolean relationship now reports
+`Checked`. Boolean-bearing relationships, including tuples that also contain
+Decimal, do not thereby authorize fixed or batch edits or cascades. Unenforced
+relationships retain their previous treatment. Every other mutation prerequisite
+still applies to the older carrier profile.
+
+Original synthetic native records cover true/false membership, duplicate false,
+one-to-one children, exact composite tuples, mixed nullable integer and Decimal
+components, paired-type and parent-index rejection, independent set-model cases,
+allocation/row/work limits and cancellation after successful read prefixes. Header
+variants preserve the existing Jet 4/ACE 12/16-family read gates. These controls do
+not establish physical tree validity or Microsoft Access qualification.

@@ -165,6 +165,8 @@ Automatic constrained scans must preserve the source's sequential row order;
 explicit required indexes keep their configured key order.
 Use [native check coverage](docs/NATIVE_CHECKS.md) when adding consistency checks;
 unchecked profiles and native constraint limitations must remain explicit.
+Keep relationship read coverage separate from mutation key-profile coverage;
+checking stored membership must not implicitly expand write eligibility.
 Query constraints must use backend-neutral contracts and retain the original
 filter. Push down only wholly safe predicates; partial AND extraction can hide
 eager errors. Never cache a selected snapshot as a complete table. Binding reads

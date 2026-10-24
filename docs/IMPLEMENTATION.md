@@ -1,5 +1,20 @@
 # Implementation status
 
+## Read-only Boolean foreign-key membership
+
+Native constraint inspection now checks exact stored Boolean foreign keys,
+including mixed nullable integer and Decimal tuples. False is a present key,
+not an all-NULL exemption. Strict paired types and the existing parent unique
+index requirement remain in force. Public read coverage is separate from an
+internal explicit mutation-carrier allowlist, so successful Boolean membership
+does not enable fixed, batch or cascade edits. An otherwise writable Jet 4 control
+isolates this guard by changing only enforcement to NotEnforced.
+
+The final combined constraint/mutation batch passes 65 integration tests, with
+three focused key unit tests and strict scoped Clippy also passing. Workspace
+formatting passes. See [stored Boolean relationships](NATIVE_CONSTRAINTS.md#stored-boolean-relationship-membership).
+This is the physical stored-key profile, not native Access insertion qualification.
+
 ## Explicit calculated-field preview in the CLI
 
 `query preview-calculation --database PATH TABLE COLUMN` exposes the existing

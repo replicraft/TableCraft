@@ -153,10 +153,12 @@ pub(super) fn qualified(report: &ConstraintReport) -> Result<(), EditError> {
             [field.required(), field.empty_text(), field.validation()]
                 .contains(&RuleCheckStatus::Unsupported)
         })
-        || report
-            .relationships()
-            .iter()
-            .any(|relationship| relationship.status() == RelationshipCheckStatus::Unsupported)
+        // Record membership can be qualified independently of mutation. Keep
+        // newly readable key families outside both before/after write gates.
+        || report.relationships().iter().any(|relationship| {
+            relationship.status() == RelationshipCheckStatus::Unsupported
+                || !relationship.existing_mutation_key_profile()
+        })
     {
         return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
     }
