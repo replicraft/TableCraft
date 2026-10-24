@@ -175,6 +175,12 @@ and all ACE writes remain separate work.
 
 ## Explicit stored scalar calculations
 
+An explicit [row-local calculation preview](../CALCULATION_PREVIEWS.md) can now
+prepare/evaluate admitted stored formulas against ordinary same-table fields.
+It returns separately named recomputed results without replacing cached values,
+coercing to their declared carrier or establishing freshness/native compatibility.
+Ordinary query eligibility and the inert cached browsing path below remain unchanged.
+
 The explicit [cached browsing profile](../CLI_BROWSING.md#explicit-stored-calculations)
 now composes these qualified stored results with ordinary scalar fields in one
 physical page. `StoredTablePage` retains the inert declarations and per-column

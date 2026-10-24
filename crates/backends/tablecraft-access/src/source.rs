@@ -1,3 +1,5 @@
+mod calculation;
+pub use calculation::{CalculationError, PreparedCalculation};
 mod collation;
 mod collections;
 mod multivalue;

@@ -16,7 +16,10 @@ pub use browsing::{
     VersionHistoryColumn,
 };
 mod source;
-pub use source::{NativeSavedReadError, NativeSavedSelectError, NativeSource};
+pub use source::{
+    CalculationError, NativeSavedReadError, NativeSavedSelectError, NativeSource,
+    PreparedCalculation,
+};
 mod editing;
 pub use editing::{NativeEditError, NativeEditor};
 mod saved;
