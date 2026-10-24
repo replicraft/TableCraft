@@ -176,6 +176,7 @@ impl TextFunction {
         matches!(
             self,
             Self::CStr
+                | Self::Replace
                 | Self::ChrB
                 | Self::ChrW
                 | Self::Left
@@ -334,7 +335,9 @@ pub fn apply_with_context<'a>(
     if function == TextFunction::CStr {
         return cstr::prepare(&arguments[0], context);
     }
-    if (function.produces_bytes() && function != TextFunction::ChrW && !function.slices_units())
+    if (function.produces_bytes()
+        && !matches!(function, TextFunction::ChrW | TextFunction::Replace)
+        && !function.slices_units())
         || function == TextFunction::InStrB
     {
         // Byte-only producers need the owning evaluator. ChrW also retains its

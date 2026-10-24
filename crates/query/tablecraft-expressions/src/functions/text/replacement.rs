@@ -1,4 +1,7 @@
 //! Borrowed Replace arguments and bounded streaming construction.
+#[cfg(feature = "sql")]
+mod raw;
+
 use super::compare;
 // Preserve the existing public import while sharing the working sink contract.
 pub use super::output::TextOutput;
@@ -43,6 +46,7 @@ pub(crate) fn prepare_positions<'a>(
     )
 }
 
+#[derive(Clone, Copy)]
 pub(crate) struct Options {
     start: usize,
     count: i32,
@@ -85,14 +89,23 @@ impl Options {
         find: &'a Value,
         replacement: &'a Value,
     ) -> Result<Replacement<'a>, EvalError> {
-        Ok(Replacement {
-            source: text(source)?,
-            find: text(find)?,
-            replacement: text(replacement)?,
+        Ok(self.with_texts(text(source)?, text(find)?, text(replacement)?))
+    }
+
+    pub(crate) fn with_texts<'a>(
+        self,
+        source: &'a str,
+        find: &'a str,
+        replacement: &'a str,
+    ) -> Replacement<'a> {
+        Replacement {
+            source,
+            find,
+            replacement,
             start: self.start,
             count: self.count,
             mode: self.mode,
-        })
+        }
     }
 }
 

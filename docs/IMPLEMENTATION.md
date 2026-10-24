@@ -1,5 +1,32 @@
 # Implementation status
 
+## Retained String replacement
+
+Replace now participates in lossless String production in scalar/query evaluation.
+Its first three operands retain units; optional controls keep their original
+conversion/order. Representable Text uses the borrowed recipe, while raw inputs
+and suffixes inside a pair use bounded unit buffers and byte output. Binary
+matching and explicit raw General spans preserve inserted units without searching
+them again. Unpaired intermediate results remain observable; repaired final pairs
+publish normally. Invalid final output stays buffered failure. See
+[replacement contracts](TEXT_REPLACEMENT.md#retained-string-operands-and-results).
+
+753 all-feature expression tests plus one doctest, 376 minimal expression tests,
+25 focused query tests, eleven General adapter tests and four CLI tests pass.
+Scoped all-feature/minimal Clippy passes. Controls include independent unit-model
+properties, malformed/nonadvancing provider spans, callback refusal, post-callback
+cancellation, every observed raw scan/output checkpoint, quotas, prepared values,
+derived/grouped/correlated cells and domains.
+
+The new runner passes 9,068 independent controls, including four unchanged native
+inputs through sequential/selected primary-index reads. Existing decoded General
+and raw General search runners pass 268 and 4,544 controls. Rounded count/source
+regressions pass 798 controls with registered ScalarSamples; the scalar-spelling
+runner passes 324 source-free controls. No dependency, stored carrier or write
+gate changed. Full workspace tests, benchmarks and Windows Access qualification
+were not run; wider coercion, locale providers and P0 semantics remain unfinished.
+
+
 ## Retained database String substring search
 
 InStr/InStrRev now pass raw String units to providers that explicitly opt in
@@ -20,8 +47,8 @@ cancellation checkpoint, budgets, parameter reuse and domain/aggregate calls.
 The independent runner passes 4,544 controls with four unchanged native inputs;
 existing decoded General and binary search recipes pass 268 and 3,634 controls.
 No dependency, stored carrier or write gate changed. Full workspace tests,
-benchmarks and native Access qualification were not run. Text/LCID providers,
-raw replacement and broader P0 semantics remain unfinished.
+benchmarks and native Access qualification were not run. Text/LCID providers
+and broader P0 semantics remain unfinished; retained replacement is described above.
 
 
 ## Retained binary String substring search

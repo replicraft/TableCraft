@@ -224,6 +224,13 @@ General models. Text/LCID raw searches still require Unicode publication;
 additional consumers, locale providers and native qualification remain acceptance
 work.
 
+[Replace](TEXT_REPLACEMENT.md#retained-string-operands-and-results) now retains
+complete String units through matching and output, with binary and explicit raw
+General providers. Raw-aware observations, derived cells, grouped/correlated
+queries and domain retrieval work without premature publication. Eager/control/
+state rules, raw byte/work limits and strict final Unicode remain explicit.
+Other consumers, complete Variant semantics and native qualification remain open.
+
 ### P0 implementation boundaries reviewed 24 October 2026
 
 | Boundary | Current implementation | Remaining work |

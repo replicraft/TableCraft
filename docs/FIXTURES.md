@@ -1,5 +1,26 @@
 # Candidate Access fixtures
 
+## Retained String replacement controls
+
+The original [runner](testing/compare_raw_replacement.py) and
+[General helper](testing/RawGeneralReplacementOracle.java) pass 9,068 controls.
+Python supplies independent nonoverlapping binary unit replacement; General
+cases use the reviewed Jackcess encoder through the existing original short-span
+model. UTF-16 hex preserves isolated units. Length and binary StrComp observations
+check exact result units, including expansions, ignored prefixes, suffixes inside
+pairs, deletion, count limits and repairing final pairs.
+
+Native-source controls reuse four registered native-policy inputs through inert
+TableDataOracle getters, then TableCraft evaluates queries under database/global
+General policies with sequential and selected primary-index reads. Before/after
+hashes confirm unchanged originals. Artifact identity is checked; helpers compile
+temporarily and no third-party artifact is added. The original count-conversion
+runner also passes 798 controls over the separate registered ScalarSamples inputs;
+the scalar runner passes 324 source-free controls. These do not establish native
+Access SQL or locale behavior. The new runner uses smaller projection batches to
+retain existing default step limits.
+
+
 ## Raw General substring-search controls
 
 The original [runner](testing/compare_raw_general_search.py) and

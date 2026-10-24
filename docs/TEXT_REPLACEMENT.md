@@ -1,11 +1,57 @@
 # Bounded Replace expressions
 
 `Replace(expression, find, replacement[, start[, count[, compare]]])` now resolves
-in scalar SELECT evaluation and bound retrieval. It returns Text, replacing
+in scalar SELECT evaluation and bound retrieval. It returns a String, replacing
 non-overlapping source matches without searching the inserted replacement again.
 The result begins at the requested start position: the preceding source prefix
 is not retained. Grouping, nested calls, correlated fields and reusable parameters
 use the existing text-call plan rather than a separate query runtime.
+
+## Retained String operands and results
+
+Replace now retains the source, find and replacement String operands through
+both evaluators. Complete raw UTF-16 ranges, including isolated surrogates and
+unaligned byte ranges, can participate without premature Unicode publication.
+Binary matching uses unit spans; inserted units are never searched again.
+General database modes use the separate explicit raw substring provider and
+consume its actual expansion spans. Equality/LIKE support does not imply search
+support, and provider failure never triggers a different matcher.
+
+The result stays lossless through raw-aware consumers, derived cells, groups,
+correlations, aggregates and domain retrieval. For example,
+`AscW(Replace('😀',ChrW(55357),''))` returns -8704, while
+`LenB(Replace('😀','z','',2,0))` returns 2. The suffix starts at the requested
+unit even inside a pair. `Replace(ChrW(55296)&'a','a',ChrW(56320))` repairs a
+surrogate pair and publishes U+10000 as valid final Text. Directly publishing
+an unpaired result remains UnrepresentableText and buffered queries publish no
+partial table.
+
+The public `apply_retained_replacement` API returns a ByteOperand. Its borrowed
+Text path retains existing scalar formatting and UTF-8 output accounting when
+the inputs and suffix are representable. Other inputs use bounded unit buffers
+and a metered raw-byte sink under the existing signed-Long String ceiling.
+Final Text publication independently enforces UTF-8 limits. Materialized APIs
+retain strict publication; no stored/source/parameter carrier changes.
+
+Control conversion still precedes source/find/replacement admission. Every written
+argument remains eager, including count-zero/empty-find cases. NULL remains an
+error, Empty retains its explicit String/numeric targets and Error/Missing keep
+their existing failures. All required operands must be admitted and raw byte
+counts must be even before shortcuts. A shortcut requires no unused comparer.
+A real nonbinary match requires an explicit raw provider or strict Unicode
+publication through the existing provider path; system Text/LCID support is not
+inferred from General database support. A raw provider range must be nonempty
+and within the remaining suffix; success checks cancellation before use.
+
+The [independent runner](testing/compare_raw_replacement.py) passes 9,068 controls:
+Python nonoverlapping unit models, both CLI evaluators, independently keyed General
+spans, raw output observations and sequential/selected-index queries over four
+unchanged native inputs. The Java helper uses the reviewed external encoder and
+existing original span model; TableCraft alone evaluates SQL. Default resource
+limits remain unchanged; smaller projection batches keep the recipe within them.
+The existing count-conversion, scalar-source, decoded General and raw General
+search recipes also pass. These are engineering model checks; native Access
+coercion, defaults, locale/code-page behavior and raw edge rules remain unqualified.
 
 ## Arguments and current policies
 
@@ -36,8 +82,9 @@ precedes text-carrier validation under this explicit current error-order policy.
 Empty source or start beyond its length returns empty Text. Empty find or count
 zero returns the unchanged suffix beginning at start. Empty replacement deletes
 matched source text. UTF-16 offsets preserve supplementary-character widths;
-a start inside a surrogate pair fails with UnrepresentableText instead of
-silently changing the boundary or emitting replacement characters.
+a start inside a surrogate pair can now retain the exact suffix through the
+lossless evaluator path described below. Strict Text publication still rejects
+an unpaired final result instead of changing boundaries or emitting replacements.
 
 ```sh
 tablecraft query eval "SELECT Replace('banana','an','X') AS Replaced"
@@ -91,8 +138,7 @@ explicit binary/ordinal modes, missing defaults, surrogate refusals, resource-li
 refusals and independently decoded sequential/indexed native rows. Source bytes
 remain unchanged; see [implementation status](IMPLEMENTATION.md) for check totals.
 
-Complete Variant coercion, lossless unpaired-surrogate results, native
-code-page/locale matching, native default/error precedence and actual Windows Access
+Complete Variant coercion, native code-page/locale matching, native default/error precedence and actual Windows Access
 qualification remain open. `Replace` is Partial in the
 [built-in tracker](ACCESS_BUILTINS.md). The API does not execute VBA or stored code.
 
@@ -124,7 +170,8 @@ positions. Source coercion remains unchanged. [Comparison modes](STRING_COMPARIS
 now also accept raw DATE and explicit-policy SQL numeric Text, retaining their
 closed codes and original validation order. Empty find/count-zero
 continues to return the suffix; inserted replacement text is never searched again.
-A start inside a surrogate pair still fails, including with zero replacements.
+Materialized Text APIs still refuse an unpaired result. The retained evaluator
+path below can observe exact suffix units, including with zero replacements.
 Native NULL/error/subtype precedence remains provisional pending Access comparison.
 
 Normalization buffers, match scans and output share cumulative limits. A nine-byte

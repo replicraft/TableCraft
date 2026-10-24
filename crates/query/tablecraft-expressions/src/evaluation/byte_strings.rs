@@ -167,6 +167,9 @@ impl Evaluator<'_> {
         arguments: &[FunctionArgument],
         depth: usize,
     ) -> Result<ByteOperand, EvalError> {
+        if function == TextFunction::Replace {
+            return self.replacement_byte_call(arguments, depth);
+        }
         let (first, rest, count) = self.byte_call_inputs(function, arguments, depth)?;
         self.apply_expression_byte_string(function, first, &rest[..count])
     }
