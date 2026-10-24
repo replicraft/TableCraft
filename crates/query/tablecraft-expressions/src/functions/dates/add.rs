@@ -35,8 +35,15 @@ impl DateAdd {
         number: impl FnOnce() -> Result<&'a Value, EvalError>,
         mut convert: impl FnMut(&Value) -> Result<i32, EvalError>,
     ) -> Result<Self, EvalError> {
+        Self::prepare_with_count(interval, || convert(number()?))
+    }
+
+    pub(crate) fn prepare_with_count(
+        interval: &Value,
+        number: impl FnOnce() -> Result<i32, EvalError>,
+    ) -> Result<Self, EvalError> {
         let interval = Interval::parse(interval)?;
-        let number = convert(number()?)?;
+        let number = number()?;
         Ok(Self { interval, number })
     }
 

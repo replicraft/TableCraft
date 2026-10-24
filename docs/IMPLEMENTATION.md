@@ -1,5 +1,20 @@
 # Implementation status
 
+## Retained date component and interval APIs
+
+Year/Month/Day/Hour/Minute/Second, Weekday and DateAdd/DatePart/DateDiff now admit
+valid active String ranges through the existing contextual date/control kernels.
+Publication stays at each operation's existing admission point: invalid intervals
+or week controls still precede later source conversion. Scalar DATE/Extended
+values remain borrowed and exact. No ambient policy, new function or ordinary
+query conversion behavior is introduced.
+
+The focused batch passes 81 tests, including callback-once/precedence controls,
+80 successful parity paths and 30 raw/eager query refusals. Scoped strict Clippy,
+minimal expression compilation, formatting and the CLI build pass. See
+[retained date operations](RETAINED_CONVERSIONS.md#date-components-and-interval-operations).
+Native calendar/error qualification remains separate.
+
 ## Ordinary visible-Memo history flags
 
 History discovery now accepts the existing visible Memo scalar family: ordinary

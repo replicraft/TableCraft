@@ -52,18 +52,23 @@ impl WeekSettings {
         context: WeekContext,
         mut convert: impl FnMut(&Value) -> Result<i32, EvalError>,
     ) -> Result<Self, EvalError> {
+        Self::parse_with_controls(|index| input(index)?.map(&mut convert).transpose(), context)
+    }
+
+    pub(crate) fn parse_with_controls(
+        mut input: impl FnMut(usize) -> Result<Option<i32>, EvalError>,
+        context: WeekContext,
+    ) -> Result<Self, EvalError> {
         Ok(Self {
             first_day: option(
                 input(0)?,
                 DAYS_PER_WEEK,
                 context.first_day.map(|day| i32::from(day.number())),
-                &mut convert,
             )?,
             first_week: option(
                 input(1)?,
                 FULL_WEEK_RULE,
                 context.first_week.map(|rule| i32::from(rule.number())),
-                &mut convert,
             )?,
         })
     }
@@ -116,16 +121,10 @@ fn days_in_year(year: i16) -> Result<i32, EvalError> {
         .map_err(|_| EvalError::Overflow)
 }
 
-fn option(
-    value: Option<&Value>,
-    maximum: i32,
-    system: Option<i32>,
-    convert: &mut impl FnMut(&Value) -> Result<i32, EvalError>,
-) -> Result<i32, EvalError> {
+fn option(value: Option<i32>, maximum: i32, system: Option<i32>) -> Result<i32, EvalError> {
     let Some(value) = value else {
         return Ok(DEFAULT_OPTION);
     };
-    let value = convert(value)?;
     if value == SYSTEM_OPTION {
         return system.ok_or(EvalError::CalendarPolicyRequired);
     }

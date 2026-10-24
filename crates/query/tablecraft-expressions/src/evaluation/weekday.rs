@@ -1,8 +1,8 @@
 //! Bounded materialized Weekday evaluation under request-local policies.
-use super::{Evaluator, date_conversions::expression_date_source, text_output::Output};
+use super::{Evaluator, date_input::DateInput, text_output::Output};
 use crate::{
     EvalError,
-    functions::dates::{self, WeekContext, parsing::DateParseContext},
+    functions::dates::{Weekday, parsing::DateParseContext},
 };
 use tablecraft_core::values::{ExpressionValue, Value};
 impl Evaluator<'_> {
@@ -13,7 +13,7 @@ impl Evaluator<'_> {
         value: &Value,
         first_day: Option<&Value>,
     ) -> Result<Value, EvalError> {
-        self.weekday_inputs(Some(value), || Ok(value), || Ok(first_day))
+        self.weekday_inputs(DateInput::Scalar(value), first_day.map(DateInput::Scalar))
     }
 
     /// Retain source Error data until after first-day conversion and validation.
@@ -23,42 +23,32 @@ impl Evaluator<'_> {
         value: &ExpressionValue,
         first_day: Option<&ExpressionValue>,
     ) -> Result<Value, EvalError> {
-        let raw_value = match value {
-            ExpressionValue::Value(value) => Some(value),
-            _ => None,
-        };
-        let empty = Value::Int16(0);
         self.weekday_inputs(
-            raw_value,
-            || expression_date_source(value, &empty),
-            || {
-                first_day
-                    .map(|value| expression_date_source(value, &empty))
-                    .transpose()
-            },
+            DateInput::Expression(value),
+            first_day.map(DateInput::Expression),
         )
     }
 
-    fn weekday_inputs<'a>(
+    fn weekday_inputs(
         &mut self,
-        raw_value: Option<&Value>,
-        value: impl FnOnce() -> Result<&'a Value, EvalError>,
-        first_day: impl FnOnce() -> Result<Option<&'a Value>, EvalError>,
+        value: DateInput<'_>,
+        first_day: Option<DateInput<'_>>,
     ) -> Result<Value, EvalError> {
-        if matches!(raw_value, Some(Value::Text(text)) if text.len() > self.limits.max_text_bytes) {
+        if matches!(value.scalar(), Some(Value::Text(text)) if text.len() > self.limits.max_text_bytes)
+        {
             return Err(EvalError::TextLimit);
         }
         self.check(0)?;
-        let first_day = first_day()?;
-        let normalized = self.text_long_override(first_day)?;
-        let first_day = normalized.as_ref().or(first_day);
-        dates::weekday_with_input(
-            value,
-            first_day,
-            WeekContext {
-                first_day: self.first_day_of_week,
-                first_week: self.first_week_of_year,
-            },
+        let first_day = first_day.map(|value| value.materialize(self)).transpose()?;
+        let normalized = self.text_long_override(first_day.as_deref())?;
+        let first_day = normalized.as_ref().or(first_day.as_deref());
+        // Preserve the separate operation-entry checkpoint before validating
+        // week controls, then admit the source only after those controls pass.
+        self.check(0)?;
+        let operation = Weekday::prepare(first_day, self.week_context())?;
+        let value = value.materialize(self)?;
+        operation.apply(
+            &value,
             DateParseContext {
                 date_format: self.date_format,
                 year_window: self.year_window,

@@ -32,9 +32,9 @@ pub use first_week::FirstWeekOfYear;
 pub(crate) use part::DatePart;
 pub use part::{date_part, date_part_with_context};
 pub use week_start::FirstDayOfWeek;
-pub use weekday::weekday;
 #[cfg(feature = "sql")]
-pub(crate) use weekday::weekday_with_input;
+pub(crate) use weekday::Weekday;
+pub use weekday::weekday;
 pub use weeks::WeekContext;
 pub(in crate::functions) use weeks::WeekSettings;
 

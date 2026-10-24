@@ -77,21 +77,6 @@ impl Evaluator<'_> {
     }
 }
 
-/// Borrow date-coercible states; callers supply the numeric-zero Empty carrier.
-/// This is not the String-parameter policy of DateValue/TimeValue.
-pub(super) fn expression_date_source<'a>(
-    value: &'a ExpressionValue,
-    empty: &'a Value,
-) -> Result<&'a Value, EvalError> {
-    match value {
-        ExpressionValue::Value(value) => Ok(value),
-        ExpressionValue::Empty => Ok(empty),
-        ExpressionValue::Error(_) => Err(EvalError::TypeMismatch),
-        ExpressionValue::StringBytes(_) => Err(EvalError::NonScalarExpression),
-        ExpressionValue::Missing => Err(EvalError::NonScalarExpression),
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;

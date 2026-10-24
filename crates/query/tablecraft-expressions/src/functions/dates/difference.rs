@@ -79,12 +79,24 @@ impl DateDiff {
 
     pub(crate) fn prepare_with_options<'a>(
         interval: &Value,
-        option: impl FnMut(usize) -> Result<Option<&'a Value>, EvalError>,
+        mut option: impl FnMut(usize) -> Result<Option<&'a Value>, EvalError>,
         context: WeekContext,
-        convert: impl FnMut(&Value) -> Result<i32, EvalError>,
+        mut convert: impl FnMut(&Value) -> Result<i32, EvalError>,
+    ) -> Result<Self, EvalError> {
+        Self::prepare_with_controls(
+            interval,
+            |index| option(index)?.map(&mut convert).transpose(),
+            context,
+        )
+    }
+
+    pub(crate) fn prepare_with_controls(
+        interval: &Value,
+        option: impl FnMut(usize) -> Result<Option<i32>, EvalError>,
+        context: WeekContext,
     ) -> Result<Self, EvalError> {
         let interval = Interval::parse(interval)?;
-        let settings = WeekSettings::parse_with_input(option, context, convert)?;
+        let settings = WeekSettings::parse_with_controls(option, context)?;
         let first_day = settings.first_day;
         if matches!(interval, Interval::Weekday) && first_day != DEFAULT_WEEK_OPTION {
             return Err(EvalError::UnsupportedExpression);
