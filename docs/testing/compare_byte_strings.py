@@ -75,6 +75,12 @@ def main():
                         if raw:
                             expressions.append(f"AscB({call})")
                             expected.append(str(raw[0]))
+                        if len(raw) % 2 == 0:
+                            expressions.append(f"Len({call})")
+                            expected.append(str(len(raw) // 2))
+                            if raw:
+                                expressions.append(f"AscW({call})")
+                                expected.append(str(int.from_bytes(raw[:2], "little", signed=True)))
                     assert execute(args.cli, mode, "SELECT " + ",".join(expressions)) == [expected], cases
                     count += len(expected)
 
@@ -84,6 +90,21 @@ def main():
             for code in range(start, start + 16):
                 expressions += [f"LenB(ChrB({code}))", f"AscB(ChrB({code}))"]
                 expected += ["1", str(code)]
+            assert execute(args.cli, mode, "SELECT " + ",".join(expressions)) == [expected]
+            count += len(expected)
+
+        units = [0, 65, 255, 256, 32767, 32768, 65535, -1, -32768]
+        units += list(range(0xD800, 0xE000))
+        for start in range(0, len(units), 16):
+            expressions = []
+            expected = []
+            for code in units[start:start + 16]:
+                raw = (code & 0xFFFF).to_bytes(2, "little")
+                expressions.extend([
+                    f"Len(ChrW({code}))", f"AscW(ChrW({code}))",
+                    f"LenB(CVar(ChrW({code})))", f"VarType(ChrW({code}))",
+                ])
+                expected.extend(["1", str(int.from_bytes(raw, "little", signed=True)), "2", "8"])
             assert execute(args.cli, mode, "SELECT " + ",".join(expressions)) == [expected]
             count += len(expected)
 

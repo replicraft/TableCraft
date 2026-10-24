@@ -54,14 +54,12 @@ impl Evaluator<'_> {
             }
             if matches!(
                 function,
-                TextFunction::Len
-                    | TextFunction::LTrim
+                TextFunction::LTrim
                     | TextFunction::RTrim
                     | TextFunction::Trim
                     | TextFunction::LCase
                     | TextFunction::UCase
                     | TextFunction::Asc
-                    | TextFunction::AscW
                     | TextFunction::StrReverse
                     | TextFunction::Val
             ) && let [A::Expression(expression)] = arguments
@@ -84,7 +82,7 @@ impl Evaluator<'_> {
                 let value = self.byte_call(function, arguments, depth)?;
                 return self.publish_byte_operand(value);
             }
-            if matches!(function, TextFunction::LenB | TextFunction::AscB)
+            if function.observes_bytes()
                 && let [A::Expression(expression)] = arguments
             {
                 let value = self.expression_byte_operand(expression, depth + 1)?;

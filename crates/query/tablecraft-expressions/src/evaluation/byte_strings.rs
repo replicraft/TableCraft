@@ -8,6 +8,7 @@ use crate::{
         text::{
             TextFunction,
             byte_string::{ByteOperand, ByteString, ExpressionByteOperand},
+            characters,
             sql_arguments::{self, Argument},
         },
     },
@@ -17,6 +18,8 @@ use tablecraft_core::{
     values::{ExpressionValue, Value},
 };
 use tablecraft_sql::select::{Expression, FunctionArgument};
+
+const UTF16_UNIT_BYTES: usize = size_of::<u16>();
 
 impl Evaluator<'_> {
     pub(super) fn expression_byte_operand(
@@ -119,7 +122,7 @@ impl Evaluator<'_> {
         if function == TextFunction::StrConv {
             return self.apply_expression_strconv(first, &rest[0], rest.get(1));
         }
-        if function == TextFunction::ChrB {
+        if matches!(function, TextFunction::ChrB | TextFunction::ChrW) {
             return self.apply_byte_string(function, ByteOperand::Scalar(first.into_code()?), &[]);
         }
 
@@ -147,17 +150,25 @@ impl Evaluator<'_> {
         if function == TextFunction::StrConv {
             return self.apply_strconv(first, &rest[0], rest.get(1));
         }
-        if function == TextFunction::ChrB {
+        if matches!(function, TextFunction::ChrB | TextFunction::ChrW) {
             let ByteOperand::Scalar(value) = first else {
                 return Err(EvalError::TypeMismatch);
             };
-            let byte = u8::try_from(self.byte_long(&value)?).map_err(|_| EvalError::Overflow)?;
-            self.budget.charge(Resource::Bytes, 1)?;
+            let code = self.byte_long(&value)?;
+            let (unit, length) = if function == TextFunction::ChrW {
+                (characters::unicode_unit(code)?, UTF16_UNIT_BYTES)
+            } else {
+                (
+                    u16::from(u8::try_from(code).map_err(|_| EvalError::Overflow)?),
+                    size_of::<u8>(),
+                )
+            };
+            self.budget.charge(Resource::Bytes, length as u64)?;
             let mut bytes = Vec::new();
             bytes
-                .try_reserve_exact(1)
+                .try_reserve_exact(length)
                 .map_err(|_| EvalError::Allocation)?;
-            bytes.push(byte);
+            bytes.extend_from_slice(&unit.to_le_bytes()[..length]);
             return ByteString::from_owned(bytes).map(ByteOperand::Bytes);
         }
 
@@ -267,6 +278,22 @@ impl Evaluator<'_> {
             ByteOperand::Bytes(bytes) => {
                 self.check(0)?;
                 match function {
+                    TextFunction::Len | TextFunction::AscW => {
+                        let (units, remainder) = bytes.as_bytes().as_chunks::<UTF16_UNIT_BYTES>();
+                        if !remainder.is_empty() {
+                            return Err(EvalError::UnrepresentableText);
+                        }
+                        if function == TextFunction::Len {
+                            Ok(Value::Int32(bytes.len() / UTF16_UNIT_BYTES as i32))
+                        } else {
+                            units
+                                .first()
+                                .copied()
+                                .map(i16::from_le_bytes)
+                                .map(Value::Int16)
+                                .ok_or(EvalError::Domain)
+                        }
+                    }
                     TextFunction::LenB => Ok(Value::Int32(bytes.len())),
                     TextFunction::AscB => bytes
                         .as_bytes()
@@ -286,7 +313,7 @@ impl Evaluator<'_> {
         function: TextFunction,
         operand: ExpressionByteOperand,
     ) -> Result<Value, EvalError> {
-        if !matches!(function, TextFunction::LenB | TextFunction::AscB) {
+        if !function.observes_bytes() {
             return Err(EvalError::UnsupportedExpression);
         }
         self.check(0)?;
@@ -314,3 +341,6 @@ mod scalar_sources;
 
 #[cfg(test)]
 mod expression_tests;
+
+#[cfg(test)]
+mod unicode_tests;

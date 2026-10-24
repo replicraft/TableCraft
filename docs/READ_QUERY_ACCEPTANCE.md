@@ -74,6 +74,12 @@ source families and native result-type qualification remain separate. See
 
 ## Remaining acceptance work
 
+Len/AscW now inspect [complete raw UTF-16 units](BYTE_STRING_FUNCTIONS.md#complete-utf-16-unit-observations),
+including nested ChrW surrogates, without forcing early Unicode publication.
+Byte lengths, signed unit codes and String inspection remain distinct from
+Binary values. Strict final publication, odd-byte Unicode observations and wider
+raw relational/operator/coercion gaps remain explicit.
+
 Round's digit count now follows the nonnegative Long profile independently of
 Decimal storage scale. [Bounded high precision](MATH_FUNCTIONS.md#round-precision-beyond-decimal-storage-scale)
 covers tiny IEEE values and extreme counts without an overflowing scale factor or

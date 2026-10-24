@@ -22,11 +22,7 @@ pub(crate) fn apply(
             return Err(EvalError::TypeMismatch);
         };
         let character = if function == TextFunction::ChrW {
-            if !(MIN_SIGNED_UNIT..=MAX_UNSIGNED_UNIT).contains(&code) {
-                return Err(EvalError::Domain);
-            }
-            // The accepted negative half is the signed spelling of a UTF-16 unit.
-            char::from_u32(u32::from(code as u16)).ok_or(EvalError::UnrepresentableText)?
+            char::from_u32(u32::from(unicode_unit(code)?)).ok_or(EvalError::UnrepresentableText)?
         } else {
             let code = u8::try_from(code).map_err(|_| EvalError::Domain)?;
             match context.character_code_page {
@@ -46,8 +42,7 @@ pub(crate) fn apply(
     }
     let character = text.chars().next().ok_or(EvalError::Domain)?;
     let code = if function == TextFunction::AscW {
-        // Returning a numeric leading surrogate loses no input text; unlike ChrW,
-        // this operation does not have to materialize an unpaired UTF-16 result.
+        // A numeric leading surrogate needs no strict scalar ChrW publication.
         text.encode_utf16().next().ok_or(EvalError::Domain)? as i16
     } else {
         i16::from(match context.character_code_page {
@@ -58,5 +53,15 @@ pub(crate) fn apply(
     };
     Ok(TextResult::CharacterCode(code))
 }
+
+pub(crate) fn unicode_unit(code: i32) -> Result<u16, EvalError> {
+    if !(MIN_SIGNED_UNIT..=MAX_UNSIGNED_UNIT).contains(&code) {
+        return Err(EvalError::Domain);
+    }
+
+    // The accepted negative half is the signed spelling of a UTF-16 unit.
+    Ok(code as u16)
+}
+
 #[cfg(test)]
 mod tests;
