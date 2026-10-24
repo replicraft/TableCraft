@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-24",
+  "scope": "Compare explicit cached Memo reads with inert independent Text getters.\n\nNo formulas execute; original storage and buffered failures remain separate from\nMicrosoft Access recalculation, freshness and calculated-Memo admissibility.\n",
+  "controls": 86,
+  "hashes_unchanged": true,
+  "inputs": {
+    ".cache/tablecraft-bin/calculated-memo-20261024": "0f5071eb4497e7c7e9221551fbcd9e51960b09f38d8ad06d18aea0a07d8546e6",
+    ".cache/tablecraft-fixtures/jackcess-5.0.4.jar": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    "docs/testing/CalculatedMemoFixture.java": "62ee9b69c72941aff5606a7c993f0cf51a635747c2e5a9a9cff759fd931ca933",
+    "docs/testing/compare_calculated_memos.py": "f40e2d41465802151528005352975d1f380ce9750eb97d9261a8966ce69b7862",
+    ".cache/tablecraft-fixtures/calculated-memo-modes-20261024/V2016.accdb": "d6c65a4f59909fa550e9fc98cc196997a3326bca92e882348c6e99596b98ac7c",
+    ".cache/tablecraft-fixtures/calculated-memo-modes-20261024/V2019.accdb": "230b92a3a12c327a2cf27d9d31c58d8acf6e3f07340e383d9ff7a162eec7a5cd",
+    "crates/engines/tablecraft-ace/src/table/record.rs": "24658b3c29603dc3030e59e53390f83c58b38c9f54b5034e454f9592db7092be",
+    "crates/engines/tablecraft-ace/src/table/long_text.rs": "899431cb15af2ae4bc029428340e9c440c8930a2f27b938b5a8415eb7f10937e",
+    "crates/engines/tablecraft-ace/src/table/calculated/encoding.rs": "438973bd55cde986edb49976b298ff209b66d7a76624718c622762065d2e6e42",
+    "crates/engines/tablecraft-ace/src/table/calculated/long_text.rs": "f4fa807bc4e07e5d0da99861a91f80fedeb16cefd0e7477e5b1b92b87f32fbf7",
+    "crates/engines/tablecraft-ace/src/table/calculated/mod.rs": "cc8ec1f5914d4c9c190d42af53da627491059b430c7df1d1a9a666c489662596"
+  },
+  "observations": [
+    {
+      "file": ".cache/tablecraft-fixtures/calculated-memo-modes-20261024/V2016.accdb",
+      "bytes": 454656,
+      "sha256": "d6c65a4f59909fa550e9fc98cc196997a3326bca92e882348c6e99596b98ac7c",
+      "oracle_sha256": "04bf5d2a9b74f59ca126eb5c4bf8610456d9dff34d141dc44a0bc54174856364",
+      "cached_cells": 14,
+      "declarations": [
+        "D\tWide\tMEMO\t0\tfalse",
+        "D\tCompact\tMEMO\t0\tfalse"
+      ]
+    },
+    {
+      "file": ".cache/tablecraft-fixtures/calculated-memo-modes-20261024/V2019.accdb",
+      "bytes": 528384,
+      "sha256": "230b92a3a12c327a2cf27d9d31c58d8acf6e3f07340e383d9ff7a162eec7a5cd",
+      "oracle_sha256": "04bf5d2a9b74f59ca126eb5c4bf8610456d9dff34d141dc44a0bc54174856364",
+      "cached_cells": 14,
+      "declarations": [
+        "D\tWide\tMEMO\t0\tfalse",
+        "D\tCompact\tMEMO\t0\tfalse"
+      ]
+    }
+  ]
+}

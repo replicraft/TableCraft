@@ -30,6 +30,10 @@ pub(in crate::table) fn kind(column: &NativeColumn) -> Option<ScalarType> {
     {
         return None;
     }
+    if column.native_type() == data_type::LONG_TEXT {
+        return (column.storage_length() == 0 && column.extended_flags() == CALCULATED_EXT_MASK)
+            .then_some(ScalarType::Text);
+    }
     if column.native_type() == data_type::SHORT_TEXT {
         let capacity = column.storage_length().checked_sub(WRAPPER_BYTES)?;
         return (capacity <= data_type::MAX_SHORT_TEXT_BYTES
@@ -68,8 +72,12 @@ pub(in crate::table) fn decode(
     let kind = kind(column).ok_or(InspectError::Unsupported)?;
     let bytes = wrapper::payload(bytes)?;
     if kind == ScalarType::Text {
+        let capacity = column
+            .storage_length()
+            .checked_sub(WRAPPER_BYTES)
+            .ok_or(InspectError::Unsupported)?
+            / UTF16_UNIT_BYTES;
         let value = text::decode(bytes, true, budget)?;
-        let capacity = (column.storage_length() - WRAPPER_BYTES) / UTF16_UNIT_BYTES;
         if value.encode_utf16().count() > capacity {
             return Err(InspectError::Malformed);
         }

@@ -4,6 +4,9 @@ mod calculated_fixture;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/mutation/fixture.rs"]
 mod fixture;
+#[allow(dead_code)]
+#[path = "../../../engines/tablecraft-ace/tests/calculated_memos/fixture.rs"]
+mod memo_fixture;
 #[path = "../../../engines/tablecraft-ace/tests/calculated_storage/scalar_fixture.rs"]
 mod scalar_fixture;
 #[path = "../../../engines/tablecraft-ace/tests/support/mod.rs"]
@@ -330,4 +333,44 @@ fn decimal_declarations_keep_recomputed_outputs_separate_from_stored_scale_and_c
             [Value::Decimal(Decimal::new(-12345, 4).unwrap())]
         );
     }
+}
+
+#[test]
+fn memo_declarations_do_not_read_or_reinterpret_corrupt_cached_storage() {
+    let bytes = memo_fixture::database(6, false, &[Some(memo_fixture::inline(&[255]))], &[]);
+    let forbid_rows = Rc::new(Cell::new(true));
+    let source = NativeSource::new(
+        Watching {
+            data: Cursor::new(bytes.clone()),
+            forbid_rows: forbid_rows.clone(),
+        },
+        CatalogScope::new(1),
+        budget(),
+        &|| false,
+    )
+    .unwrap();
+    let preview = source
+        .prepare_calculation("Items", "Score", ParseLimits::default())
+        .unwrap();
+    assert_eq!(preview.declaration().data_type(), ScalarType::Text);
+    assert_eq!(preview.declaration().column().storage_length(), 0);
+    assert_eq!(preview.dependencies(), ["Id"]);
+
+    forbid_rows.set(false);
+    let result = preview.execute(ExecutionOptions::default()).unwrap();
+    assert!(matches!(
+        result.rows()[0].as_slice(),
+        [Value::Int32(2)] | [Value::Int64(2)]
+    ));
+    assert!(
+        read_stored_calculation(
+            &mut Cursor::new(&bytes),
+            CatalogScope::new(1),
+            "Items",
+            "Score",
+            &mut budget(),
+            &|| false,
+        )
+        .is_err()
+    );
 }
