@@ -44,6 +44,14 @@ that failure. Both dense and pruned projections use the same selection service.
 The original WHERE remains mandatory. Partial AND extraction, coercive predicates,
 SQL Text inequalities and non-NULL Binary bounds, Boolean/floating/date seeks and composite seeks
 remain unsupported. Physical Text/Binary ranges are not SQL predicate semantics.
+Non-NULL Binary comparisons currently raise TypeMismatch in the query evaluator.
+Even an exact native Binary interval is therefore unsafe as a SQL hint: pruning
+all unequal rows could suppress that required error. The retrieval constraint
+regressions cover matching and absent/unequal keys, trailing zero bytes, both
+operand orders and NULL/empty-source truth. Defining qualified Binary predicate
+semantics must precede non-NULL Binary hint extraction; the physical range API
+alone is insufficient.
+
 Unconstrained reads remain sequential unless a library caller explicitly requires
 an index. Automatic selections retain sequential table root order, preserving
 TOP and encounter-aggregate behavior; explicit required indexes retain their
