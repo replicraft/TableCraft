@@ -9,6 +9,7 @@ use crate::{
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
+use tablecraft_schema::Column;
 
 const EXPRESSION: &str = "Expression";
 const RESULT_TYPE: &str = "ResultType";
@@ -25,6 +26,10 @@ impl TableFeatures {
     pub fn schema(&self) -> &TableSchema {
         &self.schema
     }
+    pub(in crate::table) fn into_schema(self) -> TableSchema {
+        self.schema
+    }
+
     /// Complete original property stream and scoped declarations.
     pub fn properties(&self) -> &TableProperties {
         &self.properties
@@ -54,6 +59,19 @@ impl<'a> ColumnFeatures<'a> {
     pub fn calculated(&self) -> bool {
         self.column.extended_flags() & CALCULATED_EXT_MASK != 0
     }
+    /// Explicit stored scalar carrier, including qualified cached calculations.
+    /// This validates declarations only: no records or formulas are read/run,
+    /// and a calculated result can be stale. Unsupported fields remain errors.
+    pub fn stored_column(&self, budget: &mut ResourceBudget) -> Result<Column, InspectError> {
+        if self.calculated() {
+            let kind = super::calculated::qualified_kind(self)?;
+            super::snapshot::projected_column(self.column, kind, budget)
+        } else {
+            budget.charge_allocation(self.column.name().len() as u64, 1)?;
+            self.column.column()
+        }
+    }
+
     /// Native complex-child foreign-key marker, without interpreting it as data.
     pub fn complex_foreign_key(&self) -> bool {
         self.column.extended_flags() & COMPLEX_FK_EXT_FLAG != 0

@@ -4,6 +4,7 @@ use super::NativeSource;
 use tablecraft_ace::{
     CalculationDeclaration, InspectError, NativeReadSource, inspect_calculation_declaration,
 };
+use tablecraft_core::limits::Resource;
 use tablecraft_query::{ExecutionOptions, PreparedQuery, QueryError, QueryResult, Source, prepare};
 use tablecraft_sql::{ParseError, ParseLimits, query::Query};
 use thiserror::Error;
@@ -108,6 +109,31 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
             &mut budget,
             self.cancelled,
         )?;
+        // The separate cached-query policy must not turn cached calculations
+        // into ordinary dependencies of the restricted recomputation preview.
+        for dependency in &dependencies {
+            if (self.cancelled)() {
+                return Err(QueryError::Cancelled.into());
+            }
+            budget
+                .charge(Resource::Steps, columns.len() as u64 + 1)
+                .map_err(QueryError::from)?;
+            let index = columns
+                .iter()
+                .position(|column| column.name() == dependency)
+                .ok_or(CalculationError::Unsupported)?;
+            if self
+                .entry(table)?
+                .columns
+                .get()
+                .ok_or(QueryError::Source)?
+                .cached
+                .get(index)
+                .is_some_and(Option::is_some)
+            {
+                return Err(CalculationError::Unsupported);
+            }
+        }
         drop(budget);
         let plan = prepare(&query, self)?;
         Ok(PreparedCalculation {

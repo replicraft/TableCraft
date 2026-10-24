@@ -1,5 +1,21 @@
 # Implementation status
 
+## Explicit cached calculation queries
+
+`query run --stored-calculations --database PATH` now explicitly queries qualified
+stored results through a metadata-only native source and the existing read-only
+executor. Ordinary sources retain their prior eligibility. A stored projection
+cursor shares normal traversal, EOF, terminal failure and cumulative controls;
+pruned ordinary projections do not decode caches. Required indexes refuse cached
+selections before traversal; automatic selection declines that path. Cached
+provenance is exposed separately and recomputation remains distinct. See
+[the query contract](CACHED_CALCULATION_QUERIES.md).
+
+Five adapter, eight preview, three engine cursor and two CLI tests pass with strict
+scoped Clippy. Independent stored-getter replay passes 92 controls over unchanged
+Decimal/Memo fixtures and a fixed executable. This is explicit cached querying,
+not freshness, formula execution or native Access query qualification.
+
 ## Wider Decimal SUM
 
 Decimal SUM/DSum now share the existing exact fixed total with means when narrow

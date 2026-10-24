@@ -14,7 +14,10 @@ use std::cell::{OnceCell, RefCell};
 use tablecraft_ace::{
     AttachmentDecodeLimits, InspectError, TableSnapshot, TableSnapshotLimits, inspect_catalog,
 };
-use tablecraft_core::{limits::ResourceBudget, values::Value};
+use tablecraft_core::{
+    limits::{Resource, ResourceBudget},
+    values::Value,
+};
 use tablecraft_model::{CatalogScope, ModelError, ObjectKind};
 use tablecraft_query::{
     QueryError,
@@ -52,6 +55,7 @@ pub struct NativeSource<'a, R> {
     multivalues: bool,
     collections: bool,
     decoded_attachments: bool,
+    stored_calculations: bool,
     attachment_decode_limits: AttachmentDecodeLimits,
     auto_indexes: bool,
     text_policy_scope: collation::TextPolicyScope,
@@ -134,6 +138,7 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
             multivalues: false,
             collections: false,
             decoded_attachments: false,
+            stored_calculations: false,
             attachment_decode_limits: AttachmentDecodeLimits::default(),
             auto_indexes: false,
             text_policy_scope: collation::TextPolicyScope::Unselected,
@@ -147,6 +152,41 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
         self.multivalues = true;
         self
     }
+    /// Expose qualified cached calculation fields before schema discovery.
+    /// Values remain stored and potentially stale; no formula executes. This
+    /// explicit profile must be selected before binding or loading any table.
+    pub fn with_stored_calculations(mut self) -> Result<Self, InspectError> {
+        for entry in &self.entries {
+            if (self.cancelled)() {
+                return Err(InspectError::Cancelled);
+            }
+            self.budget.get_mut().charge(Resource::Steps, 1)?;
+            if entry.columns.get().is_some() {
+                return Err(InspectError::Unsupported);
+            }
+        }
+        self.stored_calculations = true;
+        Ok(self)
+    }
+
+    /// Metadata-only cache provenance for one exposed scalar column. None means
+    /// an out-of-range column; true never establishes cached-result freshness.
+    pub fn is_stored_calculation(
+        &self,
+        table: &str,
+        index: usize,
+    ) -> Result<Option<bool>, QueryError> {
+        self.schema_columns(table)?;
+        Ok(self
+            .entry(table)?
+            .columns
+            .get()
+            .ok_or(QueryError::Source)?
+            .cached
+            .get(index)
+            .map(Option::is_some))
+    }
+
     /// Opt into stored multivalues, attachment metadata and stored-history members.
     /// Binding reads metadata only. Child snapshots remain complete and bounded;
     /// FileData retains exact stored Binary envelopes; no decoder runs by default.

@@ -77,6 +77,33 @@ impl<'a, R: crate::NativeReadSource> TableCursor<'a, R> {
     ) -> Result<Self, InspectError> {
         Self::open_selected(source, scope, name, Some(selected), budget, cancelled)
     }
+    /// Explicitly qualify ordinary scalars and cached calculation results.
+    /// Selected calculated declarations require the existing exact stored profile;
+    /// no expression executes or freshness is inferred. Unselected unsupported
+    /// declarations/payloads remain outside the projection. Row framing and EOF
+    /// checks, resource limits and terminal fetch failures are unchanged.
+    pub fn open_stored_projection(
+        source: &'a mut R,
+        scope: CatalogScope,
+        name: &str,
+        names: &[&str],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, InspectError> {
+        let features =
+            super::super::inspect_table_features(source, scope, name, budget, cancelled)?;
+        let (positions, columns) =
+            super::super::calculated::projected_columns(&features, names, budget, cancelled)?;
+        Self::from_qualified(
+            source,
+            features.into_schema(),
+            Some(positions),
+            columns,
+            budget,
+            cancelled,
+        )
+    }
+
     fn open_selected(
         source: &'a mut R,
         scope: CatalogScope,
@@ -93,6 +120,17 @@ impl<'a, R: crate::NativeReadSource> TableCursor<'a, R> {
         } else {
             (None, snapshot::columns(&schema, budget)?)
         };
+        Self::from_qualified(source, schema, selected, columns, budget, cancelled)
+    }
+
+    fn from_qualified(
+        source: &'a mut R,
+        schema: TableSchema,
+        selected: Option<Vec<usize>>,
+        columns: Vec<Column>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, InspectError> {
         let mut reader = Reader {
             source,
             header: schema.header,

@@ -1,0 +1,55 @@
+{
+  "date": "2026-10-24",
+  "scope": "Compare opted-in cached queries with original independent stored-value getters.\n\nThis checks stored read/query composition, not recalculation or Access SQL.\n",
+  "controls": 92,
+  "hashes_unchanged": true,
+  "inputs": {
+    ".cache/tablecraft-bin/cached-query-20261024": "d0666d2d733e746b5cdbda776d55aca0b263e55aa566cff93e715a2fd7e9de15",
+    ".cache/tablecraft-fixtures/jackcess-5.0.4.jar": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    "docs/testing/compare_cached_queries.py": "f8e150eab4682defd76168bc75b8f0c402219bf154a5217e2fe751d3bf667464",
+    "docs/testing/CalculatedDecimalFixture.java": "aa35e0e600b8b86874449d7a3455d13eec1c7fb4e84195bf098aa6a25057746b",
+    "docs/testing/CalculatedMemoFixture.java": "62ee9b69c72941aff5606a7c993f0cf51a635747c2e5a9a9cff759fd931ca933",
+    "crates/engines/tablecraft-ace/src/table/calculated/projection.rs": "22787aaefe0a4b4b8d4e89865af07af57458093dcdafdbb81b0f9e46b24d1e2f",
+    "crates/engines/tablecraft-ace/src/table/page/cursor.rs": "ba29e20e70ebef3b80bfac22d7fde201b3212aa8722ccb0d7c7630fd7f4b50b5",
+    "crates/engines/tablecraft-ace/src/table/features/mod.rs": "e5925de84667cc9a8c325ebb075786a97034e574f177594d04b1137561d8498a",
+    "crates/backends/tablecraft-access/src/source.rs": "9a6e36e29da4c73d4e223d621d58f840a00b1665227cacff4a1a9bb22958ea84",
+    "crates/backends/tablecraft-access/src/source/schema.rs": "f90ba54e87564726f5994ba52784a33ec80f7addd76912bd362e61da76fd2ea9",
+    "crates/backends/tablecraft-access/src/source/snapshot.rs": "87e83f5a0e1b077aeea6c5bb51c465c72cff4e1e2c742bcf436fc851857a7567",
+    "crates/backends/tablecraft-access/src/source/projection.rs": "c1540655ea01d052e0e0a5d6d540b4e09e1aacfe0ac6b4547d2cae30f727e757",
+    "crates/backends/tablecraft-access/src/source/selection.rs": "3fcdb041b7f894a7b20aee869bda4e6b6930e246cdc6890c3a90c05fb7217550",
+    "crates/backends/tablecraft-access/src/source/calculation.rs": "3da1ce04b97d06446d1a5726f3e7c84844f5d27b0bda0b5b6e55766ebe73afc2",
+    "apps/tablecraft-cli/src/commands/query/mod.rs": "c94fa29ccd9e02b77857d67b4d98f301e344149e73138e4ad972f04b4f9e106d",
+    "apps/tablecraft-cli/src/commands/query/run_args.rs": "0749b189f857ff51f9a059bdb84145a82e2fd3ae7bee3cd10d7f0bc659b74e92",
+    "apps/tablecraft-cli/src/commands/query/retrieval.rs": "df3619933131c5c28ea72ee5fcdccba459d210268aad12118e0f280a8db9c3e4",
+    ".cache/tablecraft-fixtures/calculated-decimals-20261024/V2016.accdb": "9c6669076c8cba89ac36e26bfffc1f3f59a3f6df9ed5544f2663764d84041c8f",
+    ".cache/tablecraft-fixtures/calculated-decimals-20261024/V2019.accdb": "4da0bffb0c76c690d350b3bb4685377fa55f9434312eaa1a1d259a8f1799f9f1",
+    ".cache/tablecraft-fixtures/calculated-memo-modes-20261024/V2016.accdb": "d6c65a4f59909fa550e9fc98cc196997a3326bca92e882348c6e99596b98ac7c",
+    ".cache/tablecraft-fixtures/calculated-memo-modes-20261024/V2019.accdb": "230b92a3a12c327a2cf27d9d31c58d8acf6e3f07340e383d9ff7a162eec7a5cd"
+  },
+  "observations": [
+    {
+      "file": ".cache/tablecraft-fixtures/calculated-decimals-20261024/V2016.accdb",
+      "oracle_sha256": "a3f0b9593b28a34e7a6404abd7fcedc28a854f53021349b13a07a74ff194156a",
+      "rows": 11,
+      "kind": "decimal"
+    },
+    {
+      "file": ".cache/tablecraft-fixtures/calculated-decimals-20261024/V2019.accdb",
+      "oracle_sha256": "a3f0b9593b28a34e7a6404abd7fcedc28a854f53021349b13a07a74ff194156a",
+      "rows": 11,
+      "kind": "decimal"
+    },
+    {
+      "file": ".cache/tablecraft-fixtures/calculated-memo-modes-20261024/V2016.accdb",
+      "oracle_sha256": "04bf5d2a9b74f59ca126eb5c4bf8610456d9dff34d141dc44a0bc54174856364",
+      "rows": 7,
+      "kind": "memo"
+    },
+    {
+      "file": ".cache/tablecraft-fixtures/calculated-memo-modes-20261024/V2019.accdb",
+      "oracle_sha256": "04bf5d2a9b74f59ca126eb5c4bf8610456d9dff34d141dc44a0bc54174856364",
+      "rows": 7,
+      "kind": "memo"
+    }
+  ]
+}

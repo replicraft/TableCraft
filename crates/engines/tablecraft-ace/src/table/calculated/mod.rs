@@ -3,6 +3,8 @@ mod declaration;
 mod encoding;
 mod long_text;
 mod page;
+mod projection;
+pub(in crate::table) use projection::projected_columns;
 mod read;
 mod snapshot;
 mod wrapper;

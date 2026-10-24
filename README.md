@@ -30,6 +30,10 @@ file allowance can reach 16 MiB. `--native-value-bytes` separately raises encode
 Memo/OLE/attachment reads from 2 MiB to at most 32 MiB under cumulative budgets
 ([storage limits](docs/LARGER_ENCODED_VALUES.md)). See [decoded attachment limits](docs/LARGER_DECODED_ATTACHMENTS.md).
 
+To query qualified cached calculation results, explicitly pass
+`query run --database example.accdb --stored-calculations`. These values can be
+stale; formulas do not execute. See [cached queries](docs/CACHED_CALCULATION_QUERIES.md).
+
 For larger local scalar tables, `tablecraft rows example.accdb Customers --stream`
 continues in TSV batches, with optional scalar `--column` selections and explicit
 cumulative read limits. [Streaming output](docs/STREAMING_ROWS.md) can retain earlier

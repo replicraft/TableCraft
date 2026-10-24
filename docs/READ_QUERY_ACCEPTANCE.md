@@ -383,6 +383,12 @@ using the existing fixed-total implementation. Twenty-one focused regressions an
 125 independent Fraction-model results plus five refusals pass; native Access
 precision remains unqualified. See [Decimal sums](DECIMAL_SUMS.md).
 
+Explicit cached query sources now expose qualified stored calculation fields
+without formula execution or inferred freshness. Ninety-two independent getter/
+query controls pass; ordinary sources keep their prior eligibility. This closes
+a cached-read gap without completing formula freshness or native query
+qualification. See [cached queries](CACHED_CALCULATION_QUERIES.md).
+
 ### P0 implementation boundaries reviewed 24 October 2026
 
 | Boundary | Current implementation | Remaining work |

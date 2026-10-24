@@ -80,6 +80,9 @@ pub(crate) struct RunArgs {
     /// Read supported local tables from this explicit stable/offline MDB/ACCDB copy.
     #[arg(long, value_name = "PATH")]
     pub(crate) database: Option<PathBuf>,
+    /// Query qualified stored calculation caches; results may be stale and are never recalculated.
+    #[arg(long, requires = "database", conflicts_with = "sqlite")]
+    pub(crate) stored_calculations: bool,
     /// Enable qualified .Value expansion and scalar-parent membership criteria.
     #[arg(long, requires = "database")]
     pub(crate) multivalues: bool,

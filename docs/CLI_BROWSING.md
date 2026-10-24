@@ -158,8 +158,10 @@ storage alongside ordinary scalar columns. Both display formats append
 ` [cached]` to calculated column headers. These are stored results, potentially
 stale or inconsistent with other columns; no formula, VBA or active content runs.
 For example a cache of 42 is displayed unchanged even when its formula and current
-input would yield 2. This opt-in is browsing only: ordinary `rows` and query Source
-eligibility remain unchanged. Calculated ACE 2007 columns remain unqualified.
+input would yield 2. Ordinary `rows` and default query sources retain their prior
+eligibility. A separate [cached-query opt-in](CACHED_CALCULATION_QUERIES.md) exposes
+qualified stored results to `query run` without recalculation. Calculated ACE
+2007 columns remain unqualified.
 
 The reusable API is `NativeBrowser::stored_page`, returning the distinct engine
 `StoredTablePage` from `read_stored_table_page`. It retains original schema and
