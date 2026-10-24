@@ -78,6 +78,8 @@ fn global_password_supports_inventory_rows_queries_and_detailed_inspection() {
             "query",
             "run",
             "SELECT Count(*) AS Total FROM ROULETTE_TB",
+            "--native-value-bytes",
+            "4194304",
             "--database",
             input.path(),
             "-p",

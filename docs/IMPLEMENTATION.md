@@ -1,10 +1,34 @@
 # Implementation status
 
+## Explicit larger encoded native values
+
+Validated LongValueReadLimits/LongValueReadSource and `query run
+--native-value-bytes` now permit encoded MEMO/OLE/attachment values up to 32 MiB.
+Defaults stay at 2 MiB; decoded Memo/file/header and cumulative pools remain
+separate. Larger chains retain bounded references, charged visited sets and local
+physical batches without resetting cumulative budgets. Raw bytes and delegated
+header/decryption hooks remain intact. AttachmentDecodeLimits independently
+selects encoded allowance; changing it invalidates decoded caches. CLI Run
+arguments now live in a boxed feature-local RunArgs structure without changing
+option spelling. See [storage contracts](LARGER_ENCODED_VALUES.md).
+
+34 focused engine tests, eight adapter tests and 12 CLI tests pass. Scoped
+engine/adapter/CLI Clippy, minimal engine/adapter checks, formatting, Python
+compilation and the dependency guard pass. Existing decoded-file and metadata
+replays also pass 33 and 21 controls on unchanged inputs. The independent
+runner passes 55 controls using original four-family 4/20 MiB OLE fixtures and
+three existing incompressible attachment inputs, inert Jackcess getters and Python
+bytes. Full 32 MiB storage/16,384-reference synthetic reads pass in all four
+qualified families. Native Access, performance measurements, broader read/query
+acceptance and production writes remain unfinished.
+
+
 ## Explicit decoded attachment file allowances
 
 The engine now exposes validated AttachmentDecodeLimits and bounded decoding
 entry points up to a 16 MiB file allowance. Existing entry points keep their
-1 MiB default; encoded storage stays bounded to 2 MiB and headers to 4 KiB.
+1 MiB default; encoded storage defaults to 2 MiB and headers stay at 4 KiB.
+The later explicit encoded allowance is described above.
 NativeSource and `query run --attachment-bytes` carry the explicit allowance into
 the existing decoded-file view. Native/query/output pools stay separate, metadata
 pruning stays inert and complete caches publish only after all children succeed.

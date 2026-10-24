@@ -21,8 +21,9 @@ output allowances. Native and query budgets still apply; see [larger payloads](d
 
 Explicit decoded attachment queries can also set `--attachment-bytes BYTES`
 with `--collections --decoded-attachments`. The default stays 1 MiB; the explicit
-file allowance can reach 16 MiB while encoded storage and other budgets remain
-separate. See [decoded attachment limits](docs/LARGER_DECODED_ATTACHMENTS.md).
+file allowance can reach 16 MiB. `--native-value-bytes` separately raises encoded
+Memo/OLE/attachment reads from 2 MiB to at most 32 MiB under cumulative budgets
+([storage limits](docs/LARGER_ENCODED_VALUES.md)). See [decoded attachment limits](docs/LARGER_DECODED_ATTACHMENTS.md).
 
 For larger local scalar tables, `tablecraft rows example.accdb Customers --stream`
 continues in TSV batches, with optional scalar `--column` selections and explicit

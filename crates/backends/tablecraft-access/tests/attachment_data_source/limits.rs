@@ -104,3 +104,32 @@ fn file_policy_changes_do_not_refund_the_original_native_budget() {
         matches!(execute(&source, sql), Err(QueryError::Limit(error)) if error.resource == Resource::Bytes)
     );
 }
+
+#[test]
+fn changing_only_encoded_allowance_invalidates_decoded_cache() {
+    let encoded = large_encoded();
+    let allowed = AttachmentDecodeLimits::new(1_100_000).unwrap();
+    let source = NativeSource::new(
+        Cursor::new(attachment_fixture::with_payloads(&encoded, EMPTY_FILE)),
+        CatalogScope::new(1),
+        ResourceBudget::new(64 * 1024 * 1024, 16384, 100_000_000),
+        &|| false,
+    )
+    .unwrap()
+    .with_decoded_attachment_limits(allowed);
+    let sql = "SELECT Count(Score.FileData) FROM Items";
+    assert_eq!(execute(&source, sql).unwrap(), [vec![Value::Int64(2)]]);
+
+    let smaller = allowed
+        .with_encoded_bytes(encoded.len() as u32 - 1)
+        .unwrap();
+    let source = source.with_decoded_attachment_limits(smaller);
+    assert_eq!(execute(&source, sql), Err(QueryError::StructureLimit));
+    assert_eq!(
+        execute(&source, "SELECT Count(Score.FileName) FROM Items").unwrap(),
+        [vec![Value::Int64(2)]]
+    );
+
+    let source = source.with_decoded_attachment_limits(allowed);
+    assert_eq!(execute(&source, sql).unwrap(), [vec![Value::Int64(2)]]);
+}

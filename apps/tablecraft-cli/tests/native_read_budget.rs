@@ -315,3 +315,31 @@ fn query_allocation_and_row_pools_have_explicit_ranges_and_unchanged_output() {
         assert!(result.stdout.is_empty());
     }
 }
+
+#[test]
+fn native_value_allowance_requires_database_and_validates_its_own_range() {
+    for value in ["0", "33554433", "-1", "many"] {
+        let result = run(&[
+            "query",
+            "run",
+            "SELECT 1",
+            "--database",
+            "missing.accdb",
+            "--native-value-bytes",
+            value,
+        ]);
+        assert_eq!(result.status.code(), Some(2));
+        assert!(result.stdout.is_empty());
+        assert!(!String::from_utf8_lossy(&result.stderr).contains("database I/O failed"));
+    }
+    let result = run(&[
+        "query",
+        "run",
+        "SELECT 1",
+        "--native-value-bytes",
+        "4194304",
+    ]);
+    assert_eq!(result.status.code(), Some(2));
+    assert!(result.stdout.is_empty());
+    assert!(String::from_utf8_lossy(&result.stderr).contains("--database"));
+}

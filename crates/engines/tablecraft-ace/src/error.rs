@@ -87,6 +87,9 @@ pub enum InspectError {
     /// Attachment decoding requires a positive bounded file-size allowance.
     #[error("invalid attachment decoding limits")]
     InvalidAttachmentLimits,
+    /// Native long-value reads require a positive bounded encoded-byte allowance.
+    #[error("invalid native long-value read limits")]
+    InvalidLongValueLimits,
     /// A complete snapshot cannot be assembled after rows have been returned.
     #[error("scalar cursor has already returned rows")]
     CursorAdvanced,

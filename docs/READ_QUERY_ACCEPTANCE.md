@@ -364,8 +364,10 @@ ACCDT/package handling and signature verification remain separate backend work.
 They are not prerequisites for every offline write experiment, nor are they waived.
 VBA execution remains deferred; dependent queries must report the limitation.
 
-Native [larger stored payloads](LARGE_PAYLOADS.md) now admit 2 MiB OLE and 1 MiB
-decoded Memo/attachment files. Explicit query Text (up to 1 MiB) and buffered
+Native [larger stored payloads](LARGE_PAYLOADS.md) retain a 2 MiB encoded default;
+[explicit encoded reads](LARGER_ENCODED_VALUES.md) reach 32 MiB, with independent
+20 MiB OLE/3 MiB incompressible attachment controls. Decoded Memo stays at 1 MiB;
+attachment files separately allow up to 16 MiB. Explicit query Text (up to 1 MiB) and buffered
 output (up to 16 MiB) allowances now enable full larger payload projections;
 defaults and separate cumulative execution/provider limits remain.
 
