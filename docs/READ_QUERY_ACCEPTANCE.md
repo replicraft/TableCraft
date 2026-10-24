@@ -74,6 +74,12 @@ source families and native result-type qualification remain separate. See
 
 ## Remaining acceptance work
 
+[Retained String predicates](RAW_PREDICATES.md) now preserve NULL truth and empty
+quantifier outcomes without Unicode publication. The existing explicit both-known-
+Variant String/numeric rule also recognizes raw String identity. Eager failures,
+metadata/policies and strict non-NULL coercion remain explicit; broader raw LIKE,
+keys, native locale providers and P0 semantics remain unfinished.
+
 Qualified [query cells](RETAINED_STRINGS.md) now retain core's checked String byte
 ranges through derived rows, UNION ALL, correlated subqueries and First/Last.
 Raw-aware consumers operate without premature Unicode publication; ordinary

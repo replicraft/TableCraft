@@ -15,11 +15,11 @@ impl Runtime<'_, '_> {
         negated: bool,
         env: Environment<'_>,
     ) -> Result<CellValue, QueryError> {
-        let value = self.expression_operand(expression, env)?;
+        let value = self.retained_expression_operand(expression, env)?;
         let mut declaration = value.declaration;
         let mut membership = Membership::new();
         for candidate in list {
-            let item = self.expression_operand(candidate, env)?;
+            let item = self.retained_expression_operand(candidate, env)?;
             declaration = combined(declaration, item.declaration);
             let policy = self.expression_pair_policy(expression, candidate, &value, &item)?;
             membership.consider(&value, &item, |left, right| {

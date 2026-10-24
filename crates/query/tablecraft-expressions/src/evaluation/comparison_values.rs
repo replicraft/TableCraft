@@ -12,10 +12,15 @@ mod dates;
 mod effective;
 mod floating;
 
+#[cfg(test)]
+mod raw_tests;
+
 impl Evaluator<'_> {
     /// Compare expression operands without implicitly converting Error codes.
     /// Standard Error/Error pairs compare their codes; mixed kinds are TypeMismatch.
-    /// Opaque codes and other expression-only states retain explicit refusal.
+    /// Raw String/NULL yields Unknown without Unicode publication; other raw
+    /// pairs retain strict materialization. Opaque codes and other expression-only
+    /// states retain explicit refusal.
     pub fn compare_expression_values(
         &mut self,
         operator: Comparison,
@@ -25,6 +30,24 @@ impl Evaluator<'_> {
         match (left, right) {
             (ExpressionValue::Value(left), ExpressionValue::Value(right)) => {
                 self.compare_values(operator, left, right)
+            }
+            (ExpressionValue::StringBytes(_), ExpressionValue::Value(Value::Null))
+            | (ExpressionValue::Value(Value::Null), ExpressionValue::StringBytes(_)) => {
+                self.check(0)?;
+                Ok(Truth::Unknown)
+            }
+            (ExpressionValue::StringBytes(left), ExpressionValue::StringBytes(right)) => {
+                let left = self.publish_expression_string(left)?;
+                let right = self.publish_expression_string(right)?;
+                self.compare_values(operator, &left, &right)
+            }
+            (ExpressionValue::StringBytes(left), ExpressionValue::Value(right)) => {
+                let left = self.publish_expression_string(left)?;
+                self.compare_values(operator, &left, right)
+            }
+            (ExpressionValue::Value(left), ExpressionValue::StringBytes(right)) => {
+                let right = self.publish_expression_string(right)?;
+                self.compare_values(operator, left, &right)
             }
             (ExpressionValue::Error(left), ExpressionValue::Error(right)) => {
                 self.check(0)?;

@@ -5,7 +5,9 @@ use super::Runtime;
 use crate::execution::cell::CellValue;
 use crate::{QueryError, plan::Expr, source::TextPolicy};
 use tablecraft_core::values::{ExpressionValue, Value};
-use tablecraft_expressions::comparison::{self, Collation, Comparison, variant_text_numeric};
+use tablecraft_expressions::comparison::{
+    self, Collation, Comparison, variant_expression_text_numeric,
+};
 use tablecraft_expressions::numeric::OperandDeclaration;
 use tablecraft_expressions::{EvalError, logic::Truth};
 
@@ -16,18 +18,6 @@ impl<'a> Runtime<'a, '_> {
         }
         crate::plan::text_policy::expression(expr, &mut || self.tick(), 1)
     }
-    pub(super) fn text_pair_policy(
-        &mut self,
-        left: &Expr,
-        right: &Expr,
-        a: &Value,
-        b: &Value,
-    ) -> Result<TextPolicy, QueryError> {
-        if !matches!((a, b), (Value::Text(_), Value::Text(_))) {
-            return Ok(TextPolicy::Default);
-        }
-        Ok(self.text_policy(left)?.merge(self.text_policy(right)?))
-    }
     pub(super) fn expression_pair_policy(
         &mut self,
         left: &Expr,
@@ -35,11 +25,16 @@ impl<'a> Runtime<'a, '_> {
         a: &CellValue,
         b: &CellValue,
     ) -> Result<TextPolicy, QueryError> {
-        match (&a.value, &b.value) {
-            (ExpressionValue::Value(a), ExpressionValue::Value(b)) => {
-                self.text_pair_policy(left, right, a, b)
-            }
-            _ => Ok(TextPolicy::Default),
+        if matches!(
+            a.value,
+            ExpressionValue::StringBytes(_) | ExpressionValue::Value(Value::Text(_))
+        ) && matches!(
+            b.value,
+            ExpressionValue::StringBytes(_) | ExpressionValue::Value(Value::Text(_))
+        ) {
+            Ok(self.text_policy(left)?.merge(self.text_policy(right)?))
+        } else {
+            Ok(TextPolicy::Default)
         }
     }
 
@@ -50,27 +45,54 @@ impl<'a> Runtime<'a, '_> {
         b: &CellValue,
         policy: TextPolicy,
     ) -> Result<Truth, QueryError> {
-        let (left_policy, right_policy) = (a.policy, b.policy);
         let declared_variants = self.options.declared_integral
             && a.declaration == Some(OperandDeclaration::Variant)
             && b.declaration == Some(OperandDeclaration::Variant);
-        if let (ExpressionValue::Value(a), ExpressionValue::Value(b)) = (&a.value, &b.value) {
-            if declared_variants {
+        if declared_variants {
+            self.tick()?;
+            if let Some(result) = variant_expression_text_numeric(
+                op,
+                &a.value,
+                &b.value,
+                OperandDeclaration::Variant,
+                OperandDeclaration::Variant,
+            )? {
                 self.tick()?;
-                if let Some(result) = variant_text_numeric(
-                    op,
-                    a,
-                    b,
-                    OperandDeclaration::Variant,
-                    OperandDeclaration::Variant,
-                )? {
-                    self.tick()?;
-                    return Ok(result);
-                }
+                return Ok(result);
             }
-            let policy = policy.merge(left_policy).merge(right_policy);
-            return self.compare_predicate_policy(op, a, b, policy);
         }
+
+        let raw_null = matches!(
+            (&a.value, &b.value),
+            (
+                ExpressionValue::StringBytes(_),
+                ExpressionValue::Value(Value::Null)
+            ) | (
+                ExpressionValue::Value(Value::Null),
+                ExpressionValue::StringBytes(_)
+            )
+        );
+        let ordinary = matches!(
+            a.value,
+            ExpressionValue::Value(_) | ExpressionValue::StringBytes(_)
+        ) && matches!(
+            b.value,
+            ExpressionValue::Value(_) | ExpressionValue::StringBytes(_)
+        );
+        if ordinary && !raw_null {
+            let converted_left = self.comparison_cell(a)?;
+            let converted_right = self.comparison_cell(b)?;
+            let left = converted_left.as_ref().unwrap_or(a);
+            let right = converted_right.as_ref().unwrap_or(b);
+            if let (ExpressionValue::Value(a), ExpressionValue::Value(b)) =
+                (&left.value, &right.value)
+            {
+                let policy = policy.merge(left.policy).merge(right.policy);
+                return self.compare_predicate_policy(op, a, b, policy);
+            }
+            return Err(QueryError::Unsupported);
+        }
+
         self.tick()?;
         let result = self
             .evaluator()
@@ -78,6 +100,21 @@ impl<'a> Runtime<'a, '_> {
             .map_err(predicate_error)?;
         self.tick()?;
         Ok(result)
+    }
+
+    fn comparison_cell(&mut self, cell: &CellValue) -> Result<Option<CellValue>, QueryError> {
+        if let ExpressionValue::StringBytes(bytes) = &cell.value {
+            let value = self
+                .evaluator()
+                .publish_expression_string(bytes)
+                .map_err(predicate_error)?;
+            return Ok(Some(
+                CellValue::scalar(value)
+                    .with_policy(cell.policy)
+                    .with_declaration(cell.declaration),
+            ));
+        }
+        Ok(None)
     }
 
     pub(super) fn expression_policies(

@@ -762,6 +762,11 @@ general effective-type tables and native Access qualification remain open.
 
 ## Effective numeric predicate types (23 October 2026)
 
+[Retained String predicates](RAW_PREDICATES.md) now preserve NULL truth without
+decoding. The both-known-Variant String/numeric exception also recognizes raw
+String identity without inspecting contents; declarations remain caller-issued.
+Other raw operands publish strictly before the existing effective-type service.
+
 The explicit query profile now selects the reviewed effective numeric type before
 ordinary predicate comparison, rather than always parsing an integral/Text pair
 as Double. `Evaluator::compare_effective_numeric_values` exposes the policy

@@ -160,8 +160,8 @@ impl Runtime<'_, '_> {
                 if let Some(comparison) = relational::operator(*operator) =>
             {
                 self.tick()?;
-                let left_value = self.expression_operand(left, env)?;
-                let right_value = self.expression_operand(right, env)?;
+                let left_value = self.retained_expression_operand(left, env)?;
+                let right_value = self.retained_expression_operand(right, env)?;
                 self.declared_comparison(comparison, left, right, left_value, right_value)
             }
             Expr::Binary(operator, left, right)

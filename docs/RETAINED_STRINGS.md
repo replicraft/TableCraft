@@ -31,6 +31,10 @@ sort/group keys retain their existing ordinary-Text comparison profile rather
 than silently ordering unsupported raw data. Broader raw predicate/key semantics
 and native Access qualification remain unfinished.
 
+[NULL predicates and issued-Variant category ordering](RAW_PREDICATES.md) now
+retain Strings until their result actually needs Unicode. Other non-NULL
+comparison and raw key/provider limits remain explicit.
+
 Both public query result modes retain strict final String publication. A raw
 String may survive intermediate rows, but a directly selected unrepresentable
 String still fails before buffered results reach the caller/CLI. Explicit Error
