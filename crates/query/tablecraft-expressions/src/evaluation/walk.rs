@@ -101,13 +101,8 @@ impl Evaluator<'_> {
                 expression,
                 negated,
             } => {
-                let value = self.expression_operand(expression, depth + 1)?;
-                Ok(Value::Boolean(
-                    matches!(
-                        value,
-                        tablecraft_core::values::ExpressionValue::Value(Value::Null)
-                    ) != *negated,
-                ))
+                let value = self.expression_byte_operand(expression, depth + 1)?;
+                Ok(Value::Boolean(value.is_null() != *negated))
             }
             E::Between {
                 expression,

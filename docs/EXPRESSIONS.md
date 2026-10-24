@@ -237,6 +237,12 @@ The parser-independent `functions` module owns a closed, allocation-free built-i
 lookup and value kernels. `IsNull(value)` returns Boolean true only for stored
 NULL; zero, empty text/binary and other materialized values are distinct. Core
 Empty/Missing/Error expression states are not coerced into stored values.
+IsNull and SQL IS NULL/IS NOT NULL also consume lossless String operands directly.
+Unpaired UTF-16 units and odd byte ranges are non-NULL Strings; these tests do not
+decode or allocate a Text payload. Constructor and eager expression failures still
+propagate. This does not permit raw Strings as stored/derived relational cells or
+widen other predicate/comparison inputs. See [raw nullness](BYTE_STRING_FUNCTIONS.md#null-identity-without-unicode-publication).
+
 `IIf(condition, truepart, falsepart)` selects and moves one already evaluated branch
 without result-carrier promotion, cloning or allocation. Both scalar syntax and
 bound retrieval evaluate condition, truepart and falsepart in written order.

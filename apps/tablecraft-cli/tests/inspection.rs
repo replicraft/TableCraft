@@ -1,5 +1,33 @@
 mod support;
 use support::run;
+
+#[test]
+fn null_tests_consume_raw_strings_in_both_hosts() {
+    for mode in ["eval", "run"] {
+        let result = run(&[
+            "query",
+            mode,
+            "SELECT IsNull(ChrW(55296)) AS A,ChrB(65) IS NOT NULL AS B,IsNull(ChrW(55296)+NULL) AS C,CStr(LeftB('😀',1)) IS NULL AS D",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(result.stdout, b"A\tB\tC\tD\nFALSE\tTRUE\tTRUE\tFALSE\n");
+
+        for expression in [
+            "IsNull(ChrW(65536))",
+            "ChrW(NULL) IS NULL",
+            "IsNull(ChrW(55296)+(1/0))",
+        ] {
+            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            assert_eq!(result.status.code(), Some(2), "{expression}");
+            assert!(result.stdout.is_empty(), "{expression}");
+        }
+    }
+}
+
 fn table(bytes: &[u8]) -> Vec<Vec<String>> {
     csv::ReaderBuilder::new()
         .delimiter(b'\t')

@@ -27,7 +27,10 @@ impl From<ByteOperand> for ExpressionByteOperand {
 
 #[cfg(feature = "sql")]
 impl ExpressionByteOperand {
-    pub(crate) fn is_null(&self) -> bool {
+    /// Observe NULL identity without decoding or allocating a String payload.
+    /// Raw Strings, Empty, Missing and Error are distinct from scalar NULL.
+    /// This does not admit those states to any particular consumer.
+    pub fn is_null(&self) -> bool {
         matches!(self, Self::Scalar(ExpressionValue::Value(Value::Null)))
     }
 

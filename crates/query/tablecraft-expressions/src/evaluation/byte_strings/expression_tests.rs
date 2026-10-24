@@ -16,6 +16,28 @@ fn input(value: ExpressionValue) -> ExpressionByteOperand {
 }
 
 #[test]
+fn raw_string_null_tests_do_not_require_unicode_publication() {
+    for raw in ["ChrW(55296)", "ChrB(65)", "CStr(LeftB('😀',1))"] {
+        for (sql, expected) in [
+            (format!("IsNull({raw})"), false),
+            (format!("{raw} IS NULL"), false),
+            (format!("{raw} IS NOT NULL"), true),
+            (format!("IsNull({raw}+NULL)"), true),
+        ] {
+            let parsed = parse_select(&format!("SELECT {sql}"), Default::default()).unwrap();
+            let Projection::Expression { expression, .. } = &parsed.query().projection[0] else {
+                panic!("expression required");
+            };
+            let mut budget = ResourceBudget::new(65536, 0, 10000);
+            let result =
+                Evaluator::new(&NoBindings, &mut budget, Default::default()).evaluate(expression);
+
+            assert_eq!(result, Ok(Value::Boolean(expected)), "{sql}");
+        }
+    }
+}
+
+#[test]
 fn byte_state_targets_keep_numeric_codes_string_sources_and_control_order_distinct() {
     let mut budget = ResourceBudget::new(65536, 0, 10000);
     let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default());
