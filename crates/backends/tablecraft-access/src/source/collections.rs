@@ -1,11 +1,12 @@
 //! Aligned named metadata views over separately cached complete child snapshots.
+mod load;
 mod payload;
 use super::{NativeSource, query_error};
 use payload::DecodedFiles;
 use std::cell::OnceCell;
 use tablecraft_ace::{
-    AttachmentColumn, ComplexColumnLinks, MultivalueColumn, inspect_attachment_declarations,
-    read_attachment_column_with_limits,
+    AttachmentColumn, AttachmentMetadataColumn, ComplexParentLink, MultivalueColumn,
+    inspect_attachment_declarations,
 };
 use tablecraft_core::{limits::Resource, values::Value};
 use tablecraft_query::{
@@ -21,25 +22,33 @@ pub(super) struct AttachmentCache {
     snapshots: Vec<AttachmentSnapshot>,
 }
 struct AttachmentSnapshot {
+    metadata: OnceCell<AttachmentMetadataColumn>,
     stored: OnceCell<AttachmentColumn>,
     decoded: OnceCell<DecodedFiles>,
 }
 enum NativeField<'a> {
     Value(&'a MultivalueColumn),
     Attachment(&'a AttachmentColumn, &'a str),
+    AttachmentMetadata(&'a AttachmentMetadataColumn, &'a str),
     AttachmentData(&'a AttachmentColumn, &'a DecodedFiles),
 }
 impl NativeField<'_> {
-    fn links(&self) -> &ComplexColumnLinks {
+    fn parents(&self) -> &[ComplexParentLink] {
         match self {
-            Self::Value(column) => column.links(),
-            Self::Attachment(column, _) | Self::AttachmentData(column, _) => column.links(),
+            Self::Value(column) => column.links().parents(),
+            Self::Attachment(column, _) | Self::AttachmentData(column, _) => {
+                column.links().parents()
+            }
+            Self::AttachmentMetadata(column, _) => column.parents(),
         }
     }
     fn value(&self, parent: usize, child: usize) -> Option<&Value> {
         match self {
             Self::Value(column) => column.value(parent, child),
             Self::Attachment(column, member) => column.metadata_value(parent, child, member),
+            Self::AttachmentMetadata(column, member) => {
+                column.metadata_value(parent, child, member)
+            }
             Self::AttachmentData(_, files) => files.get(parent, child),
         }
     }
@@ -146,6 +155,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 .try_reserve_exact(members.len())
                 .map_err(|_| QueryError::Allocation)?;
             snapshots.extend((0..members.len()).map(|_| AttachmentSnapshot {
+                metadata: OnceCell::new(),
                 stored: OnceCell::new(),
                 decoded: OnceCell::new(),
             }));
@@ -174,112 +184,6 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
             .get()
             .ok_or(QueryError::Source)?
             .text_collations)
-    }
-    fn load_members(
-        &self,
-        table: &str,
-        selected: &[usize],
-    ) -> Result<Vec<NativeField<'_>>, QueryError> {
-        if selected.is_empty() {
-            return Ok(Vec::new());
-        }
-        let members = self.attachment_members(table)?;
-        validate_projection(selected, members.len())?;
-        let entry = self.entry(table)?;
-        let cache = entry.attachments.get().ok_or(QueryError::Source)?;
-        self.budget
-            .try_borrow_mut()
-            .map_err(|_| QueryError::Source)?
-            .charge_allocation(selected.len() as u64, size_of::<NativeField<'_>>() as u64)
-            .map_err(|error| query_error(error.into()))?;
-        let mut fields = Vec::new();
-        fields
-            .try_reserve_exact(selected.len())
-            .map_err(|_| QueryError::Allocation)?;
-        for index in selected {
-            if (self.cancelled)() {
-                return Err(QueryError::Cancelled);
-            }
-            let member = &members[*index];
-            let owner = members
-                .iter()
-                .position(|other| {
-                    other
-                        .collection()
-                        .as_str()
-                        .eq_ignore_ascii_case(member.collection().as_str())
-                })
-                .ok_or(QueryError::Source)?;
-            let cell = &cache.snapshots[owner].stored;
-            if cell.get().is_none() {
-                let mut source = self
-                    .source
-                    .try_borrow_mut()
-                    .map_err(|_| QueryError::Source)?;
-                let mut budget = self
-                    .budget
-                    .try_borrow_mut()
-                    .map_err(|_| QueryError::Source)?;
-                let snapshot = read_attachment_column_with_limits(
-                    &mut *source,
-                    self.scope,
-                    &entry.name,
-                    member.collection().as_str(),
-                    self.snapshot_limits,
-                    &mut budget,
-                    self.cancelled,
-                )
-                .map_err(query_error)?;
-                // Compare observed child metadata as well as the parent declaration.
-                for (position, declared) in members.iter().enumerate().filter(|(_, other)| {
-                    other
-                        .collection()
-                        .as_str()
-                        .eq_ignore_ascii_case(member.collection().as_str())
-                }) {
-                    let field = snapshot
-                        .links()
-                        .child_snapshot()
-                        .schema()
-                        .columns()
-                        .iter()
-                        .find(|field| field.name().eq_ignore_ascii_case(declared.column().name()))
-                        .ok_or(QueryError::SchemaChanged)?;
-                    if field.scalar_type() != Some(declared.column().data_type())
-                        || snapshot
-                            .metadata_text_sort_order(declared.column().name())
-                            .map(crate::collation::identity)
-                            != cache.text_collations[position]
-                    {
-                        return Err(QueryError::SchemaChanged);
-                    }
-                }
-                cell.set(snapshot).map_err(|_| QueryError::Source)?;
-            }
-            let snapshot = cell.get().ok_or(QueryError::Source)?;
-            if member
-                .column()
-                .name()
-                .eq_ignore_ascii_case(payload::FILE_DATA)
-            {
-                let decoded = &cache.snapshots[owner].decoded;
-                if decoded.get().is_none() {
-                    let mut budget = self
-                        .budget
-                        .try_borrow_mut()
-                        .map_err(|_| QueryError::Source)?;
-                    let files = DecodedFiles::read(snapshot, &mut budget, self.cancelled)?;
-                    decoded.set(files).map_err(|_| QueryError::Source)?;
-                }
-                fields.push(NativeField::AttachmentData(
-                    snapshot,
-                    decoded.get().ok_or(QueryError::Source)?,
-                ));
-            } else {
-                fields.push(NativeField::Attachment(snapshot, member.column().name()));
-            }
-        }
-        Ok(fields)
     }
     pub(super) fn member_scan(
         &self,
@@ -311,16 +215,8 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
         for (position, column) in selected.into_iter().enumerate() {
             fields.insert(position, NativeField::Value(column));
         }
-        let parents = fields
-            .first()
-            .ok_or(QueryError::Source)?
-            .links()
-            .parents()
-            .len();
-        if fields
-            .iter()
-            .any(|field| field.links().parents().len() != parents)
-        {
+        let parents = fields.first().ok_or(QueryError::Source)?.parents().len();
+        if fields.iter().any(|field| field.parents().len() != parents) {
             return Err(QueryError::Source);
         }
         let mut ordinal = 0;
@@ -353,7 +249,6 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                     field,
                     parent: ordinal,
                     length: field
-                        .links()
                         .parents()
                         .get(ordinal)
                         .ok_or(QueryError::Source)?

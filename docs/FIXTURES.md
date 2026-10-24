@@ -1,5 +1,47 @@
 # Candidate Access fixtures
 
+## Attachment metadata without payload reads
+
+The original MIT [AttachmentMetadataFixture.java](testing/AttachmentMetadataFixture.java)
+uses the reviewed Jackcess 5.0.4 JAR to create fresh ACE 2016/2019/2007 databases.
+Each has two parents: one holds a deterministic incompressible 3 MiB file and a
+three-byte file, and the other has no attachments. Public attachment APIs produce
+real encoded wrappers. The large encoded value is 3,146,722 bytes, exceeding the
+current 2 MiB encoded read envelope. Read-only independent getters verify all
+metadata, encoded/decoded lengths and the original decoded SHA-256:
+`e44f145b85dde7ab04a48f7d6fba13bf7fff8a739c39e646d340351f2ee72e68`.
+Expressions and active content do not run. Generated binaries and the JAR remain
+ignored local artifacts; only original generator/runner sources are tracked.
+
+| Profile | Bytes | Registered SHA-256 |
+| --- | ---: | --- |
+| V2016 | 3,584,000 | `70bba6653108d52d3ec931a749a77148eb44c2f9be8d0b87025020c64082e112` |
+| V2019 | 3,657,728 | `593904e7db7c48aa94a1f03bfae4b3fd4d4e02665efc3953d65aed21a81f2813` |
+| V2007 | 3,551,232 | `d0b61260ff5a6d669141d7f5b04d88ff0cbf313230c6fef1912bd389abd3930a` |
+
+Generator SHA-256: `eb091fff9b2a4b9a32b7247f2eee7e4613b7fac506411adcf1747b417b433c6c`.
+Runner SHA-256: `9ac237ca2e36d7f9992d416b4b0c671db2d923ec156ede4fb1d74c1fac071b88`.
+JAR SHA-256: `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+Fresh generations may have different database identities; the default runner
+admits only these recorded original bytes, independently of mutable inventories.
+
+```sh
+python3 docs/testing/compare_attachment_metadata.py \
+  --cli target/debug/tablecraft \
+  --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
+  --directory .cache/tablecraft-fixtures/attachment-metadata
+```
+
+Use `--generate` only with a fresh directory to create a new candidate corpus.
+The registered replay passes 21 controls: all five aligned metadata members with
+and without the decoding flag, parent counts, TOP, explicit payload-limit failures
+with empty stdout (including a filter omitting the large-file parent), selected
+index refusal and unchanged original hashes. Only TableCraft executes SQL;
+Jackcess supplies stored values and original attachment decoding, not native query
+semantics. Separate synthetic fault tests prove zero visits to denied payload
+pages and continued orphan/duplicate rejection. Windows Access has not run; this
+does not qualify native FileData representation, coherent live reads or saves.
+
 ## Larger scalar snapshot query controls
 
 The original MIT [compare_large_queries.py](testing/compare_large_queries.py) reuses

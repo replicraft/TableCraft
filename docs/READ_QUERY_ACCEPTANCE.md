@@ -59,6 +59,13 @@ Access comparison behavior. See [predicate scope](NUMERIC_PREDICATES.md).
 
 ## Remaining acceptance work
 
+Attachment metadata queries now use complete projected child snapshots without
+loading FileData values or external payload pages. Independent controls cover
+valid 3 MiB files across ACE 2007/2016/2019; explicit file-content queries retain
+the existing payload limits and complete-read refusals. This closes unnecessary
+metadata payload reads, not native FileData query representation or full collection
+semantics. See [metadata contracts](NATIVE_TABLES.md#attachment-metadata-projection-snapshots).
+
 | Priority | Area | Completion evidence still needed |
 | --- | --- | --- |
 | P0 | Value semantics | Declared-expression/Variant result promotion, complete coercion and Error operator/aggregate behavior; independently modeled boundaries and later native comparisons |

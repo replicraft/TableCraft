@@ -444,10 +444,14 @@ products; empty child sets retain the documented NULL-extension policy.
 
 Binding uses `inspect_attachment_declarations` without reading parent/child records,
 retaining each flat Text member's exact policy identity.
-Execution lazily caches one complete checked attachment snapshot per referenced
-field, separately from scalar projections and `.Value` collections. **This currently
-reads encoded FileData as part of the bounded child snapshot**, even for a metadata
-projection; it never decodes or extracts that payload. Without the separate
+Execution lazily caches a complete metadata projection per referenced field,
+separately from scalar projections, `.Value` collections and full attachment
+snapshots. All parent keys, child references/identities, selected metadata and live
+counts are checked before publication. Metadata-only queries omit FileData values
+and never visit their external long-value pages. The omitted payload is unavailable,
+not a fabricated NULL, and its integrity remains unqualified. This permits metadata
+queries over valid files beyond the existing encoded/decoded payload limits.
+Without the separate
 decoded-view opt-in below, `FileData` binding remains unavailable pending native
 binary-representation qualification. Bare attachment
 fields and matching wildcards remain unsupported. Ordinary scalar queries and
@@ -497,10 +501,15 @@ from NULL or an empty malformed wrapper. Metadata and data remain aligned to the
 same child; empty parents retain the existing NULL extension. Stored field/wrapper
 type labels remain separate, and no content is opened, extracted or executed.
 
-The complete decoded cache is separate from the encoded metadata snapshot and is
+When FileData is requested, every selected member of that collection uses the
+same complete full attachment snapshot, including metadata selected before
+FileData. Enabling the decoder flag alone does not load unrequested payloads.
+An existing complete full snapshot can also satisfy later metadata requests.
+
+The complete decoded cache is separate from the full encoded snapshot and is
 published only after every child succeeds. A later corrupt payload fails even
 under TOP or a filter that would omit it; errors publish no CLI rows. Failed
-decoding does not invalidate otherwise readable metadata. Shared native budgets
+decoding does not invalidate an already cached metadata projection. Shared native budgets
 charge buffers, decoding/copy work and cancellation checkpoints; query/output
 budgets still apply separately. Native decoding permits 2 MiB encoded data,
 1 MiB file data, a decoded body of at most 1 MiB plus a 4 KiB header.

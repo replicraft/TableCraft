@@ -10,6 +10,8 @@ mod complex_fixture;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/complex_links/fixture.rs"]
 mod links_fixture;
+#[path = "attachment_data_source/metadata.rs"]
+mod metadata;
 #[path = "../../../engines/tablecraft-ace/tests/support/mod.rs"]
 mod support;
 use std::{
@@ -31,16 +33,32 @@ const EMPTY_FILE: &[u8] = &[
 const PAGE_BYTES: usize = 4096;
 const PARENT_PAGE: usize = 12;
 const CHILD_PAGE: usize = 22;
+
+struct PayloadWatch {
+    page: usize,
+    forbidden: Cell<bool>,
+    reads: Cell<usize>,
+}
+
 struct Watching {
     bytes: Cursor<Vec<u8>>,
     forbid_records: Rc<Cell<bool>>,
     forbid_children: Rc<Cell<bool>>,
     reads: Rc<Cell<usize>>,
+    payload: Option<Rc<PayloadWatch>>,
 }
 impl tablecraft_ace::NativeReadSource for Watching {}
 impl Read for Watching {
     fn read(&mut self, bytes: &mut [u8]) -> std::io::Result<usize> {
         let page = self.bytes.position() as usize / PAGE_BYTES;
+        if let Some(payload) = &self.payload
+            && page == payload.page
+        {
+            payload.reads.set(payload.reads.get() + 1);
+            if payload.forbidden.get() {
+                return Err(std::io::ErrorKind::PermissionDenied.into());
+            }
+        }
         if matches!(page, PARENT_PAGE | CHILD_PAGE) {
             assert!(!self.forbid_records.get(), "binding read table records");
         }
@@ -81,6 +99,7 @@ fn decoded_payloads_align_preserve_null_empty_and_reuse_complete_cache() {
                 forbid_records: forbid_records.clone(),
                 forbid_children: forbid_children.clone(),
                 reads: reads.clone(),
+                payload: None,
             },
             CatalogScope::new(1),
             budget(),

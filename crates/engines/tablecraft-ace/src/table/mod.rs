@@ -8,9 +8,10 @@ pub use calculated::{
 };
 mod features;
 pub use complex::{
-    AttachmentColumn, AttachmentMemberDeclaration, StoredAttachment,
+    AttachmentColumn, AttachmentMemberDeclaration, AttachmentMetadataColumn, StoredAttachment,
     inspect_attachment_declarations, inspect_attachment_members, read_attachment_column,
-    read_attachment_column_with_limits,
+    read_attachment_column_with_limits, read_attachment_metadata,
+    read_attachment_metadata_with_limits,
 };
 pub use complex::{
     ComplexColumnLinks, ComplexParentLink, ComplexReferenceViolation, read_complex_column_links,

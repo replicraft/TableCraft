@@ -7,9 +7,10 @@ mod page;
 mod resolve;
 mod value_schema;
 pub use attachments::{
-    AttachmentColumn, AttachmentMemberDeclaration, StoredAttachment,
+    AttachmentColumn, AttachmentMemberDeclaration, AttachmentMetadataColumn, StoredAttachment,
     inspect_attachment_declarations, inspect_attachment_members, read_attachment_column,
-    read_attachment_column_with_limits,
+    read_attachment_column_with_limits, read_attachment_metadata,
+    read_attachment_metadata_with_limits,
 };
 pub(super) use encoding::supported_key;
 pub use history::{
