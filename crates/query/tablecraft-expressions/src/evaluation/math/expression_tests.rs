@@ -80,7 +80,7 @@ fn error_data_is_rejected_at_the_original_kernel_validation_position() {
             MathFunction::Round,
             vec![
                 ExpressionValue::Error(1),
-                ExpressionValue::Value(Value::Int16(29)),
+                ExpressionValue::Value(Value::Int16(-1)),
             ],
             EvalError::Domain,
         ),

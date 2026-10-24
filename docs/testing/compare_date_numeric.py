@@ -120,7 +120,7 @@ def main():
             places = int(Decimal(lexical).to_integral_value(rounding=ROUND_HALF_EVEN))
             for source in ["2.25", "CCur(2.25)", "CDec(2.25)", "NULL"]:
                 expression = f"Round({source},CDate({lexical}))"
-                if not 0 <= places <= 28:
+                if not 0 <= places <= 2147483647:
                     execute(args.cli, mode, "SELECT 1," + expression, success=False)
                 else:
                     rows = execute(args.cli, mode, "SELECT " + expression)

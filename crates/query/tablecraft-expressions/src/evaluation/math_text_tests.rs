@@ -92,7 +92,7 @@ fn contextual_math_preserves_validation_order_and_failed_rng_controls_do_not_adv
     assert_eq!(
         evaluator.apply_math(
             MathFunction::Round,
-            &[Value::Text("bad".into()), Value::Text("29".into())]
+            &[Value::Text("bad".into()), Value::Text("-1".into())]
         ),
         Err(EvalError::Domain)
     );

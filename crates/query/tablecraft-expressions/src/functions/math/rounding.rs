@@ -5,12 +5,16 @@ use crate::{
     numeric::decimal::{FloatConversion, from_value, into_value},
 };
 use rust_decimal::{Decimal as LibraryDecimal, RoundingStrategy, prelude::ToPrimitive};
-use tablecraft_core::values::{Currency, Decimal, Double, Single, Value};
+use tablecraft_core::values::{Currency, Double, Single, Value};
+
+mod precision;
 
 // At this magnitude every finite binary64 value is already integral. Avoid
 // changing large integers through an unnecessary multiply/divide round trip.
 const DOUBLE_INTEGRAL_MAGNITUDE: f64 = (1_u64 << (f64::MANTISSA_DIGITS - 1)) as f64;
 const CURRENCY_MULTIPLIER: i64 = 10_i64.pow(Currency::SCALE as u32);
+// Preserve the existing multiply/round/divide profile in its original range.
+const MAX_SCALED_FLOAT_PLACES: u32 = 28;
 
 pub(super) fn apply_with_input<'a>(
     count: usize,
@@ -40,7 +44,7 @@ fn checked_places(
         let Value::Int32(places) = convert(Conversion::Long, places)? else {
             return Err(EvalError::TypeMismatch);
         };
-        if !(0..=i32::from(Decimal::MAX_SCALE)).contains(&places) {
+        if places < 0 {
             return Err(EvalError::Domain);
         }
         places as u32
@@ -91,6 +95,10 @@ fn float(value: f64, places: u32) -> Result<f64, EvalError> {
     if value.abs() >= DOUBLE_INTEGRAL_MAGNITUDE {
         return Ok(value);
     }
+    if places > MAX_SCALED_FLOAT_PLACES {
+        return precision::round(value, places);
+    }
+
     let factor = 10_f64.powi(places as i32);
     let magnitude = value.abs();
     if 1.0 / factor < magnitude - magnitude.next_down() {

@@ -63,7 +63,7 @@ fn math_text_keeps_explicit_policy_domains_and_eager_argument_failures() {
         Err(EvalError::NumberFormatRequired.into())
     );
     for (sql, error) in [
-        ("SELECT Round('bad',29)", EvalError::Domain),
+        ("SELECT Round('bad',-1)", EvalError::Domain),
         ("SELECT RGB(-1,'bad',0)", EvalError::Domain),
         ("SELECT Round('bad',1/0)", EvalError::DivisionByZero),
         ("SELECT RGB(-1,'bad',1/0)", EvalError::DivisionByZero),

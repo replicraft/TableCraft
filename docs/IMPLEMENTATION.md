@@ -1,5 +1,29 @@
 # Implementation status
 
+## Round digit counts independent of storage scale
+
+Round now admits nonnegative Long precision counts instead of rejecting counts
+above Decimal's 28-place storage scale. Fixed carriers/scales are retained through
+rust_decimal. Floating precision through 28 places preserves its existing profile;
+higher precision uses a bounded stack formatter/parser, with a proven unchanged-
+carrier path at 324 places and above. NULL/Error/control order and eager failures
+remain explicit. See [precision scope and references](MATH_FUNCTIONS.md#round-precision-beyond-decimal-storage-scale).
+
+Four new kernel controls include generated finite-bit retention, subnormal goldens,
+signed zero and count boundaries. Two new query controls cover prepared VALUE/Long
+rebinding, derived/scalar-subquery/UNION composition and buffered failure behavior.
+All 688 all-feature expression tests plus one doctest, 364 minimal expression tests,
+18 focused query tests and six CLI tests pass. Focused expression/query/CLI Clippy,
+minimal query check, formatting, Python compilation and diff checks pass.
+
+The original precision recipe passes 960 exact IEEE value/carrier comparisons
+against Python Decimal quantization. Updated source-free math Text and DATE/numeric
+recipes pass 178 and 1,456 controls respectively; invalid-count cases now use
+negative controls. No dependency, native decoder, stored scalar or writer scope
+changed. Native fixtures, Windows Access, full engine/workspace suites and benchmarks
+were not run. Native admissible counts/precision/subtypes/error order and complete
+P0 value/text semantics remain unqualified or unfinished.
+
 ## Native VALUE query parameters
 
 Native parameter code zero now reconstructs as the documented VALUE type.

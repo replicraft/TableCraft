@@ -50,9 +50,10 @@ The unary magnitude/integral/transcendental functions propagate NULL; RGB/QBColo
 reject NULL under their separate color contract. Round evaluates both supplied operands in
 written order, validates its place argument, then propagates a NULL first operand.
 An explicit NULL place count is InvalidNullConversion. The existing checked Int32
-half-even conversion supplies the count; the supported range is 0–28, tied to the
-Decimal carrier's maximum scale. Negative/greater counts are Domain errors. This
-is the current supported bound, not a qualified native maximum. Non-finite inputs,
+half-even conversion supplies a nonnegative Long count, independently of Decimal
+storage scale. Negative counts are Domain errors; conversion outside Long still
+overflows. [Higher-precision rounding](#round-precision-beyond-decimal-storage-scale)
+uses bounded storage/work rather than a loop proportional to that count. Non-finite inputs,
 unsupported carriers under each function profile, invalid arities, missing argument slots
 and qualified VBA/UDF calls fail explicitly. Arguments do not short-circuit on
 NULL, and retrieval buffers the complete result before publication.
@@ -134,7 +135,7 @@ control uses Single. Pure numeric APIs retain their host-free conversion boundar
 and reject Text without a contextual evaluator. No system locale is inferred.
 
 Round validates the converted count before converting its value. Counts retain
-the current 0–28 bound. Numeric Decimal/Currency sources retain their exact
+the nonnegative Long range. Numeric Decimal/Currency sources retain their exact
 carrier when only the count is Text. RGB validates channels in red/green/blue
 order after eager argument evaluation; failed Rnd control conversions do not
 advance state. Existing numeric domains, NULL behavior and carrier rules remain.
@@ -197,7 +198,7 @@ argument failure: RGB(CVErr(1),1/0,0) reports DivisionByZero. The same path appl
 to derived/correlated operands and Error-valued encounter aggregates.
 
 One internal borrowed argument accessor preserves each kernel's validation order.
-Round requests and validates digits before its value, so Round(CVErr(1),29)
+Round requests and validates digits before its value, so Round(CVErr(1),-1)
 reports Domain. RGB converts and validates red before green and blue, so
 RGB(-1,CVErr(1),0) also reports Domain. Rnd requires supplied state before operand
 conversion, and failed admission never consumes a draw. Existing numeric-only
@@ -228,15 +229,15 @@ requested at the relevant validation point. This is not lazy SQL execution.
 
 Round's optional digit argument now uses the shared explicit Long converter for
 all admitted carriers, including legacy DATE. The stored OLE serial is rounded
-half-even before checking the existing 0–28 digit range. It does not extract a
+half-even before checking the nonnegative Long digit range. It does not extract a
 calendar component. For example, `Round(2.25,CDate(1))` returns 2.2 and
 `Round(2.25,CDate(1.5))` returns 2.25. DATE digit conversion requires no number or
 calendar format policy; Text digits retain the explicit NumberFormat requirement.
 
 Digits are still admitted before the value's NULL gate or Error admission;
-`Round(NULL,CDate(29))` and `Round(CVErr(1),CDate(29))` fail Domain. Written argument
+`Round(NULL,CDate(-1))` and `Round(CVErr(1),CDate(-1))` fail Domain. Written argument
 expressions remain eager, including division-by-zero failures. Decimal/Currency
-value carriers, raw binary floating rounding, resource controls and the refusal
+value carriers, existing floating profiles through 28 places, resource controls and the refusal
 of DATE in Round's Variant value slot are unchanged. Extended dates remain
 unsupported in either slot.
 
@@ -247,3 +248,35 @@ provides its raw-serial conversion. See the [reviewed specification record](VARI
 Independent DATE/Decimal controls and query/CLI tests cover this engineering
 profile; native Access digit coercion, rounding and error-order qualification
 remain pending.
+
+## Round precision beyond Decimal storage scale
+
+Round now accepts every nonnegative Long digit count. The former maximum of 28
+was a TableCraft storage-scale restriction, not a qualified Access function
+limit. Negative counts still fail Domain after checked Long conversion; NULL,
+Error, numeric Text and DATE count admission retain their existing order.
+Consequently `Round(NULL,29)` returns NULL, while `Round(CVErr(1),29)` reaches
+Error admission and fails TypeMismatch. A negative count still fails before
+either source admission.
+
+Fixed integral, Decimal and Currency inputs retain their existing carriers and
+scale. rust_decimal already leaves a value unchanged when its stored scale is no
+greater than the requested precision; no general decimal implementation was added.
+Floating inputs through 28 places retain the prior multiply/half-even/divide
+profile. Higher precision uses Rust's locale-independent
+[half-even floating formatter](https://doc.rust-lang.org/std/fmt/index.html#precision)
+and checked float parsing through a fixed 342-byte stack buffer, covering at most
+323 fractional places and 16 integral digits after the existing large-integral
+fast path. This avoids overflowing a power-of-ten factor or allocating an output
+proportional to an arbitrary Long input. At 324 places or more, half the decimal
+quantum is smaller than half the least binary64 subnormal spacing, so the finite
+IEEE carrier is unchanged. Signed zero and Single reconstruction retain their bits.
+
+[Access's query examples](https://support.microsoft.com/en-us/access/functions/round-function)
+and the reviewed MS-VBAL Round declaration motivate this extension; they do not
+establish native results at extreme precision. The original
+[independent precision runner](testing/compare_round_precision.py) compares 960
+results and Double carriers against exact binary input converted to Python Decimal
+with half-even quantization. Subnormals, both signs, signed zero, random finite
+bits and maximum Long counts are covered. Native Access precision, admissible
+counts, return subtype and error-order qualification remain pending.

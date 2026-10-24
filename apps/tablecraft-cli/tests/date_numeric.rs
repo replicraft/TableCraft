@@ -88,8 +88,8 @@ fn round_date_digit_controls_use_raw_numeric_serials_in_both_query_paths() {
         assert_eq!(row.iter().collect::<Vec<_>>(), ["2.2", "2.25", "2", "NULL"]);
 
         for expression in [
-            "Round(NULL,CDate(29))",
-            "Round(CVErr(1),CDate(29))",
+            "Round(NULL,CDate(-1))",
+            "Round(CVErr(1),CDate(-1))",
             "Round(1/0,CDate(1))",
         ] {
             let output = run(&["query", mode, &format!("SELECT 1,{expression}")]);

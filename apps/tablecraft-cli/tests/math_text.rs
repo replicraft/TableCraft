@@ -31,7 +31,7 @@ fn math_error_arguments_keep_eager_failures_and_ordered_validation() {
             ("RGB(CVErr(1),1/0,0)", "division by zero"),
             ("Round(CVErr(1),1/0)", "division by zero"),
             ("Abs(CVErr(1))", "type mismatch"),
-            ("Round(CVErr(1),29)", "domain"),
+            ("Round(CVErr(1),-1)", "domain"),
             ("RGB(-1,CVErr(1),0)", "domain"),
         ] {
             let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
@@ -60,7 +60,7 @@ fn null_math_union_arms_preserve_other_carriers_and_buffer_late_failures() {
     }
 
     for sql in [
-        "SELECT CByte(2) AS N UNION ALL SELECT Round(NULL,29)",
+        "SELECT CByte(2) AS N UNION ALL SELECT Round(NULL,-1)",
         "SELECT CByte(2) AS N UNION ALL SELECT Round(NULL,1/0)",
     ] {
         let result = run(&["query", "run", sql]);
