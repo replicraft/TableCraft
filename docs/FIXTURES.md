@@ -1,5 +1,17 @@
 # Candidate Access fixtures
 
+## Native aggregate probe recipe
+
+The original MIT [aggregate recipe](testing/native_aggregate_oracle.py) and
+[DAO collector](testing/Capture-NativeAggregates.ps1) use authored values 1, 2, 3
+and NULL with 100 fixed queries. Request SHA-256:
+`2744eab6f5d791fbf59ccaee52b64a00d35e39e88c3f34e97044f77c9fbbe15e`.
+Prepared requests and future native captures stay ignored. No third-party binary,
+code or dataset was added. No native database has been generated or qualified by
+this recipe yet; synthetic portable-test envelopes are not ACCDB fixtures or
+native observations. The working CLI passes its 100 inline exercise controls.
+[Capture/comparison limits](testing/NATIVE_AGGREGATE_ORACLE.md) remain explicit.
+
 ## Interrupted-seek scalar replay
 
 On 23 October 2026 the original MIT [ScalarFixture.java](testing/ScalarFixture.java)

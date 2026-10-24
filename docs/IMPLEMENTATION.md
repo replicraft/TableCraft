@@ -1,5 +1,23 @@
 # Implementation status
 
+## Native aggregate value/type probe preparation
+
+An original fixed recipe now prepares 100 aggregate value/carrier probes, with a
+Windows DAO collector and portable integrity/comparison commands. Native values,
+VarType results and DAO field type/size remain separate observations. Request,
+collector and database hashes, build metadata, complete case coverage and unchanged
+originals are checked. Native errors, partial output, process failures and mismatches
+cannot become passing compatibility evidence. See
+[probe scope and commands](testing/NATIVE_AGGREGATE_ORACLE.md).
+
+All 100 query shapes execute through the current CLI over equivalent inline inputs,
+with independently checked aggregate values. Nine new portable evidence tests and
+twelve existing text-oracle tests pass; Python compilation and diff checks pass.
+PowerShell, Windows and native ACE capture remain unrun, and no synthetic report
+counts as native evidence. Reviewed Count/DCount pages do not establish the narrower
+native carriers needed to change the existing Int64 profile. No runtime, dependency,
+native reader or writer behavior changed. P0 value semantics remain unfinished.
+
 ## NULL-only text result inference
 
 Text-call metadata now retains known NULL-only source/count inputs for 23 existing
