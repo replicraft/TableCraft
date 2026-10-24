@@ -20,7 +20,8 @@ mod header;
 mod limits;
 mod source;
 pub use source::{
-    AgileSource, EncryptedSource, LongValueReadLimits, LongValueReadSource, NativeReadSource,
+    AgileSource, EncryptedSource, LongTextReadLimits, LongValueReadLimits, LongValueReadSource,
+    NativeReadSource,
 };
 mod preservation;
 mod properties;

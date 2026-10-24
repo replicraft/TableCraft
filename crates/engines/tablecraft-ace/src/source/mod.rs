@@ -5,7 +5,7 @@ mod long_values;
 use crate::{Header, InspectError};
 pub use agile::AgileSource;
 pub use encrypted::EncryptedSource;
-pub use long_values::{LongValueReadLimits, LongValueReadSource};
+pub use long_values::{LongTextReadLimits, LongValueReadLimits, LongValueReadSource};
 use std::io::{Read, Seek};
 use tablecraft_core::limits::ResourceBudget;
 
@@ -20,6 +20,11 @@ pub trait NativeReadSource: Read + Seek {
     /// Per-value storage limits, separate from cumulative resource budgets.
     fn long_value_limits(&self) -> LongValueReadLimits {
         LongValueReadLimits::default()
+    }
+
+    /// Decoded Memo UTF-8 limit, separate from encoded storage and resource pools.
+    fn long_text_limits(&self) -> LongTextReadLimits {
+        LongTextReadLimits::default()
     }
 
     /// Attach qualified read context to this source's original header.
@@ -49,6 +54,10 @@ impl NativeReadSource for crate::OfflineReadTransaction {}
 impl<S: NativeReadSource + ?Sized> NativeReadSource for &mut S {
     fn long_value_limits(&self) -> LongValueReadLimits {
         (**self).long_value_limits()
+    }
+
+    fn long_text_limits(&self) -> LongTextReadLimits {
+        (**self).long_text_limits()
     }
 
     fn qualify_header(&self, header: Header) -> Result<Header, InspectError> {

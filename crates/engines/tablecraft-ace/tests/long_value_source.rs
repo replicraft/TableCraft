@@ -1,6 +1,7 @@
 use std::io::{self, Cursor, Read, Seek, SeekFrom};
 use tablecraft_ace::{
-    Header, InspectError, LongValueReadLimits, LongValueReadSource, NativeReadSource,
+    Header, InspectError, LongTextReadLimits, LongValueReadLimits, LongValueReadSource,
+    NativeReadSource,
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
@@ -66,10 +67,13 @@ fn outer_policy_and_mutable_reborrows_preserve_native_hooks_and_raw_bytes() {
     bytes[62..66].copy_from_slice(&[0xfb, 0x8a, 0xbc, 0x4e]);
     let header = Header::parse(&bytes[..66], bytes.len() as u64).unwrap();
     let limits = LongValueReadLimits::new(4_194_304).unwrap();
-    let mut source = LongValueReadSource::new(HookSource(Cursor::new(bytes.clone())), limits);
+    let text_limits = LongTextReadLimits::new(4_194_304).unwrap();
+    let mut source = LongValueReadSource::new(HookSource(Cursor::new(bytes.clone())), limits)
+        .with_text_limits(text_limits);
     let mut borrowed = &mut source;
     let source = &mut borrowed;
     assert_eq!(source.long_value_limits(), limits);
+    assert_eq!(source.long_text_limits(), text_limits);
     assert_eq!(
         source.qualify_header(header).err(),
         Some(InspectError::Unsupported)
@@ -92,4 +96,39 @@ fn outer_policy_and_mutable_reborrows_preserve_native_hooks_and_raw_bytes() {
     assert_eq!(raw, bytes);
     source.seek(SeekFrom::Start(20)).unwrap();
     assert_eq!(source.stream_position().unwrap(), 20);
+}
+
+#[test]
+fn decoded_policies_validate_separately_and_survive_nested_storage_wrappers() {
+    assert_eq!(LongTextReadLimits::default().maximum_bytes(), 1_048_576);
+    for bytes in [1, 1_048_577, 16_777_216] {
+        assert_eq!(
+            LongTextReadLimits::new(bytes).unwrap().maximum_bytes(),
+            bytes
+        );
+    }
+    for bytes in [0, 16_777_217, u32::MAX] {
+        assert_eq!(
+            LongTextReadLimits::new(bytes),
+            Err(InspectError::InvalidLongTextLimits)
+        );
+    }
+
+    let text = LongTextReadLimits::new(3_145_728).unwrap();
+    let inner = LongValueReadSource::new(
+        Cursor::new(Vec::<u8>::new()),
+        LongValueReadLimits::default(),
+    )
+    .with_text_limits(text);
+    let storage = LongValueReadLimits::new(16_777_216).unwrap();
+    let mut outer = LongValueReadSource::new(inner, storage);
+    assert_eq!(outer.long_text_limits(), text);
+    assert_eq!(outer.long_value_limits(), storage);
+    let borrowed = &mut outer;
+    assert_eq!(borrowed.long_text_limits(), text);
+
+    let override_limit = LongTextReadLimits::new(1).unwrap();
+    let outer = outer.with_text_limits(override_limit);
+    assert_eq!(outer.long_text_limits(), override_limit);
+    assert_eq!(outer.into_inner().long_text_limits(), text);
 }

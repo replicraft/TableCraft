@@ -1,14 +1,14 @@
 //! Text decoding on the shared bounded native long-value storage.
 use super::long_value;
-use crate::limits::MAX_LONG_TEXT_BYTES;
 use crate::{
     InspectError,
     format::{reader::Reader, text},
 };
 
-// Logical input passes for compression classification, UTF-16 conversion and
-// UTF-8 emission. The bounded decoder checks cancellation before/after this work.
-const DECODE_PASSES: usize = 3;
+// Logical input passes for compression classification, UTF-16 conversion,
+// checked UTF-8 sizing and UTF-8 emission. The decoder also checks cancellation
+// between bounded chunks inside these passes.
+const DECODE_PASSES: usize = 4;
 
 pub(super) fn read<R: crate::NativeReadSource>(
     reader: &mut Reader<'_, R>,
@@ -22,14 +22,13 @@ pub(super) fn read<R: crate::NativeReadSource>(
                     .checked_mul(DECODE_PASSES)
                     .ok_or(InspectError::StructureLimit)?,
             )?;
-            let decoded = text::decode_long_with_limit(
+            let decoded = text::decode_long_with_limits(
                 &bytes,
                 reader.source.long_value_limits().maximum_bytes() as usize,
+                reader.source.long_text_limits().maximum_bytes() as usize,
                 reader.budget,
+                reader.cancelled,
             )?;
-            if decoded.len() > MAX_LONG_TEXT_BYTES {
-                return Err(InspectError::StructureLimit);
-            }
             reader.tick()?;
             Ok(decoded)
         })

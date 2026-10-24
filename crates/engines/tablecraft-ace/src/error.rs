@@ -90,6 +90,9 @@ pub enum InspectError {
     /// Native long-value reads require a positive bounded encoded-byte allowance.
     #[error("invalid native long-value read limits")]
     InvalidLongValueLimits,
+    /// Native Memo decoding requires a positive bounded UTF-8 allowance.
+    #[error("invalid native long-text read limits")]
+    InvalidLongTextLimits,
     /// A complete snapshot cannot be assembled after rows have been returned.
     #[error("scalar cursor has already returned rows")]
     CursorAdvanced,
