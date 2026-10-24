@@ -8,6 +8,8 @@ mod compression;
 #[path = "version_history/fixture.rs"]
 mod fixture;
 mod support;
+#[path = "version_history/visible_memo.rs"]
+mod visible_memo;
 
 use fixture::{database, database_with, definition};
 use proptest::prelude::*;

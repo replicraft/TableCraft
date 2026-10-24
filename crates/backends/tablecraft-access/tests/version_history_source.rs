@@ -13,6 +13,8 @@ mod fixture;
 mod mixed;
 #[path = "../../../engines/tablecraft-ace/tests/support/mod.rs"]
 mod support;
+#[path = "version_history_source/visible_memo.rs"]
+mod visible_memo;
 
 use std::{
     cell::{Cell, RefCell},

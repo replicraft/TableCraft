@@ -1,5 +1,19 @@
 # Implementation status
 
+## Ordinary visible-Memo history flags
+
+History discovery now accepts the existing visible Memo scalar family: ordinary
+or Hyperlink updatable flags, each with or without Unicode compression. Previously
+current Hyperlink Text read correctly while its supported history was unavailable.
+RichText properties and markup remain inert raw data. Hidden markers, child/
+template flag gates, association and complete membership checks stay unchanged;
+unknown/calculated/fixed visible layouts remain refused.
+
+The engine/adapter history batch passes 22 tests, including all four visible flag
+combinations, metadata-only binding and unqualified member/flag refusals. Scoped
+strict Clippy, workspace formatting and a fresh CLI build pass. See the
+[stored-history contract](STORED_HISTORY_QUERIES.md#stored-record-contract).
+
 ## Retained numeric, Boolean and date conversion APIs
 
 All nine explicit numeric/Boolean conversion calls and CDate/CVDate/DateValue/

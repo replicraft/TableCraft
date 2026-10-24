@@ -4,7 +4,7 @@ use crate::{
     TableSchema,
     format::{
         data_type,
-        layout::{FIXED_FLAG, UNICODE_COMPRESSION_FLAG, UPDATABLE_FLAG},
+        layout::{FIXED_FLAG, HYPERLINK_FLAG, UNICODE_COMPRESSION_FLAG, UPDATABLE_FLAG},
     },
     header::check,
 };
@@ -120,21 +120,22 @@ pub(super) fn type_fields(
     Ok((value, modified))
 }
 
-// The visible current Memo uses the ordinary Memo codec. Its Unicode
-// compression marker does not change the hidden history's schema or encoding.
+// The visible current Memo uses its ordinary scalar codec. Known hyperlink
+// and Unicode-compression flags do not change the hidden history encoding.
+// Hyperlink components and rich-text properties remain uninterpreted data.
 fn qualified_visible_memo(field: &NativeColumn) -> bool {
-    qualified_storage(field, data_type::LONG_TEXT)
+    field.native_type() == data_type::LONG_TEXT
+        && !field.fixed()
+        && field.flags() & !HYPERLINK_FLAG == UPDATABLE_FLAG
         && matches!(field.extended_flags(), 0 | UNICODE_COMPRESSION_FLAG)
+        && field.scalar_type().is_some()
 }
 
 fn qualified(field: &NativeColumn, kind: u8) -> bool {
-    qualified_storage(field, kind) && field.extended_flags() == 0
-}
-
-fn qualified_storage(field: &NativeColumn, kind: u8) -> bool {
     let flags = UPDATABLE_FLAG | if field.fixed() { FIXED_FLAG } else { 0 };
     field.native_type() == kind
         && field.fixed() == (kind == data_type::DATE_TIME)
         && field.flags() == flags
+        && field.extended_flags() == 0
         && field.scalar_type().is_some()
 }
