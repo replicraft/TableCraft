@@ -399,3 +399,9 @@ Named/derived/UNION composition reuses those facts without scans or providers;
 nullable parameters and NULL controls remain distinct. This closes another
 [result-inference gap](QUERY_RESULT_TYPES.md#null-only-text-inputs), not native
 DAO/UNION typing or complete P0 compatibility.
+
+The [aggregate capture/replay recipe](testing/NATIVE_AGGREGATE_ORACLE.md) now covers
+100 populated/empty numeric aggregate shapes with separate native values, runtime
+subtypes and DAO field metadata. TableCraft-side inline exercise passes; portable
+integrity tests pass. Native capture remains unrun, so existing Count/DCount
+carriers and native aggregate qualification remain unchanged.
