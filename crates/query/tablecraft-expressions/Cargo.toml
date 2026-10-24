@@ -35,6 +35,7 @@ fluent-catalog = ["dep:fluent-bundle", "dep:fluent-syntax", "dep:unic-langid"]
 
 [dev-dependencies]
 clap.workspace = true
+memchr.workspace = true
 proptest.workspace = true
 
 [[example]]

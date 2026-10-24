@@ -103,6 +103,9 @@ writeable = { version = "0.6.4", default-features = false }
 # SQL syntax
 sqlparser = { version = "0.63", default-features = false, features = ["std"] }
 
+# Exact byte-search experiments (development-only consumer)
+memchr = { version = "2.8.3", default-features = false, features = ["std"] }
+
 # Synchronous SQLite storage (bundled native library, bounded read operations)
 rusqlite = { version = "0.40.2", default-features = false, features = ["bundled", "hooks", "limits"] }
 tokio-rusqlite = { version = "0.8.0", default-features = false }

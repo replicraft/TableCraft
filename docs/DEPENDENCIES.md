@@ -1,5 +1,25 @@
 # Adopted dependency and licensing baseline
 
+## Bounded byte-search experiment (24 October 2026)
+
+Expressions' development-only `byte_search` example now directly consumes the
+already locked memchr 2.8.3. Its root declaration disables defaults and explicitly
+enables `std` (which enables upstream `alloc`); logging and optional pattern
+integration stay disabled. There is no new registry package/version/checksum or
+required transitive dependency. Published metadata declares Rust 1.61 and
+Unlicense OR MIT; the archive includes COPYING and LICENSE-MIT, with MIT available
+for this consumer. It has no build script. Upstream optimized search contains
+unsafe/SIMD internals; this experiment adds no TableCraft unsafe code or FFI.
+
+The example compares the scalar kernel, bounded borrowed memmem spans and an
+explicitly unsuitable whole-buffer reference. Six tests pass, including 256
+independent generated controls and the measured work-unit incompatibility of
+prepaying a span for an early match. Production InStrB and its callback contract
+remain unchanged. This is a working benchmark consumer, not a production
+dependency/adoption or a speedup claim. See the
+[experiment contract](testing/BYTE_SEARCH_EXPERIMENT.md) and
+[upstream API](https://docs.rs/memchr/2.8.3/memchr/memmem/fn.find.html).
+
 ## Native index collection experiment (24 October 2026)
 
 ACE's development-only `index_columns` benchmark now directly consumes the

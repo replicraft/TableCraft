@@ -32,8 +32,12 @@ entries. [LIBRARY_POLICY.md](LIBRARY_POLICY.md) remains the concise selection po
 ## Targeted backend review: 24 October 2026
 
 All fourteen requested libraries were checked against root/member manifests,
-Cargo.lock, current consumers and primary API documentation. None is currently
-a direct TableCraft dependency. A lockfile-only entry can belong to an optional
+Cargo.lock, current consumers and primary API documentation. At that review
+baseline none was a direct TableCraft dependency. Subsequent working development
+benchmarks directly consume ArrayVec, SmallVec and memchr; their exact features
+and boundaries are recorded in [DEPENDENCIES.md](DEPENDENCIES.md). No production
+container or search implementation has been replaced by those experiments.
+A lockfile-only entry can belong to an optional
 or build-time closure; it does not establish active use in a particular build.
 This review adds no dependencies or version upgrades and claims no measured
 speedup. Earlier candidate-version rows below remain the broader reference
@@ -43,8 +47,8 @@ inventory; this section refines their current implementation readiness.
 | --- | --- | --- |
 | [binrw](https://docs.rs/binrw/0.15.2/binrw/) | Absent | Prototype on a new structured native codec, especially a writer. Read/Seek derives, endian controls and assertions could improve composition; current borrowed zerocopy index/LVAL headers already have a working boundary. |
 | [deku](https://docs.rs/deku/0.20.3/deku/) | Absent | Defer as an alternative for genuinely mixed bit/byte streams. It overlaps binrw/bilge; its optional bit machinery is unnecessary for byte-only codecs. |
-| [smallvec](https://docs.rs/smallvec/latest/smallvec/struct.SmallVec.html) | Lockfile-only 1.16.3 | Benchmark short index-column lists against Vec and ArrayVec. Inline small cases can avoid allocations, but spills still allocate and larger enclosing objects have a cost. |
-| [arrayvec](https://docs.rs/arrayvec/latest/arrayvec/struct.ArrayVec.html) | Lockfile-only 0.7.8 | Strong bounded-collection candidate: native index definitions admit at most ten columns. Fixed capacity plus try_push can remove a heap allocation without silently inventing a lower limit. |
+| [smallvec](https://docs.rs/smallvec/latest/smallvec/struct.SmallVec.html) | Development benchmark 1.16.3; originally lockfile-only | Benchmark short index-column lists against Vec and ArrayVec. Inline small cases can avoid allocations, but spills still allocate and larger enclosing objects have a cost. |
+| [arrayvec](https://docs.rs/arrayvec/latest/arrayvec/struct.ArrayVec.html) | Development benchmark 0.7.8; originally lockfile-only | Strong bounded-collection candidate: native index definitions admit at most ten columns. Fixed capacity plus try_push can remove a heap allocation without silently inventing a lower limit. |
 | [dashmap](https://docs.rs/dashmap/latest/dashmap/struct.DashMap.html) | Absent | Defer until a measured concurrent-map consumer exists. Source-local RefCell state is not a concurrent native connection; guard-held callbacks/reentry introduce deadlock hazards. |
 | [indexmap](https://docs.rs/indexmap/latest/indexmap/map/struct.IndexMap.html) | Lockfile-only 2.14.2 | Keep as a future insertion-ordered keyed registry/property collection. Current bounded vectors work; Rust Value equality/hashing cannot replace SQL grouping semantics. |
 | [bitvec](https://docs.rs/bitvec/1.1.1/bitvec/) | Absent | Defer until mutable allocation maps or derived bitmaps need it. Explicit bit order and borrowed views are useful; existing native u64/trailing-zero scans have workload evidence. |
@@ -52,7 +56,7 @@ inventory; this section refines their current implementation readiness.
 | [bilge](https://docs.rs/bilge/0.5.0/bilge/) | Absent | Selective packed-field candidate for row-slot offsets/status bits. Prefer existing named masks where they are already clear; preserve raw/reserved numeric encodings. |
 | [bytes](https://docs.rs/bytes/latest/bytes/) | Lockfile-only 1.12.1 | Defer direct adoption until immutable buffers are actually shared across consumers. Cheap views are useful, but small slices can retain large backing allocations; current bounded pages/borrowed layouts need no refcounted replacement. |
 | [bitflags](https://docs.rs/bitflags/latest/bitflags/) | Lockfile-only 1.3.2 and 2.13.2 | Useful for a real typed flag domain during an index/constraint refactor. Preserve unknown raw bits and the separate supported-mask qualification; four clear constants alone do not justify a mechanical rewrite. |
-| [memchr](https://docs.rs/memchr/latest/memchr/) | Lockfile-only 2.8.3 | Highest-priority search experiment: memmem for exact InStrB byte substrings. The current window-by-window search can do quadratic work; bounded cancellation/accounting must survive the replacement. |
+| [memchr](https://docs.rs/memchr/latest/memchr/) | Development benchmark 2.8.3; originally lockfile-only | Highest-priority search experiment: memmem for exact InStrB byte substrings. The current window-by-window search can do quadratic work; bounded cancellation/accounting must survive the replacement. |
 | [moka](https://docs.rs/moka/latest/moka/) | Absent | Retain the selected future derived-cache choice; defer adoption until generation/invalidation keys and a real shared consumer exist. Best-effort eviction does not enforce our hard budget or native snapshot guarantees. |
 | [parking_lot](https://docs.rs/parking_lot/0.12.5/parking_lot/type.Mutex.html) | Absent | Evaluate a specific in-process lock, not a wholesale replacement. SQLite work state currently treats std mutex poisoning as a database failure; parking_lot's non-poisoning semantics require an explicit replacement policy. |
 
