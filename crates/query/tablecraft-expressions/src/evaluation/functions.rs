@@ -116,8 +116,16 @@ impl Evaluator<'_> {
             ) {
                 let mut values: [ExpressionValue; TextFunction::MAX_ARGUMENTS] =
                     std::array::from_fn(|_| ExpressionValue::Value(Value::Null));
-                for (argument, value) in arguments.zip(&mut values) {
+                let search_sources = match function {
+                    TextFunction::InStr if count > 2 => 1..3,
+                    TextFunction::InStr | TextFunction::InStrRev => 0..2,
+                    _ => 0..0,
+                };
+                for (index, (argument, value)) in arguments.zip(&mut values).enumerate() {
                     *value = match argument {
+                        Argument::Expression(expression) if search_sources.contains(&index) => self
+                            .expression_byte_operand(expression, depth + 1)?
+                            .into_expression_value(),
                         Argument::Expression(expression) => {
                             self.expression_operand(expression, depth + 1)?
                         }
