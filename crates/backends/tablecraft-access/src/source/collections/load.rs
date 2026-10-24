@@ -1,9 +1,9 @@
-//! Complete metadata/payload cache selection for aligned attachment members.
+//! Complete stored-history and attachment cache selection for aligned members.
 use super::payload::DecodedFiles;
-use super::{AttachmentCache, NativeField, NativeSource, payload, query_error};
+use super::{CollectionCache, NativeField, NativeSource, payload, query_error};
 use tablecraft_ace::{
     NativeColumn, NativeReadSource, NativeSortOrder, read_attachment_column_with_limits,
-    read_attachment_metadata_with_limits,
+    read_attachment_metadata_with_limits, read_version_history_column_with_limits,
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_query::{QueryError, source::validate_projection};
@@ -17,10 +17,10 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
         if selected.is_empty() {
             return Ok(Vec::new());
         }
-        let members = self.attachment_members(table)?;
+        let members = self.named_members(table)?;
         validate_projection(selected, members.len())?;
         let entry = self.entry(table)?;
-        let cache = entry.attachments.get().ok_or(QueryError::Source)?;
+        let cache = entry.collections.get().ok_or(QueryError::Source)?;
         self.budget
             .try_borrow_mut()
             .map_err(|_| QueryError::Source)?
@@ -49,6 +49,56 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
                 .map_err(|_| QueryError::Source)?
                 .charge(Resource::Steps, selected.len() as u64)
                 .map_err(|error| query_error(error.into()))?;
+            if let Some(memo) = &cache.history_memos[*index] {
+                let cell = &cache.snapshots[owner].history;
+                if cell.get().is_none() {
+                    let mut source = self
+                        .source
+                        .try_borrow_mut()
+                        .map_err(|_| QueryError::Source)?;
+                    let mut budget = self
+                        .budget
+                        .try_borrow_mut()
+                        .map_err(|_| QueryError::Source)?;
+                    let snapshot = read_version_history_column_with_limits(
+                        &mut *source,
+                        self.scope,
+                        &entry.name,
+                        memo.as_str(),
+                        self.snapshot_limits,
+                        &mut budget,
+                        self.cancelled,
+                    )
+                    .map_err(query_error)?;
+                    let hidden = snapshot
+                        .links()
+                        .schema()
+                        .owner()
+                        .columns()
+                        .iter()
+                        .find(|column| column.number() == snapshot.links().column().number())
+                        .ok_or(QueryError::SchemaChanged)?;
+                    if !hidden
+                        .name()
+                        .eq_ignore_ascii_case(member.collection().as_str())
+                    {
+                        return Err(QueryError::SchemaChanged);
+                    }
+                    self.validate_named_members(
+                        cache,
+                        member.collection().as_str(),
+                        snapshot.links().child_snapshot().schema().columns(),
+                        |name| snapshot.member_text_sort_order(name),
+                        &mut budget,
+                    )?;
+                    cell.set(snapshot).map_err(|_| QueryError::Source)?;
+                }
+                fields.push(NativeField::History(
+                    cell.get().ok_or(QueryError::Source)?,
+                    member.column().name(),
+                ));
+                continue;
+            }
             let payload_requested = selected.iter().any(|selected| {
                 let other = &members[*selected];
                 other
@@ -81,7 +131,7 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
                         self.cancelled,
                     )
                     .map_err(query_error)?;
-                    self.validate_attachment_members(
+                    self.validate_named_members(
                         cache,
                         member.collection().as_str(),
                         snapshot.child_snapshot().schema().columns(),
@@ -116,7 +166,7 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
                     self.cancelled,
                 )
                 .map_err(query_error)?;
-                self.validate_attachment_members(
+                self.validate_named_members(
                     cache,
                     member.collection().as_str(),
                     snapshot.links().child_snapshot().schema().columns(),
@@ -156,9 +206,9 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
         Ok(fields)
     }
 
-    fn validate_attachment_members(
+    fn validate_named_members(
         &self,
-        cache: &AttachmentCache,
+        cache: &CollectionCache,
         collection: &str,
         fields: &[NativeColumn],
         mut order: impl FnMut(&str) -> Option<NativeSortOrder>,

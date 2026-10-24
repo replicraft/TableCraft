@@ -1,5 +1,31 @@
 # Candidate Access fixtures
 
+## Stored-history query inputs
+
+Fresh original VersionHistoryFixture.java inputs are retained unchanged under the
+ignored history-query-20261024 inventory. The existing original generator/getter
+sources retain SHA-256 values recorded in the
+[query report](testing/results/stored-history-queries-2026-10-24.json).
+The new [metadata oracle](testing/VersionHistoryQueryOracle.java), SHA-256
+`abef84e2aeb4c1f7da3c8aa7abdd802a0a51f41aa99da0666edac5cc64851cb6`,
+uses inert read-only Jackcess declarations/current-value getters, not reference
+SQL or VBA. The [runner](testing/compare_version_history_queries.py), SHA-256
+`aa3476693f035e26c91afce252aed4dfa7377908c76ea62e3901e7cbd385580f`,
+compares 192 independent stored-record/query controls under Ordinal/database
+policies, verifies unchanged original inputs and the fixed CLI hash, and records
+source hashes. It adds no copied third-party database or implementation.
+
+| Original input | Bytes | SHA-256 |
+| --- | ---: | --- |
+| V2007.accdb | 434,176 | `94ba46e515bf38ab73ebffcbf17d9514f87cc448895ea41529c684c91e51b203` |
+| V2016.accdb | 466,944 | `de08f1841753d2ebc9babcfc3d8c97e677e13a42796947b00d49a5030aeec3a9` |
+| V2019.accdb | 536,576 | `6b85b15ab368d63305db3f557647e7ab9dcf15c63d72cc21fe0ea557c6b5174d` |
+
+The reviewed Jackcess 5.0.4 JAR remains SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+Native Access SQL, conceptual latest-history behavior and general compatibility
+are unrun/unqualified; see the [explicit history contract](STORED_HISTORY_QUERIES.md).
+
 ## Full-width Decimal arithmetic controls
 
 The original [Python runner](testing/compare_decimal_boundaries.py), SHA-256

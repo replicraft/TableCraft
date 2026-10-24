@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-24",
+  "scope": "Independent stored-record/model comparison; not native Access SQL",
+  "cli_sha256": "0d7ef13cb87c5390339b4b6040c7b457c293c9ba577fe2687e5d5d8b7445f108",
+  "cli_unchanged": true,
+  "inputs_unchanged": true,
+  "inputs": [
+    {
+      "file": "V2007.accdb",
+      "bytes": 434176,
+      "sha256": "94ba46e515bf38ab73ebffcbf17d9514f87cc448895ea41529c684c91e51b203"
+    },
+    {
+      "file": "V2016.accdb",
+      "bytes": 466944,
+      "sha256": "de08f1841753d2ebc9babcfc3d8c97e677e13a42796947b00d49a5030aeec3a9"
+    },
+    {
+      "file": "V2019.accdb",
+      "bytes": 536576,
+      "sha256": "6b85b15ab368d63305db3f557647e7ab9dcf15c63d72cc21fe0ea557c6b5174d"
+    }
+  ],
+  "sources": {
+    "docs/testing/VersionHistoryFixture.java": "7eccbc76f21f57cfc8cbdd7b1034d331be26d149a52351da3cfce4d4916a5e4a",
+    "docs/testing/VersionHistoryOracle.java": "179c7724564feeea1b033ae97813f8bcb438c5887f772d4be27cd284c23971f0",
+    "docs/testing/VersionHistoryQueryOracle.java": "abef84e2aeb4c1f7da3c8aa7abdd802a0a51f41aa99da0666edac5cc64851cb6",
+    "docs/testing/compare_version_history_queries.py": "aa3476693f035e26c91afce252aed4dfa7377908c76ea62e3901e7cbd385580f"
+  },
+  "reference_reader": {
+    "artifact": "jackcess-5.0.4.jar",
+    "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+  },
+  "runs": [
+    {
+      "collation": "ordinal",
+      "query_controls": 96,
+      "result": "pass"
+    },
+    {
+      "collation": "database",
+      "query_controls": 96,
+      "result": "pass"
+    }
+  ],
+  "native_access": "unrun",
+  "discovery_source_sha256": "94874ff22c2835f3660afc786ae4ccdf41afbe2d3e0282f810f693944755cd68",
+  "unavailable_history_regression": "Six adapter tests pass, including unrelated supported history plus unsupported visible-Memo/flat-member candidates and explicit unavailable-member refusal."
+}

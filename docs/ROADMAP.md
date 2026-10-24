@@ -540,8 +540,11 @@ contract retains the primary references, algorithms, provenance and exact limits
    independent stored-row models cover grouping, ordering and same-child WHERE rules.
    [Attachment presence criteria](COLLECTION_PRESENCE.md) now distinguish empty
    containers from nullable metadata without reading FileData. Native FileData
-   SQL representation, history member SQL and complete native
-   semantics/qualification remain. ACE 16 calculated
+   SQL representation and complete native semantics/qualification remain.
+   Explicit [stored-history query members](STORED_HISTORY_QUERIES.md) now use
+   actual hidden-field declarations and aligned stored records under --collections,
+   with complete caches and independent three-profile evidence. Native history SQL
+   and latest-version behavior remain separately unqualified. ACE 16 calculated
    fields have explicit
    cached reads, not expression evaluation or freshness guarantees. Jet 4/ACE 12
    are not required to implement field types absent from those formats. See

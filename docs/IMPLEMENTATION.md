@@ -1,5 +1,24 @@
 # Implementation status
 
+## Explicit stored-history query members
+
+`--collections` now exposes actual resolved hidden-field Memo history Text and
+modified-time members. Binding reads declarations only; stored-order expansion,
+aligned member predicates, complete bounded caches and flat-field Text policy
+routing reuse the existing collection executor. Visible current Memo remains
+independent. Unsupported history candidates cannot block unrelated supported
+members/scalars; explicit unavailable-member use refuses, while corrupt mappings
+and quota/cancellation failures propagate. See [stored history queries](STORED_HISTORY_QUERIES.md).
+
+Six adapter and eight engine history tests pass, including late-child corruption,
+metadata-only binding, policies, cache reuse and mixed unavailable histories.
+Eighteen existing attachment, collection-policy and automatic-index tests also
+pass after cache integration. The independent runner passes 192 stored-record/model
+controls across three unchanged ACE inputs under Ordinal/database policies, with
+final CLI/source/input hashes recorded. Scoped ACE/Access Clippy passes. Native
+Access SQL/latest-version semantics and wider advanced-field acceptance remain
+unfinished; this is an explicit engineering query view.
+
 ## Constant conditional crosstab headings
 
 Named crosstabs now derive fixed schemas for policy-independent constant IIf,

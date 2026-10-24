@@ -492,7 +492,9 @@ The synthetic UTF-16 generator keeps its first bytes outside the reserved native
 compressed-text header, while retaining arbitrary Unicode suffixes; its seed is
 kept as a fixture-encoding guard. The engineering `table_data --version-history MEMO`
 mode accepts the visible name and conflicts with index/calculation/multivalue
-modes. Production query expansion, current-value reconciliation, default history
+modes. Explicit [stored-history query members](../STORED_HISTORY_QUERIES.md) now
+reuse these checked records and their actual hidden/value/modified field names.
+Current-value reconciliation, default chronological history
 ordering, append/update/delete semantics, actual Access and application save/reopen
 remain unqualified. All ACE writes stay blocked.
 
@@ -539,6 +541,17 @@ Explicit native `query run --collections` now binds stored `FileURL`, `FileName`
 views. One attachment contributes its matching fields together; no cross-product
 is taken within that child record. Metadata binding reads no user records;
 execution uses complete bounded attachment snapshots and retains encoded payloads.
-FileData SQL interpretation, implicit extraction/decoding, history member SQL and
+Native FileData/history SQL interpretation, implicit extraction/decoding and
 native Access semantic qualification remain pending. See the
 [query contract](../NATIVE_QUERIES.md#attachment-metadata-member-queries).
+
+## Explicit stored-history SQL views
+
+`query run --collections` now also exposes qualified stored-history members under
+their actual resolved hidden field names. Text and modified-time references stay
+aligned to one complete checked snapshot; the visible current Memo remains an
+independent scalar. Binding reads metadata only, Text policies come from the flat
+member, and unsupported/malformed shapes retain the strict history guards.
+See [stored-history query contracts](../STORED_HISTORY_QUERIES.md) for discovery,
+examples, resource/cancellation and cache boundaries. This engineering view does
+not establish native Access SQL equivalence or latest-value semantics.
