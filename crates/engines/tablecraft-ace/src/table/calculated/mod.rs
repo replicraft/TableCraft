@@ -1,12 +1,14 @@
 mod decimal;
 mod declaration;
 mod encoding;
+mod long_text;
 mod page;
 mod read;
 mod snapshot;
 mod wrapper;
 pub use declaration::{CalculationDeclaration, inspect_calculation_declaration};
 pub(super) use encoding::{decode, supported};
+pub(super) use long_text::read as read_long_text;
 pub use page::{StoredTablePage, read_stored_table_page};
 pub(super) use read::qualified_kind;
 pub use read::{read_stored_calculation, read_stored_int32_calculation};

@@ -216,7 +216,9 @@ read-only text probe checks both encodings against the reviewed decoder, and
 synthetic CI retains the valid escaped form and arbitrary Unicode after an
 ordinary uncompressed prefix.
 Unknown types, flags, capacities, wrappers, encodings and lengths fail without a
-partial result. Long Text/extended-date calculations and error caches remain unqualified.
+partial result. Extended-date calculations and error caches remain unqualified.
+[Cached Long Text calculations](../CACHED_MEMO_CALCULATIONS.md) now resolve observed
+MEMO long-value storage before unwrapping and decoding the cached Text.
 [Cached Decimal calculations](../CACHED_DECIMAL_CALCULATIONS.md) now admit the
 observed Numeric wrapper separately, with self-described effective scale and
 strict geometry independent of ordinary Decimal declarations.

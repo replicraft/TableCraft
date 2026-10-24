@@ -36,8 +36,9 @@ coexist with a cached value `-1.2345` or `0.0000`.
 Absent storage and a qualified empty calculation wrapper retain the existing
 NULL behavior. Present zero with scale four remains `0.0000`. Alternate widths,
 headers, signs, scales, excessive magnitudes and negative-zero encodings fail
-explicitly. Other calculated Numeric geometries, Long Text, extended dates and
-error caches remain unqualified. No ordinary 17-byte Decimal codec is reused for
+explicitly. Other calculated Numeric geometries, extended dates and error caches
+remain unqualified. [Cached Memo calculations](CACHED_MEMO_CALCULATIONS.md) have
+their own separately qualified storage path. No ordinary 17-byte Decimal codec is reused for
 this different layout, and no new dependency is introduced.
 
 Declaration inspection remains metadata-only, including over corrupt cached

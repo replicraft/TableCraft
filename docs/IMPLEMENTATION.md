@@ -1,5 +1,22 @@
 # Implementation status
 
+## Cached Long Text calculation reads
+
+Explicit cached calculation inspection and row browsing now resolve observed
+ACE 16-family Memo storage before validating its calculation wrapper and decoding
+Text. Inline, single-row and chained caches share the existing bounded Memo
+reader and independent encoded/decoded ceilings. NULL, empty and Unicode values
+remain exact; malformed late caches suppress buffered publication. Ordinary
+query eligibility and recomputed previews remain separate. See
+[the cached Memo contract](CACHED_MEMO_CALCULATIONS.md).
+
+Five new engine tests, nine cached-carrier regressions, four ordinary Memo tests
+and eight adapter preview tests pass with scoped Clippy and formatting.
+Independent replay passes 86 controls over unchanged fresh ACE 2016/2019 files,
+including 28 cached cells, authored compression/BOM probes and corruption copies.
+This qualifies the independent storage profile, not native Access recalculation,
+freshness or all calculated-Memo declarations.
+
 ## Literal-selected result descriptors
 
 Metadata-only preparation now preserves the successful selected carrier and

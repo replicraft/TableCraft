@@ -15,24 +15,31 @@ pub(super) fn read<R: crate::NativeReadSource>(
     definition: &[u8],
 ) -> Result<Option<String>, InspectError> {
     long_value::read(reader, definition)?
-        .map(|bytes| {
-            reader.work(
-                bytes
-                    .len()
-                    .checked_mul(DECODE_PASSES)
-                    .ok_or(InspectError::StructureLimit)?,
-            )?;
-            let decoded = text::decode_long_with_limits(
-                &bytes,
-                reader.source.long_value_limits().maximum_bytes() as usize,
-                reader.source.long_text_limits().maximum_bytes() as usize,
-                reader.budget,
-                reader.cancelled,
-            )?;
-            reader.tick()?;
-            Ok(decoded)
-        })
+        .map(|bytes| decode(reader, &bytes))
         .transpose()
+}
+
+/// Decode already checked native storage, optionally after removing a qualified
+/// calculated wrapper. Both callers retain the same work/text policies.
+pub(super) fn decode<R: crate::NativeReadSource>(
+    reader: &mut Reader<'_, R>,
+    bytes: &[u8],
+) -> Result<String, InspectError> {
+    reader.work(
+        bytes
+            .len()
+            .checked_mul(DECODE_PASSES)
+            .ok_or(InspectError::StructureLimit)?,
+    )?;
+    let decoded = text::decode_long_with_limits(
+        bytes,
+        reader.source.long_value_limits().maximum_bytes() as usize,
+        reader.source.long_text_limits().maximum_bytes() as usize,
+        reader.budget,
+        reader.cancelled,
+    )?;
+    reader.tick()?;
+    Ok(decoded)
 }
 
 #[cfg(test)]

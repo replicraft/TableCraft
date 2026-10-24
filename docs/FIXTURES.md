@@ -1,5 +1,28 @@
 # Candidate Access fixtures
 
+## Cached calculated Memo inputs
+
+Original MIT [CalculatedMemoFixture.java](testing/CalculatedMemoFixture.java),
+SHA-256 `62ee9b69c72941aff5606a7c993f0cf51a635747c2e5a9a9cff759fd931ca933`,
+creates fresh ACE 2016/2019 Memo caches with expression evaluation disabled. The
+reviewed Jackcess 5.0.4 getters and public in-memory Column.read probes supply
+independent Unicode and compression observations. Both persisted declarations
+use capacity zero and flags C0; a requested builder setting is not evidence of a
+persisted compression flag. No third-party code, fixture or active content is
+copied. Accepted originals stay ignored under
+`.cache/tablecraft-fixtures/calculated-memo-modes-20261024/`.
+
+| Original input | Bytes | SHA-256 |
+| --- | ---: | --- |
+| V2016.accdb | 454,656 | `d6c65a4f59909fa550e9fc98cc196997a3326bca92e882348c6e99596b98ac7c` |
+| V2019.accdb | 528,384 | `230b92a3a12c327a2cf27d9d31c58d8acf6e3f07340e383d9ff7a162eec7a5cd` |
+
+The [86-control report](testing/results/calculated-memos-2026-10-24.json) retains
+unchanged original/oracle/implementation/CLI hashes. Mutation checks use disposable
+copies only. Earlier probe directories are investigation inputs, not accepted
+fixtures. The [cached Memo contract](CACHED_MEMO_CALCULATIONS.md) retains explicit
+freshness and native Access qualification gaps.
+
 ## Cached calculated Decimal inputs
 
 Original MIT [CalculatedDecimalFixture.java](testing/CalculatedDecimalFixture.java),

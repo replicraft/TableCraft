@@ -110,6 +110,11 @@ retain the observed wrapped coefficient/scale through stored inspection and
 cached row browsing. Eighty-two independent controls pass; ordinary calculated
 query execution, freshness and native recalculation remain separate gaps.
 
+Explicit [cached Memo reads](CACHED_MEMO_CALCULATIONS.md) now compose native
+long-value resolution, checked calculation wrappers and existing Unicode decoding.
+Eighty-six independent controls pass across fresh ACE 2016/2019 inputs; ordinary
+query evaluation and freshness remain separate acceptance work.
+
 ## Remaining acceptance work
 
 Explicit [decoded attachment allowances](LARGER_DECODED_ATTACHMENTS.md) now admit

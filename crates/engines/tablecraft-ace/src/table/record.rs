@@ -86,6 +86,9 @@ fn scalar<R: crate::NativeReadSource>(
     reader: &mut Reader<'_, R>,
 ) -> Result<Value, InspectError> {
     if super::calculated::supported(c) {
+        if c.native_type() == data_type::LONG_TEXT {
+            return super::calculated::read_long_text(bytes, reader);
+        }
         return super::calculated::decode(c, bytes, reader.budget);
     }
     if super::complex::supported_key(c) {

@@ -153,8 +153,8 @@ with Caption under Field. No automatic table alias mapping is implemented.
 
 `rows COPY.accdb TABLE --stored-calculations` permits the qualified ACE 16-family
 stored Boolean, Int32, Double, Currency, legacy DateTime, [Decimal](CACHED_DECIMAL_CALCULATIONS.md)
-and Short Text calculation
-wrappers alongside ordinary scalar columns. Both display formats append
+and Short Text/[Long Text](CACHED_MEMO_CALCULATIONS.md) calculation
+storage alongside ordinary scalar columns. Both display formats append
 ` [cached]` to calculated column headers. These are stored results, potentially
 stale or inconsistent with other columns; no formula, VBA or active content runs.
 For example a cache of 42 is displayed unchanged even when its formula and current
