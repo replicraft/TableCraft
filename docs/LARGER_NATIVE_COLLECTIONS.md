@@ -105,6 +105,12 @@ retain no inputs or decoded files. The existing free `decode_attachment` and
 caches now use one session per complete decoded column, and still publish only
 after all members succeed. This introduces no new provider or write capability.
 
+Explicit [decoded-file allowances](LARGER_DECODED_ATTACHMENTS.md) now support a
+validated per-file ceiling up to 16 MiB, retaining the 1 MiB default and separate
+encoded/header limits. File-policy changes clear decoded caches without budget
+refunds, while complete stored snapshots remain reusable. Metadata-only member
+inventories rebuild when decoding is first enabled; unrequested payloads stay inert.
+
 Four native controls cover 512 independent compressed files under a 192 KiB
 pool, lazy workspace allocation, resets after checksum/truncation/trailing/plain
 streams and every observed reused-stream cancellation checkpoint with explicit

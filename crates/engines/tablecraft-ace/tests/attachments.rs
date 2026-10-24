@@ -1,8 +1,14 @@
 use flate2::{Compression, write::ZlibEncoder};
 use proptest::prelude::*;
 use std::{cell::Cell, io::Write};
-use tablecraft_ace::{AttachmentDecoder, AttachmentEncoding, InspectError, decode_attachment};
+use tablecraft_ace::{
+    AttachmentDecodeLimits, AttachmentDecoder, AttachmentEncoding, InspectError, decode_attachment,
+    decode_attachment_with_limits,
+};
 use tablecraft_core::limits::{Resource, ResourceBudget};
+
+#[path = "attachments/limits.rs"]
+mod limits;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(8 * 1024 * 1024, 100, 10_000_000)

@@ -26,6 +26,15 @@ struct AttachmentSnapshot {
     stored: OnceCell<AttachmentColumn>,
     decoded: OnceCell<DecodedFiles>,
 }
+
+impl AttachmentCache {
+    pub(super) fn clear_decoded(&mut self) {
+        for snapshot in &mut self.snapshots {
+            snapshot.decoded.take();
+        }
+    }
+}
+
 enum NativeField<'a> {
     Value(&'a MultivalueColumn),
     Attachment(&'a AttachmentColumn, &'a str),

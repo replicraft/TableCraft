@@ -1,4 +1,6 @@
-use super::{AttachmentDecoder, AttachmentEncoding, DecodedAttachment, inflate};
+use super::{
+    AttachmentDecodeLimits, AttachmentDecoder, AttachmentEncoding, DecodedAttachment, inflate,
+};
 use crate::{
     InspectError,
     format::{bytes::u32_at, text},
@@ -18,8 +20,6 @@ const HEADER_BYTES: usize = TYPE_UNITS_OFFSET + size_of::<u32>();
 const SUPPORTED_HEADER_TAG: u32 = 1;
 const UTF16_BYTES: usize = size_of::<u16>();
 const MAX_HEADER_BYTES: usize = 4096;
-const MAX_FILE_BYTES: usize = 1024 * 1024;
-const MAX_BODY_BYTES: usize = MAX_HEADER_BYTES + MAX_FILE_BYTES;
 
 /// Decode an explicitly supplied native FileData attachment wrapper without
 /// opening content or writing files. Encoded inputs are capped at 2 MiB,
@@ -36,9 +36,21 @@ pub fn decode_attachment(
     AttachmentDecoder::new(budget, cancelled).decode(encoded)
 }
 
+/// Decode with an explicit file ceiling while retaining encoded/header bounds.
+/// A larger allowance does not waive checksum, exact-length or resource checks.
+pub fn decode_attachment_with_limits(
+    encoded: &[u8],
+    limits: AttachmentDecodeLimits,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<DecodedAttachment, InspectError> {
+    AttachmentDecoder::new_with_limits(budget, cancelled, limits).decode(encoded)
+}
+
 pub(super) fn using_inflater(
     encoded: &[u8],
     inflater: &mut Option<Decompress>,
+    limits: AttachmentDecodeLimits,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<DecodedAttachment, InspectError> {
@@ -57,7 +69,7 @@ pub(super) fn using_inflater(
         _ => return Err(InspectError::Unsupported),
     };
     let length = u32_at(encoded, LENGTH_OFFSET)? as usize;
-    if length > MAX_BODY_BYTES {
+    if length > MAX_HEADER_BYTES + limits.maximum_file_bytes() as usize {
         return Err(InspectError::StructureLimit);
     }
     if length < HEADER_BYTES + UTF16_BYTES {
@@ -96,7 +108,7 @@ pub(super) fn using_inflater(
     {
         return Err(InspectError::Malformed);
     }
-    if body.len() - header > MAX_FILE_BYTES {
+    if body.len() - header > limits.maximum_file_bytes() as usize {
         return Err(InspectError::StructureLimit);
     }
     let type_label = text::decode(&body[HEADER_BYTES..header - UTF16_BYTES], false, budget)?;

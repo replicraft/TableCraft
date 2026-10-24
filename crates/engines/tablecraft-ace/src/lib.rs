@@ -50,7 +50,10 @@ pub use table::{
     read_attachment_column_with_limits, read_attachment_metadata,
     read_attachment_metadata_with_limits,
 };
-pub use table::{AttachmentDecoder, AttachmentEncoding, DecodedAttachment, decode_attachment};
+pub use table::{
+    AttachmentDecodeLimits, AttachmentDecoder, AttachmentEncoding, DecodedAttachment,
+    decode_attachment, decode_attachment_with_limits,
+};
 pub use table::{
     AttachmentMemberDeclaration, MultivalueColumn, MultivalueDeclaration,
     inspect_attachment_declarations, inspect_attachment_members, inspect_multivalue_columns,

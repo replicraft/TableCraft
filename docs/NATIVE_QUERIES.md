@@ -512,8 +512,11 @@ published only after every child succeeds. A later corrupt payload fails even
 under TOP or a filter that would omit it; errors publish no CLI rows. Failed
 decoding does not invalidate an already cached metadata projection. Shared native budgets
 charge buffers, decoding/copy work and cancellation checkpoints; query/output
-budgets still apply separately. Native decoding permits 2 MiB encoded data,
-1 MiB file data, a decoded body of at most 1 MiB plus a 4 KiB header.
+budgets still apply separately. Native decoding retains 2 MiB encoded data,
+1 MiB default file data and a 4 KiB header. Explicit
+[file allowances](LARGER_DECODED_ATTACHMENTS.md) can raise decoded file bytes to
+16 MiB; they do not raise encoded storage or cumulative pools. Changing an
+allowance clears decoded caches so a lower policy cannot reuse oversized values.
 Separate query Text and CLI output limits remain; see [larger payloads](LARGE_PAYLOADS.md). Selected parent indexes remain
 unsupported without fallback. Binary comparison, ordering and arbitrary Binary
 function overloads are not introduced by the projection/Count/NULL-test profile.

@@ -9,7 +9,9 @@ mod selection;
 mod snapshot;
 
 use std::cell::{OnceCell, RefCell};
-use tablecraft_ace::{InspectError, TableSnapshot, TableSnapshotLimits, inspect_catalog};
+use tablecraft_ace::{
+    AttachmentDecodeLimits, InspectError, TableSnapshot, TableSnapshotLimits, inspect_catalog,
+};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::{CatalogScope, ModelError, ObjectKind};
 use tablecraft_query::{
@@ -48,6 +50,7 @@ pub struct NativeSource<'a, R> {
     multivalues: bool,
     collections: bool,
     decoded_attachments: bool,
+    attachment_decode_limits: AttachmentDecodeLimits,
     auto_indexes: bool,
     text_policy_scope: collation::TextPolicyScope,
 }
@@ -129,6 +132,7 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
             multivalues: false,
             collections: false,
             decoded_attachments: false,
+            attachment_decode_limits: AttachmentDecodeLimits::default(),
             auto_indexes: false,
             text_policy_scope: collation::TextPolicyScope::Unselected,
         })
@@ -153,11 +157,37 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
     /// Enables collection metadata; does not claim native SQL binary representation.
     /// Only referencing FileData decodes complete bounded payload collections.
     pub fn with_decoded_attachments(mut self) -> Self {
+        if !self.decoded_attachments {
+            // Existing metadata-only member inventories do not expose FileData.
+            // Rebuild them when decoding is first enabled, without budget refunds.
+            for entry in &mut self.entries {
+                entry.attachments.take();
+            }
+        }
+
         self.multivalues = true;
         self.collections = true;
         self.decoded_attachments = true;
         self
     }
+
+    /// Opt into decoded FileData with an explicit per-file allowance. Changing
+    /// the allowance discards decoded caches without refunding consumed budgets;
+    /// stored snapshots and inert metadata remain reusable.
+    pub fn with_decoded_attachment_limits(mut self, limits: AttachmentDecodeLimits) -> Self {
+        self = self.with_decoded_attachments();
+        if self.attachment_decode_limits != limits {
+            for entry in &mut self.entries {
+                if let Some(cache) = entry.attachments.get_mut() {
+                    cache.clear_decoded();
+                }
+            }
+            self.attachment_decode_limits = limits;
+        }
+
+        self
+    }
+
     /// Opt into metadata-based index selection for safe scalar query constraints.
     /// Unconstrained reads remain sequential. Explicit table indexes take priority.
     /// The first matching qualified single-key definition is selected; a selected
