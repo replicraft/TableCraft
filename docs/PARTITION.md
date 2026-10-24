@@ -86,3 +86,21 @@ The original [range runner](testing/compare_partition.py) now also checks all-Te
 controls under en-US/de-DE, malformed/overflowing controls, NULL/eager failures and
 four registered large-index fixture families. It independently enumerates buckets
 and rounds with Python Decimal; unchanged source hashes remain checked.
+
+
+## Ordered expression-state admission
+
+Partition now preserves eager Error/Empty/Missing inputs through its NULL
+precheck and all four Long conversions. NULL suppresses conversion failures,
+including Error data; operational failures while evaluating any operand still
+propagate. All controls convert before range validation. Error data needs an
+explicit conversion; Missing is not a scalar. Host Empty selects numeric zero,
+without adding a SQL Empty constructor. Shared preparation retains labels and
+padding, while normalization and output use the same cumulative byte budget.
+
+Focused tests cover exact output/normalization allowances, every observed
+successful cancellation checkpoint, derived Error values and once-only volatile
+operands. The [independent state runner](testing/compare_partition_hyperlink_states.py)
+checks NULL/error ordering and labels against a separately enumerated model over
+scalar calls and unchanged registered native inputs. Only TableCraft executes
+expressions; native Error/Empty precedence remains unqualified.

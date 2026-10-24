@@ -1,8 +1,30 @@
 use std::cmp::Ordering;
 use tablecraft_core::values::Value;
-use tablecraft_expressions::{EvalError, comparison::Collation};
+use tablecraft_expressions::{
+    EvalError, comparison::Collation, functions::conversions::text::NumberFormat,
+};
 use tablecraft_query::{ExecutionOptions, QueryError, prepare, source::MemorySource};
 use tablecraft_sql::parse_query;
+
+#[test]
+fn hyperlink_states_keep_selector_before_derived_errors_and_explicit_text_policies() {
+    for (sql, expected) in [
+        (
+            "SELECT HyperlinkPart(E,6) FROM (SELECT CVErr(11) AS E) AS D",
+            EvalError::Domain,
+        ),
+        (
+            "SELECT HyperlinkPart(NULL,CVErr(11))",
+            EvalError::TypeMismatch,
+        ),
+        (
+            "SELECT HyperlinkPart(CVErr(11),1/0)",
+            EvalError::DivisionByZero,
+        ),
+    ] {
+        assert_eq!(run(sql), Err(QueryError::Evaluation(expected)));
+    }
+}
 
 struct LabelOrder;
 
@@ -26,6 +48,36 @@ fn run(sql: &str) -> Result<Vec<Vec<Value>>, QueryError> {
         )?
         .rows()
         .to_vec())
+}
+
+#[test]
+fn text_selector_parameter_consults_each_execution_policy() {
+    let source = MemorySource::default();
+    let parsed = parse_query(
+        "PARAMETERS P TEXT; SELECT HyperlinkPart('name#address#sub#tip',P)",
+        Default::default(),
+    )
+    .unwrap();
+    let plan = prepare(parsed.query(), &source).unwrap();
+
+    for (policy, selector) in [(NumberFormat::EnUs, "2.5"), (NumberFormat::DeDe, "2,5")] {
+        let parameters = [("P", Value::Text(selector.into()))];
+        assert!(matches!(
+            plan.execute(&source, &parameters, Default::default()),
+            Err(QueryError::Evaluation(EvalError::NumberFormatRequired))
+        ));
+        let result = plan
+            .execute(
+                &source,
+                &parameters,
+                ExecutionOptions {
+                    number_format: Some(policy),
+                    ..Default::default()
+                },
+            )
+            .unwrap();
+        assert_eq!(result.rows(), [vec![Value::Text("address".into())]]);
+    }
 }
 
 #[test]

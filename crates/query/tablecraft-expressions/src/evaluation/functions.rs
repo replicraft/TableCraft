@@ -111,6 +111,8 @@ impl Evaluator<'_> {
                     | TextFunction::MonthName
                     | TextFunction::WeekdayName
                     | TextFunction::Format
+                    | TextFunction::Partition
+                    | TextFunction::HyperlinkPart
             ) {
                 let mut values: [ExpressionValue; TextFunction::MAX_ARGUMENTS] =
                     std::array::from_fn(|_| ExpressionValue::Value(Value::Null));
@@ -144,6 +146,10 @@ impl Evaluator<'_> {
                         self.apply_expression_calendar_name(function, &values[..count])
                     }
                     TextFunction::Format => self.apply_expression_format(&values[..count]),
+                    TextFunction::Partition => self.apply_expression_partition(&values[..count]),
+                    TextFunction::HyperlinkPart => {
+                        self.apply_expression_hyperlink_part(&values[..count])
+                    }
                     _ => self.apply_expression_slice(function, &values[..count]),
                 };
             }

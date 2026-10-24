@@ -101,8 +101,16 @@ pub(super) fn apply<'a>(
     let Value::Int32(selector) = Conversion::Long.apply(selector)? else {
         return Err(EvalError::TypeMismatch);
     };
+    apply_part(|| Ok(link), selector, step)
+}
+
+pub(crate) fn apply_part<'a>(
+    link: impl FnOnce() -> Result<&'a Value, EvalError>,
+    selector: i32,
+    step: impl FnMut() -> Result<(), EvalError>,
+) -> Result<TextResult<'a>, EvalError> {
     let part = HyperlinkPart::try_from(selector)?;
-    match link {
+    match link()? {
         Value::Null => Ok(TextResult::Null),
         Value::Text(text) => extract(text, part, step).map(TextResult::Text),
         _ => Err(EvalError::TypeMismatch),

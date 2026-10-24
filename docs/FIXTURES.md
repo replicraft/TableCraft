@@ -5827,3 +5827,21 @@ python3 docs/testing/compare_format_states.py \
   --directory .cache/tablecraft-fixtures/large-indexes
 python3 docs/testing/compare_format.py --cli target/debug/tablecraft
 ```
+
+
+## Partition and hyperlink state controls (23 October 2026)
+
+The original [state runner](testing/compare_partition_hyperlink_states.py) passes
+282 controls: 218 scalar and 64 native sequential/indexed cases. Partition labels
+use the independent enumerated-bucket/Decimal model; hyperlink selectors use
+Python Decimal half-even conversion and independently split stored-text parts.
+Checks include NULL/Error ordering, explicit conversions, numeric Text selectors,
+late operational failures and buffered stdout. No address is followed.
+
+Native inputs are the four registered persistent large-index corpus originals.
+The reviewed Jackcess 5.0.4 getter reads all 20,000 identities per file without
+executing expressions; TableCraft alone applies SQL to those fields. Registered
+SHA-256 identities are unchanged before/after. No generated database, copied
+fixture, dependency or new binary is added. Existing Partition/HyperlinkPart
+runners separately pass 830/866 scalar controls; their optional native branches
+were not rerun. Native Access expression/coercion/error qualification is unrun.

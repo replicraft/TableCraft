@@ -3,6 +3,23 @@ mod support;
 use support::run;
 
 #[test]
+fn partition_error_data_reaches_null_gate_without_hiding_late_failures() {
+    for mode in ["eval", "run"] {
+        let result = run(&["query", mode, "SELECT Partition(NULL,CVErr(11),9,2) AS N"]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(result.stdout, b"N\nNULL\n");
+        let result = run(&["query", mode, "SELECT 1,Partition(NULL,CVErr(11),9,1/0)"]);
+        assert!(!result.status.success());
+        assert!(result.stdout.is_empty());
+        assert!(String::from_utf8_lossy(&result.stderr).contains("division by zero"));
+    }
+}
+
+#[test]
 fn padded_partition_labels_use_csv_transport_and_buffer_errors() {
     for mode in ["eval", "run"] {
         let result = run(&[

@@ -144,7 +144,9 @@ preserving CVar and raw string buffers. Byte producers, observations and InStrB
 now also retain explicit states through their control/NULL/progressive source
 stages. General Format now retains states through NULL-week, ordered controls,
 mask and source admission. Masked host Empty sources remain explicitly
-unqualified/refused. Broader raw carriers, Variant semantics and remaining
+unqualified/refused. Partition and HyperlinkPart now likewise retain states through
+their distinct NULL/control/source admission; hyperlink numeric Text selectors
+require the explicit number-format policy. Broader raw carriers, Variant semantics and remaining
 string/formatting options retain separate state/coercion gaps. CurrentUser,
 numbered Error and GUID conversions now also retain reviewed return categories;
 provider invocation and session/permission boundaries remain unchanged. Numbered
