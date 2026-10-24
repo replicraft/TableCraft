@@ -5,6 +5,8 @@ corpus. Jackcess supplies exact metadata and raw weights, not native Access SQL.
 """
 import argparse
 import base64
+import csv
+from io import StringIO
 import os
 from pathlib import Path
 import re
@@ -15,6 +17,7 @@ from compare_browsing import PROFILES, RECIPES, run
 from compare_large_tables import digest
 
 JAR_SHA256 = "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+FIXTURE_ROW_COUNT = 6
 QUERIES = {
     "compare": "SELECT ID,LegacyText<ChrW(769) AS L,ModernText<ChrW(769) AS M,ChrW(128)<ChrW(769) AS D,StrComp(ChrW(128),ChrW(769)) AS ModuleMode,StrComp(ChrW(128),ChrW(769),2) AS DatabaseMode FROM PolicyProbe WHERE ID=1",
     "orderLegacyText": "SELECT ID FROM PolicyProbe ORDER BY LegacyText,ID",
@@ -24,6 +27,21 @@ QUERIES = {
     "group": "SELECT Min(ID) AS ID,Count(*) AS N FROM PolicyProbe GROUP BY LegacyText ORDER BY Min(ID)",
     "like": "SELECT ModernText LIKE ('[' & ChrW(769) & '-' & ChrW(128) & ']') AS M FROM PolicyProbe WHERE ID=1",
 }
+
+
+def grouped_string_cases(reference):
+    first = next(csv.DictReader(StringIO(reference), delimiter="\t"))
+    for field, outcome in [("LegacyText", "L"), ("ModernText", "M")]:
+        choices = ",".join(["'ChrW(128)'", *[f"'{field}'" for _ in range(FIXTURE_ROW_COUNT - 1)]])
+        domain = f"DLookup(Choose(ID,{choices}),'PolicyProbe','ID=1')"
+        for operator in ["&", "+"]:
+            key = f"({domain}{operator}'')"
+            for output in [f"{key}&''", f"{key}+''", f"CVar({key})&''", f"CVar({key})+''"]:
+                sql = (
+                    f"SELECT Min(ID) AS ID,({output})<ChrW(769) AS Result "
+                    f"FROM PolicyProbe GROUP BY {key}"
+                )
+                yield sql, "ID\tResult\n1\t" + first[outcome] + "\n"
 
 
 def main():
@@ -70,6 +88,19 @@ def main():
                                 raise ValueError(f"{profile} {policy} {case}: independent result differs, "
                                                  f"selected={bool(options)}, wrapper={wrapper}")
                             controls += 1
+                    if case == "compare":
+                        for sql, wanted in grouped_string_cases(expected):
+                            for options in [[], ["--index", "PolicyProbe", "ModernIndex"]]:
+                                actual = run(
+                                    args.cli, "query", "run", sql, "--database", path,
+                                    "--collation", policy, "--number-format", "en-us", *options,
+                                )
+                                if actual != wanted:
+                                    raise ValueError(
+                                        f"{profile} {policy}: grouped string policy differs, "
+                                        f"selected={bool(options)}"
+                                    )
+                                controls += 1
             failed = subprocess.run([str(args.cli), "query", "run", "SELECT LegacyText=ModernText FROM PolicyProbe",
                                      "--database", str(path), "--collation", "database"], capture_output=True, text=True, check=False)
             if failed.returncode != 2 or failed.stdout or failed.stderr != "error: conflicting text comparison policies\n":

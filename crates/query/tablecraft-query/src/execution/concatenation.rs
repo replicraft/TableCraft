@@ -93,7 +93,7 @@ impl Runtime<'_, '_> {
         expression: &Expr,
         env: Environment<'_>,
     ) -> Result<StringCell, QueryError> {
-        match expression {
+        let mut cell = match expression {
             Expr::Binary(BinaryOperator::Add, left, right) => self.add_cells(left, right, env),
             Expr::Binary(BinaryOperator::Concatenate, left, right) => {
                 self.concatenate_cells(left, right, env)
@@ -109,11 +109,13 @@ impl Runtime<'_, '_> {
                 let value = self.byte_call(*function, arguments, env)?;
                 Ok(StringCell {
                     value: value.into(),
-                    policy: self.text_policy(expression)?,
+                    policy: TextPolicy::Default,
                     declaration: functions::result(expression),
                 })
             }
-            _ => self.expression_operand(expression, env).map(Into::into),
-        }
+            _ => return self.expression_operand(expression, env).map(Into::into),
+        }?;
+        cell.policy = self.result_text_policy(expression, cell.policy, env)?;
+        Ok(cell)
     }
 }

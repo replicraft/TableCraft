@@ -4,11 +4,7 @@ use super::{Environment, Runtime};
 use crate::execution::cell::CellValue;
 use crate::{
     QueryError,
-    plan::{
-        Aggregate, Expr,
-        identity::{Comparer, Identity},
-    },
-    profile::MAX_BIND_DEPTH,
+    plan::{Aggregate, Expr},
 };
 use tablecraft_core::values::Value;
 use tablecraft_expressions::functions::conditional::{
@@ -24,39 +20,7 @@ impl Runtime<'_, '_> {
         env: Environment<'_>,
     ) -> Result<CellValue, QueryError> {
         let value = self.expression_cell(expression, env)?;
-        let mut policy = self.text_policy(expression)?;
-        if self.options.collation_resolver.is_some() {
-            let scopes = std::iter::once((0, env.group_keys)).chain(
-                env.outer
-                    .iter()
-                    .enumerate()
-                    .map(|(index, scope)| (index + 1, scope.group_keys)),
-            );
-            for (shift, keys) in scopes {
-                let Some(keys) = keys else {
-                    continue;
-                };
-                for (key, cell) in keys.expressions.iter().zip(keys.values) {
-                    let mut tick = |depth| {
-                        if depth > MAX_BIND_DEPTH {
-                            return Err(QueryError::StructureLimit);
-                        }
-                        self.tick()
-                    };
-                    if (Comparer { tick: &mut tick }).same_expression(
-                        expression,
-                        key,
-                        1,
-                        Identity {
-                            shift,
-                            projection: false,
-                        },
-                    )? {
-                        policy = policy.merge(cell.policy);
-                    }
-                }
-            }
-        }
+        let policy = self.result_text_policy(expression, value.policy, env)?;
         Ok(value.with_policy(policy))
     }
 
