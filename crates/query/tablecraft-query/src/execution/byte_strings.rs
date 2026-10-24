@@ -81,16 +81,39 @@ impl Runtime<'_, '_> {
         arguments: &[Expr],
         env: Environment<'_>,
     ) -> Result<ByteOperand, QueryError> {
+        let (first, rest) = self.byte_call_inputs(arguments, env)?;
+        Ok(self.evaluator().apply_expression_byte_string(
+            function,
+            first,
+            &rest[..arguments.len() - 1],
+        )?)
+    }
+
+    pub(super) fn slice_call(
+        &mut self,
+        function: TextFunction,
+        arguments: &[Expr],
+        env: Environment<'_>,
+    ) -> Result<Value, QueryError> {
+        let (first, rest) = self.byte_call_inputs(arguments, env)?;
+        Ok(self.evaluator().apply_expression_slice_source(
+            function,
+            first,
+            &rest[..arguments.len() - 1],
+        )?)
+    }
+
+    fn byte_call_inputs(
+        &mut self,
+        arguments: &[Expr],
+        env: Environment<'_>,
+    ) -> Result<(ExpressionByteOperand, [ExpressionValue; 2]), QueryError> {
         let first = self.expression_byte_operand(&arguments[0], env)?;
         let mut rest: [ExpressionValue; 2] =
             std::array::from_fn(|_| ExpressionValue::Value(Value::Null));
         for (argument, value) in arguments[1..].iter().zip(&mut rest) {
             *value = self.expression_operand(argument, env)?.value;
         }
-        Ok(self.evaluator().apply_expression_byte_string(
-            function,
-            first,
-            &rest[..arguments.len() - 1],
-        )?)
+        Ok((first, rest))
     }
 }

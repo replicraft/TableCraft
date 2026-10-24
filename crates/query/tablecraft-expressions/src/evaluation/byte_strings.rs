@@ -88,6 +88,26 @@ impl Evaluator<'_> {
         arguments: &[FunctionArgument],
         depth: usize,
     ) -> Result<ByteOperand, EvalError> {
+        let (first, rest, count) = self.byte_call_inputs(function, arguments, depth)?;
+        self.apply_expression_byte_string(function, first, &rest[..count])
+    }
+
+    pub(super) fn slice_call(
+        &mut self,
+        function: TextFunction,
+        arguments: &[FunctionArgument],
+        depth: usize,
+    ) -> Result<Value, EvalError> {
+        let (first, rest, count) = self.byte_call_inputs(function, arguments, depth)?;
+        self.apply_expression_slice_source(function, first, &rest[..count])
+    }
+
+    fn byte_call_inputs(
+        &mut self,
+        function: TextFunction,
+        arguments: &[FunctionArgument],
+        depth: usize,
+    ) -> Result<(ExpressionByteOperand, [ExpressionValue; 2], usize), EvalError> {
         let mut arguments = sql_arguments::normalize(function, arguments)
             .ok_or(EvalError::UnsupportedExpression)?;
         let Some(Argument::Expression(first)) = arguments.next() else {
@@ -106,7 +126,7 @@ impl Evaluator<'_> {
                 Argument::EmptyText => ExpressionValue::Value(Value::Text(String::new())),
             };
         }
-        self.apply_expression_byte_string(function, first, &rest[..count])
+        Ok((first, rest, count))
     }
 
     /// Admit eager byte-producer states at their original numeric/source stages.

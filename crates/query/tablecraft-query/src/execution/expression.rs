@@ -249,7 +249,10 @@ impl Runtime<'_, '_> {
                         .evaluator()
                         .apply_expression_character(*function, &value)?);
                 }
-                if function.produces_bytes() && !function.slices_units() {
+                if function.slices_units() {
+                    return self.slice_call(*function, arguments, env);
+                }
+                if function.produces_bytes() {
                     let operand = self.byte_call(*function, arguments, env)?;
                     return Ok(self.evaluator().publish_byte_operand(operand)?);
                 }
@@ -261,10 +264,7 @@ impl Runtime<'_, '_> {
                 }
                 if matches!(
                     function,
-                    TextFunction::Left
-                        | TextFunction::Right
-                        | TextFunction::Mid
-                        | TextFunction::InStr
+                    TextFunction::InStr
                         | TextFunction::InStrRev
                         | TextFunction::Replace
                         | TextFunction::StrComp
@@ -317,7 +317,7 @@ impl Runtime<'_, '_> {
                         TextFunction::HyperlinkPart => {
                             self.evaluator().apply_expression_hyperlink_part(values)?
                         }
-                        _ => self.evaluator().apply_expression_slice(*function, values)?,
+                        _ => return Err(QueryError::Unsupported),
                     };
                     return Ok(value);
                 }

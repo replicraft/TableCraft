@@ -17,6 +17,25 @@ fn unicode_intermediates_remain_strings_inside_calls_and_strict_at_stdout() {
         );
         assert_eq!(result.stdout, b"L\tW\tB\tT\tTail\n1\t-10240\t2\t8\t-8704\n");
 
+        let result = run(&[
+            "query",
+            mode,
+            "SELECT Mid(Left('A😀Z',3),2,2) AS Face,Left(ChrW(55296),0) AS Empty,Right(Mid('A😀Z',2,3),1) AS Tail",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        let row = csv::ReaderBuilder::new()
+            .delimiter(b'\t')
+            .from_reader(result.stdout.as_slice())
+            .records()
+            .next()
+            .unwrap()
+            .unwrap();
+        assert_eq!(row.iter().collect::<Vec<_>>(), ["\"😀\"", "\"\"", "\"Z\""]);
+
         for expression in [
             "ChrW(55296)",
             "Len(ChrB(65))",

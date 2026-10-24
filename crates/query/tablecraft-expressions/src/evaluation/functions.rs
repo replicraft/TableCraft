@@ -78,7 +78,10 @@ impl Evaluator<'_> {
                 let value = self.expression_operand(expression, depth + 1)?;
                 return self.apply_expression_character(function, &value);
             }
-            if function.produces_bytes() && !function.slices_units() {
+            if function.slices_units() {
+                return self.slice_call(function, arguments, depth);
+            }
+            if function.produces_bytes() {
                 let value = self.byte_call(function, arguments, depth)?;
                 return self.publish_byte_operand(value);
             }
@@ -93,10 +96,7 @@ impl Evaluator<'_> {
             let count = arguments.len();
             if matches!(
                 function,
-                TextFunction::Left
-                    | TextFunction::Right
-                    | TextFunction::Mid
-                    | TextFunction::InStr
+                TextFunction::InStr
                     | TextFunction::InStrRev
                     | TextFunction::Replace
                     | TextFunction::StrComp
@@ -148,7 +148,7 @@ impl Evaluator<'_> {
                     TextFunction::HyperlinkPart => {
                         self.apply_expression_hyperlink_part(&values[..count])
                     }
-                    _ => self.apply_expression_slice(function, &values[..count]),
+                    _ => Err(EvalError::UnsupportedExpression),
                 };
             }
             let mut values: [Value; TextFunction::MAX_ARGUMENTS] =

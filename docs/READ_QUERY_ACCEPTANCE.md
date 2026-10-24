@@ -85,6 +85,9 @@ units under Len/LenB, AscW/AscB and inspection. Checked Long counts clamp before
 byte multiplication, and source/control admission retains the ordinary slice
 ordering. Direct scalar publication and raw relational cells remain strict;
 see [nested slicing](BYTE_STRING_FUNCTIONS.md#nested-utf-16-unit-slices).
+Direct outer slices can now retain raw-producing sources through selection and
+publish a representable final range without publishing an invalid intermediate.
+Materialized scalar sources retain their borrowed path and existing budgets.
 
 Round's digit count now follows the nonnegative Long profile independently of
 Decimal storage scale. [Bounded high precision](MATH_FUNCTIONS.md#round-precision-beyond-decimal-storage-scale)

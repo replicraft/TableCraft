@@ -4,7 +4,7 @@ use crate::{
     EvalError,
     functions::{
         conversions::Conversion,
-        text::{TextFunction, TextResult, slicing},
+        text::{TextFunction, TextResult, byte_string::ExpressionByteOperand, slicing},
     },
 };
 use tablecraft_core::{
@@ -28,14 +28,45 @@ impl Evaluator<'_> {
         function: TextFunction,
         arguments: &[ExpressionValue],
     ) -> Result<Value, EvalError> {
-        if !matches!(
-            function,
-            TextFunction::Left | TextFunction::Right | TextFunction::Mid
-        ) || !function.accepts_arity(arguments.len())
-        {
+        let Some((first, rest)) = arguments.split_first() else {
+            return Err(EvalError::UnsupportedExpression);
+        };
+        self.expression_slice_inputs(function, first, rest)
+    }
+
+    /// Publish a slice of a lossless source, retaining the borrowed scalar path
+    /// when its source already has a materialized expression value.
+    pub fn apply_expression_slice_source(
+        &mut self,
+        function: TextFunction,
+        first: ExpressionByteOperand,
+        rest: &[ExpressionValue],
+    ) -> Result<Value, EvalError> {
+        match first {
+            ExpressionByteOperand::Scalar(first) => {
+                self.expression_slice_inputs(function, &first, rest)
+            }
+            first @ ExpressionByteOperand::Bytes(_) => {
+                if !function.slices_units() {
+                    return Err(EvalError::UnsupportedExpression);
+                }
+                let result = self.apply_expression_byte_string(function, first, rest)?;
+                self.publish_byte_operand(result)
+            }
+        }
+    }
+
+    fn expression_slice_inputs(
+        &mut self,
+        function: TextFunction,
+        first: &ExpressionValue,
+        rest: &[ExpressionValue],
+    ) -> Result<Value, EvalError> {
+        if !function.slices_units() || !function.accepts_arity(rest.len() + 1) {
             return Err(EvalError::UnsupportedExpression);
         }
-        for value in arguments {
+
+        for value in std::iter::once(first).chain(rest) {
             if matches!(value, ExpressionValue::Value(Value::Text(text)) if text.len() > self.limits.max_text_bytes)
             {
                 return Err(EvalError::TextLimit);
@@ -43,15 +74,18 @@ impl Evaluator<'_> {
         }
         let empty_text = Value::Text(String::new());
         let empty_number = Value::Int32(0);
-        self.slice_inputs(function, arguments.len(), |index| match &arguments[index] {
-            ExpressionValue::Value(value) => Ok(value),
-            ExpressionValue::Empty => Ok(if index == 0 {
-                &empty_text
-            } else {
-                &empty_number
-            }),
-            ExpressionValue::Error(_) => Err(EvalError::TypeMismatch),
-            ExpressionValue::Missing => Err(EvalError::NonScalarExpression),
+        self.slice_inputs(function, rest.len() + 1, |index| {
+            let argument = if index == 0 { first } else { &rest[index - 1] };
+            match argument {
+                ExpressionValue::Value(value) => Ok(value),
+                ExpressionValue::Empty => Ok(if index == 0 {
+                    &empty_text
+                } else {
+                    &empty_number
+                }),
+                ExpressionValue::Error(_) => Err(EvalError::TypeMismatch),
+                ExpressionValue::Missing => Err(EvalError::NonScalarExpression),
+            }
         })
     }
 
