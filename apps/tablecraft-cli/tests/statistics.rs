@@ -53,3 +53,26 @@ fn aggregate_refusals_and_late_errors_never_publish_partial_stdout() {
         assert!(result.stdout.is_empty());
     }
 }
+
+#[test]
+fn date_statistics_require_explicit_numeric_conversion() {
+    for function in ["Var", "VarP", "StDev", "StDevP"] {
+        let sql = format!("SELECT 1,{function}(#2024-01-01#)");
+        let result = run(&["query", "run", &sql]);
+        assert_eq!(result.status.code(), Some(2));
+        assert!(result.stdout.is_empty());
+        assert!(String::from_utf8_lossy(&result.stderr).contains("expression type mismatch"));
+    }
+
+    let result = run(&[
+        "query",
+        "run",
+        "SELECT VarP(CDbl(X)) AS V,StDevP(CDbl(X)) AS S FROM (SELECT #2024-01-01# AS X UNION ALL SELECT #2024-01-03# UNION ALL SELECT NULL) AS T WHERE X IS NOT NULL",
+    ]);
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    assert_eq!(result.stdout, b"V\tS\n1\t1\n");
+}

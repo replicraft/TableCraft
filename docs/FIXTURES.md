@@ -6049,3 +6049,16 @@ modern ACE inputs. Sum/DSum execute in TableCraft through sequential and both
 ID-index orders. The existing four-profile original hashes and bytes remain
 unchanged. No binary fixture, third-party source or native Access evidence is
 added. See [numerical scope](testing/FLOATING_SUMS.md#integralfloating-integration).
+
+
+## Statistical numeric admission and explicit DATE serials
+
+The original MIT [compare_statistical_admission.py](testing/compare_statistical_admission.py)
+adds no binary input or third-party source. It checks the existing reviewed
+Jackcess JAR and four registered large-index corpus identities, reads inert raw
+DATE bits, and compares 208 CLI controls. Python Fraction derives sample/population
+statistics over explicit serial conversion. Raw Date/Text/Error refusal and NULL
+controls remain separate from numeric results. Sequential and ascending/descending
+ID indexes cover direct and domain statistics; original bytes/hashes remain
+unchanged. Only TableCraft executes SQL; native Access admission, error ordering
+and result typing remain unqualified.

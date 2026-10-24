@@ -1,3 +1,5 @@
+#[path = "statistics/admission.rs"]
+mod admission;
 #[path = "statistics/bounds.rs"]
 mod bounds;
 #[path = "statistics/numerical.rs"]

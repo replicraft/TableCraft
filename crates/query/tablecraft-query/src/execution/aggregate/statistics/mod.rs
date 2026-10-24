@@ -7,7 +7,7 @@ use crate::{
     plan::{Expr, Statistic},
 };
 use tablecraft_core::values::{Double, Value};
-use tablecraft_expressions::functions::conversions::Conversion;
+use tablecraft_expressions::{EvalError, functions::conversions::Conversion};
 
 impl Runtime<'_, '_> {
     pub(in crate::execution) fn statistic(
@@ -39,6 +39,21 @@ impl Runtime<'_, '_> {
             if matches!(value, Value::Null) {
                 continue;
             }
+            if !matches!(
+                value,
+                Value::Boolean(_)
+                    | Value::Byte(_)
+                    | Value::Int16(_)
+                    | Value::Int32(_)
+                    | Value::Int64(_)
+                    | Value::Single(_)
+                    | Value::Double(_)
+                    | Value::Currency(_)
+                    | Value::Decimal(_)
+            ) {
+                return Err(EvalError::TypeMismatch.into());
+            }
+
             let Value::Double(value) = Conversion::Double.apply(&value)? else {
                 return Err(QueryError::Unsupported);
             };

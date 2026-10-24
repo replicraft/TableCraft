@@ -1,5 +1,26 @@
 # Implementation status
 
+## Statistical numeric admission before shared conversion
+
+Var/VarP/StDev/StDevP and their domain counterparts now check numeric/Boolean
+operand families before invoking the shared Double converter. General CDbl's
+legacy DATE support no longer implicitly admits unconverted Date values into
+these numeric-only statistics. Explicit serial conversion remains available;
+filter NULL before CDbl because a conversion error precedes aggregate NULL
+elimination. Empty/all-NULL groups keep the existing population rules and
+preparation remains metadata-only. See [the contract](STATISTICAL_AGGREGATES.md).
+
+Two new query tests cover nonnumeric families, singleton/NULL/empty groups,
+direct/domain refusal and explicit negative/positive DATE serial statistics.
+The focused query batch passes twenty tests, including existing cancellation,
+resource, numerical and Error-cell coverage. Three CLI statistics tests pass.
+The independent runner passes 208 numerical/admission/native-field controls on
+unchanged registered four-family inputs. Query all-target/all-feature Clippy,
+CLI build, formatting, Python syntax and diff checks pass. No dependency or write
+path changes. Full engine/workspace suites and native Access comparisons were
+not run for this admission fix. Ordinary SQL aggregate declaration categories
+remain unknown rather than being inferred from their materialized carriers.
+
 ## Rounded integral operands in floating-selected sums
 
 Sum/DSum now reuse the existing Double converter for integer operands once
