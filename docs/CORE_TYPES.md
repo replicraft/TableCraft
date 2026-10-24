@@ -48,6 +48,8 @@ src/
       extended.rs     Gregorian extended date/time validation
     stored.rs         Storage value composition and redacted Debug
     expression.rs     Language states and storage conversion
+    expression_string.rs Lossless owned String byte ranges
+    expression_string/   Focused byte-range tests
     validation.rs     Shared value-validation errors and state categories
     fixed.rs          Private formatting shared by Currency and Decimal
   limits.rs           Resource accounting, errors and focused tests
@@ -124,6 +126,29 @@ This separation follows Microsoft's distinction between uninitialized `Empty`
 and `Null` in [Variant data type](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/variant-data-type),
 and omitted optional arguments in [IsMissing](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/ismissing-function).
 It does not implement VBA coercion, objects/Nothing, arrays or evaluation.
+
+## Lossless expression String buffers
+
+`ExpressionString` owns an adopted byte buffer and checked active range. The
+existing `tablecraft-expressions` ByteString now uses it as its backing value;
+this is a working shared representation, not a new stored Value variant.
+Construction moves the caller's already charged allocation without copying or
+decoding. Consuming `select` validates an exact range relative to the active
+bytes; reversed/out-of-range requests return `ExpressionStringRangeError`.
+Nested selections retain the same allocation and do not realign byte boundaries.
+Odd byte lengths and unpaired UTF-16 units are preserved. Debug reports length
+without payloads.
+
+Core owns no Unicode publication, formatting, SQL truth/coercion or function
+position rules. The expression consumer retains its existing signed Long byte
+limit, one-based/clamped slicing and budgeted strict UTF-8 publication. No new
+Serde representation or cloning API is introduced. ExpressionValue, stored Text,
+source snapshots and write admission remain unchanged; raw relational cells are
+still unfinished. This shared ownership boundary precedes that integration.
+
+Four focused controls include retained-allocation/nested-range goldens, invalid
+and empty ranges, redaction and a fixed-seed 256-case slice-content model. Existing
+byte-function, query and independent CLI controls verify the consuming wrapper.
 
 ## Identity and lifetime
 

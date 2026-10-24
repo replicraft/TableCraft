@@ -1,5 +1,14 @@
 # Candidate Access fixtures
 
+## Shared expression String range controls
+
+Core's new owned String range has four original focused controls, including a
+fixed-seed 256-case slice model and an allocation-retention golden. Replaying the
+existing byte, selection and binary-comparison recipes passes 35,336, 1,806 and
+1,102 source-free controls through the rebuilt CLI. No native database input,
+third-party artifact or dependency was added. Native Access and benchmarks were
+not run; this validates the shared representation and existing consumers only.
+
 ## Independent raw UTF-16 comparison controls
 
 The original [binary StrComp runner](testing/compare_raw_string_comparison.py)

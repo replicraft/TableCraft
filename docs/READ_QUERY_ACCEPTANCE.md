@@ -74,6 +74,11 @@ source families and native result-type qualification remain separate. See
 
 ## Remaining acceptance work
 
+The existing raw String consumer now uses core's [checked owned byte ranges](CORE_TYPES.md#lossless-expression-string-buffers).
+This establishes shared ownership for subsequent expression/query integration;
+raw relational cells remain unfinished. Stored Text, default limits, coercion
+and native read/write qualification are unchanged.
+
 StrComp binary mode now compares [complete raw UTF-16 units](STRING_COMPARISON.md#lossless-binary-string-operands)
 without Unicode publication. NULL/mode ordering and strict Text/Database provider
 paths remain separate. This closes a String comparison-consumer gap, not native
