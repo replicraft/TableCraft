@@ -1,5 +1,25 @@
 # Candidate Access fixtures
 
+## Short Text equality query evidence
+
+The [query runner](testing/compare_text_equality_queries.py), SHA-256
+`0f296bda3a6dfc95c09d69bee7fd54c8f4a8483e3a2576daef6a847adc3c349b`,
+reuses the eight immutable Text inputs registered under NULL-only index evidence.
+No new third-party database or implementation is copied. The unchanged original
+MIT TextEqualityCandidateOracle.java uses inert Jackcess encoders/getters;
+its SHA-256 remains
+`006bf10ff2c3ebd599624da972da59749228e9e4f335200383d0fbcc064f2693`.
+The runner verifies registered input/JAR hashes, passes 792 query controls over
+128 oracle cases and mutates only disposable copies. Native Access is unrun.
+
+The [benchmark recipe](testing/benchmark_text_equality.py), SHA-256
+`ee6dabc528250d4f06efc8f305ff19c716b2439a3d1b1eebb062b536746738bd`,
+checks equal complete answers and unchanged binary/input hashes around timing.
+[Raw measurements](testing/results/text-equality-queries-2026-10-24.json) preserve
+all 15 samples per command; the adjacent metadata records relative input paths,
+hashes, build/tool details and answer digests. No private paths were present in
+the raw artifact. Scope and results are in [Text equality seeks](TEXT_EQUALITY_SEEKS.md).
+
 ## Larger decoded attachment inputs
 
 Original MIT [LargeDecodedAttachmentFixture.java](testing/LargeDecodedAttachmentFixture.java)

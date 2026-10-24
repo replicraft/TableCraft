@@ -1,7 +1,9 @@
 //! Closed General descriptor resolution over one explicitly shared quota.
 use super::GeneralCollation;
 use std::cell::RefCell;
-use tablecraft_ace::{GeneralSortFamily, InspectError, NativeSortOrder};
+use tablecraft_ace::{
+    GeneralEqualityPrefix, GeneralSortFamily, InspectError, NativeSortOrder, TextIndexSelection,
+};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_expressions::{
     EvalError,
@@ -9,11 +11,12 @@ use tablecraft_expressions::{
 };
 use tablecraft_query::{
     QueryError,
-    source::{CollationResolver, TextCollationId},
+    source::{CollationResolver, TextCollationId, TextEqualityKey},
 };
 
 const LEGACY_ORDER: [u8; 4] = [9, 4, 0, 0];
 const GENERAL_2010_ORDER: [u8; 4] = [9, 4, 0, 1];
+const _: () = assert!(GeneralEqualityPrefix::MAX_BYTES <= TextEqualityKey::MAX_BYTES);
 
 /// Native General legacy/2010 query policies sharing one caller-owned quota.
 /// Exact unknown identities fail; no ordinal/default fallback or OS locale is
@@ -72,6 +75,41 @@ impl<'a> NativeCollationResolver<'a> {
     }
 }
 impl CollationResolver for NativeCollationResolver<'_> {
+    fn equality_key(
+        &self,
+        key: TextCollationId,
+        literal: &str,
+    ) -> Result<Option<TextEqualityKey>, QueryError> {
+        let policy = if key == identity(self.legacy.order) {
+            &self.legacy
+        } else if key == identity(self.modern.order) {
+            &self.modern
+        } else {
+            // A hint must not activate an unknown comparison on an empty source.
+            return Ok(None);
+        };
+        if (policy.cancelled)() {
+            return Err(EvalError::Cancelled.into());
+        }
+        let mut budget = policy
+            .budget
+            .try_borrow_mut()
+            .map_err(|_| EvalError::CollationFailed)?;
+        for (position, _) in literal.encode_utf16().enumerate() {
+            if (policy.cancelled)() {
+                return Err(EvalError::Cancelled.into());
+            }
+            budget.charge(Resource::Steps, 1)?;
+            if position >= TextIndexSelection::MAX_BOUND_UNITS {
+                return Ok(None);
+            }
+        }
+        let prefix =
+            GeneralEqualityPrefix::from_text(policy.order, literal, &mut budget, policy.cancelled)
+                .map_err(super::adapt)?;
+        TextEqualityKey::from_host(key, prefix.as_bytes()).map(Some)
+    }
+
     fn resolve(&self, key: TextCollationId) -> Result<&dyn Collation, QueryError> {
         if (self.legacy.cancelled)() {
             return Err(EvalError::Cancelled.into());

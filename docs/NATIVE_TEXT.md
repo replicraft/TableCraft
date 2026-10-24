@@ -231,7 +231,8 @@ available through `read_table_text_index_range` and projected/request readers.
 Only qualified single Short Text indexes are admitted. Literal input remains
 bounded to 255 UTF-16 units; unknown descriptors, Memo, wrong typed indexes and
 invalid limits fail without fallback. This operation does not select the query's
-comparison policy or add a non-NULL text hint to `query run --auto-index`.
+comparison policy. [Query integration](TEXT_EQUALITY_SEEKS.md) separately requires
+explicit agreement between the actual comparer and native source.
 
 Callers must retain and apply their original equality using the exact General
 policy of the chosen index. A returned row is a candidate, not a proven SQL
@@ -281,9 +282,12 @@ Corrupt-copy controls prove disjoint-child pruning, complete-read refusal and
 selected-root failure without stdout. Output-limit failures stay buffered.
 [Fixture records](FIXTURES.md#short-text-equality-candidate-evidence) retain hashes.
 
-The non-NULL query integration still needs explicit comparer/source agreement,
-whole-predicate safety and residual evaluation. Inequality bounds, Memo candidate
-pruning, performance measurements and Windows Access qualification remain open.
+`GeneralEqualityPrefix` now retains an owned, descriptor-qualified prefix for
+`TextIndexSelection::EqualityPrefix`. The Access resolver and source use it for
+[direct query equality](TEXT_EQUALITY_SEEKS.md), preserving whole-predicate safety
+and residual evaluation. That document includes independent query controls and
+CLI measurements. Inequality bounds, Memo candidate pruning and Windows Access
+qualification remain open.
 
 ## References and evidence limits
 

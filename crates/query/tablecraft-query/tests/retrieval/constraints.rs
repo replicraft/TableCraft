@@ -17,6 +17,8 @@ mod int64;
 mod narrow;
 #[path = "constraints/null_strings.rs"]
 mod null_strings;
+#[path = "constraints/text_equality.rs"]
+mod text_equality;
 
 struct Restricted {
     source: MemorySource,

@@ -1,8 +1,9 @@
 use super::{NativeSource, query_error, schema::ScalarSchema};
+use crate::collation::identity;
 use tablecraft_ace::{
-    BinaryIndexSelection, ByteIndexSelection, CurrencyIndexSelection, GuidIndexSelection,
-    IndexInspection, IndexProjectionSelection, IndexReadRequest, Int16IndexSelection,
-    Int32IndexSelection, Int64IndexSelection, NativeIndex, TextIndexSelection,
+    BinaryIndexSelection, ByteIndexSelection, CurrencyIndexSelection, GeneralEqualityPrefix,
+    GuidIndexSelection, IndexInspection, IndexProjectionSelection, IndexReadRequest,
+    Int16IndexSelection, Int32IndexSelection, Int64IndexSelection, NativeIndex, TextIndexSelection,
     inspect_table_indexes, read_table_index_in_table_order, read_table_index_with_request,
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
@@ -221,6 +222,26 @@ fn candidate_selection(
     if dense != Some(constraint.column()) {
         return IndexProjectionSelection::All;
     }
+    if let ScanConstraint::TextEqual { key: hint, .. } = constraint {
+        let Some(field) = key else {
+            return IndexProjectionSelection::All;
+        };
+        let Some(order) = field.text_sort_order() else {
+            return IndexProjectionSelection::All;
+        };
+        if hint.policy() != identity(order) {
+            return IndexProjectionSelection::All;
+        }
+        let Ok(prefix) = GeneralEqualityPrefix::from_encoded(order, hint.as_bytes()) else {
+            return IndexProjectionSelection::All;
+        };
+        return if prefix.supports_column(field) {
+            IndexProjectionSelection::Text(TextIndexSelection::EqualityPrefix(prefix))
+        } else {
+            IndexProjectionSelection::All
+        };
+    }
+
     match key.and_then(|field| selection(constraint, field.scalar_type()?)) {
         Some(Selection::Byte(selection)) => IndexProjectionSelection::Byte(selection),
         Some(Selection::Int16(selection)) => IndexProjectionSelection::Int16(selection),

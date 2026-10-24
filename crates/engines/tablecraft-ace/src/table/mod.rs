@@ -58,8 +58,8 @@ mod decimal;
 mod extended_datetime;
 mod indexes;
 pub use indexes::{
-    BinaryIndexSelection, GuidIndexSelection, TextIndexSelection, read_table_binary_index_range,
-    read_table_guid_index, read_table_text_index_range,
+    BinaryIndexSelection, GeneralEqualityPrefix, GuidIndexSelection, TextIndexSelection,
+    read_table_binary_index_range, read_table_guid_index, read_table_text_index_range,
 };
 pub use indexes::{IndexConstraintViolation, IndexConstraints};
 mod long_text;

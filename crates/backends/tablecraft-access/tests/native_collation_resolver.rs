@@ -216,3 +216,49 @@ fn each_observed_construction_and_resolution_checkpoint_can_cancel() {
         );
     }
 }
+
+#[test]
+fn equality_keys_keep_independent_primary_goldens_and_decline_unknown_or_long_literals() {
+    let budget = pool();
+    let resolver = NativeCollationResolver::new(order(1), &budget, &|| false).unwrap();
+    for (family, expected) in [(0, vec![0x4a]), (1, vec![0x0e, 0x02])] {
+        let key = resolver.equality_key(id(family), "A  ").unwrap().unwrap();
+        assert_eq!(key.policy(), id(family));
+        assert_eq!(key.as_bytes(), expected);
+    }
+    for literal in ["x".repeat(256), "😀".repeat(128)] {
+        assert_eq!(resolver.equality_key(id(1), &literal).unwrap(), None);
+    }
+    assert_eq!(
+        resolver
+            .equality_key(TextCollationId::from_host(u64::MAX), "a")
+            .unwrap(),
+        None
+    );
+}
+
+#[test]
+fn equality_key_work_shares_provider_quotas_cancellation_and_borrow_refusals() {
+    let budget = RefCell::new(ResourceBudget::new(0, 0, 10000));
+    let resolver = NativeCollationResolver::new(order(1), &budget, &|| false).unwrap();
+    assert!(matches!(
+        resolver.equality_key(id(1), "a"),
+        Err(QueryError::Evaluation(EvalError::Limit(_)))
+    ));
+
+    let budget = pool();
+    let cancelled = Cell::new(false);
+    let cancellation = || cancelled.get();
+    let resolver = NativeCollationResolver::new(order(1), &budget, &cancellation).unwrap();
+    let locked = budget.borrow_mut();
+    assert!(matches!(
+        resolver.equality_key(id(1), "a"),
+        Err(QueryError::Evaluation(EvalError::CollationFailed))
+    ));
+    cancelled.set(true);
+    assert!(matches!(
+        resolver.equality_key(id(1), "a"),
+        Err(QueryError::Evaluation(EvalError::Cancelled))
+    ));
+    drop(locked);
+}

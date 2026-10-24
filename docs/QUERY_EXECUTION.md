@@ -449,6 +449,12 @@ Invalid literals decline hints; Text/arbitrary expressions are not pre-evaluated
 The CLI accepts invariant `--param P=currency:0.0001`, including full-range exact
 values and checked four-place rounding through the existing numeric Text converter.
 
+[Short Text equality hints](TEXT_EQUALITY_SEEKS.md) additionally require source
+opt-in and an opaque key issued by the actual field-policy resolver. Metadata
+is rechecked before issuing a key. Only a single direct field/literal or bound
+Text-parameter equality qualifies; no Text hint is extracted from AND. The
+backend-neutral executor never interprets key bytes and retains the full filter.
+
 Other arithmetic, unary parameter expressions, OR, mixed-column conjunctions, BETWEEN,
 coercive/non-integer comparisons and predicates containing subqueries retain full
 scans. Joins/derived relations receive no pushed outer constraint. In particular,

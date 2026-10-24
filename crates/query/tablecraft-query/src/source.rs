@@ -5,6 +5,8 @@ pub(crate) use collation::{
     validate as validate_text_collations, validate_types as validate_text_policy_types,
 };
 mod constraint;
+mod equality;
+pub use equality::TextEqualityKey;
 mod multivalue;
 pub use multivalue::{MultivalueList, MultivalueVisitor};
 mod projection;
@@ -19,6 +21,14 @@ use tablecraft_schema::{Column, SchemaName, validate_row};
 /// Hosts own I/O cancellation/limits before invoking the visitor; the executor
 /// bounds every visited row. No database or provider is opened implicitly.
 pub trait Source {
+    /// Opt into resolver-issued Text equality hints for this table.
+    /// This metadata-only capability must not scan rows or activate providers.
+    /// Returning true still requires a matching actual comparer and the original
+    /// residual predicate. Default sources decline without hint-generation work.
+    fn text_equality_hints(&self, _table: &str) -> Result<bool, QueryError> {
+        Ok(false)
+    }
+
     /// Optional named retrieval definition in the same source namespace as tables.
     /// Return None for ordinary/unknown table names. Providers must reject ambiguous
     /// table/query declarations and return stable owned syntax borrowed from their

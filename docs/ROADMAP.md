@@ -500,11 +500,13 @@ contract retains the primary references, algorithms, provenance and exact limits
    Explicit engine [Short Text equality candidates](NATIVE_TEXT.md#conservative-short-text-equality-candidates)
    now provide conservative primary-prefix pruning under the General model.
    They retain possible false positives and require complete residual equality;
-   comparer/source agreement for non-NULL query integration remains unfinished.
+   [direct query equality](TEXT_EQUALITY_SEEKS.md) now uses comparer/source agreement,
+   complete residual evaluation and independent query/benchmark evidence.
+   Wider predicate and locale qualification remain unfinished.
    Single Short Binary index reads/checks now work;
    typed Binary ranges also work for explicit library hosts. Compound Binary
    reads now share the owned tuple reader and whole-entry digest checks. Automatic
-   non-NULL binary predicate pushdown, compound seeks and SQL text bounds remain
+   non-NULL binary predicate pushdown, compound seeks and SQL text inequality bounds remain
    unsupported. NULL-only General Text/Short Binary predicates now use qualified
    explicit or automatic indexes without invoking a string comparator; see
    [NULL selection scope](AUTOMATIC_INDEXES.md#null-only-text-and-binary-selection).

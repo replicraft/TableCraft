@@ -25,7 +25,10 @@ keys are Byte, Int16, Int32, Int64, Currency and GUID under their existing engin
 profiles: exact typed intervals/equality and qualified NULL tests retain their
 existing semantics. NULL-only constraints also select qualified single General
 Text and Short Binary indexes; empty strings/bytes are separate non-NULL values.
-These constraints require no SQL string comparator or locale provider. Native field identities map to exposed scalar columns by
+These NULL constraints require no SQL string comparator or locale provider.
+Single direct Short Text equality can additionally use
+[comparer-qualified hints](TEXT_EQUALITY_SEEKS.md) under `--collation database`;
+its actual resolver and source must agree before index selection. Native field identities map to exposed scalar columns by
 validated names; mixed native schemas retain their scalar-view boundary.
 
 Declarations must have known local ordinary/primary constraints and include NULL
@@ -39,7 +42,7 @@ Once a candidate is selected, read, corruption, unsupported-profile, cancellatio
 and quota failures propagate. No other index or sequential scan is tried after
 that failure. Both dense and pruned projections use the same selection service.
 The original WHERE remains mandatory. Partial AND extraction, coercive predicates,
-SQL non-NULL Text/Binary bounds, Boolean/floating/date seeks and composite seeks
+SQL Text inequalities and non-NULL Binary bounds, Boolean/floating/date seeks and composite seeks
 remain unsupported. Physical Text/Binary ranges are not SQL predicate semantics.
 Unconstrained reads remain sequential unless a library caller explicitly requires
 an index. Automatic selections retain sequential table root order, preserving
@@ -126,7 +129,8 @@ Preparation still does not traverse indexes. The residual IS NULL predicate stay
 in the executor. Automatic results retain sequential root order, including TOP
 and First/Last. A later unfiltered consumer loads a complete table independently
 of the ephemeral selected snapshot. IS NOT NULL and non-NULL string/binary
-predicates do not acquire this selection. An unsafe AND does not contribute a
+predicates do not acquire this NULL selection. Short Text equality has its
+separate comparer-qualified contract above. An unsafe AND does not contribute a
 partial NULL hint, preserving eager errors.
 
 The original [NULL selection runner](testing/compare_null_indexes.py) passes

@@ -1,5 +1,6 @@
 //! Single Short/Long Text physical keys. Native key equivalence is not SQL equality.
 use super::entry_digest as digest;
+mod equality;
 mod selection;
 use super::{
     key::{ASC_NULL, ASC_VALUE, DESC_NULL, DESC_VALUE, KeyProfile, KeyRow, KeyWork, MARKER_BYTES},
@@ -11,6 +12,7 @@ use crate::{
     format::layout::INDEX_KEY_BYTES,
     header::check,
 };
+pub use equality::GeneralEqualityPrefix;
 use selection::EncodedSelection;
 pub use selection::TextIndexSelection;
 use std::cmp::Ordering;

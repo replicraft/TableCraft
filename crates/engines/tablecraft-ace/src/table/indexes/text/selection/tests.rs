@@ -108,6 +108,35 @@ fn prefix_fences_keep_extensions_and_both_duplicate_boundary_sides() {
 }
 
 #[test]
+fn owned_prefixes_cannot_cross_descriptors_or_select_memo_prefixes() {
+    let legacy = GeneralEqualityPrefix::from_encoded(
+        NativeSortOrder::from_native_bytes([9, 4, 0, 0]),
+        &[0x4a],
+    )
+    .unwrap();
+    let modern = profile(1, false);
+    let mut pool = budget();
+    let mut work = KeyWork {
+        budget: &mut pool,
+        cancelled: &|| false,
+    };
+    assert!(matches!(
+        EncodedSelection::new(
+            TextIndexSelection::EqualityPrefix(legacy),
+            &modern,
+            &mut work
+        ),
+        Err(InspectError::Unsupported)
+    ));
+    let mut memo = profile(0, false);
+    memo.maximum_units = None;
+    assert!(matches!(
+        EncodedSelection::new(TextIndexSelection::EqualityPrefix(legacy), &memo, &mut work),
+        Err(InspectError::Unsupported)
+    ));
+}
+
+#[test]
 fn memo_unknown_orders_limits_and_cancellation_do_not_become_complete_scans() {
     let mut metadata = profile(1, false);
     metadata.maximum_units = None;
