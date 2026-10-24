@@ -6939,3 +6939,48 @@ are skipped, full traversal rejects them, corrupt chosen roots fail and small
 output caps publish nothing. Native Access SQL, performance and automatic non-NULL
 query selection remain unqualified/unimplemented as described in
 [the owning contract](NATIVE_TEXT.md#conservative-short-text-equality-candidates).
+
+## Advanced-field storage evolution inputs
+
+The original MIT [producer](testing/AdvancedEvolutionFixture.java) creates fresh
+ACE 2016/2019 files through the reviewed Jackcess 5.0.4 public builder/update APIs.
+Expression evaluation is disabled. The original MIT
+[getter oracle](testing/AdvancedEvolutionOracle.java) opens accepted files read-only,
+checks raw/public attachment identities and encoded bytes, and records stored
+history DATE bits without executing expressions or SQL. Its separate `--orphan`
+mode only edits an explicitly named disposable `orphan.accdb` copy for refusal
+controls. No third-party code or fixture was copied.
+
+Accepted originals are under ignored
+`.cache/tablecraft-fixtures/advanced-evolution-deleted-20261024/`:
+
+| File | Bytes | SHA-256 |
+| --- | ---: | --- |
+| V2016.accdb | 1,236,992 | `b84c6a619692f8d0c86dd3be73bd8311f42847a25668029ee99a7feda640e758` |
+| V2019.accdb | 1,306,624 | `c18eb198a4247514a6b79d36b862996a0012540c68f3c90490ca1e44fa6d8e7a` |
+
+Producer SHA-256: `c79544e3b0afe5a4ee228c7e71bb34cef074fcb5e3a02149fbadffce4e414a0e`.
+Oracle SHA-256: `f04ed21232606413fa5a036b60e6838cc0a4afbb3324c060389687ec54d6cc26`.
+[Runner](testing/compare_advanced_evolution.py) SHA-256:
+`f900b2f3b1a3b8c16c2b4e2bd6757e8264b425c9f96b13092342b58cafbf7fa8`.
+The reviewed JAR remains SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`;
+its existing Apache-2.0 provenance/notice review is unchanged.
+
+The [feature report](testing/ADVANCED_FIELD_EVOLUTION.md) and
+[raw results](testing/results/advanced-evolution-2026-10-24.json) record 60 passing
+controls and 18,584 compared query cells against one unchanged immutable CLI.
+Each file retains seven untouched 8-field historical roots, 147 current 18-field
+roots, 120 relocation links, 303 multivalue children, 130 attachments and 30 stored
+versions after six parent deletions. The runner uses explicit larger native/query
+work pools; unchanged defaults do not admit every larger Memo projection.
+Original hashes are verified before/after replay. Corruption experiments affect
+copies only, and no generated database or compiled class is tracked.
+
+Earlier `.cache/tablecraft-fixtures/advanced-evolution-20261024/` files were
+investigation inputs: their deletion cursor had already reached EOF, and they
+rewrote the intended untouched subset. They are excluded from accepted counts
+and claims. The single `advanced-evolution-probe-20261024.accdb` likewise tested
+builder capability only. Failed calculated-Extended and additional multivalue-type
+probes do not establish supported declarations. Native Access SQL, freshness,
+concurrent edits and save/reopen behavior remain unqualified.

@@ -1,0 +1,64 @@
+{
+  "date": "2026-10-24",
+  "scope": "Compare evolved advanced-field reads with original inert independent getters.\n\nThis checks stored physical rows and explicit TableCraft collection/query models,\nnot Access recalculation, concurrency, native SQL or preservation after saves.\n",
+  "controls": 60,
+  "compared_cells": 18584,
+  "hashes_unchanged": true,
+  "native_steps": 100000000,
+  "execution_steps": 100000000,
+  "inputs": {
+    ".cache/tablecraft-fixtures/jackcess-5.0.4.jar": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    ".cache/tablecraft-bin/cached-query-20261024": "d0666d2d733e746b5cdbda776d55aca0b263e55aa566cff93e715a2fd7e9de15",
+    "docs/testing/AdvancedEvolutionOracle.java": "f04ed21232606413fa5a036b60e6838cc0a4afbb3324c060389687ec54d6cc26",
+    "docs/testing/AdvancedEvolutionFixture.java": "c79544e3b0afe5a4ee228c7e71bb34cef074fcb5e3a02149fbadffce4e414a0e",
+    "docs/testing/compare_advanced_evolution.py": "f900b2f3b1a3b8c16c2b4e2bd6757e8264b425c9f96b13092342b58cafbf7fa8",
+    ".cache/tablecraft-fixtures/advanced-evolution-deleted-20261024/V2016.accdb": "b84c6a619692f8d0c86dd3be73bd8311f42847a25668029ee99a7feda640e758",
+    ".cache/tablecraft-fixtures/advanced-evolution-deleted-20261024/V2019.accdb": "c18eb198a4247514a6b79d36b862996a0012540c68f3c90490ca1e44fa6d8e7a",
+    "crates/engines/tablecraft-ace/src/table/record.rs": "24658b3c29603dc3030e59e53390f83c58b38c9f54b5034e454f9592db7092be",
+    "crates/engines/tablecraft-ace/src/table/page/cursor.rs": "ba29e20e70ebef3b80bfac22d7fde201b3212aa8722ccb0d7c7630fd7f4b50b5",
+    "crates/engines/tablecraft-ace/src/table/calculated/projection.rs": "22787aaefe0a4b4b8d4e89865af07af57458093dcdafdbb81b0f9e46b24d1e2f",
+    "crates/engines/tablecraft-ace/src/table/calculated/encoding.rs": "438973bd55cde986edb49976b298ff209b66d7a76624718c622762065d2e6e42",
+    "crates/engines/tablecraft-ace/src/table/complex/links/read.rs": "dde1e7fb948ba6f9d5c3af7cb11c7d1bb7e9dc2c10e4393b7c7e405762263580",
+    "crates/engines/tablecraft-ace/src/table/complex/multivalue/schema.rs": "2ebcdf6c8bb9a5ae29ca92eb94cb6feb79d87db818cc9d8f96490dc8f45b2042",
+    "crates/engines/tablecraft-ace/src/table/complex/attachments/schema.rs": "319ba59cbcd7ab100733476f08eaac1c8ebb872ad3dbd32a9bad8d846829426d",
+    "crates/engines/tablecraft-ace/src/table/complex/history/schema.rs": "a77cf49344bbc89be49c2be00e8232ac3ea49700e315a9a1f314e585ef9c6153",
+    "crates/backends/tablecraft-access/src/source/schema.rs": "f90ba54e87564726f5994ba52784a33ec80f7addd76912bd362e61da76fd2ea9",
+    "crates/backends/tablecraft-access/src/source/projection.rs": "c1540655ea01d052e0e0a5d6d540b4e09e1aacfe0ac6b4547d2cae30f727e757",
+    "docs/testing/compare_browsing.py": "4f1ced3ad3970150683ec720a31ec85f8400fa73b4a7b5e2343a33abbf58d67e",
+    "docs/testing/compare_cached_pages.py": "883d563b1e1c47df3ae94e751404d6ec263de71be02208565e450559c2668253",
+    "docs/testing/compare_calculated_decimals.py": "57d849a3a3251e0b1827c95bb74a7387fa353ab935affdfd812ed84e1224c7fd",
+    "docs/testing/cli_tsv.py": "3b849270cc2cde83ecd62089d949ec0388e2ce8755c67801e1c2b16cbb209f6f"
+  },
+  "observations": [
+    {
+      "file": ".cache/tablecraft-fixtures/advanced-evolution-deleted-20261024/V2016.accdb",
+      "bytes": 1236992,
+      "sha256": "b84c6a619692f8d0c86dd3be73bd8311f42847a25668029ee99a7feda640e758",
+      "oracle_sha256": "9df7b3589234b7820746ade7275d1c602fd6eebb3dba78a09176ca4c86866ea2",
+      "parents": 154,
+      "physical_field_counts": {
+        "8": 7,
+        "18": 147
+      },
+      "relocation_links": 120,
+      "choices": 303,
+      "attachments": 130,
+      "versions": 30
+    },
+    {
+      "file": ".cache/tablecraft-fixtures/advanced-evolution-deleted-20261024/V2019.accdb",
+      "bytes": 1306624,
+      "sha256": "c18eb198a4247514a6b79d36b862996a0012540c68f3c90490ca1e44fa6d8e7a",
+      "oracle_sha256": "afe9ea4114b1900791ccdbbd720280d98509deb3d1658921373ceaefaaab9135",
+      "parents": 154,
+      "physical_field_counts": {
+        "8": 7,
+        "18": 147
+      },
+      "relocation_links": 120,
+      "choices": 303,
+      "attachments": 130,
+      "versions": 30
+    }
+  ]
+}
