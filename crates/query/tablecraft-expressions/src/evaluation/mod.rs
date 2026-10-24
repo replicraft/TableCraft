@@ -69,6 +69,7 @@ mod variants;
 mod walk;
 mod week_options;
 mod weekday;
+pub use arithmetic::addition::PreparedAddition;
 pub use bindings::{Bindings, NoBindings};
 pub use context::{EvalLimits, Evaluator};
 

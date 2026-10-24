@@ -60,6 +60,16 @@ fn contextual_numeric_text_keeps_date_overflow_categories_and_explicit_policies(
         ("'1,0'+CDate(2958465)", Err(EvalError::Overflow.into())),
         ("CVDate(2958465)+'1,0'", Ok(2958466.0)),
         ("CDate(2958465)+CVar('1,0')", Ok(2958466.0)),
+        (
+            "CDate(2958465)+CStr(LeftB('1,0',6))",
+            Err(EvalError::Overflow.into()),
+        ),
+        (
+            "CStr(LeftB('1,0',6))+CDate(2958465)",
+            Err(EvalError::Overflow.into()),
+        ),
+        ("CDate(2958465)+LeftB('1,0',6)", Ok(2958466.0)),
+        ("CDate(2958465)+CVar(CStr(LeftB('1,0',6)))", Ok(2958466.0)),
         ("CDate(-657434)-'1,0'", Err(EvalError::Overflow.into())),
         ("CDate(-657434)-CVar('1,0')", Ok(-657435.0)),
         ("'0,0'-CVDate(2958465)", Ok(-2958465.0)),

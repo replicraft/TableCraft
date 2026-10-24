@@ -6,6 +6,11 @@ including whole-input validation, regional separators, fallible normalization,
 shared quotas and cancellation. No format is inferred from the operating system.
 Prepared queries use each execution's policy; stored fields remain unchanged.
 
+The String/String branch of plus now also accepts [lossless raw string inputs](CONCATENATION.md#lossless-string-addition).
+Mixed raw String/numeric addition strictly publishes Text before reusing the
+numeric rules below, retaining original declaration categories. NULL propagation
+requires no decoding or numeric parsing after operand-family/state admission.
+
 | Operation | Current Text route |
 | --- | --- |
 | Text + Text | Concatenation, without numeric parsing |

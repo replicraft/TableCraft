@@ -62,13 +62,58 @@ availability is established by the query examples cited below. These sources
 motivate the explicit complete-unit profile, not native qualification of
 surrogate handling, odd-byte strings or broader Variant/Byte-array coercion.
 
-The expanded original Python recipe passes 1,542 source-free controls over both
+The original ampersand expansion passed 1,542 source-free controls over both
 query commands. Python constructs UTF-16LE bytes independently, observes units,
 decodes only final valid output and checks refused invalid publication. Seeded
 unit pairs include zero/control characters, paired/unpaired surrogates, NULL,
 Empty, policies and eager failures. It also checks the CLI's existing escaped
 display-cell contract rather than treating that output as raw JSON. Native
-fixtures, Windows Access and benchmarks were not run for this expansion.
+fixtures, Windows Access and benchmarks were not run for that expansion. The
+subsequent plus expansion below records the recipe's current combined coverage.
+
+## Lossless String addition
+
+The String/String branch of `+` now retains complete raw UTF-16 units just as
+ampersand does. `ChrW(55357)+ChrW(56832)` and
+`Left('😀',1)+Right('😀',1)` publish `😀`. Nested byte/unit observations,
+inspection, CStr/CVar and slices can consume the intermediate. Direct invalid
+final output and raw relational cells remain refused. Odd-byte concatenation is
+still unqualified and refused when a join is required.
+
+Plus keeps its separate NULL rule: `ChrW(55296)+NULL` returns NULL after both
+operands evaluate. This needs no Unicode decoding, string join or numeric policy;
+the same NULL shortcut applies to an already admitted odd-byte String. An eager
+failure such as `(ChrW(55296)+NULL)+(1/0)` still aborts. Error/Missing and the
+current host Empty refusal for plus retain their existing boundaries; ampersand's
+explicit Empty conversion does not widen numeric arithmetic.
+
+String/numeric pairs still perform numeric addition. A raw string must first
+publish representable Text, then use the existing explicit NumberFormat and
+numeric target rules. `LeftB('12',4)+1` yields numeric thirteen with an explicit
+number policy, whereas `LeftB('12',4)+'1'` yields Text `121`. Binary/GUID/extended-
+date and non-finite counterpart admission retains its arithmetic refusal rather
+than silently concatenating or producing NULL.
+
+The shared evaluator's `PreparedAddition` returns either a completed raw
+String/NULL result or materialized operands for existing scalar/declared dispatch.
+Query execution retains each operand's text policy and original Scalar/Variant
+category through that handoff. Under declared arithmetic,
+`CDate(2958465)+CStr(LeftB('1,0',6))` still overflows, while a Variant string
+participant can retain the existing Double widening with the de-DE number policy.
+No declaration is inferred from decoded values or a successful conversion.
+
+Scalar-only pairs retain existing dispatch and borrowed Text joins. Raw String
+joins reuse the checked, cumulatively charged ampersand buffer-copy kernel;
+numeric publication and normalization retain their own charges. All existing
+work/cancellation, output ceilings and buffered CLI failure rules remain active.
+
+Microsoft's [MS-VBAL plus contract](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/91621d4b-3da3-4fe9-9581-adda857efe05)
+distinguishes String joining, numeric addition and NULL results. The Access text
+expression references below establish query use. The expanded independent
+concatenation recipe passes 2,918 source-free controls over both operators;
+Python models UTF-16LE joining and final decoding independently. Existing byte
+and numeric Text recipes still pass 35,336 and 660 controls. Native Access,
+fixture replays and broader Variant/odd-byte qualification remain open.
 
 ## Shared execution and metadata
 

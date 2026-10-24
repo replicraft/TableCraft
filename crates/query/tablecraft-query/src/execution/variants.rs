@@ -172,6 +172,7 @@ impl Runtime<'_, '_> {
             Expr::Binary(BinaryOperator::Concatenate, left, right) => {
                 self.concatenation_cell(left, right, env)
             }
+            Expr::Binary(BinaryOperator::Add, left, right) => self.addition_cell(left, right, env),
             Expr::Binary(operator, left, right)
                 if let Some(comparison) = relational::operator(*operator) =>
             {
@@ -183,8 +184,7 @@ impl Runtime<'_, '_> {
             Expr::Binary(operator, left, right)
                 if matches!(
                     operator,
-                    BinaryOperator::Add
-                        | BinaryOperator::Subtract
+                    BinaryOperator::Subtract
                         | BinaryOperator::Multiply
                         | BinaryOperator::Divide
                         | BinaryOperator::IntegerDivide

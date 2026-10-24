@@ -16,6 +16,9 @@ fn selector_outputs_retain_value_policies_without_resolving_metadata_or_index_po
         "A & Left(ChrW(55296),0)",
         "Left(ChrW(55296),0) & (SELECT T.A)",
         "CVar((SELECT T.A)) & Left(ChrW(55296),0)",
+        "A + Left(ChrW(55296),0)",
+        "Left(ChrW(55296),0) + (SELECT T.A)",
+        "CVar((SELECT T.A)) + Left(ChrW(55296),0)",
     ] {
         let source = Fixture::new();
         let resolver = Resolver::new();

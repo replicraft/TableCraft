@@ -1,5 +1,35 @@
 # Implementation status
 
+## Lossless String addition with declared numeric handoff
+
+The String/String branch of plus now joins complete raw UTF-16 units without
+premature publication. NULL propagates after eager operand admission without
+Unicode decoding; actual odd-byte joins and invalid final Text remain refused.
+Mixed raw String/numeric operands strictly publish Text before returning to the
+existing numeric/declared dispatcher. A small shared `PreparedAddition` boundary
+returns either the completed String/NULL result or materialized operands; it does
+not establish declarations. Bound intermediate cells retain both original
+Scalar/Variant categories and runtime text policies. Scalar-only dispatch and
+borrowed Text joining remain in their existing kernels. See [scope and references](CONCATENATION.md#lossless-string-addition).
+
+Three new evaluator controls cover surrogate reconstruction/generation, separate
+NULL/error/type-family rules, quota failures and every observed cancellation
+checkpoint. Two new query tests cover prepared rebinding, grouped/correlated
+consumers and continued raw relational-cell refusal. Expanded Date controls prove
+Scalar overflow versus Variant widening after raw numeric Text publication;
+expanded routing controls retain field/CVar/subquery policies. A new CLI test
+covers both hosts, numeric policies and buffered failures. All 702 all-feature
+expression tests plus one doctest, 364 minimal expression tests, 81 focused query
+tests and nineteen CLI tests pass. Focused Clippy, minimal query compilation,
+formatting, Python compilation and diff checks pass.
+
+The independent concatenation recipe now passes 2,918 source-free controls over
+ampersand and plus; existing byte and numeric Text recipes pass 35,336 and 660
+controls respectively. Native fixtures, Windows Access, full engine/workspace
+suites and benchmarks were not run. No dependency, stored carrier, native decoder
+or writer scope changed. Host Empty arithmetic, odd-byte joins, other raw
+operators, wider promotion and native qualification remain unfinished.
+
 ## CStr over lossless string inputs
 
 CStr now retains existing raw string buffers through the shared owning evaluator

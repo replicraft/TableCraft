@@ -59,7 +59,7 @@ impl<'a> Evaluator<'a> {
         if matches!(
             expression,
             Expression::Binary {
-                operator: BinaryOperator::Concatenate,
+                operator: BinaryOperator::Concatenate | BinaryOperator::Add,
                 ..
             }
         ) {

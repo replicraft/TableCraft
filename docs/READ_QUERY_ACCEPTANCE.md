@@ -102,6 +102,13 @@ observation refusals and strict final publication remain unchanged. This closes
 a conversion-path gap, not raw relational carriers or broader Variant/native
 semantics. See [CStr string inputs](CSTR.md#lossless-string-inputs).
 
+The String/String branch of plus now retains raw units through joining and
+propagates NULL without forced decoding. Mixed raw String/numeric operands still
+use strict publication, explicit numeric policies and their original declaration
+categories. Scalar/Variant Date overflow and field/subquery text policies remain
+covered. This does not complete host Empty, odd-byte joins, general promotion or
+native qualification. See [String addition](CONCATENATION.md#lossless-string-addition).
+
 Round's digit count now follows the nonnegative Long profile independently of
 Decimal storage scale. [Bounded high precision](MATH_FUNCTIONS.md#round-precision-beyond-decimal-storage-scale)
 covers tiny IEEE values and extreme counts without an overflowing scale factor or

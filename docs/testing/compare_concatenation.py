@@ -91,19 +91,30 @@ def main():
     pairs = [(0, 0), (65, 66), (0xD83D, 0xDE00), (0xD83E, 0xDD80),
              (0xD800, 65), (65, 0xDFFF), (0xDC00, 0xD800)]
     pairs += [(rng.randrange(65536), rng.randrange(65536)) for _ in range(128)]
-    for left, right in pairs:
-        expression = f"(ChrW({left})&ChrW({right}))"
-        raw = left.to_bytes(2, "little") + right.to_bytes(2, "little")
-        check(f"SELECT Len({expression}) AS Result", [len(raw) // 2])
-        check(f"SELECT LenB({expression}) AS Result", [len(raw)])
-        check(f"SELECT AscW({expression}) AS Result", [int.from_bytes(raw[:2], "little", signed=True)])
-        check(f"SELECT VarType({expression}) AS Result", [8])
-        try:
-            published = raw.decode("utf-16le")
-        except UnicodeDecodeError:
-            check(f"SELECT {expression} AS Result", None, accepted=False)
-        else:
-            check(f"SELECT {expression} AS Result", [published])
+    for operator in ["&", "+"]:
+        for left, right in pairs:
+            expression = f"(ChrW({left}){operator}ChrW({right}))"
+            raw = left.to_bytes(2, "little") + right.to_bytes(2, "little")
+            check(f"SELECT Len({expression}) AS Result", [len(raw) // 2])
+            check(f"SELECT LenB({expression}) AS Result", [len(raw)])
+            check(f"SELECT AscW({expression}) AS Result", [int.from_bytes(raw[:2], "little", signed=True)])
+            check(f"SELECT VarType({expression}) AS Result", [8])
+            try:
+                published = raw.decode("utf-16le")
+            except UnicodeDecodeError:
+                check(f"SELECT {expression} AS Result", None, accepted=False)
+            else:
+                check(f"SELECT {expression} AS Result", [published])
+
+    for expression in ["ChrW(55296)+NULL", "NULL+ChrW(55296)", "ChrB(65)+NULL"]:
+        check(f"SELECT {expression} AS Result", [None])
+    for expression in ["LeftB('12',4)+1", "1+LeftB('12',4)"]:
+        check(f"SELECT CStr({expression}) AS Result", ["13"], ["--number-format", "invariant"])
+        check(f"SELECT VarType({expression}) AS Result", [5], ["--number-format", "invariant"])
+        check(f"SELECT {expression} AS Result", None, accepted=False)
+    for expression in ["ChrW(55296)+CVErr(1)", "CVErr(1)+ChrW(55296)",
+                       "(ChrW(55296)+NULL)+(1/0)", "LenB(ChrB(65)+ChrB(0))"]:
+        check(f"SELECT {expression} AS Result", None, accepted=False)
 
     for expression, expected in [
         ("Nz(NULL)&'x'", "x"), ("NULL&Nz(NULL)", ""),
