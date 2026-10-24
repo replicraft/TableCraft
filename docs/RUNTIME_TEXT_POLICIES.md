@@ -41,6 +41,18 @@ policy even when its retained representative has the same value; removing that r
 must not change the ordering or TOP selection of surviving values. This merge does
 not reevaluate expressions or activate a provider, and fresh conversion/function
 results retain their separate Default policy.
+With a field resolver, GROUP BY evaluates each row's group keys once and retains
+all keyed rows until key-column runtime policies have been merged. Membership is
+then computed under those complete policies: a late field identity can both merge
+neutral groups and separate values that the default comparer would equate.
+Each tuple column retains its own identity, including across partitions separated
+by other numeric keys. Retained group representatives carry the resulting policy
+through output expressions and named/crosstab consumers. Additional keyed-row
+headers use fallible allocation under the existing cumulative byte/work limits;
+no source is rescanned and no key is reevaluated to repartition. A fixed allowance
+can therefore exhaust sooner. Without a field resolver, global-comparer grouping
+keeps its existing incremental key storage.
+
 Group and discovered-heading representatives retain the policies of matching cells
 that are discarded. A neutral literal cannot bridge incompatible field policies
 by erasing an intermediate contributor. Grouped output expressions, including

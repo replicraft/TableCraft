@@ -4,6 +4,7 @@ mod collation_routing {
     mod crosstab;
     mod domain;
     mod domain_distinct_sort;
+    mod domain_group_policy;
     mod domain_keys;
     mod dynamic_heading_policy;
     mod predicates;
