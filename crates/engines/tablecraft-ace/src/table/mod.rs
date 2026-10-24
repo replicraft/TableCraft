@@ -6,8 +6,9 @@ pub use attachment::{
 };
 mod complex;
 pub use calculated::{
-    StoredCalculation, StoredInt32Calculation, StoredTablePage, read_stored_calculation,
-    read_stored_int32_calculation, read_stored_table_page,
+    CalculationDeclaration, StoredCalculation, StoredInt32Calculation, StoredTablePage,
+    inspect_calculation_declaration, read_stored_calculation, read_stored_int32_calculation,
+    read_stored_table_page,
 };
 mod features;
 pub use complex::{

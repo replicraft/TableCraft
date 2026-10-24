@@ -70,6 +70,10 @@ pub use table::{
     ByteIndexSelection, CurrencyIndexSelection, Int16IndexSelection, Int32IndexSelection,
     Int64IndexSelection, read_table_index, read_table_index_range, read_table_int64_index_range,
 };
+pub use table::{
+    CalculationDeclaration, StoredCalculation, StoredInt32Calculation,
+    inspect_calculation_declaration, read_stored_calculation, read_stored_int32_calculation,
+};
 pub use table::{ColumnFeatures, TableFeatures, inspect_table_features};
 pub use table::{
     ComplexColumnLinks, ComplexParentLink, ComplexReferenceViolation, read_complex_column_links,
@@ -90,10 +94,6 @@ pub use table::{
     read_multivalue_table_page_with_request,
 };
 pub use table::{NativeColumn, TableSchema, TableSnapshot, inspect_table_schema, read_table};
-pub use table::{
-    StoredCalculation, StoredInt32Calculation, read_stored_calculation,
-    read_stored_int32_calculation,
-};
 pub use table::{StoredTablePage, read_stored_table_page};
 pub use table::{
     StoredVersion, VersionHistoryColumn, VersionHistoryMemberDeclaration,
