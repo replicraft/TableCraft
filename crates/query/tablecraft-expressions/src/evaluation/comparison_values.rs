@@ -11,6 +11,7 @@ use tablecraft_core::values::{ExpressionValue, Value};
 mod dates;
 mod effective;
 mod floating;
+mod strings;
 
 #[cfg(test)]
 mod raw_tests;
@@ -18,8 +19,9 @@ mod raw_tests;
 impl Evaluator<'_> {
     /// Compare expression operands without implicitly converting Error codes.
     /// Standard Error/Error pairs compare their codes; mixed kinds are TypeMismatch.
-    /// Raw String/NULL yields Unknown without Unicode publication; other raw
-    /// pairs retain strict materialization. Opaque codes and other expression-only
+    /// Raw String/NULL yields Unknown without Unicode publication. String pairs
+    /// use an explicitly selected raw-unit provider or strict materialization.
+    /// Opaque codes and other expression-only
     /// states retain explicit refusal.
     pub fn compare_expression_values(
         &mut self,
@@ -27,6 +29,10 @@ impl Evaluator<'_> {
         left: &ExpressionValue,
         right: &ExpressionValue,
     ) -> Result<Truth, EvalError> {
+        if let Some(result) = self.compare_retained_strings(operator, left, right)? {
+            return Ok(result);
+        }
+
         match (left, right) {
             (ExpressionValue::Value(left), ExpressionValue::Value(right)) => {
                 self.compare_values(operator, left, right)

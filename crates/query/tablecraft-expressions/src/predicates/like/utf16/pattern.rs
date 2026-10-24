@@ -27,7 +27,7 @@ pub(super) fn compile(
     col: &dyn Collation,
     work: &mut Work<'_>,
 ) -> Result<Pattern, EvalError> {
-    let units = text.units(work)?;
+    let units = text.units(work.budget, work.cancelled)?;
     let mut literals = work.buffer(units.len())?;
     let mut tokens = work.buffer(units.len())?;
     let (many, one, not) = match mode {

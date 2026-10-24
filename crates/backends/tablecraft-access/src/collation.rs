@@ -6,11 +6,14 @@ pub(crate) use resolver::identity;
 mod like;
 mod search;
 use std::{cell::RefCell, cmp::Ordering};
-use tablecraft_ace::{InspectError, NativeSortOrder, compare_general_text};
+use tablecraft_ace::{InspectError, NativeSortOrder, compare_general_text, compare_general_utf16};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_expressions::{
     EvalError,
-    comparison::{Collation, LikeProfile, LikeSpanState, StringCompareMode, StringSearch},
+    comparison::{
+        Collation, LikeProfile, LikeSpanState, StringCompareMode, StringComparisonProfile,
+        StringSearch,
+    },
 };
 
 /// Caller-selected provisional General comparison with one cumulative budget.
@@ -77,6 +80,18 @@ impl<'a> GeneralCollation<'a> {
 }
 
 impl Collation for GeneralCollation<'_> {
+    fn string_comparison_profile(&self) -> StringComparisonProfile {
+        StringComparisonProfile::Utf16
+    }
+
+    fn compare_utf16(&self, left: &[u16], right: &[u16]) -> Result<Ordering, EvalError> {
+        let mut budget = self
+            .budget
+            .try_borrow_mut()
+            .map_err(|_| EvalError::CollationFailed)?;
+        compare_general_utf16(self.order, left, right, &mut budget, self.cancelled).map_err(adapt)
+    }
+
     fn option_compare(&self) -> Option<StringCompareMode> {
         self.option_compare
     }

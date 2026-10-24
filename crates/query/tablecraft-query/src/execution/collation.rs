@@ -79,6 +79,31 @@ impl<'a> Runtime<'a, '_> {
             b.value,
             ExpressionValue::Value(_) | ExpressionValue::StringBytes(_)
         );
+        let raw_strings = matches!(
+            (&a.value, &b.value),
+            (
+                ExpressionValue::StringBytes(_),
+                ExpressionValue::StringBytes(_) | ExpressionValue::Value(Value::Text(_))
+            ) | (
+                ExpressionValue::Value(Value::Text(_)),
+                ExpressionValue::StringBytes(_)
+            )
+        );
+        if raw_strings {
+            let collation = self.string_comparator(policy.merge(a.policy).merge(b.policy))?;
+            let evaluator = self.evaluator();
+            let mut evaluator = if let Some(collation) = collation {
+                evaluator.with_collation(collation)
+            } else {
+                evaluator
+            };
+            let result = evaluator
+                .compare_expression_values(op, a, b)
+                .map_err(predicate_error)?;
+            self.tick()?;
+            return Ok(result);
+        }
+
         if ordinary && !raw_null {
             let converted_left = self.comparison_cell(a)?;
             let converted_right = self.comparison_cell(b)?;

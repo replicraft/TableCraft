@@ -80,7 +80,9 @@ Variant String/numeric rule also recognizes raw String identity. Eager failures,
 metadata/policies and strict non-NULL coercion remain explicit. LIKE/NOT LIKE now
 retain raw String/NULL truth under an explicitly selected wildcard mode. Non-NULL
 raw matching also feeds complete units to explicitly selected UTF-16 providers,
-retaining policy routing and refusing odd byte lengths. Raw keys, additional
+retaining policy routing and refusing odd byte lengths. Non-NULL String
+comparisons also use an explicitly selected [raw-unit provider](RAW_STRING_COMPARISON.md),
+retaining separate SQL space rules and stored field policies. Raw keys, additional
 native locale providers, native matching qualification and P0 semantics remain
 unfinished.
 

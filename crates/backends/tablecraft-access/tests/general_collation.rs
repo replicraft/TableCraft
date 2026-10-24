@@ -123,6 +123,41 @@ fn comparisons_remain_consistent_across_query_operations() {
 }
 
 #[test]
+fn raw_general_strings_keep_sql_space_rules_and_relational_consumers() {
+    for version in [0, 1] {
+        let policy = policy(version);
+        assert_eq!(
+            policy
+                .compare_utf16(&[0xd800, 97, 32], &[0xd800, 65])
+                .unwrap(),
+            Ordering::Equal
+        );
+        assert_ne!(
+            policy.compare_like_units(&[97, 32], &[65]).unwrap(),
+            Ordering::Equal
+        );
+
+        let sql = "SELECT S=ChrW(55296)&'a',S<>ChrW(55296)&'b',S IN(ChrW(55296)&'A'),S BETWEEN ChrW(55296)&'a' AND ChrW(55296)&'b',S=ANY(SELECT ChrW(55296)&'a'),S=ALL(SELECT ChrW(55296)&'A') FROM (SELECT ChrW(55296)&'A ' AS S) AS Q";
+        assert_eq!(
+            rows(sql, &policy).unwrap(),
+            vec![vec![Value::Boolean(true); 6]]
+        );
+        assert_eq!(
+            rows(
+                "SELECT LenB(S) FROM (SELECT ChrW(55296)&'A ' AS S) AS Q WHERE S=ChrW(55296)&'a'",
+                &policy
+            )
+            .unwrap(),
+            vec![vec![Value::Int32(6)]]
+        );
+        assert_eq!(
+            rows("SELECT 1 FROM (SELECT ChrW(55296)&'A ' AS S) AS A INNER JOIN (SELECT ChrW(55296)&'a' AS T) AS B ON A.S=B.T", &policy).unwrap(),
+            vec![vec![Value::Int64(1)]]
+        );
+    }
+}
+
+#[test]
 fn comparison_budget_is_cumulative_across_callbacks_and_executions() {
     let policy = GeneralCollation::new(
         NativeSortOrder::from_native_bytes([9, 4, 0, 1]),

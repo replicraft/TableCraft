@@ -1,13 +1,12 @@
 //! Bounded wildcard matching with explicit scalar/UTF-16 policies.
-mod input;
 mod pattern;
 mod utf16;
+pub use crate::comparison::StringInput as LikeString;
 use crate::{
     EvalError,
     comparison::{Collation, LikeProfile},
     logic::Truth,
 };
-pub use input::LikeString;
 use pattern::Token;
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},

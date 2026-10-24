@@ -31,6 +31,26 @@ pub fn compare_general_text(
     compare_keys(&left, &right, &mut work)
 }
 
+/// Compare complete raw UTF-16 Strings under the provisional General SQL model.
+/// Isolated surrogates retain their weights. Trailing ASCII spaces are ignored,
+/// as in compare_general_text; LIKE retains its separate literal-space policy.
+/// All scans, encoding and comparison consume the caller's cumulative budget.
+/// This is not native Access SQL qualification or permission for index pushdown.
+pub fn compare_general_utf16(
+    order: NativeSortOrder,
+    left: &[u16],
+    right: &[u16],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Ordering, InspectError> {
+    check(budget, cancelled)?;
+    let family = order.general_family().ok_or(InspectError::Unsupported)?;
+    let mut work = key::Work { budget, cancelled };
+    let left = trim_spaces(left, &mut work)?;
+    let right = trim_spaces(right, &mut work)?;
+    compare_units(family, left, right, &mut work)
+}
+
 /// Compare complete raw General LIKE literals, including isolated surrogates.
 /// Unlike SQL text comparison, trailing spaces retain their literal weights.
 /// No physical prefix/digest or normalization supplies comparison results.
@@ -45,9 +65,18 @@ pub fn compare_general_like_units(
     check(budget, cancelled)?;
     let family = order.general_family().ok_or(InspectError::Unsupported)?;
     let mut work = key::Work { budget, cancelled };
-    let left = key::encode_full(family, left, &mut work)?;
-    let right = key::encode_full(family, right, &mut work)?;
-    compare_keys(&left, &right, &mut work)
+    compare_units(family, left, right, &mut work)
+}
+
+fn compare_units(
+    family: GeneralSortFamily,
+    left: &[u16],
+    right: &[u16],
+    work: &mut key::Work<'_>,
+) -> Result<Ordering, InspectError> {
+    let left = key::encode_full(family, left, work)?;
+    let right = key::encode_full(family, right, work)?;
+    compare_keys(&left, &right, work)
 }
 
 /// Match a raw literal or prove that its primary prefix cannot be extended into
@@ -94,11 +123,19 @@ pub(super) fn full_key(
         work.tick()?;
         units.push(unit);
     }
+    let units = trim_spaces(&units, work)?;
+    key::encode_full(family, units, work)
+}
+
+fn trim_spaces<'a>(
+    mut units: &'a [u16],
+    work: &mut key::Work<'_>,
+) -> Result<&'a [u16], InspectError> {
     while units.last() == Some(&SPACE_UNIT) {
         work.tick()?;
-        units.pop();
+        units = &units[..units.len() - 1];
     }
-    key::encode_full(family, &units, work)
+    Ok(units)
 }
 
 pub(super) fn compare_keys(

@@ -1,5 +1,25 @@
 # Implementation status
 
+## Explicit raw-unit String comparison
+
+Relational String pairs can now use a separately selected UTF-16 provider without
+Unicode publication. General legacy/2010 preserve their recorded weights and SQL
+trailing-space model; LIKE keeps its separate literal-space contract. Static and
+retained field policies route comparisons, with unknown/conflicting identities
+and callback failures refused. NULL/state and declared Variant category admission
+remain unchanged. Odd byte counts, scalar-only publication and mixed coercion
+retain explicit boundaries. Raw keys and additional consumers remain unfinished.
+See [raw comparison](RAW_STRING_COMPARISON.md).
+
+All-feature and minimal expression tests pass, including generated unit order,
+provider refusal and pure cancellation controls. Forty-seven focused query tests,
+five native comparison tests, six adapter comparison tests and four CLI tests
+pass. Scoped Clippy checks, minimal query compilation and formatting pass. The
+independent runner passes 17,345 raw-order controls; existing raw LIKE/predicate,
+retained-cell and native-policy recipes also pass with native input hashes
+unchanged. No dependency, physical index, stored carrier or write gate changed.
+Full workspace tests, benchmarks and Windows Access were not run.
+
 ## Complete raw units through explicit UTF-16 LIKE
 
 The shared matcher now accepts borrowed decoded/raw String inputs and materializes

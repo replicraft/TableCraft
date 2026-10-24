@@ -7,8 +7,12 @@ pub use declared::{variant_expression_text_numeric, variant_text_numeric};
 mod locale;
 pub use locale::LocaleId;
 mod search;
+mod string_input;
+mod strings;
 pub use like::{LikeProfile, LikeSpanState};
 pub use search::StringSearch;
+pub use string_input::StringInput;
+pub use strings::{StringComparisonProfile, compare_utf16_strings};
 use tablecraft_core::values::Value;
 
 /// Explicit Option Compare policy for string built-ins; no module setting is inferred.
@@ -26,6 +30,17 @@ pub enum StringCompareMode {
 pub trait Collation {
     /// Compare decoded strings according to the selected database policy.
     fn compare(&self, left: &str, right: &str) -> Result<Ordering, EvalError>;
+    /// Select raw-unit comparison explicitly, independently of the LIKE profile.
+    fn string_comparison_profile(&self) -> StringComparisonProfile {
+        StringComparisonProfile::Unicode
+    }
+    /// Compare complete UTF-16 Strings under this provider's SQL text policy.
+    /// This is separate from LIKE's literal and character-class weights.
+    /// Providers own cumulative callback work/cancellation and must refuse
+    /// unsupported identities without a binary/locale fallback.
+    fn compare_utf16(&self, _left: &[u16], _right: &[u16]) -> Result<Ordering, EvalError> {
+        Err(EvalError::UnsupportedExpression)
+    }
     /// Select matching units explicitly; ordering alone does not activate a
     /// UTF-16/expansion profile or change existing scalar providers.
     fn like_profile(&self) -> LikeProfile {
