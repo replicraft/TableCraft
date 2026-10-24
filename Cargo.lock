@@ -1444,6 +1444,7 @@ name = "tablecraft-ace"
 version = "0.1.0"
 dependencies = [
  "aes",
+ "arrayvec",
  "base64",
  "bytemuck",
  "cbc",
@@ -1458,6 +1459,7 @@ dependencies = [
  "rc4",
  "sha1",
  "sha2",
+ "smallvec",
  "subtle",
  "tablecraft-core",
  "tablecraft-expressions",

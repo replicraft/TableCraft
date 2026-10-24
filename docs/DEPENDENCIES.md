@@ -1,5 +1,30 @@
 # Adopted dependency and licensing baseline
 
+## Native index collection experiment (24 October 2026)
+
+ACE's development-only `index_columns` benchmark now directly consumes the
+already locked ArrayVec 0.7.8 and SmallVec 1.16.3. Root workspace declarations
+disable both default feature sets; SmallVec explicitly enables `const_generics`
+for its inline array. Normal native library builds gain neither direct dependency.
+The experiment does not select a production container or change native limits.
+
+Both published manifests offer MIT OR Apache-2.0 and include both license files;
+MIT is available for this consumer. ArrayVec declares Rust 1.51, while SmallVec
+does not declare a minimum in its published manifest. These profiles are checked
+on the repository toolchain, without claiming an independently tested minimum.
+Neither selected crate has a build script or a required transitive dependency.
+Cargo.lock changes only ACE's development consumer edges; registry versions and
+checksums stay unchanged. Neither serde nor optional integration features are
+requested. Upstream containers use unsafe internals; the benchmark introduces
+no TableCraft unsafe code, native FFI, runtime, network or platform dependency.
+
+Capacity/spill-derived container allocation counts are distinguished from global
+allocator observations. Separate isolated ACE copies allow complete native
+inspection comparisons without changing the working engine. Benchmarks alone
+do not qualify native Access compatibility or authorize production adoption.
+Primary APIs: [ArrayVec](https://docs.rs/arrayvec/0.7.8/arrayvec/struct.ArrayVec.html),
+[SmallVec](https://docs.rs/smallvec/1.16.3/smallvec/struct.SmallVec.html).
+
 ## Localized error messages
 
 Expressions optionally adopts fluent-bundle 0.16.0, fluent-syntax 0.12.0 and
