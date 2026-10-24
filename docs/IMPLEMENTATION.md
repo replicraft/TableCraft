@@ -1,5 +1,25 @@
 # Implementation status
 
+## Logical query result metadata
+
+Metadata-only binding now describes stable successful carriers for NOT and the
+five binary logical operators. Binary inference checks possible NULL substitutions
+before joining descriptors; different successful carriers remain Dynamic. Known
+admitted NULL-only XOR/EQV results stay NULL-only. Changed-value constraints are
+removed without reading rows, parsing Text or inferring Scalar/Variant categories.
+Stable outputs now feed existing UNION numeric widening, including Byte NOT
+combined with Integer. Standalone operator values are unchanged. See
+[logical metadata](QUERY_RESULT_TYPES.md#logical-result-carriers-and-nullable-alternatives).
+
+Six new query tests cover eleven admitted families across all five operators in
+nullable/nonnullable matrices (1,210 binary queries), no-scan named/Text binding,
+unsupported families, nullable carrier changes, derived/aggregate/subquery/empty
+results, UNION widening and retained conversion/eager failures. Fifty-two focused
+query tests and three CLI tests pass. Focused query Clippy, minimal-feature check,
+formatting and diff checks pass. No native corpus, Microsoft Access, full workspace
+or benchmarks ran for this change. No dependency, storage, declaration or write
+scope changed; complete native logical/Variant typing remains unfinished.
+
 ## Round legacy DATE digit conversion
 
 Round's optional digit control now uses the shared checked Long converter for

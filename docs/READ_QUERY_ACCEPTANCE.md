@@ -333,3 +333,11 @@ legacy DATE serials, before the existing 0–28 range and value admission. This
 removes a numeric-only control inconsistency while preserving DATE-value refusal,
 eager failures and NULL/Error ordering. [Round controls](MATH_FUNCTIONS.md#round-long-digit-controls)
 remain an explicit engineering profile awaiting native qualification.
+
+
+Logical operators now expose stable successful result carriers during metadata-only
+binding. Nullable alternatives are checked explicitly: varying carriers remain
+Dynamic, and known admitted NULL-only XOR/EQV results stay NULL-only. Named/derived
+and UNION consumers retain the descriptors without record scans or declaration
+inference. [Logical metadata](QUERY_RESULT_TYPES.md#logical-result-carriers-and-nullable-alternatives)
+closes an inference gap; complete Variant/operator/native semantics remain P0.

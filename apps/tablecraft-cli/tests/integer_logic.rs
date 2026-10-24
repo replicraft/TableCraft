@@ -47,3 +47,30 @@ fn integer_operators_and_final_predicates_work_through_cli_commands() {
         .collect::<Vec<_>>();
     assert_eq!(rows, ["2", "3"]);
 }
+
+#[test]
+fn stable_logical_descriptors_feed_existing_union_widening() {
+    let result = run(&[
+        "query",
+        "run",
+        "SELECT N,VarType(N) FROM (SELECT Not CByte(1) AS N UNION ALL SELECT CInt(-2)) AS Q",
+    ]);
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    let rows = csv::ReaderBuilder::new()
+        .delimiter(b'\t')
+        .from_reader(result.stdout.as_slice())
+        .records()
+        .map(|record| {
+            record
+                .unwrap()
+                .iter()
+                .map(str::to_owned)
+                .collect::<Vec<_>>()
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(rows, [["254", "2"], ["-2", "2"]]);
+}
