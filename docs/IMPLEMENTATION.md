@@ -1,5 +1,40 @@
 # Implementation status
 
+## Encrypted modern history interoperability and reference checks
+
+Four new registered ciphertexts cover both priority ACE 16 layouts and both
+independent-reference/TableCraft encryption producers. Each retains the modern
+history corpus's 19,902 exact rows, including Large Numbers and 2019 Extended
+dates. New original drivers create only fresh encryption outputs and independently
+read modern rows/indexes, reusing the existing tagged encoding through a package-
+visible helper. No engine, runtime dependency, format or table-write capability
+changes. See [scope and reproduction](testing/ENCRYPTED_MODERN_HISTORIES.md).
+
+Generation passes 98 controls and registered reuse passes 82. Every row, complete
+CLI stream, indexed query, selected date order and count agrees with the model
+and independent reader. All 6,010 data-page hashes agree between independent
+and Rust decoders. Decoded SIDs agree; password changes preserve data ciphertext;
+wrong/empty/missing credentials and byte exhaustion publish no buffered query
+stdout. Both TableCraft and independent removal recover every original plaintext
+byte. Plaintext/ciphertext hashes remain unchanged.
+
+The restored reference JARs match previously recorded hashes. A general dependency
+summary named only the 5.0.0 raw-decoder baseline, while the detailed rewrite
+contract already identified 5.0.2. The summary is corrected; a shared hash guard
+now enforces the recorded Jackcess/core/BC artifacts before compiling rewrite/SID
+helpers. The older JAR is explicitly refused for APIs it lacks. All six original
+Java drivers compile against the reviewed artifacts. Python syntax, formatting,
+dependency boundaries and diff checks pass. The agile_pages engineering reader
+was rebuilt; runtime Rust code is unchanged, so full Rust/backend suites and the
+older 43-input rewrite corpus were not repeated. An initial duplicate-flag
+runner failure and partial generation remain excluded locally.
+
+No third-party implementation source, JAR or generated database is tracked.
+Native Windows Access save/reopen, general encrypted large-file/cipher behavior,
+Variant/locale/advanced-field scope and coherent live-file reads remain open.
+This independent read/copy evidence does not authorize ordinary table writes.
+
+
 ## Modern scalar histories and bounded scattered index fetches
 
 New original ACE 2016/2019 history fixtures exercise Large Number and 2019

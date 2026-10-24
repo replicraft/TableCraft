@@ -9,6 +9,7 @@ import subprocess
 import tempfile
 from compare_encryption_envelopes import CASES as ENVELOPES
 from compare_browsing import display
+from encryption_references import rewrite_classpath
 
 
 ORIGINALS = {
@@ -31,12 +32,13 @@ def main():
     parser.add_argument("--derived-directory", type=Path)
     parser.add_argument("--check-add", action="store_true")
     args = parser.parse_args()
+    reviewed_classpath = rewrite_classpath(args.jar, args.crypt_jar, args.bc_jar)
     inputs = [(args.directory / name, *values) for name, values in ORIGINALS.items()]
     if args.derived_directory:
         inputs.extend((path, None, "A😀é", "Records") for path in sorted(args.derived_directory.glob("*-*-*.accdb")))
     with tempfile.TemporaryDirectory(prefix="tablecraft-rewrite-comparison-") as temporary:
         temporary = Path(temporary)
-        classpath = os.pathsep.join(str(p) for p in [args.jar, args.crypt_jar, args.bc_jar, temporary])
+        classpath = os.pathsep.join([reviewed_classpath, str(temporary)])
         subprocess.run(["javac", "-cp", classpath, "-d", str(temporary), str(RECIPES / "NativeSecurityOracle.java"), str(RECIPES / "EncryptedPagesOracle.java"), str(RECIPES / "RemoveAddedEncryptionOracle.java")], check=True, capture_output=True)
 
         def oracle(driver, path, password, *extra):

@@ -33,7 +33,7 @@ public class TableDataOracle {
       default -> throw new IllegalArgumentException("Unsupported comparison carrier");
     };
   }
-  private static void rows(String label, Table table, Cursor cursor, boolean dateBits) throws Exception {
+  static void rows(String label, Table table, Cursor cursor, boolean dateBits) throws Exception {
     var names=table.getColumns().stream().map(Column::getName).toList();Row row;
     while((row=cursor.getNextRow(names))!=null) {
       StringBuilder line=new StringBuilder(label);
