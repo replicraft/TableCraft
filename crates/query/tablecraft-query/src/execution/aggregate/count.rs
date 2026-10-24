@@ -31,7 +31,9 @@ impl Runtime<'_, '_> {
                         continue;
                     }
                     ExpressionByteOperand::Scalar(
-                        ExpressionValue::Value(_) | ExpressionValue::Error(_),
+                        ExpressionValue::Value(_)
+                        | ExpressionValue::Error(_)
+                        | ExpressionValue::StringBytes(_),
                     )
                     | ExpressionByteOperand::Bytes(_) => {}
                     ExpressionByteOperand::Scalar(

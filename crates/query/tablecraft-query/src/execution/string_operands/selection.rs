@@ -55,9 +55,10 @@ impl Runtime<'_, '_> {
             }
         }
 
-        let mut selected = selection
-            .finish_payload()?
-            .unwrap_or_else(|| CellValue::scalar(Value::Null).into());
+        let mut selected = match selection.finish_payload()? {
+            Some(value) => value,
+            None => StringCell::try_from(CellValue::scalar(Value::Null))?,
+        };
         selected.policy = policy;
         selected.declaration = Some(OperandDeclaration::Variant);
         Ok(selected)

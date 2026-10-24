@@ -24,6 +24,7 @@ impl Evaluator<'_> {
             _ => {
                 self.check(0)?;
                 match value {
+                    ExpressionValue::StringBytes(_) => Err(EvalError::NonScalarExpression),
                     ExpressionValue::Missing => Err(EvalError::NonScalarExpression),
                     _ => Err(EvalError::TypeMismatch),
                 }
@@ -81,6 +82,7 @@ pub(super) fn expression_date_source<'a>(
         ExpressionValue::Value(value) => Ok(value),
         ExpressionValue::Empty => Ok(empty),
         ExpressionValue::Error(_) => Err(EvalError::TypeMismatch),
+        ExpressionValue::StringBytes(_) => Err(EvalError::NonScalarExpression),
         ExpressionValue::Missing => Err(EvalError::NonScalarExpression),
     }
 }

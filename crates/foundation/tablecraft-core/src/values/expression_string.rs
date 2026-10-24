@@ -16,6 +16,20 @@ pub struct ExpressionString {
     range: Range<usize>,
 }
 
+impl Clone for ExpressionString {
+    fn clone(&self) -> Self {
+        Self::from_owned(self.as_bytes().to_vec())
+    }
+}
+
+impl PartialEq for ExpressionString {
+    fn eq(&self, other: &Self) -> bool {
+        self.as_bytes() == other.as_bytes()
+    }
+}
+
+impl Eq for ExpressionString {}
+
 impl ExpressionString {
     /// Adopt an already charged allocation without copying or decoding it.
     pub fn from_owned(bytes: Vec<u8>) -> Self {

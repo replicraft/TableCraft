@@ -85,7 +85,7 @@ impl Evaluator<'_> {
             }
         }
         self.expression_operand(expression, depth)
-            .map(ExpressionByteOperand::Scalar)
+            .and_then(ExpressionByteOperand::try_from)
     }
 
     pub(super) fn iif_byte_operand(

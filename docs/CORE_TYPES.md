@@ -104,9 +104,10 @@ ordering must be implemented separately. No ordering trait is supplied for value
 
 ## Language-only states
 
-`ExpressionValue` wraps a stored scalar or the distinct `Empty`, `Missing` and
-`Error` states. `TryFrom<ExpressionValue> for Value` rejects all three language-only
-states with typed `ValueError::ExpressionNotStorable`; none becomes NULL or an
+`ExpressionValue` wraps a stored scalar, lossless `StringBytes`, or the distinct
+`Empty`, `Missing` and `Error` states. `TryFrom<ExpressionValue> for Value` rejects
+all four non-storable variants with typed `ValueError::ExpressionNotStorable`;
+StringBytes requires explicit Unicode publication and none becomes NULL or an
 empty string. An error code is an opaque evaluator-supplied `u32`. The carrier itself does not
 perform CVErr conversion or exception handling.
 
@@ -141,12 +142,14 @@ without payloads.
 
 Core owns no Unicode publication, formatting, SQL truth/coercion or function
 position rules. The expression consumer retains its existing signed Long byte
-limit, one-based/clamped slicing and budgeted strict UTF-8 publication. No new
-Serde representation or cloning API is introduced. ExpressionValue, stored Text,
-source snapshots and write admission remain unchanged; raw relational cells are
-still unfinished. This shared ownership boundary precedes that integration.
+limit, one-based/clamped slicing and budgeted strict UTF-8 publication. No Serde
+representation is introduced. Clone copies only active bytes under caller-owned
+allocation responsibility; query execution uses a metered fallible copy instead.
+ExpressionValue::StringBytes now retains this representation through qualified
+[query cells](RETAINED_STRINGS.md). Stored Text, source snapshots and write
+admission remain unchanged; full raw predicate/key semantics remain unfinished.
 
-Four focused controls include retained-allocation/nested-range goldens, invalid
+Five focused controls include retained-allocation/nested-range goldens, invalid
 and empty ranges, redaction and a fixed-seed 256-case slice-content model. Existing
 byte-function, query and independent CLI controls verify the consuming wrapper.
 

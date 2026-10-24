@@ -84,6 +84,7 @@ impl Evaluator<'_> {
                     &empty_number
                 }),
                 ExpressionValue::Error(_) => Err(EvalError::TypeMismatch),
+                ExpressionValue::StringBytes(_) => Err(EvalError::NonScalarExpression),
                 ExpressionValue::Missing => Err(EvalError::NonScalarExpression),
             }
         })

@@ -100,6 +100,13 @@ impl Runtime<'_, '_> {
         let records =
             matches!(&plan.node, ReadNode::Select(select) if !select.record_keys.is_empty());
         if plan.distinct || records {
+            for row in &mut rows {
+                if records {
+                    self.materialize_strings(&mut row.records)?;
+                } else {
+                    self.materialize_strings(&mut row.values)?;
+                }
+            }
             if records {
                 self.unify_cell_policies(&mut rows, |row| &mut row.records)?;
             } else {
@@ -243,7 +250,7 @@ impl Runtime<'_, '_> {
         }
         let mut values = self.allocate_expression_row(select.projection.len())?;
         for expr in &select.projection {
-            values.push(self.expression_operand(expr, env)?);
+            values.push(self.retained_expression_operand(expr, env)?);
         }
         let mut keys = self.allocate_expression_row(plan.sort.len())?;
         for (expr, _) in &plan.sort {
@@ -330,6 +337,9 @@ impl Runtime<'_, '_> {
         mut rows: Vec<Vec<CellValue>>,
         policies: &[crate::source::TextPolicy],
     ) -> Result<Vec<Vec<CellValue>>, QueryError> {
+        for row in &mut rows {
+            self.materialize_strings(row)?;
+        }
         self.unify_cell_policies(&mut rows, Vec::as_mut_slice)?;
         let mut result: Vec<Vec<CellValue>> = Vec::new();
         for row in rows {

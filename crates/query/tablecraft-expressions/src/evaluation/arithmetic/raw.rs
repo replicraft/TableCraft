@@ -118,6 +118,9 @@ fn admit(operand: &ExpressionByteOperand) -> Result<(), EvalError> {
         ExpressionByteOperand::Scalar(ExpressionValue::Missing) => {
             Err(EvalError::NonScalarExpression)
         }
+        ExpressionByteOperand::Scalar(ExpressionValue::StringBytes(_)) => {
+            Err(EvalError::NonScalarExpression)
+        }
         ExpressionByteOperand::Scalar(ExpressionValue::Empty) | ExpressionByteOperand::Bytes(_) => {
             Ok(())
         }

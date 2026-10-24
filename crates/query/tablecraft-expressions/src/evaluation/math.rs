@@ -25,6 +25,7 @@ impl Evaluator<'_> {
         self.apply_math_arguments(function, values.len(), |index| match &values[index] {
             ExpressionValue::Value(value) => Ok(value),
             ExpressionValue::Error(_) => Err(EvalError::TypeMismatch),
+            ExpressionValue::StringBytes(_) => Err(EvalError::NonScalarExpression),
             ExpressionValue::Missing => Err(EvalError::NonScalarExpression),
             ExpressionValue::Empty if function == MathFunction::Round && index == 0 => {
                 Err(EvalError::NonScalarExpression)

@@ -53,11 +53,7 @@ fn cstr_retains_raw_string_inputs_through_rebinding_and_grouped_consumers() {
     .unwrap();
     assert_eq!(result.rows(), &[vec![Value::Int64(-20479)]]);
 
-    for sql in [
-        "SELECT CStr(ChrW(55296))",
-        "SELECT Len(S) FROM (SELECT CStr(ChrW(55296)) AS S) AS Q",
-        "SELECT Len(CStr(ChrB(65)))",
-    ] {
+    for sql in ["SELECT CStr(ChrW(55296))", "SELECT Len(CStr(ChrB(65)))"] {
         assert_eq!(
             prepare(&syntax(sql), &source)
                 .unwrap()

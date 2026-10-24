@@ -6,12 +6,23 @@ use crate::{
     QueryError,
     plan::{Aggregate, Expr},
 };
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{ExpressionValue, Value};
+use tablecraft_expressions::functions::text::byte_string::ByteOperand;
 use tablecraft_expressions::{functions::conversions::Conversion, numeric::OperandDeclaration};
 use tablecraft_sql::select::{BinaryOperator, Quantifier};
 
 impl Runtime<'_, '_> {
     pub(super) fn expression_operand(
+        &mut self,
+        expression: &Expr,
+        env: Environment<'_>,
+    ) -> Result<CellValue, QueryError> {
+        let mut value = self.retained_expression_operand(expression, env)?;
+        value.value = self.evaluator().publish_expression_value(value.value)?;
+        Ok(value)
+    }
+
+    pub(super) fn retained_expression_operand(
         &mut self,
         expression: &Expr,
         env: Environment<'_>,
@@ -27,6 +38,17 @@ impl Runtime<'_, '_> {
         env: Environment<'_>,
     ) -> Result<CellValue, QueryError> {
         match expression {
+            Expr::TextCall(function, arguments) if function.produces_bytes() => {
+                self.tick()?;
+                let value = match self.byte_call(*function, arguments, env)? {
+                    ByteOperand::Scalar(value) => ExpressionValue::Value(value),
+                    ByteOperand::Bytes(bytes) => {
+                        ExpressionValue::StringBytes(bytes.into_expression_string())
+                    }
+                };
+                Ok(CellValue::from(value)
+                    .with_declaration(super::declarations::functions::result(expression)))
+            }
             Expr::Eval(value) => {
                 self.tick()?;
                 let value = self.eval(value, env)?;
@@ -200,20 +222,20 @@ impl Runtime<'_, '_> {
             }
             Expr::CVar(value) => {
                 self.tick()?;
-                self.expression_operand(value, env)
+                self.retained_expression_operand(value, env)
                     .map(|value| value.with_declaration(Some(OperandDeclaration::Variant)))
             }
             Expr::IIf(condition, yes, no) => {
                 let value = self.iif_string_cell(condition, yes, no, env)?;
-                self.publish_string_cell(value)
+                self.retain_string_cell(value)
             }
             Expr::Nz(value, replacement) => {
                 let value = self.nz_string_cell(value, replacement.as_deref(), env)?;
-                self.publish_string_cell(value)
+                self.retain_string_cell(value)
             }
             Expr::ConditionalCall(function, arguments) => {
                 let value = self.conditional_string_cell(*function, arguments, env)?;
-                self.publish_string_cell(value)
+                self.retain_string_cell(value)
             }
             _ => {
                 let declaration = super::declarations::functions::result(expression);

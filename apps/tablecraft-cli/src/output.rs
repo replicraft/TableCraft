@@ -129,7 +129,9 @@ impl TableOutput {
                 let result = write!(self, "#ERROR({code})");
                 self.checked(result)
             }
-            ExpressionValue::Empty | ExpressionValue::Missing => Err(OutputError::UnsupportedValue),
+            ExpressionValue::Empty | ExpressionValue::Missing | ExpressionValue::StringBytes(_) => {
+                Err(OutputError::UnsupportedValue)
+            }
         }
     }
     pub(super) fn text_value(&mut self, value: &str) -> Result<(), OutputError> {

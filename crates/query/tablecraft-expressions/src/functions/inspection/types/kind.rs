@@ -49,6 +49,7 @@ impl VariantKind {
 pub(super) fn metadata(input: InspectionInput<'_>) -> Result<(&'static str, i16), EvalError> {
     let kind = match input {
         InspectionInput::ByteString(_) => VariantKind::String,
+        InspectionInput::Expression(ExpressionValue::StringBytes(_)) => VariantKind::String,
         InspectionInput::Array(ArrayView::Variants(_)) => {
             return Ok(("Variant()", ARRAY_FLAG + VariantKind::Variant as i16));
         }

@@ -21,6 +21,17 @@ impl ByteString {
         })
     }
 
+    /// Adopt the shared expression representation, retaining the Long byte limit.
+    pub fn from_expression_string(value: ExpressionString) -> Result<Self, EvalError> {
+        i32::try_from(value.len()).map_err(|_| EvalError::Overflow)?;
+        Ok(Self { value })
+    }
+
+    /// Move the active range to a shared expression cell without copying.
+    pub fn into_expression_string(self) -> ExpressionString {
+        self.value
+    }
+
     /// Exact active bytes, without terminators, decoding or padding.
     pub fn as_bytes(&self) -> &[u8] {
         self.value.as_bytes()
@@ -71,20 +82,24 @@ impl ByteString {
     /// Strictly publish valid UTF-16LE through a metered UTF-8 sink. Odd byte
     /// counts and unpaired surrogates fail; discard partial output on any error.
     pub fn write_utf8(&self, output: &mut impl TextOutput) -> Result<(), EvalError> {
-        output.step()?;
-        let (units, remainder) = self.as_bytes().as_chunks::<UTF16_UNIT_BYTES>();
-        if !remainder.is_empty() {
-            return Err(EvalError::UnrepresentableText);
-        }
-        let units = units.iter().copied().map(u16::from_le_bytes);
-        let mut buffer = [0; char::MAX.len_utf8()];
-        for character in char::decode_utf16(units) {
-            output.step()?;
-            let character = character.map_err(|_| EvalError::UnrepresentableText)?;
-            output.append(character.encode_utf8(&mut buffer))?;
-        }
-        Ok(())
+        write_utf8(self.as_bytes(), output)
     }
+}
+
+pub(crate) fn write_utf8(bytes: &[u8], output: &mut impl TextOutput) -> Result<(), EvalError> {
+    output.step()?;
+    let (units, remainder) = bytes.as_chunks::<UTF16_UNIT_BYTES>();
+    if !remainder.is_empty() {
+        return Err(EvalError::UnrepresentableText);
+    }
+    let units = units.iter().copied().map(u16::from_le_bytes);
+    let mut buffer = [0; char::MAX.len_utf8()];
+    for character in char::decode_utf16(units) {
+        output.step()?;
+        let character = character.map_err(|_| EvalError::UnrepresentableText)?;
+        output.append(character.encode_utf8(&mut buffer))?;
+    }
+    Ok(())
 }
 
 fn nonnegative(value: i32) -> Result<usize, EvalError> {

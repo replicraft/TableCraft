@@ -15,7 +15,7 @@ impl Runtime<'_, '_> {
         let mut policy = crate::source::TextPolicy::Default;
         for (index, row) in group.iter().enumerate() {
             self.tick()?;
-            let value = self.expression_operand(
+            let value = self.retained_expression_operand(
                 argument,
                 Environment {
                     row,

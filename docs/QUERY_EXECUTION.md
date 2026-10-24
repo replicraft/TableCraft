@@ -28,6 +28,12 @@ Full Variant/subtype inference and native Access qualification remain open.
 
 ## Host API and ownership
 
+[Retained String cells](RETAINED_STRINGS.md) now preserve odd bytes and unpaired
+units through qualified intermediate rows. Raw-aware consumers can observe them;
+ordinary scalar services and both public result modes request strict Unicode
+publication under the shared budget. Source/parameter/write carriers remain
+ordinary Value, and preparation remains metadata-only.
+
 Use `prepare(&Query, &dyn Source)` to resolve source/field slots and declared
 parameters without scanning rows, then `PreparedQuery::execute` with a source,
 exact named parameter values and `ExecutionOptions`. The crate's public doctest

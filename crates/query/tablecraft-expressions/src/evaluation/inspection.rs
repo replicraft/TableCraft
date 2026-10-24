@@ -23,6 +23,7 @@ impl Evaluator<'_> {
                 self.check(0)?;
                 Err(EvalError::NonScalarExpression)
             }
+            ExpressionValue::StringBytes(_) => Err(EvalError::NonScalarExpression),
         }
     }
 

@@ -145,7 +145,7 @@ fn raw_byte_intermediates_keep_group_identity_aggregate_dependencies_and_scopes(
 }
 
 #[test]
-fn raw_byte_calls_preserve_string_inspection_and_strict_relational_publication() {
+fn raw_byte_calls_preserve_string_inspection_and_strict_final_publication() {
     let result = run(
         "SELECT TypeName(ChrB(65)),VarType(CVar(ChrB(65))),IsArray(ChrB(65)),LenB(LeftB(Null,1)),MidB('A中🦀',3,6)",
     ).unwrap();
@@ -164,7 +164,6 @@ fn raw_byte_calls_preserve_string_inspection_and_strict_relational_publication()
         "SELECT CVar(ChrB(65))",
         "SELECT LeftB('A',1)",
         "SELECT RightB('🦀',2)",
-        "SELECT LenB(A.T) FROM (SELECT ChrB(65) AS T) AS A",
     ] {
         assert_eq!(
             run(sql).err(),

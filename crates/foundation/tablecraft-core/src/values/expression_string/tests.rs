@@ -1,5 +1,25 @@
 use super::*;
+use crate::values::{ExpressionState, ExpressionValue, Value, ValueError};
 use proptest::prelude::*;
+
+#[test]
+fn cloning_and_representation_equality_use_only_active_string_bytes() {
+    let selected = ExpressionString::from_owned(vec![255, 65, 0, 255])
+        .select(1..3)
+        .unwrap();
+    let owned = selected.clone();
+    assert_eq!(owned.bytes, &[65, 0]);
+    assert_eq!(owned.range, 0..2);
+    assert_eq!(owned, selected);
+
+    let expression = ExpressionValue::StringBytes(selected);
+    assert!(matches!(
+        Value::try_from(expression),
+        Err(ValueError::ExpressionNotStorable(
+            ExpressionState::StringBytes
+        ))
+    ));
+}
 
 #[test]
 fn adoption_and_nested_ranges_retain_the_allocation_and_exact_bytes() {

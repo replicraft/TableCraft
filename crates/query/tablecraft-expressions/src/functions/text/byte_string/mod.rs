@@ -13,6 +13,8 @@ pub use search::find_binary;
 pub(crate) use search::mode as search_mode;
 use tablecraft_core::values::Value;
 pub use value::ByteString;
+#[cfg(feature = "sql")]
+pub(crate) use value::write_utf8;
 
 /// An evaluated scalar or a lossless byte-string intermediate. No implicit
 /// Binary-to-string conversion or unmetered cloning is provided.
