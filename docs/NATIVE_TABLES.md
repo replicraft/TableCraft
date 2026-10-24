@@ -623,3 +623,22 @@ existing checked snapshot/read budgets and stable-source contract remain active.
 This metadata/borrowing boundary supports explicit hosts and does not qualify
 native Access SQL member syntax. Engine history tests and the adapter's metadata,
 policy, cache and unsupported-candidate controls exercise the boundary.
+
+
+## Explicit decoded Memo policies
+
+`LongTextReadLimits` retains the existing 1 MiB decoded UTF-8 default and permits
+an explicit positive ceiling up to 16 MiB. NativeReadSource supplies the policy;
+LongValueReadSource::with_text_limits overrides it while forwarding raw I/O,
+header/page decoding and mutable reborrows. An encoded-only outer wrapper keeps
+its inner decoded policy. Encoded-value/chain bounds and cumulative native pools
+remain separate; these are consumer ceilings, not format maxima.
+
+Memo Unicode decoding measures the actual UTF-8 length before output String
+allocation. Scratch and output allocations remain fallible and charged; native
+work reserves four logical input passes. Classification, unit conversion, sizing
+and emission check cancellation at bounded intervals (at most 4,096 items, or
+16,384 encoded bytes), then recheck before returning. No partial value publishes.
+Metadata text decoding retains its own existing contract. Default/lower/upper
+bounds, encoding routes, exact byte charges, nested source forwarding and every
+observed decode-cancellation checkpoint have focused controls.
