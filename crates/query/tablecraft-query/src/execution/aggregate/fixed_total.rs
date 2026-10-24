@@ -132,6 +132,20 @@ impl Total {
         Decimal::new(coefficient, scale).ok()
     }
 
+    /// Final SUM conversion preserves a fitting exact coefficient/scale. Wider
+    /// totals use the same highest-fitting-scale half-even rule as Decimal means.
+    pub(super) fn sum(
+        &self,
+        budget: &mut ResourceBudget,
+        cancelled: Option<&dyn Fn() -> bool>,
+    ) -> Result<Value, QueryError> {
+        check(budget, cancelled)?;
+        if let Some(value) = self.narrow() {
+            return Ok(Value::Decimal(value));
+        }
+        self.decimal(1, budget, cancelled)
+    }
+
     pub(super) fn double(
         &self,
         count: i64,

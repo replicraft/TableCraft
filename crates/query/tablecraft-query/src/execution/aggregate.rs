@@ -4,6 +4,7 @@ pub(super) mod binary;
 mod count;
 mod encounter;
 mod extrema;
+mod fixed_total;
 mod statistics;
 mod sum;
 use super::{Environment, Runtime};

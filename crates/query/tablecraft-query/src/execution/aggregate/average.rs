@@ -1,6 +1,6 @@
 //! Wider exact totals for means; source carriers and SUM retain their own rules.
-mod wide;
 use super::binary::Scratch;
+use super::fixed_total as wide;
 use crate::QueryError;
 use tablecraft_core::{
     limits::ResourceBudget,

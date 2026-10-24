@@ -1,5 +1,15 @@
 # Implementation status
 
+## Wider Decimal SUM
+
+Decimal SUM/DSum now share the existing exact fixed total with means when narrow
+folds would lose precision or overflow. Final fitting/half-even conversion occurs
+once; ordinary lossless folds retain their representation and non-Decimal prefix
+rules remain explicit. Twenty-one focused sum/mean regressions, strict Clippy and
+125 independent Fraction-model results plus five refusals pass. See
+[Decimal sums](DECIMAL_SUMS.md). This is the engineering numerical contract;
+native Access precision and wider Variant promotion remain unqualified.
+
 ## Final-policy extrema
 
 Min/Max now retain uncertain String candidates until the complete runtime text
