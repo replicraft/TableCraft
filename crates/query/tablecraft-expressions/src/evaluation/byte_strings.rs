@@ -1,4 +1,5 @@
 //! Owning byte-string evaluation and strict scalar publication.
+mod trimming;
 mod unicode;
 
 use super::{Evaluator, text_arguments};
@@ -226,6 +227,9 @@ impl Evaluator<'_> {
         if function == TextFunction::CStr {
             return self.apply_expression_cstr_operand(first);
         }
+        if function.trims_spaces() {
+            return self.apply_trim_source(function, first.into_string()?);
+        }
         if function.slices_units() {
             return self.apply_unicode_slice(function, first, rest);
         }
@@ -259,6 +263,9 @@ impl Evaluator<'_> {
         }
         if function == TextFunction::CStr {
             return self.apply_expression_cstr_operand(first.into());
+        }
+        if function.trims_spaces() {
+            return self.apply_trim_source(function, first);
         }
         if function.slices_units() {
             return self.unicode_slice(function, first, rest);

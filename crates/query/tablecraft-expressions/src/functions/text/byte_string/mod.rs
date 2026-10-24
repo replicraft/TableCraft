@@ -3,6 +3,7 @@ mod comparison;
 mod input;
 mod observations;
 mod search;
+mod trimming;
 mod value;
 
 pub use comparison::compare_binary_utf16;
@@ -12,6 +13,7 @@ pub use search::find_binary;
 #[cfg(feature = "sql")]
 pub(crate) use search::mode as search_mode;
 use tablecraft_core::values::Value;
+pub use trimming::trim_spaces;
 pub use value::ByteString;
 #[cfg(feature = "sql")]
 pub(crate) use value::write_utf8;

@@ -22,6 +22,12 @@ explicit raw General spans and suffixes starting inside a surrogate pair. A late
 replacement can repair a pair; final publication still requires valid Unicode.
 Ordinary representable Text inputs retain their borrowed recipe and output policy.
 
+[LTrim/RTrim/Trim](TEXT_CASING.md#retained-string-trimming) now select lossless
+complete-unit ranges without copying the owned buffer. Nested observations,
+replacement and derived/domain cells can consume isolated units; final Unicode
+publication stays strict. Text result policies and scalar formatting remain at
+their existing boundaries.
+
 Stored `Value`, source snapshots, parameters and write contracts remain unchanged.
 Core conversion to Value explicitly rejects StringBytes with its own non-storable
 category. Representational equality compares active bytes, without implying SQL
