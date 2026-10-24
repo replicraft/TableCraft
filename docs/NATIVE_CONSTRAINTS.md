@@ -75,7 +75,21 @@ reference fields of their own table, for example `[Minimum] <= [Maximum]`. Pure
 scalar arithmetic, comparisons, Boolean logic and IS NULL use the existing
 [scalar evaluator](EXPRESSIONS.md), with no providers or callbacks. Numeric BETWEEN/NOT BETWEEN and IN/NOT IN lists
 reuse shared scalar predicate kernels. Rules are preflighted even on empty tables.
-Calls, subqueries, host members, LIKE and text comparisons are Unsupported. No implicit collation is selected.
+Only two pure calls are admitted: unqualified case-insensitive `Len(text)` and
+`StrComp(left, right, 0)`, with exact arity and a literal integer zero comparison
+mode. Their operands must be statically Text or NULL: string/NULL literals,
+declared Text fields, and recursive `+`/`&` compositions of those operands. Field
+rules still restrict references inside calls to their own field; table rules may
+reference their own table's Text fields. Numeric/date operands and mixed
+concatenations are refused before evaluation rather than implicitly formatted.
+`Len` measures UTF-16 units; binary `StrComp` distinguishes case and trailing
+spaces. Both use the existing evaluator without a locale provider.
+
+Unknown or qualified calls, `UCase`, omitted/nonbinary/computed comparison modes,
+subqueries, host members, LIKE and ordinary text comparisons remain Unsupported.
+No implicit collation is selected. Nested calls are not admitted as Text operands;
+these two numeric-returning calls may participate in existing numeric comparisons,
+BETWEEN and IN predicates.
 
 False results produce typed field/table-rule violations. NULL results report
 Unsupported: native Access NULL-validation behavior is not qualified. Evaluation
@@ -92,10 +106,18 @@ Microsoft describes [field rules](https://learn.microsoft.com/en-us/office/clien
 and [table rules](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/tabledef-validationrule-property-dao).
 The original [validation recipe](testing/ValidationFixture.java) and
 [comparison runner](testing/compare_validation.py) verify six tables per format:
-field ranges, cross-field bounds, explicit NULL handling, unsupported calls on
+field ranges, cross-field bounds, explicit NULL handling, admitted Len calls on
 populated/empty tables and an intentionally unresolved NULL result. Jackcess
 rejects the generated out-of-range/cross-field invalid writes. These comparisons
 do not establish native Access NULL behavior or general expression equivalence.
+
+Microsoft also provides [validation examples using Len and binary StrComp](https://support.microsoft.com/en-us/access/restrict-data-input-by-using-validation-rules).
+Its StrComp example includes `UCase`; that locale-dependent part remains
+unqualified. Original synthetic native records independently cover supplementary
+UTF-16 characters, embedded NUL, binary case/trailing spaces, NULL outcomes and
+explicit guards, pure text addition/concatenation, eager division failures,
+rejected signatures/scopes even when empty, limits and prefix cancellation. This
+expansion does not qualify all validation functions or native Access saves.
 
 ## Composite independent evidence
 

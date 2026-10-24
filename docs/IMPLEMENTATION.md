@@ -1,5 +1,19 @@
 # Implementation status
 
+## Pure text calls in native validation rules
+
+Native field/table constraint audits now admit statically Text/NULL `Len` and
+explicit binary `StrComp(..., 0)` under existing scope and resource checks.
+Numeric/date formatting, locale calls and unresolved NULL results remain
+unsupported. Existing Jet 4 Int32 plans and ACE 16 engineering batches evaluate
+the admitted rules against complete candidates; invalid candidates fail before
+publication. No physical mutation carrier or normal ACE save path is added.
+
+The focused combined batch passes 18 integration tests, including valid/invalid
+candidate checks, eager errors, empty-table preflight, UTF-16 lengths and binary
+ordering. Workspace formatting passes; scoped rule units and strict Clippy also
+pass. See [native validation rules](NATIVE_CONSTRAINTS.md#bounded-validation-expressions).
+
 ## Read-only Boolean foreign-key membership
 
 Native constraint inspection now checks exact stored Boolean foreign keys,
