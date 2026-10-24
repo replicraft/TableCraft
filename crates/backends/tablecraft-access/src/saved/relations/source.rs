@@ -34,7 +34,7 @@ impl<'a> Source<'a> {
                 Body::Named(identifier::literal(name)?)
             }
             (None, Some(text)) => {
-                let query = context.query(&[text])?;
+                let (query, text) = context.source_query(text)?;
                 if !query.parameters.is_empty() {
                     return Err(E::Unsupported);
                 }

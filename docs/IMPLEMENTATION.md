@@ -1,5 +1,24 @@
 # Implementation status
 
+## Stored derived-source terminators
+
+Parsed queries now expose a lexical statement prefix while retaining the exact
+original source. Native saved derived-source reconstruction embeds this prefix
+under its existing guard and compares owned models, admitting one final query
+terminator without trimming quoted semicolons or admitting extra statements.
+The registered report source now reconstructs independently; its full definition
+still refuses an unqualified type-zero parameter. See
+[stored source boundaries](NATIVE_SAVED_QUERIES.md).
+
+All 60 parser tests plus one doctest, 68 saved-query adapter tests and 30 CLI
+saved-query tests pass. Focused parser/adapter/CLI Clippy, minimal adapter check,
+formatting and diff checks pass. Tests include Unicode, comments, PARAMETERS
+delimiters, malformed/multiple statements, native-profile outer joins, cumulative
+limits, cancellation and buffered failures. Original example bytes remain
+unchanged. No dependency, VBA execution or writer scope changed. Native Access,
+independent-reader replays and full engine/workspace suites were not run; wider
+saved-query types and complete read/query acceptance remain unfinished.
+
 ## Qualified reserved field names
 
 The SQL adapter now reads keyword spellings as names in dot-member positions,

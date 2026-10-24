@@ -160,6 +160,19 @@ impl<'a> Context<'a> {
         self.check()?;
         Ok(query)
     }
+
+    pub fn source_query<'s>(
+        &mut self,
+        source: &'s str,
+    ) -> Result<(Query, &'s str), SavedSelectError> {
+        let text = self.text(&[source])?;
+        self.parsing(text.len())?;
+        let parsed = parse_query(&text, self.limits)?;
+        let statement_end = parsed.statement_source().len();
+        self.check()?;
+        Ok((parsed.into_query(), &source[..statement_end]))
+    }
+
     pub fn reserve<T>(&mut self, count: usize) -> Result<Vec<T>, SavedSelectError> {
         self.check()?;
         self.budget

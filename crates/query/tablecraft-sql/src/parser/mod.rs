@@ -1,7 +1,7 @@
 //! The only module allowed to depend on upstream parser/token types.
 
 use crate::select::Select;
-use sqlparser::parser::Parser;
+use sqlparser::{parser::Parser, tokenizer::Token};
 
 mod access;
 mod actions;
@@ -76,6 +76,7 @@ pub fn parse_select(source: &str, limits: ParseLimits) -> Result<ParsedSelect, P
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ParsedQuery {
     source: String,
+    statement_end: usize,
     query: crate::query::Query,
 }
 impl ParsedQuery {
@@ -83,6 +84,15 @@ impl ParsedQuery {
     pub fn source(&self) -> &str {
         &self.source
     }
+
+    /// Exact SQL prefix before an optional final statement terminator.
+    /// Trailing trivia after that terminator is excluded. Quoted semicolons,
+    /// comments before it and internal PARAMETERS delimiters remain untouched.
+    /// Without a final terminator this is the complete original source.
+    pub fn statement_source(&self) -> &str {
+        &self.source[..self.statement_end]
+    }
+
     /// Owned query syntax; no binding or execution has occurred.
     pub fn query(&self) -> &crate::query::Query {
         &self.query
@@ -100,12 +110,19 @@ pub fn parse_query(source: &str, limits: ParseLimits) -> Result<ParsedQuery, Par
     limits.check_input(source)?;
     let dialect = access::AccessDialect;
     let tokens = limits.check_tokens(source, lex::tokens(source, &dialect)?)?;
+    let statement_end = tokens
+        .last()
+        .filter(|token| token.token == Token::SemiColon)
+        .map_or(source.len(), |token| {
+            lex::byte_offset(source, token.span.start)
+        });
     let mut parser = Parser::new(&dialect).with_tokens_with_locations(tokens);
     let context = limits::ParseContext::new(limits);
     let query = queries::query(&mut parser, &context)?;
     access::finish(&mut parser)?;
     Ok(ParsedQuery {
         source: source.to_owned(),
+        statement_end,
         query,
     })
 }

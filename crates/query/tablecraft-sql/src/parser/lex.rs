@@ -141,7 +141,7 @@ fn separate_hash_operators(tokens: Vec<TokenWithSpan>) -> Vec<TokenWithSpan> {
     output
 }
 
-fn byte_offset(source: &str, location: Location) -> usize {
+pub(super) fn byte_offset(source: &str, location: Location) -> usize {
     let prefix = source
         .split_inclusive('\n')
         .take(location.line.saturating_sub(1) as usize)

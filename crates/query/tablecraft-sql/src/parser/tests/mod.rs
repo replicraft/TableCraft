@@ -8,6 +8,7 @@ mod limits;
 mod parameter_prompts;
 mod queries;
 mod saved;
+mod terminators;
 mod text;
 
 use super::*;

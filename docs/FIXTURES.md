@@ -1,5 +1,20 @@
 # Candidate Access fixtures
 
+## Stored terminated derived reads
+
+The existing registered ACE 2007 `Access_Example_VBA.accdb` supplies the exact
+terminated SELECT source in `~sq_d510~sq_dChild52`. A regression reconstructs that
+source independently, checks the complete owned model and raw fragment, and
+retains the full original definition's unsupported type-zero parameter refusal.
+The original SHA-256 remains
+`3cd1fc88d70bc93909ae6d190fa9692e709d5641b205fd2f66185c905e42cfbf`.
+
+Existing authored native fixture tests now also use terminated derived reads
+across Jet 4 and ACE codes 2/5/6, checking outer-join results, cumulative limits,
+cancellation and unchanged bytes. CLI tests cover saved/named retrieval and
+buffered late failures for terminated sources. No new binary or third-party code
+was added; native Access and independent-reader replays were not run for this batch.
+
 ## Registered saved object-list syntax
 
 The existing `Access_Example_VBA.accdb` additionally checks reconstruction of

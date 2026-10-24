@@ -109,6 +109,11 @@ Its VBA calls remain unresolved and explicit execution still fails without
 publishing rows. This closes a stored-syntax gap, not the remaining query
 composition or native execution acceptance scope.
 
+Stored derived reads now admit a single final standalone terminator through a
+lexical prefix and the original embedded-query guard. This closes a source-shape
+gap found in the example's report query; its native type-zero implicit parameter
+still requires a separate contract. Original query fragments remain unchanged.
+
 [Runtime domain text policies](RUNTIME_TEXT_POLICIES.md) now survive derived/named
 outputs and comparison/key consumers. Their conservative merge behavior does not
 complete native mixed-policy precedence or supply additional locale providers.
