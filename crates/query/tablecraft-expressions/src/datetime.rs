@@ -1,4 +1,4 @@
-//! Explicit timezone-free ISO literal profile; no locale-dependent date guessing.
+//! Separate SQL date literals and strict ISO host parameter syntax.
 use crate::EvalError;
 use jiff::civil::{Date, DateTime, Time};
 use tablecraft_core::values::LegacyDateTime;
@@ -41,6 +41,13 @@ pub fn parse_literal(text: &str) -> Result<LegacyDateTime, EvalError> {
     }
     .map_err(|_| EvalError::UnsupportedLiteral)?;
     LegacyDateTime::from_calendar(calendar).map_err(|_| EvalError::UnsupportedLiteral)
+}
+
+/// Parse a hash-delimited SQL literal's contents without selecting a host locale.
+/// Retains strict ISO spellings and adds complete-year U.S./English dates and
+/// 12/24-hour times. Two-digit/omitted years and regional guessing are not supplied.
+pub fn parse_query_literal(text: &str) -> Result<LegacyDateTime, EvalError> {
+    parse_literal(text).or_else(|_| crate::functions::dates::parsing::parse_query_literal(text))
 }
 
 #[cfg(test)]

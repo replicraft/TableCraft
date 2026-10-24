@@ -151,8 +151,9 @@ It verifies independent reading, not Microsoft Access query/expression behavior.
 No Microsoft Access oracle, application activation, native edit/save/reopen,
 shared-file operation or Windows/Linux execution has been qualified by these checks.
 
-Legacy Date/Time projection, temporal comparison/order and the bounded ISO literal/
-parameter/output profile are implemented; see [native date contracts](NATIVE_TABLES.md#legacy-datetime).
+Legacy Date/Time projection, temporal comparison/order, [SQL literals](SQL_DATE_LITERALS.md)
+and the bounded ISO parameter/output profile are implemented; see
+[native date contracts](NATIVE_TABLES.md#legacy-datetime).
 
 Bounded Long Text snapshots now include inline and overflow/chained native values;
 see [Long Text limits](NATIVE_TABLES.md#bounded-long-text). Markup remains inert data.

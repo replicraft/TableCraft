@@ -1,5 +1,32 @@
 # Implementation status
 
+## U.S. and English SQL date/time literals
+
+Hash-delimited SQL literals now admit complete-year U.S./English dates and
+qualified 12/24-hour times alongside ISO, through a separate pure query-literal
+entry point. Jiff and shared date/time recognition provide calendar validation;
+SQL U.S. order does not depend on execution-local text-date settings. Strict ISO
+CLI date parameters retain their existing API. Invalid literals still fail
+metadata binding without scans, including on empty results. See
+[SQL literal scope and primary references](SQL_DATE_LITERALS.md).
+
+Three new expression tests cover complete-year/order/epoch/leap/calendar goldens,
+refusals and a fixed-seed civil property. Three query and two CLI tests cover
+policy-independent reuse, derived/UNION/subquery/membership/dynamic consumers,
+empty-result preparation and typed parameters. The batch passes 650 expression
+unit tests plus one doctest, 345 minimal-profile expression tests, eleven selected
+query tests and six selected CLI tests. Expression/query/CLI all-target/all-feature
+Clippy, CLI build, formatting, Python syntax, dependency boundaries and diff checks
+pass. Full native/backend/workspace suites and benchmarks are not repeated.
+
+The independent runner passes 230 controls: 206 scalar calendar/spelling cases
+and 24 native sequential/indexed predicates over four unchanged registered inputs.
+Read-only Jackcess getters establish stored DATE values; only TableCraft executes
+SQL. No new dependency, AST/stored carrier, clock, locale provider or native write
+capability is added. Two-digit/omitted years, wider regional reinterpretation and
+native Access spelling/precision/error qualification remain open.
+
+
 ## Encrypted modern history interoperability and reference checks
 
 Four new registered ciphertexts cover both priority ACE 16 layouts and both

@@ -188,3 +188,10 @@ the expression service. Parsing still owns syntax only. Numeric suffixes, decima
 literal carrier inference and complete native typing remain separate acceptance
 work; malformed/separated/quoted radix prefixes do not silently normalize to a
 valid number.
+
+
+[SQL date/time evaluation](SQL_DATE_LITERALS.md) now accepts complete-year U.S.
+and English spellings plus qualified times alongside ISO. This changes the
+shared evaluator and closed literal validation, not the parser's syntax-only
+raw-content contract. Regional text conversion and ISO typed parameters retain
+separate admission policies; broader native literal syntax remains unqualified.

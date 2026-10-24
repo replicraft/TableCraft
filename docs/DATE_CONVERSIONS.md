@@ -32,7 +32,7 @@ range/error-order behavior still require Access comparison.
 Text requires `--date-format iso|en-us|de-de` or the corresponding DateParseContext/
 Evaluator/ExecutionOptions setting. DateTextFormat now lives in the date-parsing
 slice and remains re-exported from the existing CStr path. This also controls
-[CStr output](CSTR.md); it does not alter ISO SQL literals, parameter transport,
+[CStr output](CSTR.md); it does not alter [SQL literals](SQL_DATE_LITERALS.md), parameter transport,
 ordinary CLI date rendering or stored date fields.
 
 | Profile | Numeric date order |
