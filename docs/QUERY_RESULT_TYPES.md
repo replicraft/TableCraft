@@ -355,3 +355,12 @@ constructor/conversion errors and eager/control failures. Preparation checks a
 scan counter before execution; it does not inspect rows, parse Text, consult
 locale/clock providers or suppress failing controls. This is successful-value
 metadata, not proof a call will succeed or native Access result-type qualification.
+
+## Mixed selector inputs to numeric aggregates
+
+SUM/AVG now map the alternatives of IIf, Choose and Switch through their existing
+accumulator result contracts before merging metadata. Distinct input carriers
+can therefore retain one guaranteed output carrier, without widening input cells
+or evaluating selectors during preparation. Unknown and differing aggregate
+outcomes remain Dynamic. See [aggregate output descriptions](AGGREGATE_OUTPUT_TYPES.md)
+for the boundaries and 800-case/1,600-execution matrix.
