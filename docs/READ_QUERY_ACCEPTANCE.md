@@ -113,6 +113,14 @@ plus 3 MiB compressed and 1.5 MB stored files. Pure decoder controls cover the
 refusals remain explicit. Larger decoded Memo values and native FileData query
 representation remain unfinished.
 
+Explicit [stored-history query members](STORED_HISTORY_QUERIES.md) now expose
+actual hidden-field names through `--collections`, retaining current Memo,
+aligned stored versions, complete caches and native flat-field policies.
+Six adapter/eight engine tests and 192 independent stored-record/query controls
+pass. Unsupported history candidates remain unavailable without blocking
+unrelated supported fields. Native history SQL/latest-version behavior and
+wider advanced-field semantics remain unqualified.
+
 Opt-in [automatic native indexes](AUTOMATIC_INDEXES.md) now choose matching
 qualified single-key definitions under existing safe constraints. Automatic
 selections preserve sequential encounter order, original predicates and cache
@@ -277,7 +285,7 @@ semantics. See [metadata contracts](NATIVE_TABLES.md#attachment-metadata-project
 | P0 | Value semantics | Declared-expression/Variant result promotion, complete coercion and Error operator/aggregate behavior; independently modeled boundaries and later native comparisons |
 | P0 | Native text | Complete mixed-policy precedence, additional locale providers and explicit LCID search implementations; consistent predicates, sets, groups, sort and LIKE behavior |
 | P1 | Query composition | Remaining admitted saved/named definitions, heading names and wider native syntax; qualify whether proposed inline TRANSFORM forms are actually accepted by Access before adding grammar |
-| P1 | Advanced fields | Native FileData query representation, history query access, full collection semantics and calculated-field evaluation/freshness rules |
+| P1 | Advanced fields | Native FileData query representation, wider history/collection semantics and calculated-field evaluation/freshness rules |
 | P1 | Storage and scale | Wider column-type/row histories, broader collection sizes and file locality, predictable limits and unchanged originals |
 | Qualification | Native Access | Build/locale-qualified values, ordering, errors, saved queries and representative application outcomes on Windows |
 

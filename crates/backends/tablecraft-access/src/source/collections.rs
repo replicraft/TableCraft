@@ -1,4 +1,4 @@
-//! Aligned named metadata views over separately cached complete child snapshots.
+//! Aligned named stored-member views over separately cached complete child snapshots.
 mod load;
 mod payload;
 use super::{NativeSource, query_error};
@@ -6,28 +6,30 @@ use payload::DecodedFiles;
 use std::cell::OnceCell;
 use tablecraft_ace::{
     AttachmentColumn, AttachmentMetadataColumn, ComplexParentLink, MultivalueColumn,
-    inspect_attachment_declarations,
+    VersionHistoryColumn, inspect_attachment_declarations, inspect_version_history_declarations,
 };
 use tablecraft_core::{limits::Resource, values::Value};
 use tablecraft_query::{
     QueryError,
     source::{MultivalueList, MultivalueVisitor, TextCollationId, validate_projection},
 };
-use tablecraft_schema::CollectionMember;
+use tablecraft_schema::{CollectionMember, SchemaName};
 
-pub(super) struct AttachmentCache {
+pub(super) struct CollectionCache {
     members: Vec<CollectionMember>,
     text_collations: Vec<Option<TextCollationId>>,
+    history_memos: Vec<Option<SchemaName>>,
     // Only the first member of each collection owns a complete snapshot.
-    snapshots: Vec<AttachmentSnapshot>,
+    snapshots: Vec<CollectionSnapshot>,
 }
-struct AttachmentSnapshot {
+struct CollectionSnapshot {
     metadata: OnceCell<AttachmentMetadataColumn>,
     stored: OnceCell<AttachmentColumn>,
     decoded: OnceCell<DecodedFiles>,
+    history: OnceCell<VersionHistoryColumn>,
 }
 
-impl AttachmentCache {
+impl CollectionCache {
     pub(super) fn clear_decoded(&mut self) {
         for snapshot in &mut self.snapshots {
             snapshot.decoded.take();
@@ -40,6 +42,7 @@ enum NativeField<'a> {
     Attachment(&'a AttachmentColumn, &'a str),
     AttachmentMetadata(&'a AttachmentMetadataColumn, &'a str),
     AttachmentData(&'a AttachmentColumn, &'a DecodedFiles),
+    History(&'a VersionHistoryColumn, &'a str),
 }
 impl NativeField<'_> {
     fn parents(&self) -> &[ComplexParentLink] {
@@ -49,6 +52,7 @@ impl NativeField<'_> {
                 column.links().parents()
             }
             Self::AttachmentMetadata(column, _) => column.parents(),
+            Self::History(column, _) => column.links().parents(),
         }
     }
     fn value(&self, parent: usize, child: usize) -> Option<&Value> {
@@ -59,6 +63,7 @@ impl NativeField<'_> {
                 column.metadata_value(parent, child, member)
             }
             Self::AttachmentData(_, files) => files.get(parent, child),
+            Self::History(column, member) => column.member_value(parent, child, member),
         }
     }
 }
@@ -76,10 +81,7 @@ impl MultivalueList for NativeList<'_> {
     }
 }
 impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
-    pub(super) fn attachment_members(
-        &self,
-        table: &str,
-    ) -> Result<&[CollectionMember], QueryError> {
+    pub(super) fn named_members(&self, table: &str) -> Result<&[CollectionMember], QueryError> {
         if !self.collections {
             return Ok(&[]);
         }
@@ -88,7 +90,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
         }
         self.schema_columns(table)?;
         let entry = self.entry(table)?;
-        if entry.attachments.get().is_none() {
+        if entry.collections.get().is_none() {
             let mut budget = self
                 .budget
                 .try_borrow_mut()
@@ -118,6 +120,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 .map_err(|error| query_error(error.into()))?;
             let mut members = Vec::new();
             let mut text_collations = Vec::new();
+            let mut history_memos = Vec::new();
             members
                 .try_reserve_exact(declarations.len())
                 .map_err(|_| QueryError::Allocation)?;
@@ -148,6 +151,57 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                     .map_err(|_| QueryError::Allocation)?;
                 text_collations.resize(members.len(), None);
             }
+
+            // FileData declarations above apply only to attachment collections.
+            // Histories use their actual hidden field and native member names.
+            budget
+                .charge_allocation(members.len() as u64, size_of::<Option<SchemaName>>() as u64)
+                .map_err(|error| query_error(error.into()))?;
+            history_memos
+                .try_reserve_exact(members.len())
+                .map_err(|_| QueryError::Allocation)?;
+            history_memos.resize(members.len(), None);
+            if !unavailable.is_empty() {
+                let mut source = self
+                    .source
+                    .try_borrow_mut()
+                    .map_err(|_| QueryError::Source)?;
+                let histories = inspect_version_history_declarations(
+                    &mut *source,
+                    self.scope,
+                    &entry.name,
+                    &mut budget,
+                    self.cancelled,
+                )
+                .map_err(query_error)?;
+                budget
+                    .charge_allocation(
+                        histories.len() as u64,
+                        (size_of::<CollectionMember>()
+                            + size_of::<Option<TextCollationId>>()
+                            + size_of::<Option<SchemaName>>()) as u64,
+                    )
+                    .map_err(|error| query_error(error.into()))?;
+                members
+                    .try_reserve_exact(histories.len())
+                    .map_err(|_| QueryError::Allocation)?;
+                text_collations
+                    .try_reserve_exact(histories.len())
+                    .map_err(|_| QueryError::Allocation)?;
+                history_memos
+                    .try_reserve_exact(histories.len())
+                    .map_err(|_| QueryError::Allocation)?;
+                for declaration in histories {
+                    if (self.cancelled)() {
+                        return Err(QueryError::Cancelled);
+                    }
+                    budget.charge(Resource::Steps, 1)?;
+                    let (member, memo, order) = declaration.into_parts();
+                    members.push(member);
+                    text_collations.push(order.map(crate::collation::identity));
+                    history_memos.push(Some(memo));
+                }
+            }
             if members.iter().any(|member| {
                 !unavailable.iter().any(|name| {
                     name.as_str()
@@ -157,39 +211,41 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 return Err(QueryError::SchemaChanged);
             }
             budget
-                .charge_allocation(members.len() as u64, size_of::<AttachmentSnapshot>() as u64)
+                .charge_allocation(members.len() as u64, size_of::<CollectionSnapshot>() as u64)
                 .map_err(|error| query_error(error.into()))?;
             let mut snapshots = Vec::new();
             snapshots
                 .try_reserve_exact(members.len())
                 .map_err(|_| QueryError::Allocation)?;
-            snapshots.extend((0..members.len()).map(|_| AttachmentSnapshot {
+            snapshots.extend((0..members.len()).map(|_| CollectionSnapshot {
                 metadata: OnceCell::new(),
                 stored: OnceCell::new(),
                 decoded: OnceCell::new(),
+                history: OnceCell::new(),
             }));
             entry
-                .attachments
-                .set(AttachmentCache {
+                .collections
+                .set(CollectionCache {
                     members,
                     text_collations,
+                    history_memos,
                     snapshots,
                 })
                 .map_err(|_| QueryError::Source)?;
         }
-        Ok(&entry.attachments.get().ok_or(QueryError::Source)?.members)
+        Ok(&entry.collections.get().ok_or(QueryError::Source)?.members)
     }
-    pub(super) fn attachment_text_collations(
+    pub(super) fn member_text_collations(
         &self,
         table: &str,
     ) -> Result<&[Option<TextCollationId>], QueryError> {
         if !self.collections {
             return Ok(&[]);
         }
-        self.attachment_members(table)?;
+        self.named_members(table)?;
         Ok(&self
             .entry(table)?
-            .attachments
+            .collections
             .get()
             .ok_or(QueryError::Source)?
             .text_collations)

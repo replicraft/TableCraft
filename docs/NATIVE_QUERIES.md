@@ -51,10 +51,12 @@ retains Unicode order; `general-legacy`/`general-2010` select the provisional
 cumulative limits. Native-only `--collation database` instead selects the stored
 database default and per-field General policies under one shared quota. Unknown
 required field policies and expressions combining distinct identities fail.
-Opted-in `.Value` and attachment Text members retain their stored flat-field
+Opted-in `.Value`, attachment and stored-history Text members retain their stored flat-field
 policies; decoded FileData remains Binary. [Stored-policy scope](NATIVE_TEXT.md#stored-database-general-policy) records the
 conservative boundary. Family overrides infer no field/database locale. Native
-SQL qualification remains pending, and no text predicate pushdown is enabled. A table's stored row order
+SQL qualification remains pending. Direct scalar Short Text equality can use
+[comparer-qualified index candidates](TEXT_EQUALITY_SEEKS.md); collection member
+predicates do not use that hint profile. A table's stored row order
 is not a SQL ordering guarantee; use ORDER BY for deterministic selection.
 
 The source also supplies [opaque text-policy identities](QUERY_EXECUTION.md#source-text-policy-identity)
@@ -419,8 +421,9 @@ counts and buffered refusals, while preserving source hashes.
 
 These are native storage/independent row-model comparisons. Microsoft Access SQL
 has not run. Scalar-parent and mixed displayed/hidden criteria now use the
-documented explicit membership profile; collection display values, history
-member SQL, native empty/product/NULL semantics, locale/Variant return promotion and
+documented explicit membership profile. Explicit [stored-history member views](STORED_HISTORY_QUERIES.md)
+now reuse checked native records; collection display values, native history SQL,
+native empty/product/NULL semantics, locale/Variant return promotion and
 Windows Access qualification remain explicit gaps. This feature does not change
 native write restrictions or make VBA/lookup execution available.
 
@@ -435,6 +438,8 @@ tablecraft query run 'SELECT ID, Count(Files.FileName) AS N FROM Collections GRO
 qualified `.Value` lists plus named stored attachment metadata on ACE 2007 and
 ACE 16-family (2016/2019) layouts. Default and `--multivalues` behavior remain
 unchanged. Library hosts opt in with `NativeSource::with_collections()`.
+The same explicit mode also exposes [stored Memo history members](STORED_HISTORY_QUERIES.md)
+under actual resolved hidden field names, without replacing the visible current Memo.
 
 Supported members are `FileURL` (Text), `FileName` (Text), `FileType` (Text),
 `FileTimeStamp` (legacy DateTime) and `FileFlags` (Int32), all nullable. Stored
@@ -603,7 +608,9 @@ The workspace is charged once per decoded column; per-file body/type/copy work a
 allocations remain cumulative, with complete cache publication unchanged. The
 larger ACE 16/ACE 2007 corpus includes exact 20,000-file decoded reads/queries;
 see [scope](LARGER_NATIVE_COLLECTIONS.md#larger-attachments-and-stored-histories).
-This does not qualify native FileData SQL representation or history queries.
+This does not qualify native FileData SQL representation or native history SQL.
+The separate [stored-history engineering view](STORED_HISTORY_QUERIES.md) now
+supports bounded named-member reads without chronological/latest-value inference.
 
 
 ## Attachment presence criteria

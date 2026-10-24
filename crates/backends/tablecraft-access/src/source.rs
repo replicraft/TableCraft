@@ -27,7 +27,7 @@ struct Entry {
     index: Option<tablecraft_schema::SchemaName>,
     projected: RefCell<Vec<projection::CachedProjection>>,
     multivalues: OnceCell<multivalue::CollectionCache>,
-    attachments: OnceCell<collections::AttachmentCache>,
+    collections: OnceCell<collections::CollectionCache>,
 }
 /// One inert catalog and lazily loaded, cached scalar snapshots. No shared-file
 /// locking or transaction snapshot is implied: the source must remain unchanged.
@@ -118,7 +118,7 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
                 index: None,
                 projected: RefCell::new(Vec::new()),
                 multivalues: OnceCell::new(),
-                attachments: OnceCell::new(),
+                collections: OnceCell::new(),
             });
         }
         Ok(Self {
@@ -145,9 +145,11 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
         self.multivalues = true;
         self
     }
-    /// Opt into stored multivalues and named attachment metadata members.
+    /// Opt into stored multivalues, attachment metadata and stored-history members.
     /// Binding reads metadata only. Child snapshots remain complete and bounded;
     /// This option alone keeps payloads encoded; FileData needs a separate opt-in.
+    /// Histories use actual hidden field/member names and retain stored order;
+    /// this explicit TableCraft view does not establish native SQL equivalence.
     pub fn with_collections(mut self) -> Self {
         self.multivalues = true;
         self.collections = true;
@@ -161,7 +163,7 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
             // Existing metadata-only member inventories do not expose FileData.
             // Rebuild them when decoding is first enabled, without budget refunds.
             for entry in &mut self.entries {
-                entry.attachments.take();
+                entry.collections.take();
             }
         }
 
@@ -178,7 +180,7 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
         self = self.with_decoded_attachments();
         if self.attachment_decode_limits != limits {
             for entry in &mut self.entries {
-                if let Some(cache) = entry.attachments.get_mut() {
+                if let Some(cache) = entry.collections.get_mut() {
                     cache.clear_decoded();
                 }
             }
@@ -295,13 +297,13 @@ impl<R: tablecraft_ace::NativeReadSource> Source for NativeSource<'_, R> {
         &self,
         table: &str,
     ) -> Result<&[tablecraft_schema::CollectionMember], QueryError> {
-        self.attachment_members(table)
+        self.named_members(table)
     }
     fn collection_member_text_collations(
         &self,
         table: &str,
     ) -> Result<&[Option<tablecraft_query::source::TextCollationId>], QueryError> {
-        self.attachment_text_collations(table)
+        self.member_text_collations(table)
     }
     fn scan_collection_members(
         &self,
