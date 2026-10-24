@@ -102,17 +102,19 @@ fn month_day(a: &str, b: &str) -> Result<(u16, u16), EvalError> {
     } else {
         (b, a)
     };
+    Ok((named_month(month)?, number(day, MONTH_DAY_DIGITS)?))
+}
+
+pub(super) fn named_month(month: &str) -> Result<u16, EvalError> {
     if month.len() > MAX_MONTH_BYTES {
         return Err(EvalError::TypeMismatch);
     }
     let parsed = strtime::parse("%B", month)
         .or_else(|_| strtime::parse("%b", month))
         .map_err(|_| EvalError::TypeMismatch)?;
-    Ok((
-        parsed.month().ok_or(EvalError::TypeMismatch)? as u16,
-        number(day, MONTH_DAY_DIGITS)?,
-    ))
+    Ok(parsed.month().ok_or(EvalError::TypeMismatch)? as u16)
 }
+
 fn year(value: &str, context: DateParseContext) -> Result<i16, EvalError> {
     let year = number(value, YEAR_DIGITS)?;
     let year = if value.len() <= MONTH_DAY_DIGITS {

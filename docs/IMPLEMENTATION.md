@@ -1,5 +1,33 @@
 # Implementation status
 
+## SQL token-year mapping and date-component priorities
+
+The pure SQL literal service now applies the reviewed MS-VBAL fixed 1930-2029
+short-year formula, numeric component priorities and English named-month ordering.
+Unambiguous month/year forms resolve to day one. Jiff supplies calendar/month-name
+validation; typed ISO parameters and runtime CDate/DateSerial windows retain
+separate behavior. Context-dependent month/day forms still require a default-year
+decision. See [literal contract and primary formula](SQL_DATE_LITERALS.md#token-year-and-interpretation-rules).
+
+One new expression test checks all 100 short years and representative reordered,
+leading-zero and month/year forms. New query/CLI cases reuse plans under different
+constructor windows and retain fixed literal years. Existing refusal controls
+now use malformed dates instead of newly supported token forms. The specified
+priority makes 31/12/26 mean 1931-12-26; initial test expectations incorrectly
+assumed day-first precedence and were corrected to the primary contract without
+changing the implementation priority.
+
+The batch passes 651 expression tests plus one doctest, 345 minimal-profile
+expression tests, seven selected query tests and seven selected CLI tests.
+Expression/query/CLI all-target/all-feature Clippy, CLI build, formatting,
+Python syntax, dependency boundaries and diff checks pass. The independent
+runner passes 442 controls: 418 scalar and 24 native sequential/indexed cases,
+with original hashes unchanged. Only TableCraft executes SQL; the interpretation
+model is not native Access comparison evidence. Full native/backend/workspace
+suites and benchmarks are not repeated. No new carrier, provider, dependency,
+clock or write capability is introduced.
+
+
 ## U.S. and English SQL date/time literals
 
 Hash-delimited SQL literals now admit complete-year U.S./English dates and

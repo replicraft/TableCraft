@@ -5926,3 +5926,15 @@ TableCraft alone applies the date-literal SQL predicates. JAR/input hashes remai
 checked and originals unchanged. No new database, third-party source or library
 is added. [The profile](SQL_DATE_LITERALS.md) retains wider spelling, regional,
 precision/error and native Access qualification gaps.
+
+
+## SQL date-token year and order controls (23 October 2026)
+
+The expanded original [date runner](testing/compare_sql_date_literals.py) passes
+442 controls: 418 scalar and 24 native cases over the same unchanged registered
+four-family inputs. Python checks all 100 short token years, representative
+component priorities/month-year forms and native date predicates. The fixed
+1930-2029 token model is independent of the runtime constructor window. Read-only
+Jackcess getters supply stored DATE values; only TableCraft executes SQL.
+Specification-model results do not qualify native Access interpretation. No new
+binary, third-party implementation or runtime dependency is added.

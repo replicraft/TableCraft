@@ -24,9 +24,9 @@ fn query_literals_use_us_dates_and_times_without_a_regional_text_policy() {
         }
         for sql in [
             "SELECT 1,#2/29/1900#",
-            "SELECT 1,#1/2/26#",
+            "SELECT 1,#1//2/26#",
             "SELECT 1,#Mar 7#",
-            "SELECT 1,#31/12/2026#",
+            "SELECT 1,#32/13/2026#",
             "SELECT 1,#12/31/2024 24:00#",
         ] {
             let result = run(&["query", mode, sql]);
@@ -50,4 +50,26 @@ fn sql_literal_extension_does_not_change_iso_typed_parameter_admission() {
     let result = run(&["query", "run", sql, "--param", "P=date:1/2/2026"]);
     assert_eq!(result.status.code(), Some(2));
     assert!(result.stdout.is_empty());
+}
+
+#[test]
+fn sql_token_years_keep_the_fixed_mapping_beside_explicit_constructor_windows() {
+    for mode in ["eval", "run"] {
+        let result = run(&[
+            "query",
+            mode,
+            "SELECT Year(#1/2/29#) AS A,Year(#1/2/30#) AS B,Year(#1/2/49#) AS C,Year(DateSerial(49,1,2)) AS D,Day(#31/12/26#) AS E",
+            "--two-digit-year-max",
+            "2049",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(
+            result.stdout,
+            b"A\tB\tC\tD\tE\n2029\t1930\t1949\t2049\t26\n"
+        );
+    }
 }

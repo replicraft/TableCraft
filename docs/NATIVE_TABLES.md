@@ -181,7 +181,7 @@ Eq remain unchanged. `temporal_cmp` compares day/time fractions, so -0.25 and +0
 are the same time and negative-day time ordering is not numeric double ordering.
 
 SQL date comparisons/order/grouping/distinct use those temporal semantics.
-[SQL date literals](SQL_DATE_LITERALS.md) accept complete-year U.S./English and
+[SQL date literals](SQL_DATE_LITERALS.md) accept U.S./English token-date and
 qualified time spellings alongside YYYY-MM-DD or YYYY-MM-DD HH:MM:SS[.fraction].
 The SQL literal service is independent of regional text conversion; offsets,
 timezones and wider context-dependent spellings remain refused.

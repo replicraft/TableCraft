@@ -44,8 +44,9 @@ pub fn parse_literal(text: &str) -> Result<LegacyDateTime, EvalError> {
 }
 
 /// Parse a hash-delimited SQL literal's contents without selecting a host locale.
-/// Retains strict ISO spellings and adds complete-year U.S./English dates and
-/// 12/24-hour times. Two-digit/omitted years and regional guessing are not supplied.
+/// Retains ISO spellings and adds U.S./English token-date interpretation and
+/// qualified times. Two-digit token years have a fixed 1930-2029 mapping;
+/// dates requiring an implementation-defined default year remain unsupported.
 pub fn parse_query_literal(text: &str) -> Result<LegacyDateTime, EvalError> {
     parse_literal(text).or_else(|_| crate::functions::dates::parsing::parse_query_literal(text))
 }
