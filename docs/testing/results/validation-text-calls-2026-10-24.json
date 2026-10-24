@@ -1,0 +1,1068 @@
+{
+  "date": "2026-10-24",
+  "scope": "Independently model stored Len/explicit binary StrComp validation read audits.\n\nOnly a separate original reference-check mode evaluates supplied pure rules.\nThe accepted main corpus and all getter/CLI inspection remain inert.\n",
+  "controls": 204,
+  "getter_cells": 618,
+  "hashes_unchanged": true,
+  "inputs": {
+    "crates/engines/tablecraft-ace/src/constraints/fields.rs": "58658fa85b58dfda5d1aa8d13c4b9b07bd16a95beaf819304d132ffa30680e52",
+    "crates/engines/tablecraft-ace/src/constraints/rules/bindings.rs": "5ebe466e5016c0dfba0f3eb78f192f32de3d36029fcb1aae309040390a669e6d",
+    "crates/engines/tablecraft-ace/src/constraints/rules/compile.rs": "ba70efbfd54d67ef9c873f1877b15d33c101dd3af2f61220c8247f50de582dbc",
+    "crates/engines/tablecraft-ace/src/constraints/rules/functions.rs": "bca8cd04032d1e3eab58446ce49ba8071c56cdd3d899eeb1238e5f0923ba1cc8",
+    "crates/engines/tablecraft-ace/src/constraints/rules/mod.rs": "752e5864953781f7595e061dbdc64cde726fd1467cfb523ac58b55ef78787272",
+    "crates/engines/tablecraft-ace/src/constraints/rules/tests.rs": "5cdefbe53f89dba8e8f3176fbb7f3c3315242d981956bca71941274beeccb572",
+    "docs/testing/ValidationTextCallFixture.java": "5588aaa3c388d486c9077ed22d4d2a0acb3ea99893e6370e7f5064e2907fe1bd",
+    "docs/testing/ValidationTextCallOracle.java": "e753d32ccf9ec713ee3155b46e8bf3f3cdf66beb1f96c0a8ca260d40c5762d95",
+    "docs/testing/cli_tsv.py": "3b849270cc2cde83ecd62089d949ec0388e2ce8755c67801e1c2b16cbb209f6f",
+    "docs/testing/compare_browsing.py": "4f1ced3ad3970150683ec720a31ec85f8400fa73b4a7b5e2343a33abbf58d67e",
+    "docs/testing/compare_calculated_decimals.py": "57d849a3a3251e0b1827c95bb74a7387fa353ab935affdfd812ed84e1224c7fd",
+    "docs/testing/compare_validation_text_calls.py": "578372e5bb7317692b25aa9a0dd762163469af99c2269fb1045dedb54a02bc1d",
+    "docs/testing/float_model.py": "27f205bd4122cd860bf2acac1bb6918b0ea06ab2e5d7241328b2ad63f7820802",
+    ".cache/tablecraft-bin/validation-functions-20261024": "36613d7cac56199e04337385e0fbdcebdfe425dc6fed592e463363f2710d3eca",
+    ".cache/tablecraft-fixtures/jackcess-5.0.4.jar": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    ".cache/tablecraft-fixtures/validation-text-calls-qualified-20261024/V2016.accdb": "20b103a3d2610e94644222e2632dac655d6542ef73243a367f8c87fbba55f6f4",
+    ".cache/tablecraft-fixtures/validation-text-calls-qualified-20261024/V2019.accdb": "ba8cc6eecf99330644c4308273710beb7ff832bc208397fe9d70f06e1376c76d",
+    ".cache/tablecraft-fixtures/validation-text-calls-qualified-20261024/reference-V2016.accdb": "1ffd9e8a444ebb665cd38b7e7b2ce521d39c005df52b57842e448cff2df5b0b9",
+    ".cache/tablecraft-fixtures/validation-text-calls-qualified-20261024/reference-V2019.accdb": "7eccbfe6428c36ebfaf53e43099a7338b5d288e9975d5dd2af89a163aa6e08b3"
+  },
+  "observations": [
+    {
+      "profile": "V2016",
+      "tables": 51,
+      "rows": 103,
+      "oracle_sha256": "828550edf2a7059123d88d58e6b132761f511432050a4b711a9130efa067ba33",
+      "reference_oracle_sha256": "0ab4a86633e1fa4d281b7960daf2c812ba587db4c9569222782e526704236bc4",
+      "rules": [
+        {
+          "table": "BinaryPairs",
+          "scope": "table",
+          "rule": "StrComp([Label],[Other],0)<=0",
+          "rows": 11,
+          "status": "Checked",
+          "true": 11,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "BinaryPairsNullable",
+          "scope": "table",
+          "rule": "[Label] Is Null Or [Other] Is Null Or StrComp([Label],[Other],0)<=0",
+          "rows": 14,
+          "status": "Checked",
+          "true": 14,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "FieldBinary",
+          "scope": "field",
+          "rule": "StrComp([Label],\"ABC\",0)=0",
+          "rows": 1,
+          "status": "Checked",
+          "true": 1,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "FieldBinaryInvalid",
+          "scope": "field",
+          "rule": "StrComp([Label],\"ABC\",0)=0",
+          "rows": 2,
+          "status": "Rejected",
+          "true": 1,
+          "false": 1,
+          "unknown": 0
+        },
+        {
+          "table": "FieldBinaryUnknownNull",
+          "scope": "field",
+          "rule": "StrComp([Label],\"ABC\",0)=0",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        },
+        {
+          "table": "FieldClockEmpty",
+          "scope": "field",
+          "rule": "Date() Is Not Null",
+          "rows": 0,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "FieldClockStored",
+          "scope": "field",
+          "rule": "Date() Is Not Null",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        },
+        {
+          "table": "FieldCrossField",
+          "scope": "field",
+          "rule": "Len([Other])<100",
+          "rows": 0,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "FieldForeignEmpty",
+          "scope": "field",
+          "rule": "Len([Foreign].[Label])<100",
+          "rows": 0,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "FieldForeignStored",
+          "scope": "field",
+          "rule": "Len([Foreign].[Label])<100",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        },
+        {
+          "table": "FieldLen",
+          "scope": "field",
+          "rule": "Len([Label])<100",
+          "rows": 10,
+          "status": "Checked",
+          "true": 10,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "FieldLenAstralInvalid",
+          "scope": "field",
+          "rule": "Len([Label])<100",
+          "rows": 2,
+          "status": "Rejected",
+          "true": 1,
+          "false": 1,
+          "unknown": 0
+        },
+        {
+          "table": "FieldLenEmpty",
+          "scope": "field",
+          "rule": "Len([Label])<100",
+          "rows": 0,
+          "status": "Checked",
+          "true": 0,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "FieldLenInvalid",
+          "scope": "field",
+          "rule": "Len([Label])<100",
+          "rows": 2,
+          "status": "Rejected",
+          "true": 1,
+          "false": 1,
+          "unknown": 0
+        },
+        {
+          "table": "FieldLenNulInvalid",
+          "scope": "field",
+          "rule": "Len([Label])<100",
+          "rows": 2,
+          "status": "Rejected",
+          "true": 1,
+          "false": 1,
+          "unknown": 0
+        },
+        {
+          "table": "FieldLenNullable",
+          "scope": "field",
+          "rule": "[Label] Is Null Or Len([Label])<100",
+          "rows": 11,
+          "status": "Checked",
+          "true": 11,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "FieldLenUnknownNull",
+          "scope": "field",
+          "rule": "Len([Label])<100",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        },
+        {
+          "table": "FieldLocaleEmpty",
+          "scope": "field",
+          "rule": "StrComp([Label],\"ABC\",1)=0",
+          "rows": 0,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "FieldLocaleStored",
+          "scope": "field",
+          "rule": "StrComp([Label],\"ABC\",1)=0",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        },
+        {
+          "table": "FieldMissingModeEmpty",
+          "scope": "field",
+          "rule": "StrComp([Label],\"ABC\")=0",
+          "rows": 0,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "FieldMissingModeStored",
+          "scope": "field",
+          "rule": "StrComp([Label],\"ABC\")=0",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        },
+        {
+          "table": "FieldNumericEmpty",
+          "scope": "field",
+          "rule": "Len([ID])<100",
+          "rows": 0,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "FieldNumericStored",
+          "scope": "field",
+          "rule": "Len([ID])<100",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        },
+        {
+          "table": "FieldUnknownEmpty",
+          "scope": "field",
+          "rule": "UnknownFunction([Label])=0",
+          "rows": 0,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "FieldUnknownStored",
+          "scope": "field",
+          "rule": "UnknownFunction([Label])=0",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        },
+        {
+          "table": "FieldUpperEmpty",
+          "scope": "field",
+          "rule": "UCase([Label])=\"ABC\"",
+          "rows": 0,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "FieldUpperStored",
+          "scope": "field",
+          "rule": "UCase([Label])=\"ABC\"",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        },
+        {
+          "table": "TableBinary",
+          "scope": "table",
+          "rule": "StrComp([Label],\"ABC\",0)=0",
+          "rows": 1,
+          "status": "Checked",
+          "true": 1,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "TableBinaryInvalid",
+          "scope": "table",
+          "rule": "StrComp([Label],\"ABC\",0)=0",
+          "rows": 2,
+          "status": "Rejected",
+          "true": 1,
+          "false": 1,
+          "unknown": 0
+        },
+        {
+          "table": "TableBinaryUnknownNull",
+          "scope": "table",
+          "rule": "StrComp([Label],\"ABC\",0)=0",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        },
+        {
+          "table": "TableClockEmpty",
+          "scope": "table",
+          "rule": "Date() Is Not Null",
+          "rows": 0,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "TableClockStored",
+          "scope": "table",
+          "rule": "Date() Is Not Null",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        },
+        {
+          "table": "TableForeignEmpty",
+          "scope": "table",
+          "rule": "Len([Foreign].[Label])<100",
+          "rows": 0,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "TableForeignStored",
+          "scope": "table",
+          "rule": "Len([Foreign].[Label])<100",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        },
+        {
+          "table": "TableLen",
+          "scope": "table",
+          "rule": "Len([Label])<100",
+          "rows": 10,
+          "status": "Checked",
+          "true": 10,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "TableLenAstralInvalid",
+          "scope": "table",
+          "rule": "Len([Label])<100",
+          "rows": 2,
+          "status": "Rejected",
+          "true": 1,
+          "false": 1,
+          "unknown": 0
+        },
+        {
+          "table": "TableLenEmpty",
+          "scope": "table",
+          "rule": "Len([Label])<100",
+          "rows": 0,
+          "status": "Checked",
+          "true": 0,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "TableLenInvalid",
+          "scope": "table",
+          "rule": "Len([Label])<100",
+          "rows": 2,
+          "status": "Rejected",
+          "true": 1,
+          "false": 1,
+          "unknown": 0
+        },
+        {
+          "table": "TableLenNulInvalid",
+          "scope": "table",
+          "rule": "Len([Label])<100",
+          "rows": 2,
+          "status": "Rejected",
+          "true": 1,
+          "false": 1,
+          "unknown": 0
+        },
+        {
+          "table": "TableLenNullable",
+          "scope": "table",
+          "rule": "[Label] Is Null Or Len([Label])<100",
+          "rows": 11,
+          "status": "Checked",
+          "true": 11,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "TableLenUnknownNull",
+          "scope": "table",
+          "rule": "Len([Label])<100",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        },
+        {
+          "table": "TableLocaleEmpty",
+          "scope": "table",
+          "rule": "StrComp([Label],\"ABC\",1)=0",
+          "rows": 0,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "TableLocaleStored",
+          "scope": "table",
+          "rule": "StrComp([Label],\"ABC\",1)=0",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        },
+        {
+          "table": "TableMissingModeEmpty",
+          "scope": "table",
+          "rule": "StrComp([Label],\"ABC\")=0",
+          "rows": 0,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "TableMissingModeStored",
+          "scope": "table",
+          "rule": "StrComp([Label],\"ABC\")=0",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        },
+        {
+          "table": "TableNumericEmpty",
+          "scope": "table",
+          "rule": "Len([ID])<100",
+          "rows": 0,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "TableNumericStored",
+          "scope": "table",
+          "rule": "Len([ID])<100",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        },
+        {
+          "table": "TableUnknownEmpty",
+          "scope": "table",
+          "rule": "UnknownFunction([Label])=0",
+          "rows": 0,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "TableUnknownStored",
+          "scope": "table",
+          "rule": "UnknownFunction([Label])=0",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        },
+        {
+          "table": "TableUpperEmpty",
+          "scope": "table",
+          "rule": "UCase([Label])=\"ABC\"",
+          "rows": 0,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "TableUpperStored",
+          "scope": "table",
+          "rule": "UCase([Label])=\"ABC\"",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        }
+      ]
+    },
+    {
+      "profile": "V2019",
+      "tables": 51,
+      "rows": 103,
+      "oracle_sha256": "828550edf2a7059123d88d58e6b132761f511432050a4b711a9130efa067ba33",
+      "reference_oracle_sha256": "0ab4a86633e1fa4d281b7960daf2c812ba587db4c9569222782e526704236bc4",
+      "rules": [
+        {
+          "table": "BinaryPairs",
+          "scope": "table",
+          "rule": "StrComp([Label],[Other],0)<=0",
+          "rows": 11,
+          "status": "Checked",
+          "true": 11,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "BinaryPairsNullable",
+          "scope": "table",
+          "rule": "[Label] Is Null Or [Other] Is Null Or StrComp([Label],[Other],0)<=0",
+          "rows": 14,
+          "status": "Checked",
+          "true": 14,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "FieldBinary",
+          "scope": "field",
+          "rule": "StrComp([Label],\"ABC\",0)=0",
+          "rows": 1,
+          "status": "Checked",
+          "true": 1,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "FieldBinaryInvalid",
+          "scope": "field",
+          "rule": "StrComp([Label],\"ABC\",0)=0",
+          "rows": 2,
+          "status": "Rejected",
+          "true": 1,
+          "false": 1,
+          "unknown": 0
+        },
+        {
+          "table": "FieldBinaryUnknownNull",
+          "scope": "field",
+          "rule": "StrComp([Label],\"ABC\",0)=0",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        },
+        {
+          "table": "FieldClockEmpty",
+          "scope": "field",
+          "rule": "Date() Is Not Null",
+          "rows": 0,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "FieldClockStored",
+          "scope": "field",
+          "rule": "Date() Is Not Null",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        },
+        {
+          "table": "FieldCrossField",
+          "scope": "field",
+          "rule": "Len([Other])<100",
+          "rows": 0,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "FieldForeignEmpty",
+          "scope": "field",
+          "rule": "Len([Foreign].[Label])<100",
+          "rows": 0,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "FieldForeignStored",
+          "scope": "field",
+          "rule": "Len([Foreign].[Label])<100",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        },
+        {
+          "table": "FieldLen",
+          "scope": "field",
+          "rule": "Len([Label])<100",
+          "rows": 10,
+          "status": "Checked",
+          "true": 10,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "FieldLenAstralInvalid",
+          "scope": "field",
+          "rule": "Len([Label])<100",
+          "rows": 2,
+          "status": "Rejected",
+          "true": 1,
+          "false": 1,
+          "unknown": 0
+        },
+        {
+          "table": "FieldLenEmpty",
+          "scope": "field",
+          "rule": "Len([Label])<100",
+          "rows": 0,
+          "status": "Checked",
+          "true": 0,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "FieldLenInvalid",
+          "scope": "field",
+          "rule": "Len([Label])<100",
+          "rows": 2,
+          "status": "Rejected",
+          "true": 1,
+          "false": 1,
+          "unknown": 0
+        },
+        {
+          "table": "FieldLenNulInvalid",
+          "scope": "field",
+          "rule": "Len([Label])<100",
+          "rows": 2,
+          "status": "Rejected",
+          "true": 1,
+          "false": 1,
+          "unknown": 0
+        },
+        {
+          "table": "FieldLenNullable",
+          "scope": "field",
+          "rule": "[Label] Is Null Or Len([Label])<100",
+          "rows": 11,
+          "status": "Checked",
+          "true": 11,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "FieldLenUnknownNull",
+          "scope": "field",
+          "rule": "Len([Label])<100",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        },
+        {
+          "table": "FieldLocaleEmpty",
+          "scope": "field",
+          "rule": "StrComp([Label],\"ABC\",1)=0",
+          "rows": 0,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "FieldLocaleStored",
+          "scope": "field",
+          "rule": "StrComp([Label],\"ABC\",1)=0",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        },
+        {
+          "table": "FieldMissingModeEmpty",
+          "scope": "field",
+          "rule": "StrComp([Label],\"ABC\")=0",
+          "rows": 0,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "FieldMissingModeStored",
+          "scope": "field",
+          "rule": "StrComp([Label],\"ABC\")=0",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        },
+        {
+          "table": "FieldNumericEmpty",
+          "scope": "field",
+          "rule": "Len([ID])<100",
+          "rows": 0,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "FieldNumericStored",
+          "scope": "field",
+          "rule": "Len([ID])<100",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        },
+        {
+          "table": "FieldUnknownEmpty",
+          "scope": "field",
+          "rule": "UnknownFunction([Label])=0",
+          "rows": 0,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "FieldUnknownStored",
+          "scope": "field",
+          "rule": "UnknownFunction([Label])=0",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        },
+        {
+          "table": "FieldUpperEmpty",
+          "scope": "field",
+          "rule": "UCase([Label])=\"ABC\"",
+          "rows": 0,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "FieldUpperStored",
+          "scope": "field",
+          "rule": "UCase([Label])=\"ABC\"",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        },
+        {
+          "table": "TableBinary",
+          "scope": "table",
+          "rule": "StrComp([Label],\"ABC\",0)=0",
+          "rows": 1,
+          "status": "Checked",
+          "true": 1,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "TableBinaryInvalid",
+          "scope": "table",
+          "rule": "StrComp([Label],\"ABC\",0)=0",
+          "rows": 2,
+          "status": "Rejected",
+          "true": 1,
+          "false": 1,
+          "unknown": 0
+        },
+        {
+          "table": "TableBinaryUnknownNull",
+          "scope": "table",
+          "rule": "StrComp([Label],\"ABC\",0)=0",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        },
+        {
+          "table": "TableClockEmpty",
+          "scope": "table",
+          "rule": "Date() Is Not Null",
+          "rows": 0,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "TableClockStored",
+          "scope": "table",
+          "rule": "Date() Is Not Null",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        },
+        {
+          "table": "TableForeignEmpty",
+          "scope": "table",
+          "rule": "Len([Foreign].[Label])<100",
+          "rows": 0,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "TableForeignStored",
+          "scope": "table",
+          "rule": "Len([Foreign].[Label])<100",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        },
+        {
+          "table": "TableLen",
+          "scope": "table",
+          "rule": "Len([Label])<100",
+          "rows": 10,
+          "status": "Checked",
+          "true": 10,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "TableLenAstralInvalid",
+          "scope": "table",
+          "rule": "Len([Label])<100",
+          "rows": 2,
+          "status": "Rejected",
+          "true": 1,
+          "false": 1,
+          "unknown": 0
+        },
+        {
+          "table": "TableLenEmpty",
+          "scope": "table",
+          "rule": "Len([Label])<100",
+          "rows": 0,
+          "status": "Checked",
+          "true": 0,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "TableLenInvalid",
+          "scope": "table",
+          "rule": "Len([Label])<100",
+          "rows": 2,
+          "status": "Rejected",
+          "true": 1,
+          "false": 1,
+          "unknown": 0
+        },
+        {
+          "table": "TableLenNulInvalid",
+          "scope": "table",
+          "rule": "Len([Label])<100",
+          "rows": 2,
+          "status": "Rejected",
+          "true": 1,
+          "false": 1,
+          "unknown": 0
+        },
+        {
+          "table": "TableLenNullable",
+          "scope": "table",
+          "rule": "[Label] Is Null Or Len([Label])<100",
+          "rows": 11,
+          "status": "Checked",
+          "true": 11,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "TableLenUnknownNull",
+          "scope": "table",
+          "rule": "Len([Label])<100",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        },
+        {
+          "table": "TableLocaleEmpty",
+          "scope": "table",
+          "rule": "StrComp([Label],\"ABC\",1)=0",
+          "rows": 0,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "TableLocaleStored",
+          "scope": "table",
+          "rule": "StrComp([Label],\"ABC\",1)=0",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        },
+        {
+          "table": "TableMissingModeEmpty",
+          "scope": "table",
+          "rule": "StrComp([Label],\"ABC\")=0",
+          "rows": 0,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "TableMissingModeStored",
+          "scope": "table",
+          "rule": "StrComp([Label],\"ABC\")=0",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        },
+        {
+          "table": "TableNumericEmpty",
+          "scope": "table",
+          "rule": "Len([ID])<100",
+          "rows": 0,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "TableNumericStored",
+          "scope": "table",
+          "rule": "Len([ID])<100",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        },
+        {
+          "table": "TableUnknownEmpty",
+          "scope": "table",
+          "rule": "UnknownFunction([Label])=0",
+          "rows": 0,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "TableUnknownStored",
+          "scope": "table",
+          "rule": "UnknownFunction([Label])=0",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        },
+        {
+          "table": "TableUpperEmpty",
+          "scope": "table",
+          "rule": "UCase([Label])=\"ABC\"",
+          "rows": 0,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 0
+        },
+        {
+          "table": "TableUpperStored",
+          "scope": "table",
+          "rule": "UCase([Label])=\"ABC\"",
+          "rows": 1,
+          "status": "Not checked: unsupported rule",
+          "true": 0,
+          "false": 0,
+          "unknown": 1
+        }
+      ]
+    }
+  ]
+}

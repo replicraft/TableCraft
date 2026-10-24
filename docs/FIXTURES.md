@@ -7073,3 +7073,78 @@ its conversion/tuple behavior. Reproducible accepted evidence uses only the
 original committed recipes and pinned files above. Generated databases, reference
 JAR, compiled classes and executable stay ignored. Native Access, cascades and
 Boolean-key mutation qualification remain unrun.
+
+## Original text-call validation inputs
+
+The [ValidationTextCallFixture.java](testing/ValidationTextCallFixture.java)
+producer and [ValidationTextCallOracle.java](testing/ValidationTextCallOracle.java)
+are original MIT repository code. They use the reviewed external Jackcess 5.0.4
+public property/getter APIs; no third-party code or fixture is copied. Default
+corpus generation and read-only oracle access disable expression evaluation.
+Unsupported calls and deliberate historical false/NULL states are stored as inert
+properties, with no imported code or database content executed.
+
+The separate explicit `--reference-check` producer mode evaluates only original
+supplied pure Len/StrComp rules against reference insert/rejection assertions.
+These fresh reference files are distinct from the fully inert main corpus. Their
+stored getters/properties match the corresponding main-corpus tables. A direct
+NULL result is recorded as a distinct reference uncertainty exception, not a
+successful validation or a FALSE outcome. Existing JAR Apache-2.0 provenance and
+SHA-256 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`
+remain unchanged.
+
+Fresh files generated on 24 October 2026 remain ignored under
+`.cache/tablecraft-fixtures/validation-text-calls-qualified-20261024/`:
+
+| File | Bytes | SHA-256 |
+| --- | ---: | --- |
+| V2016.accdb | 1,097,728 | `20b103a3d2610e94644222e2632dac655d6542ef73243a367f8c87fbba55f6f4` |
+| V2019.accdb | 1,167,360 | `ba8cc6eecf99330644c4308273710beb7ff832bc208397fe9d70f06e1376c76d` |
+| reference-V2016.accdb | 516,096 | `1ffd9e8a444ebb665cd38b7e7b2ce521d39c005df52b57842e448cff2df5b0b9` |
+| reference-V2019.accdb | 589,824 | `7eccbfe6428c36ebfaf53e43099a7338b5d288e9975d5dd2af89a163aa6e08b3` |
+
+Each main input has 51 tables and 103 stored rows. The
+[independent model](testing/compare_validation_text_calls.py) counts unsigned
+UTF-16 units and compares unit vectors, with independent U+00FF/U+0100,
+BMP/astral, NUL, combining and boundary controls. Read-only inspection preserves
+Unsupported NULL/call cases, explicit NULL guards and field-scope restrictions;
+late FALSE states fail without partial stdout. Ordinary queries still return
+stored rows without activating validation properties.
+
+The [feature record](testing/VALIDATION_TEXT_CALLS.md) and
+[accepted report](testing/results/validation-text-calls-2026-10-24.json) retain
+204 passing controls, 618 compared getter cells and all 19 unchanged hashes.
+Producer SHA-256 is
+`5588aaa3c388d486c9077ed22d4d2a0acb3ea99893e6370e7f5064e2907fe1bd`;
+oracle SHA-256 is
+`e753d32ccf9ec713ee3155b46e8bf3f3cdf66beb1f96c0a8ca260d40c5762d95`;
+runner SHA-256 is
+`578372e5bb7317692b25aa9a0dd762163469af99c2269fb1045dedb54a02bc1d`.
+
+Earlier `validation-call-probe-*` capability files are excluded from accepted
+counts. The first version intentionally stopped at the distinct NULL exception;
+its second version investigated pure acceptance/rejection behavior. Earlier
+`validation-text-calls-20261024/` mixed-stage files and
+`validation-text-calls-inert-20261024/` files are also excluded: the accepted
+recipe separates reference execution from inert construction and adds independent
+late astral/NUL failures. All originals remain preserved. Generated databases,
+reference JAR, compiled classes and executable remain ignored. Native Access,
+locale/UCase/clock calls and broader validation/write qualification remain unrun.
+
+### Original validation recipe regression replay
+
+The existing original MIT `ValidationFixture.java` recipe was regenerated on
+24 October 2026 under ignored
+`.cache/tablecraft-fixtures/legacy-validation-20261024/`. No external fixture
+bytes were copied. The reviewed Jackcess JAR and immutable executable above were
+reused. `compare_validation.py` passes six coverage checks per format, including
+newly admitted populated/empty Len rules, while unresolved NULL remains Unsupported.
+Read-only replay leaves both fresh original inputs unchanged:
+
+| File | SHA-256 |
+| --- | --- |
+| V2016.accdb | `96656fd34832b431b6797c4f6aedcdd5811d63e89b655ff264edbc1fd96acab5` |
+| V2000.mdb | `c7babc5796f04b24659a1b91e9e1e591d6399cb355cf0adf339999dd76efb3cc` |
+
+These 12 regression checks are separate from the 204-control text-call corpus.
+They provide independent engineering evidence, not native Access qualification.

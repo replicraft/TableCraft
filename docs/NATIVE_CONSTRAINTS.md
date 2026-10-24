@@ -118,6 +118,10 @@ UTF-16 characters, embedded NUL, binary case/trailing spaces, NULL outcomes and
 explicit guards, pure text addition/concatenation, eager division failures,
 rejected signatures/scopes even when empty, limits and prefix cancellation. This
 expansion does not qualify all validation functions or native Access saves.
+The [independent text-call replay](testing/VALIDATION_TEXT_CALLS.md) records
+204 controls and 618 getter cells across original ACE 2016/2019 inputs, with
+all 19 pinned hashes unchanged. The existing ACE/Jet 4 recipe also passes its
+12 coverage checks on fresh originals.
 
 ## Composite independent evidence
 

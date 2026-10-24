@@ -14,6 +14,12 @@ candidate checks, eager errors, empty-table preflight, UTF-16 lengths and binary
 ordering. Workspace formatting passes; scoped rule units and strict Clippy also
 pass. See [native validation rules](NATIVE_CONSTRAINTS.md#bounded-validation-expressions).
 
+The [independent text-call replay](testing/VALIDATION_TEXT_CALLS.md) passes
+204 controls and 618 stored getter cells across ACE 2016/2019; all 19 pinned
+hashes match. Fresh original ACE/Jet 4 validation inputs also pass the existing
+12-check coverage replay without modification. Native Access equivalence and
+broader validation/write qualification remain separate.
+
 ## Read-only Boolean foreign-key membership
 
 Native constraint inspection now checks exact stored Boolean foreign keys,
