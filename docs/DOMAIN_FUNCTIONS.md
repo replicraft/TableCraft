@@ -25,7 +25,8 @@ All supplied arguments evaluate in written order before string validation. This
 profile requires Text carriers; explicit NULL is InvalidNullConversion and other
 carriers are TypeMismatch. An omitted final argument slot is omission, not NULL;
 missing required expression/domain slots remain errors. Omitted or whitespace-only criteria select the whole
-domain. Criteria contain a scalar expression without WHERE. A missing criteria
+domain. Criteria contain a scalar expression without WHERE, with the qualified
+[named collection presence exception](COLLECTION_PRESENCE.md#domain-criteria). A missing criteria
 field returns NULL; missing expression fields, source failures and unsupported
 syntax remain errors. Subqueries and object/member access inside strings are
 rejected before binding, so their lookup failures cannot masquerade as missing
@@ -159,3 +160,16 @@ Ordinary SQL aggregates retain their separate declaration boundary.
 This adds no binding scan, provider activation, conversion, runtime host or new
 stored/public Variant carrier. Native SQL type classification and the existing
 coercion, locale, encounter-order and aggregate precision gaps remain open.
+
+
+## Named collection presence in criteria
+
+Qualified local-table named collections now support direct IS NULL / IS NOT NULL
+criteria and existing Boolean combinations in runtime domain calls. These use the
+same typed parent filter as SELECT WHERE, preserving parent cardinality without
+expanding attachments into aggregate input rows. Scalar domain value expressions,
+member-access refusals, missing-field NULL results and isolated parameters remain
+unchanged. Nested domain criteria retain the owning depth/work/row/allocation
+budget and eager/complete-read failures. Native attachment calls use the complete
+metadata cache without loading FileData, including with decoded-payload opt-in.
+See [the exact scope and evidence](COLLECTION_PRESENCE.md#domain-criteria).

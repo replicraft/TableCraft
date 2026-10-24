@@ -6137,8 +6137,9 @@ Access ordering, mixed-type coercion and failure precedence remain unqualified.
 The original `testing/compare_attachment_presence.py` reuses the registered
 `AttachmentMetadataFixture.java` corpus and Jackcess 5.0.4. It adds no binary
 fixture or generation step. Parent membership counts come from the inert Java
-inspector; TableCraft alone executes NULL/non-NULL and combined criteria with and
-without decoded-attachment opt-in. Each registered original hash is checked
+inspector; TableCraft alone executes NULL/non-NULL and combined WHERE/domain
+criteria with and without decoded-attachment opt-in. Domain count/sum/average/lookup
+results use independently derived parent identities and membership counts. Each registered original hash is checked
 before and after execution. These are independent source/model controls, not
 native Access SQL qualification.
 
