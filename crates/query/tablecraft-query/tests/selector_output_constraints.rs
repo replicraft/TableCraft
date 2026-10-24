@@ -186,3 +186,6 @@ fn relaxed_text_metadata_composes_with_union_and_keeps_mixed_carriers_dynamic() 
         );
     }
 }
+
+#[path = "selector_output_constraints/literals.rs"]
+mod literals;

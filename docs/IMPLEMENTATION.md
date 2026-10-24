@@ -1,5 +1,20 @@
 # Implementation status
 
+## Literal-selected result descriptors
+
+Metadata-only preparation now preserves the successful selected carrier and
+Text/Decimal constraints for literal-controlled IIf/Choose results. Switch merges
+only reachable result alternatives and retains a no-match NULL possibility when
+needed. Unknown controls remain conservative. Every branch still binds and runs
+eagerly; Variant categories, text-policy lineage and runtime errors are unchanged.
+See [selector metadata](CONDITIONAL_FUNCTIONS.md#literal-selection-and-result-metadata).
+
+Sixty-one focused integration tests pass with strict scoped Clippy, formatting
+and minimal-feature checks. Coverage includes literal/unknown descriptors,
+nullable choices, derived/grouped/empty results, Single-rounded indexes, raw
+String observers, dead-branch binding errors and unused clock activation. This
+improves successful-result metadata, not complete native mixed-type promotion.
+
 ## Cached calculated Decimal reads
 
 Explicit stored-calculation inspection and cached row browsing now admit the
