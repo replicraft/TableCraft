@@ -72,7 +72,7 @@ impl ByteString {
         self.select(offset..(offset + length))
     }
 
-    fn select(self, range: Range<usize>) -> Result<Self, EvalError> {
+    pub(super) fn select(self, range: Range<usize>) -> Result<Self, EvalError> {
         self.value
             .select(range)
             .map(|value| Self { value })

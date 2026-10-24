@@ -231,6 +231,12 @@ queries and domain retrieval work without premature publication. Eager/control/
 state rules, raw byte/work limits and strict final Unicode remain explicit.
 Other consumers, complete Variant semantics and native qualification remain open.
 
+[Raw trimming](TEXT_CASING.md#retained-string-trimming) now retains complete
+String ranges through LTrim/RTrim/Trim, including unaligned inputs and isolated
+units. Only U+0020 edges are removed. Work/cancellation, scalar policies, fresh
+result text policy and final Unicode publication stay explicit. Remaining String
+consumers, broader Variant/coercion and native qualification are still open.
+
 ### P0 implementation boundaries reviewed 24 October 2026
 
 | Boundary | Current implementation | Remaining work |

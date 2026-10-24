@@ -1,5 +1,30 @@
 # Implementation status
 
+## Retained String trimming
+
+LTrim/RTrim/Trim now participate in lossless String production. Raw complete-unit
+inputs select an owned active range without Unicode decoding or payload copying;
+ordinary scalar inputs retain their Text path and explicit formatting/output
+policies. Only U+0020 edge units are removed. Odd byte counts refuse trimming;
+isolated surrogates remain observable until strict final publication. Source
+comparers are not activated and the existing fresh result policy is retained.
+See [trimming contracts](TEXT_CASING.md#retained-string-trimming).
+
+759 all-feature expression tests plus one doctest, 379 minimal expression tests,
+58 focused query tests and one CLI test pass. Scoped Clippy passes in both
+expression feature profiles and for query/CLI consumers. Controls cover independent
+unit-list properties, zero-payload-budget pointer preservation for an unaligned
+range, every observed kernel cancellation checkpoint, state/format limits,
+prepared/grouped/derived/correlated/domain calls and field-policy separation.
+
+The original runner passes 3,786 independent controls with four unchanged native
+inputs through sequential/selected primary-index reads. Existing scalar trimming/
+casing and retained-cell recipes pass 336 and 1,053 controls. No dependency,
+stored carrier or write gate changed. Full workspace tests, benchmarks and
+Windows Access qualification were not run; remaining consumers, locale providers
+and broader P0 semantics remain unfinished.
+
+
 ## Retained String replacement
 
 Replace now participates in lossless String production in scalar/query evaluation.

@@ -176,6 +176,9 @@ impl TextFunction {
         matches!(
             self,
             Self::CStr
+                | Self::LTrim
+                | Self::RTrim
+                | Self::Trim
                 | Self::Replace
                 | Self::ChrB
                 | Self::ChrW
@@ -187,6 +190,11 @@ impl TextFunction {
                 | Self::MidB
                 | Self::StrConv
         )
+    }
+
+    /// Whether this operation removes leading/trailing U+0020 String units.
+    pub const fn trims_spaces(self) -> bool {
+        matches!(self, Self::LTrim | Self::RTrim | Self::Trim)
     }
 
     /// Whether this operation slices a string by UTF-16 units rather than bytes.
@@ -337,7 +345,8 @@ pub fn apply_with_context<'a>(
     }
     if (function.produces_bytes()
         && !matches!(function, TextFunction::ChrW | TextFunction::Replace)
-        && !function.slices_units())
+        && !function.slices_units()
+        && !function.trims_spaces())
         || function == TextFunction::InStrB
     {
         // Byte-only producers need the owning evaluator. ChrW also retains its

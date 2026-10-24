@@ -138,3 +138,40 @@ is separate from broader ICU/Windows mapping qualification.
 The existing independent casing runner also passes 562 stable-Unicode, language
 and refusal controls in scalar CLI mode. Its optional native-row branch was not
 rerun; native coverage for this slice is the four-family scalar runner above.
+
+## Retained String trimming
+
+LTrim/RTrim/Trim now retain complete raw UTF-16 String units through both
+evaluators. They remove U+0020 at the selected edges while preserving isolated
+surrogates, NUL, tabs, nonbreaking spaces and other units. Active ranges can begin
+at an unaligned byte offset; units are read as little-endian from that range.
+Odd byte counts refuse trimming instead of dropping or padding a byte.
+
+The pure `byte_string::trim_spaces` kernel selects a range in the owned ByteString
+without copying its payload or decoding Unicode. It checks work/cancellation
+before each examined edge unit. Already adopted inputs need no payload allowance;
+constructors and query-cell copies retain their own existing charges. Ordinary
+Text/NULL and scalar sources keep their borrowed Text path, explicit formatting
+policies and output limits. Error/Missing and unsupported carriers remain refused;
+Empty targets empty Text. No locale or comparer is needed merely to trim.
+
+For example, `LenB(Trim(' '&ChrW(55296)&' '))` returns 2.
+`Trim(' '&ChrW(55357)&' ')&ChrW(56832)` repairs a pair and returns valid final Text.
+A directly selected unpaired result still fails before buffered output reaches
+the user. Derived/grouped/correlated cells, prepared values, domain retrieval
+and nested Replace can retain those intermediates. Trimming keeps its existing
+fresh result text policy; it does not activate an unresolved input comparer.
+Stored values, source/parameter carriers and write gates are unchanged.
+
+Microsoft's specific [trimming query examples](https://support.microsoft.com/en-us/access/functions/ltrim-rtrim-and-trim-functions)
+establish direct query availability. The complete-unit/range rules here are the
+explicit engineering profile; native Access edge/error and coercion qualification
+remain separate.
+
+The original [runner](testing/compare_raw_trimming.py) passes 3,786 independent
+controls. Python list prefix/suffix removal checks lengths and exact binary
+result units across both CLI evaluators. Native getters supply four unchanged
+inputs for sequential/selected-index length controls under stored and explicit
+General choices. TableCraft alone evaluates SQL. Existing scalar trimming/casing
+and retained-cell recipes pass 336 and 1,053 controls. No new dependency,
+benchmark result or Windows Access comparison is supplied by this batch.

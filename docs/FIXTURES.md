@@ -1,5 +1,23 @@
 # Candidate Access fixtures
 
+## Retained String trimming controls
+
+The original [runner](testing/compare_raw_trimming.py) passes 3,786 controls.
+Independent Python integer-list prefix/suffix removal checks exact unit results
+and lengths across both CLI evaluators, including isolated units, surrogate
+pairs, NUL, tabs, nonbreaking spaces, empty/all-space and unaligned ranges.
+Invalid raw lengths, eager failures and strict final publication are checked
+separately from successful observations.
+
+Native-source controls reuse the four registered native-policy inputs through
+inert TableDataOracle getters. TableCraft executes sequential/selected primary-
+index length queries under stored and explicit General choices; all before/after
+hashes remain unchanged. The reviewed JAR identity is checked and no new
+third-party artifact is added. Existing scalar trimming/casing and retained-cell
+recipes pass 336 and 1,053 controls. These are independent engineering checks;
+native Access edge/coercion qualification remains pending.
+
+
 ## Retained String replacement controls
 
 The original [runner](testing/compare_raw_replacement.py) and

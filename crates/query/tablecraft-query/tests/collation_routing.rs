@@ -12,6 +12,7 @@ mod collation_routing {
     mod raw_search;
     mod raw_strings;
     mod raw_support;
+    mod raw_trimming;
     mod selectors;
     mod sets;
     mod support;
