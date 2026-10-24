@@ -34,11 +34,58 @@ NULL rows. Inputs evaluate normally for every selected row. Filtered/empty group
 HAVING, domain criteria, shared quotas and cancellation retain their existing
 contracts. Empty/Missing query cells remain unsupported.
 
-This does not make raw Strings storable, sortable or materializable as derived
-table cells. Other aggregate consumers retain their own admission/publication
-rules. The original [cardinality runner](testing/compare_raw_string_count.py)
+Raw Strings remain expression data with [retained cells](RETAINED_STRINGS.md)
+and [explicit comparison keys](RAW_STRING_KEYS.md). Stored values retain their
+own admission rules. The original [cardinality runner](testing/compare_raw_string_count.py)
 passes 774 independent source-free controls, including seeded unit sequences,
 odd bytes, explicit CStr/CVar identity, filtering, NULL results and failures.
+
+## Retained String extrema
+
+Min/Max and DMin/DMax now retain the selected String cell instead of forcing each
+candidate to Unicode. NULL is omitted; empty/all-NULL populations return NULL.
+A singleton, including an odd byte range or isolated surrogate, performs no
+unused comparison or locale lookup. Raw-aware observers can consume the selected
+data through derived rows, grouped/HAVING queries, correlations, fixed named
+crosstabs and domain calls:
+
+```sh
+tablecraft query run "SELECT LenB(Min(S)) AS N FROM (SELECT ChrW(55296) AS S) AS Q"
+```
+
+This returns 2. Actual String comparisons use the [strict key boundary](RAW_STRING_KEYS.md):
+explicit UTF-16 providers compare complete units, Unicode-only providers publish
+strictly, and odd byte counts remain refused when comparison needs units.
+Numeric/String mixtures retain TypeMismatch without adopting predicate coercion
+or the Variant category exception. Field/static/runtime policies select the
+comparer; unknown/conflicting required policies and callback failures propagate.
+Equal extrema retain their first encountered representative and its exact bytes.
+
+Every selected row's argument still evaluates normally. An unrepresentable String
+is data; invalid constructors, division by zero, cancellation and resource errors
+remain failures. A later operational failure is not hidden by an earlier String
+candidate or a possible minimum/maximum bound. Shared allocations/work remain
+cumulative, and extrema retain one selected cell without a second value collection.
+
+Scalar consumers explicitly publish the selected String before Value conversion.
+Public query/CLI String publication remains strict, so selecting an unpaired
+result directly still fails before buffered output. Error-only extrema retain
+their separate standard-code contract below; mixed Error/String values fail
+TypeMismatch. No stored/source/parameter type or native write gate changed.
+
+Microsoft's [SQL Min/Max reference](https://learn.microsoft.com/en-us/office/vba/access/concepts/criteria-expressions/min-max-functions-microsoft-access-sql)
+defines group extrema. Its [DMin/DMax reference](https://support.microsoft.com/en-gb/access/functions/dmin-dmax-functions)
+explicitly permits query expressions, describes numeric/String results and
+excludes NULL values. Applying those selection rules to lossless String cells
+is TableCraft's implemented profile; raw native Access execution remains unqualified.
+
+The original [extrema runner](testing/compare_raw_string_extrema.py) passes 791
+controls: 215 source-free controls over reordered independent General key vectors
+and 576 native-source aggregate/domain controls. Jackcess getters supply the six
+stored IDs in each of four unchanged inputs; Python supplies selection/length/
+representative expectations. Database/default overrides, sequential and selected
+primary-index reads, criteria and empty populations are covered. Only TableCraft
+evaluates SQL. Native Access comparison and benchmarks were not run.
 
 ## Standard Error extrema
 
@@ -52,7 +99,8 @@ later expressions or failures.
 Ordinary scalar extrema retain strict key ordering, exact carrier comparisons and
 explicit field text policies. They do not adopt contextual predicate coercions just
 because Error comparisons now share the expression path. Empty/Missing remain
-unsupported query cells. Sorting, grouping and DISTINCT/UNION keys are not widened.
+unsupported query cells. Error sort/group/set consumers retain their separate
+limits; [retained String keys](RAW_STRING_KEYS.md) use their own explicit profile.
 
 Both direct and domain extrema return expression data through
 `PreparedQuery::execute_expression`. Derived/named, grouped/HAVING, correlated and

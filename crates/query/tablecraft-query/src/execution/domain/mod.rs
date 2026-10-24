@@ -19,7 +19,9 @@ impl Runtime<'_, '_> {
         arguments: &[Expr],
         env: Environment<'_>,
     ) -> Result<Value, QueryError> {
-        Ok(into_scalar(self.domain_expression(kind, arguments, env)?)?)
+        let mut result = self.domain_expression(kind, arguments, env)?;
+        result.value = self.evaluator().publish_expression_value(result.value)?;
+        Ok(into_scalar(result)?)
     }
 
     pub(in crate::execution) fn domain_expression(

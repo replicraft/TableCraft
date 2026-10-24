@@ -27,11 +27,13 @@ impl Runtime<'_, '_> {
             return self.statistic(kind, argument.ok_or(QueryError::Unsupported)?, env);
         }
         if matches!(kind, Aggregate::Minimum | Aggregate::Maximum) {
-            return Ok(into_scalar(self.extreme_aggregate(
+            let mut result = self.extreme_aggregate(
                 argument.ok_or(QueryError::Unsupported)?,
                 env,
                 matches!(kind, Aggregate::Maximum),
-            )?)?);
+            )?;
+            result.value = self.evaluator().publish_expression_value(result.value)?;
+            return Ok(into_scalar(result)?);
         }
         if matches!(kind, Aggregate::First | Aggregate::Last) {
             let mut result = self.encounter_aggregate(

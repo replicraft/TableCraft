@@ -74,6 +74,13 @@ source families and native result-type qualification remain separate. See
 
 ## Remaining acceptance work
 
+[Min/Max and domain extrema](EXPRESSION_AGGREGATES.md#retained-string-extrema)
+now retain selected String data through raw-aware consumers, with strict actual
+comparison, scalar publication, NULL/type/Error rules and cumulative budgets.
+The independent runner covers reordered key vectors and four unchanged native
+inputs through sequential/selected-index aggregate and domain calls. Remaining
+String consumers, broader coercion and native qualification are still open.
+
 [Retained String predicates](RAW_PREDICATES.md) now preserve NULL truth and empty
 quantifier outcomes without Unicode publication. The existing explicit both-known-
 Variant String/numeric rule also recognizes raw String identity. Eager failures,

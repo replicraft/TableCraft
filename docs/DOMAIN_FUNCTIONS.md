@@ -6,6 +6,13 @@ expression arguments: expression text, domain name, and optional criteria text.
 This is an implemented partial profile, not complete Access qualification.
 Source-free `query eval` and UPDATE do not gain domain access.
 
+DMin/DMax now retain [lossless String extrema](EXPRESSION_AGGREGATES.md#retained-string-extrema)
+through the shared Min/Max kernel. Raw-aware callers can observe selected bytes;
+actual comparisons require the selected String provider. Scalar consumers publish
+valid selected Text explicitly, and final unrepresentable String output still
+fails. Domain namespace, parameter restrictions, criteria, NULL rules, shared
+budgets and required field policies remain in force.
+
 ```sh
 tablecraft query run --database example.accdb \
   "SELECT DCount('*','Orders','Amount>100') AS OrdersOver100"
