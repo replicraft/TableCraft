@@ -284,8 +284,9 @@ The [logical rules](https://learn.microsoft.com/en-us/openspecs/microsoft_genera
 require Error rejection. These references guide this explicit materialized-value
 profile; they do not qualify native Access SQL, declared/Variant coercion or error
 ordering. Host Empty now has its [own relational admission](RAW_PREDICATES.md#host-empty-comparisons).
-Sorting, grouping, DISTINCT/UNION set keys, concatenation, Missing and
-numeric-aggregate behavior retain separate contracts and acceptance work. Predicate support
+Sorting, grouping and DISTINCT/UNION keys now have the explicit standard Error
+profile below. Concatenation, Missing and numeric aggregates retain their separate
+contracts and acceptance work. Predicate support
 does not silently widen those consumers or stored sources.
 
 The original [predicate runner](testing/compare_error_predicates.py) passes 838
@@ -359,3 +360,40 @@ then reject it at ordered interval/control/week/source admission. Later operatio
 failures and once-only volatile operands remain observable. Host Empty uses the
 existing zero semantics for numeric/date controls; strict interval and Missing
 refusals remain. See [date interval state scope](DATE_INTERVALS.md#ordered-expression-state-operands-23-october-2026).
+
+
+## Standard Error relational keys
+
+The existing standard Error-code comparator now also serves GROUP BY, DISTINCT,
+active DISTINCTROW complete-record keys, UNION duplicate removal, ORDER BY and
+TOP ties. Codes from 0 through 65535 retain Error identity and compare by code;
+none becomes a stored number, Text or NULL. Equal codes share a group/set key and
+sort as a tie. Named/derived sources, domain reads over those definitions and
+crosstab row groups retain the same expression cells. Pivot heading names still
+have their separate scalar publication contract.
+
+Error/NULL and Error/non-Error scalar comparisons fail TypeMismatch in either
+encounter order, matching the existing Error predicate contract. Error therefore
+does not acquire the ordinary scalar keys' NULL-first ordering. A nonstandard
+opaque code is UnsupportedExpression even as a singleton key: validation occurs
+before duplicate-removal loops that might otherwise perform no comparison.
+Empty/Missing remain unsupported key states. Tuple comparison retains its normal
+written-key short circuit after all operand expressions have evaluated; this does
+not invent a whole-column mixed-type inference pass.
+
+`execute_expression` can return retained Error keys/results. Scalar `execute`
+still requires an explicit consumer, such as `CLng(E)` or `CStr(E)`, for final
+publication. Errors in later operands/rows remain operational failures even after
+a duplicate, match or TOP boundary could be decided. Key validation and comparisons
+consume the existing cumulative query work and cancellation controls; no source
+scan is introduced during binding and no option/profile flag is added.
+
+Focused controls exercise standard-code endpoints, duplicate/group counts,
+ascending/descending sorting, TOP ties, singleton retention, both mixed-carrier
+encounter orders, eager division failures, named/domain/crosstab composition,
+independent seeded integer-code sets and bounded cancellation/resource failures.
+The existing DISTINCTROW Error fixture now collapses identical complete derived
+records while retaining later evaluation errors. These are engineering semantics
+using the [MS-VBAL relational rule](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/f8acd631-55c1-4199-bc1e-022aaab6d9c8)
+for Error pairs; Microsoft Access SQL group/set/order behavior and native error
+precedence remain unqualified.

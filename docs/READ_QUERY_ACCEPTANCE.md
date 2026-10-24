@@ -755,3 +755,11 @@ projection parser. The registered application's saved Leszynski join explicitly
 executes, with all 933 rows matching independent inert getters and unchanged
 original bytes. [Saved-query scope](NATIVE_SAVED_QUERIES.md#registered-qualified-wildcard-query)
 retains VBA and native SQL qualification gaps.
+
+
+Standard [Error relational keys](VARIANT_ERRORS.md#standard-error-relational-keys)
+now reuse the existing standard-code comparator for grouping, sets, sorting and
+TOP ties, retaining expression carriers across named/domain/crosstab composition.
+Opaque codes, Empty/Missing and Error/NULL or mixed-scalar comparisons retain
+explicit refusals. This closes a finite key-consumer gap; broader Error aggregate,
+Variant promotion and native grouping/order qualification remain unfinished.
