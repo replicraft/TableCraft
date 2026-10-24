@@ -7260,3 +7260,37 @@ established native flag readback and the prior history binding failure. Generate
 databases, compiled classes, external JAR and immutable executable remain ignored.
 Native Access SQL, history writes, shared-file behavior and hyperlink/UI semantics
 remain unqualified.
+
+## Original text-relationship research inputs
+
+[TextRelationshipProbe.java](testing/TextRelationshipProbe.java) is original MIT
+repository code. It creates fresh inert tables through the reviewed Jackcess
+5.0.4 builder/relationship APIs and pinned General descriptor constants. Expression
+evaluation is disabled. Unique-probe tables are separate from relationship parents.
+No third-party code or fixture is copied. The JAR retains its existing Apache-2.0
+notice review and SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+
+Fresh originals remain ignored under
+`.cache/tablecraft-fixtures/text-relationship-research-accepted-20261024/`:
+
+| File | Bytes | SHA-256 |
+| --- | ---: | --- |
+| V2000.mdb | 225,280 | `f6b72776ed4f5418e02be109ad87f9124d1493f9760fa5df6176266c97f8b663` |
+| V2007.accdb | 454,656 | `0b1fb9c5fe21a20cac18c4ad415bd406bebacf6eddb38749c03a9796c7e26d65` |
+| V2016.accdb | 495,616 | `9a8c52fb09ee6cada9d71646192d6095867edc65c30d3fd44a2162b3b9bdbe14` |
+| V2019.accdb | 561,152 | `55b04ca1f64c5829e50a17e8bcb0a3e5d3f2dda44797343ca2f0cb373087d6ac` |
+
+The [research record](testing/TEXT_RELATIONSHIP_RESEARCH.md) and
+[report](testing/results/text-relationship-research-2026-10-24.json) distinguish
+176 independent reference attempts from eight unchanged conservative reader
+audits. Text FK coverage remains Unsupported; no native Access semantics or write
+permit is inferred. Tagged TSV logs retain exact reference outcomes and are
+hashed in the report. Generated databases, classes, logs and reference binaries
+remain ignored.
+
+Earlier `.cache/TextRelationshipProbe.java`,
+`text-relationship-probe-V2016-20261024.accdb` and the four files under
+`text-relationship-research-20261024/` are excluded capability inputs. Their
+original bytes remain preserved. The accepted research record uses the final
+original producer with separate unique-probe tables and complete tagged logs.

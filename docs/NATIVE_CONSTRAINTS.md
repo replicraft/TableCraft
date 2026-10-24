@@ -67,6 +67,12 @@ Defaults, broader expression/collation and other key profiles, native writes
 and Microsoft Access comparison remain separate work. Unsupported coverage blocks
 write qualification; this is a bounded step-2 profile, not universal validation.
 
+Text FK expansion has a concrete [reference comparison prerequisite](testing/TEXT_RELATIONSHIP_RESEARCH.md):
+observed reference foreign-key matching differs from its physical unique-index
+key equivalence for trailing/ignored units, combining text and expansions.
+Existing text-index support therefore does not establish Text FK membership.
+Text relationships remain Unsupported, with existing mutation guards unchanged.
+
 ## Bounded validation expressions
 
 Field rules supply their implied field through a quoted lexer token, for example
