@@ -9,6 +9,8 @@ impl Evaluator<'_> {
     /// Convert a state without silently treating Error data as its numeric code.
     /// Host Empty converts to DATE zero for CDate/CVDate; string-date extraction
     /// retains an explicit refusal for Empty pending its own coercion profile.
+    /// Retained Strings share strict publication and the existing date Text
+    /// policies; malformed ranges are never repaired or converted to NULL.
     pub fn apply_expression_date_conversion(
         &mut self,
         function: DateConversion,
@@ -16,6 +18,10 @@ impl Evaluator<'_> {
     ) -> Result<Value, EvalError> {
         match value {
             ExpressionValue::Value(value) => self.apply_date_conversion(function, value),
+            ExpressionValue::StringBytes(value) => {
+                let value = self.publish_expression_string(value)?;
+                self.apply_date_conversion(function, &value)
+            }
             ExpressionValue::Empty
                 if matches!(function, DateConversion::CDate | DateConversion::CVDate) =>
             {
@@ -24,7 +30,6 @@ impl Evaluator<'_> {
             _ => {
                 self.check(0)?;
                 match value {
-                    ExpressionValue::StringBytes(_) => Err(EvalError::NonScalarExpression),
                     ExpressionValue::Missing => Err(EvalError::NonScalarExpression),
                     _ => Err(EvalError::TypeMismatch),
                 }

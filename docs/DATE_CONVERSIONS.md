@@ -164,6 +164,10 @@ coercion is distinct, and this change does not reinterpret it as numeric zero.
 NULL rules, numeric/Text policies, legacy bits and Extended precision/range rules
 are unchanged. Operational failures and cancellation remain failures, never Error
 data. Value-only entry points continue sharing the existing conversion kernels.
+The public retained-value CDate/CVDate/DateValue/TimeValue APIs now also accept
+valid active String ranges through strict, metered publication followed by those
+same kernels; see [retained conversion parity](RETAINED_CONVERSIONS.md).
+Malformed selected units and missing conversion policies remain explicit failures.
 
 The reference is [MS-VBAL revision 3.0](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/d5418146-0bd2-45eb-9c7a-fd9502722c74):
 sections 5.5.1.2.9/11 distinguish Error and Empty Let-coercion; section 6.1.2.4

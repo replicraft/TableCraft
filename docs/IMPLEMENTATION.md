@@ -1,5 +1,20 @@
 # Implementation status
 
+## Retained numeric, Boolean and date conversion APIs
+
+All nine explicit numeric/Boolean conversion calls and CDate/CVDate/DateValue/
+TimeValue now accept valid active String ranges in the public retained-value
+APIs. They reuse strict publication and the same materialized conversion kernels.
+Exact LongLong/Currency/Decimal endpoints, explicit number/date policies,
+Error/Empty/Missing distinctions and cumulative controls remain unchanged.
+Malformed selected units remain refused before conversion; discarded backing
+bytes are not decoded. Ordinary query conversion already handled valid Strings.
+
+The focused batch passes 28 tests, including four new kernel/state controls and
+two query parity controls. Strict scoped Clippy, workspace formatting and the
+fresh CLI build pass. See [retained conversions](RETAINED_CONVERSIONS.md).
+This closes API representation gaps, not native promotion or conversion qualification.
+
 ## Compressed current Memo with stored history
 
 Stored-history discovery now accepts the ordinary Unicode-compression bit on a

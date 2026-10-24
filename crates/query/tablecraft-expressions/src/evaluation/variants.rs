@@ -68,6 +68,8 @@ impl Evaluator<'_> {
     /// Explicit numeric calls consume Empty as zero and reviewed calls consume
     /// standard Error codes. CDec requires separate numeric code extraction.
     /// Arithmetic and stored-value publication never convert states implicitly.
+    /// Retained Strings use strict active-range publication before the ordinary
+    /// numeric Text converter, retaining its explicit format and range checks.
     pub fn apply_expression_conversion(
         &mut self,
         conversion: Conversion,
@@ -75,6 +77,10 @@ impl Evaluator<'_> {
     ) -> Result<Value, EvalError> {
         match value {
             ExpressionValue::Value(value) => self.apply_conversion(conversion, value),
+            ExpressionValue::StringBytes(value) => {
+                let value = self.publish_expression_string(value)?;
+                self.apply_conversion(conversion, &value)
+            }
             _ => {
                 self.check(0)?;
                 errors::convert(conversion, value)
@@ -145,3 +151,6 @@ impl Evaluator<'_> {
         self.node(expression, depth).map(ExpressionValue::Value)
     }
 }
+
+#[cfg(test)]
+mod retained_conversion_tests;
