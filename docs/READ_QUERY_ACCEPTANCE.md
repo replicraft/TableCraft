@@ -79,6 +79,14 @@ policy activation. Existing Extended sources retain their precision; unknown
 source families and native result-type qualification remain separate. See
 [result metadata](QUERY_RESULT_TYPES.md).
 
+Other date functions now retain their existing successful-value NULL contracts
+in metadata: component/extraction calls and DateDiff follow their date operands,
+while CDate/CVDate and constructors promise non-NULL dates only on success.
+Named/derived, UNION and Nz compositions retain these guarantees without source
+scans or control evaluation. This closes an inference gap, not broader coercion
+or native result-type qualification. See
+[date nullability](QUERY_RESULT_TYPES.md#date-value-nullability-and-successful-constructors).
+
 ## Remaining acceptance work
 
 [Min/Max and domain extrema](EXPRESSION_AGGREGATES.md#retained-string-extrema)

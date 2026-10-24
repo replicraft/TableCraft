@@ -1,5 +1,20 @@
 # Implementation status
 
+## Date result nullability
+
+Date components, DatePart/Weekday, DateDiff and DateValue/TimeValue now retain
+source nullability and NULL-only successful results during metadata-only binding.
+CDate/CVDate and DateSerial/TimeSerial expose their non-NULL successful DateTime
+carrier; NULL arguments still fail at execution. Named/derived, UNION and Nz
+consumers retain those guarantees without scans or provider activation. See
+[result contracts](QUERY_RESULT_TYPES.md#date-value-nullability-and-successful-constructors).
+
+49 focused query tests pass, including six new metadata/runtime controls. Scoped
+query Clippy and the minimal-feature query check pass. Eager expressions, invalid
+controls, conversion errors, nullable and Dynamic sources retain their existing
+outcomes. Full workspace tests and native Access comparisons were not run; wider
+promotion, declaration matrices and P0 qualification remain unfinished.
+
 ## Host Empty relational admission
 
 Host-supplied Empty now selects zero or empty Text at the expression comparison

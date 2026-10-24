@@ -111,13 +111,21 @@ impl Binder<'_> {
             Expr::FinancialCall(..) | Expr::CashFlowCall(..) => {
                 OutputType::scalar(ScalarType::Double, true)
             }
-            Expr::DateCall(..) | Expr::DatePart(..) | Expr::Weekday(..) => {
-                OutputType::scalar(ScalarType::Int16, true)
+            Expr::DateCall(_, input) | Expr::DatePart(_, input, _) | Expr::Weekday(input, _) => {
+                dates::propagating(
+                    self.result_type(input, scopes, depth + 1)?,
+                    ScalarType::Int16,
+                )
             }
-            Expr::DateDiff(..) => OutputType::scalar(ScalarType::Int32, true),
-            Expr::DateConvert(..) | Expr::ConstructorCall(..) => {
-                OutputType::scalar(ScalarType::DateTime, true)
+            Expr::DateDiff(_, first, second, _) => {
+                let first = self.result_type(first, scopes, depth + 1)?;
+                let second = self.result_type(second, scopes, depth + 1)?;
+                dates::difference(first, second)
             }
+            Expr::DateConvert(function, input) => {
+                dates::conversion(*function, self.result_type(input, scopes, depth + 1)?)
+            }
+            Expr::ConstructorCall(..) => OutputType::scalar(ScalarType::DateTime, false),
             Expr::DateAdd(_, _, date) => {
                 dates::addition(self.result_type(date, scopes, depth + 1)?)
             }
