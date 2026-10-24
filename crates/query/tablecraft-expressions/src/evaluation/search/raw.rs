@@ -1,4 +1,4 @@
-//! Raw binary searches borrow active String ranges; provider searches publish Text.
+//! Raw searches retain String units under explicit binary/provider contracts.
 use super::{Evaluator, search, text_arguments};
 use crate::{
     EvalError,
@@ -55,6 +55,19 @@ impl Evaluator<'_> {
             let haystack = self.search_source(&arguments[haystack])?;
             let needle = self.search_source(&arguments[needle])?;
             options.find_binary_inputs(start, haystack.input(), needle.input(), &mut || {
+                if self.cancelled.is_some_and(|cancelled| cancelled()) {
+                    return Err(EvalError::Cancelled);
+                }
+                self.budget.charge(Resource::Steps, 1)?;
+                Ok(())
+            })?
+        } else if let Some(mode) = options.raw_provider_mode(self.collation) {
+            let haystack = self.search_source(&arguments[haystack])?;
+            let needle = self.search_source(&arguments[needle])?;
+            let haystack = haystack.input().units(self.budget, self.cancelled)?;
+            let needle = needle.input().units(self.budget, self.cancelled)?;
+            let provider = self.collation.ok_or(EvalError::CollationRequired)?;
+            options.find_provider_units(start, &haystack, &needle, provider, mode, &mut || {
                 if self.cancelled.is_some_and(|cancelled| cancelled()) {
                     return Err(EvalError::Cancelled);
                 }

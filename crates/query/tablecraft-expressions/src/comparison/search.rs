@@ -7,3 +7,13 @@ pub enum StringSearch {
     /// Find the last match ending at or before this exclusive UTF-16 boundary.
     ReverseThrough(usize),
 }
+
+/// Input representation explicitly supported for a selected substring mode.
+/// Search is separate from equality and LIKE: expansions need consumed spans.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum StringSearchProfile {
+    /// Require decoded Unicode Text before invoking the existing search callback.
+    Unicode,
+    /// Accept complete UTF-16 units, including isolated surrogates.
+    Utf16,
+}

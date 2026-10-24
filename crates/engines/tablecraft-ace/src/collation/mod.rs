@@ -11,7 +11,7 @@ pub use comparison::{
 };
 pub use key::{NativeTextKey, encode_text_index_key, encode_utf16_text_index_key};
 pub use like_units::{general_like_unit_step, is_general_like_unit};
-pub use search::{GeneralTextSearch, find_general_text};
+pub use search::{GeneralTextSearch, find_general_text, find_general_utf16};
 pub use sort_order::{GeneralSortFamily, NativeSortOrder};
 use std::io::{Read, Seek};
 use tablecraft_core::limits::{Resource, ResourceBudget};

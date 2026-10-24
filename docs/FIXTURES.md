@@ -1,5 +1,24 @@
 # Candidate Access fixtures
 
+## Raw General substring-search controls
+
+The original [runner](testing/compare_raw_general_search.py) and
+[raw oracle helper](testing/RawGeneralSearchOracle.java) pass 4,544 controls.
+The helper reuses the existing original GeneralSearchOracle span model and
+reviewed Jackcess key encoder; all synthetic inputs fit the complete short-key
+profile. UTF-16 hex output retains isolated units without replacement encoding.
+Cases include both General families, valid/isolated surrogates, ignored keys,
+expansions, accents, spaces and forward/reverse bounds.
+
+Four registered native-policy inputs additionally supply source rows through
+inert TableDataOracle getters, followed by TableCraft queries under database and
+explicit General policies with sequential and selected primary-index reads.
+Before/after hashes confirm unchanged files. JAR identity is checked, compiled
+helpers are temporary and no third-party artifact is added. Decoded General and
+binary search recipes still pass 268 and 3,634 controls. These checks establish
+the provisional span model; native Access search/locale qualification is pending.
+
+
 ## Retained binary String search controls
 
 The original [runner](testing/compare_raw_string_search.py) passes 3,634 controls

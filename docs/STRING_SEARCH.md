@@ -22,8 +22,9 @@ out-of-range cases. Valid controls followed by a NULL String return NULL without
 decoding its partner. Later written evaluation failures remain eager.
 
 Explicit binary mode and a host-declared binary default select this path.
-InStrRev's omitted comparison remains binary. Text/database/LCID searches still
-require strict Unicode publication and their existing substring providers;
+InStrRev's omitted comparison remains binary. Database providers can explicitly
+accept raw units as described below. Other provider searches still require
+strict Unicode publication and their existing substring providers;
 raw binary support does not make an equality comparer into a search provider.
 Provider failures are propagated without a binary retry. Final String output
 and stored/source/parameter contracts are unchanged.
@@ -38,6 +39,47 @@ bounds, failures and four unchanged native inputs through sequential and selecte
 primary-index reads. Inert native getters supply rows only; TableCraft evaluates
 SQL. General search/replacement and database StrComp regressions also pass.
 No benchmarks or Windows Access comparisons were run.
+
+## Retained database String operands
+
+Providers can now opt into `StringSearchProfile::Utf16` for a specific
+`StringCompareMode` through `Collation::string_search_profile`, then implement
+`find_utf16`. Equality and LIKE profiles do not activate substring search.
+The callback returns a consumed unit span under the same earliest/latest,
+forward/reverse bounds and cumulative work/cancellation contracts as `find`.
+Invalid ranges and callback failures refuse the result; neither triggers a
+Unicode, binary or alternate-provider retry.
+
+For retained raw inputs, the evaluator validates controls and NULL before
+converting both String sources into budgeted unit buffers. Complete units can
+include isolated surrogates or begin at an unaligned byte range. Odd byte counts
+still fail when search is required. Source formatting, eager errors and strict
+final String publication retain their separate contracts. Ordinary decoded inputs
+retain the existing decoded provider path.
+
+The General adapter and explicit CLI General policies now opt in for Database
+mode only. Mode 2 and host-declared Database defaults share the existing
+full-weight span model. The standalone engine exposes `find_general_utf16`;
+its decoded/raw paths share pruning, shortest-span selection and SQL trailing-
+space rules. Valid surrogate pairs remain single boundary elements; isolated
+units remain individual elements with their family-specific weights. This is
+model consistency, not native Access locale/search qualification.
+
+`query run --collation general-2010` can now evaluate
+`SELECT InStr(1,ChrW(55296)&'Straße','ss',2)` and returns 6.
+The source-free library evaluator accepts the same explicit host contract;
+CLI `query eval` retains its existing no-collation interface. Text mode and
+explicit LCID raw search remain separate; the General provider does not supply
+a system-locale implementation. Built-in calls use the supplied default provider,
+while SQL predicates continue to route stored field policies separately.
+
+The original [raw General runner](testing/compare_raw_general_search.py) passes
+4,544 controls. Its Java helper uses the reviewed independent encoder with the
+existing exhaustive short-span model, including unpaired units, valid pairs,
+ignored keys, accents, expansions, spaces and both bound directions. Native-source
+controls read four unchanged inputs sequentially and through selected primary
+indexes. Original binary and decoded General regressions also pass. No native
+Access comparisons or new performance claims follow from these checks.
 
 ## Arguments and bounds
 

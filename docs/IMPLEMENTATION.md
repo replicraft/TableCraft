@@ -1,5 +1,29 @@
 # Implementation status
 
+## Retained database String substring search
+
+InStr/InStrRev now pass raw String units to providers that explicitly opt in
+for their selected mode. The General adapter and CLI policies implement Database
+search through standalone `find_general_utf16`, sharing the existing decoded
+span traversal, pruning, shortest-match and trailing-space model. Valid pairs
+retain scalar boundaries; isolated units keep their family weights. Unit
+conversion and callbacks retain cumulative limits, cancellation and span
+validation. Field-policy SQL predicates remain separate from explicit built-in
+default-provider calls. See [search contracts](STRING_SEARCH.md#retained-database-string-operands).
+
+746 all-feature expression tests plus one doctest, 376 minimal expression tests,
+14 engine comparison/search tests, 59 query tests, ten General adapter tests and
+two CLI search tests pass. Scoped Clippy and minimal query compilation pass.
+Tests cover malformed spans, failure without fallback, post-callback cancellation,
+raw/decoded equivalence, unpruned span properties, every observed raw engine
+cancellation checkpoint, budgets, parameter reuse and domain/aggregate calls.
+The independent runner passes 4,544 controls with four unchanged native inputs;
+existing decoded General and binary search recipes pass 268 and 3,634 controls.
+No dependency, stored carrier or write gate changed. Full workspace tests,
+benchmarks and native Access qualification were not run. Text/LCID providers,
+raw replacement and broader P0 semantics remain unfinished.
+
+
 ## Retained binary String substring search
 
 InStr/InStrRev now retain their String operands through scalar and query
