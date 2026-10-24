@@ -6,7 +6,6 @@ use crate::{
     plan::{PreparedBody, Slot},
 };
 use tablecraft_expressions::functions::dates::parsing::ReferenceYear;
-use tablecraft_schema::{SchemaName, TypeDescriptor};
 use tablecraft_sql::query::{Query, Statement};
 
 mod arrays;
@@ -26,6 +25,7 @@ mod literals;
 mod multivalue;
 mod named;
 mod parameters;
+pub(crate) use parameters::Parameter;
 mod projection;
 mod relation;
 mod result_types;
@@ -48,11 +48,6 @@ pub struct PreparationOptions {
 pub struct PreparedQuery {
     pub(crate) body: PreparedBody,
     pub(crate) parameters: Vec<Parameter>,
-}
-
-pub(crate) struct Parameter {
-    pub name: SchemaName,
-    pub data_type: TypeDescriptor,
 }
 
 pub(super) struct Binder<'a> {

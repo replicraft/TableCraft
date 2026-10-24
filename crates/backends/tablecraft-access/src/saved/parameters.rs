@@ -6,6 +6,7 @@ use tablecraft_sql::query::{DataType, Parameter};
 // Match the existing owned SQL parser's declaration ceiling, not a claim about
 // every native engine/provider's parameter limit.
 pub(super) const MAX_DECLARATIONS: usize = 255;
+const VALUE: i16 = 0;
 const BOOLEAN: i16 = 1;
 const BYTE: i16 = 2;
 const SHORT: i16 = 3;
@@ -47,6 +48,7 @@ pub(super) fn read(
         }
         let flag = row.flag().ok_or(SavedSelectError::InvalidMetadata)?;
         let type_name = match flag {
+            VALUE => "VALUE",
             BOOLEAN => "BIT",
             BYTE => "BYTE",
             SHORT => "SHORT",

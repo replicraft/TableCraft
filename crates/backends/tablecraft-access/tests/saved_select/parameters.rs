@@ -1,4 +1,5 @@
 use super::*;
+use tablecraft_access::NativeSource;
 use tablecraft_core::values::{Double, Single, Value};
 use tablecraft_query::{ExecutionOptions, QueryError, prepare, source::MemorySource};
 
@@ -14,6 +15,7 @@ fn parameter<'a>(name: &'a str, kind: i16, length: Option<i32>, order: &'a [u8])
 #[test]
 fn native_parameter_types_and_order_reach_the_complete_owned_query_without_binding() {
     let types = [
+        (0, "VALUE"),
         (1, "BIT"),
         (2, "BYTE"),
         (3, "SHORT"),
@@ -61,8 +63,8 @@ fn native_parameter_types_and_order_reach_the_complete_owned_query_without_bindi
     )
     .unwrap();
     assert_eq!(result.query(), expected.query());
-    assert_eq!(result.query().parameters.len(), 12);
-    assert_eq!(result.definition().rows()[10].extra(), Some(17));
+    assert_eq!(result.query().parameters.len(), 13);
+    assert_eq!(result.definition().rows()[11].extra(), Some(17));
     for extra in [None, Some(0), Some(1), Some(i32::MAX)] {
         let result = compile(&[parameter("P", 10, extra, &[0, 0, 0, 1]), column("1")]).unwrap();
         let arguments = &result.query().parameters[0].data_type.arguments;
@@ -117,14 +119,66 @@ fn owned_native_parameters_bind_only_when_the_caller_explicitly_executes_with_ex
 }
 
 #[test]
+fn native_value_parameters_rebind_priority_profiles_without_changing_bytes() {
+    let mut table = row(5);
+    table.name1 = Some("Items");
+    let fragments = [
+        parameter("P", 0, None, &[0, 0, 0, 1]),
+        table,
+        column("[P]"),
+        Fragment {
+            expression: Some("Id=[P]"),
+            ..row(8)
+        },
+    ];
+    for code in [1, 2, 5, 6] {
+        let mut bytes = database_with_query_flags(&fragments, 0);
+        bytes[20] = code;
+        if code == 1 {
+            bytes[4..20].copy_from_slice(b"Standard Jet DB\0");
+        }
+        let original = bytes.clone();
+        let mut reader = Cursor::new(bytes);
+        let mut source =
+            NativeSource::new(&mut reader, CatalogScope::new(7), budget(), &|| false).unwrap();
+        let saved = source
+            .read_saved_select("Saved", Default::default())
+            .unwrap();
+        assert_eq!(saved.query().parameters[0].data_type.name, "VALUE");
+        assert!(
+            saved
+                .definition()
+                .rows()
+                .iter()
+                .any(|row| { row.name1() == Some("P") && row.flag() == Some(0) })
+        );
+        let plan = prepare(saved.query(), &source).unwrap();
+        for value in [Value::Byte(2), Value::Int16(2), Value::Int32(2)] {
+            let result = plan
+                .execute(&source, &[("P", value.clone())], Default::default())
+                .unwrap();
+            assert_eq!(result.rows(), &[vec![value]]);
+        }
+        assert!(
+            plan.execute(&source, &[("P", Value::Null)], Default::default())
+                .unwrap()
+                .rows()
+                .is_empty()
+        );
+        drop(source);
+        assert_eq!(reader.get_ref(), &original);
+    }
+}
+
+#[test]
 fn parameter_metadata_does_not_default_unknown_types_lengths_names_or_order() {
-    for kind in [0, 12, 13, 16, 17, i16::MIN] {
+    for kind in [12, 13, 16, 17, i16::MIN] {
         assert_eq!(
             compile(&[parameter("P", kind, None, &[0, 0, 0, 1]), column("1")]).err(),
             Some(E::Unsupported)
         );
     }
-    for (kind, extra) in [(10, -1), (10, i32::MIN), (4, 0), (6, 1)] {
+    for (kind, extra) in [(10, -1), (10, i32::MIN), (4, 0), (6, 1), (0, 0), (0, 1)] {
         assert_eq!(
             compile(&[
                 parameter("P", kind, Some(extra), &[0, 0, 0, 1]),

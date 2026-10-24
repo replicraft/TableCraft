@@ -15,7 +15,7 @@ impl Runtime<'_, '_> {
     ) -> Result<Option<Currency>, QueryError> {
         self.tick()?;
         if let Expr::Parameter(index) = expr {
-            return Ok(match self.parameters.get(*index) {
+            return Ok(match self.parameters.get(*index).map(|p| p.value) {
                 Some(Value::Currency(value)) => Some(*value),
                 _ => None,
             });

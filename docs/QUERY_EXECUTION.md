@@ -59,6 +59,12 @@ TypeDescriptor as constrained fields. SQL
 INTEGER/INT/LONG map to Int32; SHORT/SMALLINT map to Int16. Parameterized precision/
 scale and other unsupported type arguments fail rather than being ignored.
 
+[VALUE parameters](VALUE_PARAMETERS.md) instead retain the explicitly supplied
+scalar carrier or NULL, with dynamic output metadata and Variant declaration
+provenance. Typed declarations keep their exact carrier checks; named VALUE/scalar
+declaration conflicts are not silently reconciled. Existing finite/Text/resource
+limits and explicit name binding remain active. No VBA runtime is involved.
+
 ## Source text-policy identity
 
 `Source::text_collations(table)` optionally exposes opaque `TextCollationId`s,

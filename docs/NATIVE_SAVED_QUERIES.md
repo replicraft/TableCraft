@@ -145,9 +145,9 @@ terminators, malformed delimiters, action queries and inner parameter declaratio
 remain refused. Scalar/projection fragments retain their separate terminator guards.
 
 The registered `~sq_d510~sq_dChild52` source demonstrates a stored terminated SELECT.
-Its source now reconstructs independently, but the complete original definition
-still has an unsupported native type-zero parameter. No type is guessed and no
-missing application table is invented to make that query executable.
+Its complete definition now also reconstructs the native type-zero parameter as
+[VALUE](VALUE_PARAMETERS.md). No fixed carrier is guessed and no missing
+application table is invented to make that query executable.
 
 The caller supplies ResourceBudget, cancellation and ParseLimits. Expanded
 expression/name/type spellings share the clamped byte ceiling; each parser call also
@@ -271,8 +271,8 @@ or AST cloning. The consuming `ParsedQuery::into_query` accessor supports this
 working adaptation. Neither reconstruction nor `query saved` binds values or
 displays prompts; callers may explicitly use the existing query binder.
 
-The qualified flag mapping is Boolean/Byte/Int16/Int32/Currency/Single/Double/
-legacy DateTime/Binary/Text/LongBinary/GUID (native tags 1–11 and 15). It preserves
+The qualified flag mapping is Value/Boolean/Byte/Int16/Int32/Currency/Single/Double/
+legacy DateTime/Binary/Text/LongBinary/GUID (native tags 0–11 and 15). It preserves
 IEEESINGLE/IEEEDOUBLE syntax separately. Text LvExtra NULL/zero retains unspecified
 TEXT syntax, and a positive value becomes its integer argument. Negative Text
 lengths and any non-NULL extra on another type fail. These are syntactic arguments,

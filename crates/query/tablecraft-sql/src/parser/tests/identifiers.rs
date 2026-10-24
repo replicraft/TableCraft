@@ -44,6 +44,29 @@ fn access_reserved_words_require_brackets_in_name_positions() {
 }
 
 #[test]
+fn value_is_a_parameter_type_without_becoming_a_stored_column_type() {
+    for sql in [
+        "PARAMETERS P VALUE; SELECT P",
+        "PARAMETERS [Prompt?] vAlUe, N LONG; SELECT [Prompt?], N",
+        "CREATE PROCEDURE ReadValue P VALUE AS SELECT P",
+    ] {
+        query_round_trip(sql);
+    }
+
+    for sql in [
+        "PARAMETERS P VALUE(2); SELECT P",
+        "PARAMETERS P [VALUE]; SELECT P",
+        "PARAMETERS P VARIANT; SELECT P",
+        "CREATE TABLE T (N VALUE)",
+    ] {
+        assert!(
+            crate::parse_query(sql, ParseLimits::default()).is_err(),
+            "{sql}"
+        );
+    }
+}
+
+#[test]
 fn dot_members_keep_keyword_spellings_without_relaxing_other_name_positions() {
     for sql in [
         "SELECT Tags.Value FROM Items",
