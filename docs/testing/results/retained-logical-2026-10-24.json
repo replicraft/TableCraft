@@ -1,0 +1,8 @@
+{
+  "cli_sha256": "5d2c57f043b15264c0d59395e6f0940d6b73b344cbff4884df90e08c2650f9b6",
+  "model": "Decimal nearest-even and per-bit signed 32/64-bit truth tables",
+  "native_access": "unrun",
+  "queries": 2056,
+  "refusals": 320,
+  "values": 3448
+}

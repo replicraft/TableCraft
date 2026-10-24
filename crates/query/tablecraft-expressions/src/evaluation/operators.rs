@@ -17,13 +17,25 @@ impl Evaluator<'_> {
     /// Apply a binary operator to already evaluated expression data.
     /// Hosts evaluate both operands before this call. Arithmetic admits Empty at
     /// operator-specific targets; ampersand uses empty Text. Logical operators
-    /// retain scalar admission; comparisons admit standard Error/Error pairs.
+    /// admit Empty and raw Strings; comparisons admit standard Error/Error pairs.
     pub fn apply_expression_binary(
         &mut self,
         operator: B,
         left: ExpressionValue,
         right: ExpressionValue,
     ) -> Result<Value, EvalError> {
+        let logical = match operator {
+            B::And => Some(Logical::And),
+            B::Or => Some(Logical::Or),
+            B::Xor => Some(Logical::Xor),
+            B::Equivalence => Some(Logical::Equivalence),
+            B::Implication => Some(Logical::Implication),
+            _ => None,
+        };
+        if let Some(logical) = logical {
+            return self.apply_expression_logical(logical, left, right);
+        }
+
         if operator == B::Divide
             && let Some(numerator) = empty_division_operand(&left, &right)
         {

@@ -46,6 +46,16 @@ impl Runtime<'_, '_> {
         } else {
             TextPolicy::Default
         };
+        if matches!(
+            operator,
+            B::And | B::Or | B::Xor | B::Equivalence | B::Implication
+        ) {
+            let value =
+                self.evaluator()
+                    .apply_expression_binary(operator, left.value, right.value)?;
+            return Ok(CellValue::scalar(value).with_declaration(declaration));
+        }
+
         if operator == B::Divide
             && let Some(numerator) = empty_division_operand(&left.value, &right.value)
         {
@@ -109,6 +119,13 @@ impl Runtime<'_, '_> {
     ) -> Result<CellValue, QueryError> {
         let policy = TextPolicy::Default;
         let declaration = operand.declaration;
+        if operator == U::Not {
+            let value = self
+                .evaluator()
+                .apply_expression_complement(operand.value)?;
+            return Ok(CellValue::scalar(value).with_declaration(declaration));
+        }
+
         let value = if matches!(operator, U::Plus | U::Minus) {
             arithmetic_unary_operand(operator, operand.value)?
         } else {

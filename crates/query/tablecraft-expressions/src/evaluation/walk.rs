@@ -61,6 +61,12 @@ impl Evaluator<'_> {
                 operator,
                 expression,
             } => {
+                if *operator == UnaryOperator::Not {
+                    let value = self
+                        .expression_byte_operand(expression, depth + 1)?
+                        .into_expression_value();
+                    return self.apply_expression_complement(value);
+                }
                 let value = self.expression_operand(expression, depth + 1)?;
                 let value = if matches!(operator, UnaryOperator::Plus | UnaryOperator::Minus) {
                     arithmetic_unary_operand(*operator, value)?
@@ -110,8 +116,12 @@ impl Evaluator<'_> {
                         .into_expression_value();
                     return self.apply_expression_binary(*operator, left, right);
                 }
-                let left = self.expression_operand(left, depth + 1)?;
-                let right = self.expression_operand(right, depth + 1)?;
+                let left = self
+                    .expression_byte_operand(left, depth + 1)?
+                    .into_expression_value();
+                let right = self
+                    .expression_byte_operand(right, depth + 1)?
+                    .into_expression_value();
                 self.apply_expression_binary(*operator, left, right)
             }
             E::IsNull {

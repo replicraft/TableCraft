@@ -7,6 +7,8 @@ use crate::{
 };
 use tablecraft_core::values::Value;
 
+mod operands;
+
 impl Evaluator<'_> {
     pub(super) fn apply_logical(
         &mut self,
