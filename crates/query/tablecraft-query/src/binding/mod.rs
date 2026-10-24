@@ -37,12 +37,16 @@ mod text_policy;
 /// No clock, locale discovery or row scan supplies these settings.
 #[derive(Clone, Copy, Default)]
 pub struct PreparationOptions {
+    /// Capture the explicit engineering decimal integer-literal typing policy.
+    /// Staged execution pairs this with declaration-sensitive arithmetic;
+    /// already prepared literal carriers cannot be changed during execution.
+    pub declared_arithmetic: bool,
     /// Explicit lexical default for SQL date tokens that omit their year.
     /// Resolved dates are captured in the plan; execution cannot replace them.
     pub reference_year: Option<ReferenceYear>,
 }
 
-/// Prepared retrieval with resolved slots and captured date-token constants.
+/// Prepared retrieval with resolved slots and captured lexical constants.
 /// Binding invokes no row-scan callback. Plans omit Debug/Serde to avoid leaking
 /// query and identifier payloads.
 pub struct PreparedQuery {
@@ -57,6 +61,7 @@ pub(super) struct Binder<'a> {
     materialized: &'a [crate::discovery::Materialized<'a>],
     discover: bool,
     reference_year: Option<ReferenceYear>,
+    declared_arithmetic: bool,
     pending_schema: Option<String>,
     parameters: Vec<Parameter>,
     parameter_scope: Vec<usize>,
@@ -152,6 +157,7 @@ pub(crate) fn prepare_stage<'a>(
         materialized,
         discover: options.discover,
         reference_year: options.preparation.reference_year,
+        declared_arithmetic: options.preparation.declared_arithmetic,
         pending_schema: None,
         parameters: Vec::new(),
         parameter_scope: Vec::new(),

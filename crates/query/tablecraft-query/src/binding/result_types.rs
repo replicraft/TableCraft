@@ -57,6 +57,9 @@ impl Binder<'_> {
                 .ok_or(QueryError::Source)?
                 .data_type
                 .output_type(),
+            Expr::NumericLiteral(value) => {
+                OutputType::scalar(ScalarType::of(value).ok_or(QueryError::Source)?, false)
+            }
             Expr::Literal(Expression::Null) => OutputType::Null,
             Expr::Literal(Expression::Integer(_)) => OutputType::scalar(ScalarType::Int64, false),
             Expr::Literal(Expression::Text(_)) => OutputType::scalar(ScalarType::Text, false),

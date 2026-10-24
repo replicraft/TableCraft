@@ -111,7 +111,8 @@ pub(crate) struct RunArgs {
     pub(crate) execution_limits: Box<ExecutionArgs>,
     #[command(flatten)]
     pub(crate) comparison_limits: ComparisonArgs,
-    /// Engineering declaration-sensitive arithmetic and effective numeric comparisons; native qualification remains pending.
+    /// Engineering literal typing, declaration-sensitive arithmetic and effective numeric comparisons.
+    /// Native qualification remains pending.
     #[arg(long = "declared-arithmetic", visible_alias = "declared-integral")]
     pub(crate) declared_integral: bool,
     #[command(flatten)]

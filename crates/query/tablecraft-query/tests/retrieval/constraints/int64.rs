@@ -166,3 +166,51 @@ proptest::proptest! {
         proptest::prop_assert_eq!(result.rows(),expected);proptest::prop_assert!(source.seen.get().is_some());
     }
 }
+
+#[test]
+fn captured_integer_literals_keep_safe_hints_and_double_literals_decline_exact_hints() {
+    use tablecraft_query::{PreparationOptions, prepare_with_options};
+
+    for (literal, expected) in [
+        ("1", Some(1)),
+        ("40000", Some(40000)),
+        ("2147483647", Some(2147483647)),
+        ("2147483648", None),
+        ("9007199254740993", None),
+        ("CLng(2147483648)", None),
+    ] {
+        let source = Restricted::big(false);
+        let ignoring = Restricted::big(true);
+        let sql = format!("SELECT X FROM T WHERE X={literal}");
+        let parsed = parse_query(&sql, Default::default()).unwrap();
+        let plan = prepare_with_options(
+            parsed.query(),
+            &source,
+            PreparationOptions {
+                declared_arithmetic: true,
+                ..Default::default()
+            },
+        )
+        .unwrap();
+        let options = ExecutionOptions {
+            declared_integral: true,
+            ..Default::default()
+        };
+        let actual = plan.execute(&source, &[], options);
+        let residual = plan.execute(&ignoring, &[], options);
+        match (actual, residual) {
+            (Ok(actual), Ok(residual)) => assert_eq!(actual.rows(), residual.rows(), "{literal}"),
+            (Err(actual), Err(residual)) => assert_eq!(actual, residual, "{literal}"),
+            _ => panic!("constraint and residual outcomes differ for {literal}"),
+        }
+        assert_eq!(
+            source.seen.get(),
+            expected.map(|value| ScanConstraint::Int64 {
+                column: 0,
+                lower: Included(value),
+                upper: Included(value),
+            }),
+            "{literal}"
+        );
+    }
+}

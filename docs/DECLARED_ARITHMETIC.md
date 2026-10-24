@@ -18,6 +18,76 @@ String/String joins complete without numeric dispatch; numeric cases return to
 the same selected-width/agreement paths. Decoding a raw string does not establish
 a Scalar declaration or remove an explicit Variant participant.
 
+## Captured decimal integer literals
+
+The same explicit `query run --declared-arithmetic` profile now captures
+unsuffixed decimal integer literals as Integer through magnitude 32767, Long
+through magnitude 2147483647, and Double above that boundary. Signs do not extend
+a token's positive range: `-32768` is Long and `-2147483648` is Double. Decimal
+point and exponent spellings retain Double; existing radix tokens retain their
+own profile. Unsuffixed large integers never imply LongLong or Decimal. This
+policy therefore rounds `9007199254740993` to binary64 before an enclosing cast.
+`CLngLng(9223372036854775807)` overflows after that rounding; an explicitly typed
+LongLong parameter or `CLngLng('9223372036854775807')` with an explicit number
+format retains the exact value. Explicit Decimal casts and stored declared
+carriers retain their existing contracts.
+
+This closes a concrete selected-width gap: `32767+1` now overflows as two Scalar
+Integer operands, while `CVar(32767)+1` widens to Long. The resulting declared
+carriers and Scalar/Variant provenance propagate through derived and correlated
+queries, named discovery, runtime domain preparation and fixed crosstab heading
+folding. Closed crosstab headings use the same selected-width arithmetic as their
+execution, preserving eager errors before source scans. Safe Integer/Long
+comparison constants still permit exact integral scan hints; Double constants
+explicitly decline those hints and retain their complete residual filter.
+
+Direct library hosts opt into literal typing with
+`PreparationOptions::declared_arithmetic`; preparation captures immutable literal
+carriers and output metadata. `prepare()` retains the original Int64 integer
+literal profile. Executing such a default-prepared plan with
+`ExecutionOptions::declared_integral = true` enables existing declaration-sensitive
+operators but does not reinterpret its literals. Conversely, executing an
+explicitly typed plan with that execution option disabled preserves its captured
+carriers while using the existing materialized operator behavior. Staged
+`execute_with_schema_discovery` preparation derives both choices from the one
+execution option. Source-free CLI `query eval`, structural TOP counts and ORDER BY
+ordinals are unchanged; no VBA suffix grammar is added.
+
+The subtype boundaries are an explicit engineering choice grounded in
+[Microsoft's Number Tokens contract](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/685ad840-accb-4bdb-8bfd-f3d88498547a).
+The [Access expression syntax guide](https://support.microsoft.com/en-us/access/guide-to-expression-syntax)
+establishes numeric constant syntax but does not establish these query subtype
+boundaries. No native Access execution comparison has qualified this policy.
+Wide decimal Number tokens retain the existing 128-byte literal ceiling;
+numeric carriers are captured directly without allocating a normalized spelling
+or introducing extra plan depth. Binding and constant
+folding continue to share work, depth, byte and cancellation controls.
+
+`numeric_literals` and the retrieval constraint tests cover threshold carriers,
+2^53 and signed i64 boundaries, 29-digit values, typed parameters, captured plan
+reuse, explicit casts, selected overflow/widening, crosstabs, cancellation and
+unsupported literal lengths. Closed-heading negation is also compared directly
+with actual query runtime evaluation for Scalar/Variant Integer and Long minima,
+raw Date minimum-plus-fraction and upper-envelope overflow, fractional serials
+and both signs of input zero. The current Date policy is stored-serial `0 - DATE`;
+both input zero signs yield positive zero, checked by raw serial bits. This does
+not make Date-to-heading spelling policy-independent or qualify native behavior.
+The independent
+[`compare_numeric_literals.py`](testing/compare_numeric_literals.py) runner uses
+Python integers and binary64 conversions, rather than production imports.
+Its 2026-10-24 run passed 191 value/subtype controls and 6 refusals against a
+fixed CLI with SHA-256
+`cba6dfcc80424b4eb05c743ceb1c9e33c890b80613485aebb6dd4b96a1e636c5`;
+the runner verified its binary hash before and after execution. The complete
+current declaration runner also passed all 5,550 source-free controls against
+that binary. Its existing exact LongLong operator controls now supply numeric
+Text with an explicit `en-us` format, preserving exact operands independently of
+the new literal policy; the dedicated literal runner separately checks rounding
+and cast overflow of bare large integers. No controls were removed.
+The [tracked replay report](testing/results/numeric-literals-2026-10-24.json)
+retains the actual terminal summaries, runner/binary hashes and explicitly
+post-run source observations; per-case stdout was not retained.
+
 ## Operations independent of widening categories
 
 Under the current explicit engineering profile, declaration categories are

@@ -51,6 +51,7 @@ impl Binder<'_> {
                     .declaration
             }
             Expr::Literal(_)
+            | Expr::NumericLiteral(_)
             | Expr::DateLiteral(..)
             | Expr::CollectionItem { .. }
             | Expr::ParentPresence { .. } => Some(OperandDeclaration::Scalar),

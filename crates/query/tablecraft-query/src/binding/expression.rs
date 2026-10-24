@@ -90,7 +90,17 @@ impl Binder<'_> {
                     self.charge(t.len())?;
                 }
                 // Reject unmaterializable literal spellings even on empty sources.
-                if let E::DateLiteral(text) = expr {
+                if let E::Integer(value) = expr
+                    && self.declared_arithmetic
+                {
+                    self.integer_literal(*value)?
+                } else if let E::Number(text) = expr
+                    && self.declared_arithmetic
+                    && !text.is_empty()
+                    && text.bytes().all(|byte| byte.is_ascii_digit())
+                {
+                    self.wide_integer_literal(text)?
+                } else if let E::DateLiteral(text) = expr {
                     let value = match self.reference_year {
                         Some(year) => parse_query_literal_with_reference_year(text, year),
                         None => parse_query_literal(text),

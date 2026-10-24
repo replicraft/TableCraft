@@ -134,6 +134,8 @@ impl Runtime<'_, '_> {
         self.tick()?;
         Ok(match expr {
             Expr::Literal(Expression::Integer(value)) => Some(*value),
+            Expr::NumericLiteral(Value::Int16(value)) => Some(i64::from(*value)),
+            Expr::NumericLiteral(Value::Int32(value)) => Some(i64::from(*value)),
             Expr::Parameter(index) if parameter => {
                 match self.parameters.get(*index).map(|p| p.value) {
                     Some(Value::Byte(value)) => Some(i64::from(*value)),
@@ -143,11 +145,15 @@ impl Runtime<'_, '_> {
                     _ => None,
                 }
             }
-            Expr::Convert(conversion @ (Conversion::Byte | Conversion::Integer), inner) => self
+            Expr::Convert(
+                conversion @ (Conversion::Byte | Conversion::Integer | Conversion::Long),
+                inner,
+            ) => self
                 .integer_constant(inner, false)?
                 .and_then(|value| match conversion {
                     Conversion::Byte => u8::try_from(value).ok().map(i64::from),
                     Conversion::Integer => i16::try_from(value).ok().map(i64::from),
+                    Conversion::Long => i32::try_from(value).ok().map(i64::from),
                     _ => unreachable!("matched integral conversion"),
                 }),
             Expr::Unary(U::Plus, inner) => self.integer_constant(inner, false)?,

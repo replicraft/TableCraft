@@ -339,7 +339,7 @@ semantics and native Access qualification remain unfinished.
 | Database text providers | Native General recognition requires LCID 1033, variant zero and version 0 or 1; raw predicates, keys and database StrComp use explicit providers | Additional database orders and native function-specific padding/weight qualification |
 | System text / explicit LCID | Opt-in ICU host profiles implement decoded text comparison/search and exact registered LCID dispatch; General database comparison remains separate | Windows NLS/ACE function-specific qualification and broader locale providers; explicit registration does not establish native LCID equivalence |
 | Mixed field policies | Runtime policies survive retained cells; distinct required IDs conservatively merge to Conflict | Native precedence rules before relaxing conflicts |
-| Value categories | Declaration-sensitive arithmetic remains an explicit engineering option; unknown provenance is retained | Complete literal/subtype/Variant promotion, Error and result-type matrices before enabling broader defaults |
+| Value categories | Explicit declaration-sensitive arithmetic now captures decimal integer literal carriers; default preparation is unchanged and unknown provenance is retained | Qualify literal subtypes and complete Variant promotion, Error and result-type matrices before enabling broader defaults |
 
 The [explicit ICU profile](ICU_TEXT_PROFILE.md) has bounded callbacks and 3,032
 independent ICU4C controls. It supplies working host functionality while retaining

@@ -26,6 +26,7 @@ impl Comparer<'_> {
                 false
             }
             (Expr::Literal(a), Expr::Literal(b)) => a == b,
+            (Expr::NumericLiteral(a), Expr::NumericLiteral(b)) => a == b,
             (Expr::DateLiteral(a, av), Expr::DateLiteral(b, bv)) => a == b && av == bv,
             (Expr::CurrentUser, Expr::CurrentUser) => true,
             (

@@ -1,4 +1,5 @@
 //! Policy-independent fixed headings; reuse scalar kernels without source access.
+mod arithmetic;
 mod conditional;
 
 use super::super::Binder;
@@ -23,6 +24,7 @@ impl Binder<'_> {
     ) -> Result<Value, QueryError> {
         self.tick(depth)?;
         match expr {
+            Expr::NumericLiteral(value) => Ok(value.clone()),
             Expr::DateLiteral(_, value) => Ok(Value::DateTime(*value)),
             Expr::Literal(Expression::Text(text)) => Ok(Value::Text(self.copy_name(text)?)),
             Expr::Literal(
@@ -38,9 +40,10 @@ impl Binder<'_> {
                 if matches!(value, Value::Text(_)) {
                     return Err(QueryError::Unsupported);
                 }
-                self.heading_operation(0, |evaluator| evaluator.apply_unary(*operator, value))
+                self.constant_unary(*operator, input, value, depth + 1)
             }
             Expr::Binary(operator, left, right) => {
+                let expressions = (left.as_ref(), right.as_ref());
                 let left = self.constant_heading(left, depth + 1)?;
                 let right = self.constant_heading(right, depth + 1)?;
                 let has_text = matches!(left, Value::Text(_)) || matches!(right, Value::Text(_));
@@ -69,9 +72,7 @@ impl Binder<'_> {
                 } else {
                     0
                 };
-                self.heading_operation(bytes, |evaluator| {
-                    evaluator.apply_binary(*operator, &left, &right)
-                })
+                self.constant_binary(*operator, expressions, (&left, &right), bytes, depth + 1)
             }
             Expr::Convert(conversion, input) => {
                 let value = self.constant_heading(input, depth + 1)?;
