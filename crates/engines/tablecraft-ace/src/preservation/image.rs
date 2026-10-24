@@ -2,7 +2,7 @@ use super::{COPY_CHUNK_BYTES, ObjectDependency};
 use crate::{
     CatalogInspection, Header, InspectError, header::check, inspect_catalog, inspect_header,
 };
-use std::io::{Cursor, Read, Seek, SeekFrom};
+use std::io::{Cursor, Read, Seek};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
 
@@ -54,7 +54,9 @@ impl NativeImage {
             )?;
         }
         check(budget, cancelled)?;
-        if source.seek(SeekFrom::End(0))? != length || Header::parse(&bytes, length)? != header {
+        if tablecraft_io::seek_to_end(source, budget, cancelled)? != length
+            || Header::parse(&bytes, length)? != header
+        {
             return Err(InspectError::Malformed);
         }
         let catalog = inspect_catalog(&mut Cursor::new(&bytes), scope, budget, cancelled)?;

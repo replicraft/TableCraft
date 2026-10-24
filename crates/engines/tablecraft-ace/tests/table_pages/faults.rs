@@ -21,6 +21,7 @@ enum Failure {
     WrongPosition,
     Decode,
     Cancel,
+    SeekCancel,
 }
 
 #[derive(Default)]
@@ -67,6 +68,10 @@ impl Read for FaultSource<'_> {
 impl Seek for FaultSource<'_> {
     fn seek(&mut self, position: SeekFrom) -> io::Result<u64> {
         if self.controls.call(Operation::Seek) {
+            if matches!(self.failure, Failure::SeekCancel) {
+                self.controls.cancelled.set(true);
+                return self.bytes.seek(position);
+            }
             if let (Failure::WrongPosition, SeekFrom::Start(offset)) = (self.failure, position) {
                 return Ok(offset ^ 1);
             }
@@ -140,7 +145,7 @@ fn every_continuation_io_and_page_hook_failure_closes_the_cursor_without_a_parti
         for (index, operation) in operations.iter().enumerate().skip(prefix_end) {
             let failures: &[Failure] = match operation {
                 Operation::Read => &[Failure::Io, Failure::Eof, Failure::InvalidCount],
-                Operation::Seek => &[Failure::Io, Failure::WrongPosition],
+                Operation::Seek => &[Failure::Io, Failure::WrongPosition, Failure::SeekCancel],
                 Operation::Decode => &[Failure::Decode, Failure::Cancel],
             };
             for &failure in failures {
@@ -170,7 +175,7 @@ fn every_continuation_io_and_page_hook_failure_closes_the_cursor_without_a_parti
                     Failure::Eof => InspectError::Truncated,
                     Failure::InvalidCount | Failure::WrongPosition => InspectError::Malformed,
                     Failure::Decode => InspectError::UnsupportedEncryption,
-                    Failure::Cancel => InspectError::Cancelled,
+                    Failure::Cancel | Failure::SeekCancel => InspectError::Cancelled,
                 };
                 assert_eq!(
                     error, expected_error,
@@ -208,13 +213,15 @@ struct ShortSource<'a> {
     bytes: Cursor<&'a [u8]>,
     chunk: usize,
     reads: usize,
+    seeks: usize,
+    interrupt_seeks: bool,
     stalled: &'a Cell<bool>,
 }
 
 impl Read for ShortSource<'_> {
     fn read(&mut self, buffer: &mut [u8]) -> io::Result<usize> {
         self.reads += 1;
-        if self.stalled.get() || self.reads.is_multiple_of(7) {
+        if (!self.interrupt_seeks && self.stalled.get()) || self.reads.is_multiple_of(7) {
             return Err(io::ErrorKind::Interrupted.into());
         }
         let count = buffer.len().min(self.chunk);
@@ -224,6 +231,11 @@ impl Read for ShortSource<'_> {
 
 impl Seek for ShortSource<'_> {
     fn seek(&mut self, position: SeekFrom) -> io::Result<u64> {
+        self.seeks += 1;
+        if self.interrupt_seeks && (self.stalled.get() || self.seeks.is_multiple_of(3)) {
+            self.bytes.set_position(1);
+            return Err(io::ErrorKind::Interrupted.into());
+        }
         self.bytes.seek(position)
     }
 }
@@ -231,15 +243,20 @@ impl Seek for ShortSource<'_> {
 impl NativeReadSource for ShortSource<'_> {}
 
 #[test]
-fn short_interrupted_reads_retain_complete_continuation_without_resetting_work() {
+fn short_interrupted_reads_and_seeks_retain_complete_continuation_without_resetting_work() {
     for code in [1, 2, 5, 6] {
         let bytes = profile(403, code);
-        for chunk in [1, 17, 4095] {
+        for (chunk, interrupt_seeks) in [1, 17, 4095]
+            .into_iter()
+            .flat_map(|chunk| [false, true].map(|seeks| (chunk, seeks)))
+        {
             let stalled = Cell::new(false);
             let mut source = ShortSource {
                 bytes: Cursor::new(bytes.as_slice()),
                 chunk,
                 reads: 0,
+                seeks: 0,
+                interrupt_seeks,
                 stalled: &stalled,
             };
             let mut allowance = budget();
@@ -272,6 +289,8 @@ fn persistent_interruption_exhausts_shared_work_and_never_retries_a_failed_curso
         bytes: Cursor::new(bytes.as_slice()),
         chunk: 17,
         reads: 0,
+        seeks: 0,
+        interrupt_seeks: false,
         stalled: &stalled,
     };
     let mut allowance = budget();
@@ -295,4 +314,40 @@ fn persistent_interruption_exhausts_shared_work_and_never_retries_a_failed_curso
         Some(InspectError::CursorFailed)
     );
     assert_eq!(source.bytes.get_ref(), &bytes.as_slice());
+}
+
+#[test]
+fn persistent_interrupted_seeks_fail_atomically_and_leave_continuation_terminal() {
+    for code in [1, 2, 5, 6] {
+        let bytes = profile(403, code);
+        let stalled = Cell::new(false);
+        let mut source = ShortSource {
+            bytes: Cursor::new(bytes.as_slice()),
+            chunk: 17,
+            reads: 0,
+            seeks: 0,
+            interrupt_seeks: true,
+            stalled: &stalled,
+        };
+        let mut allowance = budget();
+        let mut cursor =
+            TableCursor::open(&mut source, SCOPE, "Items", &mut allowance, &|| false).unwrap();
+        cursor.next_page(1, &mut allowance, &|| false).unwrap();
+        stalled.set(true);
+        let mut remaining = ResourceBudget::new(16 * 1024 * 1024, 16_384, 10_000);
+        assert!(matches!(
+            cursor.next_page(500, &mut remaining, &|| false),
+            Err(InspectError::Limit(_))
+        ));
+        assert_eq!(remaining.remaining(Resource::Steps), 0);
+        assert_eq!(cursor.position(), 1);
+        assert!(cursor.is_failed());
+        let work = allowance.remaining(Resource::Steps);
+        assert_eq!(
+            cursor.next_page(1, &mut allowance, &|| false).err(),
+            Some(InspectError::CursorFailed)
+        );
+        assert_eq!(allowance.remaining(Resource::Steps), work);
+        assert_eq!(source.bytes.get_ref(), &bytes.as_slice());
+    }
 }

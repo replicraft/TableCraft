@@ -82,7 +82,7 @@ fn exact_seek_positions_keep_empty_completion_and_pre_seek_cancellation() {
         let mut budget = ResourceBudget::new(0, 0, 10);
         read_exact_at(&mut source, offset, &mut [], &mut budget, &|| false).unwrap();
         write_exact_at(&mut source, offset, &[], &mut budget, &|| false).unwrap();
-        assert_eq!(budget.remaining(Resource::Steps), 6);
+        assert_eq!(budget.remaining(Resource::Steps), 4);
 
         source.requested = None;
         assert_eq!(
@@ -95,6 +95,6 @@ fn exact_seek_positions_keep_empty_completion_and_pre_seek_cancellation() {
             Err(IoError::Cancelled)
         );
         assert_eq!(source.requested, None);
-        assert_eq!(budget.remaining(Resource::Steps), 6);
+        assert_eq!(budget.remaining(Resource::Steps), 4);
     }
 }

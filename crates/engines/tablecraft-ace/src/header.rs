@@ -3,7 +3,7 @@ use crate::{
     format::page::{JET3_PAGE_BYTES, PAGE_BYTES},
     limits::MAX_READ_FILE_BYTES,
 };
-use std::io::{Read, Seek, SeekFrom};
+use std::io::{Read, Seek};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const FILE_SIGNATURE: [u8; 4] = [0, 1, 0, 0];
@@ -141,8 +141,7 @@ pub fn inspect_header<R: Read + Seek>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Header, InspectError> {
-    check(budget, cancelled)?;
-    let length = source.seek(SeekFrom::End(0))?;
+    let length = tablecraft_io::seek_to_end(source, budget, cancelled)?;
     budget.charge(Resource::Bytes, Header::PREFIX_BYTES as u64)?;
     let mut prefix = [0; Header::PREFIX_BYTES];
     tablecraft_io::read_exact_at(source, 0, &mut prefix, budget, cancelled)?;

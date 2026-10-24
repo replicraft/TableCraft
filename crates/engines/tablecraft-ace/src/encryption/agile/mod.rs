@@ -147,7 +147,7 @@ pub fn read_agile_encryption<R: Read + Seek>(
     let mut page = Zeroizing::new([0; PAGE_BYTES]);
     tablecraft_io::read_exact_at(source, 0, &mut *page, budget, cancelled)?;
     // Revalidate the exact header being used; callers must still provide a stable source.
-    let length = source.seek(std::io::SeekFrom::End(0))?;
+    let length = tablecraft_io::seek_to_end(source, budget, cancelled)?;
     let header = Header::parse(&*page, length)?;
     let info = super::parse_office(&*page)?;
     if !header.encoded_pages()

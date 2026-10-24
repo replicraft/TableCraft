@@ -77,3 +77,22 @@ controls: buffered rows, wildcard/ID/COUNT(*)/indexed queries fail with empty
 stdout; full and ID-only streaming retain exactly the preceding valid rows.
 Original and derivative hashes remain unchanged during all reads. Independent
 getters locate targets only; they do not qualify SQL or native Access behavior.
+
+
+## Interrupted seeks and length observations
+
+Native length observations and absolute read/write positioning now use the
+[bounded seek helpers](IO.md#interrupted-absolute-seeks). Only Interrupted errors
+retry the same target; permanent errors and invalid reported absolute positions
+retain direct refusal. Completion cancellation is checked before data I/O or
+header-prefix charging. No allowance is reset and original bytes stay unchanged.
+
+The native fault matrix now cancels each successful remaining seek after a
+one-row prefix. Mixed short reads/recurring seek interruptions complete all 403
+rows across Jet 4 and ACE 2007/2016/2019 layouts, even when a failed seek moves the
+cursor. Persistent interrupted seeks exhaust the explicit suffix budget, publish
+none of that suffix, preserve the delivered position and leave continuation
+terminal. Header and complete-image controls separately cover End(0) replay,
+completion cancellation, bounded persistent interruption and unchanged images.
+These controls add storage-failure evidence, not coherent live-file snapshots or
+new native write permissions.

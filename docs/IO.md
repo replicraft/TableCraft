@@ -8,6 +8,9 @@ Default features are empty; optional journal enables the working
 
 ## Implemented operations
 
+- `seek_absolute` / `seek_to_end`: bounded absolute and End(0) targets, including
+  Interrupted retries, position checks where known and completion cancellation.
+  Relative seeks are deliberately absent from this retry API.
 - `read_exact`: fill a supplied buffer, continuing short reads and retrying
   Interrupted within the same work allowance.
 - `read_exact_at`: seek to an absolute byte offset, then perform the same checked
@@ -25,15 +28,18 @@ Default features are empty; optional journal enables the working
 
 These reuse std Read/Seek. Callers charge requested bytes once before I/O; the
 helpers charge one work step/check cancellation before each read attempt and once
-on completion. Read-at-offset additionally checks/charges before seeking. Empty
-exact reads still check completion. EOF returns Io(UnexpectedEof); other read/seek
+on completion. Absolute seek helpers likewise charge each attempt and successful
+completion; read/write-at-offset use them. Empty exact reads still check
+completion. EOF returns Io(UnexpectedEof); other read/seek
 errors retain only ErrorKind. A reader returning more bytes than requested fails
 with InvalidReadCount. Interrupted read retries cannot escape the work budget.
-Seek errors return immediately; there is no automatic seek retry. Both absolute
+Only Interrupted seek errors retry the same absolute/End(0) target under the
+existing budget; other seek errors return immediately. Both absolute read/write
 helpers compare the returned position with the requested offset, including for
 empty buffers. A mismatch returns payload-free InvalidSeekPosition before any
-read/write callback, with the seek work retained and no automatic retry. This
-cannot detect a source that falsely reports the requested position.
+read/write callback, with the seek work retained and no automatic retry of an
+invalid result. This cannot detect a source that falsely reports the requested
+position.
 
 A failure can leave partially filled caller buffers and a changed source position.
 Consumers must discard partial data when their API promises complete results.
@@ -78,3 +84,26 @@ The native consumer also observes cancellation immediately after its page-decode
 hook, before parsing or retaining decoded bytes. This hook stays in ACE, separate
 from generic raw I/O. [Continuation fault coverage](NATIVE_READ_FAILURES.md)
 checks read/seek/decode errors, terminal cursors and interrupted short reads.
+
+## Interrupted absolute seeks
+
+Interrupted attempts may have changed the host cursor. Repeating Start(offset)
+still addresses the original byte target; relative-to-current retries would not
+have that property. End(0) is repeated only as an explicit length observation of a
+caller-owned stable source. Its result is not a promise that a live file retained
+its size. [Rust Seek](https://doc.rust-lang.org/std/io/trait.Seek.html#tymethod.seek)
+and [Interrupted](https://doc.rust-lang.org/std/io/enum.ErrorKind.html#variant.Interrupted)
+provide the underlying cursor/error contracts.
+
+A successful seek now has its own completion work/cancellation check before
+subsequent reads or writes, including empty buffers. This adds one successful-seek
+work step to existing at-offset calls; byte charging remains with the caller.
+Incorrect reported absolute positions fail before data I/O, and non-Interrupted
+errors—including WouldBlock—are never retried. Partial cursor/data changes remain
+possible on failure; no retry allocates a fresh allowance or promises atomicity.
+
+Native header length inspection, complete-image length revalidation and Agile
+header revalidation now use the same bounded End(0) helper. Native page reads and
+the existing writer already use the shared absolute I/O entry points. Generic
+checkpoint ownership remains in I/O; Jet/ACE page geometry, encryption, locking,
+constraints and transaction qualification remain in their owning layers.

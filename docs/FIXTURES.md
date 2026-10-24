@@ -1,5 +1,36 @@
 # Candidate Access fixtures
 
+## Interrupted-seek scalar replay
+
+On 23 October 2026 the original MIT [ScalarFixture.java](testing/ScalarFixture.java)
+recipe generated a fresh ignored corpus for the interrupted-seek I/O checks.
+The reviewed Jackcess 5.0.4 artifact and earlier provenance/license records remain
+applicable; no third-party fixture or source was copied. Generated databases and
+the JAR remain untracked. Recipe SHA-256:
+`a349c59d4980092638fb9ac0a879186e7ea739be3ff1f06bb01f60625713083a`.
+JAR SHA-256:
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+
+| Input | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Scalar-V2000.mdb | 135,168 | `de2e67a9f0194988d031cc9c981176ae9a76d3bf80599040729b408fc2b7be82` |
+| Scalar-V2007.accdb | 364,544 | `4ed9555c239e56f0649040fb9357913e4e38dcbaac5c2cb668614857882922bc` |
+| Scalar-V2016.accdb | 401,408 | `95c52665d28869a92764f0958b62ad53e465847e3a0c637829d4ff29c8f5ef37` |
+| Scalar-V2019.accdb | 471,040 | `eef6a7d1f23c482333ad5b70b312125bd89799ea168b10a522491eb4b7625190` |
+
+```sh
+python3 docs/testing/compare_browsing.py \
+  --cli target/debug/tablecraft \
+  --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
+  --directory .cache/tablecraft-fixtures/scalar-seek-20261023
+```
+
+The replay passes 275 inventory/page/projection/query controls per profile, with
+all original hashes unchanged. Jackcess supplies inert stored-value expectations;
+only TableCraft executes SQL. This establishes independent read coverage, not
+native Access query, save/reopen or shared-file qualification. Older corpus
+hashes remain separate; generation metadata can differ between fresh inputs.
+
 ## Attachment metadata without payload reads
 
 The original MIT [AttachmentMetadataFixture.java](testing/AttachmentMetadataFixture.java)
