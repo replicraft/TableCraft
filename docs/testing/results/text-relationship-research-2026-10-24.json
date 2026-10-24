@@ -1,0 +1,1106 @@
+{
+  "date": "2026-10-24",
+  "scope": "Research only: independent text-FK matching differs from physical unique-key equivalence; no Text FK admission or native Access qualification.",
+  "reference_attempts": 176,
+  "reader_audits": 8,
+  "native_access": "unrun",
+  "inputs": {
+    "docs/testing/TextRelationshipProbe.java": "83892f0021a5e820629e8ba137dc542dd9012dbcf90bef17b70a4f0d835ce0bf",
+    ".cache/tablecraft-fixtures/jackcess-5.0.4.jar": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    ".cache/tablecraft-bin/memo-history-family-20261024": "15e9822bbac91a3039d29c6b9bfb0465ac2a6d8d0caf7686a75e6fe1a42afd07",
+    ".cache/tablecraft-fixtures/text-relationship-research-accepted-20261024/V2000.mdb": "f6b72776ed4f5418e02be109ad87f9124d1493f9760fa5df6176266c97f8b663",
+    ".cache/tablecraft-fixtures/text-relationship-research-accepted-20261024/V2000.tsv": "3550b4661089848452277dd838fa80cae04b87e62d9a69b8a93d6126b466e69d",
+    ".cache/tablecraft-fixtures/text-relationship-research-accepted-20261024/V2007.accdb": "0b1fb9c5fe21a20cac18c4ad415bd406bebacf6eddb38749c03a9796c7e26d65",
+    ".cache/tablecraft-fixtures/text-relationship-research-accepted-20261024/V2007.tsv": "3550b4661089848452277dd838fa80cae04b87e62d9a69b8a93d6126b466e69d",
+    ".cache/tablecraft-fixtures/text-relationship-research-accepted-20261024/V2016.accdb": "9a8c52fb09ee6cada9d71646192d6095867edc65c30d3fd44a2162b3b9bdbe14",
+    ".cache/tablecraft-fixtures/text-relationship-research-accepted-20261024/V2016.tsv": "3550b4661089848452277dd838fa80cae04b87e62d9a69b8a93d6126b466e69d",
+    ".cache/tablecraft-fixtures/text-relationship-research-accepted-20261024/V2019.accdb": "55b04ca1f64c5829e50a17e8bcb0a3e5d3f2dda44797343ca2f0cb373087d6ac",
+    ".cache/tablecraft-fixtures/text-relationship-research-accepted-20261024/V2019.tsv": "3550b4661089848452277dd838fa80cae04b87e62d9a69b8a93d6126b466e69d"
+  },
+  "observations": [
+    {
+      "profile": "V2000",
+      "reference_attempts": [
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "alpha",
+          "accepted": true
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "alpha",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "ALPHA",
+          "accepted": true
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "ALPHA",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "Alpha ",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "Alpha ",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "Alpha\u0000",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "Alpha\u0000",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "\u00c9",
+          "accepted": true
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "\u00c9",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "e\u0301",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "e\u0301",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "Strasse",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "Strasse",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "",
+          "accepted": true
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": null,
+          "accepted": true
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": null,
+          "accepted": true
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "e",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "e",
+          "accepted": true
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "missing",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "missing",
+          "accepted": true
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "alpha",
+          "accepted": true
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "alpha",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "ALPHA",
+          "accepted": true
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "ALPHA",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "Alpha ",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "Alpha ",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "Alpha\u0000",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "Alpha\u0000",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "\u00c9",
+          "accepted": true
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "\u00c9",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "e\u0301",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "e\u0301",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "Strasse",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "Strasse",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "",
+          "accepted": true
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": null,
+          "accepted": true
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": null,
+          "accepted": true
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "e",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "e",
+          "accepted": true
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "missing",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "missing",
+          "accepted": true
+        }
+      ],
+      "reader_audits": "Unsupported for both General versions",
+      "source_unchanged": true
+    },
+    {
+      "profile": "V2007",
+      "reference_attempts": [
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "alpha",
+          "accepted": true
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "alpha",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "ALPHA",
+          "accepted": true
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "ALPHA",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "Alpha ",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "Alpha ",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "Alpha\u0000",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "Alpha\u0000",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "\u00c9",
+          "accepted": true
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "\u00c9",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "e\u0301",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "e\u0301",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "Strasse",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "Strasse",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "",
+          "accepted": true
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": null,
+          "accepted": true
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": null,
+          "accepted": true
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "e",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "e",
+          "accepted": true
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "missing",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "missing",
+          "accepted": true
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "alpha",
+          "accepted": true
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "alpha",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "ALPHA",
+          "accepted": true
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "ALPHA",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "Alpha ",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "Alpha ",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "Alpha\u0000",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "Alpha\u0000",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "\u00c9",
+          "accepted": true
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "\u00c9",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "e\u0301",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "e\u0301",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "Strasse",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "Strasse",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "",
+          "accepted": true
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": null,
+          "accepted": true
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": null,
+          "accepted": true
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "e",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "e",
+          "accepted": true
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "missing",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "missing",
+          "accepted": true
+        }
+      ],
+      "reader_audits": "Unsupported for both General versions",
+      "source_unchanged": true
+    },
+    {
+      "profile": "V2016",
+      "reference_attempts": [
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "alpha",
+          "accepted": true
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "alpha",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "ALPHA",
+          "accepted": true
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "ALPHA",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "Alpha ",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "Alpha ",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "Alpha\u0000",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "Alpha\u0000",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "\u00c9",
+          "accepted": true
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "\u00c9",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "e\u0301",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "e\u0301",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "Strasse",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "Strasse",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "",
+          "accepted": true
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": null,
+          "accepted": true
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": null,
+          "accepted": true
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "e",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "e",
+          "accepted": true
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "missing",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "missing",
+          "accepted": true
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "alpha",
+          "accepted": true
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "alpha",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "ALPHA",
+          "accepted": true
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "ALPHA",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "Alpha ",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "Alpha ",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "Alpha\u0000",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "Alpha\u0000",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "\u00c9",
+          "accepted": true
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "\u00c9",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "e\u0301",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "e\u0301",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "Strasse",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "Strasse",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "",
+          "accepted": true
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": null,
+          "accepted": true
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": null,
+          "accepted": true
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "e",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "e",
+          "accepted": true
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "missing",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "missing",
+          "accepted": true
+        }
+      ],
+      "reader_audits": "Unsupported for both General versions",
+      "source_unchanged": true
+    },
+    {
+      "profile": "V2019",
+      "reference_attempts": [
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "alpha",
+          "accepted": true
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "alpha",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "ALPHA",
+          "accepted": true
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "ALPHA",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "Alpha ",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "Alpha ",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "Alpha\u0000",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "Alpha\u0000",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "\u00c9",
+          "accepted": true
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "\u00c9",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "e\u0301",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "e\u0301",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "Strasse",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "Strasse",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "",
+          "accepted": true
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": null,
+          "accepted": true
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": null,
+          "accepted": true
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "e",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "e",
+          "accepted": true
+        },
+        {
+          "sort_version": 0,
+          "kind": "foreign",
+          "value": "missing",
+          "accepted": false
+        },
+        {
+          "sort_version": 0,
+          "kind": "unique",
+          "value": "missing",
+          "accepted": true
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "alpha",
+          "accepted": true
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "alpha",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "ALPHA",
+          "accepted": true
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "ALPHA",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "Alpha ",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "Alpha ",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "Alpha\u0000",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "Alpha\u0000",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "\u00c9",
+          "accepted": true
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "\u00c9",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "e\u0301",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "e\u0301",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "Strasse",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "Strasse",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "",
+          "accepted": true
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": null,
+          "accepted": true
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": null,
+          "accepted": true
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "e",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "e",
+          "accepted": true
+        },
+        {
+          "sort_version": 1,
+          "kind": "foreign",
+          "value": "missing",
+          "accepted": false
+        },
+        {
+          "sort_version": 1,
+          "kind": "unique",
+          "value": "missing",
+          "accepted": true
+        }
+      ],
+      "reader_audits": "Unsupported for both General versions",
+      "source_unchanged": true
+    }
+  ]
+}
