@@ -2,6 +2,7 @@ use super::Error;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 
 mod currency;
+mod numeric;
 
 const MAX_BINDINGS: usize = 256;
 const MAX_NAME_BYTES: usize = 255;
@@ -37,6 +38,9 @@ pub(super) fn parse(raw: &[String]) -> Result<Vec<(String, Value)>, Error> {
             "long" => Value::Int32(text.parse().map_err(|_| Error::Parameter)?),
             "bigint" => Value::Int64(text.parse().map_err(|_| Error::Parameter)?),
             "currency" => currency::parse(text, &mut conversion_budget)?,
+            "decimal" => numeric::decimal(text)?,
+            "single" => numeric::single(text)?,
+            "double" => numeric::double(text)?,
             "date" => Value::DateTime(
                 tablecraft_expressions::datetime::parse_literal(text)
                     .map_err(|_| Error::Parameter)?,

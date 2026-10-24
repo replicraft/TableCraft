@@ -19,6 +19,7 @@ tempfile.workspace = true
 rpassword.workspace = true
 zeroize = { workspace = true, features = ["alloc"] }
 csv.workspace = true
+rust_decimal.workspace = true
 comfy-table.workspace = true
 tracing-subscriber.workspace = true
 tracing.workspace = true

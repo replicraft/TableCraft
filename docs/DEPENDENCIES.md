@@ -1081,3 +1081,14 @@ with default features disabled, for `div_rem` and parity in bounded half-even
 Decimal mean quantization. No registry package, license, build script or platform
 capability is added. Existing num-bigint handles wider aligned totals; stored
 Decimal and ordinary arithmetic remain rust_decimal-backed. See [mean scope](AVERAGES.md).
+
+## Exact CLI Decimal parameters
+
+The CLI now inherits the existing workspace `rust_decimal` 1.43.0 std-only
+selection for `--param NAME=decimal:VALUE`. `Decimal::from_str_exact` supplies
+parsing behind a bounded fixed-point lexical/scale check, followed by the core
+validated Decimal constructor. Inputs must retain their original scale; this
+consumer does not round through CDec or normalize an oversized coefficient.
+Single/Double parameters use Rust's standard parsers and finite-result checks.
+No registry version, shared feature or new resolved package is introduced;
+Cargo.lock records the additional CLI consumer. Package ownership is unchanged.

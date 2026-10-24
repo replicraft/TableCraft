@@ -47,6 +47,11 @@ qualification recorded separately.
   writers. Offline/stable input remains required; this is not live Access
   coordination or coherent capture during noncooperating changes.
 
+CLI declared parameters now include exact Decimal and finite Single/Double
+carriers. They retain explicit syntax and strict carrier matching; see
+[parameter input rules](DEVELOPMENT.md). This closes a host-input gap without
+completing the value-semantics acceptance work below.
+
 ## Remaining acceptance work
 
 | Priority | Area | Completion evidence still needed |

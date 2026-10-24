@@ -1,5 +1,26 @@
 # Implementation status
 
+## Exact numeric CLI parameter carriers
+
+`query run --param` now supplies Decimal, Single and Double values to the existing
+query parameter contract. Decimal input uses workspace-owned rust_decimal exact
+parsing and core constructor validation, retaining its coefficient and scale
+without CDec rounding. Single/Double use Rust's standard IEEE parsers with finite
+result checks, preserving signed zero and subnormal bits. SQL declaration matching
+remains strict; the bare Decimal declaration works, while precision/scale
+arguments remain unsupported. Currency keeps its existing invariant CCur profile.
+See [parameter syntax](DEVELOPMENT.md#inline-retrieval-cli).
+
+Two decoder tests and three process integration tests cover exact Decimal extrema,
+retained zeros/scale, float precision differences, signed zero/subnormal bit patterns,
+non-finite/overflow/malformed input and atomic wrong-carrier refusal. The focused
+CLI batch passes 26 tests including existing retrieval, Currency and color/Nz controls. CLI all-target/
+all-feature Clippy, formatting, the dependency guard and its 32 tests pass. No
+registry package/version or shared feature changes; the CLI gains a working
+consumer of the existing rust_decimal dependency. Native Access compatibility
+and the full read/query roadmap remain unfinished; engine/workspace suites were
+not repeated for this host-input change.
+
 ## Same-carrier selector constraint metadata
 
 IIf/Switch/Choose and explicit Nz fallbacks now expose common Text/Decimal

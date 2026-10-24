@@ -1488,6 +1488,7 @@ dependencies = [
  "rc4",
  "rpassword",
  "rusqlite",
+ "rust_decimal",
  "sha2",
  "tablecraft-access",
  "tablecraft-ace",
