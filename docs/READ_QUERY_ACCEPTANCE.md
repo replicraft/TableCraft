@@ -135,9 +135,9 @@ actual hidden-field names through `--collections`, retaining current Memo,
 aligned stored versions, complete caches and native flat-field policies.
 The original replay passes 192 independent stored-record/query controls.
 Unsupported history candidates remain unavailable without blocking unrelated
-supported fields. Visible current Memos with the ordinary Unicode-compression
-bit now retain qualified history discovery and querying; the expanded focused
-engine/adapter batch passes 19 tests and a separate
+supported fields. Ordinary current Memos, including Hyperlink flags and optional
+Unicode compression, now retain qualified history discovery and querying; the
+expanded focused engine/adapter batch passes 22 tests and a separate
 [compressed-Memo replay](testing/COMPRESSED_MEMO_HISTORIES.md) passes 198 controls.
 Unknown/calculated flags and unsupported template/flat flags remain refused. Native history SQL/latest-version behavior
 and wider advanced-field semantics remain unqualified.
