@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-24",
+  "scope": "Consolidated all-feature query regression after retained date APIs, standard Error relational keys and authored calculated Hyperlink Memo cache reads. Native adapter evidence is recorded separately.",
+  "command": "cargo test -p tablecraft-query --all-features --locked -j 2",
+  "exit_code": 0,
+  "passed": 1056,
+  "ignored": 0,
+  "result_targets": 194,
+  "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)",
+  "git_head": "590737b2cbfc248a0991828e7ad2888824c9e89f",
+  "query_expression_source_files": 569,
+  "query_expression_source_sha256": "17f9527dd9b3cc62df59e14224b0f0d145d24f3bf02133cc74bd48a73b0ad301",
+  "inputs": {
+    ".cache/query-regression-20261024-error-keys.log": "63bb133ecb63844b1fc7e6fca9d8098032a2d872f937e2032717d103711e9ba7",
+    "Cargo.lock": "68548efc779b592b1d885a02cf21d1c547559091c72b4f814ba75842ebb0a2ab",
+    "Cargo.toml": "4fc24d3479835ff249ea49df6724d81179965c8d6f2a73f236f0f3e00da822a4",
+    ".cache/tablecraft-bin/calculated-text-family-20261024": "507a7af27a386a4e37d353d095dd94d533d48656d7cc7b5f6f4d45c218f4a379",
+    "crates/engines/tablecraft-ace/src/table/calculated/encoding.rs": "2696016379366f545762107f2d5e49eb78abb63394b5f2633ea3fb713f2f99e7"
+  },
+  "native_access": "unrun; user-deferred",
+  "limitations": [
+    "A passing engineering profile does not establish complete Variant promotion, NLS/ACE equivalence or native saves.",
+    "The separate text-FK research record retains Unsupported; its reference attempts are not compatibility passing tests."
+  ]
+}

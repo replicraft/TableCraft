@@ -1,5 +1,14 @@
 # Implementation status
 
+## Consolidated Error-key and retained-date query regression
+
+The all-feature query package passes 1,056 tests across 194 result targets,
+including doctests, after the shared key and date-input changes. The
+[recorded batch](testing/results/read-query-error-date-regression-2026-10-24.json)
+pins the source revision/digest, lockfile, terminal log and immutable CLI.
+Scoped strict Clippy, workspace formatting and the normal CLI build also pass.
+No native Access or full backend completion is inferred from this regression.
+
 ## Cached calculated Hyperlink Memo reads
 
 Explicit stored-calculation inspection, rows and queries now accept authored
