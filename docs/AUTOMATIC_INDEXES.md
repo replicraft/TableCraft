@@ -23,7 +23,9 @@ Preparation discovers schema without reading index pages or user records. The
 first matching single-key definition in native definition order is used. Eligible
 keys are Byte, Int16, Int32, Int64, Currency and GUID under their existing engine
 profiles: exact typed intervals/equality and qualified NULL tests retain their
-existing semantics. Native field identities map to exposed scalar columns by
+existing semantics. NULL-only constraints also select qualified single General
+Text and Short Binary indexes; empty strings/bytes are separate non-NULL values.
+These constraints require no SQL string comparator or locale provider. Native field identities map to exposed scalar columns by
 validated names; mixed native schemas retain their scalar-view boundary.
 
 Declarations must have known local ordinary/primary constraints and include NULL
@@ -37,7 +39,8 @@ Once a candidate is selected, read, corruption, unsupported-profile, cancellatio
 and quota failures propagate. No other index or sequential scan is tried after
 that failure. Both dense and pruned projections use the same selection service.
 The original WHERE remains mandatory. Partial AND extraction, coercive predicates,
-SQL Text/Binary/Boolean/floating/date seeks and composite seeks are not introduced.
+SQL non-NULL Text/Binary bounds, Boolean/floating/date seeks and composite seeks
+remain unsupported. Physical Text/Binary ranges are not SQL predicate semantics.
 Unconstrained reads remain sequential unless a library caller explicitly requires
 an index. Automatic selections retain sequential table root order, preserving
 TOP and encounter-aggregate behavior; explicit required indexes retain their
@@ -108,3 +111,29 @@ These debug point reads do not establish release throughput, cold-cache latency,
 broad range performance, a general optimizer speedup or native Access performance.
 Measured binary SHA-256:
 `5ab69087462235a3a018b02ce930aa8158d131ed273d7c15543ce038c4e414fa`.
+
+## NULL-only Text and Binary selection
+
+An existing `ScanConstraint::Null` now maps to the native typed Text/Binary NULL
+request for both explicit and automatic matching indexes. Column matching,
+ignore-NULL/foreign/compound exclusions, traversal qualification, key/row agreement,
+shared quotas and cancellation retain the same rules as other selected reads.
+Text profiles still need the qualified native General descriptor even though the
+SQL predicate itself does not compare strings. An unsupported chosen profile is
+an error; it is never reinterpreted with another policy or retried sequentially.
+
+Preparation still does not traverse indexes. The residual IS NULL predicate stays
+in the executor. Automatic results retain sequential root order, including TOP
+and First/Last. A later unfiltered consumer loads a complete table independently
+of the ephemeral selected snapshot. IS NOT NULL and non-NULL string/binary
+predicates do not acquire this selection. An unsafe AND does not contribute a
+partial NULL hint, preserving eager errors.
+
+The original [NULL selection runner](testing/compare_null_indexes.py) passes
+216 controls over four-family Binary indexes and both General versions of Text indexes against
+inert sequential Jackcess getters. It compares automatic and explicit ascending/
+descending selections, complete reads versus a smaller row ceiling, TOP/First/
+Last, empty versus NULL, empty tables, complete-cache boundaries, ignored/unrelated
+indexes and corrupt chosen roots. Inputs remain immutable; corrupt experiments
+use disposable copies. This evidence qualifies the explicit engineering read
+profile; Windows Access SQL/optimizer behavior remains unrun.

@@ -146,6 +146,8 @@ fn field_column(expr: &Expr, columns: &[Column], projection: &[usize]) -> Option
                 | ScalarType::Int64
                 | ScalarType::Guid
                 | ScalarType::Currency
+                | ScalarType::Text
+                | ScalarType::Binary
         )
     {
         Some(*projection.get(*index)?)
