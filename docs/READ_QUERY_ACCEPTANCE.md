@@ -345,6 +345,11 @@ discarding duplicate rows. This fixes a concrete sort/TOP propagation defect
 without defining native mixed-field precedence; the focused regression batch
 passes 84 tests. See [the runtime contract](RUNTIME_TEXT_POLICIES.md).
 
+Literal-controlled IIf/Choose and reachable Switch alternatives now retain
+precise successful result descriptors without removing eager branches. Unknown
+controls keep conservative metadata; this does not complete native subtype or
+Variant promotion. See [selector metadata](CONDITIONAL_FUNCTIONS.md#literal-selection-and-result-metadata).
+
 ### P0 implementation boundaries reviewed 24 October 2026
 
 | Boundary | Current implementation | Remaining work |

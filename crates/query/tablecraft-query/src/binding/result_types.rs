@@ -6,6 +6,7 @@ mod dates;
 mod logical;
 mod math;
 mod null_replacement;
+mod selectors;
 mod text;
 mod unary;
 use super::{Binder, literals};
@@ -14,7 +15,7 @@ use crate::{
     plan::{Aggregate, DomainFunction, Expr, Slot},
 };
 use tablecraft_expressions::functions::{
-    conditional::ConditionalFunction, conversions::Conversion, dates::clock::ClockFunction,
+    conversions::Conversion, dates::clock::ClockFunction,
     inspection::types::ValueInspectionFunction,
 };
 use tablecraft_schema::ScalarType;
@@ -199,21 +200,11 @@ impl Binder<'_> {
                 let right = self.result_type(right, scopes, depth + 1)?;
                 arithmetic::result(*operator, left, right)
             }
-            Expr::IIf(_, yes, no) => self
-                .result_type(yes, scopes, depth + 1)?
-                .union(self.result_type(no, scopes, depth + 1)?),
+            Expr::IIf(condition, yes, no) => {
+                self.iif_result_type(condition, yes, no, scopes, depth + 1)?
+            }
             Expr::ConditionalCall(function, arguments) => {
-                let mut result = OutputType::Null;
-                for (index, argument) in arguments.iter().enumerate() {
-                    let is_value = match function {
-                        ConditionalFunction::Choose => index > 0,
-                        ConditionalFunction::Switch => index % 2 == 1,
-                    };
-                    if is_value {
-                        result = result.union(self.result_type(argument, scopes, depth + 1)?);
-                    }
-                }
-                result
+                self.selection_result_type(*function, arguments, scopes, depth + 1)?
             }
             Expr::Nz(value, replacement) => {
                 let input = self.result_type(value, scopes, depth + 1)?;

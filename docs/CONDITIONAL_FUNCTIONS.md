@@ -253,3 +253,53 @@ eager unselected failures. The independent runner uses IEEE binary32 packing
 before Python Decimal half-even rounding, and checks ordinary/selected-index
 queries over unchanged registered native rows. Query-wrapper precision, native
 NULL/error precedence and full Variant promotion remain open.
+
+
+## Literal selection and result metadata
+
+Preparation now retains the selected branch's complete output descriptor when
+closed scalar literal controls establish which IIf or Choose choice can return.
+Switch omits known-false alternatives and alternatives after a known-true pair;
+an unresolved earlier condition remains a possible choice. A guaranteed true
+tail removes the extra no-match NULL possibility, while a selected nullable
+branch or selected NULL retains its own nullability. Unknown controls keep the
+existing conservative merge. Nz's existing nonnullable-input inference is
+unchanged.
+
+For example, `IIf(True,A,B)` preserves A's Decimal precision/scale even if B has
+different constraints or a different carrier. `Switch(Flag,A,True,B)` still
+combines both reachable choices, but cannot introduce NULL solely from a missing
+match. Literal Choose indexes reuse the existing Single conversion, half-even
+rounding and one-based range policy: 1.49999999 selects choice two, while an
+out-of-list representable index yields NULL metadata. Invalid controls such as
+1e100 remain runtime failures; preparation does not raise or hide that failure.
+
+This analysis reads only captured scalar literals, including checked Number and
+Date literals. Fields, parameters, Text controls, casts and other calls remain
+unknown. It never executes a provider, scans a record or evaluates a general
+expression. Number spellings were already validated and charged during binding;
+re-reading a closed literal retains their 128-byte ceiling. Selector analysis
+checks the parent binding budget/cancellation before literal processing and
+meters the bounded Choose payload-index walk. No payload vector is allocated.
+
+Every choice still binds and its result metadata is visited. Every control and
+choice still executes in written order, including a known unused branch, later
+Switch controls and out-of-list Choose calls. A precise descriptor describes
+successful returned values, not a promise that a call will succeed. Division,
+clock/provider, constructor and publication failures remain observable. Raw
+String payloads keep their existing observation/publication boundaries; selected
+values are not converted to fit the metadata. IIf/Switch/Choose retain their
+Variant declaration categories independently of the narrower carrier descriptor.
+Text-policy lineage still includes all applicable alternatives. The refined
+descriptors can participate in existing derived/named and UNION result rules;
+they do not introduce a new selector coercion policy.
+
+The [Microsoft Access IIf contract](https://support.microsoft.com/en-us/access/functions/iif-function),
+[Switch query contract](https://support.microsoft.com/en-us/access/functions/switch-function)
+and [Choose query contract](https://support.microsoft.com/en-us/access/functions/choose-function)
+establish branch selection and eager evaluation. The metadata refinement applies
+those contracts to TableCraft's existing result carriers; it does not qualify
+native mixed-type return promotion. Tests cover exact Text/Decimal constraints,
+NULL, near-half Single index rounding, first-match selection, unknown controls,
+derived/grouped/empty results, Variant widening, raw String observation, unused
+clock calls and eager failures without preparation scans.
