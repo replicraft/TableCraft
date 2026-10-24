@@ -2,6 +2,8 @@
 
 #[path = "mutation/fixture.rs"]
 mod base;
+#[path = "foreign_updates/boolean.rs"]
+mod boolean;
 #[path = "foreign_updates/fixture.rs"]
 mod fixture;
 mod support;

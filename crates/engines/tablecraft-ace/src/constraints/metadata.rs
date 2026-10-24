@@ -41,7 +41,7 @@ impl FieldCheck {
 /// Record-integrity coverage for one associated native relationship.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum RelationshipCheckStatus {
-    /// Qualified one-to-ten-column integer/Currency/GUID tuple membership checked.
+    /// Qualified one-to-ten-column stored scalar tuple membership checked.
     Checked,
     /// Qualified declaration explicitly disables referential integrity.
     NotEnforced,
@@ -53,6 +53,7 @@ pub enum RelationshipCheckStatus {
 pub struct RelationshipCheck {
     pub(super) relationship: NativeRelationship,
     pub(super) status: RelationshipCheckStatus,
+    pub(super) existing_mutation_key_profile: bool,
 }
 impl RelationshipCheck {
     /// Original native declaration.
@@ -62,6 +63,12 @@ impl RelationshipCheck {
     /// Whether record integrity was checked or explicitly left unqualified.
     pub const fn status(&self) -> RelationshipCheckStatus {
         self.status
+    }
+
+    /// Retains the pre-existing mutation carrier boundary independently of read
+    /// coverage. This alone does not qualify any write operation.
+    pub(crate) const fn existing_mutation_key_profile(&self) -> bool {
+        self.existing_mutation_key_profile
     }
 }
 

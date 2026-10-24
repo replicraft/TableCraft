@@ -1,5 +1,7 @@
 #[path = "mutation/fixture.rs"]
 mod base;
+#[path = "composite_constraints/boolean.rs"]
+mod boolean;
 #[path = "composite_constraints/currency.rs"]
 mod currency;
 #[path = "composite_constraints/decimal.rs"]

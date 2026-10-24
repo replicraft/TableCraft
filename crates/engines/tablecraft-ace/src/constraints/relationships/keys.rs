@@ -10,6 +10,7 @@ use tablecraft_schema::ScalarType;
 // Guid byte order makes no claim about Access ORDER BY or its physical indexes.
 #[derive(Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
 pub(super) enum Atom {
+    Boolean(bool),
     Integer(i64),
     Currency(i64),
     Guid([u8; Guid::BYTE_LEN]),
@@ -21,7 +22,8 @@ pub(super) fn position(table: &TableSnapshot, name: &str) -> Option<usize> {
         column.name().eq_ignore_ascii_case(name)
             && matches!(
                 column.data_type(),
-                ScalarType::Byte
+                ScalarType::Boolean
+                    | ScalarType::Byte
                     | ScalarType::Int16
                     | ScalarType::Int32
                     | ScalarType::Int64
@@ -35,6 +37,7 @@ pub(super) fn position(table: &TableSnapshot, name: &str) -> Option<usize> {
 pub(super) fn atom(value: &Value) -> Result<Option<Atom>, InspectError> {
     Ok(Some(match value {
         Value::Null => return Ok(None),
+        Value::Boolean(value) => Atom::Boolean(*value),
         Value::Byte(value) => Atom::Integer(i64::from(*value)),
         Value::Int16(value) => Atom::Integer(i64::from(*value)),
         Value::Int32(value) => Atom::Integer(i64::from(*value)),
@@ -85,6 +88,7 @@ pub(super) fn collect<A: Copy>(
 mod tests {
     use super::*;
     use proptest::prelude::*;
+
     #[test]
     fn key_domains_preserve_null_and_reject_unsupported_coercions() {
         assert!(
@@ -107,12 +111,37 @@ mod tests {
             Some(InspectError::Malformed)
         );
     }
+
+    #[test]
+    fn boolean_atoms_are_present_and_never_integer_zero_or_minus_one() {
+        let false_key = atom(&Value::Boolean(false)).unwrap();
+        let true_key = atom(&Value::Boolean(true)).unwrap();
+        assert!(false_key == Some(Atom::Boolean(false)));
+        assert!(true_key == Some(Atom::Boolean(true)));
+        assert!(false_key != true_key);
+        for key in [false_key, true_key] {
+            assert!(key != atom(&Value::Null).unwrap());
+            assert!(key != atom(&Value::Int32(0)).unwrap());
+            assert!(key != atom(&Value::Int32(-1)).unwrap());
+            assert!(key != atom(&Value::Byte(1)).unwrap());
+        }
+    }
+
     proptest! {
-        #![proptest_config(ProptestConfig{cases:256,rng_seed:proptest::test_runner::RngSeed::Fixed(0x475549444b455953),..Default::default()})]
+        #![proptest_config(ProptestConfig {
+            cases: 256,
+            rng_seed: proptest::test_runner::RngSeed::Fixed(0x475549444b455953),
+            ..Default::default()
+        })]
+
         #[test]
-        fn guid_equality_matches_all_canonical_bytes(a in any::<[u8;Guid::BYTE_LEN]>(),b in any::<[u8;Guid::BYTE_LEN]>()) {
-            let left=atom(&Value::Guid(Guid::from_bytes(a))).unwrap();let right=atom(&Value::Guid(Guid::from_bytes(b))).unwrap();
-            prop_assert!((left==right)==(a==b));
+        fn guid_equality_matches_all_canonical_bytes(
+            a in any::<[u8; Guid::BYTE_LEN]>(),
+            b in any::<[u8; Guid::BYTE_LEN]>()
+        ) {
+            let left = atom(&Value::Guid(Guid::from_bytes(a))).unwrap();
+            let right = atom(&Value::Guid(Guid::from_bytes(b))).unwrap();
+            prop_assert_eq!(left == right, a == b);
         }
     }
 }

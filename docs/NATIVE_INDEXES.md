@@ -522,8 +522,11 @@ remain recorded and original bytes unchanged. Six CI tests include a 256-case
 two-value model, compressed row-reference prefixes, every possible value byte,
 NULL/key mismatches, typed seeks, mixed carriers, constraints, budgets and
 cancellation. Unrelated eligible Jet 4 Int32 edits retain every byte outside the
-field; the Jet 4 Int32 editor still rejects Boolean targets and normal ACE saves stay blocked. Boolean seeks/production mutation,
-foreign-key qualification and actual Microsoft Access evidence remain separate.
+field; the Jet 4 Int32 editor still rejects Boolean targets and normal ACE saves
+stay blocked. Boolean seeks and production mutation remain unimplemented.
+[Read-only Boolean foreign-key membership](NATIVE_CONSTRAINTS.md#stored-boolean-relationship-membership)
+now has a separate exact stored-tuple audit; it does not qualify mutation or actual
+Microsoft Access behavior.
 
 ## Complete single-GUID indexes
 

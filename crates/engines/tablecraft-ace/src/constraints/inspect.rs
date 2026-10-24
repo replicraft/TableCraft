@@ -7,8 +7,8 @@ use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
 
 /// Explicit bounded record audit of Required/AllowZeroLength and qualified
-/// one-to-ten-column Int32/Int64 foreign keys touching one table. Paired storage
-/// types must match. Only bounded pure field/table
+/// one-to-ten-column scalar foreign keys touching one table. Paired storage
+/// types must match; Boolean coverage remains read-only. Only bounded pure field/table
 /// validation expressions run; unqualified rules are reported unsupported. Structural
 /// index checks remain the separate check_table API. No writes/cascades execute.
 pub fn check_table_constraints<R: crate::NativeReadSource>(
@@ -45,7 +45,7 @@ pub fn check_table_constraints<R: crate::NativeReadSource>(
         {
             continue;
         }
-        let status = relationships::check_relationship(
+        let coverage = relationships::check_relationship(
             source,
             scope,
             &relationship,
@@ -59,7 +59,8 @@ pub fn check_table_constraints<R: crate::NativeReadSource>(
             .map_err(|_| InspectError::Allocation)?;
         checks.push(RelationshipCheck {
             relationship,
-            status,
+            status: coverage.status,
+            existing_mutation_key_profile: coverage.existing_mutation_key_profile,
         });
     }
     check(budget, cancelled)?;

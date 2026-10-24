@@ -10,6 +10,21 @@ use keys::{keys, position};
 use membership::validate_keys;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
+use tablecraft_schema::ScalarType;
+
+pub(super) struct RelationshipCoverage {
+    pub(super) status: RelationshipCheckStatus,
+    pub(super) existing_mutation_key_profile: bool,
+}
+
+impl RelationshipCoverage {
+    fn unsupported() -> Self {
+        Self {
+            status: RelationshipCheckStatus::Unsupported,
+            existing_mutation_key_profile: false,
+        }
+    }
+}
 
 pub(super) fn check_relationship<R: crate::NativeReadSource>(
     source: &mut R,
@@ -18,17 +33,20 @@ pub(super) fn check_relationship<R: crate::NativeReadSource>(
     target: &TableSnapshot,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<RelationshipCheckStatus, InspectError> {
+) -> Result<RelationshipCoverage, InspectError> {
     check(budget, cancelled)?;
     let declaration = relationship.declaration();
     let Some(rules) = declaration.rules() else {
-        return Ok(RelationshipCheckStatus::Unsupported);
+        return Ok(RelationshipCoverage::unsupported());
     };
     if !rules.enforced {
-        return Ok(RelationshipCheckStatus::NotEnforced);
+        return Ok(RelationshipCoverage {
+            status: RelationshipCheckStatus::NotEnforced,
+            existing_mutation_key_profile: true,
+        });
     }
     if declaration.columns().is_empty() || declaration.columns().len() > INDEX_KEY_COLUMNS {
-        return Ok(RelationshipCheckStatus::Unsupported);
+        return Ok(RelationshipCoverage::unsupported());
     }
     let parent_name = declaration.parent_table().as_str();
     let child_name = declaration.child_table().as_str();
@@ -38,7 +56,7 @@ pub(super) fn check_relationship<R: crate::NativeReadSource>(
         match read_table(source, scope, parent_name, budget, cancelled) {
             Ok(table) => Some(table),
             Err(InspectError::UnknownTable | InspectError::Unsupported | InspectError::Encoded) => {
-                return Ok(RelationshipCheckStatus::Unsupported);
+                return Ok(RelationshipCoverage::unsupported());
             }
             Err(error) => return Err(error),
         }
@@ -49,7 +67,7 @@ pub(super) fn check_relationship<R: crate::NativeReadSource>(
         match read_table(source, scope, child_name, budget, cancelled) {
             Ok(table) => Some(table),
             Err(InspectError::UnknownTable | InspectError::Unsupported | InspectError::Encoded) => {
-                return Ok(RelationshipCheckStatus::Unsupported);
+                return Ok(RelationshipCoverage::unsupported());
             }
             Err(error) => return Err(error),
         }
@@ -61,10 +79,10 @@ pub(super) fn check_relationship<R: crate::NativeReadSource>(
     for (i, pair) in declaration.columns().iter().enumerate() {
         check(budget, cancelled)?;
         let Some(parent_column) = position(parent, pair.parent().as_str()) else {
-            return Ok(RelationshipCheckStatus::Unsupported);
+            return Ok(RelationshipCoverage::unsupported());
         };
         let Some(child_column) = position(child, pair.child().as_str()) else {
-            return Ok(RelationshipCheckStatus::Unsupported);
+            return Ok(RelationshipCoverage::unsupported());
         };
         if parent.columns()[parent_column].data_type() != child.columns()[child_column].data_type()
             || !decimal::compatible(
@@ -72,7 +90,7 @@ pub(super) fn check_relationship<R: crate::NativeReadSource>(
                 &child.schema().columns()[child_column],
             )
         {
-            return Ok(RelationshipCheckStatus::Unsupported);
+            return Ok(RelationshipCoverage::unsupported());
         }
         parent_columns[i] = parent_column;
         child_columns[i] = child_column;
@@ -94,7 +112,7 @@ pub(super) fn check_relationship<R: crate::NativeReadSource>(
                 .is_some_and(|constraints| constraints.primary_key() || constraints.unique())
     });
     if !eligible {
-        return Ok(RelationshipCheckStatus::Unsupported);
+        return Ok(RelationshipCoverage::unsupported());
     }
     check_keys(
         parent,
@@ -105,7 +123,23 @@ pub(super) fn check_relationship<R: crate::NativeReadSource>(
         budget,
         cancelled,
     )?;
-    Ok(RelationshipCheckStatus::Checked)
+    // Read support must not implicitly qualify a new mutation key carrier.
+    let existing_mutation_key_profile = parent_columns.iter().all(|&position| {
+        matches!(
+            parent.columns()[position].data_type(),
+            ScalarType::Byte
+                | ScalarType::Int16
+                | ScalarType::Int32
+                | ScalarType::Int64
+                | ScalarType::Currency
+                | ScalarType::Guid
+                | ScalarType::Decimal
+        )
+    });
+    Ok(RelationshipCoverage {
+        status: RelationshipCheckStatus::Checked,
+        existing_mutation_key_profile,
+    })
 }
 
 fn check_keys(
