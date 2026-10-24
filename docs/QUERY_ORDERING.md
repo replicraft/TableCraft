@@ -23,9 +23,15 @@ projection identity allows matching aggregate kinds/operands, including aggregat
 subexpressions. This shared identity service does not enable aggregate GROUP BY
 or treat read plans as grouping keys.
 
-Repeated clock/Rnd, opaque domain calls and subqueries do not acquire reusable
-identity, including inside a larger expression or aggregate argument. Use an
-explicit selected alias to order those values. Sort expressions that use output
+Repeated clock/Rnd, opaque domain calls, Eval and subqueries do not acquire
+reusable identity, including inside a larger expression or aggregate argument.
+Equal Eval argument syntax does not establish a stable result: its parsed body
+can contain random/clock calls, nested Eval or execution-supplied text. Even a
+literal pure body remains opaque during metadata-only projected-sort matching.
+Use an explicit selected alias or ordinal to order those values. Those references
+reuse the selected cell, while ordinary non-DISTINCT repeated Eval expressions
+keep their independent eager evaluation. Group-key identity remains separate and
+retains its runtime DynamicNotRepeatable checks. Sort expressions that use output
 aliases inside a larger expression, unselected DISTINCT keys and broader read-plan
 identity remain unsupported. New matching does not execute providers or scan rows
 while preparing, coerce result carriers or infer collation. Unsupported forms fail

@@ -75,9 +75,20 @@ their provider/state is used. The runtime restores its previous key context even
 on error. Hidden Rnd calls while constructing a key through a domain also fail;
 ordinary direct clock-key behavior retains its existing rules. Literal and
 field-produced pure dynamic keys can participate in structural grouping and
-projection validation. Dynamic clock group keys from Microsoft's broader
+grouped-projection validation. Dynamic clock group keys from Microsoft's broader
 examples remain unsupported; this does not qualify native optimizer, collation
 or invocation order.
+
+DISTINCT projected-sort matching treats Eval as opaque, even when its argument
+is literal pure text. Repeated argument syntax cannot prove a reusable result
+without interpreting a dynamic body or inspecting execution values. A repeated
+Eval expression in ORDER BY therefore fails metadata-only preparation; select an
+explicit alias or ordinal to sort the already evaluated value. This also covers
+Eval nested in larger expressions or aggregate arguments. Ordinary non-DISTINCT
+repeated Eval expressions retain separate eager calls, while grouped pure Eval
+keys retain the runtime repeatability checks above. Focused controls compare
+selected random outputs and exact four/eight draw counts for these distinct paths;
+they do not qualify native Access optimizer invocation counts.
 
 Each dynamic input shares the caller's bytes/steps allowance and cancellation
 callback. Source-sized syntax allocation/work allowances are charged before

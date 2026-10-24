@@ -203,3 +203,6 @@ fn explicit_random_alias_draws_once_per_input_and_sort_failures_remain_visible()
         Some(QueryError::Evaluation(EvalError::DivisionByZero))
     );
 }
+
+#[path = "projected_sort/dynamic.rs"]
+mod dynamic;
