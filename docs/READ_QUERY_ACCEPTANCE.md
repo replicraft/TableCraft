@@ -337,9 +337,13 @@ semantics and native Access qualification remain unfinished.
 | Boundary | Current implementation | Remaining work |
 | --- | --- | --- |
 | Database text providers | Native General recognition requires LCID 1033, variant zero and version 0 or 1; raw predicates, keys and database StrComp use explicit providers | Additional database orders and native function-specific padding/weight qualification |
-| System text / explicit LCID | Separate `compare_text` and `find_locale` contracts default to refusal; General database comparison does not supply either | Concrete bounded providers and locale-specific search/comparison evidence; parsing an LCID does not implement it |
+| System text / explicit LCID | Opt-in ICU host profiles implement decoded text comparison/search and exact registered LCID dispatch; General database comparison remains separate | Windows NLS/ACE function-specific qualification and broader locale providers; explicit registration does not establish native LCID equivalence |
 | Mixed field policies | Runtime policies survive retained cells; distinct required IDs conservatively merge to Conflict | Native precedence rules before relaxing conflicts |
 | Value categories | Declaration-sensitive arithmetic remains an explicit engineering option; unknown provenance is retained | Complete literal/subtype/Variant promotion, Error and result-type matrices before enabling broader defaults |
+
+The [explicit ICU profile](ICU_TEXT_PROFILE.md) has bounded callbacks and 3,032
+independent ICU4C controls. It supplies working host functionality while retaining
+the native NLS/ACE gaps above; no system locale or numeric LCID alias is inferred.
 
 These are implementation gaps as well as later qualification tasks. Completing
 raw String consumers does not complete P0. Windows comparisons remain deferred;

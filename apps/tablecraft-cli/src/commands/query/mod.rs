@@ -15,6 +15,7 @@ mod parameters;
 mod retrieval;
 mod run_args;
 mod saved;
+mod text_policy;
 pub(crate) use args::Command;
 use run_args::RunArgs;
 use std::fmt;
@@ -113,6 +114,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
                 native_steps,
                 execution_limits,
                 comparison_limits,
+                text_policy,
                 declared_integral,
                 large_values,
                 multivalues,
@@ -142,6 +144,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
                         .map_or(crate::output::MAX_OUTPUT_BYTES, |bytes| bytes as usize),
                     execution_limits: execution_limits.limits(),
                     comparison_limits,
+                    text_policy,
                     collation,
                     like_mode,
                     year_window,

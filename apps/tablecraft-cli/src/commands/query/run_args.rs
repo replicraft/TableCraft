@@ -18,6 +18,7 @@ use tablecraft_expressions::functions::text::code_page::CharacterCodePage;
 use tablecraft_expressions::functions::text::cstr::DateTextFormat;
 
 #[derive(ClapArgs)]
+#[command(group(clap::ArgGroup::new("comparison_context").args(["collation", "text_locale"]).multiple(true)))]
 pub(crate) struct RunArgs {
     /// Last year of DateSerial's 100-year window; default 2029 (1930..2029).
     #[arg(long = "two-digit-year-max", value_name = "YEAR", value_parser = calendar::parse_window)]
@@ -71,6 +72,8 @@ pub(crate) struct RunArgs {
     /// Explicit ordinal/General override, or stored database/per-field General policies.
     #[arg(long, value_enum, requires_if("database", "database"))]
     pub(crate) collation: Option<TextCollation>,
+    #[command(flatten)]
+    pub(crate) text_policy: super::text_policy::Args,
     /// Explicit LIKE wildcards; database ANSI settings are not inferred.
     #[arg(long, value_enum)]
     pub(crate) like_mode: Option<Wildcards>,

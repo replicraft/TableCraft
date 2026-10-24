@@ -1,0 +1,48 @@
+{
+  "binary_sha256": "277d60db9305625b510417e7e7c64ce125a48dd71914f8ea02b26226017260c8",
+  "controls": 3032,
+  "icu4c_collation_versions": {
+    "de-DE": [
+      153,
+      121,
+      0,
+      0
+    ],
+    "en-US": [
+      153,
+      121,
+      0,
+      0
+    ],
+    "sv-SE": [
+      153,
+      121,
+      44,
+      0
+    ],
+    "tr-TR": [
+      153,
+      121,
+      44,
+      0
+    ]
+  },
+  "icu4c_version": [
+    74,
+    1,
+    0,
+    0
+  ],
+  "inputs_sha256": "5831f7853cd414a4f5f8fe24f2d49dbfed14dd2ff05c54161473952db1e6b5aa",
+  "locales": [
+    "en-US",
+    "de-DE",
+    "sv-SE",
+    "tr-TR"
+  ],
+  "native_access": "unrun",
+  "profile": "secondary, case level off, normalization on, nonignorable punctuation, numeric off",
+  "reference": "ICU4C ucol_strcoll; independent scalar-boundary span enumeration",
+  "runner_sha256": "2f0d4fdb5f0b0bbac94a785ebb8444bdb6e9968485c9db81e0354418fbb5f6d6",
+  "windows_nls": "unrun"
+}

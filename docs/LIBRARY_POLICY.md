@@ -247,6 +247,13 @@ replace native Access compatibility evidence with ICU output, or call allocating
 mapping convenience APIs before applying output budgets. Feature/notice/closure
 records are in [DEPENDENCIES.md](DEPENDENCIES.md#unicode-case-mapping).
 
+The optional [ICU text profile](ICU_TEXT_PROFILE.md) now uses icu_collator with
+compiled data for explicit host-selected comparison/search. It does not replace
+native General keys, database field policies or NLS qualification. Keep exact
+LCID registration, input/call ceilings, per-provider pools and ICU scratch
+allocation limits explicit. SmallVec in this optional production closure is an
+upstream scratch implementation, separate from its index benchmark consumer.
+
 ### Access Rnd sequence
 
 [Query Rnd](RANDOM_FUNCTIONS.md) owns an explicit Basic-compatible 24-bit sequence.

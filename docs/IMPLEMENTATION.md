@@ -1,5 +1,20 @@
 # Implementation status
 
+## Explicit host locale text providers
+
+`query run --text-locale` now composes optional ICU text comparison/search with
+the existing database comparer. Four closed locale profiles and optional exact
+`--text-lcid` registration support text-mode StrComp/InStr/InStrRev/Replace.
+Database, field, binary and LIKE policies retain their existing implementations.
+Atomic/input/search ceilings, per-provider pools and ICU scratch limitations are
+explicit in [the provider contract](ICU_TEXT_PROFILE.md).
+
+Seven provider tests, six CLI tests and 11 existing comparison regressions pass,
+with scoped Clippy, minimal-feature checks and strict rustdoc. The independent
+ICU4C replay passes 3,032 controls against an immutable executable. These are
+explicit ICU host profiles, not qualified Windows NLS/ACE locale implementations;
+native precedence, database orders and function-specific fidelity remain P0.
+
 ## Stored attachment FileData queries
 
 Explicit `--collections` now exposes exact stored FileData Binary envelopes along
@@ -41,7 +56,7 @@ scoped Clippy and the minimal-feature check. Isolated variants pass 96 integrati
 tests and 2,094 independent metadata/constructor controls. All 675 timing samples
 are retained, including ties, noise and a documented potential initial formatter
 overlap. Results do not establish a broad query-speed gain or native Access
-qualification. SmallVec and memchr remain development-only; production InStrB
+qualification. Direct SmallVec and memchr experiments remain development-only; production InStrB
 retains its existing work/cancellation contract.
 
 ## Explicit row-local calculated-expression previews

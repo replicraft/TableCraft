@@ -1,5 +1,52 @@
 # Adopted dependency and licensing baseline
 
+## Explicit ICU text provider (24 October 2026)
+
+The optional expressions feature `icu-text` directly adopts icu_collator 2.3.1,
+with defaults disabled and only compiled_data requested. Normal CLI builds enable
+the feature for working `--text-locale` consumers; standalone expression/engine
+profiles need not activate it. The four explicit locale profiles compose with
+the existing comparer rather than replacing native General, binary, SQL field
+or LIKE policies. See [the provider contract](ICU_TEXT_PROFILE.md).
+
+The offline lock refresh adds exactly these eight packages, without upgrading
+existing versions. Existing ICU 2.3 support packages and SmallVec are reused.
+
+| New package | Version | License | Declared Rust minimum |
+| --- | --- | --- | --- |
+| icu_collator | 2.3.1 | Unicode-3.0 | 1.88 |
+| icu_collator_data | 2.3.0 | Unicode-3.0 | 1.88 |
+| icu_locale_fallback | 2.3.0 | Unicode-3.0 | 1.88 |
+| icu_locale_fallback_data | 2.3.0 | Unicode-3.0 | 1.88 |
+| icu_normalizer | 2.3.0 | Unicode-3.0 | 1.88 |
+| icu_normalizer_data | 2.3.0 | Unicode-3.0 | 1.88 |
+| utf16_iter | 1.0.5 | Apache-2.0 OR MIT | Unspecified |
+| write16 | 1.0.0 | Apache-2.0 OR MIT | Unspecified |
+
+Published manifests and bundled license files were inspected; distributions
+retain Unicode notices and the selected MIT/Apache notices. The three data
+packages have build scripts that emit configuration/check-cfg directives and
+watch ICU4X_DATA_DIR. That override was unset in these checks; no custom data,
+download or external build generator was used. The remaining new packages have
+no build script. The repository toolchain is checked, not a separately qualified
+minimum Rust toolchain. No network, GUI, async runtime or native FFI dependency is
+added to the production consumer. The optional engineering reference runner uses
+the system ICU4C library through Python; product code does not.
+
+ICU internals use optimized unsafe support and SmallVec scratch allocation.
+Provider quotas meter owned boundary storage and documented traversal admission;
+the wrapper does not replace ICU's allocator. Atomic input/search ceilings and
+before/after cancellation checks bound calls without claiming interruptibility
+or complete upstream allocation accounting. General and ICU retain distinct
+provider pools. No Rust unsafe code is introduced by this adapter.
+
+Seven provider tests, six CLI tests and existing comparison regressions pass,
+with scoped Clippy, minimal-feature checks and strict rustdoc. The original
+[ICU4C replay](testing/compare_icu_text.py) passes 3,032 controls against a fixed
+CLI. This is independent ICU profile evidence, not a performance measurement,
+Windows NLS qualification or a complete advisory/unsafe-code audit. Primary APIs
+and exact settings are linked in the owning provider document.
+
 ## Bounded byte-search experiment (24 October 2026)
 
 Expressions' development-only `byte_search` example now directly consumes the
@@ -27,7 +74,8 @@ ACE's `index_columns` benchmark directly compares the already locked ArrayVec
 index-column storage, using the existing ten-column format ceiling and fallible
 insertion. Public access remains a slice. The enlarged NativeIndex object is
 charged in its owning vector; the former separate key allocation charge is
-removed. SmallVec remains development-only. Root workspace declarations disable
+removed. ACE's direct SmallVec consumer remains development-only; the optional
+ICU text provider also uses SmallVec transitively. Root workspace declarations disable
 both default feature sets; SmallVec explicitly enables `const_generics` for its
 benchmark inline array. Native limits and on-disk encoding are unchanged.
 

@@ -6,6 +6,8 @@ mod like;
 pub use declared::{variant_expression_text_numeric, variant_text_numeric};
 mod locale;
 pub use locale::LocaleId;
+#[cfg(feature = "icu-text")]
+pub mod icu_text;
 mod search;
 mod string_input;
 mod strings;
