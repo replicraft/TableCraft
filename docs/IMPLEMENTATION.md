@@ -1,5 +1,20 @@
 # Implementation status
 
+## Checked ordinary numeric predicates
+
+Ordinary numeric pairs now reuse the reviewed effective-type conversion service.
+Currency/LongLong predicates therefore check Currency's range before comparison,
+closing a path that previously used exact strict-key comparison without that
+conversion. Numeric Text and declaration-sensitive provenance remain separate;
+strict sort/group/set keys are unchanged. See [predicate scope](NUMERIC_PREDICATES.md#shared-ordinary-numeric-effective-types).
+
+766 all-feature expression tests, 379 minimal expression tests, 57 focused query
+tests and two CLI tests pass. The independent scaled-integer property checks both
+operand orders; source controls cover eager overflow, refused partial hints and
+empty tables. Scoped expression and query/CLI Clippy checks pass. Full workspace
+tests and Windows Access comparisons were not run. P0 promotion, wider coercion
+and locale work remain unfinished; storage and write gates are unchanged.
+
 ## Retained first-unit String construction
 
 String now retains both operands through its NULL gate and count/character

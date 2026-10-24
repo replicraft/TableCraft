@@ -115,3 +115,23 @@ fn date_numeric_selection_composes_without_enabling_implicit_extended_dates() {
         Err(EvalError::DivisionByZero.into())
     );
 }
+
+#[test]
+fn ordinary_numeric_relational_consumers_preserve_currency_overflow() {
+    for predicate in [
+        "CCur(0)=CLngLng(922337203685478)",
+        "CLngLng(-922337203685478)<CCur(0)",
+        "CCur(0) IN (CLngLng(922337203685478))",
+        "CCur(0) IN (SELECT CLngLng(922337203685478))",
+        "CCur(0)=ALL(SELECT CLngLng(922337203685478))",
+        "CCur(0) BETWEEN CLngLng(-922337203685478) AND CLngLng(922337203685478)",
+    ] {
+        for declared in [false, true] {
+            assert_eq!(
+                run(&format!("SELECT {predicate}"), declared),
+                Err(EvalError::Overflow.into()),
+                "{predicate}, declared={declared}"
+            );
+        }
+    }
+}

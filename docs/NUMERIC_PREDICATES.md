@@ -13,6 +13,7 @@ consumers retain their existing statement/operation restrictions.
 | Text beside Decimal | Checked Decimal conversion |
 | Text beside ordinary integer/Boolean/Single/Double | Double conversion; LongLong is rounded to Double before comparison |
 | LongLong beside Single/Double | Both operands convert to Double; Single widens rather than narrowing the LongLong |
+| Currency beside integral/Boolean | Checked Currency conversion of both operands; an out-of-range LongLong fails Overflow |
 | Currency beside Single/Double | Convert the floating operand through checked Currency conversion |
 | Decimal beside Single/Double | Convert the floating operand through the existing CDec profile |
 | Text beside Text | Existing collation and captured field-policy routing; no numeric reinterpretation |
@@ -191,3 +192,30 @@ native DATE getters on unchanged registered four-family inputs. It checks both
 operand directions, nine numeric families, range errors, NULLs, and sequential/
 ascending/descending index paths. Only TableCraft executes SQL; native Access
 comparison/coercion and error precedence remain unqualified.
+
+## Shared ordinary numeric effective types
+
+Ordinary pure-numeric predicates now use the same checked effective-type service
+as the explicit declaration profile. Decimal takes precedence over Currency;
+Currency takes precedence over ordinary integral and floating carriers. Single
+with Long/LongLong selects Double; Single with Double selects Single. The other
+integral pairs retain their reviewed common width. Both operands convert before
+comparison. This closes a Currency/LongLong gap: exact strict-key comparison could
+previously compare an integer outside Currency's range without an overflow.
+
+For example, `CCur(0)=CLngLng(922337203685478)` now fails Overflow, while
+`CCur(0)<CLngLng(922337203685477)` succeeds. This follows the checked operand
+conversion required by the [MS-VBAL relational effective-type table](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/f8acd631-55c1-4199-bc1e-022aaab6d9c8).
+It is a reference-backed materialized predicate profile, not native Access SQL
+qualification. Numeric Text retains its existing separate default Double route
+and explicit NumberFormat requirement; declared/Variant provenance is not inferred.
+Strict sort/group/set-key comparison remains separate.
+
+An independent checked scaled-integer property covers Currency/LongLong ordering
+and range failure in both operand directions. Expression controls retain NULL and
+strict-key distinctions. Query controls cover list/subquery membership, quantified
+predicates, ranges, and both declaration settings. Source controls prove that a
+partially safe AND cannot introduce a hint that hides overflow, including when the
+other condition excludes every row. Empty sources still do not evaluate predicates.
+Both CLI query modes retain buffered failures. Windows Access comparison remains
+pending; no storage, index qualification or write gate changed.

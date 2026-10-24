@@ -65,6 +65,13 @@ raw-serial selection when Decimal participates, without requiring the engineerin
 declaration flag. This does not enable strict set-key coercion or qualify native
 Access comparison behavior. See [predicate scope](NUMERIC_PREDICATES.md).
 
+Ordinary numeric pairs also share checked effective-type conversion. In
+particular, Currency/LongLong predicates now refuse integers outside Currency's
+range instead of bypassing conversion through exact key comparison. Source
+controls retain eager failures without partial hints. This does not complete
+P0 promotion or qualify native comparison behavior; numeric Text and strict
+set/group/sort comparison keep their separate contracts.
+
 DateAdd now exposes its existing successful date carrier for numeric/Boolean/Text
 sources during metadata-only preparation, with source nullability preserved.
 Named/derived, UNION, Nz and Avg consumers retain this metadata without scans or

@@ -95,6 +95,9 @@ impl Evaluator<'_> {
         if let Some(result) = self.compare_effective_date_values(operator, left, right)? {
             return Ok(result);
         }
+        if let Some(result) = self.compare_numeric_pair(operator, left, right)? {
+            return Ok(result);
+        }
         if let Some(result) = self.compare_floating_integer(operator, left, right)? {
             return Ok(result);
         }
