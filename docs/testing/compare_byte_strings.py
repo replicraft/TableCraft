@@ -84,6 +84,30 @@ def main():
                     assert execute(args.cli, mode, "SELECT " + ",".join(expressions)) == [expected], cases
                     count += len(expected)
 
+        # Ordinary slices count UTF-16 units, including split surrogate pairs.
+        # Python bytes supply the independent expected ranges; no text decoding
+        # is needed to observe the selected units.
+        for text in ["", "A", "中", "😀", "A中🦀", "e\u0301"]:
+            encoded = text.encode("utf-16le")
+            for length in [0, 1, 2, 3, 2147483647]:
+                for start in [1, 2, 3, 2147483647]:
+                    cases = [
+                        (f"Left('{text}',{length})", encoded[:2 * length]),
+                        (f"Right('{text}',{length})", encoded[-2 * length:] if length else b""),
+                        (f"Mid('{text}',{start},{length})", encoded[2 * (start - 1):2 * (start - 1 + length)]),
+                        (f"Mid('{text}',{start})", encoded[2 * (start - 1):]),
+                    ]
+                    expressions = []
+                    expected = []
+                    for call, raw in cases:
+                        expressions.extend([f"Len({call})", f"LenB({call})", f"VarType({call})"])
+                        expected.extend([str(len(raw) // 2), str(len(raw)), "8"])
+                        if raw:
+                            expressions.append(f"AscW({call})")
+                            expected.append(str(int.from_bytes(raw[:2], "little", signed=True)))
+                    assert execute(args.cli, mode, "SELECT " + ",".join(expressions)) == [expected], cases
+                    count += len(expected)
+
         for start in range(0, 256, 16):
             expressions = []
             expected = []

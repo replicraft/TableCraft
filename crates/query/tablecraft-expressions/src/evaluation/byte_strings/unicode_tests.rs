@@ -57,37 +57,134 @@ fn unicode_observations_keep_unpaired_units_without_publishing_them() {
 }
 
 #[test]
-fn unicode_intermediates_charge_storage_and_all_observed_work_can_cancel() {
-    let expression = parse_expression("AscW(LeftB(ChrW(55296),2))", Default::default()).unwrap();
-    let mut bytes = ResourceBudget::new(1, 0, 10000);
-    let mut evaluator = Evaluator::new(&NoBindings, &mut bytes, Default::default());
-    assert!(matches!(
-        evaluator.evaluate(&expression),
-        Err(EvalError::Limit(_))
-    ));
+fn unicode_slices_retain_units_and_clamp_long_requests_before_byte_conversion() {
+    for (sql, expected) in [
+        ("Len(Left('😀',1))", Value::Int32(1)),
+        ("LenB(Left('😀',1))", Value::Int32(2)),
+        ("AscW(Left('😀',1))", Value::Int16(-10179)),
+        ("AscW(Right('😀',1))", Value::Int16(-8704)),
+        ("AscW(Mid('A😀Z',3,1))", Value::Int16(-8704)),
+        ("Len(Mid(ChrW(55296),1))", Value::Int32(1)),
+        ("Len(Left(ChrW(55296),0))", Value::Int32(0)),
+        ("VarType(Right('😀',1))", Value::Int16(8)),
+        ("TypeName(Mid('😀',1,1))", Value::Text("String".into())),
+        ("Len(Left('😀',2147483647))", Value::Int32(2)),
+        ("Len(Right('😀',2147483647))", Value::Int32(2)),
+        ("Len(Mid('😀',2147483647,2147483647))", Value::Int32(0)),
+        ("Len(Mid('😀',1,2147483647))", Value::Int32(2)),
+        ("Len(Mid(Left('😀',1),2))", Value::Int32(0)),
+        ("Len(Left(NULL,CVErr(1)))", Value::Null),
+        ("Len(Mid(NULL,0,CVErr(1)))", Value::Null),
+    ] {
+        assert_eq!(evaluate(sql), Ok(expected), "{sql}");
+    }
 
-    let count = Cell::new(0);
+    for (sql, expected) in [
+        ("Left('😀',1)", EvalError::UnrepresentableText),
+        ("Right('😀',1)", EvalError::UnrepresentableText),
+        ("Len(Left(ChrB(65),1))", EvalError::UnrepresentableText),
+        ("Len(Left('abc',NULL))", EvalError::TypeMismatch),
+        ("Len(Left(CVErr(1),-1))", EvalError::TypeMismatch),
+        ("Len(Mid('abc',0,CVErr(1)))", EvalError::Domain),
+        ("Len(Mid('abc',1,-1))", EvalError::Domain),
+        ("Len(Left(NULL,1/0))", EvalError::DivisionByZero),
+    ] {
+        assert_eq!(evaluate(sql), Err(expected), "{sql}");
+    }
+}
+
+#[test]
+fn unicode_slice_states_admit_source_before_controls() {
     let mut budget = ResourceBudget::new(65536, 0, 10000);
-    Evaluator::new(&NoBindings, &mut budget, Default::default())
-        .with_cancellation(&|| {
-            count.set(count.get() + 1);
-            false
-        })
-        .evaluate(&expression)
+    let mut evaluator = Evaluator::new(&NoBindings, &mut budget, Default::default());
+    let empty = evaluator
+        .apply_expression_byte_string(
+            TextFunction::Left,
+            ExpressionByteOperand::Scalar(ExpressionValue::Empty),
+            &[ExpressionValue::Empty],
+        )
         .unwrap();
-    for stop in 1..=count.get() {
-        let current = Cell::new(0);
-        let mut budget = ResourceBudget::new(65536, 0, 10000);
-        assert_eq!(
-            Evaluator::new(&NoBindings, &mut budget, Default::default())
-                .with_cancellation(&|| {
-                    current.set(current.get() + 1);
-                    current.get() == stop
-                })
-                .evaluate(&expression),
-            Err(EvalError::Cancelled),
-            "checkpoint {stop}"
+    assert_eq!(
+        evaluator.observe_byte_operand(TextFunction::Len, empty),
+        Ok(Value::Int32(0))
+    );
+
+    for (source, control, expected) in [
+        (
+            ExpressionValue::Missing,
+            ExpressionValue::Empty,
+            EvalError::NonScalarExpression,
+        ),
+        (
+            ExpressionValue::Error(11),
+            ExpressionValue::Missing,
+            EvalError::TypeMismatch,
+        ),
+        (
+            ExpressionValue::Empty,
+            ExpressionValue::Missing,
+            EvalError::NonScalarExpression,
+        ),
+        (
+            ExpressionValue::Empty,
+            ExpressionValue::Error(11),
+            EvalError::TypeMismatch,
+        ),
+    ] {
+        let result = evaluator.apply_expression_byte_string(
+            TextFunction::Left,
+            ExpressionByteOperand::Scalar(source),
+            &[control],
         );
+        assert!(matches!(result, Err(error) if error == expected));
+    }
+    let null = evaluator
+        .apply_expression_byte_string(
+            TextFunction::Mid,
+            ExpressionByteOperand::Scalar(ExpressionValue::Value(Value::Null)),
+            &[ExpressionValue::Missing, ExpressionValue::Error(11)],
+        )
+        .unwrap();
+    assert_eq!(evaluator.publish_byte_operand(null), Ok(Value::Null));
+}
+
+#[test]
+fn unicode_intermediates_charge_storage_and_all_observed_work_can_cancel() {
+    for sql in [
+        "AscW(LeftB(ChrW(55296),2))",
+        "AscW(Mid(Left('A😀Z',2),2,1))",
+    ] {
+        let expression = parse_expression(sql, Default::default()).unwrap();
+        let mut bytes = ResourceBudget::new(1, 0, 10000);
+        let mut evaluator = Evaluator::new(&NoBindings, &mut bytes, Default::default());
+        assert!(matches!(
+            evaluator.evaluate(&expression),
+            Err(EvalError::Limit(_))
+        ));
+
+        let count = Cell::new(0);
+        let mut budget = ResourceBudget::new(65536, 0, 10000);
+        Evaluator::new(&NoBindings, &mut budget, Default::default())
+            .with_cancellation(&|| {
+                count.set(count.get() + 1);
+                false
+            })
+            .evaluate(&expression)
+            .unwrap();
+        for stop in 1..=count.get() {
+            let current = Cell::new(0);
+            let mut budget = ResourceBudget::new(65536, 0, 10000);
+            assert_eq!(
+                Evaluator::new(&NoBindings, &mut budget, Default::default())
+                    .with_cancellation(&|| {
+                        current.set(current.get() + 1);
+                        current.get() == stop
+                    })
+                    .evaluate(&expression),
+                Err(EvalError::Cancelled),
+                "checkpoint {stop}"
+            );
+        }
     }
 }
 

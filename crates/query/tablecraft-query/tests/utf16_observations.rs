@@ -74,3 +74,34 @@ fn utf16_code_parameters_rebind_without_retaining_raw_values_in_the_plan() {
         );
     }
 }
+
+#[test]
+fn unicode_slices_compose_across_bound_parameters_and_grouped_results() {
+    let source = MemorySource::default();
+    let parsed = parse_query(
+        "PARAMETERS S TEXT(8),N LONG; SELECT AscW(Left(S,N)),LenB(Right(S,N)),VarType(Mid(S,1,N))",
+        Default::default(),
+    )
+    .unwrap();
+    let plan = prepare(parsed.query(), &source).unwrap();
+    for (text, code) in [("😀", -10179), ("🦀", -10178)] {
+        assert_eq!(
+            plan.execute(
+                &source,
+                &[("S", Value::Text(text.into())), ("N", Value::Int32(1))],
+                Default::default(),
+            )
+            .unwrap()
+            .rows(),
+            &[vec![Value::Int16(code), Value::Int32(2), Value::Int16(8)]]
+        );
+    }
+    assert_eq!(
+        run("SELECT Len(Left(Q.T,1)),Sum(AscW(Right(Q.T,1))) FROM (SELECT '😀' AS T UNION ALL SELECT '😁') AS Q GROUP BY Len(Left(Q.T,1))").unwrap(),
+        [vec![Value::Int32(1), Value::Int64(-17407)]]
+    );
+    assert_eq!(
+        run("SELECT Len(T) FROM (SELECT Left('😀',1) AS T) AS Q"),
+        Err(QueryError::Evaluation(EvalError::UnrepresentableText))
+    );
+}

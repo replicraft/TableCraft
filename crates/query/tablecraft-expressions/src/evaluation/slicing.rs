@@ -92,7 +92,7 @@ impl Evaluator<'_> {
         self.text(slice)
     }
 
-    fn slice_position(&mut self, value: &Value) -> Result<i32, EvalError> {
+    pub(super) fn slice_position(&mut self, value: &Value) -> Result<i32, EvalError> {
         if matches!(value, Value::Null) {
             return Err(EvalError::TypeMismatch);
         }

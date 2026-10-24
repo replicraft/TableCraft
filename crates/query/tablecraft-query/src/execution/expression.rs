@@ -249,7 +249,7 @@ impl Runtime<'_, '_> {
                         .evaluator()
                         .apply_expression_character(*function, &value)?);
                 }
-                if function.produces_bytes() {
+                if function.produces_bytes() && !function.slices_units() {
                     let operand = self.byte_call(*function, arguments, env)?;
                     return Ok(self.evaluator().publish_byte_operand(operand)?);
                 }

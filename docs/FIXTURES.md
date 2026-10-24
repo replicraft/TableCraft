@@ -2,11 +2,13 @@
 
 ## Independent raw UTF-16 observations
 
-The expanded original [byte recipe](testing/compare_byte_strings.py) checks 21,308
+The expanded original [byte recipe](testing/compare_byte_strings.py) checks 24,670
 source-free values/refusals against Python UTF-16LE byte models in both query
 commands. Added cases cover Len/AscW over complete raw units and ChrW inputs for
 every code unit D800–DFFF, plus signed spellings, byte lengths and String subtype
-inspection. Direct surrogate publication stays refused. No binary, third-party
+inspection. Ordinary Left/Right/Mid ranges now also cover omitted lengths,
+surrogate halves and maximum Long counts using Python byte ranges in multiples
+of two. Direct surrogate publication stays refused. No binary, third-party
 source or additional dependency was added. Native fixture replays and Windows
 Access were not run for this batch.
 

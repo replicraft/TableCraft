@@ -175,8 +175,21 @@ impl TextFunction {
     pub const fn produces_bytes(self) -> bool {
         matches!(
             self,
-            Self::ChrB | Self::ChrW | Self::LeftB | Self::RightB | Self::MidB | Self::StrConv
+            Self::ChrB
+                | Self::ChrW
+                | Self::Left
+                | Self::Right
+                | Self::Mid
+                | Self::LeftB
+                | Self::RightB
+                | Self::MidB
+                | Self::StrConv
         )
+    }
+
+    /// Whether this operation slices a string by UTF-16 units rather than bytes.
+    pub const fn slices_units(self) -> bool {
+        matches!(self, Self::Left | Self::Right | Self::Mid)
     }
 
     /// Whether this operation can inspect a lossless string-byte intermediate.
@@ -317,7 +330,7 @@ pub fn apply_with_context<'a>(
     if function == TextFunction::Format {
         return format::prepare(arguments, context);
     }
-    if (function.produces_bytes() && function != TextFunction::ChrW)
+    if (function.produces_bytes() && function != TextFunction::ChrW && !function.slices_units())
         || function == TextFunction::InStrB
     {
         // Byte-only producers need the owning evaluator. ChrW also retains its

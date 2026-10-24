@@ -47,6 +47,9 @@ shared budgets remain in force. A test permits only three normalization bytes
 plus two result bytes while borrowing a six-byte source, and cancels every
 observed conversion/scan/output checkpoint. A cut through a surrogate pair still
 fails with UnrepresentableText rather than emitting replacement characters.
+Nested slices consumed through [lossless UTF-16 observations](BYTE_STRING_FUNCTIONS.md#nested-utf-16-unit-slices)
+now retain those units without scalar publication; this uses a separately charged
+UTF-16 buffer for Text sources and does not change the borrowed scalar kernel.
 The pure kernels retain Text/NULL sources. SQL scalar sources now use the explicit
 conversion below. Raw byte-string functions, Space/String, substring search and
 replacement retain their separately documented profiles. No blanket

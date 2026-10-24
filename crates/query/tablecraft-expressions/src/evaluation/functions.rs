@@ -78,7 +78,7 @@ impl Evaluator<'_> {
                 let value = self.expression_operand(expression, depth + 1)?;
                 return self.apply_expression_character(function, &value);
             }
-            if function.produces_bytes() {
+            if function.produces_bytes() && !function.slices_units() {
                 let value = self.byte_call(function, arguments, depth)?;
                 return self.publish_byte_operand(value);
             }
