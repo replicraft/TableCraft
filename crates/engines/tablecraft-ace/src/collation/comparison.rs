@@ -7,6 +7,24 @@ use tablecraft_expressions::comparison::LikeSpanState;
 
 const SPACE_UNIT: u16 = b' ' as u16;
 
+/// Initial primary weights shared by every equal complete General SQL string.
+/// This deliberately omits the primary terminator and every secondary weight.
+pub(crate) fn equality_primary_prefix(
+    order: NativeSortOrder,
+    text: &str,
+    maximum_bytes: usize,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, InspectError> {
+    check(budget, cancelled)?;
+    let family = order.general_family().ok_or(InspectError::Unsupported)?;
+    let mut work = key::Work { budget, cancelled };
+    let mut key = full_key(family, text, &mut work)?;
+    key.bytes.truncate(key.primary_length.min(maximum_bytes));
+    work.tick()?;
+    Ok(key.bytes)
+}
+
 /// Compare complete decoded text using the reviewed General weight model.
 ///
 /// This is a provisional comparison policy, not native Access SQL qualification.

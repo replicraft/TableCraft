@@ -1,5 +1,6 @@
 //! Native text-order metadata, separate from decoded string comparison.
 mod comparison;
+pub(crate) use comparison::equality_primary_prefix;
 mod key;
 mod like_units;
 mod search;

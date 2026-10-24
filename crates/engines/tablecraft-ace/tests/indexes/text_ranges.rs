@@ -105,6 +105,7 @@ fn typed_all_null_and_empty_ranges_reject_wrong_index_profiles() {
     for selection in [
         TextIndexSelection::All,
         TextIndexSelection::Null,
+        TextIndexSelection::EqualityCandidates("a"),
         TextIndexSelection::Range {
             start: Included("z"),
             end: Included("a"),
@@ -143,6 +144,34 @@ fn typed_all_null_and_empty_ranges_reject_wrong_index_profiles() {
 #[test]
 fn oversize_utf16_endpoints_and_cancellation_fail_before_source_reads() {
     for oversized in ["a".repeat(256), "😀".repeat(128)] {
+        for selection in [
+            TextIndexSelection::Range {
+                start: Included(&oversized),
+                end: Unbounded,
+            },
+            TextIndexSelection::EqualityCandidates(&oversized),
+        ] {
+            let mut source = Cursor::new(copy());
+            assert!(matches!(
+                read_table_text_index_range(
+                    &mut source,
+                    CatalogScope::new(1),
+                    "TAG_GRP_TB",
+                    "TAG_GRP_NME",
+                    selection,
+                    &mut budget(),
+                    &|| false,
+                ),
+                Err(InspectError::StructureLimit)
+            ));
+            assert_eq!(source.position(), 0);
+        }
+    }
+
+    for selection in [
+        TextIndexSelection::All,
+        TextIndexSelection::EqualityCandidates("a"),
+    ] {
         let mut source = Cursor::new(copy());
         assert!(matches!(
             read_table_text_index_range(
@@ -150,29 +179,12 @@ fn oversize_utf16_endpoints_and_cancellation_fail_before_source_reads() {
                 CatalogScope::new(1),
                 "TAG_GRP_TB",
                 "TAG_GRP_NME",
-                TextIndexSelection::Range {
-                    start: Included(&oversized),
-                    end: Unbounded
-                },
+                selection,
                 &mut budget(),
-                &|| false
+                &|| true,
             ),
-            Err(InspectError::StructureLimit)
+            Err(InspectError::Cancelled)
         ));
         assert_eq!(source.position(), 0);
     }
-    let mut source = Cursor::new(copy());
-    assert!(matches!(
-        read_table_text_index_range(
-            &mut source,
-            CatalogScope::new(1),
-            "TAG_GRP_TB",
-            "TAG_GRP_NME",
-            TextIndexSelection::All,
-            &mut budget(),
-            &|| true
-        ),
-        Err(InspectError::Cancelled)
-    ));
-    assert_eq!(source.position(), 0);
 }

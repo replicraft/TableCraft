@@ -175,8 +175,10 @@ bytes protect the new profile without claiming native fixture qualification.
 
 ## Physical text cursor intervals
 
-`read_table_text_index_range` and `IndexProjectionSelection::Text` accept
-`TextIndexSelection::{All, Null, Range { start, end }}`. Every variant requires a
+The physical cursor forms accepted by `read_table_text_index_range` and
+`IndexProjectionSelection::Text` are
+`TextIndexSelection::{All, Null, Range { start, end }}`. The separate
+EqualityCandidates form is described below. Every variant requires a
 qualified single Short/Long Text index, including All/Null/empty intervals; no wrong
 carrier, missing index or unsupported descriptor becomes a sequential scan.
 Bounds borrow UTF-8 strings, accept at most 255 UTF-16 units each and are encoded
@@ -199,8 +201,8 @@ exclusive endpoint filtering occurs at leaves. Skipped subtrees and unselected
 records remain unchecked. Returned rows retain exact key re-encoding, projection
 and ownership checks. Only All retains complete traversal/count semantics; even
 an unbounded Range is a selected snapshot and must never be cached as a complete
-table. The query adapter retains its existing original filters and ordinal
-policy, without automatic text pushdown.
+table. The query adapter retains its original filters and explicit comparison
+policies; only qualified NULL tests currently supply Text index hints.
 
 The engineering example uses clap and buffers bounded tagged output:
 
@@ -220,6 +222,68 @@ fail. All source/copy hashes remain unchanged. Authored public-API tests retain
 registered cursor order, projection, early UTF-16 limits/cancellation and typed
 refusal; 512 generated opaque-key intervals protect conservative hull math.
 Native Microsoft Access qualification and SQL locale behavior remain unrun.
+
+## Conservative Short Text equality candidates
+
+`TextIndexSelection::EqualityCandidates(literal)` now selects a conservative
+superset for the existing explicit full-string General equality model. It is
+available through `read_table_text_index_range` and projected/request readers.
+Only qualified single Short Text indexes are admitted. Literal input remains
+bounded to 255 UTF-16 units; unknown descriptors, Memo, wrong typed indexes and
+invalid limits fail without fallback. This operation does not select the query's
+comparison policy or add a non-NULL text hint to `query run --auto-index`.
+
+Callers must retain and apply their original equality using the exact General
+policy of the chosen index. A returned row is a candidate, not a proven SQL
+match. For example, an accent difference or extra primary suffix can survive
+pruning. NULL is excluded. An empty/ignored literal primary stream retains all
+non-NULL keys. The resulting snapshot is partial and cannot populate a complete
+source cache, even if the chosen prefix happens to visit every non-NULL record.
+
+The selector derives at most 32 initial primary-weight bytes from the complete
+General key after SQL trailing-ASCII-space handling. It omits the primary
+terminator and secondary/tertiary weights. Equal complete model keys share these
+initial bytes; both full comparison and physical encoding ignore trailing ASCII
+spaces within the complete Short Text envelope.
+Short Text indexes encode the complete field's unit envelope, while the entry
+digest preserves the selected byte prefix. A compile-time assertion ties the
+ceiling to the digest module's retained prefix. Memo indexes can omit units after
+the native prefix, so they are rejected for this operation. These are properties
+of the current explicit General model, not native Access SQL qualification.
+
+Ascending/descending markers and primary bytes follow the index direction.
+Inclusive parent hulls retain equal-prefix extensions and duplicate separator
+boundaries; leaf keys must start with that prefix. Root/owner/key/row agreement,
+selected-row limits, cumulative work/allocations, cancellation and buffered
+publication retain their existing checks. Unselected payloads and pruned subtrees
+remain unchecked. No chosen failure becomes a complete sequential scan.
+
+The engineering example uses clap Parser and prints candidates in physical order:
+
+```sh
+cargo run --locked --offline -p tablecraft-ace --example text_range -- \
+  .cache/tablecraft-fixtures/null-indexes-20261024/Text-V2016-1.accdb \
+  --index TextDesc --mode equality-candidates --value 'Straße' --project-id
+```
+
+Eight focused selection tests cover generated strings/hulls, known equalities,
+intentional false positives, digested keys, Memo/unknown/limit refusals and sampled
+cancellation. They include 253,952 scalar-BMP/family/direction cases with stored
+trailing spaces. Existing public-API tests additionally check early UTF-16 and
+cancellation refusal before I/O, wrong carriers and an actual nullable Memo index.
+The independent [runner](testing/compare_text_equality_candidates.py) passes 824
+controls over eight immutable original 1,000-row Text inputs. Independent Jackcess
+encoders/getters supply exact candidate sets, physical order and complete trimmed
+short-key equalities; no SQL or active content runs there. Controls cover both
+General versions and directions, all four priority families, projected IDs,
+UTF-16 maxima, empty/ignored weights, accents, expansions and supplementary text.
+Corrupt-copy controls prove disjoint-child pruning, complete-read refusal and
+selected-root failure without stdout. Output-limit failures stay buffered.
+[Fixture records](FIXTURES.md#short-text-equality-candidate-evidence) retain hashes.
+
+The non-NULL query integration still needs explicit comparer/source agreement,
+whole-predicate safety and residual evaluation. Inequality bounds, Memo candidate
+pruning, performance measurements and Windows Access qualification remain open.
 
 ## References and evidence limits
 

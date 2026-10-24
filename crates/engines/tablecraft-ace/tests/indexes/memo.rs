@@ -49,7 +49,20 @@ fn nullable_memo_index_profile_uses_long_text_metadata_and_retains_null_keys() {
         .unwrap();
         assert_eq!(selected.rows(), baseline.rows());
     }
+    assert!(matches!(
+        read_table_text_index_range(
+            &mut source,
+            scope,
+            "USysRibbons",
+            "CreatedId",
+            TextIndexSelection::EqualityCandidates("a"),
+            &mut budget(),
+            &|| false,
+        ),
+        Err(InspectError::Unsupported)
+    ));
     assert_eq!(source.get_ref(), &bytes);
+
     // A malformed selected Memo key must fail rather than become a table scan.
     source.get_mut()[785 * 4096 + 480] = 0x7f;
     assert!(matches!(
