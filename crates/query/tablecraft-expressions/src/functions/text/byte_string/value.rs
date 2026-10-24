@@ -1,6 +1,7 @@
 use super::super::output::TextOutput;
 use crate::EvalError;
 use std::{fmt, ops::Range};
+use tablecraft_core::values::ExpressionString;
 
 const UTF16_UNIT_BYTES: usize = size_of::<u16>();
 
@@ -8,59 +9,63 @@ const UTF16_UNIT_BYTES: usize = size_of::<u16>();
 /// Hosts charge storage before adopting the buffer. This is an expression
 /// intermediate, not a stored Binary value or a promise of valid Unicode.
 pub struct ByteString {
-    bytes: Vec<u8>,
-    range: Range<usize>,
+    value: ExpressionString,
 }
 
 impl ByteString {
     /// Adopt an already charged buffer. Native string lengths fit signed Long.
     pub fn from_owned(bytes: Vec<u8>) -> Result<Self, EvalError> {
         i32::try_from(bytes.len()).map_err(|_| EvalError::Overflow)?;
-        let range = 0..bytes.len();
-        Ok(Self { bytes, range })
+        Ok(Self {
+            value: ExpressionString::from_owned(bytes),
+        })
     }
 
     /// Exact active bytes, without terminators, decoding or padding.
     pub fn as_bytes(&self) -> &[u8] {
-        &self.bytes[self.range.clone()]
+        self.value.as_bytes()
     }
 
     /// Byte count, representable as an Access Long.
     pub fn len(&self) -> i32 {
-        (self.range.end - self.range.start) as i32
+        self.value.len() as i32
     }
 
     /// Whether the active string contains no bytes.
     pub fn is_empty(&self) -> bool {
-        self.range.is_empty()
+        self.value.is_empty()
     }
 
     /// Retain at most `length` leading bytes without rounding byte boundaries.
-    pub fn left(mut self, length: i32) -> Result<Self, EvalError> {
+    pub fn left(self, length: i32) -> Result<Self, EvalError> {
         let length = nonnegative(length)?.min(self.as_bytes().len());
-        self.range.end = self.range.start + length;
-        Ok(self)
+        self.select(0..length)
     }
 
     /// Retain at most `length` trailing bytes without rounding byte boundaries.
-    pub fn right(mut self, length: i32) -> Result<Self, EvalError> {
+    pub fn right(self, length: i32) -> Result<Self, EvalError> {
         let length = nonnegative(length)?.min(self.as_bytes().len());
-        self.range.start = self.range.end - length;
-        Ok(self)
+        let total = self.as_bytes().len();
+        self.select((total - length)..total)
     }
 
     /// Select bytes from a one-based start, with an optional nonnegative length.
-    pub fn mid(mut self, start: i32, length: Option<i32>) -> Result<Self, EvalError> {
+    pub fn mid(self, start: i32, length: Option<i32>) -> Result<Self, EvalError> {
         if start < 1 {
             return Err(EvalError::Domain);
         }
         let length = length.map(nonnegative).transpose()?;
         let offset = ((start - 1) as usize).min(self.as_bytes().len());
-        self.range.start += offset;
-        if let Some(length) = length {
-            self.range.end = self.range.start + length.min(self.as_bytes().len());
-        }
-        Ok(self)
+        let end = self.as_bytes().len();
+        let length = length.unwrap_or(end - offset).min(end - offset);
+        self.select(offset..(offset + length))
+    }
+
+    fn select(self, range: Range<usize>) -> Result<Self, EvalError> {
+        self.value
+            .select(range)
+            .map(|value| Self { value })
+            .map_err(|_| EvalError::Domain)
     }
 
     /// Strictly publish valid UTF-16LE through a metered UTF-8 sink. Odd byte

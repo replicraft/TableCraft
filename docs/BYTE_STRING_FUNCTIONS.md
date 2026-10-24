@@ -198,6 +198,11 @@ including supplementary characters, omitted lengths and maximum Long controls.
 
 ## Remaining byte-string work
 
+The existing ByteString now uses core's [ExpressionString buffer/range](CORE_TYPES.md#lossless-expression-string-buffers).
+Function counts, clamping, Long byte bounds and strict UTF-8 publication remain
+in the expression library. This introduces a shared owned representation without
+widening stored Values, ExpressionValue or relational cells.
+
 [Binary StrComp](STRING_COMPARISON.md#lossless-binary-string-operands) now compares
 complete raw units without Unicode publication, including unpaired surrogates and
 mixed ordinary Text. Odd-byte unit comparisons remain refused; NULL mode ordering,

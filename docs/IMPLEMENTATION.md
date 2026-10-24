@@ -1,5 +1,27 @@
 # Implementation status
 
+## Shared owned expression String ranges
+
+Core now owns ExpressionString, an adopted immutable byte buffer and checked
+active range. The existing expression ByteString uses it directly. Exact nested
+selection retains the same allocation without decoding or realignment; odd bytes
+and unpaired UTF-16 units remain intact, invalid ranges return a payload-free typed
+error and Debug exposes only length. The owning expression consumer retains Long
+byte bounds, one-based/clamped slicing and metered strict Unicode publication.
+This shared boundary prepares expression/query integration without adding a stored
+Value, ExpressionValue variant, Serde format or unmetered clone operation. Raw
+relational cells remain unfinished. See [core contracts](CORE_TYPES.md#lossless-expression-string-buffers).
+
+Core all-feature tests pass, including four new controls and a fixed-seed 256-case
+range model. Twenty-nine focused expression tests, eighteen query tests and two
+CLI tests pass. Core/expression/query all-target all-feature Clippy, minimal core
+compilation, dependency boundaries, formatting and diff checks pass. The rebuilt
+CLI passes the existing independent source-free recipes: 35,336 byte controls,
+1,806 selection controls and 1,102 binary comparisons. No new dependency or fixture
+was added. Full expression/engine/workspace suites, native Windows Access and
+benchmarks were not run. Stored carriers, native readers/writers and the remaining
+backend acceptance gaps are unchanged.
+
 ## Lossless binary StrComp operands
 
 StrComp now admits raw String operands until its selected comparison mode.
