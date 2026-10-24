@@ -11,8 +11,8 @@ are 1–7 relative to the selected first day, with wraparound. Numeric operands 
 checked Long half-even conversion; abbreviate uses the current numeric/Boolean
 conversion profile and defaults to FALSE. NULL raises InvalidNullConversion in
 any supplied slot. [Legacy DATE serials](DATE_NUMERIC.md) now use the same numeric
-ordinal/Boolean conversion; calendar month/day extraction is separate. Text,
-Extended-date, binary/GUID ordinal coercion and full Variant promotion remain
+ordinal/Boolean conversion; calendar month/day extraction is separate. Extended-date,
+binary/GUID ordinal coercion and full Variant promotion remain
 outside this profile. Month 13 and alternate calendars are unsupported.
 
 Optional missing slots work without treating SQL NULL as omission. For example,
@@ -20,6 +20,37 @@ Optional missing slots work without treating SQL NULL as omission. For example,
 name of Monday. Missing required slots, qualifiers, wildcards and wrong arities
 fail before operand evaluation. Written expressions remain eager; errors inside
 arguments or unselected IIf branches are not hidden.
+
+## Numeric Text controls
+
+Evaluator calls now admit Text ordinal, abbreviation and first-day controls through
+[the shared numeric converter](NUMERIC_TEXT.md). A reached Text conversion requires
+an explicit NumberFormat (`--number-format`); this setting is independent of the
+DateTextFormat used for labels. Ordinals and first-day controls use direct checked
+Long half-even conversion without a floating intermediate. Abbreviation controls
+use the existing Boolean Text profile, including numeric nonzero and True/False.
+For example, `2.5` selects month 2, while
+`2.5000000000000000000000000000000001` selects month 3.
+
+Conversion follows existing admission order: ordinal, abbreviation, ordinal range,
+then WeekdayName first-day and label language. An invalid weekday range therefore
+fails before a later Text first-day needs conversion or number policy. NULL,
+Empty/Error, explicit system-first-day context and eager written expressions keep
+their existing rules. The parser-free recipe API continues to refuse Text; only
+the evaluator owns metered contextual conversion. Input/output limits, cumulative
+allocation/work and cancellation remain enforced.
+
+```sh
+tablecraft query eval "SELECT MonthName('10'),WeekdayName('1','False','2')" --number-format en-us --date-format en-us
+```
+
+Microsoft's [MonthName query examples](https://support.microsoft.com/en-us/access/functions/monthname-function)
+and [WeekdayName query examples](https://support.microsoft.com/en-us/access/functions/weekdayname-function)
+explicitly use Text ordinals. MS-VBAL revision 3.0 sections 6.1.2.11.1.28 and
+6.1.2.11.1.43 provide the Long/Boolean argument declarations; the
+[reviewed specification record](VARIANT_ERRORS.md#explicit-numeric-empty-and-cdec-error-rules)
+identifies the cached revision. These references and independent controls do not
+establish native Access locale/coercion/error equivalence.
 
 ## Language and first-day policies
 
@@ -78,7 +109,7 @@ defines ordinal naming and the default full-name option. Its
 defines first-day-relative numbering and the default system sentinel zero.
 [Unicode CLDR's German Gregorian data](https://github.com/unicode-org/cldr-json/blob/main/cldr-json/cldr-dates-full/main/de/ca-gregorian.json)
 provides a reference for the explicit standalone labels; CLDR is not native Access
-comparison evidence. Broader locales/calendars, full Variant/Text coercion, native
+comparison evidence. Broader locales/calendars, full Variant coercion, native
 NLS spelling, default behavior and error precedence remain unqualified. Both
 functions are **Partial** in the [built-in tracker](ACCESS_BUILTINS.md).
 

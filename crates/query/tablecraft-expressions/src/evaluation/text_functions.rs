@@ -109,6 +109,12 @@ impl Evaluator<'_> {
             && matches!(arguments.get(1), Some(Value::Text(_)))
         {
             self.contextual_date_format(arguments)?
+        } else if matches!(
+            function,
+            TextFunction::MonthName | TextFunction::WeekdayName
+        ) && function.accepts_arity(arguments.len())
+        {
+            self.contextual_calendar_name(function, arguments)?
         } else {
             text::apply_with_context(
                 function,

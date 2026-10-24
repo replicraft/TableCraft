@@ -97,3 +97,54 @@ fn missing_policy_invalid_arguments_and_flag_values_publish_nothing() {
     let result = run(&["query", "parse", "SELECT 1", "--first-day-of-week", "2"]);
     assert!(!result.status.success());
 }
+
+#[test]
+fn numeric_text_controls_use_explicit_number_policy_and_buffer_failures() {
+    for mode in ["eval", "run"] {
+        let result = run(&[
+            "query",
+            mode,
+            "SELECT MonthName('10'),MonthName('2.5000000000000000000000000000000001','True'),WeekdayName('1','False','2')",
+            "--date-format",
+            "en-us",
+            "--number-format",
+            "en-us",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(
+            rows(&result.stdout)[1],
+            ["\"October\"", "\"Mar\"", "\"Monday\""]
+        );
+
+        for expression in [
+            "MonthName('2147483647.5')",
+            "WeekdayName('1','False','bad')",
+            "MonthName('1',1/0)",
+        ] {
+            let result = run(&[
+                "query",
+                mode,
+                &format!("SELECT 1,{expression}"),
+                "--date-format",
+                "en-us",
+                "--number-format",
+                "en-us",
+            ]);
+            assert!(!result.status.success(), "{expression}");
+            assert!(result.stdout.is_empty(), "{expression}");
+        }
+        let result = run(&[
+            "query",
+            mode,
+            "SELECT MonthName('1')",
+            "--date-format",
+            "en-us",
+        ]);
+        assert!(!result.status.success());
+        assert!(result.stdout.is_empty());
+    }
+}

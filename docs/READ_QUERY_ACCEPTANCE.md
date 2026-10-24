@@ -317,3 +317,12 @@ constrained branches, without converting selected values or scanning records.
 Mixed carriers stay Dynamic. This reduces avoidable unknown metadata through
 selectors, named/derived outputs and downstream UNIONs; broader native return
 promotion and declaration inference remain open.
+
+
+Calendar-name ordinal/abbreviation/first-day Text controls now share metered
+numeric conversion under explicit NumberFormat. Long lexical half-even conversion,
+Boolean admission, validation order, request-local settings and buffered failures
+are covered through evaluator/query/CLI checks and independent Gregorian/Decimal
+controls. [Calendar names](CALENDAR_NAMES.md#numeric-text-controls) remain Partial;
+this closes a specific coercion gap without completing P0 Variant/NLS/native
+qualification or changing storage/write scope.

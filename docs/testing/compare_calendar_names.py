@@ -5,6 +5,7 @@ Jackcess supplies optional native row inputs, not native Access SQL evaluation.
 import argparse
 import csv
 import datetime as dt
+from decimal import Decimal, ROUND_HALF_EVEN
 from io import StringIO
 from pathlib import Path
 import subprocess
@@ -26,11 +27,13 @@ def weekday_name(day, first, short, profile):
     return name[:(2 if profile == 'de-de' else 3)] if short else name
 
 
-def check(cli, mode, profile, cases, first=None):
+def check(cli, mode, profile, cases, first=None, number_format=None):
     for start in range(0, len(cases), 6):
         batch = cases[start:start+6]
         sql = 'SELECT '+','.join(f'{expression} AS C{i}' for i,(expression,_) in enumerate(batch))
         options = [] if first is None else ['--first-day-of-week', str(first)]
+        if number_format is not None:
+            options.extend(['--number-format', number_format])
         result = subprocess.run([str(cli), 'query', mode, sql, '--date-format', profile, *options], capture_output=True, text=True)
         assert result.returncode == 0, (mode, profile, sql, result.stderr)
         rows = list(csv.reader(StringIO(result.stdout), delimiter='\t'))
@@ -56,6 +59,30 @@ def main():
                     for short in [False, True]:
                         cases.append((f'WeekdayName({day},{str(short)},{first})', weekday_name(day, first, short, profile)))
             controls += check(args.cli, mode, profile, cases)
+            for number_format in ['en-us', 'de-de']:
+                cases = []
+                for lexical in [
+                    '0.5000000000000000000000000000000001',
+                    '1', '1.5', '2.5',
+                    '2.5000000000000000000000000000000001',
+                    '6.5', '10', '12.49',
+                ]:
+                    ordinal = int(Decimal(lexical).to_integral_value(rounding=ROUND_HALF_EVEN))
+                    local = lexical.replace('.', ',') if number_format == 'de-de' else lexical
+                    for short in [False, True]:
+                        abbreviation = '0.00001' if short else '0'
+                        if number_format == 'de-de':
+                            abbreviation = abbreviation.replace('.', ',')
+
+                        expression = f"MonthName('{local}','{abbreviation}')"
+                        cases.append((expression, month_name(ordinal, short, profile)))
+                        if ordinal <= 7:
+                            for first in range(1, 8):
+                                expression = f"WeekdayName('{local}','{abbreviation}','{first}')"
+                                expected = weekday_name(ordinal, first, short, profile)
+                                cases.append((expression, expected))
+
+                controls += check(args.cli, mode, profile, cases, number_format=number_format)
             for first in range(1, 8):
                 cases = [(f'WeekdayName({day},{str(short)})', weekday_name(day, first, short, profile))
                          for day in range(1, 8) for short in [False, True]]
