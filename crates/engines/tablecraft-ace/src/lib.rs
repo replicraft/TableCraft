@@ -4,7 +4,7 @@ mod catalog;
 mod collation;
 pub use collation::{
     GeneralSortFamily, GeneralTextSearch, NativeSortOrder, NativeTextKey,
-    compare_general_like_units, compare_general_text, encode_text_index_key,
+    compare_general_like_units, compare_general_text, compare_general_utf16, encode_text_index_key,
     encode_utf16_text_index_key, find_general_text, general_like_literal_step,
     general_like_unit_step, inspect_database_sort_order, is_general_like_unit,
 };

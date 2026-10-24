@@ -89,3 +89,28 @@ fn raw_like_complete_units_use_explicit_general_profiles() {
         assert!(result.stdout.is_empty());
     }
 }
+
+#[test]
+fn raw_relational_comparisons_use_general_sql_space_semantics() {
+    for collation in ["general-legacy", "general-2010"] {
+        let result = run(&[
+            "query",
+            "run",
+            "SELECT S=ChrW(55296)&'a' AS A,S IN(ChrW(55296)&'A') AS B,LeftB('a',2)='A ' AS C FROM (SELECT ChrW(55296)&'A ' AS S) AS Q",
+            "--collation",
+            collation,
+        ]);
+        assert!(result.status.success(), "{:?}", result.stderr);
+        assert_eq!(result.stdout, b"A\tB\tC\nTRUE\tTRUE\tTRUE\n");
+
+        let result = run(&[
+            "query",
+            "run",
+            "SELECT ChrW(55296)=ChrW(55296),1/0",
+            "--collation",
+            collation,
+        ]);
+        assert_eq!(result.status.code(), Some(2));
+        assert!(result.stdout.is_empty());
+    }
+}

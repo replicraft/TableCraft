@@ -32,8 +32,9 @@ than silently ordering unsupported raw data. Broader raw predicate/key semantics
 and native Access qualification remain unfinished.
 
 [NULL predicates and issued-Variant category ordering](RAW_PREDICATES.md) now
-retain Strings until their result actually needs Unicode. Other non-NULL
-comparison and raw key/provider limits remain explicit.
+retain Strings until their result actually needs Unicode. Non-NULL String pairs
+now use [explicit raw-unit providers](RAW_STRING_COMPARISON.md) where supplied;
+scalar-only providers, mixed coercion and raw key limits remain explicit.
 LIKE/NOT LIKE also preserve raw String/NULL results without decoding, while
 retaining the explicit wildcard mode and eager argument failures. Non-NULL raw
 matching uses complete raw units with explicitly selected UTF-16 providers;

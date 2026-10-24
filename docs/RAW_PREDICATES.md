@@ -30,8 +30,9 @@ never infers declarations from returned values, rejects non-finite numeric input
 and leaves Boolean/Date outside this exception. Unknown/Scalar categories cannot
 activate it. Default materialized comparison behavior remains unchanged.
 
-Non-NULL comparisons outside that exception still publish raw Strings strictly
-before existing numeric/date coercion and policy-aware Text comparison. Runtime
+Non-NULL String/String comparisons now use complete raw units with explicitly
+selected [UTF-16 comparison providers](RAW_STRING_COMPARISON.md). Scalar-only
+providers and mixed numeric/date coercion retain strict Unicode publication. Runtime
 and static text policies, declarations, effective numeric selection, limits and
 cancellation stay in their existing services. This adds no Unicode replacement,
 implicit binary comparison, locale provider or raw set/sort key profile.

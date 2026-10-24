@@ -201,8 +201,9 @@ including supplementary characters, omitted lengths and maximum Long controls.
 
 [Raw NULL predicates](RAW_PREDICATES.md) now use String identity without Unicode
 publication across comparisons, lists/ranges and qualified subqueries. The explicit
-both-Variant String/numeric exception also needs no decoding. Other non-NULL
-comparisons and raw set/sort key limits remain unfinished. LIKE now consumes
+both-Variant String/numeric exception also needs no decoding. Non-NULL String pairs
+now use [explicit raw-unit comparison](RAW_STRING_COMPARISON.md); mixed coercion,
+additional providers and raw set/sort keys remain unfinished. LIKE now consumes
 complete raw units through explicitly selected UTF-16 providers, preserving
 isolated surrogates and refusing odd byte lengths; scalar-only providers retain
 strict Unicode publication. See [pattern contracts](PATTERN_MATCHING.md).

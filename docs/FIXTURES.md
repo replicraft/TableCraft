@@ -1,5 +1,18 @@
 # Candidate Access fixtures
 
+## Raw String order controls
+
+The original [raw String order runner](testing/compare_raw_string_order.py) passes
+17,345 controls against the existing reviewed short General key vectors in
+`crates/engines/tablecraft-ace/src/collation/key/tests/vectors.tsv`. It pairs both
+families' vectors of at most four units through all six SQL operators, including
+isolated surrogates, and adds list/range/subquery/refusal cases. These native-index
+vectors qualify the explicit provisional full-string model, not Microsoft Access
+SQL execution. No new third-party fixture was copied or downloaded. Existing
+raw LIKE/predicate and retained-cell runners pass 2,745/7,113/1,053 controls; the
+native-policy runner passes 1,844 controls over unchanged registered hashes.
+Native Access qualification and benchmarks remain unrun.
+
 ## Raw UTF-16 LIKE controls
 
 The original [raw LIKE runner](testing/compare_raw_like.py) passes 2,745 controls

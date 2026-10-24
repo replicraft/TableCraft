@@ -421,6 +421,13 @@ are deferred and do not block this implementation work.
 
 ## General query policy
 
+`compare_general_utf16` additionally supplies complete raw-unit SQL comparison,
+including isolated surrogates. It shares the same trailing-ASCII-space trimming
+and full-key model as decoded comparison; LIKE retains its separate literal-space
+rules. The registered independent short-key controls now include raw units that
+cannot be represented as Unicode Text. See [raw String comparison](RAW_STRING_COMPARISON.md)
+for provider opt-in, query routing and remaining raw-key/native qualification gaps.
+
 `tablecraft-access::GeneralCollation` implements the supplied backend-neutral
 `Collation` contract using `compare_general_text`. Its constructor validates an
 explicit sort descriptor and owns a caller-issued cumulative budget and borrowed

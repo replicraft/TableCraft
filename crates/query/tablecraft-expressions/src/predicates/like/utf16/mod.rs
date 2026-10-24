@@ -27,7 +27,7 @@ pub(super) fn matches(
     work: &mut Work<'_>,
 ) -> Result<Truth, EvalError> {
     let pattern = pattern::compile(pattern, mode, col, work)?;
-    let units = text.units(work)?;
+    let units = text.units(work.budget, work.cancelled)?;
     let width = units.len().checked_add(1).ok_or(EvalError::Allocation)?;
     let mut states = States {
         previous: work.buffer(width)?,

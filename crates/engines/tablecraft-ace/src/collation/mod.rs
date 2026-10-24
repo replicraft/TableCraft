@@ -5,7 +5,10 @@ mod like_units;
 mod search;
 mod sort_order;
 use crate::{InspectError, format::header_mask, header::check};
-pub use comparison::{compare_general_like_units, compare_general_text, general_like_literal_step};
+pub use comparison::{
+    compare_general_like_units, compare_general_text, compare_general_utf16,
+    general_like_literal_step,
+};
 pub use key::{NativeTextKey, encode_text_index_key, encode_utf16_text_index_key};
 pub use like_units::{general_like_unit_step, is_general_like_unit};
 pub use search::{GeneralTextSearch, find_general_text};

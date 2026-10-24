@@ -6,7 +6,10 @@ use tablecraft_ace::{InspectError, NativeSortOrder};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_expressions::{
     EvalError,
-    comparison::{Collation, LikeProfile, LikeSpanState, StringCompareMode, StringSearch},
+    comparison::{
+        Collation, LikeProfile, LikeSpanState, StringCompareMode, StringComparisonProfile,
+        StringSearch,
+    },
 };
 
 const GENERAL_LEGACY_ORDER: [u8; 4] = [9, 4, 0, 0];
@@ -61,6 +64,20 @@ pub(super) enum SelectedCollation {
     General(GeneralCollation<'static>),
 }
 impl Collation for SelectedCollation {
+    fn string_comparison_profile(&self) -> StringComparisonProfile {
+        match self {
+            Self::Ordinal => StringComparisonProfile::Unicode,
+            Self::General(policy) => policy.string_comparison_profile(),
+        }
+    }
+
+    fn compare_utf16(&self, left: &[u16], right: &[u16]) -> Result<Ordering, EvalError> {
+        match self {
+            Self::Ordinal => Err(EvalError::UnsupportedExpression),
+            Self::General(policy) => policy.compare_utf16(left, right),
+        }
+    }
+
     fn like_literal_step(
         &self,
         candidate: &[u16],

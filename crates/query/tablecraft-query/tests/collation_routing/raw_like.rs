@@ -1,50 +1,9 @@
-use super::support::*;
-use std::cmp::Ordering;
-use tablecraft_expressions::{
-    EvalError,
-    comparison::{Collation, LikeProfile},
-    predicates::LikeMode,
+use super::{
+    raw_support::{RawResolver, Units},
+    support::*,
 };
+use tablecraft_expressions::{EvalError, predicates::LikeMode};
 use tablecraft_query::source::MemorySource;
-
-struct Units(bool);
-
-impl Collation for Units {
-    fn compare(&self, _: &str, _: &str) -> Result<Ordering, EvalError> {
-        Err(EvalError::UnsupportedExpression)
-    }
-
-    fn like_profile(&self) -> LikeProfile {
-        LikeProfile::Utf16Weights
-    }
-
-    fn compare_like_units(&self, left: &[u16], right: &[u16]) -> Result<Ordering, EvalError> {
-        let fold = |unit: &u16| {
-            if self.0 && (65..=90).contains(unit) {
-                unit + 32
-            } else {
-                *unit
-            }
-        };
-        Ok(left.iter().map(fold).cmp(right.iter().map(fold)))
-    }
-
-    fn is_like_unit(&self, units: &[u16]) -> Result<bool, EvalError> {
-        Ok(units.len() == 1)
-    }
-}
-
-struct RawResolver;
-
-impl CollationResolver for RawResolver {
-    fn resolve(&self, id: TextCollationId) -> Result<&dyn Collation, QueryError> {
-        match id.host_key() {
-            1 => Ok(&Units(true)),
-            2 => Ok(&Units(false)),
-            _ => Err(EvalError::CollationRequired.into()),
-        }
-    }
-}
 
 #[test]
 fn raw_like_uses_explicit_unit_provider_through_derived_rows_and_filters() {

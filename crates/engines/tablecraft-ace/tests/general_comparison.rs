@@ -1,6 +1,9 @@
 use proptest::prelude::*;
 use std::{cell::Cell, cmp::Ordering};
-use tablecraft_ace::{InspectError, NativeSortOrder, compare_general_text, encode_text_index_key};
+use tablecraft_ace::{
+    InspectError, NativeSortOrder, compare_general_text, compare_general_utf16,
+    encode_text_index_key,
+};
 use tablecraft_core::limits::ResourceBudget;
 
 fn budget() -> ResourceBudget {
@@ -81,9 +84,6 @@ fn short_comparisons_agree_with_independent_complete_key_vectors() {
         if units.len() > 255 {
             continue;
         }
-        let Ok(text) = String::from_utf16(&units) else {
-            continue;
-        };
         let key: Vec<_> = fields[2]
             .as_bytes()
             .as_chunks::<2>()
@@ -91,7 +91,7 @@ fn short_comparisons_agree_with_independent_complete_key_vectors() {
             .iter()
             .map(|part| u8::from_str_radix(std::str::from_utf8(part).unwrap(), 16).unwrap())
             .collect();
-        cases.push((fields[0].parse::<u8>().unwrap(), text, key));
+        cases.push((fields[0].parse::<u8>().unwrap(), units, key));
     }
     // Pair every independent vector with its peers; a widened suffix must not
     // change short-value equality or order. These are index-model observations,
@@ -99,10 +99,14 @@ fn short_comparisons_agree_with_independent_complete_key_vectors() {
     for (version, left, key) in &cases {
         for (_, right, other) in cases.iter().filter(|(v, _, _)| v == version) {
             assert_eq!(
-                compare(*version, left, right),
-                key.cmp(other),
-                "version {version}: {left:?} / {right:?}"
+                compare_general_utf16(order(*version), left, right, &mut budget(), &|| false,)
+                    .unwrap(),
+                key.cmp(other)
             );
+
+            if let (Ok(left), Ok(right)) = (String::from_utf16(left), String::from_utf16(right)) {
+                assert_eq!(compare(*version, &left, &right), key.cmp(other));
+            }
         }
     }
 }
