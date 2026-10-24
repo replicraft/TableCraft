@@ -17,6 +17,14 @@ pinned source/helper/input/JAR/executable hashes match after replay. Existing re
 code handles this workload without a production change. Larger Memo projections
 use explicitly larger work pools; default byte/row/output limits remain unchanged.
 
+A freshly rebuilt immutable CLI additionally passes 197 independent replay
+controls: 92 cached-value, 60 advanced-evolution and 45 mixed-scalar-history checks.
+The latter compare 19,902 retained rows per ACE 16, ACE 2007 and Jet 4 file against
+independent getters and the original value model. Original input hashes remain
+unchanged. The minimal query build passes; normal incremental builds remain enabled.
+The [closeout record](testing/results/read-query-closeout-2026-10-24.json) retains
+the executable/source identity, exact scope and replay counts.
+
 These checks strengthen the published stable/offline profile. They do not complete
 all Partial expression contracts, calculated freshness, native text precedence,
 coherent live reads or native Access compatibility acceptance.
