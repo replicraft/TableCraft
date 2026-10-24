@@ -115,8 +115,8 @@ fn binary_logical_returns_use_both_operand_categories() {
 #[test]
 fn nulls_errors_unknown_categories_and_longlong_limits_remain_explicit() {
     for sql in [
-        "SELECT CInt(7)\\(Not First(CInt(1)))",
-        "SELECT CInt(7)\\(First(CInt(1)) And CInt(-1))",
+        "SELECT CInt(-32768)\\(Not First(CInt(0)))",
+        "SELECT CInt(-32768)\\(First(CInt(-1)) And CInt(-1))",
     ] {
         assert_eq!(run(sql, true), Err(QueryError::ArithmeticDeclaration));
     }

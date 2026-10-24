@@ -1,5 +1,31 @@
 # Implementation status
 
+## Unknown binary arithmetic with agreeing outcomes
+
+The explicit declared-arithmetic profile now permits unknown operand provenance
+when its implemented Scalar and Variant outcomes agree. A shared numeric service
+computes one materialized result and checks selected integral/Single/legacy Date
+widths. Retained results keep unknown provenance; declaration-dependent widening
+remains refused. Known Scalar overflow and known Variant widening retain their
+contracts. Common conversion/arithmetic errors no longer become unknown-category
+refusals. See [agreement scope](DECLARED_ARITHMETIC.md#binary-arithmetic-with-unknown-provenance).
+
+Contextual numeric Text and rounded quotient operands reuse existing metered
+services. Tests check exact byte/work charges, every observed conversion
+cancellation checkpoint, once-only Rnd operand evaluation, prepared rebinding,
+late buffered failures and continued ambiguity in later consumers. Exhaustive
+Byte-pair agreement tests use independent wide-integer results and literal bounds.
+All 684 all-feature expression tests plus one doctest, 360 minimal expression
+tests, 45 focused query tests and 17 CLI tests pass. Expression all-target/all-feature
+Clippy, focused query/CLI Clippy, minimal query check, formatting and diff checks pass.
+
+The independent SQL declaration runner passes 5,550 source-free controls, including
+596 new narrow-integer arithmetic/quotient cases. Python integers independently
+model exact values, bounds and signed truncating division. Native database inputs,
+Windows Access, full engine/workspace suites and benchmarks were not run. No
+dependency, default execution, native format or writer scope changed. Full P0
+semantics and native declaration qualification remain unfinished.
+
 ## Unknown unary negation with agreeing outcomes
 
 Explicit declared-arithmetic execution now permits an unknown Integer, Long or

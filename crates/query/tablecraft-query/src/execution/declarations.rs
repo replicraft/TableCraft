@@ -19,13 +19,11 @@ use tablecraft_sql::select::{BinaryOperator as B, UnaryOperator as U};
 fn resolved(
     left: Option<OperandDeclaration>,
     right: Option<OperandDeclaration>,
-) -> Result<ArithmeticDeclarations, QueryError> {
-    if combined(left, right).is_none() {
-        return Err(QueryError::ArithmeticDeclaration);
-    }
+) -> Option<ArithmeticDeclarations> {
+    combined(left, right)?;
     // A known Variant participant establishes widening independently of the
     // other category. Unknown never establishes that both operands are scalar.
-    Ok(ArithmeticDeclarations {
+    Some(ArithmeticDeclarations {
         left: left.unwrap_or(OperandDeclaration::Scalar),
         right: right.unwrap_or(OperandDeclaration::Scalar),
     })
@@ -59,27 +57,30 @@ impl Runtime<'_, '_> {
             _ => return Err(QueryError::Unsupported),
         };
         let value = if self.options.declared_integral
-            && operator == B::IntegerDivide
-            && uses_declared_overflow(Arithmetic::IntegerDivide, &left, &right)
-        {
-            let declarations = resolved(declarations.0, declarations.1)?;
-            self.evaluator().apply_declared_rounded_arithmetic(
-                operation.ok_or(QueryError::Unsupported)?,
-                &left,
-                &right,
-                declarations,
-            )?
-        } else if self.options.declared_integral
             && let Some(operation) = operation
             && uses_declared_overflow(operation, &left, &right)
         {
-            let declarations = resolved(declarations.0, declarations.1)?;
-            self.evaluator().apply_declared_numeric_arithmetic(
-                operation,
-                &left,
-                &right,
-                declarations,
-            )?
+            if let Some(declarations) = resolved(declarations.0, declarations.1) {
+                if operation == Arithmetic::IntegerDivide {
+                    self.evaluator().apply_declared_rounded_arithmetic(
+                        operation,
+                        &left,
+                        &right,
+                        declarations,
+                    )?
+                } else {
+                    self.evaluator().apply_declared_numeric_arithmetic(
+                        operation,
+                        &left,
+                        &right,
+                        declarations,
+                    )?
+                }
+            } else {
+                self.evaluator()
+                    .apply_arithmetic_agreement(operation, &left, &right)?
+                    .ok_or(QueryError::ArithmeticDeclaration)?
+            }
         } else {
             self.evaluator().apply_binary(operator, &left, &right)?
         };

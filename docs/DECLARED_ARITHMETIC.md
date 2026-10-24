@@ -21,6 +21,8 @@ unsigned quotient carrier. Int64 integral addition/subtraction/multiplication,
 Int64-selected integer division and Int64 negation retain checked Int64 behavior
 in both categories. Byte/Boolean negation always fits its existing Int16 result.
 These paths now execute even when their aggregate/UNION provenance is unknown.
+Other selected-width operations additionally use the
+[per-operation agreement check](#binary-arithmetic-with-unknown-provenance).
 
 The same public `uses_declared_overflow` dispatch predicate now selects contextual
 rounded quotient operations for the query layer. It neither converts inputs nor
@@ -127,8 +129,9 @@ UNION outputs deliberately have unknown declaration, even when one arm is empty.
 Ordinary SQL aggregate results and unclassified functions also remain unknown.
 Reviewed domain functions carry their documented Variant return category below.
 A selected input row cannot establish a function's declaration. Non-NULL integral-result
-arithmetic requiring an unknown category fails with ArithmeticDeclaration unless
-a known Variant participant already establishes widening. An explicit cast or
+arithmetic with unknown categories uses the agreement check below. A widening
+result still fails with ArithmeticDeclaration unless a known Variant participant
+already establishes widening. An explicit cast or
 CVar can supply the caller's intended category. NULL propagation, integral
 Double-result division/power and the fixed-width cases below do not require this
 width decision.
@@ -950,9 +953,10 @@ Variant rules give the same successful result within that carrier. Negation runs
 once, after ordinary eager operand evaluation. This does not infer a declaration:
 the output retains unknown provenance for every later consumer.
 
-For example, `-First(CInt(2))` now returns Integer -2. Adding a narrow Integer to
-that result still requires declaration provenance under the existing binary
-profile; wrapping the result in CVar explicitly supplies Variant provenance.
+For example, `-First(CInt(2))` now returns Integer -2. Later binary arithmetic
+also uses agreement where available, but an operation requiring widening still
+needs declaration provenance; wrapping the result in CVar explicitly supplies
+Variant provenance.
 `-First(CInt(-32768))`, `-First(CLng(-2147483648))` and an out-of-envelope Date
 negation still report ArithmeticDeclaration: Scalar would overflow, while Variant
 would widen. Known Scalar inputs retain Overflow and known Variant inputs retain
@@ -965,3 +969,36 @@ coercion/Variant exception are specified in MS-VBAL section 5.6.9.3.1, using the
 dated reference recorded above. Prepared executions recheck each input; a prior
 successful value, failure or cancellation never changes the plan's category.
 No extra source scan, operand evaluation, conversion provider or allowance is used.
+
+## Binary arithmetic with unknown provenance
+
+The explicit declared-arithmetic policy now evaluates unknown-category arithmetic
+when the implemented Scalar and Variant branches agree for the evaluated operands.
+The shared numeric service computes one materialized result and checks whether it
+retains the selected integral, Single or legacy Date carrier. A retained result
+is usable without assigning either category. Widening reports ArithmeticDeclaration
+when provenance is unknown; known Scalar inputs still report Overflow and a known
+Variant participant still permits widening. Double/fixed-point and other existing
+category-independent operations retain their profiles.
+
+For example, `First(CInt(2))+CInt(1)` returns Integer 3, while
+`First(CInt(32767))+CInt(1)` still requires a declaration. The successful sum retains
+unknown provenance: a comparison using it does not gain a Scalar/Variant category,
+and a later operation that needs widening still refuses. Empty UNION arms and
+selected rows never manufacture static declarations. Prepared execution checks
+actual operands on each run without changing metadata or the plan.
+
+`numeric::arithmetic_agreement` returns Some(value) for agreement, None for a
+successful materialized result whose Scalar branch would overflow, or the common
+validation/conversion/arithmetic error. NULL is Some(NULL), not ambiguity.
+`Evaluator::apply_arithmetic_agreement` reuses contextual Text conversion and the
+same metered rounded-operand service as declared integer division. Each operand
+expression runs once, Text is normalized once and no second evaluation or fresh
+allowance is used to compare branches. Standalone numeric kernels remain policy-free.
+
+An unknown category no longer masks a common division-by-zero, invalid-number,
+conversion-range, cancellation or resource failure. Those failures retain their
+ordinary typed errors; this specifies the engineering policy rather than native
+Access error precedence. The existing reviewed MS-VBAL arithmetic/overflow tables
+remain the reference. Default execution and native declaration qualification are
+unchanged; this does not complete P0 promotion or native SQL compatibility.

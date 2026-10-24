@@ -96,9 +96,9 @@ fn differing_scalar_variant_outcomes_still_require_explicit_provenance() {
 #[test]
 fn agreement_does_not_assign_a_declaration_or_hide_operand_failures() {
     for sql in [
-        "SELECT -First(CInt(2))+CInt(1)",
-        "SELECT Q.N+CInt(1) FROM (SELECT -First(CInt(2)) AS N) AS Q",
-        "SELECT -First(CDate(2))+CDate(1)",
+        "SELECT -First(CInt(2))+CInt(-32767)",
+        "SELECT Q.N+CInt(-32767) FROM (SELECT -First(CInt(2)) AS N) AS Q",
+        "SELECT -First(CDate(2))+CDate(-657434)",
     ] {
         assert_eq!(
             run(sql, true),

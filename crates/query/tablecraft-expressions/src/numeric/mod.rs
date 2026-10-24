@@ -14,7 +14,7 @@ pub(crate) use compare::compare;
 #[cfg(feature = "sql")]
 pub(crate) use promotion::integer_operand_conversion;
 pub use promotion::{
-    ArithmeticDeclarations, OperandDeclaration, declared_integral_arithmetic,
+    ArithmeticDeclarations, OperandDeclaration, arithmetic_agreement, declared_integral_arithmetic,
     declared_numeric_arithmetic, promoted_arithmetic, promoted_negate, uses_declared_overflow,
 };
 

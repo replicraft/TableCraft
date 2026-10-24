@@ -6,7 +6,7 @@ use crate::{
     functions::conversions::Conversion,
     numeric::{Arithmetic, integer},
 };
-pub use numeric::{declared_numeric_arithmetic, uses_declared_overflow};
+pub use numeric::{arithmetic_agreement, declared_numeric_arithmetic, uses_declared_overflow};
 use tablecraft_core::values::Value;
 
 /// Caller-established declaration category, separate from a value's carrier.
@@ -65,17 +65,20 @@ pub fn declared_integral_arithmetic(
     {
         return Ok(result);
     }
-    let retains_carrier = matches!(
-        (integral_target(left, right), &result),
+    if !retains_integral_carrier(integral_target(left, right), &result) {
+        return Err(EvalError::Overflow);
+    }
+    Ok(result)
+}
+
+fn retains_integral_carrier(target: Conversion, result: &Value) -> bool {
+    matches!(
+        (target, result),
         (Conversion::Byte, Value::Byte(_))
             | (Conversion::Integer, Value::Int16(_))
             | (Conversion::Long, Value::Int32(_))
             | (Conversion::LongLong, Value::Int64(_))
-    );
-    if !retains_carrier {
-        return Err(EvalError::Overflow);
-    }
-    Ok(result)
+    )
 }
 
 #[cfg(test)]

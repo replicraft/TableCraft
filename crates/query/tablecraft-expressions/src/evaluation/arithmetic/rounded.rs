@@ -20,6 +20,25 @@ impl Evaluator<'_> {
         declarations: ArithmeticDeclarations,
     ) -> Result<Value, EvalError> {
         self.check(0)?;
+        self.rounded_binary_with(
+            operator,
+            left,
+            right,
+            Value::Null,
+            |operator, left, right| {
+                numeric::declared_integral_arithmetic(operator, left, right, declarations)
+            },
+        )
+    }
+
+    pub(super) fn rounded_binary_with<T>(
+        &mut self,
+        operator: Arithmetic,
+        left: &Value,
+        right: &Value,
+        null: T,
+        compute: impl FnOnce(Arithmetic, &Value, &Value) -> Result<T, EvalError>,
+    ) -> Result<T, EvalError> {
         if !matches!(operator, Arithmetic::IntegerDivide | Arithmetic::Modulo) {
             return Err(EvalError::UnsupportedExpression);
         }
@@ -29,12 +48,12 @@ impl Evaluator<'_> {
         }
 
         if matches!(left, Value::Null) || matches!(right, Value::Null) {
-            return Ok(Value::Null);
+            return Ok(null);
         }
         let target = numeric::integer_operand_conversion(left, right)?;
         let left = self.apply_conversion(target, left)?;
         let right = self.apply_conversion(target, right)?;
-        numeric::declared_integral_arithmetic(operator, &left, &right, declarations)
+        compute(operator, &left, &right)
     }
 }
 
