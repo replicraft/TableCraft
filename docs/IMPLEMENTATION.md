@@ -1,5 +1,18 @@
 # Implementation status
 
+## Stored attachment FileData queries
+
+Explicit `--collections` now exposes exact stored FileData Binary envelopes along
+with metadata, without running a decoder. `--decoded-attachments` retains its
+separate original-file representation. Actual declarations are metadata-only;
+complete caches, member alignment, payload pruning, resource controls and opaque
+unknown/empty wrappers remain explicit. See [stored FileData](STORED_ATTACHMENT_DATA.md).
+
+Thirteen engine, 23 adapter and nine CLI tests pass with scoped Clippy. The
+independent replay passes 396 getter/type/query controls across unchanged fresh
+ACE 2007/2016/2019 inputs using a pinned immutable executable. Native SQL/DAO
+byte-equivalence and broader collection membership semantics remain unqualified.
+
 ## Retained String reversal
 
 SQL StrReverse now retains reversed complete UTF-16 units across raw-aware

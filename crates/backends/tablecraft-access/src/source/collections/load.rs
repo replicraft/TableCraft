@@ -176,10 +176,11 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
                 cell.set(snapshot).map_err(|_| QueryError::Source)?;
             }
             let snapshot = cell.get().ok_or(QueryError::Source)?;
-            if member
-                .column()
-                .name()
-                .eq_ignore_ascii_case(payload::FILE_DATA)
+            if self.decoded_attachments
+                && member
+                    .column()
+                    .name()
+                    .eq_ignore_ascii_case(payload::FILE_DATA)
             {
                 let decoded = &cache.snapshots[owner].decoded;
                 if decoded.get().is_none() {

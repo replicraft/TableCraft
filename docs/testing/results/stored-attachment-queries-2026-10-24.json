@@ -1,0 +1,109 @@
+{
+  "date": "2026-10-24",
+  "scope": "Independent stored attachment physical Binary and explicit query-model comparison; no native Microsoft Access SQL/DAO byte equivalence qualification",
+  "binary": {
+    "path": ".cache/tablecraft-bin/tablecraft-read-query-20261024-r2",
+    "sha256": "277d60db9305625b510417e7e7c64ce125a48dd71914f8ea02b26226017260c8"
+  },
+  "inputs": [
+    {
+      "path": "docs/testing/AttachmentFixture.java",
+      "bytes": 5309,
+      "sha256": "97d8012bef975401e153cc214cd2d05edcd5c1f34db5425c45c5abfe76a59201"
+    },
+    {
+      "path": "docs/testing/AttachmentStoredDataOracle.java",
+      "bytes": 3271,
+      "sha256": "26bb1bf45b6eea445bc1c90faf3149b85e38bbfcab7be39d800bdeec70242d2e"
+    },
+    {
+      "path": "docs/testing/compare_attachment_queries.py",
+      "bytes": 24682,
+      "sha256": "be317ae8cd995e170cff58bb8ae12086115734e1fa9a58ac0b51af7f7389b3ab"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+      "bytes": 1407244,
+      "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/stored-file-data-20261024/V2007.accdb",
+      "bytes": 376832,
+      "sha256": "9d573241dab5feb6b488799ff5964babbb79be33bb77e419a9984d6fbe2a231f"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/stored-file-data-20261024/V2016.accdb",
+      "bytes": 409600,
+      "sha256": "d8a365d911e8f707f41f31b90fa7830b9e442e70c71c43289f13f455e16ff292"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/stored-file-data-20261024/V2019.accdb",
+      "bytes": 483328,
+      "sha256": "b2c14c78cbe8d79f545214ddb1f038bfa28ad4952d00372ba092bcb9af5f6505"
+    }
+  ],
+  "sources": [
+    {
+      "path": "crates/backends/tablecraft-access/src/source/collections/load.rs",
+      "sha256": "e64d090fd3673600ef652241eed6d1563c5a92a3938fa99d827c1978e3a78a60"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/source/collections/payload.rs",
+      "sha256": "4fadae7d3db98224daa10ea95e1f79e3f356b46ff9d759d0f77b3c8f92cb4266"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/source/collections.rs",
+      "sha256": "503dc56a0fd2b4d5529603c5d046ce372744b4864621eeb7403bc5fe1a599aec"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/source.rs",
+      "sha256": "a1c431d65a4d31fce0202ae9e711245c67c89a82bfd852c9e94b110503ce38d5"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/attachments/declaration.rs",
+      "sha256": "f689aebe2f46d77229ad5352e7f1900063d8175dbf3a2958038dec86ce39ec62"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/attachments/discovery.rs",
+      "sha256": "fe2aaf7f830058b2869489ea1ac888a0c285f9dd1ad9bcc32b40b8f1a7a0216f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/attachments/metadata.rs",
+      "sha256": "412ad66c24875add062e6d5df60e47a86aca86fe1731f02ab192b794a6179fb5"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/attachments/mod.rs",
+      "sha256": "0b9de525fe28ff4728fd7cebaea8ff4d62083929033e39c1f1022079f9155cff"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/attachments/read.rs",
+      "sha256": "75098aba8a7687642cd953edb9c7e88015e5d08b3082299247e1aee83ad312ae"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/attachments/record.rs",
+      "sha256": "be12921033fec43d76b16ca0223418c1190a2fd36c303940feff8be689f039fd"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/attachments/schema.rs",
+      "sha256": "319ba59cbcd7ab100733476f08eaac1c8ebb872ad3dbd32a9bad8d846829426d"
+    }
+  ],
+  "results": [
+    {
+      "collation": "ordinal",
+      "exit_code": 0,
+      "stdout": "Unchanged source b2c14c78cbe8d79f545214ddb1f038bfa28ad4952d00372ba092bcb9af5f6505\nPassed 198 attachment query model controls with ordinal policy\n",
+      "stderr": ""
+    },
+    {
+      "collation": "database",
+      "exit_code": 0,
+      "stdout": "Unchanged source b2c14c78cbe8d79f545214ddb1f038bfa28ad4952d00372ba092bcb9af5f6505\nPassed 198 attachment query model controls with database policy\n",
+      "stderr": ""
+    }
+  ],
+  "controls_per_policy": 198,
+  "total_controls": 396,
+  "hashes_unchanged": true,
+  "timings": null
+}

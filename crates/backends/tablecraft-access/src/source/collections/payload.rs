@@ -6,7 +6,6 @@ use tablecraft_core::{
     values::Value,
 };
 use tablecraft_query::QueryError;
-use tablecraft_schema::{CollectionMember, Column, ScalarType};
 
 pub(super) const FILE_DATA: &str = "FileData";
 const COPY_BLOCK_BYTES: usize = 4096;
@@ -18,42 +17,6 @@ fn check(budget: &mut ResourceBudget, cancelled: &dyn Fn() -> bool) -> Result<()
     budget.charge(Resource::Steps, 1)?;
     Ok(())
 }
-fn owned(value: &str, budget: &mut ResourceBudget) -> Result<String, QueryError> {
-    budget.charge_allocation(value.len() as u64, 1)?;
-    let mut result = String::new();
-    result
-        .try_reserve_exact(value.len())
-        .map_err(|_| QueryError::Allocation)?;
-    result.push_str(value);
-    Ok(result)
-}
-pub(super) fn declare(
-    members: &mut Vec<CollectionMember>,
-    budget: &mut ResourceBudget,
-    cancelled: &dyn Fn() -> bool,
-) -> Result<(), QueryError> {
-    let metadata_len = members.len();
-    for index in 0..metadata_len {
-        check(budget, cancelled)?;
-        budget.charge(Resource::Steps, index as u64)?;
-        let name = members[index].collection().as_str();
-        if members[..index]
-            .iter()
-            .any(|other| other.collection().as_str().eq_ignore_ascii_case(name))
-        {
-            continue;
-        }
-        let collection = owned(name, budget)?;
-        let column = Column::new(owned(FILE_DATA, budget)?, ScalarType::Binary, true)?;
-        budget.charge_allocation(1, size_of::<CollectionMember>() as u64)?;
-        members
-            .try_reserve_exact(1)
-            .map_err(|_| QueryError::Allocation)?;
-        members.push(CollectionMember::new(collection, column)?);
-    }
-    check(budget, cancelled)
-}
-
 pub(super) struct DecodedFiles {
     parents: Vec<Vec<Value>>,
 }

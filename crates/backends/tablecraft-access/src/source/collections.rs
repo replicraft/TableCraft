@@ -58,7 +58,7 @@ impl NativeField<'_> {
     fn value(&self, parent: usize, child: usize) -> Option<&Value> {
         match self {
             Self::Value(column) => column.value(parent, child),
-            Self::Attachment(column, member) => column.metadata_value(parent, child, member),
+            Self::Attachment(column, member) => column.stored_value(parent, child, member),
             Self::AttachmentMetadata(column, member) => {
                 column.metadata_value(parent, child, member)
             }
@@ -139,19 +139,6 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 );
                 members.push(declaration.into_member());
             }
-            if self.decoded_attachments {
-                payload::declare(&mut members, &mut budget, self.cancelled)?;
-                // Decoded FileData declarations are appended and remain Binary.
-                let extra = members.len() - text_collations.len();
-                budget
-                    .charge_allocation(extra as u64, size_of::<Option<TextCollationId>>() as u64)
-                    .map_err(|error| query_error(error.into()))?;
-                text_collations
-                    .try_reserve_exact(extra)
-                    .map_err(|_| QueryError::Allocation)?;
-                text_collations.resize(members.len(), None);
-            }
-
             // FileData declarations above apply only to attachment collections.
             // Histories use their actual hidden field and native member names.
             budget

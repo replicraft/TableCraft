@@ -189,6 +189,35 @@ fn decoded_attachment_queries_require_explicit_opt_in_and_buffer_late_errors() {
         bytes[20] = code;
         let database = Database::new(bytes.clone());
         let sql = "SELECT Id,Score.FileData AS Data FROM Items";
+        let raw = run(&[
+            "query",
+            "run",
+            sql,
+            "--database",
+            database.path(),
+            "--collections",
+        ]);
+        assert!(
+            raw.status.success(),
+            "{}",
+            String::from_utf8_lossy(&raw.stderr)
+        );
+        let hex = |bytes: &[u8]| {
+            bytes
+                .iter()
+                .map(|byte| format!("{byte:02x}"))
+                .collect::<String>()
+        };
+        assert_eq!(
+            raw.stdout,
+            format!(
+                "Id\tData\n1\t0x{}\n1\tNULL\n2\t0x{}\n3\tNULL\n",
+                hex(attachment_fixture::PAYLOAD),
+                hex(&empty_file)
+            )
+            .as_bytes()
+        );
+
         let result = run(&[
             "query",
             "run",
@@ -321,7 +350,6 @@ fn decoded_attachment_queries_require_explicit_opt_in_and_buffer_late_errors() {
         );
         assert_eq!(aligned_hidden.stdout, b"Id\n");
         for options in [
-            vec!["--collections"],
             vec!["--decoded-attachments"],
             vec!["--multivalues", "--decoded-attachments"],
         ] {
@@ -379,7 +407,8 @@ fn collections_flag_exposes_aligned_attachment_metadata_and_preserves_value_quer
             String::from_utf8_lossy(&result.stderr)
         );
         assert_eq!(result.stdout, b"Id\tN\n1\t1\n2\t1\n3\t0\n");
-        for sql in ["SELECT Score.FileData FROM Items", "SELECT * FROM Items"] {
+        {
+            let sql = "SELECT * FROM Items";
             let result = run(&[
                 "query",
                 "run",

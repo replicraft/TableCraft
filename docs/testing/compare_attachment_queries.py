@@ -23,11 +23,12 @@ def main():
     parser.add_argument("--collation", choices=("ordinal", "database"), default="ordinal")
     args = parser.parse_args()
     assert digest(args.jar) == JACKCESS_SHA256, "Expected reviewed Jackcess artifact"
+    cli_before = digest(args.cli)
     controls = 0
     for path in [args.ace2007, args.ace2016, args.ace2019]:
         before = digest(path)
         tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "AttachmentFixture.java", "--query-metadata", path)
-        parents, children, child_ids = {}, {}, {}
+        parents, children, child_ids, encoded_payloads = {}, {}, {}, {}
         for line in tagged.splitlines():
             cells = line.split("\t")
             if cells[0] == "P":
@@ -35,10 +36,12 @@ def main():
                 parents[cells[1]] = cells[2]
                 children[cells[1]] = []
                 child_ids[cells[1]] = []
+                encoded_payloads[cells[1]] = []
             else:
                 assert len(cells) == 8 and cells[0] in parents
                 children[cells[0]].append([cells[2], cells[3], cells[4], cells[6], cells[7]])
                 child_ids[cells[0]].append(cells[1])
+                encoded_payloads[cells[0]].append(cells[5])
         assert len(parents) == 2 and sum(map(len, children.values())) == 6
         options = ["--database", path, "--collections", "--native-bytes", "67108864", "--collation", args.collation]
         names = ["FileURL", "FileName", "FileType", "FileTimeStamp", "FileFlags"]
@@ -88,6 +91,32 @@ def main():
             decoded_ids[parent].append(child_id)
         assert decoded_ids == child_ids
         assert all(len(payloads[p]) == len(children[p]) for p in parents)
+        # Check the physical OLE declaration and raw flat carrier independently
+        # of the public encoded getter used by the original metadata recipe.
+        physical = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "AttachmentStoredDataOracle.java", path)
+        declaration, *physical_rows = physical.splitlines()
+        assert declaration == "D\tFileData\tOLE\tBinary"
+        expected_physical = ["\t".join(["C", parent, identity, value]) for parent in parents for identity, value in zip(child_ids[parent], encoded_payloads[parent], strict=True)]
+        assert physical_rows == expected_physical
+        controls += 1
+        assert any(encoded_payloads[p][i] != value for p in parents for i, value in enumerate(payloads[p]))
+        controls += 1
+        # Default FileData exposes exact opaque storage, preserving alignment in
+        # either projection order. The decoded view remains an explicit choice.
+        for positions in [[0], [1, 0], [0, 1, 2], [2, 1, 0]]:
+            raw_names = ["FileData", "FileName", "FileType"]
+            selected = [raw_names[i] for i in positions]
+            sql = "SELECT ID," + ",".join("Files." + name + " AS " + name for name in selected) + " FROM Collections"
+            expected = "ID\t" + "\t".join(selected) + "\n"
+            for parent, identity in parents.items():
+                for index, child in enumerate(children[parent] or [["N"] * len(names)]):
+                    values = [encoded_payloads[parent][index] if children[parent] else "N", child[1], child[2]]
+                    expected += display(identity) + "\t" + "\t".join(display(values[i]) for i in positions) + "\n"
+            assert run(args.cli, "query", "run", sql, *options) == expected, (path, sql)
+            controls += 1
+        expected = "ID\tN\n" + "".join(display(identity) + "\t" + str(len(encoded_payloads[parent])) + "\n" for parent, identity in parents.items())
+        assert run(args.cli, "query", "run", "SELECT ID,Count(Files.FileData) AS N FROM Collections GROUP BY ID ORDER BY ID", *options) == expected
+        controls += 1
         decoded_options = [*options, "--decoded-attachments"]
         for with_names in [False, True]:
             sql = "SELECT ID," + ("Files.FileName AS Name," if with_names else "") + "Files.FileData AS Data FROM Collections"
@@ -230,6 +259,18 @@ def main():
         with tempfile.TemporaryDirectory(prefix="tablecraft-query-attachments-") as directory:
             bad = Path(directory) / "bad.accdb"
             bad.write_bytes(changed)
+            # Corrupted wrapper checksums do not change the opaque raw carrier.
+            raw_options = ["--database", bad, "--collections", "--native-bytes", "67108864", "--collation", args.collation]
+            sql = "SELECT Files.FileData AS Data FROM Collections"
+            expected = "Data\n"
+            for parent in parents:
+                for value in encoded_payloads[parent] or ["N"]:
+                    raw_value = bytes.fromhex(value[1:]) if value != "N" else None
+                    if raw_value == encoded:
+                        raw_value = encoded[:-1] + bytes([encoded[-1] ^ 1])
+                    expected += display("N" if raw_value is None else "X" + raw_value.hex()) + "\n"
+            assert run(args.cli, "query", "run", sql, *raw_options) == expected
+            controls += 1
             bad_options = ["--database", bad, "--collections", "--decoded-attachments", "--native-bytes", "67108864"]
             for sql in ["SELECT Files.FileData FROM Collections", "SELECT TOP 1 Files.FileData FROM Collections", "SELECT Files.FileData FROM Collections WHERE ID=999", "SELECT TOP 1 Files.FileName FROM Collections WHERE Files.FileData IS NOT NULL", "SELECT TOP 1 A.ID FROM Collections AS A,Collections AS B WHERE A.Files.FileData IS NULL", "SELECT TOP 1 A.Files.FileName FROM Collections AS A,Collections AS B WHERE False AND B.Files.FileData IS NULL", "TRANSFORM Count(*) SELECT TOP 1 ID FROM Collections WHERE Files.FileData IS NULL GROUP BY ID PIVOT ID", "SELECT TOP 1 ID FROM Collections WHERE EXISTS(SELECT 1 WHERE Files.FileData IS NOT NULL)", "SELECT TOP 1 A.ID FROM Collections AS A INNER JOIN Collections AS B ON False AND A.Files.FileData IS NOT NULL", "SELECT TOP 1 ID FROM Collections WHERE EXISTS(SELECT 1 WHERE Files.FileData IS NOT NULL AND Files.FileFlags>=0)"]:
                 rejected(args.cli, sql, bad_options)
@@ -237,11 +278,12 @@ def main():
             assert run(args.cli, "query", "run", "SELECT Count(Files.FileName) AS N FROM Collections", *bad_options) == "N\n6\n"
             controls += 1
             assert bad.read_bytes() == changed
-        for sql in ["SELECT Files.FileData FROM Collections", "SELECT Files FROM Collections", "SELECT * FROM Collections"]:
+        for sql in ["SELECT Files FROM Collections", "SELECT * FROM Collections"]:
             rejected(args.cli, sql, options)
             controls += 1
         assert digest(path) == before
-        print("Unchanged source", before)
+        assert digest(args.cli) == cli_before, "CLI changed during replay"
+    print("Unchanged source", before)
     print(f"Passed {controls} attachment query model controls with {args.collation} policy")
 
 

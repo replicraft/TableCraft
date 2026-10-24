@@ -2,7 +2,7 @@ use super::*;
 
 const PAYLOAD_PAGE: usize = 23;
 
-fn external() -> Vec<u8> {
+pub(super) fn external() -> Vec<u8> {
     let mut descriptor = (0x40000000 | attachment_fixture::PAYLOAD.len() as u32)
         .to_le_bytes()
         .to_vec();

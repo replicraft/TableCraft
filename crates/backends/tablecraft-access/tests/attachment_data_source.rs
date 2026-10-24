@@ -14,6 +14,8 @@ mod limits;
 mod links_fixture;
 #[path = "attachment_data_source/metadata.rs"]
 mod metadata;
+#[path = "attachment_data_source/raw.rs"]
+mod raw;
 #[path = "../../../engines/tablecraft-ace/tests/support/mod.rs"]
 mod support;
 use std::{
@@ -112,7 +114,12 @@ fn decoded_payloads_align_preserve_null_empty_and_reuse_complete_cache() {
         let members = source.collection_members("Items").unwrap();
         assert_eq!(members.len(), 6);
         assert_eq!(
-            members.last().unwrap().column().data_type(),
+            members
+                .iter()
+                .find(|member| member.column().name() == "FileData")
+                .unwrap()
+                .column()
+                .data_type(),
             ScalarType::Binary
         );
         let parsed =
@@ -262,8 +269,8 @@ fn decoding_is_explicit_complete_and_not_hidden_by_filters_or_top() {
     )
     .unwrap()
     .with_collections();
-    assert_eq!(source.collection_members("Items").unwrap().len(), 5);
-    assert!(execute(&source, "SELECT Score.FileData FROM Items").is_err());
+    assert_eq!(source.collection_members("Items").unwrap().len(), 6);
+    assert!(execute(&source, "SELECT Score.FileData FROM Items").is_ok());
     let source = NativeSource::new(Cursor::new(bytes), CatalogScope::new(1), budget(), &|| {
         false
     })

@@ -11,7 +11,7 @@ use tablecraft_ace::{
     AttachmentColumn, CollectionPageRequest, InspectError, TablePageRequest, TableSnapshotLimits,
     read_attachment_column, read_multivalue_column, read_stored_collection_table_page_with_request,
 };
-use tablecraft_core::limits::ResourceBudget;
+use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 
 #[path = "attachments/fixture.rs"]
@@ -44,6 +44,18 @@ fn typed_attachment_metadata_keeps_exact_labels_nulls_empty_and_scoped_identitie
         assert_eq!(first.file_name(), Some("../é🦀\0.bin"));
         assert_eq!(first.file_type(), Some("field/type"));
         assert_eq!(first.encoded_file_data(), Some(PAYLOAD));
+        assert_eq!(
+            collection.stored_value(0, 0, "FileData"),
+            Some(&Value::Binary(PAYLOAD.into()))
+        );
+        assert_eq!(
+            collection.stored_value(0, 1, "FileData"),
+            Some(&Value::Null)
+        );
+        assert_eq!(
+            collection.stored_value(1, 0, "FileData"),
+            Some(&Value::Binary(Vec::new()))
+        );
         assert_eq!(
             first.file_timestamp().unwrap().to_bits(),
             (-0.25_f64).to_bits()
@@ -260,7 +272,6 @@ fn mixed_pages_retain_typed_attachment_metadata_and_empty_memberships() {
 #[test]
 fn named_metadata_discovery_is_inert_and_borrowed_members_keep_exact_carriers() {
     use tablecraft_ace::inspect_attachment_members;
-    use tablecraft_core::values::Value;
     for code in [2, 5, 6] {
         let mut bytes = database();
         bytes[20] = code;
@@ -282,11 +293,14 @@ fn named_metadata_discovery_is_inert_and_borrowed_members_keep_exact_carriers() 
                 "FileURL",
                 "FileName",
                 "FileType",
+                "FileData",
                 "FileTimeStamp",
                 "FileFlags"
             ]
         );
-        assert!(members.iter().all(|member| member.collection().as_str()=="Score" && member.column().nullable()));
+        assert!(members.iter().all(|member| {
+            member.collection().as_str() == "Score" && member.column().nullable()
+        }));
         assert_eq!(
             collection.metadata_value(0, 0, "filename"),
             Some(&Value::Text("../é🦀\0.bin".into()))
@@ -322,7 +336,7 @@ fn named_metadata_discovery_is_inert_and_borrowed_members_keep_exact_carriers() 
             )
             .unwrap()
             .len(),
-            5
+            6
         );
         assert!(inspect(&bytes).is_err());
     }

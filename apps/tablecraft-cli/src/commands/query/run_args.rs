@@ -80,10 +80,10 @@ pub(crate) struct RunArgs {
     /// Enable qualified .Value expansion and scalar-parent membership criteria.
     #[arg(long, requires = "database")]
     pub(crate) multivalues: bool,
-    /// Enable stored .Value lists and named attachment metadata members.
+    /// Enable stored .Value lists and attachment/history members, including encoded FileData.
     #[arg(long, requires = "database", conflicts_with = "multivalues")]
     pub(crate) collections: bool,
-    /// Expose FileData as bounded decoded Binary; native SQL representation is unqualified.
+    /// Decode selected attachment FileData into original file bytes.
     #[arg(long, requires = "collections", conflicts_with = "multivalues")]
     pub(crate) decoded_attachments: bool,
     /// Maximum decoded attachment file bytes; default 1 MiB, maximum 16 MiB. Encoded storage limits still apply.

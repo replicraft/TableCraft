@@ -457,9 +457,9 @@ counts are checked before publication. Metadata-only queries omit FileData value
 and never visit their external long-value pages. The omitted payload is unavailable,
 not a fabricated NULL, and its integrity remains unqualified. This permits metadata
 queries over valid files beyond the existing encoded/decoded payload limits.
-Without the separate
-decoded-view opt-in below, `FileData` binding remains unavailable pending native
-binary-representation qualification. Bare attachment
+`FileData` is available as exact stored Binary under the same explicit
+`--collections` option; see [stored attachment data](STORED_ATTACHMENT_DATA.md).
+It retains the encoded envelope without implicit decoding. Bare attachment
 fields and matching wildcards remain unsupported. Ordinary scalar queries and
 counts do not load attachment records. Selected indexes on a collection-reading
 parent are rejected, with no sequential fallback. All native/query/output budgets
@@ -469,12 +469,13 @@ The [independent comparison](testing/compare_attachment_queries.py) uses the
 existing original `AttachmentFixture` corpus and read-only Jackcess 5.0.4 metadata.
 It checks all five individual members, paired/full/reordered projection alignment,
 empty parents, aggregates, displayed-child filtering, scalar-parent membership,
-unsupported payload/wildcard refusal and unchanged hashes across all three
+stored payload bytes and wildcard refusal and unchanged hashes across all three
 qualified families. These are stored-record/explicit-model comparisons, not native
 Access SQL, empty-set/negative-criteria semantics or Windows qualification.
 The script also accepts `--collation database` to compose stored child policies
-with the shared native resolver. All 162 model controls pass in that mode against
-the same three unchanged corpus files, including aligned/mixed/joined membership,
+with the shared native resolver. The [24 October replay](testing/results/stored-attachment-queries-2026-10-24.json)
+passes 198 model controls per policy (396 total) against fresh original
+V2007/V2016/V2019 files, including aligned/mixed/joined membership,
 correlated reads, crosstabs, decoded payloads and rejection checks. Synthetic
 legacy/2010/unknown metadata controls separately distinguish field routing from
 using one database-wide policy.
@@ -493,13 +494,15 @@ tablecraft query run 'SELECT ID, Files.FileName AS Name, Files.FileData AS Data 
 `--decoded-attachments` requires `--collections`; library hosts explicitly call
 `NativeSource::with_decoded_attachments()`, which also enables collection metadata.
 This supplies a **TableCraft decoded Binary view**, not a claim about native
-Access SQL's binary representation. Ordinary `--collections` still refuses
-`FileData`, and merely opening, binding or requesting metadata never decodes it.
+Access SQL's binary representation. Ordinary `--collections` returns the exact
+stored encoded envelope; merely opening, binding or requesting metadata never
+decodes it.
 Microsoft describes FileData as reserved internal binary attachment storage in
 [the DAO attachment guide](https://learn.microsoft.com/en-us/office/vba/access/concepts/data-access-objects/work-with-attachments-in-dao);
 raw native SQL/DAO Value versus decoded-file semantics require Windows comparisons.
 
-Explicit FileData references decode complete checked attachment collections before
+Under this explicit decoder option, FileData references decode complete checked
+attachment collections before
 visiting any parent rows. The existing bounded decoder verifies native wrappers,
 lengths and zlib/checksums, retains original file bytes and returns NULL for stored
 NULL. A valid zero-byte file becomes empty Binary (`0x` in CLI output), separately

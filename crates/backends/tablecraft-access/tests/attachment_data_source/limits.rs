@@ -58,7 +58,7 @@ fn changing_file_limits_revalidates_decoded_cache_without_rereading_stored_rows(
 }
 
 #[test]
-fn enabling_decoded_views_after_metadata_inventory_rebuilds_member_schema() {
+fn enabling_decoded_views_after_metadata_inventory_preserves_member_schema() {
     let source = NativeSource::new(
         Cursor::new(attachment_fixture::with_payloads(
             attachment_fixture::PAYLOAD,
