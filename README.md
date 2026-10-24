@@ -1,8 +1,9 @@
 # TableCraft
 
 A Rust application being developed as a cross-platform Microsoft Access alternative.
-Native MDB/ACCDB interoperability and optional peer-to-peer collaboration are
-planned capabilities; bounded read-only SQLite queries are available.
+Bounded local MDB/ACCDB browsing and Access SQL queries are available, alongside
+read-only SQLite queries. Broader native editing and optional peer-to-peer
+collaboration remain under development.
 
 **ACE 16 is the primary compatibility target, with 100% compatibility as the
 long-term goal.** Implementation and compatibility testing focus on ACE 16;
@@ -33,6 +34,11 @@ Memo/OLE/attachment reads from 2 MiB to at most 32 MiB under cumulative budgets
 To query qualified cached calculation results, explicitly pass
 `query run --database example.accdb --stored-calculations`. These values can be
 stale; formulas do not execute. See [cached queries](docs/CACHED_CALCULATION_QUERIES.md).
+
+Explicitly recompute a supported same-row formula with
+`tablecraft query preview-calculation --database example.accdb Items Score`.
+The separate `Recomputed` result uses TableCraft expression rules and leaves stored
+caches intact. See [calculation previews](docs/CALCULATION_PREVIEWS.md).
 
 For larger local scalar tables, `tablecraft rows example.accdb Customers --stream`
 continues in TSV batches, with optional scalar `--column` selections and explicit

@@ -4,7 +4,8 @@ The native adapter can now prepare and explicitly evaluate a restricted stored
 calculated expression. This is an engineering preview using TableCraft's current
 expression semantics. It does not make calculated fields ordinary query columns,
 coerce results into their declared stored type, certify cached freshness, update
-the database or establish Microsoft Access equivalence. No CLI command is added.
+the database or establish Microsoft Access equivalence. The CLI exposes this same
+explicit preview through `query preview-calculation`.
 
 ```rust,no_run
 use std::fs::File;
@@ -28,6 +29,62 @@ let result = preview.execute(ExecutionOptions::default())?;
 assert_eq!(result.columns(), &["Recomputed"]);
 # Ok::<(), Box<dyn std::error::Error>>(())
 ```
+
+## Explicit CLI preview
+
+```sh
+tablecraft query preview-calculation --database copy.accdb Items Score
+tablecraft --format tsv query preview-calculation --database copy.accdb Items FullName \
+  --number-format invariant
+```
+
+The required TABLE and COLUMN select one formula; the only result heading is
+`Recomputed`. Values follow the existing evaluator and output formatter. A native
+Int32 declaration can therefore produce Text or a widened numeric result in this
+preview. Row order follows the ordinary source's sequential snapshot. The command
+requires the qualified ACE calculated-field declarations; it does not supply
+calculated fields to formats that lack them.
+
+This differs from `query run --stored-calculations`: that explicit policy reads
+stored caches, while this command recomputes from ordinary same-table inputs and
+never opens the cached-value source mode. Stale/NULL or malformed unselected
+caches do not become dependencies. Neither command changes ordinary query-column
+eligibility or certifies cache freshness. No output database or save option exists.
+
+Global `-p`/`--password` uses the ordinary native opening path, including its hidden
+terminal prompt when credentials are required and omitted. Missing passwords in
+noninteractive use and incorrect passwords fail before formula execution. Source
+bytes remain unchanged. Global `--format` selects the existing table/TSV transport,
+including its CSV-crate quoting of displayed Text values.
+
+`--number-format` and `--date-format` explicitly supply the conversion/concatenation
+policies used by the admitted expression profile. There are no clock/random,
+collection, index, cached-source or declared-arithmetic options: these would not
+expand the existing preparation contract. All calls and calculated dependencies
+remain refused before user records are read, even when those records are corrupt.
+
+Resource controls retain their existing defaults and independent ceilings:
+
+| Stage | Explicit controls |
+| --- | --- |
+| Native metadata/ordinary dependencies | `--native-bytes`, `--native-rows`, `--native-steps` |
+| Encoded and decoded long values | `--native-value-bytes`, `--native-text-bytes` |
+| Query evaluation/intermediates | `--execution-bytes`, `--execution-rows`, `--execution-steps`, `--text-bytes` |
+| Buffered display and final transport | `--output-bytes` |
+
+The parser keeps its existing bounded default syntax policy. Results are fully
+evaluated and rendered before stdout. A later arithmetic/read/format failure or
+quota refusal produces no successful prefix; final TSV quoting and table layout
+also remain inside the selected output allowance. No limit is raised implicitly.
+
+Ten focused CLI tests cover both qualified ACE 16-family headers, stale/NULL
+caches versus recomputed values, corrupt-cache pruning, natural Text output under
+an Int32 declaration, explicit numeric formatting, late division failure, refused
+calls/nonlocal/calculated inputs, invalid user records, native/query/Text/output
+ceilings, table/TSV formatting, final transport expansion, required arguments and
+encrypted password paths. Every authored database is checked byte-for-byte after
+use. These are engineering controls; native Access formula results and freshness
+remain unqualified.
 
 ## Explicit preparation and execution
 

@@ -46,6 +46,10 @@ The CLI executable is `tablecraft`. Argument handling uses
 clap's `Parser` derive. The CLI provides help, version, `query parse` output and
 `query eval` for source-free scalar SELECT expressions. Eval rejects clauses
 requiring query execution and buffers results before stdout.
+`query preview-calculation --database PATH TABLE COLUMN` explicitly invokes the
+[restricted row-local preview](docs/CALCULATION_PREVIEWS.md). Keep its natural
+`Recomputed` results separate from stored caches and declared result conversion;
+query-callable functions do not automatically belong in calculated-field formulas.
 `query saved --database PATH NAME` reconstructs the
 qualified native SELECT/UNION/crosstab profiles without binding, source expansion or execution;
 follow [saved-query boundaries](docs/NATIVE_SAVED_QUERIES.md).

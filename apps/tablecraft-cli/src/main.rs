@@ -16,10 +16,17 @@ mod presentation;
     name = "tablecraft",
     version,
     about = "TableCraft inspection and query tools",
-    after_help = "Query parse prints syntax; query saved reconstructs a native saved SELECT without executing it; query eval calculates source-free SELECT expressions; query run executes bounded retrieval. Query update creates a fresh offline Jet 4 copy for qualified Int32 edits. Inspect reports metadata or explicit checks without executing content. In-place CLI editing and GUI hosts are not implemented."
+    after_help = concat!(
+        "Query parse prints syntax; query saved reconstructs a native saved SELECT without executing it; ",
+        "query eval calculates source-free SELECT expressions; query run executes bounded retrieval; ",
+        "query preview-calculation explicitly recomputes a restricted stored formula without saving. ",
+        "Query update creates a fresh offline Jet 4 copy for qualified Int32 edits. ",
+        "Inspect reports metadata or explicit checks without executing content. ",
+        "In-place CLI editing and GUI hosts are not implemented."
+    )
 )]
 struct Cli {
-    /// Output style for tables, rows, inspect and query run/eval.
+    /// Output style for tables, rows, inspect and query run/eval/preview-calculation.
     #[arg(long, global = true, value_enum, default_value = "auto")]
     format: presentation::Format,
     /// Enable operation diagnostics on stderr; repeat for I/O detail.
