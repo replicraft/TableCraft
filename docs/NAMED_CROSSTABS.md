@@ -218,3 +218,22 @@ Focused tests cover nested choices, named SELECT/UNION composition without scans
 Text names, empty input, unselected arithmetic failures, contextual refusal,
 duplicate/NULL headings, charged unselected payloads, deferred error precedence
 and every observed conditional cancellation checkpoint.
+
+## Inline TRANSFORM is not an established Access requirement
+
+Named crosstabs remain the supported composition boundary. Microsoft's
+[TRANSFORM contract](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/transform-statement-microsoft-access-sql)
+places TRANSFORM at the beginning of the SQL string and documents subqueries in
+crosstab WHERE predicates. Its
+[subquery contract](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/sql-subqueries-microsoft-access-sql)
+defines nested statements as SELECT and explicitly excludes subqueries from
+crosstab output expressions. Neither contract establishes a TRANSFORM statement
+inside a parenthesized FROM source. That distinction is not proof that every
+Access version rejects every such form, but it provides no basis to claim this
+inline syntax as required native compatibility.
+
+Any earlier roadmap wish for inline TRANSFORM therefore needs specific native
+query evidence before parser/model expansion. Existing named crosstab references,
+including execution-stage discovery of dynamic schemas, provide working
+composition without introducing a speculative SQL extension or scanning during
+metadata-only preparation.
