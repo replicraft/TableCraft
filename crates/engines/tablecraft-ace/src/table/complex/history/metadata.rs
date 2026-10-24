@@ -1,6 +1,6 @@
 use super::{record, schema::Columns};
-use crate::{ComplexColumnLinks, InspectError, NativeColumn};
-use tablecraft_core::values::LegacyDateTime;
+use crate::{ComplexColumnLinks, InspectError, NativeColumn, NativeSortOrder};
+use tablecraft_core::values::{LegacyDateTime, Value};
 
 /// Complete stored history for one visible Memo and its resolved hidden column.
 pub struct VersionHistoryColumn {
@@ -11,7 +11,7 @@ pub struct VersionHistoryColumn {
 impl VersionHistoryColumn {
     pub(in crate::table::complex) fn record<'a>(
         &self,
-        row: &'a [tablecraft_core::values::Value],
+        row: &'a [Value],
     ) -> Result<StoredVersion<'a>, InspectError> {
         record::read(row, &self.columns)
     }
@@ -23,6 +23,29 @@ impl VersionHistoryColumn {
     pub fn memo_column(&self) -> &NativeColumn {
         &self.links.schema().owner().columns()[self.memo_position]
     }
+
+    /// Borrow a checked stored value/modified member by its actual native name.
+    /// Unknown members and absent ordinals return None; stored NULL remains a value.
+    pub fn member_value(&self, parent: usize, child: usize, member: &str) -> Option<&Value> {
+        let position = [self.columns.value, self.columns.modified]
+            .into_iter()
+            .find(|position| {
+                self.links.child_snapshot().schema().columns()[*position]
+                    .name()
+                    .eq_ignore_ascii_case(member)
+            })?;
+        self.links.child_row(parent, child)?.get(position)
+    }
+
+    /// Exact flat Text order for a declared stored member, without I/O.
+    pub fn member_text_sort_order(&self, member: &str) -> Option<NativeSortOrder> {
+        [self.columns.value, self.columns.modified]
+            .into_iter()
+            .map(|position| &self.links.child_snapshot().schema().columns()[position])
+            .find(|column| column.name().eq_ignore_ascii_case(member))?
+            .text_sort_order()
+    }
+
     /// Stored versions in flat snapshot order, without newest-first sorting or
     /// implicit latest-value selection. An absent parent ordinal returns None.
     pub fn stored_versions(

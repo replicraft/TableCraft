@@ -95,7 +95,8 @@ pub use table::{
 };
 pub use table::{StoredTablePage, read_stored_table_page};
 pub use table::{
-    StoredVersion, VersionHistoryColumn, read_version_history_column,
+    StoredVersion, VersionHistoryColumn, VersionHistoryMemberDeclaration,
+    inspect_version_history_declarations, read_version_history_column,
     read_version_history_column_with_limits,
 };
 pub use table::{

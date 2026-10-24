@@ -1,6 +1,7 @@
 use super::super::encoding::OBSERVED_HISTORY_EXT_FLAG;
 use crate::{
-    ComplexColumnLinks, ComplexTableSchema, InspectError, NativeColumn, TableSchema,
+    ComplexColumnLinks, ComplexColumnSchema, ComplexTableSchema, InspectError, NativeColumn,
+    TableSchema,
     format::{
         data_type,
         layout::{FIXED_FLAG, UPDATABLE_FLAG},
@@ -69,8 +70,14 @@ pub(in crate::table::complex) fn select(
 }
 
 pub(super) fn read(links: &ComplexColumnLinks) -> Result<Columns, InspectError> {
-    let (value, modified) = type_fields(links.column().type_table())?;
-    let flat = links.child_snapshot().schema();
+    qualify(links.column(), links.child_snapshot().schema())
+}
+
+pub(super) fn qualify(
+    column: &ComplexColumnSchema,
+    flat: &TableSchema,
+) -> Result<Columns, InspectError> {
+    let (value, modified) = type_fields(column.type_table())?;
     let position = |template: &NativeColumn| {
         let (position, field) = flat
             .columns()
@@ -86,7 +93,7 @@ pub(super) fn read(links: &ComplexColumnLinks) -> Result<Columns, InspectError> 
     let identity = flat
         .columns()
         .iter()
-        .position(|field| field.number() == links.column().identity_number())
+        .position(|field| field.number() == column.identity_number())
         .ok_or(InspectError::Malformed)?;
     Ok(Columns {
         value: position(value)?,
@@ -94,7 +101,9 @@ pub(super) fn read(links: &ComplexColumnLinks) -> Result<Columns, InspectError> 
         identity,
     })
 }
-fn type_fields(template: &TableSchema) -> Result<(&NativeColumn, &NativeColumn), InspectError> {
+pub(super) fn type_fields(
+    template: &TableSchema,
+) -> Result<(&NativeColumn, &NativeColumn), InspectError> {
     if template.declared_rows() != 0 || template.columns().len() != HISTORY_FIELDS {
         return Err(InspectError::Unsupported);
     }

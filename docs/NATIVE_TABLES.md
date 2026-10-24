@@ -603,3 +603,23 @@ exercise 255 visible fields, wide variable tails and high logical mask bits in
 Jet 4, ACE 2007 and both ACE 16 layouts. Current readers handle original
 append-column generations without changing default limits. This evidence does
 not qualify native DDL, historical writes or Access save/reopen.
+
+
+## Stored-history member declarations
+
+`inspect_version_history_declarations` now returns checked visible-Memo bindings
+and actual hidden-field/value/modified member names for qualified ACE 2007/2016/
+2019 histories without reading parent or child records. The owned
+`VersionHistoryMemberDeclaration` retains the actual flat member type and Text
+sort identity; generated field names are never guessed. Unsupported candidates
+remain unavailable without blocking unrelated supported declarations. Corrupt
+resolved mappings, cancellation and resource failures still propagate.
+
+A complete `VersionHistoryColumn` can borrow `member_value` by parent/child
+ordinal and actual member name, and expose `member_text_sort_order` without I/O.
+Stored NULL is distinct from an absent ordinal/member. Values remain in stored
+order; this API does not select a newest version or replace current Memo. The
+existing checked snapshot/read budgets and stable-source contract remain active.
+This metadata/borrowing boundary supports explicit hosts and does not qualify
+native Access SQL member syntax. Engine history tests and the adapter's metadata,
+policy, cache and unsupported-candidate controls exercise the boundary.

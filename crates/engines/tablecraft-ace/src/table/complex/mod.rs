@@ -14,7 +14,8 @@ pub use attachments::{
 };
 pub(super) use encoding::supported_key;
 pub use history::{
-    StoredVersion, VersionHistoryColumn, read_version_history_column,
+    StoredVersion, VersionHistoryColumn, VersionHistoryMemberDeclaration,
+    inspect_version_history_declarations, read_version_history_column,
     read_version_history_column_with_limits,
 };
 pub use links::{

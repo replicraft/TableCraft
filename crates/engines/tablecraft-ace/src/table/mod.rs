@@ -30,7 +30,8 @@ pub use complex::{
     read_multivalue_table_page_with_request,
 };
 pub use complex::{
-    StoredVersion, VersionHistoryColumn, read_version_history_column,
+    StoredVersion, VersionHistoryColumn, VersionHistoryMemberDeclaration,
+    inspect_version_history_declarations, read_version_history_column,
     read_version_history_column_with_limits,
 };
 mod mutation;
