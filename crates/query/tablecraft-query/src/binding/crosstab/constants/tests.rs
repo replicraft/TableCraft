@@ -135,3 +135,60 @@ fn every_observed_constant_binding_checkpoint_can_cancel() {
         assert_eq!(run(stop), Err(QueryError::Cancelled), "checkpoint {stop}");
     }
 }
+
+#[test]
+fn eager_choices_charge_every_payload_and_preserve_deferred_condition_errors() {
+    let input = Expr::IIf(
+        Box::new(Expr::Literal(Expression::Boolean(true))),
+        Box::new(text("selected")),
+        Box::new(text("unselected")),
+    );
+    let mut budget = ResourceBudget::new(8, 0, 1000);
+    assert!(matches!(
+        binder(Some(&mut budget), None).constant_heading(&input, 1),
+        Err(QueryError::Limit(error)) if error.resource == Resource::Bytes
+    ));
+
+    let bad_condition = Expr::Literal(Expression::GuidLiteral(
+        "00000000-0000-0000-0000-000000000000".into(),
+    ));
+    let failure = Expr::Binary(
+        BinaryOperator::Divide,
+        Box::new(Expr::Literal(Expression::Integer(1))),
+        Box::new(Expr::Literal(Expression::Integer(0))),
+    );
+    let input = Expr::ConditionalCall(
+        tablecraft_expressions::functions::conditional::ConditionalFunction::Switch,
+        vec![bad_condition, failure],
+    );
+    assert_eq!(
+        binder(None, None).constant_heading(&input, 1),
+        Err(QueryError::Evaluation(EvalError::DivisionByZero))
+    );
+}
+
+#[test]
+fn every_conditional_checkpoint_can_cancel_without_source_access() {
+    let input = Expr::Nz(
+        Box::new(Expr::Literal(Expression::Null)),
+        Some(Box::new(Expr::IIf(
+            Box::new(Expr::Literal(Expression::Boolean(true))),
+            Box::new(text("selected")),
+            Box::new(text("unselected")),
+        ))),
+    );
+    let calls = Cell::new(0);
+    let run = |stop| {
+        let cancelled = || {
+            calls.set(calls.get() + 1);
+            calls.get() == stop
+        };
+        binder(None, Some(&cancelled)).constant_heading(&input, 1)
+    };
+    assert!(run(usize::MAX).is_ok());
+    let count = calls.get();
+    for stop in 1..=count {
+        calls.set(0);
+        assert_eq!(run(stop), Err(QueryError::Cancelled), "checkpoint {stop}");
+    }
+}
