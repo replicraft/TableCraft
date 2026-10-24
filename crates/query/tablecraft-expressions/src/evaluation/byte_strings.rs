@@ -1,4 +1,6 @@
 //! Owning byte-string evaluation and strict scalar publication.
+mod unicode;
+
 use super::{Evaluator, text_arguments};
 use crate::{
     EvalError,
@@ -119,6 +121,9 @@ impl Evaluator<'_> {
         }
         self.text_expression_limits(rest)?;
         self.check(0)?;
+        if function.slices_units() {
+            return self.apply_unicode_slice(function, first, rest);
+        }
         if function == TextFunction::StrConv {
             return self.apply_expression_strconv(first, &rest[0], rest.get(1));
         }
@@ -146,6 +151,9 @@ impl Evaluator<'_> {
         self.check(0)?;
         if !function.produces_bytes() || !function.accepts_arity(rest.len() + 1) {
             return Err(EvalError::UnsupportedExpression);
+        }
+        if function.slices_units() {
+            return self.unicode_slice(function, first, rest);
         }
         if function == TextFunction::StrConv {
             return self.apply_strconv(first, &rest[0], rest.get(1));

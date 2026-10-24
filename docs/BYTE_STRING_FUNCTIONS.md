@@ -122,7 +122,7 @@ tablecraft query run "SELECT Len(LeftB('😀',2)),AscW(RightB('😀',2))"
 ```
 
 These return `1, -10240, 2` and `1, -8704` respectively. Direct `ChrW(55296)`
-publication still fails UnrepresentableText. Ordinary Left/Right/Mid, arbitrary
+publication still fails UnrepresentableText. Arbitrary
 operators/selection, source parameters and relational string cells retain their
 existing representable-Text boundaries. The borrowed scalar ChrW API likewise
 keeps its strict character/publication contract.
@@ -136,9 +136,38 @@ same evaluator; raw storage is charged before allocation, observations require
 no new payload allocation and cancellation remains active.
 
 The expanded [independent byte recipe](testing/compare_byte_strings.py) compares
-21,308 source-free values/refusals against Python UTF-16LE bytes. It includes
+24,670 source-free values/refusals against Python UTF-16LE bytes. It includes
 every surrogate unit, signed code spellings, partial-byte slices, inspection and
 both CLI query paths. It executes no native Access SQL or application code.
+
+## Nested UTF-16 unit slices
+
+Left/Right/Mid now retain whole UTF-16 units when consumed through the lossless
+string path by Len/LenB, AscW/AscB, byte producers, CVar or type inspection.
+For example, `AscW(Left('😀',1))` returns -10179 and
+`AscW(Right('😀',1))` returns -8704. A nested slice can consume another raw
+slice or ChrW surrogate without decoding it. Odd-byte inputs remain refused;
+the evaluator does not invent an alignment or drop bytes.
+
+Microsoft's [Left query example and count contract](https://support.microsoft.com/en-us/access/functions/left-function)
+and [Mid query examples and optional length](https://support.microsoft.com/en-us/access/functions/mid-function)
+establish direct query availability and distinguish character counts from byte
+counts. This implementation uses TableCraft's explicit Windows-style UTF-16
+profile; surrogate behavior has not been compared with native Access.
+
+Operands evaluate eagerly before admission. Source Error/Missing and explicit
+CStr coercion precede positional conversion; a NULL source propagates before
+admitting controls, but cannot suppress an operand's operational failure.
+Mid validates its positive start before admitting an optional length. Counts use
+the existing checked Long rules. Huge requests clamp in units before converting
+to byte offsets. Existing raw buffers slice without another payload allocation;
+Text sources encode under cumulative allocation, work and cancellation controls.
+
+Ordinary direct slice calls retain the existing scalar path and its budget
+behavior. Direct publication of a surrogate-splitting slice still fails, and
+raw intermediates cannot cross relational cells or arbitrary scalar consumers.
+The independent Python byte recipe now also checks ordinary UTF-16 slices,
+including supplementary characters, omitted lengths and maximum Long controls.
 
 ## Remaining byte-string work
 

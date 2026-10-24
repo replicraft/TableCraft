@@ -8,7 +8,7 @@ fn unicode_intermediates_remain_strings_inside_calls_and_strict_at_stdout() {
         let result = run(&[
             "query",
             mode,
-            "SELECT Len(ChrW(55296)) AS L,AscW(ChrW(55296)) AS W,LenB(ChrW(55296)) AS B,VarType(ChrW(55296)) AS T,AscW(RightB('😀',2)) AS Tail",
+            "SELECT Len(Left('😀',1)) AS L,AscW(Mid(ChrW(55296),1,1)) AS W,LenB(Right('😀',1)) AS B,VarType(Left('😀',1)) AS T,AscW(Right('😀',1)) AS Tail",
         ]);
         assert!(
             result.status.success(),
@@ -23,6 +23,8 @@ fn unicode_intermediates_remain_strings_inside_calls_and_strict_at_stdout() {
             "AscW(ChrB(65))",
             "Len(ChrW(1/0))",
             "AscW(ChrW(CVErr(1)))",
+            "Left('😀',1)",
+            "Len(Left(NULL,1/0))",
         ] {
             let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert_eq!(result.status.code(), Some(2), "{expression}");

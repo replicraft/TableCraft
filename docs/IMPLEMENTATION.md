@@ -1,5 +1,33 @@
 # Implementation status
 
+## Nested UTF-16 unit slices
+
+Left/Right/Mid now participate in the lossless string path for nested byte/unit
+observations, CVar, byte producers and type inspection. Complete unpaired units
+remain available without decoding; odd-byte inputs are refused. Source NULL and
+Error/Empty/Missing admission retain ordinary slice ordering, including positive
+Mid start validation before optional length admission. Long requests clamp in
+units before conversion to byte offsets. Existing byte buffers slice by range;
+Text sources encode under cumulative allocation/work/cancellation controls.
+Direct ordinary scalar slices retain their existing borrowed path and strict
+publication. See [scope and references](BYTE_STRING_FUNCTIONS.md#nested-utf-16-unit-slices).
+
+Two new evaluator controls cover surrogate goldens, large counts, eager failures
+and host expression states. Existing metering tests now exercise both raw ChrW
+and nested ordinary slices at every observed cancellation checkpoint. A new
+bound-query test covers parameter rebinding and grouping; CLI coverage exercises
+both query hosts and buffered refusals. All 693 all-feature expression tests plus
+one doctest, 364 minimal expression tests, nineteen focused query tests and eight
+CLI tests pass. Focused Clippy, minimal query check, formatting, Python compilation
+and diff checks pass.
+
+The expanded independent byte recipe passes 24,670 source-free value/refusal
+controls against Python UTF-16LE byte ranges, including ordinary slices with
+maximum Long requests. No native fixture replay, Windows Access comparison,
+full engine/workspace suite or benchmark was run. No dependency, stored carrier,
+native decoder or writer scope changed. Wider raw-string/operator/coercion and
+native qualification work remains open.
+
 ## Raw UTF-16 unit observations
 
 Len/AscW now inspect complete UTF-16LE units in existing byte-string intermediates

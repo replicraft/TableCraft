@@ -80,6 +80,12 @@ Byte lengths, signed unit codes and String inspection remain distinct from
 Binary values. Strict final publication, odd-byte Unicode observations and wider
 raw relational/operator/coercion gaps remain explicit.
 
+Nested Left/Right/Mid now use the same lossless path, retaining split surrogate
+units under Len/LenB, AscW/AscB and inspection. Checked Long counts clamp before
+byte multiplication, and source/control admission retains the ordinary slice
+ordering. Direct scalar publication and raw relational cells remain strict;
+see [nested slicing](BYTE_STRING_FUNCTIONS.md#nested-utf-16-unit-slices).
+
 Round's digit count now follows the nonnegative Long profile independently of
 Decimal storage scale. [Bounded high precision](MATH_FUNCTIONS.md#round-precision-beyond-decimal-storage-scale)
 covers tiny IEEE values and extreme counts without an overflowing scale factor or
