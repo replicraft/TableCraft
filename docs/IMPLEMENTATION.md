@@ -1,5 +1,30 @@
 # Implementation status
 
+## Native VALUE query parameters
+
+Native parameter code zero now reconstructs as the documented VALUE type.
+Query-only syntax, metadata-only dynamic output and explicit scalar input retain
+the existing name/finite/Text/budget limits; typed declarations remain strict.
+Runtime parameter records now preserve Scalar/Variant provenance with their
+borrowed values, including derived, scalar-subquery and grouped arithmetic.
+Named VALUE/scalar declaration conflicts remain explicit. No VBA runtime or
+stored column type was added. See [VALUE parameter scope](VALUE_PARAMETERS.md).
+
+Five focused query tests cover all fifteen current scalar/NULL carriers,
+rebinding, strict controls, declaration widening, named scopes, payload budgets
+and every observed cancellation checkpoint. Focused named/crosstab/schema/result-
+metadata/retrieval/declaration regressions pass, along with 61 parser tests plus
+one doctest, 69 saved-query adapter tests and 35 CLI parameter/saved-query tests.
+Focused Clippy, minimal query/adapter checks, formatting and diff checks pass.
+
+The independent original getter/comparison checks the complete registered
+59-query inventory: 51 reads reconstruct and round-trip with matching parameter
+declarations, including twelve VALUE parameters; eight non-read definitions stay
+refused. Original database/JAR hashes remain unchanged. Missing application
+sources, VBA UDFs and policy requirements still constrain execution. Native
+Windows Access, full engine/workspace suites and benchmarks were not run.
+Complete Variant/native read/query acceptance remains unfinished.
+
 ## Stored derived-source terminators
 
 Parsed queries now expose a lexical statement prefix while retaining the exact

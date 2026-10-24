@@ -52,9 +52,15 @@ impl Binder<'_> {
             }
             Expr::Literal(_)
             | Expr::DateLiteral(..)
-            | Expr::Parameter(_)
             | Expr::CollectionItem { .. }
             | Expr::ParentPresence { .. } => Some(OperandDeclaration::Scalar),
+            Expr::Parameter(index) => Some(
+                self.parameters
+                    .get(*index)
+                    .ok_or(QueryError::Source)?
+                    .data_type
+                    .declaration(),
+            ),
             Expr::Convert(Conversion::Decimal, _)
             | Expr::CVar(_)
             | Expr::CvErr(_)

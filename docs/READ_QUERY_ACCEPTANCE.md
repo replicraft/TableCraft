@@ -111,8 +111,11 @@ composition or native execution acceptance scope.
 
 Stored derived reads now admit a single final standalone terminator through a
 lexical prefix and the original embedded-query guard. This closes a source-shape
-gap found in the example's report query; its native type-zero implicit parameter
-still requires a separate contract. Original query fragments remain unchanged.
+gap found in the example's report query. Native type-zero parameters now retain
+their [VALUE contract](VALUE_PARAMETERS.md), closing the remaining reconstruction
+gap in the registered read-query inventory: all 51 read definitions reconstruct
+with independent parameter comparisons. This is syntax/metadata evidence, not
+execution of missing sources or VBA UDFs. Original query fragments remain unchanged.
 
 [Runtime domain text policies](RUNTIME_TEXT_POLICIES.md) now survive derived/named
 outputs and comparison/key consumers. Their conservative merge behavior does not

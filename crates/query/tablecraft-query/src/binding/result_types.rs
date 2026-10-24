@@ -51,14 +51,12 @@ impl Binder<'_> {
                 .and_then(|scope| scope.iter().filter(|slot| slot.available).nth(*index))
                 .map(|slot| slot.output_type)
                 .ok_or(QueryError::Source)?,
-            Expr::Parameter(index) => OutputType::Scalar {
-                data_type: self
-                    .parameters
-                    .get(*index)
-                    .ok_or(QueryError::Source)?
-                    .data_type,
-                nullable: true,
-            },
+            Expr::Parameter(index) => self
+                .parameters
+                .get(*index)
+                .ok_or(QueryError::Source)?
+                .data_type
+                .output_type(),
             Expr::Literal(Expression::Null) => OutputType::Null,
             Expr::Literal(Expression::Integer(_)) => OutputType::scalar(ScalarType::Int64, false),
             Expr::Literal(Expression::Text(_)) => OutputType::scalar(ScalarType::Text, false),

@@ -172,6 +172,12 @@ extra whitespace. The adapter separates upstream PostgreSQL hash operators using
 source spans; quoted text and bracketed names remain inert. Parsing alone still
 does not validate the date's calendar or qualify evaluation behavior.
 
+## VALUE query parameters
+
+Query parameter types also include [VALUE](VALUE_PARAMETERS.md), preserving the
+Access Variant parameter spelling without admitting it as a stored column type.
+Length arguments and the unqualified VARIANT spelling remain refused.
+
 ## Parsed statement source
 
 `ParsedQuery::statement_source()` exposes the exact input prefix before an

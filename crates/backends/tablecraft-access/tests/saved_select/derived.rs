@@ -140,7 +140,7 @@ fn derived_sources_reject_remote_qualifiers_actions_parameters_injection_and_dup
 }
 
 #[test]
-fn registered_terminated_source_keeps_original_metadata_and_its_remaining_parameter_refusal() {
+fn registered_terminated_source_keeps_original_metadata_and_its_value_parameter() {
     let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("../../../docs/examples/Access_Example_VBA.accdb");
     let original = std::fs::read(&path).unwrap();
@@ -173,11 +173,11 @@ fn registered_terminated_source_keeps_original_metadata_and_its_remaining_parame
     assert_eq!(saved.query(), expected.query());
     assert_eq!(saved.definition().rows()[1].expression(), Some(text));
 
-    // Native type zero still needs an explicit untyped-parameter contract.
-    assert_eq!(
-        reconstruct_saved_select(definition, Default::default(), &mut budget(), &|| false).err(),
-        Some(E::Unsupported)
-    );
+    let complete =
+        reconstruct_saved_select(definition, Default::default(), &mut budget(), &|| false).unwrap();
+    assert_eq!(complete.query().parameters.len(), 1);
+    assert_eq!(complete.query().parameters[0].name.as_str(), "__txt3");
+    assert_eq!(complete.query().parameters[0].data_type.name, "VALUE");
     assert_eq!(std::fs::read(path).unwrap(), original);
 }
 

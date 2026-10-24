@@ -1,4 +1,5 @@
 use super::cell::{CellQueryResult, into_scalar};
+use super::context::ParameterValue;
 use super::{ExecutionOptions, ExpressionQueryResult, QueryResult, Runtime};
 use crate::discovery::DiscoveryState;
 use crate::{PreparedQuery, QueryError, Source, plan::PreparedBody};
@@ -9,7 +10,8 @@ use tablecraft_core::{
 
 impl PreparedQuery {
     /// Execute against explicit sources and exactly the declared parameter names.
-    /// Parameters must already have their exact declared carriers; NULL is allowed.
+    /// Scalar parameters require exact carriers; VALUE retains the supplied scalar
+    /// carrier. NULL is allowed. Neither form performs implicit input coercion.
     /// A source must keep its schema/data snapshot stable throughout this call.
     pub fn execute<'a>(
         &self,
@@ -128,7 +130,7 @@ impl PreparedQuery {
         }
         runtime.budget.charge_allocation(
             self.parameters.len() as u64,
-            std::mem::size_of::<&Value>() as u64,
+            std::mem::size_of::<ParameterValue<'_>>() as u64,
         )?;
         runtime
             .parameters
@@ -142,14 +144,17 @@ impl PreparedQuery {
             });
             let (_, value) = matches.next().ok_or(QueryError::Parameter)?;
             if matches.next().is_some()
-                || declared.data_type.validate_value(value).is_err()
-                || matches!(value,Value::Text(t) if t.len()>options.text_limit())
-                || matches!(value,Value::Single(v) if !v.to_float().is_finite())
-                || matches!(value,Value::Double(v) if !v.to_float().is_finite())
+                || !declared.data_type.accepts(value)
+                || matches!(value, Value::Text(text) if text.len() > options.text_limit())
+                || matches!(value, Value::Single(value) if !value.to_float().is_finite())
+                || matches!(value, Value::Double(value) if !value.to_float().is_finite())
             {
                 return Err(QueryError::Parameter);
             }
-            runtime.parameters.push(value);
+            runtime.parameters.push(ParameterValue {
+                value,
+                declaration: declared.data_type.declaration(),
+            });
         }
         let (rows, names, types) = match &self.body {
             PreparedBody::Read(read) => (

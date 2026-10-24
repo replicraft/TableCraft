@@ -7,6 +7,13 @@ pub(super) fn parse(p: &mut Parser<'_>, column: bool) -> Result<DataType, ParseE
         return Err(ParseError::at(p, K::Syntax, "expected Access data type"));
     };
     let type_name = type_word.value.to_ascii_uppercase();
+    if !column && type_word.quote_style.is_none() && type_name == "VALUE" {
+        return Ok(DataType {
+            name: type_name,
+            arguments: Vec::new(),
+        });
+    }
+
     if (!column && matches!(type_name.as_str(), "COUNTER" | "AUTOINCREMENT"))
         || type_word.quote_style.is_some()
         || !matches!(

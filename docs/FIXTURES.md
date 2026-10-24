@@ -1,11 +1,25 @@
 # Candidate Access fixtures
 
+## Registered VALUE parameter inventory
+
+The original [parameter getter](testing/SavedParameterOracle.java) disables
+expression evaluation and reads only query-family/parameter metadata with reviewed
+Jackcess 5.0.4. The [comparison](testing/compare_example_saved_definitions.py)
+checks all 59 registered definitions: 51 saved reads reconstruct and round-trip,
+their declarations agree with independent getters (including twelve VALUE
+parameters), and eight DDL/pass-through definitions remain refused by read
+reconstruction. Original database and JAR SHA-256 remain respectively
+`3cd1fc88d70bc93909ae6d190fa9692e709d5641b205fd2f66185c905e42cfbf` and
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+No new binary or third-party code was added. This is inert metadata/syntax evidence;
+neither SQL/VBA execution nor native Access conformance was established.
+
 ## Stored terminated derived reads
 
 The existing registered ACE 2007 `Access_Example_VBA.accdb` supplies the exact
 terminated SELECT source in `~sq_d510~sq_dChild52`. A regression reconstructs that
-source independently, checks the complete owned model and raw fragment, and
-retains the full original definition's unsupported type-zero parameter refusal.
+source independently and checks the complete owned model and raw fragment. The
+full original definition now also retains its native type-zero VALUE parameter.
 The original SHA-256 remains
 `3cd1fc88d70bc93909ae6d190fa9692e709d5641b205fd2f66185c905e42cfbf`.
 

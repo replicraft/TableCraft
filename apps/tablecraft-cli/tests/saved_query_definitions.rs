@@ -323,7 +323,7 @@ fn saved_select_command_retains_the_registered_examples_leading_digit_source_nam
 
 #[test]
 fn saved_parameter_declarations_print_without_values_or_prompts_and_unknown_types_fail() {
-    for flag in [4, 0] {
+    for flag in [4, 0, 17] {
         let row = |attribute| Fragment {
             object: Some(fixture::QUERY_ID),
             attribute: Some(attribute),
@@ -346,7 +346,7 @@ fn saved_parameter_declarations_print_without_values_or_prompts_and_unknown_type
             0x80000000,
         ));
         let result = cli_support::run(&["-vv", "query", "saved", "--database", db.path(), "Saved"]);
-        if flag == 4 {
+        if flag == 4 || flag == 0 {
             assert!(
                 result.status.success(),
                 "{}",
@@ -354,7 +354,10 @@ fn saved_parameter_declarations_print_without_values_or_prompts_and_unknown_type
             );
             assert_eq!(
                 String::from_utf8(result.stdout).unwrap(),
-                "PARAMETERS [Prompt?] LONG; SELECT [Prompt?] AS [Answer];\n"
+                format!(
+                    "PARAMETERS [Prompt?] {}; SELECT [Prompt?] AS [Answer];\n",
+                    if flag == 0 { "VALUE" } else { "LONG" }
+                )
             );
         } else {
             assert_eq!(result.status.code(), Some(2));

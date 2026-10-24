@@ -373,6 +373,11 @@ literal evaluation or type coercion occurs. At most 256 bindings and 65,536 tota
 UTF-8 argument bytes are accepted; duplicates/unknown/omitted/wrong-carrier values
 fail. SQL INTEGER uses the `long` carrier.
 
+SQL [VALUE parameters](VALUE_PARAMETERS.md) retain whichever supported scalar
+carrier the caller explicitly supplies. For example, `PARAMETERS P VALUE; SELECT P`
+with `--param P=short:7` retains Int16; it does not infer a fixed parameter type or
+coerce subsequent runs to that carrier. Other typed declarations stay strict.
+
 Numeric CLI syntax is independent of query `--number-format`. Currency retains
 its existing invariant CCur rounding profile. Decimal uses optional sign, ASCII
 digits and an optional decimal point (at least one digit overall), with exact

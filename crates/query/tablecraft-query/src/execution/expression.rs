@@ -42,7 +42,7 @@ impl Runtime<'_, '_> {
             Expr::Field { .. } | Expr::CollectionItem { .. } | Expr::Output(..) => {
                 Ok(into_scalar(self.expression_operand(expr, env)?)?)
             }
-            Expr::Parameter(index) => self.copy(self.parameters[*index]),
+            Expr::Parameter(index) => self.copy(self.parameters[*index].value),
             Expr::Unary(U::Plus | U::Minus, _) => {
                 Ok(into_scalar(self.expression_operand(expr, env)?)?)
             }

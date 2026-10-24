@@ -87,7 +87,7 @@ impl Runtime<'_, '_> {
             Expr::Literal(literal @ Expression::GuidLiteral(_)) => {
                 self.evaluator().evaluate(literal)?
             }
-            Expr::Parameter(index) => match self.parameters.get(*index) {
+            Expr::Parameter(index) => match self.parameters.get(*index).map(|p| p.value) {
                 Some(Value::Guid(value)) => return Ok(Some(*value)),
                 _ => return Ok(None),
             },
@@ -109,13 +109,15 @@ impl Runtime<'_, '_> {
         self.tick()?;
         Ok(match expr {
             Expr::Literal(Expression::Integer(value)) => Some(*value),
-            Expr::Parameter(index) if parameter => match self.parameters.get(*index) {
-                Some(Value::Byte(value)) => Some(i64::from(*value)),
-                Some(Value::Int16(value)) => Some(i64::from(*value)),
-                Some(Value::Int32(value)) => Some(i64::from(*value)),
-                Some(Value::Int64(value)) => Some(*value),
-                _ => None,
-            },
+            Expr::Parameter(index) if parameter => {
+                match self.parameters.get(*index).map(|p| p.value) {
+                    Some(Value::Byte(value)) => Some(i64::from(*value)),
+                    Some(Value::Int16(value)) => Some(i64::from(*value)),
+                    Some(Value::Int32(value)) => Some(i64::from(*value)),
+                    Some(Value::Int64(value)) => Some(*value),
+                    _ => None,
+                }
+            }
             Expr::Convert(conversion @ (Conversion::Byte | Conversion::Integer), inner) => self
                 .integer_constant(inner, false)?
                 .and_then(|value| match conversion {

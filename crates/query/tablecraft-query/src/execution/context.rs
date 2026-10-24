@@ -7,6 +7,13 @@ use tablecraft_core::{
     values::Value,
 };
 use tablecraft_expressions::evaluation::{EvalLimits, Evaluator, NoBindings};
+use tablecraft_expressions::numeric::OperandDeclaration;
+
+#[derive(Clone, Copy)]
+pub(super) struct ParameterValue<'a> {
+    pub value: &'a Value,
+    pub declaration: OperandDeclaration,
+}
 
 pub(crate) struct Runtime<'a, 'source> {
     pub(super) numeric_scratch: Vec<NumericScratch>,
@@ -14,7 +21,7 @@ pub(crate) struct Runtime<'a, 'source> {
     pub(super) domain_depth: usize,
     pub(super) source: &'source dyn Source,
     pub(super) discovery: &'a DiscoveryState<'source>,
-    pub(super) parameters: Vec<&'a Value>,
+    pub(super) parameters: Vec<ParameterValue<'a>>,
     pub(super) options: ExecutionOptions<'a>,
     pub(super) budget: &'a mut ResourceBudget,
 }
