@@ -11,6 +11,9 @@ use crate::{
 };
 use std::mem::discriminant;
 use tablecraft_core::values::Value;
+use tablecraft_expressions::evaluation::{
+    arithmetic_operands, arithmetic_unary_operand, empty_division_operand,
+};
 use tablecraft_expressions::numeric::{
     Arithmetic, ArithmeticDeclarations, OperandDeclaration, uses_declared_overflow,
 };
@@ -43,8 +46,14 @@ impl Runtime<'_, '_> {
         } else {
             TextPolicy::Default
         };
-        let left = into_operator_scalar(left)?;
-        let right = into_operator_scalar(right)?;
+        if operator == B::Divide
+            && let Some(numerator) = empty_division_operand(&left.value, &right.value)
+        {
+            let value = self.evaluator().apply_empty_division(numerator)?;
+            return Ok(CellValue::scalar(value)
+                .with_policy(policy)
+                .with_declaration(declaration));
+        }
         let operation = match operator {
             B::Add => Some(Arithmetic::Add),
             B::Subtract => Some(Arithmetic::Subtract),
@@ -55,6 +64,11 @@ impl Runtime<'_, '_> {
             B::Power => Some(Arithmetic::Power),
             B::Concatenate | B::And | B::Or | B::Xor | B::Equivalence | B::Implication => None,
             _ => return Err(QueryError::Unsupported),
+        };
+        let (left, right) = if operation.is_some() {
+            arithmetic_operands(operator, left.value, right.value)?
+        } else {
+            (into_operator_scalar(left)?, into_operator_scalar(right)?)
         };
         let value = if self.options.declared_integral
             && let Some(operation) = operation
@@ -95,7 +109,11 @@ impl Runtime<'_, '_> {
     ) -> Result<CellValue, QueryError> {
         let policy = TextPolicy::Default;
         let declaration = operand.declaration;
-        let value = into_operator_scalar(operand)?;
+        let value = if matches!(operator, U::Plus | U::Minus) {
+            arithmetic_unary_operand(operator, operand.value)?
+        } else {
+            into_operator_scalar(operand)?
+        };
         let selected_width = self.options.declared_integral
             && operator == U::Minus
             && matches!(

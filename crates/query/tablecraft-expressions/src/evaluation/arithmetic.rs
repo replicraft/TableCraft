@@ -1,5 +1,6 @@
 //! Contextual numeric Text operands; standalone numeric kernels stay policy-free.
 pub(super) mod addition;
+pub(super) mod operands;
 mod rounded;
 use super::Evaluator;
 use crate::{

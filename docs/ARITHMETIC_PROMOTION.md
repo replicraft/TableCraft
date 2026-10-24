@@ -52,8 +52,9 @@ is covered as a distinct input.
 Decimal takes precedence over a legacy DATE operand. Conversion uses the stored
 DATE serial, not its civil interpretation. Other DATE operations retain their
 existing APIs. Extended DateTime and other unsupported carriers do not become
-numeric. Error data, Empty/Missing and arrays do not acquire implicit scalar or
-storage representations through this service.
+numeric. Error/Missing and arrays remain refused. [Host Empty arithmetic](EMPTY_ARITHMETIC.md)
+now selects reviewed operator-specific operands at the expression boundary;
+the numeric kernels still accept only ordinary scalar values. Empty remains non-storable.
 
 ## Boundaries and remaining work
 
@@ -249,8 +250,10 @@ including zero/zero. Integer division and Mod also retain DivisionByZero, includ
 when half-even conversion rounds a divisor such as 0.5 to zero. This is based on
 separate [ordinary division](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/8628f21c-3f02-42b1-908c-201bd7ffe1b5)
 and [integer division/Mod](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/09fdf266-a9d5-4ecb-b7d8-ffd1361cb349)
-language rules. The wider Empty-operand exceptions and assignment of nonfinite
-Double values before raising an error are not implemented by the scalar service.
+language rules. The expression boundary now implements the reviewed
+[host Empty effective-type profile](EMPTY_ARITHMETIC.md); wider Empty identity/subtype
+qualification remains open. Assignment of nonfinite Double values before raising
+an error is not implemented by the scalar service.
 
 NULL operands still propagate after written expressions evaluate. An operand's
 operational failure remains eager: `0/(1/0)` fails with DivisionByZero before the
