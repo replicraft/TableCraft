@@ -249,3 +249,13 @@ explicitly uses SELECT over ProductSales. That establishes direct query scope;
 the broader [MS-VBAL conversion rules](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/d5418146-0bd2-45eb-9c7a-fd9502722c74)
 inform the explicit host Empty/Error contract. Native mixed NULL/Error precedence,
 complete Variant coercion and locale/provider equivalence remain unqualified.
+
+## Explicit ICU text-mode provider
+
+The optional [ICU host text profile](ICU_TEXT_PROFILE.md) now supplies compare_text
+and Text-mode search under four explicitly selected locales. `query run
+--text-locale en-US` activates it for explicit text modes while ordinary SQL,
+database and LIKE policies retain their selected base provider. Numeric LCID
+registration is a separate explicit option. This is a working bounded ICU profile,
+not Windows NLS or native Access qualification; omitted module policy, raw malformed
+Strings and unsupported registrations keep their existing refusals.

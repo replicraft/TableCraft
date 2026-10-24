@@ -40,3 +40,15 @@ Access and performance qualification remain separate.
 [Qualified Short Text equality hints](TEXT_EQUALITY_SEEKS.md) charge prefix
 generation to the same provider pool as residual comparisons. Index pruning does
 not reset, refund or replace the comparison allowance.
+
+## Separate optional ICU text provider
+
+The explicit [ICU text profile](ICU_TEXT_PROFILE.md) allows these same flags with
+--text-locale alone. Each distinct General or ICU provider receives its own
+cumulative allowance. Combining providers can therefore consume more than one
+configured pool; --comparison-bytes/--comparison-steps are per-provider ceilings,
+not one global comparison cap across all providers. Native per-field General
+policies still share their existing General pool. Defaults/maxima are unchanged,
+and no callback resets or borrows the query execution allowance. ICU's internal
+scratch allocator and hard input/search bounds retain their separately documented
+limits; the provider byte pool charges its own search boundary allocations.

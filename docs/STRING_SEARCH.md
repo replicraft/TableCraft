@@ -300,3 +300,14 @@ state/precedence controls and optional registered native-field integrations.
 The scalar search/replacement runners also support source-free runs when both
 `--jar` and `--directory` are omitted. Supplying either requires both; full native
 modes still verify the JAR, selected corpus identities and unchanged originals.
+
+## Explicit ICU host searches
+
+The optional [ICU host text provider](ICU_TEXT_PROFILE.md) supplies bounded
+scalar-boundary substring matching for explicit Text mode and one exact
+host-registered LCID. It preserves original UTF-16 consumed widths for canonical
+and expanded matches and delegates database search unchanged. The CLI activates
+it with --text-locale; --text-lcid registers a numeric identity separately. Input
+ceilings and cumulative work/cancellation remain explicit. The standalone-span
+algorithm is not a native NLS StringSearch implementation or a completed wider
+LCID/Access compatibility profile.

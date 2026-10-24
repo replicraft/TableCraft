@@ -36,8 +36,9 @@ Cargo.lock, current consumers and primary API documentation. At that review
 baseline none was a direct TableCraft dependency. Subsequent working development
 benchmarks directly consume ArrayVec, SmallVec and memchr; their exact features
 and boundaries are recorded in [DEPENDENCIES.md](DEPENDENCIES.md). The measured
-follow-up adopts ArrayVec only for private bounded native index columns. SmallVec
-and memchr remain development-only; production search is unchanged.
+follow-up adopts ArrayVec only for private bounded native index columns. The direct
+SmallVec and memchr experiments remain development-only; production byte search
+is unchanged. The optional ICU text provider uses SmallVec transitively.
 A lockfile-only entry can belong to an optional
 or build-time closure; it does not establish active use in a particular build.
 This review adds no dependencies or version upgrades and claims no measured
@@ -48,7 +49,7 @@ inventory; this section refines their current implementation readiness.
 | --- | --- | --- |
 | [binrw](https://docs.rs/binrw/0.15.2/binrw/) | Absent | Prototype on a new structured native codec, especially a writer. Read/Seek derives, endian controls and assertions could improve composition; current borrowed zerocopy index/LVAL headers already have a working boundary. |
 | [deku](https://docs.rs/deku/0.20.3/deku/) | Absent | Defer as an alternative for genuinely mixed bit/byte streams. It overlaps binrw/bilge; its optional bit machinery is unnecessary for byte-only codecs. |
-| [smallvec](https://docs.rs/smallvec/latest/smallvec/struct.SmallVec.html) | Development benchmark 1.16.3; originally lockfile-only | Measured against Vec and ArrayVec; retain as a development contender. Small inline cases save storage, but spills and noisy ten-column results did not justify production adoption. |
+| [smallvec](https://docs.rs/smallvec/latest/smallvec/struct.SmallVec.html) | Direct development benchmark 1.16.3; also transitive in the optional ICU provider | Measured against Vec and ArrayVec; retain as a development contender. Small inline cases save storage, but spills and noisy ten-column results did not justify production adoption. |
 | [arrayvec](https://docs.rs/arrayvec/latest/arrayvec/struct.ArrayVec.html) | Native index consumer 0.7.8; originally lockfile-only | Adopted for private native index columns after the measured comparison. The existing ten-column ceiling and fallible insertion remove one allocation per index; public slices, validation and physical encoding remain unchanged. |
 | [dashmap](https://docs.rs/dashmap/latest/dashmap/struct.DashMap.html) | Absent | Defer until a measured concurrent-map consumer exists. Source-local RefCell state is not a concurrent native connection; guard-held callbacks/reentry introduce deadlock hazards. |
 | [indexmap](https://docs.rs/indexmap/latest/indexmap/map/struct.IndexMap.html) | Lockfile-only 2.14.2 | Keep as a future insertion-ordered keyed registry/property collection. Current bounded vectors work; Rust Value equality/hashing cannot replace SQL grouping semantics. |
@@ -151,7 +152,9 @@ Binary ownership or add both bytes and byteview without a measured need.
 
 The bounded memchr and ArrayVec/SmallVec experiments now have
 [recorded measurements](DEPENDENCIES.md). ArrayVec is adopted only for native
-index columns; the other two remain development-only. Parser, bit-stream and concurrent-cache choices stay tied
+index columns; the direct SmallVec and memchr experiments remain development-only.
+ICU uses SmallVec internally in its optional production closure. Parser, bit-stream
+and concurrent-cache choices stay tied
 to their corresponding real consumers. Full feature/target/MSRV/license review
 and workload verification remain adoption requirements, not results supplied by
 this fit review.
@@ -202,7 +205,7 @@ encoder equivalence does not establish native Access SQL or text-index traversal
 | [rust_decimal 1.43.0](https://docs.rs/crate/rust_decimal/1.43.0) | MIT | Adopted; expressions conversions/arithmetic | Checked numeric conversion/arithmetic and explicit bounded rounding behind domain carriers; std only, Serde disabled. Full promotion and native rounding qualification remain pending. Its 96-bit magnitude is not the field envelope; preserve scale, errors and explicit rounding. |
 | [bigdecimal 0.4.11](https://docs.rs/crate/bigdecimal/0.4.11) | MIT/Apache-2.0 | Alternative/oracle; Bounded intermediates or tests | Useful exact large coefficients; cap precision, scale, time and allocation. Nonterminating division is not exact and it is not a native storage codec. |
 | [decimal-rs 0.2.0](https://docs.rs/crate/decimal-rs/0.2.0) | Apache-2.0 | Alternative; Future broader SQL decimal | 38-digit model could serve broader DECIMAL needs; no current requirement supersedes the field carrier. Compare rounding, scale retention and overflow first. |
-| [icu_collator 2.3.1](https://docs.rs/crate/icu_collator/2.3.1) | Unicode-3.0 | Compatibility prototype; expressions and ACE string indexes | The [isolated ordering probe](testing/ICU_COLLATION_PROBE.md) observes differences from both General models even after trailing-space handling. No substring API/default search data; UTF-16 comparison replaces unpaired surrogates. Remains a candidate, with no runtime adoption or native-key substitution. |
+| [icu_collator 2.3.1](https://docs.rs/crate/icu_collator/2.3.1) | Unicode-3.0 | Optional host text provider; expressions | The [ordering probe](testing/ICU_COLLATION_PROBE.md) differs from General and still rules out native-key substitution. The [explicit ICU profile](ICU_TEXT_PROFILE.md) compares decoded Unicode and owns bounded scalar-span search. Raw malformed Strings refuse before ICU; no native NLS/ACE equivalence is claimed. |
 | [encoding_rs 0.8.42](https://docs.rs/crate/encoding_rs/0.8.42) | (Apache-2.0 OR MIT) AND BSD-3-Clause | Adopted; explicit scalar character-code pages. Native legacy text/import remain future consumers | [Current single-byte scope](CHARACTER_CODE_PAGES.md) uses non-replacing stack decoding with defaults disabled. WHATWG coverage is not every Windows/OEM code page or native Access equivalence. Preserve original bytes and reject unsupported/unmapped inputs. |
 | [jiff 0.2.38](https://docs.rs/crate/jiff/0.2.38) | Unlicense OR MIT | Keep; core and expressions | Replaces time for civil validation/conversion, strict date input and shared Gregorian date extraction. Keep exact Access carriers; std/perf-inline only, without automatic timezone discovery. Benchmarks include its conversion cost. |
 | [regex 1.13.1](https://docs.rs/crate/regex/1.13.1) | MIT OR Apache-2.0 | Use with a concrete application feature; Search/import tooling | Bound patterns, compiled size and input. Do not implement Access LIKE by assuming regex syntax/semantics match. |
@@ -497,7 +500,9 @@ ArtCraft dependency. Details and acceptance are in [External Data](features/EXTE
 Adopt icu_casemap 2.3.0 with compiled_data, icu_locale_core 2.3.0 with alloc and
 writeable 0.6.4 for the working [LCase/UCase slice](TEXT_CASING.md). All declare
 Unicode-3.0; primary ICU packages require Rust 1.88, writeable 1.82, within our 1.99
-toolchain. This is distinct from the unadopted ICU collation prototype. The exact
+toolchain. This is distinct from native collation qualification; a later optional
+[host text profile](ICU_TEXT_PROFILE.md) adopts ICU without replacing General.
+The exact
 23-package added closure, licenses and feature limits are recorded in DEPENDENCIES.
 Upstream security review found [GHSA-7fx9-626j-vqph](https://github.com/unicode-org/icu4x/security/advisories/GHSA-7fx9-626j-vqph);
 locked zerovec 0.11.8 and zerovec-derive 0.11.6 include the documented fixes.

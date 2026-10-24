@@ -78,6 +78,7 @@ pub(super) struct Controls {
     pub case_locale: Option<tablecraft_expressions::functions::text::casing::CaseLocale>,
     pub clock: Option<tablecraft_expressions::functions::dates::clock::ClockReading>,
     pub collation: Option<TextCollation>,
+    pub text_policy: super::text_policy::Args,
     pub like_mode: Option<Wildcards>,
     pub year_window: Option<TwoDigitYearWindow>,
     pub character_code_page: Option<CharacterCodePage>,
@@ -279,6 +280,14 @@ fn execute(
     collation: Option<&dyn Collation>,
     collation_resolver: Option<&dyn CollationResolver>,
 ) -> Result<ExpressionQueryResult, Error> {
+    let text_policy = controls
+        .text_policy
+        .build(collation, controls.comparison_limits.budget(), &|| false)
+        .map_err(|error| Error::Retrieval(tablecraft_query::QueryError::Evaluation(error)))?;
+    let collation = text_policy
+        .as_ref()
+        .map(|provider| provider as &dyn Collation)
+        .or(collation);
     let clock = super::clock::HostClock::new(controls.clock);
     let error_messages = EnglishErrorMessages::default();
     let random = RndState::new(controls.random_seed).map_err(|_| Error::Parameter)?;
