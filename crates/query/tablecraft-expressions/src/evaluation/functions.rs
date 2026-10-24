@@ -37,8 +37,9 @@ impl Evaluator<'_> {
             if function == TextFunction::CStr
                 && let [A::Expression(expression)] = arguments
             {
-                let value = self.expression_operand(expression, depth + 1)?;
-                return self.apply_expression_cstr(&value);
+                let value = self.expression_byte_operand(expression, depth + 1)?;
+                let value = self.apply_expression_cstr_operand(value)?;
+                return self.publish_byte_operand(value);
             }
             if function == TextFunction::Str
                 && let [A::Expression(expression)] = arguments

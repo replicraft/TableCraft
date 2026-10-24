@@ -210,8 +210,9 @@ impl Runtime<'_, '_> {
             }
             Expr::TextCall(function, arguments) => {
                 if *function == TextFunction::CStr {
-                    let value = self.expression_operand(&arguments[0], env)?;
-                    return Ok(self.evaluator().apply_expression_cstr(&value)?);
+                    let value = self.expression_byte_operand(&arguments[0], env)?;
+                    let value = self.evaluator().apply_expression_cstr_operand(value)?;
+                    return Ok(self.evaluator().publish_byte_operand(value)?);
                 }
                 if *function == TextFunction::Str {
                     let value = self.expression_operand(&arguments[0], env)?;

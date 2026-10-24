@@ -9,6 +9,37 @@ fn table(bytes: &[u8]) -> Vec<Vec<String>> {
         .map(|record| record.unwrap().iter().map(str::to_owned).collect())
         .collect()
 }
+
+#[test]
+fn cstr_preserves_nested_string_bytes_and_keeps_final_output_strict() {
+    for mode in ["eval", "run"] {
+        let result = run(&[
+            "query",
+            mode,
+            "SELECT LenB(CStr(ChrB(65))) AS B,AscW(CStr(ChrW(55296))) AS W,CStr(ChrW(55357))&CStr(ChrW(56832)) AS Face",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(
+            table(&result.stdout),
+            [vec!["B", "W", "Face"], vec!["1", "-10240", "\"😀\""]]
+        );
+
+        for expression in [
+            "CStr(ChrW(55296))",
+            "CStr(ChrB(65))",
+            "Len(CStr(ChrB(65)))",
+            "CStr(1/0)",
+        ] {
+            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            assert_eq!(result.status.code(), Some(2), "{expression}");
+            assert!(result.stdout.is_empty(), "{expression}");
+        }
+    }
+}
 #[test]
 fn cstr_uses_separate_numeric_and_date_policies_in_both_query_paths() {
     for mode in ["eval", "run"] {

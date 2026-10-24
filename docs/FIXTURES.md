@@ -13,7 +13,7 @@ Access and benchmarks were not run; no third-party artifact or dependency was ad
 
 ## Independent raw UTF-16 observations
 
-The expanded original [byte recipe](testing/compare_byte_strings.py) checks 26,590
+The expanded original [byte recipe](testing/compare_byte_strings.py) checks 35,336
 source-free values/refusals against Python UTF-16LE byte models in both query
 commands. Added cases cover Len/AscW over complete raw units and ChrW inputs for
 every code unit D800–DFFF, plus signed spellings, byte lengths and String subtype
@@ -23,6 +23,11 @@ of two. Direct outer slices also select empty ranges from those intermediates
 before scalar publication. Direct surrogate publication stays refused. No binary, third-party
 source or additional dependency was added. Native fixture replays and Windows
 Access were not run for this batch.
+
+CStr observations now cover every surrogate unit and every ChrB byte while
+retaining strict final publication and odd-byte Unicode observation refusals.
+The existing standalone CStr and concatenation recipes also pass 3,224 and 1,542
+source-free controls respectively; their optional native inputs were not supplied.
 
 ## Independent Round precision controls
 

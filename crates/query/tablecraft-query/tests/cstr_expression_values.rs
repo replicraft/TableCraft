@@ -24,6 +24,52 @@ fn source() -> MemorySource {
 }
 
 #[test]
+fn cstr_retains_raw_string_inputs_through_rebinding_and_grouped_consumers() {
+    let source = source();
+    let query = syntax(
+        "PARAMETERS P LONG; SELECT AscW(CStr(ChrW(P))),LenB(CStr(LeftB('😀',1))),VarType(CStr(ChrW(P)))",
+    );
+    let plan = prepare(&query, &source).unwrap();
+    for (code, expected) in [(55296, -10240), (57343, -8193), (65, 65)] {
+        let result = plan
+            .execute(&source, &[("P", Value::Int32(code))], Default::default())
+            .unwrap();
+        assert_eq!(
+            result.rows(),
+            &[vec![
+                Value::Int16(expected),
+                Value::Int32(1),
+                Value::Int16(8)
+            ]]
+        );
+    }
+
+    let result = prepare(
+        &syntax("SELECT Sum(AscW(CStr(ChrW(ID+55295)))) FROM T"),
+        &source,
+    )
+    .unwrap()
+    .execute(&source, &[], Default::default())
+    .unwrap();
+    assert_eq!(result.rows(), &[vec![Value::Int64(-20479)]]);
+
+    for sql in [
+        "SELECT CStr(ChrW(55296))",
+        "SELECT Len(S) FROM (SELECT CStr(ChrW(55296)) AS S) AS Q",
+        "SELECT Len(CStr(ChrB(65)))",
+    ] {
+        assert_eq!(
+            prepare(&syntax(sql), &source)
+                .unwrap()
+                .execute(&source, &[], Default::default())
+                .err(),
+            Some(QueryError::Evaluation(EvalError::UnrepresentableText)),
+            "{sql}"
+        );
+    }
+}
+
+#[test]
 fn explicit_cstr_consumes_error_cells_in_derived_correlated_group_and_domain_queries() {
     let source = source();
     for (sql, expected) in [

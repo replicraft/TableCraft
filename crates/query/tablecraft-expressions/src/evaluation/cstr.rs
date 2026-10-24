@@ -2,11 +2,32 @@
 use super::{Evaluator, text_arguments, text_output::Output};
 use crate::{
     EvalError,
-    functions::text::{TextFunction, cstr},
+    functions::text::{
+        TextFunction,
+        byte_string::{ByteOperand, ExpressionByteOperand},
+        cstr,
+    },
 };
 use tablecraft_core::values::{ExpressionValue, Value};
 
 impl Evaluator<'_> {
+    /// Convert scalar expression data under CStr policies, or retain an existing
+    /// string buffer without decoding, replacing or allocating its payload.
+    pub fn apply_expression_cstr_operand(
+        &mut self,
+        value: ExpressionByteOperand,
+    ) -> Result<ByteOperand, EvalError> {
+        match value {
+            ExpressionByteOperand::Scalar(value) => {
+                self.apply_expression_cstr(&value).map(ByteOperand::Scalar)
+            }
+            ExpressionByteOperand::Bytes(bytes) => {
+                self.check(0)?;
+                Ok(ByteOperand::Bytes(bytes))
+            }
+        }
+    }
+
     /// Borrow Text operands; materialize other scalar spellings under the same
     /// CStr policies and cumulative budget as explicit conversion.
     pub(super) fn string_operand(&mut self, value: &Value) -> Result<Option<Value>, EvalError> {
@@ -98,3 +119,6 @@ mod lengths;
 
 #[cfg(test)]
 mod expression_sources;
+
+#[cfg(test)]
+mod byte_sources;

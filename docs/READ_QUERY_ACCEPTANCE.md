@@ -96,6 +96,12 @@ Host-supplied Empty becomes empty Text; Error and Missing remain refused. Odd-by
 concatenation, other raw operators and relational string carriers remain explicit
 gaps. See [concatenation scope](CONCATENATION.md#lossless-utf-16-concatenation).
 
+Explicit CStr now preserves existing raw string ranges without decoding or
+allocating another payload. Scalar conversion states/policies, odd-byte Unicode
+observation refusals and strict final publication remain unchanged. This closes
+a conversion-path gap, not raw relational carriers or broader Variant/native
+semantics. See [CStr string inputs](CSTR.md#lossless-string-inputs).
+
 Round's digit count now follows the nonnegative Long profile independently of
 Decimal storage scale. [Bounded high precision](MATH_FUNCTIONS.md#round-precision-beyond-decimal-storage-scale)
 covers tiny IEEE values and extreme counts without an overflowing scale factor or

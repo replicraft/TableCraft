@@ -1,5 +1,31 @@
 # Implementation status
 
+## CStr over lossless string inputs
+
+CStr now retains existing raw string buffers through the shared owning evaluator
+and both query hosts. Odd-byte ranges and unpaired units remain string data until
+a consumer requires Unicode; no replacement decoding, Binary reinterpretation or
+new payload allocation occurs for this identity conversion. Scalar numeric/date,
+Error/Empty/Missing and NULL inputs retain their existing conversion policies and
+refusals. Borrowed CStr still handles materialized scalar sources, and final
+publication stays strict. See [string-input scope](CSTR.md#lossless-string-inputs).
+
+Three new evaluator controls cover SQL composition/refusals, active-range pointer
+identity under a zero-byte budget, every observed cancellation checkpoint and
+generated arbitrary byte retention. A bound-query test covers parameter rebinding,
+aggregate consumption and continued relational-cell refusal; a CLI test checks
+both query paths and buffered failures. All 699 all-feature expression tests plus
+one doctest, 364 minimal expression tests, 48 focused query tests and five CLI
+tests pass. Focused Clippy, minimal query compilation, formatting, Python
+compilation and diff checks pass.
+
+The expanded independent byte recipe passes 35,336 source-free controls, including
+CStr over every surrogate unit and every ChrB byte. Existing CStr and concatenation
+recipes pass 3,224 and 1,542 controls respectively. Native fixture replays, Windows
+Access, full engine/workspace suites and benchmarks were not run. No dependency,
+stored carrier, decoder or writer scope changed. Broader raw-string operators,
+relational carriers, Variant coercion and native qualification remain unfinished.
+
 ## Lossless ampersand concatenation
 
 Ampersand now retains complete UTF-16 units through nested operands, observations,

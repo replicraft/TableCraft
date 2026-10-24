@@ -159,6 +159,9 @@ impl Evaluator<'_> {
         }
         self.text_expression_limits(rest)?;
         self.check(0)?;
+        if function == TextFunction::CStr {
+            return self.apply_expression_cstr_operand(first);
+        }
         if function.slices_units() {
             return self.apply_unicode_slice(function, first, rest);
         }
@@ -189,6 +192,9 @@ impl Evaluator<'_> {
         self.check(0)?;
         if !function.produces_bytes() || !function.accepts_arity(rest.len() + 1) {
             return Err(EvalError::UnsupportedExpression);
+        }
+        if function == TextFunction::CStr {
+            return self.apply_expression_cstr_operand(first.into());
         }
         if function.slices_units() {
             return self.unicode_slice(function, first, rest);

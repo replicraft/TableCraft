@@ -114,8 +114,8 @@ def main():
             expressions = []
             expected = []
             for code in range(start, start + 16):
-                expressions += [f"LenB(ChrB({code}))", f"AscB(ChrB({code}))"]
-                expected += ["1", str(code)]
+                expressions += [f"LenB(ChrB({code}))", f"AscB(ChrB({code}))", f"AscB(CStr(ChrB({code})))"]
+                expected += ["1", str(code), str(code)]
             assert execute(args.cli, mode, "SELECT " + ",".join(expressions)) == [expected]
             count += len(expected)
 
@@ -129,12 +129,18 @@ def main():
                 expressions.extend([
                     f"Len(ChrW({code}))", f"AscW(ChrW({code}))",
                     f"LenB(CVar(ChrW({code})))", f"VarType(ChrW({code}))",
+                    f"LenB(CStr(ChrW({code})))", f"AscW(CStr(ChrW({code})))",
                 ])
-                expected.extend(["1", str(int.from_bytes(raw, "little", signed=True)), "2", "8"])
+                signed = str(int.from_bytes(raw, "little", signed=True))
+                expected.extend(["1", signed, "2", "8", "2", signed])
             assert execute(args.cli, mode, "SELECT " + ",".join(expressions)) == [expected]
             count += len(expected)
 
         for expression in ["ChrB(65)", "LeftB('A',1)", "RightB('🦀',2)", "ChrB(256)", "MidB('A',0)", "LeftB(Null,1/0)"]:
+            execute(args.cli, mode, "SELECT 1," + expression, succeeds=False)
+            count += 1
+
+        for expression in ["CStr(ChrW(55296))", "CStr(ChrB(65))", "Len(CStr(ChrB(65)))"]:
             execute(args.cli, mode, "SELECT 1," + expression, succeeds=False)
             count += 1
 
