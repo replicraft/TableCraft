@@ -1,8 +1,8 @@
 //! Selection facts refine successful carriers without removing eager expressions.
-use super::{Binder, literals};
+use super::{Binder, aggregate, literals};
 use crate::{
     OutputType, QueryError,
-    plan::{Expr, Slot},
+    plan::{Aggregate, Expr, Slot},
 };
 use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_expressions::{
@@ -10,6 +10,12 @@ use tablecraft_expressions::{
     functions::conditional::{ConditionalFunction, expression},
 };
 use tablecraft_sql::select::Expression;
+
+#[derive(Clone, Copy)]
+enum Mapping {
+    Value,
+    Aggregate(Aggregate),
+}
 
 #[derive(Clone, Copy)]
 enum Index {
@@ -27,10 +33,22 @@ impl Binder<'_> {
         scopes: &[&[Slot]],
         depth: usize,
     ) -> Result<OutputType, QueryError> {
+        self.iif_mapped_type(Mapping::Value, condition, yes, no, scopes, depth)
+    }
+
+    fn iif_mapped_type(
+        &mut self,
+        mapping: Mapping,
+        condition: &Expr,
+        yes: &Expr,
+        no: &Expr,
+        scopes: &[&[Slot]],
+        depth: usize,
+    ) -> Result<OutputType, QueryError> {
         // Inspect both result descriptions even when the selector is known.
         // This is metadata refinement, never dead-expression elimination.
-        let yes = self.result_type(yes, scopes, depth)?;
-        let no = self.result_type(no, scopes, depth)?;
+        let yes = self.mapped_type(mapping, yes, scopes, depth)?;
+        let no = self.mapped_type(mapping, no, scopes, depth)?;
         self.tick(depth)?;
         Ok(match literal_truth(condition)? {
             Some(true) => yes,
@@ -46,14 +64,85 @@ impl Binder<'_> {
         scopes: &[&[Slot]],
         depth: usize,
     ) -> Result<OutputType, QueryError> {
+        self.selection_mapped_type(Mapping::Value, function, arguments, scopes, depth)
+    }
+
+    fn selection_mapped_type(
+        &mut self,
+        mapping: Mapping,
+        function: ConditionalFunction,
+        arguments: &[Expr],
+        scopes: &[&[Slot]],
+        depth: usize,
+    ) -> Result<OutputType, QueryError> {
         match function {
-            ConditionalFunction::Choose => self.choose_result_type(arguments, scopes, depth),
-            ConditionalFunction::Switch => self.switch_result_type(arguments, scopes, depth),
+            ConditionalFunction::Choose => {
+                self.choose_result_type(mapping, arguments, scopes, depth)
+            }
+            ConditionalFunction::Switch => {
+                self.switch_result_type(mapping, arguments, scopes, depth)
+            }
+        }
+    }
+
+    fn mapped_type(
+        &mut self,
+        mapping: Mapping,
+        expression: &Expr,
+        scopes: &[&[Slot]],
+        depth: usize,
+    ) -> Result<OutputType, QueryError> {
+        match mapping {
+            Mapping::Value => self.result_type(expression, scopes, depth),
+            Mapping::Aggregate(kind) => {
+                self.numeric_aggregate_result_type(kind, expression, scopes, depth)
+            }
+        }
+    }
+
+    pub(super) fn numeric_aggregate_result_type(
+        &mut self,
+        kind: Aggregate,
+        expression: &Expr,
+        scopes: &[&[Slot]],
+        depth: usize,
+    ) -> Result<OutputType, QueryError> {
+        match expression {
+            Expr::IIf(condition, yes, no) => {
+                self.tick(depth)?;
+                self.iif_mapped_type(
+                    Mapping::Aggregate(kind),
+                    condition,
+                    yes,
+                    no,
+                    scopes,
+                    depth + 1,
+                )
+            }
+            Expr::ConditionalCall(function, arguments) => {
+                self.tick(depth)?;
+                self.selection_mapped_type(
+                    Mapping::Aggregate(kind),
+                    *function,
+                    arguments,
+                    scopes,
+                    depth + 1,
+                )
+            }
+            Expr::CVar(value) => {
+                self.tick(depth)?;
+                self.numeric_aggregate_result_type(kind, value, scopes, depth + 1)
+            }
+            _ => Ok(aggregate::numeric(
+                kind,
+                self.result_type(expression, scopes, depth)?,
+            )),
         }
     }
 
     fn choose_result_type(
         &mut self,
+        mapping: Mapping,
         arguments: &[Expr],
         scopes: &[&[Slot]],
         depth: usize,
@@ -85,7 +174,7 @@ impl Binder<'_> {
         };
         let mut result = OutputType::Null;
         for (position, argument) in arguments.iter().enumerate().skip(1) {
-            let choice = self.result_type(argument, scopes, depth)?;
+            let choice = self.mapped_type(mapping, argument, scopes, depth)?;
             match index {
                 Index::Choice(index) if index == position => result = choice,
                 Index::Unknown => result = result.union(choice),
@@ -97,6 +186,7 @@ impl Binder<'_> {
 
     fn switch_result_type(
         &mut self,
+        mapping: Mapping,
         arguments: &[Expr],
         scopes: &[&[Slot]],
         depth: usize,
@@ -105,7 +195,7 @@ impl Binder<'_> {
         let mut fall_through = true;
         for pair in arguments.as_chunks::<2>().0 {
             self.tick(depth)?;
-            let choice = self.result_type(&pair[1], scopes, depth)?;
+            let choice = self.mapped_type(mapping, &pair[1], scopes, depth)?;
             let truth = literal_truth(&pair[0])?;
             if fall_through && truth != Some(false) {
                 result = Some(match result {

@@ -225,8 +225,7 @@ impl Binder<'_> {
                 }
             }
             Expr::Aggregate(kind @ (Aggregate::Sum | Aggregate::Average), Some(argument)) => {
-                let input = self.result_type(argument, scopes, depth + 1)?;
-                aggregate::numeric(*kind, input)
+                self.numeric_aggregate_result_type(*kind, argument, scopes, depth + 1)?
             }
             Expr::Aggregate(Aggregate::Statistic(_), _)
             | Expr::DomainCall(

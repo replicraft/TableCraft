@@ -1,5 +1,15 @@
 # Implementation status
 
+## Numeric aggregate schemas across selector alternatives
+
+SUM/AVG now retain a common successful output carrier when different IIf,
+Choose or Switch input families feed the same accumulator result family.
+Unknown or incompatible outcomes stay Dynamic; no runtime conversion or scan is
+introduced. Forty-eight focused regressions, including 800 metadata cases and
+1,600 executions, pass with strict scoped Clippy. This is an implementation
+carrier guarantee, not native Access subtype qualification. See
+[aggregate output descriptions](AGGREGATE_OUTPUT_TYPES.md).
+
 ## Explicit cached calculation queries
 
 `query run --stored-calculations --database PATH` now explicitly queries qualified
