@@ -101,7 +101,11 @@ fn unicode_slices_compose_across_bound_parameters_and_grouped_results() {
         [vec![Value::Int32(1), Value::Int64(-17407)]]
     );
     assert_eq!(
-        run("SELECT Len(T) FROM (SELECT Left('😀',1) AS T) AS Q"),
+        run("SELECT Len(T) FROM (SELECT Left('😀',1) AS T) AS Q").unwrap(),
+        [vec![Value::Int32(1)]]
+    );
+    assert_eq!(
+        run("SELECT T FROM (SELECT Left('😀',1) AS T) AS Q"),
         Err(QueryError::Evaluation(EvalError::UnrepresentableText))
     );
     assert_eq!(
