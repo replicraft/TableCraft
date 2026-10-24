@@ -4,7 +4,8 @@ The qualified Jet 4 / ACE 2007 / ACE 2016 / ACE 2019 long-value reader now admit
 a default of 2 MiB encoded MEMO or opaque OLE bytes through at most 1,024 LVAL rows.
 An explicit [encoded-value policy](LARGER_ENCODED_VALUES.md) raises storage to
 32 MiB and 16,384 references without changing cumulative pools.
-Decoded Long Text has a separate 1 MiB UTF-8 ceiling. The encoded bound accounts
+Decoded Long Text defaults to a separate 1 MiB UTF-8 ceiling, with an explicit
+[decoded Memo allowance](LARGER_MEMOS.md) up to 16 MiB. The encoded bound accounts
 for UTF-16 storage independently of decoded UTF-8 size. Native attachment decoding
 retains defaults of 2 MiB encoded storage, a 1 MiB file and a 4 KiB header, through
 both stored and zlib modes. An explicit [decoded-file allowance](LARGER_DECODED_ATTACHMENTS.md)
@@ -14,9 +15,10 @@ These are engineering ceilings, not format maxima.
 
 Exact lengths, LVAL owners, row flags, reference cycles, termination, Unicode and
 attachment checksums remain mandatory. Default reference scans charge work as chains grow; explicit larger chains use
-a charged visited set and bounded physical batches. Text decoding reserves three logical passes over its encoded
-input; cancellation is checked before and after decoding, not within every Unicode
-conversion loop. Attachment copying/inflation retains its block checkpoints.
+a charged visited set and bounded physical batches. Text decoding reserves four logical passes over its encoded
+input. Memo conversion now also checks cancellation in bounded classification,
+unit/sizing/emission chunks; see [decoded Memo checkpoints](LARGER_MEMOS.md).
+Metadata text decoding retains its existing separate contract. Attachment copying/inflation retains its block checkpoints.
 Caller allocations, page reads and cumulative work remain separately limited.
 No source bytes change and no attachment/OLE/VBA content executes.
 
@@ -25,7 +27,7 @@ No source bytes change and no attachment/OLE/VBA content executes.
 Native stored-value admission and query execution have separate controls. The
 SQL evaluator and query runtime default to 65,536 bytes per Text value. An explicit
 `ExecutionOptions::max_text_bytes` or `query run --text-bytes BYTES` raises that
-limit up to 1,048,576 UTF-8 bytes. It applies to source/parameter copies, generated
+limit up to 16,777,216 UTF-8 bytes. It applies to source/parameter copies, generated
 intermediates, nested queries, domain calls and discovery execution under the same
 options. Binding/parser literal limits remain unchanged; preparing a plan never
 scans records to decide a value's size. Reusing a plan with default options again

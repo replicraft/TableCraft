@@ -18,6 +18,9 @@ goal above does not imply complete current read/query support.
 For larger Memo/OLE/attachment query results, explicit `query run --text-bytes
 1048576 --output-bytes 8388608 --format tsv` raises the separate per-Text and
 output allowances. Native and query budgets still apply; see [larger payloads](docs/LARGE_PAYLOADS.md).
+Explicit [larger Memo reads](docs/LARGER_MEMOS.md) can separately raise decoded
+native Text with `--native-text-bytes` and query Text with `--text-bytes`, up to
+16 MiB each; encoded storage and output retain independent controls.
 
 Explicit decoded attachment queries can also set `--attachment-bytes BYTES`
 with `--collections --decoded-attachments`. The default stays 1 MiB; the explicit

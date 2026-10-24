@@ -203,9 +203,11 @@ data-macro evidence/absence detection and broader
 physical mutation, allocation and recovery; these are prerequisites to a writable
 frontend, not features supplied by the preview.
 
-Native [larger payload reads](LARGE_PAYLOADS.md) now cover 2 MiB OLE and 1 MiB
-decoded Memo/attachment files. Explicit SQL Text and CLI output allowances
-now enable larger full projections under unchanged default and cumulative limits.
+Native [larger payload reads](LARGE_PAYLOADS.md) now have separate encoded,
+decoded Memo, attachment-file, query and output policies. Independent inputs
+include 20 MiB OLE, 3 MiB Memo and 3 MiB incompressible attachments.
+[Explicit decoded Memo/query Text ceilings](LARGER_MEMOS.md) reach 16 MiB without
+raising defaults or cumulative limits; rendered output retains its own ceiling.
 
 ## Remaining local-file read/query work
 

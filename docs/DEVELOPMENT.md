@@ -409,7 +409,7 @@ Without a policy a query that needs text comparison fails; plain Text projection
 Run uses the query library's shared work ceilings and the same escaped TSV-style
 formatter and default 1 MiB logical output ceiling as eval. Explicit
 `query run --output-bytes` can raise this to 16 MiB, including final CSV expansion;
-`--text-bytes` separately raises individual Text admission to 1 MiB. Output contains one header and
+`--text-bytes` separately raises individual Text admission to 16 MiB. Output contains one header and
 zero or more rows. All evaluation and formatting finish before stdout, so every
 parse/bind/parameter/evaluation/format failure exits 2 with no partial output.
 I/O/broken-pipe handling remains as documented above. Diagnostics omit SQL, names
@@ -512,7 +512,9 @@ caps, complete cache publication, default API compatibility and qualification.
 
 `query run --text-bytes BYTES --output-bytes BYTES` enables explicit larger Text
 and final output allowances. Defaults remain 64 KiB per Text and 1 MiB output;
-maxima are 1 MiB and 16 MiB respectively. Shared query allocations, native reads,
+maxima are 16 MiB for both, with separate cumulative pools.
+Native decoded Memo bytes use the independent
+[`--native-text-bytes` policy](LARGER_MEMOS.md). Shared query allocations, native reads,
 work and table layout retain separate limits. See [larger payloads](LARGE_PAYLOADS.md).
 
 

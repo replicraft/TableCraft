@@ -5,7 +5,7 @@ use super::retrieval::{TextCollation, Wildcards};
 use super::{calendar, character, clock, date_text, number};
 use clap::Args as ClapArgs;
 use std::path::PathBuf;
-use tablecraft_ace::{AttachmentDecodeLimits, LongValueReadLimits};
+use tablecraft_ace::{AttachmentDecodeLimits, LongTextReadLimits, LongValueReadLimits};
 use tablecraft_expressions::functions::conversions::text::NumberFormat;
 use tablecraft_expressions::functions::dates::clock::ClockReading;
 use tablecraft_expressions::functions::dates::parsing::ReferenceYear;
@@ -92,6 +92,9 @@ pub(crate) struct RunArgs {
     /// Maximum encoded Memo/OLE/attachment value bytes; default 2 MiB, maximum 32 MiB.
     #[arg(long, value_name = "BYTES", requires = "database", conflicts_with = "sqlite", value_parser = clap::value_parser!(u32).range(1..=i64::from(LongValueReadLimits::MAX_BYTES)))]
     pub(crate) native_value_bytes: Option<u32>,
+    /// Maximum decoded Memo UTF-8 bytes; default 1 MiB, maximum 16 MiB. Query Text limits remain separate.
+    #[arg(long, value_name = "BYTES", requires = "database", conflicts_with = "sqlite", value_parser = clap::value_parser!(u32).range(1..=i64::from(LongTextReadLimits::MAX_BYTES)))]
+    pub(crate) native_text_bytes: Option<u32>,
     /// Cumulative native read/allocation bytes; default 16 MiB, maximum 256 MiB.
     #[arg(long, value_name = "BYTES", requires = "database", conflicts_with = "sqlite", value_parser = clap::value_parser!(u64).range(1..=crate::native::MAX_QUERY_READ_BYTES))]
     pub(crate) native_bytes: Option<u64>,

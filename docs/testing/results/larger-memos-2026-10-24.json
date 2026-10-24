@@ -1,0 +1,27 @@
+{
+  "binary_sha256": "0d7ef13cb87c5390339b4b6040c7b457c293c9ba577fe2687e5d5d8b7445f108",
+  "controls": 76,
+  "inputs": {
+    "2007": {
+      "bytes": 9711616,
+      "sha256": "f03358973b9f15f9de0451a314a437522e00fe0ab6d57bd4773502c025473580"
+    },
+    "2016": {
+      "bytes": 9748480,
+      "sha256": "90cfc95517dab8bf5da482b59dcc1443ab8a323d5bf70d532b1c6fecb2aa74d4"
+    },
+    "2019": {
+      "bytes": 9818112,
+      "sha256": "c0ddab22165559475d04d2298ad768d4a001edb0959aa0c93a9f5b5fcbfaa9b9"
+    },
+    "jet4": {
+      "bytes": 9482240,
+      "sha256": "9c178ae4ebbaaf2e3965b7c011c6dab9f8f2ed2eb8331c492ae994d00592eb54"
+    }
+  },
+  "jar_sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+  "native_access": "unrun",
+  "recipe_sha256": "6f8749c2cf3f53830372522ae8de24495a51625cf8b3fc2466ad83cd3f8116a2",
+  "runner_sha256": "7babba2bd4db496ee61beec728970c6e165bc7e9c2f844565487455f08e0f1ec",
+  "scope": "larger decoded Memo query values, exact getter/bytes/UTF16-unit answers and bounded failures"
+}
