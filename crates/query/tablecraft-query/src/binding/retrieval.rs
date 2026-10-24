@@ -16,12 +16,15 @@ impl Binder<'_> {
         outer: &[&[Slot]],
         depth: usize,
     ) -> Result<ReadPlan, QueryError> {
-        self.tick(depth)?;
-        if read.owner_access {
-            return Err(QueryError::Unsupported);
-        }
-        self.body(&read.body, &read.order_by, outer, depth + 1)
+        self.with_collection_criteria(false, |binder| {
+            binder.tick(depth)?;
+            if read.owner_access {
+                return Err(QueryError::Unsupported);
+            }
+            binder.body(&read.body, &read.order_by, outer, depth + 1)
+        })
     }
+
     fn body(
         &mut self,
         body: &ReadBody,

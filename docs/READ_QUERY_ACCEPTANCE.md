@@ -356,3 +356,12 @@ multiplying parent records by attachment count. All twelve domain functions reta
 their owning aggregate contracts and shared budgets; scalar values, missing-field
 NULL behavior and unsupported member syntax remain explicit. [Domain presence](COLLECTION_PRESENCE.md#domain-criteria)
 closes a composition gap without widening native payload or write permissions.
+
+
+Presence operands now compose inside supported scalar WHERE/domain predicates,
+using a borrowed current-parent frame and written evaluation order. Comparisons,
+selectors, conversions, ranges/lists and optional scalar controls no longer require
+a top-level presence atom. Clause/subquery boundaries, eager errors, once-only Rnd,
+complete-view validation and shared limits remain explicit. [Composition scope](COLLECTION_PRESENCE.md#scalar-predicate-composition)
+still refuses unqualified hidden-member folds, projection and correlated outer
+containers; this does not complete native collection or P0 value/text semantics.

@@ -27,9 +27,9 @@ attachment-style bare-field predicate. Scalar fields retain ordinary SQL NULL
 tests. Names, aliases, case policy and ambiguous references follow existing
 binding rules. Binding reads no parent/child records or payloads.
 
-WHERE's Boolean structure admits direct tests, NOT and the five logical operators.
-The binder lifts the test into a typed parent predicate before pruning or
-execution. A representative named member supplies the complete membership view;
+WHERE admits direct tests, NOT, logical operators and composition inside supported
+scalar expressions. The binder retains typed presence operands and resolves them
+to the current parent-membership frame before pruning or execution. A representative named member supplies the complete membership view;
 its values do not determine emptiness. The requested view is validated through
 EOF, including stored NULL children. Read/schema/provider errors, cumulative
 work/row/allocation ceilings and cancellation remain failures. An earlier match,
@@ -50,10 +50,11 @@ large file. Original bytes and source budgets remain unchanged.
 
 ## Current limits and evidence
 
-Bare collection projection, `IsNull(Files)` calls, comparisons of a presence test,
-function-wrapped tests and correlated outer-container tests remain unsupported.
-These forms fail during binding. Presence mixed with a non-Boolean member operand
-that cannot be independently folded also fails before scanning. This adds no
+Bare collection projection, `IsNull(Files)` calls on the collection itself,
+non-WHERE uses and correlated outer-container tests remain unsupported. These
+forms fail during binding. Compound scalar calls mixing presence with hidden
+member criteria whose empty-list fold is unqualified also fail before scanning.
+Displayed member criteria remain supported within composed calls. This adds no
 collection display values, history SQL, lookup execution or writes.
 
 Focused source tests distinguish empty membership from nullable children and
@@ -95,3 +96,38 @@ that contract with the documented attachment emptiness criteria guides this
 engineering profile; it does not establish native Access domain/attachment
 execution equivalence. Native metadata-only caches retain their existing payload
 boundary and no query string opens an external source or activates VBA.
+
+
+## Scalar predicate composition
+
+Presence Boolean operands now compose in comparisons, conversions, selectors,
+list/range predicates and other supported scalar calls in WHERE and domain
+criteria. For example:
+
+```sql
+SELECT ID FROM Items WHERE (Files IS NULL)=True;
+SELECT ID FROM Items WHERE IIf(Files IS NULL,True,False);
+SELECT DCount('*','Items','CBool(Files IS NOT NULL)');
+```
+
+The runtime retains a borrowed parent frame only while evaluating that predicate.
+A resolved presence operand validates its member view at its written scalar
+position, then returns Boolean. Other arguments retain their existing eager
+rules: a leading division error fails before a later presence operand is inspected;
+an invalid view in an earlier operand fails before a later division. Rnd controls
+still evaluate once per evaluated parent predicate, without one draw per child.
+Completion rechecks cancellation after successful view validation.
+
+Scalar-child traversal shares binding limits and excludes nested read plans.
+Each read binds its own clause context; enabling presence in an outer WHERE does
+not enable bare collection projection or capture outer containers in a subquery.
+Nested reads with their own qualified WHERE criteria retain their own parent
+frame. Stored records, public expression values and output schemas acquire no
+collection reference or extra Boolean column.
+
+A displayed child remains the current row: `IIf(Files IS NULL,False,
+Files.FileName='a')` filters that child. The corresponding compound call over
+wholly hidden members remains refused because empty-list membership/selector
+semantics need a separate contract. Simple independently foldable Boolean criteria
+retain their existing parent-membership behavior. Native Access composition and
+error-order qualification remain pending.

@@ -380,3 +380,6 @@ mod presence;
 
 #[path = "collection_members/domain_presence.rs"]
 mod domain_presence;
+
+#[path = "collection_members/presence_composition.rs"]
+mod presence_composition;

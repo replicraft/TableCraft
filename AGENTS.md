@@ -66,6 +66,8 @@ snapshots; follow [NATIVE_QUERIES.md](docs/NATIVE_QUERIES.md) for its supported
 profile. [Named collection presence](docs/COLLECTION_PRESENCE.md) tests complete
 membership independently of nullable metadata; keep displayed child criteria
 separate from parent presence and retain the metadata-only attachment cache.
+Scalar-composed presence tests use the current borrowed parent frame at their
+written evaluation position; retain clause/subquery isolation and eager operands.
 Results are buffered before stdout. Database
 header/catalog inspection is available through `inspect`/`inspect --catalog`; the bounded `query update` command creates fresh offline Jet 4 copies under
 [explicit editing limits](docs/QUERY_EDITING.md). In-place CLI editing and GUI hosts

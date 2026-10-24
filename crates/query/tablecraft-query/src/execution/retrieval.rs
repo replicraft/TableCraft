@@ -74,6 +74,7 @@ impl Runtime<'_, '_> {
                 let mut output = Vec::new();
                 for row in rows {
                     let env = Environment {
+                        collections: None,
                         row: &row,
                         outer,
                         output: &row,
@@ -176,6 +177,7 @@ impl Runtime<'_, '_> {
                 let value = self.eval(
                     filter,
                     Environment {
+                        collections: None,
                         row: &row,
                         outer,
                         output: &[],
@@ -194,6 +196,7 @@ impl Runtime<'_, '_> {
             let groups = self.groups(filtered, select, outer)?;
             for group in groups {
                 let env = Environment {
+                    collections: None,
                     row: group.rows.first().map_or(&[], Vec::as_slice),
                     outer,
                     output: &[],
@@ -213,6 +216,7 @@ impl Runtime<'_, '_> {
                     select,
                     plan,
                     Environment {
+                        collections: None,
                         row: &row,
                         outer,
                         output: &[],
@@ -286,6 +290,7 @@ impl Runtime<'_, '_> {
                 keys.push(self.repeatable_key(
                     expr,
                     Environment {
+                        collections: None,
                         row: &row,
                         outer,
                         output: &[],

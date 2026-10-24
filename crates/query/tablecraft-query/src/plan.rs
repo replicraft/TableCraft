@@ -153,6 +153,11 @@ pub(crate) enum Expr {
     IsNull(Box<Expr>, bool),
     // WHERE-only container test; lifted to a typed parent predicate before execution.
     CollectionEmpty(Box<Expr>, bool),
+    // Resolved key in the current parent-membership frame; never a stored scalar.
+    ParentPresence {
+        collection: usize,
+        negated: bool,
+    },
     IIf(Box<Expr>, Box<Expr>, Box<Expr>),
     DateAdd(Box<Expr>, Box<Expr>, Box<Expr>),
     DateDiff(Box<Expr>, Box<Expr>, Box<Expr>, [Option<Box<Expr>>; 2]),

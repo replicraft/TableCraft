@@ -334,6 +334,14 @@ impl Runtime<'_, '_> {
             }
             Expr::Nz(..) => Ok(into_scalar(self.expression_operand(expr, env)?)?),
             Expr::CollectionEmpty(..) => Err(QueryError::Unsupported),
+            Expr::ParentPresence {
+                collection,
+                negated,
+            } => self.collection_presence(
+                *collection,
+                *negated,
+                env.collections.ok_or(QueryError::Source)?,
+            ),
             Expr::IsNull(e, negated) => {
                 let value = self.expression_operand(e, env)?;
                 Ok(Value::Boolean(

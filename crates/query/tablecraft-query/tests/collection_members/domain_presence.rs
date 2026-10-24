@@ -124,7 +124,6 @@ fn domain_presence_preserves_eager_complete_reads_and_rejects_member_value_scope
         "SELECT DCount('*','Items','Files IS NULL OR 1/0')",
         "SELECT DCount('*','Items','Files.FileName IS NULL')",
         "SELECT DCount('Files','Items','Files IS NULL')",
-        "SELECT DCount('*','Items','IIf(Files IS NULL,True,False)')",
     ] {
         assert!(run(sql, &source).is_err(), "{sql}");
     }

@@ -1,5 +1,33 @@
 # Implementation status
 
+## Scalar composition of collection presence
+
+Named-collection NULL operands now compose in supported scalar WHERE/domain
+expressions. Binding captures an explicit clause context, restores it on success
+or failure and resets it for nested reads. Scalar-child traversal excludes nested
+read plans. Typed presence operands resolve to the current borrowed parent frame;
+no Boolean prefetch pass or public/stored collection carrier is introduced.
+Evaluation validates the requested view at its written position and rechecks
+completion cancellation. See [composition scope](COLLECTION_PRESENCE.md#scalar-predicate-composition).
+
+Five new query tests cover comparisons, selectors, conversions, arrays, ranges,
+list/subquery predicates, optional date controls, domain criteria, displayed child
+filters, nested read isolation, eager/error ordering, once-only Rnd and every
+observed cancellation checkpoint. Compound calls over unqualified hidden member
+folds remain refused before scanning. All 160 focused query integration tests and
+three library tests pass, along with four adapter tests and nine CLI tests.
+Adapter checks retain forbidden external FileData reads through composed SELECT
+and domain criteria; CLI originals remain byte-identical.
+
+Focused query/adapter Clippy, minimal query check, formatting and diff checks pass.
+The independent runner passes 138 presence/composition controls on the registered
+valid 3 MiB attachment corpus, including 48 new composed controls; the existing
+metadata/payload runner passes 21 controls. Original hashes remain unchanged.
+Microsoft Access, full workspace, full engine and benchmarks were not run. No
+dependency, native format, writer or native qualification changed. Collection
+projection, correlated outer containers, unqualified hidden-member folds and P0
+value/text compatibility remain unfinished.
+
 ## Domain collection-presence criteria
 
 Runtime domain criteria now reuse the qualified named-collection NULL predicate

@@ -39,6 +39,9 @@ def main():
             for condition, expected in [
                 ("Files IS NULL", empty),
                 ("Files IS NOT NULL", present),
+                ("(Files IS NULL)=True", empty),
+                ("CBool(Files IS NOT NULL)", present),
+                ("IIf(Files IS NULL,True,False)", empty),
                 ("NOT (Files IS NULL)", present),
                 ("Files IS NULL OR Files IS NOT NULL", [[identity] for _, identity, _ in parents]),
                 ("Files IS NULL AND Files IS NOT NULL", []),
@@ -53,7 +56,11 @@ def main():
                 assert rows[1:] == expected, (profile, sql, rows, expected)
                 controls += 1
 
-            for condition, selected in [("Files IS NULL", empty), ("Files IS NOT NULL", present)]:
+            for condition, selected in [
+                ("Files IS NULL", empty),
+                ("Files IS NOT NULL", present),
+                ("IIf(Files IS NULL,True,False)", empty),
+            ]:
                 identities = [int(row[0]) for row in selected]
                 for function, expression, expected in [
                     ("DCount", "*", len(identities)),

@@ -164,8 +164,9 @@ coercion, locale, encounter-order and aggregate precision gaps remain open.
 
 ## Named collection presence in criteria
 
-Qualified local-table named collections now support direct IS NULL / IS NOT NULL
-criteria and existing Boolean combinations in runtime domain calls. These use the
+Qualified local-table named collections now support IS NULL / IS NOT NULL
+criteria, Boolean combinations and supported scalar composition in runtime domain
+calls. These use the
 same typed parent filter as SELECT WHERE, preserving parent cardinality without
 expanding attachments into aggregate input rows. Scalar domain value expressions,
 member-access refusals, missing-field NULL results and isolated parameters remain

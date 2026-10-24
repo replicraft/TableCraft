@@ -5,7 +5,9 @@ use crate::{
     plan::{Expr, MemberSlot, Slot},
     profile::SOURCE_SCHEMA_POLICY,
 };
-use tablecraft_sql::select::{BinaryOperator as B, Expression, FieldReference, UnaryOperator as U};
+use tablecraft_sql::select::{Expression, FieldReference};
+
+mod children;
 
 impl Binder<'_> {
     pub(in crate::binding) fn filter_expression(
@@ -14,45 +16,39 @@ impl Binder<'_> {
         scopes: &[&[Slot]],
         depth: usize,
     ) -> Result<Expr, QueryError> {
-        match expression {
-            Expression::Unary {
-                operator: U::Not,
-                expression,
-            } => {
-                self.tick(depth)?;
-                Ok(Expr::Unary(
-                    U::Not,
-                    Box::new(self.filter_expression(expression, scopes, depth + 1)?),
-                ))
-            }
-            Expression::Binary {
-                operator: operator @ (B::And | B::Or | B::Xor | B::Equivalence | B::Implication),
-                left,
-                right,
-            } => {
-                self.tick(depth)?;
-                Ok(Expr::Binary(
-                    *operator,
-                    Box::new(self.filter_expression(left, scopes, depth + 1)?),
-                    Box::new(self.filter_expression(right, scopes, depth + 1)?),
-                ))
-            }
-            Expression::IsNull {
-                expression: value,
-                negated,
-            } => {
-                if let Expression::Field(field) = value.as_ref()
-                    && let Some(index) =
-                        named_collection(field, scopes.first().copied().unwrap_or(&[]))?
-                {
-                    self.tick(depth)?;
-                    let value = self.field(0, index, scopes[0])?;
-                    return Ok(Expr::CollectionEmpty(Box::new(value), *negated));
-                }
-                self.expression(expression, scopes, false, depth)
-            }
-            _ => self.expression(expression, scopes, false, depth),
+        self.with_collection_criteria(true, |binder| {
+            binder.expression(expression, scopes, false, depth)
+        })
+    }
+
+    pub(in crate::binding) fn with_collection_criteria<T>(
+        &mut self,
+        enabled: bool,
+        build: impl FnOnce(&mut Self) -> Result<T, QueryError>,
+    ) -> Result<T, QueryError> {
+        let previous = self.collection_criteria;
+        self.collection_criteria = enabled;
+        let result = build(self);
+        self.collection_criteria = previous;
+        result
+    }
+
+    pub(in crate::binding) fn collection_null_test(
+        &mut self,
+        expression: &Expression,
+        scopes: &[&[Slot]],
+        negated: bool,
+        depth: usize,
+    ) -> Result<Option<Expr>, QueryError> {
+        if self.collection_criteria
+            && let Expression::Field(field) = expression
+            && let Some(index) = named_collection(field, scopes.first().copied().unwrap_or(&[]))?
+        {
+            self.tick(depth)?;
+            let field = self.field(0, index, scopes[0])?;
+            return Ok(Some(Expr::CollectionEmpty(Box::new(field), negated)));
         }
+        Ok(None)
     }
 
     pub(super) fn collect_presence(
@@ -62,29 +58,52 @@ impl Binder<'_> {
         depth: usize,
     ) -> Result<bool, QueryError> {
         self.tick(depth)?;
-        Ok(match expression {
-            Expr::CollectionEmpty(value, _) => {
-                let Expr::Field {
-                    depth: 0, index, ..
-                } = value.as_ref()
-                else {
-                    return Err(QueryError::Unsupported);
-                };
-                *used.get_mut(*index).ok_or(QueryError::Source)? = true;
-                true
-            }
-            Expr::Unary(U::Not, value) => self.collect_presence(value, used, depth + 1)?,
-            Expr::Binary(
-                B::And | B::Or | B::Xor | B::Equivalence | B::Implication,
-                left,
-                right,
-            ) => {
-                let left = self.collect_presence(left, used, depth + 1)?;
-                let right = self.collect_presence(right, used, depth + 1)?;
-                left || right
-            }
-            _ => false,
-        })
+        if let Expr::CollectionEmpty(value, _) = expression {
+            let Expr::Field {
+                depth: 0, index, ..
+            } = value.as_ref()
+            else {
+                return Err(QueryError::Unsupported);
+            };
+            *used.get_mut(*index).ok_or(QueryError::Source)? = true;
+            return Ok(true);
+        }
+        let mut found = false;
+        for child in children::children(expression) {
+            found |= self.collect_presence(child, used, depth + 1)?;
+        }
+        Ok(found)
+    }
+
+    pub(super) fn resolve_presence(
+        &mut self,
+        expression: &mut Expr,
+        fields: &[(usize, usize)],
+        depth: usize,
+    ) -> Result<(), QueryError> {
+        self.tick(depth)?;
+        if let Expr::CollectionEmpty(value, negated) = expression {
+            let Expr::Field {
+                depth: 0, index, ..
+            } = value.as_ref()
+            else {
+                return Err(QueryError::Unsupported);
+            };
+            let collection = fields
+                .iter()
+                .find(|(field, _)| field == index)
+                .map(|(_, collection)| *collection)
+                .ok_or(QueryError::Source)?;
+            *expression = Expr::ParentPresence {
+                collection,
+                negated: *negated,
+            };
+            return Ok(());
+        }
+        for child in children::children_mut(expression) {
+            self.resolve_presence(child, fields, depth + 1)?;
+        }
+        Ok(())
     }
 }
 

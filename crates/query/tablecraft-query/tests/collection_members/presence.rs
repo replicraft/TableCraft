@@ -93,8 +93,6 @@ fn presence_remains_eager_and_validates_complete_views_after_true_or_false_prefi
     assert!(run("SELECT Id FROM Items WHERE Files IS NULL OR 1/0", &source).is_err());
     for sql in [
         "SELECT Files IS NULL FROM Items",
-        "SELECT Id FROM Items WHERE IIf(Files IS NULL,True,False)",
-        "SELECT Id FROM Items WHERE (Files IS NULL)=True",
         "SELECT Id FROM Items WHERE Files IS NULL AND Files.FileName",
         "SELECT Id FROM Items AS A,Items AS B WHERE Files IS NULL",
     ] {
