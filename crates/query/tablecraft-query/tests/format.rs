@@ -4,6 +4,38 @@ use tablecraft_expressions::{EvalError, functions::conversions::text::NumberForm
 use tablecraft_query::{ExecutionOptions, QueryError, prepare, source::MemorySource};
 use tablecraft_sql::parse_query;
 
+#[test]
+fn format_states_preserve_derived_errors_null_week_prechecks_and_eager_failures() {
+    for (sql, expected) in [
+        (
+            "SELECT Format(E,'0',8) FROM (SELECT CVErr(11) AS E) AS D",
+            EvalError::Domain,
+        ),
+        (
+            "SELECT Format(CVErr(11),CVErr(12),8,NULL)",
+            EvalError::InvalidNullConversion,
+        ),
+        (
+            "SELECT Format(CVErr(11),NULL)",
+            EvalError::InvalidNullConversion,
+        ),
+        ("SELECT Format(1,'0',CVErr(11))", EvalError::TypeMismatch),
+        (
+            "SELECT Format(CVErr(11),'0',1/0)",
+            EvalError::DivisionByZero,
+        ),
+    ] {
+        assert_eq!(run(sql), Err(QueryError::Evaluation(expected)), "{sql}");
+    }
+    assert_eq!(
+        run("SELECT Format(CLng(CVErr(11)),'0'),Format(CStr(CVErr(11)),'@')").unwrap(),
+        [vec![
+            Value::Text("11".into()),
+            Value::Text("Error 11".into())
+        ]]
+    );
+}
+
 fn run(sql: &str) -> Result<Vec<Vec<Value>>, QueryError> {
     let source = MemorySource::default();
     let parsed = parse_query(sql, Default::default()).unwrap();

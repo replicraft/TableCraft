@@ -142,8 +142,10 @@ selector/ordinal/control/policy stages with explicit host Empty targets.
 StrConv now also retains states through flag/LCID/source admission while
 preserving CVar and raw string buffers. Byte producers, observations and InStrB
 now also retain explicit states through their control/NULL/progressive source
-stages. General Format, broader raw carriers and remaining string/formatting
-options retain separate state/coercion gaps. CurrentUser,
+stages. General Format now retains states through NULL-week, ordered controls,
+mask and source admission. Masked host Empty sources remain explicitly
+unqualified/refused. Broader raw carriers, Variant semantics and remaining
+string/formatting options retain separate state/coercion gaps. CurrentUser,
 numbered Error and GUID conversions now also retain reviewed return categories;
 provider invocation and session/permission boundaries remain unchanged. Numbered
 Error now accepts signed Long codes through a separate checked provider identity;

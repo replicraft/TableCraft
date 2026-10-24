@@ -1,5 +1,33 @@
 # Implementation status
 
+## General Format expression states through ordered admission
+
+Format now retains eager Error/Empty/Missing operands through its NULL-week
+precheck, progressive week settings, mask and source admission. Materialized and
+state-aware calls share borrowed preparation and the existing bounded renderers.
+Supported Empty mask/week targets are explicit; masked host Empty sources remain
+unqualified and refused instead of silently choosing zero/NULL. Error conversion
+stays explicit. See [contract and open scope](FORMAT.md#ordered-expression-state-admission).
+No mask grammar, locale, runtime, return category or dependency is added.
+
+Four new expression tests cover admission order, supported/unqualified Empty
+targets, exact six-byte Text normalization/output, every observed successful
+cancellation checkpoint and once-only Rnd controls. Query/CLI cases add derived
+Error values, explicit conversion and atomic failures. The batch passes 642
+expression unit tests plus one doctest, 345 minimal-profile expression tests,
+21 selected query tests and 12 selected CLI tests. All-target/all-feature
+expression/query/CLI Clippy, CLI build, formatting, Python syntax, dependency
+boundaries and diff checks pass. Full backend/workspace suites and benchmarks
+were not repeated.
+
+The new independent runner passes 186 controls (130 scalar and 56 native
+sequential/indexed cases) over unchanged registered inputs. The existing numeric
+Format runner passes 2,470 scalar controls; its optional native branch was not
+rerun. Only TableCraft executes SQL. Masked host Empty, full Variant/type
+inference, wider masks/locales and native Access/Windows comparisons remain open
+before further writes.
+
+
 ## Byte-function expression states through ordered admission
 
 LenB/AscB/ChrB, byte slices and InStrB now retain eager Error/Empty/Missing states

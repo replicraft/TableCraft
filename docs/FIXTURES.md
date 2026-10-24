@@ -5798,3 +5798,32 @@ python3 docs/testing/compare_byte_states.py \
   --directory .cache/tablecraft-fixtures/large-indexes
 python3 docs/testing/compare_byte_strings.py --cli target/debug/tablecraft
 ```
+
+## General Format expression-state controls
+
+Original MIT [compare_format_states.py](testing/compare_format_states.py) uses
+independent fixed-integer display, ASCII text/casing and explicit state/error
+models. Read-only Jackcess getters supply native identities from registered
+original/restored large-index inputs. JAR/input identities are checked before
+reference use; no new binary, copied implementation or reference SQL/VBA is added.
+
+The runner passes 186 controls: 130 scalar eval/run and 56 sequential/selected
+index cases across Jet 4, ACE 2007, ACE 2016 and ACE 2019 layouts. Cases cover
+NULL-week prechecks, progressive invalid-week/mask/source order, explicit
+Long/CStr conversion, return-carrier inspection and eager operational failures
+with empty buffered stdout. Every original hash remains unchanged. Supported
+host Empty targets and masked-source refusal are separate Rust controls; SQL
+Nz(NULL) is not treated as Empty. Full native mask-specific Empty behavior is
+unqualified rather than inferred from this corpus.
+
+The existing numeric Format runner also passes 2,470 scalar mask/section/refusal
+controls; its optional native branch was not rerun. These are engineering models
+and getter integration, not native Access query/NLS/Variant/error-order evidence.
+
+```sh
+python3 docs/testing/compare_format_states.py \
+  --cli target/debug/tablecraft \
+  --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
+  --directory .cache/tablecraft-fixtures/large-indexes
+python3 docs/testing/compare_format.py --cli target/debug/tablecraft
+```

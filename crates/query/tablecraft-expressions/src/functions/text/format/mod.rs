@@ -62,17 +62,33 @@ pub(crate) fn prepare_with<'a>(
     context: TextContext<'_>,
     convert: impl FnMut(&Value) -> Result<i32, EvalError>,
 ) -> Result<TextResult<'a>, EvalError> {
-    if !(1..=4).contains(&arguments.len()) {
+    prepare_inputs(
+        arguments.len(),
+        context,
+        arguments
+            .iter()
+            .skip(2)
+            .any(|value| matches!(value, Value::Null)),
+        |index| Ok(&arguments[index]),
+        convert,
+    )
+}
+
+pub(crate) fn prepare_inputs<'a>(
+    count: usize,
+    context: TextContext<'_>,
+    null_week_option: bool,
+    mut argument: impl FnMut(usize) -> Result<&'a Value, EvalError>,
+    convert: impl FnMut(&Value) -> Result<i32, EvalError>,
+) -> Result<TextResult<'a>, EvalError> {
+    if !(1..=4).contains(&count) {
         return Err(EvalError::UnsupportedExpression);
     }
-    for value in arguments.iter().skip(2) {
-        if matches!(value, Value::Null) {
-            return Err(EvalError::InvalidNullConversion);
-        }
+    if null_week_option {
+        return Err(EvalError::InvalidNullConversion);
     }
-    let weeks = WeekSettings::parse_with(
-        arguments.get(2),
-        arguments.get(3),
+    let weeks = WeekSettings::parse_with_input(
+        |index| (count > index + 2).then(|| argument(index + 2)).transpose(),
         WeekContext {
             first_day: context.first_day_of_week,
             first_week: context.first_week_of_year,
@@ -80,13 +96,13 @@ pub(crate) fn prepare_with<'a>(
         convert,
     )?;
 
-    let value = &arguments[0];
-    let mask = match arguments.get(1) {
+    let mask = match (count > 1).then(|| argument(1)).transpose()? {
         None => "",
         Some(Value::Text(mask)) => mask,
         Some(Value::Null) => return Err(EvalError::InvalidNullConversion),
         Some(_) => return Err(EvalError::TypeMismatch),
     };
+    let value = argument(0)?;
     if mask.is_empty() {
         return if matches!(value, Value::Null) {
             Ok(TextResult::Text(""))

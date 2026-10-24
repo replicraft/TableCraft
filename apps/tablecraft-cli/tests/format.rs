@@ -3,6 +3,41 @@ mod support;
 use support::run;
 
 #[test]
+fn format_states_keep_control_precedence_and_failed_stdout_atomic() {
+    for mode in ["eval", "run"] {
+        let result = run(&[
+            "query",
+            mode,
+            "SELECT Len(Format(CLng(CVErr(11)),'0')) AS N,Len(Format(CStr(CVErr(11)),'@')) AS T",
+            "--number-format",
+            "en-US",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(result.stdout, b"N\tT\n2\t8\n");
+        for (expression, diagnostic) in [
+            ("Format(CVErr(11),'0',8,CVErr(12))", "domain"),
+            ("Format(CVErr(11),CVErr(12),8,NULL)", "invalid use of NULL"),
+            ("Format(CVErr(11),NULL)", "invalid use of NULL"),
+            ("Format(1,'0',CVErr(11))", "type mismatch"),
+            ("Format(CVErr(11),'0',1/0)", "division by zero"),
+        ] {
+            let sql = format!("SELECT 1,{expression}");
+            let result = run(&["query", mode, &sql, "--number-format", "en-US"]);
+            assert!(!result.status.success(), "{sql}");
+            assert!(result.stdout.is_empty(), "{sql}");
+            assert!(
+                String::from_utf8_lossy(&result.stderr).contains(diagnostic),
+                "{sql}"
+            );
+        }
+    }
+}
+
+#[test]
 fn custom_format_sections_and_optional_slots_execute_in_both_query_commands() {
     for mode in ["eval", "run"] {
         let result = run(&[

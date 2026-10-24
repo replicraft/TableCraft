@@ -1026,3 +1026,9 @@ Source Empty has a string target, code/control Empty a numeric target and Error
 conversion remains explicit. Existing raw views, strict publication, independent
 provider limits and cumulative controls remain; general Format and broader
 Variant/raw relational carriers are separate acceptance work.
+
+Format now retains [states through NULL-week, week-control, mask and source
+admission](FORMAT.md#ordered-expression-state-admission), borrowing its input
+buffers and retaining eager operational failures. Supported host Empty mask/week
+targets are explicit; masked host Empty sources remain unqualified and refused.
+This does not complete Variant promotion, mask/NLS or native error behavior.
