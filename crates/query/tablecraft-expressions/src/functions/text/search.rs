@@ -1,6 +1,9 @@
 //! Bounded UTF-16 substring scans and explicit locale/provider delegation.
 mod mode;
+mod units;
 use super::{TextFunction, TextResult, compare};
+#[cfg(feature = "sql")]
+use crate::comparison::StringInput;
 use crate::{
     EvalError,
     comparison::{Collation, StringCompareMode, StringSearch},
@@ -116,6 +119,57 @@ impl Search<'_> {
 }
 
 impl SearchOptions {
+    #[cfg(feature = "sql")]
+    pub(crate) fn uses_binary(&self, collation: Option<&dyn Collation>) -> bool {
+        matches!(
+            &self.mode,
+            SearchMode::Compare(mode)
+                if mode.or_else(|| collation.and_then(Collation::option_compare))
+                    == Some(StringCompareMode::Binary)
+        )
+    }
+
+    /// The caller must select binary mode and admit NULL/scalar sources first.
+    #[cfg(feature = "sql")]
+    pub(crate) fn find_binary_inputs(
+        self,
+        start: i32,
+        haystack: StringInput<'_>,
+        needle: StringInput<'_>,
+        step: &mut impl FnMut() -> Result<(), EvalError>,
+    ) -> Result<TextResult<'static>, EvalError> {
+        self.validate_start(start)?;
+        let haystack = units::Units::new(haystack)?;
+        let needle = units::Units::new(needle)?;
+        let length = units::length(haystack.clone(), step)?;
+        let needle_length = units::length(needle.clone(), step)?;
+        let start = if self.reverse && start == LAST_POSITION {
+            length
+        } else {
+            start as usize
+        };
+        if length == 0 || start > length {
+            return Ok(TextResult::Position(0));
+        }
+        if needle_length == 0 {
+            return result(Some(start - 1));
+        }
+
+        let search = if self.reverse {
+            StringSearch::ReverseThrough(start)
+        } else {
+            StringSearch::ForwardFrom(start - 1)
+        };
+        result(binary_units(
+            haystack,
+            needle,
+            length,
+            needle_length,
+            search,
+            step,
+        )?)
+    }
+
     pub(crate) fn default_start(&self) -> i32 {
         if self.reverse {
             LAST_POSITION
@@ -140,7 +194,6 @@ impl SearchOptions {
         step: &mut impl FnMut() -> Result<(), EvalError>,
     ) -> Result<TextResult<'static>, EvalError> {
         self.validate_start(start)?;
-        let Self { mode, reverse } = self;
 
         if matches!(haystack, Value::Null) || matches!(needle, Value::Null) {
             return Ok(TextResult::Null);
@@ -148,8 +201,21 @@ impl SearchOptions {
         let (Value::Text(haystack), Value::Text(needle)) = (haystack, needle) else {
             return Err(EvalError::TypeMismatch);
         };
-        let length = units(haystack, step)?;
-        let needle_length = units(needle, step)?;
+        self.find_text(start, haystack, needle, collation, step)
+    }
+
+    pub(crate) fn find_text(
+        self,
+        start: i32,
+        haystack: &str,
+        needle: &str,
+        collation: Option<&dyn Collation>,
+        step: &mut impl FnMut() -> Result<(), EvalError>,
+    ) -> Result<TextResult<'static>, EvalError> {
+        self.validate_start(start)?;
+        let Self { mode, reverse } = self;
+        let length = units::length(haystack.encode_utf16(), step)?;
+        let needle_length = units::length(needle.encode_utf16(), step)?;
         let start = if reverse && start == LAST_POSITION {
             length
         } else {
@@ -168,7 +234,14 @@ impl SearchOptions {
         };
         let mode = mode.resolve(collation)?;
         let found = if matches!(mode, SearchMode::Compare(Some(StringCompareMode::Binary))) {
-            binary(haystack, needle, length, needle_length, search, step)?
+            binary_units(
+                haystack.encode_utf16(),
+                needle.encode_utf16(),
+                length,
+                needle_length,
+                search,
+                step,
+            )?
         } else {
             step()?;
             let collation = collation.ok_or(EvalError::CollationRequired)?;
@@ -199,15 +272,7 @@ impl SearchOptions {
         result(found)
     }
 }
-fn units(text: &str, step: &mut impl FnMut() -> Result<(), EvalError>) -> Result<usize, EvalError> {
-    let mut count = 0usize;
-    for _ in text.encode_utf16() {
-        step()?;
-        count = count.checked_add(1).ok_or(EvalError::Overflow)?;
-    }
-    i32::try_from(count).map_err(|_| EvalError::Overflow)?;
-    Ok(count)
-}
+
 fn result(position: Option<usize>) -> Result<TextResult<'static>, EvalError> {
     let position = match position {
         Some(position) => position.checked_add(1).ok_or(EvalError::Overflow)?,
@@ -217,9 +282,10 @@ fn result(position: Option<usize>) -> Result<TextResult<'static>, EvalError> {
         i32::try_from(position).map_err(|_| EvalError::Overflow)?,
     ))
 }
-fn binary(
-    haystack: &str,
-    needle: &str,
+
+fn binary_units(
+    haystack: impl Iterator<Item = u16> + Clone,
+    needle: impl Iterator<Item = u16> + Clone,
     length: usize,
     needle_length: usize,
     search: StringSearch,
@@ -232,7 +298,7 @@ fn binary(
     let Some(last) = end.checked_sub(needle_length) else {
         return Ok(None);
     };
-    let mut candidates = haystack.encode_utf16();
+    let mut candidates = haystack;
     let mut found = None;
     for position in 0..=last {
         step()?;
@@ -242,7 +308,7 @@ fn binary(
             continue;
         }
         let mut matched = true;
-        for unit in needle.encode_utf16() {
+        for unit in needle.clone() {
             step()?;
             if candidate.next() != Some(unit) {
                 matched = false;

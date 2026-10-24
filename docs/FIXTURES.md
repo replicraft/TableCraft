@@ -1,5 +1,20 @@
 # Candidate Access fixtures
 
+## Retained binary String search controls
+
+The original [runner](testing/compare_raw_string_search.py) passes 3,634 controls
+against independent Python integer-list window positions, including isolated
+UTF-16 units, overlapping patterns, default reverse starts, empty/NULL inputs,
+unaligned ranges and refusals. Both CLI evaluators run the source-free controls.
+Native-source controls reuse the four registered native-policy inputs through
+sequential and selected primary-index reads with explicit policy choices.
+The reviewed Jackcess artifact and inert TableDataOracle supply rows only;
+TableCraft executes SQL. All four before/after hashes remain unchanged.
+No third-party artifact was added. Existing General search/replacement and raw
+database StrComp runners pass 268 and 9,255 controls. These are independent
+engineering checks, not observed Windows Access search behavior.
+
+
 ## Raw database-mode StrComp controls
 
 The original [runner](testing/compare_raw_database_comparison.py) passes 9,255

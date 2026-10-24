@@ -215,6 +215,13 @@ semantics. See [metadata contracts](NATIVE_TABLES.md#attachment-metadata-project
 | P1 | Storage and scale | Wider column-type/row histories, broader collection sizes and file locality, predictable limits and unchanged originals |
 | Qualification | Native Access | Build/locale-qualified values, ordering, errors, saved queries and representative application outcomes on Windows |
 
+[Binary substring searches](STRING_SEARCH.md#retained-binary-string-operands)
+now retain raw String units through InStr/InStrRev in both evaluators, including
+derived/grouped/correlated inputs and prepared parameters. Shared budgets, eager
+failures and provider boundaries remain explicit. Text/database/LCID searches
+still require Unicode publication; additional raw consumers, locale providers
+and native qualification remain acceptance work.
+
 ### P0 implementation boundaries reviewed 24 October 2026
 
 | Boundary | Current implementation | Remaining work |

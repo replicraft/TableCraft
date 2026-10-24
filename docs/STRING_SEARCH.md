@@ -5,6 +5,40 @@ and retrieval. Positions are one-based Int32 UTF-16 code-unit offsets; no match
 returns zero and a NULL string returns NULL. This counts supplementary characters
 as two units, preserves embedded NUL/spaces and does not normalize Unicode.
 
+## Retained binary String operands
+
+InStr and InStrRev now retain their two String operands in both evaluators.
+Binary mode searches complete UTF-16 units directly, including isolated surrogate
+units, mixed decoded/raw strings and unaligned active byte ranges. For example,
+`InStr(1,'😀',ChrW(56832),0)` returns 2, and
+`InStrRev(ChrW(55296)&'a'&ChrW(55296),ChrW(55296))` returns 3.
+No payload allocation, Unicode replacement or byte realignment is needed for
+already supplied binary String inputs. Scalar formatting retains its own budgets.
+
+Starts/results remain unit positions; InStrB remains a separate byte search.
+Reverse bounds still require the complete match to end within the requested
+prefix. Odd byte counts refuse non-NULL searches, including empty-needle or
+out-of-range cases. Valid controls followed by a NULL String return NULL without
+decoding its partner. Later written evaluation failures remain eager.
+
+Explicit binary mode and a host-declared binary default select this path.
+InStrRev's omitted comparison remains binary. Text/database/LCID searches still
+require strict Unicode publication and their existing substring providers;
+raw binary support does not make an equality comparer into a search provider.
+Provider failures are propagated without a binary retry. Final String output
+and stored/source/parameter contracts are unchanged.
+
+Microsoft's specific [InStr query examples](https://support.microsoft.com/en-gb/access/functions/instr-function)
+and [InStrRev query examples](https://support.microsoft.com/en-gb/access/functions/instrrev-function)
+establish direct query availability. The unit model and current edge/error rules
+remain independent engineering behavior pending native Access qualification.
+The [independent runner](testing/compare_raw_string_search.py) passes 3,634
+controls using Python integer-list windows, both CLI evaluators, forward/reverse
+bounds, failures and four unchanged native inputs through sequential and selected
+primary-index reads. Inert native getters supply rows only; TableCraft evaluates
+SQL. General search/replacement and database StrComp regressions also pass.
+No benchmarks or Windows Access comparisons were run.
+
 ## Arguments and bounds
 
 | Call | Current behavior |

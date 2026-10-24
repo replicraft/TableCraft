@@ -1,5 +1,25 @@
 # Implementation status
 
+## Retained binary String substring search
+
+InStr/InStrRev now retain their String operands through scalar and query
+admission, then share the existing metered binary candidate loop over borrowed
+UTF-16 units. Isolated surrogates and unaligned complete-unit ranges remain
+searchable without payload allocation. Mode/start/NULL ordering, eager operands,
+reverse full-match bounds, explicit defaults, provider separation and strict
+publication remain explicit. See [search scope](STRING_SEARCH.md#retained-binary-string-operands).
+
+743 all-feature expression tests plus one doctest, 376 minimal expression tests,
+15 focused query tests and one CLI test pass, alongside scoped Clippy. Tests cover independent unit-window properties,
+zero allocation/work budgets, every observed raw scan cancellation checkpoint,
+provider refusal without fallback and prepared/grouped/derived/correlated calls.
+The independent runner passes 3,634 controls, including four unchanged native
+inputs through sequential and selected-index reads. Existing General search and
+raw database StrComp runners pass 268 and 9,255 controls. No dependency or write
+gate changed. Full workspace tests, benchmarks and Windows Access qualification
+were not run; nonbinary raw search and broader P0 semantics remain unfinished.
+
+
 ## Raw database-mode StrComp
 
 StrComp mode 2 and declared Database defaults now pass retained String units to

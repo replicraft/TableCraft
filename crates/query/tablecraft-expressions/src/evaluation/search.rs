@@ -1,4 +1,6 @@
 //! Contextual substring operands retain explicit formatting/search policies.
+mod raw;
+
 use super::{Evaluator, text_arguments};
 use crate::{
     EvalError,
@@ -43,6 +45,11 @@ impl Evaluator<'_> {
         let (haystack, needle) = search::operand_indices(function, arguments.len());
         let null_operand = matches!(arguments[haystack], ExpressionValue::Value(Value::Null))
             || matches!(arguments[needle], ExpressionValue::Value(Value::Null));
+        if matches!(arguments[haystack], ExpressionValue::StringBytes(_))
+            || matches!(arguments[needle], ExpressionValue::StringBytes(_))
+        {
+            return self.raw_search(function, arguments, null_operand);
+        }
         let empty_text = Value::Text(String::new());
         let empty_number = Value::Int32(0);
         let result = self.search_inputs(function, arguments.len(), null_operand, |index| {
@@ -68,19 +75,7 @@ impl Evaluator<'_> {
         null_operand: bool,
         mut argument: impl FnMut(usize) -> Result<&'a Value, EvalError>,
     ) -> Result<TextResult<'static>, EvalError> {
-        self.check(0)?;
-        let mode = if count > 3 { Some(argument(3)?) } else { None };
-        let normalized_mode = self.text_long_override(mode)?;
-        let options = search::prepare_options(function, count, normalized_mode.as_ref().or(mode))?;
-
-        let start = match search::start_index(function, count) {
-            Some(index) => match self.apply_conversion(Conversion::Long, argument(index)?)? {
-                Value::Int32(value) => value,
-                _ => return Err(EvalError::TypeMismatch),
-            },
-            None => options.default_start(),
-        };
-        options.validate_start(start)?;
+        let (options, start) = self.search_controls(function, count, &mut argument)?;
 
         // NULL is observed without coercing its partner, after valid controls.
         // Every written SQL operand has already been evaluated at the caller.
@@ -108,6 +103,29 @@ impl Evaluator<'_> {
             },
         )
     }
+
+    fn search_controls<'a>(
+        &mut self,
+        function: TextFunction,
+        count: usize,
+        mut argument: impl FnMut(usize) -> Result<&'a Value, EvalError>,
+    ) -> Result<(search::SearchOptions, i32), EvalError> {
+        self.check(0)?;
+        let mode = if count > 3 { Some(argument(3)?) } else { None };
+        let normalized_mode = self.text_long_override(mode)?;
+        let options = search::prepare_options(function, count, normalized_mode.as_ref().or(mode))?;
+
+        let start = match search::start_index(function, count) {
+            Some(index) => match self.apply_conversion(Conversion::Long, argument(index)?)? {
+                Value::Int32(value) => value,
+                _ => return Err(EvalError::TypeMismatch),
+            },
+            None => options.default_start(),
+        };
+        options.validate_start(start)?;
+
+        Ok((options, start))
+    }
 }
 
 #[cfg(test)]
@@ -118,3 +136,6 @@ mod scalar_tests;
 
 #[cfg(test)]
 mod expression_tests;
+
+#[cfg(test)]
+mod raw_tests;

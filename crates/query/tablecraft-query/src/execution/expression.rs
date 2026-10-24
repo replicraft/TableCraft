@@ -297,8 +297,19 @@ impl Runtime<'_, '_> {
                 ) {
                     let mut values: [ExpressionValue; TextFunction::MAX_ARGUMENTS] =
                         std::array::from_fn(|_| ExpressionValue::Value(Value::Null));
-                    for (argument, value) in arguments.iter().zip(&mut values) {
-                        *value = self.expression_operand(argument, env)?.value;
+                    let search_sources = match function {
+                        TextFunction::InStr if arguments.len() > 2 => 1..3,
+                        TextFunction::InStr | TextFunction::InStrRev => 0..2,
+                        _ => 0..0,
+                    };
+                    for (index, (argument, value)) in arguments.iter().zip(&mut values).enumerate()
+                    {
+                        *value = if search_sources.contains(&index) {
+                            self.expression_byte_operand(argument, env)?
+                                .into_expression_value()
+                        } else {
+                            self.expression_operand(argument, env)?.value
+                        };
                     }
                     let values = &values[..arguments.len()];
                     let value = match function {
