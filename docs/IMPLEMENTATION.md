@@ -1,5 +1,17 @@
 # Implementation status
 
+## Final-policy extrema
+
+Min/Max now retain uncertain String candidates until the complete runtime text
+policy is known, fixing a reproduced wrong-answer and unused-default-comparer
+failure. Numeric/Error and stable-policy paths retain one selected cell. Six
+focused regressions and the 98-test collation/domain/Error batch pass, with
+once-only evaluation, singleton raw Strings, NULL provenance, cancellation and
+allocation controls. See [extrema](EXPRESSION_AGGREGATES.md).
+
+This fixes the current provider contract; native Access mixed-policy precedence
+remains unqualified.
+
 ## GROUP BY policy completion before partitioning
 
 With an explicit field resolver, grouping now evaluates keys once, retains bounded
