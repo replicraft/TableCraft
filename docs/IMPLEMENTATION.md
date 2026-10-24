@@ -1,5 +1,31 @@
 # Implementation status
 
+## Maximum-width table read histories
+
+Original inert Jackcess fixtures now exercise 255-column tables in Jet 4,
+ACE 2007 and both ACE 16 layouts. Nine schema-width generations retain old rows
+across null-mask/variable-offset boundaries, with a later grown update, deleted
+rows and appended rows. WideVariable has 254 Short Text fields; WideMixed combines
+Boolean, Byte, Int16, Int32 and Text. No production reader or limit change was
+needed. See [coverage and limits](testing/WIDE_TABLE_HISTORIES.md).
+
+The original generation and first reuse pass 104 independent controls. Direct
+Jackcess/native index-order checks bring the final registered reuse to 112,
+including independent Python value models, complete/batched/projected native
+reads, buffered/progressive CLI rows, sequential/indexed SQL, aggregates and
+atomic tiny-budget refusal. All four source hashes remain unchanged. Two new
+portable framing tests pass with the existing local test (three selected tests),
+covering unsigned wide offsets/masks, corrupt high-slot/count/end framing and
+insufficient offset allocation. An initial test used the wrong typed-error
+variant and was corrected before the passing run; production behavior is unchanged.
+
+The engineering example build, engine all-feature library Clippy, formatting,
+Python syntax, recipe hash and diff checks pass. No external binaries are tracked,
+new dependency adopted or write scope expanded. Full native/backend/workspace
+suites, performance measurements and native Access comparisons were not repeated
+for this fixture/test-only slice.
+
+
 ## Explicit SQL date-token reference years
 
 Omitted-year SQL tokens now accept caller-issued ReferenceYear context. The

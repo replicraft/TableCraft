@@ -214,3 +214,11 @@ remain independent of runtime date policies; explicit reference-year preparation
 captures omitted-year dates without scanning. Invalid constants fail metadata
 binding even on empty results. Wider time/regional forms and native precision/
 error qualification remain open.
+
+
+[Maximum-width histories](testing/WIDE_TABLE_HISTORIES.md) now independently
+exercise 255-column tables, nine schema-width generations, high variable offsets
+and 32-byte masks across the four priority layouts. Complete/progressive/projected
+reads and sequential/indexed queries retain registered original bytes. This closes
+the explicit wide-table coverage gap; wider schema histories and coherent live
+shared-file reads remain separate work.

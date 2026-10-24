@@ -570,3 +570,10 @@ read/seek/page-hook callback after a successful prefix, terminal failures and
 bounded interrupted short reads. Cancellation is observed immediately after
 page decoding before interpreting the local buffer. No new format, live-file
 coherence or write qualification follows from these synthetic checks.
+
+
+[Maximum-width table histories](testing/WIDE_TABLE_HISTORIES.md) independently
+exercise 255 visible fields, wide variable tails and high logical mask bits in
+Jet 4, ACE 2007 and both ACE 16 layouts. Current readers handle original
+append-column generations without changing default limits. This evidence does
+not qualify native DDL, historical writes or Access save/reopen.
