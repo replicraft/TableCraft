@@ -504,8 +504,9 @@ contract retains the primary references, algorithms, provenance and exact limits
    Text-bearing compound indexes now support mixed two-to-ten-column reads and
    projections, including per-column General descriptors and whole-entry digests;
    Memo/full-width uniqueness and native text writes remain unqualified. Exact Currency and [Byte/Int16 intervals](NARROW_RANGES.md) now join Int32/Int64 ranges under typed bounds and
-   original-filter retention. Additional typed/composite seeks and automatic index
-   selection remain performance work.
+   original-filter retention. Opt-in [automatic selection](AUTOMATIC_INDEXES.md)
+   now chooses matching qualified single-key indexes. Additional typed/composite
+   seeks and cost-based selection remain performance work.
 3. Complete applicable ACE advanced-field reads/query access. Stored multivalues,
    attachments and Memo history have qualified browsing APIs. Backend-neutral
    scalar multivalue `.Value` expansion now works over explicit host collection
@@ -625,9 +626,11 @@ now work through explicitly selected indexes. The engine also has
 [exact GUID/NULL point selection](NATIVE_INDEXES.md#exact-guid-point-selections);
 backend-neutral GUID equality/NULL predicate integration now uses it for explicit
 matching single-GUID indexes, including mixed-schema scalar projections. Broader typed
-predicate pushdown and automatic index choice remain open. Schema discovery is separate from
+predicate pushdown and cost-based index choice remain open. Opt-in
+[automatic selection](AUTOMATIC_INDEXES.md) now uses matching qualified single-key
+definitions. Schema discovery is separate from
 row loading. Physical traversal stays in ACE, source adaptation in Access and
-backend-neutral planning in query. Automatic index choice and TOP pushdown remain
+backend-neutral planning in query. Cost-based choices and TOP pushdown remain
 future work.
 
 Continue original minimal fixture recipes and independent-reader comparisons;

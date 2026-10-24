@@ -96,6 +96,14 @@ or native result-type qualification. See
 
 ## Remaining acceptance work
 
+Opt-in [automatic native indexes](AUTOMATIC_INDEXES.md) now choose matching
+qualified single-key definitions under existing safe constraints. Automatic
+selections preserve sequential encounter order, original predicates and cache
+boundaries; chosen failures remain explicit. Independent four-family controls
+cover all supported key carriers, default-limit selections and TOP/First/Last.
+Cost-based optimization, wider seeks, TOP pushdown and native optimizer
+qualification remain open; this does not complete read/query acceptance.
+
 [Min/Max and domain extrema](EXPRESSION_AGGREGATES.md#retained-string-extrema)
 now retain selected String data through raw-aware consumers, with strict actual
 comparison, scalar publication, NULL/type/Error rules and cumulative budgets.

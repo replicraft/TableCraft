@@ -1,6 +1,9 @@
 use proptest::prelude::*;
 use std::io::Cursor;
-use tablecraft_ace::{InspectError, inspect_table_indexes};
+use tablecraft_ace::{
+    IndexProjectionSelection, IndexReadRequest, InspectError, inspect_table_indexes,
+    read_table_index_in_table_order, read_table_projection,
+};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
 #[path = "indexes/memo.rs"]
@@ -372,6 +375,30 @@ fn indexed_live_roots_follow_bounded_relocation_to_a_deleted_target_slot() {
     bytes[target + 4096 - record.len()..target + 4096].copy_from_slice(&record);
     put16(&mut bytes, root + 20, (start as u16) | 0x4000);
     put32(&mut bytes, root + start, 827 << 8);
+    let ordered = read_table_index_in_table_order(
+        &mut Cursor::new(bytes.clone()),
+        CatalogScope::new(1),
+        "ROULETTE_TB",
+        "ORDR_NBR",
+        IndexReadRequest {
+            columns: Some(&["ORDR_NBR"]),
+            selection: IndexProjectionSelection::All,
+            maximum_rows: 100,
+        },
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    let sequential = read_table_projection(
+        &mut Cursor::new(bytes.clone()),
+        CatalogScope::new(1),
+        "ROULETTE_TB",
+        &["ORDR_NBR"],
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(ordered.rows(), sequential.rows());
     let rows = tablecraft_ace::read_table_index(
         &mut Cursor::new(bytes),
         CatalogScope::new(1),
@@ -383,6 +410,28 @@ fn indexed_live_roots_follow_bounded_relocation_to_a_deleted_target_slot() {
     .unwrap();
     assert_eq!(rows.rows().len(), 38);
     assert_eq!(rows.rows()[0][0], tablecraft_core::values::Value::Int32(1));
+}
+
+#[test]
+fn table_order_requests_validate_row_limits_before_native_io() {
+    for maximum_rows in [0, u32::MAX] {
+        let mut source = Cursor::new(Vec::<u8>::new());
+        let result = read_table_index_in_table_order(
+            &mut source,
+            CatalogScope::new(1),
+            "Items",
+            "Key",
+            IndexReadRequest {
+                columns: None,
+                selection: IndexProjectionSelection::All,
+                maximum_rows,
+            },
+            &mut ResourceBudget::new(0, 0, 0),
+            &|| false,
+        );
+        assert!(matches!(result, Err(InspectError::InvalidSnapshotLimits)));
+        assert_eq!(source.position(), 0);
+    }
 }
 
 #[path = "indexes/text_tuple.rs"]

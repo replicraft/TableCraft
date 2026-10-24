@@ -1,10 +1,8 @@
 //! Bounded native projected scans and complete projection snapshot reuse.
-use super::{
-    Entry, NativeSource, query_error, schema::ScalarSchema, selection::projected_selection,
-};
+use super::{Entry, NativeSource, query_error, schema::ScalarSchema, selection::chosen_index};
 use tablecraft_ace::{
     IndexProjectionSelection, IndexReadRequest, TableCursor, TableSnapshot, inspect_table_indexes,
-    read_table_index_with_request,
+    read_table_index_in_table_order, read_table_index_with_request,
 };
 use tablecraft_core::limits::Resource;
 use tablecraft_query::{
@@ -175,26 +173,46 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
         let names = declared
             .selected_names(indices, &mut budget)
             .map_err(query_error)?;
-        if let Some(index) = &entry.index {
-            let selection = if let Some(constraint) = constraint {
-                let inspection = inspect_table_indexes(
+        let inspection = if constraint.is_some() && (entry.index.is_some() || self.auto_indexes) {
+            Some(
+                inspect_table_indexes(
                     &mut *source,
                     self.scope,
                     &entry.name,
                     &mut budget,
                     self.cancelled,
                 )
-                .map_err(query_error)?;
-                projected_selection(&inspection, index.as_str(), declared, constraint)?
-            } else {
-                IndexProjectionSelection::All
-            };
+                .map_err(query_error)?,
+            )
+        } else {
+            None
+        };
+        let chosen = match (inspection.as_ref(), constraint) {
+            (Some(inspection), Some(constraint)) => chosen_index(
+                inspection,
+                entry.index.as_ref().map(|index| index.as_str()),
+                declared,
+                constraint,
+                &mut budget,
+                self.cancelled,
+            )?,
+            _ => entry
+                .index
+                .as_ref()
+                .map(|index| (index.as_str(), IndexProjectionSelection::All)),
+        };
+        if let Some((index, selection)) = chosen {
             let complete = selection == IndexProjectionSelection::All;
-            let snapshot = read_table_index_with_request(
+            let read_index = if entry.index.is_none() {
+                read_table_index_in_table_order
+            } else {
+                read_table_index_with_request
+            };
+            let snapshot = read_index(
                 &mut *source,
                 self.scope,
                 &entry.name,
-                index.as_str(),
+                index,
                 IndexReadRequest {
                     columns: Some(&names),
                     selection,

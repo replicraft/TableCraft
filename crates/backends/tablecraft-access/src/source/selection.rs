@@ -1,12 +1,15 @@
-use super::{NativeSource, query_error};
+use super::{NativeSource, query_error, schema::ScalarSchema};
 use tablecraft_ace::{
-    ByteIndexSelection, CurrencyIndexSelection, GuidIndexSelection, IndexProjectionSelection,
-    IndexReadRequest, Int16IndexSelection, Int32IndexSelection, Int64IndexSelection,
-    inspect_table_indexes, read_table_index_with_request,
+    ByteIndexSelection, CurrencyIndexSelection, GuidIndexSelection, IndexInspection,
+    IndexProjectionSelection, IndexReadRequest, Int16IndexSelection, Int32IndexSelection,
+    Int64IndexSelection, NativeIndex, inspect_table_indexes, read_table_index_in_table_order,
+    read_table_index_with_request,
 };
-use tablecraft_core::values::Value;
+use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_query::{QueryError, Source, source::ScanConstraint};
 use tablecraft_schema::ScalarType;
+
+mod automatic;
 
 impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
     pub(super) fn selected_scan(
@@ -16,9 +19,9 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
         visitor: &mut dyn FnMut(&[Value]) -> Result<(), QueryError>,
     ) -> Result<(), QueryError> {
         let entry = self.entry(table)?;
-        let Some(index) = &entry.index else {
+        if entry.index.is_none() && !self.auto_indexes {
             return self.scan(table, visitor);
-        };
+        }
         self.schema_columns(table)?;
         let declared = entry.columns.get().ok_or(QueryError::Source)?;
         if entry.table.get().is_some() {
@@ -41,7 +44,19 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 self.cancelled,
             )
             .map_err(query_error)?;
-            let selection = projected_selection(&inspection, index.as_str(), declared, constraint)?;
+            let Some((index, selection)) = chosen_index(
+                &inspection,
+                entry.index.as_ref().map(|index| index.as_str()),
+                declared,
+                constraint,
+                &mut budget,
+                self.cancelled,
+            )?
+            else {
+                drop(budget);
+                drop(source);
+                return self.scan(table, visitor);
+            };
             if selection == IndexProjectionSelection::All {
                 drop(budget);
                 drop(source);
@@ -56,11 +71,16 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
             } else {
                 None
             };
-            read_table_index_with_request(
+            let read_index = if entry.index.is_none() {
+                read_table_index_in_table_order
+            } else {
+                read_table_index_with_request
+            };
+            read_index(
                 &mut *source,
                 self.scope,
                 &entry.name,
-                index.as_str(),
+                index,
                 IndexReadRequest {
                     columns: names.as_deref(),
                     selection,
@@ -154,9 +174,9 @@ fn selection(constraint: ScanConstraint, kind: ScalarType) -> Option<Selection> 
 }
 
 pub(super) fn projected_selection(
-    inspection: &tablecraft_ace::IndexInspection,
+    inspection: &IndexInspection,
     index: &str,
-    declared: &super::schema::ScalarSchema,
+    declared: &ScalarSchema,
     constraint: ScanConstraint,
 ) -> Result<IndexProjectionSelection<'static>, QueryError> {
     let selected = inspection
@@ -164,6 +184,17 @@ pub(super) fn projected_selection(
         .iter()
         .find(|candidate| candidate.name().eq_ignore_ascii_case(index))
         .ok_or(QueryError::UnknownName)?;
+    Ok(candidate_selection(
+        inspection, selected, declared, constraint,
+    ))
+}
+
+fn candidate_selection(
+    inspection: &IndexInspection,
+    selected: &NativeIndex,
+    declared: &ScalarSchema,
+    constraint: ScanConstraint,
+) -> IndexProjectionSelection<'static> {
     let key = match selected.columns() {
         [key] => inspection
             .schema()
@@ -179,17 +210,30 @@ pub(super) fn projected_selection(
             .position(|column| column.name().eq_ignore_ascii_case(field.name()))
     });
     if dense != Some(constraint.column()) {
-        return Ok(IndexProjectionSelection::All);
+        return IndexProjectionSelection::All;
     }
-    Ok(
-        match key.and_then(|field| selection(constraint, field.scalar_type()?)) {
-            Some(Selection::Byte(selection)) => IndexProjectionSelection::Byte(selection),
-            Some(Selection::Int16(selection)) => IndexProjectionSelection::Int16(selection),
-            Some(Selection::Currency(selection)) => IndexProjectionSelection::Currency(selection),
-            Some(Selection::Guid(selection)) => IndexProjectionSelection::Guid(selection),
-            Some(Selection::Int32(selection)) => IndexProjectionSelection::Int32(selection),
-            Some(Selection::Int64(selection)) => IndexProjectionSelection::Int64(selection),
-            None => IndexProjectionSelection::All,
-        },
-    )
+    match key.and_then(|field| selection(constraint, field.scalar_type()?)) {
+        Some(Selection::Byte(selection)) => IndexProjectionSelection::Byte(selection),
+        Some(Selection::Int16(selection)) => IndexProjectionSelection::Int16(selection),
+        Some(Selection::Currency(selection)) => IndexProjectionSelection::Currency(selection),
+        Some(Selection::Guid(selection)) => IndexProjectionSelection::Guid(selection),
+        Some(Selection::Int32(selection)) => IndexProjectionSelection::Int32(selection),
+        Some(Selection::Int64(selection)) => IndexProjectionSelection::Int64(selection),
+        None => IndexProjectionSelection::All,
+    }
+}
+
+pub(super) fn chosen_index<'a>(
+    inspection: &'a IndexInspection,
+    explicit: Option<&'a str>,
+    declared: &ScalarSchema,
+    constraint: ScanConstraint,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Option<(&'a str, IndexProjectionSelection<'static>)>, QueryError> {
+    if let Some(index) = explicit {
+        return projected_selection(inspection, index, declared, constraint)
+            .map(|selection| Some((index, selection)));
+    }
+    automatic::choose(inspection, declared, constraint, budget, cancelled)
 }

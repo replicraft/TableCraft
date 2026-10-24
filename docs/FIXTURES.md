@@ -5053,6 +5053,15 @@ checks the same outcomes; metadata timestamps need not reproduce registered
 hashes. No generated database is committed. Independent index evidence does not
 establish native Access SQL, text, platform, locking or save/reopen conformance.
 
+The original [automatic-index runner](testing/compare_automatic_indexes.py) reuses
+these registered inputs and reviewed JAR without generating or modifying files.
+Existing IndexRowsOracle and TableDataOracle supply inert field values and
+sequential row order. Its 86 controls cover all six supported key carriers,
+NULL/ranges, exact LongLong boundaries, prepared parameters, complete-count cache
+separation, sequential encounter order through a descending key, TOP/First/Last
+and buffered failures. Only TableCraft evaluates SQL. No third-party fixture,
+code, native Access execution or additional format qualification is supplied.
+
 
 ## Original arithmetic result-type controls
 

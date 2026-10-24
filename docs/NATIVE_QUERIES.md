@@ -89,7 +89,8 @@ FROM sources.
 
 Execution normally materializes all live rows before evaluating clauses. An
 explicit eligible index permits [safe integer/Currency/GUID filter pushdown](QUERY_EXECUTION.md#safe-source-constraints);
-automatic index selection and TOP pushdown remain unimplemented.
+opt-in [automatic selection](AUTOMATIC_INDEXES.md) now chooses matching qualified
+single-key indexes. TOP pushdown and cost-based optimization remain unimplemented.
 Explicit Binary index ranges are available to library hosts through
 `read_table_binary_index_range` and projected Binary selections. The query adapter
 still applies Binary predicates after complete snapshots; it does not automatically

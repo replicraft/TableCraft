@@ -1,5 +1,27 @@
 # Implementation status
 
+## Opt-in automatic native indexes
+
+`query run --auto-index --database PATH` and NativeSource::with_auto_indexes now
+choose matching qualified single-key indexes for existing safe constraints.
+Unconstrained/no-candidate reads stay sequential; chosen failures propagate
+without retry. ACE supplies a table-order index request so automatic paths retain
+sequential row order, including relocated roots, TOP and First/Last. Explicit
+required indexes retain their key order. Partial snapshots stay outside complete
+caches, and all original predicates/budgets remain active. See
+[selection contracts and measurements](AUTOMATIC_INDEXES.md).
+
+31 focused adapter tests, 28 engine index tests and four CLI tests pass. Scoped
+engine/adapter/CLI Clippy, the minimal adapter check and dependency guard pass.
+The independent runner passes 86 controls over four unchanged registered
+20,000-row fixtures, using inert getters for values and sequential order. Debug
+warm-cache CLI point reads average 4.7–5.4 ms with automatic selection versus
+90–99 ms sequentially; explicit index times are comparable and all preliminary/
+noisy samples are retained. This selects an existing seek, not a faster seek
+kernel. Full workspace tests, release benchmarks and Windows Access comparisons
+were not run. Cost-based choices, wider typed/composite seeks, TOP pushdown,
+other read/query acceptance work and production write qualification remain open.
+
 ## Prepared arithmetic boundary audit
 
 The arithmetic metadata controls now cover 44,800 binary and 240 unary executions

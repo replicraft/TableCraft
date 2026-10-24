@@ -115,6 +115,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
             decoded_attachments,
             sqlite,
             index,
+            auto_index,
         } => {
             let parsed = sql.as_deref().map(parse).transpose()?;
             let input = match (parsed.as_ref(), saved.as_deref()) {
@@ -151,6 +152,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
                     rows: native_rows.unwrap_or(crate::native::DEFAULT_NATIVE_ROWS),
                     steps: native_steps.unwrap_or(crate::native::DEFAULT_NATIVE_STEPS),
                     index: &index,
+                    auto_index,
                     multivalues,
                     collections,
                     decoded_attachments,
