@@ -4,7 +4,7 @@ use crate::{
     TableSchema,
     format::{
         data_type,
-        layout::{FIXED_FLAG, UPDATABLE_FLAG},
+        layout::{FIXED_FLAG, UNICODE_COMPRESSION_FLAG, UPDATABLE_FLAG},
     },
     header::check,
 };
@@ -31,7 +31,7 @@ pub(in crate::table::complex) fn select(
         .position(|field| field.name().eq_ignore_ascii_case(name))
         .ok_or(InspectError::UnknownColumn)?;
     let memo = &schema.owner().columns()[memo_position];
-    if !qualified(memo, data_type::LONG_TEXT) {
+    if !qualified_visible_memo(memo) {
         return Err(InspectError::Unsupported);
     }
     let mut selected = None;
@@ -119,11 +119,22 @@ pub(super) fn type_fields(
         .ok_or(InspectError::Unsupported)?;
     Ok((value, modified))
 }
+
+// The visible current Memo uses the ordinary Memo codec. Its Unicode
+// compression marker does not change the hidden history's schema or encoding.
+fn qualified_visible_memo(field: &NativeColumn) -> bool {
+    qualified_storage(field, data_type::LONG_TEXT)
+        && matches!(field.extended_flags(), 0 | UNICODE_COMPRESSION_FLAG)
+}
+
 fn qualified(field: &NativeColumn, kind: u8) -> bool {
+    qualified_storage(field, kind) && field.extended_flags() == 0
+}
+
+fn qualified_storage(field: &NativeColumn, kind: u8) -> bool {
     let flags = UPDATABLE_FLAG | if field.fixed() { FIXED_FLAG } else { 0 };
     field.native_type() == kind
         && field.fixed() == (kind == data_type::DATE_TIME)
         && field.flags() == flags
-        && field.extended_flags() == 0
         && field.scalar_type().is_some()
 }

@@ -1,5 +1,20 @@
 # Implementation status
 
+## Compressed current Memo with stored history
+
+Stored-history discovery now accepts the ordinary Unicode-compression bit on a
+qualified visible current Memo. Previously normal scalar reads succeeded while
+its supported history disappeared from collection metadata. The current value
+uses its existing decoder; hidden markers, template/flat field flags, mapping
+and complete child membership checks retain their existing requirements.
+Unknown/calculated visible flags remain refused.
+
+The focused engine/adapter batch passes 19 tests, including five new compression
+controls for metadata-only binding, aligned members, complete-cache reuse,
+late orphan refusal, unsupported flags, budgets and cancellation. Strict scoped
+Clippy and workspace formatting pass. See
+[stored-history contracts](STORED_HISTORY_QUERIES.md#stored-record-contract).
+
 ## Retained String numeric renderer consistency
 
 The public retained-value evaluator now publishes valid String ranges through

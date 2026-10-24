@@ -3,6 +3,8 @@
 mod base;
 #[path = "complex_schema/fixture.rs"]
 mod complex_fixture;
+#[path = "version_history/compression.rs"]
+mod compression;
 #[path = "version_history/fixture.rs"]
 mod fixture;
 mod support;

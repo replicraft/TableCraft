@@ -33,6 +33,12 @@ do not replace that value, reconcile it against historical entries, choose a
 latest version, infer chronological ordering or run any expression or handler.
 Native Access history updates and writes remain separate work.
 
+The visible current Memo may use the ordinary Unicode-compression flag (exact
+extended flags 0 or 1). It retains the existing Memo decoder; this does not change
+historical child encoding or infer a newest value. Unknown/calculated visible
+flags, unsupported ordinary geometry and nonzero template/flat history flags
+remain refused. Metadata-only discovery and complete child validation still apply.
+
 Within one history, members remain aligned to the same stored child. Flat stored
 order, duplicate values, Unicode/NUL text, NULL/empty Text, nullable timestamps and
 exact DATE carriers survive the borrowed source view. SQL projection uses the
