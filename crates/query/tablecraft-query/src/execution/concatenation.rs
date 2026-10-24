@@ -1,37 +1,12 @@
-//! Lossless string operands retain runtime provenance until final publication.
+//! String concatenation shares admission and provenance with other string consumers.
 mod addition;
 
-use super::{Environment, Runtime, cell::CellValue};
+use super::{Environment, Runtime, cell::CellValue, string_operands::StringCell};
 use crate::{
     QueryError,
-    plan::{
-        Expr,
-        declarations::{combined, functions},
-    },
-    source::TextPolicy,
+    plan::{Expr, declarations::combined},
 };
-use tablecraft_core::values::ExpressionValue;
-use tablecraft_expressions::{
-    functions::text::byte_string::{ByteOperand, ExpressionByteOperand},
-    numeric::OperandDeclaration,
-};
-use tablecraft_sql::select::BinaryOperator;
-
-struct StringCell {
-    value: ExpressionByteOperand,
-    policy: TextPolicy,
-    declaration: Option<OperandDeclaration>,
-}
-
-impl From<CellValue> for StringCell {
-    fn from(cell: CellValue) -> Self {
-        Self {
-            value: ExpressionByteOperand::Scalar(cell.value),
-            policy: cell.policy,
-            declaration: cell.declaration,
-        }
-    }
-}
+use tablecraft_expressions::functions::text::byte_string::ExpressionByteOperand;
 
 impl Runtime<'_, '_> {
     pub(super) fn concatenation_operand(
@@ -54,20 +29,7 @@ impl Runtime<'_, '_> {
         self.publish_string_cell(cell)
     }
 
-    fn publish_string_cell(&mut self, cell: StringCell) -> Result<CellValue, QueryError> {
-        let value = match cell.value {
-            ExpressionByteOperand::Scalar(value) => value,
-            ExpressionByteOperand::Bytes(bytes) => ExpressionValue::Value(
-                self.evaluator()
-                    .publish_byte_operand(ByteOperand::Bytes(bytes))?,
-            ),
-        };
-        Ok(CellValue::from(value)
-            .with_policy(cell.policy)
-            .with_declaration(cell.declaration))
-    }
-
-    fn concatenate_cells(
+    pub(super) fn concatenate_cells(
         &mut self,
         left: &Expr,
         right: &Expr,
@@ -86,36 +48,5 @@ impl Runtime<'_, '_> {
             policy,
             declaration,
         })
-    }
-
-    fn string_cell(
-        &mut self,
-        expression: &Expr,
-        env: Environment<'_>,
-    ) -> Result<StringCell, QueryError> {
-        let mut cell = match expression {
-            Expr::Binary(BinaryOperator::Add, left, right) => self.add_cells(left, right, env),
-            Expr::Binary(BinaryOperator::Concatenate, left, right) => {
-                self.concatenate_cells(left, right, env)
-            }
-            Expr::CVar(value) => {
-                self.tick()?;
-                let mut value = self.string_cell(value, env)?;
-                value.declaration = Some(OperandDeclaration::Variant);
-                Ok(value)
-            }
-            Expr::TextCall(function, arguments) if function.produces_bytes() => {
-                self.tick()?;
-                let value = self.byte_call(*function, arguments, env)?;
-                Ok(StringCell {
-                    value: value.into(),
-                    policy: TextPolicy::Default,
-                    declaration: functions::result(expression),
-                })
-            }
-            _ => return self.expression_operand(expression, env).map(Into::into),
-        }?;
-        cell.policy = self.result_text_policy(expression, cell.policy, env)?;
-        Ok(cell)
     }
 }

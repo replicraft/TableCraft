@@ -1,5 +1,20 @@
 # Candidate Access fixtures
 
+## Independent raw numeric String controls
+
+The original [numeric Text runner](testing/compare_arithmetic_text.py) passes
+1,350 source-free controls. Python Decimal supplies arithmetic and half-even
+expectations for ordinary and raw UTF-16 numeric spellings under explicit regional
+policies. Additional cases cover all six non-addition operators with raw Strings
+and NULL in both orders, unsupported GUID admission and eager division failures.
+Both CLI query modes and explicit declared-arithmetic cases are included. Optional
+native getter inputs were not supplied; this is not native Access SQL evidence.
+
+The existing concatenation and byte-string recipes also pass 2,918 and 35,336
+controls. The native-policy recipe passes 1,844 model/source controls over the
+unchanged four inputs registered below. No new third-party artifact, dependency
+or fixture generator was introduced. Windows Access and benchmarks were not run.
+
 ## Grouped string policy provenance controls
 
 The expanded original [native policy runner](testing/compare_native_collations.py)

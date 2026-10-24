@@ -74,6 +74,17 @@ impl Evaluator<'_> {
                 operator,
                 right,
             } => {
+                if matches!(
+                    operator,
+                    BinaryOperator::Subtract
+                        | BinaryOperator::Multiply
+                        | BinaryOperator::Divide
+                        | BinaryOperator::IntegerDivide
+                        | BinaryOperator::Modulo
+                        | BinaryOperator::Power
+                ) {
+                    return self.numeric_arithmetic_call(*operator, left, right, depth);
+                }
                 if *operator == BinaryOperator::Add {
                     let value = self.addition_call(left, right, depth)?;
                     return self.publish_byte_operand(value);

@@ -1,7 +1,11 @@
 //! Contextual numeric Text operands; standalone numeric kernels stay policy-free.
 pub(super) mod addition;
 pub(super) mod operands;
+pub(super) mod raw;
 mod rounded;
+
+#[cfg(test)]
+mod raw_tests;
 use super::Evaluator;
 use crate::{
     EvalError,

@@ -73,6 +73,7 @@ pub use arithmetic::addition::PreparedAddition;
 pub use arithmetic::operands::{
     arithmetic_operands, arithmetic_unary_operand, empty_division_operand,
 };
+pub use arithmetic::raw::PreparedNumericArithmetic;
 pub use bindings::{Bindings, NoBindings};
 pub use context::{EvalLimits, Evaluator};
 

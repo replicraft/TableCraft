@@ -1,5 +1,30 @@
 # Implementation status
 
+## Lossless String admission in numeric arithmetic
+
+Subtraction, multiplication, division, integer division, Mod and power now admit
+raw String intermediates before NULL propagation. Previously an unpaired UTF-16
+surrogate beside NULL failed Unicode decoding prematurely. Both operands still
+evaluate eagerly, unsupported families and Error/Missing retain their refusals,
+and non-NULL Strings strictly publish Text before existing numeric conversion.
+Original-type Empty division and declaration-aware Date/integral dispatch remain
+in their owning services. Shared string operand handling now lives in its own
+execution feature module, retaining grouped runtime policies and declarations.
+See [numeric String contracts](ARITHMETIC_TEXT.md).
+
+The NULL regression was observed failing before the fix. Verification passes:
+709 all-feature expression tests and one doctest, 364 minimal expression tests,
+99 focused query tests, nineteen CLI tests, expression/query all-target all-feature
+Clippy, focused CLI Clippy and minimal query compilation. The amended Empty-divisor
+test also passes independently. Formatting, Python compilation and diff checks pass.
+Independent recipes pass 1,350 arithmetic, 2,918 concatenation, 35,336 byte-string
+and 1,844 native-policy model/source controls. The four native-policy inputs retain
+their registered hashes; arithmetic used source-free controls only.
+
+No dependency, stored carrier, native decoder or writer changed. Engine/workspace
+suites, Windows Access and benchmarks were not run. Full P0 value/text semantics,
+storage reliability and the wider backend roadmap remain unfinished.
+
 ## Grouped policy retention in composed string operands
 
 A regression could lose accumulated group-key text policy when a composed key

@@ -185,7 +185,11 @@ complete raw units, including surrogate halves that form valid final Text. Its
 nested observations and inspection retain String identity; odd-byte concatenation
 remains explicitly refused. [String addition](CONCATENATION.md#lossless-string-addition)
 now shares the complete-unit join, with separate NULL propagation and numeric
-dispatch that retains declaration provenance. Other operators retain the limits below.
+dispatch that retains declaration provenance. The six non-addition
+[numeric operators](ARITHMETIC_TEXT.md#lossless-string-operands-in-numeric-arithmetic)
+now admit raw String families before NULL propagation; non-NULL numeric conversion
+still requires strict Text publication and the existing explicit number policy.
+Other operators retain the limits below.
 
 [StrConv](STRCONV.md) now supports explicit casing and strict single-byte
 Unicode/ANSI conversions; width/kana and broader mapping behavior remain open.
