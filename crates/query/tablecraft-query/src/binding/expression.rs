@@ -131,10 +131,18 @@ impl Binder<'_> {
             E::IsNull {
                 expression,
                 negated,
-            } => Expr::IsNull(
-                Box::new(self.expression(expression, scopes, aggregates, depth + 1)?),
-                *negated,
-            ),
+            } => {
+                if let Some(presence) =
+                    self.collection_null_test(expression, scopes, *negated, depth + 1)?
+                {
+                    presence
+                } else {
+                    Expr::IsNull(
+                        Box::new(self.expression(expression, scopes, aggregates, depth + 1)?),
+                        *negated,
+                    )
+                }
+            }
             E::Between {
                 expression,
                 first_bound,

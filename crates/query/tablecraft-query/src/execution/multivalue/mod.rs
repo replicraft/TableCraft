@@ -7,6 +7,7 @@ use crate::{
 use tablecraft_schema::{CollectionMember, Column};
 mod expansion;
 mod parent;
+pub(in crate::execution) use parent::ParentCollections;
 
 impl Runtime<'_, '_> {
     pub(super) fn collection_requests<'a>(

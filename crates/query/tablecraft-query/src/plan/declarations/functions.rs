@@ -17,9 +17,12 @@ pub(crate) fn result(expression: &Expr) -> Option<OperandDeclaration> {
         Expr::DateCall(function, _) => Some(dates::component(*function)),
         Expr::Inspect(function, _) => Some(inspection::recognition(*function)),
         Expr::ValueInspect(function, _) => Some(inspection::value(*function)),
-        Expr::IsNull(..) | Expr::Exists(_) | Expr::CurrentUser | Expr::ErrorMessageString(_) => {
-            Some(OperandDeclaration::Scalar)
-        }
+        Expr::IsNull(..)
+        | Expr::CollectionEmpty(..)
+        | Expr::ParentPresence { .. }
+        | Expr::Exists(_)
+        | Expr::CurrentUser
+        | Expr::ErrorMessageString(_) => Some(OperandDeclaration::Scalar),
         Expr::ErrorMessage(_) | Expr::GuidFromString(_) | Expr::StringFromGuid(_) => {
             Some(OperandDeclaration::Variant)
         }

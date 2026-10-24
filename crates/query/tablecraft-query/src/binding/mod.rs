@@ -67,6 +67,7 @@ pub(super) struct Binder<'a> {
     parameter_scope: Vec<usize>,
     // Named sources and scalar calls remain unavailable to UPDATE binding.
     retrieval: bool,
+    collection_criteria: bool,
     active_queries: Vec<String>,
     nodes: usize,
     policy_visits: usize,
@@ -160,6 +161,7 @@ pub(crate) fn prepare_stage<'a>(
         parameters: Vec::new(),
         parameter_scope: Vec::new(),
         retrieval: true,
+        collection_criteria: false,
         active_queries: Vec::new(),
         nodes: 0,
         policy_visits: 0,

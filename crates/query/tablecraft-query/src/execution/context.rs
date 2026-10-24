@@ -1,3 +1,4 @@
+use super::multivalue::ParentCollections;
 use super::{ExecutionOptions, QueryError, Source, aggregate::binary::Scratch as NumericScratch};
 use crate::execution::cell::CellValue;
 use crate::{discovery::DiscoveryState, plan::Expr};
@@ -24,6 +25,7 @@ pub(crate) struct Environment<'a> {
     pub(super) output: &'a [CellValue],
     pub(super) group: Option<&'a [Vec<CellValue>]>,
     pub(super) group_keys: Option<GroupKeys<'a>>,
+    pub(super) collections: Option<&'a ParentCollections<'a>>,
 }
 #[derive(Clone, Copy)]
 pub(super) struct OuterScope<'a> {

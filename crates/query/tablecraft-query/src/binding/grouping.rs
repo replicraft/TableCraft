@@ -30,6 +30,7 @@ impl Binder<'_> {
             | Expr::Field { .. }
             | Expr::Parameter(_)
             | Expr::CollectionItem { .. }
+            | Expr::ParentPresence { .. }
             | Expr::Output(_, _)
             | Expr::Clock(_)
             | Expr::CurrentUser => true,

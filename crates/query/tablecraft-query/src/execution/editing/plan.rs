@@ -114,6 +114,7 @@ pub fn plan_update<E: EditableTable>(
             expression_row.push(CellValue::scalar(runtime.copy(value)?));
         }
         let env = Environment {
+            collections: None,
             row: &expression_row,
             outer: &[],
             output: &[],

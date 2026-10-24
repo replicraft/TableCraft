@@ -102,7 +102,8 @@ impl Binder<'_> {
             | Expr::Field { .. }
             | Expr::Parameter(_)
             | Expr::Output(_, _)
-            | Expr::CollectionItem { .. } => {}
+            | Expr::CollectionItem { .. }
+            | Expr::ParentPresence { .. } => {}
             Expr::Subquery(read) | Expr::Exists(read) => {
                 self.replace_item_read(read, binding, target + 1, capture, depth + 1)?;
             }

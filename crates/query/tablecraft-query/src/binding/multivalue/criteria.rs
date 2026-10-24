@@ -183,8 +183,11 @@ impl Binder<'_> {
             mut expr => {
                 let mut used =
                     referenced_fields(std::slice::from_ref(&expr), source.row_width(), self)?;
-                if self.collect_presence(&expr, &mut used, depth + 1)? {
-                    return Err(QueryError::Unsupported);
+                let presence = self.collect_presence(&expr, &mut used, depth + 1)?;
+                if presence {
+                    self.resolve_presence(&mut expr, virtual_fields, depth + 1)?;
+                    used =
+                        referenced_fields(std::slice::from_ref(&expr), source.row_width(), self)?;
                 }
                 for (field, _) in virtual_fields {
                     used[*field] &= hidden[*field];
@@ -193,6 +196,11 @@ impl Binder<'_> {
                 let Some(&(field, collection)) = fields.next() else {
                     return Ok(ParentPredicate::Scalar(expr));
                 };
+                if presence {
+                    // Hidden member folds inside arbitrary scalar calls have no
+                    // qualified empty-list evaluation contract yet.
+                    return Err(QueryError::Unsupported);
+                }
                 let many = fields.next().is_some();
                 let negated = match &mut expr {
                     Expr::Binary(operator @ B::NotEqual, _, _) => {

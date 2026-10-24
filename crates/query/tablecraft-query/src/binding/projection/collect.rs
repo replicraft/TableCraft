@@ -97,6 +97,7 @@ impl Pruner<'_, '_> {
             | Expr::Literal(_)
             | Expr::DateLiteral(..)
             | Expr::CollectionItem { .. }
+            | Expr::ParentPresence { .. }
             | Expr::Output(_, _)
             | Expr::Parameter(_)
             | Expr::Aggregate(_, None) => {}

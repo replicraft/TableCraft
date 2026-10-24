@@ -208,6 +208,7 @@ impl Runtime<'_, '_> {
                     self.eval_predicate(
                         condition,
                         Environment {
+                            collections: None,
                             row: &values,
                             outer,
                             output: &[],

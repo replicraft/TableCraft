@@ -34,6 +34,7 @@ pub(crate) fn bind_update(query: &Query, source: &dyn Source) -> Result<BoundUpd
         parameters: Vec::new(),
         parameter_scope: Vec::new(),
         retrieval: false,
+        collection_criteria: false,
         active_queries: Vec::new(),
         nodes: 0,
         policy_visits: 0,

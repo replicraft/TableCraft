@@ -63,6 +63,7 @@ pub(crate) fn bind_domain(
         parameters: Vec::new(),
         parameter_scope: Vec::new(),
         retrieval: true,
+        collection_criteria: false,
         active_queries: Vec::new(),
         nodes: 0,
         policy_visits: 0,

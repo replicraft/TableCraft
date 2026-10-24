@@ -572,3 +572,54 @@ fn domain_presence_counts_parents_and_buffers_errors_across_priority_profiles() 
         assert!(result.stdout.is_empty());
     }
 }
+
+#[test]
+fn composed_attachment_presence_keeps_scalar_calls_domain_criteria_and_buffering() {
+    let database = Database::new(attachment_fixture::database());
+    for predicate in [
+        "(Score IS NULL)=True",
+        "IIf(Score IS NULL,True,False)",
+        "CBool(Score IS NULL)",
+    ] {
+        let sql = format!("SELECT Id FROM Items WHERE {predicate}");
+        let result = run(&[
+            "query",
+            "run",
+            &sql,
+            "--database",
+            database.path(),
+            "--collections",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(result.stdout, b"Id\n3\n");
+    }
+    let result = run(&[
+        "query",
+        "run",
+        "SELECT DCount('*','Items','IIf(Score IS NULL,True,False)') AS N",
+        "--database",
+        database.path(),
+        "--collections",
+    ]);
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    assert_eq!(result.stdout, b"N\n1\n");
+
+    let result = run(&[
+        "query",
+        "run",
+        "SELECT Id FROM Items WHERE IIf(Score IS NULL,True,1/0)",
+        "--database",
+        database.path(),
+        "--collections",
+    ]);
+    assert!(!result.status.success());
+    assert!(result.stdout.is_empty());
+}

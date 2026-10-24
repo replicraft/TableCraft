@@ -79,6 +79,22 @@ fn metadata_cache_omits_payloads_and_failed_payload_reads_leave_it_available() {
         execute(&source, "SELECT Count(*) FROM Items WHERE Score IS NULL").unwrap(),
         [vec![Value::Int64(1)]]
     );
+    assert_eq!(
+        execute(
+            &source,
+            "SELECT Count(*) FROM Items WHERE CBool(Score IS NOT NULL)"
+        )
+        .unwrap(),
+        [vec![Value::Int64(2)]]
+    );
+    assert_eq!(
+        execute(
+            &source,
+            "SELECT DCount('*','Items','IIf(Score IS NULL,True,False)')"
+        )
+        .unwrap(),
+        [vec![Value::Int64(1)]]
+    );
     assert_eq!(payload.reads.get(), 0);
     forbid_children.set(true);
     assert_eq!(execute(&source, count).unwrap(), [vec![Value::Int64(2)]]);
