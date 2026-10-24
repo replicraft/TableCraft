@@ -2,7 +2,7 @@ use super::*;
 use tablecraft_core::values::{Currency, Decimal, Single};
 
 #[test]
-fn finite_carriers_use_existing_double_conversion_without_text_or_date_coercion() {
+fn finite_carriers_keep_admission_and_fixed_offsets_preserve_small_differences() {
     for (kind, values, expected) in [
         (ScalarType::Byte, vec![Value::Byte(1), Value::Byte(3)], 1.0),
         (
@@ -63,6 +63,12 @@ fn finite_carriers_use_existing_double_conversion_without_text_or_date_coercion(
     );
     assert_eq!(
         float(&run("SELECT VarP(X) FROM T", &data).unwrap().rows()[0][0]),
+        0.25
+    );
+    // Explicit conversion still deliberately rounds both inputs before the
+    // aggregate sees them; the mixed/floating admission policy is unchanged.
+    assert_eq!(
+        float(&run("SELECT VarP(CDbl(X)) FROM T", &data).unwrap().rows()[0][0]),
         0.0
     );
 }

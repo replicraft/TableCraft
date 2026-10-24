@@ -255,10 +255,10 @@ promotion is not complete.
 | Max | Partial | Same comparison/collation limits as Min. |
 | First | Partial | First encountered scalar/NULL or [expression Error](VARIANT_ERRORS.md#encounter-order-aggregates-and-domains). All operands evaluate. Native scan/index encounter order is not guaranteed to match Access. |
 | Last | Partial | Last encountered scalar/NULL or expression Error; all operands evaluate. Same encounter-order limits as First. |
-| StDev | Partial | Sample deviation over finite numeric values; two known values required. [Bounded Double profile](STATISTICAL_AGGREGATES.md); native accumulation/promotion/precision qualification remains open. |
-| StDevP | Partial | Population deviation over finite numeric values; singleton returns Double zero. [Bounded Double profile](STATISTICAL_AGGREGATES.md); native accumulation/promotion/precision qualification remains open. |
-| Var | Partial | Sample variance over finite numeric values; two known values required. [Bounded Double profile](STATISTICAL_AGGREGATES.md); native accumulation/promotion/precision qualification remains open. |
-| VarP | Partial | Population variance over finite numeric values; the documented two-value minimum is retained. [Bounded Double profile](STATISTICAL_AGGREGATES.md); native accumulation/promotion/precision qualification remains open. |
+| StDev | Partial | Sample deviation over finite numeric values; two known values required. [Bounded statistics with exact fixed offsets](STATISTICAL_AGGREGATES.md); native accumulation/promotion/precision qualification remains open. |
+| StDevP | Partial | Population deviation over finite numeric values; singleton returns Double zero. [Bounded statistics with exact fixed offsets](STATISTICAL_AGGREGATES.md); native accumulation/promotion/precision qualification remains open. |
+| Var | Partial | Sample variance over finite numeric values; two known values required. [Bounded statistics with exact fixed offsets](STATISTICAL_AGGREGATES.md); native accumulation/promotion/precision qualification remains open. |
+| VarP | Partial | Population variance over finite numeric values; the documented two-value minimum is retained. [Bounded statistics with exact fixed offsets](STATISTICAL_AGGREGATES.md); native accumulation/promotion/precision qualification remains open. |
 
 ## Domain functions
 

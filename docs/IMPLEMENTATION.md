@@ -1,5 +1,21 @@
 # Implementation status
 
+## Fixed-point statistical spread
+
+Var/VarP/StDev/StDevP now translate all-fixed numeric groups exactly before
+binary64 rounding. Adjacent large LongLong, Currency and Decimal values therefore
+retain nonzero spread. Mixed floating groups and explicit CDbl inputs retain their
+previous conversion lane. Existing BigInt handles only bounded wide alignment;
+normal offsets use i128 and stack formatting. The additional retained offset
+buffer is charged explicitly. See [statistics](STATISTICAL_AGGREGATES.md).
+
+Forty focused tests and strict scoped Clippy pass. Independent Fraction replay
+passes 404 result controls across 101 SQL queries against one unchanged executable.
+Tests retain once-only evaluation, NULL/type/Error behavior, narrow/wide scratch
+controls, cancellation and the old rounded-input result through explicit CDbl.
+This is the current default numerical profile, not qualified native ACE precision
+or complete Variant promotion.
+
 ## Dynamic crosstab heading policy completion
 
 Dynamic pivots with unresolved Default provenance and an explicit resolver now

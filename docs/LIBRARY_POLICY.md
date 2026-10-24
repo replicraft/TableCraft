@@ -298,6 +298,11 @@ bounded accumulator does not require another Decimal library or change the
 stored Decimal carrier. Mixed-type and native rounding qualification remain open.
 
 
+[Fixed-point statistical offsets](STATISTICAL_AGGREGATES.md#numerical-work-and-resource-ownership)
+also reuse BigInt only when exact scale alignment exceeds i128. Narrow differences
+use checked primitive arithmetic and a stack spelling before binary64 conversion.
+This does not introduce another Decimal library or widen stored values.
+
 ## Collection and search decisions
 
 Native index metadata uses ArrayVec under the existing ten-column ceiling.
