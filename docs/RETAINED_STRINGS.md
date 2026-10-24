@@ -34,6 +34,9 @@ and native Access qualification remain unfinished.
 [NULL predicates and issued-Variant category ordering](RAW_PREDICATES.md) now
 retain Strings until their result actually needs Unicode. Other non-NULL
 comparison and raw key/provider limits remain explicit.
+LIKE/NOT LIKE also preserve raw String/NULL results without decoding, while
+retaining the explicit wildcard mode and eager argument failures. Non-NULL raw
+matching still uses strict Unicode publication.
 
 Both public query result modes retain strict final String publication. A raw
 String may survive intermediate rows, but a directly selected unrepresentable

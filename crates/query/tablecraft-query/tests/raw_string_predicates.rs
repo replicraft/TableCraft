@@ -1,6 +1,7 @@
 use std::cell::Cell;
 use tablecraft_core::values::Value;
 use tablecraft_expressions::EvalError;
+use tablecraft_expressions::predicates::LikeMode;
 use tablecraft_query::{ExecutionOptions, QueryError, prepare, source::MemorySource};
 use tablecraft_sql::parse_query;
 
@@ -136,5 +137,61 @@ fn raw_predicates_keep_eager_errors_and_cancel_every_observed_checkpoint() {
             ),
             Err(QueryError::Cancelled | QueryError::Evaluation(EvalError::Cancelled))
         ));
+    }
+}
+
+#[test]
+fn raw_like_null_retains_cells_in_projections_and_filters() {
+    let source = MemorySource::default();
+    for mode in [LikeMode::Ansi89, LikeMode::Ansi92] {
+        for sql in [
+            "SELECT S LIKE NULL,NULL LIKE S,S NOT LIKE NULL,NULL NOT LIKE S FROM (SELECT ChrW(55296) AS S) AS Q",
+            "SELECT S LIKE NULL,NULL LIKE S,S NOT LIKE NULL,NULL NOT LIKE S FROM (SELECT ChrB(65) AS S) AS Q WHERE IsNull(S LIKE NULL)",
+        ] {
+            let parsed = parse_query(sql, Default::default()).unwrap();
+            let plan = prepare(parsed.query(), &source).unwrap();
+            assert_eq!(
+                plan.execute(
+                    &source,
+                    &[],
+                    ExecutionOptions {
+                        like_mode: Some(mode),
+                        ..Default::default()
+                    }
+                )
+                .unwrap()
+                .rows(),
+                &[vec![Value::Null; 4]],
+                "{sql}"
+            );
+            assert_eq!(
+                plan.execute(&source, &[], Default::default()).err(),
+                Some(QueryError::Evaluation(EvalError::LikeModeRequired))
+            );
+        }
+    }
+
+    for (expression, expected) in [
+        ("S LIKE 1/0", EvalError::DivisionByZero),
+        ("NULL LIKE ChrW(65536)", EvalError::Domain),
+        ("S LIKE '*'", EvalError::UnrepresentableText),
+    ] {
+        let sql = format!("SELECT {expression} FROM (SELECT ChrW(55296) AS S) AS Q");
+        let parsed = parse_query(&sql, Default::default()).unwrap();
+        assert_eq!(
+            prepare(parsed.query(), &source)
+                .unwrap()
+                .execute(
+                    &source,
+                    &[],
+                    ExecutionOptions {
+                        like_mode: Some(LikeMode::Ansi89),
+                        ..Default::default()
+                    }
+                )
+                .err(),
+            Some(QueryError::Evaluation(expected)),
+            "{sql}"
+        );
     }
 }

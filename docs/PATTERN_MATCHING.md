@@ -84,6 +84,10 @@ no partial query result. Other host collations stay on the scalar path unless
 they explicitly opt in and provide the raw-unit callbacks.
 
 With a selected mode, either NULL operand produces unknown; NOT retains unknown.
+Retained expression Strings use this gate before Unicode publication, including
+odd byte ranges and unpaired UTF-16 units. They still require an explicit mode;
+non-NULL raw matching retains strict Unicode publication. See
+[retained predicate boundaries](RAW_PREDICATES.md).
 Other non-NULL operand kinds fail with `TypeMismatch`. Both operand expressions
 are evaluated eagerly before matching, including errors in a pattern expression
 when the tested expression is NULL. Missing policy, bad-pattern, collation,

@@ -54,6 +54,13 @@ def main():
             sql = "SELECT " + ",".join(predicates("S")) + f" FROM (SELECT {raw} AS S) AS Q"
             controls += query(args.cli, "run", sql, expected)
 
+            for wildcard in ["ansi89", "ansi92"]:
+                options = ["--like-mode", wildcard]
+                sql = f"SELECT {raw} LIKE NULL,NULL LIKE {raw},{raw} NOT LIKE NULL,NULL NOT LIKE {raw}"
+                controls += query(args.cli, "run", sql, [["NULL"] * 4], options)
+                sql = f"SELECT S LIKE NULL,NULL NOT LIKE S FROM (SELECT {raw} AS S) AS Q WHERE IsNull(S LIKE NULL)"
+                controls += query(args.cli, "run", sql, [["NULL"] * 2], options)
+
         source = f" FROM (SELECT ChrW({code}) AS S) AS Q"
         sql = "SELECT S IN(SELECT NULL),S=ANY(SELECT NULL),S=ALL(SELECT NULL),S=ANY(SELECT NULL WHERE False),S=ALL(SELECT NULL WHERE False)" + source
         controls += query(args.cli, "run", sql, [["NULL", "NULL", "NULL", "FALSE", "TRUE"]])
@@ -70,6 +77,15 @@ def main():
             "ChrW(55296)='a'",
         ]:
             controls += query(args.cli, mode, "SELECT 1," + expression, None)
+
+    for wildcard in ["ansi89", "ansi92"]:
+        for expression in [
+            "ChrW(55296) LIKE 1/0", "NULL LIKE ChrW(65536)",
+            "ChrW(55296) LIKE '*'", "'*' LIKE ChrB(65)",
+        ]:
+            controls += query(args.cli, "run", "SELECT 1," + expression, None,
+                              ["--like-mode", wildcard])
+    controls += query(args.cli, "run", "SELECT ChrB(65) LIKE NULL", None)
 
     print(f"Passed {controls} independent raw String predicate controls; native Access unrun.")
 

@@ -3,11 +3,13 @@
 ## Raw String predicate controls
 
 The original [predicate runner](testing/compare_raw_string_predicates.py) passes
-5,808 source-free controls. Python supplies Unknown truth for String/NULL pairs,
+7,113 source-free controls. Python supplies Unknown truth for String/NULL pairs,
 empty quantifier outcomes and the issued-Variant type-category rule over fixed
 and seeded raw producers. Both CLI modes cover scalar comparisons/lists/ranges;
 bound runs include retained derived cells, subqueries and explicit declaration
-flags. Eager/state/publication refusals remain checked. Existing retained-cell
+flags. Explicit ANSI-89/92 runs also cover LIKE/NOT LIKE NULL truth through direct
+and retained cells, missing-mode refusal and eager errors.
+Eager/state/publication refusals remain checked. Existing retained-cell
 and native-policy recipes pass 1,053 and 1,844 controls over unchanged registered
 native-policy inputs. No third-party artifact/dependency was added. Native Windows
 Access and benchmarks were not run.

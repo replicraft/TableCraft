@@ -168,9 +168,13 @@ impl Evaluator<'_> {
                 pattern,
                 negated,
             } => {
-                let value = self.node(expression, depth + 1)?;
-                let pattern = self.node(pattern, depth + 1)?;
-                self.apply_like(&value, &pattern, *negated)
+                let value = self
+                    .expression_byte_operand(expression, depth + 1)?
+                    .into_expression_value();
+                let pattern = self
+                    .expression_byte_operand(pattern, depth + 1)?
+                    .into_expression_value();
+                self.apply_expression_like(&value, &pattern, *negated)
             }
             E::Call {
                 qualifier,

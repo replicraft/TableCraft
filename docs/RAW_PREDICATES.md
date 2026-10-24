@@ -34,13 +34,20 @@ Non-NULL comparisons outside that exception still publish raw Strings strictly
 before existing numeric/date coercion and policy-aware Text comparison. Runtime
 and static text policies, declarations, effective numeric selection, limits and
 cancellation stay in their existing services. This adds no Unicode replacement,
-implicit binary comparison, locale provider or raw set/sort key profile. LIKE and
-broader raw/native comparison behavior remain unfinished.
+implicit binary comparison, locale provider or raw set/sort key profile.
+
+LIKE/NOT LIKE also retain both operands until matching. Raw String/NULL pairs
+produce NULL without decoding or consulting a collation, including odd ranges
+and unpaired units. The host must still explicitly select ANSI-89 or ANSI-92;
+missing mode remains LikeModeRequired. Both argument expressions evaluate before
+the NULL gate. Non-NULL raw matching still requires strict Unicode publication
+before the existing pattern/policy service. Broader raw matching, native locale
+providers and key semantics remain unfinished.
 
 Focused tests cover all six comparisons, state/eager failures, lists/ranges,
 group/filter/subquery consumers, empty sets, issued declarations, zero decoded
 payload budget and cancellation at every observed query checkpoint. The original
-[independent runner](testing/compare_raw_string_predicates.py) passes 5,808
+[independent runner](testing/compare_raw_string_predicates.py) passes 7,113
 source-free NULL/category/refusal controls. Retained-cell and native-policy recipes
 also pass; only TableCraft evaluates SQL. Native Windows Access qualification and
 benchmarks were not run.
