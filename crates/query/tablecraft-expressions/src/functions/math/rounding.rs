@@ -2,10 +2,7 @@ use super::MathFunction;
 use crate::{
     EvalError,
     functions::conversions::Conversion,
-    numeric::{
-        self, IntegerType,
-        decimal::{FloatConversion, from_value, into_value},
-    },
+    numeric::decimal::{FloatConversion, from_value, into_value},
 };
 use rust_decimal::{Decimal as LibraryDecimal, RoundingStrategy, prelude::ToPrimitive};
 use tablecraft_core::values::{Currency, Decimal, Double, Single, Value};
@@ -25,11 +22,7 @@ pub(super) fn apply_with_input<'a>(
     } else {
         None
     };
-    let converted_places = places
-        .filter(|value| matches!(value, Value::Text(_)))
-        .map(|value| convert(Conversion::Long, value))
-        .transpose()?;
-    let places = checked_places(converted_places.as_ref().or(places))?;
+    let places = checked_places(places, convert)?;
     let value = argument(0)?;
     let converted_value = if matches!(value, Value::Text(_)) {
         Some(convert(Conversion::Double, value)?)
@@ -39,12 +32,12 @@ pub(super) fn apply_with_input<'a>(
     rounded(converted_value.as_ref().unwrap_or(value), places)
 }
 
-fn checked_places(places: Option<&Value>) -> Result<u32, EvalError> {
+fn checked_places(
+    places: Option<&Value>,
+    convert: &mut impl FnMut(Conversion, &Value) -> Result<Value, EvalError>,
+) -> Result<u32, EvalError> {
     Ok(if let Some(places) = places {
-        if matches!(places, Value::Null) {
-            return Err(EvalError::InvalidNullConversion);
-        }
-        let Value::Int32(places) = numeric::coerce_integer(places, IntegerType::Int32)? else {
+        let Value::Int32(places) = convert(Conversion::Long, places)? else {
             return Err(EvalError::TypeMismatch);
         };
         if !(0..=i32::from(Decimal::MAX_SCALE)).contains(&places) {

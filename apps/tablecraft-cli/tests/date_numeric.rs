@@ -67,3 +67,34 @@ fn unary_date_math_preserves_results_and_buffers_date_overflow() {
         assert!(result.stdout.is_empty());
     }
 }
+
+#[test]
+fn round_date_digit_controls_use_raw_numeric_serials_in_both_query_paths() {
+    for mode in ["eval", "run"] {
+        let output = run(&[
+            "query",
+            mode,
+            "SELECT Round(2.25,CDate(1)),Round(2.25,CDate(1.5)),Round(2.25,CDate(-0.5)),Round(NULL,CDate(1))",
+        ]);
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let mut reader = csv::ReaderBuilder::new()
+            .delimiter(b'\t')
+            .from_reader(output.stdout.as_slice());
+        let row = reader.records().next().unwrap().unwrap();
+        assert_eq!(row.iter().collect::<Vec<_>>(), ["2.2", "2.25", "2", "NULL"]);
+
+        for expression in [
+            "Round(NULL,CDate(29))",
+            "Round(CVErr(1),CDate(29))",
+            "Round(1/0,CDate(1))",
+        ] {
+            let output = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            assert!(!output.status.success(), "{expression}");
+            assert!(output.stdout.is_empty(), "{expression}");
+        }
+    }
+}

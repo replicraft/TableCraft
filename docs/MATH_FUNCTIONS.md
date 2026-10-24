@@ -222,3 +222,28 @@ semantics remain unqualified. No VBA runtime or stored state carrier is introduc
 Math entry checks retain shared work/cancellation and dynamic Rnd repeatability
 rules. Operand evaluation stays eager; only already-evaluated data admission is
 requested at the relevant validation point. This is not lazy SQL execution.
+
+
+## Round Long digit controls
+
+Round's optional digit argument now uses the shared explicit Long converter for
+all admitted carriers, including legacy DATE. The stored OLE serial is rounded
+half-even before checking the existing 0–28 digit range. It does not extract a
+calendar component. For example, `Round(2.25,CDate(1))` returns 2.2 and
+`Round(2.25,CDate(1.5))` returns 2.25. DATE digit conversion requires no number or
+calendar format policy; Text digits retain the explicit NumberFormat requirement.
+
+Digits are still admitted before the value's NULL gate or Error admission;
+`Round(NULL,CDate(29))` and `Round(CVErr(1),CDate(29))` fail Domain. Written argument
+expressions remain eager, including division-by-zero failures. Decimal/Currency
+value carriers, raw binary floating rounding, resource controls and the refusal
+of DATE in Round's Variant value slot are unchanged. Extended dates remain
+unsupported in either slot.
+
+[Access's Round query examples](https://support.microsoft.com/en-us/access/functions/round-function)
+establish direct query availability. MS-VBAL revision 3.0 section 6.1.2.10.1.7
+declares the digit control As Long; the existing [DATE converter](DATE_NUMERIC.md)
+provides its raw-serial conversion. See the [reviewed specification record](VARIANT_ERRORS.md#explicit-numeric-empty-and-cdec-error-rules).
+Independent DATE/Decimal controls and query/CLI tests cover this engineering
+profile; native Access digit coercion, rounding and error-order qualification
+remain pending.

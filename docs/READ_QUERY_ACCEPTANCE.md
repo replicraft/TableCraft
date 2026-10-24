@@ -326,3 +326,10 @@ are covered through evaluator/query/CLI checks and independent Gregorian/Decimal
 controls. [Calendar names](CALENDAR_NAMES.md#numeric-text-controls) remain Partial;
 this closes a specific coercion gap without completing P0 Variant/NLS/native
 qualification or changing storage/write scope.
+
+
+Round's typed digit control now shares explicit Long conversion, including raw
+legacy DATE serials, before the existing 0–28 range and value admission. This
+removes a numeric-only control inconsistency while preserving DATE-value refusal,
+eager failures and NULL/Error ordering. [Round controls](MATH_FUNCTIONS.md#round-long-digit-controls)
+remain an explicit engineering profile awaiting native qualification.

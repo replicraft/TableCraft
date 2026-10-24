@@ -115,6 +115,27 @@ def main():
             execute(args.cli, mode, "SELECT 1," + expression, success=False)
             count += 1
 
+    for mode in ["eval", "run"]:
+        for lexical in ["-1", "-0.75", "-0.5", "-0.0", "0.5", "1", "1.5", "2.5", "28.5", "28.75", "29"]:
+            places = int(Decimal(lexical).to_integral_value(rounding=ROUND_HALF_EVEN))
+            for source in ["2.25", "CCur(2.25)", "CDec(2.25)", "NULL"]:
+                expression = f"Round({source},CDate({lexical}))"
+                if not 0 <= places <= 28:
+                    execute(args.cli, mode, "SELECT 1," + expression, success=False)
+                else:
+                    rows = execute(args.cli, mode, "SELECT " + expression)
+                    actual = rows[0][0]
+                    if source == "NULL":
+                        assert actual == "NULL", (expression, rows)
+                    else:
+                        with localcontext() as context:
+                            context.prec = 50
+                            expected_value = Decimal("2.25").quantize(
+                                Decimal(1).scaleb(-places), rounding=ROUND_HALF_EVEN
+                            )
+                        assert Decimal(actual) == expected_value, (expression, rows, expected_value)
+                count += 1
+
     if args.native_directory:
         number = (dt.datetime(2024, 1, 2, 12) - dt.datetime(1899, 12, 30)).total_seconds() / 86400
         expected_row = [number, 5, math.floor(number), 7, math.trunc(number), 7, 1, 2]
