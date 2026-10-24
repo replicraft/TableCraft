@@ -54,6 +54,7 @@ impl Runtime<'_, '_> {
                         budget: self.budget,
                         cancelled: self.options.cancelled,
                         discover: self.discovery.enabled,
+                        reference_year: self.options.reference_year,
                     },
                     kind,
                     expression,

@@ -44,7 +44,15 @@ impl Evaluator<'_> {
             E::Text(text) => self.text(text),
             E::Number(text) => number(text),
             E::GuidLiteral(text) => crate::guid::parse_literal(text).map(Value::Guid),
-            E::DateLiteral(text) => crate::datetime::parse_query_literal(text).map(Value::DateTime),
+            E::DateLiteral(text) => {
+                let value = match self.reference_year {
+                    Some(year) => {
+                        crate::datetime::parse_query_literal_with_reference_year(text, year)
+                    }
+                    None => crate::datetime::parse_query_literal(text),
+                }?;
+                Ok(Value::DateTime(value))
+            }
             E::Field(field) => {
                 let value = self.bindings.resolve(field)?;
                 self.binding_value(value)

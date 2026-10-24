@@ -1,5 +1,34 @@
 # Implementation status
 
+## Explicit SQL date-token reference years
+
+Omitted-year SQL tokens now accept caller-issued ReferenceYear context. The
+metadata-only prepare_with_options API captures checked legacy DATE constants
+in the owned plan, retaining written spelling for structural identity. Staged
+execution supplies its explicit year to each preparation; scalar eval uses the
+same parser. Runtime DateValue/CDate, domain text and Eval text retain their
+execution context. No ambient year, clock lookup, row scan, new dependency or
+write expansion is introduced. See [literal context](SQL_DATE_LITERALS.md#explicit-default-year-context).
+
+The date-token parser applies calendar validity before the documented
+month/day-versus-month/year priorities, including leap/non-leap and DATE envelope
+endpoints. Tests cover plan reuse with different runtime years, nested queries,
+metadata rejection on empty results, date-derived integral named-crosstab
+headings without scans, runtime domain/dynamic text and both CLI commands. Raw
+DATE heading names retain their existing runtime formatting/staging requirement;
+an initial test assumed otherwise and was corrected to exercise integral
+headings without broadening metadata formatting.
+
+The batch passes 652 all-feature expression tests plus one doctest, 345 minimal
+expression tests, 780 query tests plus one doctest and eight selected CLI tests.
+The 12-package dependency guard, expression/query/CLI all-target/all-feature
+Clippy, CLI build, formatting, Python syntax and diff checks pass. The independent
+runner passes 534 controls (502 scalar and 32 native sequential/indexed), retaining
+all four registered input hashes. Only TableCraft executes SQL; native Access
+literal interpretation/precision/error qualification remains unrun. Full native/
+backend/workspace suites and benchmarks were not repeated for this query slice.
+
+
 ## SQL token-year mapping and date-component priorities
 
 The pure SQL literal service now applies the reviewed MS-VBAL fixed 1930-2029

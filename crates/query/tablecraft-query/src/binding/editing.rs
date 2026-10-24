@@ -29,6 +29,7 @@ pub(crate) fn bind_update(query: &Query, source: &dyn Source) -> Result<BoundUpd
         source,
         materialized: &[],
         discover: false,
+        reference_year: None,
         pending_schema: None,
         parameters: Vec::new(),
         parameter_scope: Vec::new(),
@@ -61,7 +62,7 @@ pub(crate) fn bind_update(query: &Query, source: &dyn Source) -> Result<BoundUpd
 // but never permit a hidden scan, aggregate, parameter or output-slot dependency.
 fn pure(expression: &Expr) -> bool {
     match expression {
-        Expr::Literal(_) | Expr::Field { depth: 0, .. } => true,
+        Expr::Literal(_) | Expr::DateLiteral(..) | Expr::Field { depth: 0, .. } => true,
         Expr::Unary(_, value) | Expr::IsNull(value, _) => pure(value),
         Expr::Binary(_, left, right) => pure(left) && pure(right),
         Expr::Between(value, first, last, _) => pure(value) && pure(first) && pure(last),

@@ -58,7 +58,9 @@ pub struct ExecutionOptions<'a> {
     pub first_day_of_week: Option<tablecraft_expressions::functions::dates::FirstDayOfWeek>,
     /// Caller-issued first-week rule for explicit system week options.
     pub first_week_of_year: Option<tablecraft_expressions::functions::dates::FirstWeekOfYear>,
-    /// Actual/reference Gregorian year for omitted-year date text; no clock is read.
+    /// Reference Gregorian year for runtime omitted-year date text; no clock is read.
+    /// Staged execution also captures this as its SQL token preparation default.
+    /// Already prepared date constants cannot be changed by this execution setting.
     pub reference_year: Option<tablecraft_expressions::functions::dates::parsing::ReferenceYear>,
     /// Explicit CStr date/time output profile, independent of number-format and locale discovery.
     pub date_format: Option<tablecraft_expressions::functions::text::cstr::DateTextFormat>,

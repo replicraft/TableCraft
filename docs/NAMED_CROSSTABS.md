@@ -167,3 +167,12 @@ query result expectations. Jackcess never executes stored SQL. These controls do
 not qualify computed IN syntax, native expression promotion, optimizer behavior
 or error precedence in Microsoft Access; actual native Access comparisons remain
 pending.
+
+
+Explicit [date-token preparation context](SQL_DATE_LITERALS.md#explicit-default-year-context)
+can resolve omitted-year dates used by integral fixed IN headings, such as
+CLng(#Mar 7#), before establishing named output schemas. Raw DATE heading names
+still require runtime formatting and the existing execution staging.
+The resulting constants are stored in the plan; metadata binding still scans no
+rows and invokes no clock or formatting provider. Plain preparation has no implicit
+year. Runtime text-date conversions remain execution dependent.

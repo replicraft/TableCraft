@@ -1322,3 +1322,11 @@ All supplied expressions evaluate before progressive interval/count/week/source
 validation. DateDiff still converts both sources before NULL propagation; source
 precision, calendar algorithms, caller-issued policies and formal categories are
 unchanged. Error codes are never used numerically implicitly.
+
+
+SQL date constants resolve during preparation, including empty-result plans.
+`prepare_with_options` accepts an explicit `PreparationOptions.reference_year`
+for omitted-year tokens; plain `prepare` retains context-free admission. Staged
+execution uses its explicit reference year during preparation. Captured constants
+stay stable when a plan is reused with different runtime date-text settings. See
+[SQL date context](SQL_DATE_LITERALS.md#explicit-default-year-context).

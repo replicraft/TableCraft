@@ -28,7 +28,7 @@ mod plan;
 pub use output_types::OutputType;
 mod profile;
 pub mod source;
-pub use binding::{PreparedQuery, prepare};
+pub use binding::{PreparationOptions, PreparedQuery, prepare, prepare_with_options};
 pub use error::QueryError;
 pub use execution::{ExecutionOptions, ExpressionQueryResult, QueryLimits, QueryResult};
 pub use execution::{UpdateError, UpdatePlan, plan_update};

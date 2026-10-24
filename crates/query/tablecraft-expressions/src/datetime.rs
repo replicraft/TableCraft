@@ -1,5 +1,5 @@
 //! Separate SQL date literals and strict ISO host parameter syntax.
-use crate::EvalError;
+use crate::{EvalError, functions::dates::parsing::ReferenceYear};
 use jiff::civil::{Date, DateTime, Time};
 use tablecraft_core::values::LegacyDateTime;
 
@@ -48,7 +48,20 @@ pub fn parse_literal(text: &str) -> Result<LegacyDateTime, EvalError> {
 /// qualified times. Two-digit token years have a fixed 1930-2029 mapping;
 /// dates requiring an implementation-defined default year remain unsupported.
 pub fn parse_query_literal(text: &str) -> Result<LegacyDateTime, EvalError> {
-    parse_literal(text).or_else(|_| crate::functions::dates::parsing::parse_query_literal(text))
+    parse_literal(text)
+        .or_else(|_| crate::functions::dates::parsing::parse_query_literal(text, None))
+}
+
+/// Resolve an omitted-year SQL date token using a caller-issued full year.
+/// The caller chooses the lexical default; no clock or regional setting is read.
+/// Explicit years retain the fixed SQL token interpretation, independently of
+/// runtime DateSerial windows and date-text conversion policies.
+pub fn parse_query_literal_with_reference_year(
+    text: &str,
+    year: ReferenceYear,
+) -> Result<LegacyDateTime, EvalError> {
+    parse_literal(text)
+        .or_else(|_| crate::functions::dates::parsing::parse_query_literal(text, Some(year)))
 }
 
 #[cfg(test)]

@@ -59,7 +59,7 @@ impl Binder<'_> {
             Expr::Literal(Expression::Integer(_)) => OutputType::scalar(ScalarType::Int64, false),
             Expr::Literal(Expression::Text(_)) => OutputType::scalar(ScalarType::Text, false),
             Expr::Literal(Expression::Boolean(_)) => OutputType::scalar(ScalarType::Boolean, false),
-            Expr::Literal(Expression::DateLiteral(_)) => {
+            Expr::DateLiteral(..) | Expr::Literal(Expression::DateLiteral(_)) => {
                 OutputType::scalar(ScalarType::DateTime, false)
             }
             Expr::Literal(Expression::GuidLiteral(_)) => {

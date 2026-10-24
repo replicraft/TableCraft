@@ -26,7 +26,7 @@ impl Binder<'_> {
                     return Err(QueryError::Unsupported);
                 }
             }
-            Expr::Literal(_) | Expr::Clock(_) | Expr::CurrentUser => {}
+            Expr::Literal(_) | Expr::DateLiteral(..) | Expr::Clock(_) | Expr::CurrentUser => {}
             Expr::Unary(_, e)
             | Expr::IsNull(e, _)
             | Expr::Convert(_, e)
