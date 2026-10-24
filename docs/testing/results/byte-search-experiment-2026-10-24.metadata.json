@@ -1,0 +1,183 @@
+{
+  "architecture": "arm64",
+  "binary": "target/release/examples/byte_search",
+  "binary_sha256": "5a12c272f7f66be93269e799ef67223a5d92718499531cf3aae9d8492d70a309",
+  "cases": [
+    {
+      "bytes": 65536,
+      "first_offset": 0,
+      "haystack_sha256": "7a23d31b7dda5690f71429e4f0fe4259795ee9a815b35c2e9f0d69b0623ac216",
+      "iterations": 1000000,
+      "needle_bytes": 32,
+      "needle_sha256": "c206e0780db07d1bbb9db9d9ddfa7dc0b92e1dad34619a462a58cf08ba02c618",
+      "probes": {
+        "bounded": {
+          "checkpoints": 34,
+          "work": 34
+        },
+        "reference": {
+          "checkpoints": 1,
+          "work": 1
+        },
+        "scalar": {
+          "checkpoints": 34,
+          "work": 34
+        }
+      },
+      "scenario": "front"
+    },
+    {
+      "bytes": 65536,
+      "first_offset": null,
+      "haystack_sha256": "bf718b6f653bebc184e1479f1935b8da974d701b893afcf49e701f3e2f9f9c5a",
+      "iterations": 1000,
+      "needle_bytes": 1,
+      "needle_sha256": "3e23e8160039594a33894f6564e1b1348bbd7a0088d42c4acb73eeaed59c009d",
+      "probes": {
+        "bounded": {
+          "checkpoints": 19,
+          "work": 65554
+        },
+        "reference": {
+          "checkpoints": 1,
+          "work": 1
+        },
+        "scalar": {
+          "checkpoints": 131073,
+          "work": 131073
+        }
+      },
+      "scenario": "absent"
+    },
+    {
+      "bytes": 65536,
+      "first_offset": null,
+      "haystack_sha256": "bf718b6f653bebc184e1479f1935b8da974d701b893afcf49e701f3e2f9f9c5a",
+      "iterations": 100,
+      "needle_bytes": 32,
+      "needle_sha256": "c206e0780db07d1bbb9db9d9ddfa7dc0b92e1dad34619a462a58cf08ba02c618",
+      "probes": {
+        "bounded": {
+          "checkpoints": 51,
+          "work": 66609
+        },
+        "reference": {
+          "checkpoints": 1,
+          "work": 1
+        },
+        "scalar": {
+          "checkpoints": 2161666,
+          "work": 2161666
+        }
+      },
+      "scenario": "absent"
+    },
+    {
+      "bytes": 65536,
+      "first_offset": 65504,
+      "haystack_sha256": "daa52f7cd7cfb42355ad9e6ee312f197f96fbabf15ebf96317122156282be694",
+      "iterations": 100,
+      "needle_bytes": 32,
+      "needle_sha256": "c206e0780db07d1bbb9db9d9ddfa7dc0b92e1dad34619a462a58cf08ba02c618",
+      "probes": {
+        "bounded": {
+          "checkpoints": 51,
+          "work": 66609
+        },
+        "reference": {
+          "checkpoints": 1,
+          "work": 1
+        },
+        "scalar": {
+          "checkpoints": 2161666,
+          "work": 2161666
+        }
+      },
+      "scenario": "late"
+    },
+    {
+      "bytes": 65536,
+      "first_offset": 32752,
+      "haystack_sha256": "f4f36680c665292e47199d9fae7c1dfa33fc1044807a6523840b20c0ec73c48a",
+      "iterations": 1000,
+      "needle_bytes": 32,
+      "needle_sha256": "a75982a64fbc70ccee4920e6055205ae1aa21172681a22f2822495e54df298c5",
+      "probes": {
+        "bounded": {
+          "checkpoints": 12,
+          "work": 37155
+        },
+        "reference": {
+          "checkpoints": 1,
+          "work": 1
+        },
+        "scalar": {
+          "checkpoints": 65650,
+          "work": 65650
+        }
+      },
+      "scenario": "random"
+    },
+    {
+      "bytes": 65536,
+      "first_offset": 32766,
+      "haystack_sha256": "27d2c5c9abadc451111bd1456d9965f1b653c5190f522a96d4fed5bdf3075be4",
+      "iterations": 1000,
+      "needle_bytes": 3,
+      "needle_sha256": "5ae7e6a42304dc6e4176210b83c43024f99a0bce9a870c3b6d2c95fc8ebfb74c",
+      "probes": {
+        "bounded": {
+          "checkpoints": 12,
+          "work": 36894
+        },
+        "reference": {
+          "checkpoints": 1,
+          "work": 1
+        },
+        "scalar": {
+          "checkpoints": 70218,
+          "work": 70218
+        }
+      },
+      "scenario": "raw"
+    },
+    {
+      "bytes": 65536,
+      "first_offset": null,
+      "haystack_sha256": "bf718b6f653bebc184e1479f1935b8da974d701b893afcf49e701f3e2f9f9c5a",
+      "iterations": 100,
+      "needle_bytes": 33,
+      "needle_sha256": "5454fe1095a46824a3b0eea0b0315e80cbb64644253be306edde97fd2fcec653",
+      "probes": {
+        "bounded": {
+          "checkpoints": 2227137,
+          "work": 2227137
+        },
+        "reference": {
+          "checkpoints": 1,
+          "work": 1
+        },
+        "scalar": {
+          "checkpoints": 2227137,
+          "work": 2227137
+        }
+      },
+      "scenario": "absent"
+    }
+  ],
+  "hyperfine": "hyperfine 2.0.0",
+  "native_access": "unrun",
+  "policy": "benchmark-only; bounded units differ; whole reference is not production-safe",
+  "profile": "release, normal incremental settings, default features",
+  "python": "3.14.0",
+  "runs": 15,
+  "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)",
+  "source_sha256": {
+    "crates/query/tablecraft-expressions/examples/byte_search.rs": "cf1e7e1456072fb6e372bd4225dad5abc227e85e080089ed2115332cd2d6ba22",
+    "crates/query/tablecraft-expressions/examples/byte_search/algorithm.rs": "60af381c929cfd249afc4423766414eca87f1db23b113c6d9e882fe3b5823bd4",
+    "crates/query/tablecraft-expressions/examples/byte_search/tests.rs": "d8cd9558985f7393d2e698fefeee01a8ed4fc6482676aa212b0cc3cf98daf0c7",
+    "docs/testing/benchmark_byte_search.py": "ab849c30cf946436ecadcb0f166926d6b52105afc52ab01c6df5f1901029befb"
+  },
+  "system": "Darwin",
+  "warmup": 3
+}
