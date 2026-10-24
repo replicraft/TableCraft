@@ -367,6 +367,12 @@ cover large adjacent fixed values, differing scales and unchanged explicit/mixed
 floating conversion. This closes a numerical-loss defect, not native precision
 or Variant qualification. See [statistics](STATISTICAL_AGGREGATES.md).
 
+GROUP BY now completes runtime policy accumulation per key column before
+partitioning when an explicit resolver is used. Late field identities can merge
+or separate earlier neutral keys without re-evaluation or extra scans; filtered
+rows remain outside the grouping domain. The focused batch passes 133 tests.
+See [runtime policies](RUNTIME_TEXT_POLICIES.md).
+
 ### P0 implementation boundaries reviewed 24 October 2026
 
 | Boundary | Current implementation | Remaining work |

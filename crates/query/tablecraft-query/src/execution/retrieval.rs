@@ -12,10 +12,6 @@ pub(super) struct OutputRow {
     pub(super) keys: Vec<CellValue>,
     pub(super) records: Vec<CellValue>,
 }
-pub(super) struct Group {
-    pub(super) keys: Vec<CellValue>,
-    pub(super) rows: Vec<Vec<CellValue>>,
-}
 impl Runtime<'_, '_> {
     pub(super) fn read(
         &mut self,
@@ -277,66 +273,6 @@ impl Runtime<'_, '_> {
             keys,
             records,
         }))
-    }
-    pub(super) fn groups(
-        &mut self,
-        rows: Vec<Vec<CellValue>>,
-        select: &SelectPlan,
-        outer: &[OuterScope<'_>],
-    ) -> Result<Vec<Group>, QueryError> {
-        if select.group.is_empty() {
-            let mut groups = Vec::new();
-            self.push(
-                &mut groups,
-                Group {
-                    keys: Vec::new(),
-                    rows,
-                },
-            )?;
-            return Ok(groups);
-        }
-        let policies = self.expression_policies(&select.group)?;
-        let mut groups: Vec<Group> = Vec::new();
-        for row in rows {
-            let mut keys = self.allocate_expression_row(select.group.len())?;
-            for expr in &select.group {
-                keys.push(self.repeatable_comparison_key(
-                    expr,
-                    Environment {
-                        collections: None,
-                        row: &row,
-                        outer,
-                        output: &[],
-                        group: None,
-                        group_keys: None,
-                    },
-                )?);
-            }
-            let mut index = None;
-            for (i, group) in groups.iter().enumerate() {
-                if self.same_expression_row(&keys, &group.keys, &policies)? {
-                    index = Some(i);
-                    break;
-                }
-            }
-            if let Some(i) = index {
-                for (retained, incoming) in groups[i].keys.iter_mut().zip(&keys) {
-                    retained.policy = retained.policy.merge(incoming.policy);
-                }
-                self.push(&mut groups[i].rows, row)?;
-            } else {
-                let mut members = Vec::new();
-                self.push(&mut members, row)?;
-                self.push(
-                    &mut groups,
-                    Group {
-                        keys,
-                        rows: members,
-                    },
-                )?;
-            }
-        }
-        Ok(groups)
     }
     fn unique(
         &mut self,

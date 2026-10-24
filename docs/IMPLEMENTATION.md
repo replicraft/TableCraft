@@ -1,5 +1,21 @@
 # Implementation status
 
+## GROUP BY policy completion before partitioning
+
+With an explicit field resolver, grouping now evaluates keys once, retains bounded
+keyed rows and merges each complete key column's runtime policies before deciding
+membership. Late contributors can therefore merge or separate earlier neutral
+keys correctly, including across tuple partitions. Filtered-out rows do not
+contribute. Global-only grouping retains incremental storage. The feature now
+owns its implementation in `execution/grouping.rs`; see
+[runtime policies](RUNTIME_TEXT_POLICIES.md).
+
+The focused grouping/crosstab/named batch passes 133 tests, with eight targeted
+regressions and strict Clippy also passing. Metadata-only binding, no rescans,
+explicit overrides, eager failures, cumulative header allocations, cancellation
+and named output provenance remain intact. Native mixed-policy precedence remains
+unqualified; this fixes the existing explicit provider model.
+
 ## Fixed-point statistical spread
 
 Var/VarP/StDev/StDevP now translate all-fixed numeric groups exactly before
