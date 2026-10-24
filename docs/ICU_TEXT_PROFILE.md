@@ -44,9 +44,25 @@ search index or a universally linear algorithm.
 
 Text mode accepts decoded Unicode. Unpaired/odd raw Strings fail strict publication
 before this provider; no replacement characters or binary retry appear. Binary
-string modes retain their existing raw-unit behavior. Database compare, SQL
-predicates, field-policy resolution, LIKE and database search delegate to the
-selected base provider unchanged. Supplying only --text-locale does not activate
+string modes retain their existing raw-unit behavior.
+
+The locked ICU4X 2.3.1 `CollatorBorrowed::compare_utf16` API cannot substitute for
+the existing raw-unit contract: its decoder replaces isolated surrogate units.
+The published [UTF-16 API contract](https://docs.rs/icu_collator/2.1.1/icu_collator/struct.CollatorBorrowed.html#method.compare_utf16)
+and the locked package's `src/comparison.rs` UTF-16 method documentation describe
+that behavior. A scratch consumer against the actual 2.3.1 dependency confirmed
+that `[D800]`, `[D801]`, `[DC00]` and `[FFFD]` compare equal at the selected strength.
+An independent direct `ucol_strcoll` probe using ICU4C 74.1, with the existing
+runner's explicit attributes, instead distinguished `[D800] < [D801]`,
+`[DC00] < [DC01]`, `[D800] < [DC00]` and `[D800] < [FFFD]` in all four locales.
+These are concrete disagreements, not native Access qualification. Replacing
+invalid units would also invent substring matches and consumed spans; odd bytes
+cannot form complete UTF-16 units at all. Raw comparison/search admission therefore
+remains unchanged. Valid raw UTF-16 continues through strict Unicode publication;
+there is no new profile, replacement fallback or system ICU product dependency.
+
+Database compare, SQL predicates, field-policy resolution, LIKE and database
+search delegate to the selected base provider unchanged. Supplying only --text-locale does not activate
 ordinary SQL comparison, LIKE or an omitted Option Compare policy. Explicit
 --collation can be composed with the text provider; it retains its separate policy.
 
