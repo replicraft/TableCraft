@@ -1,5 +1,29 @@
 # Implementation status
 
+## Conservative Short Text equality candidates
+
+ACE now exposes TextIndexSelection::EqualityCandidates through existing explicit
+Text readers, projections and requests. It retains a conservative initial primary
+weight prefix under the current full-string General model, with physical
+index-direction handling and inclusive subtree hulls. A digest-owned bound keeps
+the prefix before physical truncation. Only qualified Short Text is admitted;
+Memo/unknown/wrong profiles refuse. NULL is excluded and false positives require
+the original full comparison. This is an engine/library operation and engineering
+example; ordinary query hints are unchanged. See
+[candidate contracts](NATIVE_TEXT.md#conservative-short-text-equality-candidates).
+
+38 focused engine tests pass, including generated hull/string controls and 253,952
+scalar-BMP/family/direction cases. Scoped engine Clippy and the minimal engine
+check pass; the clap-based example builds. Formatting, Python compilation,
+strict engine rustdoc and the dependency guard also pass. The independent runner passes 824
+controls across eight unchanged original four-family Text databases, using inert
+Jackcess getters and encoders. Candidate order/sets, inclusion of reference-equal
+rows, projection, actual disjoint-subtree pruning, corrupt-root refusals and
+buffered output limits pass. Full workspace checks, benchmarks and Windows Access
+comparisons were not run. Comparer/source agreement for non-NULL query integration,
+wider text predicates and remaining backend/write acceptance stay open.
+
+
 ## NULL-only Text and Binary index predicates
 
 Query constraint extraction now admits wholly safe direct Text/Binary IS NULL

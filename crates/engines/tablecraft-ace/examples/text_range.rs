@@ -24,6 +24,7 @@ enum Mode {
     All,
     Null,
     Range,
+    EqualityCandidates,
 }
 #[derive(Parser)]
 struct Arguments {
@@ -39,6 +40,9 @@ struct Arguments {
     start: Option<String>,
     #[arg(long)]
     end: Option<String>,
+    /// Literal for conservative Short Text equality candidates; apply a residual comparison.
+    #[arg(long, required_if_eq("mode", "equality-candidates"))]
+    value: Option<String>,
     #[arg(long, requires = "start")]
     exclude_start: bool,
     #[arg(long, requires = "end")]
@@ -82,9 +86,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     if !matches!(args.mode, Mode::Range) && (start.is_some() || end.is_some()) {
         return Err("bounds require range mode".into());
     }
+    if !matches!(args.mode, Mode::EqualityCandidates) && args.value.is_some() {
+        return Err("value requires equality-candidates mode".into());
+    }
     let selection = match args.mode {
         Mode::All => TextIndexSelection::All,
         Mode::Null => TextIndexSelection::Null,
+        Mode::EqualityCandidates => TextIndexSelection::EqualityCandidates(
+            args.value
+                .as_deref()
+                .ok_or("candidate mode requires value")?,
+        ),
         Mode::Range => TextIndexSelection::Range {
             start: bound(start, args.exclude_start),
             end: bound(end, args.exclude_end),

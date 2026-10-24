@@ -116,6 +116,13 @@ cover both General versions and all four families. Non-NULL Text/Binary bounds,
 cost-based optimization, wider seeks, TOP pushdown and native optimizer
 qualification remain open; this does not complete read/query acceptance.
 
+The engine now offers explicit [Short Text equality candidates](NATIVE_TEXT.md#conservative-short-text-equality-candidates)
+under the current General model. They conservatively retain primary-prefix
+matches and require full residual equality; 824 independent controls protect
+candidate sets, ordering, completeness of reference matches and pruning failures.
+Non-NULL query integration still requires an explicit comparer/source agreement.
+This is not native SQL qualification or completion of text predicate pushdown.
+
 [Min/Max and domain extrema](EXPRESSION_AGGREGATES.md#retained-string-extrema)
 now retain selected String data through raw-aware consumers, with strict actual
 comparison, scalar publication, NULL/type/Error rules and cumulative budgets.

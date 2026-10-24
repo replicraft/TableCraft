@@ -4,6 +4,7 @@ use crate::format::layout::INDEX_KEY_BYTES as MAX_KEY_BYTES;
 use crate::{InspectError, header::check};
 
 const DIGEST_BYTES: usize = size_of::<u16>();
+pub(in crate::table::indexes) const RETAINED_PREFIX_BYTES: usize = MAX_KEY_BYTES - DIGEST_BYTES;
 const POLYNOMIAL: u16 = 0x8005;
 const HIGH_BIT: u16 = 1 << (u16::BITS - 1);
 const BYTE_SHIFT: u32 = u8::BITS;
@@ -15,7 +16,7 @@ pub(in crate::table::indexes) fn truncate(
     if bytes.len() <= MAX_KEY_BYTES {
         return Ok(());
     }
-    let kept = MAX_KEY_BYTES - DIGEST_BYTES;
+    let kept = RETAINED_PREFIX_BYTES;
     let mut register = 0_u16;
     // Advance the polynomial register before feeding each discarded byte.
     // The final byte enters its low lane without another advance. Serialization

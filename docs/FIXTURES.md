@@ -6715,3 +6715,42 @@ python3 docs/testing/compare_null_indexes.py \
 The 216 controls pass. `--generate` is reserved for a fresh candidate directory;
 its values do not replace the registry automatically. Windows Access comparisons,
 SQL string/binary bounds and native optimizer qualification remain unrun.
+
+## Short Text equality candidate evidence
+
+The original MIT [TextEqualityCandidateOracle.java](testing/TextEqualityCandidateOracle.java)
+uses the reviewed Jackcess 5.0.4 encoder/getter implementation independently of
+TableCraft. It opens inputs read-only, disables expression evaluation, retains
+index-cursor order and emits candidate identities plus complete trimmed Short
+Text key equalities. It runs no SQL, native Access, macros or application code.
+The current conservative primary prefix is explicitly 32 bytes; full matches
+must still be evaluated separately. No third-party source or fixture was copied.
+
+The runner reuses all eight unchanged Text inputs from the
+[NULL index registry](#null-only-index-predicate-inputs), under
+`.cache/tablecraft-fixtures/null-indexes-20261024`. It verifies those exact original
+hashes before and after reads. No new database generation or binary tracking is
+introduced; mutation controls operate only on disposable copies. The reviewed
+JAR remains unchanged, SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+
+Oracle SHA-256: `006bf10ff2c3ebd599624da972da59749228e9e4f335200383d0fbcc064f2693`.
+[Runner](testing/compare_text_equality_candidates.py) SHA-256:
+`88dc515a4c5155d87ea5b9e3a51434c547a9619003ab26d2a5c7372a49a12003`.
+
+```sh
+cargo build -p tablecraft-ace --example text_range --locked --offline
+python3 docs/testing/compare_text_equality_candidates.py \
+  --ranges target/debug/examples/text_range \
+  --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
+  --directory .cache/tablecraft-fixtures/null-indexes-20261024
+```
+
+824 controls pass across Jet 4 / ACE 2007/2016/2019, both General versions and
+index directions. They compare exact candidate rows/order, inclusion of reference-
+equal rows and projected IDs for fifteen literals. Wrong profiles, missing/
+oversized bounds and conflicting mode arguments refuse. Corrupt disjoint children
+are skipped, full traversal rejects them, corrupt chosen roots fail and small
+output caps publish nothing. Native Access SQL, performance and automatic non-NULL
+query selection remain unqualified/unimplemented as described in
+[the owning contract](NATIVE_TEXT.md#conservative-short-text-equality-candidates).

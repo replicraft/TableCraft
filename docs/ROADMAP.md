@@ -497,6 +497,10 @@ contract retains the primary references, algorithms, provenance and exact limits
    Windows comparisons are deferred at the user's direction; continue
    implementation using reviewed references and independent checks, retaining
    native qualification as a separate pending gate.
+   Explicit engine [Short Text equality candidates](NATIVE_TEXT.md#conservative-short-text-equality-candidates)
+   now provide conservative primary-prefix pruning under the General model.
+   They retain possible false positives and require complete residual equality;
+   comparer/source agreement for non-NULL query integration remains unfinished.
    Single Short Binary index reads/checks now work;
    typed Binary ranges also work for explicit library hosts. Compound Binary
    reads now share the owned tuple reader and whole-entry digest checks. Automatic
