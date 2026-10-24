@@ -243,27 +243,53 @@ fn dynamic_sources_keep_possible_null_without_losing_fixed_successful_carriers()
     let source = source();
     for (expression, expected) in [
         (
-            "Year(IIf(True,CDate(1),CVErr(1)))",
+            "Year(IIf(D Is Not Null,CDate(1),CVErr(1)))",
             scalar(ScalarType::Int16, true),
         ),
         (
-            "DateDiff('d',IIf(True,CDate(1),CVErr(1)),CDate(1))",
+            "DateDiff('d',IIf(D Is Not Null,CDate(1),CVErr(1)),CDate(1))",
             scalar(ScalarType::Int32, true),
         ),
         (
-            "DateValue(IIf(True,CDate(1),CVErr(1)))",
+            "DateValue(IIf(D Is Not Null,CDate(1),CVErr(1)))",
             scalar(ScalarType::DateTime, true),
         ),
         (
-            "CDate(IIf(True,CDate(1),CVErr(1)))",
+            "CDate(IIf(D Is Not Null,CDate(1),CVErr(1)))",
             scalar(ScalarType::DateTime, false),
         ),
     ] {
-        let query = syntax(&format!("SELECT {expression}"));
+        let query = syntax(&format!("SELECT {expression} FROM T"));
         let plan = prepare(&query, &source).unwrap();
         assert_eq!(plan.output_types().unwrap(), [expected], "{expression}");
         let result = plan.execute(&source, &[], Default::default()).unwrap();
         assert_eq!(result.output_types(), [expected]);
         assert_ne!(result.rows()[0][0], Value::Null);
+    }
+}
+
+#[test]
+fn literal_selected_dates_keep_nonnull_metadata_without_skipping_other_branches() {
+    let source = source();
+    for (function, kind) in [
+        ("Year", ScalarType::Int16),
+        ("DateValue", ScalarType::DateTime),
+        ("CDate", ScalarType::DateTime),
+    ] {
+        let query = syntax(&format!("SELECT {function}(IIf(True,CDate(1),CVErr(1)))"));
+        let plan = prepare(&query, &source).unwrap();
+        let expected = scalar(kind, false);
+        assert_eq!(plan.output_types().unwrap(), [expected]);
+        assert_eq!(source.scans.get(), 0);
+        let result = plan.execute(&source, &[], Default::default()).unwrap();
+        assert_eq!(result.output_types(), [expected]);
+        assert_ne!(result.rows()[0][0], Value::Null);
+
+        let query = syntax(&format!("SELECT {function}(IIf(True,CDate(1),1/0))"));
+        let plan = prepare(&query, &source).unwrap();
+        assert_eq!(
+            plan.execute(&source, &[], Default::default()).err(),
+            Some(QueryError::Evaluation(EvalError::DivisionByZero))
+        );
     }
 }
