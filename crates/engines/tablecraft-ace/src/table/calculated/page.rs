@@ -46,7 +46,7 @@ impl StoredTablePage {
 /// Read a bounded page with ordinary scalars and explicitly cached calculations.
 /// All declarations are qualified before reading rows, including empty pages.
 /// Only the existing ACE 16-family stored Boolean/Int32/Double/Currency/DateTime/
-/// Short Text wrappers with matching ResultType and nonempty Expression qualify.
+/// Decimal/Short Text wrappers with matching ResultType and nonempty Expression qualify.
 /// Complex/unknown columns fail; no expression, provider or active content runs.
 /// Skipped/later payloads are unchecked. Use a stable/offline source. Budgets,
 /// cancellation and atomic failure follow the ordinary scalar paging contract.

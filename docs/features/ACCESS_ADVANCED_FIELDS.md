@@ -191,7 +191,7 @@ skipped/unvisited payloads remain outside partial-read validation.
 
 
 `read_stored_calculation`/`StoredCalculation` now extend the explicit path to
-Boolean, Double, Currency, legacy DateTime and Short Text alongside Int32. The
+Boolean, Double, Currency, legacy DateTime, Decimal and Short Text alongside Int32. The
 strict Int32 API remains available. Generic values retain exact core carriers;
 ordinary scalar query snapshots still reject calculated fields. CLI
 `--stored-calculation` uses this profile, labels the stored carrier and buffers
@@ -216,8 +216,10 @@ read-only text probe checks both encodings against the reviewed decoder, and
 synthetic CI retains the valid escaped form and arbitrary Unicode after an
 ordinary uncompressed prefix.
 Unknown types, flags, capacities, wrappers, encodings and lengths fail without a
-partial result. Long Text/Decimal/extended-date calculations and error caches
-remain unqualified.
+partial result. Long Text/extended-date calculations and error caches remain unqualified.
+[Cached Decimal calculations](../CACHED_DECIMAL_CALCULATIONS.md) now admit the
+observed Numeric wrapper separately, with self-described effective scale and
+strict geometry independent of ordinary Decimal declarations.
 
 The original [mixed scalar recipe](../testing/CalculatedScalarFixture.java)
 explicitly disables evaluation and creates six stored projections plus empty

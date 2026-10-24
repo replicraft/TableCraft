@@ -1,3 +1,4 @@
+mod decimal;
 mod declaration;
 mod encoding;
 mod page;

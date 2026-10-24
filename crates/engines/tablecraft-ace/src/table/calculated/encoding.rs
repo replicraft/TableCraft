@@ -1,4 +1,5 @@
 use super::super::schema::NativeColumn;
+use super::decimal;
 use super::wrapper::{self, WRAPPER_BYTES};
 use crate::{
     InspectError, ReadProfile,
@@ -50,6 +51,7 @@ pub(in crate::table) fn kind(column: &NativeColumn) -> Option<ScalarType> {
         data_type::DOUBLE => ScalarType::Double,
         data_type::CURRENCY => ScalarType::Currency,
         data_type::DATE_TIME => ScalarType::DateTime,
+        data_type::NUMERIC if column.decimal_parameters() == Some((0, 0)) => ScalarType::Decimal,
         _ => return None,
     })
 }
@@ -88,6 +90,7 @@ pub(in crate::table) fn decode(
         return Ok(Value::Null);
     }
     Ok(match kind {
+        ScalarType::Decimal => Value::Decimal(decimal::decode(bytes)?),
         ScalarType::Int32 => Value::Int32(i32::from_le_bytes(
             bytes.try_into().map_err(|_| InspectError::Malformed)?,
         )),

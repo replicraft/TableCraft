@@ -105,6 +105,11 @@ peers, raw slices and declaration-sensitive widening. See [logical evidence](INT
 This closes an operand/admission gap, not complete Variant promotion or native
 Access qualification.
 
+Explicit [cached calculated Decimal reads](CACHED_DECIMAL_CALCULATIONS.md) now
+retain the observed wrapped coefficient/scale through stored inspection and
+cached row browsing. Eighty-two independent controls pass; ordinary calculated
+query execution, freshness and native recalculation remain separate gaps.
+
 ## Remaining acceptance work
 
 Explicit [decoded attachment allowances](LARGER_DECODED_ATTACHMENTS.md) now admit
