@@ -15,6 +15,12 @@ late orphan refusal, unsupported flags, budgets and cancellation. Strict scoped
 Clippy and workspace formatting pass. See
 [stored-history contracts](STORED_HISTORY_QUERIES.md#stored-record-contract).
 
+The [independent compressed-Memo replay](testing/COMPRESSED_MEMO_HISTORIES.md)
+passes 198 controls across fresh ACE 2007/2016/2019 files, comparing declarations,
+current values and stored-history queries under ordinal and database policies.
+All 26 pinned hashes match. Native Access SQL, history freshness/mutation and
+compressed child/template variants remain unqualified.
+
 ## Retained String numeric renderer consistency
 
 The public retained-value evaluator now publishes valid String ranges through

@@ -7148,3 +7148,57 @@ Read-only replay leaves both fresh original inputs unchanged:
 
 These 12 regression checks are separate from the 204-control text-call corpus.
 They provide independent engineering evidence, not native Access qualification.
+
+## Original compressed Memo history inputs
+
+The [CompressedHistoryFixture.java](testing/CompressedHistoryFixture.java) producer
+and [CompressedHistoryOracle.java](testing/CompressedHistoryOracle.java) are original
+MIT repository code. The producer creates fresh files through the reviewed
+Jackcess 5.0.4 public builder/history APIs, with expression evaluation disabled.
+The read-only oracle combines public Column getters with pinned reference
+VersionHistoryColumnInfoImpl metadata getters. Existing original current-value
+and flat-history oracles retain actual association names, stored values/order
+and DATE bits. No third-party code or fixture is copied; no database expressions
+or application content execute.
+
+Original files generated on 24 October 2026 remain ignored under
+`.cache/tablecraft-fixtures/compressed-history-20261024/`:
+
+| File | Bytes | SHA-256 |
+| --- | ---: | --- |
+| V2007.accdb | 524,288 | `e3366c49ba66a0f199c098beac14d1071923b1e8b49729df9207bab643e7d341` |
+| V2016.accdb | 557,056 | `50f0b711ebcdc4f45e404083aa46cb5ea97bd6cc4b3f1b5097301aee51cbf39a` |
+| V2019.accdb | 626,688 | `69e7f8771c0aeb0fbb632243008b1390360b3d3ad70d0efa68d9ae627274168c` |
+
+Each file contains two separate five-parent tables, each with six stored versions.
+Visible append-only Memos independently persist Unicode compression; history
+value children retain their existing uncompressed declaration. Current values
+include larger Unicode, control characters, empty/NULL Text and content distinct
+from historical versions. Duplicates, nullable child fields and empty histories
+remain separate. This does not qualify compressed child/template declarations.
+
+Producer SHA-256 is
+`41fe7126f78183cb97efe4cab89aeac9e2e30c5db52c3fe6e5a9a532b979ab4b`;
+compression oracle SHA-256 is
+`1b7b6a51936eb50c59cc89d770c99de5929aa453facdc7dace5bb6488c6d946a`;
+runner SHA-256 is
+`3fb5e1089f4e9a4a55f42e32bb852993e868b9d645a1a864da0ab05c82b383de`.
+The reviewed JAR remains
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`,
+with its existing Apache-2.0 provenance/notice review.
+
+The [feature record](testing/COMPRESSED_MEMO_HISTORIES.md) and
+[accepted report](testing/results/compressed-history-2026-10-24.json) retain 198
+passing controls across metadata, ordinal queries and stored-database comparison
+queries. All 26 hashes remain unchanged after replay. The reused query runner
+uses an explicit larger cumulative native byte allowance; defaults do not change.
+Generated databases, compiled classes, reference JAR and immutable CLI stay ignored.
+
+Earlier `compressed-history-probe-V2016-20261024.accdb` and
+`compressed-history-probe-V2019-20261024.accdb` are excluded capability inputs.
+They established visible compressed Memo readability and the prior history-name
+binding failure. A first metadata-parser attempt overwrote native column rows
+with text-sort rows of the same name and failed before producing a report; it is
+excluded from accepted counts. Original bytes remain preserved. Native Access
+SQL, live-file coherence, history mutation and broader compressed child variants
+remain unqualified.

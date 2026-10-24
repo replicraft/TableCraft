@@ -84,6 +84,14 @@ continue to apply.
 
 ## Verification
 
+The [compressed current-Memo replay](testing/COMPRESSED_MEMO_HISTORIES.md)
+adds 198 independent controls across original ACE 2007/2016/2019 files: six
+metadata comparisons and 96 stored-query controls under each of ordinal and
+database policies. All 26 pinned hashes remain unchanged. Current/child values,
+association names, NULL/empty histories, grouping, member criteria and refusals
+are compared without native Access execution. The expanded engine/adapter
+batch passes 19 tests, including calculated/unknown flag and late-orphan controls.
+
 `tablecraft-access/tests/version_history_source.rs` covers metadata-only binding,
 all three qualified profile codes, current/history separation, paired member
 alignment, stored order, NULL/empty members, DATE bits, collection presence,
