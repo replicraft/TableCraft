@@ -86,3 +86,45 @@ proptest! {
         prop_assert_eq!(MathFunction::Abs.apply(&[input]), Ok(Value::Double(Double::from_float(quarters.abs() as f64 / 4.0))));
     }
 }
+
+#[test]
+fn round_digit_controls_convert_raw_date_serials_before_range_and_value_admission() {
+    let input = Value::Double(Double::from_float(2.25));
+    for (serial, expected) in [
+        (-0.5, 2.0),
+        (-0.0, 2.0),
+        (0.5, 2.0),
+        (1.0, 2.2),
+        (1.5, 2.25),
+        (2.5, 2.25),
+        (28.5, 2.25),
+    ] {
+        assert_eq!(
+            MathFunction::Round.apply(&[input.clone(), date(serial)]),
+            Ok(Value::Double(Double::from_float(expected))),
+            "serial {serial}"
+        );
+        assert_eq!(
+            MathFunction::Round.apply(&[Value::Null, date(serial)]),
+            Ok(Value::Null)
+        );
+    }
+
+    for serial in [-1.0, -0.75, 28.75, 29.0, 2958465.75] {
+        assert_eq!(
+            MathFunction::Round.apply(&[Value::Null, date(serial)]),
+            Err(EvalError::Domain),
+            "serial {serial}"
+        );
+    }
+    let extended =
+        Value::DateTimeExtended(ExtendedDateTime::new(2026, 10, 23, 0, 0, 0, 0).unwrap());
+    assert_eq!(
+        MathFunction::Round.apply(&[Value::Null, extended]),
+        Err(EvalError::TypeMismatch)
+    );
+    assert_eq!(
+        MathFunction::Round.apply(&[date(2.5), date(1.0)]),
+        Err(EvalError::TypeMismatch)
+    );
+}

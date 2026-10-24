@@ -1,5 +1,26 @@
 # Implementation status
 
+## Round legacy DATE digit conversion
+
+Round's optional digit control now uses the shared checked Long converter for
+all admitted values instead of bypassing legacy DATE through a numeric-only
+kernel. Raw serials round half-even before the existing 0–28 range and value
+admission. Text still requires NumberFormat; source NULL/Error ordering, eager
+arguments and Decimal/Currency/floating result profiles remain unchanged. DATE
+in the value slot and Extended dates remain refused. See
+[Round controls](MATH_FUNCTIONS.md#round-long-digit-controls).
+
+A kernel test covers fractional/negative/signed-zero and range controls, source
+NULL and unsupported dates. Query and CLI tests cover correlated/derived calls,
+retained Currency, eager errors, buffered failures and a bad later row under TOP.
+All 23 focused math tests pass in both feature profiles, thirteen focused query
+tests and five CLI tests pass. All-feature expression all-target and focused query
+Clippy, formatting and diff checks pass. The independent DATE runner passes
+1,456 source-free controls, including 88 new DATE digit cases modeled with Python
+Decimal. Native corpus, Microsoft Access, full workspace and benchmarks were not
+run for this change. No dependencies, stored values or write scope changed;
+native coercion/rounding/error equivalence remains unqualified.
+
 ## Calendar-name numeric Text controls
 
 MonthName and WeekdayName now admit ordinal, abbreviation and first-day Text

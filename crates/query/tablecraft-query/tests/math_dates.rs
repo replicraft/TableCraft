@@ -1,4 +1,4 @@
-use tablecraft_core::values::{Double, LegacyDateTime, Value};
+use tablecraft_core::values::{Currency, Double, LegacyDateTime, Value};
 use tablecraft_expressions::EvalError;
 use tablecraft_query::{OutputType, QueryError, prepare, source::MemorySource};
 use tablecraft_schema::ScalarType;
@@ -66,4 +66,34 @@ fn date_math_output_metadata_is_available_without_evaluating_overflowing_values(
             vec![Value::Double(Double::from_float(3.0))]
         ]
     );
+}
+
+#[test]
+fn round_date_digit_controls_compose_without_changing_source_type_or_eagerness() {
+    let sql = "SELECT Round(CCur(2.25),Q.D),Round(NULL,Q.D),(SELECT Round(2.25,Q.D)) FROM (SELECT CDate(1) AS D) AS Q";
+    assert_eq!(
+        run(sql).unwrap(),
+        [vec![
+            Value::Currency(Currency::from_scaled(22_000)),
+            Value::Null,
+            Value::Double(Double::from_float(2.2)),
+        ]]
+    );
+
+    for (sql, expected) in [
+        ("SELECT Round(NULL,CDate(29))", EvalError::Domain),
+        ("SELECT Round(CVErr(1),CDate(29))", EvalError::Domain),
+        ("SELECT Round(CVErr(1),CDate(1))", EvalError::TypeMismatch),
+        ("SELECT Round(1/0,CDate(29))", EvalError::DivisionByZero),
+        (
+            "SELECT TOP 1 Round(2.25,D) FROM (SELECT CDate(1) AS D UNION ALL SELECT CDate(29) AS D) AS Q",
+            EvalError::Domain,
+        ),
+    ] {
+        assert_eq!(
+            run(sql).err(),
+            Some(QueryError::Evaluation(expected)),
+            "{sql}"
+        );
+    }
 }
