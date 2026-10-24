@@ -85,7 +85,7 @@ def main():
                 assert result["checksum"] == (100 * expected_checksum) % 2 ** 64
                 allocations = 0 if mode == "arrayvec" or mode == "smallvec" and width <= 2 else 100 * len(indexes)
                 assert result["container_heap_allocations"] == allocations
-                assert result["container_heap_bytes"] == allocations * 160
+                assert result["container_heap_bytes"] == allocations * 10 * description["index_column_bytes"]
                 controls += 3
         assert digest(path) == before
         inputs[path.name] = before
