@@ -177,10 +177,16 @@ fn float_round_matches_documented_midpoints_and_preserves_large_or_already_preci
 }
 #[test]
 fn place_count_validation_is_bounded_and_independent_of_null_value() {
-    for count in [-1, 29, i32::MAX] {
+    for count in [-1, i32::MIN] {
         assert_eq!(
             MathFunction::Round.apply(&[Value::Null, Value::Int32(count)]),
             Err(EvalError::Domain)
+        );
+    }
+    for count in [29, 308, 309, 323, 324, i32::MAX] {
+        assert_eq!(
+            MathFunction::Round.apply(&[Value::Null, Value::Int32(count)]),
+            Ok(Value::Null)
         );
     }
     assert_eq!(

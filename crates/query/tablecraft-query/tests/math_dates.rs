@@ -81,12 +81,12 @@ fn round_date_digit_controls_compose_without_changing_source_type_or_eagerness()
     );
 
     for (sql, expected) in [
-        ("SELECT Round(NULL,CDate(29))", EvalError::Domain),
-        ("SELECT Round(CVErr(1),CDate(29))", EvalError::Domain),
+        ("SELECT Round(NULL,CDate(-1))", EvalError::Domain),
+        ("SELECT Round(CVErr(1),CDate(-1))", EvalError::Domain),
         ("SELECT Round(CVErr(1),CDate(1))", EvalError::TypeMismatch),
-        ("SELECT Round(1/0,CDate(29))", EvalError::DivisionByZero),
+        ("SELECT Round(1/0,CDate(-1))", EvalError::DivisionByZero),
         (
-            "SELECT TOP 1 Round(2.25,D) FROM (SELECT CDate(1) AS D UNION ALL SELECT CDate(29) AS D) AS Q",
+            "SELECT TOP 1 Round(2.25,D) FROM (SELECT CDate(1) AS D UNION ALL SELECT CDate(-1) AS D) AS Q",
             EvalError::Domain,
         ),
     ] {

@@ -76,7 +76,7 @@ fn null_math_union_arms_do_not_impose_a_numeric_conversion_on_other_arms() {
 fn null_metadata_keeps_round_controls_eager_failures_and_special_math_contracts() {
     let runtime = MemorySource::default();
     for (expression, expected) in [
-        ("Round(NULL,29)", EvalError::Domain),
+        ("Round(NULL,-1)", EvalError::Domain),
         ("Round(NULL,1/0)", EvalError::DivisionByZero),
         ("Round(NULL,CVErr(1))", EvalError::TypeMismatch),
         ("IIf(True,Abs(NULL),1/0)", EvalError::DivisionByZero),

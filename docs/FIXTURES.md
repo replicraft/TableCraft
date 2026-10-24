@@ -1,5 +1,16 @@
 # Candidate Access fixtures
 
+## Independent Round precision controls
+
+The original [precision recipe](testing/compare_round_precision.py) uses Python's
+exact `Decimal.from_float` input and half-even quantization to check 960 CLI
+Double results and subtype codes. Cases include signed zero, subnormals, seeded
+finite bit patterns and digit counts 29 through maximum Long. No database or
+third-party fixture is involved. The existing source-free math Text and DATE
+control recipes now use negative counts for invalid-count cases, preserving their
+ordered admission checks after removal of the former 28-place ceiling. Native
+Microsoft Access and native fixture replays were not run for this batch.
+
 ## Registered VALUE parameter inventory
 
 The original [parameter getter](testing/SavedParameterOracle.java) disables

@@ -154,3 +154,6 @@ mod tests;
 
 #[cfg(test)]
 mod date_tests;
+
+#[cfg(test)]
+mod precision_tests;

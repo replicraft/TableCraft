@@ -74,6 +74,13 @@ source families and native result-type qualification remain separate. See
 
 ## Remaining acceptance work
 
+Round's digit count now follows the nonnegative Long profile independently of
+Decimal storage scale. [Bounded high precision](MATH_FUNCTIONS.md#round-precision-beyond-decimal-storage-scale)
+covers tiny IEEE values and extreme counts without an overflowing scale factor or
+count-sized allocation. Independent exact-binary/Decimal controls close this
+artificial admission limit; native precision/subtype/error qualification and wider
+P0 coercion remain unfinished.
+
 RGB now follows the formal Integer channel contract before upper saturation,
 closing the earlier Long-envelope admission. Checked fractional/numeric Text
 conversion, eager operands and progressive channel validation remain explicit;

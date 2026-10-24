@@ -98,6 +98,9 @@ fn round_digit_controls_convert_raw_date_serials_before_range_and_value_admissio
         (1.5, 2.25),
         (2.5, 2.25),
         (28.5, 2.25),
+        (28.75, 2.25),
+        (29.0, 2.25),
+        (2958465.75, 2.25),
     ] {
         assert_eq!(
             MathFunction::Round.apply(&[input.clone(), date(serial)]),
@@ -110,7 +113,7 @@ fn round_digit_controls_convert_raw_date_serials_before_range_and_value_admissio
         );
     }
 
-    for serial in [-1.0, -0.75, 28.75, 29.0, 2958465.75] {
+    for serial in [-1.0, -0.75] {
         assert_eq!(
             MathFunction::Round.apply(&[Value::Null, date(serial)]),
             Err(EvalError::Domain),

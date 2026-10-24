@@ -34,7 +34,7 @@ fn math_data_admission_retains_count_and_channel_validation_precedence() {
     for (sql, error) in [
         ("SELECT Abs(CVErr(1))", EvalError::TypeMismatch),
         ("SELECT Sqr(CVErr(1))", EvalError::TypeMismatch),
-        ("SELECT Round(CVErr(1),29)", EvalError::Domain),
+        ("SELECT Round(CVErr(1),-1)", EvalError::Domain),
         (
             "SELECT Round(CVErr(1),NULL)",
             EvalError::InvalidNullConversion,

@@ -75,8 +75,8 @@ def main():
                 check(expression, expected, tag, mode, number_format)
                 check(expression, None, None, mode, error="number-format")
         for expression, error in [
-            ("Round('bad','29')", "domain"),
-            ("Round(NULL,'29')", "domain"),
+            ("Round('bad','-1')", "domain"),
+            ("Round(NULL,'-1')", "domain"),
             ("RGB(-1,'bad',0)", "domain"),
             ("QBColor('16')", "domain"),
             ("RGB('2147483648',0,0)", "overflow"),
@@ -89,7 +89,7 @@ def main():
         for expression, error in [
             ("RGB(CVErr(1),1/0,0)", "division by zero"),
             ("Round(CVErr(1),1/0)", "division by zero"),
-            ("Round(CVErr(1),29)", "domain"),
+            ("Round(CVErr(1),-1)", "domain"),
             ("Round(CVErr(1),NULL)", "NULL"),
             ("Round(NULL,CVErr(1))", "type mismatch"),
             ("RGB(-1,CVErr(1),0)", "domain"),
@@ -115,7 +115,7 @@ def main():
             for expression, error in [
                 ("Abs(CVErr(ID))", "type mismatch"),
                 ("RGB(CVErr(ID),1/(ID-1),0)", "division by zero"),
-                ("Round(CVErr(ID),29)", "domain"),
+                ("Round(CVErr(ID),-1)", "domain"),
             ]:
                 check(expression, None, None, database=database, error=error)
             assert hashlib.sha256(database.read_bytes()).hexdigest() == digest
