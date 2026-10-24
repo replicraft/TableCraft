@@ -311,7 +311,9 @@ fn attachment_metadata_aligns_and_reuses_one_complete_snapshot_without_payload_d
             [vec![Value::Int32(1)], vec![Value::Int32(2)]]
         );
         assert_eq!(reads.get(), count);
-        assert!(execute(&source, "SELECT Score.FileData FROM Items").is_err());
+        forbid.set(false);
+        assert!(execute(&source, "SELECT Score.FileData FROM Items").is_ok());
+        forbid.set(true);
         assert_eq!(
             execute(&source, "SELECT Count(*) FROM Items").unwrap(),
             [vec![Value::Int64(3)]]
@@ -352,7 +354,7 @@ fn attachment_opt_in_index_and_corrupt_child_boundaries_are_explicit() {
     })
     .unwrap()
     .with_collections();
-    assert_eq!(source.collection_members("Items").unwrap().len(), 5);
+    assert_eq!(source.collection_members("Items").unwrap().len(), 6);
     assert_eq!(
         execute(&source, "SELECT Score.FileName FROM Items").err(),
         Some(QueryError::Source)

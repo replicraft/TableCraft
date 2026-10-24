@@ -1,5 +1,29 @@
 # Candidate Access fixtures
 
+## Stored FileData query inputs
+
+Fresh original AttachmentFixture.java inputs use the existing reviewed Jackcess
+5.0.4 JAR. The unchanged original generator has SHA-256
+`97d8012bef975401e153cc214cd2d05edcd5c1f34db5425c45c5abfe76a59201`.
+The new original MIT [physical oracle](testing/AttachmentStoredDataOracle.java),
+SHA-256 `26bb1bf45b6eea445bc1c90faf3149b85e38bbfcab7be39d800bdeec70242d2e`,
+checks the actual OLE declaration and raw flat byte arrays independently against
+the encoded getter. No third-party implementation, database or active content
+is copied. Original databases remain ignored under stored-file-data-20261024.
+
+| Original input | Bytes | SHA-256 |
+| --- | ---: | --- |
+| V2007.accdb | 376,832 | `9d573241dab5feb6b488799ff5964babbb79be33bb77e419a9984d6fbe2a231f` |
+| V2016.accdb | 409,600 | `d8a365d911e8f707f41f31b90fa7830b9e442e70c71c43289f13f455e16ff292` |
+| V2019.accdb | 483,328 | `b2c14c78cbe8d79f545214ddb1f038bfa28ad4952d00372ba092bcb9af5f6505` |
+
+The [query replay report](testing/results/stored-attachment-queries-2026-10-24.json)
+retains source/oracle/JAR/input hashes and the immutable CLI SHA-256. It passes
+198 controls under each comparison policy, 396 total, including exact stored
+bytes, decoded bytes, member alignment, counts and opaque checksum mutations.
+Only disposable copies are mutated; original hashes remain unchanged. These
+physical-reader/query controls do not establish Windows SQL/DAO byte equivalence.
+
 ## Native index collection experiment recipes
 
 Original MIT [IndexColumnsFixture.java](testing/IndexColumnsFixture.java), SHA-256

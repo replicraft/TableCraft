@@ -1,6 +1,9 @@
 use super::{record, schema::Columns};
 use crate::{AttachmentDecoder, ComplexColumnLinks, DecodedAttachment, InspectError};
-use tablecraft_core::{limits::ResourceBudget, values::LegacyDateTime};
+use tablecraft_core::{
+    limits::ResourceBudget,
+    values::{LegacyDateTime, Value},
+};
 
 /// Complete checked native attachment collections with encoded file data.
 pub struct AttachmentColumn {
@@ -19,14 +22,21 @@ impl AttachmentColumn {
         &self.links
     }
 
+    /// Borrow an exact stored member, including FileData's encoded Binary envelope.
+    /// No attachment decoder runs. NULL, empty bytes and unknown wrappers remain
+    /// distinct; unknown names and absent parent/child ordinals return None.
+    pub fn stored_value(&self, parent: usize, child: usize, member: &str) -> Option<&Value> {
+        let position = super::schema::FIELDS
+            .iter()
+            .position(|(name, _)| name.eq_ignore_ascii_case(member))?;
+        self.links
+            .child_row(parent, child)?
+            .get(self.columns.positions[position])
+    }
+
     /// Borrow a qualified scalar metadata member at a checked child ordinal.
     /// FileData and unknown names return None; stored NULL remains Some(Null).
-    pub fn metadata_value(
-        &self,
-        parent: usize,
-        child: usize,
-        member: &str,
-    ) -> Option<&tablecraft_core::values::Value> {
+    pub fn metadata_value(&self, parent: usize, child: usize, member: &str) -> Option<&Value> {
         let position = super::schema::FIELDS
             .iter()
             .position(|(name, _)| name.eq_ignore_ascii_case(member))?;

@@ -113,7 +113,9 @@ plus 3 MiB compressed and 1.5 MB stored files. Pure decoder controls cover the
 refusals remain explicit. [Larger decoded Memo allowances](LARGER_MEMOS.md)
 now permit up to 16 MiB independently of encoded storage and query/output pools;
 76 four-family getter/byte/query controls cover 3 MiB ASCII and 1.8 MB Unicode
-payloads. Native FileData query representation remains unfinished.
+payloads. [Stored FileData queries](STORED_ATTACHMENT_DATA.md) now expose exact
+encoded Binary under `--collections`, separately from explicit decoded files.
+Native SQL/DAO byte equivalence remains unqualified.
 
 Explicit [stored-history query members](STORED_HISTORY_QUERIES.md) now expose
 actual hidden-field names through `--collections`, retaining current Memo,
@@ -287,7 +289,7 @@ semantics. See [metadata contracts](NATIVE_TABLES.md#attachment-metadata-project
 | P0 | Value semantics | Declared-expression/Variant result promotion, complete coercion and Error operator/aggregate behavior; independently modeled boundaries and later native comparisons |
 | P0 | Native text | Complete mixed-policy precedence, additional locale providers and explicit LCID search implementations; consistent predicates, sets, groups, sort and LIKE behavior |
 | P1 | Query composition | Remaining admitted saved/named definitions, heading names and wider native syntax; qualify whether proposed inline TRANSFORM forms are actually accepted by Access before adding grammar |
-| P1 | Advanced fields | Native FileData query representation, wider history/collection semantics and calculated-field evaluation/freshness beyond the explicit row-local preview |
+| P1 | Advanced fields | Native FileData SQL/DAO byte qualification, wider history/collection semantics and calculated-field evaluation/freshness beyond the explicit row-local preview |
 | P1 | Storage and scale | Wider column-type/row histories, broader collection sizes and file locality, predictable limits and unchanged originals |
 | Qualification | Native Access | Build/locale-qualified values, ordering, errors, saved queries and representative application outcomes on Windows |
 

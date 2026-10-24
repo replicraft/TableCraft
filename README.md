@@ -22,7 +22,9 @@ Explicit [larger Memo reads](docs/LARGER_MEMOS.md) can separately raise decoded
 native Text with `--native-text-bytes` and query Text with `--text-bytes`, up to
 16 MiB each; encoded storage and output retain independent controls.
 
-Explicit decoded attachment queries can also set `--attachment-bytes BYTES`
+Attachment queries with `--collections` expose exact stored `FileData` Binary
+envelopes; [stored and decoded representations](docs/STORED_ATTACHMENT_DATA.md)
+remain distinct. Explicit decoded attachment queries can also set `--attachment-bytes BYTES`
 with `--collections --decoded-attachments`. The default stays 1 MiB; the explicit
 file allowance can reach 16 MiB. `--native-value-bytes` separately raises encoded
 Memo/OLE/attachment reads from 2 MiB to at most 32 MiB under cumulative budgets

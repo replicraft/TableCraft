@@ -181,7 +181,7 @@ fn multivalue_declarations_and_snapshots_keep_flat_unknown_orders_without_templa
     );
 }
 #[test]
-fn attachment_declarations_preserve_member_orders_and_keep_encoded_file_data_absent() {
+fn attachment_declarations_preserve_member_orders_and_declare_stored_file_data() {
     for code in [2, 5, 6] {
         let (mut bytes, orders) = attachment_orders();
         bytes[20] = code;
@@ -193,7 +193,7 @@ fn attachment_declarations_preserve_member_orders_and_keep_encoded_file_data_abs
             &|| false,
         )
         .unwrap();
-        assert_eq!(rich.len(), 5);
+        assert_eq!(rich.len(), 6);
         for (index, member) in rich.iter().enumerate() {
             assert_eq!(member.member().collection().as_str(), "Score");
             assert_eq!(
@@ -262,7 +262,7 @@ fn declaration_discovery_never_reads_parent_or_child_records() {
                 )
                 .unwrap()
                 .len(),
-                5
+                6
             );
         } else {
             assert_eq!(

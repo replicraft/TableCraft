@@ -5,8 +5,8 @@ use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
 use tablecraft_schema::{CollectionMember, Column};
 
-/// Inspect qualified stored attachment metadata without loading parent/child rows.
-/// FileData is deliberately absent: encoded storage is not a qualified SQL value.
+/// Inspect qualified stored attachment members without loading parent/child rows.
+/// FileData is declared as stored Binary; its wrapper is not decoded or interpreted.
 /// Unsupported templates remain absent; corrupt resolved mappings fail.
 pub fn inspect_attachment_members<R: crate::NativeReadSource>(
     source: &mut R,
@@ -20,7 +20,7 @@ pub fn inspect_attachment_members<R: crate::NativeReadSource>(
 
 /// Inspect qualified attachment members with exact flat text-order metadata.
 /// Unsupported templates remain absent; corrupt resolved mappings fail.
-/// FileData stays absent. No parent/child records, payloads, paths, lookup content
+/// FileData retains its flat Binary declaration. No parent/child records, payloads, paths, lookup content
 /// or active objects are read/executed; unknown descriptors remain explicit.
 pub fn inspect_attachment_declarations<R: crate::NativeReadSource>(
     source: &mut R,
@@ -69,9 +69,6 @@ fn inspect_declarations<R: crate::NativeReadSource, T>(
         };
         for (index, (name, _)) in schema::FIELDS.iter().enumerate() {
             check(budget, cancelled)?;
-            if index == schema::DATA {
-                continue;
-            }
             let flat = &column.flat_table().columns()[positions.positions[index]];
             let kind = flat.scalar_type().ok_or(InspectError::Unsupported)?;
             budget.charge_allocation(1, size_of::<T>() as u64)?;

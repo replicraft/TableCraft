@@ -547,8 +547,11 @@ Explicit native `query run --collections` now binds stored `FileURL`, `FileName`
 views. One attachment contributes its matching fields together; no cross-product
 is taken within that child record. Metadata binding reads no user records;
 execution uses complete bounded attachment snapshots and retains encoded payloads.
-Native FileData/history SQL interpretation, implicit extraction/decoding and
-native Access semantic qualification remain pending. See the
+`FileData` also exposes exact stored Binary under this opt-in, preserving the
+encoded envelope. [Stored attachment data](../STORED_ATTACHMENT_DATA.md) documents
+the physical declaration/getter evidence and explicit decoded alternative. Native
+SQL/DAO byte equivalence, implicit extraction/decoding and native Access semantic
+qualification remain pending. See the
 [query contract](../NATIVE_QUERIES.md#attachment-metadata-member-queries).
 
 ## Explicit stored-history SQL views

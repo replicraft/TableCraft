@@ -1,7 +1,7 @@
 use crate::NativeSortOrder;
 use tablecraft_schema::CollectionMember;
 
-/// Qualified stored attachment member metadata. FileData stays absent/opaque.
+/// Qualified stored attachment member metadata. FileData stays encoded/opaque.
 /// Text order belongs to the actual flat member; template/database settings do
 /// not substitute for unknown descriptors and no comparison policy activates.
 pub struct AttachmentMemberDeclaration {

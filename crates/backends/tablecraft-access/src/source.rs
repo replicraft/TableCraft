@@ -149,7 +149,7 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
     }
     /// Opt into stored multivalues, attachment metadata and stored-history members.
     /// Binding reads metadata only. Child snapshots remain complete and bounded;
-    /// This option alone keeps payloads encoded; FileData needs a separate opt-in.
+    /// FileData retains exact stored Binary envelopes; no decoder runs by default.
     /// Histories use actual hidden field/member names and retain stored order;
     /// this explicit TableCraft view does not establish native SQL equivalence.
     pub fn with_collections(mut self) -> Self {
@@ -161,14 +161,6 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
     /// Enables collection metadata; does not claim native SQL binary representation.
     /// Only referencing FileData decodes complete bounded payload collections.
     pub fn with_decoded_attachments(mut self) -> Self {
-        if !self.decoded_attachments {
-            // Existing metadata-only member inventories do not expose FileData.
-            // Rebuild them when decoding is first enabled, without budget refunds.
-            for entry in &mut self.entries {
-                entry.collections.take();
-            }
-        }
-
         self.multivalues = true;
         self.collections = true;
         self.decoded_attachments = true;
