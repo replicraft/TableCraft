@@ -28,8 +28,8 @@ a conversion request or permission to guess a type from a successful row.
 | Integer, decimal/exponent, hexadecimal/octal, Text, Boolean, legacy DATE and GUID literals | Their current materialized carrier; non-NULL |
 | Nine numeric/Boolean conversion calls | Their explicit target carrier; successful conversions are non-NULL |
 | Stable text functions | Text, Int16, Int32 or Double according to the current evaluator; conservative NULL allowance |
-| Abs/Int/Fix/Round | Supported numeric input carrier, Boolean becomes Int16; input value constraints removed |
-| Sgn, transcendental math, RGB/QBColor and Rnd | Int16, Double, Int32 and Single respectively; no provider is activated during binding |
+| Abs/Int/Fix/Round | Supported numeric input carrier, Boolean becomes Int16; input value constraints removed. NULL-only value inputs remain NULL-only. |
+| Sgn, transcendental math, RGB/QBColor and Rnd | Int16, Double, Int32 and Single respectively; Sgn/transcendental NULL-only inputs remain NULL-only. No provider is activated during binding. |
 | Date components/DatePart/Weekday and DateDiff | Int16 and Int32 respectively; nullable |
 | Date constructors/conversions | Nullable legacy DateTime |
 | DateAdd | Existing Extended source retains Extended; supported numeric/Boolean/Text and legacy sources produce legacy DateTime. Source nullability is retained; a NULL-only source stays NULL-only; unsupported/Dynamic sources stay Dynamic. No conversion runs during binding. |
@@ -254,3 +254,25 @@ named/Text binding, removed constraints, unsupported families, buffered failures
 and UNION widening. [MS-VBAL logical operators](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/2d70780d-6e99-47d6-9759-2b3a46b8e862)
 guide the existing explicit operator contract; these tests establish TableCraft
 metadata consistency, not native Access SQL conformance.
+
+## NULL-only math inputs
+
+The twelve existing unary math functions Abs, Int, Fix, Round, Sgn, Sqr, Exp,
+Log, Sin, Cos, Tan and Atn now retain NULL-only metadata when their value operand
+is itself known to return only NULL. This follows their existing successful-value
+behavior without evaluating operands, controls, records or providers in binding.
+Derived projections, scalar subqueries, selectors and aggregates retain that
+information. Rnd, RGB and QBColor keep their separate non-NULL result contracts;
+a NULL argument does not turn those functions into successful NULL results.
+
+This affects the existing materialized UNION conversion profile. For example,
+`SELECT Sqr(NULL) AS N UNION ALL SELECT CByte(2)` retains NULL and Byte values,
+with a nullable Byte descriptor; the NULL-only arm no longer imposes Double on
+the other arm. Both arm orders use the same rule. This is metadata about the
+implemented evaluator, not qualification of native Access declared UNION types.
+
+NULL-only output metadata never replaces execution. Round still evaluates its
+supplied digit operand, converts it to Long and checks its supported range before
+returning NULL. Eager failures, nested subquery failures, cancellation and shared
+budgets remain in force. An invalid later UNION arm still prevents buffered
+publication, even when an earlier arm succeeded.

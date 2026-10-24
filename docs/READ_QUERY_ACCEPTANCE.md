@@ -373,3 +373,9 @@ cursor controls retain complete output; persistent seek interruption closes
 continuation under the original work allowance. [Seek failure evidence](NATIVE_READ_FAILURES.md#interrupted-seeks-and-length-observations)
 strengthens storage reliability without qualifying shared-file coherence or new
 write behavior.
+
+NULL-only unary math now retains its existing successful-value metadata through
+composition and UNION without imposing a numeric conversion on other arms.
+Round control validation and eager failures remain active. This closes another
+[result metadata gap](QUERY_RESULT_TYPES.md#null-only-math-inputs); native declared
+UNION types and full P0 value/text semantics remain unfinished.
