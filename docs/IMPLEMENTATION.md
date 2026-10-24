@@ -1,5 +1,25 @@
 # Implementation status
 
+## NULL-only text result inference
+
+Text-call metadata now retains known NULL-only source/count inputs for 23 existing
+functions. Search argument positions follow normalized two-argument and explicit
+start forms. Byte producers retain NULL-only results without turning raw string
+bytes into stored Binary. Named/derived/scalar-subquery composition needs no
+records or provider callbacks. Text and math inference now occupy separate feature
+modules. See [current inference contracts](QUERY_RESULT_TYPES.md#null-only-text-inputs).
+
+Four new query tests cover forty call shapes, omitted controls, named/derived
+composition, both UNION arm orders, retained Byte carriers, NULL-refusing functions,
+invalid controls and eager failures. Prepared nullable parameters stay nullable,
+rebind after NULL and retain their original metadata. Two CLI tests verify visible
+VarType carriers and empty stdout after late failures. All 36 focused query tests
+and twelve CLI tests pass. Focused query/CLI Clippy, minimal query check, formatting
+and diff checks pass. No runtime function, dependency, native decoder or writer
+scope changed. Native corpora, Windows Access, full engine/workspace suites and
+benchmarks were not run. Native declared UNION/DAO types and full P0 value/text
+semantics remain unfinished.
+
 ## Unknown binary arithmetic with agreeing outcomes
 
 The explicit declared-arithmetic profile now permits unknown operand provenance

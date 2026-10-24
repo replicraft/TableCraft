@@ -27,7 +27,7 @@ a conversion request or permission to guess a type from a successful row.
 | SQL NULL literal | Null-only metadata |
 | Integer, decimal/exponent, hexadecimal/octal, Text, Boolean, legacy DATE and GUID literals | Their current materialized carrier; non-NULL |
 | Nine numeric/Boolean conversion calls | Their explicit target carrier; successful conversions are non-NULL |
-| Stable text functions | Text, Int16, Int32 or Double according to the current evaluator; conservative NULL allowance |
+| Stable text functions | Text, Int16, Int32 or Double according to the current evaluator; conservative NULL allowance. Qualified NULL-propagating source arguments retain NULL-only results as described below. |
 | Abs/Int/Fix/Round | Supported numeric input carrier, Boolean becomes Int16; input value constraints removed. NULL-only value inputs remain NULL-only. |
 | Sgn, transcendental math, RGB/QBColor and Rnd | Int16, Double, Int32 and Single respectively; Sgn/transcendental NULL-only inputs remain NULL-only. No provider is activated during binding. |
 | Date components/DatePart/Weekday and DateDiff | Int16 and Int32 respectively; nullable |
@@ -276,3 +276,36 @@ supplied digit operand, converts it to Long and checks its supported range befor
 returning NULL. Eager failures, nested subquery failures, cancellation and shared
 budgets remain in force. An invalid later UNION arm still prevents buffered
 publication, even when an earlier arm succeeded.
+
+## NULL-only text inputs
+
+Text result inference now follows the existing NULL propagation of 23 functions.
+It examines only their designated source/count arguments in the normalized owned
+call; it does not evaluate arguments, scan records, format values or invoke a
+collation/language provider during preparation.
+
+| Functions | Argument positions that establish a NULL-only successful result |
+| --- | --- |
+| Len/LenB, LCase/UCase, LTrim/RTrim/Trim, Left/Right/Mid, LeftB/RightB/MidB, StrConv, Space, Hex/Oct/Str | First argument |
+| String, StrComp, InStrRev | Either of the first two arguments |
+| Two-argument InStr/InStrB | Either string argument |
+| InStr/InStrB with an explicit/defaulted start slot | Second or third argument; the start and compare controls do not supply result nullness |
+
+An argument must itself have NULL-only metadata. A nullable Text parameter or
+field does not qualify, even when an earlier execution supplied NULL. Optional
+written slots use the same normalization as binding. Named/derived projections,
+scalar subqueries and nested NULL-propagating calls retain the result without
+execution-stage schema discovery or provider activation.
+
+Within the existing materialized UNION profile, a NULL-only text-function arm
+no longer forces Text/Long conversion on the other arm. For example,
+`SELECT Len(NULL) AS N UNION ALL SELECT CByte(2)` retains NULL and Byte, with a
+nullable Byte descriptor. This describes current evaluator guarantees; native
+DAO declared field codes and Access UNION typing remain unqualified.
+
+Metadata never skips runtime controls or written expressions. Invalid byte-slice
+positions, invalid compare/conversion settings and eager division errors still
+fail, including after an earlier successful UNION row. CStr, Val, StrReverse and
+character-code functions keep their own NULL-refusal contracts; the inference
+rule does not turn those failures into successful NULL results. Text and math
+metadata now have separate feature modules under the query binder.
