@@ -1,0 +1,138 @@
+{
+  "date": "2026-10-24",
+  "scope": "Replay compressed current-Memo/history composition against independent getters.\n\nThis covers a visible-Memo admission defect, not compressed child templates,\nnative Access SQL, history freshness, mutation or concurrent files.\n",
+  "controls": 198,
+  "hashes_unchanged": true,
+  "inputs": {
+    "crates/backends/tablecraft-access/src/source/collections/load.rs": "e64d090fd3673600ef652241eed6d1563c5a92a3938fa99d827c1978e3a78a60",
+    "crates/backends/tablecraft-access/src/source/collections.rs": "503dc56a0fd2b4d5529603c5d046ce372744b4864621eeb7403bc5fe1a599aec",
+    "crates/engines/tablecraft-ace/src/table/complex/history/discovery.rs": "94874ff22c2835f3660afc786ae4ccdf41afbe2d3e0282f810f693944755cd68",
+    "crates/engines/tablecraft-ace/src/table/complex/history/read.rs": "8243e73df2d084f1ce3dc2df0063d5e3c68919a282afddd6fd361dca918a38bc",
+    "crates/engines/tablecraft-ace/src/table/complex/history/schema.rs": "a1601b4d7846a16218dc72a4f16341972986eff0f138a3577218f3ad67861c30",
+    "docs/testing/CompressedHistoryFixture.java": "41fe7126f78183cb97efe4cab89aeac9e2e30c5db52c3fe6e5a9a532b979ab4b",
+    "docs/testing/CompressedHistoryOracle.java": "1b7b6a51936eb50c59cc89d770c99de5929aa453facdc7dace5bb6488c6d946a",
+    "docs/testing/VersionHistoryOracle.java": "179c7724564feeea1b033ae97813f8bcb438c5887f772d4be27cd284c23971f0",
+    "docs/testing/VersionHistoryQueryOracle.java": "abef84e2aeb4c1f7da3c8aa7abdd802a0a51f41aa99da0666edac5cc64851cb6",
+    "docs/testing/cli_tsv.py": "3b849270cc2cde83ecd62089d949ec0388e2ce8755c67801e1c2b16cbb209f6f",
+    "docs/testing/collection_cli.py": "fdf2de93100b972189a7b284d4d74260200bb4abb4e67cdc230c212337b52074",
+    "docs/testing/compare_attachment_columns.py": "9b59dd6dd11a248827240209caff04c844ddffa596c713261ae342bf05079085",
+    "docs/testing/compare_browsing.py": "4f1ced3ad3970150683ec720a31ec85f8400fa73b4a7b5e2343a33abbf58d67e",
+    "docs/testing/compare_cached_pages.py": "883d563b1e1c47df3ae94e751404d6ec263de71be02208565e450559c2668253",
+    "docs/testing/compare_calculated_decimals.py": "57d849a3a3251e0b1827c95bb74a7387fa353ab935affdfd812ed84e1224c7fd",
+    "docs/testing/compare_complex_links.py": "86af3bb7ac5eafd4e973bdc9230018b07e244410b12bf5fa2677b03566ca41f9",
+    "docs/testing/compare_composite_constraints.py": "7fdccb1e75629a9108feb903b5bc10f72159d73cd77e320e90eca62ac41c6a08",
+    "docs/testing/compare_compressed_histories.py": "3fb5e1089f4e9a4a55f42e32bb852993e868b9d645a1a864da0ab05c82b383de",
+    "docs/testing/compare_version_history.py": "12cd88cd1cfa050cf7f48071904cbe1bb886495a4118ae880cb0560298c0515f",
+    "docs/testing/compare_version_history_queries.py": "aa3476693f035e26c91afce252aed4dfa7377908c76ea62e3901e7cbd385580f",
+    "docs/testing/float_model.py": "27f205bd4122cd860bf2acac1bb6918b0ea06ab2e5d7241328b2ad63f7820802",
+    ".cache/tablecraft-bin/compressed-history-20261024": "73a3a3b2a39c109fcf2e6778e32eaf998fbaad1bb4fe1e36dcfa26b0549cca81",
+    ".cache/tablecraft-fixtures/compressed-history-20261024/V2007.accdb": "e3366c49ba66a0f199c098beac14d1071923b1e8b49729df9207bab643e7d341",
+    ".cache/tablecraft-fixtures/compressed-history-20261024/V2016.accdb": "50f0b711ebcdc4f45e404083aa46cb5ea97bd6cc4b3f1b5097301aee51cbf39a",
+    ".cache/tablecraft-fixtures/compressed-history-20261024/V2019.accdb": "69e7f8771c0aeb0fbb632243008b1390360b3d3ad70d0efa68d9ae627274168c",
+    ".cache/tablecraft-fixtures/jackcess-5.0.4.jar": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+  },
+  "metadata": [
+    {
+      "profile": "V2007",
+      "table": "Histories",
+      "memo": "Notes",
+      "hidden": "VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880",
+      "value_member": "Notes",
+      "modified_member": "Modified_F9B5E312-4155-4c59-9AAE-391C1B295827",
+      "flat_table": "f_FD7973F14C794820998953E114870EB5_VersionHistory_F5F8918F-0A3F-",
+      "oracle_sha256": "11093d1530797148deb5838457311429198ae00ca8457378eb74e1f7b65f2458"
+    },
+    {
+      "profile": "V2007",
+      "table": "OtherHistories",
+      "memo": "Details",
+      "hidden": "VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880",
+      "value_member": "Details",
+      "modified_member": "Modified_F9B5E312-4155-4c59-9AAE-391C1B295827",
+      "flat_table": "f_0ACB150DC3A940D69EFC4CDEF9F0F3EC_VersionHistory_F5F8918F-0A3F-",
+      "oracle_sha256": "11093d1530797148deb5838457311429198ae00ca8457378eb74e1f7b65f2458"
+    },
+    {
+      "profile": "V2016",
+      "table": "Histories",
+      "memo": "Notes",
+      "hidden": "VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880",
+      "value_member": "Notes",
+      "modified_member": "Modified_F9B5E312-4155-4c59-9AAE-391C1B295827",
+      "flat_table": "f_8DBCA735EC66457F97CF74FDD65C8991_VersionHistory_F5F8918F-0A3F-",
+      "oracle_sha256": "5645b7fcf361e9da2724192157f2ad58ab46f79c8acc4b9a2d1ed80e8a20b513"
+    },
+    {
+      "profile": "V2016",
+      "table": "OtherHistories",
+      "memo": "Details",
+      "hidden": "VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880",
+      "value_member": "Details",
+      "modified_member": "Modified_F9B5E312-4155-4c59-9AAE-391C1B295827",
+      "flat_table": "f_67920FC421784B4EB8BE6AA0EDB06BC5_VersionHistory_F5F8918F-0A3F-",
+      "oracle_sha256": "5645b7fcf361e9da2724192157f2ad58ab46f79c8acc4b9a2d1ed80e8a20b513"
+    },
+    {
+      "profile": "V2019",
+      "table": "Histories",
+      "memo": "Notes",
+      "hidden": "VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880",
+      "value_member": "Notes",
+      "modified_member": "Modified_F9B5E312-4155-4c59-9AAE-391C1B295827",
+      "flat_table": "f_5DDBD1AA5EBE4FBCA61E680AD9C924F8_VersionHistory_F5F8918F-0A3F-",
+      "oracle_sha256": "2eb388f8a85fb7565621cffd1a1004b39131cfd11ed030352732684a0434e7b2"
+    },
+    {
+      "profile": "V2019",
+      "table": "OtherHistories",
+      "memo": "Details",
+      "hidden": "VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880",
+      "value_member": "Details",
+      "modified_member": "Modified_F9B5E312-4155-4c59-9AAE-391C1B295827",
+      "flat_table": "f_870FBA5190E94832BB9BF64D6F6AA94F_VersionHistory_F5F8918F-0A3F-",
+      "oracle_sha256": "2eb388f8a85fb7565621cffd1a1004b39131cfd11ed030352732684a0434e7b2"
+    }
+  ],
+  "replays": [
+    {
+      "cli_sha256": "73a3a3b2a39c109fcf2e6778e32eaf998fbaad1bb4fe1e36dcfa26b0549cca81",
+      "collation": "ordinal",
+      "inputs": [
+        {
+          "file": "V2007.accdb",
+          "sha256": "e3366c49ba66a0f199c098beac14d1071923b1e8b49729df9207bab643e7d341"
+        },
+        {
+          "file": "V2016.accdb",
+          "sha256": "50f0b711ebcdc4f45e404083aa46cb5ea97bd6cc4b3f1b5097301aee51cbf39a"
+        },
+        {
+          "file": "V2019.accdb",
+          "sha256": "69e7f8771c0aeb0fbb632243008b1390360b3d3ad70d0efa68d9ae627274168c"
+        }
+      ],
+      "native_access": "unrun",
+      "query_controls": 96
+    },
+    {
+      "cli_sha256": "73a3a3b2a39c109fcf2e6778e32eaf998fbaad1bb4fe1e36dcfa26b0549cca81",
+      "collation": "database",
+      "inputs": [
+        {
+          "file": "V2007.accdb",
+          "sha256": "e3366c49ba66a0f199c098beac14d1071923b1e8b49729df9207bab643e7d341"
+        },
+        {
+          "file": "V2016.accdb",
+          "sha256": "50f0b711ebcdc4f45e404083aa46cb5ea97bd6cc4b3f1b5097301aee51cbf39a"
+        },
+        {
+          "file": "V2019.accdb",
+          "sha256": "69e7f8771c0aeb0fbb632243008b1390360b3d3ad70d0efa68d9ae627274168c"
+        }
+      ],
+      "native_access": "unrun",
+      "query_controls": 96
+    }
+  ]
+}

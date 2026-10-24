@@ -133,11 +133,13 @@ Native SQL/DAO byte equivalence remains unqualified.
 Explicit [stored-history query members](STORED_HISTORY_QUERIES.md) now expose
 actual hidden-field names through `--collections`, retaining current Memo,
 aligned stored versions, complete caches and native flat-field policies.
-Six adapter/eight engine tests and 192 independent stored-record/query controls
-pass. Unsupported history candidates remain unavailable without blocking
-unrelated supported fields. Visible current Memos with the ordinary Unicode-compression bit now retain
-qualified history discovery and querying; unknown/calculated flags and unsupported
-template/flat flags remain refused. Native history SQL/latest-version behavior
+The original replay passes 192 independent stored-record/query controls.
+Unsupported history candidates remain unavailable without blocking unrelated
+supported fields. Visible current Memos with the ordinary Unicode-compression
+bit now retain qualified history discovery and querying; the expanded focused
+engine/adapter batch passes 19 tests and a separate
+[compressed-Memo replay](testing/COMPRESSED_MEMO_HISTORIES.md) passes 198 controls.
+Unknown/calculated flags and unsupported template/flat flags remain refused. Native history SQL/latest-version behavior
 and wider advanced-field semantics remain unqualified.
 
 Opt-in [automatic native indexes](AUTOMATIC_INDEXES.md) now choose matching
