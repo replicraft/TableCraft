@@ -169,6 +169,9 @@ impl Runtime<'_, '_> {
                     _ => Err(QueryError::Cardinality),
                 }
             }
+            Expr::Binary(BinaryOperator::Concatenate, left, right) => {
+                self.concatenation_cell(left, right, env)
+            }
             Expr::Binary(operator, left, right)
                 if let Some(comparison) = relational::operator(*operator) =>
             {
@@ -187,7 +190,6 @@ impl Runtime<'_, '_> {
                         | BinaryOperator::IntegerDivide
                         | BinaryOperator::Modulo
                         | BinaryOperator::Power
-                        | BinaryOperator::Concatenate
                         | BinaryOperator::And
                         | BinaryOperator::Or
                         | BinaryOperator::Xor

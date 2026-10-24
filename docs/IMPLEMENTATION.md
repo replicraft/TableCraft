@@ -1,5 +1,35 @@
 # Implementation status
 
+## Lossless ampersand concatenation
+
+Ampersand now retains complete UTF-16 units through nested operands, observations,
+type inspection and slices, publishing only the final scalar result. Two surrogate
+halves can form valid final Text; unmatched final units, odd-byte operands and raw
+relational cells remain refused. Scalar-only pairs retain their borrowed join and
+explicit numeric/date conversion policies. The shared evaluator now admits
+host-supplied Empty as empty Text for ampersand only; query Nz's existing empty-Text
+behavior is unchanged. Error/Missing refusal and eager operational failures remain
+distinct from NULL handling. Bound intermediate cells retain runtime text policies
+and declaration provenance. See [scope and references](CONCATENATION.md#lossless-utf-16-concatenation).
+
+Three new evaluator controls cover independent surrogate goldens/generated scalar
+reconstruction, state admission, allocation limits and every observed cancellation
+checkpoint, including a multi-chunk raw copy. Two new query tests cover prepared
+parameter rebinding, grouped/correlated composition and publication refusal.
+Existing routing tests now also cover raw operands beside field, CVar and scalar-
+subquery text policies; a new CLI test exercises both query paths and buffered
+failures. All 696 all-feature expression tests plus one doctest, 364 minimal
+expression tests, seventy focused query tests and six CLI tests pass. Focused
+Clippy, minimal query compilation, formatting, Python compilation and diff checks
+pass. The larger metering control was rerun after its final test-only expansion.
+
+The expanded independent concatenation recipe passes 1,542 source-free controls;
+the existing byte recipe still passes 26,590. Python supplies UTF-16LE byte models
+and checks the CLI's escaped display cells. No dependency, stored value carrier,
+native decoder or writer scope changed. Native fixtures, Windows Access, full
+engine/workspace suites and benchmarks were not run. Other raw operators,
+odd-byte concatenation, broader coercion and native qualification remain open.
+
 ## Final publication after composed slices
 
 Both query hosts now evaluate ordinary slice sources through the existing

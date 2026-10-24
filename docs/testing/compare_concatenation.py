@@ -13,13 +13,21 @@ from pathlib import Path
 import random
 import subprocess
 
-from compare_browsing import RECIPES
+from compare_browsing import RECIPES, escaped
 from compare_cstr import date_text
 from compare_union_types import JAR_SHA256, NATIVE_HASHES
 from compare_large_indexes import (
     INPUT_HASHES as INDEX_HASHES,
     registered_input_hash,
 )
+
+
+def displayed_value(value):
+    if value is None:
+        return "NULL"
+    if isinstance(value, str):
+        return '"' + escaped(value) + '"'
+    return json.dumps(value)
 
 
 def main():
@@ -43,8 +51,9 @@ def main():
                 assert not result.stderr, result.stderr
                 rows = list(csv.reader(StringIO(result.stdout), delimiter="\t", strict=True))
                 assert rows[0] == ["Result"], rows[0]
-                values = [None if row[0] == "NULL" else json.loads(row[0]) for row in rows[1:]]
-                assert values == expected, (sql, values, expected)
+                values = [row[0] for row in rows[1:]]
+                displayed = [displayed_value(value) for value in expected]
+                assert values == displayed, (sql, values, displayed)
             else:
                 assert not result.stdout, (sql, result.stdout)
             controls += 1
@@ -76,6 +85,38 @@ def main():
     for expression in ("1 & 'x'", "#2024-01-02# & 'x'", "Null & (1/0)",
                        "IIf(False,1 & 'x','ok')", "CVErr(1) & 'x'"):
         check("SELECT " + expression + " AS Result", None, accepted=False)
+
+    # Model raw string concatenation independently as complete UTF-16LE units.
+    # Strict decoding is required only for the final scalar publication.
+    pairs = [(0, 0), (65, 66), (0xD83D, 0xDE00), (0xD83E, 0xDD80),
+             (0xD800, 65), (65, 0xDFFF), (0xDC00, 0xD800)]
+    pairs += [(rng.randrange(65536), rng.randrange(65536)) for _ in range(128)]
+    for left, right in pairs:
+        expression = f"(ChrW({left})&ChrW({right}))"
+        raw = left.to_bytes(2, "little") + right.to_bytes(2, "little")
+        check(f"SELECT Len({expression}) AS Result", [len(raw) // 2])
+        check(f"SELECT LenB({expression}) AS Result", [len(raw)])
+        check(f"SELECT AscW({expression}) AS Result", [int.from_bytes(raw[:2], "little", signed=True)])
+        check(f"SELECT VarType({expression}) AS Result", [8])
+        try:
+            published = raw.decode("utf-16le")
+        except UnicodeDecodeError:
+            check(f"SELECT {expression} AS Result", None, accepted=False)
+        else:
+            check(f"SELECT {expression} AS Result", [published])
+
+    for expression, expected in [
+        ("Nz(NULL)&'x'", "x"), ("NULL&Nz(NULL)", ""),
+        ("Nz(NULL)&Nz(NULL)", ""),
+        ("Len(ChrW(55296)&NULL)", 1),
+        ("Len(NULL&ChrW(55296))", 1),
+        ("Mid(ChrW(55296)&'x',2)", "x"),
+    ]:
+        check(f"SELECT {expression} AS Result", [expected])
+    check("SELECT Len(ChrW(55296)&1) AS Result", [2], ["--number-format", "invariant"])
+    for expression in ["LenB(ChrB(65)&ChrB(0))", "ChrW(55296)&CVErr(1)",
+                       "CVErr(1)&ChrW(55296)", "ChrW(55296)&(1/0)"]:
+        check(f"SELECT {expression} AS Result", None, accepted=False)
 
     if args.native_directory:
         assert hashlib.sha256(args.jar.read_bytes()).hexdigest() == JAR_SHA256

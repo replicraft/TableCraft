@@ -8,7 +8,7 @@ use crate::{
     predicates::{self, Membership},
 };
 use tablecraft_core::{limits::Resource, values::Value};
-use tablecraft_sql::select::Expression as E;
+use tablecraft_sql::select::{BinaryOperator, Expression as E};
 
 impl Evaluator<'_> {
     pub(super) fn check(&mut self, depth: usize) -> Result<(), EvalError> {
@@ -69,6 +69,10 @@ impl Evaluator<'_> {
                 operator,
                 right,
             } => {
+                if *operator == BinaryOperator::Concatenate {
+                    let value = self.concatenation_call(left, right, depth)?;
+                    return self.publish_byte_operand(value);
+                }
                 let left = self.expression_operand(left, depth + 1)?;
                 let right = self.expression_operand(right, depth + 1)?;
                 self.apply_expression_binary(*operator, left, right)

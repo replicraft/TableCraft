@@ -1,4 +1,6 @@
 //! Contextual scalar-to-Text conversion for &, separate from numeric/text +.
+mod bytes;
+
 use super::Evaluator;
 use crate::{EvalError, functions::text::TextFunction, text};
 use tablecraft_core::values::Value;

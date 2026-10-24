@@ -2,7 +2,10 @@ use super::Evaluator;
 use crate::{
     EvalError,
     comparison::Comparison as C,
-    functions::conversions::{Conversion, errors::into_operator_scalar},
+    functions::{
+        conversions::{Conversion, errors::into_operator_scalar},
+        text::byte_string::ExpressionByteOperand,
+    },
     logic::{Logical, Truth},
     numeric::{self, Arithmetic as A},
     text,
@@ -12,14 +15,22 @@ use tablecraft_sql::select::{BinaryOperator as B, UnaryOperator as U};
 
 impl Evaluator<'_> {
     /// Apply a binary operator to already evaluated expression data.
-    /// Hosts evaluate both operands before this call. Arithmetic/logical/concatenation inputs
-    /// require scalars; relational comparisons admit standard Error/Error pairs.
+    /// Hosts evaluate both operands before this call. Arithmetic/logical inputs
+    /// require scalars; concatenation also admits Empty as empty Text. Relational
+    /// comparisons admit standard Error/Error pairs.
     pub fn apply_expression_binary(
         &mut self,
         operator: B,
         left: ExpressionValue,
         right: ExpressionValue,
     ) -> Result<Value, EvalError> {
+        if operator == B::Concatenate {
+            let result = self.apply_expression_concatenation(
+                ExpressionByteOperand::Scalar(left),
+                ExpressionByteOperand::Scalar(right),
+            )?;
+            return self.publish_byte_operand(result);
+        }
         let comparison = match operator {
             B::Equal => Some(C::Equal),
             B::NotEqual => Some(C::NotEqual),

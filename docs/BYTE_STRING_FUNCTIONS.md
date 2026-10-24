@@ -176,6 +176,11 @@ including supplementary characters, omitted lengths and maximum Long controls.
 
 ## Remaining byte-string work
 
+[Ampersand concatenation](CONCATENATION.md#lossless-utf-16-concatenation) now joins
+complete raw units, including surrogate halves that form valid final Text. Its
+nested observations and inspection retain String identity; odd-byte concatenation
+remains explicitly refused. Other operators retain the limits below.
+
 [StrConv](STRCONV.md) now supports explicit casing and strict single-byte
 Unicode/ANSI conversions; width/kana and broader mapping behavior remain open.
 Its encoding results use these same lossless byte-string intermediates. InStrB

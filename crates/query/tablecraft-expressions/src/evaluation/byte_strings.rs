@@ -19,7 +19,7 @@ use tablecraft_core::{
     limits::Resource,
     values::{ExpressionValue, Value},
 };
-use tablecraft_sql::select::{Expression, FunctionArgument};
+use tablecraft_sql::select::{BinaryOperator, Expression, FunctionArgument};
 
 const UTF16_UNIT_BYTES: usize = size_of::<u16>();
 
@@ -29,6 +29,15 @@ impl Evaluator<'_> {
         expression: &Expression,
         depth: usize,
     ) -> Result<ExpressionByteOperand, EvalError> {
+        if let Expression::Binary {
+            operator: BinaryOperator::Concatenate,
+            left,
+            right,
+        } = expression
+        {
+            self.check(depth)?;
+            return self.concatenation_call(left, right, depth).map(Into::into);
+        }
         if let Expression::Call {
             qualifier,
             name,
@@ -58,6 +67,15 @@ impl Evaluator<'_> {
         expression: &Expression,
         depth: usize,
     ) -> Result<ByteOperand, EvalError> {
+        if let Expression::Binary {
+            operator: BinaryOperator::Concatenate,
+            left,
+            right,
+        } = expression
+        {
+            self.check(depth)?;
+            return self.concatenation_call(left, right, depth);
+        }
         if let Expression::Call {
             qualifier,
             name,

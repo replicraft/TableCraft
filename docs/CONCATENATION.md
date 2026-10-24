@@ -13,8 +13,10 @@ tablecraft query run "SELECT 'ID=' & ID FROM Contacts" \
   --database example.accdb --number-format invariant
 ```
 
-One NULL operand contributes empty text; two NULLs return NULL. Empty Text remains
-Text. The separate `+` path still concatenates Text/Text, propagates a participating
+One NULL operand contributes empty text; two NULLs return NULL. Host-supplied
+Empty expression data now contributes empty Text; Missing remains refused.
+Query Nz already returns empty Text when its fallback is omitted, and retains
+that behavior. The separate `+` path still concatenates Text/Text, propagates a participating
 NULL and uses its existing contextual numeric rules for mixed numeric operands.
 Both operands evaluate in written order before scalar formatting: a later division
 by zero is not hidden by NULL or a prior operand needing an output policy.
@@ -23,10 +25,50 @@ Unselected conditional branches remain eager.
 Binary and GUID implicit formatting remain unsupported; callers use explicit
 qualified conversions where available. Error operands now fail TypeMismatch after
 both operands evaluate. They never render as CLI `#ERROR(...)` text inside an
-expression; explicit CStr remains distinct. Empty/Missing and byte-string/array
-concatenation remain outside this scalar extension. See the
+expression; explicit CStr remains distinct. Missing, odd-byte string and array
+concatenation remain outside this extension. See the
 [expression consumer contract](EXPRESSION_AGGREGATES.md#concatenation-and-numeric-admission). Full native
 Variant, byte-array and regional behavior remain compatibility gaps.
+
+## Lossless UTF-16 concatenation
+
+Ampersand now retains complete raw UTF-16 units through its operands and result.
+For example, `ChrW(55357)&ChrW(56832)` and
+`Left('😀',1)&Right('😀',1)` publish `😀` without first decoding either
+surrogate half. Nested Len/LenB, AscW/AscB, CVar, type inspection, byte producers
+and ordinary slices can consume the intermediate. `Len(ChrW(55296)&NULL)` returns
+one, while direct publication of `ChrW(55296)&NULL` remains refused. Opaque Binary
+is not interpreted as Text, and raw strings do not become stored/parameter cells.
+
+Both operands evaluate eagerly before state admission and scalar formatting.
+Error remains TypeMismatch even beside NULL or a raw string; operational errors
+in a later operand remain visible. Raw operands must contain whole UTF-16 units;
+odd-byte concatenation is explicitly unqualified and refused, including pairs
+whose combined byte count would be even. This does not extend the overloaded `+`
+operator or arbitrary raw-string comparison/selection semantics.
+
+Scalar-only pairs retain the existing borrowed UTF-8 join. When a raw operand is
+present, ordinary scalar conversion still uses explicit CStr policies, and Text
+encodes through the existing metered UTF-16 path. Raw concatenation checks Long
+byte-length overflow and charges the complete output before fallible reservation.
+Copying checks cancellation/work at bounded chunks. A raw string joined with NULL
+can transfer its existing buffer without a new payload allocation. Strict final
+publication enforces the selected Text ceiling. Bound execution retains both
+runtime Text policies and declaration provenance through these intermediates.
+
+The [MS-VBAL ampersand contract](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/9f072ffc-e943-4fcc-a4d0-f3c7db96abd9)
+defines String joining, Empty/NULL admission and Error refusal; Access query
+availability is established by the query examples cited below. These sources
+motivate the explicit complete-unit profile, not native qualification of
+surrogate handling, odd-byte strings or broader Variant/Byte-array coercion.
+
+The expanded original Python recipe passes 1,542 source-free controls over both
+query commands. Python constructs UTF-16LE bytes independently, observes units,
+decodes only final valid output and checks refused invalid publication. Seeded
+unit pairs include zero/control characters, paired/unpaired surrogates, NULL,
+Empty, policies and eager failures. It also checks the CLI's existing escaped
+display-cell contract rather than treating that output as raw JSON. Native
+fixtures, Windows Access and benchmarks were not run for this expansion.
 
 ## Shared execution and metadata
 
