@@ -45,6 +45,8 @@ Native queries can explicitly select the stored General text order with
 `--collation database`, using each scalar or opted-in collection Text field's supported General policy and
 the stored database default. Required unknown policies and expression conflicts
 fail explicitly. See [text policy scope](docs/NATIVE_TEXT.md#stored-database-general-policy).
+Larger General queries can set `--comparison-bytes` and `--comparison-steps`
+without changing native/query/output pools; see [comparison limits](docs/COMPARISON_BUDGETS.md).
 
 `query run --database example.accdb --auto-index` can choose a qualified single-key
 index for existing safe integer, Currency or GUID filters, plus qualified

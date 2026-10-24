@@ -2,6 +2,7 @@ mod calendar;
 mod character;
 mod clock;
 mod collation;
+mod comparison_limits;
 mod date_text;
 mod editing;
 mod eval;
@@ -111,6 +112,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
                 native_rows,
                 native_steps,
                 execution_limits,
+                comparison_limits,
                 declared_integral,
                 large_values,
                 multivalues,
@@ -138,6 +140,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
                         .output_bytes
                         .map_or(crate::output::MAX_OUTPUT_BYTES, |bytes| bytes as usize),
                     execution_limits: execution_limits.limits(),
+                    comparison_limits,
                     collation,
                     like_mode,
                     year_window,

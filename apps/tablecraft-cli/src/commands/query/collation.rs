@@ -1,4 +1,5 @@
 //! Explicit CLI comparison policies; native descriptor selection is opt-in.
+use super::comparison_limits::Args as ComparisonArgs;
 use clap::ValueEnum;
 use std::{cmp::Ordering, ops::Range};
 use tablecraft_access::GeneralCollation;
@@ -14,8 +15,6 @@ use tablecraft_expressions::{
 
 const GENERAL_LEGACY_ORDER: [u8; 4] = [9, 4, 0, 0];
 const GENERAL_2010_ORDER: [u8; 4] = [9, 4, 0, 1];
-const COMPARISON_BYTES: u64 = 16 * 1024 * 1024;
-const COMPARISON_STEPS: u64 = 1_000_000;
 
 #[derive(Clone, Copy, ValueEnum)]
 pub(crate) enum TextCollation {
@@ -43,6 +42,13 @@ impl From<UpdateCollation> for TextCollation {
 }
 impl TextCollation {
     pub(super) fn build(self) -> Result<SelectedCollation, InspectError> {
+        self.build_with_budget(comparison_budget())
+    }
+
+    pub(super) fn build_with_budget(
+        self,
+        budget: ResourceBudget,
+    ) -> Result<SelectedCollation, InspectError> {
         let order = match self {
             Self::Database => return Err(InspectError::Unsupported),
             Self::Ordinal => return Ok(SelectedCollation::Ordinal),
@@ -51,13 +57,13 @@ impl TextCollation {
         };
         Ok(SelectedCollation::General(GeneralCollation::new(
             NativeSortOrder::from_native_bytes(order),
-            comparison_budget(),
+            budget,
             &|| false,
         )?))
     }
 }
 pub(super) fn comparison_budget() -> ResourceBudget {
-    ResourceBudget::new(COMPARISON_BYTES, 0, COMPARISON_STEPS)
+    ComparisonArgs::default().budget()
 }
 pub(super) enum SelectedCollation {
     Ordinal,
