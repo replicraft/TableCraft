@@ -72,6 +72,13 @@ controls retain eager failures without partial hints. This does not complete
 P0 promotion or qualify native comparison behavior; numeric Text and strict
 set/group/sort comparison keep their separate contracts.
 
+Prepared arithmetic metadata now has 44,800 binary and 240 unary boundary
+controls across current scalar families and NULL. Successful claimed descriptors
+remain consistent with runtime carriers; only explicit numerical/conversion
+refusals are admitted by the controls. This is cross-layer evidence, not an
+independent arithmetic-answer oracle or complete promotion qualification. See
+[result-type evidence](QUERY_RESULT_TYPES.md#evidence-and-references).
+
 DateAdd now exposes its existing successful date carrier for numeric/Boolean/Text
 sources during metadata-only preparation, with source nullability preserved.
 Named/derived, UNION, Nz and Avg consumers retain this metadata without scans or

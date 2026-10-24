@@ -1,5 +1,24 @@
 # Implementation status
 
+## Prepared arithmetic boundary audit
+
+The arithmetic metadata controls now cover 44,800 binary and 240 unary executions
+at independently chosen scalar envelopes, including NULL, signed extrema,
+floating underflow/overflow boundaries, signed zero, fixed-point scale/range and
+legacy Date limits. Plans prepare without rows and retain their descriptors
+across runtime sources. Every successful claimed descriptor accepts its output;
+unexpected structural/source/resource failures fail the check. No runtime change
+was needed. See [evidence scope](QUERY_RESULT_TYPES.md#evidence-and-references).
+
+The boundary matrix observes 34,177 binary successes/10,623 checked refusals and
+222 unary successes/18 refusals. This establishes cross-layer consistency within
+that envelope, not independent arithmetic answers or native Access equivalence.
+Dynamic results, wider declared/Variant semantics, locale providers and native
+qualification remain open. No storage, dependency or write gate changed.
+All eight arithmetic metadata tests pass in both all-feature and minimal profiles;
+scoped query Clippy and formatting pass. Full workspace tests and Windows Access
+comparisons were not run.
+
 ## Date result nullability
 
 Date components, DatePart/Weekday, DateDiff and DateValue/TimeValue now retain
