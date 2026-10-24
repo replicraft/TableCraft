@@ -1,4 +1,4 @@
-use super::super::LikeMode;
+use super::super::{LikeMode, LikeString};
 use super::{Work, compare};
 use crate::{EvalError, comparison::Collation};
 use std::{cmp::Ordering, ops::Range};
@@ -22,16 +22,12 @@ pub(super) struct Pattern {
 }
 
 pub(super) fn compile(
-    text: &str,
+    text: LikeString<'_>,
     mode: LikeMode,
     col: &dyn Collation,
     work: &mut Work<'_>,
 ) -> Result<Pattern, EvalError> {
-    let mut units = work.buffer(text.len())?;
-    for unit in text.encode_utf16() {
-        work.tick()?;
-        units.push(unit);
-    }
+    let units = text.units(work)?;
     let mut literals = work.buffer(units.len())?;
     let mut tokens = work.buffer(units.len())?;
     let (many, one, not) = match mode {

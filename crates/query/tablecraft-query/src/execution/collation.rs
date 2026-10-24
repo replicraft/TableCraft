@@ -141,12 +141,19 @@ impl<'a> Runtime<'a, '_> {
         a: &Value,
         b: &Value,
     ) -> Result<Option<&'a dyn Collation>, QueryError> {
-        let Some(resolver) = self.options.collation_resolver else {
-            return Ok(self.options.collation);
-        };
         if !matches!((a, b), (Value::Text(_), Value::Text(_))) {
             return Ok(self.options.collation);
         }
+        self.string_comparator(policy)
+    }
+
+    pub(super) fn string_comparator(
+        &mut self,
+        policy: TextPolicy,
+    ) -> Result<Option<&'a dyn Collation>, QueryError> {
+        let Some(resolver) = self.options.collation_resolver else {
+            return Ok(self.options.collation);
+        };
         let key = match policy {
             TextPolicy::Default => return Ok(self.options.collation),
             TextPolicy::Column(key) => key,

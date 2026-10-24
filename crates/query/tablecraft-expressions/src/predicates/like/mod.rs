@@ -1,4 +1,5 @@
 //! Bounded wildcard matching with explicit scalar/UTF-16 policies.
+mod input;
 mod pattern;
 mod utf16;
 use crate::{
@@ -6,6 +7,7 @@ use crate::{
     comparison::{Collation, LikeProfile},
     logic::Truth,
 };
+pub use input::LikeString;
 use pattern::Token;
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -69,7 +71,13 @@ pub fn like(
     };
     let collation = collation.ok_or(EvalError::CollationRequired)?;
     if collation.like_profile() == LikeProfile::Utf16Weights {
-        return utf16::matches(text, pattern, mode, collation, &mut work);
+        return utf16::matches(
+            LikeString::Text(text),
+            LikeString::Text(pattern),
+            mode,
+            collation,
+            &mut work,
+        );
     }
     let tokens = pattern::compile(pattern, mode, collation, &mut work)?;
     let width = tokens.len().checked_add(1).ok_or(EvalError::Allocation)?;
@@ -102,5 +110,29 @@ pub fn like(
     })
 }
 
+/// Match non-NULL Strings under an explicitly selected UTF-16 weight provider.
+/// Inputs are borrowed; checked unit buffers and transitions consume the shared
+/// allocation/work budget. No decoding, alignment cast or replacement occurs.
+/// Scalar-only providers are refused; callers handle NULL and other value kinds.
+pub fn like_utf16(
+    value: LikeString<'_>,
+    pattern: LikeString<'_>,
+    mode: LikeMode,
+    collation: &dyn Collation,
+    budget: &mut ResourceBudget,
+    cancelled: Option<&dyn Fn() -> bool>,
+) -> Result<Truth, EvalError> {
+    let mut work = Work { budget, cancelled };
+    work.tick()?;
+    if collation.like_profile() != LikeProfile::Utf16Weights {
+        return Err(EvalError::UnsupportedExpression);
+    }
+
+    utf16::matches(value, pattern, mode, collation, &mut work)
+}
+
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod raw_tests;

@@ -36,7 +36,9 @@ retain Strings until their result actually needs Unicode. Other non-NULL
 comparison and raw key/provider limits remain explicit.
 LIKE/NOT LIKE also preserve raw String/NULL results without decoding, while
 retaining the explicit wildcard mode and eager argument failures. Non-NULL raw
-matching still uses strict Unicode publication.
+matching uses complete raw units with explicitly selected UTF-16 providers;
+scalar-only providers retain strict Unicode publication. Odd byte counts remain
+refused. Field/runtime policies still route the matcher and may fail explicitly.
 
 Both public query result modes retain strict final String publication. A raw
 String may survive intermediate rows, but a directly selected unrepresentable

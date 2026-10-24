@@ -1,5 +1,29 @@
 # Implementation status
 
+## Complete raw units through explicit UTF-16 LIKE
+
+The shared matcher now accepts borrowed decoded/raw String inputs and materializes
+checked UTF-16 units without Unicode publication or alignment casts. Isolated
+surrogates reach the existing literal/class/element callbacks intact. Odd byte
+lengths remain refused. Query field/runtime policies select the provider before
+matching; unknowns/conflicts do not fall back. Scalar-only providers keep strict
+Unicode publication. Both ANSI modes, existing eager failures, cumulative budgets
+and cancellation remain explicit. No native decoder, dependency, storage value,
+index pushdown or write gate changed. See [pattern contracts](PATTERN_MATCHING.md).
+
+The independent raw LIKE runner passes 2,745 controls, alongside 7,113 existing
+predicate controls. Generated pure tests compare with an exhaustive unit-glob
+model; focused query tests cover raw derived rows, filters and policy resolution.
+This is implementation/model evidence, not native Access qualification.
+
+Eleven pure matcher tests pass with all features and with minimal features;
+focused evaluator/query/CLI tests also pass, including the two new raw-policy
+cases. Expression all-target Clippy, query/CLI focused Clippy, minimal query
+compilation, formatting, Python compilation and diff checks pass. The native
+field-policy replay passes 1,844 controls and verifies all four registered input
+hashes unchanged. Full workspace tests, benchmarks and Windows Access were not
+run for this batch.
+
 ## Retained String NULL matching
 
 LIKE/NOT LIKE now retain raw operands until matching so String/NULL pairs produce
