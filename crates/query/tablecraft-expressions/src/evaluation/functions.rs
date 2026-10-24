@@ -110,6 +110,7 @@ impl Evaluator<'_> {
                     | TextFunction::FormatDateTime
                     | TextFunction::MonthName
                     | TextFunction::WeekdayName
+                    | TextFunction::Format
             ) {
                 let mut values: [ExpressionValue; TextFunction::MAX_ARGUMENTS] =
                     std::array::from_fn(|_| ExpressionValue::Value(Value::Null));
@@ -142,6 +143,7 @@ impl Evaluator<'_> {
                     TextFunction::MonthName | TextFunction::WeekdayName => {
                         self.apply_expression_calendar_name(function, &values[..count])
                     }
+                    TextFunction::Format => self.apply_expression_format(&values[..count]),
                     _ => self.apply_expression_slice(function, &values[..count]),
                 };
             }

@@ -182,3 +182,53 @@ ScalarSamples V2000/V2007/V2016/V2019 files; all original hashes stay unchanged.
 The new runner passes 816 controls; the existing fixed numeric and scientific
 comparison recipes pass 2,470 and 1,432 controls respectively.
 These controls do not execute native Access SQL or qualify Windows NLS.
+
+## Ordered expression-state admission
+
+Format now retains eager expression states through its existing validation stages.
+A NULL supplied week option is refused before week conversion; then first-day
+and first-week controls validate progressively, followed by mask admission and
+source admission. For example, `Format(CVErr(11),CVErr(12),8,NULL)` reports
+InvalidNullConversion, while the same call without the final NULL reports Domain
+for first-day 8 before admitting mask/source Error data. Mask grammar still
+resolves at its existing rendering stage. These are preserved TableCraft rules,
+not native Access error-precedence qualification.
+
+Error data gives TypeMismatch and Missing gives NonScalarExpression at its
+admission point. Explicit `Format(CLng(CVErr(11)),'0')` and
+`Format(CStr(CVErr(11)),'@')` retain their separate numeric/string meanings. All
+written argument expressions remain eager and once-only: a late division error
+still stops before any retained Error value reaches these gates.
+
+Host Empty mask values select empty Text. Host Empty week controls select numeric
+zero and require the existing caller-issued system week settings; they do not
+choose Sunday/Jan-1 silently. An Empty source with an omitted/empty mask uses
+the existing blank string target. **Masked host Empty sources remain unqualified
+and explicitly unsupported.** The reviewed Format contract does not establish
+which numeric, text, date or section interpretation should be used for every
+mask. This implementation does not replace that state with zero or stored NULL.
+Native comparisons or a more specific contract are still needed. SQL Nz(NULL)
+retains its existing empty Text identity; no Empty constructor is added.
+
+Materialized and state-aware callers share the same borrowed preparation
+service. It requests week controls, mask and source at their owning stages;
+source/mask buffers are not copied into a replacement argument list. The existing
+numeric/date/text recipes and charged materializer retain source normalization,
+per-Text and cumulative byte/work/cancellation limits. No mask grammar, locale
+fallback, return category, dependency or runtime is added.
+
+The [MS-VBAL Format contract](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/c2022d53-37dc-4597-8321-728e385afc92)
+defines argument roles, defaults and format families. The shared
+[conversion basis](STRCONV.md#ordered-expression-state-admission) separates
+explicit Error conversion and Empty targets. Neither establishes full native
+Variant/mask-specific behavior; Format remains Partial.
+
+Four expression tests cover NULL/week/mask/source order, supported versus
+unqualified Empty targets, exact six-byte Text normalization/output, every
+observed successful cancellation checkpoint and once-only Rnd controls. New
+query/CLI tests add derived states, explicit conversion and atomic failures.
+The original [state runner](testing/compare_format_states.py) passes 186 checks
+(130 scalar and 56 four-family sequential/indexed native cases), retaining all
+source hashes. The existing numeric Format runner also passes 2,470 scalar
+checks; its optional native branch was not rerun. Only TableCraft executes SQL.
+Full Variant, masked Empty, wider masks/NLS and Windows/native Access remain open.
