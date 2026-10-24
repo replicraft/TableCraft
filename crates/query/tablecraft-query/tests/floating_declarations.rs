@@ -56,8 +56,8 @@ fn single_selected_overflow_keeps_categories_through_nested_results() {
 #[test]
 fn unknown_categories_only_block_selected_width_operations_and_eager_errors_survive() {
     assert_eq!(
-        run("SELECT First(CSng(1))*CInt(2)", true),
-        Err(QueryError::ArithmeticDeclaration)
+        run("SELECT First(CSng(1))*CInt(2)", true).unwrap(),
+        [vec![Value::Single(Single::from_float(2.0))]]
     );
     assert_eq!(
         run("SELECT First(CSng(1))*CLng(2)", true).unwrap(),

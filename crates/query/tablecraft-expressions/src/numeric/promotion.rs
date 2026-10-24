@@ -9,7 +9,7 @@ use tablecraft_core::values::{Double, Single, Value};
 mod declaration;
 mod division;
 pub use declaration::{
-    ArithmeticDeclarations, OperandDeclaration, declared_integral_arithmetic,
+    ArithmeticDeclarations, OperandDeclaration, arithmetic_agreement, declared_integral_arithmetic,
     declared_numeric_arithmetic, uses_declared_overflow,
 };
 mod negation;

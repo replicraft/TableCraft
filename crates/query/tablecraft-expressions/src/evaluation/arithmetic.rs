@@ -28,6 +28,36 @@ impl Evaluator<'_> {
         }
     }
 
+    /// Evaluate contextual arithmetic once without inferring unknown declarations.
+    /// Some retains a result shared by the implemented Scalar/Variant rules;
+    /// None reports declaration-dependent widening. Text normalization, common
+    /// failures, resource accounting and cancellation use the ordinary services.
+    pub fn apply_arithmetic_agreement(
+        &mut self,
+        operator: Arithmetic,
+        left: &Value,
+        right: &Value,
+    ) -> Result<Option<Value>, EvalError> {
+        self.check(0)?;
+        if matches!(operator, Arithmetic::IntegerDivide | Arithmetic::Modulo) {
+            return self.rounded_binary_with(
+                operator,
+                left,
+                right,
+                Some(Value::Null),
+                numeric::arithmetic_agreement,
+            );
+        }
+
+        self.numeric_binary_with(
+            operator,
+            left,
+            right,
+            Some(Value::Null),
+            numeric::arithmetic_agreement,
+        )
+    }
+
     /// Apply nullable integral arithmetic with caller-established declarations.
     /// This checks cancellation/shared work before the allocation-free kernel;
     /// it does not infer declarations or change default SQL operator dispatch.
@@ -58,12 +88,35 @@ impl Evaluator<'_> {
         right: &Value,
         declarations: Option<ArithmeticDeclarations>,
     ) -> Result<Value, EvalError> {
+        self.numeric_binary_with(
+            operator,
+            left,
+            right,
+            Value::Null,
+            |operator, left, right| {
+                if let Some(declarations) = declarations {
+                    numeric::declared_numeric_arithmetic(operator, left, right, declarations)
+                } else {
+                    numeric::promoted_arithmetic(operator, left, right)
+                }
+            },
+        )
+    }
+
+    fn numeric_binary_with<T>(
+        &mut self,
+        operator: Arithmetic,
+        left: &Value,
+        right: &Value,
+        null: T,
+        compute: impl FnOnce(Arithmetic, &Value, &Value) -> Result<T, EvalError>,
+    ) -> Result<T, EvalError> {
         for operand in [left, right] {
             admission::contextual(operand)?;
         }
 
         if matches!(left, Value::Null) || matches!(right, Value::Null) {
-            return Ok(Value::Null);
+            return Ok(null);
         }
         let text = matches!(left, Value::Text(_)) || matches!(right, Value::Text(_));
         let decimal = matches!(left, Value::Decimal(_)) || matches!(right, Value::Decimal(_));
@@ -99,11 +152,7 @@ impl Evaluator<'_> {
         };
         let left = converted_left.as_ref().unwrap_or(left);
         let right = converted_right.as_ref().unwrap_or(right);
-        if let Some(declarations) = declarations {
-            numeric::declared_numeric_arithmetic(operator, left, right, declarations)
-        } else {
-            numeric::promoted_arithmetic(operator, left, right)
-        }
+        compute(operator, left, right)
     }
 }
 
@@ -112,3 +161,6 @@ mod tests;
 
 #[cfg(test)]
 mod admission_tests;
+
+#[cfg(test)]
+mod agreement_tests;

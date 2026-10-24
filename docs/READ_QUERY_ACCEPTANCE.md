@@ -385,3 +385,10 @@ when the materialized result retains its carrier and both category rules agree.
 Unknown widening cases remain refused, and successful results retain unknown
 provenance. This removes a false refusal without qualifying native aggregate or
 UNION declarations; see [negation agreement](DECLARED_ARITHMETIC.md#unary-negation-with-unknown-provenance).
+
+Explicit declared binary arithmetic now permits unknown provenance where the
+existing Scalar/Variant outcomes agree, while retaining unknown output categories.
+Widening still requires provenance, and common conversion/arithmetic failures remain
+typed errors. The shared numeric/evaluator services avoid repeated operand or Text
+conversion work; [agreement scope](DECLARED_ARITHMETIC.md#binary-arithmetic-with-unknown-provenance)
+does not establish native declared types or complete P0 compatibility.

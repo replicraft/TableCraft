@@ -1,10 +1,12 @@
 //! Numeric carrier admission and declaration-dependent selected-width overflow.
-use super::{ArithmeticDeclarations, OperandDeclaration, declared_integral_arithmetic};
+use super::{ArithmeticDeclarations, OperandDeclaration, retains_integral_carrier};
 use crate::{
     EvalError,
     numeric::{
-        Arithmetic, admission, integer,
-        promotion::{integer_operand_conversion, promoted_arithmetic, small_float_operand},
+        Arithmetic, integer,
+        promotion::{
+            integer_operand_conversion, integral_target, promoted_arithmetic, small_float_operand,
+        },
     },
 };
 use tablecraft_core::values::Value;
@@ -88,31 +90,57 @@ pub fn declared_numeric_arithmetic(
     right: &Value,
     declarations: ArithmeticDeclarations,
 ) -> Result<Value, EvalError> {
-    for value in [left, right] {
-        admission::materialized(value)?;
-    }
-    if matches!(left, Value::Null) || matches!(right, Value::Null) {
-        return Ok(Value::Null);
-    }
-    if integer(left).is_some() && integer(right).is_some() {
-        return declared_integral_arithmetic(operator, left, right, declarations);
-    }
-    if matches!(operator, Arithmetic::IntegerDivide | Arithmetic::Modulo) {
-        let target = integer_operand_conversion(left, right)?;
-        let left = target.apply(left)?;
-        let right = target.apply(right)?;
-        return declared_integral_arithmetic(operator, &left, &right, declarations);
-    }
-    let result = promoted_arithmetic(operator, left, right)?;
-    let widened_single =
-        single_operation(operator, left, right) && !matches!(result, Value::Single(_));
-    let widened_date =
-        date_operation(operator, left, right) && !matches!(result, Value::DateTime(_));
-    if declarations.result() == OperandDeclaration::Scalar && (widened_single || widened_date) {
+    let (result, retained) = evaluated(operator, left, right)?;
+    if declarations.result() == OperandDeclaration::Scalar && !retained {
         return Err(EvalError::Overflow);
     }
     Ok(result)
 }
 
+/// Evaluate once and return a value only when the implemented Scalar and Variant
+/// rules agree. None means a Scalar would overflow while a Variant would widen.
+/// Shared validation/conversion/arithmetic failures remain errors, not ambiguity.
+/// This does not establish either operand's declaration or native Access typing.
+/// Text conversion and its budgets belong to the contextual evaluator.
+pub fn arithmetic_agreement(
+    operator: Arithmetic,
+    left: &Value,
+    right: &Value,
+) -> Result<Option<Value>, EvalError> {
+    let (result, retained) = evaluated(operator, left, right)?;
+    Ok(retained.then_some(result))
+}
+
+fn evaluated(
+    operator: Arithmetic,
+    left: &Value,
+    right: &Value,
+) -> Result<(Value, bool), EvalError> {
+    let result = promoted_arithmetic(operator, left, right)?;
+    if matches!(result, Value::Null) {
+        return Ok((result, true));
+    }
+
+    let retained = if matches!(operator, Arithmetic::IntegerDivide | Arithmetic::Modulo) {
+        retains_integral_carrier(integer_operand_conversion(left, right)?, &result)
+    } else if integer(left).is_some()
+        && integer(right).is_some()
+        && !matches!(operator, Arithmetic::Divide | Arithmetic::Power)
+    {
+        retains_integral_carrier(integral_target(left, right), &result)
+    } else if single_operation(operator, left, right) {
+        matches!(result, Value::Single(_))
+    } else if date_operation(operator, left, right) {
+        matches!(result, Value::DateTime(_))
+    } else {
+        true
+    };
+
+    Ok((result, retained))
+}
+
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod agreement_tests;

@@ -26,7 +26,7 @@ fn declared_integral_flag_preserves_defaults_and_keeps_failures_buffered() {
     let unknown = run(&[
         "query",
         "run",
-        "SELECT First(CInt(2))+CInt(1)",
+        "SELECT First(CInt(32767))+CInt(1)",
         "--declared-integral",
     ]);
     assert_eq!(unknown.status.code(), Some(2));
@@ -415,7 +415,7 @@ fn unknown_negation_uses_agreement_without_assigning_a_category() {
             "SELECT 1,-First(CInt(-32768))",
             "SELECT 1,-First(CLng(-2147483648))",
             "SELECT 1,-First(CDate(2958465))",
-            "SELECT 1,(-First(CInt(2)))+CInt(1)",
+            "SELECT 1,(-First(CInt(2)))+CInt(-32767)",
             "SELECT -Q.N FROM (SELECT CInt(2) AS N UNION ALL SELECT CInt(-32768)) AS Q",
         ] {
             let failure = run(&["query", "run", sql, flag]);
@@ -423,6 +423,47 @@ fn unknown_negation_uses_agreement_without_assigning_a_category() {
             assert!(failure.stdout.is_empty(), "{sql}");
             assert!(
                 String::from_utf8_lossy(&failure.stderr).contains("declaration is unknown"),
+                "{sql}"
+            );
+        }
+    }
+}
+
+#[test]
+fn unknown_binary_arithmetic_uses_agreement_and_keeps_late_failures_buffered() {
+    for flag in ["--declared-arithmetic", "--declared-integral"] {
+        let result = run(&[
+            "query",
+            "run",
+            "SELECT First(CInt(2))+CInt(3) AS I,First(CSng(1.25))*CInt(2) AS S,First(CInt(7))\\'2.5' AS Q",
+            "--number-format",
+            "en-us",
+            flag,
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(result.stdout, b"I\tS\tQ\n5\t2.5\t3\n");
+
+        for (sql, error) in [
+            (
+                "SELECT Q.N+CInt(1) FROM (SELECT CInt(2) AS N UNION ALL SELECT CInt(32767)) AS Q",
+                "declaration is unknown",
+            ),
+            ("SELECT 1,First(CInt(7))\\CInt(0)", "division by zero"),
+            ("SELECT 1,First('bad')\\CInt(2)", "type mismatch"),
+            (
+                "SELECT CInt(-32768)\\((First(CInt(2))+CInt(1))=CInt(3))",
+                "declaration is unknown",
+            ),
+        ] {
+            let failure = run(&["query", "run", sql, "--number-format", "en-us", flag]);
+            assert_eq!(failure.status.code(), Some(2), "{sql}");
+            assert!(failure.stdout.is_empty(), "{sql}");
+            assert!(
+                String::from_utf8_lossy(&failure.stderr).contains(error),
                 "{sql}"
             );
         }

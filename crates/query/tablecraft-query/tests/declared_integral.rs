@@ -89,8 +89,8 @@ fn union_and_aggregate_unknowns_are_not_guessed_from_selected_or_present_rows() 
     ] {
         assert!(run(sql, &source, false).is_ok());
         assert_eq!(
-            run(sql, &source, true),
-            Err(QueryError::ArithmeticDeclaration),
+            run(sql, &source, true).unwrap(),
+            run(sql, &source, false).unwrap(),
             "{sql}"
         );
     }

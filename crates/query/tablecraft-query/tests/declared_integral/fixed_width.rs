@@ -66,7 +66,7 @@ fn unknown_remainder_sources_keep_their_checked_operand_widths() {
         "SELECT First(CInt(-32768))+CInt(-1)",
         "SELECT -First(CInt(-32768))",
         "SELECT First(CInt(-32768))\\CInt(-1)",
-        "SELECT (First(CInt(3)) Mod CInt(2))+CInt(1)",
+        "SELECT (First(CInt(3)) Mod CInt(2))+CInt(32767)",
     ] {
         assert_eq!(
             run(sql, &source, true),

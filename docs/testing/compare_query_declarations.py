@@ -82,6 +82,32 @@ def main():
         else:
             check(sql, None, error="numeric overflow", **options)
 
+    # Unknown narrow categories need no guess when both outcomes agree.
+    # Python's unbounded integers supply independent exact results and limits.
+    for cast, low, high, tag, values in [
+        ("CByte", 0, 255, 17, [0, 1, 2, 127, 254, 255]),
+        ("CInt", -32768, 32767, 2, [-32768, -32767, -1, 0, 1, 2, 32766, 32767]),
+        ("CLng", -2147483648, 2147483647, 3,
+         [-2147483648, -2147483647, -1, 0, 1, 2147483646, 2147483647]),
+    ]:
+        for left, right in itertools.product(values, repeat=2):
+            for operator, exact in [("+", left + right), ("-", left - right), ("*", left * right)]:
+                expression = f"First({cast}({left})) {operator} {cast}({right})"
+                if low <= exact <= high:
+                    check(expression, exact, tag)
+                else:
+                    check(expression, None, error="declaration is unknown")
+
+            expression = f"First({cast}({left})) \\ {cast}({right})"
+            if right == 0:
+                check(expression, None, error="division by zero")
+                continue
+            quotient = (abs(left) // abs(right)) * (-1 if (left < 0) != (right < 0) else 1)
+            if low <= quotient <= high:
+                check(expression, quotient, tag)
+            else:
+                check(expression, None, error="declaration is unknown")
+
     # Unknown aggregate provenance cannot affect these fixed Int64 results.
     # Python integers model range/quotient/remainder independently of Rust.
     low, high = -(1 << 63), (1 << 63) - 1
@@ -294,7 +320,7 @@ def main():
     check("CInt(32767)+CInt(1)", 32768, 3, declared=False)
     check("-CInt(-32768)", None)
     check("-CVar(CInt(-32768))", 32768, 3)
-    check("First(CInt(1))+CInt(1)", None)
+    check("First(CInt(1))+CInt(1)", 2, 2)
     check("CVar(NULL)+(1/0)", None)
     for expression in ["VarType(1)", "Asc('A')", "AscW('A')", "AscB('A')"]:
         check(f"{expression}+CInt(32767)", None)
