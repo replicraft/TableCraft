@@ -27,6 +27,21 @@ impl From<ByteOperand> for ExpressionByteOperand {
 
 #[cfg(feature = "sql")]
 impl ExpressionByteOperand {
+    pub(crate) fn is_null(&self) -> bool {
+        matches!(self, Self::Scalar(ExpressionValue::Value(Value::Null)))
+    }
+
+    pub(crate) fn into_code(self) -> Result<Value, EvalError> {
+        match self {
+            Self::Scalar(ExpressionValue::Value(value)) => Ok(value),
+            Self::Scalar(ExpressionValue::Empty) => Ok(Value::Int32(0)),
+            Self::Scalar(ExpressionValue::Error(_)) | Self::Bytes(_) => {
+                Err(EvalError::TypeMismatch)
+            }
+            Self::Scalar(ExpressionValue::Missing) => Err(EvalError::NonScalarExpression),
+        }
+    }
+
     pub(crate) fn into_string(self) -> Result<ByteOperand, EvalError> {
         match self {
             Self::Bytes(bytes) => Ok(ByteOperand::Bytes(bytes)),

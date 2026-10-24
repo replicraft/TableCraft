@@ -1019,3 +1019,10 @@ through flag/LCID/source admission, including CVar and nested byte producers.
 Source Empty selects empty Text, control Empty selects numeric zero, and Error
 conversion remains explicit. Existing owned raw output and strict Unicode
 publication remain; general Format and other byte-function states stay separate.
+
+LenB/AscB/ChrB, byte slices and InStrB now retain [expression states through
+ordered admission](BYTE_STRING_FUNCTIONS.md#ordered-byte-function-expression-states).
+Source Empty has a string target, code/control Empty a numeric target and Error
+conversion remains explicit. Existing raw views, strict publication, independent
+provider limits and cumulative controls remain; general Format and broader
+Variant/raw relational carriers are separate acceptance work.

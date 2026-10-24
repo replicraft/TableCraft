@@ -8,7 +8,7 @@ use tablecraft_expressions::functions::text::{
 };
 
 impl Runtime<'_, '_> {
-    fn expression_byte_operand(
+    pub(super) fn expression_byte_operand(
         &mut self,
         expression: &Expr,
         env: Environment<'_>,
@@ -51,19 +51,28 @@ impl Runtime<'_, '_> {
         env: Environment<'_>,
     ) -> Result<Value, QueryError> {
         let (start, strings) = if arguments.len() > 2 {
-            (Some(self.eval(&arguments[0], env)?), &arguments[1..])
+            (
+                Some(self.expression_operand(&arguments[0], env)?.value),
+                &arguments[1..],
+            )
         } else {
             (None, arguments)
         };
-        let haystack = self.byte_operand(&strings[0], env)?;
-        let needle = self.byte_operand(&strings[1], env)?;
+        let haystack = self.expression_byte_operand(&strings[0], env)?;
+        let needle = self.expression_byte_operand(&strings[1], env)?;
         let mode = strings
             .get(2)
-            .map(|expression| self.eval(expression, env))
+            .map(|expression| {
+                self.expression_operand(expression, env)
+                    .map(|value| value.value)
+            })
             .transpose()?;
-        Ok(self
-            .evaluator()
-            .apply_byte_search(start.as_ref(), haystack, needle, mode.as_ref())?)
+        Ok(self.evaluator().apply_expression_byte_search(
+            start.as_ref(),
+            haystack,
+            needle,
+            mode.as_ref(),
+        )?)
     }
 
     pub(super) fn byte_call(
@@ -72,26 +81,16 @@ impl Runtime<'_, '_> {
         arguments: &[Expr],
         env: Environment<'_>,
     ) -> Result<ByteOperand, QueryError> {
-        if function == TextFunction::StrConv {
-            let first = self.expression_byte_operand(&arguments[0], env)?;
-            let mut rest: [ExpressionValue; 2] =
-                std::array::from_fn(|_| ExpressionValue::Value(Value::Null));
-            for (argument, value) in arguments[1..].iter().zip(&mut rest) {
-                *value = self.expression_operand(argument, env)?.value;
-            }
-            return Ok(self.evaluator().apply_expression_strconv(
-                first,
-                &rest[0],
-                (arguments.len() > 2).then_some(&rest[1]),
-            )?);
-        }
-        let first = self.byte_operand(&arguments[0], env)?;
-        let mut rest = [Value::Null, Value::Null];
+        let first = self.expression_byte_operand(&arguments[0], env)?;
+        let mut rest: [ExpressionValue; 2] =
+            std::array::from_fn(|_| ExpressionValue::Value(Value::Null));
         for (argument, value) in arguments[1..].iter().zip(&mut rest) {
-            *value = self.eval(argument, env)?;
+            *value = self.expression_operand(argument, env)?.value;
         }
-        Ok(self
-            .evaluator()
-            .apply_byte_string(function, first, &rest[..arguments.len() - 1])?)
+        Ok(self.evaluator().apply_expression_byte_string(
+            function,
+            first,
+            &rest[..arguments.len() - 1],
+        )?)
     }
 }

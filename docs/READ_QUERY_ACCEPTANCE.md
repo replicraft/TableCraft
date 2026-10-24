@@ -140,8 +140,10 @@ source NULL, policy and ordered option/source admission without payload copies.
 FormatDateTime and calendar-name calls now also retain states through their
 selector/ordinal/control/policy stages with explicit host Empty targets.
 StrConv now also retains states through flag/LCID/source admission while
-preserving CVar and raw string buffers. General Format, other byte-specific
-sources and remaining string/formatting options retain separate state/coercion gaps. CurrentUser,
+preserving CVar and raw string buffers. Byte producers, observations and InStrB
+now also retain explicit states through their control/NULL/progressive source
+stages. General Format, broader raw carriers and remaining string/formatting
+options retain separate state/coercion gaps. CurrentUser,
 numbered Error and GUID conversions now also retain reviewed return categories;
 provider invocation and session/permission boundaries remain unchanged. Numbered
 Error now accepts signed Long codes through a separate checked provider identity;

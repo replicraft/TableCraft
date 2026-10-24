@@ -222,7 +222,9 @@ sources through the shared CStr service. Boolean, integer, floating, Currency an
 Decimal values use their existing spellings; numerics require an explicit
 NumberFormat. Legacy DATE requires DateTextFormat. Text is borrowed and NULL
 propagates without a formatting provider. Native-only GUID/extended DATE, Binary,
-arrays and expression-only Error/Missing/Empty do not acquire implicit spellings.
+arrays remain refused. Expression states now use the dedicated admission profile
+below: host Empty has a string target, while Error/Missing do not acquire
+implicit spellings.
 The policy-free borrowed text kernels retain their Text/NULL admission.
 
 [Microsoft's Access Len reference](https://support.microsoft.com/en-gb/access/functions/len-function)
@@ -257,5 +259,60 @@ raw ByteString into [StrConv admission](STRCONV.md#ordered-expression-state-admi
 Flags and LCID validate before the source is admitted, while written source and
 control operations stay eager. CVar and nested raw producers retain their
 representation; the output remains the original ByteOperand type with strict
-ordinary Unicode publication. This supplies no new Error storage, inspection or
-state behavior for other byte functions.
+ordinary Unicode publication. This supplies no new Error storage or broad relational raw-string
+carrier; the other byte consumers now share the explicit admission profile below.
+
+## Ordered byte-function expression states
+
+LenB, AscB, ChrB, LeftB, RightB, MidB and InStrB now retain eager expression states
+through their owning admission points. They reuse ExpressionByteOperand and the
+original borrowed/view/encoding/search kernels. Materialized public entry points
+remain available; state-aware producers, observations and search add no stored
+Error/Empty/Missing or broader raw relational carrier.
+
+Host Empty selects empty Text for source strings and numeric zero for supplied
+codes/controls. Thus LenB(Empty) is zero, AscB(Empty) fails for empty input and
+ChrB(Empty) produces the raw byte zero. LeftB/RightB count zero selects an empty
+view; MidB start zero still fails. These are host API states, not a new SQL
+constructor; Nz(NULL) still supplies ordinary empty Text. Error data requires
+explicit conversion and Missing gives NonScalarExpression when reached.
+
+Slices convert position and any supplied length before checking their combined
+ranges and admitting the source. In particular, `MidB(CVErr(11),0,CVErr(12))`
+reports TypeMismatch during length admission; a negative validly converted
+position fails before source Error admission. Source NULL still propagates after
+valid controls. These preserved byte-slice stages differ from text Mid's profile.
+
+InStrB validates comparison mode, start and the source NULL gate, then admits
+and formats each source progressively from left to right. NULL can mask retained
+Error/Missing source data after valid controls; operational errors in written
+arguments remain eager. A numeric left source without NumberFormat still fails
+that policy before admitting right-hand Error data. Empty-source/needle early
+results occur only after both source conversions. Text/database/LCID byte-search
+providers remain unavailable; a mode above the standard range is refused before
+source admission, with no binary fallback.
+
+The same preparation services serve materialized/state callers. Raw slice views
+move their existing buffers and ranges, including odd/unpaired units, under the
+same cumulative controls. Ordinary Unicode publication remains strict. Byte
+observations and search never force publication or reinterpret raw strings as
+stored Binary. No return category, code page, provider, alias or dependency is added.
+
+The existing [ChrB contract](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/900323ac-8160-42cd-ae52-4073f2a95116),
+[Mid/MidB contract](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/4a65ee4e-b6b9-45d3-a3f6-576fed4bb227)
+and [InStr/InStrB contract](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/33e81067-4b43-4c45-a501-0acf1616f2f9)
+guide byte roles, ranges, NULL and result positions. The shared
+[conversion basis](STRCONV.md#ordered-expression-state-admission) separates
+Empty targets and explicit Error conversion. Native Access precedence and full
+Variant/raw-string semantics remain unqualified.
+
+Four expression tests cover all seven functions, Empty/code/source distinctions,
+control order, NULL masking, progressive source policy failures, raw view buffer
+identity under zero additional byte allowance, every observed successful slice/
+search cancellation checkpoint and once-only Rnd controls. Query/CLI tests add
+derived states, explicit conversion and atomic failures. The new
+[runner](testing/compare_byte_states.py) passes 364 controls (300 scalar and 64
+four-family sequential/indexed cases) over unchanged registered inputs. The
+existing byte runner additionally passes 3,792 scalar controls; its optional
+native branch was not rerun. Only TableCraft executes SQL. Full Variant, broader
+raw carriers, provider and Windows/native Access qualification remain open.

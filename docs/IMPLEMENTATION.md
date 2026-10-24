@@ -1,5 +1,33 @@
 # Implementation status
 
+## Byte-function expression states through ordered admission
+
+LenB/AscB/ChrB, byte slices and InStrB now retain eager Error/Empty/Missing states
+through numeric controls, NULL gates and progressive source admission. Raw
+inputs use the existing ExpressionByteOperand boundary. Materialized/state
+callers share preparation, slicing and search services; owned views and strict
+Unicode publication remain. Error conversion stays explicit and host Empty has
+separate string/code/control targets. No provider, dependency, alias, runtime or
+return category is added. See [contract](BYTE_STRING_FUNCTIONS.md#ordered-byte-function-expression-states).
+
+Four new expression tests exercise all seven functions, Empty targets, combined
+slice controls, comparison/start/NULL ordering, progressive source policy errors,
+raw view buffer identity with zero additional byte allowance, every observed
+successful slice/search cancellation checkpoint and once-only Rnd controls.
+Query/CLI cases add derived Error values and buffered failures. The batch passes
+638 expression unit tests plus one doctest, 345 minimal-profile expression tests,
+28 selected query tests and 10 selected CLI tests. All-target/all-feature
+expression/query/CLI Clippy, CLI build, formatting, Python syntax, dependency
+boundaries and diff checks pass. Full backend/workspace suites and benchmarks
+were not repeated.
+
+The new independent runner passes 364 controls (300 scalar and 64 native
+sequential/indexed cases) over unchanged registered inputs. The existing byte
+runner passes 3,792 scalar controls; its optional native branch was not rerun.
+Only TableCraft executes SQL. Native Access/Windows, general Format, complete
+Variant and broader raw-string/provider semantics remain open before writes.
+
+
 ## StrConv expression states and owned raw inputs
 
 StrConv now retains scalar Error/Empty/Missing inputs through flag, LCID and

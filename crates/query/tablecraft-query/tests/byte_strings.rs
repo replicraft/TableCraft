@@ -4,6 +4,38 @@ use tablecraft_expressions::EvalError;
 use tablecraft_query::{ExecutionOptions, QueryError, prepare, source::MemorySource};
 use tablecraft_sql::parse_query;
 
+#[test]
+fn byte_states_preserve_derived_errors_until_control_and_source_admission() {
+    for (sql, expected) in [
+        ("SELECT LenB(CVErr(11))", EvalError::TypeMismatch),
+        ("SELECT AscB(CVErr(11))", EvalError::TypeMismatch),
+        ("SELECT ChrB(CVErr(65))", EvalError::TypeMismatch),
+        (
+            "SELECT LeftB(E,-1) FROM (SELECT CVErr(11) AS E) AS D",
+            EvalError::Domain,
+        ),
+        (
+            "SELECT MidB(CVErr(11),0,CVErr(12))",
+            EvalError::TypeMismatch,
+        ),
+        (
+            "SELECT InStrB(CVErr(11),NULL,CVErr(12),3)",
+            EvalError::UnsupportedExpression,
+        ),
+        (
+            "SELECT InStrB(1,123,CVErr(11),0)",
+            EvalError::NumberFormatRequired,
+        ),
+        ("SELECT LeftB(CVErr(11),1/0)", EvalError::DivisionByZero),
+    ] {
+        assert_eq!(run(sql), Err(QueryError::Evaluation(expected)), "{sql}");
+    }
+    assert_eq!(
+        run("SELECT InStrB(1,NULL,CVErr(11),0),LenB(LeftB(CStr(CVErr(11)),3)),AscB(ChrB(CLng(CVErr(65))))").unwrap(),
+        [vec![Value::Null, Value::Int32(3), Value::Int16(65)]]
+    );
+}
+
 fn run(sql: &str) -> Result<Vec<Vec<Value>>, QueryError> {
     let source = MemorySource::default();
     let parsed = parse_query(sql, Default::default()).unwrap();

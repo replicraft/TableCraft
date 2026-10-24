@@ -87,8 +87,8 @@ impl Evaluator<'_> {
             if matches!(function, TextFunction::LenB | TextFunction::AscB)
                 && let [A::Expression(expression)] = arguments
             {
-                let value = self.byte_operand(expression, depth + 1)?;
-                return self.observe_byte_operand(function, value);
+                let value = self.expression_byte_operand(expression, depth + 1)?;
+                return self.observe_expression_byte_operand(function, value);
             }
             let arguments = sql_arguments::normalize(function, arguments)
                 .ok_or(EvalError::UnsupportedExpression)?;

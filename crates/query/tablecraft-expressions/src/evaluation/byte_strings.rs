@@ -1,5 +1,5 @@
 //! Owning byte-string evaluation and strict scalar publication.
-use super::Evaluator;
+use super::{Evaluator, text_arguments};
 use crate::{
     EvalError,
     functions::{
@@ -88,33 +88,48 @@ impl Evaluator<'_> {
         let Some(Argument::Expression(first)) = arguments.next() else {
             return Err(EvalError::UnsupportedExpression);
         };
-        if function == TextFunction::StrConv {
-            let first = self.expression_byte_operand(first, depth + 1)?;
-            let mut rest: [ExpressionValue; 2] =
-                std::array::from_fn(|_| ExpressionValue::Value(Value::Null));
-            let count = arguments.len();
-            for (argument, value) in arguments.zip(&mut rest) {
-                *value = match argument {
-                    Argument::Expression(expression) => {
-                        self.expression_operand(expression, depth + 1)?
-                    }
-                    Argument::Integer(value) => ExpressionValue::Value(Value::Int64(value)),
-                    Argument::EmptyText => ExpressionValue::Value(Value::Text(String::new())),
-                };
-            }
-            return self.apply_expression_strconv(first, &rest[0], (count > 1).then_some(&rest[1]));
-        }
-        let first = self.byte_operand(first, depth + 1)?;
-        let mut rest = [Value::Null, Value::Null];
+        let first = self.expression_byte_operand(first, depth + 1)?;
+        let mut rest: [ExpressionValue; 2] =
+            std::array::from_fn(|_| ExpressionValue::Value(Value::Null));
         let count = arguments.len();
         for (argument, value) in arguments.zip(&mut rest) {
             *value = match argument {
-                Argument::Expression(expression) => self.node(expression, depth + 1)?,
-                Argument::Integer(value) => Value::Int64(value),
-                Argument::EmptyText => Value::Text(String::new()),
+                Argument::Expression(expression) => {
+                    self.expression_operand(expression, depth + 1)?
+                }
+                Argument::Integer(value) => ExpressionValue::Value(Value::Int64(value)),
+                Argument::EmptyText => ExpressionValue::Value(Value::Text(String::new())),
             };
         }
-        self.apply_byte_string(function, first, &rest[..count])
+        self.apply_expression_byte_string(function, first, &rest[..count])
+    }
+
+    /// Admit eager byte-producer states at their original numeric/source stages.
+    pub fn apply_expression_byte_string(
+        &mut self,
+        function: TextFunction,
+        first: ExpressionByteOperand,
+        rest: &[ExpressionValue],
+    ) -> Result<ByteOperand, EvalError> {
+        if !function.produces_bytes() || !function.accepts_arity(rest.len() + 1) {
+            return Err(EvalError::UnsupportedExpression);
+        }
+        self.text_expression_limits(rest)?;
+        self.check(0)?;
+        if function == TextFunction::StrConv {
+            return self.apply_expression_strconv(first, &rest[0], rest.get(1));
+        }
+        if function == TextFunction::ChrB {
+            return self.apply_byte_string(function, ByteOperand::Scalar(first.into_code()?), &[]);
+        }
+
+        let empty_number = Value::Int32(0);
+        self.byte_slice_inputs(
+            function,
+            || first.into_string(),
+            rest.len(),
+            |index| text_arguments::scalar(&rest[index], &empty_number),
+        )
     }
 
     /// Apply a byte producer to already evaluated operands in written order.
@@ -146,15 +161,27 @@ impl Evaluator<'_> {
             return ByteString::from_owned(bytes).map(ByteOperand::Bytes);
         }
 
-        let position = self.byte_long(&rest[0])?;
-        let length = rest.get(1).map(|value| self.byte_long(value)).transpose()?;
+        self.byte_slice_inputs(function, || Ok(first), rest.len(), |index| Ok(&rest[index]))
+    }
+
+    fn byte_slice_inputs<'a>(
+        &mut self,
+        function: TextFunction,
+        source: impl FnOnce() -> Result<ByteOperand, EvalError>,
+        count: usize,
+        mut argument: impl FnMut(usize) -> Result<&'a Value, EvalError>,
+    ) -> Result<ByteOperand, EvalError> {
+        let position = self.byte_long(argument(0)?)?;
+        let length = (count > 1)
+            .then(|| self.byte_long(argument(1)?))
+            .transpose()?;
         if position < 0
             || (function == TextFunction::MidB && position == 0)
             || length.is_some_and(|length| length < 0)
         {
             return Err(EvalError::Domain);
         }
-        let first = self.coerce_byte_string_source(first)?;
+        let first = self.coerce_byte_string_source(source()?)?;
         let bytes = match first {
             ByteOperand::Scalar(Value::Null) => return Ok(ByteOperand::Scalar(Value::Null)),
             ByteOperand::Scalar(Value::Text(text)) => self.encode_byte_string(&text)?,
@@ -252,6 +279,19 @@ impl Evaluator<'_> {
             }
         }
     }
+
+    /// Observe scalar states or raw string bytes without Unicode publication.
+    pub fn observe_expression_byte_operand(
+        &mut self,
+        function: TextFunction,
+        operand: ExpressionByteOperand,
+    ) -> Result<Value, EvalError> {
+        if !matches!(function, TextFunction::LenB | TextFunction::AscB) {
+            return Err(EvalError::UnsupportedExpression);
+        }
+        self.check(0)?;
+        self.observe_byte_operand(function, operand.into_string()?)
+    }
 }
 
 impl Evaluator<'_> {
@@ -271,3 +311,6 @@ mod tests;
 
 #[cfg(test)]
 mod scalar_sources;
+
+#[cfg(test)]
+mod expression_tests;
