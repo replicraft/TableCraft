@@ -253,3 +253,6 @@ fn parsing_and_execution_share_all_cancellation_points_and_quotas() {
         );
     }
 }
+
+#[path = "dynamic_eval/discovery.rs"]
+mod discovery;

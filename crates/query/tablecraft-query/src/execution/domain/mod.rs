@@ -73,6 +73,7 @@ impl Runtime<'_, '_> {
                             self.source,
                             self.options,
                             self.budget,
+                            self.repeatable_dynamic,
                         )?;
                     }
                 }

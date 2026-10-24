@@ -2,7 +2,7 @@
 use crate::{
     ExecutionOptions, ExpressionQueryResult, PreparedQuery, QueryError, QueryLimits, Source,
     binding::{PreparationOptions, StageOptions, prepare_stage},
-    execution::{CellQueryResult, publish_cells},
+    execution::{CellQueryResult, ExecutionContext, publish_cells},
     plan::PreparedBody,
     profile::{MAX_NAMED_DEPTH, SOURCE_SCHEMA_POLICY},
     source::TextPolicy,
@@ -48,6 +48,7 @@ pub fn execute_with_schema_discovery<'a>(
         budget: &mut budget,
         discovery: &discovery,
         parameterless: false,
+        repeatable_dynamic: false,
     };
     let plan = operation.prepare(query)?;
     let result = plan.execute_discovered(
@@ -56,7 +57,10 @@ pub fn execute_with_schema_discovery<'a>(
         options,
         operation.budget,
         &discovery,
-        true,
+        ExecutionContext {
+            strict_parameters: true,
+            repeatable_dynamic: false,
+        },
     )?;
     publish_cells(result, operation.budget, options)
 }
@@ -92,6 +96,7 @@ impl<'source> DiscoveryState<'source> {
         source: &'source dyn Source,
         options: ExecutionOptions<'_>,
         budget: &mut ResourceBudget,
+        repeatable_dynamic: bool,
     ) -> Result<(), QueryError> {
         if !self.enabled {
             return Err(QueryError::Unsupported);
@@ -103,6 +108,7 @@ impl<'source> DiscoveryState<'source> {
             budget,
             discovery: self,
             parameterless: true,
+            repeatable_dynamic,
         }
         .discover(name)
     }
@@ -115,6 +121,7 @@ struct Operation<'a, 'source> {
     budget: &'a mut ResourceBudget,
     discovery: &'a DiscoveryState<'source>,
     parameterless: bool,
+    repeatable_dynamic: bool,
 }
 
 impl<'source> Operation<'_, 'source> {
@@ -220,7 +227,10 @@ impl<'source> Operation<'_, 'source> {
             self.options,
             self.budget,
             self.discovery,
-            false,
+            ExecutionContext {
+                strict_parameters: false,
+                repeatable_dynamic: self.repeatable_dynamic,
+            },
         )?;
         let PreparedBody::Crosstab(cross) = &plan.body else {
             return Err(QueryError::SchemaChanged);
