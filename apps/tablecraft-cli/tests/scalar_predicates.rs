@@ -2,6 +2,29 @@ mod support;
 use support::run;
 
 #[test]
+fn date_numeric_predicates_work_without_declaration_flags_or_text_policies() {
+    for command in ["eval", "run"] {
+        let result = run(&[
+            "query",
+            command,
+            "SELECT CDate(-.25)=CDbl(.25) AS Temporal,CDate(-.25)=CDec(.25) AS Raw,CDate(1) IN (1) AS Member",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(result.stdout, b"Temporal\tRaw\tMember\nTRUE\tFALSE\tTRUE\n");
+
+        for sql in ["SELECT 1,CDate(1)<2958466", "SELECT 1,CDate(1) IN (1,1/0)"] {
+            let failure = run(&["query", command, sql]);
+            assert_eq!(failure.status.code(), Some(2));
+            assert!(failure.stdout.is_empty());
+        }
+    }
+}
+
+#[test]
 fn source_free_predicates_preserve_reversed_bounds_exact_int64_and_null() {
     let result = run(&[
         "query",

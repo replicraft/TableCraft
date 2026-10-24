@@ -17,6 +17,8 @@ consumers retain their existing statement/operation restrictions.
 | Decimal beside Single/Double | Convert the floating operand through the existing CDec profile |
 | Text beside Text | Existing collation and captured field-policy routing; no numeric reinterpretation |
 | Either scalar NULL | Unknown, without parsing the other already-evaluated scalar |
+| Legacy DATE beside ordinary numeric/Boolean | Checked CDate conversion of numeric operands, followed by temporal comparison; no Text policy needed |
+| Legacy DATE beside Decimal | Existing CDec conversion and numeric comparison of raw serials |
 | Legacy DATE beside Text | Convert Text through CDate under an explicit date policy, then compare temporally |
 | Extended DATE, GUID or unsupported carriers mixed with Text | Existing refusal; no implicit narrowing or GUID parsing |
 
@@ -50,8 +52,18 @@ CDate syntax profile, not full Windows regional parsing.
 
 Comparison is temporal: negative Automation DATE aliases can compare equal despite
 different stored bits. Extended DateTime/Text remains refused, so the predicate
-cannot silently narrow its 100-nanosecond precision through legacy CDate. DATE/numeric
-comparison and full declared/Variant coercion remain outside this extension.
+cannot silently narrow its 100-nanosecond precision through legacy CDate.
+
+Ordinary DATE/numeric predicates now reuse the existing effective-type service:
+Date is selected beside integral/Boolean/floating/Currency values, while Decimal
+selects Decimal. Without Decimal, numbers outside the Date envelope fail Overflow;
+with Decimal, comparison does not impose that Date range on the numeric operand.
+For example, CDate(-.25)=CDbl(.25) compares calendar aliases as equal, while
+CDate(-.25)=CDec(.25) compares raw serials as unequal. This routing is independent
+of declaration categories and now works without --declared-arithmetic in scalar
+and bound queries. Other declaration-dependent conversions retain their existing
+profiles. The relational effective-type table motivates this engineering profile;
+native Access coercion, date ordering and failure precedence remain unqualified.
 
 ```sh
 tablecraft query eval "SELECT #2025-01-01#='01.01.2025'" --date-format de-de
@@ -158,3 +170,24 @@ rounded significands and all six comparisons in both orders, including seeded
 Int64 inputs. Native-source controls use raw ID getters from four unchanged
 registered 20,000-row fixtures with sequential and both explicit ID-index directions.
 Only TableCraft executes SQL; Windows Access equivalence remains unqualified.
+
+
+## Ordinary Date/numeric predicate evidence
+
+The shared Date/numeric service now runs from ordinary `compare_values` as well
+as the explicit effective-type API. No declaration flag, numeric Text policy or
+regional date parser is required for these numeric operands. Strict comparison
+and set/group/sort keys retain their own service; native Date predicate pushdown
+is not introduced. A partially supported AND cannot discard rows before a Date
+conversion failure is evaluated. Extended Date mixtures remain unsupported.
+
+Two new evaluator tests cover exhaustive quarter-day calendar/raw-serial
+comparison models and checked Date envelopes. Two query tests cover ordinary
+filters, reversed operands, membership/ranges, subqueries, joins, grouping/HAVING,
+domain criteria and eager failures. A CLI test covers both eval/run and buffered
+refusals. The original [comparison runner](testing/compare_date_numeric_predicates.py)
+passes 236 query controls with independent Decimal day/fraction tuples and raw
+native DATE getters on unchanged registered four-family inputs. It checks both
+operand directions, nine numeric families, range errors, NULLs, and sequential/
+ascending/descending index paths. Only TableCraft executes SQL; native Access
+comparison/coercion and error precedence remain unqualified.

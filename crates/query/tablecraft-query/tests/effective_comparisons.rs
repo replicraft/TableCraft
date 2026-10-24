@@ -104,7 +104,7 @@ fn date_numeric_selection_composes_without_enabling_implicit_extended_dates() {
     assert_eq!(run("SELECT A.N FROM (SELECT CInt(1) AS N) AS A INNER JOIN (SELECT CDate(1) AS D) AS B ON A.N=B.D", true).unwrap(), vec![vec![Value::Int16(1)]]);
     assert_eq!(
         run("SELECT CDate(1)=CInt(1)", false),
-        Err(EvalError::TypeMismatch.into())
+        Ok(vec![vec![Value::Boolean(true)]])
     );
     assert_eq!(
         run("SELECT 1,CDate(1)=CLng(2958466)", true),

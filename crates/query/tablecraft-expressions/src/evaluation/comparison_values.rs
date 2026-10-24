@@ -50,8 +50,9 @@ impl Evaluator<'_> {
 
     /// Compare already-evaluated scalar operands under the explicit numeric/date
     /// predicate profile. Text/Text retains collation; numeric/Text uses NumberFormat
-    /// and legacy DATE/Text uses the existing CDate policy. This does not infer
-    /// declared/Variant types or change strict comparison for set/group keys.
+    /// and legacy DATE/Text uses the existing CDate policy. Legacy DATE/numeric
+    /// uses checked CDate conversion unless Decimal selects raw serial comparison.
+    /// Declared/Variant types are not inferred; set/group keys keep strict comparison.
     pub fn compare_values(
         &mut self,
         operator: Comparison,
@@ -61,6 +62,9 @@ impl Evaluator<'_> {
         self.check(0)?;
         if matches!(left, Value::Null) || matches!(right, Value::Null) {
             return Ok(Truth::Unknown);
+        }
+        if let Some(result) = self.compare_effective_date_values(operator, left, right)? {
+            return Ok(result);
         }
         if let Some(result) = self.compare_floating_integer(operator, left, right)? {
             return Ok(result);

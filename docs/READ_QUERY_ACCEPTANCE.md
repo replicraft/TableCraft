@@ -52,6 +52,11 @@ carriers. They retain explicit syntax and strict carrier matching; see
 [parameter input rules](DEVELOPMENT.md). This closes a host-input gap without
 completing the value-semantics acceptance work below.
 
+Ordinary Date/numeric predicates now reuse checked CDate conversion, or Decimal
+raw-serial selection when Decimal participates, without requiring the engineering
+declaration flag. This does not enable strict set-key coercion or qualify native
+Access comparison behavior. See [predicate scope](NUMERIC_PREDICATES.md).
+
 ## Remaining acceptance work
 
 | Priority | Area | Completion evidence still needed |
