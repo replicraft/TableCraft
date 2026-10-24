@@ -201,6 +201,25 @@ fn raw_general_keys_share_sets_groups_sorting_ties_and_crosstab_rows() {
 }
 
 #[test]
+fn raw_general_extrema_keep_sql_weights_and_first_equal_representatives() {
+    let input = "(SELECT 1 AS ID,ChrW(55296)&'b' AS S UNION ALL SELECT 2,ChrW(55296)&'a' UNION ALL SELECT 3,ChrW(55296)&'A ' UNION ALL SELECT 4,NULL) AS Q";
+    for version in [0, 1] {
+        let sql = format!(
+            "SELECT LenB(Min(S)),StrComp(Min(S),ChrW(55296)&'a',0),LenB(Max(S)),StrComp(Max(S),ChrW(55296)&'b',0) FROM {input}"
+        );
+        assert_eq!(
+            rows(&sql, &policy(version)).unwrap(),
+            vec![vec![
+                Value::Int32(4),
+                Value::Int16(0),
+                Value::Int32(4),
+                Value::Int16(0),
+            ]]
+        );
+    }
+}
+
+#[test]
 fn comparison_budget_is_cumulative_across_callbacks_and_executions() {
     let policy = GeneralCollation::new(
         NativeSortOrder::from_native_bytes([9, 4, 0, 1]),

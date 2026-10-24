@@ -1,5 +1,31 @@
 # Implementation status
 
+## Retained String aggregate and domain extrema
+
+Min/Max and DMin/DMax now retain selected String cells until an actual comparison
+or scalar/public result needs publication. They share strict scalar/String key
+ordering, preserve field/runtime policies and first equal representatives, omit
+NULL and keep standard Error-only extrema separate. Singletons need no unused
+comparison/Unicode decoding; actual unit comparisons still refuse odd lengths.
+Scalar aggregate/domain boundaries explicitly publish valid Text. Final
+unrepresentable output and operational failures remain buffered failures. See
+[aggregate contracts](EXPRESSION_AGGREGATES.md#retained-string-extrema).
+
+The previous CLI failed a singleton LenB(Min(raw String)) case; it now returns
+the exact byte count. 123 focused query tests, eight adapter tests and six CLI
+tests pass, covering fields, groups/HAVING, correlations, fixed named crosstab
+cells, domain/scalar composition, strict types/Error limits and every observed
+query cancellation checkpoint. Scoped Clippy, minimal query compilation,
+formatting, Python compilation and diff checks pass.
+
+The original runner passes 791 independent controls: reordered General vectors
+plus aggregate/domain queries over four unchanged native inputs, including
+selected primary-index reads and empty criteria. Existing key/predicate/
+retained-cell/native-policy recipes pass. No dependency, stored carrier or write
+gate changed. Full workspace tests, benchmarks and Windows Access qualification
+were not run; wider coercion, other consumers and native qualification remain
+unfinished.
+
 ## Retained String keys and crosstab cells
 
 Grouping, DISTINCT/active DISTINCTROW, UNION duplicate removal, sorting and TOP

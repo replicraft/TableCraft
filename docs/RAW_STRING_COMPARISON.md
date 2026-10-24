@@ -50,8 +50,9 @@ added. The independent key vectors establish the provisional model, not native
 Microsoft Access SQL conformance.
 
 [Raw DISTINCT/UNION/group/sort keys](RAW_STRING_KEYS.md) now use this comparison
-boundary when an actual comparison is needed. Additional aggregate/built-in
-consumers and wider raw coercion remain separate acceptance work. Final query/CLI String
+boundary when an actual comparison is needed. [Min/Max and domain extrema](EXPRESSION_AGGREGATES.md#retained-string-extrema)
+also retain Strings under these strict key rules. Other consumers and wider raw
+coercion remain separate acceptance work. Final query/CLI String
 publication remains strict: directly selecting an unrepresentable String still
 fails before buffered results are returned. Stored values, source/parameter
 admission, write gates and physical index encodings are unchanged.

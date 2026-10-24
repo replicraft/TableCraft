@@ -62,5 +62,6 @@ Focused tests additionally cover field policy resolution, every observed query
 cancellation checkpoint, raw crosstab row sorting and metadata-only preparation
 of fixed named crosstabs with raw cells. Existing comparison/LIKE/predicate,
 retained-cell and native-policy recipes pass with registered native inputs
-unchanged. Wider Variant/coercion, raw Min/Max and other built-in consumers,
+unchanged. [Raw Min/Max](EXPRESSION_AGGREGATES.md#retained-string-extrema) now reuse
+this strict comparison boundary. Wider Variant/coercion and other built-in consumers,
 additional locales and native Access qualification remain acceptance work.

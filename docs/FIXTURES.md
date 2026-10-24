@@ -1,5 +1,21 @@
 # Candidate Access fixtures
 
+## Retained String extrema controls
+
+The original [extrema runner](testing/compare_raw_string_extrema.py) passes 791
+controls. Python selects first equal representatives from all reviewed short
+General vectors in original, reversed and seeded orders, with NULL and grouped
+inputs. Lengths and binary StrComp observations verify selected byte contents.
+These 215 source-free controls are separate from 576 native-source controls.
+
+The reviewed Jackcess JAR and original TableDataOracle getters supply IDs 1..6
+from each registered policy input. Python supplies independent ASCII/selection
+expectations; TableCraft alone evaluates aggregate/domain SQL. Native runs cover
+database/default General policies, both explicit family overrides, sequential and
+selected primary-index reads, bounded criteria and empty populations. All four
+input SHA-256 values remain unchanged. No new third-party fixture or dependency
+was added. Native Access qualification and benchmarks were not run.
+
 ## Retained String key controls
 
 The original [key runner](testing/compare_raw_string_keys.py) passes 406 controls

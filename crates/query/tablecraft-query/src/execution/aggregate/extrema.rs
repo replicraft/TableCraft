@@ -1,4 +1,4 @@
-//! Min/Max retain expression data without widening scalar key comparison.
+//! Min/Max retain expression data under strict scalar/String key comparison.
 use super::{Environment, Expr, QueryError, Runtime};
 use crate::execution::cell::CellValue;
 use std::cmp::Ordering;
@@ -18,7 +18,7 @@ impl Runtime<'_, '_> {
         let mut policy = crate::source::TextPolicy::Default;
         for row in group {
             self.tick()?;
-            let value = self.expression_operand(
+            let value = self.retained_expression_operand(
                 argument,
                 Environment {
                     row,
@@ -30,7 +30,7 @@ impl Runtime<'_, '_> {
             policy = policy.merge(value.policy);
             match &value.value {
                 ExpressionValue::Value(Value::Null) => continue,
-                ExpressionValue::Value(_) => {}
+                ExpressionValue::Value(_) | ExpressionValue::StringBytes(_) => {}
                 ExpressionValue::Error(_) => {
                     // Even a singleton must have a qualified standard code.
                     self.evaluator().compare_expression_values(
@@ -39,9 +39,7 @@ impl Runtime<'_, '_> {
                         &value,
                     )?;
                 }
-                ExpressionValue::Empty
-                | ExpressionValue::Missing
-                | ExpressionValue::StringBytes(_) => {
+                ExpressionValue::Empty | ExpressionValue::Missing => {
                     return Err(EvalError::NonScalarExpression.into());
                 }
             }
@@ -50,14 +48,24 @@ impl Runtime<'_, '_> {
                 true
             } else {
                 match (&value.value, &selected.value) {
-                    (ExpressionValue::Value(value), ExpressionValue::Value(selected)) => {
-                        let policy =
-                            if matches!((value, selected), (Value::Text(_), Value::Text(_))) {
-                                self.text_policy(argument)?.merge(policy)
-                            } else {
-                                crate::source::TextPolicy::Default
-                            };
-                        self.order(value, selected, policy)?
+                    (
+                        ExpressionValue::Value(_) | ExpressionValue::StringBytes(_),
+                        ExpressionValue::Value(_) | ExpressionValue::StringBytes(_),
+                    ) => {
+                        let policy = if matches!(
+                            (&value.value, &selected.value),
+                            (
+                                ExpressionValue::Value(Value::Text(_))
+                                    | ExpressionValue::StringBytes(_),
+                                ExpressionValue::Value(Value::Text(_))
+                                    | ExpressionValue::StringBytes(_)
+                            )
+                        ) {
+                            self.text_policy(argument)?.merge(policy)
+                        } else {
+                            crate::source::TextPolicy::Default
+                        };
+                        self.order_key(&value, &selected, policy)?
                             == if maximum {
                                 Ordering::Greater
                             } else {

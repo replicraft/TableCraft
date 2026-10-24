@@ -256,7 +256,9 @@ live-file reads or native Access qualification.
 DISTINCTROW, UNION duplicate removal, sorting and TOP ties under explicit
 comparison policies. Fixed-heading named crosstabs also retain raw cells for
 outer observers; actual pivot/heading names keep their separate publication
-contract. Remaining raw aggregate/built-in consumers, broader Variant coercion,
+contract. Min/Max and domain extrema now also retain
+[lossless Strings](EXPRESSION_AGGREGATES.md#retained-string-extrema) under strict
+key comparison and scalar publication rules. Other raw consumers, broader Variant coercion,
 additional locales and native qualification remain in the read/query workstream.
 
 The execution order below remains the acceptance checklist. The next query work
