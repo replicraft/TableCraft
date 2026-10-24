@@ -9,7 +9,7 @@ execution-local; preparation does not capture a page.
 | --- | --- |
 | Chr(code) | Checked half-even numeric-to-Int32 conversion followed by the single-byte range 0–255. Decodes using the selected page; without one, only ASCII is accepted. Unlike String, this function does not reduce out-of-range codes modulo 256. |
 | Asc(text) | Encodes the first character in the selected single-byte page and returns its byte code as Int16 (0–255). Without a page, only ASCII is accepted. Empty Text fails. |
-| ChrW(code) | Checked numeric-to-Int32 conversion, accepting signed Int16 or unsigned UTF-16 spellings (-32768–65535). Negative spellings reinterpret the 16-bit unit; surrogate units cannot become stored Text and fail. |
+| ChrW(code) | Checked numeric-to-Int32 conversion, accepting signed Int16 or unsigned UTF-16 spellings (-32768–65535). Negative spellings reinterpret the unit; nested byte consumers can retain it, while surrogate units cannot publish as stored Text. |
 | AscW(text) | Returns the first UTF-16 unit as a signed Int16. This includes a leading surrogate from supplementary input, without modifying or constructing an unpaired-surrogate string. Empty Text fails. |
 
 All four reject NULL with InvalidNullConversion. SQL Asc/AscW now convert ordinary
@@ -24,8 +24,11 @@ Native coercion/result/error precedence still requires Access qualification.
 ChrW/AscW use the explicit Windows-style UTF-16 profile on every platform, without
 emulating historical Macintosh VBA guesses. For example, ChrW(-1) produces U+FFFF,
 AscW(U+FFFF) returns -1 and AscW of a leading U+1F600 returns -10179 (unit D83D).
-ChrW of D83D fails with UnrepresentableText; supplementary scalar construction is
+Direct ChrW of D83D publication fails with UnrepresentableText; supplementary scalar construction is
 not inferred from a number greater than 65535.
+Nested [raw UTF-16 observations](BYTE_STRING_FUNCTIONS.md#complete-utf-16-unit-observations)
+now retain individual surrogate units through Len, LenB, AscW, AscB, byte slices,
+explicit binary byte search and type inspection without relaxing publication.
 
 ## Encoding and resources
 
@@ -75,9 +78,9 @@ decoded sequential/indexed native rows, preserving original database bytes.
 [Implementation status](IMPLEMENTATION.md) records counts and check scope.
 
 All four are Partial in the [built-in tracker](ACCESS_BUILTINS.md). Full Variant
-coercion, DBCS/native mappings and error/default behavior, lossless surrogate
-results and Windows Access execution remain incomplete. AscB/ChrB and `$` aliases
-remain separate unsupported calls.
+coercion, DBCS/native mappings and error/default behavior, general raw-string
+results and Windows Access execution remain incomplete. AscB/ChrB and Chr$ retain
+their separate documented contracts; wider typed aliases remain unsupported.
 
 ## Raw first-byte observation
 
@@ -113,7 +116,7 @@ Normalization, streamed output and raw byte buffers use cumulative resource limi
 A control permits four normalized code bytes plus one result byte; a separate
 three-byte control permits two normalized digits and one retained raw byte.
 Every observed ChrW conversion/output checkpoint can cancel. Selected Windows-1252
-still maps byte 128 to U+20AC; no-page high bytes, unpaired ChrW surrogates and
+still maps byte 128 to U+20AC; no-page high bytes, unpaired ChrW scalar publication and
 out-of-range codes still fail. No DBCS, best-fit or platform locale discovery is
 introduced. The [combined mode/code evidence](STRING_COMPARISON.md#contextual-comparison-mode-conversion)
 records current checks and native Access gaps; all character built-ins remain

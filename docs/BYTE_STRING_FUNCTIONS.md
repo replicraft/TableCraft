@@ -100,13 +100,53 @@ buffered. An even byte slice starting at an odd UTF-16 boundary can still be val
 Unicode: MidB('🦀',2,2) contains bytes D8 80 and publishes U+80D8. Publication does
 not realign a byte slice to the original character boundaries.
 
+## Complete UTF-16 unit observations
+
+Len and AscW now consume lossless intermediates containing complete UTF-16LE
+units. Len returns the unit count as Long; AscW returns the first unit as signed
+Integer, including an unpaired surrogate. Neither operation decodes the entire
+string into Rust Text, substitutes a replacement character or changes stored data.
+Odd byte counts remain UnrepresentableText for these Unicode observations;
+LenB/AscB retain their separate byte-level behavior. An empty raw string has Len
+zero, while AscW still fails Domain on an empty string.
+
+ChrW now also supplies a two-byte intermediate to nested byte consumers and
+inspection. Its existing checked Long, -32768..65535 code-unit range, signed
+spelling and explicit numeric Text/DATE conversion rules are shared with the
+strict character kernel. CVar retains that intermediate, and TypeName/VarType
+continue to report String/8. No Binary, array or stored carrier is introduced.
+
+```sh
+tablecraft query eval "SELECT Len(ChrW(55296)),AscW(ChrW(55296)),LenB(ChrW(55296))"
+tablecraft query run "SELECT Len(LeftB('😀',2)),AscW(RightB('😀',2))"
+```
+
+These return `1, -10240, 2` and `1, -8704` respectively. Direct `ChrW(55296)`
+publication still fails UnrepresentableText. Ordinary Left/Right/Mid, arbitrary
+operators/selection, source parameters and relational string cells retain their
+existing representable-Text boundaries. The borrowed scalar ChrW API likewise
+keeps its strict character/publication contract.
+
+The existing [Len/LenB specification](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/a4d9985a-e2cb-489c-a20a-5da09d77a59e)
+and [Chr/ChrW](https://support.microsoft.com/en-us/access/functions/chr-function)
+and [Asc/AscW](https://support.microsoft.com/en-us/access/functions/asc-function)
+contracts motivate this explicit Windows-style UTF-16 profile; native Access
+surrogate/odd-byte query behavior remains unqualified. Both query hosts reuse the
+same evaluator; raw storage is charged before allocation, observations require
+no new payload allocation and cancellation remains active.
+
+The expanded [independent byte recipe](testing/compare_byte_strings.py) compares
+21,308 source-free values/refusals against Python UTF-16LE bytes. It includes
+every surrogate unit, signed code spellings, partial-byte slices, inspection and
+both CLI query paths. It executes no native Access SQL or application code.
+
 ## Remaining byte-string work
 
 [StrConv](STRCONV.md) now supports explicit casing and strict single-byte
 Unicode/ANSI conversions; width/kana and broader mapping behavior remain open.
 Its encoding results use these same lossless byte-string intermediates. InStrB
 supports the explicit binary profile below. The current lossless paths do not yet
-extend to arbitrary conditional/operator arguments, Len's raw-string overload,
+extend to arbitrary conditional/operator arguments, odd-byte Unicode observations,
 array elements, parameter/result carriers, derived-table cells or raw-string
 comparison/sorting. Those boundaries still require ordinary representable Text;
 they do not silently replace or truncate invalid data. Dollar-suffixed aliases,
@@ -117,7 +157,8 @@ The parser-free public carrier supports already charged raw byte buffers and
 consuming slices. SQL-enabled hosts use the owning `apply_byte_string`,
 `observe_byte_operand` and `publish_byte_operand` evaluator methods. The borrowed
 `text::apply*`/TextResult API does not produce raw byte strings; it explicitly
-rejects these producers. An ANSI conversion through StrConv remains a distinct
+rejects the byte-only producers; ChrW retains its existing strict scalar result.
+An ANSI conversion through StrConv remains a distinct
 operation and must not silently change Unicode inputs to an inferred code page.
 
 ## Binary byte search

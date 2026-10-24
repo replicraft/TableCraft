@@ -223,14 +223,12 @@ impl Runtime<'_, '_> {
                 }
                 if matches!(
                     function,
-                    TextFunction::Len
-                        | TextFunction::LTrim
+                    TextFunction::LTrim
                         | TextFunction::RTrim
                         | TextFunction::Trim
                         | TextFunction::LCase
                         | TextFunction::UCase
                         | TextFunction::Asc
-                        | TextFunction::AscW
                         | TextFunction::StrReverse
                         | TextFunction::Val
                 ) {
@@ -255,7 +253,7 @@ impl Runtime<'_, '_> {
                     let operand = self.byte_call(*function, arguments, env)?;
                     return Ok(self.evaluator().publish_byte_operand(operand)?);
                 }
-                if matches!(function, TextFunction::LenB | TextFunction::AscB) {
+                if function.observes_bytes() {
                     let operand = self.expression_byte_operand(&arguments[0], env)?;
                     return Ok(self
                         .evaluator()

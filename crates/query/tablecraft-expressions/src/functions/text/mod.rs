@@ -175,8 +175,13 @@ impl TextFunction {
     pub const fn produces_bytes(self) -> bool {
         matches!(
             self,
-            Self::ChrB | Self::LeftB | Self::RightB | Self::MidB | Self::StrConv
+            Self::ChrB | Self::ChrW | Self::LeftB | Self::RightB | Self::MidB | Self::StrConv
         )
+    }
+
+    /// Whether this operation can inspect a lossless string-byte intermediate.
+    pub const fn observes_bytes(self) -> bool {
+        matches!(self, Self::Len | Self::LenB | Self::AscB | Self::AscW)
     }
 
     /// Validate syntax shape before evaluating operands.
@@ -312,9 +317,11 @@ pub fn apply_with_context<'a>(
     if function == TextFunction::Format {
         return format::prepare(arguments, context);
     }
-    if function.produces_bytes() || function == TextFunction::InStrB {
-        // Byte producers use the owning byte-operand evaluator, never a borrowed
-        // TextResult that could discard odd bytes or unpaired UTF-16 units.
+    if (function.produces_bytes() && function != TextFunction::ChrW)
+        || function == TextFunction::InStrB
+    {
+        // Byte-only producers need the owning evaluator. ChrW also retains its
+        // strict borrowed scalar path, which rejects unpaired publication.
         return Err(EvalError::UnsupportedExpression);
     }
     if matches!(

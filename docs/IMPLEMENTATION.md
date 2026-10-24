@@ -1,5 +1,29 @@
 # Implementation status
 
+## Raw UTF-16 unit observations
+
+Len/AscW now inspect complete UTF-16LE units in existing byte-string intermediates
+without forcing early Unicode publication. ChrW can supply its checked two-byte
+unit to nested byte consumers and inspection; its range validation is shared with
+the strict scalar constructor. Unpaired units retain String identity, while odd-byte
+Unicode observations, final surrogate publication and raw relational string cells
+remain refused. See [UTF-16 scope](BYTE_STRING_FUNCTIONS.md#complete-utf-16-unit-observations).
+
+Three new expression controls cover raw unit/sign goldens, generated unsigned/signed
+spellings, allocation limits and every observed cancellation checkpoint. Two query
+tests cover prepared rebinding, correlated/grouped/crosstab consumers and continued
+publication refusal; one CLI test covers both query paths and buffered failures.
+All 691 all-feature expression tests plus one doctest, 364 minimal expression tests,
+twelve focused query tests and nine CLI byte/character tests pass. Focused Clippy,
+minimal query check, formatting, Python compilation and diff checks pass.
+
+The expanded independent byte recipe passes 21,308 source-free value/refusal
+controls against Python UTF-16LE models, including every surrogate unit. No new
+dependency, stored carrier, native decoder, VBA runtime or writer scope changed.
+Native fixture replays, Windows Access, full engine/workspace suites and benchmarks
+were not run. Wider raw-string/coercion semantics and native qualification remain
+unfinished.
+
 ## Round digit counts independent of storage scale
 
 Round now admits nonnegative Long precision counts instead of rejecting counts
