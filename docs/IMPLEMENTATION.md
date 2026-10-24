@@ -1,5 +1,25 @@
 # Implementation status
 
+## QBColor checked Integer argument
+
+QBColor now converts its palette index through the shared Integer conversion,
+matching the formal Microsoft signature before validating 0..15. Values outside
+Int16 report Overflow; representable integers outside the palette report Domain.
+Numeric Text, Decimal/Currency/floating rounding, explicit expression-state
+admission and reusable query parameters share that path. RGB retains its current
+Long/saturation profile. See [the source and boundary](COLOR_FUNCTIONS.md#qbcolor-integer-argument-boundary).
+
+The batch passes 653 all-feature expression tests plus one doctest, 346 minimal
+expression tests, nine selected color/math-state/math-Text query tests and two
+CLI color tests. Exact typed errors, failed-then-successful plan reuse and atomic
+CLI diagnostics are checked. The independent runner passes 354 scalar controls
+using Python Decimal half-even/range calculations; optional native-row inputs
+were not supplied in this run. Expression/query/CLI all-target/all-feature Clippy,
+CLI build, formatting, Python syntax and diff checks pass. No new dependency,
+stored type or write capability is introduced. Full workspace/native suites and
+native Access query-wrapper/error comparisons were not repeated.
+
+
 ## Malformed maximum-width row continuation
 
 Two new integration tests exercise independent 255-column chained schemas,

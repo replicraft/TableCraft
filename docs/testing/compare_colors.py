@@ -29,14 +29,17 @@ def basic(index):
     return packed([intensity * ((index >> shift) & 1) for shift in [2, 1, 0]])
 
 
-def execute(cli, mode, sql, database=None, succeeds=True):
+def execute(cli, mode, sql, database=None, succeeds=True, diagnostic=None, options=()):
     command = [str(cli), "query", mode, sql]
     if database is not None:
         command.extend(["--database", str(database)])
 
+    command.extend(map(str, options))
     result = subprocess.run(command, capture_output=True, text=True, check=False)
     if not succeeds:
-        assert result.returncode != 0 and not result.stdout, (sql, result.stdout)
+        assert result.returncode == 2 and not result.stdout, (sql, result.stdout)
+        if diagnostic:
+            assert diagnostic in result.stderr, (sql, result.stderr, diagnostic)
         return []
 
     assert result.returncode == 0, (sql, result.stderr)
@@ -70,6 +73,19 @@ def main():
         ]:
             execute(args.cli, mode, "SELECT 1," + expression, succeeds=False)
             count += 1
+
+    for mode in ["eval", "run"]:
+        for value in [32767, 32768, -32768, -32769, Decimal("32766.5"), Decimal("32767.5")]:
+            rounded = int(Decimal(value).to_integral_value(rounding=ROUND_HALF_EVEN))
+            diagnostic = "numeric overflow" if not -32768 <= rounded <= 32767 else "invalid arithmetic domain"
+            for expression in [str(value), "'" + str(value) + "'", f"CDec('{value}')"]:
+                execute(
+                    args.cli, mode, f"SELECT 1,QBColor({expression})", succeeds=False,
+                    diagnostic=diagnostic, options=["--number-format", "invariant"],
+                )
+                count += 1
+        assert execute(args.cli, mode, "SELECT QBColor(15.49),RGB(32768,0,0)") == [[str(basic(15)), "255"]]
+        count += 1
 
     for database in args.database:
         before = hashlib.sha256(database.read_bytes()).digest()

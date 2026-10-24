@@ -38,8 +38,10 @@ pub(super) fn apply_with_input<'a>(
             red | (green << GREEN_SHIFT) | (blue << BLUE_SHIFT)
         }
         MathFunction::QbColor => {
-            let index =
-                usize::try_from(number(argument(0)?, convert)?).map_err(|_| EvalError::Domain)?;
+            let Value::Int16(index) = convert(Conversion::Integer, argument(0)?)? else {
+                return Err(EvalError::TypeMismatch);
+            };
+            let index = usize::try_from(index).map_err(|_| EvalError::Domain)?;
             *BASIC_PALETTE.get(index).ok_or(EvalError::Domain)?
         }
         _ => return Err(EvalError::UnsupportedExpression),
@@ -106,6 +108,39 @@ mod tests {
         ] {
             assert_eq!(MathFunction::QbColor.apply(&[value]), Err(error));
         }
+    }
+
+    #[test]
+    fn palette_arguments_use_integer_conversion_before_domain_validation() {
+        for value in [
+            Value::Int32(32768),
+            Value::Int32(-32769),
+            Value::Double(Double::from_float(32767.5)),
+            Value::Decimal(Decimal::new(327675, 1).unwrap()),
+            Value::Currency(Currency::from_scaled(327675000)),
+        ] {
+            assert_eq!(
+                MathFunction::QbColor.apply(&[value]),
+                Err(EvalError::Overflow)
+            );
+        }
+
+        for value in [
+            Value::Int16(32767),
+            Value::Int16(-32768),
+            Value::Double(Double::from_float(32766.5)),
+        ] {
+            assert_eq!(
+                MathFunction::QbColor.apply(&[value]),
+                Err(EvalError::Domain)
+            );
+        }
+
+        // RGB keeps its separately documented Long/saturation profile.
+        assert_eq!(
+            MathFunction::Rgb.apply(&[Value::Int32(32768), Value::Byte(0), Value::Byte(0)]),
+            Ok(Value::Int32(255))
+        );
     }
 
     #[test]

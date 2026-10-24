@@ -128,7 +128,8 @@ or proof of cross-platform bit equality. Native Access remains unrun.
 
 All fifteen math identities, including Rnd, now accept numeric Text through the
 SQL evaluator's supplied NumberFormat. Value operands convert to Double; Round's
-place count and RGB/QBColor controls use checked Long conversion, while Rnd's
+place count and RGB controls use checked Long conversion; QBColor uses checked
+Integer conversion, while Rnd's
 control uses Single. Pure numeric APIs retain their host-free conversion boundary
 and reject Text without a contextual evaluator. No system locale is inferred.
 
@@ -214,7 +215,7 @@ Query Nz(NULL) retains empty Text and supplies no new Empty constructor.
 The reviewed [MS-VBAL specification](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/d5418146-0bd2-45eb-9c7a-fd9502722c74)
 provides Error Let-coercion refusal (5.5.1.2.9), numeric Empty zero (5.5.1.2.11),
 Abs's Integer Empty result and Int/Fix's fallback Integer coercion. Typed controls
-retain the existing bounded profiles, including color Long widths. Native argument
+retain the existing bounded profiles, including RGB Long channels and QBColor Integer indexes. Native argument
 coercion/evaluation precedence, full Variant behavior and Round Empty value
 semantics remain unqualified. No VBA runtime or stored state carrier is introduced.
 

@@ -28,13 +28,14 @@ Results are 197121/128 and 255, respectively.
 
 ## Conversion and failure boundaries
 
-The current profile reuses checked numeric/Boolean CLng conversion, including
-half-even integer rounding. It accepts numeric stored carriers, rejects NULL
+RGB reuses checked numeric/Boolean CLng conversion; QBColor uses checked CInt
+conversion for its Integer argument. Both use half-even integer rounding. The
+profile accepts numeric stored carriers, rejects NULL
 with InvalidNullConversion, negative converted arguments and out-of-range palette
 indices with Domain, and conversion overflow/non-finite inputs with existing
 typed failures. Boolean TRUE converts to -1 and therefore fails the domain check.
 SQL numeric Text now uses an explicit NumberFormat through the shared checked
-Long conversion. Binary and object/default-property coercions remain unsupported.
+target conversion. Binary and object/default-property coercions remain unsupported.
 RGB inputs beyond the signed Long conversion envelope fail before saturation.
 
 Every supplied expression evaluates eagerly in written order before numeric
@@ -74,11 +75,32 @@ This supplies numbers only and adds no UI or Windows object dependency.
 Numeric Text controls follow the existing per-channel validation order and
 conversion envelope; a failed red channel does not parse green or blue Text.
 See [math Text evidence](MATH_FUNCTIONS.md#explicit-numeric-text-operands-23-october-2026).
-This does not qualify native Integer-versus-Long argument-width behavior.
+RGB retains its current Long channel profile; its native argument-width behavior
+remains unqualified. QBColor now models the formal Integer argument contract;
+native Access query-wrapper qualification remains unrun.
 
 
 Color calls now use [explicit expression-value admission](MATH_FUNCTIONS.md#expression-errorempty-math-arguments-23-october-2026)
 after all supplied SQL expressions evaluate. Error data fails TypeMismatch at its
 channel/index position; earlier numeric domain errors retain precedence. Host
-Empty is zero under the existing Long control profile. This does not qualify
+Empty is zero under the RGB Long/QBColor Integer control profiles. This does not qualify
 native argument widths or evaluation/error precedence.
+
+
+## QBColor Integer argument boundary
+
+The [formal QBColor contract](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/4b7087c6-20fc-4d90-8d83-730a0c6a4aad)
+declares an Integer argument and Long result. Existing query availability remains
+established by the Access sandbox query reference above. The implementation now
+uses the shared Integer conversion before validating the 0..15 palette range:
+32768/-32769 report Overflow, while 32767/-32768 convert successfully and then
+report Domain. Fractional/Decimal/Currency and explicit-policy numeric Text
+arguments use the same checked conversion, without changing stored values.
+This corrects the earlier Long control profile, which reported Domain for values
+that overflow Integer. RGB's separately documented channel saturation remains.
+
+Focused checks include exact typed errors, plan reuse after failed parameters,
+scalar/query CLI refusal with no stdout, and independent Decimal half-even/range
+models. Host Empty/Error/Missing and eager evaluation retain their existing
+admission path. The correction follows the formal argument model; actual native
+Access coercion, query-wrapper behavior and error wording remain unqualified.
