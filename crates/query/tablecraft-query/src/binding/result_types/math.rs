@@ -1,58 +1,9 @@
 //! Successful scalar carriers; this does not execute functions or infer coercions.
 use crate::OutputType;
-use tablecraft_expressions::functions::{math::MathFunction, text::TextFunction};
+use tablecraft_expressions::functions::math::MathFunction;
 use tablecraft_schema::ScalarType;
 
-pub(super) fn text(function: TextFunction) -> OutputType {
-    let scalar = match function {
-        TextFunction::Len
-        | TextFunction::LenB
-        | TextFunction::InStr
-        | TextFunction::InStrB
-        | TextFunction::InStrRev => ScalarType::Int32,
-        TextFunction::StrComp | TextFunction::Asc | TextFunction::AscB | TextFunction::AscW => {
-            ScalarType::Int16
-        }
-        TextFunction::Val => ScalarType::Double,
-        // StrConv can return raw bytes or Unicode depending on its controls.
-        TextFunction::ChrB
-        | TextFunction::LeftB
-        | TextFunction::RightB
-        | TextFunction::MidB
-        | TextFunction::StrConv => return OutputType::Dynamic,
-        TextFunction::LCase
-        | TextFunction::UCase
-        | TextFunction::LTrim
-        | TextFunction::RTrim
-        | TextFunction::Trim
-        | TextFunction::Left
-        | TextFunction::Right
-        | TextFunction::Mid
-        | TextFunction::Replace
-        | TextFunction::Space
-        | TextFunction::String
-        | TextFunction::StrReverse
-        | TextFunction::Chr
-        | TextFunction::ChrString
-        | TextFunction::ChrW
-        | TextFunction::Hex
-        | TextFunction::Oct
-        | TextFunction::Str
-        | TextFunction::CStr
-        | TextFunction::Format
-        | TextFunction::FormatDateTime
-        | TextFunction::MonthName
-        | TextFunction::WeekdayName
-        | TextFunction::FormatNumber
-        | TextFunction::FormatPercent
-        | TextFunction::FormatCurrency
-        | TextFunction::Partition
-        | TextFunction::HyperlinkPart => ScalarType::Text,
-    };
-    OutputType::scalar(scalar, true)
-}
-
-pub(super) fn math(function: MathFunction, input: Option<OutputType>) -> OutputType {
+pub(super) fn result(function: MathFunction, input: Option<OutputType>) -> OutputType {
     // These functions propagate a NULL value operand on every successful call.
     // Metadata does not bypass eager operands or Round's digit validation.
     if input == Some(OutputType::Null)

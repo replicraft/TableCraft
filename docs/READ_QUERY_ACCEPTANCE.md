@@ -392,3 +392,10 @@ Widening still requires provenance, and common conversion/arithmetic failures re
 typed errors. The shared numeric/evaluator services avoid repeated operand or Text
 conversion work; [agreement scope](DECLARED_ARITHMETIC.md#binary-arithmetic-with-unknown-provenance)
 does not establish native declared types or complete P0 compatibility.
+
+Text metadata now retains qualified NULL-only source/count arguments across 23
+existing functions, including both search call shapes and raw-byte producers.
+Named/derived/UNION composition reuses those facts without scans or providers;
+nullable parameters and NULL controls remain distinct. This closes another
+[result-inference gap](QUERY_RESULT_TYPES.md#null-only-text-inputs), not native
+DAO/UNION typing or complete P0 compatibility.

@@ -3,9 +3,10 @@ mod aggregate;
 mod arithmetic;
 mod concatenation;
 mod dates;
-mod functions;
 mod logical;
+mod math;
 mod null_replacement;
+mod text;
 mod unary;
 use super::{Binder, literals};
 use crate::{
@@ -91,13 +92,23 @@ impl Binder<'_> {
                 },
                 false,
             ),
-            Expr::TextCall(function, _) => functions::text(*function),
+            Expr::TextCall(function, arguments) => {
+                let mut output = text::result(*function);
+                for &index in text::null_inputs(*function, arguments.len()) {
+                    let input = arguments.get(index).ok_or(QueryError::Source)?;
+                    if self.result_type(input, scopes, depth + 1)? == OutputType::Null {
+                        output = OutputType::Null;
+                        break;
+                    }
+                }
+                output
+            }
             Expr::MathCall(function, arguments) => {
                 let input = arguments
                     .first()
                     .map(|argument| self.result_type(argument, scopes, depth + 1))
                     .transpose()?;
-                functions::math(*function, input)
+                math::result(*function, input)
             }
             Expr::FinancialCall(..) | Expr::CashFlowCall(..) => {
                 OutputType::scalar(ScalarType::Double, true)
