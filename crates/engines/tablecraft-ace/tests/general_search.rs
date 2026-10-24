@@ -1,3 +1,6 @@
+#[path = "general_search/raw.rs"]
+mod raw;
+
 use proptest::prelude::*;
 use std::{cell::Cell, cmp::Ordering, ops::Range};
 use tablecraft_ace::{

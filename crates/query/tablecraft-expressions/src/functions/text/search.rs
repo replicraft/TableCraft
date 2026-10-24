@@ -3,13 +3,14 @@ mod mode;
 mod units;
 use super::{TextFunction, TextResult, compare};
 #[cfg(feature = "sql")]
-use crate::comparison::StringInput;
+use crate::comparison::{StringInput, StringSearchProfile};
 use crate::{
     EvalError,
     comparison::{Collation, StringCompareMode, StringSearch},
     functions::conversions::Conversion,
 };
 use mode::SearchMode;
+use std::ops::Range;
 use tablecraft_core::values::Value;
 
 const FIRST_POSITION: i32 = 1;
@@ -127,6 +128,56 @@ impl SearchOptions {
                 if mode.or_else(|| collation.and_then(Collation::option_compare))
                     == Some(StringCompareMode::Binary)
         )
+    }
+
+    #[cfg(feature = "sql")]
+    pub(crate) fn raw_provider_mode(
+        &self,
+        collation: Option<&dyn Collation>,
+    ) -> Option<StringCompareMode> {
+        let provider = collation?;
+        let SearchMode::Compare(mode) = &self.mode else {
+            return None;
+        };
+        let mode = mode.or_else(|| provider.option_compare())?;
+        (provider.string_search_profile(mode) == StringSearchProfile::Utf16).then_some(mode)
+    }
+
+    /// Inputs have already been converted under the evaluator's shared budget.
+    #[cfg(feature = "sql")]
+    pub(crate) fn find_provider_units(
+        self,
+        start: i32,
+        haystack: &[u16],
+        needle: &[u16],
+        collation: &dyn Collation,
+        mode: StringCompareMode,
+        step: &mut impl FnMut() -> Result<(), EvalError>,
+    ) -> Result<TextResult<'static>, EvalError> {
+        self.validate_start(start)?;
+        let length = haystack.len();
+        let start = if self.reverse && start == LAST_POSITION {
+            length
+        } else {
+            start as usize
+        };
+        if length == 0 || start > length {
+            return Ok(TextResult::Position(0));
+        }
+        if needle.is_empty() {
+            return result(Some(start - 1));
+        }
+
+        let search = if self.reverse {
+            StringSearch::ReverseThrough(start)
+        } else {
+            StringSearch::ForwardFrom(start - 1)
+        };
+        step()?;
+        let found = collation.find_utf16(haystack, needle, search, mode)?;
+        step()?;
+        validate_match(&found, length, search)?;
+        result(found.map(|found| found.start))
     }
 
     /// The caller must select binary mode and admit NULL/scalar sources first.
@@ -255,22 +306,31 @@ impl SearchOptions {
                 SearchMode::Compare(None) => return Err(EvalError::CollationRequired),
             };
             step()?;
-            if let Some(found) = &found {
-                let valid = found.start <= found.end
-                    && found.start < length
-                    && found.end <= length
-                    && match search {
-                        StringSearch::ForwardFrom(start) => found.start >= start,
-                        StringSearch::ReverseThrough(end) => found.end <= end,
-                    };
-                if !valid {
-                    return Err(EvalError::InvalidTextMatch);
-                }
-            }
+            validate_match(&found, length, search)?;
             found.map(|found| found.start)
         };
         result(found)
     }
+}
+
+fn validate_match(
+    found: &Option<Range<usize>>,
+    length: usize,
+    search: StringSearch,
+) -> Result<(), EvalError> {
+    if let Some(found) = found {
+        let valid = found.start <= found.end
+            && found.start < length
+            && found.end <= length
+            && match search {
+                StringSearch::ForwardFrom(start) => found.start >= start,
+                StringSearch::ReverseThrough(end) => found.end <= end,
+            };
+        if !valid {
+            return Err(EvalError::InvalidTextMatch);
+        }
+    }
+    Ok(())
 }
 
 fn result(position: Option<usize>) -> Result<TextResult<'static>, EvalError> {

@@ -8,7 +8,7 @@ use tablecraft_expressions::{
     EvalError,
     comparison::{
         Collation, LikeProfile, LikeSpanState, StringCompareMode, StringComparisonProfile,
-        StringSearch,
+        StringSearch, StringSearchProfile,
     },
 };
 
@@ -121,6 +121,26 @@ impl Collation for SelectedCollation {
             Self::General(policy) => policy.compare(left, right),
         }
     }
+    fn string_search_profile(&self, mode: StringCompareMode) -> StringSearchProfile {
+        match self {
+            Self::Ordinal => StringSearchProfile::Unicode,
+            Self::General(policy) => policy.string_search_profile(mode),
+        }
+    }
+
+    fn find_utf16(
+        &self,
+        haystack: &[u16],
+        needle: &[u16],
+        search: StringSearch,
+        mode: StringCompareMode,
+    ) -> Result<Option<Range<usize>>, EvalError> {
+        match self {
+            Self::Ordinal => Err(EvalError::UnsupportedExpression),
+            Self::General(policy) => policy.find_utf16(haystack, needle, search, mode),
+        }
+    }
+
     fn find(
         &self,
         haystack: &str,

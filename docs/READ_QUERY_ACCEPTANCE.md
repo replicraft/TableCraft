@@ -218,9 +218,11 @@ semantics. See [metadata contracts](NATIVE_TABLES.md#attachment-metadata-project
 [Binary substring searches](STRING_SEARCH.md#retained-binary-string-operands)
 now retain raw String units through InStr/InStrRev in both evaluators, including
 derived/grouped/correlated inputs and prepared parameters. Shared budgets, eager
-failures and provider boundaries remain explicit. Text/database/LCID searches
-still require Unicode publication; additional raw consumers, locale providers
-and native qualification remain acceptance work.
+failures and provider boundaries remain explicit. [Database-mode raw search](STRING_SEARCH.md#retained-database-string-operands)
+now uses a separate opt-in consumed-span contract, implemented by the existing
+General models. Text/LCID raw searches still require Unicode publication;
+additional consumers, locale providers and native qualification remain acceptance
+work.
 
 ### P0 implementation boundaries reviewed 24 October 2026
 

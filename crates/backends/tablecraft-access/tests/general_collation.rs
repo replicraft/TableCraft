@@ -333,3 +333,31 @@ fn reentrant_cancellation_provider_returns_a_typed_error_without_panicking() {
     assert_eq!(policy.compare("a", "A").unwrap(), Ordering::Equal);
     assert!(attempts.get() > 0);
 }
+
+#[test]
+fn raw_general_searches_share_expansion_spans_and_keep_binary_text_modes_separate() {
+    for version in [0, 1] {
+        let policy = policy(version).with_option_compare(StringCompareMode::Database);
+        let expected_first = if version == 0 { 1 } else { 2 };
+        assert_eq!(
+            rows("SELECT InStr(1,ChrW(55296)&'Straße','ss',2),InStrRev(ChrW(55296)&'SS ß','ss',-1,2),InStr(ChrW(55296)&'A','a'),InStr(1,ChrB(65),NULL,2)", &policy).unwrap(),
+            [vec![Value::Int32(6), Value::Int32(5), Value::Int32(expected_first), Value::Null]],
+        );
+        assert_eq!(
+            rows("SELECT InStr(1,MidB('😀',2,2),ChrW(216),2)", &policy).unwrap(),
+            [vec![Value::Int32(1)]],
+        );
+        assert!(matches!(
+            rows("SELECT InStr(1,ChrB(65),'',2)", &policy),
+            Err(QueryError::Evaluation(EvalError::UnrepresentableText))
+        ));
+        assert!(matches!(
+            rows("SELECT InStr(1,ChrW(55296),ChrW(55296),1)", &policy),
+            Err(QueryError::Evaluation(EvalError::UnrepresentableText))
+        ));
+        assert!(matches!(
+            rows("SELECT InStrRev(ChrW(55296),ChrW(55296),-1,2),1/0", &policy),
+            Err(QueryError::Evaluation(EvalError::DivisionByZero))
+        ));
+    }
+}

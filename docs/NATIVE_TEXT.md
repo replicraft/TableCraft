@@ -667,6 +667,13 @@ InStr database/default modes, explicitly selected database InStrRev, and databas
 Replace now use it. Binary defaults for InStrRev/Replace are unchanged; text-mode
 and explicit LCID search remain separate gaps.
 
+Raw String inputs now use the separate `find_general_utf16` engine API through
+an explicit per-mode search profile and `Collation::find_utf16`. Decoded and raw
+paths share span traversal/pruning and complete keys. Raw boundaries retain valid
+surrogate pairs while admitting isolated units. The adapter opts in for Database
+mode only; equality/LIKE capabilities do not imply search support. See
+[raw search scope and independent controls](STRING_SEARCH.md#retained-database-string-operands).
+
 The model selects the earliest/latest valid Unicode start in the requested
 window, then the shortest nonempty substring with an equal complete General
 weight key. This handles unequal-length spans such as `ß`/`ss` and composed/

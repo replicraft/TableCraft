@@ -1,10 +1,13 @@
 //! Metered substring search under the explicit full-string General weight model.
+mod raw;
+
 use super::{
-    GeneralSortFamily, NativeSortOrder,
+    NativeSortOrder,
     comparison::{compare_keys, full_key},
     key,
 };
 use crate::{InspectError, header::check};
+pub use raw::find_general_utf16;
 use std::{cmp::Ordering, ops::Range};
 use tablecraft_core::limits::ResourceBudget;
 
@@ -65,11 +68,30 @@ pub fn find_general_text(
         units += character.len_utf16();
     }
     boundaries.push((haystack.len(), units, primary_bound));
+    find_spans(
+        &boundaries,
+        &needle_key,
+        needle.is_empty(),
+        search,
+        &mut work,
+        |range, work| full_key(family, &haystack[range], work),
+    )
+}
+
+fn find_spans(
+    boundaries: &[(usize, usize, usize)],
+    needle_key: &key::ComparisonKey,
+    empty_needle: bool,
+    search: GeneralTextSearch,
+    work: &mut key::Work<'_>,
+    mut encode: impl FnMut(Range<usize>, &mut key::Work<'_>) -> Result<key::ComparisonKey, InspectError>,
+) -> Result<Option<Range<usize>>, InspectError> {
+    let units = boundaries.last().ok_or(InspectError::Malformed)?.1;
     let (first, last, reverse) = match search {
         GeneralTextSearch::ForwardFrom(start) => (start, units, false),
         GeneralTextSearch::ReverseThrough(end) => (0, end.min(units), true),
     };
-    if needle.is_empty() {
+    if empty_needle {
         for position in 0..boundaries.len() {
             work.tick()?;
             let index = if reverse {
@@ -98,7 +120,7 @@ pub fn find_general_text(
         } else {
             position
         };
-        let (start_byte, start_unit, prefix_bound) = boundaries[start];
+        let (start_offset, start_unit, prefix_bound) = boundaries[start];
         if start_unit < first || start_unit >= last {
             continue;
         }
@@ -108,28 +130,21 @@ pub fn find_general_text(
         if boundaries[final_end].2 - prefix_bound < needle_key.primary_length {
             continue;
         }
-        let Some(first_end) = first_complete(
-            family,
-            haystack,
-            &boundaries,
-            start,
-            final_end,
-            &needle_key,
-            &mut work,
-        )?
+        let Some(first_end) =
+            first_complete(boundaries, start, final_end, needle_key, work, &mut encode)?
         else {
             continue;
         };
-        for &(end_byte, end_unit, _) in &boundaries[first_end..=final_end] {
+        for &(end_offset, end_unit, _) in &boundaries[first_end..=final_end] {
             work.tick()?;
             if end_unit > last {
                 break;
             }
-            let candidate = full_key(family, &haystack[start_byte..end_byte], &mut work)?;
-            if !can_extend(&candidate, &needle_key, &mut work)? {
+            let candidate = encode(start_offset..end_offset, work)?;
+            if !can_extend(&candidate, needle_key, work)? {
                 break;
             }
-            if compare_keys(&candidate, &needle_key, &mut work)? == Ordering::Equal {
+            if compare_keys(&candidate, needle_key, work)? == Ordering::Equal {
                 work.tick()?;
                 return Ok(Some(start_unit..end_unit));
             }
@@ -140,13 +155,15 @@ pub fn find_general_text(
 }
 
 fn first_complete(
-    family: GeneralSortFamily,
-    text: &str,
     boundaries: &[(usize, usize, usize)],
     start: usize,
     final_end: usize,
     needle: &key::ComparisonKey,
     work: &mut key::Work<'_>,
+    encode: &mut impl FnMut(
+        Range<usize>,
+        &mut key::Work<'_>,
+    ) -> Result<key::ComparisonKey, InspectError>,
 ) -> Result<Option<usize>, InspectError> {
     let begin = boundaries[start].0;
     let mut low = start + 1;
@@ -155,7 +172,7 @@ fn first_complete(
     // search avoids encoding every shorter prefix of a long matching needle.
     loop {
         work.tick()?;
-        let candidate = full_key(family, &text[begin..boundaries[high].0], work)?;
+        let candidate = encode(begin..boundaries[high].0, work)?;
         if candidate.primary_length >= needle.primary_length {
             break;
         }
@@ -168,7 +185,7 @@ fn first_complete(
     while low < high {
         work.tick()?;
         let middle = low + (high - low) / 2;
-        let candidate = full_key(family, &text[begin..boundaries[middle].0], work)?;
+        let candidate = encode(begin..boundaries[middle].0, work)?;
         if candidate.primary_length >= needle.primary_length {
             high = middle;
         } else {

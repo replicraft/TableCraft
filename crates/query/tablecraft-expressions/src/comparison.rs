@@ -10,7 +10,7 @@ mod search;
 mod string_input;
 mod strings;
 pub use like::{LikeProfile, LikeSpanState};
-pub use search::StringSearch;
+pub use search::{StringSearch, StringSearchProfile};
 pub use string_input::StringInput;
 #[cfg(feature = "sql")]
 pub(crate) use strings::order_utf16_strings;
@@ -97,6 +97,24 @@ pub trait Collation {
         &self,
         _haystack: &str,
         _needle: &str,
+        _search: StringSearch,
+        _mode: StringCompareMode,
+    ) -> Result<Option<Range<usize>>, EvalError> {
+        Err(EvalError::UnsupportedExpression)
+    }
+    /// Explicit input support for one substring mode. Equality/LIKE profiles do
+    /// not activate this contract, and database support does not imply text mode.
+    fn string_search_profile(&self, _mode: StringCompareMode) -> StringSearchProfile {
+        StringSearchProfile::Unicode
+    }
+    /// Search complete UTF-16 String units under an explicitly supported mode.
+    /// Return the consumed unit range with the same bounds/earliest/latest and
+    /// cumulative resource contracts as find(). No binary or Unicode retry occurs
+    /// after a callback failure. LCID lookup remains a separate contract.
+    fn find_utf16(
+        &self,
+        _haystack: &[u16],
+        _needle: &[u16],
         _search: StringSearch,
         _mode: StringCompareMode,
     ) -> Result<Option<Range<usize>>, EvalError> {

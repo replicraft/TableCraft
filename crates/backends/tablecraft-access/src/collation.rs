@@ -12,7 +12,7 @@ use tablecraft_expressions::{
     EvalError,
     comparison::{
         Collation, LikeProfile, LikeSpanState, StringCompareMode, StringComparisonProfile,
-        StringSearch,
+        StringSearch, StringSearchProfile,
     },
 };
 
@@ -125,6 +125,24 @@ impl Collation for GeneralCollation<'_> {
             .map_err(|_| EvalError::CollationFailed)?;
         compare_general_text(self.order, left, right, &mut budget, self.cancelled).map_err(adapt)
     }
+    fn string_search_profile(&self, mode: StringCompareMode) -> StringSearchProfile {
+        if mode == StringCompareMode::Database {
+            StringSearchProfile::Utf16
+        } else {
+            StringSearchProfile::Unicode
+        }
+    }
+
+    fn find_utf16(
+        &self,
+        haystack: &[u16],
+        needle: &[u16],
+        search: StringSearch,
+        mode: StringCompareMode,
+    ) -> Result<Option<std::ops::Range<usize>>, EvalError> {
+        self.search_utf16(haystack, needle, search, mode)
+    }
+
     fn find(
         &self,
         haystack: &str,

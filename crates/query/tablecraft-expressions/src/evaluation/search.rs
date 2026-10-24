@@ -139,3 +139,6 @@ mod expression_tests;
 
 #[cfg(test)]
 mod raw_tests;
+
+#[cfg(test)]
+mod raw_provider_tests;

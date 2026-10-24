@@ -123,7 +123,15 @@ pub(super) fn full_key(
         work.tick()?;
         units.push(unit);
     }
-    let units = trim_spaces(&units, work)?;
+    full_key_utf16(family, &units, work)
+}
+
+pub(super) fn full_key_utf16(
+    family: GeneralSortFamily,
+    units: &[u16],
+    work: &mut key::Work<'_>,
+) -> Result<key::ComparisonKey, InspectError> {
+    let units = trim_spaces(units, work)?;
     key::encode_full(family, units, work)
 }
 
