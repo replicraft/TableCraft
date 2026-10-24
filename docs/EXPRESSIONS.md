@@ -527,6 +527,11 @@ UPDATE continues to reject calls. Function/aggregate binding now lives in
 
 ## Checked numeric and Boolean conversion functions
 
+The public retained-value numeric/Boolean conversion APIs now accept valid active
+String ranges through strict, metered publication before the existing converter.
+Their explicit formats, exact ranges, Error/Empty/Missing rules and cumulative
+controls remain unchanged; see [retained conversion parity](RETAINED_CONVERSIONS.md).
+
 CByte, CInt, CLng, CLngLng and CBool now use a closed parser-independent
 conversion layer across scalar SELECTs, retrieval and qualified saved SELECTs.
 They accept numeric/Boolean carriers, [legacy DATE serials](DATE_NUMERIC.md) and
