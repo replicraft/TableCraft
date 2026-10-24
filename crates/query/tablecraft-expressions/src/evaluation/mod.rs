@@ -86,6 +86,9 @@ mod text_function_tests;
 mod provider_cancellation_tests;
 
 #[cfg(test)]
+mod direct_control_tests;
+
+#[cfg(test)]
 mod format_tests;
 
 #[cfg(test)]

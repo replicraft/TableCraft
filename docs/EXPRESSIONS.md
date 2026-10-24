@@ -131,6 +131,15 @@ reusing the evaluator shares the remaining budget. Rows are not charged. String
 capacity is reserved fallibly. This is an allocation/work allowance, not exact
 resident memory accounting or a deadline.
 
+Direct `apply_conversion` calls check cancellation and consume a work step for
+numeric, NULL and unsupported inputs as well as Text. Expression-only conversion
+states use the same admission check. Direct IIf calls and every incremental
+Switch/Choose argument likewise check operational limits before selecting or
+retaining a payload. Failed argument steps remain latched in the selector; an
+ignored failure cannot produce a successful finish. Pure conversion/selection
+kernels remain caller-metered. These guards do not change conversion values or
+the selectors' eager semantic-error rules.
+
 `EvalLimits` clamps maximum depth to 32 nodes. Each Text value defaults to 65,536
 UTF-8 bytes; explicit `max_text_bytes` can request up to 1 MiB, including manually
 constructed trees. Callers can lower either limit; cumulative allocation/work

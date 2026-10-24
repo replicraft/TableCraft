@@ -50,6 +50,12 @@ Callers supply their work limits; the scalar/query evaluators retain normal node
 allocation, text and cancellation budgets. Unselected text allocations still
 consume budget. Results publish only after successful complete evaluation.
 
+The public evaluator `apply_iif` and `push_selection_argument` entry points also
+check cancellation/work for non-Text conditions and choice payloads. A last,
+unselected binding callback that requests cancellation cannot return a successful
+chosen result. Pure `Selection` still requires caller-owned metering. Evaluator
+operational failures are latched even if the caller ignores the returned error.
+
 ## Evidence and remaining qualification
 
 Microsoft's [Switch reference](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/switch-function)

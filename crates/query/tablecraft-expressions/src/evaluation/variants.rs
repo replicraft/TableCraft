@@ -41,7 +41,10 @@ impl Evaluator<'_> {
     ) -> Result<Value, EvalError> {
         match value {
             ExpressionValue::Value(value) => self.apply_conversion(conversion, value),
-            _ => errors::convert(conversion, value),
+            _ => {
+                self.check(0)?;
+                errors::convert(conversion, value)
+            }
         }
     }
 
