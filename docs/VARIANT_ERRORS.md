@@ -283,8 +283,9 @@ define standard Error-code comparisons and leave opaque-code results undefined.
 The [logical rules](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/2d70780d-6e99-47d6-9759-2b3a46b8e862)
 require Error rejection. These references guide this explicit materialized-value
 profile; they do not qualify native Access SQL, declared/Variant coercion or error
-ordering. Sorting, grouping, DISTINCT/UNION set keys, concatenation, Empty/Missing
-and numeric-aggregate behavior remain separate acceptance work. Predicate support
+ordering. Host Empty now has its [own relational admission](RAW_PREDICATES.md#host-empty-comparisons).
+Sorting, grouping, DISTINCT/UNION set keys, concatenation, Missing and
+numeric-aggregate behavior retain separate contracts and acceptance work. Predicate support
 does not silently widen those consumers or stored sources.
 
 The original [predicate runner](testing/compare_error_predicates.py) passes 838

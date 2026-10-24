@@ -10,6 +10,7 @@ use tablecraft_core::values::{ExpressionValue, Value};
 
 mod dates;
 mod effective;
+mod empty;
 mod floating;
 mod strings;
 
@@ -21,14 +22,17 @@ impl Evaluator<'_> {
     /// Standard Error/Error pairs compare their codes; mixed kinds are TypeMismatch.
     /// Raw String/NULL yields Unknown without Unicode publication. String pairs
     /// use an explicitly selected raw-unit provider or strict materialization.
-    /// Opaque codes and other expression-only
-    /// states retain explicit refusal.
+    /// Host Empty selects numeric zero or empty String under its counterpart's
+    /// comparison profile. Opaque codes and Missing retain explicit refusal.
     pub fn compare_expression_values(
         &mut self,
         operator: Comparison,
         left: &ExpressionValue,
         right: &ExpressionValue,
     ) -> Result<Truth, EvalError> {
+        if let Some(result) = self.compare_empty_values(operator, left, right)? {
+            return Ok(result);
+        }
         if let Some(result) = self.compare_retained_strings(operator, left, right)? {
             return Ok(result);
         }
