@@ -1,4 +1,4 @@
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{Decimal, Value};
 use tablecraft_expressions::EvalError;
 use tablecraft_query::{
     QueryError, prepare,
@@ -38,6 +38,45 @@ fn error_consumers_keep_fields_grouping_aggregates_and_correlations() {
             .execute(&source, &[], Default::default())
             .unwrap();
         assert_eq!(result.rows(), [expected]);
+    }
+}
+
+#[test]
+fn decimal_error_conversion_is_explicit_across_derived_groups_and_correlations() {
+    let source = MemorySource::default();
+    for sql in [
+        "SELECT CDec(CVErr(1))",
+        "SELECT CDec(Q.Problem) FROM (SELECT CVErr(1) AS Problem) AS Q",
+        "SELECT CDec(Min(Q.Problem)) FROM (SELECT CVErr(1) AS Problem) AS Q",
+        "SELECT (SELECT CDec(Q.Problem)) FROM (SELECT CVErr(1) AS Problem) AS Q",
+        "SELECT Q.ID FROM (SELECT 1 AS ID) AS Q WHERE CDec(CVErr(Q.ID))=1",
+    ] {
+        let parsed = parse_query(sql, Default::default()).unwrap();
+        assert_eq!(
+            prepare(parsed.query(), &source)
+                .unwrap()
+                .execute(&source, &[], Default::default())
+                .err(),
+            Some(QueryError::Evaluation(EvalError::TypeMismatch)),
+            "{sql}"
+        );
+    }
+
+    for sql in [
+        "SELECT CDec(CLng(CVErr(2001)))",
+        "SELECT CDec(CLng(Q.Problem)) FROM (SELECT CVErr(2001) AS Problem) AS Q",
+        "SELECT CDec(CLng(Min(Q.Problem))) FROM (SELECT CVErr(2001) AS Problem) AS Q",
+        "SELECT (SELECT CDec(CLng(Q.Problem))) FROM (SELECT CVErr(2001) AS Problem) AS Q",
+    ] {
+        let parsed = parse_query(sql, Default::default()).unwrap();
+        let result = prepare(parsed.query(), &source)
+            .unwrap()
+            .execute(&source, &[], Default::default())
+            .unwrap();
+        assert_eq!(
+            result.rows(),
+            [vec![Value::Decimal(Decimal::new(2001, 0).unwrap())]]
+        );
     }
 }
 

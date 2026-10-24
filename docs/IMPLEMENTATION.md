@@ -1,5 +1,29 @@
 # Implementation status
 
+## Explicit numeric Empty and CDec Error conversion
+
+The expression conversion kernel now admits host Empty as each numeric
+destination's zero or Boolean false, preserving the requested carrier. NULL
+retains InvalidNullConversion; Missing and stored Empty remain refused. CDec now
+rejects direct Error data with TypeMismatch, following its distinct ordinary
+Decimal Let-coercion contract. Other reviewed numeric calls retain their explicit
+standard-code exception; `CDec(CLng(CVErr(...)))` requests code extraction before
+conversion. Query Nz empty Text, eager failures and operational guards remain
+unchanged. [The reviewed revision and boundaries](VARIANT_ERRORS.md#explicit-numeric-empty-and-cdec-error-rules)
+are recorded separately from native qualification.
+
+Two pure tests cover all nine zero-result carriers, NULL/Missing/storage refusal,
+standard/opaque Error boundaries and explicit code extraction. A scalar test,
+a query test spanning derived/correlated/aggregate/filter consumers and a CLI test
+cover direct refusal, successful explicit conversion and buffered eager failures.
+All 669 all-feature expression tests plus one doctest, 351 minimal tests,
+seventeen focused query tests and two CLI tests pass. The original Error consumer
+runner passes 186 source-free model controls, including 28 new conversion cases;
+no native database or Microsoft Access SQL ran in that replay. Expression
+all-target/all-feature Clippy, focused query Clippy, formatting and diff checks
+pass. No dependency, storage format, SQL constructor or write scope changed.
+Full workspace and native Access comparisons remain unrun for this change.
+
 ## Direct conversion and selector operational guards
 
 Materialized evaluator conversions now check cancellation and charge work for

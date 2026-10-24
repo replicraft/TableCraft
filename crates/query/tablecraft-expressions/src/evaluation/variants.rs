@@ -32,8 +32,9 @@ impl Evaluator<'_> {
         errors::cverr(value)
     }
 
-    /// Explicit numeric conversions may consume standard Error codes; ordinary
-    /// arithmetic and stored-value publication never use this conversion implicitly.
+    /// Explicit numeric calls consume Empty as zero and reviewed calls consume
+    /// standard Error codes. CDec requires separate numeric code extraction.
+    /// Arithmetic and stored-value publication never convert states implicitly.
     pub fn apply_expression_conversion(
         &mut self,
         conversion: Conversion,

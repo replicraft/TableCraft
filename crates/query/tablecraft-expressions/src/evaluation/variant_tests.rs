@@ -86,6 +86,29 @@ fn error_data_survives_selection_and_explicit_consumers_without_catching_failure
 }
 
 #[test]
+fn decimal_error_sources_require_explicit_code_extraction_after_eager_selection() {
+    for source in [
+        "CVErr(0)",
+        "IIf(True,CVErr(2001),1)",
+        "Choose(1,CVErr(1))",
+        "Switch(True,CVErr(65535))",
+    ] {
+        assert_eq!(
+            evaluate(&format!("CDec({source})")),
+            Err(EvalError::TypeMismatch)
+        );
+        assert!(matches!(
+            evaluate(&format!("CDec(CLng({source}))")),
+            Ok(Value::Decimal(_))
+        ));
+    }
+    assert_eq!(
+        evaluate("CDec(IIf(True,CVErr(1),1/0))"),
+        Err(EvalError::DivisionByZero)
+    );
+}
+
+#[test]
 fn every_observed_checkpoint_and_text_conversion_limits_remain_enforced() {
     let expr = expression("CInt(IIf(True,CVErr('2,001'),CVErr(0)))");
     let count = Cell::new(0);
