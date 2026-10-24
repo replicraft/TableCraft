@@ -158,3 +158,28 @@ fn binding_reads_metadata_only_and_every_execution_checkpoint_can_cancel() {
         ));
     }
 }
+
+#[test]
+fn palette_parameter_overflow_is_distinct_from_an_in_range_integer_outside_the_palette() {
+    let source = source();
+    let parsed = parse_query("PARAMETERS P LONG; SELECT QBColor(P)", Default::default()).unwrap();
+    let plan = prepare(parsed.query(), &source).unwrap();
+    for (value, error) in [
+        (32767, EvalError::Domain),
+        (32768, EvalError::Overflow),
+        (-32768, EvalError::Domain),
+        (-32769, EvalError::Overflow),
+    ] {
+        assert_eq!(
+            plan.execute(&source, &[("P", Value::Int32(value))], Default::default())
+                .err(),
+            Some(QueryError::Evaluation(error))
+        );
+    }
+    assert_eq!(
+        plan.execute(&source, &[("P", Value::Int32(4))], Default::default())
+            .unwrap()
+            .rows(),
+        [vec![Value::Int32(128)]]
+    );
+}

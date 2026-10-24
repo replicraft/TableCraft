@@ -5989,3 +5989,14 @@ both original/derivative immutability during reads. No derivative is retained as
 a binary fixture or added to CI. The original generation hashes, reviewed JAR
 and license boundary above remain unchanged; native Access is unrun. See
 [the failure contract](NATIVE_READ_FAILURES.md#maximum-width-malformed-suffixes).
+
+
+### QBColor Integer boundary controls
+
+The original compare_colors.py model now distinguishes Integer overflow from
+palette Domain refusal using independent Python Decimal half-even/range checks.
+Scalar eval/run cover integral, fractional, numeric Text and CDec arguments at
+both Int16 endpoints, alongside the existing packed-channel/palette controls.
+The 23 October 2026 run passes 354 scalar controls; no optional native database
+was supplied. No new fixture bytes, external code, tools or dependencies are
+introduced; native Access query-wrapper/error qualification remains unrun.

@@ -50,3 +50,28 @@ fn packed_color_queries_work_in_both_paths_without_runtime_context() {
         }
     }
 }
+
+#[test]
+fn palette_integer_conversion_errors_remain_buffered_and_differ_from_domain_failures() {
+    for mode in ["eval", "run"] {
+        for (input, diagnostic) in [
+            ("32768", "numeric overflow"),
+            ("-32769", "numeric overflow"),
+            ("32767.5", "numeric overflow"),
+            ("'32768'", "numeric overflow"),
+            ("32767", "invalid arithmetic domain"),
+            ("-32768", "invalid arithmetic domain"),
+        ] {
+            let result = run(&[
+                "query",
+                mode,
+                &format!("SELECT 1,QBColor({input})"),
+                "--number-format",
+                "invariant",
+            ]);
+            assert_eq!(result.status.code(), Some(2));
+            assert!(result.stdout.is_empty());
+            assert!(String::from_utf8_lossy(&result.stderr).contains(diagnostic));
+        }
+    }
+}

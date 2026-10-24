@@ -229,3 +229,11 @@ now have portable terminal-cursor checks and 280 corrupted-copy CLI controls,
 including ID-only/empty projections, complete buffered refusal and exact earlier
 streaming publication. This closes the announced wide-row continuation slice;
 it does not establish live-file coherence or validate unselected payload values.
+
+
+QBColor now follows its formal Integer argument boundary before palette range
+validation, through the existing shared scalar/Text conversion service. This fixes
+Overflow-versus-Domain classification outside Int16 without changing RGB's Long
+channel profile. Native query-wrapper and broader coercion qualification remain
+open; [the color contract](COLOR_FUNCTIONS.md#qbcolor-integer-argument-boundary)
+separates the model from native evidence.
