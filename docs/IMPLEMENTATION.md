@@ -1,5 +1,22 @@
 # Implementation status
 
+## Dynamic crosstab heading policy completion
+
+Dynamic pivots with unresolved Default provenance and an explicit resolver now
+retain validated pre-WHERE candidates until the final accumulated policy is
+known. This preserves both distinctions lost by an initially coarser comparer
+and equivalences introduced by a later field policy. Final heading deduplication,
+ordering and buckets share that policy, with no extra scan or pivot evaluation.
+The final schema ceiling remains independent of bounded candidate retention;
+other crosstab paths retain incremental admission. See
+[runtime text policies](RUNTIME_TEXT_POLICIES.md).
+
+The focused crosstab/named/collation batch passes 120 tests with strict Clippy.
+Regressions cover both policy directions, filtered-out contributors, absent default
+comparers, first spelling, named cache reuse, 257 candidates collapsing to one
+heading, final-width refusal, quotas and cancellation. These enforce the explicit
+provider model without establishing native Access policy precedence.
+
 ## Cached Long Text calculation reads
 
 Explicit cached calculation inspection and row browsing now resolve observed

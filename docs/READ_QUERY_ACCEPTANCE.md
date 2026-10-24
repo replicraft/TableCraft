@@ -355,6 +355,12 @@ precise successful result descriptors without removing eager branches. Unknown
 controls keep conservative metadata; this does not complete native subtype or
 Variant promotion. See [selector metadata](CONDITIONAL_FUNCTIONS.md#literal-selection-and-result-metadata).
 
+Dynamic crosstab discovery now retains candidates when runtime policies can
+change their equality, then uses the final policy for heading admission and
+buckets. Both coarser and stricter late policies work without rescanning or
+premature final-width rejection; the focused regression batch passes 120 tests.
+Candidate storage remains separately budgeted. See [runtime policies](RUNTIME_TEXT_POLICIES.md).
+
 ### P0 implementation boundaries reviewed 24 October 2026
 
 | Boundary | Current implementation | Remaining work |

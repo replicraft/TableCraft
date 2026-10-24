@@ -60,8 +60,20 @@ contract; this does not infer native conversion-function precedence.
 
 Fixed pivot headings are rechecked when execution supplies a policy unavailable
 in static metadata. Headings that become equivalent under that policy fail with
-AmbiguousName rather than silently producing duplicate buckets. Dynamic heading
-ordering and bucket comparisons use the accumulated pivot policy.
+AmbiguousName rather than silently producing duplicate buckets. A dynamic pivot
+with initially Default provenance and an explicit resolver retains its non-NULL
+pre-WHERE candidate cells until their final accumulated policy is known. Heading
+comparisons then use that final policy once: a later field can make earlier values
+equivalent or distinguish values the default comparer would have merged. The first
+representative remains and all matching rows enter its one bucket. Candidates are
+validated before WHERE and copied under cumulative byte/work limits, with no early
+schema-width cutoff; only final distinct headings use the 256-column ceiling.
+Additional candidate retention can exhaust a fixed query allowance sooner. Pivot
+expressions are not reevaluated and sources are not rescanned. Without a resolver,
+or with an initially fixed field identity, existing incremental admission remains
+applicable. Explicit fixed headings retain their declared width and still fail on
+equivalent headings. Dynamic heading ordering and bucket comparisons use the
+accumulated pivot policy.
 
 Default is neutral; equal identities remain one; differing identities become
 Conflict. Required unknown/conflicting policies fail through the existing resolver.

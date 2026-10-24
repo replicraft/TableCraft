@@ -22,22 +22,7 @@ impl Runtime<'_, '_> {
             }
             return Ok(());
         }
-        // Validate the name even if collation would merge this representative.
-        match value {
-            Value::Text(text) => self.validate_heading_name(text)?,
-            Value::Byte(_) | Value::Int16(_) | Value::Int32(_) | Value::Int64(_) => {}
-            Value::Boolean(_)
-            | Value::Single(_)
-            | Value::Double(_)
-            | Value::Currency(_)
-            | Value::Decimal(_)
-            | Value::DateTime(_)
-            | Value::DateTimeExtended(_) => {
-                // A duplicate cannot hide missing policy or an invalid name.
-                self.formatted_heading(value)?;
-            }
-            _ => return Err(QueryError::Unsupported),
-        }
+        self.validate_heading_value(value)?;
         for existing in headings.iter_mut() {
             if self.equal(
                 super::super::values::scalar(existing)?,
@@ -58,6 +43,76 @@ impl Runtime<'_, '_> {
         let owned = self.copy_expression(cell)?;
         self.push(headings, owned)
     }
+
+    fn validate_heading_value(&mut self, value: &Value) -> Result<(), QueryError> {
+        // Validate the name even if collation would merge this representative.
+        match value {
+            Value::Text(text) => self.validate_heading_name(text)?,
+            Value::Byte(_) | Value::Int16(_) | Value::Int32(_) | Value::Int64(_) => {}
+            Value::Boolean(_)
+            | Value::Single(_)
+            | Value::Double(_)
+            | Value::Currency(_)
+            | Value::Decimal(_)
+            | Value::DateTime(_)
+            | Value::DateTimeExtended(_) => {
+                // A duplicate cannot hide missing policy or an invalid name.
+                self.formatted_heading(value)?;
+            }
+            _ => return Err(QueryError::Unsupported),
+        }
+        Ok(())
+    }
+
+    pub(super) fn retain_heading_candidate(
+        &mut self,
+        candidates: &mut Vec<CellValue>,
+        cell: &CellValue,
+    ) -> Result<(), QueryError> {
+        self.tick()?;
+        let value = super::super::values::scalar(cell)?;
+        if matches!(value, Value::Null) {
+            return Ok(());
+        }
+        self.validate_heading_value(value)?;
+        let owned = self.copy_expression(cell)?;
+        self.push(candidates, owned)
+    }
+
+    pub(super) fn merge_dynamic_headings(
+        &mut self,
+        headings: Vec<CellValue>,
+        policy: crate::source::TextPolicy,
+        width: usize,
+    ) -> Result<Vec<CellValue>, QueryError> {
+        // Runtime pivot cells can supply either stricter or coarser equality
+        // than the default. Candidates have not lost distinctions through an
+        // earlier comparison. Move them under the final accumulated policy.
+        let mut merged: Vec<CellValue> = Vec::new();
+        for heading in headings {
+            self.tick()?;
+            let mut duplicate = false;
+            for existing in &mut merged {
+                if self.equal(
+                    super::super::values::scalar(existing)?,
+                    super::super::values::scalar(&heading)?,
+                    policy.merge(existing.policy).merge(heading.policy),
+                )? {
+                    existing.policy = existing.policy.merge(heading.policy);
+                    duplicate = true;
+                    break;
+                }
+            }
+            if !duplicate {
+                if merged.len() + width >= SOURCE_SCHEMA_POLICY.max_columns {
+                    return Err(QueryError::StructureLimit);
+                }
+                self.push(&mut merged, heading)?;
+            }
+        }
+        Ok(merged)
+    }
+
     pub(super) fn sort_headings(
         &mut self,
         mut headings: Vec<CellValue>,
