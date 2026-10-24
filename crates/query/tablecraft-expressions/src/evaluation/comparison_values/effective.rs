@@ -33,6 +33,32 @@ impl Evaluator<'_> {
         let Some(target) = target(left, right) else {
             return self.compare_values(operator, left, right);
         };
+        self.compare_as(target, operator, left, right)
+    }
+
+    pub(super) fn compare_numeric_pair(
+        &mut self,
+        operator: Comparison,
+        left: &Value,
+        right: &Value,
+    ) -> Result<Option<Truth>, EvalError> {
+        if !numeric(left) || !numeric(right) {
+            return Ok(None);
+        }
+
+        let Some(target) = target(left, right) else {
+            return Ok(None);
+        };
+        self.compare_as(target, operator, left, right).map(Some)
+    }
+
+    fn compare_as(
+        &mut self,
+        target: Conversion,
+        operator: Comparison,
+        left: &Value,
+        right: &Value,
+    ) -> Result<Truth, EvalError> {
         let left = self.apply_conversion(target, left)?;
         let right = self.apply_conversion(target, right)?;
         comparison::compare(operator, &left, &right, None)

@@ -1,6 +1,7 @@
 use super::*;
 use crate::evaluation::{EvalLimits, NoBindings};
 use crate::functions::conversions::text::NumberFormat;
+use proptest::prelude::*;
 use tablecraft_core::{
     limits::ResourceBudget,
     values::{Currency, Decimal, Double, Single},
@@ -67,6 +68,10 @@ fn numeric_pairs_use_reviewed_floating_and_fixed_point_effective_types() {
     ] {
         for (a, b) in [(&left, &right), (&right, &left)] {
             assert_eq!(
+                evaluator.compare_values(Comparison::Equal, a, b),
+                Ok(Truth::True)
+            );
+            assert_eq!(
                 evaluator.compare_effective_numeric_values(Comparison::Equal, a, b),
                 Ok(Truth::True)
             );
@@ -110,4 +115,69 @@ fn explicit_policy_null_and_cancellation_boundaries_remain_visible() {
             .compare_effective_numeric_values(Comparison::Equal, &Value::Byte(1), &text),
         Err(EvalError::Cancelled)
     );
+}
+
+#[test]
+fn ordinary_numeric_predicates_check_currency_admission_in_both_orders() {
+    let mut budget = ResourceBudget::new(65536, 0, 65536);
+    let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default());
+    let currency = Value::Currency(Currency::from_scaled(0));
+
+    for integer in [
+        i64::MIN,
+        -922_337_203_685_478,
+        922_337_203_685_478,
+        i64::MAX,
+    ] {
+        let integer = Value::Int64(integer);
+        for (left, right) in [(&currency, &integer), (&integer, &currency)] {
+            assert_eq!(
+                evaluator.compare_values(Comparison::Less, left, right),
+                Err(EvalError::Overflow)
+            );
+        }
+    }
+
+    assert_eq!(
+        evaluator.compare_values(Comparison::Equal, &Value::Null, &Value::Int64(i64::MAX)),
+        Ok(Truth::Unknown)
+    );
+    assert_eq!(
+        comparison::compare(Comparison::Less, &currency, &Value::Int64(i64::MAX), None),
+        Ok(Truth::True)
+    );
+}
+
+proptest! {
+    #![proptest_config(crate::test_support::config())]
+
+    #[test]
+    fn ordinary_currency_integer_comparison_matches_checked_scaled_model(
+        scaled in any::<i64>(),
+        integer in any::<i64>(),
+    ) {
+        let mut budget = ResourceBudget::new(65536, 0, 65536);
+        let mut evaluator = Evaluator::new(&NoBindings, &mut budget, EvalLimits::default());
+        let currency = Value::Currency(Currency::from_scaled(scaled));
+        let number = Value::Int64(integer);
+        let expected = match integer.checked_mul(10_000) {
+            Some(converted) => {
+                Ok(if scaled < converted {
+                    Truth::True
+                } else {
+                    Truth::False
+                })
+            }
+            None => Err(EvalError::Overflow),
+        };
+
+        prop_assert_eq!(
+            evaluator.compare_values(Comparison::Less, &currency, &number),
+            expected
+        );
+        prop_assert_eq!(
+            evaluator.compare_values(Comparison::Greater, &number, &currency),
+            expected
+        );
+    }
 }

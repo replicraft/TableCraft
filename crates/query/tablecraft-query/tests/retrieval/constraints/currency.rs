@@ -213,3 +213,36 @@ fn currency_hint_work_shares_every_observed_cancellation_checkpoint() {
         ));
     }
 }
+
+#[test]
+fn currency_integer_overflow_cannot_be_hidden_by_partial_pushdown() {
+    for filter in [
+        "X=922337203685478",
+        "X=922337203685478 AND Y<0",
+        "Y<0 AND X=922337203685478",
+    ] {
+        for ignore in [false, true] {
+            let source = Restricted::money(ignore);
+            assert_eq!(
+                run(&format!("SELECT X FROM T WHERE {filter}"), &source)
+                    .map(|result| result.rows().to_vec()),
+                Err(tablecraft_expressions::EvalError::Overflow.into()),
+                "{filter}"
+            );
+            assert_eq!(source.seen.get(), None);
+        }
+
+        let empty = MemorySource::new(vec![table(
+            "T",
+            &[("X", ScalarType::Currency), ("Y", ScalarType::Int32)],
+            vec![],
+        )])
+        .unwrap();
+        assert!(
+            run(&format!("SELECT X FROM T WHERE {filter}"), &empty)
+                .unwrap()
+                .rows()
+                .is_empty()
+        );
+    }
+}
