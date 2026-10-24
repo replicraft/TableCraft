@@ -1,5 +1,18 @@
 # Implementation status
 
+## Explicit Decimal parameter constraints
+
+The query binder now accepts DECIMAL(p,s)/NUMERIC(p,s) using the existing checked
+schema descriptors. Exact host scale/carrier checks survive named scopes,
+subqueries and UNION; metadata refusal never scans rows. Bare Decimal and native
+saved-query parameter mappings retain their existing behavior. See
+[the parameter contract](DECIMAL_PARAMETERS.md).
+
+Four query tests cover all admitted precision/scale pairs and scope conflicts;
+two CLI tests cover exact output and buffered refusals. Three existing numeric
+parameter CLI tests and scoped query Clippy also pass. Native Access parameter
+rescaling and saved/reopen comparisons remain unrun.
+
 ## Explicit larger Memo query allowances
 
 `query run --native-text-bytes` now selects decoded native Memo bytes through the
