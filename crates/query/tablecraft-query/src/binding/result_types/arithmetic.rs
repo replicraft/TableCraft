@@ -17,6 +17,17 @@ pub(super) fn result(operator: BinaryOperator, left: OutputType, right: OutputTy
         return OutputType::Dynamic;
     }
     if left == OutputType::Null || right == OutputType::Null {
+        let other = if left == OutputType::Null {
+            right
+        } else {
+            left
+        };
+        if let OutputType::Scalar { data_type, .. } = other
+            && !numeric_operand(data_type.scalar_type())
+        {
+            return OutputType::Dynamic;
+        }
+
         return OutputType::Null;
     }
     let (

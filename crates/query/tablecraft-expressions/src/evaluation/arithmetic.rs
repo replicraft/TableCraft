@@ -4,7 +4,7 @@ use super::Evaluator;
 use crate::{
     EvalError,
     functions::conversions::Conversion,
-    numeric::{self, Arithmetic, ArithmeticDeclarations},
+    numeric::{self, Arithmetic, ArithmeticDeclarations, admission},
 };
 use tablecraft_core::values::Value;
 
@@ -58,6 +58,10 @@ impl Evaluator<'_> {
         right: &Value,
         declarations: Option<ArithmeticDeclarations>,
     ) -> Result<Value, EvalError> {
+        for operand in [left, right] {
+            admission::contextual(operand)?;
+        }
+
         if matches!(left, Value::Null) || matches!(right, Value::Null) {
             return Ok(Value::Null);
         }
@@ -105,3 +109,6 @@ impl Evaluator<'_> {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod admission_tests;

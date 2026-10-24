@@ -74,6 +74,13 @@ source families and native result-type qualification remain separate. See
 
 ## Remaining acceptance work
 
+Shared arithmetic admission now rejects unsupported GUID/Binary/Extended-date and
+non-finite floating operands before returning NULL. Supported NULL/Text operands
+retain policy-free propagation; eager evaluation failures remain visible through
+aggregates and domains. This closes a silent unsupported-carrier-to-NULL path,
+without adding those carriers to arithmetic or qualifying native error precedence.
+See [arithmetic boundaries](ARITHMETIC_PROMOTION.md).
+
 Attachment metadata queries now use complete projected child snapshots without
 loading FileData values or external payload pages. Independent controls cover
 valid 3 MiB files across ACE 2007/2016/2019; explicit file-content queries retain

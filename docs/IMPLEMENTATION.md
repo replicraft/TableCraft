@@ -1,5 +1,32 @@
 # Implementation status
 
+## Arithmetic admission before NULL propagation
+
+Checked, promoted, declaration-aware and contextual arithmetic now share explicit
+operand-family admission before returning NULL. Unsupported GUID/Binary/Extended
+date operands fail TypeMismatch even beside NULL; non-finite floating operands
+fail NonFinite. The checked kernel remains numeric-only, promoted arithmetic
+retains legacy DATE, and contextual evaluation admits Text without parsing it
+when NULL determines the result. Admission checks already evaluated operands
+left-to-right before conversion; this error boundary is not native Access
+qualification. Known unsupported counterparts now retain Dynamic output metadata
+rather than acquiring a NULL-only descriptor. See [promotion boundaries](ARITHMETIC_PROMOTION.md)
+and [contextual rules](ARITHMETIC_TEXT.md).
+
+Three kernel tests and two evaluator tests cover all seven operations, both
+operand orders, non-finite bits, exact profile boundaries, retained NULL/Text
+behavior and unused conversion ranges. Three query tests cover a good NULL prefix
+followed by an unsupported value, inert metadata, explicit filtering, empty
+sources, derived/correlated/domain/aggregate consumers and eager failures. A CLI
+test verifies buffered GUID/Binary refusals. All 676 all-feature expression tests
+plus one doctest, 356 minimal tests, 29 focused query tests and seventeen CLI tests
+pass. Expression all-target/all-feature and focused query Clippy, formatting and
+diff checks pass. The original arithmetic/Text runner passes 660 source-free
+controls, including 108 new admission/NULL/eager-error checks. The optional native
+corpus, native Access, full workspace and benchmarks were not run for this change.
+No dependency, stored value format, read profile or write scope changed. Complete
+coercion, promotion and native error equivalence remain unfinished.
+
 ## Arithmetic dispatch independent of widening categories
 
 The explicit engineering profile now asks for Scalar/Variant provenance only

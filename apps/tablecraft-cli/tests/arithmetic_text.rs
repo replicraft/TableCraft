@@ -1,6 +1,29 @@
 use std::process::Command;
 
 #[test]
+fn null_arithmetic_rejects_unsupported_guid_and_binary_inputs_without_partial_stdout() {
+    for mode in ["eval", "run"] {
+        for operator in ["+", "-", "*", "/", "\\", "Mod", "^"] {
+            for value in [
+                "{guid {00112233-4455-6677-8899-aabbccddeeff}}",
+                "GUIDFromString('{00112233-4455-6677-8899-aabbccddeeff}')",
+            ] {
+                let sql = format!("SELECT 1,Null {operator} {value}");
+                let output = Command::new(env!("CARGO_BIN_EXE_tablecraft"))
+                    .args(["query", mode, &sql])
+                    .output()
+                    .unwrap();
+                assert_eq!(output.status.code(), Some(2), "{sql}");
+                assert!(output.stdout.is_empty());
+                assert!(
+                    String::from_utf8_lossy(&output.stderr).contains("expression type mismatch")
+                );
+            }
+        }
+    }
+}
+
+#[test]
 fn both_query_commands_use_explicit_arithmetic_text_policy_and_buffer_failures() {
     for mode in ["eval", "run"] {
         let output = Command::new(env!("CARGO_BIN_EXE_tablecraft"))

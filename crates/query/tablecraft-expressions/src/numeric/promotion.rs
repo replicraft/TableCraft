@@ -1,5 +1,5 @@
 //! Materialized numeric value promotion, separate from the checked Int64 kernels.
-use super::{Arithmetic, arithmetic, decimal, integer};
+use super::{Arithmetic, admission, arithmetic, decimal, integer};
 use crate::{
     EvalError,
     functions::{conversions::Conversion, dates::date_arithmetic},
@@ -27,6 +27,10 @@ pub fn promoted_arithmetic(
     left: &Value,
     right: &Value,
 ) -> Result<Value, EvalError> {
+    for operand in [left, right] {
+        admission::materialized(operand)?;
+    }
+
     if matches!(left, Value::Null) || matches!(right, Value::Null) {
         return Ok(Value::Null);
     }

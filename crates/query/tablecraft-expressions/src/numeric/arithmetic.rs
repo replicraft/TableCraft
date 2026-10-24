@@ -52,7 +52,12 @@ mod properties {
 /// results use Double. This API does not infer VBA Variant promotion types.
 /// Decimal operands select the checked Decimal profile; Currency/float mixing
 /// without a Decimal operand remains unsupported.
+/// Operand families and finite floats are checked before NULL propagation.
 pub fn arithmetic(operator: Arithmetic, left: &Value, right: &Value) -> Result<Value, EvalError> {
+    for operand in [left, right] {
+        admission::strict(operand)?;
+    }
+
     if matches!(left, Value::Null) || matches!(right, Value::Null) {
         return Ok(Value::Null);
     }

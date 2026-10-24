@@ -35,9 +35,19 @@ converter, including nearest-even rounding of large integers before the operatio
 This does not implement all arithmetic subtype widening or native error precedence. Existing zero-divisor/domain/overflow rules remain authoritative.
 
 Both supported scalar operand expressions evaluate before operator conversion, in written order.
-NULL arithmetic propagates without parsing the other already-evaluated scalar;
+NULL arithmetic propagates after admitting both operand families, without parsing
+the other already-evaluated supported scalar;
 `Null + ('2'/0)` still fails. Text `+` with NULL propagates NULL. Ampersand follows its separate [contextual formatting contract](CONCATENATION.md). Error data, arrays and expression-only states do not
 become implicit numbers or stored NULL.
+
+In particular, GUID, Binary and Extended-date arithmetic operands now fail
+TypeMismatch even beside NULL. Non-finite floating operands fail NonFinite before
+NULL propagation. The same shared admission rules apply to contextual numeric
+arithmetic and the explicit declared rounded API. Valid finite values do not need
+to fit an otherwise-unused conversion target when NULL already determines the
+result. Invalid numeric Text still needs no parsing policy in that case. Eager
+operand evaluation remains first; a later written division error is not suppressed
+by a NULL or an unsupported carrier. Native error precedence remains unqualified.
 
 ```sh
 tablecraft query eval "SELECT '2,5'+3, '2'+'3', '9,5' Mod '2,5'" --number-format de-de
