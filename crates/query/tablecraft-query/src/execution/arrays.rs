@@ -8,7 +8,7 @@ use tablecraft_expressions::{
     arrays::{ArrayValue, ArrayView, BoundFunction},
     functions::{
         inspection::types::{InspectionInput, ValueInspectionFunction},
-        text::byte_string::{ByteOperand, ByteString},
+        text::byte_string::{ByteOperand, ByteString, ExpressionByteOperand},
     },
 };
 use tablecraft_sql::select::BinaryOperator;
@@ -80,9 +80,20 @@ impl Runtime<'_, '_> {
             }
             return Ok(input);
         }
+        if let Expr::IIf(condition, yes, no) = expression {
+            let value = self.iif_string_cell(condition, yes, no, env)?;
+            return Ok(match value.value {
+                ExpressionByteOperand::Scalar(scalar) => Operand::Expression(
+                    CellValue::from(scalar)
+                        .with_policy(value.policy)
+                        .with_declaration(value.declaration),
+                ),
+                ExpressionByteOperand::Bytes(bytes) => Operand::ByteString(bytes),
+            });
+        }
         if matches!(
             expression,
-            Expr::CvErr(_) | Expr::IIf(..) | Expr::Nz(..) | Expr::ConditionalCall(..)
+            Expr::CvErr(_) | Expr::Nz(..) | Expr::ConditionalCall(..)
         ) {
             return self
                 .expression_operand(expression, env)

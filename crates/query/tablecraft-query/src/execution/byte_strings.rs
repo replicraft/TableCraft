@@ -15,6 +15,9 @@ impl Runtime<'_, '_> {
         env: Environment<'_>,
     ) -> Result<ExpressionByteOperand, QueryError> {
         match expression {
+            Expr::IIf(condition, yes, no) => self
+                .iif_string_cell(condition, yes, no, env)
+                .map(|value| value.value),
             Expr::Binary(BinaryOperator::Add, left, right) => {
                 self.addition_operand(left, right, env)
             }

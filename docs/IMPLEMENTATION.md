@@ -1,5 +1,31 @@
 # Implementation status
 
+## Lossless IIf branch selection
+
+IIf now evaluates both branches through the lossless operand service before
+selection. Previously raw Strings were forced through Unicode publication even
+when the branch was unselected or an outer byte consumer required no decoding.
+The existing metered condition conversion and allocation-free selector now move
+generic evaluated payloads. Bound branches retain their merged text policies,
+runtime grouped provenance and Variant declaration. Inspection and byte/NULL/count
+consumers can retain the selected raw String; direct scalar output remains strict.
+Invalid constructors and eager operational failures still abort. See
+[IIf contracts](CONDITIONAL_FUNCTIONS.md#lossless-iif-branches).
+
+The raw branch regression failed before the fix. Thirty-nine focused all-feature
+expression tests, 364 minimal expression tests, sixty-six query tests and nine
+CLI tests pass. Coverage includes selected/unselected raw branches, Error data,
+condition policies, ordinary and grouped provenance, parameter rebinding, byte
+quotas and every observed cancellation checkpoint. Expression/query all-target
+all-feature Clippy, focused CLI Clippy, minimal query compilation, formatting,
+Python compilation and diff checks pass. Independent source-free runners pass
+1,392 IIf controls and the existing 2,246 NULL and 774 Count controls.
+
+No dependency, stored carrier, native decoder or writer changed. Full expression,
+engine/workspace suites, Windows Access and benchmarks were not run for this
+chunk. Other conditional/raw relational paths, complete native coercion and the
+full backend roadmap remain unfinished.
+
 ## NULL tests over lossless String operands
 
 IsNull and SQL IS NULL/IS NOT NULL now use the lossless operand service in scalar

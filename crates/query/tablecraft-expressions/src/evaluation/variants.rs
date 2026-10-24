@@ -85,10 +85,8 @@ impl Evaluator<'_> {
                     ],
                 ) => {
                     self.check(depth)?;
-                    let condition = self.expression_operand(condition, depth + 1)?;
-                    let yes = self.expression_operand(yes, depth + 1)?;
-                    let no = self.expression_operand(no, depth + 1)?;
-                    return self.apply_iif(&condition, yes, no);
+                    let value = self.iif_byte_operand(condition, yes, no, depth)?;
+                    return self.publish_expression_byte_value(value);
                 }
                 (Some(Builtin::Nz), [A::Expression(value), rest @ ..])
                     if rest.len() <= 1

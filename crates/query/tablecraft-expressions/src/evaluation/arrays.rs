@@ -6,7 +6,7 @@ use crate::{
     functions::{
         Builtin,
         inspection::types::InspectionInput,
-        text::byte_string::{ByteOperand, ByteString},
+        text::byte_string::{ByteOperand, ByteString, ExpressionByteOperand},
     },
 };
 use tablecraft_core::values::{ExpressionValue, Value};
@@ -115,15 +115,15 @@ impl<'a> Evaluator<'a> {
                 }
                 return Ok(input);
             }
+            if builtin == Some(Builtin::IIf) {
+                return Ok(match self.expression_byte_operand(expression, depth)? {
+                    ExpressionByteOperand::Scalar(value) => InspectionOperand::Expression(value),
+                    ExpressionByteOperand::Bytes(bytes) => InspectionOperand::ByteString(bytes),
+                });
+            }
             if matches!(
                 builtin,
-                Some(
-                    Builtin::Eval
-                        | Builtin::CvErr
-                        | Builtin::IIf
-                        | Builtin::Nz
-                        | Builtin::Conditional(_)
-                )
+                Some(Builtin::Eval | Builtin::CvErr | Builtin::Nz | Builtin::Conditional(_))
             ) {
                 return self
                     .expression_operand(expression, depth)

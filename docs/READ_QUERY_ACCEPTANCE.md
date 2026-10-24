@@ -74,6 +74,12 @@ source families and native result-type qualification remain separate. See
 
 ## Remaining acceptance work
 
+IIf now retains [lossless String branches](CONDITIONAL_FUNCTIONS.md#lossless-iif-branches)
+through eager evaluation and selection, allowing observations/inspection and final
+publication to happen at their owning consumers. Branch policies/declarations and
+operational failures remain explicit; broader conditional/raw relational and native
+qualification work remains unfinished.
+
 IsNull and SQL IS NULL/IS NOT NULL now observe raw String identity without Unicode
 publication, including odd byte ranges and unpaired units. Operational failures
 remain failures. This closes a nullness-consumer gap, not broader comparison,

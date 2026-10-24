@@ -248,6 +248,9 @@ without result-carrier promotion, cloning or allocation. Both scalar syntax and
 bound retrieval evaluate condition, truepart and falsepart in written order.
 An error or resource failure in the unselected branch still fails the expression.
 No optimizer path drops that branch or its required source fields.
+IIf now also moves [lossless String branches](CONDITIONAL_FUNCTIONS.md#lossless-iif-branches)
+without prematurely publishing either branch as Unicode. A selected String may
+feed a raw consumer; direct final scalar publication remains strict.
 
 Supported conditions are Boolean, exact integer/Currency/Decimal and finite Single/
 Double: zero is false and nonzero is true. Exact coefficients are tested without
