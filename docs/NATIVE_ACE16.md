@@ -151,3 +151,10 @@ numeric index traversal/checks now have [independent compound evidence](NATIVE_I
 including mixed directions and maximum-width keys. Native Access conformance,
 remaining index encodings, composite seeks/mutation and all ACE writes remain
 unqualified.
+
+
+[Modern storage histories](testing/MODERN_SCALAR_HISTORIES.md) now independently
+exercise 19,902 retained rows per 2016/2019-family input with Large Number fields,
+2019 Date/Time Extended, added columns, null-mask growth, updates/deletes and
+scattered Large Number index references. These extend observed read/query
+evidence; other modern-field histories and native Access qualification remain open.

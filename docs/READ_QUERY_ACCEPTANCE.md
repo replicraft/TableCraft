@@ -25,6 +25,9 @@ qualification recorded separately.
   A separate [mixed scalar history corpus](testing/MIXED_SCALAR_HISTORIES.md)
   checks seventeen-field layouts, null-mask growth, Memo/OLE updates and exact
   native scalar values across 19,902 retained rows per priority profile.
+  [Modern ACE 16 histories](testing/MODERN_SCALAR_HISTORIES.md) additionally check
+  Large Number and 2019 Extended dates, historical fixed-prefix changes and
+  scattered indexed row loading under cumulative controls.
   Larger explicit multivalue loads include 20,000/400 parents with 48,000/40,000
   children; a separate 20,000-attachment/version corpus checks exact metadata,
   decoded bytes and stored history DATE bits. These do not establish arbitrary

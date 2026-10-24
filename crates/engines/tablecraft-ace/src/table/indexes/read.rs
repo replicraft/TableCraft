@@ -15,7 +15,7 @@ use super::{
     profile::{IndexProfile, KeyType},
 };
 use crate::{
-    InspectError,
+    InspectError, TableSnapshotLimits,
     format::{
         allocation,
         reader::Reader,
@@ -155,7 +155,9 @@ pub fn read_table_index_projection<R: crate::NativeReadSource>(
 /// Partial selections cap returned keys/rows rather than the table declaration;
 /// only traversed pages and returned rows are audited. Complete reads additionally
 /// require the declared count to fit and agree. No limit changes native key
-/// eligibility, depth/map/physical-read quotas, write qualification or fallback.
+/// eligibility, depth/map quotas, write qualification or fallback. Explicit
+/// requests fetch referenced rows in bounded internal batches, retaining one
+/// cumulative budget; legacy entry points retain their operation-wide read quota.
 pub fn read_table_index_with_request<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
@@ -272,6 +274,7 @@ impl Default for ReadOptions<'_> {
 struct ReadView<'a> {
     projection: &'a RowProjection,
     maximum_rows: usize,
+    row_batch_size: Option<usize>,
 }
 
 fn read_selected<R: crate::NativeReadSource>(
@@ -344,6 +347,8 @@ fn read_selected<R: crate::NativeReadSource>(
     let view = ReadView {
         projection: &projection,
         maximum_rows: options.maximum_rows as usize,
+        row_batch_size: (!options.legacy_table_limit)
+            .then(|| TableSnapshotLimits::default().batch_rows() as usize),
     };
     let rows = match profile {
         IndexProfile::EncodedTuple(profile) => {
@@ -449,7 +454,16 @@ fn read_rows<R: crate::NativeReadSource, P: KeyProfile, const N: usize>(
     let data_pages = allocation::pages(&mut reader, schema.layout.usage)?;
     let mut rows = Vec::new();
     let mut current_page = None;
-    for entry in entries {
+    for (position, entry) in entries.into_iter().enumerate() {
+        if view
+            .row_batch_size
+            .is_some_and(|size| position.is_multiple_of(size))
+        {
+            // The index/map pass already completed under its own quota. Row
+            // batches start at predetermined boundaries, without retrying failed
+            // work or refilling the caller's cumulative resource budget.
+            reader.reads = 0;
+        }
         reader.work(profile.components())?;
         reader.budget.charge(Resource::Rows, 1)?;
         let page_number = reference_page(entry.row);

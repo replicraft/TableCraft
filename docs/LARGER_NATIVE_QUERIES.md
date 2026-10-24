@@ -75,9 +75,16 @@ never certifies a complete table or populates a complete-table cache.
 
 Legacy engine index entry points retain their original 16,384-row table guard.
 Required index errors retain their no-fallback contract. Index depth, mapped-page,
-physical-read and resource quotas remain independent; index traversal materializes
-its selection rather than using the sequential batch size. Independent 20,000-row
-indexed comparisons now cover the profiles below; the accepted ceiling is not
+physical-read and resource quotas remain independent. Explicit IndexReadRequest
+calls validate/materialize selected keys under the original tree/map pass quota,
+then fetch referenced rows in internal 256-row groups, each with the existing
+4,096-read quota and the same cumulative caller budgets. Groups begin at fixed
+boundaries; failures are not retried and no result is published until completion.
+The single current-page buffer may survive a boundary; root/row/hidden-key checks
+still apply to every returned record. Legacy index APIs retain their original
+operation-wide read quota. [Scattered modern histories](testing/MODERN_SCALAR_HISTORIES.md)
+exposed and now exercise this distinction. This is not streaming index execution.
+Independent 20,000-row indexed comparisons now cover the profiles below; the accepted ceiling is not
 evidence that all tables up to 1,000,000 rows can be read.
 Legacy collection/attachment/history entry points, template readers, editing,
 image retention and writes retain separate default limits and qualification.

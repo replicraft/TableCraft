@@ -1,5 +1,38 @@
 # Implementation status
 
+## Modern scalar histories and bounded scattered index fetches
+
+New original ACE 2016/2019 history fixtures exercise Large Number and 2019
+Date/Time Extended alongside added fields, Boolean/null-mask growth, deleted
+roots, grown Memo/OLE and tick-exact date changes. Each retains 19,902 rows.
+Independent getters and a Python model agree on every value, including Int64
+endpoint/Double-boundary values, added/missing fields and seven-digit dates.
+See [history contract and observed issue](testing/MODERN_SCALAR_HISTORIES.md).
+
+The corpus exposed a full Large Number index scan exhausting the operation-wide
+4,096-read quota while following scattered rows. Explicit IndexReadRequest calls
+now validate keys/maps, then fetch rows in predetermined 256-row groups using
+that quota per group and one cumulative byte/row/work pool. No failure is retried
+and no partial snapshot is returned. Legacy entry points retain their original
+quota/row limits. No cache, dependency, carrier, runtime or write change is added.
+
+Two new Rust tests cover 20,000 scattered roots in both key directions across
+four read layouts, exact hidden-key projections, cumulative byte exhaustion,
+late key corruption and ACE 16 cancellation around group/final boundaries.
+The focused batch passes 21 native, six adapter and three CLI index tests;
+a further 61 native index-profile regressions pass. ACE all-target/all-feature
+Clippy and the minimal-feature check pass. Rebuilt table-data/CLI artifacts, formatting,
+Python syntax, dependency boundaries and diff checks are checked for this slice.
+Full workspace/backend suites and benchmarks are not repeated; this adds no
+performance claim.
+
+The new independent runner passes 37 controls over both unchanged registered
+files, comparing complete/projected cursors, CLI streaming/pages, modern values,
+sequential/indexed exact predicates, counts and Extended-date order. Only
+TableCraft executes SQL. Native Access, broader histories/locales/Variant semantics,
+advanced-field scope and coherent live-file reads remain open before writes.
+
+
 ## Page-decoder cancellation and terminal continuation failures
 
 Native page reads now observe cancellation immediately after a successful host
