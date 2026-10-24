@@ -2,6 +2,7 @@
 mod aggregate;
 mod arithmetic;
 mod concatenation;
+mod dates;
 mod functions;
 mod null_replacement;
 mod unary;
@@ -107,17 +108,9 @@ impl Binder<'_> {
             Expr::DateConvert(..) | Expr::ConstructorCall(..) => {
                 OutputType::scalar(ScalarType::DateTime, true)
             }
-            Expr::DateAdd(_, _, date) => match self.result_type(date, scopes, depth + 1)? {
-                OutputType::Scalar { data_type, .. }
-                    if matches!(
-                        data_type.scalar_type(),
-                        ScalarType::DateTime | ScalarType::DateTimeExtended
-                    ) =>
-                {
-                    OutputType::scalar(data_type.scalar_type(), true)
-                }
-                _ => OutputType::Dynamic,
-            },
+            Expr::DateAdd(_, _, date) => {
+                dates::addition(self.result_type(date, scopes, depth + 1)?)
+            }
             Expr::Clock(function) => OutputType::scalar(
                 match function {
                     ClockFunction::Date | ClockFunction::Time | ClockFunction::Now => {

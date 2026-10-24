@@ -18,6 +18,16 @@ Access error precedence remains unqualified.
 
 ## Source and control policies
 
+Metadata-only binding now reports DateAdd's successful carrier for each supported
+source family: converted numeric/Boolean/Text and legacy sources produce legacy
+DateTime, while an existing Extended source retains Extended. Source nullability
+survives; a NULL-only source stays NULL-only after successful control validation.
+Unsupported or dynamically typed sources stay Dynamic. No interval/count
+validation, Text parsing, provider lookup or row scan runs to establish metadata.
+Execution retains every existing conversion/policy/range failure. These are
+current evaluator guarantees, separate from native SQL typing; see
+[result metadata](QUERY_RESULT_TYPES.md).
+
 Existing DateTime, DateTimeExtended and NULL sources remain borrowed and bypass
 CDate. Legacy dates retain their existing whole-second calendar profile; Extended
 dates retain exact components and 100 ns fractions, including years before 100.

@@ -57,6 +57,13 @@ raw-serial selection when Decimal participates, without requiring the engineerin
 declaration flag. This does not enable strict set-key coercion or qualify native
 Access comparison behavior. See [predicate scope](NUMERIC_PREDICATES.md).
 
+DateAdd now exposes its existing successful date carrier for numeric/Boolean/Text
+sources during metadata-only preparation, with source nullability preserved.
+Named/derived, UNION, Nz and Avg consumers retain this metadata without scans or
+policy activation. Existing Extended sources retain their precision; unknown
+source families and native result-type qualification remain separate. See
+[result metadata](QUERY_RESULT_TYPES.md).
+
 ## Remaining acceptance work
 
 Attachment metadata queries now use complete projected child snapshots without

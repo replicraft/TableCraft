@@ -1,5 +1,25 @@
 # Implementation status
 
+## DateAdd source-conversion result metadata
+
+Metadata-only binding now describes DateAdd's existing converted source profile:
+supported numeric/Boolean/Text and legacy sources produce legacy DateTime;
+existing Extended sources retain Extended. Source nullability survives and a
+NULL-only source stays NULL-only after successful controls. Unsupported/Dynamic
+sources retain Dynamic. The feature-local helper performs no conversion, policy
+lookup or row read. See [interval source rules](DATE_INTERVALS.md) and
+[result types](QUERY_RESULT_TYPES.md).
+
+Four new tests cover twelve supported families, nullable/required inputs, declared
+parameters, constraint removal, exact legacy/Extended results, inert metadata
+binding, named/derived/UNION/Nz/Avg composition and retained execution failures.
+Forty-eight distinct focused query tests pass across the two batched runs,
+including existing date source/state/declaration/average and result-type/named
+consumers. Focused query Clippy, formatting and diff checks pass. Existing tests
+that expected Dynamic for a Decimal source now require its proven legacy date
+carrier. Runtime values, Scalar/Variant declaration categories, dependencies and
+native writes are unchanged; native Access and full workspace tests were not run.
+
 ## Explicit numeric Empty and CDec Error conversion
 
 The expression conversion kernel now admits host Empty as each numeric
