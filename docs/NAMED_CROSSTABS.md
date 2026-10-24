@@ -135,7 +135,8 @@ remain refused here because their result or validity depends on execution polici
 A policy-dependent fixed heading may still execute as a top-level crosstab under
 its existing explicit execution context. Binding does not choose that context,
 consume volatile state or scan records to invent a schema. Other pure function
-families and conditional expression shapes remain separate extension work.
+families remain separate extension work. Constant eager choices are supported
+under the bounded profile below.
 
 Operators/conversions/math call the existing expression kernels, with NoBindings
 and no provider context. Source access is absent from the evaluator, even beyond
@@ -176,3 +177,44 @@ still require runtime formatting and the existing execution staging.
 The resulting constants are stored in the plan; metadata binding still scans no
 rows and invokes no clock or formatting provider. Plain preparation has no implicit
 year. Runtime text-date conversions remain execution dependent.
+
+## Constant conditional headings
+
+Named fixed schemas now also admit IIf, Nz, Choose and Switch when every operand
+belongs to the existing policy-independent constant profile. For example,
+`IN (IIf(True,2,99),Choose(1,1,99),Nz(Switch(False,99),4))` declares columns
+2, 1 and 4 without scanning Sales or discovering a result. Those columns can be
+referenced through named SELECT wrappers, joins and UNION dependencies using the
+ordinary metadata-only planner. Execution retains the original heading expressions;
+this is schema derivation, not a rewrite or a persistent result cache.
+
+All operands are visited eagerly in written order, including unselected branches,
+unused Nz replacements and later Switch pairs. The existing expression kernels
+select and move the chosen Value without cloning its Text payload. Their numeric
+condition/index admission, NULL selection and deferred control-conversion errors
+remain authoritative. An omitted query Nz replacement yields empty Text. Existing
+heading naming, length, duplicate and carrier admission still apply; selecting NULL
+or an unsupported heading carrier does not invent a column name.
+
+Text condition/index coercion remains contextual and is refused by metadata-only
+preparation. Unselected fields, parameters, providers, volatile calls and Text
+numeric conversions also remain contextual. These cases can use the existing
+explicit execution-phase discovery service; constant selection does not suppress
+them. Arithmetic failures in unselected constant branches still fail preparation,
+even when the underlying source has no rows. Every branch consumes the same
+cumulative binding byte/work/depth allowance and cancellation checks. No new
+source, provider, dependency, storage or write contract is introduced.
+
+The function availability and eager-selection contracts follow Microsoft's Access
+[IIf](https://support.microsoft.com/en-gb/access/functions/iif-function),
+[Nz](https://support.microsoft.com/en-gb/access/functions/nz-function),
+[Switch](https://support.microsoft.com/en-us/access/switch-function) and
+[Choose](https://support.microsoft.com/en-us/access/functions/choose-function)
+query references. These contracts motivate the existing scalar kernels; they do
+not establish native Access acceptance of every constant pivot expression or
+TableCraft's preparation/error timing. Native Access qualification remains unrun.
+
+Focused tests cover nested choices, named SELECT/UNION composition without scans,
+Text names, empty input, unselected arithmetic failures, contextual refusal,
+duplicate/NULL headings, charged unselected payloads, deferred error precedence
+and every observed conditional cancellation checkpoint.

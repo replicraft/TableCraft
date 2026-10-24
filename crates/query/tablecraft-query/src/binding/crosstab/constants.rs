@@ -1,4 +1,6 @@
 //! Policy-independent fixed headings; reuse scalar kernels without source access.
+mod conditional;
+
 use super::super::Binder;
 use crate::{
     QueryError,
@@ -97,6 +99,13 @@ impl Binder<'_> {
                 })
             }
             Expr::CVar(input) => self.constant_heading(input, depth + 1),
+            Expr::IIf(condition, yes, no) => self.constant_iif(condition, yes, no, depth + 1),
+            Expr::Nz(value, replacement) => {
+                self.constant_nz(value, replacement.as_deref(), depth + 1)
+            }
+            Expr::ConditionalCall(function, arguments) => {
+                self.constant_selection(*function, arguments, depth + 1)
+            }
             // Fields, parameters, subqueries and policy/host-dependent calls cannot
             // declare a stable metadata schema. No evaluator or source sees them.
             _ => Err(QueryError::Unsupported),

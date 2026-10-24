@@ -1,5 +1,20 @@
 # Implementation status
 
+## Constant conditional crosstab headings
+
+Named crosstabs now derive fixed schemas for policy-independent constant IIf,
+Nz, Choose and Switch IN headings. Shared conditional kernels retain eager
+branches, NULL rules, checked selectors and owned payloads under the binding
+budget. Contextual/volatile/parameter-dependent operands still require their
+existing discovery path; preparation never scans rows or activates a provider.
+See [named heading scope](NAMED_CROSSTABS.md).
+
+All 33 named crosstab integration tests and five constant-binding unit tests pass,
+including source-free binding, named/UNION composition, eager errors,
+collation-required execution, cancellation and allocation controls. Scoped query
+Clippy passes. This expands working composition without qualifying broader saved
+syntax or native Access behavior.
+
 ## Retained logical operands and Empty admission
 
 Not and all six binary logical operators now admit explicit host Empty as
