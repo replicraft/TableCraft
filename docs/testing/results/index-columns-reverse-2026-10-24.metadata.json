@@ -1,0 +1,6616 @@
+{
+  "platform": "Darwin",
+  "architecture": "arm64",
+  "hyperfine": "hyperfine 2.0.0",
+  "runs": 15,
+  "warmup": 3,
+  "profile": "release, normal Cargo defaults, isolated ACE variants",
+  "inspection_iterations": 1000,
+  "constructor_iterations": 250000,
+  "inspection_only": true,
+  "reverse_order": true,
+  "native_access": "unrun",
+  "allocation_counting": "capacity/spill-derived collection constructors only",
+  "timing_scope": "inspection includes ordinary metadata budgets; constructors include capacity/spill bookkeeping",
+  "input_sha256": {
+    "index-columns-V2016.accdb": "ad2b539848fbe8d2a6952cbc285be4b7f946a1798dd184d4b551785bac7db4ec",
+    "index-columns-V2000.mdb": "1392c2f51ce954e7cfc8551f8e8f0a66dadbc922865016661ad537f226a23994"
+  },
+  "binary_sha256": {
+    "smallvec": "7fa012966f063dd9dbada2b2a60f0dc14b876ed8ab9109d3b725f9bc124ab429",
+    "arrayvec": "18fb3276ef3e6f90c573be77ba3177e90c018767fdde01866f9224c765c03bc6",
+    "vec": "836f3de86a695e9478aa5f80210a4b255ad87d06c0a9d8a9ba710a5345994edf"
+  },
+  "correctness": {
+    "allocation_counting": "capacity/spill-derived collection constructors only",
+    "binary_sha256": {
+      "arrayvec": "18fb3276ef3e6f90c573be77ba3177e90c018767fdde01866f9224c765c03bc6",
+      "smallvec": "7fa012966f063dd9dbada2b2a60f0dc14b876ed8ab9109d3b725f9bc124ab429",
+      "vec": "836f3de86a695e9478aa5f80210a4b255ad87d06c0a9d8a9ba710a5345994edf"
+    },
+    "controls": 2094,
+    "input_sha256": {
+      "index-columns-V2000.mdb": "1392c2f51ce954e7cfc8551f8e8f0a66dadbc922865016661ad537f226a23994",
+      "index-columns-V2016.accdb": "ad2b539848fbe8d2a6952cbc285be4b7f946a1798dd184d4b551785bac7db4ec"
+    },
+    "native_access": "unrun"
+  },
+  "descriptions": {
+    "Columns1Indexes1-smallvec": {
+      "index_column_bytes": 16,
+      "native_index_bytes": 112,
+      "vec_bytes": 24,
+      "arrayvec_bytes": 168,
+      "smallvec_bytes": 48,
+      "indexes": [
+        {
+          "name": "Index0",
+          "number": 0,
+          "data_number": 0,
+          "root": 91,
+          "usage": 23042,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ]
+          ]
+        }
+      ]
+    },
+    "Columns1Indexes1-arrayvec": {
+      "index_column_bytes": 16,
+      "native_index_bytes": 232,
+      "vec_bytes": 24,
+      "arrayvec_bytes": 168,
+      "smallvec_bytes": 48,
+      "indexes": [
+        {
+          "name": "Index0",
+          "number": 0,
+          "data_number": 0,
+          "root": 91,
+          "usage": 23042,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ]
+          ]
+        }
+      ]
+    },
+    "Columns1Indexes1-vec": {
+      "index_column_bytes": 16,
+      "native_index_bytes": 88,
+      "vec_bytes": 24,
+      "arrayvec_bytes": 168,
+      "smallvec_bytes": 48,
+      "indexes": [
+        {
+          "name": "Index0",
+          "number": 0,
+          "data_number": 0,
+          "root": 91,
+          "usage": 23042,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ]
+          ]
+        }
+      ]
+    },
+    "Columns1Indexes24-smallvec": {
+      "index_column_bytes": 16,
+      "native_index_bytes": 112,
+      "vec_bytes": 24,
+      "arrayvec_bytes": 168,
+      "smallvec_bytes": 48,
+      "indexes": [
+        {
+          "name": "Index0",
+          "number": 0,
+          "data_number": 0,
+          "root": 96,
+          "usage": 24322,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index1",
+          "number": 1,
+          "data_number": 1,
+          "root": 97,
+          "usage": 24323,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              1,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index2",
+          "number": 2,
+          "data_number": 2,
+          "root": 98,
+          "usage": 24324,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              2,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index3",
+          "number": 3,
+          "data_number": 3,
+          "root": 99,
+          "usage": 24325,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              3,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index4",
+          "number": 4,
+          "data_number": 4,
+          "root": 100,
+          "usage": 24326,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              4,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index5",
+          "number": 5,
+          "data_number": 5,
+          "root": 101,
+          "usage": 24327,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              5,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index6",
+          "number": 6,
+          "data_number": 6,
+          "root": 102,
+          "usage": 24328,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              6,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index7",
+          "number": 7,
+          "data_number": 7,
+          "root": 103,
+          "usage": 24329,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              7,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index8",
+          "number": 8,
+          "data_number": 8,
+          "root": 104,
+          "usage": 24330,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              8,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index9",
+          "number": 9,
+          "data_number": 9,
+          "root": 105,
+          "usage": 24331,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              9,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index10",
+          "number": 10,
+          "data_number": 0,
+          "root": 96,
+          "usage": 24322,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index11",
+          "number": 11,
+          "data_number": 1,
+          "root": 97,
+          "usage": 24323,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              1,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index12",
+          "number": 12,
+          "data_number": 2,
+          "root": 98,
+          "usage": 24324,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              2,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index13",
+          "number": 13,
+          "data_number": 3,
+          "root": 99,
+          "usage": 24325,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              3,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index14",
+          "number": 14,
+          "data_number": 4,
+          "root": 100,
+          "usage": 24326,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              4,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index15",
+          "number": 15,
+          "data_number": 5,
+          "root": 101,
+          "usage": 24327,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              5,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index16",
+          "number": 16,
+          "data_number": 6,
+          "root": 102,
+          "usage": 24328,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              6,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index17",
+          "number": 17,
+          "data_number": 7,
+          "root": 103,
+          "usage": 24329,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              7,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index18",
+          "number": 18,
+          "data_number": 8,
+          "root": 104,
+          "usage": 24330,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              8,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index19",
+          "number": 19,
+          "data_number": 9,
+          "root": 105,
+          "usage": 24331,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              9,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index20",
+          "number": 20,
+          "data_number": 0,
+          "root": 96,
+          "usage": 24322,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index21",
+          "number": 21,
+          "data_number": 1,
+          "root": 97,
+          "usage": 24323,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              1,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index22",
+          "number": 22,
+          "data_number": 2,
+          "root": 98,
+          "usage": 24324,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              2,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index23",
+          "number": 23,
+          "data_number": 3,
+          "root": 99,
+          "usage": 24325,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              3,
+              true
+            ]
+          ]
+        }
+      ]
+    },
+    "Columns1Indexes24-arrayvec": {
+      "index_column_bytes": 16,
+      "native_index_bytes": 232,
+      "vec_bytes": 24,
+      "arrayvec_bytes": 168,
+      "smallvec_bytes": 48,
+      "indexes": [
+        {
+          "name": "Index0",
+          "number": 0,
+          "data_number": 0,
+          "root": 96,
+          "usage": 24322,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index1",
+          "number": 1,
+          "data_number": 1,
+          "root": 97,
+          "usage": 24323,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              1,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index2",
+          "number": 2,
+          "data_number": 2,
+          "root": 98,
+          "usage": 24324,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              2,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index3",
+          "number": 3,
+          "data_number": 3,
+          "root": 99,
+          "usage": 24325,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              3,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index4",
+          "number": 4,
+          "data_number": 4,
+          "root": 100,
+          "usage": 24326,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              4,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index5",
+          "number": 5,
+          "data_number": 5,
+          "root": 101,
+          "usage": 24327,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              5,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index6",
+          "number": 6,
+          "data_number": 6,
+          "root": 102,
+          "usage": 24328,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              6,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index7",
+          "number": 7,
+          "data_number": 7,
+          "root": 103,
+          "usage": 24329,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              7,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index8",
+          "number": 8,
+          "data_number": 8,
+          "root": 104,
+          "usage": 24330,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              8,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index9",
+          "number": 9,
+          "data_number": 9,
+          "root": 105,
+          "usage": 24331,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              9,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index10",
+          "number": 10,
+          "data_number": 0,
+          "root": 96,
+          "usage": 24322,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index11",
+          "number": 11,
+          "data_number": 1,
+          "root": 97,
+          "usage": 24323,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              1,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index12",
+          "number": 12,
+          "data_number": 2,
+          "root": 98,
+          "usage": 24324,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              2,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index13",
+          "number": 13,
+          "data_number": 3,
+          "root": 99,
+          "usage": 24325,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              3,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index14",
+          "number": 14,
+          "data_number": 4,
+          "root": 100,
+          "usage": 24326,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              4,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index15",
+          "number": 15,
+          "data_number": 5,
+          "root": 101,
+          "usage": 24327,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              5,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index16",
+          "number": 16,
+          "data_number": 6,
+          "root": 102,
+          "usage": 24328,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              6,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index17",
+          "number": 17,
+          "data_number": 7,
+          "root": 103,
+          "usage": 24329,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              7,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index18",
+          "number": 18,
+          "data_number": 8,
+          "root": 104,
+          "usage": 24330,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              8,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index19",
+          "number": 19,
+          "data_number": 9,
+          "root": 105,
+          "usage": 24331,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              9,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index20",
+          "number": 20,
+          "data_number": 0,
+          "root": 96,
+          "usage": 24322,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index21",
+          "number": 21,
+          "data_number": 1,
+          "root": 97,
+          "usage": 24323,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              1,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index22",
+          "number": 22,
+          "data_number": 2,
+          "root": 98,
+          "usage": 24324,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              2,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index23",
+          "number": 23,
+          "data_number": 3,
+          "root": 99,
+          "usage": 24325,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              3,
+              true
+            ]
+          ]
+        }
+      ]
+    },
+    "Columns1Indexes24-vec": {
+      "index_column_bytes": 16,
+      "native_index_bytes": 88,
+      "vec_bytes": 24,
+      "arrayvec_bytes": 168,
+      "smallvec_bytes": 48,
+      "indexes": [
+        {
+          "name": "Index0",
+          "number": 0,
+          "data_number": 0,
+          "root": 96,
+          "usage": 24322,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index1",
+          "number": 1,
+          "data_number": 1,
+          "root": 97,
+          "usage": 24323,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              1,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index2",
+          "number": 2,
+          "data_number": 2,
+          "root": 98,
+          "usage": 24324,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              2,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index3",
+          "number": 3,
+          "data_number": 3,
+          "root": 99,
+          "usage": 24325,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              3,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index4",
+          "number": 4,
+          "data_number": 4,
+          "root": 100,
+          "usage": 24326,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              4,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index5",
+          "number": 5,
+          "data_number": 5,
+          "root": 101,
+          "usage": 24327,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              5,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index6",
+          "number": 6,
+          "data_number": 6,
+          "root": 102,
+          "usage": 24328,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              6,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index7",
+          "number": 7,
+          "data_number": 7,
+          "root": 103,
+          "usage": 24329,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              7,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index8",
+          "number": 8,
+          "data_number": 8,
+          "root": 104,
+          "usage": 24330,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              8,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index9",
+          "number": 9,
+          "data_number": 9,
+          "root": 105,
+          "usage": 24331,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              9,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index10",
+          "number": 10,
+          "data_number": 0,
+          "root": 96,
+          "usage": 24322,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index11",
+          "number": 11,
+          "data_number": 1,
+          "root": 97,
+          "usage": 24323,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              1,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index12",
+          "number": 12,
+          "data_number": 2,
+          "root": 98,
+          "usage": 24324,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              2,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index13",
+          "number": 13,
+          "data_number": 3,
+          "root": 99,
+          "usage": 24325,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              3,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index14",
+          "number": 14,
+          "data_number": 4,
+          "root": 100,
+          "usage": 24326,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              4,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index15",
+          "number": 15,
+          "data_number": 5,
+          "root": 101,
+          "usage": 24327,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              5,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index16",
+          "number": 16,
+          "data_number": 6,
+          "root": 102,
+          "usage": 24328,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              6,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index17",
+          "number": 17,
+          "data_number": 7,
+          "root": 103,
+          "usage": 24329,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              7,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index18",
+          "number": 18,
+          "data_number": 8,
+          "root": 104,
+          "usage": 24330,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              8,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index19",
+          "number": 19,
+          "data_number": 9,
+          "root": 105,
+          "usage": 24331,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              9,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index20",
+          "number": 20,
+          "data_number": 0,
+          "root": 96,
+          "usage": 24322,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index21",
+          "number": 21,
+          "data_number": 1,
+          "root": 97,
+          "usage": 24323,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              1,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index22",
+          "number": 22,
+          "data_number": 2,
+          "root": 98,
+          "usage": 24324,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              2,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index23",
+          "number": 23,
+          "data_number": 3,
+          "root": 99,
+          "usage": 24325,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              3,
+              true
+            ]
+          ]
+        }
+      ]
+    },
+    "Columns2Indexes1-smallvec": {
+      "index_column_bytes": 16,
+      "native_index_bytes": 112,
+      "vec_bytes": 24,
+      "arrayvec_bytes": 168,
+      "smallvec_bytes": 48,
+      "indexes": [
+        {
+          "name": "Index0",
+          "number": 0,
+          "data_number": 0,
+          "root": 110,
+          "usage": 27906,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ]
+          ]
+        }
+      ]
+    },
+    "Columns2Indexes1-arrayvec": {
+      "index_column_bytes": 16,
+      "native_index_bytes": 232,
+      "vec_bytes": 24,
+      "arrayvec_bytes": 168,
+      "smallvec_bytes": 48,
+      "indexes": [
+        {
+          "name": "Index0",
+          "number": 0,
+          "data_number": 0,
+          "root": 110,
+          "usage": 27906,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ]
+          ]
+        }
+      ]
+    },
+    "Columns2Indexes1-vec": {
+      "index_column_bytes": 16,
+      "native_index_bytes": 88,
+      "vec_bytes": 24,
+      "arrayvec_bytes": 168,
+      "smallvec_bytes": 48,
+      "indexes": [
+        {
+          "name": "Index0",
+          "number": 0,
+          "data_number": 0,
+          "root": 110,
+          "usage": 27906,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ]
+          ]
+        }
+      ]
+    },
+    "Columns2Indexes24-smallvec": {
+      "index_column_bytes": 16,
+      "native_index_bytes": 112,
+      "vec_bytes": 24,
+      "arrayvec_bytes": 168,
+      "smallvec_bytes": 48,
+      "indexes": [
+        {
+          "name": "Index0",
+          "number": 0,
+          "data_number": 0,
+          "root": 115,
+          "usage": 29186,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index1",
+          "number": 1,
+          "data_number": 1,
+          "root": 116,
+          "usage": 29187,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index2",
+          "number": 2,
+          "data_number": 2,
+          "root": 117,
+          "usage": 29188,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index3",
+          "number": 3,
+          "data_number": 3,
+          "root": 118,
+          "usage": 29189,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index4",
+          "number": 4,
+          "data_number": 4,
+          "root": 119,
+          "usage": 29190,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index5",
+          "number": 5,
+          "data_number": 5,
+          "root": 120,
+          "usage": 29191,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index6",
+          "number": 6,
+          "data_number": 6,
+          "root": 121,
+          "usage": 29192,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index7",
+          "number": 7,
+          "data_number": 7,
+          "root": 122,
+          "usage": 29193,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index8",
+          "number": 8,
+          "data_number": 8,
+          "root": 123,
+          "usage": 29194,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index9",
+          "number": 9,
+          "data_number": 9,
+          "root": 124,
+          "usage": 29195,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index10",
+          "number": 10,
+          "data_number": 0,
+          "root": 115,
+          "usage": 29186,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index11",
+          "number": 11,
+          "data_number": 1,
+          "root": 116,
+          "usage": 29187,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index12",
+          "number": 12,
+          "data_number": 2,
+          "root": 117,
+          "usage": 29188,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index13",
+          "number": 13,
+          "data_number": 3,
+          "root": 118,
+          "usage": 29189,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index14",
+          "number": 14,
+          "data_number": 4,
+          "root": 119,
+          "usage": 29190,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index15",
+          "number": 15,
+          "data_number": 5,
+          "root": 120,
+          "usage": 29191,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index16",
+          "number": 16,
+          "data_number": 6,
+          "root": 121,
+          "usage": 29192,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index17",
+          "number": 17,
+          "data_number": 7,
+          "root": 122,
+          "usage": 29193,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index18",
+          "number": 18,
+          "data_number": 8,
+          "root": 123,
+          "usage": 29194,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index19",
+          "number": 19,
+          "data_number": 9,
+          "root": 124,
+          "usage": 29195,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index20",
+          "number": 20,
+          "data_number": 0,
+          "root": 115,
+          "usage": 29186,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index21",
+          "number": 21,
+          "data_number": 1,
+          "root": 116,
+          "usage": 29187,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index22",
+          "number": 22,
+          "data_number": 2,
+          "root": 117,
+          "usage": 29188,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index23",
+          "number": 23,
+          "data_number": 3,
+          "root": 118,
+          "usage": 29189,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ]
+          ]
+        }
+      ]
+    },
+    "Columns2Indexes24-arrayvec": {
+      "index_column_bytes": 16,
+      "native_index_bytes": 232,
+      "vec_bytes": 24,
+      "arrayvec_bytes": 168,
+      "smallvec_bytes": 48,
+      "indexes": [
+        {
+          "name": "Index0",
+          "number": 0,
+          "data_number": 0,
+          "root": 115,
+          "usage": 29186,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index1",
+          "number": 1,
+          "data_number": 1,
+          "root": 116,
+          "usage": 29187,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index2",
+          "number": 2,
+          "data_number": 2,
+          "root": 117,
+          "usage": 29188,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index3",
+          "number": 3,
+          "data_number": 3,
+          "root": 118,
+          "usage": 29189,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index4",
+          "number": 4,
+          "data_number": 4,
+          "root": 119,
+          "usage": 29190,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index5",
+          "number": 5,
+          "data_number": 5,
+          "root": 120,
+          "usage": 29191,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index6",
+          "number": 6,
+          "data_number": 6,
+          "root": 121,
+          "usage": 29192,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index7",
+          "number": 7,
+          "data_number": 7,
+          "root": 122,
+          "usage": 29193,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index8",
+          "number": 8,
+          "data_number": 8,
+          "root": 123,
+          "usage": 29194,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index9",
+          "number": 9,
+          "data_number": 9,
+          "root": 124,
+          "usage": 29195,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index10",
+          "number": 10,
+          "data_number": 0,
+          "root": 115,
+          "usage": 29186,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index11",
+          "number": 11,
+          "data_number": 1,
+          "root": 116,
+          "usage": 29187,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index12",
+          "number": 12,
+          "data_number": 2,
+          "root": 117,
+          "usage": 29188,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index13",
+          "number": 13,
+          "data_number": 3,
+          "root": 118,
+          "usage": 29189,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index14",
+          "number": 14,
+          "data_number": 4,
+          "root": 119,
+          "usage": 29190,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index15",
+          "number": 15,
+          "data_number": 5,
+          "root": 120,
+          "usage": 29191,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index16",
+          "number": 16,
+          "data_number": 6,
+          "root": 121,
+          "usage": 29192,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index17",
+          "number": 17,
+          "data_number": 7,
+          "root": 122,
+          "usage": 29193,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index18",
+          "number": 18,
+          "data_number": 8,
+          "root": 123,
+          "usage": 29194,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index19",
+          "number": 19,
+          "data_number": 9,
+          "root": 124,
+          "usage": 29195,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index20",
+          "number": 20,
+          "data_number": 0,
+          "root": 115,
+          "usage": 29186,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index21",
+          "number": 21,
+          "data_number": 1,
+          "root": 116,
+          "usage": 29187,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index22",
+          "number": 22,
+          "data_number": 2,
+          "root": 117,
+          "usage": 29188,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index23",
+          "number": 23,
+          "data_number": 3,
+          "root": 118,
+          "usage": 29189,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ]
+          ]
+        }
+      ]
+    },
+    "Columns2Indexes24-vec": {
+      "index_column_bytes": 16,
+      "native_index_bytes": 88,
+      "vec_bytes": 24,
+      "arrayvec_bytes": 168,
+      "smallvec_bytes": 48,
+      "indexes": [
+        {
+          "name": "Index0",
+          "number": 0,
+          "data_number": 0,
+          "root": 115,
+          "usage": 29186,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index1",
+          "number": 1,
+          "data_number": 1,
+          "root": 116,
+          "usage": 29187,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index2",
+          "number": 2,
+          "data_number": 2,
+          "root": 117,
+          "usage": 29188,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index3",
+          "number": 3,
+          "data_number": 3,
+          "root": 118,
+          "usage": 29189,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index4",
+          "number": 4,
+          "data_number": 4,
+          "root": 119,
+          "usage": 29190,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index5",
+          "number": 5,
+          "data_number": 5,
+          "root": 120,
+          "usage": 29191,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index6",
+          "number": 6,
+          "data_number": 6,
+          "root": 121,
+          "usage": 29192,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index7",
+          "number": 7,
+          "data_number": 7,
+          "root": 122,
+          "usage": 29193,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index8",
+          "number": 8,
+          "data_number": 8,
+          "root": 123,
+          "usage": 29194,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index9",
+          "number": 9,
+          "data_number": 9,
+          "root": 124,
+          "usage": 29195,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index10",
+          "number": 10,
+          "data_number": 0,
+          "root": 115,
+          "usage": 29186,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index11",
+          "number": 11,
+          "data_number": 1,
+          "root": 116,
+          "usage": 29187,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index12",
+          "number": 12,
+          "data_number": 2,
+          "root": 117,
+          "usage": 29188,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index13",
+          "number": 13,
+          "data_number": 3,
+          "root": 118,
+          "usage": 29189,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index14",
+          "number": 14,
+          "data_number": 4,
+          "root": 119,
+          "usage": 29190,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index15",
+          "number": 15,
+          "data_number": 5,
+          "root": 120,
+          "usage": 29191,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index16",
+          "number": 16,
+          "data_number": 6,
+          "root": 121,
+          "usage": 29192,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index17",
+          "number": 17,
+          "data_number": 7,
+          "root": 122,
+          "usage": 29193,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index18",
+          "number": 18,
+          "data_number": 8,
+          "root": 123,
+          "usage": 29194,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index19",
+          "number": 19,
+          "data_number": 9,
+          "root": 124,
+          "usage": 29195,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index20",
+          "number": 20,
+          "data_number": 0,
+          "root": 115,
+          "usage": 29186,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index21",
+          "number": 21,
+          "data_number": 1,
+          "root": 116,
+          "usage": 29187,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index22",
+          "number": 22,
+          "data_number": 2,
+          "root": 117,
+          "usage": 29188,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index23",
+          "number": 23,
+          "data_number": 3,
+          "root": 118,
+          "usage": 29189,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ]
+          ]
+        }
+      ]
+    },
+    "Columns10Indexes1-smallvec": {
+      "index_column_bytes": 16,
+      "native_index_bytes": 112,
+      "vec_bytes": 24,
+      "arrayvec_bytes": 168,
+      "smallvec_bytes": 48,
+      "indexes": [
+        {
+          "name": "Index0",
+          "number": 0,
+          "data_number": 0,
+          "root": 129,
+          "usage": 32770,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ]
+          ]
+        }
+      ]
+    },
+    "Columns10Indexes1-arrayvec": {
+      "index_column_bytes": 16,
+      "native_index_bytes": 232,
+      "vec_bytes": 24,
+      "arrayvec_bytes": 168,
+      "smallvec_bytes": 48,
+      "indexes": [
+        {
+          "name": "Index0",
+          "number": 0,
+          "data_number": 0,
+          "root": 129,
+          "usage": 32770,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ]
+          ]
+        }
+      ]
+    },
+    "Columns10Indexes1-vec": {
+      "index_column_bytes": 16,
+      "native_index_bytes": 88,
+      "vec_bytes": 24,
+      "arrayvec_bytes": 168,
+      "smallvec_bytes": 48,
+      "indexes": [
+        {
+          "name": "Index0",
+          "number": 0,
+          "data_number": 0,
+          "root": 129,
+          "usage": 32770,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ]
+          ]
+        }
+      ]
+    },
+    "Columns10Indexes24-smallvec": {
+      "index_column_bytes": 16,
+      "native_index_bytes": 112,
+      "vec_bytes": 24,
+      "arrayvec_bytes": 168,
+      "smallvec_bytes": 48,
+      "indexes": [
+        {
+          "name": "Index0",
+          "number": 0,
+          "data_number": 0,
+          "root": 134,
+          "usage": 34050,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index1",
+          "number": 1,
+          "data_number": 1,
+          "root": 135,
+          "usage": 34051,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index2",
+          "number": 2,
+          "data_number": 2,
+          "root": 136,
+          "usage": 34052,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index3",
+          "number": 3,
+          "data_number": 3,
+          "root": 137,
+          "usage": 34053,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index4",
+          "number": 4,
+          "data_number": 4,
+          "root": 138,
+          "usage": 34054,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index5",
+          "number": 5,
+          "data_number": 5,
+          "root": 139,
+          "usage": 34055,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index6",
+          "number": 6,
+          "data_number": 6,
+          "root": 140,
+          "usage": 34056,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index7",
+          "number": 7,
+          "data_number": 7,
+          "root": 141,
+          "usage": 34057,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index8",
+          "number": 8,
+          "data_number": 8,
+          "root": 142,
+          "usage": 34058,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index9",
+          "number": 9,
+          "data_number": 9,
+          "root": 143,
+          "usage": 34059,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index10",
+          "number": 10,
+          "data_number": 0,
+          "root": 134,
+          "usage": 34050,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index11",
+          "number": 11,
+          "data_number": 1,
+          "root": 135,
+          "usage": 34051,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index12",
+          "number": 12,
+          "data_number": 2,
+          "root": 136,
+          "usage": 34052,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index13",
+          "number": 13,
+          "data_number": 3,
+          "root": 137,
+          "usage": 34053,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index14",
+          "number": 14,
+          "data_number": 4,
+          "root": 138,
+          "usage": 34054,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index15",
+          "number": 15,
+          "data_number": 5,
+          "root": 139,
+          "usage": 34055,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index16",
+          "number": 16,
+          "data_number": 6,
+          "root": 140,
+          "usage": 34056,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index17",
+          "number": 17,
+          "data_number": 7,
+          "root": 141,
+          "usage": 34057,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index18",
+          "number": 18,
+          "data_number": 8,
+          "root": 142,
+          "usage": 34058,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index19",
+          "number": 19,
+          "data_number": 9,
+          "root": 143,
+          "usage": 34059,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index20",
+          "number": 20,
+          "data_number": 0,
+          "root": 134,
+          "usage": 34050,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index21",
+          "number": 21,
+          "data_number": 1,
+          "root": 135,
+          "usage": 34051,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index22",
+          "number": 22,
+          "data_number": 2,
+          "root": 136,
+          "usage": 34052,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index23",
+          "number": 23,
+          "data_number": 3,
+          "root": 137,
+          "usage": 34053,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ]
+          ]
+        }
+      ]
+    },
+    "Columns10Indexes24-arrayvec": {
+      "index_column_bytes": 16,
+      "native_index_bytes": 232,
+      "vec_bytes": 24,
+      "arrayvec_bytes": 168,
+      "smallvec_bytes": 48,
+      "indexes": [
+        {
+          "name": "Index0",
+          "number": 0,
+          "data_number": 0,
+          "root": 134,
+          "usage": 34050,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index1",
+          "number": 1,
+          "data_number": 1,
+          "root": 135,
+          "usage": 34051,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index2",
+          "number": 2,
+          "data_number": 2,
+          "root": 136,
+          "usage": 34052,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index3",
+          "number": 3,
+          "data_number": 3,
+          "root": 137,
+          "usage": 34053,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index4",
+          "number": 4,
+          "data_number": 4,
+          "root": 138,
+          "usage": 34054,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index5",
+          "number": 5,
+          "data_number": 5,
+          "root": 139,
+          "usage": 34055,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index6",
+          "number": 6,
+          "data_number": 6,
+          "root": 140,
+          "usage": 34056,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index7",
+          "number": 7,
+          "data_number": 7,
+          "root": 141,
+          "usage": 34057,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index8",
+          "number": 8,
+          "data_number": 8,
+          "root": 142,
+          "usage": 34058,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index9",
+          "number": 9,
+          "data_number": 9,
+          "root": 143,
+          "usage": 34059,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index10",
+          "number": 10,
+          "data_number": 0,
+          "root": 134,
+          "usage": 34050,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index11",
+          "number": 11,
+          "data_number": 1,
+          "root": 135,
+          "usage": 34051,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index12",
+          "number": 12,
+          "data_number": 2,
+          "root": 136,
+          "usage": 34052,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index13",
+          "number": 13,
+          "data_number": 3,
+          "root": 137,
+          "usage": 34053,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index14",
+          "number": 14,
+          "data_number": 4,
+          "root": 138,
+          "usage": 34054,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index15",
+          "number": 15,
+          "data_number": 5,
+          "root": 139,
+          "usage": 34055,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index16",
+          "number": 16,
+          "data_number": 6,
+          "root": 140,
+          "usage": 34056,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index17",
+          "number": 17,
+          "data_number": 7,
+          "root": 141,
+          "usage": 34057,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index18",
+          "number": 18,
+          "data_number": 8,
+          "root": 142,
+          "usage": 34058,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index19",
+          "number": 19,
+          "data_number": 9,
+          "root": 143,
+          "usage": 34059,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index20",
+          "number": 20,
+          "data_number": 0,
+          "root": 134,
+          "usage": 34050,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index21",
+          "number": 21,
+          "data_number": 1,
+          "root": 135,
+          "usage": 34051,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index22",
+          "number": 22,
+          "data_number": 2,
+          "root": 136,
+          "usage": 34052,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index23",
+          "number": 23,
+          "data_number": 3,
+          "root": 137,
+          "usage": 34053,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ]
+          ]
+        }
+      ]
+    },
+    "Columns10Indexes24-vec": {
+      "index_column_bytes": 16,
+      "native_index_bytes": 88,
+      "vec_bytes": 24,
+      "arrayvec_bytes": 168,
+      "smallvec_bytes": 48,
+      "indexes": [
+        {
+          "name": "Index0",
+          "number": 0,
+          "data_number": 0,
+          "root": 134,
+          "usage": 34050,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index1",
+          "number": 1,
+          "data_number": 1,
+          "root": 135,
+          "usage": 34051,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index2",
+          "number": 2,
+          "data_number": 2,
+          "root": 136,
+          "usage": 34052,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index3",
+          "number": 3,
+          "data_number": 3,
+          "root": 137,
+          "usage": 34053,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index4",
+          "number": 4,
+          "data_number": 4,
+          "root": 138,
+          "usage": 34054,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index5",
+          "number": 5,
+          "data_number": 5,
+          "root": 139,
+          "usage": 34055,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index6",
+          "number": 6,
+          "data_number": 6,
+          "root": 140,
+          "usage": 34056,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index7",
+          "number": 7,
+          "data_number": 7,
+          "root": 141,
+          "usage": 34057,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index8",
+          "number": 8,
+          "data_number": 8,
+          "root": 142,
+          "usage": 34058,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index9",
+          "number": 9,
+          "data_number": 9,
+          "root": 143,
+          "usage": 34059,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index10",
+          "number": 10,
+          "data_number": 0,
+          "root": 134,
+          "usage": 34050,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index11",
+          "number": 11,
+          "data_number": 1,
+          "root": 135,
+          "usage": 34051,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index12",
+          "number": 12,
+          "data_number": 2,
+          "root": 136,
+          "usage": 34052,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index13",
+          "number": 13,
+          "data_number": 3,
+          "root": 137,
+          "usage": 34053,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index14",
+          "number": 14,
+          "data_number": 4,
+          "root": 138,
+          "usage": 34054,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index15",
+          "number": 15,
+          "data_number": 5,
+          "root": 139,
+          "usage": 34055,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index16",
+          "number": 16,
+          "data_number": 6,
+          "root": 140,
+          "usage": 34056,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index17",
+          "number": 17,
+          "data_number": 7,
+          "root": 141,
+          "usage": 34057,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index18",
+          "number": 18,
+          "data_number": 8,
+          "root": 142,
+          "usage": 34058,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index19",
+          "number": 19,
+          "data_number": 9,
+          "root": 143,
+          "usage": 34059,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index20",
+          "number": 20,
+          "data_number": 0,
+          "root": 134,
+          "usage": 34050,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index21",
+          "number": 21,
+          "data_number": 1,
+          "root": 135,
+          "usage": 34051,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ]
+          ]
+        },
+        {
+          "name": "Index22",
+          "number": 22,
+          "data_number": 2,
+          "root": 136,
+          "usage": 34052,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              2,
+              false
+            ],
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ]
+          ]
+        },
+        {
+          "name": "Index23",
+          "number": 23,
+          "data_number": 3,
+          "root": 137,
+          "usage": 34053,
+          "kind": 0,
+          "flags": 128,
+          "columns": [
+            [
+              3,
+              true
+            ],
+            [
+              4,
+              false
+            ],
+            [
+              5,
+              true
+            ],
+            [
+              6,
+              false
+            ],
+            [
+              7,
+              true
+            ],
+            [
+              8,
+              false
+            ],
+            [
+              9,
+              true
+            ],
+            [
+              0,
+              false
+            ],
+            [
+              1,
+              true
+            ],
+            [
+              2,
+              false
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  "complete": true,
+  "source_provenance_observed_after_run": {
+    "note": "These source, recipe, toolchain and JAR observations were recorded after timing. Only input and binary SHA-256 values were checked before and after each measured run.",
+    "isolated_sources_sha256": {
+      "vec": {
+        "Cargo.toml": "e2f62bc6389e97f02c1c8c97ca3a8ca62d4a92cb176fb0e768e8c616b1c16ab2",
+        "Cargo.lock": "66e39567df974edb72bfe376ee422926be4a87b6494b8274d5f2247f633fcb3f",
+        "crates/engines/tablecraft-ace/Cargo.toml": "106f8ebba1cf15bf7683cb067d59d993280c42e1ccd763b25c812a241ed6b6b0",
+        "crates/engines/tablecraft-ace/benches/index_columns.rs": "5f8ccb46ddff7d088f54abe58b29ab373c0ceb8245f7e174a9739e3b46b7b090",
+        "crates/engines/tablecraft-ace/src/table/indexes/metadata.rs": "60968f0ce0238160e44d7f4c8b6c7aa9742ddd33a5f2198ef5a9fc6786e6ebfc",
+        "crates/engines/tablecraft-ace/src/table/indexes/definition.rs": "61f05aff7195d5fe7b1dcc9dda57a9a0896501b8823859d6104a9faf30a273e1"
+      },
+      "arrayvec": {
+        "Cargo.toml": "e2f62bc6389e97f02c1c8c97ca3a8ca62d4a92cb176fb0e768e8c616b1c16ab2",
+        "Cargo.lock": "66e39567df974edb72bfe376ee422926be4a87b6494b8274d5f2247f633fcb3f",
+        "crates/engines/tablecraft-ace/Cargo.toml": "920c3cf788d7461877b9c87555d0eb3828d3772c6d7296bd5afc4600ab0bbe27",
+        "crates/engines/tablecraft-ace/benches/index_columns.rs": "5f8ccb46ddff7d088f54abe58b29ab373c0ceb8245f7e174a9739e3b46b7b090",
+        "crates/engines/tablecraft-ace/src/table/indexes/metadata.rs": "025537e75e2adf357ef27720474e8c816204a728ef46b41fd551a52688ac1af6",
+        "crates/engines/tablecraft-ace/src/table/indexes/definition.rs": "5919401156c2fcf0dee5c98d0301e8a43207e0a1fc3c194c1bc40ba14ca6f1cd"
+      },
+      "smallvec": {
+        "Cargo.toml": "e2f62bc6389e97f02c1c8c97ca3a8ca62d4a92cb176fb0e768e8c616b1c16ab2",
+        "Cargo.lock": "66e39567df974edb72bfe376ee422926be4a87b6494b8274d5f2247f633fcb3f",
+        "crates/engines/tablecraft-ace/Cargo.toml": "712ca79e95116f6527f3fad3f08792934c048d811bfb8ced40ec782f66c12886",
+        "crates/engines/tablecraft-ace/benches/index_columns.rs": "5f8ccb46ddff7d088f54abe58b29ab373c0ceb8245f7e174a9739e3b46b7b090",
+        "crates/engines/tablecraft-ace/src/table/indexes/metadata.rs": "063ba6b94269b15f0da4f021ecdb4fa8ff42d5035245d4c9288736e209ce7ca2",
+        "crates/engines/tablecraft-ace/src/table/indexes/definition.rs": "40a14ca865ad392df27411990d1fca826bfdd9d3e688df181d14fc7c2fd64cc4"
+      }
+    },
+    "current_recipes_sha256": {
+      "docs/testing/IndexColumnsFixture.java": "2a4c96894698e1cec1acb3dfed21e650b95e1502b52745800952a84d36f45947",
+      "docs/testing/IndexOracle.java": "7354de2fd0a76d1ca40f80b11747df3fc40a3b314b880c8d365935a5d87ec366",
+      "docs/testing/prepare_index_column_variants.py": "05817afdf09d96cc9554917859888d50a270454a94283359cd5f7f511d81b620",
+      "docs/testing/verify_index_column_variants.py": "afbc20afd349cd03713157ae5637475e5954de32d099e212abfc48504943f599",
+      "docs/testing/benchmark_index_columns.py": "f3e92b2bbd06441aed2f372797978f281a3a11eb2bf6096b03c8f70c1aa3a4ba"
+    },
+    "jackcess_5_0_4_sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)"
+  }
+}

@@ -12,11 +12,47 @@ import shutil
 
 
 CRATE = Path("crates/engines/tablecraft-ace")
+VEC_SETUP = """        reader
+            .budget
+            .charge_allocation(INDEX_KEY_COLUMNS as u64, size_of::<IndexColumn>() as u64)?;
+        let mut columns = Vec::new();
+        columns
+            .try_reserve_exact(INDEX_KEY_COLUMNS)
+            .map_err(|_| InspectError::Allocation)?;
+"""
 
 
 def replace_once(text, before, after):
     assert text.count(before) == 1, before
     return text.replace(before, after)
+
+
+def restore_vec_baseline(crate):
+    metadata = crate / "src/table/indexes/metadata.rs"
+    source = metadata.read_text()
+    if "columns: Vec<IndexColumn>" in source:
+        return
+    source = replace_once(source, "ArrayVec<IndexColumn, INDEX_KEY_COLUMNS>", "Vec<IndexColumn>")
+    source = source.replace("use crate::format::layout::INDEX_KEY_COLUMNS;\n", "")
+    source = source.replace("use arrayvec::ArrayVec;\n", "")
+    metadata.write_text(source)
+
+    definition = crate / "src/table/indexes/definition.rs"
+    source = definition.read_text().replace("use arrayvec::ArrayVec;\n", "")
+    source = replace_once(source, """        // Inline key storage is already included in the NativeIndex vector's
+        // allocation charge above. Each physical definition has ten key slots.
+        let mut columns = ArrayVec::<IndexColumn, INDEX_KEY_COLUMNS>::new();
+""", VEC_SETUP)
+    source = replace_once(source, """            columns
+                .try_push(IndexColumn {
+                    number,
+                    descending: physical[at + size_of::<u16>()] & ASCENDING == 0,
+                })
+                .map_err(|_| InspectError::Unsupported)?;""", """            columns.push(IndexColumn {
+                number,
+                descending: physical[at + size_of::<u16>()] & ASCENDING == 0,
+            });""")
+    definition.write_text(source)
 
 
 def main():
@@ -42,26 +78,25 @@ def main():
         (destination / "Cargo.toml").write_text(workspace)
         shutil.copy2(repository / "Cargo.lock", destination / "Cargo.lock")
         shutil.copy2(repository / "rust-toolchain.toml", destination / "rust-toolchain.toml")
+        (destination / "docs").symlink_to(repository / "docs", target_is_directory=True)
         shutil.copytree(repository / CRATE, destination / CRATE)
+        restore_vec_baseline(destination / CRATE)
         if variant == "vec":
             continue
 
         manifest = destination / CRATE / "Cargo.toml"
-        manifest.write_text(replace_once(
-            manifest.read_text(), "[dependencies]\n", f"[dependencies]\n{variant}.workspace = true\n",
-        ))
+        manifest_source = manifest.read_text()
+        dependencies = manifest_source.split("[dependencies]\n", 1)[1].split("[dev-dependencies]", 1)[0]
+        if f"{variant}.workspace = true" not in dependencies:
+            manifest_source = replace_once(
+                manifest_source, "[dependencies]\n", f"[dependencies]\n{variant}.workspace = true\n",
+            )
+        manifest.write_text(manifest_source)
         metadata = destination / CRATE / "src/table/indexes/metadata.rs"
         definition = destination / CRATE / "src/table/indexes/definition.rs"
         source = definition.read_text()
         metadata_source = metadata.read_text()
-        original = """        reader
-            .budget
-            .charge_allocation(INDEX_KEY_COLUMNS as u64, size_of::<IndexColumn>() as u64)?;
-        let mut columns = Vec::new();
-        columns
-            .try_reserve_exact(INDEX_KEY_COLUMNS)
-            .map_err(|_| InspectError::Allocation)?;
-"""
+        original = VEC_SETUP
         if variant == "arrayvec":
             collection = "ArrayVec<IndexColumn, INDEX_KEY_COLUMNS>"
             metadata_source = metadata_source.replace(

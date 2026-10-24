@@ -18,6 +18,18 @@ capacity/spill-derived allocation counts concern collection constructors only.
 See the [experiment procedure](testing/INDEX_COLUMN_COLLECTIONS.md); neither the
 recipe nor independent getter agreement establishes native Access compatibility.
 
+| Original input | Bytes | SHA-256 |
+| --- | ---: | --- |
+| index-columns-V2016.accdb | 602,112 | `ad2b539848fbe8d2a6952cbc285be4b7f946a1798dd184d4b551785bac7db4ec` |
+| index-columns-V2000.mdb | 331,776 | `1392c2f51ce954e7cfc8551f8e8f0a66dadbc922865016661ad537f226a23994` |
+
+The two runs retain all 675 timing samples and pass 2,094 independent metadata/
+constructor controls, with unchanged binary/input hashes. Source/recipe/JAR hashes
+in the sidecars are explicitly observations made after timing, separately from
+the before/after input and executable checks. Normalization now supports either
+qualified production container in isolated copies, keeping the Vec counterfactual
+reproducible after adoption. Original inputs stay ignored and unchanged.
+
 ## Larger decoded Memo inputs
 
 Original MIT [LargerMemoFixture.java](testing/LargerMemoFixture.java), SHA-256
