@@ -4,6 +4,7 @@ mod arithmetic;
 mod concatenation;
 mod dates;
 mod functions;
+mod logical;
 mod null_replacement;
 mod unary;
 use super::{Binder, literals};
@@ -156,6 +157,19 @@ impl Binder<'_> {
                 let left = self.result_type(left, scopes, depth + 1)?;
                 let right = self.result_type(right, scopes, depth + 1)?;
                 concatenation::result(left, right)
+            }
+            Expr::Binary(
+                operator @ (BinaryOperator::And
+                | BinaryOperator::Or
+                | BinaryOperator::Xor
+                | BinaryOperator::Equivalence
+                | BinaryOperator::Implication),
+                left,
+                right,
+            ) => {
+                let left = self.result_type(left, scopes, depth + 1)?;
+                let right = self.result_type(right, scopes, depth + 1)?;
+                logical::binary(*operator, left, right)
             }
             Expr::Binary(operator, left, right) => {
                 let left = self.result_type(left, scopes, depth + 1)?;

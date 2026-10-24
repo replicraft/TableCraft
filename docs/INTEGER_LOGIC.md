@@ -159,3 +159,16 @@ retain Scalar; unary Variant retains Variant, and either binary Variant operand
 establishes a Variant result. This affects subsequent overflow/widening decisions,
 not the logical kernels or default results. Unknown aggregate declarations stay
 unknown. See [the reviewed static tables and scope](DECLARED_ARITHMETIC.md#logical-operator-declaration-propagation-23-october-2026).
+
+
+## Query output metadata
+
+The query binder now publishes [stable logical result descriptors](QUERY_RESULT_TYPES.md#logical-result-carriers-and-nullable-alternatives)
+without executing operators or reading sources. NOT preserves successful carrier
+and nullability under this profile; binary operators consider possible NULL
+substitutions before claiming a Boolean/integer carrier. Nullable inputs that can
+change the successful carrier remain Dynamic. XOR/EQV NULL-only results describe
+successful values only and do not skip operand conversion or eager failures.
+Known descriptors now feed existing UNION widening, while native Scalar/Variant
+provenance remains independent. Operator values, rounding and native qualification
+limits are unchanged.

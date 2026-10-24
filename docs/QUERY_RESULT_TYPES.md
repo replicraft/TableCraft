@@ -46,6 +46,8 @@ a conversion request or permission to guess a type from a successful row.
 | Nz without replacement | Nonnullable input is preserved; NULL-only input yields nonnullable Text; nullable Text retains its constraints without NULL; other nullable carriers stay Dynamic because they can also produce empty Text. |
 | `&` concatenation | Unconstrained Text for known supported scalar operands; NULL only if both can be NULL. Two NULL-only operands remain NULL. No formatting during binding. |
 | Stable binary arithmetic | Successful fixed carriers and NULL propagation under the profile below; value-dependent widening stays Dynamic |
+| Logical NOT | Boolean/exact integer carrier, or Long for floating/fixed/legacy DATE/Text; preserves nullability and removes changed-value constraints. |
+| AND / OR / XOR / EQV / IMP | Stable Boolean/integer carrier after accounting for possible NULL substitutions; conflicting successful carriers stay Dynamic. Known admitted NULL-only XOR/EQV results stay NULL-only. |
 | Stable unary + / - | Preserve the supported carrier, or select Double for numeric Text and Integer for Byte/Boolean negation; value-dependent Integer/Long negation stays Dynamic |
 | Count | Current Int64 accumulator result, non-NULL |
 | Sum of integral/Boolean, floating, Currency or Decimal operands | Int64, Double, Currency or Decimal respectively; nullable, without input value constraints |
@@ -214,3 +216,41 @@ Legacy Date Avg inputs now infer nullable Double, matching the implemented
 [serial mean profile](AVERAGES.md#legacy-datetime-means). This is independent of
 source nullability because an empty group still returns NULL. Domain target
 metadata remains conservative; native Access result typing is unqualified.
+
+
+## Logical result carriers and nullable alternatives
+
+Metadata-only binding now describes the existing evaluator's NOT and five binary
+logical operators. NOT keeps Boolean, Byte, Integer, Long and LongLong carriers;
+floating/fixed-point, legacy DATE and contextual Text select Long. Changed-value
+constraints are discarded. NULL-only input stays NULL-only. GUID, Binary,
+Extended dates and unknown expression-state outputs remain Dynamic.
+
+Binary inference considers each admitted input's declared carrier and possible
+NULL substitution, with at most four bounded combinations and no record scans.
+Matching successful carriers combine their NULL allowances; conflicting carriers
+remain Dynamic. For example, nullable Byte/Boolean AND can produce Integer,
+Byte or Boolean, so it cannot claim one scalar descriptor. XOR/EQV return NULL
+when either operand is NULL, allowing the same nullable pair to retain Integer
+metadata. Two NULL-only operands stay NULL-only; admitted NULL XOR/EQV operands
+also establish NULL-only successful results. These descriptors never suppress
+conversion, overflow, policy or eager-expression failures.
+
+Nonnullable input types follow the existing materialized width ladder: Boolean
+pairs retain Boolean, Byte pairs retain Byte, mixed smaller integers use Integer,
+Long/LongLong retain their wider width, and rounded operands select Long or
+LongLong from original carriers before conversion. This documents the current
+[logical profile](INTEGER_LOGIC.md), not complete native Variant typing.
+
+Named/derived sources, aggregates, subqueries and empty results retain these
+descriptors. Stable logical outputs can now participate in the existing numeric
+UNION common-type conversion: `Not CByte(1)` combined with `CInt(-2)` produces
+Integer 254/-2. This is metadata-driven UNION widening, not a change to NOT's
+standalone Byte result. Unknown Scalar/Variant declarations remain unknown;
+metadata does not infer them from a successful carrier.
+
+Focused tests cover all eleven admitted families, nullable alternatives, inert
+named/Text binding, removed constraints, unsupported families, buffered failures
+and UNION widening. [MS-VBAL logical operators](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/2d70780d-6e99-47d6-9759-2b3a46b8e862)
+guide the existing explicit operator contract; these tests establish TableCraft
+metadata consistency, not native Access SQL conformance.

@@ -4,6 +4,9 @@ use tablecraft_schema::ScalarType;
 use tablecraft_sql::select::UnaryOperator;
 
 pub(super) fn result(operator: UnaryOperator, input: OutputType) -> OutputType {
+    if operator == UnaryOperator::Not {
+        return super::logical::complement(input);
+    }
     if input == OutputType::Null {
         return OutputType::Null;
     }
@@ -43,7 +46,7 @@ pub(super) fn result(operator: UnaryOperator, input: OutputType) -> OutputType {
             | ScalarType::Currency
             | ScalarType::Decimal,
         ) => OutputType::scalar(scalar, nullable),
-        // Integer/Long negation may widen; NOT retains its separate carrier rules.
+        // Integer/Long negation may widen.
         _ => OutputType::Dynamic,
     }
 }
