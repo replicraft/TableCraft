@@ -14,6 +14,7 @@ mod domain;
 mod editing;
 mod execute;
 pub use editing::{UpdateError, UpdatePlan, plan_update};
+pub(crate) use execute::ExecutionContext;
 mod expression;
 mod grouping;
 mod keys;

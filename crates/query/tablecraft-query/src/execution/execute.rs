@@ -72,7 +72,10 @@ impl PreparedQuery {
                 parameters,
                 options,
                 discovery: &discovery,
-                strict_parameters: true,
+                context: ExecutionContext {
+                    strict_parameters: true,
+                    repeatable_dynamic: false,
+                },
             },
             &mut budget,
             publish,
@@ -86,7 +89,7 @@ impl PreparedQuery {
         options: ExecutionOptions<'a>,
         budget: &'a mut ResourceBudget,
         discovery: &'a DiscoveryState<'source>,
-        strict_parameters: bool,
+        context: ExecutionContext,
     ) -> Result<CellQueryResult, QueryError> {
         self.execute_budgeted(
             ExecutionFrame {
@@ -94,7 +97,7 @@ impl PreparedQuery {
                 parameters,
                 options,
                 discovery,
-                strict_parameters,
+                context,
             },
             budget,
             |_, result| Ok(result),
@@ -115,12 +118,12 @@ impl PreparedQuery {
             parameters,
             options,
             discovery,
-            strict_parameters,
+            context,
         } = frame;
         let _span = tracing::debug_span!("query.execute", parameters = parameters.len()).entered();
         let mut runtime = Runtime {
             numeric_scratch: Vec::new(),
-            repeatable_dynamic: false,
+            repeatable_dynamic: context.repeatable_dynamic,
             domain_depth: 0,
             source,
             discovery,
@@ -129,7 +132,7 @@ impl PreparedQuery {
             budget,
         };
         runtime.tick()?;
-        if strict_parameters && parameters.len() != self.parameters.len() {
+        if context.strict_parameters && parameters.len() != self.parameters.len() {
             return Err(QueryError::Parameter);
         }
         runtime.budget.charge_allocation(
@@ -212,5 +215,10 @@ struct ExecutionFrame<'a, 'source> {
     parameters: &'a [(&'a str, Value)],
     options: ExecutionOptions<'a>,
     discovery: &'a DiscoveryState<'source>,
-    strict_parameters: bool,
+    context: ExecutionContext,
+}
+
+pub(crate) struct ExecutionContext {
+    pub strict_parameters: bool,
+    pub repeatable_dynamic: bool,
 }

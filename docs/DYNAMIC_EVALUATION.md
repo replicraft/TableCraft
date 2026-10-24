@@ -79,6 +79,21 @@ grouped-projection validation. Dynamic clock group keys from Microsoft's broader
 examples remain unsupported; this does not qualify native optimizer, collation
 or invocation order.
 
+When a group/pivot key's domain call initiates named-crosstab schema discovery,
+the newly executed definition and its nested discovery dependencies inherit that
+key's dynamic-repeatability context. A fresh evaluator cannot reset the guard and
+execute a hidden Eval random/clock body in a crosstab cell. Validation fails before
+those host callbacks or random draws, including after earlier pure cells. Failed
+partial discovery is not published or retained into another execution.
+
+Already completed materialized cells remain values: if ordinary relational
+preparation or an earlier WHERE/domain operation populated the cache outside a
+key context, grouping those cached values does not execute the original formulas
+again or retroactively reject their provenance. Normal discovery retains its
+existing evaluation counts. Context inheritance shares the same cancellation,
+parameter rules and cumulative bytes/rows/steps allowances; it introduces no new
+source scan or persistent cache.
+
 DISTINCT projected-sort matching treats Eval as opaque, even when its argument
 is literal pure text. Repeated argument syntax cannot prove a reusable result
 without interpreting a dynamic body or inspecting execution values. A repeated
