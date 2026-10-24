@@ -1,5 +1,27 @@
 # Implementation status
 
+## Same-carrier selector constraint metadata
+
+IIf/Switch/Choose and explicit Nz fallbacks now expose common Text/Decimal
+metadata when branch carriers agree but constraints differ. Known Text ceilings
+combine at their maximum; unconstrained Text stays unconstrained. Different
+Decimal precision/scale declarations retain the core Decimal carrier while
+selected values keep their exact original coefficients/scales. A same-carrier
+guard keeps mixed numeric/Text and Decimal/Single choices Dynamic. See
+[the result contract](QUERY_EXECUTION.md#same-carrier-selector-constraints).
+
+Two new integration tests cover metadata-only preparation, Unicode length
+boundaries, Decimal representations, bounded/unbounded Text fallbacks, derived
+UNION conversion/policy requirements and mixed-carrier refusal to infer a common
+value. The focused batch passes 55 query tests; the added unbounded-fallback case
+also passes its two-test target rerun. Query all-target/all-feature Clippy, CLI
+build, formatting, Python syntax and diff checks pass. The expanded independent
+runner passes 240 model/getter/query controls over unchanged registered native
+inputs. No new dependency, stored type, value conversion or write capability is
+introduced. Full workspace/native suites and native Access return-promotion
+comparisons were not repeated for this metadata slice.
+
+
 ## Query Nz and checked numeric conversion metadata
 
 Nz output inference now reflects its implemented query-context empty-Text default,

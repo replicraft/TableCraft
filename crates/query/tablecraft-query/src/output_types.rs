@@ -47,6 +47,8 @@ impl OutputType {
     pub(crate) fn union_result(self, other: Self) -> Self {
         union::common(self, other)
     }
+    // Selectors retain their chosen value: only same-carrier descriptors may
+    // share the common constraint rules without introducing a value conversion.
     pub(crate) fn union(self, other: Self) -> Self {
         match (self, other) {
             (Self::Null, other) | (other, Self::Null) => other.with_null(),
@@ -59,10 +61,16 @@ impl OutputType {
                     data_type: right,
                     nullable: b,
                 },
-            ) if left == right => Self::Scalar {
-                data_type: left,
-                nullable: a || b,
-            },
+            ) if left.scalar_type() == right.scalar_type() => union::common(
+                Self::Scalar {
+                    data_type: left,
+                    nullable: a,
+                },
+                Self::Scalar {
+                    data_type: right,
+                    nullable: b,
+                },
+            ),
             _ => Self::Dynamic,
         }
     }

@@ -6026,3 +6026,13 @@ fallbacks, both UNION arm orders, sequential/selected-index reads, required nume
 rendering policy and late/eager buffered refusals. Original hashes remain unchanged.
 No new binary fixtures or tools are introduced; only TableCraft evaluates SQL.
 Native Access result typing, query-wrapper/coercion and error equivalence are unrun.
+
+### Same-carrier selector constraint controls
+
+The original compare_nz_metadata.py runner now also covers explicit Nz fallbacks
+and IIf/Switch/Choose selections between native bounded Text and unconstrained
+literal Text. Existing registered maximum-width inputs, reviewed JAR and raw
+getters remain unchanged. The expanded 240-control run checks sequential/indexed
+UNION rendering, explicit-policy requirements and buffered failures across Jet 4,
+ACE 2007 and both ACE 16 layouts. Only TableCraft executes SQL; this is independent
+model/getter evidence, with native Access result typing/promotion unrun.

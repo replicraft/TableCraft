@@ -1367,3 +1367,35 @@ existing eager contract, including a failing fallback beside a non-null input.
 The [independent runner](testing/compare_nz_metadata.py) uses registered wide-table
 inputs, inert getters and original Python value models. Only TableCraft evaluates
 SQL; native query wrappers, return promotion and error equivalence remain open.
+
+## Same-carrier selector constraints
+
+IIf, Switch, Choose and explicit Nz fallbacks now combine compatible constraints
+when every possible scalar branch has the same carrier. The metadata service
+reuses the existing common-descriptor rules under a same-carrier guard:
+
+| Branch descriptors | Successful output descriptor |
+| --- | --- |
+| Identical descriptors | Original descriptor |
+| Text with two known length ceilings | Greater ceiling |
+| Text with any unconstrained Text branch | Unconstrained Text |
+| Decimal with different precision/scale declarations | Unconstrained core Decimal |
+| Different scalar carriers or expression-only possibilities | Dynamic |
+
+Selected values retain their original carriers, coefficients, scales and payloads.
+Metadata combination invokes no conversion, formatting provider or record scan.
+Ordinary selector nullability combines branch possibilities; Switch/Choose retain
+their possible unmatched NULL. Nz uses its separate non-NULL input/fallback rules.
+The bounded default empty-Text fallback still fits an existing Text ceiling.
+
+For example, selecting Text fields with limits 2 and 5 establishes a limit of 5.
+Selecting Decimal fields declared (3,1) and (5,3) keeps each original selected
+coefficient/scale under the unconstrained Decimal descriptor. Mixed Decimal/Single
+or numeric/Text choices retain Dynamic and their selected values.
+
+Known descriptors flow through derived/named plans and the existing UNION
+common-carrier profile. A selector returning known Text can therefore require an
+explicit numeric-rendering policy when UNION combines it with a numeric arm.
+Missing policy and eager unselected/fallback failures retain buffered refusal.
+This is the implemented successful-value contract; native Access conditional
+return promotion and exact field-constraint inference remain unqualified.
