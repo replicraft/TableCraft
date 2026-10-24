@@ -50,6 +50,9 @@ fails with UnrepresentableText rather than emitting replacement characters.
 Nested slices consumed through [lossless UTF-16 observations](BYTE_STRING_FUNCTIONS.md#nested-utf-16-unit-slices)
 now retain those units without scalar publication; this uses a separately charged
 UTF-16 buffer for Text sources and does not change the borrowed scalar kernel.
+Direct outer slices also accept raw-producing sources, publishing only their
+selected result; selecting an empty or representable range need not publish an
+invalid intermediate first. Materialized scalar sources retain the borrowed path.
 The pure kernels retain Text/NULL sources. SQL scalar sources now use the explicit
 conversion below. Raw byte-string functions, Space/String, substring search and
 replacement retain their separately documented profiles. No blanket

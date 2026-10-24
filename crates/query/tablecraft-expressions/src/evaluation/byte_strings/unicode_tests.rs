@@ -73,6 +73,11 @@ fn unicode_slices_retain_units_and_clamp_long_requests_before_byte_conversion() 
         ("Len(Mid('😀',2147483647,2147483647))", Value::Int32(0)),
         ("Len(Mid('😀',1,2147483647))", Value::Int32(2)),
         ("Len(Mid(Left('😀',1),2))", Value::Int32(0)),
+        ("Left(ChrW(55296),0)", Value::Text(String::new())),
+        ("Mid(Left('😀',1),2)", Value::Text(String::new())),
+        ("Mid(Left('A😀Z',3),2,2)", Value::Text("😀".into())),
+        ("Right(Mid('A😀Z',2,3),1)", Value::Text("Z".into())),
+        ("Left(CVar(ChrW(65)),1)", Value::Text("A".into())),
         ("Len(Left(NULL,CVErr(1)))", Value::Null),
         ("Len(Mid(NULL,0,CVErr(1)))", Value::Null),
     ] {
@@ -82,6 +87,8 @@ fn unicode_slices_retain_units_and_clamp_long_requests_before_byte_conversion() 
     for (sql, expected) in [
         ("Left('😀',1)", EvalError::UnrepresentableText),
         ("Right('😀',1)", EvalError::UnrepresentableText),
+        ("Left(ChrW(55296),1)", EvalError::UnrepresentableText),
+        ("Left(ChrB(65),0)", EvalError::UnrepresentableText),
         ("Len(Left(ChrB(65),1))", EvalError::UnrepresentableText),
         ("Len(Left('abc',NULL))", EvalError::TypeMismatch),
         ("Len(Left(CVErr(1),-1))", EvalError::TypeMismatch),
@@ -153,6 +160,7 @@ fn unicode_intermediates_charge_storage_and_all_observed_work_can_cancel() {
     for sql in [
         "AscW(LeftB(ChrW(55296),2))",
         "AscW(Mid(Left('A😀Z',2),2,1))",
+        "Mid(Left('A😀Z',2),2,0)",
     ] {
         let expression = parse_expression(sql, Default::default()).unwrap();
         let mut bytes = ResourceBudget::new(1, 0, 10000);

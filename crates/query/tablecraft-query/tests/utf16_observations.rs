@@ -104,4 +104,12 @@ fn unicode_slices_compose_across_bound_parameters_and_grouped_results() {
         run("SELECT Len(T) FROM (SELECT Left('😀',1) AS T) AS Q"),
         Err(QueryError::Evaluation(EvalError::UnrepresentableText))
     );
+    assert_eq!(
+        run("SELECT Mid(Left('A😀Z',3),2,2),Left(ChrW(55296),0),Right(Mid('A😀Z',2,3),1)").unwrap(),
+        [vec![
+            Value::Text("😀".into()),
+            Value::Text(String::new()),
+            Value::Text("Z".into())
+        ]]
+    );
 }

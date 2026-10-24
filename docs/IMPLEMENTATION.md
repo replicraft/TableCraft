@@ -1,5 +1,26 @@
 # Implementation status
 
+## Final publication after composed slices
+
+Both query hosts now evaluate ordinary slice sources through the existing
+lossless-operand path. Raw-producing sources remain intermediate until the outer
+slice publishes its selected range: `Left(ChrW(55296),0)` returns empty Text and
+`Mid(Left('A😀Z',3),2,2)` returns the complete supplementary character. Invalid
+final Text and raw relational cells remain refused. Materialized scalar sources
+still use the borrowed kernel with its original budget behavior; no fallback
+retry or replacement decoding was added. The evaluator owns admission/publication,
+and hosts share their existing eager operand collection for byte and unit slices.
+
+Expanded evaluator, bound-query and CLI controls cover direct composition,
+CVar, empty selections and continued final-publication refusal. Fourteen focused
+expression tests, nineteen query tests and eight CLI tests pass. Focused
+expression/query/CLI Clippy, minimal query compilation, formatting, Python
+compilation and diff checks pass. The independent Python recipe now passes
+26,590 value/refusal controls, including outer slices selecting empty ranges
+from unpaired intermediates. Full suites were not repeated after this follow-up;
+native fixtures, Windows Access and benchmarks were not run. Broader raw-string
+coercion, operator/relational carriers and native qualification remain open.
+
 ## Nested UTF-16 unit slices
 
 Left/Right/Mid now participate in the lossless string path for nested byte/unit

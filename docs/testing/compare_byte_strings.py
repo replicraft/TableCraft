@@ -102,6 +102,8 @@ def main():
                     for call, raw in cases:
                         expressions.extend([f"Len({call})", f"LenB({call})", f"VarType({call})"])
                         expected.extend([str(len(raw) // 2), str(len(raw)), "8"])
+                        expressions.extend([f"Left({call},0)", f"Mid({call},2147483647)"])
+                        expected.extend(['""', '""'])
                         if raw:
                             expressions.append(f"AscW({call})")
                             expected.append(str(int.from_bytes(raw[:2], "little", signed=True)))

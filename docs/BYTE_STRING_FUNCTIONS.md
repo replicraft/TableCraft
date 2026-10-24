@@ -136,7 +136,7 @@ same evaluator; raw storage is charged before allocation, observations require
 no new payload allocation and cancellation remains active.
 
 The expanded [independent byte recipe](testing/compare_byte_strings.py) compares
-24,670 source-free values/refusals against Python UTF-16LE bytes. It includes
+26,590 source-free values/refusals against Python UTF-16LE bytes. It includes
 every surrogate unit, signed code spellings, partial-byte slices, inspection and
 both CLI query paths. It executes no native Access SQL or application code.
 
@@ -163,8 +163,13 @@ the existing checked Long rules. Huge requests clamp in units before converting
 to byte offsets. Existing raw buffers slice without another payload allocation;
 Text sources encode under cumulative allocation, work and cancellation controls.
 
-Ordinary direct slice calls retain the existing scalar path and its budget
-behavior. Direct publication of a surrogate-splitting slice still fails, and
+Ordinary direct slices with materialized scalar sources retain the existing
+borrowed path and its budget behavior. When the source is a raw-producing call,
+both query hosts retain its units through the outer slice before publishing.
+Thus `Left(ChrW(55296),0)` returns empty Text, and
+`Mid(Left('A😀Z',3),2,2)` publishes the complete supplementary character. The
+inner source does not have to become a scalar cell first. Direct publication of
+a surrogate-splitting final slice still fails, and
 raw intermediates cannot cross relational cells or arbitrary scalar consumers.
 The independent Python byte recipe now also checks ordinary UTF-16 slices,
 including supplementary characters, omitted lengths and maximum Long controls.
