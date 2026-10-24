@@ -298,15 +298,17 @@ bounded accumulator does not require another Decimal library or change the
 stored Decimal carrier. Mixed-type and native rounding qualification remain open.
 
 
-## Current targeted candidate review
+## Collection and search decisions
 
-The [fourteen-library backend review](DEPENDENCY_REVIEW.md#targeted-backend-review-24-october-2026)
-records current direct/transitive status, concrete consumers and adoption gates
-for binrw, deku, smallvec, arrayvec, dashmap, indexmap, bitvec, winnow, bilge,
-bytes, bitflags, memchr, moka and parking_lot. Measured fixed-capacity index
-metadata now uses ArrayVec under the existing native ceiling; SmallVec remains
-a benchmark consumer. The bounded memchr experiment remains development-only
-because prepaid work changes early-match budget admission. Preserve the
-production search contract until that policy is resolved. Existing selected Moka
-and shared-buffer directions remain prospective until their real consumers exist;
-this review adds no unused dependencies or overlapping parser/cache frameworks.
+Native index metadata uses ArrayVec under the existing ten-column ceiling.
+SmallVec is already used transitively by Fluent, ICU and rusqlite in normal CLI
+builds; its direct ACE dependency supports the retained comparison benchmark.
+It is not selected as a replacement for native index storage.
+
+The tested memchr replacement for InStrB is not selected: prepaid work changes
+early-match budget admission. Keep the production search contract and retain the
+benchmark as evidence for that decision. Neither experiment is an outstanding
+implementation task. The [dependency review](DEPENDENCY_REVIEW.md#targeted-backend-review-24-october-2026)
+records the completed evaluations; [dependency records](DEPENDENCIES.md) describe
+actual consumers and features. Selected future Moka/shared-buffer uses still
+require working consumers before adoption.

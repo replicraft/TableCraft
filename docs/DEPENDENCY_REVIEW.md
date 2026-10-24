@@ -38,9 +38,9 @@ benchmarks directly consume ArrayVec, SmallVec and memchr; their exact features
 and boundaries are recorded in [DEPENDENCIES.md](DEPENDENCIES.md). The measured
 follow-up adopts ArrayVec only for private bounded native index columns. The direct
 SmallVec and memchr experiments remain development-only; production byte search
-is unchanged. The optional ICU text provider uses SmallVec transitively.
-A lockfile-only entry can belong to an optional
-or build-time closure; it does not establish active use in a particular build.
+is unchanged. Normal CLI builds also use SmallVec transitively through Fluent,
+ICU and rusqlite. A lockfile-only entry can belong to an optional or build-time
+closure; it does not establish active use in a particular build.
 This review adds no dependencies or version upgrades and claims no measured
 speedup. Earlier candidate-version rows below remain the broader reference
 inventory; this section refines their current implementation readiness.
@@ -49,7 +49,7 @@ inventory; this section refines their current implementation readiness.
 | --- | --- | --- |
 | [binrw](https://docs.rs/binrw/0.15.2/binrw/) | Absent | Prototype on a new structured native codec, especially a writer. Read/Seek derives, endian controls and assertions could improve composition; current borrowed zerocopy index/LVAL headers already have a working boundary. |
 | [deku](https://docs.rs/deku/0.20.3/deku/) | Absent | Defer as an alternative for genuinely mixed bit/byte streams. It overlaps binrw/bilge; its optional bit machinery is unnecessary for byte-only codecs. |
-| [smallvec](https://docs.rs/smallvec/latest/smallvec/struct.SmallVec.html) | Direct development benchmark 1.16.3; also transitive in the optional ICU provider | Measured against Vec and ArrayVec; retain as a development contender. Small inline cases save storage, but spills and noisy ten-column results did not justify production adoption. |
+| [smallvec](https://docs.rs/smallvec/latest/smallvec/struct.SmallVec.html) | Direct development benchmark 1.16.3; normal transitive use through Fluent/ICU/rusqlite | Completed index comparison selected ArrayVec. Retain the benchmark evidence and existing upstream uses; no native index migration to SmallVec is planned. |
 | [arrayvec](https://docs.rs/arrayvec/latest/arrayvec/struct.ArrayVec.html) | Native index consumer 0.7.8; originally lockfile-only | Adopted for private native index columns after the measured comparison. The existing ten-column ceiling and fallible insertion remove one allocation per index; public slices, validation and physical encoding remain unchanged. |
 | [dashmap](https://docs.rs/dashmap/latest/dashmap/struct.DashMap.html) | Absent | Defer until a measured concurrent-map consumer exists. Source-local RefCell state is not a concurrent native connection; guard-held callbacks/reentry introduce deadlock hazards. |
 | [indexmap](https://docs.rs/indexmap/latest/indexmap/map/struct.IndexMap.html) | Lockfile-only 2.14.2 | Keep as a future insertion-ordered keyed registry/property collection. Current bounded vectors work; Rust Value equality/hashing cannot replace SQL grouping semantics. |
@@ -58,7 +58,7 @@ inventory; this section refines their current implementation readiness.
 | [bilge](https://docs.rs/bilge/0.5.0/bilge/) | Absent | Selective packed-field candidate for row-slot offsets/status bits. Prefer existing named masks where they are already clear; preserve raw/reserved numeric encodings. |
 | [bytes](https://docs.rs/bytes/latest/bytes/) | Lockfile-only 1.12.1 | Defer direct adoption until immutable buffers are actually shared across consumers. Cheap views are useful, but small slices can retain large backing allocations; current bounded pages/borrowed layouts need no refcounted replacement. |
 | [bitflags](https://docs.rs/bitflags/latest/bitflags/) | Lockfile-only 1.3.2 and 2.13.2 | Useful for a real typed flag domain during an index/constraint refactor. Preserve unknown raw bits and the separate supported-mask qualification; four clear constants alone do not justify a mechanical rewrite. |
-| [memchr](https://docs.rs/memchr/latest/memchr/) | Development benchmark 2.8.3; originally lockfile-only | Measured development-only memmem experiment for exact InStrB. Long scans improve, but bounded precharging changes early-match work admission; production retains its current callback contract pending a sound policy. |
+| [memchr](https://docs.rs/memchr/latest/memchr/) | Development benchmark 2.8.3; originally lockfile-only | Completed memmem experiment for exact InStrB; the tested replacement is not selected because bounded precharging changes early-match work admission. Retain benchmark evidence and the current production callback contract. |
 | [moka](https://docs.rs/moka/latest/moka/) | Absent | Retain the selected future derived-cache choice; defer adoption until generation/invalidation keys and a real shared consumer exist. Best-effort eviction does not enforce our hard budget or native snapshot guarantees. |
 | [parking_lot](https://docs.rs/parking_lot/0.12.5/parking_lot/type.Mutex.html) | Absent | Evaluate a specific in-process lock, not a wholesale replacement. SQLite work state currently treats std mutex poisoning as a database failure; parking_lot's non-poisoning semantics require an explicit replacement policy. |
 
@@ -87,15 +87,13 @@ transaction semantics.
 
 ### Collections, flags and search
 
-[Index definitions](../crates/engines/tablecraft-ace/src/table/indexes/definition.rs)
-currently reserve heap storage for up to ten columns.
-[Retained metadata](../crates/engines/tablecraft-ace/src/table/indexes/metadata.rs)
-is a focused place to compare ArrayVec<IndexColumn, 10>, SmallVec with a smaller
-inline capacity, and the current Vec. Measure actual one/two/ten-column corpora,
-allocations, enclosing object size, retained catalog memory and inspection time.
-Existing fixed arrays for encoded tuples and 32-byte equality prefixes already
-meet their requirements. Inline storage still occupies memory, and spill/capacity
-failures must remain explicit; do not replace every vector or AST child list.
+[Native index metadata](../crates/engines/tablecraft-ace/src/table/indexes/metadata.rs)
+now uses ArrayVec under its existing ten-column ceiling. The completed
+[Vec/ArrayVec/SmallVec comparison](testing/INDEX_COLUMN_COLLECTIONS.md) records
+allocations, enclosing object sizes, retained storage and inspection timings.
+SmallVec was not selected for this storage; the retained benchmark is evidence,
+not a pending adoption task. Existing fixed arrays for encoded tuples and
+32-byte equality prefixes also retain their current representation.
 
 IndexMap requires an actual lookup-plus-order requirement and a defined removal
 policy: swap_remove changes order, while shift_remove preserves relative order
@@ -111,13 +109,11 @@ our existing qualification gate. Preserve a separate supported mask and test all
 candidate, not a claimed speed improvement.
 
 The [exact byte search](../crates/query/tablecraft-expressions/src/functions/text/byte_string/search.rs)
-compares each candidate window. [memmem Finder](https://docs.rs/memchr/latest/memchr/memmem/struct.Finder.html)
-offers a linear-time exact substring algorithm. Scope a prototype to binary
-InStrB, including odd/unpaired byte strings; it does not implement General
-linguistic comparison, SQL padding or aligned UTF-16 search. A single unchecked
-whole-buffer call would weaken cancellation and work limits. First retain bounded
-checkpoints/accounting and independent answers, then measure small/large, absent,
-repetitive, overlapping and adversarial inputs in both kernels and CLI queries.
+retains its current per-candidate work and cancellation contract. The completed
+[memmem comparison](testing/BYTE_SEARCH_EXPERIMENT.md) found that precharging
+bounded optimized spans changes early-match admission. That implementation is
+not selected for production; its benchmark and independent controls remain as
+historical evidence, not an active replacement task.
 
 ### Concurrency, caches and buffer ownership
 
@@ -153,7 +149,7 @@ Binary ownership or add both bytes and byteview without a measured need.
 The bounded memchr and ArrayVec/SmallVec experiments now have
 [recorded measurements](DEPENDENCIES.md). ArrayVec is adopted only for native
 index columns; the direct SmallVec and memchr experiments remain development-only.
-ICU uses SmallVec internally in its optional production closure. Parser, bit-stream
+Fluent, ICU and rusqlite retain their upstream SmallVec consumers. Parser, bit-stream
 and concurrent-cache choices stay tied
 to their corresponding real consumers. Full feature/target/MSRV/license review
 and workload verification remain adoption requirements, not results supplied by
@@ -193,7 +189,7 @@ encoder equivalence does not establish native Access SQL or text-index traversal
 | [deku 0.20.3](https://docs.rs/crate/deku/0.20.3) | MIT OR Apache-2.0 | Alternative, not a second default; ACE bit-level codecs | Can read/write bit structures; compare with binrw/bilge on a concrete format. Avoid overlapping codec frameworks without a separate need. |
 | [bytes 1.12.1](https://docs.rs/crate/bytes/1.12.1) | MIT | Use when sharing is needed; I/O and application protocols | Good shared buffers; current fixed pages need no refcounted buffer. Charge retained backing storage and avoid tiny slices pinning large allocations. |
 | [bitflags 2.13.2](https://docs.rs/crate/bitflags/2.13.2) | MIT OR Apache-2.0 | Prefer for a working flag abstraction; Native flags and capabilities | Named masks with retained unknown bits can improve APIs; no dependency just to replace a few clear constants, and do not silently truncate reserved bits. |
-| [memchr 2.8.3](https://docs.rs/crate/memchr/2.8.3) | Unlicense OR MIT | Benchmark first; Byte scanning | Useful optimized scanning; no correctness change or unmeasured rewrite. Bound input and compare to current slice scans. |
+| [memchr 2.8.3](https://docs.rs/crate/memchr/2.8.3) | Unlicense OR MIT | Completed benchmark; no production replacement selected | Retain the measured experiment; its bounded precharging changes early-match admission. Existing transitive uses remain unchanged. |
 | [cfb 0.15.0](https://docs.rs/crate/cfb/0.15.0) | MIT | Evaluate for identified containers; ACE object preservation/interchange | Reads/writes CFB streams; MDB/ACCDB is not a CFB database. Preserve opaque streams before any project interpretation; VBA execution remains deferred. |
 | [bitvec 1.1.1](https://docs.rs/crate/bitvec/1.1.1) | MIT | Evaluate with bitmap consumer; ACE allocation/derived bitmaps | Expresses bit order explicitly; current bounded native usage maps already work. Keep on-disk bit order and allocation accounting independent of container defaults. |
 | [byteview 0.10.2](https://docs.rs/crate/byteview/0.10.2) | MIT OR Apache-2.0 | Evaluate with ownership evidence; Immutable page/result buffers | Thin shared immutable slices may suit a future cache; not a parser or substitute for slice::array_windows. Measure retained allocation/lifetime and conversion costs. |
@@ -233,8 +229,8 @@ encoder equivalence does not establish native Access SQL or text-index traversal
 | [rayon 1.12.0](https://docs.rs/crate/rayon/1.12.0) | MIT OR Apache-2.0 | Use for bounded CPU parallelism; query/engineering/import services | Previously selected; parallelize independent immutable work after measurement. Keep transaction ordering and cooperative cancellation/budget accounting explicit. |
 | [tokio 1.53.3](https://docs.rs/crate/tokio/1.53.3) | MIT | Use with async services; Networking/application hosts | Previously selected, not needed by synchronous ACE/CLI. Minimize features; CPU work uses a suitable pool and spawn_blocking needs underlying cancellation checks. |
 | [futures 0.3.34](https://docs.rs/crate/futures/0.3.34) | MIT OR Apache-2.0 | Use only needed adapters; Async services | Prefer std Future and existing Tokio facilities when sufficient; add combinators/streams with an actual consumer and clear cancellation semantics. |
-| [smallvec 1.16.3](https://docs.rs/crate/smallvec/1.16.3) | MIT OR Apache-2.0 | Benchmark first; Short internal collections | Potential allocation savings for keys/AST children; spilling still allocates and must be budgeted. Avoid exposing it as a permanent public contract prematurely. |
-| [arrayvec 0.7.8](https://docs.rs/crate/arrayvec/0.7.8) | MIT OR Apache-2.0 | Use for a real fixed capacity; Bounded internal keys/fields | Can enforce inline capacities; use fallible insertion and explicit overflow. Current arrays may already suffice without another dependency. |
+| [smallvec 1.16.3](https://docs.rs/crate/smallvec/1.16.3) | MIT OR Apache-2.0 | Keep transitive uses and retained benchmark | Fluent/ICU/rusqlite use SmallVec in normal CLI builds. The native index comparison selected ArrayVec; no index replacement or broad AST migration is planned. |
+| [arrayvec 0.7.8](https://docs.rs/crate/arrayvec/0.7.8) | MIT OR Apache-2.0 | Keep; native index metadata | Adopted after the Vec/ArrayVec/SmallVec comparison. Fallible insertion enforces the existing ten-column ceiling; public access remains a slice. |
 | [dashmap 6.2.1](https://docs.rs/crate/dashmap/6.2.1) | MIT | Evaluate after simple synchronization; Concurrent derived state | Only if measured contention justifies it; guard lifetimes/reentrancy can deadlock. Not a transaction manager or cache-invalidation policy. |
 | [slotmap 1.1.1](https://docs.rs/crate/slotmap/1.1.1) | Zlib | Evaluate for ephemeral handles; UI/runtime objects | Generational handles suit local lifetimes, not durable ObjectIds or distributed identity. Validate stale handles and persistence boundaries. |
 | [indexmap 2.14.2](https://docs.rs/crate/indexmap/2.14.2) | Apache-2.0 OR MIT | Prefer where insertion order matters; Designer/model properties | Stable iteration can help user-authored definitions; preserve original/native ordering separately. No use solely to replace existing bounded vectors. |
