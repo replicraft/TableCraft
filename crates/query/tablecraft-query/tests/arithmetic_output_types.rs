@@ -7,6 +7,9 @@ use tablecraft_query::{
 use tablecraft_schema::{Column, ScalarType, TypeDescriptor};
 use tablecraft_sql::{parse_query, query::Query};
 
+#[path = "arithmetic_output_types/boundaries.rs"]
+mod boundaries;
+
 fn syntax(sql: &str) -> Query {
     parse_query(sql, Default::default()).unwrap().into_query()
 }

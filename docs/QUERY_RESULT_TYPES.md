@@ -98,6 +98,22 @@ is supplied. [Materialized promotion](ARITHMETIC_PROMOTION.md) is a separate ser
 
 ## Evidence and references
 
+The prepared arithmetic boundary matrix covers 44,800 binary and 240 unary
+executions across Boolean, Byte, Int16/32/64, Single/Double, Currency, Decimal,
+legacy Date and numeric/malformed Text, with NULL in every family. Inputs include
+signed extrema, width transitions, floating maxima/subnormals/signed zero, exact
+fixed-point units, large Decimal coefficients, scale 28 and Date envelope edges.
+Plans bind against metadata-only sources, then execute unchanged against each
+compatible runtime source. Every successful claimed descriptor must accept the
+actual carrier and NULL allowance; only explicit numerical/conversion refusals
+are allowed. Unexpected source, binding or resource failures fail the test.
+
+The matrix observes 34,177 successful binary values and 10,623 checked refusals,
+plus 222 successful unary values and 18 refusals. It finds no descriptor mismatch
+in this envelope. These are cross-layer consistency checks of existing behavior,
+not an independent numeric-answer oracle, proof for Dynamic descriptors, complete
+coercion coverage or native Access result-type qualification.
+
 Focused tests use a source whose scan callback panics, constrained Text fields,
 parameters, named/derived sources, nested outer joins, subqueries, aggregates,
 UNIONs, conversions and fixed/dynamic crosstabs. Runtime controls check that every
