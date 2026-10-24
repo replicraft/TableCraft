@@ -96,6 +96,14 @@ association names, NULL/empty histories, grouping, member criteria and refusals
 are compared without native Access execution. The expanded engine/adapter
 batch passes 19 tests, including calculated/unknown flag and late-orphan controls.
 
+The [ordinary visible-Memo family replay](testing/MEMO_HISTORY_FLAG_FAMILY.md)
+further checks all four ordinary/Hyperlink and uncompressed/compressed combinations,
+plus original RichText metadata and raw markup. It passes 594 controls over nine
+fresh ACE 2007/2016/2019 files, with all 32 pinned hashes unchanged. The current
+engine/adapter history targets pass 22 tests with scoped strict Clippy. Historical
+child/template flags and codecs remain unchanged; no hyperlink navigation or rich
+text conversion is implied.
+
 `tablecraft-access/tests/version_history_source.rs` covers metadata-only binding,
 all three qualified profile codes, current/history separation, paired member
 alignment, stored order, NULL/empty members, DATE bits, collection presence,
