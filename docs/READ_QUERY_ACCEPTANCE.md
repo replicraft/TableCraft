@@ -40,7 +40,10 @@ qualification recorded separately.
   writing; failpoints cover scalar, Memo and indexed snapshot publication.
   [Continuation fault controls](NATIVE_READ_FAILURES.md) now additionally cover
   each remaining read/seek/page-hook callback after a successful prefix,
-  decoder-triggered cancellation and bounded interrupted short reads.
+  decoder-triggered cancellation and bounded interrupted short reads. Sparse-source
+  controls also traverse the final two pages of a virtual 2 GiB source, retain
+  bounded projected cursors and refuse corrupt/failed high-offset tails; this is
+  synthetic address/publication evidence, not native large-file throughput.
 - Buffered collection pages now accept explicit native read limits, retaining
   complete parent/child validation and output refusal across `--all` sections.
 - Native CLI reads now use shared OS locks, excluding cooperating exclusive

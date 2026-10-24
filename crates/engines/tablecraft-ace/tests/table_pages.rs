@@ -5,6 +5,8 @@ mod faults;
 #[allow(dead_code)]
 #[path = "mutation/fixture.rs"]
 mod fixture;
+#[path = "table_pages/large_sources.rs"]
+mod large_sources;
 #[path = "large_maps/fixture.rs"]
 mod map_fixture;
 #[path = "table_pages/maps.rs"]
