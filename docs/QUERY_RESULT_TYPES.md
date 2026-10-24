@@ -30,8 +30,9 @@ a conversion request or permission to guess a type from a successful row.
 | Stable text functions | Text, Int16, Int32 or Double according to the current evaluator; conservative NULL allowance. Qualified NULL-propagating source arguments retain NULL-only results as described below. |
 | Abs/Int/Fix/Round | Supported numeric input carrier, Boolean becomes Int16; input value constraints removed. NULL-only value inputs remain NULL-only. |
 | Sgn, transcendental math, RGB/QBColor and Rnd | Int16, Double, Int32 and Single respectively; Sgn/transcendental NULL-only inputs remain NULL-only. No provider is activated during binding. |
-| Date components/DatePart/Weekday and DateDiff | Int16 and Int32 respectively; nullable |
-| Date constructors/conversions | Nullable legacy DateTime |
+| Date components/DatePart/Weekday and DateDiff | Int16 and Int32 respectively; nullability follows the date value operands, including NULL-only results |
+| DateSerial/TimeSerial and CDate/CVDate | Non-NULL legacy DateTime on successful evaluation; NULL arguments still fail |
+| DateValue/TimeValue | Legacy DateTime with source nullability, including NULL-only results |
 | DateAdd | Existing Extended source retains Extended; supported numeric/Boolean/Text and legacy sources produce legacy DateTime. Source nullability is retained; a NULL-only source stays NULL-only; unsupported/Dynamic sources stay Dynamic. No conversion runs during binding. |
 | Date/Time/Now | Non-NULL legacy DateTime; no clock read during binding |
 | Financial/cashflow functions | Nullable Double |
@@ -309,3 +310,32 @@ fail, including after an earlier successful UNION row. CStr, Val, StrReverse and
 character-code functions keep their own NULL-refusal contracts; the inference
 rule does not turn those failures into successful NULL results. Text and math
 metadata now have separate feature modules under the query binder.
+
+## Date value nullability and successful constructors
+
+Year, Month, Day, Hour, Minute, Second, Weekday and DatePart retain NULL-only
+metadata from their date source. Otherwise their Int16 carrier uses that source's
+nullability. DateDiff similarly returns NULL-only when either date source is
+NULL-only; its Int32 result permits NULL when either source is nullable or Dynamic.
+Unknown date sources retain a fixed successful carrier with conservative NULL
+allowance, without guessing their value or declaration.
+
+DateValue and TimeValue follow source nullability with legacy DateTime as the
+successful carrier. CDate and CVDate instead promise a non-NULL DateTime on
+success, because a NULL source raises InvalidNullConversion. DateSerial and
+TimeSerial likewise produce non-NULL dates on success; NULL components remain
+errors. These descriptors summarize the existing evaluator, without changing its
+conversion, component validation, precision or policy contracts.
+
+Named/derived outputs, UNION and Nz now retain these guarantees. For example,
+`SELECT Year(NULL) UNION ALL SELECT 'kept'` has nullable Text metadata, because
+its first arm contributes only NULL. It no longer imposes an Int16 possibility
+on the union. A nullable date field remains nullable across preparations and
+executions; its currently observed value cannot narrow the descriptor.
+
+Six focused tests cover component families, both DateDiff source positions,
+nullable/nonnullable fields, Dynamic input, named/derived compositions, UNION/Nz,
+constructor/conversion errors and eager/control failures. Preparation checks a
+scan counter before execution; it does not inspect rows, parse Text, consult
+locale/clock providers or suppress failing controls. This is successful-value
+metadata, not proof a call will succeed or native Access result-type qualification.
