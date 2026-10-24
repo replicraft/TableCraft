@@ -65,6 +65,24 @@ def main():
                           [*index, "--number-format", "invariant"])
                     query(sql, options=index, fails=True)
                 query(f"SELECT ID,Nz(ID,CInt(NULL)) FROM {table}", options=index, fails=True)
+                for selector, fallback in [
+                    ("Nz(C254,'fallback')", True),
+                    ("IIf(ID Mod 2=0,C254,'branch')", False),
+                    ("Choose((ID Mod 2)+1,C254,'branch')", False),
+                    ("Switch(ID Mod 2=0,C254,True,'branch')", False),
+                ]:
+                    selected_rows = []
+                    for identity in sorted(expected):
+                        tag = expected[identity][254]
+                        if fallback:
+                            tag = "T" + "fallback".encode().hex() if tag == "N" else tag
+                        elif identity % 2:
+                            tag = "T" + "branch".encode().hex()
+                        selected_rows.append([str(identity), display(tag)])
+                    sql = f"SELECT ID,{selector} AS V FROM {table} UNION ALL SELECT 99,7 ORDER BY ID"
+                    query(sql, [["ID", "V"], *selected_rows, ["99", display("T37")]],
+                          [*index, "--number-format", "invariant"])
+                    query(sql, options=index, fails=True)
 
             if table == "WideMixed":
                 numeric_rows = [[str(identity), display(expected[identity][127] if expected[identity][127] != "N" else "I16:0")]

@@ -252,3 +252,11 @@ checked numeric conversions without scans. Explicit fallbacks remove nullability
 only when their descriptors establish it. Downstream UNIONs use those descriptors
 under existing conversion policies; eager failures and mixed-carrier Dynamic
 results remain explicit. Native result typing/Variant promotion is still open.
+
+
+[Same-carrier selector constraints](QUERY_EXECUTION.md#same-carrier-selector-constraints)
+now retain common Text ceilings and a valid Decimal carrier across differently
+constrained branches, without converting selected values or scanning records.
+Mixed carriers stay Dynamic. This reduces avoidable unknown metadata through
+selectors, named/derived outputs and downstream UNIONs; broader native return
+promotion and declaration inference remain open.
