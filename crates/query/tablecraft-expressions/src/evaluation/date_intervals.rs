@@ -1,5 +1,5 @@
 //! Prepared date controls preserve validation order before bounded source conversion.
-use super::Evaluator;
+use super::{Evaluator, date_input::DateInput};
 use crate::{
     EvalError,
     functions::{
@@ -27,37 +27,43 @@ impl Evaluator<'_> {
         number: &Value,
         date: &Value,
     ) -> Result<Value, EvalError> {
-        self.date_add_inputs(|| Ok(interval), || Ok(number), || Ok(date))
+        self.date_add_inputs(
+            DateInput::Scalar(interval),
+            DateInput::Scalar(number),
+            DateInput::Scalar(date),
+        )
     }
 
-    /// Admit expression states at interval, count and date validation positions.
+    /// Admit expression states and retained Strings at their original interval,
+    /// count and date validation positions. Callers evaluate operands eagerly.
     pub fn apply_expression_date_add(
         &mut self,
         interval: &ExpressionValue,
         number: &ExpressionValue,
         date: &ExpressionValue,
     ) -> Result<Value, EvalError> {
-        let empty = Value::Int16(0);
         self.date_add_inputs(
-            || date_interval_scalar(interval, &empty),
-            || date_interval_scalar(number, &empty),
-            || date_interval_scalar(date, &empty),
+            DateInput::Expression(interval),
+            DateInput::Expression(number),
+            DateInput::Expression(date),
         )
     }
 
-    fn date_add_inputs<'a>(
+    fn date_add_inputs(
         &mut self,
-        interval: impl FnOnce() -> Result<&'a Value, EvalError>,
-        number: impl FnOnce() -> Result<&'a Value, EvalError>,
-        date: impl FnOnce() -> Result<&'a Value, EvalError>,
+        interval: DateInput<'_>,
+        number: DateInput<'_>,
+        date: DateInput<'_>,
     ) -> Result<Value, EvalError> {
         self.check(0)?;
-        let operation = DateAdd::prepare_with_number(interval()?, number, |value| {
-            self.date_control_long(value)
+        let interval = interval.materialize(self)?;
+        let operation = DateAdd::prepare_with_count(&interval, || {
+            let number = number.materialize(self)?;
+            self.date_control_long(&number)
         })?;
-        let date = date()?;
-        let converted = self.converted_date_source(date)?;
-        operation.apply(converted.as_ref().unwrap_or(date))
+        let date = date.materialize(self)?;
+        let converted = self.converted_date_source(&date)?;
+        operation.apply(converted.as_ref().unwrap_or(&date))
     }
 
     /// Extract a date part after interval and progressive week-option validation.
@@ -68,11 +74,17 @@ impl Evaluator<'_> {
         first_day: Option<&Value>,
         first_week: Option<&Value>,
     ) -> Result<Value, EvalError> {
-        let options = [first_day, first_week];
-        self.date_part_inputs(|| Ok(interval), || Ok(date), |index| Ok(options[index]))
+        self.date_part_inputs(
+            DateInput::Scalar(interval),
+            DateInput::Scalar(date),
+            [
+                first_day.map(DateInput::Scalar),
+                first_week.map(DateInput::Scalar),
+            ],
+        )
     }
 
-    /// Apply already evaluated states without changing week/source conversion order.
+    /// Publish retained inputs only as their week/source admission point is reached.
     pub fn apply_expression_date_part(
         &mut self,
         interval: &ExpressionValue,
@@ -80,33 +92,41 @@ impl Evaluator<'_> {
         first_day: Option<&ExpressionValue>,
         first_week: Option<&ExpressionValue>,
     ) -> Result<Value, EvalError> {
-        let empty = Value::Int16(0);
-        let options = [first_day, first_week];
         self.date_part_inputs(
-            || date_interval_scalar(interval, &empty),
-            || date_interval_scalar(date, &empty),
-            |index| {
-                options[index]
-                    .map(|value| date_interval_scalar(value, &empty))
-                    .transpose()
-            },
+            DateInput::Expression(interval),
+            DateInput::Expression(date),
+            [
+                first_day.map(DateInput::Expression),
+                first_week.map(DateInput::Expression),
+            ],
         )
     }
 
-    fn date_part_inputs<'a>(
+    fn date_part_inputs(
         &mut self,
-        interval: impl FnOnce() -> Result<&'a Value, EvalError>,
-        date: impl FnOnce() -> Result<&'a Value, EvalError>,
-        option: impl FnMut(usize) -> Result<Option<&'a Value>, EvalError>,
+        interval: DateInput<'_>,
+        date: DateInput<'_>,
+        options: [Option<DateInput<'_>>; 2],
     ) -> Result<Value, EvalError> {
         self.check(0)?;
-        let operation =
-            DatePart::prepare_with_options(interval()?, option, self.week_context(), |value| {
-                self.date_control_long(value)
-            })?;
-        let date = date()?;
-        let converted = self.converted_date_source(date)?;
-        operation.apply(converted.as_ref().unwrap_or(date))
+        let interval = interval.materialize(self)?;
+        let context = self.week_context();
+        let operation = DatePart::prepare_with_controls(
+            &interval,
+            |index| {
+                let option = options[index]
+                    .map(|value| value.materialize(self))
+                    .transpose()?;
+                option
+                    .as_deref()
+                    .map(|value| self.date_control_long(value))
+                    .transpose()
+            },
+            context,
+        )?;
+        let date = date.materialize(self)?;
+        let converted = self.converted_date_source(&date)?;
+        operation.apply(converted.as_ref().unwrap_or(&date))
     }
 
     /// Count boundaries after interval/week validation and ordered source conversion.
@@ -118,16 +138,18 @@ impl Evaluator<'_> {
         first_day: Option<&Value>,
         first_week: Option<&Value>,
     ) -> Result<Value, EvalError> {
-        let options = [first_day, first_week];
         self.date_diff_inputs(
-            || Ok(interval),
-            || Ok(first),
-            || Ok(second),
-            |index| Ok(options[index]),
+            DateInput::Scalar(interval),
+            DateInput::Scalar(first),
+            DateInput::Scalar(second),
+            [
+                first_day.map(DateInput::Scalar),
+                first_week.map(DateInput::Scalar),
+            ],
         )
     }
 
-    /// Keep Error/Empty data until its original control/source admission position.
+    /// Keep retained data until its original control/source admission position.
     pub fn apply_expression_date_diff(
         &mut self,
         interval: &ExpressionValue,
@@ -136,53 +158,48 @@ impl Evaluator<'_> {
         first_day: Option<&ExpressionValue>,
         first_week: Option<&ExpressionValue>,
     ) -> Result<Value, EvalError> {
-        let empty = Value::Int16(0);
-        let options = [first_day, first_week];
         self.date_diff_inputs(
-            || date_interval_scalar(interval, &empty),
-            || date_interval_scalar(first, &empty),
-            || date_interval_scalar(second, &empty),
-            |index| {
-                options[index]
-                    .map(|value| date_interval_scalar(value, &empty))
-                    .transpose()
-            },
+            DateInput::Expression(interval),
+            DateInput::Expression(first),
+            DateInput::Expression(second),
+            [
+                first_day.map(DateInput::Expression),
+                first_week.map(DateInput::Expression),
+            ],
         )
     }
 
-    fn date_diff_inputs<'a>(
+    fn date_diff_inputs(
         &mut self,
-        interval: impl FnOnce() -> Result<&'a Value, EvalError>,
-        first: impl FnOnce() -> Result<&'a Value, EvalError>,
-        second: impl FnOnce() -> Result<&'a Value, EvalError>,
-        option: impl FnMut(usize) -> Result<Option<&'a Value>, EvalError>,
+        interval: DateInput<'_>,
+        first: DateInput<'_>,
+        second: DateInput<'_>,
+        options: [Option<DateInput<'_>>; 2],
     ) -> Result<Value, EvalError> {
         self.check(0)?;
-        let operation =
-            DateDiff::prepare_with_options(interval()?, option, self.week_context(), |value| {
-                self.date_control_long(value)
-            })?;
-        let first = first()?;
-        let converted_first = self.converted_date_source(first)?;
-        let second = second()?;
-        let converted_second = self.converted_date_source(second)?;
+        let interval = interval.materialize(self)?;
+        let context = self.week_context();
+        let operation = DateDiff::prepare_with_controls(
+            &interval,
+            |index| {
+                let option = options[index]
+                    .map(|value| value.materialize(self))
+                    .transpose()?;
+                option
+                    .as_deref()
+                    .map(|value| self.date_control_long(value))
+                    .transpose()
+            },
+            context,
+        )?;
+        let first = first.materialize(self)?;
+        let converted_first = self.converted_date_source(&first)?;
+        let second = second.materialize(self)?;
+        let converted_second = self.converted_date_source(&second)?;
         operation.apply(
-            converted_first.as_ref().unwrap_or(first),
-            converted_second.as_ref().unwrap_or(second),
+            converted_first.as_ref().unwrap_or(&first),
+            converted_second.as_ref().unwrap_or(&second),
         )
-    }
-}
-
-fn date_interval_scalar<'a>(
-    value: &'a ExpressionValue,
-    empty: &'a Value,
-) -> Result<&'a Value, EvalError> {
-    match value {
-        ExpressionValue::Value(value) => Ok(value),
-        ExpressionValue::Empty => Ok(empty),
-        ExpressionValue::Error(_) => Err(EvalError::TypeMismatch),
-        ExpressionValue::StringBytes(_) => Err(EvalError::NonScalarExpression),
-        ExpressionValue::Missing => Err(EvalError::NonScalarExpression),
     }
 }
 

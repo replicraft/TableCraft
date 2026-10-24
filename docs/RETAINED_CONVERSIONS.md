@@ -26,8 +26,8 @@ Date conversions retain explicit date syntax, numeric fallback, reference-year
 and calendar controls. CDate/CVDate still share their materialized DateTime
 carrier while their query declaration categories remain separate. DateValue and
 TimeValue retain their existing component extraction, discarded-part validation
-and NULL policies. This does not widen the separate retained-input contracts of
-date component or interval APIs.
+and NULL policies. Date components and interval operations additionally use the staged retained-input
+contract below; DateSerial and TimeSerial constructors remain unchanged.
 
 Only active String bytes are published. Discarded backing bytes are not decoded.
 A selected unpaired surrogate or odd-byte range remains UnrepresentableText, even
@@ -73,3 +73,62 @@ four retained API tests and two scalar/bound parity tests. Strict scoped Clippy
 passes for the expression library/tests with SQL enabled and the new query test;
 formatting and diff checks also pass. The captured pre-fix regression returned
 TypeMismatch for retained numeric Text while its materialized control succeeded.
+
+## Date components and interval operations
+
+The retained-value APIs also accept valid active String ranges for Year, Month,
+Day, Hour, Minute, Second, Weekday, DateAdd, DatePart and DateDiff. Their previous
+NonScalarExpression refusal for valid retained date inputs was inconsistent with
+materialized Text. Scalar and bound queries already admitted valid String
+arguments, so this is API parity rather than a newly corrected ordinary query
+result or a new native compatibility claim.
+
+Publication happens at each existing admission position. DateAdd parses the
+interval before converting its count, then admits the date source. DatePart and
+DateDiff parse the interval, convert and validate first-day before first-week,
+and only then admit date sources. DateDiff converts its first date before
+publishing the second and still checks an invalid second date when the first is
+NULL. Weekday validates its optional first-day before admitting the date source.
+Invalid controls therefore do not accidentally inspect later malformed retained
+ranges. Reached control callbacks execute once. Callers still evaluate supplied
+operand expressions eagerly; this staging does not suppress an operational
+failure in an unselected IIf branch.
+
+Strict publication checks only selected bytes, rejecting odd-byte ranges and
+unpaired surrogates. It uses the existing decoded allocation/work budget,
+cancellation callback and per-Text ceiling before contextual date/numeric
+conversion. Retained controls require the same explicit number format as Text;
+date spelling and system week settings retain their explicit policies. Existing
+DATE and ExtendedDateTime inputs are borrowed, retaining their carrier and exact
+Extended precision. Empty, NULL, Error and Missing retain each operation's
+existing admission behavior. No input vector or raw backing-buffer copy is added.
+
+Operation entry checkpoints remain in place. Weekday also retains its earlier
+size check for an already materialized Text source; retained source publication
+occurs later, after week-control validation. Resource/error ordering therefore
+follows each representation's established admission stage, rather than globally
+publishing every operand in advance.
+
+Microsoft's [Year](https://support.microsoft.com/en-us/access/functions/year-function),
+[Weekday](https://support.microsoft.com/en-us/access/functions/weekday-function),
+[DateAdd](https://support.microsoft.com/en-us/access/functions/dateadd-function),
+[DatePart](https://support.microsoft.com/en-us/access/functions/datepart-function)
+and [DateDiff](https://support.microsoft.com/en-us/access/functions/datediff-function)
+references provide query examples and the existing component, interval and
+week-control contracts. They do not qualify TableCraft's internal retained
+representation or establish native failure precedence.
+
+The added five API tests cover all ten calls, active ranges with invalid discarded
+backing bytes, progressive independently expected failure precedence, exact
+Extended carriers, callback-once controls and every observed cancellation point,
+plus byte/work/per-Text exhaustion. Two query tests check 80 successful retained,
+materialized, scalar and bound results across two number formats, and 30 raw
+refusal/eager-error controls. The pre-fix Year regression failed with
+NonScalarExpression for a valid retained date whose materialized control worked.
+
+For this extension, 81 distinct focused tests passed: 19 evaluator tests (five new
+retained controls and 14 existing component/interval/Weekday controls), 55 existing
+date-kernel tests, the two new query tests and five existing conversion query
+regressions. Strict Clippy passed for SQL-enabled expression library/tests and the
+new query target; the expression library also passed a no-default-features check.
+Formatting and diff checks passed. No native Windows comparison was run.

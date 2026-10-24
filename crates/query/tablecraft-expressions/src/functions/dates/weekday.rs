@@ -34,19 +34,42 @@ pub(crate) fn weekday_with_input<'a>(
     if !scratch.text().is_empty() {
         return Err(EvalError::Domain);
     }
-    let settings = WeekSettings::parse(first_day, None, week_context)?;
-    let value = value()?;
-    if matches!(value, Value::Null) {
-        return Ok(Value::Null);
+    let operation = Weekday::prepare(first_day, week_context)?;
+    operation.apply(value()?, date_context, scratch)
+}
+
+pub(crate) struct Weekday {
+    settings: WeekSettings,
+}
+
+impl Weekday {
+    pub(crate) fn prepare(
+        first_day: Option<&Value>,
+        context: WeekContext,
+    ) -> Result<Self, EvalError> {
+        Ok(Self {
+            settings: WeekSettings::parse(first_day, None, context)?,
+        })
     }
-    let civil = match value {
-        Value::DateTime(_) | Value::DateTimeExtended(_) => conversion::calendar(value)?,
-        value => {
-            let converted = DateConversion::CDate.apply(value, date_context, scratch)?;
-            conversion::calendar(&converted)?
+
+    pub(crate) fn apply(
+        &self,
+        value: &Value,
+        date_context: DateParseContext,
+        scratch: &mut impl NumericBuffer,
+    ) -> Result<Value, EvalError> {
+        if matches!(value, Value::Null) {
+            return Ok(Value::Null);
         }
-    };
-    Ok(Value::Int16(settings.weekday(civil.date())))
+        let civil = match value {
+            Value::DateTime(_) | Value::DateTimeExtended(_) => conversion::calendar(value)?,
+            value => {
+                let converted = DateConversion::CDate.apply(value, date_context, scratch)?;
+                conversion::calendar(&converted)?
+            }
+        };
+        Ok(Value::Int16(self.settings.weekday(civil.date())))
+    }
 }
 #[cfg(test)]
 mod tests;
