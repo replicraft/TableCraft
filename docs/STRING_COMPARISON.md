@@ -6,6 +6,34 @@ parameters and qualified saved SELECTs. It returns Int16 -1/0/1 or NULL. Every
 supplied argument evaluates in written order; NULL strings do not hide errors in
 another argument. No VBA or external function is invoked.
 
+## Lossless binary String operands
+
+StrComp now retains raw String operands until mode-specific comparison. Binary
+mode 0 compares complete unsigned UTF-16 units directly, including unpaired
+surrogates, without Unicode decoding, byte alignment casts or payload allocation.
+Ordinary Text and raw ranges use the same metered unit-order loop. Active ranges
+are read exactly as UTF-16LE units: `MidB('😀',2,2)` compares equal to `ChrW(216)`;
+the range is not realigned to its original character boundary.
+
+`StrComp(ChrW(55296),ChrW(57343),0)` returns -1. Odd byte lengths remain
+UnrepresentableText when a non-NULL unit comparison is required. Mode validation
+still precedes the NULL gate, so `StrComp(ChrB(65),NULL,0)` returns NULL while an
+invalid mode still fails. Every operand and the optional mode evaluate eagerly.
+Scalar formatting and numeric Text modes retain explicit execution policies.
+
+The owning evaluator exposes `apply_expression_byte_comparison`; the borrowed
+`compare_binary_utf16` kernel consumes already admitted String operands and a
+caller-owned work callback. An explicitly supplied Binary Option Compare policy
+can select this path without a Unicode provider callback. Text/Database modes
+retain strict Text publication and their existing providers; this adds no locale
+fallback or native Windows qualification. Ordinary predicates, keys and raw
+relational storage remain separate.
+
+The original [raw comparison runner](testing/compare_raw_string_comparison.py)
+passes 1,102 source-free controls against independent unsigned-unit sequence
+ordering, including mixed ordinary Text, NULs, prefixes, trailing spaces, NULL and
+refusals. Native Access comparisons and benchmarks were not run.
+
 ## Modes and host context
 
 | Compare argument | Current implementation |

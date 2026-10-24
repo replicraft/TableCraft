@@ -1,5 +1,32 @@
 # Implementation status
 
+## Lossless binary StrComp operands
+
+StrComp now admits raw String operands until its selected comparison mode.
+Binary mode uses a shared borrowed unsigned UTF-16 unit loop for ordinary Text
+and complete raw ranges, including unpaired surrogates. Fixed-array byte chunks
+retain explicit little-endian interpretation without alignment casts or payload
+allocation. Odd byte lengths remain refused for non-NULL unit comparisons. Mode
+validation still precedes NULL propagation; operands/options remain eager and
+scalar formatting uses existing explicit policies. Text/Database modes retain
+strict Text publication and existing provider requirements. See
+[comparison contracts](STRING_COMPARISON.md#lossless-binary-string-operands).
+
+The raw regression failed before the fix. Nineteen focused all-feature expression
+tests, 368 minimal expression tests, forty-one query tests and two CLI tests pass.
+Coverage includes a fixed-seed 256-case unsigned-unit model, mixed Text, unaligned
+active ranges, every observed cancellation checkpoint, grouping/correlation,
+rebinding, regional numeric options and buffered refusals. Adopted raw inputs
+compare with a zero-byte payload budget and an explicit Binary default without
+calling the Unicode provider. Expression/query all-target all-feature Clippy,
+focused CLI Clippy, minimal query compilation, formatting, Python compilation and
+diff checks pass. The independent source-free runner passes 1,102 controls.
+
+No dependency, stored carrier, native decoder, index pushdown or writer changed.
+Full expression/engine/workspace suites, Windows Access and benchmarks were not
+run. Ordinary raw predicates/relational keys, additional native locale providers,
+full Variant semantics and the full backend roadmap remain unfinished.
+
 ## Lossless Nz, Switch and Choose payloads
 
 Nz/Switch/Choose now retain raw choice payloads through eager evaluation and

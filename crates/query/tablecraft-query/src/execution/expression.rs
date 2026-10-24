@@ -263,12 +263,24 @@ impl Runtime<'_, '_> {
                         .evaluator()
                         .observe_expression_byte_operand(*function, operand)?);
                 }
+                if *function == TextFunction::StrComp {
+                    let left = self.expression_byte_operand(&arguments[0], env)?;
+                    let right = self.expression_byte_operand(&arguments[1], env)?;
+                    let option = arguments
+                        .get(2)
+                        .map(|value| self.expression_operand(value, env))
+                        .transpose()?;
+                    return Ok(self.evaluator().apply_expression_byte_comparison(
+                        left,
+                        right,
+                        option.map(|value| value.value),
+                    )?);
+                }
                 if matches!(
                     function,
                     TextFunction::InStr
                         | TextFunction::InStrRev
                         | TextFunction::Replace
-                        | TextFunction::StrComp
                         | TextFunction::Space
                         | TextFunction::String
                         | TextFunction::FormatNumber
@@ -293,9 +305,6 @@ impl Runtime<'_, '_> {
                             .apply_expression_search(*function, values)?,
                         TextFunction::Replace => {
                             self.evaluator().apply_expression_replacement(values)?
-                        }
-                        TextFunction::StrComp => {
-                            self.evaluator().apply_expression_comparison(values)?
                         }
                         TextFunction::Space | TextFunction::String => self
                             .evaluator()

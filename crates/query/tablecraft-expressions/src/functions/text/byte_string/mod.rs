@@ -1,9 +1,11 @@
 //! Lossless expression byte strings, distinct from stored Text and Binary.
+mod comparison;
 mod input;
 mod observations;
 mod search;
 mod value;
 
+pub use comparison::compare_binary_utf16;
 pub use input::ExpressionByteOperand;
 pub(super) use observations::{first_byte, length};
 pub use search::find_binary;

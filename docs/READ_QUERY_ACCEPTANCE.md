@@ -74,6 +74,11 @@ source families and native result-type qualification remain separate. See
 
 ## Remaining acceptance work
 
+StrComp binary mode now compares [complete raw UTF-16 units](STRING_COMPARISON.md#lossless-binary-string-operands)
+without Unicode publication. NULL/mode ordering and strict Text/Database provider
+paths remain separate. This closes a String comparison-consumer gap, not native
+locale providers, ordinary raw predicates/keys or Windows qualification.
+
 Nz/Switch/Choose now retain [lossless choice payloads](CONDITIONAL_FUNCTIONS.md#lossless-nz-switch-and-choose-choices)
 through their existing eager evaluation and control conversion. Selected NULL,
 branch policies/declarations, quotas and failures remain explicit. Raw relational

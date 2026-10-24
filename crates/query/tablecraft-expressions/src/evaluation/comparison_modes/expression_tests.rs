@@ -1,9 +1,14 @@
 use super::*;
 use crate::{
+    comparison::{Collation, StringCompareMode},
     evaluation::{EvalLimits, NoBindings},
-    functions::math::random::RndState,
+    functions::{
+        math::random::RndState,
+        text::byte_string::{ByteString, ExpressionByteOperand},
+    },
 };
 use std::cell::Cell;
+use std::cmp::Ordering;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_sql::{parse_select, select::Projection};
 
@@ -13,6 +18,58 @@ fn text(value: &str) -> ExpressionValue {
 
 fn mode(value: i32) -> ExpressionValue {
     ExpressionValue::Value(Value::Int32(value))
+}
+
+#[test]
+fn adopted_binary_comparison_requires_no_payload_budget_or_provider_callback() {
+    struct BinaryOption;
+    impl Collation for BinaryOption {
+        fn compare(&self, _: &str, _: &str) -> Result<Ordering, EvalError> {
+            panic!("binary comparison must not call the Unicode provider");
+        }
+
+        fn option_compare(&self) -> Option<StringCompareMode> {
+            Some(StringCompareMode::Binary)
+        }
+    }
+
+    let mut budget = ResourceBudget::new(0, 0, 100);
+    let mut evaluator =
+        Evaluator::new(&NoBindings, &mut budget, Default::default()).with_collation(&BinaryOption);
+    let raw = || ExpressionByteOperand::Bytes(ByteString::from_owned(vec![0, 216]).unwrap());
+    assert_eq!(
+        evaluator.apply_expression_byte_comparison(raw(), raw(), None),
+        Ok(Value::Int16(0))
+    );
+    assert_eq!(
+        evaluator.apply_expression_byte_comparison(
+            ExpressionByteOperand::Bytes(ByteString::from_owned(vec![65]).unwrap()),
+            ExpressionByteOperand::Scalar(ExpressionValue::Value(Value::Null)),
+            None,
+        ),
+        Ok(Value::Null)
+    );
+}
+
+#[test]
+fn binary_comparison_consumes_raw_units_without_unicode_publication() {
+    for (sql, expected) in [
+        ("StrComp(ChrW(55296),ChrW(55297),0)", Value::Int16(-1)),
+        ("StrComp(ChrW(55296),ChrW(55296),0)", Value::Int16(0)),
+        ("StrComp(ChrW(57343),'A',0)", Value::Int16(1)),
+        ("StrComp(ChrB(65),NULL,0)", Value::Null),
+        ("StrComp(MidB('😀',2,2),ChrW(216),0)", Value::Int16(0)),
+    ] {
+        let parsed = parse_select(&format!("SELECT {sql}"), Default::default()).unwrap();
+        let Projection::Expression { expression, .. } = &parsed.query().projection[0] else {
+            panic!("expression required");
+        };
+        let mut budget = ResourceBudget::new(65536, 0, 10000);
+        let result =
+            Evaluator::new(&NoBindings, &mut budget, Default::default()).evaluate(expression);
+
+        assert_eq!(result, Ok(expected), "{sql}");
+    }
 }
 
 #[test]

@@ -91,6 +91,9 @@ impl Evaluator<'_> {
                 let value = self.expression_byte_operand(expression, depth + 1)?;
                 return self.observe_expression_byte_operand(function, value);
             }
+            if function == TextFunction::StrComp {
+                return self.comparison_byte_call(arguments, depth);
+            }
             let arguments = sql_arguments::normalize(function, arguments)
                 .ok_or(EvalError::UnsupportedExpression)?;
             let count = arguments.len();
@@ -99,7 +102,6 @@ impl Evaluator<'_> {
                 TextFunction::InStr
                     | TextFunction::InStrRev
                     | TextFunction::Replace
-                    | TextFunction::StrComp
                     | TextFunction::Space
                     | TextFunction::String
                     | TextFunction::FormatNumber
@@ -128,7 +130,6 @@ impl Evaluator<'_> {
                         self.apply_expression_search(function, &values[..count])
                     }
                     TextFunction::Replace => self.apply_expression_replacement(&values[..count]),
-                    TextFunction::StrComp => self.apply_expression_comparison(&values[..count]),
                     TextFunction::Space | TextFunction::String => {
                         self.apply_expression_repeat(function, &values[..count])
                     }

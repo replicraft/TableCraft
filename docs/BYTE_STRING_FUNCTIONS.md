@@ -198,6 +198,11 @@ including supplementary characters, omitted lengths and maximum Long controls.
 
 ## Remaining byte-string work
 
+[Binary StrComp](STRING_COMPARISON.md#lossless-binary-string-operands) now compares
+complete raw units without Unicode publication, including unpaired surrogates and
+mixed ordinary Text. Odd-byte unit comparisons remain refused; NULL mode ordering,
+strict Text/Database publication and existing provider requirements stay explicit.
+
 [Explicit CStr](CSTR.md#lossless-string-inputs) now retains existing raw string
 ranges, including odd bytes, without a new payload allocation. Its ordinary
 scalar conversion and strict final-publication contracts remain separate.

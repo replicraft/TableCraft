@@ -1,5 +1,15 @@
 # Candidate Access fixtures
 
+## Independent raw UTF-16 comparison controls
+
+The original [binary StrComp runner](testing/compare_raw_string_comparison.py)
+passes 1,102 source-free controls. Python compares unsigned unit sequences over
+fixed and seeded ranges, modeling both orders, identity and mixed ordinary Text.
+Inputs include unpaired surrogates, NULs, prefixes and trailing spaces. Both CLI
+modes also check NULL propagation, odd-byte refusal, mode validation and eager
+failures. No native database, third-party artifact or dependency was added;
+Windows Access and benchmarks were not run.
+
 ## Independent lossless Nz/Switch/Choose controls
 
 The original [selection runner](testing/compare_raw_string_selection.py) passes
