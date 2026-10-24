@@ -1,5 +1,21 @@
 # Implementation status
 
+## DISTINCT sort-key policy retention
+
+DISTINCT/DISTINCTROW now retain runtime text-policy contributors from already
+computed ORDER BY keys before discarding duplicates. Previously a duplicate could
+carry the only nondefault policy, leaving survivors to sort under the wrong
+comparer and changing TOP results. The fix preserves evaluated keys without
+reevaluating expressions or changing mixed-policy precedence. See
+[runtime policies](RUNTIME_TEXT_POLICIES.md).
+
+The focused collation, DISTINCTROW and projected-sort batch passes 84 tests.
+Three new regressions include duplicate encounter orders, reverse sorting, TOP
+percent/ties, explicit overrides, fresh function policies, metadata-only binding,
+eager failure, quota refusal and every observed cancellation checkpoint.
+This establishes the existing explicit provider contract, not native Access
+mixed-field precedence.
+
 ## Native cursors at the read-source boundary
 
 Original sparse-source controls now read actual synthetic table rows from the

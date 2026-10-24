@@ -100,6 +100,12 @@ impl Runtime<'_, '_> {
         let records =
             matches!(&plan.node, ReadNode::Select(select) if !select.record_keys.is_empty());
         if plan.distinct || records {
+            // ORDER BY expressions have already been evaluated for every input
+            // row. Preserve their contributing runtime policies before a
+            // duplicate can discard the only field-policy-bearing key.
+            if !plan.sort.is_empty() {
+                self.unify_cell_policies(&mut rows, |row| &mut row.keys)?;
+            }
             if records {
                 self.unify_cell_policies(&mut rows, |row| &mut row.records)?;
             } else {

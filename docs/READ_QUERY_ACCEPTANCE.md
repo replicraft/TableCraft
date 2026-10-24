@@ -335,6 +335,11 @@ found no mismatch with the current bounded arithmetic contract. This closes an
 independent-evidence gap; declared/Variant promotion, mixed carriers, aggregate
 semantics and native Access qualification remain unfinished.
 
+DISTINCT/DISTINCTROW now preserve runtime ORDER BY policy contributors before
+discarding duplicate rows. This fixes a concrete sort/TOP propagation defect
+without defining native mixed-field precedence; the focused regression batch
+passes 84 tests. See [the runtime contract](RUNTIME_TEXT_POLICIES.md).
+
 ### P0 implementation boundaries reviewed 24 October 2026
 
 | Boundary | Current implementation | Remaining work |

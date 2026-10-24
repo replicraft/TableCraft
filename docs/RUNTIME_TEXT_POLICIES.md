@@ -35,6 +35,12 @@ buckets retain cells until comparison finishes. This prevents a derived alias or
 cached named result from silently losing a runtime domain policy.
 
 Sort and set-key columns merge their runtime contributors before key comparison.
+For DISTINCT/DISTINCTROW, already evaluated ORDER BY keys merge their contributors
+before duplicate rows are discarded. A duplicate may carry the only nondefault
+policy even when its retained representative has the same value; removing that row
+must not change the ordering or TOP selection of surviving values. This merge does
+not reevaluate expressions or activate a provider, and fresh conversion/function
+results retain their separate Default policy.
 Group and discovered-heading representatives retain the policies of matching cells
 that are discarded. A neutral literal cannot bridge incompatible field policies
 by erasing an intermediate contributor. Grouped output expressions, including
