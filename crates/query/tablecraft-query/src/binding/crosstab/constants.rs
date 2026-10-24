@@ -21,6 +21,7 @@ impl Binder<'_> {
     ) -> Result<Value, QueryError> {
         self.tick(depth)?;
         match expr {
+            Expr::DateLiteral(_, value) => Ok(Value::DateTime(*value)),
             Expr::Literal(Expression::Text(text)) => Ok(Value::Text(self.copy_name(text)?)),
             Expr::Literal(
                 literal @ (Expression::Null

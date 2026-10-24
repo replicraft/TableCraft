@@ -91,6 +91,27 @@ def main():
             query(mode, f"SELECT Year(#{literal}#),Month(#{literal}#),Day(#{literal}#)",
                   [[str(value) for value in expected]])
 
+    for mode in ["eval", "run"]:
+        for year in [100, 1900, 2000, 2023, 2024, 9999]:
+            for literal, month, day in [
+                ("1/2", 1, 2), ("13/1", 1, 13), ("Mar 7", 3, 7),
+                ("7 Mar 6:05 PM", 3, 7),
+            ]:
+                expected = datetime.date(year, month, day)
+                query(
+                    mode, f"SELECT Year(#{literal}#),Month(#{literal}#),Day(#{literal}#)",
+                    [[str(expected.year), str(expected.month), str(expected.day)]],
+                    options=["--reference-year", year, "--date-format", "de-de"],
+                )
+            leap = year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
+            for literal in ["2/29", "29/2"]:
+                query(mode, f"SELECT Year(#{literal}#),Day(#{literal}#)",
+                      [[str(year), "29"]] if leap else None,
+                      options=["--reference-year", year], fails=not leap)
+            expected = [year, 2, 29] if leap else [2029, 2, 1]
+            query(mode, "SELECT Year(#Feb 29#),Month(#Feb 29#),Day(#Feb 29#)",
+                  [[str(value) for value in expected]], options=["--reference-year", year])
+
     scalar_controls = controls
     lower = datetime.datetime(2024, 1, 2)
     upper = datetime.datetime(2024, 1, 3, 23, 59, 59)
@@ -123,6 +144,11 @@ def main():
                 "run", "SELECT TOP 17 ID FROM IndexedRows "
                 "WHERE Stamp BETWEEN #Jan 2, 24# AND #3-Jan-24 23:59:59# ORDER BY ID",
                 [[str(identity)] for identity in sorted(selected)[:17]], selected_options,
+            )
+            query(
+                "run", "SELECT Count(*) AS N FROM IndexedRows "
+                "WHERE Stamp BETWEEN #1/2# AND #1/3 11:59:59PM#",
+                [[str(len(selected))]], [*selected_options, "--reference-year", "2024"],
             )
             query(
                 "run", "SELECT Count(*) FROM IndexedRows WHERE Stamp=#32/13/24#",

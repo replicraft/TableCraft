@@ -210,6 +210,7 @@ records immutable original/derivative inputs and corrupted-copy refusals.
 [SQL date literals](SQL_DATE_LITERALS.md) now accept U.S./English dates with a
 fixed token-year mapping, documented component-order priorities, known month/year
 forms and qualified times through pure Jiff-backed recognition. Literal values
-remain independent of runtime date policies; invalid constants fail metadata
-binding even on empty results. Implementation-defined default years, wider time/
-regional forms and native precision/error qualification remain open.
+remain independent of runtime date policies; explicit reference-year preparation
+captures omitted-year dates without scanning. Invalid constants fail metadata
+binding even on empty results. Wider time/regional forms and native precision/
+error qualification remain open.

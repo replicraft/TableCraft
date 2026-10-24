@@ -227,7 +227,9 @@ Supported profiles are `invariant`, `en-us` and `de-de`; they do not infer the
 machine's locale. [CStr](docs/CSTR.md) uses this policy for numeric output and
 requires a separate `--date-format iso|en-us|de-de` for date/time output.
 [CDate/DateValue/TimeValue](docs/DATE_CONVERSIONS.md) use that date syntax for Text
-input; omitted years additionally require `--reference-year YEAR`.
+input; omitted years additionally require `--reference-year YEAR`. The same
+explicit year resolves omitted-year [SQL date literals](docs/SQL_DATE_LITERALS.md#explicit-default-year-context),
+which are captured when queries are prepared.
 [MonthName/WeekdayName](docs/CALENDAR_NAMES.md) use the selected language profile;
 WeekdayName system/default numbering requires `--first-day-of-week 1..7` or an
 explicit SQL first-day argument. [DatePart/DateDiff](docs/WEEK_SETTINGS.md) use the

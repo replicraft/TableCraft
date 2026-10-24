@@ -144,7 +144,7 @@ impl<'a> Evaluator<'a> {
         self.first_day_of_week = Some(day);
         self
     }
-    /// Supply the actual/reference year used by omitted-year date text, without reading a clock.
+    /// Supply the reference year for omitted-year date text and SQL tokens, without a clock.
     pub fn with_reference_year(
         mut self,
         year: crate::functions::dates::parsing::ReferenceYear,

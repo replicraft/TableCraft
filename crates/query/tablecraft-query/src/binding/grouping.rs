@@ -26,6 +26,7 @@ impl Binder<'_> {
         Ok(match expr {
             Expr::MathCall(MathFunction::Rnd, _) => false,
             Expr::Literal(_)
+            | Expr::DateLiteral(..)
             | Expr::Field { .. }
             | Expr::Parameter(_)
             | Expr::CollectionItem { .. }

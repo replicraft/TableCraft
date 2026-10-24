@@ -59,7 +59,7 @@ pub(crate) enum Command {
         #[arg(long, value_name = "SEED", default_value_t = RndState::DEFAULT_SEED,
             value_parser = clap::value_parser!(u32).range(0..=i64::from(RndState::MAX_SEED)))]
         random_seed: u32,
-        /// Explicit year for date text that omits its year; the clock is not read.
+        /// Explicit year for omitted-year SQL literals and date text; the clock is not read.
         #[arg(long,value_name="YEAR",value_parser=date_text::parse_reference_year)]
         reference_year: Option<tablecraft_expressions::functions::dates::parsing::ReferenceYear>,
         /// SELECT text, passed as one shell-quoted argument.
@@ -99,7 +99,7 @@ pub(crate) enum Command {
         #[arg(long, value_name = "SEED", default_value_t = RndState::DEFAULT_SEED,
             value_parser = clap::value_parser!(u32).range(0..=i64::from(RndState::MAX_SEED)))]
         random_seed: u32,
-        /// Explicit year for date text that omits its year; the clock is not read.
+        /// Explicit year for omitted-year SQL literals and date text; the clock is not read.
         #[arg(long,value_name="YEAR",value_parser=date_text::parse_reference_year)]
         reference_year: Option<tablecraft_expressions::functions::dates::parsing::ReferenceYear>,
         /// Retrieval SQL text, passed as one shell-quoted argument.

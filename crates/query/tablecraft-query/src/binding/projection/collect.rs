@@ -94,6 +94,7 @@ impl Pruner<'_, '_> {
             | Expr::Clock(_)
             | Expr::CurrentUser
             | Expr::Literal(_)
+            | Expr::DateLiteral(..)
             | Expr::CollectionItem { .. }
             | Expr::Output(_, _)
             | Expr::Parameter(_)

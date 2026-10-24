@@ -1,5 +1,8 @@
 use super::*;
-use tablecraft_expressions::functions::conversions::text::NumberFormat;
+use tablecraft_expressions::functions::{
+    conversions::text::NumberFormat, dates::parsing::ReferenceYear,
+};
+use tablecraft_query::{PreparationOptions, prepare_with_options};
 
 #[test]
 fn computed_integer_headings_declare_schemas_without_scans_and_keep_empty_cells() {
@@ -158,4 +161,80 @@ fn computed_schema_errors_limits_and_context_dependencies_fail_before_scans() {
         Some(QueryError::Unsupported)
     );
     assert_eq!(source.scans.get(), 0);
+}
+
+#[test]
+fn date_derived_integer_headings_capture_the_lexical_year_without_scanning() {
+    let source = Views::new(&[(
+        "Piv",
+        "TRANSFORM Sum(Amount) SELECT Region FROM Sales GROUP BY Region PIVOT CLng(#Mar 7#) IN (CLng(#Mar 7#))",
+    )]);
+    let parsed = parse_query("SELECT * FROM Piv ORDER BY Region", Default::default()).unwrap();
+    let plan = prepare_with_options(
+        parsed.query(),
+        &source,
+        PreparationOptions {
+            reference_year: Some(ReferenceYear::new(2024).unwrap()),
+        },
+    )
+    .unwrap();
+    assert_eq!(source.scans.get(), 0);
+    assert_eq!(plan.output_types().unwrap().len(), 2);
+
+    let result = plan
+        .execute(
+            &source,
+            &[],
+            ExecutionOptions {
+                reference_year: Some(ReferenceYear::new(2030).unwrap()),
+                ..Default::default()
+            },
+        )
+        .unwrap();
+    assert_eq!(
+        result.rows(),
+        [
+            vec![Value::Int32(1), Value::Int64(20)],
+            vec![Value::Int32(2), Value::Int64(5)],
+            vec![Value::Int32(3), Value::Int64(8)],
+        ]
+    );
+}
+
+#[test]
+fn runtime_domain_and_dynamic_text_dates_use_the_runtime_year_after_prepared_dates_are_captured() {
+    let source = Views::new(&[]);
+    let parsed = parse_query(
+        "SELECT Year(#Mar 7#),DSum('Year(#Mar 7#)','Sales'),Eval('Year(#Mar 7#)')",
+        Default::default(),
+    )
+    .unwrap();
+    let plan = prepare_with_options(
+        parsed.query(),
+        &source,
+        PreparationOptions {
+            reference_year: Some(ReferenceYear::new(2024).unwrap()),
+        },
+    )
+    .unwrap();
+    assert_eq!(source.scans.get(), 0);
+
+    let result = plan
+        .execute(
+            &source,
+            &[],
+            ExecutionOptions {
+                reference_year: Some(ReferenceYear::new(2030).unwrap()),
+                ..Default::default()
+            },
+        )
+        .unwrap();
+    assert_eq!(
+        result.rows(),
+        [vec![
+            Value::Int16(2024),
+            Value::Int64(12180),
+            Value::Int16(2030)
+        ]]
+    );
 }

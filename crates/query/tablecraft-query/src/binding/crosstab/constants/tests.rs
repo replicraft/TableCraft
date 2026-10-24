@@ -29,6 +29,7 @@ fn binder<'a>(
         source: &NoSource,
         materialized: &[],
         discover: false,
+        reference_year: None,
         pending_schema: None,
         parameters: Vec::new(),
         parameter_scope: Vec::new(),

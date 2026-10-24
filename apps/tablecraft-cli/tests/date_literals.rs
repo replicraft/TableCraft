@@ -73,3 +73,28 @@ fn sql_token_years_keep_the_fixed_mapping_beside_explicit_constructor_windows() 
         );
     }
 }
+
+#[test]
+fn explicit_reference_year_resolves_sql_tokens_and_keeps_runtime_text_policy_separate() {
+    for mode in ["eval", "run"] {
+        let result = run(&[
+            "query",
+            mode,
+            "SELECT Year(#Mar 7#) AS Y,Day(#29/2#) AS D,Year(#1/2/49#) AS Fixed,Hour(#Mar 7 6:05 PM#) AS H",
+            "--reference-year",
+            "2024",
+            "--date-format",
+            "de-de",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(result.stdout, b"Y\tD\tFixed\tH\n2024\t29\t1949\t18\n");
+
+        let result = run(&["query", mode, "SELECT 1,#2/29#", "--reference-year", "2023"]);
+        assert_eq!(result.status.code(), Some(2));
+        assert!(result.stdout.is_empty());
+    }
+}

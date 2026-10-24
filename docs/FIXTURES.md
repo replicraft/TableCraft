@@ -5938,3 +5938,15 @@ component priorities/month-year forms and native date predicates. The fixed
 Jackcess getters supply stored DATE values; only TableCraft executes SQL.
 Specification-model results do not qualify native Access interpretation. No new
 binary, third-party implementation or runtime dependency is added.
+
+
+### Explicit SQL token default years (23 October 2026)
+
+The existing compare_sql_date_literals.py runner adds caller-issued reference
+100/1900/2000/2023/2024/9999 calendar years, independent Python leap-year/component
+expectations and explicit-year native DATE predicates. It retains the four
+registered large-index originals and reviewed read-only Jackcess getter boundary;
+only TableCraft evaluates SQL. The reference-year cases model the documented
+date-token interpretation priorities, including named-month fallback on an invalid
+reference-year day. No database bytes or tool versions are changed. Native Access
+execution remains unrun; local logs stay in the ignored persistent fixture cache.

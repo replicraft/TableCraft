@@ -34,6 +34,10 @@ impl Runtime<'_, '_> {
             }
             Expr::Clock(function) => Ok(self.evaluator().apply_clock(*function)?),
             Expr::CurrentUser => Ok(self.evaluator().apply_current_user()?),
+            Expr::DateLiteral(_, value) => {
+                self.tick()?;
+                Ok(Value::DateTime(*value))
+            }
             Expr::Literal(literal) => Ok(self.evaluator().evaluate(literal)?),
             Expr::Field { .. } | Expr::CollectionItem { .. } | Expr::Output(..) => {
                 Ok(into_scalar(self.expression_operand(expr, env)?)?)

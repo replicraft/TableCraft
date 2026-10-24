@@ -5,6 +5,7 @@ use crate::{
     OutputType, QueryError, Source,
     plan::{PreparedBody, Slot},
 };
+use tablecraft_expressions::functions::dates::parsing::ReferenceYear;
 use tablecraft_schema::{SchemaName, TypeDescriptor};
 use tablecraft_sql::query::{Query, Statement};
 
@@ -32,23 +33,35 @@ mod retrieval;
 mod source_schema;
 mod text_policy;
 
-/// Prepared retrieval with resolved slots. A host may load bounded metadata or
-/// snapshots while supplying columns; binding invokes no row-scan callback.
-/// Plans intentionally omit Debug/Serde to avoid leaking query/identifier payloads.
+/// Caller-issued lexical settings for metadata-only retrieval preparation.
+/// No clock, locale discovery or row scan supplies these settings.
+#[derive(Clone, Copy, Default)]
+pub struct PreparationOptions {
+    /// Explicit lexical default for SQL date tokens that omit their year.
+    /// Resolved dates are captured in the plan; execution cannot replace them.
+    pub reference_year: Option<ReferenceYear>,
+}
+
+/// Prepared retrieval with resolved slots and captured date-token constants.
+/// Binding invokes no row-scan callback. Plans omit Debug/Serde to avoid leaking
+/// query and identifier payloads.
 pub struct PreparedQuery {
     pub(crate) body: PreparedBody,
     pub(crate) parameters: Vec<Parameter>,
 }
+
 pub(crate) struct Parameter {
     pub name: SchemaName,
     pub data_type: TypeDescriptor,
 }
+
 pub(super) struct Binder<'a> {
     budget: Option<&'a mut tablecraft_core::limits::ResourceBudget>,
     cancelled: Option<&'a dyn Fn() -> bool>,
     source: &'a dyn Source,
     materialized: &'a [crate::discovery::Materialized<'a>],
     discover: bool,
+    reference_year: Option<ReferenceYear>,
     pending_schema: Option<String>,
     parameters: Vec<Parameter>,
     parameter_scope: Vec<usize>,
@@ -59,6 +72,7 @@ pub(super) struct Binder<'a> {
     policy_visits: usize,
     bytes: usize,
 }
+
 impl Binder<'_> {
     fn tick(&mut self, depth: usize) -> Result<(), QueryError> {
         if self.cancelled.is_some_and(|cancel| cancel()) {
@@ -90,7 +104,22 @@ impl Binder<'_> {
 /// Bind a retrieval query, resolving names and rejecting unsupported forms before
 /// scanning. ASCII-insensitive identifiers are the initial explicit profile.
 pub fn prepare(query: &Query, source: &dyn Source) -> Result<PreparedQuery, QueryError> {
-    match prepare_stage(query, source, &[], None, None, false, false)? {
+    prepare_with_options(query, source, PreparationOptions::default())
+}
+
+/// Bind without scanning, capturing explicitly supplied date-token defaults.
+/// Executing the prepared plan with another reference year affects runtime Text
+/// conversions only; its already resolved SQL date tokens remain unchanged.
+pub fn prepare_with_options(
+    query: &Query,
+    source: &dyn Source,
+    options: PreparationOptions,
+) -> Result<PreparedQuery, QueryError> {
+    let stage = StageOptions {
+        preparation: options,
+        ..Default::default()
+    };
+    match prepare_stage(query, source, &[], None, None, stage)? {
         Ok(plan) => Ok(plan),
         Err(_) => Err(QueryError::Unsupported),
     }
@@ -98,14 +127,20 @@ pub fn prepare(query: &Query, source: &dyn Source) -> Result<PreparedQuery, Quer
 
 pub(crate) type Preparation = Result<PreparedQuery, String>;
 
+#[derive(Clone, Copy, Default)]
+pub(crate) struct StageOptions {
+    pub preparation: PreparationOptions,
+    pub discover: bool,
+    pub parameterless: bool,
+}
+
 pub(crate) fn prepare_stage<'a>(
     query: &Query,
     source: &'a dyn Source,
     materialized: &'a [crate::discovery::Materialized<'a>],
     budget: Option<&'a mut tablecraft_core::limits::ResourceBudget>,
     cancelled: Option<&'a dyn Fn() -> bool>,
-    discover: bool,
-    parameterless: bool,
+    options: StageOptions,
 ) -> Result<Preparation, QueryError> {
     let _span = tracing::debug_span!("query.bind").entered();
     if !matches!(query.statement, Statement::Read(_) | Statement::Crosstab(_)) {
@@ -119,7 +154,8 @@ pub(crate) fn prepare_stage<'a>(
         cancelled,
         source,
         materialized,
-        discover,
+        discover: options.discover,
+        reference_year: options.preparation.reference_year,
         pending_schema: None,
         parameters: Vec::new(),
         parameter_scope: Vec::new(),
@@ -143,7 +179,7 @@ pub(crate) fn prepare_stage<'a>(
         };
         Ok(body)
     })();
-    if parameterless && !binder.parameters.is_empty() {
+    if options.parameterless && !binder.parameters.is_empty() {
         return Err(QueryError::Parameter);
     }
     match result {

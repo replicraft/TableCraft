@@ -8,12 +8,14 @@ use crate::{
     plan::{DomainFunction, Expr, ReadNode, ReadPlan, SelectPlan, Slot},
 };
 use tablecraft_core::limits::ResourceBudget;
+use tablecraft_expressions::functions::dates::parsing::ReferenceYear;
 
 pub(crate) struct DomainContext<'a> {
     pub source: &'a dyn Source,
     pub materialized: &'a [Materialized<'a>],
     pub budget: &'a mut ResourceBudget,
     pub discover: bool,
+    pub reference_year: Option<ReferenceYear>,
     pub cancelled: Option<&'a dyn Fn() -> bool>,
 }
 
@@ -34,6 +36,7 @@ pub(crate) fn bind_domain(
         budget,
         cancelled,
         discover,
+        reference_year,
     } = context;
     let (syntax, value, filter) = {
         let mut text = text::Text { budget, cancelled };
@@ -53,6 +56,7 @@ pub(crate) fn bind_domain(
         source,
         materialized,
         discover,
+        reference_year,
         pending_schema: None,
         budget: Some(budget),
         cancelled,

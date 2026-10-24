@@ -200,9 +200,11 @@ impl Runtime<'_, '_> {
                 let right = self.expression_operand(right, env)?;
                 self.declared_binary(*operator, left, right)
             }
-            Expr::Literal(_) | Expr::Parameter(_) => self.eval(expression, env).map(|value| {
-                CellValue::scalar(value).with_declaration(Some(OperandDeclaration::Scalar))
-            }),
+            Expr::Literal(_) | Expr::DateLiteral(..) | Expr::Parameter(_) => {
+                self.eval(expression, env).map(|value| {
+                    CellValue::scalar(value).with_declaration(Some(OperandDeclaration::Scalar))
+                })
+            }
             Expr::Convert(conversion, _) => {
                 let declaration = if *conversion == Conversion::Decimal {
                     OperandDeclaration::Variant

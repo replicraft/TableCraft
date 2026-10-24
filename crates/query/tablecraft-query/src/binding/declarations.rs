@@ -50,9 +50,10 @@ impl Binder<'_> {
                     .ok_or(QueryError::Source)?
                     .declaration
             }
-            Expr::Literal(_) | Expr::Parameter(_) | Expr::CollectionItem { .. } => {
-                Some(OperandDeclaration::Scalar)
-            }
+            Expr::Literal(_)
+            | Expr::DateLiteral(..)
+            | Expr::Parameter(_)
+            | Expr::CollectionItem { .. } => Some(OperandDeclaration::Scalar),
             Expr::Convert(Conversion::Decimal, _)
             | Expr::CVar(_)
             | Expr::CvErr(_)

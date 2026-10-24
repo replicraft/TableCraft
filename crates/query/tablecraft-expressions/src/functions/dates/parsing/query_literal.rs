@@ -1,5 +1,5 @@
 //! SQL date-token interpretation is separate from runtime text-date policies.
-use super::{DateTextFormat, text};
+use super::{DateTextFormat, ReferenceYear, text};
 use crate::EvalError;
 use tablecraft_core::values::LegacyDateTime;
 
@@ -7,13 +7,18 @@ mod date;
 
 const MAX_QUERY_LITERAL_BYTES: usize = 64;
 
-pub(crate) fn parse(value: &str) -> Result<LegacyDateTime, EvalError> {
+pub(crate) fn parse(
+    value: &str,
+    reference_year: Option<ReferenceYear>,
+) -> Result<LegacyDateTime, EvalError> {
     if value.len() > MAX_QUERY_LITERAL_BYTES || !value.is_ascii() {
         return Err(EvalError::UnsupportedLiteral);
     }
 
-    let calendar = text::parse_with(value, Some(DateTextFormat::EnUs), false, date::parse)
-        .map_err(|_| EvalError::UnsupportedLiteral)?;
+    let calendar = text::parse_with(value, Some(DateTextFormat::EnUs), false, |value| {
+        date::parse(value, reference_year)
+    })
+    .map_err(|_| EvalError::UnsupportedLiteral)?;
 
     LegacyDateTime::from_calendar(calendar).map_err(|_| EvalError::UnsupportedLiteral)
 }
@@ -21,7 +26,7 @@ pub(crate) fn parse(value: &str) -> Result<LegacyDateTime, EvalError> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::datetime::parse_query_literal;
+    use crate::datetime::{parse_query_literal, parse_query_literal_with_reference_year};
     use jiff::civil::date;
     use proptest::prelude::*;
 
@@ -117,6 +122,39 @@ mod tests {
             assert_eq!(
                 parse_query_literal(text).unwrap(),
                 LegacyDateTime::from_calendar(expected.at(0, 0, 0, 0)).unwrap(),
+                "{text}"
+            );
+        }
+    }
+
+    #[test]
+    fn explicit_default_year_controls_calendar_validity_and_two_component_priorities() {
+        for (year, text, expected) in [
+            (2024, "2/29", date(2024, 2, 29)),
+            (2024, "29/2 6:05 PM", date(2024, 2, 29)),
+            (2023, "Mar 7", date(2023, 3, 7)),
+            (2023, "7 Mar", date(2023, 3, 7)),
+            (2023, "Feb 29", date(2029, 2, 1)),
+            (2024, "Feb 29", date(2024, 2, 29)),
+            (2023, "Feb 49", date(1949, 2, 1)),
+            (2023, "1/2/49", date(1949, 1, 2)),
+            (100, "1/2", date(100, 1, 2)),
+            (9999, "12/31", date(9999, 12, 31)),
+        ] {
+            let actual =
+                parse_query_literal_with_reference_year(text, ReferenceYear::new(year).unwrap())
+                    .unwrap();
+            assert_eq!(
+                actual.calendar_rounded_to_nanos().unwrap().date(),
+                expected,
+                "{text}"
+            );
+        }
+
+        for text in ["2/29", "29/2", "32/13", "Mar/Feb", "1//2"] {
+            assert_eq!(
+                parse_query_literal_with_reference_year(text, ReferenceYear::new(2023).unwrap()),
+                Err(EvalError::UnsupportedLiteral),
                 "{text}"
             );
         }

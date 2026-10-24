@@ -1,9 +1,15 @@
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_expressions::{
     EvalError,
-    functions::dates::{TwoDigitYearWindow, parsing::DateTextFormat},
+    functions::dates::{
+        TwoDigitYearWindow,
+        parsing::{DateTextFormat, ReferenceYear},
+    },
 };
-use tablecraft_query::{ExecutionOptions, QueryError, prepare, source::MemorySource};
+use tablecraft_query::{
+    ExecutionOptions, PreparationOptions, QueryError, execute_with_schema_discovery, prepare,
+    prepare_with_options, source::MemorySource,
+};
 use tablecraft_sql::parse_query;
 
 #[test]
@@ -105,5 +111,82 @@ fn token_years_are_not_rebound_by_runtime_date_serial_windows() {
                 Value::Int16(26)
             ]]
         );
+    }
+}
+
+#[test]
+fn prepared_dates_capture_the_lexical_year_while_text_conversions_use_execution_context() {
+    let source = MemorySource::default();
+    let parsed = parse_query(
+        "SELECT Year(#Mar 7#),Year(DateValue('Mar 7')),Year((SELECT #1/2#))",
+        Default::default(),
+    )
+    .unwrap();
+    let plan = prepare_with_options(
+        parsed.query(),
+        &source,
+        PreparationOptions {
+            reference_year: Some(ReferenceYear::new(2024).unwrap()),
+        },
+    )
+    .unwrap();
+
+    for runtime_year in [2023, 2030] {
+        let result = plan
+            .execute(
+                &source,
+                &[],
+                ExecutionOptions {
+                    reference_year: Some(ReferenceYear::new(runtime_year).unwrap()),
+                    date_format: Some(DateTextFormat::EnUs),
+                    ..Default::default()
+                },
+            )
+            .unwrap();
+        assert_eq!(
+            result.rows(),
+            [vec![
+                Value::Int16(2024),
+                Value::Int16(runtime_year as i16),
+                Value::Int16(2024)
+            ]]
+        );
+    }
+}
+
+#[test]
+fn staged_preparation_captures_an_explicit_year_and_rejects_invalid_tokens_before_scanning() {
+    let source = MemorySource::default();
+    let options = ExecutionOptions {
+        reference_year: Some(ReferenceYear::new(2024).unwrap()),
+        ..Default::default()
+    };
+    let parsed = parse_query(
+        "SELECT Day(#29/2#),Year(#Feb 29#),Year(#1/2/49#)",
+        Default::default(),
+    )
+    .unwrap();
+    let result = execute_with_schema_discovery(parsed.query(), &source, &[], options).unwrap();
+    assert_eq!(
+        result.rows(),
+        [vec![
+            ExpressionValue::Value(Value::Int16(29)),
+            ExpressionValue::Value(Value::Int16(2024)),
+            ExpressionValue::Value(Value::Int16(1949))
+        ]]
+    );
+
+    for sql in ["SELECT #2/29# WHERE False", "SELECT #1//2# WHERE False"] {
+        let parsed = parse_query(sql, Default::default()).unwrap();
+        assert!(matches!(
+            prepare_with_options(
+                parsed.query(),
+                &source,
+                PreparationOptions {
+                    reference_year: Some(ReferenceYear::new(2023).unwrap()),
+                }
+            ),
+            Err(QueryError::Evaluation(EvalError::UnsupportedLiteral))
+        ));
     }
 }

@@ -1,7 +1,7 @@
 //! Explicit execution staging for named crosstab schemas; binding never scans.
 use crate::{
     ExecutionOptions, ExpressionQueryResult, PreparedQuery, QueryError, QueryLimits, Source,
-    binding::prepare_stage,
+    binding::{PreparationOptions, StageOptions, prepare_stage},
     execution::{CellQueryResult, publish_cells},
     plan::PreparedBody,
     profile::{MAX_NAMED_DEPTH, SOURCE_SCHEMA_POLICY},
@@ -135,8 +135,13 @@ impl<'source> Operation<'_, 'source> {
                 &self.discovery.materialized.borrow(),
                 Some(self.budget),
                 self.options.cancelled,
-                true,
-                self.parameterless,
+                StageOptions {
+                    preparation: PreparationOptions {
+                        reference_year: self.options.reference_year,
+                    },
+                    discover: true,
+                    parameterless: self.parameterless,
+                },
             )?;
             match stage {
                 Ok(plan) => return Ok(plan),

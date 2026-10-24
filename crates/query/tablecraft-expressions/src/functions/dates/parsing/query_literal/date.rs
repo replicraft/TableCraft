@@ -1,5 +1,5 @@
 //! MS-VBAL date-token priorities; two-digit years are lexical constants.
-use super::super::date::named_month;
+use super::super::{ReferenceYear, date::named_month};
 use crate::EvalError;
 use jiff::civil::Date;
 
@@ -19,7 +19,7 @@ enum Component {
     Month(u16),
 }
 
-pub(super) fn parse(value: &str) -> Result<Date, EvalError> {
+pub(super) fn parse(value: &str, reference_year: Option<ReferenceYear>) -> Result<Date, EvalError> {
     let (parts, count) = components(value)?;
 
     match &parts[..count] {
@@ -49,11 +49,15 @@ pub(super) fn parse(value: &str) -> Result<Date, EvalError> {
             checked(year(second), month, first).or_else(|_| checked(year(first), month, second))
         }
         [Component::Number(left), Component::Number(right)] => {
-            if checked(LEAP_VALIDATION_YEAR, *left, *right).is_ok()
+            if let Some(year) = reference_year {
+                if let Ok(date) = checked(year.year(), *left, *right)
+                    .or_else(|_| checked(year.year(), *right, *left))
+                {
+                    return Ok(date);
+                }
+            } else if checked(LEAP_VALIDATION_YEAR, *left, *right).is_ok()
                 || checked(LEAP_VALIDATION_YEAR, *right, *left).is_ok()
             {
-                // The grammar prefers a month/day in an implementation-defined
-                // default year. Metadata-only parsing has no such year provider.
                 return Err(EvalError::ReferenceYearRequired);
             }
             if (1..=MAX_MONTH).contains(left) {
@@ -64,7 +68,11 @@ pub(super) fn parse(value: &str) -> Result<Date, EvalError> {
         }
         [Component::Month(month), Component::Number(value)]
         | [Component::Number(value), Component::Month(month)] => {
-            if checked(LEAP_VALIDATION_YEAR, *month, *value).is_ok() {
+            if let Some(year) = reference_year {
+                if let Ok(date) = checked(year.year(), *month, *value) {
+                    return Ok(date);
+                }
+            } else if checked(LEAP_VALIDATION_YEAR, *month, *value).is_ok() {
                 return Err(EvalError::ReferenceYearRequired);
             }
             checked(year(*value), *month, 1)

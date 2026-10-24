@@ -4,6 +4,9 @@ use crate::{
     QueryError,
     plan::{Expr, Slot},
 };
+use tablecraft_expressions::datetime::{
+    parse_query_literal, parse_query_literal_with_reference_year,
+};
 use tablecraft_sql::select::Expression as E;
 
 impl Binder<'_> {
@@ -87,10 +90,18 @@ impl Binder<'_> {
                     self.charge(t.len())?;
                 }
                 // Reject unmaterializable literal spellings even on empty sources.
-                if matches!(expr, E::Number(_) | E::DateLiteral(_) | E::GuidLiteral(_)) {
-                    super::literals::checked(expr)?;
+                if let E::DateLiteral(text) = expr {
+                    let value = match self.reference_year {
+                        Some(year) => parse_query_literal_with_reference_year(text, year),
+                        None => parse_query_literal(text),
+                    }?;
+                    Expr::DateLiteral(text.clone(), value)
+                } else {
+                    if matches!(expr, E::Number(_) | E::GuidLiteral(_)) {
+                        super::literals::checked(expr)?;
+                    }
+                    Expr::Literal(expr.clone())
                 }
-                Expr::Literal(expr.clone())
             }
             E::Unary {
                 operator,
