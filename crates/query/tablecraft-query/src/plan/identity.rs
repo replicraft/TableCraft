@@ -20,7 +20,9 @@ impl Comparer<'_> {
     ) -> Result<bool, QueryError> {
         (self.tick)(depth)?;
         Ok(match (left, right) {
-            (Expr::MathCall(MathFunction::Rnd, _), _) | (Expr::DomainCall(..), _)
+            (Expr::MathCall(MathFunction::Rnd, _), _)
+            | (Expr::DomainCall(..), _)
+            | (Expr::Eval(_), _)
                 if context.projection =>
             {
                 false
