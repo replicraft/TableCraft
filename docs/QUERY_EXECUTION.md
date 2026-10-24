@@ -11,6 +11,12 @@ This is a usable bounded retrieval profile, not complete Access SQL compatibilit
 The separate [query editing API](QUERY_EDITING.md) plans bounded single-table
 UPDATE actions over shared snapshot contracts. Retrieval APIs remain read-only.
 
+[Retained String keys](RAW_STRING_KEYS.md) now share explicit raw-unit comparison
+across grouping, sets, sorting/TOP and crosstab row keys. Fixed-heading named
+crosstabs also retain raw cells for outer observers. Key comparison keeps strict
+type rules and final String publication remains checked; singleton keys do not
+invent unused comparisons or locale lookups.
+
 [CVErr Error data](VARIANT_ERRORS.md) now supports explicit inspection, eager
 selection and numeric consumers. `PreparedQuery::execute_expression` returns
 `ExpressionQueryResult` with explicit Error cells, including through derived rows

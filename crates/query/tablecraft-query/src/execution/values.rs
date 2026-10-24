@@ -18,20 +18,6 @@ pub(super) fn scalar(value: &CellValue) -> Result<&Value, QueryError> {
 }
 
 impl Runtime<'_, '_> {
-    pub(super) fn materialize_strings(
-        &mut self,
-        cells: &mut [CellValue],
-    ) -> Result<(), QueryError> {
-        for cell in cells {
-            self.tick()?;
-            if let ExpressionValue::StringBytes(bytes) = &cell.value {
-                cell.value =
-                    ExpressionValue::Value(self.evaluator().publish_expression_string(bytes)?);
-            }
-        }
-        Ok(())
-    }
-
     pub(super) fn copy_expression(&mut self, value: &CellValue) -> Result<CellValue, QueryError> {
         let copied = match &value.value {
             ExpressionValue::Value(value) => ExpressionValue::Value(self.copy(value)?),
@@ -163,9 +149,9 @@ impl Runtime<'_, '_> {
             return Err(QueryError::Width);
         }
         for (index, (left, right)) in left.iter().zip(right).enumerate() {
-            if !self.equal(
-                scalar(left)?,
-                scalar(right)?,
+            if !self.equal_key(
+                left,
+                right,
                 policies
                     .get(index)
                     .copied()

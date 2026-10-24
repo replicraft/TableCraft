@@ -83,7 +83,7 @@ impl Runtime<'_, '_> {
                     };
                     let mut keys = self.allocate_expression_row(plan.sort.len())?;
                     for (expr, _) in &plan.sort {
-                        keys.push(self.scalar_key(expr, env)?);
+                        keys.push(self.comparison_key(expr, env)?);
                     }
                     self.push(
                         &mut output,
@@ -100,13 +100,6 @@ impl Runtime<'_, '_> {
         let records =
             matches!(&plan.node, ReadNode::Select(select) if !select.record_keys.is_empty());
         if plan.distinct || records {
-            for row in &mut rows {
-                if records {
-                    self.materialize_strings(&mut row.records)?;
-                } else {
-                    self.materialize_strings(&mut row.values)?;
-                }
-            }
             if records {
                 self.unify_cell_policies(&mut rows, |row| &mut row.records)?;
             } else {
@@ -254,7 +247,7 @@ impl Runtime<'_, '_> {
         }
         let mut keys = self.allocate_expression_row(plan.sort.len())?;
         for (expr, _) in &plan.sort {
-            keys.push(self.scalar_key(
+            keys.push(self.comparison_key(
                 expr,
                 Environment {
                     output: &values,
@@ -264,7 +257,7 @@ impl Runtime<'_, '_> {
         }
         let mut records = self.allocate_expression_row(select.record_keys.len())?;
         for expr in &select.record_keys {
-            records.push(self.scalar_key(expr, env)?);
+            records.push(self.comparison_key(expr, env)?);
         }
         Ok(Some(OutputRow {
             values,
@@ -294,7 +287,7 @@ impl Runtime<'_, '_> {
         for row in rows {
             let mut keys = self.allocate_expression_row(select.group.len())?;
             for expr in &select.group {
-                keys.push(self.repeatable_key(
+                keys.push(self.repeatable_comparison_key(
                     expr,
                     Environment {
                         collections: None,
@@ -337,9 +330,6 @@ impl Runtime<'_, '_> {
         mut rows: Vec<Vec<CellValue>>,
         policies: &[crate::source::TextPolicy],
     ) -> Result<Vec<Vec<CellValue>>, QueryError> {
-        for row in &mut rows {
-            self.materialize_strings(row)?;
-        }
         self.unify_cell_policies(&mut rows, Vec::as_mut_slice)?;
         let mut result: Vec<Vec<CellValue>> = Vec::new();
         for row in rows {
@@ -368,11 +358,7 @@ impl Runtime<'_, '_> {
                 .text_policy(expr)?
                 .merge(left.policy)
                 .merge(right.policy);
-            let order = self.order(
-                super::values::scalar(left)?,
-                super::values::scalar(right)?,
-                policy,
-            )?;
+            let order = self.order_key(left, right, policy)?;
             if order != Ordering::Equal {
                 return Ok(if *descending { order.reverse() } else { order });
             }

@@ -1,5 +1,32 @@
 # Implementation status
 
+## Retained String keys and crosstab cells
+
+Grouping, DISTINCT/active DISTINCTROW, UNION duplicate removal, sorting and TOP
+ties now retain String data until a comparison or final publication needs it.
+Actual comparisons use the explicit provider contract with strict key type
+rules; singleton keys perform no unused locale lookup/Unicode publication.
+NULL key identity/order and existing Error-state limits remain separate.
+Crosstab row grouping/sorting share this path, and fixed-heading named crosstabs
+retain raw row/cell Strings for outer observers under metadata-only preparation.
+Pivot/heading names keep their strict contract. See [key scope](RAW_STRING_KEYS.md).
+
+The previous CLI failed Count(*) over a singleton raw DISTINCT result. That case
+now succeeds while direct unrepresentable output and operational failures still
+fail before buffered publication. The independent key runner passes 406 controls
+over the reviewed short General vectors and NULLs; the original order recipe
+retains all 17,345 controls with balanced constructors and smaller SQL batches.
+No parser/binder limit was raised or vector removed.
+
+203 focused query tests, seven adapter tests and five CLI tests pass, including
+raw record keys, field policies, stable TOP ties, repeatability, cancellation,
+strict type/state refusal and named crosstab cell retention. Scoped query/adapter/
+CLI Clippy, minimal query compilation, formatting, Python compilation and diff
+checks pass. Existing predicate/LIKE/retained-cell/native-policy recipes pass over
+unchanged registered native hashes. Full workspace tests, benchmarks and Windows
+Access were not run. Broader consumers/coercion and native qualification remain
+unfinished; no dependency, stored carrier, physical index or write gate changed.
+
 ## Explicit raw-unit String comparison
 
 Relational String pairs can now use a separately selected UTF-16 provider without

@@ -121,11 +121,11 @@ impl Runtime<'_, '_> {
             }
             let mut values = self.allocate_expression_row(columns.len())?;
             for expr in &select.projection[..width] {
-                values.push(self.expression_operand(expr, env)?);
+                values.push(self.retained_expression_operand(expr, env)?);
             }
             let mut keys = self.allocate_expression_row(plan.read.sort.len())?;
             for (expr, _) in &plan.read.sort {
-                keys.push(self.scalar_key(
+                keys.push(self.comparison_key(
                     expr,
                     Environment {
                         output: &values,
@@ -158,7 +158,7 @@ impl Runtime<'_, '_> {
                     values.push(CellValue::scalar(Value::Null));
                     continue;
                 }
-                values.push(self.expression_operand(
+                values.push(self.retained_expression_operand(
                     cell,
                     Environment {
                         row: bucket.first().ok_or(QueryError::Grouping)?.as_slice(),

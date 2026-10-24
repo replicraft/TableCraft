@@ -22,7 +22,7 @@ fn larger_retained_cells_keep_exact_lengths_across_chunked_copies() {
 }
 
 #[test]
-fn scalar_set_boundaries_publish_valid_strings_before_comparing_keys() {
+fn scalar_providers_keep_valid_string_key_results() {
     struct Ordinal;
     impl Collation for Ordinal {
         fn compare(&self, left: &str, right: &str) -> Result<Ordering, EvalError> {

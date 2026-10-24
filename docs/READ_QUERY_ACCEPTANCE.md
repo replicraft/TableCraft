@@ -82,16 +82,19 @@ retain raw String/NULL truth under an explicitly selected wildcard mode. Non-NUL
 raw matching also feeds complete units to explicitly selected UTF-16 providers,
 retaining policy routing and refusing odd byte lengths. Non-NULL String
 comparisons also use an explicitly selected [raw-unit provider](RAW_STRING_COMPARISON.md),
-retaining separate SQL space rules and stored field policies. Raw keys, additional
+retaining separate SQL space rules and stored field policies. [Raw keys](RAW_STRING_KEYS.md)
+now share the comparison boundary for grouping, sets, sorting and TOP ties, with
+retained fixed crosstab cells and separate heading publication. Additional consumers,
 native locale providers, native matching qualification and P0 semantics remain
 unfinished.
 
 Qualified [query cells](RETAINED_STRINGS.md) now retain core's checked String byte
 ranges through derived rows, UNION ALL, correlated subqueries and First/Last.
 Raw-aware consumers operate without premature Unicode publication; ordinary
-scalar services, set/key boundaries and final results remain strict. Stored Text,
-source/parameter contracts and native qualification are unchanged. Broader raw
-predicate/key semantics and the rest of P0 remain unfinished.
+scalar services and final results remain strict. Key comparisons now use explicit
+providers while preserving strict type rules. Stored Text, source/parameter
+contracts and native qualification are unchanged. Remaining raw consumers, wider
+Variant/coercion and the rest of P0 remain unfinished.
 
 StrComp binary mode now compares [complete raw UTF-16 units](STRING_COMPARISON.md#lossless-binary-string-operands)
 without Unicode publication. NULL/mode ordering and strict Text/Database provider
