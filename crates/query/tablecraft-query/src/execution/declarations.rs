@@ -9,6 +9,7 @@ use crate::{
     execution::cell::{CellValue, into_operator_scalar},
     source::TextPolicy,
 };
+use std::mem::discriminant;
 use tablecraft_core::values::Value;
 use tablecraft_expressions::numeric::{
     Arithmetic, ArithmeticDeclarations, OperandDeclaration, uses_declared_overflow,
@@ -94,11 +95,14 @@ impl Runtime<'_, '_> {
         let policy = TextPolicy::Default;
         let declaration = operand.declaration;
         let value = into_operator_scalar(operand)?;
-        let result = if self.options.declared_integral
+        let selected_width = self.options.declared_integral
             && operator == U::Minus
-            && matches!(value, Value::DateTime(_))
-        {
-            let declaration = declaration.ok_or(QueryError::ArithmeticDeclaration)?;
+            && matches!(
+                value,
+                Value::Int16(_) | Value::Int32(_) | Value::DateTime(_)
+            );
+        let input_carrier = discriminant(&value);
+        let result = if selected_width && let Some(declaration) = declaration {
             self.evaluator().apply_declared_numeric_arithmetic(
                 Arithmetic::Subtract,
                 &Value::Int16(0),
@@ -108,22 +112,16 @@ impl Runtime<'_, '_> {
                     right: declaration,
                 },
             )?
-        } else if self.options.declared_integral
-            && operator == U::Minus
-            && matches!(value, Value::Int16(_) | Value::Int32(_))
-        {
-            let declaration = declaration.ok_or(QueryError::ArithmeticDeclaration)?;
-            self.evaluator().apply_declared_integral_arithmetic(
-                Arithmetic::Subtract,
-                &Value::Int16(0),
-                &value,
-                ArithmeticDeclarations {
-                    left: OperandDeclaration::Scalar,
-                    right: declaration,
-                },
-            )?
         } else {
-            self.evaluator().apply_unary(operator, value)?
+            let result = self.evaluator().apply_unary(operator, value)?;
+            if selected_width && discriminant(&result) != input_carrier {
+                // Only an unknown declaration reaches this branch. Matching
+                // carriers establish equal Scalar/Variant outcomes for this
+                // operation; widening needs a category we cannot manufacture.
+                return Err(QueryError::ArithmeticDeclaration);
+            }
+
+            result
         };
         Ok(CellValue::scalar(result)
             .with_policy(policy)
