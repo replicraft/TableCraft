@@ -135,6 +135,20 @@ owned expression. Clause/list/statement injection fails; a trailing line comment
 cannot consume the guard. No string concatenation can turn a stored alias into a
 new clause. Consuming parser results move owned names without upstream AST exposure.
 
+Stored derived-source text may end with one standalone query terminator. The SQL
+adapter supplies its lexical statement prefix after parsing the complete original
+input; reconstruction embeds that prefix under the existing derived-source guard
+and compares the resulting owned read query. Quoted semicolons and earlier comments
+remain data, while final terminators/trivia do not enter the parenthesized source.
+Original native fragments remain unchanged. Multiple statements, repeated
+terminators, malformed delimiters, action queries and inner parameter declarations
+remain refused. Scalar/projection fragments retain their separate terminator guards.
+
+The registered `~sq_d510~sq_dChild52` source demonstrates a stored terminated SELECT.
+Its source now reconstructs independently, but the complete original definition
+still has an unsupported native type-zero parameter. No type is guessed and no
+missing application table is invented to make that query executable.
+
 The caller supplies ResourceBudget, cancellation and ParseLimits. Expanded
 expression/name/type spellings share the clamped byte ceiling; each parser call also
 enforces its token/depth ceiling. Vector/string reservations are fallible and

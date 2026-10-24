@@ -33,8 +33,14 @@ fn saved(text: &str) -> Vec<u8> {
 fn saved_derived_sources_execute_explicitly_and_never_publish_partial_rows_or_run_inert_calls() {
     for (text, accepted) in [
         ("SELECT Id FROM Items WHERE Id>1", true),
+        (
+            "SELECT Id FROM Items WHERE Id>1; -- ; stored terminator",
+            true,
+        ),
         ("SELECT 1/(3-Id) AS Id FROM Items", false),
+        ("SELECT 1/(3-Id) AS Id FROM Items; /* ; */", false),
         ("SELECT NeverRunMe(Id) AS Id FROM Items", false),
+        ("SELECT NeverRunMe(Id) AS Id FROM Items;", false),
     ] {
         let db = Database::new(saved(text));
         let inspect = cli_support::run(&["query", "saved", "--database", db.path(), "Saved"]);

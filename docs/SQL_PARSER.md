@@ -172,6 +172,17 @@ extra whitespace. The adapter separates upstream PostgreSQL hash operators using
 source spans; quoted text and bracketed names remain inert. Parsing alone still
 does not validate the date's calendar or qualify evaluation behavior.
 
+## Parsed statement source
+
+`ParsedQuery::statement_source()` exposes the exact input prefix before an
+optional final lexical statement terminator. `source()` still retains the full
+original text. Semicolons in quoted names, strings, comments and PARAMETERS
+declarations are not trimmed as text; trivia after the final terminator is
+excluded only from the prefix. This allows stored standalone read definitions to
+be embedded under separate consumer guards without accepting multiple statements
+or relaxing inline subquery grammar. Existing byte/token/depth limits apply to
+the complete original input before this prefix is available.
+
 ## Literal parameter prompt names
 
 [Parameter prompts](PARAMETER_PROMPTS.md) now admit bracketed punctuation in

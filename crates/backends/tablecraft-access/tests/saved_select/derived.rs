@@ -1,6 +1,7 @@
 use super::joins::{join, source};
 use super::*;
 use tablecraft_access::NativeSource;
+use tablecraft_ace::QueryAttribute;
 use tablecraft_core::values::Value;
 use tablecraft_query::prepare;
 
@@ -41,6 +42,26 @@ fn derived_sources_preserve_owned_reads_aliases_nesting_union_and_anonymous_root
             Some("d"),
             "SELECT 1 FROM (SELECT NeverRunMe() AS N) AS d",
         ),
+        (
+            "SELECT ID FROM Items; ",
+            Some("d"),
+            "SELECT 1 FROM (SELECT ID FROM Items) AS d",
+        ),
+        (
+            "SELECT ';' AS N; -- ; ignored",
+            Some("d"),
+            "SELECT 1 FROM (SELECT ';' AS N) AS d",
+        ),
+        (
+            "SELECT 'é🦀;' AS N\t; /* ; ignored */",
+            Some("d"),
+            "SELECT 1 FROM (SELECT 'é🦀;' AS N) AS d",
+        ),
+        (
+            "SELECT 1 AS N -- ; comment\n; -- final comment",
+            Some("d"),
+            "SELECT 1 FROM (SELECT 1 AS N) AS d",
+        ),
     ] {
         let saved = compile(&[column("1"), derived(text, alias)]).unwrap();
         assert_eq!(
@@ -75,6 +96,8 @@ fn derived_sources_reject_remote_qualifiers_actions_parameters_injection_and_dup
         "TRANSFORM Count(*) SELECT Id FROM Items GROUP BY Id PIVOT Id",
         "PARAMETERS P LONG; SELECT P",
         "SELECT 1; SELECT 2",
+        "SELECT 1;;",
+        "SELECT 1; -- delimiter\nSELECT 2;",
         "SELECT 1) AS Injected WHERE False --",
         "SELECT (1",
         "SELECT 1) UNION SELECT (2",
@@ -117,6 +140,48 @@ fn derived_sources_reject_remote_qualifiers_actions_parameters_injection_and_dup
 }
 
 #[test]
+fn registered_terminated_source_keeps_original_metadata_and_its_remaining_parameter_refusal() {
+    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../../docs/examples/Access_Example_VBA.accdb");
+    let original = std::fs::read(&path).unwrap();
+    let definition = read_saved_query_definition(
+        &mut Cursor::new(&original),
+        CatalogScope::new(1),
+        "~sq_d510~sq_dChild52",
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    let text = definition
+        .rows()
+        .iter()
+        .find(|row| row.attribute() == Some(QueryAttribute::Table))
+        .unwrap()
+        .expression()
+        .unwrap();
+    assert!(text.ends_with("; "));
+
+    // Exercise this source independently of the original implicit parameter.
+    let saved = compile(&[column("1"), derived(text, Some("510"))]).unwrap();
+    let expected = parse_query(
+        "SELECT 1 FROM (SELECT TRAP_LCTN_TB.LOCATION_NAME, TRAP_LCTN_TB.TRAP_TYPE_ID \
+         FROM TRAP_LCTN_TB WHERE (((TRAP_LCTN_TB.NACT_INDC)=False)) \
+         ORDER BY TRAP_LCTN_TB.LOCATION_NAME) AS [510]",
+        Default::default(),
+    )
+    .unwrap();
+    assert_eq!(saved.query(), expected.query());
+    assert_eq!(saved.definition().rows()[1].expression(), Some(text));
+
+    // Native type zero still needs an explicit untyped-parameter contract.
+    assert_eq!(
+        reconstruct_saved_select(definition, Default::default(), &mut budget(), &|| false).err(),
+        Some(E::Unsupported)
+    );
+    assert_eq!(std::fs::read(path).unwrap(), original);
+}
+
+#[test]
 fn native_derived_outer_join_executes_through_existing_snapshot_contracts_without_writes() {
     let rows = [
         Fragment {
@@ -128,7 +193,10 @@ fn native_derived_outer_join_executes_through_existing_snapshot_contracts_withou
             order: Some(&[0, 0, 0, 2]),
             ..column("i.Id")
         },
-        derived("SELECT Id FROM Items WHERE Id<3", Some("d")),
+        derived(
+            "SELECT Id FROM Items WHERE Id<3; -- retained metadata",
+            Some("d"),
+        ),
         source("Items", Some("i")),
         join(2, "d", "i", "d.Id=i.Id AND i.Id<>2"),
     ];
@@ -169,7 +237,7 @@ fn native_derived_outer_join_executes_through_existing_snapshot_contracts_withou
 fn derived_guards_charge_syntax_work_and_memory_and_check_cancellation_before_publication() {
     let rows = [
         column("1"),
-        derived("SELECT Id FROM Items WHERE Id>1", Some("d")),
+        derived("SELECT Id FROM Items WHERE Id>1; -- ; stored", Some("d")),
     ];
     let calls = Cell::new(0);
     reconstruct_saved_select(
