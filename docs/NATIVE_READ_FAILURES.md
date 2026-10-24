@@ -96,3 +96,27 @@ terminal. Header and complete-image controls separately cover End(0) replay,
 completion cancellation, bounded persistent interruption and unchanged images.
 These controls add storage-failure evidence, not coherent live-file snapshots or
 new native write permissions.
+
+
+## Cursor reads at the 2 GiB source boundary
+
+The original `table_pages/large_sources` controls expose a virtual 2 GiB source
+with a small catalog/schema prefix and two actual data pages at the final physical
+page positions. Reads of the unused hole fail instead of silently supplying zero
+bytes. This checks absolute seeks and native direct-map base arithmetic through
+complete, Score-only and empty projected cursors without allocating a 2 GiB image
+or performing a whole-file scan. Exact independently authored Int32 rows survive
+one-row batches under a 256 KiB cumulative allowance; each tail page is read once.
+
+Across Jet 4 and ACE 2007/2016/2019 profiles, a failed final-page read preserves the
+one-row delivered position, makes the cursor terminal and leaves later requests
+without extra work. Complete buffered materialization also refuses both I/O failure
+and a mismatched physical page owner after reading a good prefix. A usage-map bit
+past the final source page is rejected before any tail reads; a source one page
+above the 2 GiB ceiling is rejected after only its header prefix.
+
+Five tests cover 32 profile/projection/failure scenarios. This is synthetic
+high-offset traversal and publication evidence, not million-row throughput, a
+multi-GiB native-authored database, concurrent-file coherence or native Access
+qualification. The ordinary snapshot, image-capture and encryption-management
+ceilings are unchanged.

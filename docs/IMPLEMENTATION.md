@@ -1,5 +1,19 @@
 # Implementation status
 
+## Native cursors at the read-source boundary
+
+Original sparse-source controls now read actual synthetic table rows from the
+last two pages of a virtual 2 GiB file under small cumulative budgets. Complete,
+scalar-projected and zero-width cursors retain exact values and one-read-per-page
+continuation. Final-page failures close the cursor without publishing a suffix;
+complete materialization refuses failed or corrupt tails. Out-of-range usage-map
+bits and over-ceiling source lengths fail before data reads. See
+[high-offset read evidence](NATIVE_READ_FAILURES.md#cursor-reads-at-the-2-gib-source-boundary).
+
+Five focused tests cover 32 scenarios across Jet 4 and ACE 2007/2016/2019 layouts.
+These controls exercise native traversal, rather than header recognition alone;
+they do not qualify native large-file creation, throughput or live coherence.
+
 ## Captured decimal integer literal typing
 
 The explicit `--declared-arithmetic` query profile now captures decimal integer
