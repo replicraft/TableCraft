@@ -70,3 +70,35 @@ fn selected_ordinal_provider_handles_replacement_without_locale_fallback() {
     assert!(!result.status.success());
     assert!(result.stdout.is_empty());
 }
+
+#[test]
+fn retained_replacement_is_observable_and_final_unicode_stays_strict() {
+    for command in ["eval", "run"] {
+        let result = run(&[
+            "query",
+            command,
+            "SELECT AscW(Replace('😀',ChrW(55357),'')) AS Code,LenB(Replace('😀','z','',2,0)) AS Bytes,Replace(ChrW(55296)&'a','a',ChrW(56320)) AS Repaired",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(
+            table(&result.stdout),
+            [
+                vec!["Code", "Bytes", "Repaired"],
+                vec!["-8704", "2", "\"𐀀\""]
+            ]
+        );
+        for sql in [
+            "SELECT Replace(ChrW(55296),'a','b')",
+            "SELECT LenB(Replace(ChrW(55296),'a','b')),1/0",
+            "SELECT LenB(Replace(ChrB(65),'a','b'))",
+        ] {
+            let result = run(&["query", command, sql]);
+            assert_eq!(result.status.code(), Some(2));
+            assert!(result.stdout.is_empty(), "{sql}");
+        }
+    }
+}

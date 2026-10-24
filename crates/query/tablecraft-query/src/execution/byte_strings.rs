@@ -112,6 +112,21 @@ impl Runtime<'_, '_> {
         arguments: &[Expr],
         env: Environment<'_>,
     ) -> Result<ByteOperand, QueryError> {
+        if function == TextFunction::Replace {
+            let mut values: [ExpressionValue; TextFunction::MAX_ARGUMENTS] =
+                std::array::from_fn(|_| ExpressionValue::Value(Value::Null));
+            for (index, (argument, value)) in arguments.iter().zip(&mut values).enumerate() {
+                *value = if index < 3 {
+                    self.expression_byte_operand(argument, env)?
+                        .into_expression_value()
+                } else {
+                    self.expression_operand(argument, env)?.value
+                };
+            }
+            return Ok(self
+                .evaluator()
+                .apply_retained_replacement(&values[..arguments.len()])?);
+        }
         let (first, rest) = self.byte_call_inputs(arguments, env)?;
         Ok(self.evaluator().apply_expression_byte_string(
             function,

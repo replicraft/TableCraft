@@ -361,3 +361,26 @@ fn raw_general_searches_share_expansion_spans_and_keep_binary_text_modes_separat
         ));
     }
 }
+
+#[test]
+fn general_replacement_retains_units_and_consumes_actual_expansion_spans() {
+    for version in [0, 1] {
+        let policy = policy(version);
+        let (expected, length) = if version == 0 {
+            ("ChrW(57343)&' '&ChrW(57343)", 6)
+        } else {
+            ("ChrW(55296)&ChrW(57343)&' '&ChrW(57343)", 8)
+        };
+        let sql = format!(
+            "SELECT StrComp(Replace(ChrW(55296)&'SS ß','ss',ChrW(57343),1,-1,2),{expected},0),LenB(Replace(ChrW(55296)&'SS ß','ss',ChrW(57343),1,-1,2))"
+        );
+        assert_eq!(
+            rows(&sql, &policy).unwrap(),
+            [vec![Value::Int16(0), Value::Int32(length)]]
+        );
+        assert!(matches!(
+            rows("SELECT Replace(ChrW(55296),'a','b',1,-1,1)", &policy),
+            Err(QueryError::Evaluation(EvalError::UnrepresentableText))
+        ));
+    }
+}

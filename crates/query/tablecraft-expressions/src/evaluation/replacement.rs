@@ -1,4 +1,6 @@
 //! Contextual Replace operands share explicit string conversion and streaming output.
+mod raw;
+
 use super::{Evaluator, text_arguments, text_output::Output};
 use crate::{
     EvalError,
@@ -26,6 +28,13 @@ impl Evaluator<'_> {
             return Err(EvalError::UnsupportedExpression);
         }
         self.text_expression_limits(arguments)?;
+        if arguments[..3]
+            .iter()
+            .any(|value| matches!(value, ExpressionValue::StringBytes(_)))
+        {
+            let value = self.apply_retained_replacement(arguments)?;
+            return self.publish_byte_operand(value);
+        }
 
         let empty_text = Value::Text(String::new());
         let empty_number = Value::Int32(0);
@@ -44,21 +53,7 @@ impl Evaluator<'_> {
         count: usize,
         mut argument: impl FnMut(usize) -> Result<&'a Value, EvalError>,
     ) -> Result<Value, EvalError> {
-        self.check(0)?;
-        let start = if count > 3 {
-            Some(self.replacement_position(argument(3)?)?)
-        } else {
-            None
-        };
-        let substitutions = if count > 4 {
-            Some(self.replacement_position(argument(4)?)?)
-        } else {
-            None
-        };
-        let mode = if count > 5 { Some(argument(5)?) } else { None };
-        let normalized_mode = self.text_long_override(mode)?;
-        let options =
-            replacement::prepare_values(start, substitutions, normalized_mode.as_ref().or(mode))?;
+        let options = self.replacement_controls(count, &mut argument)?;
 
         let source = argument(0)?;
         let converted_source = self.string_operand(source)?;
@@ -82,6 +77,27 @@ impl Evaluator<'_> {
         Ok(Value::Text(output.text))
     }
 
+    fn replacement_controls<'a>(
+        &mut self,
+        count: usize,
+        mut argument: impl FnMut(usize) -> Result<&'a Value, EvalError>,
+    ) -> Result<replacement::Options, EvalError> {
+        self.check(0)?;
+        let start = if count > 3 {
+            Some(self.replacement_position(argument(3)?)?)
+        } else {
+            None
+        };
+        let substitutions = if count > 4 {
+            Some(self.replacement_position(argument(4)?)?)
+        } else {
+            None
+        };
+        let mode = if count > 5 { Some(argument(5)?) } else { None };
+        let normalized_mode = self.text_long_override(mode)?;
+        replacement::prepare_values(start, substitutions, normalized_mode.as_ref().or(mode))
+    }
+
     fn replacement_position(&mut self, value: &Value) -> Result<i32, EvalError> {
         match self.apply_conversion(Conversion::Long, value)? {
             Value::Int32(value) => Ok(value),
@@ -98,3 +114,9 @@ mod scalar_tests;
 
 #[cfg(test)]
 mod expression_tests;
+
+#[cfg(test)]
+mod raw_tests;
+
+#[cfg(test)]
+mod provider_tests;

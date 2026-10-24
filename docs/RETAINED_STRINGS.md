@@ -16,6 +16,12 @@ The first query returns 1 and 8; the second returns 1. The intermediate String
 does not have to become ordinary Text before its length or type is observed.
 Metadata-only preparation still performs no row scans or publication.
 
+[Replace](TEXT_REPLACEMENT.md#retained-string-operands-and-results) now retains
+its source/find/replacement operands and result, including binary unit matching,
+explicit raw General spans and suffixes starting inside a surrogate pair. A later
+replacement can repair a pair; final publication still requires valid Unicode.
+Ordinary representable Text inputs retain their borrowed recipe and output policy.
+
 Stored `Value`, source snapshots, parameters and write contracts remain unchanged.
 Core conversion to Value explicitly rejects StringBytes with its own non-storable
 category. Representational equality compares active bytes, without implying SQL

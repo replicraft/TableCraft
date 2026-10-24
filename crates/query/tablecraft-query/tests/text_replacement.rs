@@ -1,3 +1,6 @@
+#[path = "text_replacement/raw.rs"]
+mod raw;
+
 use tablecraft_core::values::Value;
 use tablecraft_query::{
     ExecutionOptions, QueryError, prepare,
