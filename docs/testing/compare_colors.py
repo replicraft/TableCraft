@@ -16,6 +16,10 @@ import subprocess
 
 def packed(channels):
     rounded = [int(Decimal(str(channel)).to_integral_value(rounding=ROUND_HALF_EVEN)) for channel in channels]
+    if any(not -32768 <= channel <= 32767 for channel in rounded):
+        raise OverflowError("RGB Integer channel overflow")
+    if any(channel < 0 for channel in rounded):
+        raise ValueError("RGB negative channel")
     return int.from_bytes(bytes(min(channel, 255) for channel in rounded), "little")
 
 
@@ -84,8 +88,44 @@ def main():
                     diagnostic=diagnostic, options=["--number-format", "invariant"],
                 )
                 count += 1
-        assert execute(args.cli, mode, "SELECT QBColor(15.49),RGB(32768,0,0)") == [[str(basic(15)), "255"]]
+        assert execute(args.cli, mode, "SELECT QBColor(15.49),RGB(32767,0,0)") == [[str(basic(15)), "255"]]
         count += 1
+
+        for spelling, succeeds in [
+            ("32767.499999999999999999999999999999999", True),
+            ("32767.500000000000000000000000000000001", False),
+        ]:
+            result = execute(
+                args.cli, mode, f"SELECT RGB('{spelling}',0,0)",
+                succeeds=succeeds, diagnostic=None if succeeds else "numeric overflow",
+                options=["--number-format", "invariant"],
+            )
+            if succeeds:
+                assert result == [["255"]]
+            count += 1
+
+        for value in [0, 255, 256, 32767, 32768, -32768, -32769,
+                      Decimal("32766.5"), Decimal("32767.5"), Decimal("-32768.5")]:
+            rounded = int(Decimal(value).to_integral_value(rounding=ROUND_HALF_EVEN))
+            diagnostic = None
+            if not -32768 <= rounded <= 32767:
+                diagnostic = "numeric overflow"
+            elif rounded < 0:
+                diagnostic = "invalid arithmetic domain"
+            for expression in [str(value), "'" + str(value) + "'", f"CDec('{value}')"]:
+                for position in range(3):
+                    arguments = ["0", "0", "0"]
+                    arguments[position] = expression
+                    sql = "SELECT 1,RGB(" + ",".join(arguments) + ")"
+                    result = execute(
+                        args.cli, mode, sql, succeeds=diagnostic is None,
+                        diagnostic=diagnostic, options=["--number-format", "invariant"],
+                    )
+                    if diagnostic is None:
+                        model = [0, 0, 0]
+                        model[position] = value
+                        assert result == [["1", str(packed(model))]], (sql, result)
+                    count += 1
 
     for database in args.database:
         before = hashlib.sha256(database.read_bytes()).digest()

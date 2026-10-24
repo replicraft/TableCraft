@@ -90,7 +90,7 @@ impl MathFunction {
     /// Sqr/Exp/Log/Sin/Cos/Tan/Atn explicitly convert numeric operands to Double.
     /// Round validates a supplied place count before propagating NULL. Non-finite
     /// inputs, carrier overflow and unsupported nonnumeric values fail explicitly.
-    /// RGB uses checked Long channels; QBColor checks an Integer palette index.
+    /// RGB uses checked Integer channels; QBColor checks an Integer palette index.
     /// Both return a packed Long; NULL conversion fails.
     /// Rnd requires apply_with_random; no implicit default state is constructed.
     pub fn apply(self, arguments: &[Value]) -> Result<Value, EvalError> {

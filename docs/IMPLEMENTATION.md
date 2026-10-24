@@ -1,5 +1,30 @@
 # Implementation status
 
+## RGB Integer channel conversion
+
+RGB now uses the formal Integer argument width for red, green and blue before
+negative validation and upper saturation. The former Long envelope accepted
+32768 and saturated it; it now reports Overflow. A valid Integer 32767 still
+saturates to 255, while -32768 reaches Domain after conversion. All channel
+positions share checked half-even conversion; explicit numeric Text retains exact
+lexical rounding without a Double intermediate. Long result packing, eager SQL
+arguments, progressive channel validation and host Empty/Error boundaries remain
+unchanged. [The color contract](COLOR_FUNCTIONS.md#rgb-integer-channel-boundary)
+records the formal declaration, Access saturation reference, conflicting formal
+equation wording and remaining native query-wrapper qualification.
+
+A new kernel test covers range/rounding boundaries across all three channels and
+floating/fixed-point inputs. Query controls cover distinct errors, late failures
+under TOP and parameter-plan recovery; a CLI test covers both execution paths
+and empty stdout on failure. All 677 all-feature expression tests plus one
+doctest, 357 minimal tests, nineteen focused query tests and three CLI tests pass. Expression
+all-target/all-feature and focused query Clippy, formatting and diff checks pass.
+The original color runner passes 538 source-free independent controls, including
+184 new channel/lexical-midpoint cases. Optional native corpus, native Access,
+full workspace and benchmarks were not run for this change. No dependency,
+database format or write scope changed; complete coercion/native precision and
+error equivalence remain open.
+
 ## Arithmetic admission before NULL propagation
 
 Checked, promoted, declaration-aware and contextual arithmetic now share explicit

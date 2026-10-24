@@ -30,6 +30,41 @@ fn run(sql: &str) -> Result<Vec<Vec<Value>>, QueryError> {
 }
 
 #[test]
+fn rgb_integer_channels_keep_conversion_domain_eager_and_late_errors_distinct() {
+    for (sql, expected) in [
+        ("SELECT RGB(32768,0,0)", EvalError::Overflow),
+        ("SELECT RGB(0,-32769,0)", EvalError::Overflow),
+        ("SELECT RGB(0,0,32767.5)", EvalError::Overflow),
+        ("SELECT RGB(32768,'bad',0)", EvalError::Overflow),
+        ("SELECT RGB(-1,32768,0)", EvalError::Domain),
+        ("SELECT RGB(0,32768,CVErr(1))", EvalError::Overflow),
+        ("SELECT RGB(32768,1/0,0)", EvalError::DivisionByZero),
+        (
+            "SELECT TOP 1 RGB(IIf(N=1,1,32768),0,0) FROM T",
+            EvalError::Overflow,
+        ),
+    ] {
+        assert_eq!(run(sql), Err(QueryError::Evaluation(expected)), "{sql}");
+    }
+
+    let source = source();
+    let query = parse_query("PARAMETERS P LONG; SELECT RGB(P,0,0)", Default::default()).unwrap();
+    let plan = prepare(query.query(), &source).unwrap();
+    for (input, expected) in [
+        (32767, Ok(vec![vec![Value::Int32(255)]])),
+        (32768, Err(QueryError::Evaluation(EvalError::Overflow))),
+        (-32768, Err(QueryError::Evaluation(EvalError::Domain))),
+        (1, Ok(vec![vec![Value::Int32(1)]])),
+    ] {
+        assert_eq!(
+            plan.execute(&source, &[("P", Value::Int32(input))], Default::default())
+                .map(|result| result.rows().to_vec()),
+            expected
+        );
+    }
+}
+
+#[test]
 fn color_calls_preserve_projection_dependencies_scopes_and_group_identity() {
     assert_eq!(
         run("SELECT RGB(N,N+1,N+2),QBColor(N) FROM T ORDER BY N").unwrap(),
