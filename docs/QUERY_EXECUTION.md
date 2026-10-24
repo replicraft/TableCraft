@@ -68,8 +68,11 @@ there is no implicit parameter prompt. Parameters require their declared carrier
 with NULL allowed, no silent coercion and optional Text limits counted in Unicode
 scalar values (not a claim of native length-unit fidelity), using the same schema
 TypeDescriptor as constrained fields. SQL
-INTEGER/INT/LONG map to Int32; SHORT/SMALLINT map to Int16. Parameterized precision/
-scale and other unsupported type arguments fail rather than being ignored.
+INTEGER/INT/LONG map to Int32; SHORT/SMALLINT map to Int16. Explicit
+[DECIMAL(p,s)/NUMERIC(p,s) parameters](DECIMAL_PARAMETERS.md) use checked precision
+1–28 and exact retained scale 0–precision. Bare Decimal keeps its existing
+unconstrained carrier boundary. Other unsupported type arguments fail rather
+than being ignored.
 
 [VALUE parameters](VALUE_PARAMETERS.md) instead retain the explicitly supplied
 scalar carrier or NULL, with dynamic output metadata and Variant declaration

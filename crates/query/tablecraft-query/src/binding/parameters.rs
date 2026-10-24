@@ -114,6 +114,11 @@ fn parameter_type(data_type: &DataType) -> Result<ParameterType, QueryError> {
     let data_type = match data_type.arguments.as_slice() {
         [] => TypeDescriptor::new(kind),
         [n] if kind == ScalarType::Text && *n > 0 => TypeDescriptor::text(*n as usize)?,
+        [precision, scale] if kind == ScalarType::Decimal => {
+            let precision = u8::try_from(*precision).map_err(|_| QueryError::Unsupported)?;
+            let scale = u8::try_from(*scale).map_err(|_| QueryError::Unsupported)?;
+            TypeDescriptor::decimal(precision, scale).map_err(|_| QueryError::Unsupported)?
+        }
         _ => return Err(QueryError::Unsupported),
     };
     Ok(ParameterType::Scalar(data_type))
