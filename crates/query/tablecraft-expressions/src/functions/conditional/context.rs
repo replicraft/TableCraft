@@ -2,7 +2,7 @@
 use super::{ConditionalFunction, Selection};
 use crate::{EvalError, functions::conversions::Conversion};
 
-impl Selection {
+impl<T> Selection<T> {
     pub(crate) fn input_conversion(&self) -> Option<Conversion> {
         if self.position >= self.count {
             return None;

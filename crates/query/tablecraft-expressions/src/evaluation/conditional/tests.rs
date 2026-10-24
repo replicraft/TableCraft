@@ -41,6 +41,26 @@ fn evaluate(text: &str, profile: Option<NumberFormat>) -> Result<ExpressionValue
 }
 
 #[test]
+fn nz_switch_and_choose_retain_raw_string_choices() {
+    for (sql, expected) in [
+        ("LenB(Nz(ChrW(55296),ChrB(65)))", Value::Int32(2)),
+        ("LenB(Nz(NULL,ChrB(65)))", Value::Int32(1)),
+        (
+            "LenB(Switch(False,ChrB(65),True,ChrW(55296)))",
+            Value::Int32(2),
+        ),
+        ("LenB(Choose(2,ChrW(55296),ChrB(65)))", Value::Int32(1)),
+        ("Nz('ok',ChrW(55296))", Value::Text("ok".into())),
+    ] {
+        assert_eq!(
+            evaluate(sql, None),
+            Ok(ExpressionValue::Value(expected)),
+            "{sql}"
+        );
+    }
+}
+
+#[test]
 fn iif_selects_lossless_strings_after_evaluating_both_branches() {
     for (sql, expected) in [
         ("LenB(IIf(True,ChrW(55296),ChrB(65)))", Value::Int32(2)),

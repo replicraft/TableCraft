@@ -1,5 +1,35 @@
 # Implementation status
 
+## Lossless Nz, Switch and Choose payloads
+
+Nz/Switch/Choose now retain raw choice payloads through eager evaluation and
+selection. The first regression failed when Nz forced a raw surrogate through
+Unicode publication. Nz now observes NULL identity directly, retaining its empty
+Text default. Switch/Choose separate checked controls from owned choices using
+the shared generic Selection state in its own feature module. Default callers
+retain the ExpressionValue API. Structural slot errors stay latched, a selected
+NULL is distinct from no match, and only one chosen payload is retained. Existing
+control conversion/deferred errors, immediate operational failures, merged choice
+policies and Variant declarations remain unchanged. Direct scalar publication is
+still strict. See [selection contracts](CONDITIONAL_FUNCTIONS.md#lossless-nz-switch-and-choose-choices).
+
+Seventeen focused all-feature expression tests, 365 minimal expression tests,
+fifty-one query tests and six CLI tests pass. Coverage includes raw/odd choices,
+no-match/selected-NULL cases, slot-error latching, ordinary/grouped text policies,
+Error data, rebinding, quotas and every observed cancellation checkpoint.
+Expression/query all-target all-feature Clippy, focused CLI Clippy, minimal query
+compilation, formatting, Python compilation and diff checks pass. The final module
+extraction was rechecked with the expression profiles and new query controls.
+Independent source-free recipes pass 1,806 new selection controls plus 1,392 IIf,
+2,246 raw NULL and 774 Count controls.
+
+Disk exhaustion interrupted one cache write and prevented a source patch. Cleaning
+generated query/expression Cargo artifacts recovered space; incremental compilation
+remained enabled and verification subsequently passed. No dependency, stored
+carrier, native decoder or writer changed. Full expression/engine/workspace suites,
+native Windows Access and benchmarks were not run. General coercion/result promotion,
+raw control/relational carriers and the full backend roadmap remain unfinished.
+
 ## Lossless IIf branch selection
 
 IIf now evaluates both branches through the lossless operand service before

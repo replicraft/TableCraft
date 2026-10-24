@@ -1,5 +1,15 @@
 # Candidate Access fixtures
 
+## Independent lossless Nz/Switch/Choose controls
+
+The original [selection runner](testing/compare_raw_string_selection.py) passes
+1,806 source-free controls. Python models byte-choice length, String identity,
+NULL/no-match outcomes and valid selected Text over fixed and seeded unit/byte
+pairs. Both CLI modes also verify eager, control-conversion and strict-publication
+failures. Existing IIf, raw NULL and Count recipes pass 1,392, 2,246 and 774 controls.
+No native input or third-party artifact was added. Windows Access and benchmarks
+were not run.
+
 ## Independent lossless IIf controls
 
 The original [IIf branch runner](testing/compare_raw_string_iif.py) passes 1,392

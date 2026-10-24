@@ -74,6 +74,11 @@ source families and native result-type qualification remain separate. See
 
 ## Remaining acceptance work
 
+Nz/Switch/Choose now retain [lossless choice payloads](CONDITIONAL_FUNCTIONS.md#lossless-nz-switch-and-choose-choices)
+through their existing eager evaluation and control conversion. Selected NULL,
+branch policies/declarations, quotas and failures remain explicit. Raw relational
+carriers, general coercion/result promotion and native qualification remain open.
+
 IIf now retains [lossless String branches](CONDITIONAL_FUNCTIONS.md#lossless-iif-branches)
 through eager evaluation and selection, allowing observations/inspection and final
 publication to happen at their owning consumers. Branch policies/declarations and

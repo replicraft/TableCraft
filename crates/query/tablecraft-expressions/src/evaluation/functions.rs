@@ -4,7 +4,6 @@ use crate::{
     EvalError,
     functions::{
         Builtin,
-        conditional::expression as selection,
         conversions::errors::into_scalar,
         dates::DateConstructor,
         financial::{
@@ -215,14 +214,10 @@ impl Evaluator<'_> {
                 let value = self.iif_byte_operand(condition, truepart, falsepart, depth)?;
                 into_scalar(self.publish_expression_byte_value(value)?)
             }
-            (Some(Builtin::Nz), [A::Expression(value)]) => {
-                let value = self.expression_operand(value, depth + 1)?;
-                into_scalar(selection::nz(value, None))
-            }
-            (Some(Builtin::Nz), [A::Expression(value), A::Expression(replacement)]) => {
-                let value = self.expression_operand(value, depth + 1)?;
-                let replacement = self.expression_operand(replacement, depth + 1)?;
-                into_scalar(selection::nz(value, Some(replacement)))
+            (Some(Builtin::Nz), [A::Expression(_)])
+            | (Some(Builtin::Nz), [A::Expression(_), A::Expression(_)]) => {
+                let value = self.nz_byte_operand(arguments, depth)?;
+                into_scalar(self.publish_expression_byte_value(value)?)
             }
             (
                 Some(Builtin::DateAdd),
@@ -325,15 +320,8 @@ impl Evaluator<'_> {
                         .iter()
                         .all(|argument| matches!(argument, A::Expression(_))) =>
             {
-                let mut selection = function.start(arguments.len())?;
-                for argument in arguments {
-                    let A::Expression(expr) = argument else {
-                        return Err(EvalError::UnsupportedExpression);
-                    };
-                    let value = self.expression_operand(expr, depth + 1)?;
-                    self.push_selection_argument(&mut selection, value)?;
-                }
-                selection.finish()
+                let value = self.selection_byte_operand(function, arguments, depth)?;
+                into_scalar(self.publish_expression_byte_value(value)?)
             }
             (Some(Builtin::Financial(function)), arguments) => {
                 let arguments = financial_arguments::normalize(function, arguments)

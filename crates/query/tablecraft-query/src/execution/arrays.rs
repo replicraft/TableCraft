@@ -80,8 +80,11 @@ impl Runtime<'_, '_> {
             }
             return Ok(input);
         }
-        if let Expr::IIf(condition, yes, no) = expression {
-            let value = self.iif_string_cell(condition, yes, no, env)?;
+        if matches!(
+            expression,
+            Expr::IIf(..) | Expr::Nz(..) | Expr::ConditionalCall(..)
+        ) {
+            let value = self.string_cell(expression, env)?;
             return Ok(match value.value {
                 ExpressionByteOperand::Scalar(scalar) => Operand::Expression(
                     CellValue::from(scalar)
@@ -91,10 +94,7 @@ impl Runtime<'_, '_> {
                 ExpressionByteOperand::Bytes(bytes) => Operand::ByteString(bytes),
             });
         }
-        if matches!(
-            expression,
-            Expr::CvErr(_) | Expr::Nz(..) | Expr::ConditionalCall(..)
-        ) {
+        if matches!(expression, Expr::CvErr(_)) {
             return self
                 .expression_operand(expression, env)
                 .map(Operand::Expression);

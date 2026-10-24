@@ -115,16 +115,16 @@ impl<'a> Evaluator<'a> {
                 }
                 return Ok(input);
             }
-            if builtin == Some(Builtin::IIf) {
+            if matches!(
+                builtin,
+                Some(Builtin::IIf | Builtin::Nz | Builtin::Conditional(_))
+            ) {
                 return Ok(match self.expression_byte_operand(expression, depth)? {
                     ExpressionByteOperand::Scalar(value) => InspectionOperand::Expression(value),
                     ExpressionByteOperand::Bytes(bytes) => InspectionOperand::ByteString(bytes),
                 });
             }
-            if matches!(
-                builtin,
-                Some(Builtin::Eval | Builtin::CvErr | Builtin::Nz | Builtin::Conditional(_))
-            ) {
+            if matches!(builtin, Some(Builtin::Eval | Builtin::CvErr)) {
                 return self
                     .expression_operand(expression, depth)
                     .map(InspectionOperand::Expression);

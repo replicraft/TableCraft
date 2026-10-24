@@ -55,6 +55,12 @@ impl Evaluator<'_> {
             && qualifier.is_empty()
         {
             match Builtin::resolve(name.as_str()) {
+                Some(Builtin::Nz) => {
+                    return self.nz_byte_operand(arguments, depth);
+                }
+                Some(Builtin::Conditional(function)) => {
+                    return self.selection_byte_operand(function, arguments, depth);
+                }
                 Some(Builtin::IIf) => {
                     if let [
                         FunctionArgument::Expression(condition),

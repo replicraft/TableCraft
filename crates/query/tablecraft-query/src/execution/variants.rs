@@ -7,9 +7,6 @@ use crate::{
     plan::{Aggregate, Expr},
 };
 use tablecraft_core::values::Value;
-use tablecraft_expressions::functions::conditional::{
-    ConditionalFunction, expression as selection,
-};
 use tablecraft_expressions::{functions::conversions::Conversion, numeric::OperandDeclaration};
 use tablecraft_sql::select::{BinaryOperator, Quantifier};
 
@@ -211,43 +208,12 @@ impl Runtime<'_, '_> {
                 self.publish_string_cell(value)
             }
             Expr::Nz(value, replacement) => {
-                self.tick()?;
-                let value = self.expression_operand(value, env)?;
-                let replacement = replacement
-                    .as_ref()
-                    .map(|replacement| self.expression_operand(replacement, env))
-                    .transpose()?;
-                let policy = value.policy.merge(
-                    replacement
-                        .as_ref()
-                        .map_or(crate::source::TextPolicy::Default, |value| value.policy),
-                );
-                Ok(CellValue::from(selection::nz(
-                    value.value,
-                    replacement.map(|value| value.value),
-                ))
-                .with_policy(policy)
-                .with_declaration(Some(OperandDeclaration::Variant)))
+                let value = self.nz_string_cell(value, replacement.as_deref(), env)?;
+                self.publish_string_cell(value)
             }
             Expr::ConditionalCall(function, arguments) => {
-                self.tick()?;
-                let mut selection = function.start(arguments.len())?;
-                let mut policy = crate::source::TextPolicy::Default;
-                for (index, argument) in arguments.iter().enumerate() {
-                    let value = self.expression_operand(argument, env)?;
-                    let is_value = match function {
-                        ConditionalFunction::Choose => index > 0,
-                        ConditionalFunction::Switch => index % 2 == 1,
-                    };
-                    if is_value {
-                        policy = policy.merge(value.policy);
-                    }
-                    self.evaluator()
-                        .push_selection_argument(&mut selection, value.value)?;
-                }
-                Ok(CellValue::from(selection.finish_expression()?)
-                    .with_policy(policy)
-                    .with_declaration(Some(OperandDeclaration::Variant)))
+                let value = self.conditional_string_cell(*function, arguments, env)?;
+                self.publish_string_cell(value)
             }
             _ => {
                 let declaration = super::declarations::functions::result(expression);

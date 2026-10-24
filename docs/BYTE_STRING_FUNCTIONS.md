@@ -205,7 +205,9 @@ scalar conversion and strict final-publication contracts remain separate.
 [IIf branches](CONDITIONAL_FUNCTIONS.md#lossless-iif-branches) now retain lossless
 Strings until selection and final publication. Both branches remain eager;
 selected raw buffers work with inspection, observations, NULL tests, joins and
-Count. Other conditional functions retain their separate admission profiles.
+Count. [Nz/Switch/Choose choices](CONDITIONAL_FUNCTIONS.md#lossless-nz-switch-and-choose-choices)
+now retain raw payloads through their own eager selection rules as well. Control
+conversion and direct final publication retain their separate admission profiles.
 
 [Ampersand concatenation](CONCATENATION.md#lossless-utf-16-concatenation) now joins
 complete raw units, including surrogate halves that form valid final Text. Its

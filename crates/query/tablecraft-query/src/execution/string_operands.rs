@@ -1,4 +1,6 @@
 //! Lossless scalar/string operands retain runtime policy and declaration provenance.
+mod selection;
+
 use super::{Environment, Runtime, cell::CellValue};
 use crate::{
     QueryError,
@@ -72,6 +74,10 @@ impl Runtime<'_, '_> {
     ) -> Result<StringCell, QueryError> {
         let mut cell = match expression {
             Expr::IIf(condition, yes, no) => self.iif_string_cell(condition, yes, no, env),
+            Expr::Nz(value, replacement) => self.nz_string_cell(value, replacement.as_deref(), env),
+            Expr::ConditionalCall(function, arguments) => {
+                self.conditional_string_cell(*function, arguments, env)
+            }
             Expr::Binary(BinaryOperator::Add, left, right) => self.add_cells(left, right, env),
             Expr::Binary(BinaryOperator::Concatenate, left, right) => {
                 self.concatenate_cells(left, right, env)

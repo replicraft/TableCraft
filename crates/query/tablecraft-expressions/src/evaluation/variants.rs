@@ -3,7 +3,7 @@ use super::Evaluator;
 use crate::{
     EvalError,
     functions::{
-        Builtin, conditional,
+        Builtin,
         conversions::{Conversion, errors},
     },
 };
@@ -88,21 +88,14 @@ impl Evaluator<'_> {
                     let value = self.iif_byte_operand(condition, yes, no, depth)?;
                     return self.publish_expression_byte_value(value);
                 }
-                (Some(Builtin::Nz), [A::Expression(value), rest @ ..])
+                (Some(Builtin::Nz), [A::Expression(_), rest @ ..])
                     if rest.len() <= 1
                         && rest
                             .iter()
                             .all(|argument| matches!(argument, A::Expression(_))) =>
                 {
-                    self.check(depth)?;
-                    let value = self.expression_operand(value, depth + 1)?;
-                    let replacement = match rest.first() {
-                        Some(A::Expression(value)) => {
-                            Some(self.expression_operand(value, depth + 1)?)
-                        }
-                        _ => None,
-                    };
-                    return Ok(conditional::expression::nz(value, replacement));
+                    let value = self.nz_byte_operand(arguments, depth)?;
+                    return self.publish_expression_byte_value(value);
                 }
                 (Some(Builtin::Conditional(function)), arguments)
                     if function.accepts_arity(arguments.len())
@@ -110,16 +103,8 @@ impl Evaluator<'_> {
                             .iter()
                             .all(|argument| matches!(argument, A::Expression(_))) =>
                 {
-                    self.check(depth)?;
-                    let mut selection = function.start(arguments.len())?;
-                    for argument in arguments {
-                        let A::Expression(value) = argument else {
-                            unreachable!()
-                        };
-                        let value = self.expression_operand(value, depth + 1)?;
-                        self.push_selection_argument(&mut selection, value)?;
-                    }
-                    return selection.finish_expression();
+                    let value = self.selection_byte_operand(function, arguments, depth)?;
+                    return self.publish_expression_byte_value(value);
                 }
                 _ => {}
             }
