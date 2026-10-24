@@ -278,9 +278,14 @@ and upstream zeroization features cover supported owned buffers/state; they do
 not promise erasure of compiler-generated copies, host strings/arguments,
 registers, swap or backups. Hosts retain credential acquisition/lifetime policy.
 
-The engineering comparison alone uses Jackcess Encrypt 5.0.0 (Apache-2.0) and
-Bouncy Castle bcprov-jdk18on 1.86 (MIT); neither is a Rust/application dependency.
-Artifact hashes and current limits are in [the encryption record](NATIVE_ENCRYPTION.md).
+Engineering raw-page comparisons retain Jackcess Encrypt 5.0.0 (Apache-2.0);
+SID/removal/rewrite helpers use the separately reviewed 5.0.2 APIs. Both use
+Bouncy Castle bcprov-jdk18on 1.86 (MIT) and Jackcess 5.0.4. These are engineering
+artifacts, with no Rust/application dependency. The shared reference guard now
+validates the exact 5.0.2/SID toolchain before compilation; 5.0.0 is explicitly
+refused there. [Artifact hashes](NATIVE_ENCRYPTION.md#independent-rewrite-evidence)
+and [modern encrypted comparisons](testing/ENCRYPTED_MODERN_HISTORIES.md)
+record working consumers and qualification limits.
 
 ## Existing dependency baseline
 

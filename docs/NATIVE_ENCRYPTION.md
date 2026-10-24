@@ -68,8 +68,8 @@ cipher implementation merely because Access releases differ.
 | Jet 4 MDB | Native 32-bit-key RC4 page encoding | Original encoded fixture: all 28 data pages and two exact table/query rows match Jackcess Encrypt; key resides in header, no password verifier |
 | ACE 2007 / code 2 | Agile AES-CBC; Office Binary RC4; CryptoAPI RC4/SHA-1; standard and compatibility AES-ECB/SHA-1 | Original code-2 CryptoAPI file plus deterministic shared-layout routing / independent vectors |
 | ACE 2010 / code 3 | Same declared Office codecs | Original Agile and compatibility AES files; exact independent pages and rows |
-| ACE 2016 / code 5 | Same declared Office codecs | Existing Agile routing controls; legacy known-answer and header-retagged table/query controls; native-authored encrypted ACE 16 comparison still pending |
-| ACE 2019 / code 6 | Same declared Office codecs | Same routing/vector distinction as code 5 |
+| ACE 2016 / code 5 | Same declared Office codecs | Original modern-history files encrypted by both reference and TableCraft writers; exact pages/rows/SIDs and copy recovery compare independently. Legacy vectors/routing remain separate; native Access-authored comparison is pending. |
+| ACE 2019 / code 6 | Same declared Office codecs | Same original encrypted-history comparisons as code 5, additionally including Extended-date histories; native Access-authored comparison is pending. |
 | Jet 1/2/3 | Not qualified | No usable local table read profile; do not infer support from RC4 reuse |
 
 `EncryptedSource` selects qualified codecs and grants the same explicit native
@@ -458,3 +458,20 @@ while entering credentials and restored afterward, exactly one prompt, no secret
 in terminal output, and unchanged source bytes. This console check needs actual
 terminal access; sandbox console access is restricted. Windows console execution
 and native Access comparisons remain unavailable, not claimed.
+
+
+## Encrypted modern history interoperability
+
+The [modern encrypted corpus](testing/ENCRYPTED_MODERN_HISTORIES.md) now covers
+real 2016/2019 layout histories encrypted independently by Jackcess Encrypt and
+TableCraft, with 19,902 rows per file. Generation passes 98 controls, including
+6,010 decoded-page comparisons, exact modern-field rows/indexes/queries, SID
+preservation, credential/limit refusals, ciphertext-preserving password changes
+and complete independent plaintext-image recovery. Originals remain unchanged.
+These fresh-copy checks do not enable ordinary table writes or qualify native
+Microsoft Access behavior.
+
+The rewrite runner now enforces the already reviewed 5.0.2 JAR and exact core/BC
+hashes before compiling the SID/removal helpers. The separately recorded 5.0.0
+raw-decoder artifact lacks those APIs and fails clearly when supplied there.
+No runtime dependency, copied library source or binary fixture is added.

@@ -424,3 +424,18 @@ The [wider Decimal mean fallback](AVERAGES.md) also uses the existing BigInt
 and directly inherited num-integer quotient/remainder/parity operations. This
 bounded accumulator does not require another Decimal library or change the
 stored Decimal carrier. Mixed-type and native rounding qualification remain open.
+
+
+## Reproducible encryption engineering references (23 October 2026)
+
+The [existing rewrite review](NATIVE_ENCRYPTION.md#independent-rewrite-evidence)
+already records Jackcess Encrypt 5.0.2, its source/POM/license review and hash;
+5.0.0 remains the older raw-decoder baseline. The modern encrypted-history runner
+and existing rewrite runner now share an exact artifact guard before compilation.
+Actual 5.0.2 bytecode provides EncryptionUtil/SidRemasker, and all original drivers
+compile with reviewed Jackcess 5.0.4 and BC 1.86. The older reviewed JAR is refused
+for this consumer. No Rust/application dependency or copied reference source is
+introduced. [Observed comparisons](testing/ENCRYPTED_MODERN_HISTORIES.md) establish
+engineering interoperability; native Access qualification and cryptographic audit
+remain distinct. The general dependency summary now reflects both reference
+versions rather than assigning the older baseline to every helper.

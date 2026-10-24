@@ -5880,3 +5880,36 @@ unchanged original hashes. It verifies the reviewed JAR and registered inputs
 before getters run. Jackcess reads values/order without expression execution;
 TableCraft alone runs SQL. Native Access behavior, save/reopen, live-file coherence
 and general write qualification remain unrun.
+
+
+## Encrypted modern history inputs
+
+The original [runner](testing/compare_encrypted_modern_histories.py) created four
+fresh Agile files from the registered modern-history originals on 23 October
+2026, using both the independent reference and TableCraft encryption writers.
+Passwords are public Unicode test inputs. No third-party fixture/code is copied;
+all generated databases, JARs and compiled helpers remain ignored under
+`.cache/tablecraft-fixtures/`. Existing plaintext originals remain unchanged.
+
+The shared artifact guard checks Jackcess 5.0.4, Jackcess Encrypt 5.0.2 (Apache-2.0,
+SHA-256 `6dbb05c767a15edd33fad0ca1d054767e71992748f2cba11d227bac00d4e648d`) and
+Bouncy Castle 1.86 (MIT, SHA-256
+`2af190b300cbb0b35e248ccf5f4a06b6072030aeb3da7a98ec73abe5b4cb371f`).
+These match the previously reviewed artifacts in the owning encryption contract.
+The 5.0.0 raw-decoder baseline remains separate from the newer rewrite APIs.
+
+| Encrypted original | Bytes | SHA-256 |
+| --- | ---: | --- |
+| V2016-reference.accdb | 5,451,776 | e0c8f61ed6027d3e226a431dd327af4aa12755dcc830679770b5a921603afebf |
+| V2016-tablecraft.accdb | 5,451,776 | a4550ccfb33cbad9505ec2acaeaaeea198afa729e067c1bdc9a4b9797bc0d29b |
+| V2019-reference.accdb | 6,864,896 | 6de05f7da430bfd3e8dc1cabb8dfa7755890ff2a8582c4e04f233c510f223a4d |
+| V2019-tablecraft.accdb | 6,864,896 | a9fbb4f700ac1b0955e1b3a9c8062f9b6e5919bd2d8d9f2b4576b89790282d9e |
+
+Generation passes 98 controls over all 19,902 rows per file, 6,010 independently
+decrypted page hashes, SID digests, native queries, credential/limit failures,
+password changes and exact plaintext recovery through both implementations.
+[The contract](testing/ENCRYPTED_MODERN_HISTORIES.md) distinguishes independent
+engineering evidence from pending native Access, cryptographic audit and general
+write qualification. An initial duplicate-flag runner failure and its partial
+local generation remain excluded; only the registered successful generation is
+used for reuse checks.

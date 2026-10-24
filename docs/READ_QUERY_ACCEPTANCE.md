@@ -27,7 +27,10 @@ qualification recorded separately.
   native scalar values across 19,902 retained rows per priority profile.
   [Modern ACE 16 histories](testing/MODERN_SCALAR_HISTORIES.md) additionally check
   Large Number and 2019 Extended dates, historical fixed-prefix changes and
-  scattered indexed row loading under cumulative controls.
+  scattered indexed row loading under cumulative controls. [Encrypted modern
+  histories](testing/ENCRYPTED_MODERN_HISTORIES.md) now compare both reference-
+  and TableCraft-created ciphertexts, exact rows/queries, every decoded data
+  page, SID digests and complete independent plaintext recovery.
   Larger explicit multivalue loads include 20,000/400 parents with 48,000/40,000
   children; a separate 20,000-attachment/version corpus checks exact metadata,
   decoded bytes and stored history DATE bits. These do not establish arbitrary
