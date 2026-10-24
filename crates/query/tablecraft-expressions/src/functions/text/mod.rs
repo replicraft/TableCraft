@@ -176,6 +176,7 @@ impl TextFunction {
         matches!(
             self,
             Self::CStr
+                | Self::StrReverse
                 | Self::LTrim
                 | Self::RTrim
                 | Self::Trim
@@ -347,7 +348,10 @@ pub fn apply_with_context<'a>(
     if (function.produces_bytes()
         && !matches!(
             function,
-            TextFunction::ChrW | TextFunction::Replace | TextFunction::String
+            TextFunction::ChrW
+                | TextFunction::Replace
+                | TextFunction::String
+                | TextFunction::StrReverse
         )
         && !function.slices_units()
         && !function.trims_spaces())

@@ -58,7 +58,7 @@ is supplied by these checks.
 | --- | --- |
 | Space(number) | Checked half-even numeric-to-Int32 count; nonnegative counts repeat U+0020, zero returns empty Text and NULL returns NULL. |
 | String(number, character) | The same count conversion; repeats the first complete UTF-16 unit of Text or a retained String, or a nonnegative numeric character code after checked Int32 conversion and modulo 256. Either NULL argument returns NULL. |
-| StrReverse(expression) | Reverses BMP UTF-16 units of Text. Empty Text stays empty; NULL is InvalidNullConversion; non-Text operands fail. |
+| StrReverse(expression) | SQL retains reversed complete UTF-16 units, including raw ranges. Empty String stays empty; NULL is InvalidNullConversion; ordinary scalar sources use explicit CStr policies. The borrowed scalar kernel remains BMP-only. |
 
 Negative counts fail with Domain and conversion overflow/non-finite input remains
 an error. Boolean operands follow the explicit numeric conversion kernel: TRUE
@@ -85,9 +85,9 @@ Latin-1 mapping. Unmapped selected-page bytes fail without replacement.
 
 Reversal preserves BMP characters, NUL, spaces and controls without normalization.
 Combining marks reverse as independent code units; no grapheme policy is inferred.
-Supplementary input currently fails rather than choosing between native surrogate
-reversal and Rust scalar reversal. Extending reversal and qualifying native
-supplementary behavior remain work to do.
+The SQL path now retains complete units through reversal, as described below.
+The borrowed scalar kernel still refuses supplementary input; native
+supplementary behavior remains unqualified.
 
 ```sh
 tablecraft query eval "SELECT Space(3), String(5,42), String(3,'éx'), StrReverse('abc')"
@@ -180,8 +180,8 @@ host Empty as empty Text and explicit Error/Missing refusal.
 Microsoft's [Access StrReverse reference](https://support.microsoft.com/en-us/access/functions/strreverse-function)
 and [String coercion rules](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/00113388-401b-41c2-8107-dc3fc0485554)
 provide the string-argument/conversion basis. This reuses the existing CStr and
-reversal profiles; complete Variant/regional/native error precedence and lossless
-supplementary reversal remain compatibility gaps.
+reversal profiles; complete Variant/regional/native error precedence and native
+supplementary reversal qualification remain compatibility gaps.
 
 Three expression and two query tests cover scalar character-code/reversal inputs,
 format rebinding, nested calls and exact Int16 results, NULL/empty/provider errors,
@@ -230,3 +230,38 @@ A CLI test verifies both scalar commands and empty stdout on failure. The
 across scalar modes and registered four-family sequential/indexed native reads;
 all source hashes remain unchanged. Only TableCraft executes SQL. Native Access
 qualification, full Variant promotion and broader query semantics remain open.
+
+
+## Retained String reversal
+
+SQL StrReverse now reverses complete two-byte String units without publishing
+intermediate Unicode. Each unit keeps its original byte order; only unit order
+changes. Raw unaligned ranges and isolated surrogates remain data. Odd byte
+counts refuse before output. This extends the existing BMP code-unit profile;
+it does not infer a grapheme policy or qualify native supplementary behavior.
+The direct borrowed scalar kernel retains its existing BMP boundary.
+
+For example, `LenB(StrReverse('🦀'))` returns 4, while direct publication of
+`StrReverse('🦀')` refuses the reversed surrogate pair. A second reversal repairs
+it: `StrReverse(StrReverse('a🦀中'))` publishes the original Text. Likewise,
+reversing the two isolated units in `ChrW(56832)&ChrW(55357)` produces valid 😀.
+No replacement character, padding or implicit Binary conversion occurs.
+
+The source-free and relational evaluators share the same retained producer.
+Derived, grouped, correlated, prepared and domain consumers may observe or repair
+its units before scalar publication. Results retain fresh Text policy and the
+existing String declaration. Empty becomes empty String; NULL is an invalid
+conversion. Error/Missing and ordinary scalar admission remain function-owned;
+CStr number/date policies still apply to scalar inputs. Written eager failures
+are not hidden by a malformed unselected String result.
+
+Output payloads consume the existing cumulative byte budget before append, and
+work/cancellation checks occur for every unit. Raw length keeps the existing
+signed Long ceiling; final Text retains its independent per-value ceiling.
+Failures publish no partial result. Six expression tests include arbitrary-unit
+permutation/involution controls, exact payload bounds, unaligned inputs and every
+observed cancellation checkpoint. Three query tests cover relational consumers
+and strict final output; two CLI tests check both evaluators and buffered refusal.
+The specific Microsoft Access StrReverse SELECT example linked above establishes
+query availability. These original engineering controls do not establish native
+surrogate handling or complete Variant semantics.

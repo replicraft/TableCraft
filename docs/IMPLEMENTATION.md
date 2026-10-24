@@ -1,5 +1,19 @@
 # Implementation status
 
+## Retained String reversal
+
+SQL StrReverse now retains reversed complete UTF-16 units across raw-aware
+consumers. Unaligned ranges and isolated units remain data, odd lengths refuse,
+and strict final Unicode publication still rejects unrepaired surrogates.
+Derived/grouped/correlated/domain consumers can observe or repair the result;
+ordinary scalar conversion, fresh Text policy and eager failures remain explicit.
+See [the reversal contract](TEXT_CONSTRUCTION.md#retained-string-reversal).
+
+Six expression tests, three query tests and two CLI tests pass, including
+arbitrary-unit controls, payload/cancellation bounds, prepared reuse and buffered
+refusals in both evaluators. The borrowed scalar kernel remains BMP-only; native
+supplementary-character and broader Variant qualification remain unfinished.
+
 ## Bounded native index metadata storage
 
 Private index-column storage now uses ArrayVec under the existing ten-key native

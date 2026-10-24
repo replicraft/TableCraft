@@ -60,7 +60,6 @@ impl Evaluator<'_> {
                     | TextFunction::LCase
                     | TextFunction::UCase
                     | TextFunction::Asc
-                    | TextFunction::StrReverse
                     | TextFunction::Val
             ) && let [A::Expression(expression)] = arguments
             {

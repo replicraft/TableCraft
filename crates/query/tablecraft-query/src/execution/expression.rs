@@ -235,7 +235,6 @@ impl Runtime<'_, '_> {
                         | TextFunction::LCase
                         | TextFunction::UCase
                         | TextFunction::Asc
-                        | TextFunction::StrReverse
                         | TextFunction::Val
                 ) {
                     let value = self.expression_operand(&arguments[0], env)?;
