@@ -43,7 +43,9 @@ The existing expression API now converts host-supplied Empty to the destination'
 numeric zero or Boolean false, preserving the requested result carrier. NULL still
 fails InvalidNullConversion; Missing stays refused. Empty remains non-storable,
 and query `Nz(NULL)` still returns empty Text rather than constructing Empty.
-This extends explicit conversion, not implicit arithmetic or a VBA runtime.
+This explicit conversion path remains separate from the new
+[operator-specific host Empty arithmetic admission](EMPTY_ARITHMETIC.md).
+Neither path supplies a VBA runtime or a SQL Empty constructor.
 
 CDec directly rejects Error with TypeMismatch, including code zero and opaque
 host codes. Its specification uses ordinary Decimal Let-coercion, without the

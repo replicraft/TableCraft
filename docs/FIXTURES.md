@@ -1,5 +1,16 @@
 # Candidate Access fixtures
 
+## Independent host Empty arithmetic controls
+
+The original [Empty-integral model](testing/compare_empty_arithmetic.py) passes
+3,230 value/carrier/refusal controls against the SQL-feature-gated
+`tablecraft-expressions` example probe `empty_arithmetic`. Python supplies integer
+arithmetic, issued declaration categories and the independent Byte/Empty rounded
+target exception. Both operand orders, boundaries, seeded values, NULL and zero
+divisors are included. This calls the shared expression/numeric APIs; it does not
+construct SQL Empty values or execute Access/VBA. No third-party fixture is used.
+See [scope, commands and source distinctions](EMPTY_ARITHMETIC.md).
+
 ## Independent lossless concatenation controls
 
 The expanded original [concatenation recipe](testing/compare_concatenation.py)

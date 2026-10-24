@@ -83,9 +83,10 @@ still unqualified and refused when a join is required.
 Plus keeps its separate NULL rule: `ChrW(55296)+NULL` returns NULL after both
 operands evaluate. This needs no Unicode decoding, string join or numeric policy;
 the same NULL shortcut applies to an already admitted odd-byte String. An eager
-failure such as `(ChrW(55296)+NULL)+(1/0)` still aborts. Error/Missing and the
-current host Empty refusal for plus retain their existing boundaries; ampersand's
-explicit Empty conversion does not widen numeric arithmetic.
+failure such as `(ChrW(55296)+NULL)+(1/0)` still aborts. Error/Missing remain
+refused. [Host Empty arithmetic](EMPTY_ARITHMETIC.md) now retains an existing
+String under plus without parsing or copying; other numeric operators use their
+reviewed effective targets. Query Nz's existing Text behavior is unchanged.
 
 String/numeric pairs still perform numeric addition. A raw string must first
 publish representable Text, then use the existing explicit NumberFormat and

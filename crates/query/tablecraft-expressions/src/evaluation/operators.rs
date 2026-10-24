@@ -1,4 +1,4 @@
-use super::Evaluator;
+use super::{Evaluator, PreparedAddition, arithmetic_operands, empty_division_operand};
 use crate::{
     EvalError,
     comparison::Comparison as C,
@@ -15,15 +15,31 @@ use tablecraft_sql::select::{BinaryOperator as B, UnaryOperator as U};
 
 impl Evaluator<'_> {
     /// Apply a binary operator to already evaluated expression data.
-    /// Hosts evaluate both operands before this call. Arithmetic/logical inputs
-    /// require scalars; concatenation also admits Empty as empty Text. Relational
-    /// comparisons admit standard Error/Error pairs.
+    /// Hosts evaluate both operands before this call. Arithmetic admits Empty at
+    /// operator-specific targets; ampersand uses empty Text. Logical operators
+    /// retain scalar admission; comparisons admit standard Error/Error pairs.
     pub fn apply_expression_binary(
         &mut self,
         operator: B,
         left: ExpressionValue,
         right: ExpressionValue,
     ) -> Result<Value, EvalError> {
+        if operator == B::Divide
+            && let Some(numerator) = empty_division_operand(&left, &right)
+        {
+            return self.apply_empty_division(numerator);
+        }
+        if operator == B::Add {
+            return match self.prepare_expression_addition(
+                ExpressionByteOperand::Scalar(left),
+                ExpressionByteOperand::Scalar(right),
+            )? {
+                PreparedAddition::StringResult(value) => self.publish_byte_operand(value),
+                PreparedAddition::ScalarOperands { left, right } => {
+                    self.apply_binary(operator, &left, &right)
+                }
+            };
+        }
         if operator == B::Concatenate {
             let result = self.apply_expression_concatenation(
                 ExpressionByteOperand::Scalar(left),
@@ -45,8 +61,20 @@ impl Evaluator<'_> {
                 .compare_expression_values(comparison, &left, &right)
                 .map(Truth::into_value);
         }
-        let left = into_operator_scalar(left)?;
-        let right = into_operator_scalar(right)?;
+        let (left, right) = if matches!(
+            operator,
+            B::Add
+                | B::Subtract
+                | B::Multiply
+                | B::Divide
+                | B::IntegerDivide
+                | B::Modulo
+                | B::Power
+        ) {
+            arithmetic_operands(operator, left, right)?
+        } else {
+            (into_operator_scalar(left)?, into_operator_scalar(right)?)
+        };
         self.apply_binary(operator, &left, &right)
     }
 

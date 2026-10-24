@@ -1,4 +1,4 @@
-use super::{Evaluator, literals::number};
+use super::{Evaluator, arithmetic_unary_operand, literals::number};
 use crate::{
     EvalError,
     comparison::Comparison,
@@ -8,7 +8,7 @@ use crate::{
     predicates::{self, Membership},
 };
 use tablecraft_core::{limits::Resource, values::Value};
-use tablecraft_sql::select::{BinaryOperator, Expression as E};
+use tablecraft_sql::select::{BinaryOperator, Expression as E, UnaryOperator};
 
 impl Evaluator<'_> {
     pub(super) fn check(&mut self, depth: usize) -> Result<(), EvalError> {
@@ -62,7 +62,12 @@ impl Evaluator<'_> {
                 expression,
             } => {
                 let value = self.expression_operand(expression, depth + 1)?;
-                self.apply_unary(*operator, into_operator_scalar(value)?)
+                let value = if matches!(operator, UnaryOperator::Plus | UnaryOperator::Minus) {
+                    arithmetic_unary_operand(*operator, value)?
+                } else {
+                    into_operator_scalar(value)?
+                };
+                self.apply_unary(*operator, value)
             }
             E::Binary {
                 left,

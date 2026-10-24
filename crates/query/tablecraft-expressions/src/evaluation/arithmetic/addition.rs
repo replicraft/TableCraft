@@ -1,5 +1,6 @@
 //! Raw strings select concatenation without bypassing numeric declaration rules.
 use super::Evaluator;
+use crate::evaluation::arithmetic_operands;
 use crate::{
     EvalError,
     functions::{
@@ -8,7 +9,7 @@ use crate::{
     },
     numeric::admission,
 };
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_sql::select::{BinaryOperator, Expression};
 
 /// A completed string/NULL addition or materialized operands for the caller's
@@ -43,20 +44,49 @@ impl Evaluator<'_> {
     }
 
     /// Admit already evaluated operands without prematurely publishing raw
-    /// strings. Numeric operands retain their values and caller-owned provenance.
+    /// strings. Ordinary numeric operands retain their values and caller-owned
+    /// provenance; host Empty follows the operator-specific admission profile.
     pub fn prepare_expression_addition(
         &mut self,
         left: ExpressionByteOperand,
         right: ExpressionByteOperand,
     ) -> Result<PreparedAddition, EvalError> {
-        let left = admit(left)?;
-        let right = admit(right)?;
         let (left, right) = match (left, right) {
-            (ByteOperand::Scalar(left), ByteOperand::Scalar(right)) => {
+            (
+                ExpressionByteOperand::Scalar(ExpressionValue::Empty),
+                ExpressionByteOperand::Bytes(bytes),
+            )
+            | (
+                ExpressionByteOperand::Bytes(bytes),
+                ExpressionByteOperand::Scalar(ExpressionValue::Empty),
+            ) => {
+                self.check(0)?;
+                return Ok(PreparedAddition::StringResult(ByteOperand::Bytes(bytes)));
+            }
+            (
+                ExpressionByteOperand::Scalar(ExpressionValue::Empty),
+                ExpressionByteOperand::Scalar(ExpressionValue::Value(Value::Text(text))),
+            )
+            | (
+                ExpressionByteOperand::Scalar(ExpressionValue::Value(Value::Text(text))),
+                ExpressionByteOperand::Scalar(ExpressionValue::Empty),
+            ) => {
+                self.check(0)?;
+                if text.len() > self.limits.max_text_bytes {
+                    return Err(EvalError::TextLimit);
+                }
+                return Ok(PreparedAddition::StringResult(ByteOperand::Scalar(
+                    Value::Text(text),
+                )));
+            }
+            (ExpressionByteOperand::Scalar(left), ExpressionByteOperand::Scalar(right)) => {
+                let (left, right) = arithmetic_operands(BinaryOperator::Add, left, right)?;
                 return Ok(PreparedAddition::ScalarOperands { left, right });
             }
             operands => operands,
         };
+        let left = admit(left)?;
+        let right = admit(right)?;
 
         self.check(0)?;
         for operand in [&left, &right] {

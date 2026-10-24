@@ -42,8 +42,9 @@ This does not implement all arithmetic subtype widening or native error preceden
 Both supported scalar operand expressions evaluate before operator conversion, in written order.
 NULL arithmetic propagates after admitting both operand families, without parsing
 the other already-evaluated supported scalar;
-`Null + ('2'/0)` still fails. Text `+` with NULL propagates NULL. Ampersand follows its separate [contextual formatting contract](CONCATENATION.md). Error data, arrays and expression-only states do not
-become implicit numbers or stored NULL.
+`Null + ('2'/0)` still fails. Text `+` with NULL propagates NULL. Ampersand follows its separate [contextual formatting contract](CONCATENATION.md). Error/Missing and arrays do not
+become implicit numbers or stored NULL. Host Empty now uses the separate
+[operator-specific admission profile](EMPTY_ARITHMETIC.md), without becoming a stored value.
 
 In particular, GUID, Binary and Extended-date arithmetic operands now fail
 TypeMismatch even beside NULL. Non-finite floating operands fail NonFinite before

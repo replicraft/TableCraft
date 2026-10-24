@@ -109,6 +109,12 @@ categories. Scalar/Variant Date overflow and field/subquery text policies remain
 covered. This does not complete host Empty, odd-byte joins, general promotion or
 native qualification. See [String addition](CONCATENATION.md#lossless-string-addition).
 
+The shared expression API now admits host Empty with operator-specific arithmetic
+targets, including rounded Byte exceptions and String identity under plus. It
+does not introduce stored/parameter Empty or a SQL constructor. Numeric promotion,
+declarations and resource accounting remain in their existing services; broader
+Empty subtype/native qualification stays open. See [host Empty scope](EMPTY_ARITHMETIC.md).
+
 Round's digit count now follows the nonnegative Long profile independently of
 Decimal storage scale. [Bounded high precision](MATH_FUNCTIONS.md#round-precision-beyond-decimal-storage-scale)
 covers tiny IEEE values and extreme counts without an overflowing scale factor or
