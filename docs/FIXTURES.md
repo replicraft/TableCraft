@@ -1,5 +1,23 @@
 # Candidate Access fixtures
 
+## Native index collection experiment recipes
+
+Original MIT [IndexColumnsFixture.java](testing/IndexColumnsFixture.java), SHA-256
+`2a4c96894698e1cec1acb3dfed21e650b95e1502b52745800952a84d36f45947`,
+creates fresh inert ACE 16 and Jet 4 inputs, each with six tables covering
+one/two/ten-column indexes and one/twenty-four logical indexes. It uses the
+existing reviewed Jackcess 5.0.4 JAR and copies no database, third-party code or
+active application content. Generated databases and isolated build copies remain
+ignored; the recipe refuses existing fixture paths.
+
+The existing IndexOracle getter supplies independent names, flags, native/physical
+identifiers, roots and key ordering. The new
+[verifier](testing/verify_index_column_variants.py) compares these against all
+three isolated container variants and checks unchanged inputs/binaries. Its
+capacity/spill-derived allocation counts concern collection constructors only.
+See the [experiment procedure](testing/INDEX_COLUMN_COLLECTIONS.md); neither the
+recipe nor independent getter agreement establishes native Access compatibility.
+
 ## Larger decoded Memo inputs
 
 Original MIT [LargerMemoFixture.java](testing/LargerMemoFixture.java), SHA-256

@@ -56,6 +56,10 @@ zerocopy = { version = "0.8.63", default-features = false, features = ["derive"]
 wide = { version = "1.7.1", default-features = false }
 bytemuck = { version = "1.25.2", default-features = false }
 
+# Native index metadata collection experiments (benchmark consumers)
+arrayvec = { version = "0.7.8", default-features = false }
+smallvec = { version = "1.16.3", default-features = false, features = ["const_generics"] }
+
 # Derived General collation-element dictionaries (not native index storage)
 fst = { version = "0.4.7", default-features = false }
 
