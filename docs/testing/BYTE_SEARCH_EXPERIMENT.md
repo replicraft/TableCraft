@@ -87,3 +87,48 @@ captures are retained under ignored `.cache`; public results are byte-identical
 copies after checking private path markers and stable source/binary hashes.
 The sidecar records host OS/architecture and tool versions without machine names
 or absolute paths. The runner is a recipe until actual results are recorded.
+
+## Recorded comparison, 24 October 2026
+
+**Decision: keep this prototype out of production.** The bounded contender improves
+long scans substantially in this run, but its prepaid units reject some queries
+that the existing callback budget admits. First-position admission is identical;
+that does not resolve the second-position counterexample. No end-to-end InStrB
+speedup is claimed because no production integration was made.
+
+Six Rust tests and scoped Clippy pass. The capture runner passes 21 independent
+Python byte-position probes. The fixed release binary, input bytes and source
+hashes are recorded in the [metadata](results/byte-search-experiment-2026-10-24.metadata.json);
+[all 315 timed samples](results/byte-search-experiment-2026-10-24.json) are retained.
+The host was Darwin arm64 with rustc 1.99.0 and hyperfine 2.0.0. Each contender had
+three warmups and fifteen measured runs. Cargo and the other coordinated timing
+workloads were stopped during this capture. Binary/source hashes were unchanged
+before/after, and public artifacts passed the private-path scan.
+
+The table reports **whole-process milliseconds, mean ± sample standard deviation**.
+Each process includes input setup, one probe and the stated number of searches.
+These are not per-search nanoseconds; fast cases include material process overhead.
+All haystacks are 65,536 bytes.
+
+| Scenario | Needle bytes | Searches/process | Scalar ms | Bounded ms | Whole reference ms |
+| --- | --- | --- | --- | --- | --- |
+| Front match | 32 | 1,000,000 | 19.09 ± 0.45 | 25.03 ± 9.79 | 87.54 ± 1.08 |
+| Absent | 1 | 1,000 | 73.20 ± 17.65 | 2.36 ± 0.18 | 2.11 ± 0.17 |
+| Absent, repeated prefix | 32 | 100 | 145.56 ± 73.33 | 1.82 ± 0.11 | 1.65 ± 0.22 |
+| Late, repeated prefix | 32 | 100 | 130.59 ± 31.95 | 1.85 ± 0.15 | 7.51 ± 14.24 |
+| Seeded random, midpoint needle | 32 | 1,000 | 47.32 ± 16.02 | 3.79 ± 0.22 | 2.94 ± 0.12 |
+| Raw surrogate/odd-byte pattern | 3 | 1,000 | 37.91 ± 1.58 | 3.49 ± 1.77 | 7.18 ± 9.98 |
+| Absent, scalar fallback | 33 | 100 | 123.53 ± 31.12 | 109.31 ± 0.96 | 1.83 ± 0.14 |
+
+Several distributions are noisy: absent-32 scalar reaches 365.64 ms, front bounded
+60.14 ms, late reference 42.65 ms and raw reference 36.65 ms. Those samples remain
+included; no rerun or exclusion was used to improve the result. The 33-byte bounded
+case calls the same scalar routine and charges the same 2,227,137 units; its lower
+observed mean does not establish an algorithmic improvement. Front-match overhead
+also deserves attention before any later adoption.
+
+Resource units differ deliberately. The absent-32 probe charges 2,161,666 units
+and callbacks in scalar mode, versus 66,609 units across 51 checkpoints in bounded
+mode. The whole reference charges only its entry unit and cannot substitute for
+metered production behavior. Results show an optimization opportunity, not a
+completed search-policy design or an Access compatibility result.
