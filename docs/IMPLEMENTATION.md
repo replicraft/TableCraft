@@ -1,5 +1,20 @@
 # Implementation status
 
+## Host Empty relational admission
+
+Host-supplied Empty now selects zero or empty Text at the expression comparison
+boundary, then reuses existing numeric/date/String services. Complete raw units
+retain provider opt-in; NULL, Error/Missing, odd ranges and operational failures
+retain explicit outcomes. Empty remains outside stored values, query parameters
+and SQL construction. See [comparison contracts](RAW_PREDICATES.md#host-empty-comparisons).
+
+772 all-feature expression tests plus one doctest, 379 minimal expression tests
+and 16 focused query regression tests pass. Six new controls cover scalar
+families, independent generated integral ordering in both directions, raw Strings,
+quotas and every observed raw comparison cancellation checkpoint. Expression
+all-target Clippy and query library Clippy pass. Full workspace tests, benchmarks
+and Windows Access comparisons were not run; broader P0 semantics remain open.
+
 ## Checked ordinary numeric predicates
 
 Ordinary numeric pairs now reuse the reviewed effective-type conversion service.

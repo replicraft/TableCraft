@@ -531,8 +531,8 @@ CByte, CInt, CLng, CLngLng and CBool now use a closed parser-independent
 conversion layer across scalar SELECTs, retrieval and qualified saved SELECTs.
 They accept numeric/Boolean carriers, [legacy DATE serials](DATE_NUMERIC.md) and
 [explicit numeric Text profiles](NUMBER_FORMAT.md). Complete regional behavior,
-Extended-date numerical conversion, binary/GUID and
-expression-only Empty/Missing states remain unsupported. Standard
+Extended-date numerical conversion, binary/GUID and expression-only Missing
+remain unsupported. Host Empty has [explicit zero targets](VARIANT_ERRORS.md#explicit-numeric-empty-and-cdec-error-rules). Standard
 [CVErr Error codes](VARIANT_ERRORS.md) now support explicit numeric conversion;
 opaque host mappings and broader propagation remain unfinished. This is a bounded value profile, not the full VBA
 conversion module. [CStr](CSTR.md) uses separate explicit output policies;

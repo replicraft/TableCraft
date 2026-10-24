@@ -18,9 +18,9 @@ tablecraft query run 'SELECT S=ANY(SELECT NULL) FROM (SELECT ChrW(55296) AS S) A
 ```
 
 These return NULL. `ChrW(55296) IN(NULL,1/0)` still fails division by zero. Error
-paired with String remains TypeMismatch; Missing/Empty retain their unsupported
-comparison-state contract. NULL propagation does not fabricate empty Text or
-store an expression-only state as NULL.
+paired with String remains TypeMismatch; Missing retains its unsupported
+comparison-state contract. Host Empty has the explicit admission below. NULL
+propagation does not fabricate empty Text or store an expression-only state as NULL.
 
 Under the explicit declared-arithmetic profile, two caller-established Variant
 operands retain the reviewed String/numeric category rule: numeric values precede
@@ -63,3 +63,27 @@ controls under both explicit General families and ANSI modes. A generated
 exhaustive unit-glob model checks the pure service independently of its state
 machine; focused tests cover raw classes, limits and every observed cancellation
 checkpoint. Neither model is native Access execution evidence.
+
+## Host Empty comparisons
+
+The expression API now admits caller-supplied Empty at the relational boundary.
+Empty beside a numeric/Boolean or legacy Date operand selects zero before the
+existing checked effective-type service. Empty/Empty uses Integer zero. Empty
+beside Text or retained String selects empty Text and keeps the selected comparison
+provider; it does not parse a String as numeric zero. Both operand orders and all
+six operators use this admission. The [MS-VBAL relational table](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/f8acd631-55c1-4199-bc1e-022aaab6d9c8)
+supplies the effective-type rules; this is not native Access execution evidence.
+
+Empty/NULL returns Unknown. Empty/Error remains TypeMismatch, Missing remains
+refused, and unsupported stored carriers do not become zero. Raw complete units
+can reach an opted-in UTF-16 provider without Unicode publication; odd ranges
+remain refused. Missing comparers, nonfinite values, byte/work limits and
+cancellation propagate through their owning services. No stored Empty carrier,
+parameter, SQL constructor or implicit binary/text provider is introduced.
+Query Nz(NULL) retains its existing empty-Text result.
+
+Six focused tests cover the scalar families, raw and decoded Strings, isolated
+units, state boundaries, quotas and every observed raw-comparison cancellation
+checkpoint. A generated independent zero/sign model checks all six integral
+predicates in both orders. Stored/query Empty provenance and broader Variant,
+native comparison and result-type qualification remain separate acceptance work.

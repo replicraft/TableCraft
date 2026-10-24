@@ -186,6 +186,13 @@ does not introduce stored/parameter Empty or a SQL constructor. Numeric promotio
 declarations and resource accounting remain in their existing services; broader
 Empty subtype/native qualification stays open. See [host Empty scope](EMPTY_ARITHMETIC.md).
 
+The expression API also admits host Empty at relational comparisons, using zero
+beside numeric/legacy Date operands and empty Text beside String data. Raw String
+comparison retains explicit provider, complete-unit and publication boundaries.
+NULL, Error, Missing, work/byte quotas and cancellation keep explicit outcomes.
+No stored/parameter Empty or SQL constructor is introduced. See
+[comparison admission](RAW_PREDICATES.md#host-empty-comparisons).
+
 Round's digit count now follows the nonnegative Long profile independently of
 Decimal storage scale. [Bounded high precision](MATH_FUNCTIONS.md#round-precision-beyond-decimal-storage-scale)
 covers tiny IEEE values and extreme counts without an overflowing scale factor or

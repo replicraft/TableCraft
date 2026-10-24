@@ -31,14 +31,6 @@ fn opaque_and_mixed_error_comparisons_never_guess_a_numeric_conversion() {
             );
         }
     }
-    assert_eq!(
-        evaluator.compare_expression_values(
-            Comparison::Equal,
-            &ExpressionValue::Empty,
-            &ExpressionValue::Value(Value::Int32(0)),
-        ),
-        Err(EvalError::NonScalarExpression)
-    );
 }
 
 proptest! {
