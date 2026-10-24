@@ -205,3 +205,10 @@ native rows, cursors and queries without inventing the deleted storage classes.
 Required visible variable tails retain validation; ignored deleted tails and
 broader evolution remain unqualified. [History evidence](testing/COLUMN_HISTORIES.md#known-fixed-prefix-qualification)
 records immutable original/derivative inputs and corrupted-copy refusals.
+
+
+[SQL date literals](SQL_DATE_LITERALS.md) now accept complete-year U.S./English
+dates and qualified time spellings through pure Jiff-backed recognition. U.S.
+order remains independent of execution date policies, and invalid literals fail
+metadata binding even on empty results. Two-digit/omitted years, wider regional
+spellings and native precision/error qualification remain open.

@@ -180,15 +180,18 @@ the previous manual extended-calendar calculation. Stored bits and representatio
 Eq remain unchanged. `temporal_cmp` compares day/time fractions, so -0.25 and +0.25
 are the same time and negative-day time ordering is not numeric double ordering.
 
-SQL date comparisons/order/grouping/distinct and ISO literals use those temporal
-semantics. ISO literals accept YYYY-MM-DD or YYYY-MM-DD HH:MM:SS[.fraction] (at most
-nine fractional digits); ambiguous locale dates, offsets and timezone spelling fail.
+SQL date comparisons/order/grouping/distinct use those temporal semantics.
+[SQL date literals](SQL_DATE_LITERALS.md) accept complete-year U.S./English and
+qualified time spellings alongside YYYY-MM-DD or YYYY-MM-DD HH:MM:SS[.fraction].
+The SQL literal service is independent of regional text conversion; offsets,
+timezones and wider context-dependent spellings remain refused.
 CLI `--param Start=date:1986-06-01` binds DATETIME declarations. Date output is a
 hash-delimited ISO calendar with nine fractional digits, explicitly rounded to the
 nearest nanosecond (ties to even); it is not a lossless serialization of double bits.
 The library retains exact bits; calendar-to-double conversion may round or reject
-an unrepresentable endpoint. Implicit text/number/date coercion and date arithmetic
-remain unsupported.
+an unrepresentable endpoint. Explicit query date/numeric conversion and arithmetic
+have their separate [execution contracts](DATE_NUMERIC.md); decoding stored bits
+does not itself select a coercion policy.
 
 The independent Jackcess 5.0.4 comparison now covers 1,606 rows across the previous
 seven tables plus CUM_VAL_TB and DECUM_VAL_TB (59 each). Calendar fields use Jackcess's

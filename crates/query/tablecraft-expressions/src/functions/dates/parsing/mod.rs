@@ -1,5 +1,9 @@
 //! CDate/CVDate/DateValue/TimeValue with explicit Gregorian text policy and no clock lookup.
 mod date;
+#[cfg(feature = "sql")]
+mod query_literal;
+#[cfg(feature = "sql")]
+pub(crate) use query_literal::parse as parse_query_literal;
 mod numeric;
 mod policy;
 mod text;

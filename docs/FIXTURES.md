@@ -5913,3 +5913,16 @@ engineering evidence from pending native Access, cryptographic audit and general
 write qualification. An initial duplicate-flag runner failure and its partial
 local generation remain excluded; only the registered successful generation is
 used for reuse checks.
+
+
+## SQL date-literal controls (23 October 2026)
+
+The repository-original [runner](testing/compare_sql_date_literals.py) passes
+230 controls: 206 scalar calendar/spelling/refusal cases and 24 native sequential/
+indexed cases over the four registered persistent large-index originals. Python's
+Gregorian calendar computes component expectations. Reviewed Jackcess 5.0.4
+read-only getters establish native stored dates without executing expressions;
+TableCraft alone applies the date-literal SQL predicates. JAR/input hashes remain
+checked and originals unchanged. No new database, third-party source or library
+is added. [The profile](SQL_DATE_LITERALS.md) retains wider spelling, regional,
+precision/error and native Access qualification gaps.
