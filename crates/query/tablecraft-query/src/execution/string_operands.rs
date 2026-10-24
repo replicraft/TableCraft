@@ -29,6 +29,25 @@ impl From<CellValue> for StringCell {
 }
 
 impl Runtime<'_, '_> {
+    pub(super) fn iif_string_cell(
+        &mut self,
+        condition: &Expr,
+        yes: &Expr,
+        no: &Expr,
+        env: Environment<'_>,
+    ) -> Result<StringCell, QueryError> {
+        self.tick()?;
+        let condition = self.expression_operand(condition, env)?;
+        let yes = self.string_cell(yes, env)?;
+        let no = self.string_cell(no, env)?;
+        let policy = yes.policy.merge(no.policy);
+        let mut selected = self.evaluator().apply_iif(&condition, yes, no)?;
+        selected.policy = policy;
+        selected.declaration = Some(OperandDeclaration::Variant);
+
+        Ok(selected)
+    }
+
     pub(super) fn publish_string_cell(
         &mut self,
         cell: StringCell,
@@ -52,6 +71,7 @@ impl Runtime<'_, '_> {
         env: Environment<'_>,
     ) -> Result<StringCell, QueryError> {
         let mut cell = match expression {
+            Expr::IIf(condition, yes, no) => self.iif_string_cell(condition, yes, no, env),
             Expr::Binary(BinaryOperator::Add, left, right) => self.add_cells(left, right, env),
             Expr::Binary(BinaryOperator::Concatenate, left, right) => {
                 self.concatenate_cells(left, right, env)

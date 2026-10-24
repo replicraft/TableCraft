@@ -3,6 +3,33 @@ mod support;
 use support::run;
 
 #[test]
+fn iif_preserves_lossless_branches_and_eager_failures_in_both_hosts() {
+    for mode in ["eval", "run"] {
+        let result = run(&[
+            "query",
+            mode,
+            "SELECT LenB(IIf(True,ChrW(55296),ChrB(65))) AS A,VarType(IIf(False,ChrW(55296),ChrB(65))) AS B,IIf(False,ChrW(55296),'ok') AS C",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(result.stdout, b"A\tB\tC\n2\t8\t\"\"\"ok\"\"\"\n");
+
+        for expression in [
+            "LenB(IIf(True,ChrW(55296),1/0))",
+            "LenB(IIf(False,ChrW(65536),ChrB(65)))",
+            "IIf(True,ChrW(55296),'ok')",
+        ] {
+            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            assert_eq!(result.status.code(), Some(2), "{expression}");
+            assert!(result.stdout.is_empty(), "{expression}");
+        }
+    }
+}
+
+#[test]
 fn decimal_error_conversion_refuses_buffered_results_and_accepts_explicit_codes() {
     for mode in ["eval", "run"] {
         let result = run(&["query", mode, "SELECT CDec(CLng(CVErr(2001))) AS N"]);

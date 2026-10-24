@@ -202,6 +202,11 @@ including supplementary characters, omitted lengths and maximum Long controls.
 ranges, including odd bytes, without a new payload allocation. Its ordinary
 scalar conversion and strict final-publication contracts remain separate.
 
+[IIf branches](CONDITIONAL_FUNCTIONS.md#lossless-iif-branches) now retain lossless
+Strings until selection and final publication. Both branches remain eager;
+selected raw buffers work with inspection, observations, NULL tests, joins and
+Count. Other conditional functions retain their separate admission profiles.
+
 [Ampersand concatenation](CONCATENATION.md#lossless-utf-16-concatenation) now joins
 complete raw units, including surrogate halves that form valid final Text. Its
 nested observations and inspection retain String identity; odd-byte concatenation

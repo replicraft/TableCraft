@@ -1,5 +1,15 @@
 # Candidate Access fixtures
 
+## Independent lossless IIf controls
+
+The original [IIf branch runner](testing/compare_raw_string_iif.py) passes 1,392
+source-free controls. Python selects independent UTF-16-unit or single-byte
+payloads and models length, first byte, String identity and NULL status. Both CLI
+modes cover chosen raw branches, unchosen raw branches beside valid Text, NULL
+conditions and eager/strict-publication failures. The existing raw NULL and Count
+recipes also pass 2,246 and 774 controls. No native input, third-party artifact
+or dependency was added; native Access and benchmarks were not run.
+
 ## Independent raw String NULL tests
 
 The original [NULL-identity runner](testing/compare_raw_string_nullness.py) passes

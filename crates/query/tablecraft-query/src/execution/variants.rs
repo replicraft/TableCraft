@@ -207,17 +207,8 @@ impl Runtime<'_, '_> {
                     .map(|value| value.with_declaration(Some(OperandDeclaration::Variant)))
             }
             Expr::IIf(condition, yes, no) => {
-                self.tick()?;
-                let condition = self.expression_operand(condition, env)?;
-                let yes = self.expression_operand(yes, env)?;
-                let no = self.expression_operand(no, env)?;
-                let policy = yes.policy.merge(no.policy);
-                Ok(CellValue::from(
-                    self.evaluator()
-                        .apply_iif(&condition, yes.value, no.value)?,
-                )
-                .with_policy(policy)
-                .with_declaration(Some(OperandDeclaration::Variant)))
+                let value = self.iif_string_cell(condition, yes, no, env)?;
+                self.publish_string_cell(value)
             }
             Expr::Nz(value, replacement) => {
                 self.tick()?;

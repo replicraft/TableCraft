@@ -11,12 +11,13 @@ pub(super) fn condition(value: &ExpressionValue) -> Result<bool, EvalError> {
     }
 }
 
-/// Select already evaluated branches; Empty is false without becoming stored NULL.
-pub fn iif(
+/// Move one already evaluated branch without interpreting its payload.
+/// Empty conditions are false without becoming stored NULL.
+pub fn iif<T>(
     condition_value: &ExpressionValue,
-    truepart: ExpressionValue,
-    falsepart: ExpressionValue,
-) -> Result<ExpressionValue, EvalError> {
+    truepart: T,
+    falsepart: T,
+) -> Result<T, EvalError> {
     Ok(if condition(condition_value)? {
         truepart
     } else {

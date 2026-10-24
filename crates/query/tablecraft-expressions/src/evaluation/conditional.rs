@@ -10,14 +10,15 @@ use crate::{
 use tablecraft_core::values::{ExpressionValue, Value};
 
 impl Evaluator<'_> {
-    /// Select already evaluated branches, preserving their carriers and Error data.
+    /// Move one already evaluated branch, preserving the caller's payload type.
+    /// This permits lossless Strings as well as ordinary expression data.
     /// Text conditions use the execution's explicit Boolean conversion policy.
-    pub fn apply_iif(
+    pub fn apply_iif<T>(
         &mut self,
         condition: &ExpressionValue,
-        yes: ExpressionValue,
-        no: ExpressionValue,
-    ) -> Result<ExpressionValue, EvalError> {
+        yes: T,
+        no: T,
+    ) -> Result<T, EvalError> {
         self.check(0)?;
 
         if let ExpressionValue::Value(value @ Value::Text(_)) = condition {

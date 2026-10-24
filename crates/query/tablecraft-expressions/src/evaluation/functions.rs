@@ -212,10 +212,8 @@ impl Evaluator<'_> {
                     A::Expression(falsepart),
                 ],
             ) => {
-                let condition = self.expression_operand(condition, depth + 1)?;
-                let truepart = self.expression_operand(truepart, depth + 1)?;
-                let falsepart = self.expression_operand(falsepart, depth + 1)?;
-                into_scalar(self.apply_iif(&condition, truepart, falsepart)?)
+                let value = self.iif_byte_operand(condition, truepart, falsepart, depth)?;
+                into_scalar(self.publish_expression_byte_value(value)?)
             }
             (Some(Builtin::Nz), [A::Expression(value)]) => {
                 let value = self.expression_operand(value, depth + 1)?;

@@ -1,5 +1,34 @@
 # Eager conditional expressions
 
+## Lossless IIf branches
+
+IIf now retains raw String branches until an owning consumer requests publication.
+Both branches still evaluate once in written order before the condition is
+converted and selected. An unselected raw surrogate or odd byte range is valid
+String data; it is not itself an operational failure. Thus
+`IIf(False,ChrW(55296),'ok')` returns ordinary Text, while
+`LenB(IIf(True,ChrW(55296),ChrB(65)))` returns 2 without decoding the selected unit.
+An invalid constructor, division failure, cancellation or resource failure in
+either branch still aborts evaluation. A selected unrepresentable String still
+fails when published directly as a scalar cell.
+
+The existing allocation-free IIf selector now moves a generic already evaluated
+payload. Scalar callers retain ExpressionValue behavior; lossless callers retain
+the raw buffer without cloning or coercion. Condition conversion and Empty/Error/
+Missing rules are unchanged. Bound execution merges both branch text policies and
+retains IIf's Variant declaration, including grouped runtime provenance. Type
+inspection, byte/unit observations, NULL tests, concatenation and Count can consume
+the selected raw String through their existing services.
+
+This closes the IIf branch-publication gap, not raw relational storage, arbitrary
+conditional functions, result promotion or native Access qualification. Nz,
+Switch and Choose retain their separate current admission profiles. The original
+[IIf runner](testing/compare_raw_string_iif.py) passes 1,392 independent source-free
+selection/refusal controls in both CLI modes, using Python byte selection rather
+than TableCraft's own evaluator as the oracle.
+
+## Materialized Switch and Choose
+
 `tablecraft-expressions::functions::conditional` owns closed Switch/Choose
 identities and a materialized-value selector. Scalar evaluation and retrieval use
 the same selector. No VBA/runtime/provider dependency is introduced.

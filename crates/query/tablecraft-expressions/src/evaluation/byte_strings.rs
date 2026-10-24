@@ -55,6 +55,17 @@ impl Evaluator<'_> {
             && qualifier.is_empty()
         {
             match Builtin::resolve(name.as_str()) {
+                Some(Builtin::IIf) => {
+                    if let [
+                        FunctionArgument::Expression(condition),
+                        FunctionArgument::Expression(yes),
+                        FunctionArgument::Expression(no),
+                    ] = arguments.as_slice()
+                    {
+                        self.check(depth)?;
+                        return self.iif_byte_operand(condition, yes, no, depth);
+                    }
+                }
                 Some(Builtin::Text(function)) if function.produces_bytes() => {
                     return self.byte_operand(expression, depth).map(Into::into);
                 }
@@ -69,6 +80,32 @@ impl Evaluator<'_> {
         }
         self.expression_operand(expression, depth)
             .map(ExpressionByteOperand::Scalar)
+    }
+
+    pub(super) fn iif_byte_operand(
+        &mut self,
+        condition: &Expression,
+        yes: &Expression,
+        no: &Expression,
+        depth: usize,
+    ) -> Result<ExpressionByteOperand, EvalError> {
+        let condition = self.expression_operand(condition, depth + 1)?;
+        let yes = self.expression_byte_operand(yes, depth + 1)?;
+        let no = self.expression_byte_operand(no, depth + 1)?;
+
+        self.apply_iif(&condition, yes, no)
+    }
+
+    pub(super) fn publish_expression_byte_value(
+        &mut self,
+        value: ExpressionByteOperand,
+    ) -> Result<ExpressionValue, EvalError> {
+        match value {
+            ExpressionByteOperand::Scalar(value) => Ok(value),
+            ExpressionByteOperand::Bytes(bytes) => self
+                .publish_byte_operand(ByteOperand::Bytes(bytes))
+                .map(ExpressionValue::Value),
+        }
     }
 
     pub(super) fn byte_operand(
