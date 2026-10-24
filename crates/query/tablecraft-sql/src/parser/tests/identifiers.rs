@@ -44,11 +44,16 @@ fn access_reserved_words_require_brackets_in_name_positions() {
 }
 
 #[test]
-fn value_is_allowed_after_dot_without_globally_relaxing_reserved_names() {
+fn dot_members_keep_keyword_spellings_without_relaxing_other_name_positions() {
     for sql in [
         "SELECT Tags.Value FROM Items",
         "SELECT T.Tags.vAlUe FROM Items AS T",
         "SELECT T.[Value] FROM Items AS T",
+        "SELECT msysobjects.Connect FROM msysobjects",
+        "SELECT T.Connect, T.SELECT, T.From, T.Order FROM Items AS T",
+        "SELECT T.Tags.Connect FROM Items AS T WHERE T.Connect IS NULL",
+        "SELECT T.Null, T.True, T.False, T.Date FROM Items AS T",
+        "SELECT T.From FROM Items AS T WHERE T.Where=1 GROUP BY T.Group HAVING Count(*)>0 ORDER BY T.Order",
     ] {
         let parsed = crate::parse_query(sql, crate::ParseLimits::default()).unwrap();
         let formatted = parsed.query().to_string();
@@ -62,7 +67,13 @@ fn value_is_allowed_after_dot_without_globally_relaxing_reserved_names() {
     for sql in [
         "SELECT Value FROM Items",
         "SELECT Tags!Value FROM Items",
-        "SELECT Tags.SELECT FROM Items",
+        "SELECT Connect FROM Items",
+        "SELECT Tags!Connect FROM Items",
+        "SELECT Code AS Connect FROM Items",
+        "SELECT Code FROM Connect",
+        "SELECT T.Connect() FROM Items AS T",
+        "SELECT T. FROM Items AS T",
+        "SELECT T.; SELECT 1 FROM Items AS T",
     ] {
         assert!(
             crate::parse_query(sql, crate::ParseLimits::default()).is_err(),

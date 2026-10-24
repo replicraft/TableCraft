@@ -430,19 +430,12 @@ fn prefix(
                 "member access requires an object or identifier",
             ));
         }
-        // Value is a reserved standalone identifier but a valid Access complex
-        // field member. Keep the exception local to dot access and its spelling.
-        let member = match parser.peek_token().token {
-            Token::Word(word)
-                if !bang
-                    && word.quote_style.is_none()
-                    && word.value.eq_ignore_ascii_case("Value") =>
-            {
-                parser.next_token();
-                crate::select::Name(word.value)
-            }
-            _ if !bang => reference_names::read(parser)?,
-            _ => access::name(parser)?,
+        // A dot selects a member, so a keyword here cannot introduce a clause.
+        // Root names, aliases and bang access retain their separate name rules.
+        let member = if bang {
+            access::name(parser)?
+        } else {
+            reference_names::member(parser)?
         };
         value = match value {
             E::Field(FieldReference {

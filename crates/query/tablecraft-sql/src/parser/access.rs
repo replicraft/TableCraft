@@ -23,11 +23,21 @@ impl Dialect for AccessDialect {
         ch.is_alphanumeric() || ch == '_' || ch == '$'
     }
 }
+
 pub(super) fn name(p: &mut Parser<'_>) -> Result<Name, ParseError> {
+    identifier(p, false)
+}
+
+pub(super) fn member_name(p: &mut Parser<'_>) -> Result<Name, ParseError> {
+    identifier(p, true)
+}
+
+fn identifier(p: &mut Parser<'_>, allow_reserved: bool) -> Result<Name, ParseError> {
     match p.peek_token().token {
         Token::Word(ref w)
             if (w.quote_style == Some('[')
-                || (w.quote_style.is_none() && super::identifiers::unreserved(&w.value)))
+                || (w.quote_style.is_none()
+                    && (allow_reserved || super::identifiers::unreserved(&w.value))))
                 && !w.value.is_empty()
                 && !w
                     .value
@@ -41,10 +51,15 @@ pub(super) fn name(p: &mut Parser<'_>) -> Result<Name, ParseError> {
         _ => Err(ParseError::at(
             p,
             K::Unsupported,
-            "expected an unreserved or bracketed name",
+            if allow_reserved {
+                "expected a member name"
+            } else {
+                "expected an unreserved or bracketed name"
+            },
         )),
     }
 }
+
 pub(super) fn alias(p: &mut Parser<'_>) -> Result<Option<Name>, ParseError> {
     if p.parse_keyword(W::AS)
         || matches!(p.peek_token().token, Token::Word(ref w) if w.quote_style == Some('[') || (w.quote_style.is_none() && super::identifiers::unreserved(&w.value)))

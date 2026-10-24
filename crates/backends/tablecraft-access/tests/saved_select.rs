@@ -24,6 +24,8 @@ mod ordering;
 mod parameter_prompts;
 #[path = "saved_select/parameters.rs"]
 mod parameters;
+#[path = "saved_select/qualified_fields.rs"]
+mod qualified_fields;
 #[path = "../../../engines/tablecraft-ace/tests/support/mod.rs"]
 mod support;
 #[path = "saved_select/unions.rs"]
