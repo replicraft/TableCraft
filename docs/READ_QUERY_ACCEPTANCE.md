@@ -104,9 +104,10 @@ contracts and native qualification are unchanged. Remaining raw consumers, wider
 Variant/coercion and the rest of P0 remain unfinished.
 
 StrComp binary mode now compares [complete raw UTF-16 units](STRING_COMPARISON.md#lossless-binary-string-operands)
-without Unicode publication. NULL/mode ordering and strict Text/Database provider
-paths remain separate. This closes a String comparison-consumer gap, not native
-locale providers, ordinary raw predicates/keys or Windows qualification.
+without Unicode publication. [Database mode](STRING_COMPARISON.md#lossless-database-string-operands)
+now also accepts raw units through an explicitly selected UTF-16 provider.
+NULL/mode ordering, field-policy routing and separate text-mode providers remain
+explicit. Native locale providers and Windows qualification remain unfinished.
 
 Nz/Switch/Choose now retain [lossless choice payloads](CONDITIONAL_FUNCTIONS.md#lossless-nz-switch-and-choose-choices)
 through their existing eager evaluation and control conversion. Selected NULL,
@@ -213,6 +214,20 @@ semantics. See [metadata contracts](NATIVE_TABLES.md#attachment-metadata-project
 | P1 | Advanced fields | Native FileData query representation, history query access, full collection semantics and calculated-field evaluation/freshness rules |
 | P1 | Storage and scale | Wider column-type/row histories, broader collection sizes and file locality, predictable limits and unchanged originals |
 | Qualification | Native Access | Build/locale-qualified values, ordering, errors, saved queries and representative application outcomes on Windows |
+
+### P0 implementation boundaries reviewed 24 October 2026
+
+| Boundary | Current implementation | Remaining work |
+| --- | --- | --- |
+| Database text providers | Native General recognition requires LCID 1033, variant zero and version 0 or 1; raw predicates, keys and database StrComp use explicit providers | Additional database orders and native function-specific padding/weight qualification |
+| System text / explicit LCID | Separate `compare_text` and `find_locale` contracts default to refusal; General database comparison does not supply either | Concrete bounded providers and locale-specific search/comparison evidence; parsing an LCID does not implement it |
+| Mixed field policies | Runtime policies survive retained cells; distinct required IDs conservatively merge to Conflict | Native precedence rules before relaxing conflicts |
+| Value categories | Declaration-sensitive arithmetic remains an explicit engineering option; unknown provenance is retained | Complete literal/subtype/Variant promotion, Error and result-type matrices before enabling broader defaults |
+
+These are implementation gaps as well as later qualification tasks. Completing
+raw String consumers does not complete P0. Windows comparisons remain deferred;
+independent implementation can continue without claiming native equivalence.
+Live shared-file coherence remains separate from the stable/offline read target.
 
 Composed grouped keys now retain accumulated runtime text policies inside nested
 ampersand/plus and CVar operands, including correlated reuse. The string path uses

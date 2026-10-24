@@ -111,3 +111,6 @@ mod operand_tests;
 
 #[cfg(test)]
 mod expression_tests;
+
+#[cfg(test)]
+mod raw_database_tests;

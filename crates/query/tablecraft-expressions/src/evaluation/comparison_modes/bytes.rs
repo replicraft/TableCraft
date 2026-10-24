@@ -1,11 +1,13 @@
-//! Raw StrComp strings retain binary units; provider modes require ordinary Text.
+//! Raw StrComp operands use explicit binary/database unit comparison contracts.
 use super::{Evaluator, compare, text_arguments};
 use crate::{
     EvalError,
-    comparison::{Collation, StringCompareMode},
+    comparison::{
+        Collation, StringCompareMode, StringComparisonProfile, StringInput, order_utf16_strings,
+    },
     functions::text::{
         TextFunction, TextResult,
-        byte_string::{ExpressionByteOperand, compare_binary_utf16},
+        byte_string::{ByteOperand, ExpressionByteOperand, compare_binary_utf16},
         sql_arguments::{self, Argument},
     },
 };
@@ -43,7 +45,8 @@ impl Evaluator<'_> {
 
     /// Compare eager String operands without prematurely publishing raw UTF-16.
     /// Mode admission precedes NULL propagation. Binary compares complete units;
-    /// Text/Database modes retain strict Unicode publication and host policies.
+    /// Database can use an explicitly selected raw-unit provider. Other provider
+    /// modes retain strict Unicode publication and their existing policies.
     pub fn apply_expression_byte_comparison(
         &mut self,
         left: ExpressionByteOperand,
@@ -51,7 +54,10 @@ impl Evaluator<'_> {
         option: Option<ExpressionValue>,
     ) -> Result<Value, EvalError> {
         let (left, right) = match (left, right) {
-            (ExpressionByteOperand::Scalar(left), ExpressionByteOperand::Scalar(right)) => {
+            (ExpressionByteOperand::Scalar(left), ExpressionByteOperand::Scalar(right))
+                if !matches!(&left, ExpressionValue::StringBytes(_))
+                    && !matches!(&right, ExpressionValue::StringBytes(_)) =>
+            {
                 let count = if option.is_some() { 3 } else { 2 };
                 let arguments = [
                     left,
@@ -94,11 +100,21 @@ impl Evaluator<'_> {
                 self.budget.charge(Resource::Steps, 1)?;
                 Ok(())
             })?;
-            return Ok(Value::Int16(match order {
-                Ordering::Less => -1,
-                Ordering::Equal => 0,
-                Ordering::Greater => 1,
-            }));
+            return Ok(comparison_value(order));
+        }
+
+        if selected == Some(StringCompareMode::Database)
+            && let Some(collation) = self.collation
+            && collation.string_comparison_profile() == StringComparisonProfile::Utf16
+        {
+            let order = order_utf16_strings(
+                comparison_input(&left)?,
+                comparison_input(&right)?,
+                collation,
+                self.budget,
+                self.cancelled,
+            )?;
+            return Ok(comparison_value(order));
         }
 
         let left = self.publish_byte_operand(left)?;
@@ -116,4 +132,20 @@ impl Evaluator<'_> {
             _ => Err(EvalError::UnsupportedExpression),
         }
     }
+}
+
+fn comparison_input(value: &ByteOperand) -> Result<StringInput<'_>, EvalError> {
+    match value {
+        ByteOperand::Scalar(Value::Text(text)) => Ok(StringInput::Text(text)),
+        ByteOperand::Bytes(bytes) => Ok(StringInput::Utf16Le(bytes.as_bytes())),
+        _ => Err(EvalError::TypeMismatch),
+    }
+}
+
+fn comparison_value(order: Ordering) -> Value {
+    Value::Int16(match order {
+        Ordering::Less => -1,
+        Ordering::Equal => 0,
+        Ordering::Greater => 1,
+    })
 }

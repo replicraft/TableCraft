@@ -12,6 +12,8 @@ mod strings;
 pub use like::{LikeProfile, LikeSpanState};
 pub use search::StringSearch;
 pub use string_input::StringInput;
+#[cfg(feature = "sql")]
+pub(crate) use strings::order_utf16_strings;
 pub use strings::{StringComparisonProfile, compare_utf16_strings};
 use tablecraft_core::values::Value;
 
