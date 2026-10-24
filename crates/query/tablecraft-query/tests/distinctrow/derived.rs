@@ -40,8 +40,8 @@ fn derived_record_errors_do_not_become_null_or_disappear_after_deduplication() {
         &source,
     );
     assert_eq!(
-        result.err(),
-        Some(QueryError::Evaluation(EvalError::NonScalarExpression))
+        result.unwrap(),
+        [vec![Value::Int32(7)], vec![Value::Int32(8)]]
     );
     let result = run(
         "SELECT DISTINCTROW D.Shown FROM (SELECT Id,Shown,1/(Hidden-30) AS HiddenValue FROM A) D INNER JOIN B ON D.Id=B.Owner ORDER BY D.Shown",

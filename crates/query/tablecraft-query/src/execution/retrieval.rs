@@ -123,6 +123,7 @@ impl Runtime<'_, '_> {
             };
             let mut unique: Vec<OutputRow> = Vec::new();
             for row in rows {
+                self.validate_key_row(if records { &row.records } else { &row.values })?;
                 let mut duplicate = false;
                 for other in &unique {
                     let same = if records {
@@ -282,6 +283,7 @@ impl Runtime<'_, '_> {
         self.unify_cell_policies(&mut rows, Vec::as_mut_slice)?;
         let mut result: Vec<Vec<CellValue>> = Vec::new();
         for row in rows {
+            self.validate_key_row(&row)?;
             let mut duplicate = false;
             for other in &result {
                 if self.same_expression_row(&row, other, policies)? {

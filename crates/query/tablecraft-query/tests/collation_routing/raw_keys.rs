@@ -183,7 +183,7 @@ fn raw_keys_preserve_scalar_provider_error_state_and_publication_boundaries() {
         ),
         (
             "SELECT Count(*) FROM (SELECT CVErr(1) AS S UNION SELECT NULL) AS Q",
-            EvalError::NonScalarExpression,
+            EvalError::TypeMismatch,
         ),
         (
             "SELECT Count(*) FROM (SELECT 1 AS ID UNION ALL SELECT 2) AS Q GROUP BY IIf(ID=1,CVar(ChrW(55296)),CVar(0))",

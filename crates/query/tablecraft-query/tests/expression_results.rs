@@ -146,10 +146,6 @@ fn operational_failures_and_unimplemented_error_coercions_remain_explicit() {
         ("SELECT IsError(1/0)", EvalError::DivisionByZero),
         ("SELECT CVErr(2001)+1", EvalError::TypeMismatch),
         (
-            "SELECT CVErr(2001) AS Problem ORDER BY Problem",
-            EvalError::NonScalarExpression,
-        ),
-        (
             "SELECT SUM(Problem) FROM (SELECT CVErr(2001) AS Problem) AS Q",
             EvalError::TypeMismatch,
         ),

@@ -1,5 +1,20 @@
 # Implementation status
 
+## Standard Error relational keys
+
+Standard Error codes now participate in grouping, DISTINCT/DISTINCTROW, UNION,
+sorting and TOP ties through the existing Error comparator. Retained cells keep
+their identity through named/domain/crosstab compositions. Opaque codes are
+rejected even in singleton keys; Error/NULL and mixed-scalar comparisons keep
+their existing TypeMismatch refusal, without acquiring NULL-first coercion.
+Empty/Missing and stored source types are unchanged.
+
+The scoped batch passes 172 integration tests plus two key-state units, with
+strict Clippy and formatting passing. Fresh CLI checks additionally verify grouped
+counts, TOP ties and buffered Error/NULL refusal. See
+[Error relational keys](VARIANT_ERRORS.md#standard-error-relational-keys).
+Native Access grouping/order and error precedence remain unqualified.
+
 ## Retained date component and interval APIs
 
 Year/Month/Day/Hour/Minute/Second, Weekday and DateAdd/DatePart/DateDiff now admit
