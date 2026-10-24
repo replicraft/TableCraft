@@ -493,3 +493,18 @@ Only TableCraft executes SQL; no VBA/application code runs in the reference read
 The immutable example and JAR hashes are checked, and original bytes remain
 unchanged. This is application read/query evidence, not native Access SQL or save
 qualification. Wider query forms and deferred VBA calls remain separate gaps.
+
+## Registered qualified reserved field
+
+The same application's `101_Object_List_qry` now reconstructs its stored
+`msysobjects.Connect` projection, other columns, filter and qualified sort keys.
+Keyword spelling after a dot remains a field/member name; standalone names,
+aliases and source names retain their reserved-word restrictions. Adapter tests
+compare the complete owned query with explicitly bracketed SQL and retain the
+original native fragments. Stored fragment injection remains refused.
+
+Reconstruction retains `GetObjectTypeName` and `GetObjectDescription` as unresolved
+calls. Explicit CLI execution still returns an unsupported-feature error with no
+stdout; reconstruction does not enable the deferred VBA runtime. The registered
+example's bytes remain unchanged. This is stored-syntax evidence, not native
+Access execution or qualification of arbitrary keyword fields.

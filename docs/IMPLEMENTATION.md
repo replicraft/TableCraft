@@ -1,5 +1,23 @@
 # Implementation status
 
+## Qualified reserved field names
+
+The SQL adapter now reads keyword spellings as names in dot-member positions,
+retaining standalone/source/alias and bang restrictions. Bracketed prompt rules,
+owned spelling, clause boundaries and member-call refusal remain explicit.
+The registered ACE 2007 object-list query now reconstructs its stored
+`msysobjects.Connect`, complete filter and qualified sort keys. Its two VBA calls
+remain unresolved; explicit CLI execution fails without publishing rows.
+See [parser scope](SQL_PARSER.md) and [stored-query evidence](NATIVE_SAVED_QUERIES.md#registered-qualified-reserved-field).
+
+All 58 parser tests plus one doctest, 67 saved-query adapter tests and 30 CLI
+saved-query tests pass. Focused parser/adapter/CLI Clippy, minimal adapter check,
+formatting and diff checks pass. The registered example's original hash and bytes
+remain unchanged. No dependency, native decoder, VBA execution or write scope
+changed. Windows Access and full engine/workspace suites were not run. Native
+acceptance of arbitrary unbracketed keyword fields remains unqualified; P0 value
+and text semantics and wider query composition remain unfinished.
+
 ## Stored qualified wildcard projections
 
 Native saved SELECT/crosstab row projections now parse through one guarded owned

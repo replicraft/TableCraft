@@ -22,6 +22,8 @@ mod identifiers;
 mod ordering;
 #[path = "saved_query_definitions/parameter_prompts.rs"]
 mod parameter_prompts;
+#[path = "saved_query_definitions/qualified_fields.rs"]
+mod qualified_fields;
 #[path = "saved_query_definitions/unions.rs"]
 mod unions;
 #[path = "saved_query_definitions/wildcards.rs"]

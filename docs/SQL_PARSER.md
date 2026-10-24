@@ -155,9 +155,14 @@ limits. Fixed-seed properties use 256 cases and regression persistence. Exact
 local verification is recorded in IMPLEMENTATION.md; Windows/Linux and native
 Access comparison have not been observed for this implementation.
 
-The reserved `Value` spelling is accepted after a dot, preserving source spelling
-for qualified field/member access. Standalone reserved names and bang access keep
-their existing bracket requirements. [Multivalue execution](MULTIVALUE_QUERIES.md)
+Keyword spellings are accepted in dot-member positions, preserving source spelling
+for qualified field/member access, including `Tags.Value` and the registered
+application's stored `msysobjects.Connect`. A dot selects one identifier token;
+it does not admit a clause, statement or member call. Standalone reserved names,
+source names, aliases and bang access keep their existing bracket requirements.
+This context-specific syntax admission does not qualify every unbracketed keyword
+against native Access; formatted fields retain bracketed names.
+[Multivalue execution](MULTIVALUE_QUERIES.md)
 is a separate explicit host-source contract; parser acceptance does not expose
 native collections or activate object/VBA access.
 

@@ -21,3 +21,11 @@ pub(super) fn read(parser: &mut Parser<'_>) -> Result<Name, ParseError> {
 pub(super) fn prompt_only(name: &Name) -> bool {
     name.as_str().chars().any(|ch| ".!`".contains(ch))
 }
+
+pub(super) fn member(parser: &mut Parser<'_>) -> Result<Name, ParseError> {
+    if matches!(parser.peek_token().token, Token::Word(word) if word.quote_style.is_none()) {
+        access::member_name(parser)
+    } else {
+        read(parser)
+    }
+}

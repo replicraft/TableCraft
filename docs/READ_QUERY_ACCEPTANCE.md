@@ -103,6 +103,12 @@ semantics. See [metadata contracts](NATIVE_TABLES.md#attachment-metadata-project
 | P1 | Storage and scale | Wider column-type/row histories, broader collection sizes and file locality, predictable limits and unchanged originals |
 | Qualification | Native Access | Build/locale-qualified values, ordering, errors, saved queries and representative application outcomes on Windows |
 
+The registered application's object-list query now reconstructs its qualified
+reserved `msysobjects.Connect` field alongside the original filter and sort keys.
+Its VBA calls remain unresolved and explicit execution still fails without
+publishing rows. This closes a stored-syntax gap, not the remaining query
+composition or native execution acceptance scope.
+
 [Runtime domain text policies](RUNTIME_TEXT_POLICIES.md) now survive derived/named
 outputs and comparison/key consumers. Their conservative merge behavior does not
 complete native mixed-policy precedence or supply additional locale providers.

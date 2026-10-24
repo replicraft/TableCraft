@@ -1,5 +1,16 @@
 # Candidate Access fixtures
 
+## Registered saved object-list syntax
+
+The existing `Access_Example_VBA.accdb` additionally checks reconstruction of
+`101_Object_List_qry`, including its stored `msysobjects.Connect` field, original
+filter, qualified sort keys and unresolved VBA calls. The adapter compares the
+complete owned model with explicit bracketed SQL; CLI checks cover inert
+reconstruction and buffered unsupported execution. Original SHA-256 remains
+`3cd1fc88d70bc93909ae6d190fa9692e709d5641b205fd2f66185c905e42cfbf`.
+No binary, license scope or VBA runtime was added. Native Access query execution
+and arbitrary unbracketed reserved-name compatibility remain unqualified.
+
 ## Registered saved wildcard join
 
 The existing MIT-derived `Access_Example_VBA.accdb` original now additionally
