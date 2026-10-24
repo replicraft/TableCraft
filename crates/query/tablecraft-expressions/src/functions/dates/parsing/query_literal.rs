@@ -1,55 +1,19 @@
-//! SQL literal dates have U.S. order and complete years, independent of host locale.
-use super::{DateParseContext, DateTextFormat, date, text};
+//! SQL date-token interpretation is separate from runtime text-date policies.
+use super::{DateTextFormat, text};
 use crate::EvalError;
-use jiff::civil::Date;
 use tablecraft_core::values::LegacyDateTime;
 
+mod date;
+
 const MAX_QUERY_LITERAL_BYTES: usize = 64;
-const COMPLETE_YEAR_DIGITS: usize = 4;
-const MIN_COMPLETE_YEAR_DIGITS: usize = "100".len();
-const ISO_DATE_BYTES: usize = "YYYY-MM-DD".len();
-const ISO_DAY_SEPARATOR: usize = "YYYY-MM".len();
 
 pub(crate) fn parse(value: &str) -> Result<LegacyDateTime, EvalError> {
     if value.len() > MAX_QUERY_LITERAL_BYTES || !value.is_ascii() {
         return Err(EvalError::UnsupportedLiteral);
     }
 
-    let context = DateParseContext {
-        date_format: Some(DateTextFormat::EnUs),
-        ..Default::default()
-    };
-
-    let calendar = text::parse_with(value, context.date_format, false, |part| {
-        let iso = part.as_bytes().get(COMPLETE_YEAR_DIGITS) == Some(&b'-')
-            && part.as_bytes()[..COMPLETE_YEAR_DIGITS]
-                .iter()
-                .all(u8::is_ascii_digit);
-
-        if iso {
-            if part.len() != ISO_DATE_BYTES || part.as_bytes().get(ISO_DAY_SEPARATOR) != Some(&b'-')
-            {
-                return Err(EvalError::UnsupportedLiteral);
-            }
-            return part
-                .parse::<Date>()
-                .map_err(|_| EvalError::UnsupportedLiteral);
-        }
-
-        let year = part
-            .split(|ch: char| ch.is_ascii_whitespace() || matches!(ch, '/' | '-' | ','))
-            .rfind(|token| !token.is_empty())
-            .ok_or(EvalError::UnsupportedLiteral)?;
-
-        if !(MIN_COMPLETE_YEAR_DIGITS..=COMPLETE_YEAR_DIGITS).contains(&year.len())
-            || !year.bytes().all(|byte| byte.is_ascii_digit())
-        {
-            return Err(EvalError::UnsupportedLiteral);
-        }
-
-        date::parse(part, context)
-    })
-    .map_err(|_| EvalError::UnsupportedLiteral)?;
+    let calendar = text::parse_with(value, Some(DateTextFormat::EnUs), false, date::parse)
+        .map_err(|_| EvalError::UnsupportedLiteral)?;
 
     LegacyDateTime::from_calendar(calendar).map_err(|_| EvalError::UnsupportedLiteral)
 }
@@ -97,15 +61,13 @@ mod tests {
         for text in [
             "",
             "2/29/1900",
-            "13/1/2026",
-            "31/12/2026",
-            "1/2/26",
-            "Mar-7-17",
+            "32/13/2026",
+            "1//2/2026",
+            "Jan/Feb/2026",
+            "1/2/10000",
             "Mar 7",
             "1/2",
-            "1/1/0099",
             "01.02.2026",
-            "2024-2-29",
             "2024-02-29T12:00:00Z",
             "2024-02-29 12:00:00+01:00",
             "12/31/2024 24:00",
@@ -126,6 +88,38 @@ mod tests {
             parse_query_literal(&" ".repeat(65)),
             Err(EvalError::UnsupportedLiteral)
         );
+    }
+
+    #[test]
+    fn token_years_and_component_priorities_have_stable_compile_time_values() {
+        for year in 0..=99 {
+            let expected = if year < 30 { 2000 + year } else { 1900 + year };
+            assert_eq!(
+                parse_query_literal(&format!("1/2/{year:02}")).unwrap(),
+                LegacyDateTime::from_calendar(date(expected, 1, 2).at(0, 0, 0, 0)).unwrap()
+            );
+        }
+
+        for (text, expected) in [
+            ("49/1/2", date(1949, 1, 2)),
+            ("31/12/26", date(1931, 12, 26)),
+            ("2024/2/29", date(2024, 2, 29)),
+            ("13/1/2026", date(2026, 1, 13)),
+            ("1 / 2 / 0029", date(2029, 1, 2)),
+            ("0099-01-01", date(1999, 1, 1)),
+            ("49 Jan 2", date(1949, 1, 2)),
+            ("2 49 Jan", date(1949, 1, 2)),
+            ("Jan 2, 49", date(1949, 1, 2)),
+            ("Feb 2024", date(2024, 2, 1)),
+            ("2024/2", date(2024, 2, 1)),
+            ("Feb 99", date(1999, 2, 1)),
+        ] {
+            assert_eq!(
+                parse_query_literal(text).unwrap(),
+                LegacyDateTime::from_calendar(expected.at(0, 0, 0, 0)).unwrap(),
+                "{text}"
+            );
+        }
     }
 
     proptest! {

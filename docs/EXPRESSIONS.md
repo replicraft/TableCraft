@@ -167,7 +167,7 @@ unsupported syntax, callback collation, cancellation, cumulative byte/step
 charges and lowered/clamped depth/output limits.
 
 Legacy Date/Time now supports temporal comparison, strict ISO and
-[complete-year U.S./English SQL literals](SQL_DATE_LITERALS.md) under the SQL
+[U.S./English token-date SQL literals](SQL_DATE_LITERALS.md) under the SQL
 feature. Literal U.S. order is independent of execution-local text-date policies;
 CLI typed date parameters retain strict ISO. [Native date contracts](NATIVE_TABLES.md#legacy-datetime) describe
 negative-day semantics, rounding boundaries and rejected locale/timezone coercions.

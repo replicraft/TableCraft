@@ -207,8 +207,9 @@ broader evolution remain unqualified. [History evidence](testing/COLUMN_HISTORIE
 records immutable original/derivative inputs and corrupted-copy refusals.
 
 
-[SQL date literals](SQL_DATE_LITERALS.md) now accept complete-year U.S./English
-dates and qualified time spellings through pure Jiff-backed recognition. U.S.
-order remains independent of execution date policies, and invalid literals fail
-metadata binding even on empty results. Two-digit/omitted years, wider regional
-spellings and native precision/error qualification remain open.
+[SQL date literals](SQL_DATE_LITERALS.md) now accept U.S./English dates with a
+fixed token-year mapping, documented component-order priorities, known month/year
+forms and qualified times through pure Jiff-backed recognition. Literal values
+remain independent of runtime date policies; invalid constants fail metadata
+binding even on empty results. Implementation-defined default years, wider time/
+regional forms and native precision/error qualification remain open.

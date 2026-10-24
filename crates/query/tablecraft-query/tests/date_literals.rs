@@ -1,5 +1,8 @@
 use tablecraft_core::values::Value;
-use tablecraft_expressions::{EvalError, functions::dates::parsing::DateTextFormat};
+use tablecraft_expressions::{
+    EvalError,
+    functions::dates::{TwoDigitYearWindow, parsing::DateTextFormat},
+};
 use tablecraft_query::{ExecutionOptions, QueryError, prepare, source::MemorySource};
 use tablecraft_sql::parse_query;
 
@@ -35,9 +38,9 @@ fn invalid_date_literals_fail_metadata_binding_even_in_an_empty_result() {
     let source = MemorySource::default();
     for literal in [
         "2/29/1900",
-        "1/2/26",
+        "1//2/26",
         "Mar 7",
-        "13/1/2026",
+        "32/13/2026",
         "12/31/2024 24:00",
     ] {
         let parsed = parse_query(
@@ -71,5 +74,36 @@ fn literal_dates_compose_with_grouped_subqueries_membership_and_dynamic_expressi
             .execute(&source, &[], Default::default())
             .unwrap();
         assert_eq!(result.rows(), [expected]);
+    }
+}
+
+#[test]
+fn token_years_are_not_rebound_by_runtime_date_serial_windows() {
+    let source = MemorySource::default();
+    let parsed = parse_query(
+        "SELECT Year(#1/2/49#),Year(DateSerial(49,1,2)),Day(#31/12/26#)",
+        Default::default(),
+    )
+    .unwrap();
+    let plan = prepare(parsed.query(), &source).unwrap();
+    for (last, expected_constructor_year) in [(2029, 1949), (2049, 2049)] {
+        let result = plan
+            .execute(
+                &source,
+                &[],
+                ExecutionOptions {
+                    year_window: Some(TwoDigitYearWindow::new(last).unwrap()),
+                    ..Default::default()
+                },
+            )
+            .unwrap();
+        assert_eq!(
+            result.rows(),
+            [vec![
+                Value::Int16(1949),
+                Value::Int16(expected_constructor_year),
+                Value::Int16(26)
+            ]]
+        );
     }
 }

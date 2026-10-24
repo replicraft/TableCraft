@@ -71,10 +71,25 @@ def main():
                 query(mode, sql, [[str(part) for part in [
                     value.year, value.month, value.day, value.hour, value.minute, value.second,
                 ]]], options=["--date-format", "de-de"])
-        for literal in ["1/2/26", "2/29/1900", "13/1/2026", "Mar 7", "12/31/2024 24:00"]:
+        for literal in ["1//2/26", "2/29/1900", "32/13/2026", "Mar 7", "12/31/2024 24:00"]:
             query(mode, f"SELECT 1,#{literal}#", fails=True)
         query(mode, "SELECT #1/2/2026#=#2026-01-02#,CDbl(#12/29/1899 06:00#)", [["TRUE", "-1.25"]])
         query(mode, "SELECT Hour(#12 AM#),Hour(#12 PM#),Minute(#2:24PM#)", [["0", "12", "24"]])
+
+    for mode in ["eval", "run"]:
+        for year in range(100):
+            expected = 2000 + year if year < 30 else 1900 + year
+            query(
+                mode, f"SELECT Year(#1/2/{year:02}#),Month(#1/2/{year:02}#),Day(#1/2/{year:02}#)",
+                [[str(expected), "1", "2"]], options=["--two-digit-year-max", "2049"],
+            )
+        for literal, expected in [
+            ("31/12/26", [1931, 12, 26]), ("2024/2/29", [2024, 2, 29]),
+            ("49 Jan 2", [1949, 1, 2]), ("Jan 2, 49", [1949, 1, 2]),
+            ("2024/2", [2024, 2, 1]), ("Feb 99", [1999, 2, 1]),
+        ]:
+            query(mode, f"SELECT Year(#{literal}#),Month(#{literal}#),Day(#{literal}#)",
+                  [[str(value) for value in expected]])
 
     scalar_controls = controls
     lower = datetime.datetime(2024, 1, 2)
@@ -101,16 +116,16 @@ def main():
             selected_options = [*options, *index]
             query(
                 "run", "SELECT Count(*) AS N FROM IndexedRows "
-                "WHERE Stamp BETWEEN #1/2/2024# AND #1/3/2024 11:59:59PM#",
+                "WHERE Stamp BETWEEN #1/2/24# AND #2024/1/3 11:59:59PM#",
                 [[str(len(selected))]], selected_options,
             )
             query(
                 "run", "SELECT TOP 17 ID FROM IndexedRows "
-                "WHERE Stamp BETWEEN #Jan 2, 2024# AND #3-Jan-2024 23:59:59# ORDER BY ID",
+                "WHERE Stamp BETWEEN #Jan 2, 24# AND #3-Jan-24 23:59:59# ORDER BY ID",
                 [[str(identity)] for identity in sorted(selected)[:17]], selected_options,
             )
             query(
-                "run", "SELECT Count(*) FROM IndexedRows WHERE Stamp=#1/2/24#",
+                "run", "SELECT Count(*) FROM IndexedRows WHERE Stamp=#32/13/24#",
                 options=selected_options, fails=True,
             )
         assert hashlib.sha256(path.read_bytes()).hexdigest() == before, "Original changed"
