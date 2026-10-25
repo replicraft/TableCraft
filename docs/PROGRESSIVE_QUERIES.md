@@ -15,7 +15,12 @@ SELECT arms, with optional aliases, declared parameters, row-local WHERE, scalar
 projections and positive unordered TOP counts. Wildcards use the ordinary qualified
 scalar metadata. Original source order and eager predicate/projection
 kernels are retained. Scalar conversion, arithmetic, text and inspection services
-use the same explicit execution policies as buffered queries.
+use the same explicit execution policies as buffered queries. Prior explicitly
+named row-local projections can feed later projections through the ordinary
+[projection alias](PROJECTION_ALIASES.md) references. Each definition executes once
+at its written position, and consumers preserve its retained carrier/declaration
+and text policy. Alias references do not bypass the complete arm admission check
+or introduce new WHERE/aggregate/subquery scopes.
 
 Admission rejects ordering, TOP PERCENT, DISTINCT/active DISTINCTROW, grouping/HAVING,
 duplicate-eliminating UNION/crosstabs, joins/products, named/derived sources,

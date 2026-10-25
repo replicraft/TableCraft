@@ -388,9 +388,6 @@ impl Binder<'_> {
                 .chain(having.iter())
                 .chain(sort.iter().map(|(e, _)| e))
                 .any(has_aggregate);
-        if self.aliases.used && aggregate {
-            return Err(QueryError::Unsupported);
-        }
         if having.is_some() && !aggregate {
             return Err(QueryError::Grouping);
         }

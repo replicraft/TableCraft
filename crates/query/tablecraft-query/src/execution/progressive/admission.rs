@@ -64,7 +64,8 @@ impl Runtime<'_, '_> {
             | Expr::DateLiteral(..)
             | Expr::Field { depth: 0, .. }
             | Expr::Parameter(_)
-            | Expr::CurrentUser => Ok(()),
+            | Expr::CurrentUser
+            | Expr::Projected(_) => Ok(()),
             Expr::Unary(_, value)
             | Expr::IsNull(value, _)
             | Expr::DateCall(_, value)
@@ -130,7 +131,6 @@ impl Runtime<'_, '_> {
             Expr::DomainCall(..)
             | Expr::Field { .. }
             | Expr::Output(..)
-            | Expr::Projected(_)
             | Expr::CollectionItem { .. }
             | Expr::CollectionEmpty(..)
             | Expr::ParentPresence { .. }

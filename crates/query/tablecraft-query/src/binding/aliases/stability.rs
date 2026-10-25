@@ -16,7 +16,6 @@ impl Binder<'_> {
         Ok(match expr {
             Expr::MathCall(MathFunction::Rnd, _)
             | Expr::Clock(_)
-            | Expr::CurrentUser
             | Expr::Eval(_)
             | Expr::DomainCall(..) => false,
             Expr::Literal(_)
@@ -27,7 +26,8 @@ impl Binder<'_> {
             | Expr::CollectionItem { .. }
             | Expr::ParentPresence { .. }
             | Expr::Output(_, _)
-            | Expr::Projected(_) => true,
+            | Expr::Projected(_)
+            | Expr::CurrentUser => true,
             Expr::Unary(_, expr)
             | Expr::IsNull(expr, _)
             | Expr::CollectionEmpty(expr, _)

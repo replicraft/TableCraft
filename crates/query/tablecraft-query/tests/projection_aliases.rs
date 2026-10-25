@@ -1,9 +1,10 @@
 //! Projection aliases compose within their written SELECT, never another scope.
 use std::cell::Cell;
 use tablecraft_core::values::Value;
+use tablecraft_expressions::{EvalError, functions::session::AccessSessionContext};
 use tablecraft_query::{
     ExecutionOptions, QueryError, Source, prepare,
-    source::{MemorySource, MemoryTable},
+    source::{MemorySource, MemoryTable, ProjectedRow},
 };
 use tablecraft_schema::{Column, ScalarType};
 use tablecraft_sql::{parse_query, query::Query};
@@ -44,6 +45,17 @@ impl Source for Host {
             .iter()
             .find(|(candidate, _)| candidate.eq_ignore_ascii_case(name))
             .map(|(_, query)| query))
+    }
+
+    fn scan_projected_progressive(
+        &self,
+        table: &str,
+        indices: &[usize],
+        visitor: &mut dyn FnMut(ProjectedRow<'_>) -> Result<(), QueryError>,
+    ) -> Result<(), QueryError> {
+        self.scans.set(self.scans.get() + 1);
+        self.data
+            .scan_projected_progressive(table, indices, visitor)
     }
 
     fn scan(
@@ -145,12 +157,108 @@ fn unsupported_alias_dependencies_fail_before_any_records() {
         "SELECT Now() AS Moment,Moment FROM T",
         "SELECT Eval('1') AS DynamicValue,DynamicValue FROM T",
         "SELECT DCount('*','T') AS DomainValue,DomainValue FROM T",
-        "SELECT Count(*) AS Total,Total+1 FROM T",
-        "SELECT N AS KeyValue,KeyValue FROM T GROUP BY N",
         "SELECT N AS Seed,Sum(Seed) FROM T",
     ] {
         let syntax = parse_query(sql, Default::default()).unwrap();
         assert!(prepare(syntax.query(), &source).is_err(), "{sql}");
         assert_eq!(source.scans.get(), 0);
+    }
+}
+
+#[test]
+fn grouped_keys_and_aggregate_outputs_feed_later_aliases() {
+    let source = Host::new(&[]);
+    for sql in [
+        "SELECT N AS KeyValue,KeyValue AS Copy,Count(*) AS Total,Total AS Again FROM T GROUP BY N ORDER BY N",
+        "SELECT N AS KeyValue,KeyValue AS Copy,Sum(CLng(1)) AS Total,Total AS Again FROM T GROUP BY N ORDER BY N",
+    ] {
+        let syntax = parse_query(sql, Default::default()).unwrap();
+        let plan = prepare(syntax.query(), &source).unwrap();
+        for declared in [false, true] {
+            let result = plan
+                .execute(
+                    &source,
+                    &[],
+                    ExecutionOptions {
+                        declared_integral: declared,
+                        ..Default::default()
+                    },
+                )
+                .unwrap();
+            let expected = [1, 3, 5].map(|key| {
+                vec![
+                    Value::Int32(key),
+                    Value::Int32(key),
+                    Value::Int64(1),
+                    Value::Int64(1),
+                ]
+            });
+            assert_eq!(result.rows(), expected);
+        }
+    }
+}
+
+#[test]
+fn progressive_alias_chains_match_buffered_union_arm_values() {
+    let source = Host::new(&[]);
+    let syntax = parse_query(
+        "SELECT N AS Seed,Seed+CLng(1) AS NextValue FROM T
+         UNION ALL SELECT N AS Other,Other+CLng(2) FROM T",
+        Default::default(),
+    )
+    .unwrap();
+    let plan = prepare(syntax.query(), &source).unwrap();
+    assert_eq!(source.scans.get(), 0);
+    for declared in [false, true] {
+        let options = ExecutionOptions {
+            declared_integral: declared,
+            ..Default::default()
+        };
+        let expected = plan.execute(&source, &[], options).unwrap();
+        let mut rows = Vec::new();
+        let summary = plan
+            .execute_progressive(&source, &[], options, &mut |row: &[Value]| {
+                rows.push(row.to_vec());
+                Ok::<(), ()>(())
+            })
+            .unwrap();
+        assert_eq!(summary.scanned_rows, 6);
+        assert_eq!(summary.emitted_rows, 6);
+        assert_eq!(rows, expected.rows());
+    }
+}
+
+#[test]
+fn immutable_session_aliases_reuse_the_exact_current_execution_context() {
+    let source = Host::new(&[]);
+    let syntax = parse_query(
+        "SELECT CurrentUser() AS AccountName,AccountName AS Copy FROM T",
+        Default::default(),
+    )
+    .unwrap();
+    let plan = prepare(syntax.query(), &source).unwrap();
+    assert_eq!(source.scans.get(), 0);
+    assert_eq!(
+        plan.execute(&source, &[], Default::default()).err(),
+        Some(QueryError::Evaluation(EvalError::AccessSessionRequired)),
+    );
+    for name in ["Reader", " e\u{301} "] {
+        let options = ExecutionOptions {
+            access_session: Some(AccessSessionContext::new(name).unwrap()),
+            ..Default::default()
+        };
+        let expected = vec![Value::Text(name.into()), Value::Text(name.into())];
+        let buffered = plan.execute(&source, &[], options).unwrap();
+        assert_eq!(
+            buffered.rows(),
+            [expected.clone(), expected.clone(), expected.clone()]
+        );
+        let mut progressive = Vec::new();
+        plan.execute_progressive(&source, &[], options, &mut |row: &[Value]| {
+            progressive.push(row.to_vec());
+            Ok::<(), ()>(())
+        })
+        .unwrap();
+        assert_eq!(progressive, buffered.rows());
     }
 }

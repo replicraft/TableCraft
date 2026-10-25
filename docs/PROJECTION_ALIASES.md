@@ -1,6 +1,6 @@
 # Prior projection aliases
 
-Ordinary buffered SELECT projections can refer to an earlier explicit alias in
+SELECT projections can refer to an earlier explicit alias in
 that same SELECT. The reference reads the already computed retained cell; it does
 not copy the defining expression into the dependent expression.
 
@@ -48,6 +48,28 @@ consume the existing binding allocation/work/depth allowances. Runtime reference
 and retained payload copies consume the same cumulative query budget as other
 expression cells and honor cancellation.
 
+## Grouped and progressive execution
+
+Grouped SELECTs can reuse prior group-key and aggregate output aliases. Every
+projection definition is validated in written order by the existing grouped-field
+capture validator. A later reference introduces no new source captures: its earlier
+definition has already passed validation, and nested reads cannot capture that
+projection alias. An ungrouped field cannot be laundered through an alias into a
+grouped result. Aggregate operands still bind against source/parameter scopes;
+`Sum(PriorAlias)` does not acquire a per-source-row interpretation from a
+per-group output cell. Unknown aggregate declarations remain unknown for later
+arithmetic; known field declarations and Count carrier descriptors retain their
+existing guarantees.
+
+The existing progressive direct-table/flat UNION ALL service also accepts these
+row-local dependencies. Each written projection observes the same row environment
+and the prior retained output cells. It retains the normal per-arm schema/shape
+preflight, whole-UNION promotion, raw publication and sticky sink/source failure
+contracts. TOP still computes all later qualifying projections and validates EOF;
+references and their payload copies consume the cumulative allowance even when
+that row is omitted. This does not admit grouped progressive reads or any other
+previously refused source shape. See [progressive queries](PROGRESSIVE_QUERIES.md).
+
 ## Current boundaries
 
 Alias dependencies are limited to stable definitions under this engineering
@@ -55,13 +77,15 @@ profile. Clocks, Rnd, Eval and opaque domain calls are refused when their alias 
 referenced, including inside a dependent scalar subquery or derived source.
 Ordinary comparison providers remain explicitly supplied and deterministic; a
 reused comparison alias reads the computed Boolean cell rather than invoking its
-provider again. An unused alias does not make an otherwise supported volatile or
-opaque definition unavailable.
+provider again. CurrentUser aliases use the immutable caller-supplied session
+name for that execution; missing session context retains its ordinary failure.
+This is expression metadata, not authentication or a database permission. An
+unused alias does not make an otherwise supported volatile or opaque definition
+unavailable.
 
 References are not introduced into WHERE, GROUP BY, HAVING, aggregate operands or
-nested subqueries. Grouped/aggregate SELECT alias dependencies, crosstab projection
-dependencies and progressive execution remain unsupported and fail before row
-scans/output. Existing bare ORDER BY aliases and ordinals keep their separate
+nested subqueries. Crosstab projection dependencies remain unsupported and fail
+before row scans/output. Existing bare ORDER BY aliases and ordinals keep their separate
 output-reference behavior; compound ordering aliases are not added by this slice.
 Forward dependencies, broader native name precedence, volatile alias evaluation
 counts and native Access qualification remain open work.
