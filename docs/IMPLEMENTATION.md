@@ -1,5 +1,16 @@
 # Implementation status
 
+## Thirty-two flat FROM items
+
+Query preparation now admits 32 top-level FROM items, with unchanged depth,
+combined-schema and cumulative execution limits. Five new controls verify complete
+projection order, metadata-only preparation, filtering, empty tables, crosstabs,
+33-item refusal before source callbacks, quotas and cancellation. Sixteen existing
+crosstab and 53 retrieval tests also pass, with strict scoped Clippy. See
+[the preparation limits](QUERY_EXECUTION.md).
+This is a consumer limit expansion, not native Access qualification or a new
+global physical-table counter.
+
 ## Retained operands in the public operator API
 
 `Evaluator::apply_expression_binary` now routes retained String ranges through
