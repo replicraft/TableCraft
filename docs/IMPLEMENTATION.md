@@ -1,5 +1,15 @@
 # Implementation status
 
+## Exact template XML names
+
+Template XML now validates NCName/QName spellings against the exact XML 1.0
+Fifth Edition ranges before namespace lookup or Access field-name escape decoding.
+Valid middle-dot/combining continuations and supplementary starts work; invalid
+Unicode-category approximations and malformed qualified names refuse. SQL/native
+name rules remain separate. Seven new controls and 59 template regressions pass
+with strict Access Clippy and formatting. See [scope](ACCESS_TEMPLATE_DATA.md)
+and [verification](testing/results/read-query-template-xml-names-2026-10-25.json).
+
 ## Explicit Japanese string encoding
 
 StrConv now accepts explicit LCID 1041 through complete string-codec/locale APIs,

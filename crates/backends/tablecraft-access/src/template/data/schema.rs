@@ -1,7 +1,10 @@
 //! Qualified inline XSD shapes and exact scalar domains, separate from values.
 mod local_types;
 
-use super::super::tree::{Node, OD, XSD};
+use super::super::{
+    tree::{Node, OD, XSD},
+    xml_names,
+};
 use super::{MAX_COLUMNS, TemplateError, check, names};
 use local_types::LocalTypes;
 use std::collections::BTreeSet;
@@ -279,16 +282,12 @@ pub(super) fn read(
 }
 
 fn xml_name(value: &str) -> Result<&str, TemplateError> {
-    if !value.chars().enumerate().all(|(index, c)| {
-        c == '_'
-            || c.is_alphabetic()
-            || (index > 0 && (c.is_alphanumeric() || matches!(c, '-' | '.')))
-    }) || value.is_empty()
-    {
+    if !xml_names::ncname(value) {
         return Err(TemplateError::Unsupported);
     }
     Ok(value)
 }
+
 fn children(node: &Node) -> Result<Vec<&Node>, TemplateError> {
     node.whitespace()?;
     Ok(node

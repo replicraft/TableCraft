@@ -142,9 +142,23 @@ Missing minOccurs=0 cells become NULL; required cells cannot disappear. Explicit
 xsi:nil=true requires nillable=true and empty content. Empty Text/Binary remain
 empty values. Cell order, unknown/duplicate cells, invalid values and supported
 facet failures are rejected. XML `_xHHHH_` UTF-16 names decode once, including
-paired surrogates and escaped underscores; invalid surrogates fail. The bounded
-NCName profile remains narrower than all Unicode XML names. Decoded field names
-must remain distinct under the shared ASCII-insensitive name policy.
+paired surrogates and escaped underscores; invalid surrogates fail. Raw schema
+names follow [XML 1.0 Fifth Edition NCName character rules](https://www.w3.org/TR/REC-xml/#NT-NameStartChar),
+with colons excluded as required by [Namespaces in XML](https://www.w3.org/TR/xml-names/#NT-NCName).
+This validation precedes Access escape decoding, so an escaped space or colon
+can still become part of a stored field name. Middle dots and combining marks
+are admitted at continuation positions, and supplementary name-start characters
+through U+EFFFF are admitted. Unicode character categories are not a substitute
+for these fixed ranges. Decoded field names must remain distinct under the shared
+ASCII-insensitive name policy.
+
+Element/attribute names, including namespace declarations, follow exact QName
+syntax. XSD `type`, `base` and `ref` values are checked as QNames after trimming
+XML whitespace and before resolving their namespace. Empty components, multiple
+colons, invalid name characters and unbound prefixes fail. No Unicode
+normalization or case folding changes XML identities. SQL and native database
+name policies remain separate. Prefix-only schema discovery retains its existing
+boundary and does not inspect malformed data after the schema.
 
 ## Limits, CLI and evidence
 
@@ -208,3 +222,14 @@ Strict Access library/test Clippy and the initial library check pass. The
 [scoped verification record](testing/results/read-query-template-named-types-2026-10-25.json)
 contains exact commands, source/log hashes, count attribution and excluded
 companion failures. No native Access execution or template instantiation was run.
+
+### XML name verification
+
+The [scoped verification record](testing/results/read-query-template-xml-names-2026-10-25.json)
+records 66 passing template tests, including seven new exact-name tests, and
+strict Access library/test linting. Independent literal boundary cases cover the
+XML character ranges, continuation-only characters and invalid Unicode category
+counterexamples. Original authored packages cover all four mandatory encoding
+variants, exact stored names/rows, Unicode namespace prefixes, malformed metadata,
+unchanged bytes and lazy schema discovery despite a malformed data suffix.
+These checks do not establish native Access template instantiation compatibility.
