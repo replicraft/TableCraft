@@ -12,7 +12,11 @@ fit finite work allowances. Twenty-four new controls and 427 regressions pass,
 with strict query/native/CLI linting, minimal query features and formatting.
 See [proof and fallback](EXACT_QUERY_KEYS.md) and
 [verification](testing/results/read-query-exact-fixed-keys-2026-10-25.json).
-This changes execution strategy, without qualifying native Access numeric behavior.
+The [original native/CAB replay](testing/EXACT_FIXED_KEYS.md) passes 90 controls,
+including 84 new-query successes comparing 14,088 rows and 41,802 cells. The old
+1,100-key Decimal grouping needs increased work; the new path fits default work.
+Sixteen immutable and seventy-one revision-source hashes were independently
+checked. This changes execution strategy, without qualifying native Access numeric behavior.
 
 ## Progressive terminal HAVING
 

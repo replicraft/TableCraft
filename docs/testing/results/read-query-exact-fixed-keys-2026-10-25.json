@@ -151,7 +151,7 @@
   ],
   "source_timing": "Production check and all new public/private tests passed first attempt; strict Clippy and minimal-feature checking required no edits. Final related rerun followed only the obsolete negative-control update. Partial/superseded passes are not added to394.",
   "validation_limits": [
-    "Scoped451 query/native/CLI tests with strict linting, minimal query features and formatting; original frozen-binary replay remains pending separate evidence.",
+    "Scoped451 query/native/CLI tests with strict linting, minimal query features and formatting, plus a separately frozen original native/CAB replay.",
     "No Date/Text/float/GUID/Binary or mixed-profile expansion, new native index encoding, pushdown constraint, expression arithmetic, metadata inference or dependency change.",
     "No full workspace suite, Microsoft Access numeric/optimizer qualification, timing or constant-memory claim."
   ],
@@ -163,5 +163,22 @@
     "query_logs": "Parent independently rehashed every accepted query check before host integration.",
     "native_cli": "57 additional controls, including three new tests across four priority profiles and both execution arithmetic profiles, pass with exact stored carriers/scale, no complete cursor cache, EOF-first publication and original-byte guards.",
     "source_timing": "Host checks initially passed; one expected fixture allocation changed from Vec to array for strict lint. Final57 and strict lint cover the final source, with unchanged values and production."
+  },
+  "original_native_replay": {
+    "report": "docs/testing/results/exact-fixed-keys-2026-10-25.json",
+    "sha256": "a5820e6f891d18f81bffb2a0b200064541bc30316f933c5663cb3bda75a72010",
+    "terminal_session": 55665,
+    "matched_commands": 90,
+    "new_successes": 84,
+    "new_rows": 14088,
+    "new_cells": 41802,
+    "old_baseline_commands": 4,
+    "representation_commands": 2,
+    "immutable_pins_independently_rehashed": 16,
+    "new_revision_sources_independently_rehashed": 37,
+    "old_revision_sources_independently_rehashed": 34,
+    "initial_numeric_goldens_and_commands_unchanged": true,
+    "comparison_scope": "Only calculated Decimal quotient key column0 in three case families compares exact Fraction(PythonDecimal); other cells and first-scale controls remain exact wire. Existing division scale independently pinned using old/new frozen probes.",
+    "native_access_qualified": false
   }
 }
