@@ -8173,3 +8173,18 @@ from committed revision `905b885a`, rather than mutable live source. Original by
 remain unchanged. These engineering results do not qualify native Access execution
 or larger-than-default CLI snapshot scale. The owning record preserves exact
 commands, hashes, model counts and excluded oracle-setup probes.
+
+## Native progressive Sum/Avg replay (25 October 2026)
+
+The [independent numeric replay](testing/PROGRESSIVE_NUMERIC_AGGREGATES.md) reuses
+the four unchanged originals and getter artifacts registered by the
+[Decimal selection corpus](testing/DECIMAL_INDEX_SELECTIONS.md#original-inputs-and-independent-model).
+No additional database binaries or third-party code are distributed. The original
+MIT generator, reviewed reader, hashes and notices retain their existing records.
+
+A fresh frozen CLI compiled from `e837d675137c8df82f296cfe9aab9f7b43ea6bb6`
+passes 244 getter/Fraction controls; 204 successes compare 228 output rows and
+996 cells, while forty modeled failures retain empty stdout. Ten immutable
+artifact hashes agree before/after and were independently rehashed by the parent;
+twenty-six scoped compiled-revision source hashes also match raw git objects.
+This is independent engineering evidence, without native Access qualification.

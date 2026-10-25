@@ -11,6 +11,10 @@ error phases remain explicit. Twenty-four new controls and 213 regressions pass
 with strict query/native/CLI Clippy and formatting. See
 [scope](PROGRESSIVE_QUERIES.md#global-sum-and-avg) and
 [verification](testing/results/read-query-progressive-numeric-aggregates-2026-10-25.json).
+A separate [original four-profile replay](testing/PROGRESSIVE_NUMERIC_AGGREGATES.md)
+passes 244 getter/Fraction controls, comparing 228 rows and 996 cells. All ten
+immutable and twenty-six scoped compiled-source hashes were independently rechecked.
+Native Access qualification remains separate.
 
 ## Progressive stored calculation reads
 

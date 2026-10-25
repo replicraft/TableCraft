@@ -1,0 +1,4783 @@
+{
+  "date": "2026-10-25",
+  "compiled_revision": "e837d675137c8df82f296cfe9aab9f7b43ea6bb6",
+  "scope": "Independent native getter/Fraction Sum/Avg engineering evidence; no Access qualification",
+  "immutable_sha256_before": {
+    ".cache/tablecraft-bin/progressive-numeric-cli-20261025": "c1e7c12722c31c31fbcdf47283b2ef0c92089d698b51f09cc200efda1cbc90c5",
+    ".cache/tablecraft-fixtures/jackcess-5.0.4.jar": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    "docs/testing/compare_progressive_numeric.py": "fd96b5c2eef593337ce08e49e99217138aeb0ce96429e6063c6c78958e255ac8",
+    ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb": "0ec45083fd4aea8cde561ecac5a6bec472a019d9a62249914120c9ad6fc1782a",
+    ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb": "7d6bf4d00e6da1a674e2ac8dbc5fea9e6ab84a26fc09ae7e98010c22cc6ffc21",
+    ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb": "be4d1f2d6bc9005263ff1ae90f442897f2d63b7d02f7e2b2bfcbfc00a26dc63c",
+    ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb": "555d1544d87d54d82648a36a2e46148dc1c9911d07b2070909dfd3710799cb37",
+    "docs/testing/compare_decimal_seeks.py": "eedf7e0c24856d566280641930e434ed340e80a55443ceebc451caf859bbcc48",
+    "docs/testing/DecimalIndexFixture.java": "dfbb9d98ab48c68f35ece47225e314373dcf66efd6beb515b5a432b68e2663fa",
+    "docs/testing/IndexRowsOracle.java": "06cf3882a64d5509b2cf93bd3d30ad30bcb70f685afe546c5d200fe2dce315f4"
+  },
+  "immutable_sha256_after": {
+    ".cache/tablecraft-bin/progressive-numeric-cli-20261025": "c1e7c12722c31c31fbcdf47283b2ef0c92089d698b51f09cc200efda1cbc90c5",
+    ".cache/tablecraft-fixtures/jackcess-5.0.4.jar": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    "docs/testing/compare_progressive_numeric.py": "fd96b5c2eef593337ce08e49e99217138aeb0ce96429e6063c6c78958e255ac8",
+    ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb": "0ec45083fd4aea8cde561ecac5a6bec472a019d9a62249914120c9ad6fc1782a",
+    ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb": "7d6bf4d00e6da1a674e2ac8dbc5fea9e6ab84a26fc09ae7e98010c22cc6ffc21",
+    ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb": "be4d1f2d6bc9005263ff1ae90f442897f2d63b7d02f7e2b2bfcbfc00a26dc63c",
+    ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb": "555d1544d87d54d82648a36a2e46148dc1c9911d07b2070909dfd3710799cb37",
+    "docs/testing/compare_decimal_seeks.py": "eedf7e0c24856d566280641930e434ed340e80a55443ceebc451caf859bbcc48",
+    "docs/testing/DecimalIndexFixture.java": "dfbb9d98ab48c68f35ece47225e314373dcf66efd6beb515b5a432b68e2663fa",
+    "docs/testing/IndexRowsOracle.java": "06cf3882a64d5509b2cf93bd3d30ad30bcb70f685afe546c5d200fe2dce315f4"
+  },
+  "compiled_revision_source_sha256": {
+    "apps/tablecraft-cli/src/commands/query/args.rs": "cf4411336886900d33ff0cb1eaba53b4503438c159cf1f0dc9b649c9f0272d20",
+    "apps/tablecraft-cli/src/commands/query/run_args.rs": "1ed24771e0ed5a1a4ec85aa87cb33ceafb21b6066155d43620673223902e28bb",
+    "apps/tablecraft-cli/src/output.rs": "adcaab8850c50f62781ca3aafec79ce50e033c10b21c149f26e514698f5cab1a",
+    "crates/backends/tablecraft-access/src/source/progressive.rs": "6681e128693675d5d5f9b34173b21905589e641ecc9c9e19c4c5dddec7f30a04",
+    "crates/query/tablecraft-query/src/execution/aggregate/accumulator.rs": "c2a527737d16d9e09a2cc0685dca2017fb7a26e0a944b052c8b6b169b6f48175",
+    "crates/query/tablecraft-query/src/execution/aggregate/average.rs": "5d2674c21f820801b54283c894f6a24621444e0de23c187e7426e012df5a028f",
+    "crates/query/tablecraft-query/src/execution/aggregate/binary.rs": "6ff65162962de5348314b1c9efd58dcfd59d58481c0c5bd690da6ab9136d7f1d",
+    "crates/query/tablecraft-query/src/execution/aggregate/count.rs": "f460f231aee31f25104aa1a263edd609d61fc48037d01cf1a4bcbbfc7e3232a8",
+    "crates/query/tablecraft-query/src/execution/aggregate/count/tests.rs": "10edcdd92e549b20d46912ec7ddfd3714d3734241ab62651c9b5a40c50dce50f",
+    "crates/query/tablecraft-query/src/execution/aggregate/encounter.rs": "e537824f3c59160f504d7dea7982ee3036408c2fa94d5126a94e485ec11fac41",
+    "crates/query/tablecraft-query/src/execution/aggregate/extrema.rs": "74eec1db3318b5660680a5fe7fb67cd707032394ec1197015a7f528286412ad8",
+    "crates/query/tablecraft-query/src/execution/aggregate/extrema/policy.rs": "d398a457081b6c36aef1a6082a2ee0d4229e736886bc26774496b6763d299458",
+    "crates/query/tablecraft-query/src/execution/aggregate/fixed_total.rs": "6f233b20706ac197ab983f92928f19cfbabd00879aa5bfe3ba759b9b90ad8d8b",
+    "crates/query/tablecraft-query/src/execution/aggregate/statistics/fixed.rs": "ea8437d39ab8f0399b166876f9947cf96fe95495e12585dec2a7db256e95337c",
+    "crates/query/tablecraft-query/src/execution/aggregate/statistics/fixed/tests.rs": "1ad2a372bafc28af98e5aa0ddef21febcf73df3dc5e8657ab2e88eb15816c2aa",
+    "crates/query/tablecraft-query/src/execution/aggregate/statistics/mod.rs": "2ea5fe14d5fbff06a83c86996a3e4526ae253de503901da0d3504c827fa2ab95",
+    "crates/query/tablecraft-query/src/execution/aggregate/statistics/spread.rs": "f18ab9deff399b19ac8080e4de01f2e36b6ac1794be00812529166ef67a3cebd",
+    "crates/query/tablecraft-query/src/execution/aggregate/sum.rs": "47b9186870e3b752b499c0efdfd1c651bdb3121fd15ba47f84e6f53559c5d267",
+    "crates/query/tablecraft-query/src/execution/context.rs": "000d85dd1bc693e49d4f38dc654350e63f5f21559bf6b9521994225e67d799ad",
+    "crates/query/tablecraft-query/src/execution/execute.rs": "909c25fceaf15d6d4f4d7c2d9d2c8e47bfbb6bb57feb8a6e180076e713cddaff",
+    "crates/query/tablecraft-query/src/execution/progressive.rs": "58f524de9b9fb7a2600b9a12b5b40a949e8bf4c7299001a81e38ee06c9938465",
+    "crates/query/tablecraft-query/src/execution/progressive/admission.rs": "b1f3279b908f11dca6d001eacf1735f38813487913dd2de626b054c9542c85ff",
+    "crates/query/tablecraft-query/src/execution/progressive/aggregates.rs": "14da20f31e8acb2285929705a5d39eb08d8d991a3417f7452ebae3a3507d9605",
+    "crates/query/tablecraft-query/src/execution/progressive/plan.rs": "878eb3c2b7e12bf4d8816e90cd7ec937992edea1684b3816e62bc22aa38e60f2",
+    "crates/query/tablecraft-query/src/execution/progressive/publication.rs": "552bcb45a0c65e386a5a3bf3034ed0d13493756ce9ab7692846e1a397b07b56b",
+    "crates/query/tablecraft-query/src/execution/progressive/rows.rs": "d4ecbca2367672da8e7693941115c158eb3bf89a1a4b486f5373b8b30835431c"
+  },
+  "source_note": "Scoped git-show revision snapshots; mutable live production is not pinned",
+  "models": {
+    "decimal-seeks-V2000-20261025.mdb/Decimal0": {
+      "getter_sha256": "67559c3cd53d31bcc0cfc08e8589507269cd08141450d30a419718a306628d3f",
+      "count": 1000,
+      "present": 909,
+      "exact_sum": "623834205931377921501697583"
+    },
+    "decimal-seeks-V2000-20261025.mdb/Decimal0/positive": {
+      "source": "decimal-seeks-V2000-20261025.mdb/Decimal0",
+      "count": 457,
+      "exact_sum": "588091193000388920235092509551",
+      "exact_mean": "588091193000388920235092509551/457",
+      "expected_sum": "overflow",
+      "expected_mean": "12868516258214199567507494739/10"
+    },
+    "decimal-seeks-V2000-20261025.mdb/Decimal0/negative": {
+      "source": "decimal-seeks-V2000-20261025.mdb/Decimal0",
+      "count": 395,
+      "exact_sum": "-587467358794457542313590811968",
+      "exact_mean": "-587467358794457542313590811968/395",
+      "expected_sum": "overflow",
+      "expected_mean": "-7436295680942500535615073569/5"
+    },
+    "decimal-seeks-V2000-20261025.mdb/Decimal4": {
+      "getter_sha256": "ede9a228e39462288251fa9205415eae6b3a301221fcbc69712e5a5bc903f1f9",
+      "count": 1000,
+      "present": 909,
+      "exact_sum": "623834205931377921501697583/10000"
+    },
+    "decimal-seeks-V2000-20261025.mdb/Decimal4/positive": {
+      "source": "decimal-seeks-V2000-20261025.mdb/Decimal4",
+      "count": 457,
+      "exact_sum": "588091193000388920235092509551/10000",
+      "exact_mean": "588091193000388920235092509551/4570000",
+      "expected_sum": "11761823860007778404701850191/200",
+      "expected_mean": "12868516258214199567507494739/100000"
+    },
+    "decimal-seeks-V2000-20261025.mdb/Decimal4/negative": {
+      "source": "decimal-seeks-V2000-20261025.mdb/Decimal4",
+      "count": 395,
+      "exact_sum": "-36716709924653596394599425748/625",
+      "exact_mean": "-36716709924653596394599425748/246875",
+      "expected_sum": "-58746735879445754231359081197/1000",
+      "expected_mean": "-7436295680942500535615073569/50000"
+    },
+    "decimal-seeks-V2000-20261025.mdb/DecimalEmpty4": {
+      "getter_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "count": 0
+    },
+    "decimal-seeks-V2000-20261025.mdb/Decimal28": {
+      "getter_sha256": "747a385506567f54c64634b47c474b92bcfb4b8834ce20e4a942041722719d37",
+      "count": 1000,
+      "present": 909,
+      "exact_sum": "623834205931377921501697583/10000000000000000000000000000"
+    },
+    "decimal-seeks-V2000-20261025.mdb/Decimal28/positive": {
+      "source": "decimal-seeks-V2000-20261025.mdb/Decimal28",
+      "count": 457,
+      "exact_sum": "588091193000388920235092509551/10000000000000000000000000000",
+      "exact_mean": "588091193000388920235092509551/4570000000000000000000000000000",
+      "expected_sum": "11761823860007778404701850191/200000000000000000000000000",
+      "expected_mean": "643425812910709978375374737/5000000000000000000000000000"
+    },
+    "decimal-seeks-V2000-20261025.mdb/Decimal28/negative": {
+      "source": "decimal-seeks-V2000-20261025.mdb/Decimal28",
+      "count": 395,
+      "exact_sum": "-9179177481163399098649856437/156250000000000000000000000",
+      "exact_mean": "-9179177481163399098649856437/61718750000000000000000000000",
+      "expected_sum": "-58746735879445754231359081197/1000000000000000000000000000",
+      "expected_mean": "-743629568094250053561507357/5000000000000000000000000000"
+    },
+    "decimal-seeks-V2007-20261025.accdb/Decimal0": {
+      "getter_sha256": "67559c3cd53d31bcc0cfc08e8589507269cd08141450d30a419718a306628d3f",
+      "count": 1000,
+      "present": 909,
+      "exact_sum": "623834205931377921501697583"
+    },
+    "decimal-seeks-V2007-20261025.accdb/Decimal0/positive": {
+      "source": "decimal-seeks-V2007-20261025.accdb/Decimal0",
+      "count": 457,
+      "exact_sum": "588091193000388920235092509551",
+      "exact_mean": "588091193000388920235092509551/457",
+      "expected_sum": "overflow",
+      "expected_mean": "12868516258214199567507494739/10"
+    },
+    "decimal-seeks-V2007-20261025.accdb/Decimal0/negative": {
+      "source": "decimal-seeks-V2007-20261025.accdb/Decimal0",
+      "count": 395,
+      "exact_sum": "-587467358794457542313590811968",
+      "exact_mean": "-587467358794457542313590811968/395",
+      "expected_sum": "overflow",
+      "expected_mean": "-7436295680942500535615073569/5"
+    },
+    "decimal-seeks-V2007-20261025.accdb/Decimal4": {
+      "getter_sha256": "ede9a228e39462288251fa9205415eae6b3a301221fcbc69712e5a5bc903f1f9",
+      "count": 1000,
+      "present": 909,
+      "exact_sum": "623834205931377921501697583/10000"
+    },
+    "decimal-seeks-V2007-20261025.accdb/Decimal4/positive": {
+      "source": "decimal-seeks-V2007-20261025.accdb/Decimal4",
+      "count": 457,
+      "exact_sum": "588091193000388920235092509551/10000",
+      "exact_mean": "588091193000388920235092509551/4570000",
+      "expected_sum": "11761823860007778404701850191/200",
+      "expected_mean": "12868516258214199567507494739/100000"
+    },
+    "decimal-seeks-V2007-20261025.accdb/Decimal4/negative": {
+      "source": "decimal-seeks-V2007-20261025.accdb/Decimal4",
+      "count": 395,
+      "exact_sum": "-36716709924653596394599425748/625",
+      "exact_mean": "-36716709924653596394599425748/246875",
+      "expected_sum": "-58746735879445754231359081197/1000",
+      "expected_mean": "-7436295680942500535615073569/50000"
+    },
+    "decimal-seeks-V2007-20261025.accdb/DecimalEmpty4": {
+      "getter_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "count": 0
+    },
+    "decimal-seeks-V2007-20261025.accdb/Decimal28": {
+      "getter_sha256": "747a385506567f54c64634b47c474b92bcfb4b8834ce20e4a942041722719d37",
+      "count": 1000,
+      "present": 909,
+      "exact_sum": "623834205931377921501697583/10000000000000000000000000000"
+    },
+    "decimal-seeks-V2007-20261025.accdb/Decimal28/positive": {
+      "source": "decimal-seeks-V2007-20261025.accdb/Decimal28",
+      "count": 457,
+      "exact_sum": "588091193000388920235092509551/10000000000000000000000000000",
+      "exact_mean": "588091193000388920235092509551/4570000000000000000000000000000",
+      "expected_sum": "11761823860007778404701850191/200000000000000000000000000",
+      "expected_mean": "643425812910709978375374737/5000000000000000000000000000"
+    },
+    "decimal-seeks-V2007-20261025.accdb/Decimal28/negative": {
+      "source": "decimal-seeks-V2007-20261025.accdb/Decimal28",
+      "count": 395,
+      "exact_sum": "-9179177481163399098649856437/156250000000000000000000000",
+      "exact_mean": "-9179177481163399098649856437/61718750000000000000000000000",
+      "expected_sum": "-58746735879445754231359081197/1000000000000000000000000000",
+      "expected_mean": "-743629568094250053561507357/5000000000000000000000000000"
+    },
+    "decimal-seeks-V2016-20261025.accdb/Decimal0": {
+      "getter_sha256": "67559c3cd53d31bcc0cfc08e8589507269cd08141450d30a419718a306628d3f",
+      "count": 1000,
+      "present": 909,
+      "exact_sum": "623834205931377921501697583"
+    },
+    "decimal-seeks-V2016-20261025.accdb/Decimal0/positive": {
+      "source": "decimal-seeks-V2016-20261025.accdb/Decimal0",
+      "count": 457,
+      "exact_sum": "588091193000388920235092509551",
+      "exact_mean": "588091193000388920235092509551/457",
+      "expected_sum": "overflow",
+      "expected_mean": "12868516258214199567507494739/10"
+    },
+    "decimal-seeks-V2016-20261025.accdb/Decimal0/negative": {
+      "source": "decimal-seeks-V2016-20261025.accdb/Decimal0",
+      "count": 395,
+      "exact_sum": "-587467358794457542313590811968",
+      "exact_mean": "-587467358794457542313590811968/395",
+      "expected_sum": "overflow",
+      "expected_mean": "-7436295680942500535615073569/5"
+    },
+    "decimal-seeks-V2016-20261025.accdb/Decimal4": {
+      "getter_sha256": "ede9a228e39462288251fa9205415eae6b3a301221fcbc69712e5a5bc903f1f9",
+      "count": 1000,
+      "present": 909,
+      "exact_sum": "623834205931377921501697583/10000"
+    },
+    "decimal-seeks-V2016-20261025.accdb/Decimal4/positive": {
+      "source": "decimal-seeks-V2016-20261025.accdb/Decimal4",
+      "count": 457,
+      "exact_sum": "588091193000388920235092509551/10000",
+      "exact_mean": "588091193000388920235092509551/4570000",
+      "expected_sum": "11761823860007778404701850191/200",
+      "expected_mean": "12868516258214199567507494739/100000"
+    },
+    "decimal-seeks-V2016-20261025.accdb/Decimal4/negative": {
+      "source": "decimal-seeks-V2016-20261025.accdb/Decimal4",
+      "count": 395,
+      "exact_sum": "-36716709924653596394599425748/625",
+      "exact_mean": "-36716709924653596394599425748/246875",
+      "expected_sum": "-58746735879445754231359081197/1000",
+      "expected_mean": "-7436295680942500535615073569/50000"
+    },
+    "decimal-seeks-V2016-20261025.accdb/DecimalEmpty4": {
+      "getter_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "count": 0
+    },
+    "decimal-seeks-V2016-20261025.accdb/Decimal28": {
+      "getter_sha256": "747a385506567f54c64634b47c474b92bcfb4b8834ce20e4a942041722719d37",
+      "count": 1000,
+      "present": 909,
+      "exact_sum": "623834205931377921501697583/10000000000000000000000000000"
+    },
+    "decimal-seeks-V2016-20261025.accdb/Decimal28/positive": {
+      "source": "decimal-seeks-V2016-20261025.accdb/Decimal28",
+      "count": 457,
+      "exact_sum": "588091193000388920235092509551/10000000000000000000000000000",
+      "exact_mean": "588091193000388920235092509551/4570000000000000000000000000000",
+      "expected_sum": "11761823860007778404701850191/200000000000000000000000000",
+      "expected_mean": "643425812910709978375374737/5000000000000000000000000000"
+    },
+    "decimal-seeks-V2016-20261025.accdb/Decimal28/negative": {
+      "source": "decimal-seeks-V2016-20261025.accdb/Decimal28",
+      "count": 395,
+      "exact_sum": "-9179177481163399098649856437/156250000000000000000000000",
+      "exact_mean": "-9179177481163399098649856437/61718750000000000000000000000",
+      "expected_sum": "-58746735879445754231359081197/1000000000000000000000000000",
+      "expected_mean": "-743629568094250053561507357/5000000000000000000000000000"
+    },
+    "decimal-seeks-V2019-20261025.accdb/Decimal0": {
+      "getter_sha256": "67559c3cd53d31bcc0cfc08e8589507269cd08141450d30a419718a306628d3f",
+      "count": 1000,
+      "present": 909,
+      "exact_sum": "623834205931377921501697583"
+    },
+    "decimal-seeks-V2019-20261025.accdb/Decimal0/positive": {
+      "source": "decimal-seeks-V2019-20261025.accdb/Decimal0",
+      "count": 457,
+      "exact_sum": "588091193000388920235092509551",
+      "exact_mean": "588091193000388920235092509551/457",
+      "expected_sum": "overflow",
+      "expected_mean": "12868516258214199567507494739/10"
+    },
+    "decimal-seeks-V2019-20261025.accdb/Decimal0/negative": {
+      "source": "decimal-seeks-V2019-20261025.accdb/Decimal0",
+      "count": 395,
+      "exact_sum": "-587467358794457542313590811968",
+      "exact_mean": "-587467358794457542313590811968/395",
+      "expected_sum": "overflow",
+      "expected_mean": "-7436295680942500535615073569/5"
+    },
+    "decimal-seeks-V2019-20261025.accdb/Decimal4": {
+      "getter_sha256": "ede9a228e39462288251fa9205415eae6b3a301221fcbc69712e5a5bc903f1f9",
+      "count": 1000,
+      "present": 909,
+      "exact_sum": "623834205931377921501697583/10000"
+    },
+    "decimal-seeks-V2019-20261025.accdb/Decimal4/positive": {
+      "source": "decimal-seeks-V2019-20261025.accdb/Decimal4",
+      "count": 457,
+      "exact_sum": "588091193000388920235092509551/10000",
+      "exact_mean": "588091193000388920235092509551/4570000",
+      "expected_sum": "11761823860007778404701850191/200",
+      "expected_mean": "12868516258214199567507494739/100000"
+    },
+    "decimal-seeks-V2019-20261025.accdb/Decimal4/negative": {
+      "source": "decimal-seeks-V2019-20261025.accdb/Decimal4",
+      "count": 395,
+      "exact_sum": "-36716709924653596394599425748/625",
+      "exact_mean": "-36716709924653596394599425748/246875",
+      "expected_sum": "-58746735879445754231359081197/1000",
+      "expected_mean": "-7436295680942500535615073569/50000"
+    },
+    "decimal-seeks-V2019-20261025.accdb/DecimalEmpty4": {
+      "getter_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "count": 0
+    },
+    "decimal-seeks-V2019-20261025.accdb/Decimal28": {
+      "getter_sha256": "747a385506567f54c64634b47c474b92bcfb4b8834ce20e4a942041722719d37",
+      "count": 1000,
+      "present": 909,
+      "exact_sum": "623834205931377921501697583/10000000000000000000000000000"
+    },
+    "decimal-seeks-V2019-20261025.accdb/Decimal28/positive": {
+      "source": "decimal-seeks-V2019-20261025.accdb/Decimal28",
+      "count": 457,
+      "exact_sum": "588091193000388920235092509551/10000000000000000000000000000",
+      "exact_mean": "588091193000388920235092509551/4570000000000000000000000000000",
+      "expected_sum": "11761823860007778404701850191/200000000000000000000000000",
+      "expected_mean": "643425812910709978375374737/5000000000000000000000000000"
+    },
+    "decimal-seeks-V2019-20261025.accdb/Decimal28/negative": {
+      "source": "decimal-seeks-V2019-20261025.accdb/Decimal28",
+      "count": 395,
+      "exact_sum": "-9179177481163399098649856437/156250000000000000000000000",
+      "exact_mean": "-9179177481163399098649856437/61718750000000000000000000000",
+      "expected_sum": "-58746735879445754231359081197/1000000000000000000000000000",
+      "expected_mean": "-743629568094250053561507357/5000000000000000000000000000"
+    }
+  },
+  "control_count": 244,
+  "successful_controls": 204,
+  "refusal_controls": 40,
+  "compared_rows": 228,
+  "compared_cells": 996,
+  "observations": [
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "scale0-all",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "92866a0f66235c9092538c8bc1f2979764bab048c5e31b07791f632d247c2893",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583",
+          "68628625515003071672353969527/100000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "scale0-all",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "92866a0f66235c9092538c8bc1f2979764bab048c5e31b07791f632d247c2893",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583",
+          "68628625515003071672353969527/100000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "scale0-all",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "92866a0f66235c9092538c8bc1f2979764bab048c5e31b07791f632d247c2893",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583",
+          "68628625515003071672353969527/100000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "scale0-positive",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "overflow",
+      "stderr": "error: numeric overflow\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "scale0-positive",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "overflow",
+      "stderr": "error: numeric overflow\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "scale0-positive",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "overflow",
+      "stderr": "error: numeric overflow\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "overflow-sum-but-valid-mean-positive",
+      "mode": "buffered",
+      "sql": "SELECT Avg([Value]) AS A FROM [Decimal0] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c2ca6912b9aed9f43555a45ec41404d17d72b4b19c1bb934b6100441bfa290a0",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "12868516258214199567507494739/10"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "overflow-sum-but-valid-mean-positive",
+      "mode": "stream1",
+      "sql": "SELECT Avg([Value]) AS A FROM [Decimal0] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c2ca6912b9aed9f43555a45ec41404d17d72b4b19c1bb934b6100441bfa290a0",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "12868516258214199567507494739/10"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "overflow-sum-but-valid-mean-positive",
+      "mode": "stream128",
+      "sql": "SELECT Avg([Value]) AS A FROM [Decimal0] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c2ca6912b9aed9f43555a45ec41404d17d72b4b19c1bb934b6100441bfa290a0",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "12868516258214199567507494739/10"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "scale0-negative",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "overflow",
+      "stderr": "error: numeric overflow\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "scale0-negative",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "overflow",
+      "stderr": "error: numeric overflow\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "scale0-negative",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "overflow",
+      "stderr": "error: numeric overflow\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "overflow-sum-but-valid-mean-negative",
+      "mode": "buffered",
+      "sql": "SELECT Avg([Value]) AS A FROM [Decimal0] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "2c6e729bb4384eeeb3fb0a7a1e83414b43fa9b0ee9d1d444a5f3828653ff9688",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "-7436295680942500535615073569/5"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "overflow-sum-but-valid-mean-negative",
+      "mode": "stream1",
+      "sql": "SELECT Avg([Value]) AS A FROM [Decimal0] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "2c6e729bb4384eeeb3fb0a7a1e83414b43fa9b0ee9d1d444a5f3828653ff9688",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "-7436295680942500535615073569/5"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "overflow-sum-but-valid-mean-negative",
+      "mode": "stream128",
+      "sql": "SELECT Avg([Value]) AS A FROM [Decimal0] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "2c6e729bb4384eeeb3fb0a7a1e83414b43fa9b0ee9d1d444a5f3828653ff9688",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "-7436295680942500535615073569/5"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "scale4-all",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "1c431dbd549e2686a09100a07531c5675229927653fd19a39f67857f58e91dff",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000",
+          "68628625515003071672353969527/1000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "scale4-all",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "1c431dbd549e2686a09100a07531c5675229927653fd19a39f67857f58e91dff",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000",
+          "68628625515003071672353969527/1000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "scale4-all",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "1c431dbd549e2686a09100a07531c5675229927653fd19a39f67857f58e91dff",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000",
+          "68628625515003071672353969527/1000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "scale4-positive",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "93c21bb7aec6ae14fdb6fbd6074a58c24ada4ba51ffcb101bf7c7aa7345906de",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "457",
+          "457",
+          "11761823860007778404701850191/200",
+          "12868516258214199567507494739/100000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "scale4-positive",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "93c21bb7aec6ae14fdb6fbd6074a58c24ada4ba51ffcb101bf7c7aa7345906de",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "457",
+          "457",
+          "11761823860007778404701850191/200",
+          "12868516258214199567507494739/100000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "scale4-positive",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "93c21bb7aec6ae14fdb6fbd6074a58c24ada4ba51ffcb101bf7c7aa7345906de",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "457",
+          "457",
+          "11761823860007778404701850191/200",
+          "12868516258214199567507494739/100000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "scale4-negative",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "3329d1295a6b76858ae6574a1ad5848b013b73ac5dfc938ff02113b71d820204",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "395",
+          "395",
+          "-58746735879445754231359081197/1000",
+          "-7436295680942500535615073569/50000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "scale4-negative",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "3329d1295a6b76858ae6574a1ad5848b013b73ac5dfc938ff02113b71d820204",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "395",
+          "395",
+          "-58746735879445754231359081197/1000",
+          "-7436295680942500535615073569/50000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "scale4-negative",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "3329d1295a6b76858ae6574a1ad5848b013b73ac5dfc938ff02113b71d820204",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "395",
+          "395",
+          "-58746735879445754231359081197/1000",
+          "-7436295680942500535615073569/50000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "all-null",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value] IS NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "78096d3dc6a14810abe2d1eee854c26d8421490e0e6f7616032590a9b259f17f",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "91",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "all-null",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value] IS NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "78096d3dc6a14810abe2d1eee854c26d8421490e0e6f7616032590a9b259f17f",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "91",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "all-null",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value] IS NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "78096d3dc6a14810abe2d1eee854c26d8421490e0e6f7616032590a9b259f17f",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "91",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "filtered-empty",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c55ea56abdb16754eec61cd29d9e965565d0bd9e27ff021a7f0b08edb304f4ba",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "0",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "filtered-empty",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c55ea56abdb16754eec61cd29d9e965565d0bd9e27ff021a7f0b08edb304f4ba",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "0",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "filtered-empty",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c55ea56abdb16754eec61cd29d9e965565d0bd9e27ff021a7f0b08edb304f4ba",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "0",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "typed-point",
+      "mode": "buffered",
+      "sql": "PARAMETERS P Decimal(28,4); SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]=P",
+      "extra": [
+        "--param",
+        "P=decimal:0.0001"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "49b99e347ee10d9f7d7ae35d733bb9dd7fcbc0d7e19699451b76a7c215f8c29a",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "57",
+          "57",
+          "57/10000",
+          "1/10000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "typed-point",
+      "mode": "stream1",
+      "sql": "PARAMETERS P Decimal(28,4); SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]=P",
+      "extra": [
+        "--param",
+        "P=decimal:0.0001"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "49b99e347ee10d9f7d7ae35d733bb9dd7fcbc0d7e19699451b76a7c215f8c29a",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "57",
+          "57",
+          "57/10000",
+          "1/10000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "typed-point",
+      "mode": "stream128",
+      "sql": "PARAMETERS P Decimal(28,4); SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]=P",
+      "extra": [
+        "--param",
+        "P=decimal:0.0001"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "49b99e347ee10d9f7d7ae35d733bb9dd7fcbc0d7e19699451b76a7c215f8c29a",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "57",
+          "57",
+          "57/10000",
+          "1/10000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "declared-policy",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE True",
+      "extra": [
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "1c431dbd549e2686a09100a07531c5675229927653fd19a39f67857f58e91dff",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000",
+          "68628625515003071672353969527/1000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "declared-policy",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE True",
+      "extra": [
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "1c431dbd549e2686a09100a07531c5675229927653fd19a39f67857f58e91dff",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000",
+          "68628625515003071672353969527/1000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "declared-policy",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE True",
+      "extra": [
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "1c431dbd549e2686a09100a07531c5675229927653fd19a39f67857f58e91dff",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000",
+          "68628625515003071672353969527/1000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "native-empty-table",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [DecimalEmpty4] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c55ea56abdb16754eec61cd29d9e965565d0bd9e27ff021a7f0b08edb304f4ba",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "0",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "native-empty-table",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [DecimalEmpty4] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c55ea56abdb16754eec61cd29d9e965565d0bd9e27ff021a7f0b08edb304f4ba",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "0",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "native-empty-table",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [DecimalEmpty4] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c55ea56abdb16754eec61cd29d9e965565d0bd9e27ff021a7f0b08edb304f4ba",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "0",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "integral-controls",
+      "mode": "buffered",
+      "sql": "SELECT Sum(ID) AS S,Avg(ID) AS A,VarType(Sum(ID)) AS ST,VarType(Avg(ID)) AS AT FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "317de25be06b38f53bf97a60599bddee7a9b579d058a5873f1521d70a8c6decf",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "499500",
+          "999/2",
+          "20",
+          "5"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "prior-alias",
+      "mode": "buffered",
+      "sql": "SELECT Sum([Value]) AS S,S+0 AS Echo FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "1672bed071ae6895518b9d071625ed7327e4fe8c6334948bcda9b32fa15bd23c",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "623834205931377921501697583/10000",
+          "623834205931377921501697583/10000"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "mixed-arms",
+      "mode": "buffered",
+      "sql": "SELECT Sum([Value]) AS N FROM Decimal4 WHERE [Value]=CDec(0) UNION ALL SELECT Avg([Value]) FROM Decimal4 WHERE [Value]=CDec(0) UNION ALL SELECT Count([Value]) FROM Decimal4 WHERE ID=1",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "257fa473b0ddb799e79c592644c49b701620a7ef9587578f1bf72714f3784768",
+      "rows": 3,
+      "expected_fraction_cells": [
+        [
+          "0"
+        ],
+        [
+          "0"
+        ],
+        [
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "integral-controls",
+      "mode": "stream1",
+      "sql": "SELECT Sum(ID) AS S,Avg(ID) AS A,VarType(Sum(ID)) AS ST,VarType(Avg(ID)) AS AT FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "317de25be06b38f53bf97a60599bddee7a9b579d058a5873f1521d70a8c6decf",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "499500",
+          "999/2",
+          "20",
+          "5"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "prior-alias",
+      "mode": "stream1",
+      "sql": "SELECT Sum([Value]) AS S,S+0 AS Echo FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "1672bed071ae6895518b9d071625ed7327e4fe8c6334948bcda9b32fa15bd23c",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "623834205931377921501697583/10000",
+          "623834205931377921501697583/10000"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "mixed-arms",
+      "mode": "stream1",
+      "sql": "SELECT Sum([Value]) AS N FROM Decimal4 WHERE [Value]=CDec(0) UNION ALL SELECT Avg([Value]) FROM Decimal4 WHERE [Value]=CDec(0) UNION ALL SELECT Count([Value]) FROM Decimal4 WHERE ID=1",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "257fa473b0ddb799e79c592644c49b701620a7ef9587578f1bf72714f3784768",
+      "rows": 3,
+      "expected_fraction_cells": [
+        [
+          "0"
+        ],
+        [
+          "0"
+        ],
+        [
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "integral-controls",
+      "mode": "stream128",
+      "sql": "SELECT Sum(ID) AS S,Avg(ID) AS A,VarType(Sum(ID)) AS ST,VarType(Avg(ID)) AS AT FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "317de25be06b38f53bf97a60599bddee7a9b579d058a5873f1521d70a8c6decf",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "499500",
+          "999/2",
+          "20",
+          "5"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "prior-alias",
+      "mode": "stream128",
+      "sql": "SELECT Sum([Value]) AS S,S+0 AS Echo FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "1672bed071ae6895518b9d071625ed7327e4fe8c6334948bcda9b32fa15bd23c",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "623834205931377921501697583/10000",
+          "623834205931377921501697583/10000"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "mixed-arms",
+      "mode": "stream128",
+      "sql": "SELECT Sum([Value]) AS N FROM Decimal4 WHERE [Value]=CDec(0) UNION ALL SELECT Avg([Value]) FROM Decimal4 WHERE [Value]=CDec(0) UNION ALL SELECT Count([Value]) FROM Decimal4 WHERE ID=1",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "257fa473b0ddb799e79c592644c49b701620a7ef9587578f1bf72714f3784768",
+      "rows": 3,
+      "expected_fraction_cells": [
+        [
+          "0"
+        ],
+        [
+          "0"
+        ],
+        [
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "native-limit",
+      "mode": "stream1",
+      "sql": "SELECT Sum([Value]),Avg([Value]) FROM Decimal4",
+      "extra": [
+        "--native-rows",
+        "1"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "resource",
+      "stderr": "error: Rows resource limit exceeded (0 remaining)\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "query-limit",
+      "mode": "stream1",
+      "sql": "SELECT Sum([Value]),Avg([Value]) FROM Decimal4",
+      "extra": [
+        "--execution-steps",
+        "1"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "resource",
+      "stderr": "error: Steps resource limit exceeded (0 remaining)\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "output-limit",
+      "mode": "stream1",
+      "sql": "SELECT Sum([Value]),Avg([Value]) FROM Decimal4",
+      "extra": [
+        "--output-bytes",
+        "1"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "output",
+      "stderr": "error: evaluation output limit exceeded\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "late-operand",
+      "mode": "stream1",
+      "sql": "SELECT Sum(ID Mod (ID-999)),Avg([Value]) FROM Decimal4",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "division",
+      "stderr": "error: division by zero\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "scale28-all",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "55d1c010c33de106bda639cdec08e8efb28eb43bd291567309c97d5a583d6e5f",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000000000000000000000000000",
+          "34314312757501535836177/500000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "scale28-all",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "55d1c010c33de106bda639cdec08e8efb28eb43bd291567309c97d5a583d6e5f",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000000000000000000000000000",
+          "34314312757501535836177/500000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "scale28-all",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "55d1c010c33de106bda639cdec08e8efb28eb43bd291567309c97d5a583d6e5f",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000000000000000000000000000",
+          "34314312757501535836177/500000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "scale28-positive",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c8152eccf1dadd573b2b192da6e6eb9df96d44ecf03c7f44d0e53134feb46e89",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "457",
+          "457",
+          "11761823860007778404701850191/200000000000000000000000000",
+          "643425812910709978375374737/5000000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "scale28-positive",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c8152eccf1dadd573b2b192da6e6eb9df96d44ecf03c7f44d0e53134feb46e89",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "457",
+          "457",
+          "11761823860007778404701850191/200000000000000000000000000",
+          "643425812910709978375374737/5000000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "scale28-positive",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c8152eccf1dadd573b2b192da6e6eb9df96d44ecf03c7f44d0e53134feb46e89",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "457",
+          "457",
+          "11761823860007778404701850191/200000000000000000000000000",
+          "643425812910709978375374737/5000000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "scale28-negative",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "8c3f89fbe3a99d0e8f3352cf6e2b401022b013c9276cfd6093f1e7aa48dc5a11",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "395",
+          "395",
+          "-58746735879445754231359081197/1000000000000000000000000000",
+          "-743629568094250053561507357/5000000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "scale28-negative",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "8c3f89fbe3a99d0e8f3352cf6e2b401022b013c9276cfd6093f1e7aa48dc5a11",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "395",
+          "395",
+          "-58746735879445754231359081197/1000000000000000000000000000",
+          "-743629568094250053561507357/5000000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "scale28-negative",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "8c3f89fbe3a99d0e8f3352cf6e2b401022b013c9276cfd6093f1e7aa48dc5a11",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "395",
+          "395",
+          "-58746735879445754231359081197/1000000000000000000000000000",
+          "-743629568094250053561507357/5000000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "scale0-all",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "92866a0f66235c9092538c8bc1f2979764bab048c5e31b07791f632d247c2893",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583",
+          "68628625515003071672353969527/100000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "scale0-all",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "92866a0f66235c9092538c8bc1f2979764bab048c5e31b07791f632d247c2893",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583",
+          "68628625515003071672353969527/100000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "scale0-all",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "92866a0f66235c9092538c8bc1f2979764bab048c5e31b07791f632d247c2893",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583",
+          "68628625515003071672353969527/100000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "scale0-positive",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "overflow",
+      "stderr": "error: numeric overflow\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "scale0-positive",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "overflow",
+      "stderr": "error: numeric overflow\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "scale0-positive",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "overflow",
+      "stderr": "error: numeric overflow\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "overflow-sum-but-valid-mean-positive",
+      "mode": "buffered",
+      "sql": "SELECT Avg([Value]) AS A FROM [Decimal0] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c2ca6912b9aed9f43555a45ec41404d17d72b4b19c1bb934b6100441bfa290a0",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "12868516258214199567507494739/10"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "overflow-sum-but-valid-mean-positive",
+      "mode": "stream1",
+      "sql": "SELECT Avg([Value]) AS A FROM [Decimal0] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c2ca6912b9aed9f43555a45ec41404d17d72b4b19c1bb934b6100441bfa290a0",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "12868516258214199567507494739/10"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "overflow-sum-but-valid-mean-positive",
+      "mode": "stream128",
+      "sql": "SELECT Avg([Value]) AS A FROM [Decimal0] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c2ca6912b9aed9f43555a45ec41404d17d72b4b19c1bb934b6100441bfa290a0",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "12868516258214199567507494739/10"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "scale0-negative",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "overflow",
+      "stderr": "error: numeric overflow\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "scale0-negative",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "overflow",
+      "stderr": "error: numeric overflow\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "scale0-negative",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "overflow",
+      "stderr": "error: numeric overflow\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "overflow-sum-but-valid-mean-negative",
+      "mode": "buffered",
+      "sql": "SELECT Avg([Value]) AS A FROM [Decimal0] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "2c6e729bb4384eeeb3fb0a7a1e83414b43fa9b0ee9d1d444a5f3828653ff9688",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "-7436295680942500535615073569/5"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "overflow-sum-but-valid-mean-negative",
+      "mode": "stream1",
+      "sql": "SELECT Avg([Value]) AS A FROM [Decimal0] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "2c6e729bb4384eeeb3fb0a7a1e83414b43fa9b0ee9d1d444a5f3828653ff9688",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "-7436295680942500535615073569/5"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "overflow-sum-but-valid-mean-negative",
+      "mode": "stream128",
+      "sql": "SELECT Avg([Value]) AS A FROM [Decimal0] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "2c6e729bb4384eeeb3fb0a7a1e83414b43fa9b0ee9d1d444a5f3828653ff9688",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "-7436295680942500535615073569/5"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "scale4-all",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "1c431dbd549e2686a09100a07531c5675229927653fd19a39f67857f58e91dff",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000",
+          "68628625515003071672353969527/1000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "scale4-all",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "1c431dbd549e2686a09100a07531c5675229927653fd19a39f67857f58e91dff",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000",
+          "68628625515003071672353969527/1000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "scale4-all",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "1c431dbd549e2686a09100a07531c5675229927653fd19a39f67857f58e91dff",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000",
+          "68628625515003071672353969527/1000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "scale4-positive",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "93c21bb7aec6ae14fdb6fbd6074a58c24ada4ba51ffcb101bf7c7aa7345906de",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "457",
+          "457",
+          "11761823860007778404701850191/200",
+          "12868516258214199567507494739/100000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "scale4-positive",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "93c21bb7aec6ae14fdb6fbd6074a58c24ada4ba51ffcb101bf7c7aa7345906de",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "457",
+          "457",
+          "11761823860007778404701850191/200",
+          "12868516258214199567507494739/100000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "scale4-positive",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "93c21bb7aec6ae14fdb6fbd6074a58c24ada4ba51ffcb101bf7c7aa7345906de",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "457",
+          "457",
+          "11761823860007778404701850191/200",
+          "12868516258214199567507494739/100000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "scale4-negative",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "3329d1295a6b76858ae6574a1ad5848b013b73ac5dfc938ff02113b71d820204",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "395",
+          "395",
+          "-58746735879445754231359081197/1000",
+          "-7436295680942500535615073569/50000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "scale4-negative",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "3329d1295a6b76858ae6574a1ad5848b013b73ac5dfc938ff02113b71d820204",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "395",
+          "395",
+          "-58746735879445754231359081197/1000",
+          "-7436295680942500535615073569/50000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "scale4-negative",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "3329d1295a6b76858ae6574a1ad5848b013b73ac5dfc938ff02113b71d820204",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "395",
+          "395",
+          "-58746735879445754231359081197/1000",
+          "-7436295680942500535615073569/50000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "all-null",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value] IS NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "78096d3dc6a14810abe2d1eee854c26d8421490e0e6f7616032590a9b259f17f",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "91",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "all-null",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value] IS NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "78096d3dc6a14810abe2d1eee854c26d8421490e0e6f7616032590a9b259f17f",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "91",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "all-null",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value] IS NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "78096d3dc6a14810abe2d1eee854c26d8421490e0e6f7616032590a9b259f17f",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "91",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "filtered-empty",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c55ea56abdb16754eec61cd29d9e965565d0bd9e27ff021a7f0b08edb304f4ba",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "0",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "filtered-empty",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c55ea56abdb16754eec61cd29d9e965565d0bd9e27ff021a7f0b08edb304f4ba",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "0",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "filtered-empty",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c55ea56abdb16754eec61cd29d9e965565d0bd9e27ff021a7f0b08edb304f4ba",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "0",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "typed-point",
+      "mode": "buffered",
+      "sql": "PARAMETERS P Decimal(28,4); SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]=P",
+      "extra": [
+        "--param",
+        "P=decimal:0.0001"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "49b99e347ee10d9f7d7ae35d733bb9dd7fcbc0d7e19699451b76a7c215f8c29a",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "57",
+          "57",
+          "57/10000",
+          "1/10000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "typed-point",
+      "mode": "stream1",
+      "sql": "PARAMETERS P Decimal(28,4); SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]=P",
+      "extra": [
+        "--param",
+        "P=decimal:0.0001"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "49b99e347ee10d9f7d7ae35d733bb9dd7fcbc0d7e19699451b76a7c215f8c29a",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "57",
+          "57",
+          "57/10000",
+          "1/10000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "typed-point",
+      "mode": "stream128",
+      "sql": "PARAMETERS P Decimal(28,4); SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]=P",
+      "extra": [
+        "--param",
+        "P=decimal:0.0001"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "49b99e347ee10d9f7d7ae35d733bb9dd7fcbc0d7e19699451b76a7c215f8c29a",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "57",
+          "57",
+          "57/10000",
+          "1/10000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "declared-policy",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE True",
+      "extra": [
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "1c431dbd549e2686a09100a07531c5675229927653fd19a39f67857f58e91dff",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000",
+          "68628625515003071672353969527/1000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "declared-policy",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE True",
+      "extra": [
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "1c431dbd549e2686a09100a07531c5675229927653fd19a39f67857f58e91dff",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000",
+          "68628625515003071672353969527/1000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "declared-policy",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE True",
+      "extra": [
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "1c431dbd549e2686a09100a07531c5675229927653fd19a39f67857f58e91dff",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000",
+          "68628625515003071672353969527/1000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "native-empty-table",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [DecimalEmpty4] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c55ea56abdb16754eec61cd29d9e965565d0bd9e27ff021a7f0b08edb304f4ba",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "0",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "native-empty-table",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [DecimalEmpty4] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c55ea56abdb16754eec61cd29d9e965565d0bd9e27ff021a7f0b08edb304f4ba",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "0",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "native-empty-table",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [DecimalEmpty4] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c55ea56abdb16754eec61cd29d9e965565d0bd9e27ff021a7f0b08edb304f4ba",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "0",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "integral-controls",
+      "mode": "buffered",
+      "sql": "SELECT Sum(ID) AS S,Avg(ID) AS A,VarType(Sum(ID)) AS ST,VarType(Avg(ID)) AS AT FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "317de25be06b38f53bf97a60599bddee7a9b579d058a5873f1521d70a8c6decf",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "499500",
+          "999/2",
+          "20",
+          "5"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "prior-alias",
+      "mode": "buffered",
+      "sql": "SELECT Sum([Value]) AS S,S+0 AS Echo FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "1672bed071ae6895518b9d071625ed7327e4fe8c6334948bcda9b32fa15bd23c",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "623834205931377921501697583/10000",
+          "623834205931377921501697583/10000"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "mixed-arms",
+      "mode": "buffered",
+      "sql": "SELECT Sum([Value]) AS N FROM Decimal4 WHERE [Value]=CDec(0) UNION ALL SELECT Avg([Value]) FROM Decimal4 WHERE [Value]=CDec(0) UNION ALL SELECT Count([Value]) FROM Decimal4 WHERE ID=1",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "257fa473b0ddb799e79c592644c49b701620a7ef9587578f1bf72714f3784768",
+      "rows": 3,
+      "expected_fraction_cells": [
+        [
+          "0"
+        ],
+        [
+          "0"
+        ],
+        [
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "integral-controls",
+      "mode": "stream1",
+      "sql": "SELECT Sum(ID) AS S,Avg(ID) AS A,VarType(Sum(ID)) AS ST,VarType(Avg(ID)) AS AT FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "317de25be06b38f53bf97a60599bddee7a9b579d058a5873f1521d70a8c6decf",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "499500",
+          "999/2",
+          "20",
+          "5"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "prior-alias",
+      "mode": "stream1",
+      "sql": "SELECT Sum([Value]) AS S,S+0 AS Echo FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "1672bed071ae6895518b9d071625ed7327e4fe8c6334948bcda9b32fa15bd23c",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "623834205931377921501697583/10000",
+          "623834205931377921501697583/10000"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "mixed-arms",
+      "mode": "stream1",
+      "sql": "SELECT Sum([Value]) AS N FROM Decimal4 WHERE [Value]=CDec(0) UNION ALL SELECT Avg([Value]) FROM Decimal4 WHERE [Value]=CDec(0) UNION ALL SELECT Count([Value]) FROM Decimal4 WHERE ID=1",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "257fa473b0ddb799e79c592644c49b701620a7ef9587578f1bf72714f3784768",
+      "rows": 3,
+      "expected_fraction_cells": [
+        [
+          "0"
+        ],
+        [
+          "0"
+        ],
+        [
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "integral-controls",
+      "mode": "stream128",
+      "sql": "SELECT Sum(ID) AS S,Avg(ID) AS A,VarType(Sum(ID)) AS ST,VarType(Avg(ID)) AS AT FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "317de25be06b38f53bf97a60599bddee7a9b579d058a5873f1521d70a8c6decf",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "499500",
+          "999/2",
+          "20",
+          "5"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "prior-alias",
+      "mode": "stream128",
+      "sql": "SELECT Sum([Value]) AS S,S+0 AS Echo FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "1672bed071ae6895518b9d071625ed7327e4fe8c6334948bcda9b32fa15bd23c",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "623834205931377921501697583/10000",
+          "623834205931377921501697583/10000"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "mixed-arms",
+      "mode": "stream128",
+      "sql": "SELECT Sum([Value]) AS N FROM Decimal4 WHERE [Value]=CDec(0) UNION ALL SELECT Avg([Value]) FROM Decimal4 WHERE [Value]=CDec(0) UNION ALL SELECT Count([Value]) FROM Decimal4 WHERE ID=1",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "257fa473b0ddb799e79c592644c49b701620a7ef9587578f1bf72714f3784768",
+      "rows": 3,
+      "expected_fraction_cells": [
+        [
+          "0"
+        ],
+        [
+          "0"
+        ],
+        [
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "native-limit",
+      "mode": "stream1",
+      "sql": "SELECT Sum([Value]),Avg([Value]) FROM Decimal4",
+      "extra": [
+        "--native-rows",
+        "1"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "resource",
+      "stderr": "error: Rows resource limit exceeded (0 remaining)\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "query-limit",
+      "mode": "stream1",
+      "sql": "SELECT Sum([Value]),Avg([Value]) FROM Decimal4",
+      "extra": [
+        "--execution-steps",
+        "1"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "resource",
+      "stderr": "error: Steps resource limit exceeded (0 remaining)\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "output-limit",
+      "mode": "stream1",
+      "sql": "SELECT Sum([Value]),Avg([Value]) FROM Decimal4",
+      "extra": [
+        "--output-bytes",
+        "1"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "output",
+      "stderr": "error: evaluation output limit exceeded\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "late-operand",
+      "mode": "stream1",
+      "sql": "SELECT Sum(ID Mod (ID-999)),Avg([Value]) FROM Decimal4",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "division",
+      "stderr": "error: division by zero\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "scale28-all",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "55d1c010c33de106bda639cdec08e8efb28eb43bd291567309c97d5a583d6e5f",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000000000000000000000000000",
+          "34314312757501535836177/500000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "scale28-all",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "55d1c010c33de106bda639cdec08e8efb28eb43bd291567309c97d5a583d6e5f",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000000000000000000000000000",
+          "34314312757501535836177/500000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "scale28-all",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "55d1c010c33de106bda639cdec08e8efb28eb43bd291567309c97d5a583d6e5f",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000000000000000000000000000",
+          "34314312757501535836177/500000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "scale28-positive",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c8152eccf1dadd573b2b192da6e6eb9df96d44ecf03c7f44d0e53134feb46e89",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "457",
+          "457",
+          "11761823860007778404701850191/200000000000000000000000000",
+          "643425812910709978375374737/5000000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "scale28-positive",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c8152eccf1dadd573b2b192da6e6eb9df96d44ecf03c7f44d0e53134feb46e89",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "457",
+          "457",
+          "11761823860007778404701850191/200000000000000000000000000",
+          "643425812910709978375374737/5000000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "scale28-positive",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c8152eccf1dadd573b2b192da6e6eb9df96d44ecf03c7f44d0e53134feb46e89",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "457",
+          "457",
+          "11761823860007778404701850191/200000000000000000000000000",
+          "643425812910709978375374737/5000000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "scale28-negative",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "8c3f89fbe3a99d0e8f3352cf6e2b401022b013c9276cfd6093f1e7aa48dc5a11",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "395",
+          "395",
+          "-58746735879445754231359081197/1000000000000000000000000000",
+          "-743629568094250053561507357/5000000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "scale28-negative",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "8c3f89fbe3a99d0e8f3352cf6e2b401022b013c9276cfd6093f1e7aa48dc5a11",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "395",
+          "395",
+          "-58746735879445754231359081197/1000000000000000000000000000",
+          "-743629568094250053561507357/5000000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "scale28-negative",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "8c3f89fbe3a99d0e8f3352cf6e2b401022b013c9276cfd6093f1e7aa48dc5a11",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "395",
+          "395",
+          "-58746735879445754231359081197/1000000000000000000000000000",
+          "-743629568094250053561507357/5000000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "scale0-all",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "92866a0f66235c9092538c8bc1f2979764bab048c5e31b07791f632d247c2893",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583",
+          "68628625515003071672353969527/100000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "scale0-all",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "92866a0f66235c9092538c8bc1f2979764bab048c5e31b07791f632d247c2893",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583",
+          "68628625515003071672353969527/100000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "scale0-all",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "92866a0f66235c9092538c8bc1f2979764bab048c5e31b07791f632d247c2893",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583",
+          "68628625515003071672353969527/100000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "scale0-positive",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "overflow",
+      "stderr": "error: numeric overflow\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "scale0-positive",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "overflow",
+      "stderr": "error: numeric overflow\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "scale0-positive",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "overflow",
+      "stderr": "error: numeric overflow\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "overflow-sum-but-valid-mean-positive",
+      "mode": "buffered",
+      "sql": "SELECT Avg([Value]) AS A FROM [Decimal0] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c2ca6912b9aed9f43555a45ec41404d17d72b4b19c1bb934b6100441bfa290a0",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "12868516258214199567507494739/10"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "overflow-sum-but-valid-mean-positive",
+      "mode": "stream1",
+      "sql": "SELECT Avg([Value]) AS A FROM [Decimal0] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c2ca6912b9aed9f43555a45ec41404d17d72b4b19c1bb934b6100441bfa290a0",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "12868516258214199567507494739/10"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "overflow-sum-but-valid-mean-positive",
+      "mode": "stream128",
+      "sql": "SELECT Avg([Value]) AS A FROM [Decimal0] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c2ca6912b9aed9f43555a45ec41404d17d72b4b19c1bb934b6100441bfa290a0",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "12868516258214199567507494739/10"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "scale0-negative",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "overflow",
+      "stderr": "error: numeric overflow\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "scale0-negative",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "overflow",
+      "stderr": "error: numeric overflow\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "scale0-negative",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "overflow",
+      "stderr": "error: numeric overflow\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "overflow-sum-but-valid-mean-negative",
+      "mode": "buffered",
+      "sql": "SELECT Avg([Value]) AS A FROM [Decimal0] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "2c6e729bb4384eeeb3fb0a7a1e83414b43fa9b0ee9d1d444a5f3828653ff9688",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "-7436295680942500535615073569/5"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "overflow-sum-but-valid-mean-negative",
+      "mode": "stream1",
+      "sql": "SELECT Avg([Value]) AS A FROM [Decimal0] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "2c6e729bb4384eeeb3fb0a7a1e83414b43fa9b0ee9d1d444a5f3828653ff9688",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "-7436295680942500535615073569/5"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "overflow-sum-but-valid-mean-negative",
+      "mode": "stream128",
+      "sql": "SELECT Avg([Value]) AS A FROM [Decimal0] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "2c6e729bb4384eeeb3fb0a7a1e83414b43fa9b0ee9d1d444a5f3828653ff9688",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "-7436295680942500535615073569/5"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "scale4-all",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "1c431dbd549e2686a09100a07531c5675229927653fd19a39f67857f58e91dff",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000",
+          "68628625515003071672353969527/1000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "scale4-all",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "1c431dbd549e2686a09100a07531c5675229927653fd19a39f67857f58e91dff",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000",
+          "68628625515003071672353969527/1000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "scale4-all",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "1c431dbd549e2686a09100a07531c5675229927653fd19a39f67857f58e91dff",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000",
+          "68628625515003071672353969527/1000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "scale4-positive",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "93c21bb7aec6ae14fdb6fbd6074a58c24ada4ba51ffcb101bf7c7aa7345906de",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "457",
+          "457",
+          "11761823860007778404701850191/200",
+          "12868516258214199567507494739/100000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "scale4-positive",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "93c21bb7aec6ae14fdb6fbd6074a58c24ada4ba51ffcb101bf7c7aa7345906de",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "457",
+          "457",
+          "11761823860007778404701850191/200",
+          "12868516258214199567507494739/100000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "scale4-positive",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "93c21bb7aec6ae14fdb6fbd6074a58c24ada4ba51ffcb101bf7c7aa7345906de",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "457",
+          "457",
+          "11761823860007778404701850191/200",
+          "12868516258214199567507494739/100000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "scale4-negative",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "3329d1295a6b76858ae6574a1ad5848b013b73ac5dfc938ff02113b71d820204",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "395",
+          "395",
+          "-58746735879445754231359081197/1000",
+          "-7436295680942500535615073569/50000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "scale4-negative",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "3329d1295a6b76858ae6574a1ad5848b013b73ac5dfc938ff02113b71d820204",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "395",
+          "395",
+          "-58746735879445754231359081197/1000",
+          "-7436295680942500535615073569/50000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "scale4-negative",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "3329d1295a6b76858ae6574a1ad5848b013b73ac5dfc938ff02113b71d820204",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "395",
+          "395",
+          "-58746735879445754231359081197/1000",
+          "-7436295680942500535615073569/50000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "all-null",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value] IS NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "78096d3dc6a14810abe2d1eee854c26d8421490e0e6f7616032590a9b259f17f",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "91",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "all-null",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value] IS NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "78096d3dc6a14810abe2d1eee854c26d8421490e0e6f7616032590a9b259f17f",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "91",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "all-null",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value] IS NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "78096d3dc6a14810abe2d1eee854c26d8421490e0e6f7616032590a9b259f17f",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "91",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "filtered-empty",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c55ea56abdb16754eec61cd29d9e965565d0bd9e27ff021a7f0b08edb304f4ba",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "0",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "filtered-empty",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c55ea56abdb16754eec61cd29d9e965565d0bd9e27ff021a7f0b08edb304f4ba",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "0",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "filtered-empty",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c55ea56abdb16754eec61cd29d9e965565d0bd9e27ff021a7f0b08edb304f4ba",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "0",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "typed-point",
+      "mode": "buffered",
+      "sql": "PARAMETERS P Decimal(28,4); SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]=P",
+      "extra": [
+        "--param",
+        "P=decimal:0.0001"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "49b99e347ee10d9f7d7ae35d733bb9dd7fcbc0d7e19699451b76a7c215f8c29a",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "57",
+          "57",
+          "57/10000",
+          "1/10000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "typed-point",
+      "mode": "stream1",
+      "sql": "PARAMETERS P Decimal(28,4); SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]=P",
+      "extra": [
+        "--param",
+        "P=decimal:0.0001"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "49b99e347ee10d9f7d7ae35d733bb9dd7fcbc0d7e19699451b76a7c215f8c29a",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "57",
+          "57",
+          "57/10000",
+          "1/10000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "typed-point",
+      "mode": "stream128",
+      "sql": "PARAMETERS P Decimal(28,4); SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]=P",
+      "extra": [
+        "--param",
+        "P=decimal:0.0001"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "49b99e347ee10d9f7d7ae35d733bb9dd7fcbc0d7e19699451b76a7c215f8c29a",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "57",
+          "57",
+          "57/10000",
+          "1/10000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "declared-policy",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE True",
+      "extra": [
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "1c431dbd549e2686a09100a07531c5675229927653fd19a39f67857f58e91dff",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000",
+          "68628625515003071672353969527/1000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "declared-policy",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE True",
+      "extra": [
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "1c431dbd549e2686a09100a07531c5675229927653fd19a39f67857f58e91dff",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000",
+          "68628625515003071672353969527/1000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "declared-policy",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE True",
+      "extra": [
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "1c431dbd549e2686a09100a07531c5675229927653fd19a39f67857f58e91dff",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000",
+          "68628625515003071672353969527/1000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "native-empty-table",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [DecimalEmpty4] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c55ea56abdb16754eec61cd29d9e965565d0bd9e27ff021a7f0b08edb304f4ba",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "0",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "native-empty-table",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [DecimalEmpty4] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c55ea56abdb16754eec61cd29d9e965565d0bd9e27ff021a7f0b08edb304f4ba",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "0",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "native-empty-table",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [DecimalEmpty4] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c55ea56abdb16754eec61cd29d9e965565d0bd9e27ff021a7f0b08edb304f4ba",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "0",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "integral-controls",
+      "mode": "buffered",
+      "sql": "SELECT Sum(ID) AS S,Avg(ID) AS A,VarType(Sum(ID)) AS ST,VarType(Avg(ID)) AS AT FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "317de25be06b38f53bf97a60599bddee7a9b579d058a5873f1521d70a8c6decf",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "499500",
+          "999/2",
+          "20",
+          "5"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "prior-alias",
+      "mode": "buffered",
+      "sql": "SELECT Sum([Value]) AS S,S+0 AS Echo FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "1672bed071ae6895518b9d071625ed7327e4fe8c6334948bcda9b32fa15bd23c",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "623834205931377921501697583/10000",
+          "623834205931377921501697583/10000"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "mixed-arms",
+      "mode": "buffered",
+      "sql": "SELECT Sum([Value]) AS N FROM Decimal4 WHERE [Value]=CDec(0) UNION ALL SELECT Avg([Value]) FROM Decimal4 WHERE [Value]=CDec(0) UNION ALL SELECT Count([Value]) FROM Decimal4 WHERE ID=1",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "257fa473b0ddb799e79c592644c49b701620a7ef9587578f1bf72714f3784768",
+      "rows": 3,
+      "expected_fraction_cells": [
+        [
+          "0"
+        ],
+        [
+          "0"
+        ],
+        [
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "integral-controls",
+      "mode": "stream1",
+      "sql": "SELECT Sum(ID) AS S,Avg(ID) AS A,VarType(Sum(ID)) AS ST,VarType(Avg(ID)) AS AT FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "317de25be06b38f53bf97a60599bddee7a9b579d058a5873f1521d70a8c6decf",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "499500",
+          "999/2",
+          "20",
+          "5"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "prior-alias",
+      "mode": "stream1",
+      "sql": "SELECT Sum([Value]) AS S,S+0 AS Echo FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "1672bed071ae6895518b9d071625ed7327e4fe8c6334948bcda9b32fa15bd23c",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "623834205931377921501697583/10000",
+          "623834205931377921501697583/10000"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "mixed-arms",
+      "mode": "stream1",
+      "sql": "SELECT Sum([Value]) AS N FROM Decimal4 WHERE [Value]=CDec(0) UNION ALL SELECT Avg([Value]) FROM Decimal4 WHERE [Value]=CDec(0) UNION ALL SELECT Count([Value]) FROM Decimal4 WHERE ID=1",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "257fa473b0ddb799e79c592644c49b701620a7ef9587578f1bf72714f3784768",
+      "rows": 3,
+      "expected_fraction_cells": [
+        [
+          "0"
+        ],
+        [
+          "0"
+        ],
+        [
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "integral-controls",
+      "mode": "stream128",
+      "sql": "SELECT Sum(ID) AS S,Avg(ID) AS A,VarType(Sum(ID)) AS ST,VarType(Avg(ID)) AS AT FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "317de25be06b38f53bf97a60599bddee7a9b579d058a5873f1521d70a8c6decf",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "499500",
+          "999/2",
+          "20",
+          "5"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "prior-alias",
+      "mode": "stream128",
+      "sql": "SELECT Sum([Value]) AS S,S+0 AS Echo FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "1672bed071ae6895518b9d071625ed7327e4fe8c6334948bcda9b32fa15bd23c",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "623834205931377921501697583/10000",
+          "623834205931377921501697583/10000"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "mixed-arms",
+      "mode": "stream128",
+      "sql": "SELECT Sum([Value]) AS N FROM Decimal4 WHERE [Value]=CDec(0) UNION ALL SELECT Avg([Value]) FROM Decimal4 WHERE [Value]=CDec(0) UNION ALL SELECT Count([Value]) FROM Decimal4 WHERE ID=1",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "257fa473b0ddb799e79c592644c49b701620a7ef9587578f1bf72714f3784768",
+      "rows": 3,
+      "expected_fraction_cells": [
+        [
+          "0"
+        ],
+        [
+          "0"
+        ],
+        [
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "native-limit",
+      "mode": "stream1",
+      "sql": "SELECT Sum([Value]),Avg([Value]) FROM Decimal4",
+      "extra": [
+        "--native-rows",
+        "1"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "resource",
+      "stderr": "error: Rows resource limit exceeded (0 remaining)\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "query-limit",
+      "mode": "stream1",
+      "sql": "SELECT Sum([Value]),Avg([Value]) FROM Decimal4",
+      "extra": [
+        "--execution-steps",
+        "1"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "resource",
+      "stderr": "error: Steps resource limit exceeded (0 remaining)\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "output-limit",
+      "mode": "stream1",
+      "sql": "SELECT Sum([Value]),Avg([Value]) FROM Decimal4",
+      "extra": [
+        "--output-bytes",
+        "1"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "output",
+      "stderr": "error: evaluation output limit exceeded\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "late-operand",
+      "mode": "stream1",
+      "sql": "SELECT Sum(ID Mod (ID-999)),Avg([Value]) FROM Decimal4",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "division",
+      "stderr": "error: division by zero\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "scale28-all",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "55d1c010c33de106bda639cdec08e8efb28eb43bd291567309c97d5a583d6e5f",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000000000000000000000000000",
+          "34314312757501535836177/500000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "scale28-all",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "55d1c010c33de106bda639cdec08e8efb28eb43bd291567309c97d5a583d6e5f",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000000000000000000000000000",
+          "34314312757501535836177/500000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "scale28-all",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "55d1c010c33de106bda639cdec08e8efb28eb43bd291567309c97d5a583d6e5f",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000000000000000000000000000",
+          "34314312757501535836177/500000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "scale28-positive",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c8152eccf1dadd573b2b192da6e6eb9df96d44ecf03c7f44d0e53134feb46e89",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "457",
+          "457",
+          "11761823860007778404701850191/200000000000000000000000000",
+          "643425812910709978375374737/5000000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "scale28-positive",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c8152eccf1dadd573b2b192da6e6eb9df96d44ecf03c7f44d0e53134feb46e89",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "457",
+          "457",
+          "11761823860007778404701850191/200000000000000000000000000",
+          "643425812910709978375374737/5000000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "scale28-positive",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c8152eccf1dadd573b2b192da6e6eb9df96d44ecf03c7f44d0e53134feb46e89",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "457",
+          "457",
+          "11761823860007778404701850191/200000000000000000000000000",
+          "643425812910709978375374737/5000000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "scale28-negative",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "8c3f89fbe3a99d0e8f3352cf6e2b401022b013c9276cfd6093f1e7aa48dc5a11",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "395",
+          "395",
+          "-58746735879445754231359081197/1000000000000000000000000000",
+          "-743629568094250053561507357/5000000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "scale28-negative",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "8c3f89fbe3a99d0e8f3352cf6e2b401022b013c9276cfd6093f1e7aa48dc5a11",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "395",
+          "395",
+          "-58746735879445754231359081197/1000000000000000000000000000",
+          "-743629568094250053561507357/5000000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "scale28-negative",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "8c3f89fbe3a99d0e8f3352cf6e2b401022b013c9276cfd6093f1e7aa48dc5a11",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "395",
+          "395",
+          "-58746735879445754231359081197/1000000000000000000000000000",
+          "-743629568094250053561507357/5000000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "scale0-all",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "92866a0f66235c9092538c8bc1f2979764bab048c5e31b07791f632d247c2893",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583",
+          "68628625515003071672353969527/100000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "scale0-all",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "92866a0f66235c9092538c8bc1f2979764bab048c5e31b07791f632d247c2893",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583",
+          "68628625515003071672353969527/100000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "scale0-all",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "92866a0f66235c9092538c8bc1f2979764bab048c5e31b07791f632d247c2893",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583",
+          "68628625515003071672353969527/100000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "scale0-positive",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "overflow",
+      "stderr": "error: numeric overflow\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "scale0-positive",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "overflow",
+      "stderr": "error: numeric overflow\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "scale0-positive",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "overflow",
+      "stderr": "error: numeric overflow\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "overflow-sum-but-valid-mean-positive",
+      "mode": "buffered",
+      "sql": "SELECT Avg([Value]) AS A FROM [Decimal0] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c2ca6912b9aed9f43555a45ec41404d17d72b4b19c1bb934b6100441bfa290a0",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "12868516258214199567507494739/10"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "overflow-sum-but-valid-mean-positive",
+      "mode": "stream1",
+      "sql": "SELECT Avg([Value]) AS A FROM [Decimal0] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c2ca6912b9aed9f43555a45ec41404d17d72b4b19c1bb934b6100441bfa290a0",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "12868516258214199567507494739/10"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "overflow-sum-but-valid-mean-positive",
+      "mode": "stream128",
+      "sql": "SELECT Avg([Value]) AS A FROM [Decimal0] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c2ca6912b9aed9f43555a45ec41404d17d72b4b19c1bb934b6100441bfa290a0",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "12868516258214199567507494739/10"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "scale0-negative",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "overflow",
+      "stderr": "error: numeric overflow\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "scale0-negative",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "overflow",
+      "stderr": "error: numeric overflow\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "scale0-negative",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal0] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "overflow",
+      "stderr": "error: numeric overflow\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "overflow-sum-but-valid-mean-negative",
+      "mode": "buffered",
+      "sql": "SELECT Avg([Value]) AS A FROM [Decimal0] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "2c6e729bb4384eeeb3fb0a7a1e83414b43fa9b0ee9d1d444a5f3828653ff9688",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "-7436295680942500535615073569/5"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "overflow-sum-but-valid-mean-negative",
+      "mode": "stream1",
+      "sql": "SELECT Avg([Value]) AS A FROM [Decimal0] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "2c6e729bb4384eeeb3fb0a7a1e83414b43fa9b0ee9d1d444a5f3828653ff9688",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "-7436295680942500535615073569/5"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "overflow-sum-but-valid-mean-negative",
+      "mode": "stream128",
+      "sql": "SELECT Avg([Value]) AS A FROM [Decimal0] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "2c6e729bb4384eeeb3fb0a7a1e83414b43fa9b0ee9d1d444a5f3828653ff9688",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "-7436295680942500535615073569/5"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "scale4-all",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "1c431dbd549e2686a09100a07531c5675229927653fd19a39f67857f58e91dff",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000",
+          "68628625515003071672353969527/1000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "scale4-all",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "1c431dbd549e2686a09100a07531c5675229927653fd19a39f67857f58e91dff",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000",
+          "68628625515003071672353969527/1000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "scale4-all",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "1c431dbd549e2686a09100a07531c5675229927653fd19a39f67857f58e91dff",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000",
+          "68628625515003071672353969527/1000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "scale4-positive",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "93c21bb7aec6ae14fdb6fbd6074a58c24ada4ba51ffcb101bf7c7aa7345906de",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "457",
+          "457",
+          "11761823860007778404701850191/200",
+          "12868516258214199567507494739/100000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "scale4-positive",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "93c21bb7aec6ae14fdb6fbd6074a58c24ada4ba51ffcb101bf7c7aa7345906de",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "457",
+          "457",
+          "11761823860007778404701850191/200",
+          "12868516258214199567507494739/100000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "scale4-positive",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "93c21bb7aec6ae14fdb6fbd6074a58c24ada4ba51ffcb101bf7c7aa7345906de",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "457",
+          "457",
+          "11761823860007778404701850191/200",
+          "12868516258214199567507494739/100000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "scale4-negative",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "3329d1295a6b76858ae6574a1ad5848b013b73ac5dfc938ff02113b71d820204",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "395",
+          "395",
+          "-58746735879445754231359081197/1000",
+          "-7436295680942500535615073569/50000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "scale4-negative",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "3329d1295a6b76858ae6574a1ad5848b013b73ac5dfc938ff02113b71d820204",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "395",
+          "395",
+          "-58746735879445754231359081197/1000",
+          "-7436295680942500535615073569/50000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "scale4-negative",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "3329d1295a6b76858ae6574a1ad5848b013b73ac5dfc938ff02113b71d820204",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "395",
+          "395",
+          "-58746735879445754231359081197/1000",
+          "-7436295680942500535615073569/50000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "all-null",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value] IS NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "78096d3dc6a14810abe2d1eee854c26d8421490e0e6f7616032590a9b259f17f",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "91",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "all-null",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value] IS NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "78096d3dc6a14810abe2d1eee854c26d8421490e0e6f7616032590a9b259f17f",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "91",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "all-null",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value] IS NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "78096d3dc6a14810abe2d1eee854c26d8421490e0e6f7616032590a9b259f17f",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "91",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "filtered-empty",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c55ea56abdb16754eec61cd29d9e965565d0bd9e27ff021a7f0b08edb304f4ba",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "0",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "filtered-empty",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c55ea56abdb16754eec61cd29d9e965565d0bd9e27ff021a7f0b08edb304f4ba",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "0",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "filtered-empty",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c55ea56abdb16754eec61cd29d9e965565d0bd9e27ff021a7f0b08edb304f4ba",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "0",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "typed-point",
+      "mode": "buffered",
+      "sql": "PARAMETERS P Decimal(28,4); SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]=P",
+      "extra": [
+        "--param",
+        "P=decimal:0.0001"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "49b99e347ee10d9f7d7ae35d733bb9dd7fcbc0d7e19699451b76a7c215f8c29a",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "57",
+          "57",
+          "57/10000",
+          "1/10000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "typed-point",
+      "mode": "stream1",
+      "sql": "PARAMETERS P Decimal(28,4); SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]=P",
+      "extra": [
+        "--param",
+        "P=decimal:0.0001"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "49b99e347ee10d9f7d7ae35d733bb9dd7fcbc0d7e19699451b76a7c215f8c29a",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "57",
+          "57",
+          "57/10000",
+          "1/10000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "typed-point",
+      "mode": "stream128",
+      "sql": "PARAMETERS P Decimal(28,4); SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE [Value]=P",
+      "extra": [
+        "--param",
+        "P=decimal:0.0001"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "49b99e347ee10d9f7d7ae35d733bb9dd7fcbc0d7e19699451b76a7c215f8c29a",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "57",
+          "57",
+          "57/10000",
+          "1/10000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "declared-policy",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE True",
+      "extra": [
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "1c431dbd549e2686a09100a07531c5675229927653fd19a39f67857f58e91dff",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000",
+          "68628625515003071672353969527/1000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "declared-policy",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE True",
+      "extra": [
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "1c431dbd549e2686a09100a07531c5675229927653fd19a39f67857f58e91dff",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000",
+          "68628625515003071672353969527/1000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "declared-policy",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal4] WHERE True",
+      "extra": [
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "1c431dbd549e2686a09100a07531c5675229927653fd19a39f67857f58e91dff",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000",
+          "68628625515003071672353969527/1000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "native-empty-table",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [DecimalEmpty4] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c55ea56abdb16754eec61cd29d9e965565d0bd9e27ff021a7f0b08edb304f4ba",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "0",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "native-empty-table",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [DecimalEmpty4] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c55ea56abdb16754eec61cd29d9e965565d0bd9e27ff021a7f0b08edb304f4ba",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "0",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "native-empty-table",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [DecimalEmpty4] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c55ea56abdb16754eec61cd29d9e965565d0bd9e27ff021a7f0b08edb304f4ba",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "0",
+          "0",
+          null,
+          null,
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "integral-controls",
+      "mode": "buffered",
+      "sql": "SELECT Sum(ID) AS S,Avg(ID) AS A,VarType(Sum(ID)) AS ST,VarType(Avg(ID)) AS AT FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "317de25be06b38f53bf97a60599bddee7a9b579d058a5873f1521d70a8c6decf",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "499500",
+          "999/2",
+          "20",
+          "5"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "prior-alias",
+      "mode": "buffered",
+      "sql": "SELECT Sum([Value]) AS S,S+0 AS Echo FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "1672bed071ae6895518b9d071625ed7327e4fe8c6334948bcda9b32fa15bd23c",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "623834205931377921501697583/10000",
+          "623834205931377921501697583/10000"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "mixed-arms",
+      "mode": "buffered",
+      "sql": "SELECT Sum([Value]) AS N FROM Decimal4 WHERE [Value]=CDec(0) UNION ALL SELECT Avg([Value]) FROM Decimal4 WHERE [Value]=CDec(0) UNION ALL SELECT Count([Value]) FROM Decimal4 WHERE ID=1",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "257fa473b0ddb799e79c592644c49b701620a7ef9587578f1bf72714f3784768",
+      "rows": 3,
+      "expected_fraction_cells": [
+        [
+          "0"
+        ],
+        [
+          "0"
+        ],
+        [
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "integral-controls",
+      "mode": "stream1",
+      "sql": "SELECT Sum(ID) AS S,Avg(ID) AS A,VarType(Sum(ID)) AS ST,VarType(Avg(ID)) AS AT FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "317de25be06b38f53bf97a60599bddee7a9b579d058a5873f1521d70a8c6decf",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "499500",
+          "999/2",
+          "20",
+          "5"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "prior-alias",
+      "mode": "stream1",
+      "sql": "SELECT Sum([Value]) AS S,S+0 AS Echo FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "1672bed071ae6895518b9d071625ed7327e4fe8c6334948bcda9b32fa15bd23c",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "623834205931377921501697583/10000",
+          "623834205931377921501697583/10000"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "mixed-arms",
+      "mode": "stream1",
+      "sql": "SELECT Sum([Value]) AS N FROM Decimal4 WHERE [Value]=CDec(0) UNION ALL SELECT Avg([Value]) FROM Decimal4 WHERE [Value]=CDec(0) UNION ALL SELECT Count([Value]) FROM Decimal4 WHERE ID=1",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "257fa473b0ddb799e79c592644c49b701620a7ef9587578f1bf72714f3784768",
+      "rows": 3,
+      "expected_fraction_cells": [
+        [
+          "0"
+        ],
+        [
+          "0"
+        ],
+        [
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "integral-controls",
+      "mode": "stream128",
+      "sql": "SELECT Sum(ID) AS S,Avg(ID) AS A,VarType(Sum(ID)) AS ST,VarType(Avg(ID)) AS AT FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "317de25be06b38f53bf97a60599bddee7a9b579d058a5873f1521d70a8c6decf",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "499500",
+          "999/2",
+          "20",
+          "5"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "prior-alias",
+      "mode": "stream128",
+      "sql": "SELECT Sum([Value]) AS S,S+0 AS Echo FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "1672bed071ae6895518b9d071625ed7327e4fe8c6334948bcda9b32fa15bd23c",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "623834205931377921501697583/10000",
+          "623834205931377921501697583/10000"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "mixed-arms",
+      "mode": "stream128",
+      "sql": "SELECT Sum([Value]) AS N FROM Decimal4 WHERE [Value]=CDec(0) UNION ALL SELECT Avg([Value]) FROM Decimal4 WHERE [Value]=CDec(0) UNION ALL SELECT Count([Value]) FROM Decimal4 WHERE ID=1",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "257fa473b0ddb799e79c592644c49b701620a7ef9587578f1bf72714f3784768",
+      "rows": 3,
+      "expected_fraction_cells": [
+        [
+          "0"
+        ],
+        [
+          "0"
+        ],
+        [
+          "1"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "native-limit",
+      "mode": "stream1",
+      "sql": "SELECT Sum([Value]),Avg([Value]) FROM Decimal4",
+      "extra": [
+        "--native-rows",
+        "1"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "resource",
+      "stderr": "error: Rows resource limit exceeded (0 remaining)\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "query-limit",
+      "mode": "stream1",
+      "sql": "SELECT Sum([Value]),Avg([Value]) FROM Decimal4",
+      "extra": [
+        "--execution-steps",
+        "1"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "resource",
+      "stderr": "error: Steps resource limit exceeded (0 remaining)\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "output-limit",
+      "mode": "stream1",
+      "sql": "SELECT Sum([Value]),Avg([Value]) FROM Decimal4",
+      "extra": [
+        "--output-bytes",
+        "1"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "output",
+      "stderr": "error: evaluation output limit exceeded\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "late-operand",
+      "mode": "stream1",
+      "sql": "SELECT Sum(ID Mod (ID-999)),Avg([Value]) FROM Decimal4",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "division",
+      "stderr": "error: division by zero\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "scale28-all",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "55d1c010c33de106bda639cdec08e8efb28eb43bd291567309c97d5a583d6e5f",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000000000000000000000000000",
+          "34314312757501535836177/500000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "scale28-all",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "55d1c010c33de106bda639cdec08e8efb28eb43bd291567309c97d5a583d6e5f",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000000000000000000000000000",
+          "34314312757501535836177/500000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "scale28-all",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "55d1c010c33de106bda639cdec08e8efb28eb43bd291567309c97d5a583d6e5f",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "1000",
+          "909",
+          "623834205931377921501697583/10000000000000000000000000000",
+          "34314312757501535836177/500000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "scale28-positive",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c8152eccf1dadd573b2b192da6e6eb9df96d44ecf03c7f44d0e53134feb46e89",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "457",
+          "457",
+          "11761823860007778404701850191/200000000000000000000000000",
+          "643425812910709978375374737/5000000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "scale28-positive",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c8152eccf1dadd573b2b192da6e6eb9df96d44ecf03c7f44d0e53134feb46e89",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "457",
+          "457",
+          "11761823860007778404701850191/200000000000000000000000000",
+          "643425812910709978375374737/5000000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "scale28-positive",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "c8152eccf1dadd573b2b192da6e6eb9df96d44ecf03c7f44d0e53134feb46e89",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "457",
+          "457",
+          "11761823860007778404701850191/200000000000000000000000000",
+          "643425812910709978375374737/5000000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "scale28-negative",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "8c3f89fbe3a99d0e8f3352cf6e2b401022b013c9276cfd6093f1e7aa48dc5a11",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "395",
+          "395",
+          "-58746735879445754231359081197/1000000000000000000000000000",
+          "-743629568094250053561507357/5000000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "scale28-negative",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "8c3f89fbe3a99d0e8f3352cf6e2b401022b013c9276cfd6093f1e7aa48dc5a11",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "395",
+          "395",
+          "-58746735879445754231359081197/1000000000000000000000000000",
+          "-743629568094250053561507357/5000000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "scale28-negative",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,Count([Value]) AS C,Sum([Value]) AS S,Avg([Value]) AS A,VarType(Sum([Value])) AS ST,VarType(Avg([Value])) AS AT FROM [Decimal28] WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "8c3f89fbe3a99d0e8f3352cf6e2b401022b013c9276cfd6093f1e7aa48dc5a11",
+      "rows": 1,
+      "expected_fraction_cells": [
+        [
+          "395",
+          "395",
+          "-58746735879445754231359081197/1000000000000000000000000000",
+          "-743629568094250053561507357/5000000000000000000000000000",
+          "14",
+          "14"
+        ]
+      ]
+    }
+  ]
+}
