@@ -1,5 +1,21 @@
 # Implementation status
 
+## Array-bound Scalar Long declarations
+
+Existing LBound/UBound results now retain their reviewed Scalar Long category
+through explicit declared arithmetic and direct/derived/named/correlated reads.
+Known overflow reports Overflow instead of an unknown-declaration refusal.
+Default materialized arithmetic and explicit CVar widening are unchanged;
+UNION/aggregate declaration categories remain unknown. See
+[the contract](VALUE_INSPECTION.md#bound-result-declaration-provenance).
+
+Nineteen scoped Rust tests pass, including six new declaration controls, alongside
+strict query library/target Clippy. Fixed crosstab heading overflow occurs before
+user scans; CVar produces the widened heading. Named constant-heading admission
+remains unchanged and metadata-only. Eager failures, empty scalar NULLs, resource
+limits and every observed cancellation checkpoint retain their boundaries. Native
+query subtype/overflow qualification and wider P0 semantics remain unfinished.
+
 ## Independent concatenation policy replay
 
 The [getter-backed replay](testing/CONCATENATION_POLICIES.md) passes 300 commands
