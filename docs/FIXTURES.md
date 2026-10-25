@@ -7990,3 +7990,50 @@ cells. All 1,899 hashes remain unchanged, including every file in the 1,885-entr
 Rust inventory independently matched to committed archive `39f35d04`.
 Natural intermediate carriers, stored ResultType conversion and native freshness
 remain distinct. See [the evidence contract](testing/CALCULATED_DEPENDENCIES.md).
+
+
+## Original per-table external query corpus
+
+[PerTableExternalFixture.java](testing/PerTableExternalFixture.java) and
+[compare_per_table_external.py](testing/compare_per_table_external.py) are original
+MIT recipes. Public Jackcess builders and inert system-query rows author root
+and two target files per V2016/V2019/V2000/V2007 profile. Reopened read-only getters
+record raw fragments, query/from-table metadata and ordinary values. Expression
+evaluation is disabled and a throwing link resolver forbids target activation.
+No reference SQL or active database content executes.
+
+The reviewed Apache-2.0 Jackcess 5.0.4 JAR retains SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+No upstream source or fixture bytes are copied. Qualified originals/getters and
+exact generation commands/class/tool identities remain ignored under
+`.cache/tablecraft-fixtures/per-table-external-20261024-qualified/`.
+
+| Original | SHA-256 |
+| --- | --- |
+| V2000/other.mdb | `6dcb7652448a7d4e3f6cef33e1f963b8a6223e4947845bab0d164b55b71dde72` |
+| V2000/root.mdb | `9d1944c4345577f46601e7b87190a0bafafdbf4f5bdac17643fce61ba6fd2b3e` |
+| V2000/target.mdb | `3a77a43003d2f63f4ed01f97be5b490a346c069006174d623cf1f99402cf056b` |
+| V2007/other.accdb | `3ee3864cbaaeb45330749bda527f772acfc1088685463588e0254fa7cf50c4a3` |
+| V2007/root.accdb | `605dad6f92340483a126c5fda33442d63601e9b32666ec535664b8acc292a769` |
+| V2007/target.accdb | `52faacb548a84fc486329f55e880e5730062a0563f7c1ed894ddfc19ca4fa61b` |
+| V2016/other.accdb | `dc0d7c0f382ba450f11b57bcf93ec40160794ecb19f901a8e929c23a09ca605b` |
+| V2016/root.accdb | `8f658e5b2e6c7144aceedc7f0f560aedc40e81b5a22a45f71f9351faaed35e72` |
+| V2016/target.accdb | `a4330d71b9dc3989e49a512248e3b991fd263771d59b8c0c01fac0b1fec91a27` |
+| V2019/other.accdb | `4fe0181fc33dddc1220baac9f72faf9e40979584b56680beaa0f454e2cae710d` |
+| V2019/root.accdb | `1b941c5bd99a2ffc70f57ac71206b48a7446290d587c7acc012e25e4d62afb97` |
+| V2019/target.accdb | `324951f69e657bf645b33c170eb6d689abed7289b2147a2c7153c00b2bc04838` |
+
+The [accepted replay](testing/results/per-table-external-2026-10-24.json) passes
+184 commands and 260 getter-modeled cells, with 156 successes, 28 intended refusals
+and zero disagreements. All 1,923 pins remain unchanged, including the 1,890-file
+Rust inventory independently matched to committed archive `cf7a501b`.
+
+The initial authoring attempt omitted the qualified flag on one global-IN row.
+Its twelve originals and exact failed-report/Java/runner/class snapshots remain
+untouched in ignored exploration storage. Corrected originals were generated in
+a fresh directory. A passed intermediate report with host-specific diagnostic
+labels is also retained privately; labels alone changed for the accepted rerun.
+See [the evidence contract](testing/PER_TABLE_EXTERNAL.md) and
+[verification record](testing/results/read-query-per-table-external-2026-10-24.json).
+Owned SQL escaping, engineering global/per-leaf precedence and native Access
+qualification remain separate from public getter metadata rendering.
