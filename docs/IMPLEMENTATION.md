@@ -1,5 +1,17 @@
 # Implementation status
 
+## Bounded exact-key grouping and sets
+
+Proven uniform Boolean/integral/NULL tuples now use a metered fingerprint
+directory for grouping, DISTINCT, qualified DISTINCTROW and UNION duplicate
+removal. Existing SQL comparison remains collision authority and retained vectors
+preserve first encounter order. Unsupported descriptors keep the original path;
+an unexpected runtime carrier disables the directory and scans all retained
+representatives. Twelve-thousand-row GROUP/DISTINCT controls fit finite work
+allowances without raising defaults. Eighteen new controls and 205 regressions
+pass with strict query Clippy and formatting. See [scope](EXACT_QUERY_KEYS.md)
+and [verification](testing/results/read-query-exact-keys-2026-10-25.json).
+
 ## Borrowed integral equijoin checks
 
 Proven bare same-carrier integral equality now rejects join pairs before copying

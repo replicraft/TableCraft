@@ -110,7 +110,11 @@ impl Runtime<'_, '_> {
                         self.apply_union_policies(&mut rows, &policies, &complete)?;
                     }
                     if !*all {
-                        rows = self.unique(rows, &policies)?;
+                        rows = self.unique(
+                            rows,
+                            &policies,
+                            plan.active_types(self.options.declared_integral),
+                        )?;
                     }
                 }
                 let mut output = Vec::new();
@@ -168,23 +172,38 @@ impl Runtime<'_, '_> {
             } else {
                 &plan.text_policies
             };
+            let mut lookup = if rows.is_empty() {
+                None
+            } else if records {
+                let ReadNode::Select(select) = &plan.node else {
+                    return Err(QueryError::Source);
+                };
+                self.exact_field_keys(&select.record_keys, &select.source)?
+            } else {
+                self.exact_output_keys(plan.active_types(self.options.declared_integral))?
+            };
             let mut unique: Vec<OutputRow> = Vec::new();
             for row in rows {
                 self.validate_key_row(if records { &row.records } else { &row.values })?;
-                let mut duplicate = false;
-                for other in &unique {
-                    let same = if records {
-                        self.same_expression_row(&row.records, &other.records, policies)?
-                    } else {
-                        self.same_expression_row(&row.values, &other.values, policies)?
-                    };
-                    if same {
-                        duplicate = true;
-                        break;
-                    }
-                }
-                if !duplicate {
+                let keys = if records { &row.records } else { &row.values };
+                let (representative, fingerprint) = self.exact_key_match(
+                    &mut lookup,
+                    keys,
+                    &unique,
+                    |row| if records { &row.records } else { &row.values },
+                    policies,
+                )?;
+                if representative.is_none() {
+                    let position = unique.len();
                     self.push(&mut unique, row)?;
+                    if let (Some(lookup), Some(fingerprint)) = (&mut lookup, fingerprint) {
+                        lookup.insert(
+                            fingerprint,
+                            position,
+                            self.budget,
+                            self.options.cancelled,
+                        )?;
+                    }
                 }
             }
             rows = unique;
@@ -338,20 +357,25 @@ impl Runtime<'_, '_> {
         &mut self,
         mut rows: Vec<Vec<CellValue>>,
         policies: &[crate::source::TextPolicy],
+        types: &[crate::OutputType],
     ) -> Result<Vec<Vec<CellValue>>, QueryError> {
         self.unify_cell_policies(&mut rows, Vec::as_mut_slice)?;
+        let mut lookup = if rows.is_empty() {
+            None
+        } else {
+            self.exact_output_keys(types)?
+        };
         let mut result: Vec<Vec<CellValue>> = Vec::new();
         for row in rows {
             self.validate_key_row(&row)?;
-            let mut duplicate = false;
-            for other in &result {
-                if self.same_expression_row(&row, other, policies)? {
-                    duplicate = true;
-                    break;
-                }
-            }
-            if !duplicate {
+            let (representative, fingerprint) =
+                self.exact_key_match(&mut lookup, &row, &result, Vec::as_slice, policies)?;
+            if representative.is_none() {
+                let position = result.len();
                 self.push(&mut result, row)?;
+                if let (Some(lookup), Some(fingerprint)) = (&mut lookup, fingerprint) {
+                    lookup.insert(fingerprint, position, self.budget, self.options.cancelled)?;
+                }
             }
         }
         Ok(result)

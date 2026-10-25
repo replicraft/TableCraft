@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Bounded metadata-proven integral/NULL lookup for GROUP BY, DISTINCT, qualified DISTINCTROW and each written UNION DISTINCT stage",
+  "unique_tests": 223,
+  "new_tests": 18,
+  "new_test_breakdown": {
+    "independent_exact_key_conformance": 10,
+    "implementation_scale_controls": 3,
+    "private_directory_profile_controls": 5
+  },
+  "existing_regression_tests": 205,
+  "regression_targets": {
+    "collation_routing": 106,
+    "declared_result_widths": 4,
+    "distinctrow": 23,
+    "error_keys": 7,
+    "grouped_expressions": 5,
+    "grouped_subqueries": 8,
+    "numeric_keys": 8,
+    "projection_alias_execution": 11,
+    "projection_alias_values": 12,
+    "union_numeric_types": 6,
+    "union_text_types": 8,
+    "union_types": 7
+  },
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-query --test exact_key_conformance --test exact_key_indexing -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/exact-key-conformance-primary-20261025.log",
+      "sha256": "00ad3ee05354ca4f6ed8cf9b605c207bb40cac7ad99321dfd8d5e037d4c4b6fa",
+      "tests": 13
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test collation_routing --test grouped_expressions --test grouped_subqueries --test error_keys --test numeric_keys --test distinctrow --test union_types --test union_numeric_types --test union_text_types --test declared_result_widths --test projection_alias_execution --test projection_alias_values -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/exact-key-conformance-regressions-20261025.log",
+      "sha256": "81da27ec71f298a4e3734c77dde4a2a25c74d379bd1b0607847bea45f0e4aff4",
+      "tests": 205
+    },
+    {
+      "command": "cargo test -p tablecraft-query --lib execution::exact_keys -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/exact-key-conformance-kernel-20261025.log",
+      "sha256": "26d4b6c3c3c888de8f304d5606a054c9325ea51e7402c8bea29febc44e6b2621",
+      "tests": 5
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --tests -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/exact-key-conformance-clippy-final-20261025.log",
+      "sha256": "a787d8f340b843603a52a16a1e0b6d580599786dfe5ec6545b6e900cb30e3be7"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "observation": "Parent-reported terminal session 81193; no private log captured."
+    }
+  ],
+  "independent_controls": [
+    "BTreeMap integer/NULL tuple model supplies first-encounter representatives and group counts across all five integral carriers, signed extrema and exact LongLong neighbours beyond 2^53.",
+    "Twelve-thousand descending unique GROUP/DISTINCT populations fit finite checked allowances; active declared Int16 proofs survive conservative public Dynamic metadata and derived sources.",
+    "Known NULL, complete selected DISTINCTROW records, written UNION DISTINCT/ALL boundaries, dynamic mixed-integral fallback, Error/raw refusals, cancellation and cumulative quotas retain current contracts.",
+    "Private forced-collision and unexpected-carrier controls preserve SQL comparator authority and all retained representatives; failed growth does not refund cumulative budget."
+  ],
+  "excluded_attempts": [
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --tests -j2 --locked --offline -- -D warnings",
+      "exit_code": 101,
+      "private_log": ".cache/exact-key-conformance-clippy-20261025.log",
+      "sha256": "064da413d1a9e7ad44054da7e9f334279399b4153fef6b4a42471c151d41fe52",
+      "reason": "New independent test tuple return type triggered type_complexity; ModelKey/ModelGroup aliases corrected readability only. No runtime or test-answer correction."
+    }
+  ],
+  "counting_notes": [
+    "The accepted 223 total counts each named test once; the implementation agent previously ran the same three integration and five private tests, which are not added again.",
+    "No failed test executions or weakened goldens occurred in this slice. The excluded initial lint attempt is retained separately."
+  ],
+  "limits": [
+    "Only proven uniform Boolean/Byte/Int16/Int32/Int64 and NULL profiles are accelerated; all other profiles retain the original general comparator path.",
+    "Additional directory storage can change quota thresholds. No timing, universal complexity, native Access subtype or optimizer equivalence is claimed."
+  ],
+  "unrun": [
+    "Full workspace suite",
+    "Native Microsoft Access SQL/optimizer comparisons",
+    "Native exact-key replay with the final executable, pending a separate frozen-binary report"
+  ]
+}

@@ -1,5 +1,5 @@
 //! Group membership uses complete key-column provenance before partitioning.
-use super::{Environment, Runtime, cell::CellValue, context::OuterScope};
+use super::{Environment, Runtime, cell::CellValue, context::OuterScope, exact_keys::ExactKeys};
 use crate::{QueryError, plan::SelectPlan, source::TextPolicy};
 
 pub(super) struct Group {
@@ -32,6 +32,11 @@ impl Runtime<'_, '_> {
         }
         let policies = self.expression_policies(&select.group)?;
         let mut groups = Vec::new();
+        let mut index = if rows.is_empty() {
+            None
+        } else {
+            self.exact_field_keys(&select.group, &select.source)?
+        };
         if self.options.collation_resolver.is_some() {
             // A later runtime field identity may distinguish or equate earlier
             // neutral keys. Evaluate once and retain all key columns before
@@ -43,14 +48,14 @@ impl Runtime<'_, '_> {
             }
             self.unify_cell_policies(&mut keyed, |input| &mut input.keys)?;
             for input in keyed {
-                self.group_member(&mut groups, input.keys, input.row, &policies)?;
+                self.group_member(&mut groups, input.keys, input.row, &policies, &mut index)?;
             }
         } else {
             // An explicit global comparer is stable for the entire operation;
             // preserve incremental key storage when no field resolver is used.
             for row in rows {
                 let keys = self.group_key(&row, select, outer)?;
-                self.group_member(&mut groups, keys, row, &policies)?;
+                self.group_member(&mut groups, keys, row, &policies, &mut index)?;
             }
         }
         Ok(groups)
@@ -86,14 +91,10 @@ impl Runtime<'_, '_> {
         keys: Vec<CellValue>,
         row: Vec<CellValue>,
         policies: &[TextPolicy],
+        lookup: &mut Option<ExactKeys>,
     ) -> Result<(), QueryError> {
-        let mut index = None;
-        for (position, group) in groups.iter().enumerate() {
-            if self.same_expression_row(&keys, &group.keys, policies)? {
-                index = Some(position);
-                break;
-            }
-        }
+        let (index, fingerprint) =
+            self.exact_key_match(lookup, &keys, groups, |group| &group.keys, policies)?;
         if let Some(index) = index {
             for (retained, incoming) in groups[index].keys.iter_mut().zip(&keys) {
                 retained.policy = retained.policy.merge(incoming.policy);
@@ -101,6 +102,7 @@ impl Runtime<'_, '_> {
             }
             self.push(&mut groups[index].rows, row)?;
         } else {
+            let position = groups.len();
             let mut members = Vec::new();
             self.push(&mut members, row)?;
             self.push(
@@ -110,6 +112,9 @@ impl Runtime<'_, '_> {
                     rows: members,
                 },
             )?;
+            if let (Some(lookup), Some(fingerprint)) = (lookup.as_mut(), fingerprint) {
+                lookup.insert(fingerprint, position, self.budget, self.options.cancelled)?;
+            }
         }
         Ok(())
     }
