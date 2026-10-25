@@ -584,7 +584,9 @@ contract retains the primary references, algorithms, provenance and exact limits
    preserving separate row/work/execution/output limits and the default budget.
    [CLI scalar row continuation](STREAMING_ROWS.md) now uses one source-bound cursor,
    explicit scalar projections and cumulative read/output controls.
-   SQL execution remains buffered; [explicit larger scalar snapshots](LARGER_NATIVE_QUERIES.md)
+   Ordinary SQL execution remains buffered; explicit
+   [progressive scalar SELECT/WHERE](STREAMING_QUERIES.md) now uses fresh native
+   cursors without complete-table retention. [Explicit larger scalar snapshots](LARGER_NATIVE_QUERIES.md)
    now preserve complete caches and independent native/query controls with 20,000-row
    comparisons. Explicit indexed loads now have independent 20,000-row comparisons across
    qualified key families, projections, typed seeks and full-cache isolation.
@@ -599,8 +601,9 @@ contract retains the primary references, algorithms, provenance and exact limits
    bytes/metadata and stored DATE bits. Decoded columns reuse a bounded inflater
    workspace without increasing default budgets. Buffered collection browsing
    now exposes explicit read ceilings with independently checked offsets, empty
-   pages and atomic `--all` output. Broader histories, streaming
-   SQL and size/locality qualification remain work, with existing row/byte/output guards retained.
+   pages and atomic `--all` output. Broader histories, wider streaming
+   SQL shapes and size/locality qualification remain work, with existing
+   row/byte/output guards retained.
 5. Complete read-only host behavior where needed. Stable/offline inputs are the
    working contract. Native CLI inputs now hold shared OS locks against cooperating
    exclusive writers; captured package inputs can release locks after capture.

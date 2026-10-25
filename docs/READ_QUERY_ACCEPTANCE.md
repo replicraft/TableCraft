@@ -35,7 +35,10 @@ qualification recorded separately.
   children; a separate 20,000-attachment/version corpus checks exact metadata,
   decoded bytes and stored history DATE bits. These do not establish arbitrary
   million-row throughput or native Access equivalence.
-  SQL results remain buffered with separate row, byte, work and output ceilings.
+  Ordinary SQL results remain buffered with separate row, byte, work and output
+  ceilings. Explicit [streaming SELECT/WHERE](STREAMING_QUERIES.md) uses fresh
+  native cursors and cumulative budgets without complete-table materialization;
+  wider query shapes retain buffered execution.
   Absolute I/O now rejects reported seek-position mismatches before reading or
   writing; failpoints cover scalar, Memo and indexed snapshot publication.
   [Continuation fault controls](NATIVE_READ_FAILURES.md) now additionally cover
@@ -51,8 +54,10 @@ qualification recorded separately.
   coordination or coherent capture during noncooperating changes.
 - The engine exposes [inert linked definitions](NATIVE_LINKED_TABLES.md), and
   explicitly supplied Access sources can share [one native allowance](NATIVE_SOURCE_BUDGETS.md).
-  Target authorization, validated routing and linked-query execution remain
-  unimplemented; neither API follows stored paths or activates providers.
+  [Explicit one-hop routing](NATIVE_LINKED_QUERIES.md) validates host-authorized
+  targets and metadata; [external named queries](EXTERNAL_NAMED_QUERIES.md) retain
+  scoped dependency identities and lexical ownership. Neither API follows stored
+  paths or activates providers. Linked chains and broader providers remain open.
 
 CLI declared parameters now include exact Decimal and finite Single/Double
 carriers. They retain explicit syntax and strict carrier matching; see
