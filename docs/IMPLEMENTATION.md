@@ -1,5 +1,19 @@
 # Implementation status
 
+## External IN after JOIN conditions
+
+The SQL adapter now distinguishes parenthesized membership predicates from
+external database tokens after JOIN ON expressions. Unparenthesized INNER,
+LEFT and RIGHT joins preserve their ON condition and FROM selector; ON may
+also contain its own IN/NOT IN list or subquery. External source syntax now
+requires FROM, so malformed source-free membership does not become a database
+selector. Existing formatting retains owned source/connection strings without
+opening them. See [the parser contract](SQL_PARSER.md#access-grammar-and-formatting).
+
+All 65 SQL library tests pass, including four new boundary/round-trip/refusal
+tests and existing generated/limit controls. Strict SQL library/test Clippy passes.
+This is syntax evidence, not native Access execution qualification.
+
 ## Independent mixed Decimal division replay
 
 The [exact-ratio replay](testing/DECIMAL_DIVISION.md) passes 269 CLI controls and

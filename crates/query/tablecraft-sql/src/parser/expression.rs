@@ -181,7 +181,11 @@ fn pratt(
                 second_bound: Box::new(second),
                 negated,
             };
-        } else if parser.parse_keyword(Keyword::IN) {
+        } else if matches!(parser.peek_nth_token(1).token, Token::LParen)
+            && parser.parse_keyword(Keyword::IN)
+        {
+            // A predicate has parenthesized values/query. Leave IN followed by
+            // database text for the enclosing FROM clause after a JOIN's ON.
             expect_token(parser, Token::LParen)?;
             if matches!(parser.peek_token().token, Token::Word(ref w) if w.keyword == Keyword::SELECT)
             {
