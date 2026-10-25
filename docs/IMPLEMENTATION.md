@@ -1,18 +1,17 @@
 # Implementation status
 
-## Declared numeric/String conversion widths
+## Declared numeric/String baseline coverage
 
-Known Scalar numeric operands now select their checked comparison conversion
-width for String peers under declared arithmetic. Integer half-even rounding,
-range errors and exact LongLong parsing replace the default Double route only
-in that explicit profile. Unknown String categories remain usable without
-inventing result provenance; existing Variant/String branches and default
-execution stay intact. Nine new tests and 73 regressions pass across expression,
-query and CLI layers, with strict linting, separate minimal-feature checks and
-formatting. The independent [128-control replay](testing/DECLARED_NUMERIC_TEXT_REPLAY.md)
-now compares 2,592 Boolean/NULL cells and 32 buffered overflow failures over
-source-free cases and four unchanged registered native inputs. Native Access
-qualification remains separate. See the [working contract](DECLARED_NUMERIC_TEXT.md).
+The existing declared predicate service selects checked numeric widths for
+String peers, including integer rounding/ranges and exact LongLong parsing.
+The frozen pre-change CLI passes the same 128-control independent replay as the
+later helper build. The redundant helper has been removed; production query and
+expression sources match the pre-change tree. Six useful query/CLI regressions
+remain, with 79 current scoped tests, strict linting and formatting passing.
+The replay compares 2,592 Boolean/NULL cells and 32 buffered failures over
+source-free cases and four unchanged native inputs. This adds coverage rather
+than a new coercion branch; native qualification remains separate. See the
+[baseline correction](DECLARED_NUMERIC_TEXT.md#baseline-correction).
 
 ## DATE query index constraints
 

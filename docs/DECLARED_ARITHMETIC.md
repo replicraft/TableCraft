@@ -1245,9 +1245,10 @@ native ACE aggregate subtypes or complete Access SQL declaration inference.
 
 ## Selected numeric widths for String predicates
 
-Known Scalar numeric operands now select their existing conversion width for
+Known Scalar numeric operands select their existing conversion width for
 String peers, including unknown String declaration provenance. Integer Text
-rounding/ranges and exact LongLong parsing no longer use the default Double
-route under declared execution. Both-Variant ordering, Scalar String/Variant
+rounding/ranges and exact LongLong parsing use the existing effective-type
+service under declared execution, separately from the default Double route.
+A baseline audit confirms this predates the withdrawn redundant helper. Both-Variant ordering, Scalar String/Variant
 coercion, unknown numeric guards and default execution remain separate. See
 [the contract, examples and verification](DECLARED_NUMERIC_TEXT.md).

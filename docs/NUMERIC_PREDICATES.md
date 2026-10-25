@@ -30,7 +30,7 @@ not acquire numeric Text parsing or the wider scalar family conversions above.
 The explicit [declared profile](DECLARED_ARITHMETIC.md#scalar-string-compared-with-variant)
 additionally selects String coercion for a known Scalar String beside a known
 Variant; that declaration-dependent branch precedes this materialized numeric
-profile. Known Scalar numeric peers now also select their own checked Text
+profile. Known Scalar numeric peers also select their own checked Text
 conversion width under the [declared numeric/String rule](DECLARED_NUMERIC_TEXT.md),
 including exact LongLong parsing and integer rounding/ranges. Unknown categories
 fail when they can change the selected branch.

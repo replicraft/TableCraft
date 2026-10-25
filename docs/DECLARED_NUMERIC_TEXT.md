@@ -1,7 +1,7 @@
 # Declared numeric/String predicates
 
 With `--declared-arithmetic`, a known Scalar Boolean, Byte, Integer, Long,
-LongLong, Single or Double operand now selects the conversion width for a String
+LongLong, Single or Double operand selects the conversion width for a String
 peer. The String can have Scalar, Variant or unknown declaration provenance.
 Both operand orders and all six relational operators share this path. Default
 materialized comparisons retain their existing Double-based numeric Text route.
@@ -28,9 +28,10 @@ already select a rounded Double for an untyped decimal integer literal.
 
 ## Boundaries and composition
 
-`Evaluator::compare_scalar_numeric_string` supplies the shared operation over
-already-evaluated operands. It requires a known Scalar numeric declaration rather
-than guessing from a carrier. Currency, Decimal and legacy DATE retain their
+The query predicate boundary checks declaration-sensitive String branches, then
+uses `Evaluator::compare_effective_numeric_values` over already-evaluated scalar
+operands. Retained String inputs use the existing strict publication adapter.
+Declaration categories are not invented from a value. Currency, Decimal and legacy DATE retain their
 existing effective-type services. Both-Variant numeric/String ordering and
 Scalar String/Variant String-coercion keep their existing branches. Unknown
 numeric provenance still refuses when it could change the comparison family.
@@ -54,14 +55,14 @@ compatibility qualification or completion of P0 value semantics.
 
 ## Verification
 
-Nine new tests and 73 regressions pass: 38 expression tests, 40 query tests and
-four CLI tests. Controls include raw UTF-16/decoded inputs, half-even boundaries,
+Six retained regression tests and 73 existing controls pass: 35 expression tests,
+40 query tests and four CLI tests. Controls include raw UTF-16/decoded inputs, half-even boundaries,
 LongLong values beyond 2^53, both directions, declaration combinations, all
 relational operators, composed predicates, reusable parameters, eager failures,
 every observed conversion cancellation checkpoint and zero-byte allocation
 refusal. Strict expression/host linting, independent minimal-feature expression
 and query checks, and formatting pass. See the
-[scoped record](testing/results/declared-numeric-text-2026-10-25.json).
+[baseline audit and current verification](testing/results/declared-numeric-text-baseline-audit-2026-10-25.json).
 
 The initial minimal-feature test filter selected zero tests because evaluation
 requires the SQL feature; it is not counted as test coverage. The initial CLI
@@ -72,3 +73,15 @@ No product result was adjusted to make that assertion pass. The independent
 128 controls comparing 2,592 Boolean/NULL cells and 32 buffered overflow failures
 with all originals and artifact/source pins unchanged. Native Access execution
 remains separate evidence work.
+
+## Baseline correction
+
+The earlier assessment incorrectly called this new conversion behavior. The
+frozen pre-change CLI from `3b1e2344` passes all 128 independent replay controls
+with identical outputs and error statuses. Its existing declared predicate
+service already selected these widths for decoded and retained String inputs.
+The extra helper introduced in `79f4c2cb` was redundant and has been removed,
+along with three helper-only tests. Production expression/query sources match
+the pre-change tree; the six useful query/CLI tests and independent replay remain.
+This is additional verified coverage, not closure of a previously missing P0
+coercion branch. Historical helper-build records remain explicitly superseded.

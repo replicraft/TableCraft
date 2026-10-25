@@ -9,7 +9,6 @@ use crate::{
 use tablecraft_core::values::{ExpressionValue, Value};
 
 mod dates;
-mod declared_numeric;
 mod declared_strings;
 pub use declared_strings::PreparedScalarStringVariantComparison;
 mod effective;

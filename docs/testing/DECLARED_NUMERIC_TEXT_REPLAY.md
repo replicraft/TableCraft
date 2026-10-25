@@ -47,3 +47,14 @@ Reports must be fresh; native inputs and the reviewed JAR must match registered
 hashes. The runner adds no product dependency or runtime. This evidence does not
 establish native query declaration inference, regional parser parity, complete
 Variant/Error semantics, write eligibility or completion of P0.
+
+## Pre-change baseline replay
+
+The frozen CLI built from `3b1e2344`, before the helper introduced in `79f4c2cb`,
+also passes all 128 controls with identical successful outputs and failures.
+The existing effective-type service already implemented the rule. The redundant
+helper was removed; current expression/query production sources match that
+baseline. Six additional query/CLI regressions and this independent evidence are
+retained. The [baseline audit](results/declared-numeric-text-baseline-audit-2026-10-25.json)
+records the correction and current checks. Do not count the helper as new P0
+functionality or add the repeated replay controls together.
