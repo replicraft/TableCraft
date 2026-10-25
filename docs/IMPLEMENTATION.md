@@ -1,5 +1,16 @@
 # Implementation status
 
+## Array-bound composition metadata
+
+LBound/UBound now expose their guaranteed nonnullable Int32 result metadata.
+This fixes mixed Text UNION conversion and wider numeric common carriers while
+preserving existing explicit array/Binary admission and bounds failures. Binding
+remains metadata-only. The [bounds controls](VALUE_INSPECTION.md)
+pass with error-message, output-type and UNION regressions: 31 focused tests and
+strict scoped Clippy. Result inference now enumerates every conservative plan
+case, so a new plan expression requires a deliberate metadata decision at compile
+time. Native array/query type qualification remains separate.
+
 ## Numbered error-message composition metadata
 
 Error(number) and Error$(number) now expose their guaranteed nonnullable Text

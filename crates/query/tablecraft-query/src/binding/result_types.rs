@@ -142,6 +142,7 @@ impl Binder<'_> {
                 },
                 false,
             ),
+            Expr::ArrayBound(..) => OutputType::scalar(ScalarType::Int32, false),
             Expr::Inspect(..) => OutputType::scalar(ScalarType::Boolean, false),
             Expr::ValueInspect(function, _) => OutputType::scalar(
                 match function {
@@ -250,8 +251,34 @@ impl Binder<'_> {
             Expr::Subquery(read) if read.output_types.len() == 1 => {
                 read.output_types[0].with_null()
             }
-            // Unqualified expressions retain visible uncertainty without samples.
-            _ => OutputType::Dynamic,
+            // Keep the remaining uncertainty explicit so a new plan expression
+            // requires a deliberate inference decision instead of a silent fallback.
+            Expr::Output(..)
+            | Expr::CollectionItem { .. }
+            | Expr::CvErr(_)
+            | Expr::Eval(_)
+            | Expr::Array(_)
+            | Expr::DomainCall(
+                DomainFunction::Average
+                | DomainFunction::First
+                | DomainFunction::Last
+                | DomainFunction::Lookup
+                | DomainFunction::Minimum
+                | DomainFunction::Maximum
+                | DomainFunction::Sum,
+                _,
+            )
+            | Expr::Aggregate(
+                Aggregate::Sum
+                | Aggregate::Average
+                | Aggregate::Minimum
+                | Aggregate::Maximum
+                | Aggregate::First
+                | Aggregate::Last,
+                None,
+            )
+            | Expr::Subquery(_)
+            | Expr::Literal(_) => OutputType::Dynamic,
         })
     }
 }

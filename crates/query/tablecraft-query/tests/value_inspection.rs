@@ -233,3 +233,6 @@ fn array_materialization_and_name_publication_share_query_limits_and_cancellatio
         Some(QueryError::Limit(_) | QueryError::Evaluation(EvalError::Limit(_)))
     ));
 }
+
+#[path = "value_inspection/bounds_metadata.rs"]
+mod bounds_metadata;
