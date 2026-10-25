@@ -59,7 +59,8 @@ impl<'a> Root<'a> {
 
 /// Explicit native Access IN bindings over stable, already-open sources.
 /// Root tables, saved queries and mapped links keep the root namespace. External
-/// targets expose local base tables only. No embedded token opens a path, loads
+/// targets expose local base tables and qualified saved read definitions. Linked
+/// target tables remain refused. No embedded token opens a path, loads
 /// a provider, changes credentials or establishes a cross-file snapshot.
 pub struct ExternalNativeSource<'a> {
     root: Root<'a>,

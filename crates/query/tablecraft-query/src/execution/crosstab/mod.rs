@@ -11,6 +11,13 @@ use tablecraft_core::values::Value;
 
 impl Runtime<'_, '_> {
     pub(super) fn crosstab(&mut self, plan: &CrosstabPlan) -> Result<CellQueryResult, QueryError> {
+        let previous = std::mem::replace(&mut self.owner, plan.read.owner);
+        let result = self.crosstab_owned(plan);
+        self.owner = previous;
+        result
+    }
+
+    fn crosstab_owned(&mut self, plan: &CrosstabPlan) -> Result<CellQueryResult, QueryError> {
         if let Some(index) = plan.materialized {
             return self.materialized_crosstab(index);
         }

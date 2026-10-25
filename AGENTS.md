@@ -69,8 +69,13 @@ Explicit SQL external `IN` sources use the metadata-only host contract in
 [EXTERNAL_QUERY_SOURCES.md](docs/EXTERNAL_QUERY_SOURCES.md). Capture exact selectors
 and immutable binding/revision keys, revalidate before scans, and retain actual
 target metadata and callbacks through discovery. Nested SELECTs choose their own
-namespace; root named/domain ownership remains explicit. External named targets
-remain unavailable. Qualified native saved SELECT/crosstab global remote-source
+namespace; root named/domain ownership remains explicit. Qualified
+[external named queries](docs/EXTERNAL_NAMED_QUERIES.md) now inherit their selected
+definition namespace for local/nested/domain references. Keep cache and cycle
+identities scoped, retain owner bindings before discovery scans, and restore
+caller ownership on errors. Explicit IN always uses the operation root's authorized
+registry; closed Eval strings still have no name bindings.
+Qualified native saved SELECT/crosstab global remote-source
 fragments now reconstruct through [the saved-source contract](docs/NATIVE_SAVED_EXTERNAL_QUERIES.md);
 per-table qualifiers remain refused. Reconstruct opaque tokens directly into
 owned fields rather than interpolating stored path/provider text into SQL.

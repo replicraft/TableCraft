@@ -61,8 +61,10 @@ impl<'a> ExternalSourceRequest<'a> {
 
 /// Already-authorized borrowed provider plus its immutable binding identity.
 /// The provider must remain stable throughout preparation and execution. Target
-/// base tables are exposed through existing Source methods; external named query
-/// expansion and recursive provider activation are not admitted by this contract.
+/// base tables and inert named definitions use existing Source methods. Named
+/// definitions retain this provider as their lexical owner. Explicit IN clauses
+/// resolve only through the operation root's host-authorized binding registry;
+/// no target callback opens or discovers another provider.
 pub struct ResolvedExternalSource<'a> {
     key: SourceKey,
     source: &'a dyn Source,

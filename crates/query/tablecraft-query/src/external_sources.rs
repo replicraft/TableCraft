@@ -6,8 +6,9 @@ use crate::{
 
 pub(crate) const MAX_EXTERNAL_SOURCES: usize = 256;
 
-#[derive(Clone, Copy, PartialEq, Eq)]
+#[derive(Clone, Copy, Default, PartialEq, Eq)]
 pub(crate) enum SourceNamespace {
+    #[default]
     Root,
     External(SourceKey),
 }

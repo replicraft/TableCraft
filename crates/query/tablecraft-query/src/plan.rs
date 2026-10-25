@@ -105,6 +105,7 @@ pub(crate) enum RelationNode {
     Derived(Box<ReadPlan>),
 }
 pub(crate) struct ReadPlan {
+    pub owner: crate::external_sources::SourceNamespace,
     pub output_types: Vec<OutputType>,
     pub materialized_types: Vec<OutputType>,
     pub declared_types: Vec<OutputType>,

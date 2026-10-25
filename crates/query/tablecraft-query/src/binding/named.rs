@@ -2,6 +2,8 @@
 use super::{Binder, Parameter};
 use crate::{
     QueryError,
+    external_sources::SourceNamespace,
+    named_identity::NamedIdentity,
     plan::{ProfiledType, ReadPlan, Relation, RelationNode, Slot},
     profile::{MAX_NAMED_DEPTH, MAX_PARAMETERS, SOURCE_SCHEMA_POLICY},
 };
@@ -64,6 +66,7 @@ impl Binder<'_> {
     }
     pub(super) fn named_read(
         &mut self,
+        namespace: SourceNamespace,
         name: &str,
         query: &Query,
         depth: usize,
@@ -72,7 +75,7 @@ impl Binder<'_> {
         if self
             .active_queries
             .iter()
-            .any(|active| SOURCE_SCHEMA_POLICY.names.equals(active, name))
+            .any(|active| active.matches(namespace, name))
         {
             return Err(QueryError::DependencyCycle);
         }
@@ -86,7 +89,9 @@ impl Binder<'_> {
             let materialized = self.materialized;
             for cached in materialized {
                 self.tick(1)?;
-                if SOURCE_SCHEMA_POLICY.names.equals(&cached.name, name) {
+                if cached.namespace == namespace
+                    && SOURCE_SCHEMA_POLICY.names.equals(&cached.name, name)
+                {
                     return Err(QueryError::SchemaChanged);
                 }
             }
@@ -117,7 +122,7 @@ impl Binder<'_> {
                 index
             };
         }
-        self.charge(size_of::<String>() + name.len())?;
+        self.charge(size_of::<NamedIdentity>() + name.len())?;
         let mut owned = String::new();
         owned
             .try_reserve_exact(name.len())
@@ -126,16 +131,19 @@ impl Binder<'_> {
         self.active_queries
             .try_reserve(1)
             .map_err(|_| QueryError::Allocation)?;
-        self.active_queries.push(owned);
+        self.active_queries.push(NamedIdentity {
+            namespace,
+            name: owned,
+        });
         let previous_scope = std::mem::replace(&mut self.parameter_scope, scope);
         // Named sources are independent definitions, never lateral relations.
         // Each stored definition has its own bounded syntax depth. The separate
         // dependency path ceiling and global node/byte budgets bound their nesting.
-        let result = match &query.statement {
-            Statement::Read(read) => self.read(read, &[], 1),
-            Statement::Crosstab(cross) => self.fixed_crosstab(cross, query),
+        let result = self.with_owner(namespace, |binder| match &query.statement {
+            Statement::Read(read) => binder.read(read, &[], 1),
+            Statement::Crosstab(cross) => binder.fixed_crosstab(cross, query),
             _ => Err(QueryError::Unsupported),
-        };
+        });
         self.parameter_scope = previous_scope;
         self.active_queries.pop();
         result

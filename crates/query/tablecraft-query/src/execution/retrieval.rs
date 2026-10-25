@@ -18,6 +18,17 @@ impl Runtime<'_, '_> {
         plan: &ReadPlan,
         outer: &[OuterScope<'_>],
     ) -> Result<Vec<Vec<CellValue>>, QueryError> {
+        let previous = std::mem::replace(&mut self.owner, plan.owner);
+        let result = self.read_owned(plan, outer);
+        self.owner = previous;
+        result
+    }
+
+    fn read_owned(
+        &mut self,
+        plan: &ReadPlan,
+        outer: &[OuterScope<'_>],
+    ) -> Result<Vec<Vec<CellValue>>, QueryError> {
         self.tick()?;
         let mut rows = match &plan.node {
             ReadNode::Crosstab(cross) => {

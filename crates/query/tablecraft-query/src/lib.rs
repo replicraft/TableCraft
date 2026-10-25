@@ -24,6 +24,7 @@ pub use discovery::execute_with_schema_discovery;
 mod execution;
 mod external_sources;
 mod heading_names;
+mod named_identity;
 mod output_types;
 mod plan;
 pub use output_types::OutputType;

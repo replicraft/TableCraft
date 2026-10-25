@@ -24,11 +24,15 @@ mapped link with an external IN subquery through this composed facade. Qualified
 now reconstruct their stored global external tokens and use the same explicit
 bindings. Unqualified persisted layouts remain refused.
 
-An external target exposes local base tables only. Each table lookup validates
+An external target exposes local base tables and qualified saved SELECT/UNION/
+crosstab definitions. Metadata-only named lookup reuses the target's lazy saved-query
+reader under the shared native allowance; execution belongs to the selected
+namespace. Follow [external named contracts](EXTERNAL_NAMED_QUERIES.md).
+Each table lookup validates
 its captured native storage classification before forwarding. Linked/ODBC target
-tables fail; unknown names stay unknown. The wrapper exposes no target named
-query definitions and resolves no further external requests. A matching table
-name is not permission to follow a link chain or execute a target saved query.
+tables fail; unknown names stay unknown. The wrapper resolves no further external requests itself. Stored explicit IN
+clauses may use only mappings already authorized at the operation root. A matching
+table name is not permission to follow a link chain or activate a provider.
 This does not expand the engine's existing native format/readability profile.
 
 The target wrapper forwards all existing table capabilities directly: scalar

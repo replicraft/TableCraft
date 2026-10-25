@@ -1,5 +1,22 @@
 # Implementation status
 
+## Explicit external named queries
+
+Explicitly mapped native targets now expose qualified saved SELECT/UNION/crosstab
+reads. Definition-local nested queries, named dependencies and domains retain
+the target owner; caller-written siblings retain their own owner. Namespaced
+cycle/discovery/result identities isolate identical names and native IDs across
+files. Explicit IN inside a target definition still requires an operation-root
+mapping. Eval remains closed to field/domain bindings, and linked target chains
+remain refused. See [the contract](EXTERNAL_NAMED_QUERIES.md).
+
+The focused batch passes 196 unique Rust tests: 94 query integration controls,
+19 query unit tests, 30 adapter tests and 53 CLI tests. Scoped strict Clippy,
+minimal-feature checks, normal CLI build, formatting and dependency checks pass.
+An initial unit-test link exhausted disk; the successful retry is counted once.
+The independent getter replay and native qualification limits are recorded
+separately. Full P0 value/text semantics and read/query acceptance remain open.
+
 ## Independent Scalar String/Variant field replay
 
 The [Scalar String/Variant replay](testing/SCALAR_STRING_VARIANT_COMPARISONS.md)
@@ -16,8 +33,8 @@ regional formatting, NULLs, six operators in both directions and native
 composition. Twenty-eight classified refusals retain empty stdout. A NULL-Date
 CVDate probe correctly refused; the final model uses CVar to retain the actual
 Date/NULL operand without unrelated conversion. This does not qualify native ACE
-declarations, Windows collation or complete P0/read-query acceptance. Next is
-externally mapped named-query composition with scoped identities and discovery.
+declarations, Windows collation or complete P0/read-query acceptance. External named-query composition is now implemented below; wider P0 value/text
+semantics remain unfinished.
 
 ## Declared Scalar String/Variant predicates
 
@@ -207,13 +224,14 @@ workspace suite were not run; the remaining read/query roadmap stays active.
 ## Explicit native external source handles
 
 `ExternalNativeSource` maps exact external database tokens to already-open sealed
-native handles. Targets expose local base tables only, preserving original
+native handles. Targets expose local base tables and qualified saved reads, preserving original
 metadata/policies, scalar and collection callbacks, index failures and complete
 cache behavior. All native handles share one cumulative borrowed allowance;
 distinct handles use distinct catalog scopes. Exact root-handle reuse stays
 local-only. Composition with `LinkedNativeSource` preserves root saved-query and
-link ownership without activating target saved queries, chains or providers.
-Native stored external-source reconstruction remains refused. See
+link ownership. Explicit target saved reads now use the lexical ownership contract;
+linked target chains and providers remain refused. Qualified native stored
+external-source reconstruction is implemented. See
 [the adapter contract](NATIVE_EXTERNAL_QUERIES.md).
 
 Eight new native external-source tests and 20 linked/handle/shared-budget
@@ -229,17 +247,16 @@ The read-only query library now routes existing SELECT/FROM IN syntax through
 caller-issued binding keys during metadata-only preparation; execution revalidates
 those keys before scanning root or target records. Actual target schemas,
 policies, hints, optimized projections and aligned collection callbacks retain
-source ownership. Each nested SELECT chooses its own namespace; named definitions
-and domain targets retain the root namespace. Successful discovery stages retain
-binding revisions to reject reuse after remapping. External named targets remain
-unsupported. See [the contract](EXTERNAL_QUERY_SOURCES.md).
+source ownership. Each SELECT retains its lexical owner; explicit IN selects its direct table
+namespace, and named definitions and domain targets retain their definition owner. Successful discovery stages retain
+binding revisions to reject reuse after remapping. External named targets now use scoped identity and discovery. See [the contract](EXTERNAL_QUERY_SOURCES.md).
 
 Fourteen external-source controls and 96 focused regression tests pass, including
 named crosstabs, runtime domains, collection members and arithmetic-profile result
 typing. The new arithmetic control checks derived/named UNION results under both
 preparation and execution profiles. Strict query library/new-test Clippy and
 formatting pass. This is explicit host-source engineering behavior; broader P0
-semantics, native external saved-query reconstruction and Access qualification
+semantics and Access qualification
 remain unfinished.
 
 ## External IN after JOIN conditions

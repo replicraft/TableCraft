@@ -39,6 +39,7 @@ fn binder<'a>(
         retrieval: true,
         collection_criteria: false,
         active_queries: Vec::new(),
+        owner: crate::external_sources::SourceNamespace::Root,
         nodes: 0,
         policy_visits: 0,
         bytes: 0,
