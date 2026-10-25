@@ -88,6 +88,9 @@ query/host linting, minimal-feature compilation and formatting pass. See the
 [integration verification](testing/results/date-query-candidates-2026-10-25.json).
 
 This does not establish native Microsoft Access SQL predicate equivalence, new
-relationship/write eligibility or live-file coherence. Original-file candidate
-replay remains separate next acceptance work;
+relationship/write eligibility or live-file coherence. The original
+[20,000-row replay](testing/DATE_QUERY_CANDIDATE_REPLAY.md) now passes 192 controls
+across four formats, including default-limit selections, complete-cache refusals
+and corrupt selected roots. It compares 539,848 ID rows with exact rational
+predicates and independent physical order while keeping all originals unchanged;
 existing complete DATE index evidence remains in [NATIVE_INDEXES.md](NATIVE_INDEXES.md).

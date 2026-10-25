@@ -1,5 +1,28 @@
 # Candidate Access fixtures
 
+## Original DATE candidate inputs
+
+Original Apache-2.0 [DateCandidateFixture.java](testing/DateCandidateFixture.java),
+SHA-256 `11e87b781c5f276cf2f8d167a07bbfbc024c0d6310a63920af3358156240d0eb`,
+creates fresh inert 20,000-row scalar inputs through the reviewed Jackcess 5.0.4
+JAR (SHA-256 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
+No upstream code or database fixture is copied. Retained DATE bits include aliases,
+signed zero, subnormals and negative/year-boundary dates. Read-only getters never
+run expressions; corruption experiments use separate copies. Accepted originals
+remain ignored under `.cache/tablecraft-fixtures/date-candidates-20261025/`.
+
+| Original | Bytes | SHA-256 |
+| --- | ---: | --- |
+| V2000.mdb | 1,298,432 | `f611ca37a15a2e52a5a522ad8c21ed6b9f6fcb22fad64f4f6fb428e01eb4c9c9` |
+| V2007.accdb | 1,527,808 | `06fb23615be453951f891e15bcd7c2c38c9f2ec35196904eba0c901c328329a2` |
+| V2016.accdb | 1,564,672 | `9882672e878b2114c28fbd581d431b0edb4ccb8f539124de0fee7fb5deae7a61` |
+| V2019.accdb | 1,634,304 | `27d3e8c62337e037c2906f7b6f6dbd58309b468f8d520dc201a764fc3efa315f` |
+
+The [192-command replay](testing/DATE_QUERY_CANDIDATE_REPLAY.md) compares 539,848
+successful ID rows and twenty buffered failure controls. Four original hashes
+and five artifact/source pins remain unchanged. Native Access execution remains
+unrun; independent fixture agreement does not qualify native SQL conformance.
+
 ## Conditional calculation preview inputs
 
 Original MIT [CalculatedIIfFixture.java](testing/CalculatedIIfFixture.java),
