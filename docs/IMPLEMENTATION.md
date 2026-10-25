@@ -21,6 +21,9 @@ remains unqualified. Five new controls and 46 regressions pass across expression
 queries and CLI, with strict linting and minimal expression compilation. See
 [scope](STRCONV.md#explicit-wide-then-hiragana-composition) and
 [verification](testing/results/read-query-wide-hiragana-2026-10-25.json).
+A separate [composition replay](testing/WIDE_HIRAGANA_COMPOSITION.md) passes
+230 commands, including 616 successful cells and 24 intended refusals. Five
+immutable and fourteen revision-source hashes were independently rechecked.
 
 ## Progressive global MIN and MAX
 

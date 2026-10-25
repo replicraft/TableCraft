@@ -8276,3 +8276,13 @@ with 396 rows and 1,584 cells, including sixteen intended refusals. No new
 third-party fixture, binary or reference SQL is redistributed. Eleven immutable
 inputs and sixteen scoped revision-source hashes were independently rechecked.
 This is engineering read/query evidence, not Microsoft Access qualification.
+
+## Original wide/Hiragana composition model (25 October 2026)
+
+The [mode-36 replay](testing/WIDE_HIRAGANA_COMPOSITION.md) composes existing
+original Unicode width-property and kana-name models. Python's reviewed Unicode
+16.0.0 data and ten literal goldens supply independent expectations; no production
+lookup, new mapping file or third-party fixture is copied. The 230 commands
+cover 616 successful cells and 24 intended refusals. All five immutable tool/CLI
+pins and fourteen committed source hashes were independently rechecked. This
+qualifies the explicit engineering composition, not native Access/NLS ordering.
