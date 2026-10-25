@@ -8342,3 +8342,47 @@ independently rechecked. The first diagnostic-label attempt remains preserved;
 SQL, expected rows, runtime and input bytes were unchanged. See
 [evidence](testing/PROGRESSIVE_GROUPED.md); native Access SQL and timing
 qualification remain separate.
+
+## Original public-writer delete storage corpus
+
+`testing/DeleteStorageFixture.java` and `testing/compare_delete_storage.py` are
+original repository-owned Apache-2.0 recipe/oracle/replay code. They use the
+already reviewed Jackcess 5.0.4 JAR (SHA256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`);
+its existing notices/provenance remain unchanged. No third-party source or fixture
+bytes were copied. Public builders create inert original Jet 4 and ACE
+2007/2016/2019 files with expression evaluation disabled. Public deleteRow writes
+fresh copies; reopened public rows/index cursors plus pinned implementation
+metadata getters and independent Python bytes establish the observed facts.
+No reference SQL, imported active content or native Access execution occurs.
+
+The sixteen actual inputs remain ignored under
+`.cache/tablecraft-fixtures/delete-storage-20261025-accepted/`; generation is not
+claimed byte-reproducible. Each profile retains before/delete-one/delete-null/
+delete-all images. The accepted replay preserves all original hashes during reads.
+The initial default-work diagnostic run remains excluded, including twelve honest
+full-check resource refusals and sixteen corrected refusal-wording expectations.
+The final explicit-work replay passes 192 controls, including sixteen expected
+unsupported selected ignore-NULL index refusals; no TableCraft deletion API or
+native write/save qualification is established. See the
+[observations and commands](testing/DELETE_STORAGE_OBSERVATIONS.md) and
+[hash-pinned accepted report](testing/results/delete-storage-final-2026-10-25.json).
+
+| Actual input | SHA256 |
+| --- | --- |
+| `Delete-V2000-before.accdb` | `7ed77380a3930163402eaf30be31c65b031f6187352a5a8be89d171d328f9e85` |
+| `Delete-V2000-delete-one.accdb` | `d4cde9a41a46131453d7e6c873e8e600cfa3cbf8830c4c7bb070ca931c0c00a6` |
+| `Delete-V2000-delete-null.accdb` | `ae3bd2b3570d68b044ae84e0b5733dbea5b534c28bb76c277d4a368986beb9c6` |
+| `Delete-V2000-delete-all.accdb` | `f2abb2b41b221da4f822cdddad87608f76f5a1853315084dc331d7172dfc2508` |
+| `Delete-V2007-before.accdb` | `3466f88d0cbd44efe7d5fc7bfe0990e10586c0431a46ffd34c4436efb59b18b2` |
+| `Delete-V2007-delete-one.accdb` | `5895ead8da90b0192de3bed346858823203794fbc3d79a31f5225548aab02b76` |
+| `Delete-V2007-delete-null.accdb` | `7e1490ad32d9335e9ecd579a9eb87052c158544f9f3a21208c02c3ca1304a165` |
+| `Delete-V2007-delete-all.accdb` | `7af040b66478f0b7d9d67519c043707285d99980d7f8baddd31787b32d3ece0d` |
+| `Delete-V2016-before.accdb` | `43989b6479d6f0303d06c1edca562f33fc94ee3081330acadc8f2867d7269efe` |
+| `Delete-V2016-delete-one.accdb` | `8dea71b161df9151571b27736c329b1295896464815cbf25bd5ec333cca25d49` |
+| `Delete-V2016-delete-null.accdb` | `577f362c2621c83514829139ad3858705699b1eefa2e0e192fe51a8a2278bb32` |
+| `Delete-V2016-delete-all.accdb` | `6a45248bd94985a501553715025e54759c6941692631b8ab2236f20add0436aa` |
+| `Delete-V2019-before.accdb` | `8c3d88e45874bc4ce7f93c1f1a90880a9d6e2474127d9ef359f02e4b18b371ce` |
+| `Delete-V2019-delete-one.accdb` | `22ba734e7bec9ac27c25da334afaea8f8db781230d901360e916376f73e29545` |
+| `Delete-V2019-delete-null.accdb` | `5a761613d016bbae1709478553f0967fd9f315fe26f46e312ea9dbadbfa04150` |
+| `Delete-V2019-delete-all.accdb` | `6f7ffe4c3c799b3f981be20eec775440ea343cea9f07d59e96e15e48d7b7cdbb` |
