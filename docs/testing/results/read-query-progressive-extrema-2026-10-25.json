@@ -87,6 +87,12 @@
       "private_log": ".cache/progressive-extrema-fmt-20261025.log",
       "exit_code": 0,
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "cargo build -p tablecraft-cli -j2 --locked --offline",
+      "private_log": ".cache/progressive-extrema-cli-build-20261025.log",
+      "exit_code": 0,
+      "sha256": "ce600d8bece01930cdee9062cc584e11f5de31879e58a56c062cd0d6e0e8d4f6"
     }
   ],
   "counting_note": "Final query primary82, buffered147 and numeric40 use distinct targets; native20 and CLI36+13 add69, totaling338. Earlier79 query primary is superseded and not added. Seven parent integration tests and sixteen query tests are new.",
@@ -115,7 +121,15 @@
     "Full workspace suite",
     "Native Microsoft Access aggregate comparison"
   ],
-  "integration_pending": [
-    "Frozen executable build and original native extrema replay"
-  ]
+  "integration_pending": [],
+  "independent_replay": {
+    "report": "docs/testing/results/native-extrema-2026-10-25.json",
+    "report_sha256": "12e66fcd000db87c30ee15cf62b650f850ae776a95804b95c9dbb060dcaff094",
+    "controls": 364,
+    "successful_commands": 348,
+    "intended_refusals": 16,
+    "compared_rows": 396,
+    "compared_cells": 1584,
+    "qualification": "Independent original getter/exact model evidence; no native Access evaluation claim."
+  }
 }

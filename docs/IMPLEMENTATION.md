@@ -10,6 +10,9 @@ snapshots, while retained candidates remain independently budgeted. Twenty-three
 new controls and 315 regressions pass across query, native and CLI targets with
 strict Clippy and minimal query features. See [scope](PROGRESSIVE_QUERIES.md) and
 [verification](testing/results/read-query-progressive-extrema-2026-10-25.json).
+An [original native replay](testing/PROGRESSIVE_EXTREMA.md) also passes 364
+controls across four profiles, comparing 396 rows and 1,584 cells. Eleven
+immutable inputs and sixteen revision-source pins were independently rehashed.
 Native Access comparison remains separate.
 
 ## Exact template XML names
