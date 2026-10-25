@@ -114,5 +114,64 @@
   ],
   "integration_pending": [
     "Parent frozen executable build and independent primary mapping matrix"
-  ]
+  ],
+  "independent_replay": {
+    "documentation": "../JAPANESE_STRING_MAPPING.md",
+    "report": "strconv-japanese-primary-2026-10-25.json",
+    "sha256": "dcf75f2fda2db87219de179df086a82fee1102e1955918918262ac24b1c9a163",
+    "command": "python3 docs/testing/compare_strconv_japanese.py --cli .cache/tablecraft-bin/japanese-string-cli-20261025 --cli-sha256 398b9c4f4b9e41521c2fd70750b5f946d5fcfa38133f3f66304f11c92ea91808 --index .cache/cp932-strconv-next-20261025/index-jis0208.txt --microsoft .cache/cp932-strconv-next-20261025/CP932.TXT --revision 1286af1ea0ea39c0d350c4d64bb235fb8132f196 --report docs/testing/results/strconv-japanese-primary-2026-10-25.json",
+    "exit_code": 0,
+    "private_log": ".cache/strconv-japanese-primary-replay-final-20261025.log",
+    "private_log_sha256": "78bb6d0b5c60762786906085f444bc944acaa48b1af829a0d9e330275a7b62b6",
+    "compiled_revision": "1286af1ea0ea39c0d350c4d64bb235fb8132f196",
+    "cli_sha256": "398b9c4f4b9e41521c2fd70750b5f946d5fcfa38133f3f66304f11c92ea91808",
+    "commands": 2172,
+    "successful_batches": 2102,
+    "intended_refusals": 70,
+    "decoded_mapping_cases": 9796,
+    "encoded_mapping_cases": 7518,
+    "matched_mapping_cases": 17314,
+    "compared_numeric_cells": 32158,
+    "disagreements": 0,
+    "independently_rehashed_immutable_pins": 5,
+    "independently_rehashed_compiled_source_pins": 13,
+    "mapping_classification": {
+      "microsoft_defined_mappings": 7915,
+      "microsoft_vs_whatwg_mapping_differences": 0,
+      "whatwg_only_decodes": 1881,
+      "whatwg_only_decode_breakdown": {
+        "byte_80": 1,
+        "eudc": 1880
+      },
+      "noncanonical_alternate_defined_byte_tokens": 398,
+      "unicode_scalars_with_alternate_defined_tokens": 396,
+      "refused_singleton_tokens": 64,
+      "refused_unicode_cases": [
+        "U+00A5",
+        "U+203E",
+        "U+2212",
+        "U+E000",
+        "U+E757",
+        "U+1F600"
+      ]
+    },
+    "excluded_oversized_batch": {
+      "private_directory": ".cache/cp932-primary-batch-exploration-20261025",
+      "report_sha256": "aa5629178e1ee8be985b70c0b8b2c376a2cf8e9ef553d3da8d1d1bef52f83c70",
+      "runner_sha256": "345050d302c286271b447503ac3ad0665c815368f9726bd562ccfc896c1ff7a2",
+      "model_sha256": "a22bee9c7a7503014f161432c0a85a54aadc81ccbf4f57a0f06800ee035ec21e",
+      "log_sha256": "4f26e2db0193b147a62bb5a49611852524cf344d264048ba0febaceb1cd7c343",
+      "exit_code": 1,
+      "commands": 578,
+      "matched_intended_refusals": 70,
+      "refused_success_batches": 508,
+      "refusal_breakdown": {
+        "eval_step_limit": 153,
+        "sql_token_limit": 355
+      },
+      "correction": "Reduced batching from 64 to 16 projected columns to fit existing CLI eval token/work ceilings. Identical mapping cases and expected values; no runtime, table, fixture or oracle changes."
+    },
+    "chronology": "This replay completed after the historical scoped-check record. Its 2,172 CLI commands are separate from the 47 Rust tests above; earlier integration_pending wording is retained as historical state.",
+    "qualification": "Independent primary-index arithmetic and inert private reference data. No Microsoft Access SQL, Windows NLS, performance or universal Unicode/invalid-sequence claim."
+  }
 }

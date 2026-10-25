@@ -33,6 +33,10 @@ features and formatting. This is the explicit WHATWG-based engineering profile,
 with documented Windows/mapping differences. See
 [scope](JAPANESE_STRING_ENCODING.md) and
 [verification](testing/results/read-query-japanese-string-encoding-2026-10-25.json).
+The separate [primary mapping replay](testing/JAPANESE_STRING_MAPPING.md) passes
+2,172 CLI commands covering 17,314 mapping cases and 32,158 exact numeric cells.
+All five immutable and thirteen revision-source pins were independently rehashed;
+the excluded oversized-batch attempt remains documented.
 
 ## Stored single-Choice template fields
 
