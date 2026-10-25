@@ -1,0 +1,195 @@
+{
+  "binary_sha256": "013203c54f1235727e73c56f702ed70498acd1ac924a05fc4f46ef350849b8b1",
+  "controls": 14498,
+  "explicit_host_registrations": {
+    "ar-SA": 1025,
+    "cs-CZ": 1029,
+    "de-DE": 1031,
+    "el-GR": 1032,
+    "en-US": 1033,
+    "es-ES": 3082,
+    "fr-FR": 1036,
+    "he-IL": 1037,
+    "it-IT": 1040,
+    "ja-JP": 1041,
+    "ko-KR": 1042,
+    "nl-NL": 1043,
+    "pl-PL": 1045,
+    "pt-BR": 1046,
+    "ru-RU": 1049,
+    "sv-SE": 1053,
+    "tr-TR": 1055,
+    "zh-CN": 2052,
+    "zh-TW": 1028
+  },
+  "icu4c_collation_versions": {
+    "ar-SA": [
+      153,
+      121,
+      44,
+      0
+    ],
+    "cs-CZ": [
+      153,
+      121,
+      44,
+      0
+    ],
+    "de-DE": [
+      153,
+      121,
+      0,
+      0
+    ],
+    "el-GR": [
+      153,
+      121,
+      44,
+      0
+    ],
+    "en-US": [
+      153,
+      121,
+      0,
+      0
+    ],
+    "es-ES": [
+      153,
+      121,
+      44,
+      0
+    ],
+    "fr-FR": [
+      153,
+      121,
+      0,
+      0
+    ],
+    "he-IL": [
+      153,
+      121,
+      44,
+      0
+    ],
+    "it-IT": [
+      153,
+      121,
+      0,
+      0
+    ],
+    "ja-JP": [
+      153,
+      121,
+      44,
+      0
+    ],
+    "ko-KR": [
+      153,
+      121,
+      44,
+      0
+    ],
+    "nl-NL": [
+      153,
+      121,
+      0,
+      0
+    ],
+    "pl-PL": [
+      153,
+      121,
+      44,
+      0
+    ],
+    "pt-BR": [
+      153,
+      121,
+      0,
+      0
+    ],
+    "ru-RU": [
+      153,
+      121,
+      44,
+      0
+    ],
+    "sv-SE": [
+      153,
+      121,
+      44,
+      0
+    ],
+    "tr-TR": [
+      153,
+      121,
+      44,
+      0
+    ],
+    "zh-CN": [
+      153,
+      121,
+      44,
+      0
+    ],
+    "zh-TW": [
+      153,
+      121,
+      44,
+      0
+    ]
+  },
+  "icu4c_version": [
+    74,
+    1,
+    0,
+    0
+  ],
+  "inputs_sha256": "f20778b601b5c3799878d63032acd7abcb91b0b71c014b26b08a368f0d8535af",
+  "locales": [
+    "en-US",
+    "de-DE",
+    "sv-SE",
+    "tr-TR",
+    "fr-FR",
+    "es-ES",
+    "it-IT",
+    "nl-NL",
+    "pl-PL",
+    "cs-CZ",
+    "ja-JP",
+    "zh-CN",
+    "zh-TW",
+    "ru-RU",
+    "el-GR",
+    "ar-SA",
+    "he-IL",
+    "ko-KR",
+    "pt-BR"
+  ],
+  "native_access": "unrun",
+  "per_locale_controls": {
+    "ar-SA": 764,
+    "cs-CZ": 765,
+    "de-DE": 758,
+    "el-GR": 764,
+    "en-US": 758,
+    "es-ES": 766,
+    "fr-FR": 764,
+    "he-IL": 764,
+    "it-IT": 764,
+    "ja-JP": 765,
+    "ko-KR": 764,
+    "nl-NL": 764,
+    "pl-PL": 765,
+    "pt-BR": 764,
+    "ru-RU": 765,
+    "sv-SE": 758,
+    "tr-TR": 758,
+    "zh-CN": 764,
+    "zh-TW": 764
+  },
+  "profile": "secondary, case level off, normalization on, nonignorable punctuation, numeric off",
+  "reference": "ICU4C ucol_strcoll; independent scalar-boundary span enumeration",
+  "runner_sha256": "aab2be090ad831ceb8fc85fe9674a5455e80dd188c1d908820aceeab127212ed",
+  "windows_nls": "unrun"
+}

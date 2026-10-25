@@ -40,7 +40,18 @@
     "controls": 21,
     "reference": "ICU4C ucol_strcoll under matching explicit attributes"
   },
-  "independent_full_replay": "Pending final immutable CLI; original four-profile result remains separate",
+  "independent_full_replay": {
+    "report": "icu-text-expanded-2026-10-25.json",
+    "sha256": "27f8682a0950367c6ae71ec553823a19ed25235148183733ecb5e7bd9b663590",
+    "controls": 14498,
+    "profiles": 19,
+    "exit_code": 0,
+    "source_commit": "67ef6925676a7e8deb77fdd360566ef63d6ce031",
+    "rust_source_files": 1914,
+    "private_source_manifest": ".cache/read-query-text-boolean-rust-source-20261025.manifest",
+    "source_manifest_sha256": "1a98377faea1fab0aff3c66e251a33103f272bd1ff6aa813ad262352d7b11a72",
+    "source_matches_committed_archive": true
+  },
   "unrun": [
     "Full workspace suite",
     "Windows NLS/Access comparisons",

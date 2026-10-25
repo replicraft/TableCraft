@@ -426,8 +426,8 @@ are still open.
 | Mixed field policies | Runtime policies survive retained cells; distinct required IDs conservatively merge to Conflict | Native precedence rules before relaxing conflicts |
 | Value categories | Explicit declaration-sensitive arithmetic now captures decimal integer literal carriers; default preparation is unchanged and unknown provenance is retained | Qualify literal subtypes and complete Variant promotion, Error and result-type matrices before enabling broader defaults |
 
-The [explicit ICU profile](ICU_TEXT_PROFILE.md) has bounded callbacks and 3,032
-independent ICU4C controls. It supplies working host functionality while retaining
+The [explicit ICU profile](ICU_TEXT_PROFILE.md) has bounded callbacks and 14,498
+independent ICU4C controls across nineteen host profiles. It supplies working host functionality while retaining
 the native NLS/ACE gaps above; no system locale or numeric LCID alias is inferred.
 
 These are implementation gaps as well as later qualification tasks. Completing

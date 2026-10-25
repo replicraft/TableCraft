@@ -35,7 +35,10 @@ separate. Ten provider and eight CLI tests pass with scoped strict Clippy, cover
 locale tailoring, canonical UTF-16 offsets and exact per-run registration.
 See [the profile table](ICU_TEXT_PROFILE.md#explicit-host-locales) and
 [verification record](testing/results/read-query-icu-expanded-2026-10-25.json).
-Native NLS/Access equivalence and broader read/query acceptance remain unfinished.
+A separate fixed-CLI replay passes 14,498 ICU4C controls across all nineteen
+profiles, including original UTF-16 spans and exact numeric host registrations.
+The executable's 1,914-file Rust source inventory matches committed archive
+`67ef6925`. Native NLS/Access equivalence and broader acceptance remain unfinished.
 
 ## Declared arithmetic result widths
 

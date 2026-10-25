@@ -15,7 +15,62 @@ import sys
 from pathlib import Path
 
 
-LOCALES = {"en-US": 1033, "de-DE": 1031, "sv-SE": 1053, "tr-TR": 1055}
+# Explicit registrations chosen by this host-side recipe, never product aliases.
+LOCALES = {
+    "en-US": 1033,
+    "de-DE": 1031,
+    "sv-SE": 1053,
+    "tr-TR": 1055,
+    "fr-FR": 1036,
+    "es-ES": 3082,
+    "it-IT": 1040,
+    "nl-NL": 1043,
+    "pl-PL": 1045,
+    "cs-CZ": 1029,
+    "ja-JP": 1041,
+    "zh-CN": 2052,
+    "zh-TW": 1028,
+    "ru-RU": 1049,
+    "el-GR": 1032,
+    "ar-SA": 1025,
+    "he-IL": 1037,
+    "ko-KR": 1042,
+    "pt-BR": 1046,
+}
+TAILORING_PAIRS = {
+    "fr-FR": [("cote", "côte")],
+    "es-ES": [("n", "ñ"), ("ñ", "o"), ("chico", "cielo")],
+    "it-IT": [("casa", "cosa")],
+    "nl-NL": [("ij", "y")],
+    "pl-PL": [("l", "ł"), ("ł", "m")],
+    "cs-CZ": [("h", "ch"), ("ch", "i")],
+    "ja-JP": [("あ", "ア"), ("あ", "い")],
+    "zh-CN": [("阿", "八")],
+    "zh-TW": [("阿", "八")],
+    "ru-RU": [("е", "ё"), ("е", "ж")],
+    "el-GR": [("σ", "ς")],
+    "ar-SA": [("ا", "ب")],
+    "he-IL": [("א", "ב")],
+    "ko-KR": [("가", "나")],
+    "pt-BR": [("a", "ã")],
+}
+SCRIPT_SEARCHES = {
+    "fr-FR": [("xCÔTEz", "côte")],
+    "es-ES": [("xÑz", "ñ")],
+    "it-IT": [("xCASAz", "casa")],
+    "nl-NL": [("xIJz", "ij")],
+    "pl-PL": [("xŁz", "ł")],
+    "cs-CZ": [("😀Chx", "ch")],
+    "ja-JP": [("xアz", "あ")],
+    "zh-CN": [("x阿z", "阿")],
+    "zh-TW": [("x阿z", "阿")],
+    "ru-RU": [("xЁz", "ё")],
+    "el-GR": [("xςz", "σ")],
+    "ar-SA": [("xابz", "ا")],
+    "he-IL": [("xאבz", "א")],
+    "ko-KR": [("x가나z", "가")],
+    "pt-BR": [("xÃz", "ã")],
+}
 UCOL_ALTERNATE_HANDLING = 1
 UCOL_CASE_LEVEL = 3
 UCOL_NORMALIZATION_MODE = 4
@@ -127,7 +182,7 @@ def verify(cli, locale, expressions, expected, extra=()):
     count = 0
     for at in range(0, len(expressions), BATCH_COLUMNS):
         sql = "SELECT " + ",".join(expressions[at:at + BATCH_COLUMNS])
-        result = subprocess.run([str(cli), "query", "run", sql, "--text-locale", locale, "--comparison-steps", "100000000", *extra], capture_output=True, text=True)
+        result = subprocess.run([str(cli), "query", "run", sql, "--text-locale", locale, "--comparison-steps", "100000000", *extra], capture_output=True, text=True, timeout=120)
         if result.returncode != 0:
             raise RuntimeError(f"ICU CLI profile failed: {result.stderr.strip()}")
         rows = list(csv.reader(io.StringIO(result.stdout), delimiter="\t"))
@@ -157,36 +212,56 @@ def main():
     pairs, searches = cases()
     controls = 0
     versions = {}
+    per_locale_controls = {}
     for locale, lcid in LOCALES.items():
+        previous_controls = controls
+        locale_pairs = pairs + TAILORING_PAIRS.get(locale, [])
+        locale_searches = searches + SCRIPT_SEARCHES.get(locale, [])
         collator = reference.collator(locale)
         try:
             coll_version = (ctypes.c_uint8 * 4)()
             reference.collation_version(collator, coll_version)
             versions[locale] = list(coll_version)
-            comparisons = [f"StrComp({quoted(left)},{quoted(right)},1)" for left, right in pairs]
-            expected = [reference.order(collator, left, right) for left, right in pairs]
+            comparisons = [f"StrComp({quoted(left)},{quoted(right)},1)" for left, right in locale_pairs]
+            expected = [reference.order(collator, left, right) for left, right in locale_pairs]
             controls += verify(args.cli, locale, comparisons, expected)
             expressions, expected = [], []
-            for haystack, needle in searches:
+            for haystack, needle in locale_searches:
                 for start, reverse in [(1, False), (2, False), (-1, True), (1, True)]:
                     call = f"InStrRev({quoted(haystack)},{quoted(needle)},{start},1)" if reverse else f"InStr({start},{quoted(haystack)},{quoted(needle)},1)"
                     expressions.append(call)
                     expected.append(reference.search(collator, haystack, needle, start, reverse))
             controls += verify(args.cli, locale, expressions, expected)
-            expressions = [f"InStr(1,{quoted(haystack)},{quoted(needle)},{lcid})" for haystack, needle in searches]
-            expected = [reference.search(collator, haystack, needle, 1, False) for haystack, needle in searches]
+            expressions = [f"InStr(1,{quoted(haystack)},{quoted(needle)},{lcid})" for haystack, needle in locale_searches]
+            expected = [reference.search(collator, haystack, needle, 1, False) for haystack, needle in locale_searches]
             controls += verify(args.cli, locale, expressions, expected, ("--text-lcid", str(lcid)))
+            per_locale_controls[locale] = controls - previous_controls
         finally:
             reference.close(collator)
     if digest(args.cli) != binary:
         raise RuntimeError("CLI changed during independent comparison")
+    inputs = {
+        "common_pairs": pairs,
+        "common_searches": searches,
+        "tailoring_pairs": TAILORING_PAIRS,
+        "script_searches": SCRIPT_SEARCHES,
+        "explicit_host_registrations": LOCALES,
+    }
+    input_bytes = json.dumps(inputs, ensure_ascii=True).encode()
     report = {
-        "controls": controls, "locales": list(LOCALES), "icu4c_version": list(version),
-        "icu4c_collation_versions": versions, "binary_sha256": binary,
-        "runner_sha256": digest(__file__), "inputs_sha256": hashlib.sha256(json.dumps([pairs, searches], ensure_ascii=True).encode()).hexdigest(),
+        "controls": controls,
+        "locales": list(LOCALES),
+        "per_locale_controls": per_locale_controls,
+        "explicit_host_registrations": LOCALES,
+        "icu4c_version": list(version),
+        "icu4c_collation_versions": versions,
+        "binary_sha256": binary,
+        "runner_sha256": digest(__file__),
+        "inputs_sha256": hashlib.sha256(input_bytes).hexdigest(),
         "profile": "secondary, case level off, normalization on, nonignorable punctuation, numeric off",
         "reference": "ICU4C ucol_strcoll; independent scalar-boundary span enumeration",
-        "native_access": "unrun", "windows_nls": "unrun",
+        "native_access": "unrun",
+        "windows_nls": "unrun",
     }
     if args.report:
         args.report.parent.mkdir(parents=True, exist_ok=True)
