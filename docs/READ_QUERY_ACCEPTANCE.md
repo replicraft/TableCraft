@@ -37,7 +37,8 @@ qualification recorded separately.
   million-row throughput or native Access equivalence.
   Ordinary SQL results remain buffered with separate row, byte, work and output
   ceilings. Explicit [streaming SELECT/WHERE, global Count/Sum/Avg/Min/Max and flat UNION ALL](STREAMING_QUERIES.md) uses fresh
-  native cursors and cumulative budgets without complete-table materialization;
+  native cursors and cumulative budgets without complete-table materialization.
+  Eligible integral grouping and static named/derived pipelines also stream;
   wider query shapes retain buffered execution.
   Absolute I/O now rejects reported seek-position mismatches before reading or
   writing; failpoints cover scalar, Memo and indexed snapshot publication.
@@ -64,9 +65,10 @@ qualification recorded separately.
 - [Proven integral query keys](EXACT_QUERY_KEYS.md) use metered directories for
   GROUP/DISTINCT/UNION while retaining SQL comparison and first encounter order.
   Twelve-thousand-row controls fit finite work allowances. [Borrowed integral
-  equijoins](QUERY_EQUIJOINS.md) retain full input validation and reject pairs
-  before copied candidate allocation; 20 independent native getter/model controls
-  pass separately from Access SQL qualification.
+  equijoins](QUERY_EQUIJOINS.md) retain full input validation and original SQL
+  comparison. Eligible equal-carrier joins now use bounded right-row directories;
+  the [original replay](testing/DIRECTORY_JOINS.md) checks 51,848 rows separately
+  from Access SQL qualification.
 - Qualified larger ACCDC reads now use [host-owned temporary storage](ACCDC_SPOOLED_READS.md),
   retaining existing small-memory capture and default budgets. A separate
   [58-control original corpus](testing/LARGE_DEPLOYMENT.md) verifies two 77 MiB
@@ -146,6 +148,33 @@ a [Text-family replay](testing/CALCULATED_TEXT_FLAG_FAMILY.md) adds 384 operatio
 controls and 384 cached-cell comparisons across plain/Hyperlink/RichText caches.
 Ordinary query evaluation, broader declarations and freshness remain separate
 acceptance work.
+
+## Query execution shape coverage
+
+Buffered execution and explicit progressive execution have separate admission
+contracts. A progressive refusal below does not mean the query is unavailable in
+ordinary buffered execution; buffered execution still needs a complete admitted
+relation under its row/allocation/work limits. This matrix records implementation,
+not Microsoft Access qualification. See [the detailed query contract](QUERY_EXECUTION.md)
+and [progressive contract](PROGRESSIVE_QUERIES.md).
+
+| Shape | Buffered execution | Explicit progressive execution |
+| --- | --- | --- |
+| Scalar table SELECT/WHERE, positive unordered TOP | Implemented bounded profile | Implemented bounded profile |
+| Static row-local named/derived SELECT chain | Implemented | Implemented, including qualified saved/native external/recomputed sources |
+| Global Count/Sum/Avg/Min/Max | Implemented | Implemented, checked EOF before result |
+| Boolean/integral/NULL GROUP BY | Implemented | Implemented, retained groups and checked EOF |
+| Text/other GROUP BY keys | Implemented strict-key profile | Refused; complete key policy cohorts need preservation |
+| HAVING | Implemented | Refused; rejected groups must not evaluate selected expressions |
+| Outer flat UNION ALL | Implemented | Implemented admitted arms and shared conversions |
+| Stateful named/derived stage or inner UNION | Implemented bounded profiles | Refused; stage completion/conversions need explicit composition |
+| Joins, sorting, DISTINCT/active DISTINCTROW | Implemented bounded profiles | Refused; no silent buffered fallback |
+| Crosstabs and runtime schema discovery | Implemented qualified profiles | Refused; preparation remains metadata-only |
+| Subqueries, domain calls and closed Eval | Implemented qualified profiles | Refused source-dependent/stateful expressions |
+
+Full Variant/result promotion, locale behavior, wider native definitions and
+storage qualification remain separate from this shape matrix. Independent
+cross-layer checks do not close those acceptance areas.
 
 ## Remaining acceptance work
 
