@@ -1,5 +1,23 @@
 # Implementation status
 
+## Power domain errors after operand conversion
+
+A converted zero base raised to a negative exponent now returns Domain rather
+than DivisionByZero, following the reviewed MS-VBAL operator rule. This includes
+both zero signs and inputs that convert or underflow to zero. The single kernel
+branch changes no successful values, Double result types, NULL admission,
+conversion policy or eager operand failures; an operand expression that actually
+divides by zero retains that error. See [the arithmetic contract](EXPRESSIONS.md).
+
+Twenty-two focused Rust tests pass: eight expression tests, seven Power query
+tests and seven existing admission/error controls. Thirteen new tests cover
+carrier cross-products, Double operand rounding, finite/underflow/domain edges,
+eager/raw/NULL errors, shared allowances and cancellation, prepared rebinding,
+derived/grouped/UNION/subquery/pivot consumers, runtime domain aggregates and
+metadata-only constant crosstab headings. Strict expression/query test Clippy,
+normal CLI building and final formatting pass. Native Access qualification and
+broader value/text compatibility remain open.
+
 ## Independent native saved external-source replay
 
 The [saved external-source replay](testing/SAVED_EXTERNAL_QUERIES.md) passes

@@ -874,3 +874,14 @@ Per-table qualifiers, global UNION remote rows and malformed metadata remain
 refused. See [the saved-source contract](NATIVE_SAVED_EXTERNAL_QUERIES.md).
 This closes one persisted composition gap; broader definitions, external named
 targets, full P0 semantics and native Access qualification remain unfinished.
+
+
+### Power zero-negative error classification
+
+Converted zero raised to a negative exponent now reports Domain consistently
+through the shared kernel/evaluator and query consumers. Actual operand division
+errors, admission/conversion failures, NULL handling and successful Double values
+retain their separate contracts. Focused controls cover prepared rebinding,
+runtime domain aggregates and bad constant crosstab headings before row scans.
+This closes one operator error-class defect, not complete Variant promotion,
+error precedence or native Access qualification. See [arithmetic](EXPRESSIONS.md).

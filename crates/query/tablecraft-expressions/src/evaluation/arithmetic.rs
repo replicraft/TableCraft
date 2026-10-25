@@ -180,3 +180,6 @@ mod agreement_tests;
 
 #[cfg(test)]
 mod division_tests;
+
+#[cfg(test)]
+mod power_tests;
