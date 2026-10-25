@@ -1,5 +1,19 @@
 # Implementation status
 
+## Physical-index ownership before every edit candidate
+
+Normal Jet 4 planning and optional ACE 16 previews now validate ownership of all
+physical index definitions before the empty-key-update return. A reproduced
+malformed table could otherwise hide an affected index from the logical inventory
+and obtain a candidate. Unrelated edits, equal-value updates and empty assignment
+requests now retain the same strict ownership gate. Known aliases and index-free
+tables keep their existing behavior; no write permit or format admission expands.
+
+The [ownership regression](NATIVE_WRITES.md#existing-tree-int32-index-maintenance)
+passes 23 normal mutation tests and 98 feature-enabled mutation/preview checks,
+with strict Clippy in both feature modes and formatting. These are malformed-copy
+refusal controls and existing-profile regressions, not native save qualification.
+
 ## Array-bound composition metadata
 
 LBound/UBound now expose their guaranteed nonnullable Int32 result metadata.

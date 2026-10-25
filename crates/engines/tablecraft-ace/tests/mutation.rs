@@ -7,6 +7,8 @@ mod non_unique;
 mod support;
 #[path = "mutation/tree_fixture.rs"]
 mod tree_fixture;
+#[path = "mutation/unowned.rs"]
+mod unowned;
 
 use proptest::prelude::*;
 use std::io::Cursor;
