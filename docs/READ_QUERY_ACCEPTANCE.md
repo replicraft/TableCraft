@@ -222,6 +222,12 @@ cover both General versions and all four families. Non-NULL Text/Binary bounds,
 cost-based optimization, wider seeks, TOP pushdown and native optimizer
 qualification remain open; this does not complete read/query acceptance.
 
+[Legacy DATE constraints](DATE_INDEX_CANDIDATES.md) now connect captured literals,
+typed parameters and wholly safe temporal bounds to explicit/automatic native
+index candidates. Residual filtering, source ordering, candidate ceilings and
+selected failures remain intact. This closes the typed DATE selection gap;
+original-file replay and native semantics qualification remain pending.
+
 The engine now offers explicit [Short Text equality candidates](NATIVE_TEXT.md#conservative-short-text-equality-candidates)
 under the current General model. They conservatively retain primary-prefix
 matches and require full residual equality; 824 independent controls protect

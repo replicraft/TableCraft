@@ -1,6 +1,7 @@
 //! Restrict only wholly safe predicates; partial AND extraction could hide eager
 //! evaluation failures on rows discarded by a source. Residual filters remain.
 mod currency;
+mod datetime;
 mod text;
 use super::Runtime;
 use crate::{QueryError, plan::Expr, source::ScanConstraint};
@@ -44,6 +45,12 @@ impl Runtime<'_, '_> {
                     if *negated {
                         if columns[column].data_type() == ScalarType::Currency {
                             Some(ScanConstraint::Currency {
+                                column,
+                                lower: Unbounded,
+                                upper: Unbounded,
+                            })
+                        } else if columns[column].data_type() == ScalarType::DateTime {
+                            Some(ScanConstraint::DateTime {
                                 column,
                                 lower: Unbounded,
                                 upper: Unbounded,
@@ -95,6 +102,16 @@ impl Runtime<'_, '_> {
                         }
                         _ => None,
                     });
+                }
+                if columns[column].data_type() == ScalarType::DateTime {
+                    return Ok(self.datetime_constant(constant)?.map(|value| {
+                        let (lower, upper) = comparison_bounds(*op, reversed, value);
+                        ScanConstraint::DateTime {
+                            column,
+                            lower,
+                            upper,
+                        }
+                    }));
                 }
                 if columns[column].data_type() == ScalarType::Text {
                     return if allow_text && *op == B::Equal {
@@ -202,6 +219,7 @@ fn field_column(expr: &Expr, columns: &[Column], projection: &[usize]) -> Option
         && matches!(
             columns.get(*projection.get(*index)?)?.data_type(),
             ScalarType::Boolean
+                | ScalarType::DateTime
                 | ScalarType::Decimal
                 | ScalarType::Byte
                 | ScalarType::Int16
@@ -276,6 +294,18 @@ fn intersect(left: ScanConstraint, right: ScanConstraint) -> Option<ScanConstrai
     }
     Some(match (left, right) {
         (ScanConstraint::Null { .. }, ScanConstraint::Null { .. }) => left,
+        (
+            ScanConstraint::DateTime {
+                lower: a, upper: b, ..
+            },
+            ScanConstraint::DateTime {
+                lower: c, upper: d, ..
+            },
+        ) => datetime::intersection(column, a, b, c, d),
+        (ScanConstraint::Null { .. }, ScanConstraint::DateTime { .. })
+        | (ScanConstraint::DateTime { .. }, ScanConstraint::Null { .. }) => {
+            return datetime::empty(column);
+        }
         (ScanConstraint::Decimal { value: a, .. }, ScanConstraint::Decimal { value: b, .. })
             if a == b =>
         {

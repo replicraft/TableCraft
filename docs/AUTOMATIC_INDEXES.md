@@ -21,7 +21,7 @@ explicit choice takes priority, including its normal eligibility/error rules.
 Selection starts only when execution supplies an existing wholly safe constraint.
 Preparation discovers schema without reading index pages or user records. The
 first matching single-key definition in native definition order is used. Eligible
-keys are Boolean, Byte, Int16, Int32, Int64, Currency, Decimal and GUID under their existing engine
+keys are Boolean, Byte, Int16, Int32, Int64, Currency, Decimal, legacy DATE and GUID under their existing engine
 profiles: exact typed intervals/equality and qualified NULL tests retain their
 existing semantics. Boolean eligibility is narrower: exact direct field/Boolean
 literal equality only, in either operand order. Boolean NULL tests, ranges,
@@ -34,6 +34,13 @@ lossy or out-of-precision points decline the hint. Decimal IS NULL can also use
 its single-column index. Conversion calls such as CDec, other numeric/Text
 carriers, NULL parameters and Decimal inequalities produce no Decimal hints.
 See [exact Decimal selections](NATIVE_INDEXES.md#exact-decimal-equality-and-null-selections).
+[Legacy DATE candidates](DATE_INDEX_CANDIDATES.md) admit captured date literals
+and typed DateTime parameters, direct comparisons in either operand order,
+wholly safe same-field AND bounds and NULL/non-NULL tests. Temporal bounds can
+retain extra records, especially epoch aliases and boundary days; the complete
+residual remains mandatory and candidate rows consume the existing allowance.
+Numeric/Decimal/Text operands, conversion calls and Date/Time Extended do not
+produce DATE hints.
 NULL-only constraints also select qualified single General
 Text and Short Binary indexes; empty strings/bytes are separate non-NULL values.
 These NULL constraints require no SQL string comparator or locale provider.
@@ -53,7 +60,7 @@ Once a candidate is selected, read, corruption, unsupported-profile, cancellatio
 and quota failures propagate. No other index or sequential scan is tried after
 that failure. Both dense and pruned projections use the same selection service.
 The original WHERE remains mandatory. Partial AND extraction, coercive predicates,
-SQL Text inequalities and non-NULL Binary bounds, Boolean/Decimal ranges, floating/date seeks and composite seeks
+SQL Text inequalities and non-NULL Binary bounds, Boolean/Decimal ranges, floating seeks and composite seeks
 remain unsupported. Physical Text/Binary ranges are not SQL predicate semantics.
 Non-NULL Binary comparisons currently raise TypeMismatch in the query evaluator.
 Even an exact native Binary interval is therefore unsafe as a SQL hint: pruning

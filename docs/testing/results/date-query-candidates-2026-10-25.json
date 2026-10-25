@@ -1,0 +1,116 @@
+{
+  "date": "2026-10-25",
+  "scope": "Backend-neutral temporal DATE hints, native explicit/automatic candidate routing and CLI controls; authored fixtures, not native Access qualification.",
+  "unique_tests": 106,
+  "new_tests": 12,
+  "existing_regression_tests": 94,
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-query --test retrieval --test date_numeric --test date_numeric_predicates --test date_literals --locked --offline -j 2",
+      "exit_code": 0,
+      "private_log": ".cache/date-query-query-regressions-final-20261025.log",
+      "sha256": "af9b31f977e6aa6a55a46c52874edf2b493938b082efa8956df97d4bf9422a82",
+      "tests": 75
+    },
+    {
+      "command": "cargo test -p tablecraft-access --test date_selection --test automatic_indexes --test currency_selection --test decimal_selection --test boolean_selection --test text_equality_source --locked --offline -j 2",
+      "exit_code": 0,
+      "private_log": ".cache/date-query-access-regressions-20261025.log",
+      "sha256": "891aa4268a01648f02c09a03c486bc24218483b5c8040c8fe18c3dfbb1b71a9e",
+      "tests": 20
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --test date_index_queries --test indexes --test date_literals --locked --offline -j 2",
+      "exit_code": 0,
+      "private_log": ".cache/date-query-cli-initial-20261025.log",
+      "sha256": "492518dee752a3eec6483bbcd00cdcbb640d684d2e88e1c605644d924553c313",
+      "tests": 11
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --test retrieval --all-features --locked --offline -j 2 -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/date-query-query-clippy-20261025.log",
+      "sha256": "cdb3470d312eef24439c680e2164abe307c0903377cb7f6aaa5fc2fd93f64b87"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-access --lib --test date_selection -p tablecraft-cli --test date_index_queries --all-features --locked --offline -j 2 -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/date-query-host-clippy-20261025.log",
+      "sha256": "9188c44cf63a33d6581f22f63e8a9ae6ad0a78c7dbd3501bf492e16fbfef60d4"
+    },
+    {
+      "command": "cargo check -p tablecraft-query -p tablecraft-access --lib --no-default-features --locked --offline -j 2",
+      "exit_code": 0,
+      "private_log": ".cache/date-query-minimal-20261025.log",
+      "sha256": "de6199749349a4b3ae4ed03ae50199837700b34792382642dfdfac9ca99c8008"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "private_log": ".cache/date-query-fmt-20261025.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "python3 scripts/check_dependency_boundaries.py",
+      "exit_code": 0,
+      "private_log": ".cache/date-query-boundaries-20261025.log",
+      "sha256": "739ec050b7e5604004f56b3adef443a0d42d1f7d650084e006da0afc9c4dd4e9"
+    }
+  ],
+  "excluded_attempts": [
+    {
+      "private_log": ".cache/date-query-constraints-initial-20261025.log",
+      "sha256": "17293d93fb00898309260dfc76c02fb7c08f8a3f18fbd60cc71ea4bfbba1febd",
+      "exit_code": 101,
+      "reason": "Initial integration omitted DateTime from the field hint whitelist. Two hint assertions exposed it. A separate test incorrectly expected CDate(NULL) to succeed; corrected to the existing InvalidNullConversion behavior. The final batch passes after adding the missing whitelist carrier and strengthening the NULL error assertion."
+    },
+    {
+      "private_log": ".cache/date-query-query-regressions-20261025.log",
+      "sha256": "3696e51ef91344496d19cd896d8a9e44337a2c84ce868f0613905bd7b754c4cf",
+      "exit_code": 101,
+      "reason": "Mistyped target numeric_predicates; Cargo refused before running tests. Corrected to actual date_numeric_predicates."
+    }
+  ],
+  "contracts": [
+    "Captured date literals and actual typed DateTime parameters only; no numeric, Decimal, Text or conversion-call hint extraction.",
+    "Temporal endpoint intersections preserve negative-date order and epoch aliases. Original eager predicates remain mandatory; no partial unsafe AND extraction.",
+    "Automatic reads retain source order; required indexes retain key order. Chosen failures propagate, candidate ceilings remain unchanged and partial snapshots never complete a cache.",
+    "Binding remains metadata-only. Reused plans retain current exact parameter carriers without canonicalizing stored payloads.",
+    "Linked/external wrappers forward constraints unchanged; recomputed views are derived plans; native cached fields retain existing selection refusal.",
+    "No dependency, default allowance, write eligibility or native qualification change. Original-file candidate replay remains pending."
+  ],
+  "source_snapshots": [
+    {
+      "path": "crates/query/tablecraft-query/src/source/constraint.rs",
+      "sha256": "6ac1065f3ebd90c1c22b5ca1cb2b0d6cfcbad9f43b832bff6812508ce1d1cfcf"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/constraint.rs",
+      "sha256": "fdb837bda983c69bc90e7ea87507a0b28558a79debe7a5da782a7ef42104f6d9"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/constraint/datetime.rs",
+      "sha256": "8cc47c44b1f7cc4ff0358ba1844b2f8144138c144ce923ceac526b2621929e72"
+    },
+    {
+      "path": "crates/query/tablecraft-query/tests/retrieval/constraints.rs",
+      "sha256": "3a6f8fcb936de8ab802b66f58c6ed1d4cd67324d572c6df5b31ad96a478b6d5c"
+    },
+    {
+      "path": "crates/query/tablecraft-query/tests/retrieval/constraints/datetime.rs",
+      "sha256": "91fe3a05327a4e5394abcbff60dbfcfda0f8f7e275121cadd1f7d020f88d077d"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/source/selection.rs",
+      "sha256": "0f8847c44851d6f411bd42d8ed00ccf1e7b714022ae0d60bebd00f0d836242d8"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/date_selection.rs",
+      "sha256": "80e5054e6266ab9e890c23900420527d80771e36d919beec8b51e607d32ab0a8"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/date_index_queries.rs",
+      "sha256": "04d668b5f9838e809b6f1b51f41cfc18d757d5b36e42e8cfc105fdf6109e8576"
+    }
+  ]
+}

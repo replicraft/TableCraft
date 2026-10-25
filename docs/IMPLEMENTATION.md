@@ -1,5 +1,16 @@
 # Implementation status
 
+## DATE query index constraints
+
+Direct legacy DATE comparisons with captured date literals and typed parameters
+now use calendar-safe native candidates through matching explicit indexes or
+opt-in automatic selection. Safe same-field bounds and NULL tests preserve the
+full original filter, raw bits, eager errors, source-order rules and cache/limit
+boundaries. Twelve new tests and 94 regressions pass across query, native adapter
+and CLI targets; strict linting, minimal-feature checks and formatting pass.
+Original-file candidate replay and native Access qualification remain pending.
+See the [contract and verification](DATE_INDEX_CANDIDATES.md).
+
 ## Native calendar DATE candidates
 
 Explicit native index requests now accept typed calendar DATE candidates. Bounds
@@ -8,7 +19,7 @@ callers retain the complete temporal residual predicate. Five unit and five new
 native-reader tests plus nine regressions pass, including projection ceilings,
 wrong-carrier refusal, corruption and cancellation. Strict all-feature engine
 linting, minimal adapter compilation and formatting pass. SQL/automatic-index
-integration and original-file replay remain separate next work. See the
+integration is now implemented above; original-file replay remains next work. See the
 [working API and limits](DATE_INDEX_CANDIDATES.md).
 
 ## Independent aggregate metadata reference

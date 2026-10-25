@@ -2,10 +2,10 @@ use super::{NativeSource, query_error, schema::ScalarSchema};
 use crate::collation::identity;
 use tablecraft_ace::{
     BinaryIndexSelection, BooleanIndexSelection, ByteIndexSelection, CurrencyIndexSelection,
-    DecimalIndexSelection, GeneralEqualityPrefix, GuidIndexSelection, IndexInspection,
-    IndexProjectionSelection, IndexReadRequest, Int16IndexSelection, Int32IndexSelection,
-    Int64IndexSelection, NativeIndex, TextIndexSelection, inspect_table_indexes,
-    read_table_index_in_table_order, read_table_index_with_request,
+    DateTimeIndexSelection, DecimalIndexSelection, GeneralEqualityPrefix, GuidIndexSelection,
+    IndexInspection, IndexProjectionSelection, IndexReadRequest, Int16IndexSelection,
+    Int32IndexSelection, Int64IndexSelection, NativeIndex, TextIndexSelection,
+    inspect_table_indexes, read_table_index_in_table_order, read_table_index_with_request,
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_query::{QueryError, Source, source::ScanConstraint};
@@ -123,6 +123,7 @@ enum Selection {
     Int16(Int16IndexSelection),
     Currency(CurrencyIndexSelection),
     Decimal(DecimalIndexSelection),
+    DateTime(DateTimeIndexSelection),
     Guid(GuidIndexSelection),
     Int32(Int32IndexSelection),
     Int64(Int64IndexSelection),
@@ -135,6 +136,12 @@ fn selection(constraint: ScanConstraint, kind: ScalarType) -> Option<Selection> 
         (ScanConstraint::Null { .. }, ScalarType::Decimal) => {
             Some(Selection::Decimal(DecimalIndexSelection::Null))
         }
+        (ScanConstraint::Null { .. }, ScalarType::DateTime) => {
+            Some(Selection::DateTime(DateTimeIndexSelection::Null))
+        }
+        (ScanConstraint::DateTime { lower, upper, .. }, ScalarType::DateTime) => Some(
+            Selection::DateTime(DateTimeIndexSelection::CalendarCandidates { lower, upper }),
+        ),
         (ScanConstraint::Boolean { value, .. }, ScalarType::Boolean) => {
             Some(Selection::Boolean(BooleanIndexSelection::Equal(value)))
         }
@@ -267,6 +274,7 @@ fn candidate_selection(
         Some(Selection::Int16(selection)) => IndexProjectionSelection::Int16(selection),
         Some(Selection::Currency(selection)) => IndexProjectionSelection::Currency(selection),
         Some(Selection::Decimal(selection)) => IndexProjectionSelection::Decimal(selection),
+        Some(Selection::DateTime(selection)) => IndexProjectionSelection::DateTime(selection),
         Some(Selection::Guid(selection)) => IndexProjectionSelection::Guid(selection),
         Some(Selection::Int32(selection)) => IndexProjectionSelection::Int32(selection),
         Some(Selection::Int64(selection)) => IndexProjectionSelection::Int64(selection),
