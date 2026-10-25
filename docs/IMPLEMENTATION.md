@@ -1,5 +1,18 @@
 # Implementation status
 
+## Additional explicit ICU host locales
+
+The opt-in ICU host text profile now supports nineteen named locales, adding
+French, Spanish, Italian, Dutch, Polish, Czech, Japanese, Chinese China/Taiwan,
+Russian, Greek, Arabic, Hebrew, Korean and Brazilian Portuguese. A shared closed
+name registry drives library/CLI selection; no numeric alias or OS locale is
+inferred. Native General database comparison and SQL field-policy routing remain
+separate. Ten provider and eight CLI tests pass with scoped strict Clippy, covering
+locale tailoring, canonical UTF-16 offsets and exact per-run registration.
+See [the profile table](ICU_TEXT_PROFILE.md#explicit-host-locales) and
+[verification record](testing/results/read-query-icu-expanded-2026-10-25.json).
+Native NLS/Access equivalence and broader read/query acceptance remain unfinished.
+
 ## Declared arithmetic result widths
 
 The explicit declared profile now retains guaranteed successful Byte/Integer/Long,

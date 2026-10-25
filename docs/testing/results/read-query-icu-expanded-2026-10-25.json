@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Nineteen explicitly selected ICU host text profiles, no native database/NLS expansion or inferred LCIDs",
+  "unique_tests": 18,
+  "new_tests": 5,
+  "targets": {
+    "icu_provider": 10,
+    "cli_text_locale": 8
+  },
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-expressions --features sql,icu-text --lib comparison::icu_text -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/icu-expanded-provider-tests-20261025.log",
+      "sha256": "54f9b0dc1585b01605732e621492186850c1c2b537a2870337fbcabf49aad605"
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --test text_locale -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/icu-expanded-cli-tests-20261025.log",
+      "sha256": "011eba64ef109676b3a7b2c924b5be9810a8255ef25672d3be6c4eb7a399bb40"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-expressions --features sql,icu-text --lib --tests -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/icu-expanded-provider-clippy-20261025.log",
+      "sha256": "03ccf793a0e9419caa3bfbe421bec0924f87f904b6b9de0cb43fa6b074ea12af"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-cli --bin tablecraft --test text_locale -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/icu-expanded-cli-clippy-20261025.log",
+      "sha256": "cf79df36181f98af83d30284bef8dcd8f2480274bd3e6d7cf2ddc51c03312a03"
+    }
+  ],
+  "anchor_probe": {
+    "private_report": ".cache/icu-host-expanded-anchor-probe-20261025.json",
+    "sha256": "63144d8982986ba97d3612afca6fcd39ef8ba6a9b28b79d2d692340f3e7d4d40",
+    "controls": 21,
+    "reference": "ICU4C ucol_strcoll under matching explicit attributes"
+  },
+  "independent_full_replay": "Pending final immutable CLI; original four-profile result remains separate",
+  "unrun": [
+    "Full workspace suite",
+    "Windows NLS/Access comparisons",
+    "Performance benchmarks"
+  ]
+}

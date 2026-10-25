@@ -1,5 +1,8 @@
 mod support;
 
+#[path = "text_locale/expanded.rs"]
+mod expanded;
+
 use support::run;
 
 fn query(sql: &str, options: &[&str]) -> std::process::Output {
