@@ -1,5 +1,21 @@
 # Implementation status
 
+## Final scoped width, native-text and source-composition batch
+
+The engine unit batch passes 163 tests with one intentionally ignored derived-data
+generator. Feature-local runs additionally cover Japanese width conversion,
+compressed wide-unit grammar, inert linked definitions and shared native quotas;
+their counts overlap the unit batch and are recorded separately. The [batch record](testing/results/read-query-width-links-regression-2026-10-24.json)
+pins the committed checkout, source digest, independent replay records, terminal
+unit log and final immutable CLI. It claims no new full-workspace/query-suite run.
+
+The normal CLI build, standalone no-default Access check, workspace formatting,
+dependency boundaries and 41 policy-script tests pass. Final CLI smoke controls
+confirm the existing 38-row native count, both width directions and retained-byte
+UNION conversion. Independent evidence remains separated from native Access
+qualification. Explicit authorized linked-source routing and the wider backend
+roadmap remain unfinished.
+
 ## Shared cumulative native source allowances
 
 The Access adapter now accepts one caller-owned native resource pool across
