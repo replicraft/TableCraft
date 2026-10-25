@@ -1,0 +1,225 @@
+{
+  "date": "2026-10-24",
+  "scope": "Compare explicit cached Byte/Int16/Int64/Single/Guid readers with inert getters.\n\nOriginal files remain unchanged. No formulas execute, and no native Access SQL,\ncached freshness, mutation or calculated-result coercion is qualified.\n",
+  "controls": 248,
+  "cached_cell_comparisons": 238,
+  "hashes_unchanged": true,
+  "hashes": {
+    "crates/engines/tablecraft-ace/src/table/calculated/decimal.rs": "f1a05cb5327aaf62109d38a8d1695db252bedfe72d2a3281ccbc79a570703aac",
+    "crates/engines/tablecraft-ace/src/table/calculated/declaration.rs": "0a4d67e97986522f3002b2b15898b9270d66dd634985cff5aa92cb2caadd78db",
+    "crates/engines/tablecraft-ace/src/table/calculated/encoding.rs": "7b07218801344bca52f57287ff39d74ed66c28ac900451e9d942c5a67b7591cf",
+    "crates/engines/tablecraft-ace/src/table/calculated/long_text.rs": "f4fa807bc4e07e5d0da99861a91f80fedeb16cefd0e7477e5b1b92b87f32fbf7",
+    "crates/engines/tablecraft-ace/src/table/calculated/mod.rs": "3f74f2e851084dc75252a561a4d9c01e64049de20e61d7a366ab89bf9ca4d036",
+    "crates/engines/tablecraft-ace/src/table/calculated/page.rs": "a68284fa5cd5e9d05a2378efd2e1804c6587834b13bc8305aa50fb1c51a84737",
+    "crates/engines/tablecraft-ace/src/table/calculated/projection.rs": "22787aaefe0a4b4b8d4e89865af07af57458093dcdafdbb81b0f9e46b24d1e2f",
+    "crates/engines/tablecraft-ace/src/table/calculated/read.rs": "b09142ae69bcd66b0ad6f59c66685c2885095a5f1cf7930fc5088ce551056e6c",
+    "crates/engines/tablecraft-ace/src/table/calculated/snapshot.rs": "500618c433b4ca73ba2fda024db3be64b6403a84a5ef70f2f30a0ab25ace1537",
+    "crates/engines/tablecraft-ace/src/table/calculated/wrapper.rs": "755102c38b7254eee2fef1586eb3644094954c4ed9f5ac7bf49a04b3dcbe4bc4",
+    "docs/testing/CalculatedCarrierFixture.java": "38c8499355855d3354ff5011626e98a8988046b2e9879eb5455cc7983af7f035",
+    "docs/testing/CalculatedCarrierOracle.java": "8f3e3d409d7838a52944d7bdd21d94a84780bb312997537d67ca00f1933091df",
+    "docs/testing/cli_tsv.py": "3b849270cc2cde83ecd62089d949ec0388e2ce8755c67801e1c2b16cbb209f6f",
+    "docs/testing/compare_browsing.py": "4f1ced3ad3970150683ec720a31ec85f8400fa73b4a7b5e2343a33abbf58d67e",
+    "docs/testing/compare_calculated_carriers.py": "6372aa0dad3c4b521a1e4f3b4db547cb4ccd382f6a8200a94abfadb57addb688",
+    "docs/testing/compare_calculated_decimals.py": "57d849a3a3251e0b1827c95bb74a7387fa353ab935affdfd812ed84e1224c7fd",
+    "docs/testing/float_model.py": "27f205bd4122cd860bf2acac1bb6918b0ea06ab2e5d7241328b2ad63f7820802",
+    ".cache/tablecraft-bin/calculated-carriers-20261024": "021a072d23e21e8d65fcf7e7331cc3100db24d4fda15337e31ded8cc01e34e11",
+    ".cache/tablecraft-fixtures/calculated-carriers-final-20261024/V2016.accdb": "db30a5f9bc60f5d363369302d55a244f38a049c21ed3b91039e7af9977e3afb0",
+    ".cache/tablecraft-fixtures/calculated-carriers-final-20261024/V2019.accdb": "eb26fa090ccb04e9f6ebe5187324a1c2586bf59a2a7c1e71604773712b006585",
+    ".cache/tablecraft-fixtures/jackcess-5.0.4.jar": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+  },
+  "observations": [
+    {
+      "profile": "V2016",
+      "table": "CarrierBIG_INT",
+      "carrier": "Int64",
+      "rows": 7,
+      "getter_values": [
+        "I:-9223372036854775808",
+        "I:9223372036854775807",
+        "I:-1",
+        "N",
+        "I:0",
+        "I:9007199254740993",
+        "I:-234567890123456789"
+      ],
+      "oracle_sha256": "6902d7040481b5408d81470be495db60d52bcf538c3ee2375c06ef7b769053e2"
+    },
+    {
+      "profile": "V2016",
+      "table": "CarrierBYTE",
+      "carrier": "Byte",
+      "rows": 7,
+      "getter_values": [
+        "U0",
+        "U255",
+        "U128",
+        "N",
+        "U1",
+        "U17",
+        "U231"
+      ],
+      "oracle_sha256": "6902d7040481b5408d81470be495db60d52bcf538c3ee2375c06ef7b769053e2"
+    },
+    {
+      "profile": "V2016",
+      "table": "CarrierFLOAT",
+      "carrier": "Single",
+      "rows": 7,
+      "getter_values": [
+        "F80000000",
+        "F00000001",
+        "F7f7fffff",
+        "N",
+        "Fff7fffff",
+        "F3fa00000",
+        "Fc18e0000"
+      ],
+      "oracle_sha256": "6902d7040481b5408d81470be495db60d52bcf538c3ee2375c06ef7b769053e2"
+    },
+    {
+      "profile": "V2016",
+      "table": "CarrierGUID",
+      "carrier": "Guid",
+      "rows": 7,
+      "getter_values": [
+        "G00000000-0000-0000-0000-000000000000",
+        "GFFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF",
+        "G01234567-89AB-CDEF-0123-456789ABCDEF",
+        "N",
+        "G80000000-0001-0002-0003-000000000004",
+        "GDEADBEEF-CAFE-FEED-0102-030405060708",
+        "GABCDEF01-2345-6789-ABCD-EF0123456789"
+      ],
+      "oracle_sha256": "6902d7040481b5408d81470be495db60d52bcf538c3ee2375c06ef7b769053e2"
+    },
+    {
+      "profile": "V2016",
+      "table": "CarrierINT",
+      "carrier": "Int16",
+      "rows": 7,
+      "getter_values": [
+        "I:-32768",
+        "I:32767",
+        "I:-1",
+        "N",
+        "I:0",
+        "I:1234",
+        "I:-23456"
+      ],
+      "oracle_sha256": "6902d7040481b5408d81470be495db60d52bcf538c3ee2375c06ef7b769053e2"
+    },
+    {
+      "profile": "V2016",
+      "table": "ExceptionalFLOAT",
+      "carrier": "Single",
+      "rows": 7,
+      "getter_values": [
+        "F80000000",
+        "F00000001",
+        "F7f800000",
+        "N",
+        "Fff800000",
+        "F7fc00000",
+        "Fffc01234"
+      ],
+      "oracle_sha256": "6902d7040481b5408d81470be495db60d52bcf538c3ee2375c06ef7b769053e2"
+    },
+    {
+      "profile": "V2019",
+      "table": "CarrierBIG_INT",
+      "carrier": "Int64",
+      "rows": 7,
+      "getter_values": [
+        "I:-9223372036854775808",
+        "I:9223372036854775807",
+        "I:-1",
+        "N",
+        "I:0",
+        "I:9007199254740993",
+        "I:-234567890123456789"
+      ],
+      "oracle_sha256": "6902d7040481b5408d81470be495db60d52bcf538c3ee2375c06ef7b769053e2"
+    },
+    {
+      "profile": "V2019",
+      "table": "CarrierBYTE",
+      "carrier": "Byte",
+      "rows": 7,
+      "getter_values": [
+        "U0",
+        "U255",
+        "U128",
+        "N",
+        "U1",
+        "U17",
+        "U231"
+      ],
+      "oracle_sha256": "6902d7040481b5408d81470be495db60d52bcf538c3ee2375c06ef7b769053e2"
+    },
+    {
+      "profile": "V2019",
+      "table": "CarrierFLOAT",
+      "carrier": "Single",
+      "rows": 7,
+      "getter_values": [
+        "F80000000",
+        "F00000001",
+        "F7f7fffff",
+        "N",
+        "Fff7fffff",
+        "F3fa00000",
+        "Fc18e0000"
+      ],
+      "oracle_sha256": "6902d7040481b5408d81470be495db60d52bcf538c3ee2375c06ef7b769053e2"
+    },
+    {
+      "profile": "V2019",
+      "table": "CarrierGUID",
+      "carrier": "Guid",
+      "rows": 7,
+      "getter_values": [
+        "G00000000-0000-0000-0000-000000000000",
+        "GFFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF",
+        "G01234567-89AB-CDEF-0123-456789ABCDEF",
+        "N",
+        "G80000000-0001-0002-0003-000000000004",
+        "GDEADBEEF-CAFE-FEED-0102-030405060708",
+        "GABCDEF01-2345-6789-ABCD-EF0123456789"
+      ],
+      "oracle_sha256": "6902d7040481b5408d81470be495db60d52bcf538c3ee2375c06ef7b769053e2"
+    },
+    {
+      "profile": "V2019",
+      "table": "CarrierINT",
+      "carrier": "Int16",
+      "rows": 7,
+      "getter_values": [
+        "I:-32768",
+        "I:32767",
+        "I:-1",
+        "N",
+        "I:0",
+        "I:1234",
+        "I:-23456"
+      ],
+      "oracle_sha256": "6902d7040481b5408d81470be495db60d52bcf538c3ee2375c06ef7b769053e2"
+    },
+    {
+      "profile": "V2019",
+      "table": "ExceptionalFLOAT",
+      "carrier": "Single",
+      "rows": 7,
+      "getter_values": [
+        "F80000000",
+        "F00000001",
+        "F7f800000",
+        "N",
+        "Fff800000",
+        "F7fc00000",
+        "Fffc01234"
+      ],
+      "oracle_sha256": "6902d7040481b5408d81470be495db60d52bcf538c3ee2375c06ef7b769053e2"
+    }
+  ],
+  "limitations": "Independent inert cached getters only; no native Access, formula or freshness qualification. CLI NaN compares category; raw payload is preserved in engine tests and getter observations."
+}

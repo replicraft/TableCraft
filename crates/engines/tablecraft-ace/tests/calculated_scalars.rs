@@ -1,5 +1,7 @@
 #[path = "calculated_storage/fixture.rs"]
 mod calculated_fixture;
+#[path = "calculated_storage/extended_carriers.rs"]
+mod extended_carriers;
 #[path = "mutation/fixture.rs"]
 mod fixture;
 #[path = "calculated_storage/scalar_fixture.rs"]
@@ -214,7 +216,7 @@ fn malformed_or_unknown_scalar_wrappers_return_no_partial_view_and_empty_tables_
         (10, 22),
         (10, 24),
         (10, 535),
-        (0x13, 39),
+        (0x14, 39),
     ] {
         assert_eq!(
             read(&scalar_fixture::database(6, kind, capacity, false, &[])).err(),

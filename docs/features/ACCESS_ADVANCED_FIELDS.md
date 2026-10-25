@@ -191,8 +191,8 @@ skipped/unvisited payloads remain outside partial-read validation.
 
 
 `read_stored_calculation`/`StoredCalculation` now extend the explicit path to
-Boolean, Double, Currency, legacy DateTime, Decimal and Short Text alongside Int32. The
-strict Int32 API remains available. Generic values retain exact core carriers;
+Boolean, Byte, Int16, Int32, Int64, Single, Double, GUID, Currency, legacy
+DateTime, Decimal and Short Text. The strict Int32 API remains available. Generic values retain exact core carriers;
 ordinary scalar query snapshots still reject calculated fields. CLI
 `--stored-calculation` uses this profile, labels the stored carrier and buffers
 formatted/escaped output before publication. Formulas can be stale and never run.
@@ -204,7 +204,12 @@ in metadata; ordinary fixed Boolean still uses its mask bit. Present canonical
 Boolean payloads are 0x00/0xff, a qualified empty wrapper is false, and absent
 storage is NULL. Other Boolean encodings fail explicitly.
 
-Double retains all stored bits, including signed zero and subnormals; Currency
+Single and Double retain all stored bits, including signed zero, subnormals and
+exceptional IEEE values. The query source retains its existing refusal of
+non-finite values, independently of successful inspection/browsing. Integer
+caches retain exact widths, including Int64 values beyond Double precision; GUID
+caches convert their native mixed-endian storage into the shared UUID carrier.
+Currency
 retains the signed scaled integer. Legacy DateTime uses the existing finite,
 bounded exact-serial constructor. Short Text declares the 23 wrapper bytes plus
 an even capacity through 510 UTF-16 bytes. Both observed compression flags are

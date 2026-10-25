@@ -1,5 +1,20 @@
 # Implementation status
 
+## Additional calculated cached scalar reads
+
+Explicit cached readers now admit authored Byte, Int16, Int64, Single and GUID
+calculations through the existing exact declaration/property/wrapper gates.
+Integer precision, IEEE bits and mixed-endian GUID storage retain their core
+carriers. Inspection and browsing preserve non-finite Single values; query
+snapshots keep their existing finite-number requirement. Default query admission,
+formula execution and freshness rules are unchanged.
+
+The [original carrier-family replay](testing/CALCULATED_CARRIER_FAMILY.md)
+passes 248 controls and 238 cell comparisons over fresh ACE 2016/2019 files;
+all 21 pinned hashes match. Fifteen engine/adapter tests and scoped strict Clippy
+pass. The initial corpus and six ambiguous quota attempts were excluded from
+accepted evidence. Native Access formula/storage qualification remains separate.
+
 ## Crosstab cell group-policy correction
 
 Crosstab cells now retain the complete row group's final key policies, matching

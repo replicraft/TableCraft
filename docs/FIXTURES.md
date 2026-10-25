@@ -7350,3 +7350,59 @@ read refusal, ignored compression requests in either setter order and rejected
 Short Text Hyperlink requests. Accepted evidence uses only the pinned original
 recipes/files above. Native Access admissibility, recalculation/freshness, Memo C1,
 shared-file behavior and writes remain unqualified.
+
+## Original additional cached calculated carrier inputs
+
+[CalculatedCarrierFixture.java](testing/CalculatedCarrierFixture.java),
+[CalculatedCarrierOracle.java](testing/CalculatedCarrierOracle.java) and the
+[comparison runner](testing/compare_calculated_carriers.py) are original repository
+code under MIT. They use reviewed external Jackcess 5.0.4 public builder and
+read-only getter APIs with expression evaluation disabled. No third-party code
+or fixture is copied; no formula or imported active content executes.
+
+Original files generated on 24 October 2026 remain ignored under
+`.cache/tablecraft-fixtures/calculated-carriers-final-20261024/`:
+
+| File | Bytes | SHA-256 |
+| --- | ---: | --- |
+| V2016.accdb | 516,096 | `db30a5f9bc60f5d363369302d55a244f38a049c21ed3b91039e7af9977e3afb0` |
+| V2019.accdb | 585,728 | `eb26fa090ccb04e9f6ebe5187324a1c2586bf59a2a7c1e71604773712b006585` |
+
+Each file has six populated calculated declarations and six matching empty
+tables. Byte, Int16, Int64, finite Single and Guid tables have seven stored rows
+each; a separate exceptional-Single table preserves infinities and NaNs while
+retaining explicit query refusal. Public getters retain typed BYTE ResultType,
+Expression, calculated/capacity metadata, stored scalar values, raw Single bits
+and canonical Guid strings. Values cover numeric boundaries, NULL, signed zero,
+subnormal/maximum Single, a binary32 NaN payload, asymmetric Guid bytes and Int64
+values outside exact binary64 integer precision. Expressions never execute or
+coerce supplied caches.
+
+Producer SHA-256 is
+`38c8499355855d3354ff5011626e98a8988046b2e9879eb5455cc7983af7f035`;
+oracle SHA-256 is
+`8f3e3d409d7838a52944d7bdd21d94a84780bb312997537d67ca00f1933091df`;
+runner SHA-256 is
+`6372aa0dad3c4b521a1e4f3b4db547cb4ccd382f6a8200a94abfadb57addb688`.
+The external JAR retains SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`
+and its existing Apache-2.0 provenance/notice review.
+
+The [feature record](testing/CALCULATED_CARRIER_FAMILY.md) and
+[accepted report](testing/results/calculated-carriers-2026-10-24.json) retain
+248 passing operation controls, 238 cached-cell comparisons and all 21 pinned
+hashes unchanged. Twelve disposable copies test late-wrapper refusal without
+changing any original. Native Access admissibility, formula behavior, freshness,
+shared-file behavior and writes remain unqualified. Textual CLI NaN output is
+checked by category; it does not expose the exact payload retained independently
+by stored getters and engine tests.
+
+The earlier ignored `calculated-carrier-probe-20261024.accdb` is an excluded
+public-builder capability probe. It established the five supported cached
+declarations and explicit reference rejection of calculated Binary/OLE and
+V2016 Extended DateTime. Files under `calculated-carriers-20261024/` are excluded
+initial inputs that mixed finite and non-finite Single caches. The failed initial
+query replay and ignored `calculated-carriers-policy-initial-report.json` are not
+accepted passing evidence. The latter preliminary report included six redundant
+quota attempts on already unsupported non-finite query sources; the final runner
+instead verifies actual quota error categories on admitted finite sources.
