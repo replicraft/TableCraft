@@ -25,7 +25,11 @@ full index traversals with every key field projected. This avoids repeated
 non-key Memo/OLE decoding while preserving root coverage, full schema identity
 and original-position constraint checks. Four new tests and 43 regressions pass;
 counted LVAL visits match the sequential pass, and corrupt non-key payloads still
-fail. Strict engine linting passes. See [scope and evidence](NATIVE_CHECKS.md#complete-checks-with-projected-index-payloads).
+fail. Strict engine linting passes. The [64-command original replay](testing/NATIVE_CHECK_PROJECTION_REPLAY.md)
+now retains identical complete reports while all sixteen optimized checks fit the
+unchanged default work allowance; twelve old nonempty checks require explicitly
+increased work. Twenty immutable hashes were independently rechecked. See
+[scope and evidence](NATIVE_CHECKS.md#complete-checks-with-projected-index-payloads).
 
 ## Original deletion histories and index membership
 
