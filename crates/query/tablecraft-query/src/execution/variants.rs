@@ -28,8 +28,9 @@ impl Runtime<'_, '_> {
         env: Environment<'_>,
     ) -> Result<CellValue, QueryError> {
         let value = self.expression_cell(expression, env)?;
-        let policy = self.result_text_policy(expression, value.policy, env)?;
-        Ok(value.with_policy(policy))
+        let (policy, complete) =
+            self.result_text_policy(expression, value.policy, value.policy_complete, env)?;
+        Ok(value.with_policy(policy).with_complete_policy(complete))
     }
 
     fn expression_cell(

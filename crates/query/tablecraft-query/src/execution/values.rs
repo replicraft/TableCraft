@@ -41,6 +41,7 @@ impl Runtime<'_, '_> {
         };
         Ok(CellValue::from(copied)
             .with_policy(value.policy)
+            .with_complete_policy(value.policy_complete)
             .with_declaration(value.declaration))
     }
 
@@ -55,13 +56,18 @@ impl Runtime<'_, '_> {
         let width = rows.first_mut().map_or(0, |row| cells(row).len());
         for column in 0..width {
             let mut policy = TextPolicy::Default;
+            let mut complete = false;
             for row in rows.iter_mut() {
                 self.tick()?;
-                policy = policy.merge(cells(row).get(column).ok_or(QueryError::Width)?.policy);
+                let cell = cells(row).get(column).ok_or(QueryError::Width)?;
+                policy = policy.merge(cell.policy);
+                complete |= cell.policy_complete;
             }
             for row in rows.iter_mut() {
                 self.tick()?;
-                cells(row).get_mut(column).ok_or(QueryError::Width)?.policy = policy;
+                let cell = cells(row).get_mut(column).ok_or(QueryError::Width)?;
+                cell.policy = policy;
+                cell.policy_complete = complete;
             }
         }
         Ok(())

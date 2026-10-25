@@ -7,7 +7,7 @@ use crate::{
     plan::{Expr, declarations::functions},
     source::TextPolicy,
 };
-use tablecraft_core::values::ExpressionValue;
+use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_expressions::{
     functions::text::byte_string::ExpressionByteOperand, numeric::OperandDeclaration,
 };
@@ -16,6 +16,7 @@ use tablecraft_sql::select::BinaryOperator;
 pub(super) struct StringCell {
     pub(super) value: ExpressionByteOperand,
     pub(super) policy: TextPolicy,
+    pub(super) policy_complete: bool,
     pub(super) declaration: Option<OperandDeclaration>,
 }
 
@@ -26,8 +27,22 @@ impl TryFrom<CellValue> for StringCell {
         Ok(Self {
             value: ExpressionByteOperand::try_from(cell.value)?,
             policy: cell.policy,
+            policy_complete: cell.policy_complete,
             declaration: cell.declaration,
         })
+    }
+}
+
+impl StringCell {
+    pub(super) fn contributing_policy(&self) -> TextPolicy {
+        match self.value {
+            ExpressionByteOperand::Bytes(_)
+            | ExpressionByteOperand::Scalar(ExpressionValue::StringBytes(_))
+            | ExpressionByteOperand::Scalar(ExpressionValue::Value(Value::Text(_) | Value::Null)) => {
+                self.policy
+            }
+            _ => TextPolicy::Default,
+        }
     }
 }
 
@@ -44,8 +59,10 @@ impl Runtime<'_, '_> {
         let yes = self.string_cell(yes, env)?;
         let no = self.string_cell(no, env)?;
         let policy = yes.policy.merge(no.policy);
+        let policy_complete = yes.policy_complete || no.policy_complete;
         let mut selected = self.evaluator().apply_iif(&condition, yes, no)?;
         selected.policy = policy;
+        selected.policy_complete = policy_complete;
         selected.declaration = Some(OperandDeclaration::Variant);
 
         Ok(selected)
@@ -61,6 +78,7 @@ impl Runtime<'_, '_> {
 
         Ok(CellValue::from(value)
             .with_policy(cell.policy)
+            .with_complete_policy(cell.policy_complete)
             .with_declaration(cell.declaration))
     }
 
@@ -91,6 +109,7 @@ impl Runtime<'_, '_> {
                 Ok(StringCell {
                     value: value.into(),
                     policy: TextPolicy::Default,
+                    policy_complete: false,
                     declaration: functions::result(expression),
                 })
             }
@@ -101,7 +120,8 @@ impl Runtime<'_, '_> {
             }
         }?;
 
-        cell.policy = self.result_text_policy(expression, cell.policy, env)?;
+        (cell.policy, cell.policy_complete) =
+            self.result_text_policy(expression, cell.policy, cell.policy_complete, env)?;
         Ok(cell)
     }
 }

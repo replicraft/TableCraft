@@ -89,6 +89,7 @@ impl Runtime<'_, '_> {
                 ExpressionByteOperand::Scalar(scalar) => Operand::Expression(
                     CellValue::from(scalar)
                         .with_policy(value.policy)
+                        .with_complete_policy(value.policy_complete)
                         .with_declaration(value.declaration),
                 ),
                 ExpressionByteOperand::Bytes(bytes) => Operand::ByteString(bytes),

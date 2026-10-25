@@ -96,6 +96,7 @@ impl Runtime<'_, '_> {
         if let Some(index) = index {
             for (retained, incoming) in groups[index].keys.iter_mut().zip(&keys) {
                 retained.policy = retained.policy.merge(incoming.policy);
+                retained.policy_complete |= incoming.policy_complete;
             }
             self.push(&mut groups[index].rows, row)?;
         } else {

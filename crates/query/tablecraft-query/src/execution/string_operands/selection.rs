@@ -25,9 +25,14 @@ impl Runtime<'_, '_> {
                 .map_or(TextPolicy::Default, |value| value.policy),
         );
 
+        let policy_complete = value.policy_complete
+            || replacement
+                .as_ref()
+                .is_some_and(|value| value.policy_complete);
         Ok(StringCell {
             value: expression::nz_bytes(value.value, replacement.map(|value| value.value)),
             policy,
+            policy_complete,
             declaration: Some(OperandDeclaration::Variant),
         })
     }
@@ -41,6 +46,7 @@ impl Runtime<'_, '_> {
         self.tick()?;
         let mut selection = function.start_payload(arguments.len())?;
         let mut policy = TextPolicy::Default;
+        let mut policy_complete = false;
 
         for argument in arguments {
             if selection.is_control() {
@@ -50,6 +56,7 @@ impl Runtime<'_, '_> {
             } else {
                 let value = self.string_cell(argument, env)?;
                 policy = policy.merge(value.policy);
+                policy_complete |= value.policy_complete;
                 self.evaluator()
                     .push_selection_payload(&mut selection, value)?;
             }
@@ -60,6 +67,7 @@ impl Runtime<'_, '_> {
             None => StringCell::try_from(CellValue::scalar(Value::Null))?,
         };
         selected.policy = policy;
+        selected.policy_complete = policy_complete;
         selected.declaration = Some(OperandDeclaration::Variant);
         Ok(selected)
     }

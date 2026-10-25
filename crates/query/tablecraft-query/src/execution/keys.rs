@@ -106,6 +106,7 @@ impl Runtime<'_, '_> {
         right: &CellValue,
         policy: TextPolicy,
     ) -> Result<Truth, QueryError> {
+        let policy = super::cell::comparison_policy(left, right, policy);
         if has_error_operand(left, right) {
             return self.compare_expression_predicate_policy(operator, left, right, policy);
         }

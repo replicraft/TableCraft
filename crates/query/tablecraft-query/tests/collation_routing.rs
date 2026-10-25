@@ -1,6 +1,8 @@
 mod collation_routing {
     mod bounds;
     mod collections;
+    mod concatenation_policy;
+    mod concatenation_policy_composition;
     mod crosstab;
     mod crosstab_group_policy;
     mod declared_addition;

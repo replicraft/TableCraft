@@ -30,6 +30,7 @@ impl Runtime<'_, '_> {
                 policy.merge(existing.policy).merge(cell.policy),
             )? {
                 existing.policy = existing.policy.merge(cell.policy);
+                existing.policy_complete |= cell.policy_complete;
                 return if fixed {
                     Err(QueryError::AmbiguousName)
                 } else {
@@ -99,6 +100,7 @@ impl Runtime<'_, '_> {
                     policy.merge(existing.policy).merge(heading.policy),
                 )? {
                     existing.policy = existing.policy.merge(heading.policy);
+                    existing.policy_complete |= heading.policy_complete;
                     duplicate = true;
                     break;
                 }

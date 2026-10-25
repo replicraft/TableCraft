@@ -34,7 +34,9 @@ impl Runtime<'_, '_> {
         self.tick()?;
         let left = self.string_cell(left, env)?;
         let right = self.string_cell(right, env)?;
-        let policy = left.policy.merge(right.policy);
+        let policy = left
+            .contributing_policy()
+            .merge(right.contributing_policy());
         let declaration = combined(left.declaration, right.declaration);
         let prepared = if self.options.declared_integral {
             self.evaluator()
@@ -54,6 +56,7 @@ impl Runtime<'_, '_> {
             PreparedAddition::StringResult(value) => Ok(StringCell {
                 value: value.into(),
                 policy,
+                policy_complete: true,
                 declaration,
             }),
             PreparedAddition::ScalarOperands {

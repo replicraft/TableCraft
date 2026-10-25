@@ -1,6 +1,7 @@
 //! Bounded, buffered row groups and pivot cells. No source-schema discovery I/O.
 use crate::execution::cell::CellValue;
 mod headings;
+mod policy;
 use super::{CellQueryResult, Environment, Runtime, context::GroupKeys, retrieval::OutputRow};
 use crate::{
     QueryError,
@@ -26,6 +27,9 @@ impl Runtime<'_, '_> {
         };
         let initial_pivot_policy = self.text_policy(&plan.pivot)?;
         let mut pivot_policy = initial_pivot_policy;
+        let mut pivot_provenance = policy::PivotPolicy::new(initial_pivot_policy);
+        let static_pivot = self.static_pivot_policy(&plan.pivot, &select.source)?;
+        let deferred_fixed = self.options.collation_resolver.is_some() && !static_pivot;
         let cell = select.projection.last().ok_or(QueryError::Grouping)?;
         let width = select.projection.len() - 1;
         let empty = Environment {
@@ -40,7 +44,15 @@ impl Runtime<'_, '_> {
         if let Some(fixed) = &plan.headings {
             for expr in fixed {
                 let value = self.scalar_key(expr, empty)?;
-                self.add_heading(&mut headings, &value, width, true, pivot_policy)?;
+                if deferred_fixed {
+                    let scalar = super::values::scalar(&value)?;
+                    if matches!(scalar, Value::Null) {
+                        return Err(QueryError::Unsupported);
+                    }
+                    self.retain_heading_candidate(&mut headings, &value)?;
+                } else {
+                    self.add_heading(&mut headings, &value, width, true, pivot_policy)?;
+                }
             }
         }
         let mut rows = Vec::new();
@@ -51,14 +63,14 @@ impl Runtime<'_, '_> {
         // Preserve every candidate distinction until that identity is known.
         let deferred_headings = dynamic
             && self.options.collation_resolver.is_some()
-            && initial_pivot_policy == crate::source::TextPolicy::Default;
+            && (initial_pivot_policy == crate::source::TextPolicy::Default || !static_pivot);
         let input = if let Some(parent) = &select.parent {
             self.parent_rows_before_filter(&select.source, parent, &[], &mut |runtime, row| {
                 if !dynamic {
                     return Ok(None);
                 }
                 let pivot = runtime.repeatable_key(&plan.pivot, Environment { row, ..empty })?;
-                pivot_policy = pivot_policy.merge(pivot.policy);
+                pivot_policy = pivot_provenance.observe(&pivot);
                 if deferred_headings {
                     runtime.retain_heading_candidate(&mut headings, &pivot)?;
                 } else {
@@ -78,7 +90,7 @@ impl Runtime<'_, '_> {
                 } else {
                     let pivot =
                         self.repeatable_key(&plan.pivot, Environment { row: &row, ..empty })?;
-                    pivot_policy = pivot_policy.merge(pivot.policy);
+                    pivot_policy = pivot_provenance.observe(&pivot);
                     if deferred_headings {
                         self.retain_heading_candidate(&mut headings, &pivot)?;
                     } else {
@@ -99,7 +111,7 @@ impl Runtime<'_, '_> {
                 Some(pivot) => pivot,
                 None => self.repeatable_key(&plan.pivot, env)?,
             };
-            pivot_policy = pivot_policy.merge(pivot.policy);
+            pivot_policy = pivot_provenance.observe(&pivot);
             self.push(&mut row, pivot)?;
             self.push(&mut rows, row)?;
         }
@@ -108,7 +120,7 @@ impl Runtime<'_, '_> {
                 headings = self.merge_dynamic_headings(headings, pivot_policy, width)?;
             }
             headings = self.sort_headings(headings, pivot_policy)?;
-        } else if pivot_policy != initial_pivot_policy {
+        } else if deferred_fixed || pivot_policy != initial_pivot_policy {
             self.check_fixed_heading_policy(&headings, pivot_policy)?;
         }
         let mut columns = Vec::new();

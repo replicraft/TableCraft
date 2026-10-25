@@ -910,3 +910,17 @@ Closed Eval and target linked-table refusals remain enforced.
 The [feature contract](EXTERNAL_NAMED_QUERIES.md) records 196 passing focused Rust
 tests and explicit boundaries. Wider query definitions, native heading semantics,
 P0 value/text behavior and native Access comparisons remain unfinished.
+
+
+### Converted non-String concatenation operands
+
+Constructed String results now retain completed runtime provenance, excluding
+latent Text policies of numeric/Boolean/date operands converted by the existing
+formatting service. Named/derived, grouped/set, aggregate and crosstab consumers
+retain that provenance; public static metadata stays conservative. Real String
+conflicts, NULL lineage and empty UNION-arm policies remain explicit.
+
+[The contract](CONCATENATION.md#constructed-string-policy-provenance) records
+construction-sensitive fixed-heading timing and 199 passing focused Rust tests.
+This does not choose native precedence between different actual String policies,
+resolve conditional NULL origins or complete broader P0/native qualification.
