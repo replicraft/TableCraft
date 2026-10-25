@@ -474,11 +474,21 @@ accepted file. A larger file-size envelope is not unrestricted large-table,
 streaming, native Access or live-file compatibility. See
 [large-source evidence and reproduction](testing/LARGE_FILE_READS.md).
 
-Only native `query run` has the explicit `--native-bytes BYTES` override; it
-requires `--database` and replaces the cumulative native byte allowance within
-1..=268435456. It retains the 16 MiB default and all separate row/work/query/output
-limits. It does not apply to `rows`, `tables`, `inspect` or writes. See
-[query controls](NATIVE_QUERIES.md#explicit-supported-boundary) for scope/examples.
+`inspect`, `tables`, `rows` and native `query run --database` accept the explicit
+`--native-bytes BYTES` override within 1..=268435456. The 16 MiB default remains;
+raising this allowance does not raise separate row/work/query/output limits or
+write limits. See [query controls](NATIVE_QUERIES.md#explicit-supported-boundary).
+
+`inspect` also accepts `--native-steps STEPS` within 1..=100000000, retaining the
+1,000,000-step default. Full `--check` operations decode each live row and traverse
+each eligible logical index, so even a small table with long payloads and several
+indexes can exhaust the default work allowance. An explicit larger work allowance
+retains byte/row ceilings, cancellation, unchecked-profile reporting and buffered
+output; it does not change which indexes are qualified. For example:
+
+```sh
+tablecraft inspect example.accdb --table Items --check --native-steps 10000000
+```
 
 ## Bounded paging across large owned maps
 

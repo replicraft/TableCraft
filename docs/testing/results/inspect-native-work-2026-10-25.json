@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-25",
+  "scope": "CLI inspect explicit cumulative native work allowance",
+  "query_production_base": "1fa3ee32",
+  "tests": 16,
+  "new_tests": 1,
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-cli --test inspect --test cli --locked --offline -j 2",
+      "exit_code": 0,
+      "private_log": ".cache/inspect-native-work-tests-20261025.log",
+      "sha256": "5d4498ee705775fb8d1e5184e49fbccea14db74ae4c8302afb332c29511d0262",
+      "terminal_session": 34725
+    },
+    {
+      "command": "cargo clippy -p tablecraft-cli --bin tablecraft --test inspect --test cli --locked --offline -j 2 -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/inspect-native-work-clippy-20261025.log",
+      "sha256": "809bcdc4bb9e967dbd38d6c4f9b122b4b9e67c46ffe48b8f99b7cb55a9b8c293",
+      "terminal_session": 29353
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "private_log": ".cache/inspect-native-work-fmt-20261025.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "terminal_session": 80659
+    }
+  ],
+  "contracts": [
+    "Default native work remains 1000000; explicit native-steps accepts 1..=100000000 using the existing shared ceiling.",
+    "Inspection shares one native budget across open/container/selected mode. Explicit work does not raise byte or row limits.",
+    "A one-step allowance and an independent one-byte allowance both fail with no stdout; increased work preserves complete baseline check output and original source bytes.",
+    "Zero and above-ceiling values fail argument validation before reading."
+  ],
+  "limits": [
+    "No full workspace or native Access qualification claim. Original public-writer delete corpus replay with increased work follows separately."
+  ]
+}

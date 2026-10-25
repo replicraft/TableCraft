@@ -7,6 +7,9 @@ pub(crate) struct Args {
     /// Cumulative native read/container bytes, including temporary extraction and failures.
     #[arg(long, value_parser = clap::value_parser!(u64).range(1..=crate::native::MAX_QUERY_READ_BYTES))]
     native_bytes: Option<u64>,
+    /// Cumulative native inspection/check work; does not raise byte or row limits.
+    #[arg(long, value_parser = clap::value_parser!(u64).range(1..=crate::native::MAX_NATIVE_READ_STEPS))]
+    native_steps: Option<u64>,
     /// Decode bounded object metadata; never executes or extracts object bodies.
     #[arg(long)]
     catalog: bool,
@@ -68,6 +71,7 @@ impl Args {
         let Self {
             path,
             native_bytes,
+            native_steps,
             catalog,
             show_system,
             query,
@@ -117,6 +121,6 @@ impl Args {
         } else {
             Mode::Header
         };
-        super::run(&path, mode, format, password, native_bytes)
+        super::run(&path, mode, format, password, native_bytes, native_steps)
     }
 }
