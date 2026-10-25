@@ -8,6 +8,8 @@ mod editing;
 mod eval;
 mod execution_limits;
 mod large_values;
+mod links;
+mod native_options;
 mod number;
 use crate::output;
 mod args;
@@ -20,11 +22,12 @@ mod text_policy;
 pub(crate) use args::Command;
 use run_args::RunArgs;
 use std::fmt;
-use tablecraft_access::{CalculationError, template::TemplateError};
+use tablecraft_access::{CalculationError, LinkSourceError, template::TemplateError};
 use tablecraft_expressions::EvalError;
 
 pub(super) enum Error {
     Input(tablecraft_access::AccessInputError),
+    Links(LinkSourceError),
     Calculation(CalculationError),
     Template(TemplateError),
     Parse(tablecraft_sql::ParseError),
@@ -45,6 +48,7 @@ impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Input(error) => error.fmt(f),
+            Self::Links(error) => error.fmt(f),
             Self::Calculation(error) => match error {
                 CalculationError::Native(error) => write!(f, "calculation metadata: {error}"),
                 CalculationError::Parse(error) => write!(f, "calculation syntax: {error}"),
@@ -118,6 +122,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
                 collation,
                 like_mode,
                 database,
+                links,
                 native_bytes,
                 native_rows,
                 native_steps,
@@ -170,6 +175,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
                 },
                 database.as_deref().map(|path| retrieval::NativeInput {
                     path,
+                    links: &links,
                     bytes: native_bytes.unwrap_or(crate::native::DEFAULT_NATIVE_BYTES),
                     rows: native_rows.unwrap_or(crate::native::DEFAULT_NATIVE_ROWS),
                     steps: native_steps.unwrap_or(crate::native::DEFAULT_NATIVE_STEPS),

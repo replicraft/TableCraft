@@ -16,6 +16,11 @@ creates disposable engineering candidates. See the [roadmap](docs/ROADMAP.md).
 ACE 2007/ACE 12 `.accdb` and Jet 4 `.mdb`.** Further write expansion follows that work; the compatibility
 goal above does not imply complete current read/query support.
 
+Explicit [linked-table queries](docs/NATIVE_LINKED_QUERIES.md#cli-target-selection)
+can select a stable target with `query run --database frontend.accdb --link
+'People link' backend.accdb 'SELECT * FROM [People link]'`. Stored paths never
+open automatically; selected files share cumulative native read limits.
+
 For larger Memo/OLE/attachment query results, explicit `query run --text-bytes
 1048576 --output-bytes 8388608 --format tsv` raises the separate per-Text and
 output allowances. Native and query budgets still apply; see [larger payloads](docs/LARGE_PAYLOADS.md).

@@ -4,8 +4,9 @@
 catalog declaration from an explicitly supplied stable native source. It returns
 the caller-scoped local object ID, signed native ID, local alias, native linked
 storage kind and the separate `Database`, `ForeignName` and `Connect` fields.
-This is an engine API and engineering example; ordinary queries continue to
-refuse unresolved linked sources. No application CLI link command is provided.
+This engine API remains inert. The separate [explicit routing service](NATIVE_LINKED_QUERIES.md)
+and CLI `query run --link ALIAS PATH` can consume host-authorized targets; ordinary
+queries continue to refuse unresolved linked sources.
 
 `NativeLinkText` distinguishes an absent catalog column, stored NULL, decoded
 Text and an unsupported declaration. An unsupported optional field remains
@@ -41,8 +42,8 @@ across calls does not refill it. Cancellation remains checked through the existi
 read/decode paths and selected-field processing. Query, comparison and output
 budgets remain distinct from native work. The Access adapter now provides an explicit
 [shared native allowance](NATIVE_SOURCE_BUDGETS.md) for already supplied sources.
-A future host-supplied target mapping must use aggregate source limits and validate
-target identity/schema before linked queries can be enabled.
+The separate [routing facade](NATIVE_LINKED_QUERIES.md) uses that aggregate pool
+and validates selected target identities and metadata before exposing linked rows.
 
 ## Contract sources and independent evidence
 

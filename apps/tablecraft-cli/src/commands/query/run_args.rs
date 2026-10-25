@@ -4,7 +4,7 @@ use super::large_values::Args as LargeValueArgs;
 use super::retrieval::{TextCollation, Wildcards};
 use super::{calendar, character, clock, date_text, number};
 use clap::Args as ClapArgs;
-use std::path::PathBuf;
+use std::{ffi::OsString, path::PathBuf};
 use tablecraft_ace::{AttachmentDecodeLimits, LongTextReadLimits, LongValueReadLimits};
 use tablecraft_expressions::functions::conversions::text::NumberFormat;
 use tablecraft_expressions::functions::dates::clock::ClockReading;
@@ -80,6 +80,10 @@ pub(crate) struct RunArgs {
     /// Read supported local tables from this explicit stable/offline MDB/ACCDB copy.
     #[arg(long, value_name = "PATH")]
     pub(crate) database: Option<PathBuf>,
+    /// Explicitly authorize a linked alias to read an already chosen stable database; repeat for more aliases.
+    #[arg(long = "link", value_names = ["ALIAS", "PATH"], num_args = super::links::MAPPING_FIELDS,
+        action = clap::ArgAction::Append, requires = "database", conflicts_with = "sqlite")]
+    pub(crate) links: Vec<OsString>,
     /// Query qualified stored calculation caches; results may be stale and are never recalculated.
     #[arg(long, requires = "database", conflicts_with = "sqlite")]
     pub(crate) stored_calculations: bool,
