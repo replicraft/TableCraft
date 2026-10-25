@@ -6,6 +6,7 @@ use crate::{
         Environment, Runtime,
         cell::{CellValue, into_scalar},
     },
+    plan::{ReadPlan, SelectPlan},
 };
 use tablecraft_core::values::Value;
 
@@ -15,8 +16,16 @@ impl Runtime<'_, '_> {
         arm: &ProgressiveArm<'_>,
         environment: Environment<'_>,
     ) -> Result<Vec<CellValue>, QueryError> {
-        let mut cells = self.allocate_expression_row(arm.select.projection.len())?;
-        for expression in &arm.select.projection {
+        self.progressive_select_projection(arm.select, environment)
+    }
+
+    pub(super) fn progressive_select_projection(
+        &mut self,
+        select: &SelectPlan,
+        environment: Environment<'_>,
+    ) -> Result<Vec<CellValue>, QueryError> {
+        let mut cells = self.allocate_expression_row(select.projection.len())?;
+        for expression in &select.projection {
             cells.push(self.retained_expression_operand(
                 expression,
                 Environment {
@@ -31,6 +40,17 @@ impl Runtime<'_, '_> {
     pub(super) fn progressive_publish<E>(
         &mut self,
         arm: &ProgressiveArm<'_>,
+        cells: Vec<CellValue>,
+        union_types: Option<&[OutputType]>,
+        summary: &mut StreamSummary,
+        visitor: &mut dyn FnMut(&[Value]) -> Result<(), E>,
+    ) -> Result<(), StreamError<E>> {
+        self.progressive_publish_read(arm.read, cells, union_types, summary, visitor)
+    }
+
+    pub(super) fn progressive_publish_read<E>(
+        &mut self,
+        read: &ReadPlan,
         mut cells: Vec<CellValue>,
         union_types: Option<&[OutputType]>,
         summary: &mut StreamSummary,
@@ -48,7 +68,7 @@ impl Runtime<'_, '_> {
                 .map_err(QueryError::Evaluation)?;
             values.push(into_scalar(cell).map_err(QueryError::Evaluation)?);
         }
-        if values.len() != arm.read.names.len() {
+        if values.len() != read.names.len() {
             return Err(QueryError::Width.into());
         }
         self.tick()?;

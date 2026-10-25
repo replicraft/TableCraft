@@ -76,7 +76,11 @@ options are unavailable. `inspect --query` remains the raw fragment path for oth
 query families or unsupported reconstruction profiles.
 
 `query run` accepts its documented scalar table sources and explicitly referenced
-qualified SELECT/UNION definitions under the named-source contract below. Upstream parser ASTs remain inside the SQL adapter.
+qualified SELECT/UNION definitions under the named-source contract below.
+Explicit `--stream --saved NAME` also accepts eligible static row-local input
+chains, under the narrower [streaming contract](STREAMING_QUERIES.md). Saved
+reconstruction alone does not establish streaming eligibility. Upstream parser
+ASTs remain inside the SQL adapter.
 Action, DDL, pass-through and unknown fragments are data in this inspection mode
 and never run.
 

@@ -3,100 +3,75 @@ use super::{StreamError, StreamSummary, plan::ProgressiveArm};
 use crate::{
     OutputType, QueryError,
     execution::{
-        Environment, Runtime, aggregate::accumulator::Accumulator, context::AggregateResult,
+        Environment, Runtime, aggregate::accumulator::Accumulator, cell::CellValue,
+        context::AggregateResult,
     },
-    plan::{Expr, RelationNode},
-    source::ProjectedRow,
+    external_sources::ExternalBinding,
+    plan::Expr,
 };
 use tablecraft_core::values::Value;
 
 impl Runtime<'_, '_> {
     pub(super) fn progressive_aggregate_rows<E>(
         &mut self,
-        arm: &ProgressiveArm<'_>,
+        arm: &mut ProgressiveArm<'_>,
         union_types: Option<&[OutputType]>,
+        bindings: &[ExternalBinding],
         summary: &mut StreamSummary,
         visitor: &mut dyn FnMut(&[Value]) -> Result<(), E>,
     ) -> Result<(), StreamError<E>> {
-        self.check_table_schema(&arm.select.source.node)?;
-        self.tick()?;
-        let RelationNode::Table {
-            name,
-            columns,
-            projection,
-            ..
-        } = &arm.select.source.node
-        else {
-            return Err(QueryError::Unsupported.into());
-        };
-        let mut accumulators = self.progressive_accumulators(&arm.aggregates)?;
-        let source = self.source;
-        let mut failure: Option<QueryError> = None;
-        let mut consume = |row: ProjectedRow<'_>| {
-            if let Some(error) = &failure {
-                return Err(error.clone());
+        let source = self.progressive_source(&arm.input, bindings)?;
+        let read = arm.read;
+        let select = arm.select;
+        let expressions = &arm.aggregates;
+        let mut accumulators = self.with_progressive_owner(read.owner, |runtime| {
+            runtime.progressive_accumulators(expressions)
+        })?;
+        let mut consume = |runtime: &mut Self, row: Vec<CellValue>, _: &mut StreamSummary| {
+            let environment = Environment {
+                aggregate_results: None,
+                row: &row,
+                collections: None,
+                outer: &[],
+                output: &[],
+                group: None,
+                group_keys: None,
+            };
+            if let Some(filter) = &select.filter
+                && !runtime.eval_predicate(filter, environment)?.is_true()
+            {
+                return Ok(());
             }
-            let result: Result<(), QueryError> = (|| {
-                self.tick()?;
-                let row = self.copy_projected_row(columns, projection, row)?;
-                summary.scanned_rows = summary
-                    .scanned_rows
-                    .checked_add(1)
-                    .ok_or(QueryError::StructureLimit)?;
-                let environment = Environment {
-                    aggregate_results: None,
-                    row: &row,
-                    collections: None,
-                    outer: &[],
-                    output: &[],
-                    group: None,
-                    group_keys: None,
+            for (expression, accumulator) in expressions.iter().zip(&mut accumulators) {
+                runtime.tick()?;
+                let Expr::Aggregate(_, argument) = expression else {
+                    return Err(QueryError::Source.into());
                 };
-                if let Some(filter) = &arm.select.filter
-                    && !self.eval_predicate(filter, environment)?.is_true()
-                {
-                    return Ok(());
-                }
-                // Operands run once per occurrence, in written projection/tree
-                // order, after WHERE. Identical aggregates are deliberately separate.
-                for (expression, accumulator) in arm.aggregates.iter().zip(&mut accumulators) {
-                    self.tick()?;
-                    let Expr::Aggregate(_, argument) = expression else {
-                        return Err(QueryError::Source);
-                    };
-                    self.push_progressive_aggregate(accumulator, argument.as_deref(), environment)?;
-                }
-                Ok(())
-            })();
-            if let Err(error) = &result {
-                failure = Some(error.clone());
+                runtime.push_progressive_aggregate(
+                    accumulator,
+                    argument.as_deref(),
+                    environment,
+                )?;
             }
-            result
+            Ok(())
         };
-        let scanned = source.scan_projected_progressive(name, projection, &mut consume);
-        if let Some(error) = failure {
-            return Err(StreamError::Query(error));
-        }
-        scanned?;
-        self.tick()?;
-
-        let results = self.progressive_aggregate_results(&arm.aggregates, accumulators)?;
-
-        // Completed results are borrowed only by the final projection. Input
-        // callbacks have returned, and no mutable Runtime overlay can leak.
-        let environment = Environment {
-            aggregate_results: Some(&results),
-            row: &[],
-            collections: None,
-            outer: &[],
-            output: &[],
-            group: None,
-            group_keys: None,
-        };
-        let cells = self.progressive_projection(arm, environment)?;
-        // Admitted TOP counts are positive, so a global aggregate's one row
-        // survives TOP. SQL TOP 0 remains a preparation error.
-        self.progressive_publish(arm, cells, union_types, summary, visitor)
+        self.scan_progressive_input(source, &mut arm.input, read.owner, summary, &mut consume)?;
+        self.with_progressive_owner(read.owner, |runtime| {
+            let results = runtime.progressive_aggregate_results(expressions, accumulators)?;
+            let environment = Environment {
+                aggregate_results: Some(&results),
+                row: &[],
+                collections: None,
+                outer: &[],
+                output: &[],
+                group: None,
+                group_keys: None,
+            };
+            let cells = runtime.progressive_select_projection(select, environment)?;
+            // Positive TOP retains the one global result; all input layers
+            // have already completed their eager work and checked EOF.
+            runtime.progressive_publish_read(read, cells, union_types, summary, visitor)
+        })
     }
 
     pub(super) fn progressive_accumulators(

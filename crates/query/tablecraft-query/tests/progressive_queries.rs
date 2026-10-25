@@ -9,6 +9,8 @@ use tablecraft_sql::parse_query;
 mod boundaries;
 #[path = "progressive_queries/counts.rs"]
 mod counts;
+#[path = "progressive_queries/derived.rs"]
+mod derived;
 #[path = "progressive_queries/execution.rs"]
 mod execution;
 #[path = "progressive_queries/extrema.rs"]

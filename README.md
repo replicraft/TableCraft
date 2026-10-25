@@ -44,8 +44,12 @@ and cumulative limits. Global `COUNT(*)`, `COUNT(expr)`, `SUM(expr)` and
 `AVG(expr)`, `MIN(expr)` and `MAX(expr)` can also stream their input and publish one result after checked EOF, avoiding a complete table
 snapshot. Eligible Boolean/integral/NULL `GROUP BY` keys also retain group states
 and publish groups in encounter order after checked EOF. Aggregate state is independently budgeted; text extrema can retain
-candidates until the final comparison policy is known. Sorting, joins,
-other aggregates and wider query shapes retain buffered execution.
+candidates until the final comparison policy is known. Static row-local named and
+inline derived SELECT chains can feed these operations, including explicit
+`--saved` and `--external` selection. Inner grouping, aggregates, UNION, ordering,
+distinctness and schema discovery remain refused; root flat UNION ALL and outer
+aggregates retain their existing streaming profile. Sorting, joins and other
+unsupported shapes retain buffered execution.
 
 For larger Memo/OLE/attachment query results, explicit `query run --text-bytes
 1048576 --output-bytes 8388608 --format tsv` raises the separate per-Text and
@@ -80,8 +84,8 @@ freshness or native conversion equivalence. See
 For explicitly recomputed values inside ordinary queries, select a fresh local
 view with repeated `query run --recomputed-column FreshItems Items ID
 --recomputed-column FreshItems Items Score`, then query
-`SELECT ID,Score FROM FreshItems WHERE Score>10`. These buffered
-[calculation views](docs/RECOMPUTED_CALCULATION_VIEWS.md) use natural expression
+`SELECT ID,Score FROM FreshItems WHERE Score>10`. Add `--stream` for an
+eligible static row-local pipeline. These explicit [calculation views](docs/RECOMPUTED_CALCULATION_VIEWS.md) use natural expression
 results and leave original table/cache routes intact; selected view expressions
 remain eager before outer filters.
 

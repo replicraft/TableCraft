@@ -408,3 +408,6 @@ fn external_help_and_argument_dependencies_are_explicit() {
         assert!(output.stdout.is_empty());
     }
 }
+
+#[path = "external_queries/progressive.rs"]
+mod progressive;

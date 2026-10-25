@@ -58,6 +58,11 @@ before row reads. Root named definitions and domain targets retain root
 ownership; external tables use their mapped target's metadata and policies.
 All selected native files share one cumulative native allowance, separate from
 query/comparison/output limits. Ordinary CLI results remain fully buffered.
+Explicit `--stream --saved NAME --external TOKEN PATH` can execute a qualified
+static row-local definition through the same authorized targets. Inner
+aggregates/grouping, UNION, ordering, distinctness and schema discovery remain
+outside the streaming profile; root flat UNION ALL and admitted outer aggregates
+retain their existing support. See [streaming queries](STREAMING_QUERIES.md).
 
 ## References and qualification
 

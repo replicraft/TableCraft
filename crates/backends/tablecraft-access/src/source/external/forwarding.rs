@@ -105,6 +105,16 @@ impl Source for LocalSource<'_> {
         source.scan_projected(table, indices, constraint, visitor)
     }
 
+    fn scan_projected_progressive(
+        &self,
+        table: &str,
+        indices: &[usize],
+        visitor: &mut dyn FnMut(ProjectedRow<'_>) -> Result<(), QueryError>,
+    ) -> Result<(), QueryError> {
+        let (source, table) = self.route(table)?;
+        source.scan_projected_progressive(table, indices, visitor)
+    }
+
     fn scan_constrained(
         &self,
         table: &str,
@@ -228,6 +238,17 @@ impl Source for ExternalNativeSource<'_> {
         self.root.handle().check()?;
         let source = self.root.source();
         source.scan_projected(table, indices, constraint, visitor)
+    }
+
+    fn scan_projected_progressive(
+        &self,
+        table: &str,
+        indices: &[usize],
+        visitor: &mut dyn FnMut(ProjectedRow<'_>) -> Result<(), QueryError>,
+    ) -> Result<(), QueryError> {
+        self.root.handle().check()?;
+        let source = self.root.source();
+        source.scan_projected_progressive(table, indices, visitor)
     }
 
     fn scan_constrained(

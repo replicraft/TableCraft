@@ -2,6 +2,7 @@
 mod admission;
 mod aggregates;
 mod groups;
+mod input;
 mod plan;
 mod publication;
 mod rows;
@@ -54,7 +55,8 @@ impl<E: std::error::Error + 'static> std::error::Error for StreamError<E> {
 }
 
 impl PreparedQuery {
-    /// Progressively evaluate local scalar SELECT/WHERE arms in written source order.
+    /// Progressively evaluate scalar SELECT arms and static row-local named or
+    /// derived SELECT/WHERE/TOP input chains in written source order.
     /// Unordered positive TOP counts limit publication while all rows are still
     /// read and evaluated through checked EOF. Flat UNION ALL combines admitted
     /// arms through the ordinary UNION result conversions. Global and proven
@@ -64,10 +66,15 @@ impl PreparedQuery {
     /// String candidates under the cumulative budget. Other aggregates are refused.
     /// Sorts, TOP PERCENT,
     /// duplicate-eliminating sets, other grouping keys, HAVING,
-    /// joins, derived/named sources, collections,
+    /// joins, inner stateful/set reads, collections,
     /// subqueries, domain calls, Eval and volatile functions are refused before
     /// scanning, even for empty inputs. The source must explicitly implement
     /// progressive projection; this never falls back to buffered retrieval.
+    /// Captured external bindings are resolved only through the operation root;
+    /// leaf schemas and keys are revalidated outside exclusive cursor callbacks.
+    /// Every selected inner projection stays eager, even when outer filters/TOP
+    /// omit its row. Intermediate raw Strings, Error data and provenance remain
+    /// retained until their actual consumer; only final output is scalar-published.
     ///
     /// Each row retains ordinary eager predicate/projection and strict scalar
     /// publication rules. A later read/evaluation/EOF failure can follow already
@@ -90,11 +97,6 @@ impl PreparedQuery {
         visitor: &mut dyn FnMut(&[Value]) -> Result<(), E>,
     ) -> Result<StreamSummary, StreamError<E>> {
         let _span = tracing::debug_span!("query.execute_progressive").entered();
-        // This first slice never resolves external namespaces, even if a bound
-        // but unused dependency happened to capture one.
-        if !self.external_sources.is_empty() {
-            return Err(QueryError::Unsupported.into());
-        }
         let mut budget = crate::discovery::budget(options.limits);
         let discovery = DiscoveryState::new(false);
         let mut runtime = self.initialize_runtime(
@@ -110,13 +112,19 @@ impl PreparedQuery {
             },
             &mut budget,
         )?;
-        let mut plan = runtime.progressive_plan(&self.body)?;
+        let mut plan = runtime.progressive_plan(&self.body, &self.external_sources)?;
         let mut summary = StreamSummary {
             scanned_rows: 0,
             emitted_rows: 0,
         };
         for arm in &mut plan.arms {
-            runtime.progressive_rows(arm, plan.union_types, &mut summary, visitor)?;
+            runtime.progressive_rows(
+                arm,
+                plan.union_types,
+                plan.bindings,
+                &mut summary,
+                visitor,
+            )?;
         }
         runtime.tick()?;
         tracing::debug!(

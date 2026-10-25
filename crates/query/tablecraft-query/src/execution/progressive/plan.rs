@@ -1,8 +1,11 @@
 //! Preflight every selected arm before any progressive record callback.
-use super::super::{Runtime, exact_keys::ExactKeys};
+use super::{
+    super::{Runtime, exact_keys::ExactKeys},
+    input::Input,
+};
 use crate::{
     OutputType, QueryError,
-    external_sources::SourceNamespace,
+    external_sources::ExternalBinding,
     plan::{Expr, PreparedBody, ReadNode, ReadPlan, SelectPlan},
 };
 
@@ -11,17 +14,20 @@ pub(super) struct ProgressiveArm<'p> {
     pub(super) select: &'p SelectPlan,
     pub(super) aggregates: Vec<&'p Expr>,
     pub(super) group_lookup: Option<ExactKeys>,
+    pub(super) input: Input<'p>,
 }
 
 pub(super) struct ProgressivePlan<'p> {
     pub(super) arms: Vec<ProgressiveArm<'p>>,
     pub(super) union_types: Option<&'p [OutputType]>,
+    pub(super) bindings: &'p [ExternalBinding],
 }
 
 impl Runtime<'_, '_> {
     pub(super) fn progressive_plan<'p>(
         &mut self,
         body: &'p PreparedBody,
+        bindings: &'p [ExternalBinding],
     ) -> Result<ProgressivePlan<'p>, QueryError> {
         self.tick()?;
         let PreparedBody::Read(read) = body else {
@@ -41,11 +47,7 @@ impl Runtime<'_, '_> {
             .map_err(|_| QueryError::Allocation)?;
 
         let union_types = if let ReadNode::Union { first, rest } = &read.node {
-            if read.owner != SourceNamespace::Root
-                || !read.sort.is_empty()
-                || read.distinct
-                || read.top.is_some()
-            {
+            if !read.sort.is_empty() || read.distinct || read.top.is_some() {
                 return Err(QueryError::Unsupported);
             }
             // Admission of the entire shape precedes metadata validation and
@@ -65,10 +67,14 @@ impl Runtime<'_, '_> {
         };
 
         for arm in &arms {
-            self.check_table_schema(&arm.select.source.node)?;
+            self.check_table_schema(&arm.input.leaf.node)?;
         }
         self.tick()?;
-        Ok(ProgressivePlan { arms, union_types })
+        Ok(ProgressivePlan {
+            arms,
+            union_types,
+            bindings,
+        })
     }
 
     fn progressive_arm<'p>(
@@ -77,6 +83,7 @@ impl Runtime<'_, '_> {
         arms: &mut Vec<ProgressiveArm<'p>>,
     ) -> Result<(), QueryError> {
         let (select, aggregates) = self.progressive_select(read)?;
+        let input = self.progressive_input(&select.source)?;
         let group_lookup = if select.group.is_empty() {
             None
         } else {
@@ -93,6 +100,7 @@ impl Runtime<'_, '_> {
             select,
             aggregates,
             group_lookup,
+            input,
         });
         Ok(())
     }

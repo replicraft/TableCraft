@@ -185,7 +185,10 @@ fn qualified_reads_preserve_buffered_late_failure_and_shared_allowances() {
             "SELECT Id FROM [remote].[Items]",
             vec!["--output-bytes", "1"],
         ),
-        ("SELECT Id FROM [remote].[Items]", vec!["--stream"]),
+        (
+            "SELECT Id FROM [remote].[Items]",
+            vec!["--stream", "--external-index", "remote", "Items", "Missing"],
+        ),
     ] {
         let mut arguments = vec![
             "query",

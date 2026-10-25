@@ -1,10 +1,9 @@
-//! Scan one arm through EOF without retaining a complete result snapshot.
+//! One admitted arm consumes a retained input pipeline through checked EOF.
 use super::{StreamError, StreamSummary, plan::ProgressiveArm};
 use crate::{
     OutputType, QueryError,
-    execution::{Environment, Runtime},
-    plan::RelationNode,
-    source::ProjectedRow,
+    execution::{Environment, Runtime, cell::CellValue},
+    external_sources::ExternalBinding,
 };
 use tablecraft_core::values::Value;
 
@@ -13,93 +12,48 @@ impl Runtime<'_, '_> {
         &mut self,
         arm: &mut ProgressiveArm<'_>,
         union_types: Option<&[OutputType]>,
+        bindings: &[ExternalBinding],
         summary: &mut StreamSummary,
         visitor: &mut dyn FnMut(&[Value]) -> Result<(), E>,
     ) -> Result<(), StreamError<E>> {
         if !arm.select.group.is_empty() {
-            return self.progressive_group_rows(arm, union_types, summary, visitor);
+            return self.progressive_group_rows(arm, union_types, bindings, summary, visitor);
         }
         if arm.select.aggregate {
-            return self.progressive_aggregate_rows(arm, union_types, summary, visitor);
+            return self.progressive_aggregate_rows(arm, union_types, bindings, summary, visitor);
         }
-        // All schemas were preflighted before the first arm. Check the selected
-        // arm again before its exclusive cursor, never from inside a callback.
-        self.check_table_schema(&arm.select.source.node)?;
-        self.tick()?;
-        let RelationNode::Table {
-            name,
-            columns,
-            projection,
-            ..
-        } = &arm.select.source.node
-        else {
-            return Err(QueryError::Unsupported.into());
-        };
-        let source = self.source;
+        let source = self.progressive_source(&arm.input, bindings)?;
+        let read = arm.read;
+        let select = arm.select;
         let mut published = 0;
-        let mut failure: Option<QueryError> = None;
-        let mut sink_failure = None;
-        let mut consume = |row: ProjectedRow<'_>| {
-            if let Some(error) = &failure {
-                return Err(error.clone());
+        let mut consume = |runtime: &mut Self, row: Vec<CellValue>, summary: &mut StreamSummary| {
+            let environment = Environment {
+                aggregate_results: None,
+                row: &row,
+                collections: None,
+                outer: &[],
+                output: &[],
+                group: None,
+                group_keys: None,
+            };
+            if let Some(filter) = &select.filter
+                && !runtime.eval_predicate(filter, environment)?.is_true()
+            {
+                return Ok(());
             }
-            let result = (|| {
-                self.tick()?;
-                let row = self.copy_projected_row(columns, projection, row)?;
-                summary.scanned_rows = summary
-                    .scanned_rows
-                    .checked_add(1)
-                    .ok_or(QueryError::StructureLimit)?;
-                let environment = Environment {
-                    aggregate_results: None,
-                    row: &row,
-                    collections: None,
-                    outer: &[],
-                    output: &[],
-                    group: None,
-                    group_keys: None,
-                };
-                if let Some(filter) = &arm.select.filter
-                    && !self.eval_predicate(filter, environment)?.is_true()
-                {
-                    return Ok(());
-                }
-                let cells = self.progressive_projection(arm, environment)?;
-                // Each buffered arm applies TOP before the enclosing UNION's
-                // conversion and final publication. Omitted cells still incur
-                // their original eager expression failures and EOF validation.
-                if arm
-                    .read
-                    .top
-                    .is_some_and(|(count, _)| published >= u64::from(count))
-                {
-                    return Ok(());
-                }
-                match self.progressive_publish(arm, cells, union_types, summary, visitor) {
-                    Ok(()) => {}
-                    Err(StreamError::Query(error)) => return Err(error),
-                    Err(StreamError::Sink(error)) => {
-                        sink_failure = Some(error);
-                        return Err(QueryError::Source);
-                    }
-                }
-                published = published.checked_add(1).ok_or(QueryError::StructureLimit)?;
-                Ok(())
-            })();
-            if let Err(error) = &result {
-                failure = Some(error.clone());
+            let cells = runtime.progressive_select_projection(select, environment)?;
+            // TOP caps only this layer's output. Its later input projections,
+            // upstream layers and physical EOF validation still execute.
+            if read
+                .top
+                .is_some_and(|(count, _)| published >= u64::from(count))
+            {
+                return Ok(());
             }
-            result
+            runtime.progressive_publish_read(read, cells, union_types, summary, visitor)?;
+            published = published.checked_add(1).ok_or(QueryError::StructureLimit)?;
+            Ok(())
         };
-        let scanned = source.scan_projected_progressive(name, projection, &mut consume);
-        if let Some(error) = sink_failure {
-            return Err(StreamError::Sink(error));
-        }
-        if let Some(error) = failure {
-            return Err(StreamError::Query(error));
-        }
-        scanned?;
-        self.tick()?;
-        Ok(())
+        self.scan_progressive_input(source, &mut arm.input, read.owner, summary, &mut consume)
     }
 }

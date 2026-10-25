@@ -10,12 +10,13 @@ the API itself never writes stdout.
 
 ## Admitted query shape
 
-The service accepts a direct root scalar table or a flat UNION ALL of those
-SELECT arms, with optional aliases, declared parameters, row-local WHERE, scalar
+The service accepts a scalar table input or a static row-local named/derived
+SELECT input chain, including already authorized external namespaces. A flat
+UNION ALL combines such SELECT arms, with optional aliases, declared parameters, row-local WHERE, scalar
 projections and positive unordered TOP counts. Wildcards use the ordinary qualified
 scalar metadata. Global COUNT(*), COUNT(expr), SUM(expr), AVG(expr), MIN(expr)
 and MAX(expr) projections
-over the same direct table are also supported. Proven Boolean/integral/NULL
+over the same admitted input are also supported. Proven Boolean/integral/NULL
 GROUP BY tuples use the same aggregates and retained final key values, as
 described below. Original source order and eager
 predicate/projection kernels are retained. Scalar conversion, arithmetic, text and inspection services
@@ -28,8 +29,8 @@ or introduce new WHERE/aggregate/subquery scopes.
 
 Admission rejects ordering, TOP PERCENT, DISTINCT/active DISTINCTROW, other
 grouping key families and HAVING,
-duplicate-eliminating UNION/crosstabs, joins/products, named/derived sources,
-subqueries, domains, collections, external namespaces, Eval and volatile
+duplicate-eliminating UNION/crosstabs, joins/products, inner stateful/set stages,
+subqueries, domains, collections, Eval and volatile
 clock/random calls. Rejection
 occurs before scanning or visiting output, including false filters and empty
 sources. This is a progressive execution profile, not a change to parser or
@@ -41,12 +42,13 @@ retains its existing conservative contracts.
 ## Global COUNT
 
 A global aggregate SELECT whose only aggregate nodes are `Count(*)` or
-`Count(expr)` can scan a direct root table progressively. Optional scalar WHERE
+`Count(expr)` can scan an admitted scalar input progressively. Optional scalar WHERE
 predicates use the normal eager evaluator. The query retains one checked Int64
 counter per written aggregate occurrence, not a complete input snapshot. Each
-native row still passes the source's selected-read and EOF validation. A pure
-`Count(*)` needs no scalar columns; other counts request only fields needed by
-WHERE and their operands.
+native row still passes the source's selected-read and EOF validation. For a direct table, pure
+`Count(*)` needs no scalar columns; other counts request fields needed by WHERE
+and their operands. A pipeline additionally retains every selected inner
+projection, even if the outer count does not inspect its value.
 
 ```sql
 SELECT Count(*) AS Population, Count(Label) AS PresentLabels,
@@ -107,7 +109,7 @@ remain explicit engineering contracts, not native Access execution qualification
 ## Global SUM and AVG
 
 Global `Sum(expr)` and `Avg(expr)` use the existing buffered numeric aggregate
-kernels over the same direct-table progressive inputs. They can share a SELECT
+kernels over the same admitted progressive inputs. They can share a SELECT
 with Count occurrences, scalar expressions and prior output aliases, and can
 share a flat UNION ALL with other admitted aggregate or row arms. No complete
 input group is retained. Arguments remain ordinary row-local expressions; nested
@@ -220,7 +222,7 @@ starts after failure. These explicit phases do not qualify native error priority
 
 ## Progressive grouped aggregates
 
-A direct-table grouped SELECT can use Boolean, Byte, Int16, Int32, Int64 and NULL
+A grouped SELECT over an admitted input can use Boolean, Byte, Int16, Int32, Int64 and NULL
 key columns, including tuples and pure row-local computed expressions. Every
 active result descriptor must prove one of those carriers. Binding captures both
 existing arithmetic profiles using the ordinary metadata inference; execution
@@ -280,12 +282,83 @@ source or EOF failures prevent every output from that arm. Sink failure stops
 later groups and arms. These explicit progressive phases are separate from
 buffered load/group/aggregate error order and native Access qualification.
 
+## Static named and derived input pipelines
+
+A row-local SELECT/WHERE/positive unordered TOP chain can feed the ordinary
+outer row, global aggregate or grouped service. Each chain ends in one explicitly
+progressive scalar table cursor. Root flat UNION ALL arms may use independent
+chains. Input definitions and output schemas must already be static at metadata
+preparation; no data/schema discovery or buffered fallback supplies a stream.
+
+```sql
+SELECT Count(*) AS Population, Sum(Score) AS Total
+FROM (SELECT TOP 100 Id, Score FROM Items WHERE Active = True) Q;
+```
+
+Every selected inner projection executes in written order, including outputs
+unused by an outer filter or projection. An inner `1/0` therefore still fails
+under outer `WHERE False`. Prior aliases use each stage's own output cells;
+they do not leak into another stage's WHERE or named parameter scope. Complete
+retained cells move between stages, preserving raw UTF-16, Error data, actual
+declarations, text policies and completion markers. Intermediate rows are not
+stored scalar schemas and are never strictly published or coerced through
+`Value`. Only the final public visitor receives published scalar values.
+
+TOP belongs to its SELECT layer. Its counter advances before downstream filters,
+so inner TOP 2 followed by an outer filter can return no rows even when later
+source rows would match. Omitted inner rows skip downstream processing while
+still evaluating the inner projection and all upstream work. No TOP count stops
+the physical cursor or hides late selected-field/EOF failures. The outer TOP
+retains its existing eager omitted-projection behavior. Repeated named uses in
+separate UNION arms retain separate counters and fresh cursors under the same
+cumulative allowances.
+
+Bound named/inline plans retain their paired metadata and remapped parameter
+indices. Each stage evaluates under its captured lexical owner, independently
+of the physical leaf's namespace. Success, query errors and typed sink errors
+restore caller ownership; terminal accumulator construction, input and finish
+use the same discipline. Named syntax remains the prepared snapshot supplied
+through `Source::query`; changing it requires preparing again. There is no new
+runtime named-definition reload or revision API.
+
+Explicit external bindings still resolve only through the operation root's
+metadata-only registry. Captured immutable binding keys are re-resolved at
+execution. Provider identity is pinned within that operation and rechecked
+outside each selected cursor. Every actual table leaf schema is preflighted before the first arm, then checked again
+before its cursor. No registry borrow or schema/definition lookup remains held
+across an exclusive callback. Stored tokens never authorize paths or providers.
+Source-owned progressive capability/read failures retain their existing stream
+error behavior; the query layer never silently materializes an unsupported source.
+
+The first implementation accepts only row-local inner SELECT stages. Inner
+aggregates/grouping, every inner UNION, crosstabs, sorting, TOP PERCENT and active
+duplicate elimination refuse during full-tree preflight, even in a later empty
+arm. These remain follow-up composition work. Inner UNION requires its own active
+conversions and complete policy cohorts before outer consumers; merely flattening
+its arms would not preserve the current contracts. Outer supported aggregates
+and grouping remain available over a row-local chain.
+
+Pipeline evaluation interleaves layer work per row rather than materializing a
+whole inner read before evaluating the outer layer. Consequently a later upstream
+error can follow earlier accepted output, and cross-row error precedence need not
+match buffered execution. EOF/input failures prevent terminal aggregate/grouped
+publication. The first query or sink failure stays sticky even if a broken source
+continues callbacks; no more frame/provider/visitor work follows it. No complete
+named/result cache is published, even after successful EOF.
+
+Frame capacities, row vectors, payload copies, comparisons and terminal states
+remain prepaid, fallible and cumulatively metered. A direct input has zero frame
+capacity and no boxed continuation/counter allocation. Source scanned counts refer
+to physical leaf rows only; emitted counts refer to final accepted output, not
+intermediate layer deliveries. String extrema retain their existing bounded
+candidate populations; this is not an arbitrary-size or constant-memory claim.
+
 ## Progressive UNION ALL
 
 Flat UNION ALL arms execute sequentially in their written order, with no complete
 arm/result snapshot or implicit buffered fallback. Every arm must satisfy the
-same direct-table expression profile; source-free arms, nested UNION plans and
-named/derived sources remain outside this slice. The complete shape and every
+same admitted expression profile; source-free arms and inner UNION plans remain
+outside this slice. Static row-local named/derived chains are admitted. The complete shape and every
 selected schema are checked before the first progressive record callback. Each
 arm's schema is checked again before starting its cursor; no schema callback is
 introduced inside an exclusive cursor callback.
@@ -374,6 +447,17 @@ Transport framing, batching, output quotas and stdout behavior belong to hosts;
 this library does not write a header or open files/providers.
 
 ## Verification and remaining work
+
+The static named/derived pipeline extension passes 404 distinct query tests,
+including 28 new controls: 130 progressive/value/policy tests, 28 runtime units
+and 246 related metadata/named/alias/UNION/text regressions. Strict query
+library/tests Clippy and standalone minimal-feature checking pass. The
+[scoped record](testing/results/read-query-progressive-derived-2026-10-25.json)
+retains exact commands, log hashes, excluded setup probes and the prepare-only
+depth diagnostic. Existing generated Count under 8 KiB passes unchanged. Native
+and CLI integration adds 134 passing controls, including twelve new facade/host
+checks. The complete scoped total is 538 distinct tests with forty new controls;
+strict native/CLI linting also passes. Actual Access qualification remains separate.
 
 The grouped extension passes 385 distinct query tests, including 25 new tests:
 104 progressive/value/policy controls, 26 runtime units and 255 related buffered

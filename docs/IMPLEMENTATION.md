@@ -1,5 +1,20 @@
 # Implementation status
 
+## Progressive static named and derived sources
+
+Eligible row-local named/derived SELECT chains now feed a single physical cursor
+without a complete intermediate table cache. Retained values preserve raw UTF-16,
+Error values, declarations and comparison policies; each stage evaluates its
+selected expressions eagerly and applies its own unordered TOP boundary. Outer
+row, global/grouped aggregate and flat UNION ALL consumers retain their current
+limits and checked EOF behavior. Inner stateful shapes and schema discovery still
+refuse before scans. The CLI supports eligible explicit saved queries, external
+targets and recomputed-column views with `--stream`; stored paths never open files.
+Forty new controls and 498 regressions pass, with strict query/native/CLI linting
+and the minimal query feature check. See [scope](PROGRESSIVE_QUERIES.md) and
+[verification](testing/results/read-query-progressive-derived-2026-10-25.json).
+These checks do not establish native Access execution compatibility.
+
 ## Progressive integral grouping
 
 Eligible Boolean/integral/NULL GROUP BY keys now retain encounter-ordered groups
