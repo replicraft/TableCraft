@@ -1,4 +1,6 @@
 //! Exact mixed binary key views; scalar comparison and retained cells stay intact.
+mod fixed;
+pub(super) use fixed::mixed_fixed_pair;
 use tablecraft_core::values::{Double, Value};
 
 /// Widen only a mixed binary pair. Existing comparison owns finite validation,
