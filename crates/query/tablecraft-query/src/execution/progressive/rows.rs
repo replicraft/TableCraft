@@ -59,7 +59,13 @@ impl Runtime<'_, '_> {
                 }
                 let mut cells = self.allocate_expression_row(arm.select.projection.len())?;
                 for expression in &arm.select.projection {
-                    cells.push(self.retained_expression_operand(expression, environment)?);
+                    cells.push(self.retained_expression_operand(
+                        expression,
+                        Environment {
+                            output: &cells,
+                            ..environment
+                        },
+                    )?);
                 }
                 // Each buffered arm applies TOP before the enclosing UNION's
                 // conversion and final publication. Omitted cells still incur

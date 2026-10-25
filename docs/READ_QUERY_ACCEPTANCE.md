@@ -1,6 +1,6 @@
 # Local Access read/query acceptance
 
-Reviewed 24 October 2026. This is a current acceptance checklist, not a claim of
+Reviewed 25 October 2026. This is a current acceptance checklist, not a claim of
 complete compatibility. The [roadmap](ROADMAP.md#remaining-local-file-readquery-work)
 retains the full backend scope and implementation order.
 
@@ -988,10 +988,11 @@ and native Access qualification remain separate work.
 
 ## Prior projection alias dependencies
 
-[Earlier explicit aliases](PROJECTION_ALIASES.md) now compose inside ordinary
-buffered non-grouped SELECT projections. Correlated scalar-subquery results can
-feed later calculations without expression duplication or row scans during binding.
-Paired descriptors, retained raw cells and runtime policies cross the dependency;
-read/SELECT scopes prevent nested capture. The alias scope passes 260 query/CLI
-tests. Grouped/progressive references, forward dependencies and native name/evaluation
-qualification remain separate work.
+[Earlier explicit aliases](PROJECTION_ALIASES.md) now compose inside ordinary,
+grouped and explicitly progressive SELECT projections. Correlated scalar-subquery
+results can feed buffered calculations without expression duplication or row scans
+during binding. Paired descriptors, retained raw cells and runtime policies cross
+the dependency; read/SELECT scopes prevent nested capture. The initial alias slice
+passes 260 query/CLI tests; the grouped/progressive follow-on passes 180 focused
+controls. Forward/crosstab dependencies and native name/evaluation qualification
+remain separate work.

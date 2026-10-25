@@ -64,3 +64,71 @@ fn alias_errors_keep_buffered_output_empty() {
         assert!(!result.stderr.is_empty(), "{sql}");
     }
 }
+
+#[test]
+fn grouped_aliases_feed_later_native_calculations() {
+    let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("../../docs/examples/Access_Example_VBA.accdb");
+    let original = fs::read(&path).unwrap();
+    let sql = concat!(
+        "SELECT ORDR_NBR Mod 2 AS Parity, Count(*) AS TotalRows, ",
+        "TotalRows+1 AS NextTotal FROM ROULETTE_TB WHERE ORDR_NBR<=3 ",
+        "GROUP BY ORDR_NBR Mod 2 ORDER BY Parity",
+    );
+    let result = run(&["query", "run", sql, "--database", path.to_str().unwrap()]);
+
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    assert_eq!(
+        result.stdout,
+        b"Parity\tTotalRows\tNextTotal\n0\t1\t2\n1\t2\t3\n"
+    );
+    assert_eq!(fs::read(&path).unwrap(), original);
+}
+
+#[test]
+fn progressive_aliases_match_buffered_results_and_keep_only_completed_batches() {
+    let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("../../docs/examples/Access_Example_VBA.accdb");
+    let original = fs::read(&path).unwrap();
+    let sql = concat!(
+        "SELECT ORDR_NBR AS Seed,Seed+1 AS NextValue ",
+        "FROM ROULETTE_TB WHERE ORDR_NBR<=3",
+    );
+    let args = ["query", "run", sql, "--database", path.to_str().unwrap()];
+    let buffered = run(&args);
+    let streamed = run(&[args.as_slice(), &["--stream", "--batch-rows", "1"]].concat());
+
+    for result in [&buffered, &streamed] {
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+    }
+    assert_eq!(buffered.stdout, b"Seed\tNextValue\n2\t3\n1\t2\n3\t4\n");
+    assert_eq!(streamed.stdout, buffered.stdout);
+
+    let failing_sql = concat!(
+        "SELECT ORDR_NBR AS Seed,10\\(3-Seed) AS Result ",
+        "FROM ROULETTE_TB WHERE ORDR_NBR<=3",
+    );
+    let args = [
+        "query",
+        "run",
+        failing_sql,
+        "--database",
+        path.to_str().unwrap(),
+    ];
+    let buffered = run(&args);
+    let streamed = run(&[args.as_slice(), &["--stream", "--batch-rows", "1"]].concat());
+
+    assert_eq!(buffered.status.code(), Some(2));
+    assert!(buffered.stdout.is_empty());
+    assert_eq!(streamed.status.code(), Some(2));
+    assert_eq!(streamed.stdout, b"Seed\tResult\n2\t10\n1\t5\n");
+    assert_eq!(fs::read(&path).unwrap(), original);
+}

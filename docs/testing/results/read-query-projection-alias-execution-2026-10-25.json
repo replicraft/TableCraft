@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Prior projection aliases in grouped and progressive SELECTs, with immutable request CurrentUser context",
+  "unique_tests": 180,
+  "new_tests": 16,
+  "targets": {
+    "query_primary": 30,
+    "query_regressions": 145,
+    "cli": 5
+  },
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-query --test projection_aliases --test projection_alias_execution --test projection_alias_values -j2 --locked --offline",
+      "private_log": ".cache/projection-alias-execution-primary-accepted-20261025.log",
+      "exit_code": 0,
+      "sha256": "8e725cd360d465a7103cd22f3481563f22b1125083cbb5d5a104b5d9b2d4e3c4"
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test grouped_expressions --test grouped_subqueries --test progressive_queries --test progressive_union_types --test collation_routing -j2 --locked --offline",
+      "private_log": ".cache/projection-alias-execution-regressions-20261025.log",
+      "exit_code": 0,
+      "sha256": "89f9024ca3cc89053c284f8404182f39712ea1dc7f6920594d48c6205b771b8b"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --tests -j2 --locked --offline -- -D warnings",
+      "private_log": ".cache/projection-alias-execution-clippy-20261025.log",
+      "exit_code": 0,
+      "sha256": "4ad2b8c4b2856d8344936ebcfa4df8719411df4ff4040feae53f72af46f71a83"
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --test projection_aliases -j2 --locked --offline",
+      "private_log": ".cache/projection-alias-execution-cli-tests-20261025.log",
+      "exit_code": 0,
+      "sha256": "a10d884104498f7746347847032693af38444399ebf61ee7a2be48731f11069a"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-cli --bin tablecraft --test projection_aliases -j2 --locked --offline -- -D warnings",
+      "private_log": ".cache/projection-alias-execution-cli-clippy-20261025.log",
+      "exit_code": 0,
+      "sha256": "34b47247a93e23ead7b5054e54751efd36d96a49961a5638fd8f77f01a36d91e"
+    }
+  ],
+  "test_authoring_corrections": [
+    "Independent expected Decimal coefficient/scale corrected to retain Currency conversion scale4; unchanged buffered/progressive parity already passed."
+  ],
+  "parent_review": [
+    "Grouped references introduce no captures beyond earlier ordered-validated definitions.",
+    "Original ACCDB baseline records table encounter order2,1,3; both buffered and completed stream batches preserve it."
+  ],
+  "unrun": [
+    "Full workspace suite",
+    "Native Access name resolution, evaluation counts and streaming comparison"
+  ]
+}

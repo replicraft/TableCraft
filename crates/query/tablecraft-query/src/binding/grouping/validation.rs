@@ -29,6 +29,10 @@ impl Binder<'_> {
             }
         }
         match expr {
+            // References only point backward in this SELECT's projection list.
+            // The ordered validation loop has already checked their definitions;
+            // nested reads cannot capture this SELECT's projection aliases.
+            Expr::Projected(_) => {}
             Expr::Field { depth, .. } | Expr::CollectionItem { depth, .. } if *depth == scope => {
                 return Err(QueryError::Grouping);
             }

@@ -1,5 +1,16 @@
 # Implementation status
 
+## Grouped and progressive projection aliases
+
+Earlier explicit aliases now also compose through grouped results and explicit
+progressive direct-table/UNION ALL execution. Ordered group validation prevents
+ungrouped capture; streaming retains partial-row values, cumulative budgets and
+full EOF checks after TOP. Immutable supplied CurrentUser context is reusable
+without callbacks. Sixteen new tests and 164 related controls pass with strict
+query and CLI Clippy. See [alias execution](PROJECTION_ALIASES.md#grouped-and-progressive-execution)
+and [verification record](testing/results/read-query-projection-alias-execution-2026-10-25.json).
+Crosstab dependencies and native alias qualification remain separate work.
+
 ## Exact Decimal index selections
 
 Single-Decimal native indexes now support exact equality and NULL selections in
@@ -22,7 +33,7 @@ scopes prevent nested capture; eager failures and cumulative limits remain activ
 Nineteen new query/CLI tests and 241 related regressions pass with strict query
 and CLI Clippy. See [alias scope](PROJECTION_ALIASES.md) and
 [verification record](testing/results/read-query-projection-aliases-2026-10-25.json).
-Grouped, progressive and wider native alias semantics remain unfinished.
+Crosstab dependencies and wider native alias semantics remain unfinished.
 
 ## Boolean index equality selections
 
