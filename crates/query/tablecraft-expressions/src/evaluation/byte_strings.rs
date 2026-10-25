@@ -97,7 +97,9 @@ impl Evaluator<'_> {
         no: &Expression,
         depth: usize,
     ) -> Result<ExpressionByteOperand, EvalError> {
-        let condition = self.expression_operand(condition, depth + 1)?;
+        let condition = self
+            .expression_byte_operand(condition, depth + 1)?
+            .into_expression_value();
         let yes = self.expression_byte_operand(yes, depth + 1)?;
         let no = self.expression_byte_operand(no, depth + 1)?;
 

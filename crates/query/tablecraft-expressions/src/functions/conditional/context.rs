@@ -17,6 +17,8 @@ impl<T> Selection<T> {
     }
 
     /// Defer ordinary conversion failures, but abort and latch operational failures.
+    /// This includes malformed retained Unicode only when converting a control;
+    /// invalid constructors fail earlier while evaluating their expressions.
     /// An ignored error can never produce a successful finish.
     pub(crate) fn push_failure(&mut self, error: EvalError) -> Result<(), EvalError> {
         if self.position >= self.count {
@@ -33,7 +35,8 @@ impl<T> Selection<T> {
             | EvalError::PrecisionLoss
             | EvalError::UnsupportedNumericCombination
             | EvalError::InvalidNullConversion
-            | EvalError::NumberFormatRequired => {
+            | EvalError::NumberFormatRequired
+            | EvalError::UnrepresentableText => {
                 self.error.get_or_insert(error);
                 Ok(())
             }

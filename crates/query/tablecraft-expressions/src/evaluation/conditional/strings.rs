@@ -60,7 +60,9 @@ impl Evaluator<'_> {
                 unreachable!("argument kinds validated before evaluation");
             };
             if selection.is_control() {
-                let value = self.expression_operand(value, depth + 1)?;
+                let value = self
+                    .expression_byte_operand(value, depth + 1)?
+                    .into_expression_value();
                 self.push_selection_control(&mut selection, value)?;
             } else {
                 let value = self.expression_byte_operand(value, depth + 1)?;

@@ -1,5 +1,18 @@
 # Implementation status
 
+## Retained String conditional controls
+
+Evaluator-backed `IIf`, `Switch` and `Choose` now convert retained controls through
+the same metered Boolean/Single services as materialized Text. Scalar and bound
+paths preserve eager branch evaluation; semantic control-conversion errors wait
+for later expressions while resource/cancellation failures remain immediate.
+Choice carriers and text-policy provenance remain unchanged. Fifty-three scoped
+tests, including eleven new controls, and strict expressions/query Clippy pass.
+The composed CLI batch also passes fourteen preview and thirty-six saved-definition
+tests. See [the control contract](CONDITIONAL_FUNCTIONS.md#retained-string-controls)
+and [verification record](testing/results/read-query-retained-selector-controls-2026-10-24.json).
+Native Access error precedence and broader value semantics remain unqualified.
+
 ## Thirty-two saved source declarations
 
 Saved SELECT/crosstab reconstruction now uses a 32-bit source membership mask,
