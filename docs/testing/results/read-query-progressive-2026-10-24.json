@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-24",
+  "production_base_commit": "3aadd7362940140bad8eb0489dca063b5619a8ea",
+  "scope": "Explicit bounded native scalar SELECT/WHERE streaming; independent engineering evidence, no native Access qualification",
+  "rust_source_inventory": {
+    "roots": [
+      "apps",
+      "crates"
+    ],
+    "files": 1879,
+    "algorithm": "Relative UTF-8 path sorted lexically; each path + NUL + lowercase hex SHA256(file bytes) + newline; SHA256 of complete UTF-8 manifest",
+    "sha256": "2bbac71ab950bc897326a120dcf6cf460a7a51ac6ec2487b5bfc7df2f4751e5c",
+    "private_manifest": ".cache/progressive-query-rust-source-20261024.manifest",
+    "verification": "Parent independently verified every replay pin and exact committed source archive. Inventory is not complete test coverage."
+  },
+  "rust_tests": {
+    "passed_unique_tests": 172,
+    "new_tests": 40,
+    "targets": {
+      "query": 89,
+      "native_adapter": 11,
+      "cli": 72
+    },
+    "overlap_note": "Repeated nine-test retrieval/help run and superseded probes excluded from unique counts."
+  },
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-query --test progressive_queries -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-query-tests-distinctrow-20261024.log",
+      "sha256": "e63d700c5e92a4d7d24aa7ad0db536a3ccdcc0989264c8baba0c5973b7986171"
+    },
+    {
+      "command": "cargo test -p tablecraft-query --lib --test static_declarations --test external_named_sources --test domain --test named_crosstabs -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-query-buffered-regressions-20261024.log",
+      "sha256": "9bfe4268ddff0ad7d98f756f68e44a629abd7c8433103524b4c6bf327a00ee25"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --test progressive_queries -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-query-clippy-distinctrow-20261024.log",
+      "sha256": "002faf8505d7645cb3b5776f686858d47f1b24b5c3ee80ad37f90c4a3e6eeefd"
+    },
+    {
+      "command": "cargo check -p tablecraft-query --no-default-features -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-query-minimal-20261024.log",
+      "sha256": "502a95e7ff12eabb523b416b662a680be72440d223b11759576e1d855f09841e"
+    },
+    {
+      "command": "cargo check -p tablecraft-access --no-default-features -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-native-minimal-20261024.log",
+      "sha256": "f99e8e1bb996f2ed7e6088fe36842b0b6cf29cd3ff0ae24d63cb0c0ee3424411"
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --test progressive_queries -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-cli-tests-20261024.log",
+      "sha256": "dfba13db7410f32deb2aa195761ca56caf0b563fb3aa9cd6f3b72c99f19a04a0"
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --bin tablecraft --test retrieval --test native_queries --test browsing -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-cli-regressions-20261024.log",
+      "sha256": "74cb97c8c923d383590944b7175fef54711a34b582e3766c67f69b930bfe1c23"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-cli --bin tablecraft --test progressive_queries --test retrieval --test native_queries --test browsing -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-cli-clippy-final-20261024.log",
+      "sha256": "0fca4a8427d11d4e29042463c695873da5e591437a9f031f87e373ab7adc71b2"
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --test retrieval -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-cli-help-regressions-20261024.log",
+      "sha256": "0a70fb160498711d6dfad6ad46e3ae68f0c27d64869ac7df6be73c7ebc3c5658"
+    },
+    {
+      "command": "cargo build -p tablecraft-cli --bin tablecraft -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-cli-build-final-20261024.log",
+      "sha256": "bcb74884a78099501f6bfc31de29d15aae4eb48dcd18d5c99bdde44d75b90089"
+    },
+    {
+      "command": "cargo test --locked -p tablecraft-access --test progressive_source",
+      "exit_code": 0,
+      "evidence": "Original completed tool transcript; no redirected log",
+      "terminal_handle": 56135
+    },
+    {
+      "command": "cargo clippy --locked -p tablecraft-access --lib --test progressive_source -- -D warnings",
+      "exit_code": 0,
+      "evidence": "Original completed tool transcript; no redirected log",
+      "terminal_handle": 36464
+    }
+  ],
+  "additional_passed_checks": [
+    "cargo fmt --all -- --check",
+    "Dependency boundary guard: 12 packages",
+    "Python script tests: 41 passed",
+    "git diff --check"
+  ],
+  "independent_replay": {
+    "report": "docs/testing/results/progressive-queries-2026-10-24.json",
+    "sha256": "60c04f1939fb0c084707b92fd11229fb237ffcfb9d5ae7477b19b7c7d7053171",
+    "controls": 88,
+    "matched_cells": 1341336,
+    "unchanged_hashes": 1898,
+    "profiles": [
+      "V2000",
+      "V2007",
+      "V2016",
+      "V2019"
+    ],
+    "original_rows_per_profile": 20000,
+    "successes": 52,
+    "division_errors": 16,
+    "resource_refusals": 16,
+    "output_refusals": 4,
+    "late_error_prefix_rows_by_batch": {
+      "1": 14999,
+      "128": 14976,
+      "1000": 14000
+    },
+    "buffered_error_output_rows": 0,
+    "native_row_quota_prefix": 768,
+    "query_row_quota_prefix": 256
+  },
+  "unrun": [
+    "Complete workspace suite",
+    "Release/performance qualification",
+    "Windows Access SQL/NLS/native save qualification"
+  ]
+}

@@ -1,5 +1,18 @@
 # Implementation status
 
+## Independent native streaming replay
+
+The [original four-profile replay](testing/PROGRESSIVE_QUERIES.md) passes 88
+commands and 1,341,336 getter-modeled cells over 20,000 rows per database. Exact
+TSV cells, buffered parity, late-error prefixes and independent native/query/output
+quotas match. All 1,898 pinned hashes remain unchanged; the 1,879-file frozen
+Rust inventory exactly matches committed archive `3aadd736`.
+
+The [verification record](testing/results/read-query-progressive-2026-10-24.json)
+combines 172 unique passing Rust tests with scoped strict Clippy, minimal-feature
+checks and the final CLI build. This qualifies the documented engineering slice;
+wider streaming, native Access behavior and backend completion remain open.
+
 ## Explicit streaming SELECT command
 
 `query run --database PATH --stream --batch-rows ROWS SQL` now composes the
