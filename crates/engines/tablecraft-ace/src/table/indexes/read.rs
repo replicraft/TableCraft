@@ -7,13 +7,13 @@ use super::projection::{
     IndexProjection, IndexProjectionSelection, IndexReadRequest, RowProjection,
 };
 use super::text::TextIndexSelection;
-use super::{Int32IndexSelection, Int64IndexSelection, inspect_table_indexes, walk::Walker};
 use super::{
-    NativeIndex, composite, decimal, guid,
+    DecimalIndexSelection, NativeIndex, composite, decimal, guid,
     key::KeyProfile,
     page,
     profile::{IndexProfile, KeyType},
 };
+use super::{Int32IndexSelection, Int64IndexSelection, inspect_table_indexes, walk::Walker};
 use crate::{
     InspectError, TableSnapshotLimits,
     format::{
@@ -245,6 +245,7 @@ fn projected_selection(selection: IndexProjectionSelection<'_>) -> Option<ReadSe
             selection.scaled(),
         )),
         IndexProjectionSelection::Guid(selection) => Some(ReadSelection::Guid(selection)),
+        IndexProjectionSelection::Decimal(selection) => Some(ReadSelection::Decimal(selection)),
         IndexProjectionSelection::Binary(selection) => Some(ReadSelection::Binary(selection)),
         IndexProjectionSelection::Text(selection) => Some(ReadSelection::Text(selection)),
     }
@@ -283,6 +284,7 @@ enum ReadSelection<'a> {
     Integer(KeyType, Int64IndexSelection),
     Binary(BinaryIndexSelection<'a>),
     Guid(GuidIndexSelection),
+    Decimal(DecimalIndexSelection),
 }
 impl ReadSelection<'_> {
     fn complete(self) -> bool {
@@ -291,6 +293,7 @@ impl ReadSelection<'_> {
             Self::Integer(_, selection) => selection == Int64IndexSelection::All,
             Self::Binary(selection) => selection == BinaryIndexSelection::All,
             Self::Guid(selection) => selection == GuidIndexSelection::All,
+            Self::Decimal(selection) => selection == DecimalIndexSelection::All,
         }
     }
 }
@@ -375,6 +378,12 @@ fn read_selected<R: crate::NativeReadSource>(
     {
         return Err(InspectError::Unsupported);
     }
+    if let Some(ReadSelection::Decimal(selection)) = options.selection {
+        let IndexProfile::Decimal(profile) = &profile else {
+            return Err(InspectError::Unsupported);
+        };
+        selection.validate(profile.kind)?;
+    }
     if (complete || options.legacy_table_limit) && schema.declared_rows() > options.maximum_rows {
         return Err(InspectError::StructureLimit);
     }
@@ -431,9 +440,14 @@ fn read_selected<R: crate::NativeReadSource>(
                 source, schema, selected, &view, profile, budget, cancelled,
             )?
         }
-        IndexProfile::Decimal(profile) => read_rows::<_, _, { decimal::MAX_ENTRY_BYTES }>(
-            source, schema, selected, &view, profile, budget, cancelled,
-        )?,
+        IndexProfile::Decimal(mut profile) => {
+            if let Some(ReadSelection::Decimal(selection)) = options.selection {
+                profile.selection = selection;
+            }
+            read_rows::<_, _, { decimal::MAX_ENTRY_BYTES }>(
+                source, schema, selected, &view, profile, budget, cancelled,
+            )?
+        }
         IndexProfile::GuidComposite(profile) => {
             read_rows::<_, _, { composite::MAX_GUID_ENTRY_BYTES }>(
                 source, schema, selected, &view, profile, budget, cancelled,

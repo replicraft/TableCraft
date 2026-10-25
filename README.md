@@ -94,8 +94,8 @@ Larger General queries can set `--comparison-bytes` and `--comparison-steps`
 without changing native/query/output pools; see [comparison limits](docs/COMPARISON_BUDGETS.md).
 
 `query run --database example.accdb --auto-index` can choose a qualified single-key
-index for existing safe integer, Currency or GUID filters, plus qualified
-Text/Binary `IS NULL` predicates. With `--collation database`, it also supports
+index for safe Boolean, integer, Currency or GUID filters, exact Decimal parameter
+equality, and qualified Text/Binary/Decimal `IS NULL` predicates. With `--collation database`, it also supports
 [qualified Short Text equality](docs/TEXT_EQUALITY_SEEKS.md). It retains original
 filtering and sequential table order, including TOP/First/Last behavior. See
 [automatic index scope and evidence](docs/AUTOMATIC_INDEXES.md).

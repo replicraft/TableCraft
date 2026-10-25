@@ -6,6 +6,9 @@ mod fixture;
 mod numeric_fixture;
 mod support;
 
+#[path = "decimal_indexes/selections.rs"]
+mod selections;
+
 use proptest::prelude::*;
 use std::io::Cursor;
 use tablecraft_ace::{

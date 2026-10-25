@@ -80,6 +80,22 @@ impl Runtime<'_, '_> {
                         _ => None,
                     });
                 }
+                if columns[column].data_type() == ScalarType::Decimal {
+                    // Actual typed parameters are already validated. Do not
+                    // evaluate CDec or another expression merely to invent a hint.
+                    return Ok(match (op, constant) {
+                        (B::Equal, Expr::Parameter(index)) => {
+                            match self.parameters.get(*index).map(|parameter| parameter.value) {
+                                Some(Value::Decimal(value)) => Some(ScanConstraint::Decimal {
+                                    column,
+                                    value: *value,
+                                }),
+                                _ => None,
+                            }
+                        }
+                        _ => None,
+                    });
+                }
                 if columns[column].data_type() == ScalarType::Text {
                     return if allow_text && *op == B::Equal {
                         let field = if reversed {
@@ -186,6 +202,7 @@ fn field_column(expr: &Expr, columns: &[Column], projection: &[usize]) -> Option
         && matches!(
             columns.get(*projection.get(*index)?)?.data_type(),
             ScalarType::Boolean
+                | ScalarType::Decimal
                 | ScalarType::Byte
                 | ScalarType::Int16
                 | ScalarType::Int32
@@ -259,6 +276,11 @@ fn intersect(left: ScanConstraint, right: ScanConstraint) -> Option<ScanConstrai
     }
     Some(match (left, right) {
         (ScanConstraint::Null { .. }, ScanConstraint::Null { .. }) => left,
+        (ScanConstraint::Decimal { value: a, .. }, ScanConstraint::Decimal { value: b, .. })
+            if a == b =>
+        {
+            left
+        }
         (ScanConstraint::Boolean { value: a, .. }, ScanConstraint::Boolean { value: b, .. })
             if a == b =>
         {

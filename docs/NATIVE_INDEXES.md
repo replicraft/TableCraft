@@ -342,10 +342,53 @@ ordering model, independent sign/word-order goldens, maximum compressed prefixes
 sign byte, precision overflow and a malformed separator with a valid child.
 Metadata/profile/typed seek/resource/cancellation failures and the ACE format
 write gate remain explicit. No dependency was added. Decimal composites now have
-their separate qualification below. Temporal and Decimal seeks, Decimal key
+their separate qualification below. Temporal and Decimal range seeks, Decimal key
 mutation, other unqualified index variants, actual
 Microsoft Access and application save/reopen remain unqualified. All ACE writes
 stay blocked; read evidence does not authorize native saves.
+
+## Exact Decimal equality and NULL selections
+
+`DecimalIndexSelection::{All, Null, Equal}` now qualifies single-column Decimal
+reads through `IndexProjectionSelection::Decimal`. `Equal` retains an actual
+Decimal carrier whose scale matches the field and whose coefficient fits its
+precision. Direct caller scale/precision mismatches, other carriers and composite
+indexes are refused before traversal, including empty/zero-width requests. This
+API introduces no rounding, numeric ranges or floating/Text reinterpretation.
+
+The selection reuses the existing exact `Option<i128>` key domain, including
+Jet 4 descending sign groups. The field's private physical-key transform is applied
+to equality points before branch comparison. Inclusive key-only fences retain
+all duplicates across separators. NULL remains distinct from scaled zero.
+Projected reads validate every returned physical key against its row, including
+keys omitted from output. Bounded reads cap selected rows and qualify only visited
+subtrees; complete reads retain count checks. Cancellation, resource and corrupt
+selected-index failures propagate without sequential fallback.
+
+The query engine can offer a Decimal equality hint only for a direct field and
+an actual typed Decimal parameter, in either operand order. It also offers the
+existing raw IS NULL hint for Decimal fields. Parameter declaration/use is covered
+by Microsoft's [Access SQL PARAMETERS contract](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/parameters-declaration-microsoft-access-sql).
+The Access adapter uses the core carrier's checked `rescale_exact` operation and
+validates native field precision before choosing a point. Numerically equal
+parameters with different retained scales can therefore select the same native
+value without altering the parameter or stored field. Lossy/out-of-precision
+normalizations decline the hint before any selected read. `CDec` calls, other
+numeric/Text carriers, NULL-valued parameters, inequalities and partial/unsafe
+conjunctions retain ordinary execution. The original filter always remains.
+
+Five new engine tests cover four priority profiles, both encoding directions,
+scales 0/4/28, full 28-digit boundaries, NULL/zero, duplicate compression,
+projected/zero-width output, declaration refusals, branch pruning, key/row
+mismatches, budgets and cancellation. Three backend-neutral tests cover numeric
+scale equivalence, typed parameters, NULL and declined unsafe/coercive forms.
+Three adapter tests cover lossless field normalization, small retained snapshots,
+complete-cache isolation, metadata-only preparation and selected-index failures.
+Existing Decimal inspection/read tests and eight Decimal mutation-preview
+regressions pass with the optional preview feature enabled. Its constructor
+continues to initialize complete selection; no write permit or gate changed.
+These checks qualify the engineering implementation, not Microsoft Access
+execution, optimizer behavior, native saves or Decimal range semantics.
 
 ## Complete Decimal-bearing composite indexes
 

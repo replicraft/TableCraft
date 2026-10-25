@@ -4,6 +4,7 @@ mod constraints;
 mod currency;
 pub use currency::CurrencyIndexSelection;
 mod decimal;
+pub use decimal::DecimalIndexSelection;
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) use decimal::DecimalType;
 mod definition;

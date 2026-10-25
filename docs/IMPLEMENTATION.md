@@ -1,5 +1,18 @@
 # Implementation status
 
+## Exact Decimal index selections
+
+Single-Decimal native indexes now support exact equality and NULL selections in
+Jet 4 and qualified ACE families, including legacy descending sign groups. Query
+hints accept actual typed Decimal parameters; the Access adapter normalizes scales
+only when exact and within field precision. Original predicates, table order,
+selected-error propagation and incomplete-cache isolation remain active. Eleven
+new tests and 73 related regressions pass with strict engine/query/Access Clippy,
+including eight existing Decimal mutation-preview controls. See
+[selection scope](NATIVE_INDEXES.md#exact-decimal-equality-and-null-selections) and
+[verification record](testing/results/read-query-decimal-selections-2026-10-25.json).
+Independent fixture replay and actual Access qualification remain separate gates.
+
 ## Prior calculated projection aliases
 
 Buffered non-grouped SELECT projections can now consume an earlier explicit alias,
