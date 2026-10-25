@@ -8,6 +8,9 @@ use tablecraft_access::{NativeBrowser, NativeTableStorage};
 pub(crate) struct Args {
     /// Explicit Access database/package/template path; never opens linked sources.
     pub(super) path: std::path::PathBuf,
+    /// Cumulative native read/container bytes, including temporary extraction and failures.
+    #[arg(long, value_parser = clap::value_parser!(u64).range(1..=native::MAX_QUERY_READ_BYTES))]
+    pub(super) native_bytes: Option<u64>,
     /// Show declared local/linked storage without opening tables or external sources.
     #[arg(long)]
     pub(super) details: bool,
@@ -25,8 +28,9 @@ pub(crate) fn run(
     show_system: bool,
     count: bool,
     password: Option<&str>,
+    native_bytes: Option<u64>,
 ) -> Result<String, Error> {
-    let mut budget = native::budget();
+    let mut budget = native::read_budget(native_bytes.unwrap_or(native::DEFAULT_NATIVE_BYTES));
     if let Some(package) = native::open_template(path, &mut budget).map_err(Error::Template)? {
         return super::template::tables(&package, details, count, &mut budget);
     }

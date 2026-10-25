@@ -12,8 +12,8 @@ pub(crate) struct NativeFile {
     deployment: bool,
 }
 enum Kind {
-    Plain(AccessInput<SharedFile>),
-    Encrypted(EncryptedSource<AccessInput<SharedFile>>),
+    Plain(AccessInput<SharedFile, std::fs::File>),
+    Encrypted(EncryptedSource<AccessInput<SharedFile, std::fs::File>>),
 }
 impl NativeFile {
     pub(crate) fn is_deployment(&self) -> bool {
@@ -25,8 +25,9 @@ pub(crate) fn open_raw(
     path: &Path,
     budget: &mut ResourceBudget,
 ) -> Result<NativeFile, AccessInputError> {
-    let source = AccessInput::open(
+    let source = AccessInput::open_with_spool(
         SharedFile::open(path).map_err(InspectError::from)?,
+        || tempfile::tempfile().map_err(InspectError::from),
         budget,
         &|| false,
     )?;

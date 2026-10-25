@@ -4,6 +4,9 @@ use super::Mode;
 pub(crate) struct Args {
     /// Explicit Access database, deployment package or template path.
     path: std::path::PathBuf,
+    /// Cumulative native read/container bytes, including temporary extraction and failures.
+    #[arg(long, value_parser = clap::value_parser!(u64).range(1..=crate::native::MAX_QUERY_READ_BYTES))]
+    native_bytes: Option<u64>,
     /// Decode bounded object metadata; never executes or extracts object bodies.
     #[arg(long)]
     catalog: bool,
@@ -64,6 +67,7 @@ impl Args {
     ) -> Result<String, super::Error> {
         let Self {
             path,
+            native_bytes,
             catalog,
             show_system,
             query,
@@ -113,6 +117,6 @@ impl Args {
         } else {
             Mode::Header
         };
-        super::run(&path, mode, format, password)
+        super::run(&path, mode, format, password, native_bytes)
     }
 }
