@@ -271,6 +271,13 @@ pub(super) fn body(
         ));
     }
     let external_db = external(p)?;
+    if external_db.is_some() && from.is_empty() {
+        return Err(ParseError::at(
+            p,
+            K::Syntax,
+            "external database IN requires FROM",
+        ));
+    }
     let selection = if p.parse_keyword(W::WHERE) {
         Some(expression::parse(p, limits)?)
     } else {

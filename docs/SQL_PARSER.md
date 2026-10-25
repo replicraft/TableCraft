@@ -93,6 +93,15 @@ Hash and GUID literals are folded from original source spans before trivia filte
 The lexer merges `!=` with `<>`, so original spelling is checked; `!=` and `==`
 are rejected. Unsupported constructs fail rather than disappearing from output.
 
+Membership `IN` requires parenthesized values or a subquery. Database-token `IN`
+after a JOIN's ON expression remains the enclosing FROM selector, including
+unparenthesized INNER/LEFT/RIGHT joins and ON expressions containing their own
+membership predicates. External source selection requires FROM. Quoted, bare
+and retained connection forms keep the existing owned syntax and normalization;
+parsing does not open their paths or activate providers. See Microsoft's
+[IN](https://support.microsoft.com/en-us/access/in-clause) and
+[FROM](https://support.microsoft.com/en-us/access/from-clause) contracts.
+
 Display prints normalized SQL with bracketed names, explicit aliases/directions,
 escaped single-quoted text, parentheses around expressions/joins and a final
 semicolon. Original quoting, comments and whitespace remain in `source()`.

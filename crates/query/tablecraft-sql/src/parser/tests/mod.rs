@@ -1,6 +1,7 @@
 mod between;
 mod corpus;
 mod definition;
+mod external_joins;
 mod generated;
 mod identifiers;
 mod in_list;
