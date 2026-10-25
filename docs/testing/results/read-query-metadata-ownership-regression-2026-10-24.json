@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-24",
+  "scope": "All-feature query regression after Error/Error$ and LBound/UBound composition metadata corrections and exhaustive metadata matching. Separate focused engine checks cover the existing edit ownership gate.",
+  "command": "cargo test -p tablecraft-query --all-features --locked --no-fail-fast -j 2",
+  "exit_code": 0,
+  "passed": 1083,
+  "ignored": 0,
+  "result_targets": 198,
+  "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)",
+  "git_head": "6731ddea20c91066e9360b55a62366f15a83cdc8",
+  "query_expression_source_files": 861,
+  "query_expression_source_sha256": "4e7bfeeb7e500db32dfee08ff1f91b33049f9d6bcf757ddd1e16d2f06b3de263",
+  "source_digest_algorithm": "SHA-256 over sorted repository-relative .rs paths under both query/expression packages, each encoded as UTF-8 path, NUL, hexadecimal SHA-256 of file bytes, newline.",
+  "inputs": {
+    ".cache/query-regression-20261024-metadata-ownership.log": "60161892dffd753d2e612451b68c68284f438519391204ad00dd363b138cdd07",
+    "Cargo.lock": "68548efc779b592b1d885a02cf21d1c547559091c72b4f814ba75842ebb0a2ab",
+    "Cargo.toml": "4fc24d3479835ff249ea49df6724d81179965c8d6f2a73f236f0f3e00da822a4",
+    ".cache/tablecraft-bin/metadata-ownership-20261024": "7a55cf9c97d91f4f50c182425db2595d53bb28b55208a21fb5f69e70d53f7fa8",
+    "crates/engines/tablecraft-ace/src/table/indexes/mutation/plan.rs": "73ab4de273b9fa462f6104652cf474764597b8b9b79c7bd2e2dee7c9582a58d8"
+  },
+  "additional_checks": {
+    "cli_preview_calculation_tests": 11,
+    "cli_build": "passed; accepted restricted preview source",
+    "default_engine_mutation_tests": 23,
+    "feature_enabled_engine_mutation_preview_checks": 98,
+    "engine_count_note": "Feature and default checks overlap; do not sum as distinct tests."
+  },
+  "native_access": "unrun; user-deferred",
+  "limitations": [
+    "Successful metadata describes existing evaluator guarantees, not native Access result-type qualification.",
+    "The engine correction rejects malformed unowned physical indexes; no write permit expands.",
+    "Full Variant, native text, advanced-field, coherent shared-file and broader backend acceptance remain unfinished."
+  ]
+}

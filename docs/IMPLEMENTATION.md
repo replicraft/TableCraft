@@ -1,5 +1,19 @@
 # Implementation status
 
+## Consolidated query metadata and edit-ownership regression
+
+The all-feature query package passes 1,083 tests across 198 result targets,
+including doctests, with none ignored. The [batch record](testing/results/read-query-metadata-ownership-regression-2026-10-24.json)
+pins the committed source revision, 861 query/expression Rust files, lockfile,
+terminal log and rebuilt CLI. Direct CLI controls now complete common-Text
+UNION ALL conversion for numbered Error and array-bound results. The restricted
+calculation-preview CLI passes its existing 11 tests and the normal build.
+
+Separate engine checks cover physical-index ownership before empty edit-key
+shortcuts: 23 default mutation tests and 98 feature-enabled checks, with overlap
+between the two sets. Native Access result types, broader read/query acceptance
+and production ACE saves remain unqualified; no write permit expands.
+
 ## Physical-index ownership before every edit candidate
 
 Normal Jet 4 planning and optional ACE 16 previews now validate ownership of all
