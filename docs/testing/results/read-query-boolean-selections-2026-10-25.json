@@ -26,7 +26,19 @@
   "limitations": [
     "All or exact Boolean equality only; no range, NULL or numeric/Text coercion hints",
     "Selected malformed or unsupported indexes fail without sequential fallback",
-    "Independent original-fixture replay pending separate evidence record",
     "Microsoft Access comparison unrun"
-  ]
+  ],
+  "independent_replay": {
+    "report": "boolean-index-selections-2026-10-25.json",
+    "sha256": "2e8a0c2218141a5c8fa375683ac38cddfcb52223572ed30adbb7b392ab734817",
+    "controls": 22,
+    "successful_queries": 16,
+    "buffered_refusals": 6,
+    "compared_rows": 8000,
+    "unchanged_pins": 14,
+    "parent_rehash": "passed",
+    "source_commit": "67ef6925676a7e8deb77fdd360566ef63d6ce031",
+    "rust_source_files": 1914,
+    "source_manifest_sha256": "1a98377faea1fab0aff3c66e251a33103f272bd1ff6aa813ad262352d7b11a72"
+  }
 }

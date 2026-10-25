@@ -9,7 +9,12 @@ coercions, ranges and NULL predicates receive no new hint; selected malformed
 indexes fail explicitly. Ten engine, fifty-six retrieval and three Access adapter
 tests pass with scoped strict Clippy. See [index scope](NATIVE_INDEXES.md) and
 [verification record](testing/results/read-query-boolean-selections-2026-10-25.json).
-Independent fixture replay and native Access comparisons remain separate evidence.
+An original ACE 2016/2019 fixture replay passes 22 CLI controls and compares
+8,000 IDs against raw independent getters, including selective native budgets
+and six buffered refusals. All fourteen scoped pins remain unchanged; the fixed
+CLI source inventory matches committed archive `67ef6925`. See
+[the replay](testing/BOOLEAN_INDEX_SELECTIONS.md). Native Access comparisons
+remain unrun.
 
 ## Policy-free constant String pivot headings
 

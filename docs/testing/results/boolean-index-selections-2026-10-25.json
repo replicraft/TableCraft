@@ -1,0 +1,546 @@
+{
+  "date": "2026-10-25",
+  "scope": "Independent getter-model engineering comparison; Access unrun",
+  "controls": 22,
+  "successful_queries": 16,
+  "buffered_refusals": 6,
+  "compared_rows": 8000,
+  "getters": {
+    "boolean-seeks-V2016-20261025.accdb": {
+      "rows": 1000,
+      "true": 286,
+      "false": 714,
+      "stdout_sha256": "62a1142bd031613c2ee65889dc68b80b0af0a3983168dcd450e457395f6bd5ef"
+    },
+    "boolean-seeks-V2019-20261025.accdb": {
+      "rows": 1000,
+      "true": 286,
+      "false": 714,
+      "stdout_sha256": "62a1142bd031613c2ee65889dc68b80b0af0a3983168dcd450e457395f6bd5ef"
+    }
+  },
+  "pins": {
+    ".cache/tablecraft-bin/read-query-text-boolean-cli-20261025": "013203c54f1235727e73c56f702ed70498acd1ac924a05fc4f46ef350849b8b1",
+    ".cache/tablecraft-fixtures/jackcess-5.0.4.jar": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    "docs/testing/compare_boolean_seeks.py": "62e44cf3a7a66b4bf3a985258cfa23fa4b311175d3ad518186fc619473110513",
+    ".cache/tablecraft-fixtures/boolean-seeks-V2016-20261025.accdb": "b98be4717e8eaf2d8ed91633aed70cb7cdc30afd071619ffe32d6bed165be484",
+    ".cache/tablecraft-fixtures/boolean-seeks-V2019-20261025.accdb": "34fccdca50890054130d8620f3f10f238752b95e443295fb1a82cb2558f37f44",
+    "docs/testing/BooleanIndexFixture.java": "81d341059c537c0d71dbf8975e0d7264e23572922e1f0385515046090de6b2e0",
+    "docs/testing/IndexRowsOracle.java": "06cf3882a64d5509b2cf93bd3d30ad30bcb70f685afe546c5d200fe2dce315f4",
+    "crates/engines/tablecraft-ace/src/table/indexes/selection.rs": "9905919d43de51c89e9d2f62f7ae60384f0e6a352b03255e1df02cfbf514ae3f",
+    "crates/engines/tablecraft-ace/src/table/indexes/boolean.rs": "73199637a75027f891cf37a1a50d99f8c340089650e33c83590fa52571ca105f",
+    "crates/engines/tablecraft-ace/src/table/indexes/read.rs": "08954f968cd28d2d5895d510027b23c236752b4e8e8f7709002f01ea865056b0",
+    "crates/engines/tablecraft-ace/src/table/indexes/projection.rs": "5e7390a4e6ab84bd06cb073ad56f6a51f7b0d6bd9327140b66dbe045e1497680",
+    "crates/query/tablecraft-query/src/source/constraint.rs": "489c5acd0ff2768fb3369e55cdc70951737a377c1853d133689c7b468fc7890d",
+    "crates/query/tablecraft-query/src/execution/constraint.rs": "1e0d917f56cf8d99d4fea7009d05e3343bd6be63c687b51857d43224ea76f834",
+    "crates/backends/tablecraft-access/src/source/selection.rs": "0480c721fcd8715587ea79bb6082b87350291696f3ada5f4e043d0e08098ae75"
+  },
+  "observations": [
+    {
+      "database": "boolean-seeks-V2016-20261025.accdb",
+      "mode": [],
+      "value": false,
+      "command": [
+        ".cache/tablecraft-bin/read-query-text-boolean-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT ID FROM BooleanIndexed WHERE Flag=False",
+        "--database",
+        ".cache/tablecraft-fixtures/boolean-seeks-V2016-20261025.accdb",
+        "--native-rows",
+        "2000"
+      ],
+      "rows": 714,
+      "stdout_sha256": "fdeeb198fe96c323f2054353afe1db5c81483fff644c0b1b521636a7d8b6d25c"
+    },
+    {
+      "database": "boolean-seeks-V2016-20261025.accdb",
+      "mode": [
+        "--auto-index"
+      ],
+      "value": false,
+      "command": [
+        ".cache/tablecraft-bin/read-query-text-boolean-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT ID FROM BooleanIndexed WHERE Flag=False",
+        "--database",
+        ".cache/tablecraft-fixtures/boolean-seeks-V2016-20261025.accdb",
+        "--native-rows",
+        "900",
+        "--auto-index"
+      ],
+      "rows": 714,
+      "stdout_sha256": "fdeeb198fe96c323f2054353afe1db5c81483fff644c0b1b521636a7d8b6d25c"
+    },
+    {
+      "database": "boolean-seeks-V2016-20261025.accdb",
+      "mode": [
+        "--index",
+        "BooleanIndexed",
+        "BoolAsc"
+      ],
+      "value": false,
+      "command": [
+        ".cache/tablecraft-bin/read-query-text-boolean-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT ID FROM BooleanIndexed WHERE Flag=False",
+        "--database",
+        ".cache/tablecraft-fixtures/boolean-seeks-V2016-20261025.accdb",
+        "--native-rows",
+        "900",
+        "--index",
+        "BooleanIndexed",
+        "BoolAsc"
+      ],
+      "rows": 714,
+      "stdout_sha256": "fdeeb198fe96c323f2054353afe1db5c81483fff644c0b1b521636a7d8b6d25c"
+    },
+    {
+      "database": "boolean-seeks-V2016-20261025.accdb",
+      "mode": [
+        "--index",
+        "BooleanIndexed",
+        "BoolDesc"
+      ],
+      "value": false,
+      "command": [
+        ".cache/tablecraft-bin/read-query-text-boolean-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT ID FROM BooleanIndexed WHERE Flag=False",
+        "--database",
+        ".cache/tablecraft-fixtures/boolean-seeks-V2016-20261025.accdb",
+        "--native-rows",
+        "900",
+        "--index",
+        "BooleanIndexed",
+        "BoolDesc"
+      ],
+      "rows": 714,
+      "stdout_sha256": "fdeeb198fe96c323f2054353afe1db5c81483fff644c0b1b521636a7d8b6d25c"
+    },
+    {
+      "database": "boolean-seeks-V2016-20261025.accdb",
+      "mode": [],
+      "value": true,
+      "command": [
+        ".cache/tablecraft-bin/read-query-text-boolean-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT ID FROM BooleanIndexed WHERE Flag=True",
+        "--database",
+        ".cache/tablecraft-fixtures/boolean-seeks-V2016-20261025.accdb",
+        "--native-rows",
+        "2000"
+      ],
+      "rows": 286,
+      "stdout_sha256": "a50b6494c08880af55cdde8de000d288cb5093b8ed56186f40d2deba80ddf402"
+    },
+    {
+      "database": "boolean-seeks-V2016-20261025.accdb",
+      "mode": [
+        "--auto-index"
+      ],
+      "value": true,
+      "command": [
+        ".cache/tablecraft-bin/read-query-text-boolean-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT ID FROM BooleanIndexed WHERE Flag=True",
+        "--database",
+        ".cache/tablecraft-fixtures/boolean-seeks-V2016-20261025.accdb",
+        "--native-rows",
+        "900",
+        "--auto-index"
+      ],
+      "rows": 286,
+      "stdout_sha256": "a50b6494c08880af55cdde8de000d288cb5093b8ed56186f40d2deba80ddf402"
+    },
+    {
+      "database": "boolean-seeks-V2016-20261025.accdb",
+      "mode": [
+        "--index",
+        "BooleanIndexed",
+        "BoolAsc"
+      ],
+      "value": true,
+      "command": [
+        ".cache/tablecraft-bin/read-query-text-boolean-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT ID FROM BooleanIndexed WHERE Flag=True",
+        "--database",
+        ".cache/tablecraft-fixtures/boolean-seeks-V2016-20261025.accdb",
+        "--native-rows",
+        "900",
+        "--index",
+        "BooleanIndexed",
+        "BoolAsc"
+      ],
+      "rows": 286,
+      "stdout_sha256": "a50b6494c08880af55cdde8de000d288cb5093b8ed56186f40d2deba80ddf402"
+    },
+    {
+      "database": "boolean-seeks-V2016-20261025.accdb",
+      "mode": [
+        "--index",
+        "BooleanIndexed",
+        "BoolDesc"
+      ],
+      "value": true,
+      "command": [
+        ".cache/tablecraft-bin/read-query-text-boolean-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT ID FROM BooleanIndexed WHERE Flag=True",
+        "--database",
+        ".cache/tablecraft-fixtures/boolean-seeks-V2016-20261025.accdb",
+        "--native-rows",
+        "900",
+        "--index",
+        "BooleanIndexed",
+        "BoolDesc"
+      ],
+      "rows": 286,
+      "stdout_sha256": "a50b6494c08880af55cdde8de000d288cb5093b8ed56186f40d2deba80ddf402"
+    },
+    {
+      "database": "boolean-seeks-V2016-20261025.accdb",
+      "refusal": "limit",
+      "flags": [
+        "--native-rows",
+        "900"
+      ],
+      "command": [
+        ".cache/tablecraft-bin/read-query-text-boolean-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT ID FROM BooleanIndexed WHERE Flag=True",
+        "--database",
+        ".cache/tablecraft-fixtures/boolean-seeks-V2016-20261025.accdb",
+        "--native-rows",
+        "900"
+      ],
+      "stderr": "error: query structural limit exceeded\n"
+    },
+    {
+      "database": "boolean-seeks-V2016-20261025.accdb",
+      "refusal": "limit",
+      "flags": [
+        "--auto-index",
+        "--native-rows",
+        "1"
+      ],
+      "command": [
+        ".cache/tablecraft-bin/read-query-text-boolean-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT ID FROM BooleanIndexed WHERE Flag=True",
+        "--database",
+        ".cache/tablecraft-fixtures/boolean-seeks-V2016-20261025.accdb",
+        "--auto-index",
+        "--native-rows",
+        "1"
+      ],
+      "stderr": "error: Rows resource limit exceeded (0 remaining)\n"
+    },
+    {
+      "database": "boolean-seeks-V2016-20261025.accdb",
+      "refusal": "output",
+      "flags": [
+        "--auto-index",
+        "--output-bytes",
+        "1"
+      ],
+      "command": [
+        ".cache/tablecraft-bin/read-query-text-boolean-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT ID FROM BooleanIndexed WHERE Flag=True",
+        "--database",
+        ".cache/tablecraft-fixtures/boolean-seeks-V2016-20261025.accdb",
+        "--auto-index",
+        "--output-bytes",
+        "1"
+      ],
+      "stderr": "error: evaluation output limit exceeded\n"
+    },
+    {
+      "database": "boolean-seeks-V2019-20261025.accdb",
+      "mode": [],
+      "value": false,
+      "command": [
+        ".cache/tablecraft-bin/read-query-text-boolean-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT ID FROM BooleanIndexed WHERE Flag=False",
+        "--database",
+        ".cache/tablecraft-fixtures/boolean-seeks-V2019-20261025.accdb",
+        "--native-rows",
+        "2000"
+      ],
+      "rows": 714,
+      "stdout_sha256": "fdeeb198fe96c323f2054353afe1db5c81483fff644c0b1b521636a7d8b6d25c"
+    },
+    {
+      "database": "boolean-seeks-V2019-20261025.accdb",
+      "mode": [
+        "--auto-index"
+      ],
+      "value": false,
+      "command": [
+        ".cache/tablecraft-bin/read-query-text-boolean-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT ID FROM BooleanIndexed WHERE Flag=False",
+        "--database",
+        ".cache/tablecraft-fixtures/boolean-seeks-V2019-20261025.accdb",
+        "--native-rows",
+        "900",
+        "--auto-index"
+      ],
+      "rows": 714,
+      "stdout_sha256": "fdeeb198fe96c323f2054353afe1db5c81483fff644c0b1b521636a7d8b6d25c"
+    },
+    {
+      "database": "boolean-seeks-V2019-20261025.accdb",
+      "mode": [
+        "--index",
+        "BooleanIndexed",
+        "BoolAsc"
+      ],
+      "value": false,
+      "command": [
+        ".cache/tablecraft-bin/read-query-text-boolean-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT ID FROM BooleanIndexed WHERE Flag=False",
+        "--database",
+        ".cache/tablecraft-fixtures/boolean-seeks-V2019-20261025.accdb",
+        "--native-rows",
+        "900",
+        "--index",
+        "BooleanIndexed",
+        "BoolAsc"
+      ],
+      "rows": 714,
+      "stdout_sha256": "fdeeb198fe96c323f2054353afe1db5c81483fff644c0b1b521636a7d8b6d25c"
+    },
+    {
+      "database": "boolean-seeks-V2019-20261025.accdb",
+      "mode": [
+        "--index",
+        "BooleanIndexed",
+        "BoolDesc"
+      ],
+      "value": false,
+      "command": [
+        ".cache/tablecraft-bin/read-query-text-boolean-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT ID FROM BooleanIndexed WHERE Flag=False",
+        "--database",
+        ".cache/tablecraft-fixtures/boolean-seeks-V2019-20261025.accdb",
+        "--native-rows",
+        "900",
+        "--index",
+        "BooleanIndexed",
+        "BoolDesc"
+      ],
+      "rows": 714,
+      "stdout_sha256": "fdeeb198fe96c323f2054353afe1db5c81483fff644c0b1b521636a7d8b6d25c"
+    },
+    {
+      "database": "boolean-seeks-V2019-20261025.accdb",
+      "mode": [],
+      "value": true,
+      "command": [
+        ".cache/tablecraft-bin/read-query-text-boolean-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT ID FROM BooleanIndexed WHERE Flag=True",
+        "--database",
+        ".cache/tablecraft-fixtures/boolean-seeks-V2019-20261025.accdb",
+        "--native-rows",
+        "2000"
+      ],
+      "rows": 286,
+      "stdout_sha256": "a50b6494c08880af55cdde8de000d288cb5093b8ed56186f40d2deba80ddf402"
+    },
+    {
+      "database": "boolean-seeks-V2019-20261025.accdb",
+      "mode": [
+        "--auto-index"
+      ],
+      "value": true,
+      "command": [
+        ".cache/tablecraft-bin/read-query-text-boolean-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT ID FROM BooleanIndexed WHERE Flag=True",
+        "--database",
+        ".cache/tablecraft-fixtures/boolean-seeks-V2019-20261025.accdb",
+        "--native-rows",
+        "900",
+        "--auto-index"
+      ],
+      "rows": 286,
+      "stdout_sha256": "a50b6494c08880af55cdde8de000d288cb5093b8ed56186f40d2deba80ddf402"
+    },
+    {
+      "database": "boolean-seeks-V2019-20261025.accdb",
+      "mode": [
+        "--index",
+        "BooleanIndexed",
+        "BoolAsc"
+      ],
+      "value": true,
+      "command": [
+        ".cache/tablecraft-bin/read-query-text-boolean-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT ID FROM BooleanIndexed WHERE Flag=True",
+        "--database",
+        ".cache/tablecraft-fixtures/boolean-seeks-V2019-20261025.accdb",
+        "--native-rows",
+        "900",
+        "--index",
+        "BooleanIndexed",
+        "BoolAsc"
+      ],
+      "rows": 286,
+      "stdout_sha256": "a50b6494c08880af55cdde8de000d288cb5093b8ed56186f40d2deba80ddf402"
+    },
+    {
+      "database": "boolean-seeks-V2019-20261025.accdb",
+      "mode": [
+        "--index",
+        "BooleanIndexed",
+        "BoolDesc"
+      ],
+      "value": true,
+      "command": [
+        ".cache/tablecraft-bin/read-query-text-boolean-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT ID FROM BooleanIndexed WHERE Flag=True",
+        "--database",
+        ".cache/tablecraft-fixtures/boolean-seeks-V2019-20261025.accdb",
+        "--native-rows",
+        "900",
+        "--index",
+        "BooleanIndexed",
+        "BoolDesc"
+      ],
+      "rows": 286,
+      "stdout_sha256": "a50b6494c08880af55cdde8de000d288cb5093b8ed56186f40d2deba80ddf402"
+    },
+    {
+      "database": "boolean-seeks-V2019-20261025.accdb",
+      "refusal": "limit",
+      "flags": [
+        "--native-rows",
+        "900"
+      ],
+      "command": [
+        ".cache/tablecraft-bin/read-query-text-boolean-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT ID FROM BooleanIndexed WHERE Flag=True",
+        "--database",
+        ".cache/tablecraft-fixtures/boolean-seeks-V2019-20261025.accdb",
+        "--native-rows",
+        "900"
+      ],
+      "stderr": "error: query structural limit exceeded\n"
+    },
+    {
+      "database": "boolean-seeks-V2019-20261025.accdb",
+      "refusal": "limit",
+      "flags": [
+        "--auto-index",
+        "--native-rows",
+        "1"
+      ],
+      "command": [
+        ".cache/tablecraft-bin/read-query-text-boolean-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT ID FROM BooleanIndexed WHERE Flag=True",
+        "--database",
+        ".cache/tablecraft-fixtures/boolean-seeks-V2019-20261025.accdb",
+        "--auto-index",
+        "--native-rows",
+        "1"
+      ],
+      "stderr": "error: Rows resource limit exceeded (0 remaining)\n"
+    },
+    {
+      "database": "boolean-seeks-V2019-20261025.accdb",
+      "refusal": "output",
+      "flags": [
+        "--auto-index",
+        "--output-bytes",
+        "1"
+      ],
+      "command": [
+        ".cache/tablecraft-bin/read-query-text-boolean-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT ID FROM BooleanIndexed WHERE Flag=True",
+        "--database",
+        ".cache/tablecraft-fixtures/boolean-seeks-V2019-20261025.accdb",
+        "--auto-index",
+        "--output-bytes",
+        "1"
+      ],
+      "stderr": "error: evaluation output limit exceeded\n"
+    }
+  ]
+}
