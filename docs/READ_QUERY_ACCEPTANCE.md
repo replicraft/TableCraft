@@ -1139,3 +1139,20 @@ with strict query/native/CLI Clippy. See
 [verification](testing/results/read-query-progressive-numeric-aggregates-2026-10-25.json).
 Extrema, statistics, grouping and wider progressive sources remain separate work;
 this does not establish complete read/query or native execution qualification.
+
+
+## Exact fixed/binary relational key admission
+
+Mixed Boolean/integral/Currency/Decimal with Single/Double now uses exact numeric
+key magnitude without rounding fixed operands into binary64. This removes the
+previous mixed-fixed refusal and large-integer PrecisionLoss from relational key
+consumers. Three 512-case fixed-seed properties compare independent arbitrary
+fractions, transitivity and adjacent-bit dyadic boundaries; query/CLI controls
+cover encounter permutations, retained carriers, groups/sets, sorting/TOP,
+extrema/domains and eager/resource/cancellation failures. Scalar predicates keep
+their existing effective-type rules and static UNION conversions remain separate.
+See [numeric keys](NUMERIC_KEYS.md#exact-fixedbinary-numeric-cohorts).
+
+This closes a strict numeric cohort gap, not full P0 Variant/result promotion,
+native mixed-policy text semantics or native Access qualification. Native storage,
+indexes and write eligibility are unchanged.

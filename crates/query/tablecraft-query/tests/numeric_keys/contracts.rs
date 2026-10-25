@@ -59,21 +59,6 @@ fn signed_zero_keys_alias_without_rewriting_retained_carriers() {
 fn strict_key_family_refusals_remain_outside_float_widening() {
     let source = MemorySource::default();
     for (left, right, error) in [
-        (
-            "CDec(1)",
-            "CDbl(1)",
-            EvalError::UnsupportedNumericCombination,
-        ),
-        (
-            "CCur(1)",
-            "CSng(1)",
-            EvalError::UnsupportedNumericCombination,
-        ),
-        (
-            "CLngLng(9007199254740993)",
-            "CDbl(9007199254740992)",
-            EvalError::PrecisionLoss,
-        ),
         ("CDate(1)", "CDbl(1)", EvalError::TypeMismatch),
         ("'1'", "CDbl(1)", EvalError::TypeMismatch),
     ] {

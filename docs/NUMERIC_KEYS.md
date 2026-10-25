@@ -1,8 +1,9 @@
 # Numeric relational keys
 
-Relational keys compare mixed Single/Double values through exact binary64 views.
-A finite Single widens exactly; the Double retains every stored bit. This gives
-successful binary key comparisons one consistent numeric order and equivalence
+Relational keys compare Boolean, integral, Currency, Decimal, Single and Double
+values by exact numeric magnitude. Mixed Single/Double values use exact binary64
+views; fixed/binary pairs use bounded integer comparison without rounding either
+operand. This gives numeric key comparisons one consistent order and equivalence
 relation. It applies to GROUP BY, DISTINCT, UNION duplicate removal, ORDER BY,
 TOP ties, extrema and crosstab heading/group comparisons. It does not convert
 result cells or change their retained carriers, declarations or text policies.
@@ -47,8 +48,8 @@ heterogeneous key profile remains unrun.
 | Boolean/integral/Currency/Decimal, without binary floats | Existing exact coefficient/scale comparison |
 | Same Single or same Double | Existing finite numeric comparison |
 | Mixed Single/Double | Exact Single-to-Double key view; Double unchanged |
-| Integral with binary float | Existing exact integer-to-Double admission; an inexact integer conversion still fails PrecisionLoss |
-| Currency/Decimal with binary float | Existing unsupported numeric combination |
+| Integral with binary float | Exact signed integer/binary magnitude, including values beyond 2^53 |
+| Currency/Decimal with binary float | Exact coefficient/scale versus binary significand/exponent comparison |
 | Legacy Date with legacy Date | Existing temporal order, including equivalent negative-fraction aliases |
 | Extended Date with Extended Date | Existing date/time tuple order |
 | Date with numeric/Text, or numeric with Text | Existing strict type refusal; no implicit parsing |
@@ -59,8 +60,9 @@ Boolean TRUE remains numerically -1 for keys; Byte 255 does not become equivalen
 through CByte's explicit Boolean exception. No automatic NumberFormat, locale or
 date policy enters a key comparison. Non-finite values still fail the existing
 finite checks; producing comparison views is not an admission or validation gate.
-The existing integer/float guards apply when those values are actually compared,
-not as a newly introduced global preflight of every possible key pair.
+Finite checks apply when values are actually compared; no new global preflight
+of every possible pair is introduced. Scalar predicates retain their separate
+precision and effective-type rules.
 
 Static UNION common-type promotion retains its existing authority. Statically
 known Single/Double arms already widen to Double before duplicate removal,
@@ -92,3 +94,41 @@ Query integration controls exercise consumers, encounter orders, policies,
 metadata and eager/resource failures in their owning query test target. These
 controls and the independent engineering models do not substitute for Windows
 Access comparison evidence.
+
+## Exact fixed/binary numeric cohorts
+
+The strict key service now admits fixed/binary pairs that previously failed
+UnsupportedNumericCombination or PrecisionLoss. Exact Decimal/Currency `0.1`
+forms one class; the slightly larger stored Double `0.1` forms a separate class.
+LongLong `9007199254740993` sorts above Double `9007199254740992`, retaining its
+integer value. Sorting, grouping, DISTINCT, dynamic UNION, TOP ties and aggregate/
+domain extrema use this same boundary. Result cells and their first encountered
+representatives retain their actual carriers. Scalar predicates and static UNION
+common-type conversion retain their existing authority.
+
+The implementation compares `c / 10^s` with `m * 2^e` by comparing `c` with
+`m * 5^s * 2^(e+s)`. Binary64's 53-bit significand times `5^28` needs at most
+119 bits, so the current Decimal/Currency envelope fits in u128. Compile-time
+bounds protect that assumption. Leading bit lengths decide unequal magnitudes
+before shifting; equal-length shifts remain representable. Subnormal exponents
+and maximum finite binary values therefore need neither oversized integers nor
+payload allocation. Signs and both binary zero signs have explicit handling.
+Existing resource/cancellation checks bracket each comparison; non-finite values
+still fail, and unsupported Date/Text/Binary pairs retain their existing gates.
+
+This is a strict relational comparison, not a new Decimal arithmetic engine.
+Core validated carriers and rust_decimal arithmetic are unchanged. Independent
+tests use the already adopted num-bigint/num-rational libraries to compare full
+arbitrary fractions through a different algorithm. Three fixed-seed properties
+run 512 cases each: full-range ordering/symmetry, transitivity through a binary
+middle and exact dyadic Decimal equality with adjacent Double distinctions.
+Literal goldens include decimal/binary rounding boundaries, 96-bit maxima,
+subnormals, signed zeros, Boolean TRUE and Int64 limits.
+
+Query tests cover all six encounter orders, both execution profiles, retained
+carriers, groups, sets, sorting/TOP, extrema/domains, eager errors, shared limits
+and every observed cancellation checkpoint. CLI checks cover visible group
+carriers, exact large-integer output and empty stdout after a later failure.
+This closes an engineering key-admission gap; native Access heterogeneous Variant
+coercion/grouping and full P0 result promotion remain unqualified. See the
+[scoped verification](testing/results/fixed-binary-keys-2026-10-25.json).

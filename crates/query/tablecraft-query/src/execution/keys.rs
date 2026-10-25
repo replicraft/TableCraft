@@ -4,7 +4,11 @@ use super::{Environment, Runtime};
 use crate::{QueryError, execution::cell::CellValue, plan::Expr, source::TextPolicy};
 use std::cmp::Ordering;
 use tablecraft_core::values::{ExpressionValue, Value};
-use tablecraft_expressions::{EvalError, comparison::Comparison, logic::Truth};
+use tablecraft_expressions::{
+    EvalError,
+    comparison::{Comparison, from_ordering},
+    logic::Truth,
+};
 
 impl Runtime<'_, '_> {
     pub(super) fn comparison_key(
@@ -91,6 +95,13 @@ impl Runtime<'_, '_> {
         right: &Value,
         policy: TextPolicy,
     ) -> Result<Truth, QueryError> {
+        if let Some(pair) = numeric::mixed_fixed_pair(left, right) {
+            self.tick()?;
+            let order = pair.compare()?;
+            self.tick()?;
+            return Ok(from_ordering(operator, order));
+        }
+
         // Scalar mixed-precision narrowing is not transitive across a key set.
         // Compare exact widened views without changing retained result cells.
         match numeric::mixed_float_views(left, right) {

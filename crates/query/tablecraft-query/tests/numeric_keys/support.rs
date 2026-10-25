@@ -23,6 +23,15 @@ pub struct Numbers {
 
 impl Numbers {
     pub fn new(order: [i32; 3], single: &str, low: &str, high: &str) -> Self {
+        Self::mixed(
+            order,
+            &format!("CDbl({low})"),
+            &format!("CSng({single})"),
+            &format!("CDbl({high})"),
+        )
+    }
+
+    pub fn mixed(order: [i32; 3], first: &str, second: &str, third: &str) -> Self {
         let data = MemorySource::new(vec![
             MemoryTable::new(
                 "Inputs".into(),
@@ -32,9 +41,8 @@ impl Numbers {
             .unwrap(),
         ])
         .unwrap();
-        let sql = format!(
-            "SELECT Id,IIf(Id=2,CSng({single}),IIf(Id=1,CDbl({low}),CDbl({high}))) AS K FROM Inputs"
-        );
+        let sql =
+            format!("SELECT Id,IIf(Id=1,{first},IIf(Id=2,{second},{third})) AS K FROM Inputs");
         let definition = parse_query(&sql, Default::default())
             .unwrap()
             .query()

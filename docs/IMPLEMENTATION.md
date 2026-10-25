@@ -1,5 +1,25 @@
 # Implementation status
 
+## Exact fixed/binary relational keys
+
+The strict relational key service now orders Boolean/integral/Currency/Decimal
+values against Single/Double by exact magnitude. It admits mixed fixed/binary
+keys that previously failed and preserves large integers beyond binary64's exact
+integer range. Retained values, scalar predicate coercion and static UNION
+conversion are unchanged. Groups, sets, sorting/TOP and aggregate/domain extrema
+share the new comparison boundary with the existing work/cancellation controls.
+
+The allocation-free comparator uses a bounded u128 product and exponent/bit-length
+comparison; compile-time assertions guard the supported Decimal/Currency envelope.
+Already adopted arbitrary-rational libraries supply an independent test oracle.
+Twenty-eight focused tests pass, including twelve new tests and three 512-case
+properties. Query/CLI checks retain non-finite/unsupported family refusals and
+eager failures; strict scoped linting, minimal query, formatting and boundary
+checks pass. This is an engineering key profile; complete
+Variant/result promotion and native Access grouping remain unqualified. See the
+[contract](NUMERIC_KEYS.md#exact-fixedbinary-numeric-cohorts) and
+[scoped verification](testing/results/fixed-binary-keys-2026-10-25.json).
+
 ## Page-buffered encryption management
 
 `rewrite_encryption_to` now creates unpublished encryption add/remove/password

@@ -197,7 +197,10 @@ pub fn compare(
     Ok(from_ordering(operator, order))
 }
 
-fn from_ordering(operator: Comparison, order: Ordering) -> Truth {
+/// Apply a predicate to an already established, non-NULL ordering.
+/// This performs no operand admission, coercion or collation lookup. Callers own
+/// comparison correctness and resource checks; NULL requires its separate rule.
+pub fn from_ordering(operator: Comparison, order: Ordering) -> Truth {
     let result = match operator {
         Comparison::Equal => order == Ordering::Equal,
         Comparison::NotEqual => order != Ordering::Equal,

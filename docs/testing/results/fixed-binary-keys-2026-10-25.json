@@ -1,0 +1,117 @@
+{
+  "date": "2026-10-25",
+  "scope": "Exact relational key ordering for mixed Boolean/integral/Currency/Decimal and finite binary floats. Engineering key profile, not native Access Variant/grouping qualification.",
+  "unique_tests": 28,
+  "new_tests": 12,
+  "existing_regression_tests": 16,
+  "counting_note": "Five new kernel tests, five new query tests and two CLI tests. Existing eight float-kernel and eight query controls counted once; repeat runs are not additive.",
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-query --lib --locked execution::keys::numeric",
+      "exit_code": 0,
+      "tests": 13
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test numeric_keys --locked",
+      "exit_code": 0,
+      "tests": 13
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --test fixed_binary_keys --locked",
+      "exit_code": 0,
+      "tests": 2
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --test numeric_keys --locked -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo clippy -p tablecraft-cli --test fixed_binary_keys --locked -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo check -p tablecraft-query --no-default-features --locked",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_dependency_boundaries.py",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "new_generated_properties": {
+    "cases_each": 512,
+    "seed": "0x6b65795f66697865",
+    "independent_oracle": "Already adopted num-bigint/num-rational; arbitrary exact fractions, separately from production u128 scaled-bit comparison.",
+    "properties": [
+      "full fixed/binary ranges and reverse-order symmetry",
+      "transitivity through a binary middle",
+      "dyadic Decimal equality and adjacent Double distinctions"
+    ]
+  },
+  "source_sha256": {
+    "crates/query/tablecraft-expressions/src/comparison.rs": "c9d14afcbfa7a737ea101b3e520dae7bc391581d01a61360a045a31c3b626917",
+    "crates/query/tablecraft-query/src/execution/keys.rs": "db74dbbb7ccf39f7c7bdf7fa29c66424e33257cea350352b1488217a48440a3e",
+    "crates/query/tablecraft-query/src/execution/keys/numeric.rs": "dbe1a618d41951c9ed73ba2e50cdf24226d4642a155a27dac14b810d59b3c1c5",
+    "crates/query/tablecraft-query/src/execution/keys/numeric/fixed.rs": "cffec6fa04c547c22f8e58164ef22a5f070c603de5b1a4fab9ea6dc762b754fb",
+    "crates/query/tablecraft-query/src/execution/keys/numeric/fixed/tests.rs": "761c16b504e81449f65d08a5c883557ce87c4d52f9871d606410682a0e53a5bf",
+    "crates/query/tablecraft-query/tests/numeric_keys.rs": "4c14c3857f82236a429127f3ddaeeaa3c455e4cfc69f00488b363dbc53c520d0",
+    "crates/query/tablecraft-query/tests/numeric_keys/contracts.rs": "a987c7efe95a85cddb7dec4f919f30f0f3153207642802b9008529d5393ff687",
+    "crates/query/tablecraft-query/tests/numeric_keys/support.rs": "00d34590990016fa9dfead14e362c2320787815de1e8b7e810a311cebc6c1b8a",
+    "crates/query/tablecraft-query/tests/numeric_keys/fixed.rs": "566f1a1fd8e42c97458b3637d292d31bf2bb1a5334da5274cba4539723afd2e8",
+    "apps/tablecraft-cli/tests/fixed_binary_keys.rs": "ad8b529d86c48b53a0ed9223d72c260f0982143ca680fdc5e9c7af84e33fecb7"
+  },
+  "baseline": {
+    "revision": "bf1df067a4d4cabe09f65544d2c1c6fc8281d1ea",
+    "private_executable": ".cache/tablecraft-bin/encryption-pages-cli-20261025",
+    "sha256": "284414fef496a705f0382d11851df43a58233f6975ccd95b08933d4a6fa91f74",
+    "observations": [
+      {
+        "case": "fixed-binary",
+        "sql": "SELECT K FROM (SELECT IIf(Id=1,CDec('0.1'),CDbl(0.1)) AS K FROM (SELECT 1 AS Id UNION ALL SELECT 2) X) Q ORDER BY K",
+        "exit_code": 2,
+        "stdout_bytes": 0,
+        "stderr_sha256": "27883962ef699bd9a7d8db7fc6e895ba1f55b5eeeac3dee721d50f2c4f3758fe"
+      },
+      {
+        "case": "large-integer-binary",
+        "sql": "SELECT K FROM (SELECT IIf(Id=1,CLngLng('9007199254740993'),CDbl(9007199254740992)) AS K FROM (SELECT 1 AS Id UNION ALL SELECT 2) X) Q ORDER BY K",
+        "exit_code": 2,
+        "stdout_bytes": 0,
+        "stderr_sha256": "224c42b39828a1e2ba34009fa494d99014c59288382cce2e983b01629210e15c"
+      }
+    ],
+    "note": "Same two representative mixed-key queries refuse with empty stdout on the frozen prechange CLI; focused new query/CLI tests now succeed."
+  },
+  "coverage": [
+    "full supported Decimal scale/coefficient envelope and all fixed numeric families",
+    "finite Single/Double extremes, subnormals and signed zeros",
+    "all six three-row encounter permutations and both execution profiles",
+    "retained carriers and exact LongLong values beyond 2^53",
+    "GROUP BY, DISTINCT, dynamic UNION, sorting, TOP ties, Min/Max and domain extrema",
+    "fixed crosstab heading membership through the scalar key helper",
+    "nonfinite and unrelated Date/Text/Binary family refusals",
+    "eager failures, zero/low budgets and every observed ordered-query cancellation checkpoint",
+    "scalar comparison precision/coercion unchanged"
+  ],
+  "authoring_corrections": [
+    "New test used a nonexistent LegacyDateTime::new constructor; corrected to existing from_ole_days.",
+    "Cancellation assertion initially accepted only QueryError::Cancelled; explicitly included the existing evaluator-wrapped EvalError::Cancelled channel. No runtime cancellation behavior changed.",
+    "Compile-time width assertion rewritten equivalently to satisfy strict int_plus_one lint.",
+    "Initial baseline diagnostic expectation used unsupported numeric instead of the existing numeric combination message; corrected the expected substring without product changes."
+  ],
+  "limits": [
+    "No native Access SQL execution or heterogeneous Variant grouping qualification.",
+    "Static UNION output conversion, scalar predicates, native index formats and stored/write admission remain separate.",
+    "No new dependencies, native fixtures or Decimal arithmetic implementation.",
+    "No performance claim or benchmark; the new comparator has no payload allocation by construction.",
+    "Full P0 Variant/result promotion and native text semantics remain unfinished."
+  ]
+}
