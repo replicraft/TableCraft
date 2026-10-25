@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Exact XML 1.0 Fifth Edition NCName/QName validation for inert ACCDT control XML, schema metadata and table data",
+  "unique_tests": 66,
+  "new_tests": 7,
+  "targets": {
+    "template_library": 66
+  },
+  "checks": [
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-access --lib template::",
+      "exit_code": 0,
+      "private_log": ".cache/template-xml-names-tests-20261025.log",
+      "sha256": "e71f22cc2a9603b9ace4958d1c39aa36a8f2716d218fed50688ec14c5f4fb72e"
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-access --lib --tests -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/template-xml-names-clippy-20261025.log",
+      "sha256": "7eb29a28fb7e36c8a96d9e70183d7faf595d67112893c2224529a2d13472029a"
+    },
+    {
+      "command": "rustfmt --edition 2024 --check crates/backends/tablecraft-access/src/template/mod.rs crates/backends/tablecraft-access/src/template/tree.rs crates/backends/tablecraft-access/src/template/xml.rs crates/backends/tablecraft-access/src/template/xml_names.rs crates/backends/tablecraft-access/src/template/xml_names/tests.rs crates/backends/tablecraft-access/src/template/data/schema.rs crates/backends/tablecraft-access/src/template/data/tests.rs crates/backends/tablecraft-access/src/template/data/tests/xml_names.rs",
+      "exit_code": 0,
+      "private_log": ".cache/template-xml-names-fmt-20261025.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "private_log": ".cache/template-xml-names-fmt-final-20261025.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "source_sha256": {
+    "crates/backends/tablecraft-access/src/template/mod.rs": "c076e61a65e4e6c75610e467d480011a83ffa0807dc52f9ddf23231a442b8bba",
+    "crates/backends/tablecraft-access/src/template/tree.rs": "d2529978156dd7f23f29449baf5dab40d1087c655b4c5ddcfd6678e678117df9",
+    "crates/backends/tablecraft-access/src/template/xml.rs": "9385aa2294870fa229fe5c1081e2d92bc8989ea2ecb0d157080a410fb2f4f6da",
+    "crates/backends/tablecraft-access/src/template/xml_names.rs": "e12b970eb54879b97fd44757833c244f560f68430495e7a67ebe934237b51198",
+    "crates/backends/tablecraft-access/src/template/xml_names/tests.rs": "e44b1fd982359a19c7b3bb9262be99daa32f9bd42c007c8e3b7cab80c6c0d6d4",
+    "crates/backends/tablecraft-access/src/template/data/schema.rs": "6be9aad6cfdbc5512df6e5663a87f920402026778d282b10c7fc892859f9674d",
+    "crates/backends/tablecraft-access/src/template/data/tests.rs": "4f3c52aca99e83a8480f6edc0859f5b241a0dfdbaa0cc73801e218d2b11e39fc",
+    "crates/backends/tablecraft-access/src/template/data/tests/xml_names.rs": "316c86defd5ae44fcfb63b80ed1a67db1120c74bb307b5c5267230dfeb98aa99"
+  },
+  "acceptance": [
+    "Explicit XML NameStartChar/NameChar scalar ranges with colon excluded for NCName; no Unicode category approximation, normalization or case folding.",
+    "Independent start-range endpoints and exclusions, continuation-only middle dot/combining/connector characters, superscript-category counterexamples, supplementary name starts and U+EFFFF/U+F0000 boundary.",
+    "Raw schema declaration NCNames validated before single-pass Access _xHHHH_ decoding; escaped spaces/colons remain stored field names.",
+    "Trimmed XSD type/base/ref QNames validated before namespace resolution; malformed components and undeclared prefixes fail without external schema access.",
+    "Element and attribute QNames, including namespace declarations, checked in bounded tree and flat control readers; namespace identity remains URI based.",
+    "Original package tests across UTF-8, BOM UTF-8 and both BOM UTF-16 byte orders preserve exact field names, scalar rows and original bytes.",
+    "Existing CJK names remain supported; exact Unicode prefixes resolve unchanged, including supplementary and combining continuations.",
+    "Metadata discovery still stops after the complete schema before malformed source units or data events; cumulative work and cancellation remain authoritative."
+  ],
+  "excluded_initial_checks": [],
+  "counting_notes": [
+    "All seven new tests plus 59 existing template tests passed on the first focused run. Strict Access lib/tests passed without lint or golden corrections.",
+    "After tests and strict checks, one blank line was added between existing schema helper functions; no behavior changed. Scoped formatter and diff checks passed.",
+    "Strict lib/tests checks compile and lint test targets; no additional full suite is claimed."
+  ],
+  "limitations": [
+    "Original authored XML/ZIP tests and primary XML grammar establish engineering behavior, not native Access template instantiation or full XSD/XML implementation qualification.",
+    "Existing encoding, package, XML byte, node, attribute and schema limits remain unchanged. DTDs, general entity expansion, external schemas/providers and unsupported XSD shapes remain refused.",
+    "SQL/native database names and OPC part-name rules are separate and unchanged. Schema prefix validation does not validate an unread record suffix."
+  ],
+  "primary_references": [
+    "https://www.w3.org/TR/REC-xml/#NT-NameStartChar",
+    "https://www.w3.org/TR/REC-xml/#NT-NameChar",
+    "https://www.w3.org/TR/xml-names/#NT-NCName",
+    "https://www.w3.org/TR/xml-names/#NT-QName"
+  ]
+}

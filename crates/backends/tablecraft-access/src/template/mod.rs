@@ -6,6 +6,7 @@ mod part_uri;
 mod relationships;
 mod tree;
 mod xml;
+mod xml_names;
 pub use objects::TemplateObject;
 mod data;
 pub use data::TemplateTable;

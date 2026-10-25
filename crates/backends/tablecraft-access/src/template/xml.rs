@@ -1,5 +1,5 @@
 //! Flat OPC control XML with explicit namespace and allocation/work ceilings.
-use super::{TemplateError, check, encoding};
+use super::{TemplateError, check, encoding, xml_names};
 use quick_xml::{NsReader, XmlVersion, events::Event, name::ResolveResult};
 use std::collections::BTreeMap;
 use tablecraft_ace::InspectError;
@@ -40,6 +40,7 @@ pub(super) fn records(
                 if finished || depth > 1 {
                     return Err(TemplateError::Malformed);
                 }
+                xml_names::qname(element.name().as_ref(), budget)?;
                 let (ns, local) = reader.resolver().resolve_element(element.name());
                 if !matches!(ns, ResolveResult::Bound(value) if value.as_ref() == namespace) {
                     return Err(TemplateError::Unsupported);
@@ -51,6 +52,7 @@ pub(super) fn records(
                         return Err(TemplateError::Unsupported);
                     }
                     let attribute = attribute.map_err(|_| TemplateError::Malformed)?;
+                    xml_names::qname(attribute.key.as_ref(), budget)?;
                     if attribute.key.as_ref() == "xmlns"
                         || attribute.key.as_ref().starts_with("xmlns:")
                     {
@@ -106,7 +108,8 @@ pub(super) fn records(
                     finished = true;
                 }
             }
-            Event::End(_) => {
+            Event::End(ref name) => {
+                xml_names::qname(name.as_ref(), budget)?;
                 if depth == 0 {
                     return Err(TemplateError::Malformed);
                 }

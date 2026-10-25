@@ -382,3 +382,5 @@ fn mixed_case_package_references_feed_the_same_stored_table() {
 
 mod encoding;
 mod named_types;
+
+mod xml_names;

@@ -1,5 +1,5 @@
 //! Bounded inert XML trees for template metadata and inline table schemas.
-use super::{TemplateError, check, encoding};
+use super::{TemplateError, check, encoding, xml_names};
 use quick_xml::{
     NsReader, XmlVersion,
     events::Event,
@@ -139,6 +139,7 @@ pub(super) fn parse_decoded(
                 budget
                     .charge(Resource::Bytes, NODE_WORK_BYTES)
                     .map_err(InspectError::from)?;
+                xml_names::qname(element.name().as_ref(), budget)?;
                 let (namespace, local) = reader.resolver().resolve_element(element.name());
                 let name = expanded(namespace, local.as_ref(), budget)?;
                 let mut attributes: Vec<Attribute> = Vec::new();
@@ -148,6 +149,7 @@ pub(super) fn parse_decoded(
                         return Err(TemplateError::Unsupported);
                     }
                     let attribute = attribute.map_err(|_| TemplateError::Malformed)?;
+                    xml_names::qname(attribute.key.as_ref(), budget)?;
                     if attribute.key.as_ref() == "xmlns"
                         || attribute.key.as_ref().starts_with("xmlns:")
                     {
@@ -166,9 +168,9 @@ pub(super) fn parse_decoded(
                         && attr_name.namespace.is_empty()
                         && matches!(attr_name.local.as_str(), "type" | "base" | "ref")
                     {
-                        let (ns, local) = reader.resolver().resolve_element(QName(
-                            value.trim_matches(|c| matches!(c, ' ' | '\t' | '\r' | '\n')),
-                        ));
+                        let value = value.trim_matches(|c| matches!(c, ' ' | '\t' | '\r' | '\n'));
+                        xml_names::qname(value, budget)?;
+                        let (ns, local) = reader.resolver().resolve_element(QName(value));
                         Some(expanded(ns, local.as_ref(), budget)?)
                     } else {
                         None
@@ -195,7 +197,8 @@ pub(super) fn parse_decoded(
                     attach(node, &mut stack, &mut root)?;
                 }
             }
-            Event::End(_) => {
+            Event::End(ref name) => {
+                xml_names::qname(name.as_ref(), budget)?;
                 let node = stack.pop().ok_or(TemplateError::Malformed)?;
                 attach(node, &mut stack, &mut root)?;
             }
