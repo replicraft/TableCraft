@@ -15,6 +15,8 @@ mod guid;
 
 #[path = "constraints/currency.rs"]
 mod currency;
+#[path = "constraints/datetime.rs"]
+mod datetime;
 #[path = "constraints/decimal.rs"]
 mod decimal;
 #[path = "constraints/int64.rs"]
@@ -112,6 +114,9 @@ impl Source for Restricted {
                 (ScanConstraint::Currency { lower, upper, .. }, Value::Currency(value)) => {
                     (lower.map(Currency::scaled), upper.map(Currency::scaled))
                         .contains(&value.scaled())
+                }
+                (ScanConstraint::DateTime { lower, upper, .. }, Value::DateTime(value)) => {
+                    datetime::contains(*value, lower, upper)
                 }
                 (ScanConstraint::Int64 { lower, upper, .. }, Value::Int64(value)) => {
                     (lower, upper).contains(value)

@@ -1,12 +1,13 @@
 use super::TextEqualityKey;
 use std::ops::Bound;
-use tablecraft_core::values::{Currency, Decimal, Guid};
+use tablecraft_core::values::{Currency, Decimal, Guid, LegacyDateTime};
 
 /// Optional backend-neutral restriction on one source column.
-/// Typed intervals/equality apply to exact Boolean, integer, Decimal, Currency or GUID carriers;
-/// NULL tests may also target other carriers supported by the source. Ordinals
-/// refer to Source::columns. Numeric bounds exclude NULL and use ascending value
-/// order. Empty/reversed intervals match no rows.
+/// Typed intervals/equality apply to Boolean, integer, Decimal, Currency, GUID
+/// and legacy DateTime carriers. NULL tests may target other supported carriers.
+/// Ordinals refer to Source::columns. Bounds exclude NULL and use numeric order,
+/// or calendar-day/time order for DateTime. Empty/reversed intervals match no
+/// rows; conservative candidates still require the original residual predicate.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ScanConstraint {
     /// Conservative Text equality candidates under a resolver/source agreement.
@@ -31,6 +32,17 @@ pub enum ScanConstraint {
         column: usize,
         /// Exact Decimal operand, without float or Text conversion.
         value: Decimal,
+    },
+    /// Conservative temporal candidates for a legacy DateTime interval.
+    /// Day/time order is independent of stored serial order. A source may return
+    /// extra rows; callers must retain the complete original predicate.
+    DateTime {
+        /// Zero-based source column ordinal.
+        column: usize,
+        /// Lower calendar-day/time endpoint; NULL is excluded.
+        lower: Bound<LegacyDateTime>,
+        /// Upper calendar-day/time endpoint; NULL is excluded.
+        upper: Bound<LegacyDateTime>,
     },
     /// Select NULL values in the specified column.
     Null {
@@ -98,6 +110,7 @@ impl ScanConstraint {
             | Self::TextEqual { column, .. }
             | Self::Boolean { column, .. }
             | Self::Decimal { column, .. }
+            | Self::DateTime { column, .. }
             | Self::Guid { column, .. }
             | Self::Byte { column, .. }
             | Self::Int16 { column, .. }
