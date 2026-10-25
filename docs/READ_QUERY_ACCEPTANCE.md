@@ -67,6 +67,12 @@ qualification recorded separately.
   equijoins](QUERY_EQUIJOINS.md) retain full input validation and reject pairs
   before copied candidate allocation; 20 independent native getter/model controls
   pass separately from Access SQL qualification.
+- Qualified larger ACCDC reads now use [host-owned temporary storage](ACCDC_SPOOLED_READS.md),
+  retaining existing small-memory capture and default budgets. A separate
+  [58-control original corpus](testing/LARGE_DEPLOYMENT.md) verifies two 77 MiB
+  ACE 16 databases and their stored/MSZIP copies, including selected Memo hashes
+  and complete 1,100-row streams. Signature/native deployment qualification stays
+  separate; encryption rewrite limits are unchanged.
 - ACCDT XML accepts UTF-8 and BOM-qualified UTF-16LE/BE, with strict declaration
   and scalar decoding. Metadata-only schema discovery stops before malformed
   record suffixes; complete row reads still reject them. Wider schemas remain

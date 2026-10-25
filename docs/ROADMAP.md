@@ -154,7 +154,8 @@ The [distribution read scope](features/ACCESS_DISTRIBUTION.md#required-read-scop
 also includes `.accdr`, `.accde`, `.mde`, `.accdt` and `.accdc`. Raw runtime/compiled
 databases reuse header-selected native readers; templates and deployment packages
 need separate bounded container/data readers. Single-database ACCDC CAB reading
-now works through AccessInput. Bounded ACCDT package inspection, UTF-8/BOM-qualified UTF-16 XML, qualified
+now works through AccessInput, including explicit host-owned storage for larger
+qualified databases with preserved small-capture defaults. Bounded ACCDT package inspection, UTF-8/BOM-qualified UTF-16 XML, qualified
 inline-XSD table reads and CLI queries also work; wider template schemas and
 native package qualification remain pending. Reading them does not depend on VBA
 execution, application instantiation or signing support. Filename-routing tests

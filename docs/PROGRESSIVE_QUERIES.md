@@ -93,7 +93,7 @@ per-row copies, so bounded live memory does not grant an unlimited scan. Slot
 registration, counter initialization, per-row occurrences and final identity
 lookups are metered and cancellable. Counter storage is prepaid, fallible and
 bounded by the existing binding-node ceiling. No complete cache is published.
-SUM/AVG can share this execution service as described below. Other aggregates,
+SUM/AVG and MIN/MAX can share this execution service as described below. Other aggregates,
 GROUP BY/HAVING and wider sources remain outside this progressive slice; ordinary
 buffered aggregate availability is unchanged. Microsoft's
 [Access SQL Count contract](https://learn.microsoft.com/en-us/office/vba/access/concepts/criteria-expressions/count-function-microsoft-access-sql)
