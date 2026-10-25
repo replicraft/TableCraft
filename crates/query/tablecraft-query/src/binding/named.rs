@@ -2,7 +2,7 @@
 use super::{Binder, Parameter};
 use crate::{
     QueryError,
-    plan::{ReadPlan, Relation, RelationNode, Slot},
+    plan::{ProfiledType, ReadPlan, Relation, RelationNode, Slot},
     profile::{MAX_NAMED_DEPTH, MAX_PARAMETERS, SOURCE_SCHEMA_POLICY},
 };
 use tablecraft_sql::query::{Query, Statement};
@@ -18,15 +18,19 @@ impl Binder<'_> {
         slots
             .try_reserve_exact(read.names.len())
             .map_err(|_| QueryError::Allocation)?;
-        for (((name, policy), output_type), declaration) in read
+        for (index, (((name, policy), _), declaration)) in read
             .names
             .iter()
             .zip(&read.text_policies)
             .zip(&read.output_types)
             .zip(&read.declarations)
+            .enumerate()
         {
             slots.push(Slot {
-                output_type: *output_type,
+                output_type: ProfiledType {
+                    materialized: read.materialized_types[index],
+                    declared: read.declared_types[index],
+                },
                 declaration: *declaration,
                 text_policy: *policy,
                 available: true,

@@ -204,13 +204,9 @@ impl Runtime<'_, '_> {
             self.push(&mut rows, row.values)?;
         }
         self.tick()?;
-        let mut output_types = self.copy_output_types(&plan.read.output_types[..width])?;
-        let cell_type = plan
-            .read
-            .output_types
-            .last()
-            .ok_or(QueryError::Grouping)?
-            .with_null();
+        let types = plan.read.active_types(self.options.declared_integral);
+        let mut output_types = self.copy_output_types(&types[..width])?;
+        let cell_type = types.last().ok_or(QueryError::Grouping)?.with_null();
         for _ in width..columns.len() {
             self.push(&mut output_types, cell_type)?;
         }

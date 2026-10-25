@@ -41,6 +41,10 @@ fn converted_and_nested_zero_divisors_keep_operator_specific_errors() {
         let parsed = parse_query(&format!("SELECT {expression}"), Default::default()).unwrap();
         let plan = prepare(parsed.query(), &source).unwrap();
         for declared in [false, true] {
+            let expected = match (declared, expression) {
+                (true, "CDec(0)/CDbl(0)" | "CCur(0)/CDec(0)") => EvalError::Overflow,
+                _ => expected,
+            };
             assert_eq!(
                 plan.execute(&source, &[], options(declared)).err(),
                 Some(QueryError::Evaluation(expected)),

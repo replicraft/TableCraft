@@ -1,9 +1,9 @@
 # Conservative query result types
 
 `PreparedQuery::output_types()` exposes scalar metadata established during bounded,
-metadata-only binding. `QueryResult::output_types()` exposes the same profile beside
-buffered output names and rows, including empty results. Both scalar and expression
-result APIs retain it. These are current evaluator guarantees, not a recreation of
+metadata-only binding. `QueryResult::output_types()` exposes conservative metadata
+for the selected execution profile beside buffered output names and rows, including
+empty results. Both scalar and expression result APIs retain it. These are current evaluator guarantees, not a recreation of
 DAO field codes or complete native Access SQL expression typing.
 
 `OutputType::Scalar { data_type, nullable }` reuses the schema crate's validated
@@ -28,6 +28,51 @@ Text results and could incorrectly coerce a derived or UNION output. Both-Text
 addition retains its Text guarantee. This is conservative metadata for the
 [declared engineering profile](DECLARED_ARITHMETIC.md), not native Access typing
 qualification; binding neither evaluates operands nor inspects source rows.
+
+## Runtime-profile-sensitive division
+
+The explicit declared-arithmetic profile selects Double for Decimal division by,
+or into, a Double, String, Currency or legacy DATE operand. The default
+materialized operator retains its Decimal-first rule. Decimal paired with Single,
+integral or Decimal operands retains Decimal in both profiles. This is an
+operator-specific engineering rule, with the primary specification and native
+qualification limits recorded in [declared arithmetic](DECLARED_ARITHMETIC.md).
+
+Preparation preserves both successful-result descriptions internally. Public
+prepared metadata is Dynamic when they differ, rather than promoting Decimal and
+Double into one descriptor and claiming it describes both. Identical descriptors
+retain their carrier and combine nullability. The literal-preparation setting and
+runtime arithmetic option remain independent: one prepared query can run in either
+profile. Returned result metadata selects the active profile without inspecting
+row values, including for empty outputs.
+
+Profile descriptions survive nested arithmetic, selectors, aggregates, scalar
+subqueries, correlated references, derived/named relations and fixed crosstab
+schemas. UNION computes its common static carrier separately for each profile
+before converting rows. For example, `CDec(3)/CDbl(2) UNION ALL CLng(2)` retains two
+Decimal cells in the default profile and two Double cells in the declared profile.
+Simply making the affected arm Dynamic would lose the default conversion of the
+second arm. Runtime-discovered crosstab caches retain their completed per-run
+result descriptions; they are not shared across different executions/profiles.
+
+Both inference walks operate on already-bound expressions and captured metadata.
+They perform no source rebinding, row scans, Text conversion or provider calls.
+Their work and three output vectors (public, materialized and declared) consume
+the existing checked preparation budgets. Unknown declarations remain unknown;
+the category-independent division rule does not require inventing a Scalar or
+Variant category. Existing mixed String/numeric addition metadata stays Dynamic.
+Eager operand errors, NULL rules, raw String publication, cancellation and runtime
+resource limits retain their existing consumers.
+
+Eight focused integration tests cover both runtime modes crossed with both
+literal-preparation modes, both operand orders, retained String inputs, UNION and
+selector/aggregate propagation, named sources, fixed/discovered crosstabs, scalar
+and correlated subqueries, unknown categories and error/NULL controls. Closed
+numeric fixed-heading arithmetic also uses the captured preparation profile;
+original expressions still execute and validate their names under runtime options.
+A mismatched runtime mode can therefore fail rather than silently rename columns.
+Eager constant zero/overflow failures remain visible before source scans. These are
+engineering composition checks, not native ACE result-type qualification.
 
 ## Implemented propagation
 

@@ -22,6 +22,8 @@ impl<T> QueryResult<T> {
     }
     /// Conservative scalar metadata aligned with output names. Dynamic entries
     /// retain unknown/varying carriers; no type is inferred from returned rows.
+    /// Metadata uses this execution's selected arithmetic profile, which can be
+    /// more specific than a prepared query's combined profile description.
     pub fn output_types(&self) -> &[OutputType] {
         &self.output_types
     }

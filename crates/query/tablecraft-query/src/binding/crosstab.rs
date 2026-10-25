@@ -3,8 +3,8 @@ mod constants;
 mod schema;
 use super::{Binder, projection, retrieval::has_aggregate};
 use crate::{
-    QueryError,
-    plan::{CrosstabPlan, Expr, ReadNode},
+    OutputType, QueryError,
+    plan::{CrosstabPlan, Expr, ReadNode, ReadPlan},
     profile::SOURCE_SCHEMA_POLICY,
 };
 use tablecraft_sql::{query::Crosstab, select::SelectPredicate};
@@ -95,26 +95,46 @@ impl Binder<'_> {
         } else {
             None
         };
-        let output_types = if let Some(headings) = &headings {
-            let mut types = self.type_vector(row_width + headings.len())?;
-            types.extend_from_slice(&read.output_types[..row_width]);
-            let cell = read
-                .output_types
-                .last()
-                .ok_or(QueryError::Grouping)?
-                .with_null();
-            types.extend(std::iter::repeat_n(cell, headings.len()));
-            Some(types)
-        } else {
-            None
-        };
+        let output_types = headings
+            .as_ref()
+            .map(|headings| {
+                self.crosstab_heading_types(&read.output_types, row_width, headings.len())
+            })
+            .transpose()?;
+        let materialized_types = headings
+            .as_ref()
+            .map(|headings| {
+                self.crosstab_heading_types(&read.materialized_types, row_width, headings.len())
+            })
+            .transpose()?;
+        let declared_types = headings
+            .as_ref()
+            .map(|headings| {
+                self.crosstab_heading_types(&read.declared_types, row_width, headings.len())
+            })
+            .transpose()?;
+        self.charge(size_of::<ReadPlan>())?;
         Ok(CrosstabPlan {
             output_types,
+            materialized_types,
+            declared_types,
             materialized: None,
             text_policies,
-            read,
+            read: Box::new(read),
             pivot,
             headings,
         })
+    }
+    fn crosstab_heading_types(
+        &mut self,
+        source: &[OutputType],
+        row_width: usize,
+        headings: usize,
+    ) -> Result<Vec<OutputType>, QueryError> {
+        let mut types = self.type_vector(row_width + headings)?;
+        types.extend_from_slice(&source[..row_width]);
+        let cell = source.last().ok_or(QueryError::Grouping)?.with_null();
+        types.extend(std::iter::repeat_n(cell, headings));
+        Ok(types)
     }
 }

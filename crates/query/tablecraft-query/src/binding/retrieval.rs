@@ -70,17 +70,34 @@ impl Binder<'_> {
                 }
                 let first = self.body(first, &[], outer, depth + 1)?;
                 let mut output_types = self.type_vector(first.output_types.len())?;
-                output_types.extend_from_slice(&first.output_types);
+                let mut materialized_types = self.type_vector(first.output_types.len())?;
+                materialized_types.extend_from_slice(&first.materialized_types);
+                let mut declared_types = self.type_vector(first.output_types.len())?;
+                declared_types.extend_from_slice(&first.declared_types);
                 let mut arms = Vec::new();
                 for arm in rest {
                     let plan = self.body(&arm.body, &[], outer, depth + 1)?;
                     if plan.names.len() != first.names.len() {
                         return Err(QueryError::Width);
                     }
-                    for (result, other) in output_types.iter_mut().zip(&plan.output_types) {
+                    for (result, other) in
+                        materialized_types.iter_mut().zip(&plan.materialized_types)
+                    {
+                        *result = result.union_result(*other);
+                    }
+                    for (result, other) in declared_types.iter_mut().zip(&plan.declared_types) {
                         *result = result.union_result(*other);
                     }
                     arms.push((arm.all, plan));
+                }
+                for (&materialized, &declared) in materialized_types.iter().zip(&declared_types) {
+                    output_types.push(
+                        ProfiledType {
+                            materialized,
+                            declared,
+                        }
+                        .conservative(),
+                    );
                 }
                 let mut text_policies = self.policy_vector(first.text_policies.len())?;
                 text_policies.extend_from_slice(&first.text_policies);
@@ -89,26 +106,38 @@ impl Binder<'_> {
                         *policy = policy.merge(*other);
                     }
                 }
-                let slots = first
-                    .names
-                    .iter()
-                    .zip(&text_policies)
-                    .zip(&output_types)
-                    .map(|((n, policy), output_type)| Slot {
-                        output_type: *output_type,
+                self.charge(
+                    first
+                        .names
+                        .len()
+                        .checked_mul(size_of::<Slot>())
+                        .ok_or(QueryError::StructureLimit)?,
+                )?;
+                let mut slots = Vec::new();
+                slots
+                    .try_reserve_exact(first.names.len())
+                    .map_err(|_| QueryError::Allocation)?;
+                for (index, (name, policy)) in first.names.iter().zip(&text_policies).enumerate() {
+                    slots.push(Slot {
+                        output_type: ProfiledType {
+                            materialized: materialized_types[index],
+                            declared: declared_types[index],
+                        },
                         declaration: None,
                         text_policy: *policy,
                         available: true,
                         member: None,
-                        name: n.clone(),
+                        name: self.copy_name(name)?,
                         qualifier: None,
-                    })
-                    .collect::<Vec<_>>();
+                    });
+                }
                 let order = self.sort(sort, &[], &slots, outer, false, depth + 1)?;
                 let declarations = self.unknown_declarations(output_types.len())?;
                 Ok(ReadPlan {
                     declarations,
                     output_types,
+                    materialized_types,
+                    declared_types,
                     text_policies,
                     names: first.names.clone(),
                     node: ReadNode::Union {
@@ -278,8 +307,13 @@ impl Binder<'_> {
             text_policies.push(self.text_policy(expr)?);
         }
         let mut output_types = self.type_vector(projection.len())?;
+        let mut materialized_types = self.type_vector(projection.len())?;
+        let mut declared_types = self.type_vector(projection.len())?;
         for expression in &projection {
-            output_types.push(self.result_type(expression, &scopes, depth + 1)?);
+            let types = self.profiled_result_type(expression, &scopes, depth + 1)?;
+            output_types.push(types.conservative());
+            materialized_types.push(types.materialized);
+            declared_types.push(types.declared);
         }
         let mut declarations = self.declaration_vector(projection.len())?;
         for expression in &projection {
@@ -290,8 +324,12 @@ impl Binder<'_> {
             .zip(&text_policies)
             .zip(&output_types)
             .zip(&declarations)
-            .map(|(((n, policy), output_type), declaration)| Slot {
-                output_type: *output_type,
+            .enumerate()
+            .map(|(index, (((n, policy), _), declaration))| Slot {
+                output_type: ProfiledType {
+                    materialized: materialized_types[index],
+                    declared: declared_types[index],
+                },
                 declaration: *declaration,
                 text_policy: *policy,
                 available: true,
@@ -353,6 +391,8 @@ impl Binder<'_> {
         Ok(ReadPlan {
             declarations,
             output_types,
+            materialized_types,
+            declared_types,
             text_policies,
             names,
             node: ReadNode::Select(Box::new(SelectPlan {

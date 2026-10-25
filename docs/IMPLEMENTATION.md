@@ -1,5 +1,28 @@
 # Implementation status
 
+## Composed query typing across arithmetic profiles
+
+Query execution now applies the explicit mixed Decimal division rule without
+changing materialized arithmetic. Bound slots and read/crosstab plans retain
+separate materialized and declared result descriptions. Prepared public metadata
+is conservative across modes; returned metadata and static UNION conversions use
+the active runtime profile. This preserves the previous default Decimal conversion
+of sibling UNION arms while admitting declared Double results through nested,
+named, selector, aggregate, scalar-subquery and crosstab composition.
+
+The [result-type contract](QUERY_RESULT_TYPES.md#runtime-profile-sensitive-division)
+records immutable literal/heading preparation, independent runtime options and
+metadata-only inference. Additional walks, vectors, enlarged temporary slots and
+boxed crosstab read plans use checked preparation allowances. Numeric fixed-heading
+folding also uses the captured declared rule, retaining eager errors before scans.
+
+Ninety-one focused query tests pass against the final source, alongside strict
+scoped query Clippy. Thirty-six CLI regression tests cover arithmetic policies,
+declaration flags, cached calculations, stored text orders and linked native
+sources. Normal CLI build, standalone no-default query checking, formatting,
+dependency boundaries and 41 policy-script tests pass. Native Access qualification
+and broader read/query/backend acceptance remain unfinished.
+
 ## Division-specific Decimal selection in the expression library
 
 The explicit declared/agreement arithmetic APIs now select Double for Decimal

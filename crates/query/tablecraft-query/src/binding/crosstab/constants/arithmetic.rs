@@ -3,7 +3,8 @@ use super::super::super::Binder;
 use crate::{QueryError, plan::Expr};
 use tablecraft_core::values::Value;
 use tablecraft_expressions::numeric::{
-    Arithmetic, ArithmeticDeclarations, OperandDeclaration, uses_declared_overflow,
+    Arithmetic, ArithmeticDeclarations, OperandDeclaration, uses_declared_double_division,
+    uses_declared_overflow,
 };
 use tablecraft_sql::select::{BinaryOperator as B, UnaryOperator as U};
 
@@ -62,7 +63,8 @@ impl Binder<'_> {
         let (left, right) = values;
         if self.declared_arithmetic
             && let Some(operation) = operation
-            && uses_declared_overflow(operation, left, right)
+            && (uses_declared_overflow(operation, left, right)
+                || uses_declared_double_division(operation, left, right))
         {
             // Closed admitted constants have explicit Scalar/Variant provenance.
             // Missing provenance must not manufacture a metadata-only heading.

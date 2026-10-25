@@ -2,7 +2,7 @@
 use super::{Binder, aggregate, literals};
 use crate::{
     OutputType, QueryError,
-    plan::{Aggregate, Expr, Slot},
+    plan::{Aggregate, Expr, ResultProfile, Slot},
 };
 use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_expressions::{
@@ -32,23 +32,24 @@ impl Binder<'_> {
         no: &Expr,
         scopes: &[&[Slot]],
         depth: usize,
+        profile: ResultProfile,
     ) -> Result<OutputType, QueryError> {
-        self.iif_mapped_type(Mapping::Value, condition, yes, no, scopes, depth)
+        self.iif_mapped_type(Mapping::Value, (condition, yes, no), scopes, depth, profile)
     }
 
     fn iif_mapped_type(
         &mut self,
         mapping: Mapping,
-        condition: &Expr,
-        yes: &Expr,
-        no: &Expr,
+        branches: (&Expr, &Expr, &Expr),
         scopes: &[&[Slot]],
         depth: usize,
+        profile: ResultProfile,
     ) -> Result<OutputType, QueryError> {
+        let (condition, yes, no) = branches;
         // Inspect both result descriptions even when the selector is known.
         // This is metadata refinement, never dead-expression elimination.
-        let yes = self.mapped_type(mapping, yes, scopes, depth)?;
-        let no = self.mapped_type(mapping, no, scopes, depth)?;
+        let yes = self.mapped_type(mapping, yes, scopes, depth, profile)?;
+        let no = self.mapped_type(mapping, no, scopes, depth, profile)?;
         self.tick(depth)?;
         Ok(match literal_truth(condition)? {
             Some(true) => yes,
@@ -63,8 +64,9 @@ impl Binder<'_> {
         arguments: &[Expr],
         scopes: &[&[Slot]],
         depth: usize,
+        profile: ResultProfile,
     ) -> Result<OutputType, QueryError> {
-        self.selection_mapped_type(Mapping::Value, function, arguments, scopes, depth)
+        self.selection_mapped_type(Mapping::Value, function, arguments, scopes, depth, profile)
     }
 
     fn selection_mapped_type(
@@ -74,13 +76,14 @@ impl Binder<'_> {
         arguments: &[Expr],
         scopes: &[&[Slot]],
         depth: usize,
+        profile: ResultProfile,
     ) -> Result<OutputType, QueryError> {
         match function {
             ConditionalFunction::Choose => {
-                self.choose_result_type(mapping, arguments, scopes, depth)
+                self.choose_result_type(mapping, arguments, scopes, depth, profile)
             }
             ConditionalFunction::Switch => {
-                self.switch_result_type(mapping, arguments, scopes, depth)
+                self.switch_result_type(mapping, arguments, scopes, depth, profile)
             }
         }
     }
@@ -91,11 +94,12 @@ impl Binder<'_> {
         expression: &Expr,
         scopes: &[&[Slot]],
         depth: usize,
+        profile: ResultProfile,
     ) -> Result<OutputType, QueryError> {
         match mapping {
-            Mapping::Value => self.result_type(expression, scopes, depth),
+            Mapping::Value => self.result_type(expression, scopes, depth, profile),
             Mapping::Aggregate(kind) => {
-                self.numeric_aggregate_result_type(kind, expression, scopes, depth)
+                self.numeric_aggregate_result_type(kind, expression, scopes, depth, profile)
             }
         }
     }
@@ -106,17 +110,17 @@ impl Binder<'_> {
         expression: &Expr,
         scopes: &[&[Slot]],
         depth: usize,
+        profile: ResultProfile,
     ) -> Result<OutputType, QueryError> {
         match expression {
             Expr::IIf(condition, yes, no) => {
                 self.tick(depth)?;
                 self.iif_mapped_type(
                     Mapping::Aggregate(kind),
-                    condition,
-                    yes,
-                    no,
+                    (condition, yes, no),
                     scopes,
                     depth + 1,
+                    profile,
                 )
             }
             Expr::ConditionalCall(function, arguments) => {
@@ -127,15 +131,16 @@ impl Binder<'_> {
                     arguments,
                     scopes,
                     depth + 1,
+                    profile,
                 )
             }
             Expr::CVar(value) => {
                 self.tick(depth)?;
-                self.numeric_aggregate_result_type(kind, value, scopes, depth + 1)
+                self.numeric_aggregate_result_type(kind, value, scopes, depth + 1, profile)
             }
             _ => Ok(aggregate::numeric(
                 kind,
-                self.result_type(expression, scopes, depth)?,
+                self.result_type(expression, scopes, depth, profile)?,
             )),
         }
     }
@@ -146,6 +151,7 @@ impl Binder<'_> {
         arguments: &[Expr],
         scopes: &[&[Slot]],
         depth: usize,
+        profile: ResultProfile,
     ) -> Result<OutputType, QueryError> {
         self.tick(depth)?;
         let index = match literal_value(arguments.first().ok_or(QueryError::Unsupported)?)? {
@@ -174,7 +180,7 @@ impl Binder<'_> {
         };
         let mut result = OutputType::Null;
         for (position, argument) in arguments.iter().enumerate().skip(1) {
-            let choice = self.mapped_type(mapping, argument, scopes, depth)?;
+            let choice = self.mapped_type(mapping, argument, scopes, depth, profile)?;
             match index {
                 Index::Choice(index) if index == position => result = choice,
                 Index::Unknown => result = result.union(choice),
@@ -190,12 +196,13 @@ impl Binder<'_> {
         arguments: &[Expr],
         scopes: &[&[Slot]],
         depth: usize,
+        profile: ResultProfile,
     ) -> Result<OutputType, QueryError> {
         let mut result = None;
         let mut fall_through = true;
         for pair in arguments.as_chunks::<2>().0 {
             self.tick(depth)?;
-            let choice = self.mapped_type(mapping, &pair[1], scopes, depth)?;
+            let choice = self.mapped_type(mapping, &pair[1], scopes, depth, profile)?;
             let truth = literal_truth(&pair[0])?;
             if fall_through && truth != Some(false) {
                 result = Some(match result {
