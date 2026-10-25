@@ -2,6 +2,8 @@ use super::*;
 use crate::functions::text::{TextFunction, TextResult, apply};
 use proptest::prelude::*;
 
+mod japanese_proper;
+
 #[derive(Default)]
 struct Output {
     text: String,

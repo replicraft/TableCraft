@@ -507,6 +507,12 @@ This expands the query text-function profile without supplying further database
 locale providers or native NLS equivalence. See the
 [composition contract](STRCONV.md#combined-japanese-case-width-and-kana).
 
+Explicit Japanese proper case now recognizes the ideographic space as a word
+boundary while preserving locale isolation and all other delimiter rules. This
+closes a documented DBCS-space gap for that explicit language profile; other
+cultures and native Access/NLS qualification remain open. See the
+[contract and scoped evidence](STRCONV.md#japanese-proper-case-word-boundaries).
+
 ### P0 implementation boundaries reviewed 24 October 2026
 
 | Boundary | Current implementation | Remaining work |

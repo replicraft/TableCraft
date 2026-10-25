@@ -69,7 +69,7 @@ def model(text, code):
     elif case == 2:
         text = text.lower()
     elif case == 3:
-        text = proper(text)
+        text = proper(text, ("\u3000",))
     if code & 4:
         text = width_mapped(text, 4, WIDE, NARROW)
     if code & 16:
@@ -90,6 +90,8 @@ def cases():
         "", "aB ｶﾞ が", "hello WORLD", "ﬁ ß", "éCOLE 中😀",
         "ａＢ　ガ が", "ｶﾞﾊﾟｳﾞ", "ﾜﾞｦﾞ", "ガカ\u3099",
         "ABC123｡｢｣､･ｰ", "①㍑ﬁe\u0301😀", "'\0\t\nAb",
+        "hello　WORLD", "ｈＥＬＬＯ　ｗＯＲＬＤ", "　hello　　WORLD　",
+        "東京abc　大阪DEF", "ß　ﬁ", "a\u00a0B　C", "a\u2003B　C",
     ]
     samples += [chr(code) for code in range(0xFF61, 0xFFA0)]
     samples += [chr(code) for code in range(0x3041, 0x3097)]
@@ -148,7 +150,7 @@ def main():
     all_cases = list(cases())
     successes = [case for case in all_cases if not case[3]]
     refusals = [case for case in all_cases if case[3]]
-    count = 2 * ((len(successes) + BATCH_COLUMNS - 1) // BATCH_COLUMNS + len(refusals)) + len(INPUTS)
+    count = 2 * ((len(successes) + BATCH_COLUMNS - 1) // BATCH_COLUMNS + len(refusals)) + 2 * len(INPUTS)
     assert count <= MAX_COMMANDS, (count, MAX_COMMANDS)
 
     def execute(mode, sql, expected, labels, options=()):
@@ -177,6 +179,8 @@ def main():
         ("hello WORLD", 7, "Ｈｅｌｌｏ　Ｗｏｒｌｄ"),
         ("ｶﾞ", 36, "が"), ("ｶﾞ", 40, "ｶﾞ"), ("ガ", 40, "が"),
         ("aが", 24, "aｶﾞ"), ("ﬁ ß", 5, "ＦＩ　ＳＳ"),
+        ("hello　WORLD", 3, "Hello　World"),
+        ("ｈＥＬＬＯ　ｗＯＲＬＤ", 11, "Hello World"),
     )
     for text, code, expected in goldens:
         assert model(text, code) == expected
@@ -210,10 +214,18 @@ def main():
             text = None if tag == "N" else bytes.fromhex(tag[1:]).decode("utf-8")
             fields.append((cells[1].removeprefix("I32:"), text))
         assert [identity for identity, _ in fields] == ["1", "2", "3"]
-        sql = "SELECT ID," + ",".join(f"StrConv(Label,{code},1041)" for code in CODES)
-        sql += " FROM ScalarSamples ORDER BY ID"
-        expected = [[identity, *[cell(model(text, code)) for code in CODES]] for identity, text in fields]
-        execute("run", sql, expected, [filename], ("--database", database))
+        for label, source in (
+            ("stored", "Label"),
+            ("japanese-word-boundary", "IIf(IsNull(Label),NULL,Label & '　WORLD')"),
+        ):
+            sql = "SELECT ID," + ",".join(f"StrConv({source},{code},1041)" for code in CODES)
+            sql += " FROM ScalarSamples ORDER BY ID"
+            expected = []
+            for identity, text in fields:
+                if text is not None and label == "japanese-word-boundary":
+                    text += "　WORLD"
+                expected.append([identity, *[cell(model(text, code)) for code in CODES]])
+            execute("run", sql, expected, [filename, label], ("--database", database))
         assert digest(database) == registered
         record["inputs"].append({
             "path": str(database), "sha256": registered,

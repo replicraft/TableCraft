@@ -1,5 +1,16 @@
 # Implementation status
 
+## Japanese proper-case word boundaries
+
+Explicit Japanese casing now recognizes U+3000 IDEOGRAPHIC SPACE as an additional
+word boundary, including LCID 1041 and host-selected Japanese. The separator is
+preserved; explicit English overrides retain their existing behavior. Seven new
+tests and 65 regressions pass across standalone casing, scalar evaluation, query
+composition and CLI paths. Generated word-state controls, raw ranges, parameter
+reuse, encoding round trips, cancellation and intermediate Text ceilings pass.
+Strict linting and formatting pass; native Access/NLS qualification and other
+DBCS cultures remain separate. See the [profile and evidence](STRCONV.md#japanese-proper-case-word-boundaries).
+
 ## Combined Japanese StrConv operations
 
 Explicit LCID 1041 now admits all 32 compatible combinations of the existing
