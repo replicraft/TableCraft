@@ -1,4 +1,5 @@
 //! Explicit bounded row-local previews, separate from native cached results.
+mod dependencies;
 mod syntax;
 use super::NativeSource;
 use tablecraft_ace::{
@@ -32,6 +33,7 @@ pub struct PreparedCalculation<'a> {
     source: &'a dyn Source,
     declaration: CalculationDeclaration,
     dependencies: Vec<String>,
+    calculated_dependencies: Vec<String>,
     query: Query,
     plan: PreparedQuery,
 }
@@ -45,6 +47,12 @@ impl PreparedCalculation<'_> {
     /// Distinct ordinary same-table fields in first-reference order.
     pub fn dependencies(&self) -> &[String] {
         &self.dependencies
+    }
+
+    /// Distinct recomputed same-table calculated dependencies, in first-reference order.
+    /// The root declaration is separate; cached values are never used as inputs.
+    pub fn calculated_dependencies(&self) -> &[String] {
+        &self.calculated_dependencies
     }
 
     /// Validated row-local query model. The output is explicitly named Recomputed.
@@ -66,9 +74,11 @@ impl PreparedCalculation<'_> {
 
 impl<R: NativeReadSource> NativeSource<'_, R> {
     /// Prepare one explicitly selected stored formula without reading user rows.
-    /// Only pure literal/ordinary same-row arithmetic, concatenation, comparison,
-    /// logical operators and NULL tests are admitted. Calls, subqueries, calculated/complex dependencies,
-    /// qualified names and unresolved parameters remain refused. This neither
+    /// Pure same-row arithmetic, concatenation, comparison, logical operators and
+    /// NULL tests may use ordinary fields or qualified calculated dependencies.
+    /// Dependencies are recomputed under bounded cycle-checked expansion, without
+    /// cached inputs or intermediate declared-type conversion. Calls, subqueries,
+    /// complex/nonlocal inputs and unresolved parameters remain refused. This neither
     /// changes ordinary query eligibility nor inspects/replaces cached results.
     pub fn prepare_calculation(
         &self,
@@ -101,11 +111,12 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
             .budget
             .try_borrow_mut()
             .map_err(|_| QueryError::Source)?;
-        let (query, dependencies) = syntax::prepare(
+        let (expression, calculated_dependencies) =
+            dependencies::expand(&declaration, limits, &mut budget, self.cancelled)?;
+        let (query, dependencies) = syntax::prepare_expression(
             &entry.name,
-            declaration.expression()?,
+            expression,
             columns,
-            limits,
             &mut budget,
             self.cancelled,
         )?;
@@ -140,6 +151,7 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
             source: self,
             declaration,
             dependencies,
+            calculated_dependencies,
             query,
             plan,
         })

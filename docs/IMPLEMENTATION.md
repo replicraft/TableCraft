@@ -1,5 +1,22 @@
 # Implementation status
 
+## Same-table calculated dependency previews
+
+Explicit calculation previews now expand qualified same-table calculated
+references into bounded deterministic expressions over ordinary scalar leaves.
+Preparation uses captured metadata and rejects cycles, unsupported reachable
+inputs and structural excess before user records are read. Separate ordinary
+and calculated dependency lists preserve canonical names. Cached results never
+become operands, even when the source enables cached calculation queries.
+
+Every intermediate retains its natural recomputed carrier without ResultType
+coercion; this is preview behavior, not native conversion or freshness
+qualification. Forty-one Access unit tests and sixteen calculation-preview
+integration tests pass with scoped strict Clippy. See
+[the dependency contract](CALCULATION_PREVIEWS.md#same-table-calculated-dependencies).
+Original independent replay, complete calculated-field semantics and native
+Access comparison remain separate acceptance work.
+
 ## Completed text policies in Min/Max
 
 Min/Max now retains String candidates when conservative static lineage cannot

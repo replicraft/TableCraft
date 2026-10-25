@@ -18,6 +18,7 @@ const QUERY_MODEL_BYTES: usize = size_of::<Query>()
 #[cfg(test)]
 mod tests;
 
+#[cfg(test)]
 pub(super) fn prepare(
     table: &str,
     expression: &str,
@@ -26,6 +27,16 @@ pub(super) fn prepare(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Query, Vec<String>), CalculationError> {
+    let expression = parse(expression, limits, budget, cancelled)?;
+    prepare_expression(table, expression, columns, budget, cancelled)
+}
+
+pub(super) fn parse(
+    expression: &str,
+    limits: ParseLimits,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Expression, CalculationError> {
     check(budget, cancelled)?;
     budget
         .charge(Resource::Steps, expression.len() as u64)
@@ -33,7 +44,18 @@ pub(super) fn prepare(
     let expression = parse_expression_strict(expression, limits)?;
     // Parser workspace has independent checked byte/token/depth ceilings.
     // Retained owned syntax and dependency storage additionally consume the
-    // caller's native pool below; this is not a bound on parser scratch memory.
+    // caller's native pool; parser scratch memory uses its structural ceilings.
+    check(budget, cancelled)?;
+    Ok(expression)
+}
+
+pub(super) fn prepare_expression(
+    table: &str,
+    expression: Expression,
+    columns: &[Column],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Query, Vec<String>), CalculationError> {
     let mut dependencies = Vec::new();
     validate(&expression, columns, &mut dependencies, budget, cancelled)?;
 
