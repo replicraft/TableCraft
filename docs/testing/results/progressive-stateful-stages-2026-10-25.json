@@ -1,0 +1,4445 @@
+{
+  "scope": "Original native/CAB static stateful stage engineering replay; no native Access SQL or timing claims",
+  "compiled_revision": "57140e145eaef59b3de6f8b84eca6852a8526ea8",
+  "compiled_source_sha256": {
+    "apps/tablecraft-cli/src/commands/query/retrieval.rs": "c4af751c320def9263648e74ef39800fb341470d7d1741254490272a3bd8a51d",
+    "crates/backends/tablecraft-access/src/input/deployment/bounded.rs": "b2cba077e63570b557a2f9608bb62a3d1d2c614ae8cfd3560ead971a7998944b",
+    "crates/backends/tablecraft-access/src/input/deployment/hybrid.rs": "17129947a0a2d6937ed6d99e5a84015723e36d42587ada210b8db2d6dfc26944",
+    "crates/backends/tablecraft-access/src/input/deployment/layout.rs": "baa53a8b66cd02573f2c345d07cf093d634fbe65b120b76ae14269e13085e7ea",
+    "crates/backends/tablecraft-access/src/input/deployment/layout/tests.rs": "59073d168e7a4d9947777c76b7340b190136b305ca0e84dba37b6c2ebcfe7705",
+    "crates/backends/tablecraft-access/src/input/deployment/spool.rs": "ecea827a0a533b14006a8b93516521db3f038f8d1f34219a31c72ffc81aa5b5f",
+    "crates/backends/tablecraft-access/src/source/progressive.rs": "6681e128693675d5d5f9b34173b21905589e641ecc9c9e19c4c5dddec7f30a04",
+    "crates/query/tablecraft-query/src/binding/retrieval.rs": "337c3e54d7b8ceacd2dc274088fff8606bca167265e448084f019aed22114c8b",
+    "crates/query/tablecraft-query/src/execution/aggregate/accumulator.rs": "649691b57db0faa88ad0a26875320953d5716adbe9fc43438eddc044229c0360",
+    "crates/query/tablecraft-query/src/execution/exact_keys/directory.rs": "e624172d4c8b703926e5411312d92d4abf0103c13834d34d3d13c023de4147ae",
+    "crates/query/tablecraft-query/src/execution/exact_keys/fixed.rs": "2d5761d2fdd3bc288b156c6047a64b81cfa07f8d549e625421bb2c8ceea723ad",
+    "crates/query/tablecraft-query/src/execution/exact_keys/fixed/tests.rs": "919fd9da0d9cf634c467090b13a6d81dc7d83ba05803f03fc2ba82466edf5e7c",
+    "crates/query/tablecraft-query/src/execution/exact_keys/mod.rs": "4989426b69785f6d6f07dbf8610f51920eb60d70e475422b908212f4296be729",
+    "crates/query/tablecraft-query/src/execution/exact_keys/profile.rs": "13934b05503d75eca1418ebc1ccc93d20a9681bcf706dedf83304f4da5907873",
+    "crates/query/tablecraft-query/src/execution/exact_keys/tests.rs": "f049c6bba2c24b909e304b91d63f770901c4a9f2c0b22297c62b06876352f423",
+    "crates/query/tablecraft-query/src/execution/exact_keys/tests/fixed_profiles.rs": "cb9fc35ef91980901ad4e3a32f072c66ec54f5adfaa2a0ef8aa7122b55ef689c",
+    "crates/query/tablecraft-query/src/execution/group_values.rs": "2ce8c882c32b97618c2d668e291c410c711806f391d2287daa637e19904d1579",
+    "crates/query/tablecraft-query/src/execution/grouping.rs": "d2511ee2b9cdd1ed7fcefd6304fce510a3c11de23e1bc537f705adb3c03883c8",
+    "crates/query/tablecraft-query/src/execution/progressive.rs": "103d447f7ff9a0a183bc02cc429fa7c84a837b76227fb0234094074f4fa72a8e",
+    "crates/query/tablecraft-query/src/execution/progressive/admission.rs": "32f2a33a0b74b11018b12d34be6304193014b2d4e02cfae87c9eef65fce5e8fc",
+    "crates/query/tablecraft-query/src/execution/progressive/aggregates.rs": "fb34fe6bf229a9945734952e7fd3aed66723666c6bb786f92ce62a2285246fd3",
+    "crates/query/tablecraft-query/src/execution/progressive/groups.rs": "8ca8383a15173cc10041eeda5d45cc67544fd74846c94736c9aa4ef24b318c03",
+    "crates/query/tablecraft-query/src/execution/progressive/groups/finish.rs": "1f11b0d0da65bcc136767c881c271e8c5c854369a6caaafe8e4bbcfd989bd072",
+    "crates/query/tablecraft-query/src/execution/progressive/groups/state.rs": "51ee31501f877b3151d3d05048d46837b24ab77f8e8fdaec010364bb8d8954eb",
+    "crates/query/tablecraft-query/src/execution/progressive/having.rs": "092809478c2c9f675dded44c54b23bbb5f901cf3aaa2ed801a860195e6814055",
+    "crates/query/tablecraft-query/src/execution/progressive/having/finish.rs": "2becbc1752be01a99ff34257ca854857c868708a9f3294fdce7a038ddb4c7d06",
+    "crates/query/tablecraft-query/src/execution/progressive/having/state.rs": "9433a17a3f9bf4ed85050a90f924ea817199136f85e7725d2c32880e2ead4bc1",
+    "crates/query/tablecraft-query/src/execution/progressive/input.rs": "e0e7538a4536f6e0337fa258f853eec28e75604bda56861387dce32e2075d2f6",
+    "crates/query/tablecraft-query/src/execution/progressive/input/plan.rs": "dffdcc7e6b5a8d3ebc34b919391d783b2fd83e6be21551a458553bf33e39b6b2",
+    "crates/query/tablecraft-query/src/execution/progressive/input/tests.rs": "4e55600bd13d9629f84e942863a3c145f8fde7b2572f04bce58dbadc7c89513e",
+    "crates/query/tablecraft-query/src/execution/progressive/plan.rs": "c7e3bfa0aa320ae1b8f9c3cad930a8f7b8f6fb46a44a47be95e2bea769573d43",
+    "crates/query/tablecraft-query/src/execution/progressive/publication.rs": "e535ca74cc2fb982a6a1678714b09a9813deb18ec947fe002600c422f47178cc",
+    "crates/query/tablecraft-query/src/execution/progressive/retained.rs": "37db8740efb971e73448ff6b16d5fca8b4937a9aa7e45a6c2004a725183ee7e3",
+    "crates/query/tablecraft-query/src/execution/progressive/retained/tests.rs": "79ef6c1272fe18da32ffe76ba78db74a9dd789df0b9b9827385703b83b9db381",
+    "crates/query/tablecraft-query/src/execution/progressive/rows.rs": "f1589354dcf87387a1ecc093df51b33060ef1322c814e4927c70ce7e3880855f",
+    "crates/query/tablecraft-query/src/execution/progressive/stages.rs": "e60f55d4ac54fe0bcab3db8df46344bd041311ee88a6886f350ee4b1adb2a8f7",
+    "crates/query/tablecraft-query/src/execution/progressive/stages/driver.rs": "4c65c2753da9b94ea458f93db9de7bf9be63e9d5d83324ef478ed1ae10b3952a",
+    "crates/query/tablecraft-query/src/execution/progressive/stages/state.rs": "25947764da3ac7f8a99cab5ef317a5b7fa4d5150ba28a13cb81131f0eb836b5b",
+    "crates/query/tablecraft-query/src/execution/progressive/text_groups.rs": "93255121de683047ac23fa1c81d677abde83a68c5c492aba01a99eecf76f0c0e",
+    "crates/query/tablecraft-query/src/execution/progressive/text_groups/capture.rs": "cc7602ba3c63e2429423aa6ad7e06dd0b9cbd5ed347cf4bf3b14906cdc9e9e74",
+    "crates/query/tablecraft-query/src/execution/progressive/text_groups/finish.rs": "697176a903ab45910f56b2c559a54c43fc036fdd61eac6cc5deba5a8119bfd7e",
+    "crates/query/tablecraft-query/src/execution/progressive/text_groups/partition.rs": "cbb9ca8b1b0c4d962ff96d5ac109123e95e8fa93c26b8cfff6d5b521ddbd5428",
+    "crates/query/tablecraft-query/src/execution/progressive/text_groups/profile.rs": "700689e2222df1fc6381ec043be2b1178e7450d3e3558594480bab3f8e9c99cc",
+    "crates/query/tablecraft-query/src/execution/progressive/text_groups/replay.rs": "31c963f11d88e5c16c60365bfd6760009398dd3dfa24c8d145fcdf579ebaff68",
+    "crates/query/tablecraft-query/src/execution/progressive/text_groups/state.rs": "0d24b5db399c73057e4b21ce76c7de4fd194c97f89916c70b81ba87edade073e",
+    "crates/query/tablecraft-query/src/execution/progressive/text_groups/tests.rs": "89b92602fc46af13675de76c87f643d8d58bb64aab0dc1c1bd09e035c87e4135",
+    "crates/query/tablecraft-query/src/plan.rs": "f6d80e63397f8e4ea8710012171454e5382013f0d2da6204cdb27d25dd3a734a",
+    "crates/backends/tablecraft-access/src/source/recomputed/forwarding.rs": "56a148134366fa311be1bade94501db0602b333809727f998570199ea65db3e4",
+    "crates/backends/tablecraft-access/src/source/external/forwarding.rs": "24f9bf1caf63b515dcc00b2d6f65293afecd324b5373b904483b43185a2968fb",
+    "apps/tablecraft-cli/src/commands/query/stream.rs": "6873c66e19d2839e464aa43e969ee9d154f12ae13db7a95eda728a09eab26bd8"
+  },
+  "immutable_sha256_before": {
+    ".cache/tablecraft-bin/progressive-stateful-cli-20261025": "93ee5e5e27b9b6eea392c5c50566c53b8e0f9de28fef9d7c5c2943b7ff22d4e9",
+    ".cache/tablecraft-fixtures/jackcess-5.0.4.jar": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    ".cache/large-deployment-provenance-20261025.json": "e5c4e1f575d96bd8552ce05f610505b6987ee0e1946ac740886468cec094d56b",
+    ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-mszip.accdc": "2fa3d571373a185be5533b92d88f229ca5d1d3cb1c287d7e8b44dc1a1b93988e",
+    ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-stored.accdc": "eda9cf10176d158edac0b3b5ff64f3bc5f812a192e45bd5863360fa73f62e034",
+    ".cache/tablecraft-fixtures/large-deployment-20261025/V2016.accdb": "51b4a6bf4477b2c1dca061e95179b5ccd70de158623edeafc96c5e38186bf630",
+    ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-mszip.accdc": "d7de049f456b4a50584bd0cdde26fabde9d7de7c20901613bc17577979c3217a",
+    ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-stored.accdc": "56ba170ad9c7fa9db405e9ca41751a4ec8bad5db486a781916dc4db8ef55ef64",
+    ".cache/tablecraft-fixtures/large-deployment-20261025/V2019.accdb": "cbb12a433c622b6d2a91e72d627b1cfab0eb6192953eaca7510c8d97668cc4f7",
+    "docs/testing/compare_progressive_stateful_stages.py": "9fa6089c0d9c86c2bd70bfee060f95b99d55abd6c39301718530322ee5129968",
+    "docs/testing/compare_progressive_derived.py": "335c04effa413efd8a1ea6ea984c9a75446b7aaf6fbc935f62f882200c2da66b",
+    "docs/testing/compare_progressive_grouped.py": "9be38ed54f0ba3b9bb079f63321468b3fd6f05607f0ab447307fd8bf8c9c5390",
+    "docs/testing/compare_large_deployment.py": "c1711b06eab9fa7c419f5bf9c973a0a728047d247e0584ce8945aa4eeba704aa",
+    "docs/testing/build_large_deployment.py": "4034cb13b9f055aa53d3a18f8387bac3d571cb7f4a4ac5e7c4e435999e6a643a",
+    "docs/testing/LargeDeploymentFixture.java": "9c9a15454df976aa133177f6a29e873d7387bc77a926b96490b8ead1f52942ce"
+  },
+  "immutable_sha256_after": {
+    ".cache/tablecraft-bin/progressive-stateful-cli-20261025": "93ee5e5e27b9b6eea392c5c50566c53b8e0f9de28fef9d7c5c2943b7ff22d4e9",
+    ".cache/tablecraft-fixtures/jackcess-5.0.4.jar": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    ".cache/large-deployment-provenance-20261025.json": "e5c4e1f575d96bd8552ce05f610505b6987ee0e1946ac740886468cec094d56b",
+    ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-mszip.accdc": "2fa3d571373a185be5533b92d88f229ca5d1d3cb1c287d7e8b44dc1a1b93988e",
+    ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-stored.accdc": "eda9cf10176d158edac0b3b5ff64f3bc5f812a192e45bd5863360fa73f62e034",
+    ".cache/tablecraft-fixtures/large-deployment-20261025/V2016.accdb": "51b4a6bf4477b2c1dca061e95179b5ccd70de158623edeafc96c5e38186bf630",
+    ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-mszip.accdc": "d7de049f456b4a50584bd0cdde26fabde9d7de7c20901613bc17577979c3217a",
+    ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-stored.accdc": "56ba170ad9c7fa9db405e9ca41751a4ec8bad5db486a781916dc4db8ef55ef64",
+    ".cache/tablecraft-fixtures/large-deployment-20261025/V2019.accdb": "cbb12a433c622b6d2a91e72d627b1cfab0eb6192953eaca7510c8d97668cc4f7",
+    "docs/testing/compare_progressive_stateful_stages.py": "9fa6089c0d9c86c2bd70bfee060f95b99d55abd6c39301718530322ee5129968",
+    "docs/testing/compare_progressive_derived.py": "335c04effa413efd8a1ea6ea984c9a75446b7aaf6fbc935f62f882200c2da66b",
+    "docs/testing/compare_progressive_grouped.py": "9be38ed54f0ba3b9bb079f63321468b3fd6f05607f0ab447307fd8bf8c9c5390",
+    "docs/testing/compare_large_deployment.py": "c1711b06eab9fa7c419f5bf9c973a0a728047d247e0584ce8945aa4eeba704aa",
+    "docs/testing/build_large_deployment.py": "4034cb13b9f055aa53d3a18f8387bac3d571cb7f4a4ac5e7c4e435999e6a643a",
+    "docs/testing/LargeDeploymentFixture.java": "9c9a15454df976aa133177f6a29e873d7387bc77a926b96490b8ead1f52942ce"
+  },
+  "pins_unchanged": true,
+  "getters": {
+    "V2016": {
+      "getter_stdout_sha256": "a641847c0b9e2604f32c0275a079157eb48083a280c342235dcef9dcc55a66e7",
+      "rows": 1100,
+      "identity_total": 605550,
+      "score_total": 10284450,
+      "memo_units": 36044800,
+      "all_memos_sha256": "e8bf0a69f1c219b0eee43da5241c075df4e15e9de0b97c849b89d6581e343425",
+      "selected_memo_sha256": {
+        "1": "59eaaa5423732027a324d43bae201c51069804033d6ba86eae939700cf0a6389",
+        "550": "4decb985de8327744b21e7dca619692d6030f877f318950776fd6f12bae18446",
+        "1100": "51cb2d773be2d0e47773592761a249154ae7211cb5279cee9cefbc2ec8399309"
+      },
+      "stored": {
+        "bytes": 77060558,
+        "sha256": "eda9cf10176d158edac0b3b5ff64f3bc5f812a192e45bd5863360fa73f62e034",
+        "blocks": 2352,
+        "compression": 0,
+        "expanded_bytes": 77041664,
+        "expanded_sha256": "51b4a6bf4477b2c1dca061e95179b5ccd70de158623edeafc96c5e38186bf630",
+        "file_name": "application.accdb"
+      },
+      "mszip": {
+        "bytes": 2798106,
+        "sha256": "2fa3d571373a185be5533b92d88f229ca5d1d3cb1c287d7e8b44dc1a1b93988e",
+        "blocks": 2352,
+        "compression": 1,
+        "expanded_bytes": 77041664,
+        "expanded_sha256": "51b4a6bf4477b2c1dca061e95179b5ccd70de158623edeafc96c5e38186bf630",
+        "file_name": "application.accdb"
+      }
+    },
+    "V2019": {
+      "getter_stdout_sha256": "a641847c0b9e2604f32c0275a079157eb48083a280c342235dcef9dcc55a66e7",
+      "rows": 1100,
+      "identity_total": 605550,
+      "score_total": 10284450,
+      "memo_units": 36044800,
+      "all_memos_sha256": "e8bf0a69f1c219b0eee43da5241c075df4e15e9de0b97c849b89d6581e343425",
+      "selected_memo_sha256": {
+        "1": "59eaaa5423732027a324d43bae201c51069804033d6ba86eae939700cf0a6389",
+        "550": "4decb985de8327744b21e7dca619692d6030f877f318950776fd6f12bae18446",
+        "1100": "51cb2d773be2d0e47773592761a249154ae7211cb5279cee9cefbc2ec8399309"
+      },
+      "stored": {
+        "bytes": 77130206,
+        "sha256": "56ba170ad9c7fa9db405e9ca41751a4ec8bad5db486a781916dc4db8ef55ef64",
+        "blocks": 2354,
+        "compression": 0,
+        "expanded_bytes": 77111296,
+        "expanded_sha256": "cbb12a433c622b6d2a91e72d627b1cfab0eb6192953eaca7510c8d97668cc4f7",
+        "file_name": "application.accdb"
+      },
+      "mszip": {
+        "bytes": 2801250,
+        "sha256": "d7de049f456b4a50584bd0cdde26fabde9d7de7c20901613bc17577979c3217a",
+        "blocks": 2354,
+        "compression": 1,
+        "expanded_bytes": 77111296,
+        "expanded_sha256": "cbb12a433c622b6d2a91e72d627b1cfab0eb6192953eaca7510c8d97668cc4f7",
+        "file_name": "application.accdb"
+      }
+    }
+  },
+  "cli_commands": 96,
+  "success_commands": 78,
+  "failure_controls": 18,
+  "disagreements": 0,
+  "commands": [
+    {
+      "case": "inner-global-all-kernels",
+      "streaming": false,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT N,S,A,Lo,Hi,VarType(N) AS [NT],VarType(S) AS [ST],VarType(A) AS [AT] FROM (SELECT Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "N",
+          "S",
+          "A",
+          "Lo",
+          "Hi",
+          "NT",
+          "ST",
+          "AT"
+        ],
+        [
+          "1100",
+          "10284450",
+          "550.5",
+          "1",
+          "1100",
+          "20",
+          "20",
+          "5"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "N\tS\tA\tLo\tHi\tNT\tST\tAT\n1100\t10284450\t550.5\t1\t1100\t20\t20\t5\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "inner-global-all-kernels",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT N,S,A,Lo,Hi,VarType(N) AS [NT],VarType(S) AS [ST],VarType(A) AS [AT] FROM (SELECT Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "1"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "N",
+          "S",
+          "A",
+          "Lo",
+          "Hi",
+          "NT",
+          "ST",
+          "AT"
+        ],
+        [
+          "1100",
+          "10284450",
+          "550.5",
+          "1",
+          "1100",
+          "20",
+          "20",
+          "5"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "N\tS\tA\tLo\tHi\tNT\tST\tAT\n1100\t10284450\t550.5\t1\t1100\t20\t20\t5\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "inner-global-all-kernels",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT N,S,A,Lo,Hi,VarType(N) AS [NT],VarType(S) AS [ST],VarType(A) AS [AT] FROM (SELECT Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "N",
+          "S",
+          "A",
+          "Lo",
+          "Hi",
+          "NT",
+          "ST",
+          "AT"
+        ],
+        [
+          "1100",
+          "10284450",
+          "550.5",
+          "1",
+          "1100",
+          "20",
+          "20",
+          "5"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "N\tS\tA\tLo\tHi\tNT\tST\tAT\n1100\t10284450\t550.5\t1\t1100\t20\t20\t5\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "exact-inner-outer-global",
+      "streaming": false,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [Groups],Sum(N) AS [Population],Sum(S) AS [Total],Sum(A) AS [Means],Min(Lo) AS [LowId],Max(Hi) AS [HighId] FROM (SELECT Id Mod 17 AS [K],Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment GROUP BY Id Mod 17) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Groups",
+          "Population",
+          "Total",
+          "Means",
+          "LowId",
+          "HighId"
+        ],
+        [
+          "17",
+          "1100",
+          "10284450",
+          "9358.5",
+          "1",
+          "1100"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Groups\tPopulation\tTotal\tMeans\tLowId\tHighId\n17\t1100\t10284450\t9358.5\t1\t1100\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "exact-inner-outer-global",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [Groups],Sum(N) AS [Population],Sum(S) AS [Total],Sum(A) AS [Means],Min(Lo) AS [LowId],Max(Hi) AS [HighId] FROM (SELECT Id Mod 17 AS [K],Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment GROUP BY Id Mod 17) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Groups",
+          "Population",
+          "Total",
+          "Means",
+          "LowId",
+          "HighId"
+        ],
+        [
+          "17",
+          "1100",
+          "10284450",
+          "9358.5",
+          "1",
+          "1100"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Groups\tPopulation\tTotal\tMeans\tLowId\tHighId\n17\t1100\t10284450\t9358.5\t1\t1100\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "text-inner-outer-group",
+      "streaming": false,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT CLng(N Mod 2) AS [Parity],Count(*) AS [Groups],Sum(N) AS [Population],Avg(A) AS [MeanOfMeans],Min(Lo) AS [LowId],Max(Hi) AS [HighId] FROM (SELECT Left(Label,8) AS [K],Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment GROUP BY Left(Label,8)) Q GROUP BY CLng(N Mod 2)",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Parity",
+          "Groups",
+          "Population",
+          "MeanOfMeans",
+          "LowId",
+          "HighId"
+        ],
+        [
+          "1",
+          "2",
+          "100",
+          "575",
+          "1",
+          "1100"
+        ],
+        [
+          "0",
+          "10",
+          "1000",
+          "599.5",
+          "100",
+          "1099"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Parity\tGroups\tPopulation\tMeanOfMeans\tLowId\tHighId\n1\t2\t100\t575\t1\t1100\n0\t10\t1000\t599.5\t100\t1099\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "text-inner-outer-group",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT CLng(N Mod 2) AS [Parity],Count(*) AS [Groups],Sum(N) AS [Population],Avg(A) AS [MeanOfMeans],Min(Lo) AS [LowId],Max(Hi) AS [HighId] FROM (SELECT Left(Label,8) AS [K],Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment GROUP BY Left(Label,8)) Q GROUP BY CLng(N Mod 2)",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Parity",
+          "Groups",
+          "Population",
+          "MeanOfMeans",
+          "LowId",
+          "HighId"
+        ],
+        [
+          "1",
+          "2",
+          "100",
+          "575",
+          "1",
+          "1100"
+        ],
+        [
+          "0",
+          "10",
+          "1000",
+          "599.5",
+          "100",
+          "1099"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Parity\tGroups\tPopulation\tMeanOfMeans\tLowId\tHighId\n1\t2\t100\t575\t1\t1100\n0\t10\t1000\t599.5\t100\t1099\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "inner-having-before-outer-global",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [Groups],Sum(N) AS [Population],Sum(S) AS [Total] FROM (SELECT Id Mod 17 AS [K],Count(*) AS [N],Sum(Score) AS [S] FROM LargeDeployment GROUP BY Id Mod 17 HAVING Count(*)=64) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Groups",
+          "Population",
+          "Total"
+        ],
+        [
+          "5",
+          "320",
+          "2991840"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Groups\tPopulation\tTotal\n5\t320\t2991840\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "middle-filter-top-before-outer-global",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [Groups],Sum(N) AS [Population],Sum(J) AS [Keys] FROM (SELECT TOP 4 K,N,CLng(K+1) AS [J] FROM (SELECT Id Mod 17 AS [K],Count(*) AS [N] FROM LargeDeployment GROUP BY Id Mod 17) I WHERE N=64) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Groups",
+          "Population",
+          "Keys"
+        ],
+        [
+          "4",
+          "256",
+          "62"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Groups\tPopulation\tKeys\n4\t256\t62\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "three-stateful-barriers",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [Rows],Sum(G) AS [Groups],Sum(P) AS [Population] FROM (SELECT N,Count(*) AS [G],Sum(N) AS [P] FROM (SELECT Id Mod 17 AS [K],Count(*) AS [N] FROM LargeDeployment GROUP BY Id Mod 17) I GROUP BY N) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Rows",
+          "Groups",
+          "Population"
+        ],
+        [
+          "2",
+          "17",
+          "1100"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Rows\tGroups\tPopulation\n2\t17\t1100\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "empty-global-one-versus-keyed-zero",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [N] FROM (SELECT Count(*) AS [N] FROM LargeDeployment WHERE False) Q UNION ALL SELECT Count(*) FROM (SELECT Id,Count(*) AS [N] FROM LargeDeployment WHERE False GROUP BY Id) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "N"
+        ],
+        [
+          "1"
+        ],
+        [
+          "0"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "N\n1\n0\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "retained-raw-error-and-natural-carriers",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT LenB(R) AS [Bytes],AscW(R) AS [Unit],CLng(E) AS [Code],VarType(N) AS [NT],VarType(C) AS [CT],VarType(D) AS [DT],CLng(C) AS [Money],CLng(D) AS [Mean] FROM (SELECT Min(ChrW(55296)) AS [R],Min(CVErr(Id)) AS [E],Count(*) AS [N],Sum(CCur(Score)) AS [C],Avg(CDec(Id)) AS [D] FROM LargeDeployment WHERE Id=1) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Bytes",
+          "Unit",
+          "Code",
+          "NT",
+          "CT",
+          "DT",
+          "Money",
+          "Mean"
+        ],
+        [
+          "2",
+          "-10240",
+          "1",
+          "20",
+          "6",
+          "14",
+          "8",
+          "1"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Bytes\tUnit\tCode\tNT\tCT\tDT\tMoney\tMean\n2\t-10240\t1\t20\t6\t14\t8\t1\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "inner-having-selected-suppression",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [N] FROM (SELECT Sum(1/0) AS [Bad] FROM LargeDeployment HAVING False) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "N"
+        ],
+        [
+          "0"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "N\n0\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "inner-late-error-outer-row-prefix",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT TOP 1 K FROM (SELECT Left(Label,8) AS [K],10\\(Max(Id)-1100) AS [Bad] FROM LargeDeployment GROUP BY Left(Label,8)) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "1"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "K"
+        ],
+        [
+          "\"row-0000\""
+        ]
+      ],
+      "expected_error_fragment": "division by zero",
+      "exit_code": 2,
+      "stdout": "K\n\"\"\"row-0000\"\"\"\n",
+      "stderr": "error: division by zero\n",
+      "matched": true
+    },
+    {
+      "case": "inner-late-error-no-outer-global-eof",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [N] FROM (SELECT Left(Label,8) AS [K],10\\(Max(Id)-1100) AS [Bad] FROM LargeDeployment GROUP BY Left(Label,8)) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "1"
+      ],
+      "expected_rows_or_prefix": null,
+      "expected_error_fragment": "division by zero",
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: division by zero\n",
+      "matched": true
+    },
+    {
+      "case": "low-query-work",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) FROM (SELECT Count(*) AS [N] FROM LargeDeployment) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128",
+        "--execution-steps",
+        "1"
+      ],
+      "expected_rows_or_prefix": null,
+      "expected_error_fragment": "resource",
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: Steps resource limit exceeded (0 remaining)\n",
+      "matched": true
+    },
+    {
+      "case": "inner-global-all-kernels",
+      "streaming": false,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT N,S,A,Lo,Hi,VarType(N) AS [NT],VarType(S) AS [ST],VarType(A) AS [AT] FROM (SELECT Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "N",
+          "S",
+          "A",
+          "Lo",
+          "Hi",
+          "NT",
+          "ST",
+          "AT"
+        ],
+        [
+          "1100",
+          "10284450",
+          "550.5",
+          "1",
+          "1100",
+          "20",
+          "20",
+          "5"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "N\tS\tA\tLo\tHi\tNT\tST\tAT\n1100\t10284450\t550.5\t1\t1100\t20\t20\t5\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "inner-global-all-kernels",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT N,S,A,Lo,Hi,VarType(N) AS [NT],VarType(S) AS [ST],VarType(A) AS [AT] FROM (SELECT Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "1"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "N",
+          "S",
+          "A",
+          "Lo",
+          "Hi",
+          "NT",
+          "ST",
+          "AT"
+        ],
+        [
+          "1100",
+          "10284450",
+          "550.5",
+          "1",
+          "1100",
+          "20",
+          "20",
+          "5"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "N\tS\tA\tLo\tHi\tNT\tST\tAT\n1100\t10284450\t550.5\t1\t1100\t20\t20\t5\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "inner-global-all-kernels",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT N,S,A,Lo,Hi,VarType(N) AS [NT],VarType(S) AS [ST],VarType(A) AS [AT] FROM (SELECT Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "N",
+          "S",
+          "A",
+          "Lo",
+          "Hi",
+          "NT",
+          "ST",
+          "AT"
+        ],
+        [
+          "1100",
+          "10284450",
+          "550.5",
+          "1",
+          "1100",
+          "20",
+          "20",
+          "5"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "N\tS\tA\tLo\tHi\tNT\tST\tAT\n1100\t10284450\t550.5\t1\t1100\t20\t20\t5\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "exact-inner-outer-global",
+      "streaming": false,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [Groups],Sum(N) AS [Population],Sum(S) AS [Total],Sum(A) AS [Means],Min(Lo) AS [LowId],Max(Hi) AS [HighId] FROM (SELECT Id Mod 17 AS [K],Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment GROUP BY Id Mod 17) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Groups",
+          "Population",
+          "Total",
+          "Means",
+          "LowId",
+          "HighId"
+        ],
+        [
+          "17",
+          "1100",
+          "10284450",
+          "9358.5",
+          "1",
+          "1100"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Groups\tPopulation\tTotal\tMeans\tLowId\tHighId\n17\t1100\t10284450\t9358.5\t1\t1100\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "exact-inner-outer-global",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [Groups],Sum(N) AS [Population],Sum(S) AS [Total],Sum(A) AS [Means],Min(Lo) AS [LowId],Max(Hi) AS [HighId] FROM (SELECT Id Mod 17 AS [K],Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment GROUP BY Id Mod 17) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Groups",
+          "Population",
+          "Total",
+          "Means",
+          "LowId",
+          "HighId"
+        ],
+        [
+          "17",
+          "1100",
+          "10284450",
+          "9358.5",
+          "1",
+          "1100"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Groups\tPopulation\tTotal\tMeans\tLowId\tHighId\n17\t1100\t10284450\t9358.5\t1\t1100\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "text-inner-outer-group",
+      "streaming": false,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT CLng(N Mod 2) AS [Parity],Count(*) AS [Groups],Sum(N) AS [Population],Avg(A) AS [MeanOfMeans],Min(Lo) AS [LowId],Max(Hi) AS [HighId] FROM (SELECT Left(Label,8) AS [K],Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment GROUP BY Left(Label,8)) Q GROUP BY CLng(N Mod 2)",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Parity",
+          "Groups",
+          "Population",
+          "MeanOfMeans",
+          "LowId",
+          "HighId"
+        ],
+        [
+          "1",
+          "2",
+          "100",
+          "575",
+          "1",
+          "1100"
+        ],
+        [
+          "0",
+          "10",
+          "1000",
+          "599.5",
+          "100",
+          "1099"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Parity\tGroups\tPopulation\tMeanOfMeans\tLowId\tHighId\n1\t2\t100\t575\t1\t1100\n0\t10\t1000\t599.5\t100\t1099\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "text-inner-outer-group",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT CLng(N Mod 2) AS [Parity],Count(*) AS [Groups],Sum(N) AS [Population],Avg(A) AS [MeanOfMeans],Min(Lo) AS [LowId],Max(Hi) AS [HighId] FROM (SELECT Left(Label,8) AS [K],Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment GROUP BY Left(Label,8)) Q GROUP BY CLng(N Mod 2)",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Parity",
+          "Groups",
+          "Population",
+          "MeanOfMeans",
+          "LowId",
+          "HighId"
+        ],
+        [
+          "1",
+          "2",
+          "100",
+          "575",
+          "1",
+          "1100"
+        ],
+        [
+          "0",
+          "10",
+          "1000",
+          "599.5",
+          "100",
+          "1099"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Parity\tGroups\tPopulation\tMeanOfMeans\tLowId\tHighId\n1\t2\t100\t575\t1\t1100\n0\t10\t1000\t599.5\t100\t1099\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "inner-having-before-outer-global",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [Groups],Sum(N) AS [Population],Sum(S) AS [Total] FROM (SELECT Id Mod 17 AS [K],Count(*) AS [N],Sum(Score) AS [S] FROM LargeDeployment GROUP BY Id Mod 17 HAVING Count(*)=64) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Groups",
+          "Population",
+          "Total"
+        ],
+        [
+          "5",
+          "320",
+          "2991840"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Groups\tPopulation\tTotal\n5\t320\t2991840\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "middle-filter-top-before-outer-global",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [Groups],Sum(N) AS [Population],Sum(J) AS [Keys] FROM (SELECT TOP 4 K,N,CLng(K+1) AS [J] FROM (SELECT Id Mod 17 AS [K],Count(*) AS [N] FROM LargeDeployment GROUP BY Id Mod 17) I WHERE N=64) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Groups",
+          "Population",
+          "Keys"
+        ],
+        [
+          "4",
+          "256",
+          "62"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Groups\tPopulation\tKeys\n4\t256\t62\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "three-stateful-barriers",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [Rows],Sum(G) AS [Groups],Sum(P) AS [Population] FROM (SELECT N,Count(*) AS [G],Sum(N) AS [P] FROM (SELECT Id Mod 17 AS [K],Count(*) AS [N] FROM LargeDeployment GROUP BY Id Mod 17) I GROUP BY N) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Rows",
+          "Groups",
+          "Population"
+        ],
+        [
+          "2",
+          "17",
+          "1100"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Rows\tGroups\tPopulation\n2\t17\t1100\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "empty-global-one-versus-keyed-zero",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [N] FROM (SELECT Count(*) AS [N] FROM LargeDeployment WHERE False) Q UNION ALL SELECT Count(*) FROM (SELECT Id,Count(*) AS [N] FROM LargeDeployment WHERE False GROUP BY Id) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "N"
+        ],
+        [
+          "1"
+        ],
+        [
+          "0"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "N\n1\n0\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "retained-raw-error-and-natural-carriers",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT LenB(R) AS [Bytes],AscW(R) AS [Unit],CLng(E) AS [Code],VarType(N) AS [NT],VarType(C) AS [CT],VarType(D) AS [DT],CLng(C) AS [Money],CLng(D) AS [Mean] FROM (SELECT Min(ChrW(55296)) AS [R],Min(CVErr(Id)) AS [E],Count(*) AS [N],Sum(CCur(Score)) AS [C],Avg(CDec(Id)) AS [D] FROM LargeDeployment WHERE Id=1) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Bytes",
+          "Unit",
+          "Code",
+          "NT",
+          "CT",
+          "DT",
+          "Money",
+          "Mean"
+        ],
+        [
+          "2",
+          "-10240",
+          "1",
+          "20",
+          "6",
+          "14",
+          "8",
+          "1"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Bytes\tUnit\tCode\tNT\tCT\tDT\tMoney\tMean\n2\t-10240\t1\t20\t6\t14\t8\t1\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "inner-having-selected-suppression",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [N] FROM (SELECT Sum(1/0) AS [Bad] FROM LargeDeployment HAVING False) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "N"
+        ],
+        [
+          "0"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "N\n0\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "inner-late-error-outer-row-prefix",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT TOP 1 K FROM (SELECT Left(Label,8) AS [K],10\\(Max(Id)-1100) AS [Bad] FROM LargeDeployment GROUP BY Left(Label,8)) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "1"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "K"
+        ],
+        [
+          "\"row-0000\""
+        ]
+      ],
+      "expected_error_fragment": "division by zero",
+      "exit_code": 2,
+      "stdout": "K\n\"\"\"row-0000\"\"\"\n",
+      "stderr": "error: division by zero\n",
+      "matched": true
+    },
+    {
+      "case": "inner-late-error-no-outer-global-eof",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [N] FROM (SELECT Left(Label,8) AS [K],10\\(Max(Id)-1100) AS [Bad] FROM LargeDeployment GROUP BY Left(Label,8)) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "1"
+      ],
+      "expected_rows_or_prefix": null,
+      "expected_error_fragment": "division by zero",
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: division by zero\n",
+      "matched": true
+    },
+    {
+      "case": "low-query-work",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) FROM (SELECT Count(*) AS [N] FROM LargeDeployment) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128",
+        "--execution-steps",
+        "1"
+      ],
+      "expected_rows_or_prefix": null,
+      "expected_error_fragment": "resource",
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: Steps resource limit exceeded (0 remaining)\n",
+      "matched": true
+    },
+    {
+      "case": "inner-global-all-kernels",
+      "streaming": false,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT N,S,A,Lo,Hi,VarType(N) AS [NT],VarType(S) AS [ST],VarType(A) AS [AT] FROM (SELECT Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "N",
+          "S",
+          "A",
+          "Lo",
+          "Hi",
+          "NT",
+          "ST",
+          "AT"
+        ],
+        [
+          "1100",
+          "10284450",
+          "550.5",
+          "1",
+          "1100",
+          "20",
+          "20",
+          "5"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "N\tS\tA\tLo\tHi\tNT\tST\tAT\n1100\t10284450\t550.5\t1\t1100\t20\t20\t5\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "inner-global-all-kernels",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT N,S,A,Lo,Hi,VarType(N) AS [NT],VarType(S) AS [ST],VarType(A) AS [AT] FROM (SELECT Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "1"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "N",
+          "S",
+          "A",
+          "Lo",
+          "Hi",
+          "NT",
+          "ST",
+          "AT"
+        ],
+        [
+          "1100",
+          "10284450",
+          "550.5",
+          "1",
+          "1100",
+          "20",
+          "20",
+          "5"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "N\tS\tA\tLo\tHi\tNT\tST\tAT\n1100\t10284450\t550.5\t1\t1100\t20\t20\t5\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "inner-global-all-kernels",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT N,S,A,Lo,Hi,VarType(N) AS [NT],VarType(S) AS [ST],VarType(A) AS [AT] FROM (SELECT Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "N",
+          "S",
+          "A",
+          "Lo",
+          "Hi",
+          "NT",
+          "ST",
+          "AT"
+        ],
+        [
+          "1100",
+          "10284450",
+          "550.5",
+          "1",
+          "1100",
+          "20",
+          "20",
+          "5"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "N\tS\tA\tLo\tHi\tNT\tST\tAT\n1100\t10284450\t550.5\t1\t1100\t20\t20\t5\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "exact-inner-outer-global",
+      "streaming": false,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [Groups],Sum(N) AS [Population],Sum(S) AS [Total],Sum(A) AS [Means],Min(Lo) AS [LowId],Max(Hi) AS [HighId] FROM (SELECT Id Mod 17 AS [K],Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment GROUP BY Id Mod 17) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Groups",
+          "Population",
+          "Total",
+          "Means",
+          "LowId",
+          "HighId"
+        ],
+        [
+          "17",
+          "1100",
+          "10284450",
+          "9358.5",
+          "1",
+          "1100"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Groups\tPopulation\tTotal\tMeans\tLowId\tHighId\n17\t1100\t10284450\t9358.5\t1\t1100\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "exact-inner-outer-global",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [Groups],Sum(N) AS [Population],Sum(S) AS [Total],Sum(A) AS [Means],Min(Lo) AS [LowId],Max(Hi) AS [HighId] FROM (SELECT Id Mod 17 AS [K],Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment GROUP BY Id Mod 17) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Groups",
+          "Population",
+          "Total",
+          "Means",
+          "LowId",
+          "HighId"
+        ],
+        [
+          "17",
+          "1100",
+          "10284450",
+          "9358.5",
+          "1",
+          "1100"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Groups\tPopulation\tTotal\tMeans\tLowId\tHighId\n17\t1100\t10284450\t9358.5\t1\t1100\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "text-inner-outer-group",
+      "streaming": false,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT CLng(N Mod 2) AS [Parity],Count(*) AS [Groups],Sum(N) AS [Population],Avg(A) AS [MeanOfMeans],Min(Lo) AS [LowId],Max(Hi) AS [HighId] FROM (SELECT Left(Label,8) AS [K],Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment GROUP BY Left(Label,8)) Q GROUP BY CLng(N Mod 2)",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Parity",
+          "Groups",
+          "Population",
+          "MeanOfMeans",
+          "LowId",
+          "HighId"
+        ],
+        [
+          "1",
+          "2",
+          "100",
+          "575",
+          "1",
+          "1100"
+        ],
+        [
+          "0",
+          "10",
+          "1000",
+          "599.5",
+          "100",
+          "1099"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Parity\tGroups\tPopulation\tMeanOfMeans\tLowId\tHighId\n1\t2\t100\t575\t1\t1100\n0\t10\t1000\t599.5\t100\t1099\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "text-inner-outer-group",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT CLng(N Mod 2) AS [Parity],Count(*) AS [Groups],Sum(N) AS [Population],Avg(A) AS [MeanOfMeans],Min(Lo) AS [LowId],Max(Hi) AS [HighId] FROM (SELECT Left(Label,8) AS [K],Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment GROUP BY Left(Label,8)) Q GROUP BY CLng(N Mod 2)",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Parity",
+          "Groups",
+          "Population",
+          "MeanOfMeans",
+          "LowId",
+          "HighId"
+        ],
+        [
+          "1",
+          "2",
+          "100",
+          "575",
+          "1",
+          "1100"
+        ],
+        [
+          "0",
+          "10",
+          "1000",
+          "599.5",
+          "100",
+          "1099"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Parity\tGroups\tPopulation\tMeanOfMeans\tLowId\tHighId\n1\t2\t100\t575\t1\t1100\n0\t10\t1000\t599.5\t100\t1099\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "inner-having-before-outer-global",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [Groups],Sum(N) AS [Population],Sum(S) AS [Total] FROM (SELECT Id Mod 17 AS [K],Count(*) AS [N],Sum(Score) AS [S] FROM LargeDeployment GROUP BY Id Mod 17 HAVING Count(*)=64) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Groups",
+          "Population",
+          "Total"
+        ],
+        [
+          "5",
+          "320",
+          "2991840"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Groups\tPopulation\tTotal\n5\t320\t2991840\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "middle-filter-top-before-outer-global",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [Groups],Sum(N) AS [Population],Sum(J) AS [Keys] FROM (SELECT TOP 4 K,N,CLng(K+1) AS [J] FROM (SELECT Id Mod 17 AS [K],Count(*) AS [N] FROM LargeDeployment GROUP BY Id Mod 17) I WHERE N=64) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Groups",
+          "Population",
+          "Keys"
+        ],
+        [
+          "4",
+          "256",
+          "62"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Groups\tPopulation\tKeys\n4\t256\t62\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "three-stateful-barriers",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [Rows],Sum(G) AS [Groups],Sum(P) AS [Population] FROM (SELECT N,Count(*) AS [G],Sum(N) AS [P] FROM (SELECT Id Mod 17 AS [K],Count(*) AS [N] FROM LargeDeployment GROUP BY Id Mod 17) I GROUP BY N) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Rows",
+          "Groups",
+          "Population"
+        ],
+        [
+          "2",
+          "17",
+          "1100"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Rows\tGroups\tPopulation\n2\t17\t1100\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "empty-global-one-versus-keyed-zero",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [N] FROM (SELECT Count(*) AS [N] FROM LargeDeployment WHERE False) Q UNION ALL SELECT Count(*) FROM (SELECT Id,Count(*) AS [N] FROM LargeDeployment WHERE False GROUP BY Id) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "N"
+        ],
+        [
+          "1"
+        ],
+        [
+          "0"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "N\n1\n0\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "retained-raw-error-and-natural-carriers",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT LenB(R) AS [Bytes],AscW(R) AS [Unit],CLng(E) AS [Code],VarType(N) AS [NT],VarType(C) AS [CT],VarType(D) AS [DT],CLng(C) AS [Money],CLng(D) AS [Mean] FROM (SELECT Min(ChrW(55296)) AS [R],Min(CVErr(Id)) AS [E],Count(*) AS [N],Sum(CCur(Score)) AS [C],Avg(CDec(Id)) AS [D] FROM LargeDeployment WHERE Id=1) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Bytes",
+          "Unit",
+          "Code",
+          "NT",
+          "CT",
+          "DT",
+          "Money",
+          "Mean"
+        ],
+        [
+          "2",
+          "-10240",
+          "1",
+          "20",
+          "6",
+          "14",
+          "8",
+          "1"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Bytes\tUnit\tCode\tNT\tCT\tDT\tMoney\tMean\n2\t-10240\t1\t20\t6\t14\t8\t1\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "inner-having-selected-suppression",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [N] FROM (SELECT Sum(1/0) AS [Bad] FROM LargeDeployment HAVING False) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "N"
+        ],
+        [
+          "0"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "N\n0\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "inner-late-error-outer-row-prefix",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT TOP 1 K FROM (SELECT Left(Label,8) AS [K],10\\(Max(Id)-1100) AS [Bad] FROM LargeDeployment GROUP BY Left(Label,8)) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "1"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "K"
+        ],
+        [
+          "\"row-0000\""
+        ]
+      ],
+      "expected_error_fragment": "division by zero",
+      "exit_code": 2,
+      "stdout": "K\n\"\"\"row-0000\"\"\"\n",
+      "stderr": "error: division by zero\n",
+      "matched": true
+    },
+    {
+      "case": "inner-late-error-no-outer-global-eof",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [N] FROM (SELECT Left(Label,8) AS [K],10\\(Max(Id)-1100) AS [Bad] FROM LargeDeployment GROUP BY Left(Label,8)) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "1"
+      ],
+      "expected_rows_or_prefix": null,
+      "expected_error_fragment": "division by zero",
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: division by zero\n",
+      "matched": true
+    },
+    {
+      "case": "low-query-work",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) FROM (SELECT Count(*) AS [N] FROM LargeDeployment) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128",
+        "--execution-steps",
+        "1"
+      ],
+      "expected_rows_or_prefix": null,
+      "expected_error_fragment": "resource",
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: Steps resource limit exceeded (0 remaining)\n",
+      "matched": true
+    },
+    {
+      "case": "inner-global-all-kernels",
+      "streaming": false,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT N,S,A,Lo,Hi,VarType(N) AS [NT],VarType(S) AS [ST],VarType(A) AS [AT] FROM (SELECT Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "N",
+          "S",
+          "A",
+          "Lo",
+          "Hi",
+          "NT",
+          "ST",
+          "AT"
+        ],
+        [
+          "1100",
+          "10284450",
+          "550.5",
+          "1",
+          "1100",
+          "20",
+          "20",
+          "5"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "N\tS\tA\tLo\tHi\tNT\tST\tAT\n1100\t10284450\t550.5\t1\t1100\t20\t20\t5\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "inner-global-all-kernels",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT N,S,A,Lo,Hi,VarType(N) AS [NT],VarType(S) AS [ST],VarType(A) AS [AT] FROM (SELECT Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "1"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "N",
+          "S",
+          "A",
+          "Lo",
+          "Hi",
+          "NT",
+          "ST",
+          "AT"
+        ],
+        [
+          "1100",
+          "10284450",
+          "550.5",
+          "1",
+          "1100",
+          "20",
+          "20",
+          "5"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "N\tS\tA\tLo\tHi\tNT\tST\tAT\n1100\t10284450\t550.5\t1\t1100\t20\t20\t5\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "inner-global-all-kernels",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT N,S,A,Lo,Hi,VarType(N) AS [NT],VarType(S) AS [ST],VarType(A) AS [AT] FROM (SELECT Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "N",
+          "S",
+          "A",
+          "Lo",
+          "Hi",
+          "NT",
+          "ST",
+          "AT"
+        ],
+        [
+          "1100",
+          "10284450",
+          "550.5",
+          "1",
+          "1100",
+          "20",
+          "20",
+          "5"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "N\tS\tA\tLo\tHi\tNT\tST\tAT\n1100\t10284450\t550.5\t1\t1100\t20\t20\t5\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "exact-inner-outer-global",
+      "streaming": false,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [Groups],Sum(N) AS [Population],Sum(S) AS [Total],Sum(A) AS [Means],Min(Lo) AS [LowId],Max(Hi) AS [HighId] FROM (SELECT Id Mod 17 AS [K],Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment GROUP BY Id Mod 17) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Groups",
+          "Population",
+          "Total",
+          "Means",
+          "LowId",
+          "HighId"
+        ],
+        [
+          "17",
+          "1100",
+          "10284450",
+          "9358.5",
+          "1",
+          "1100"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Groups\tPopulation\tTotal\tMeans\tLowId\tHighId\n17\t1100\t10284450\t9358.5\t1\t1100\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "exact-inner-outer-global",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [Groups],Sum(N) AS [Population],Sum(S) AS [Total],Sum(A) AS [Means],Min(Lo) AS [LowId],Max(Hi) AS [HighId] FROM (SELECT Id Mod 17 AS [K],Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment GROUP BY Id Mod 17) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Groups",
+          "Population",
+          "Total",
+          "Means",
+          "LowId",
+          "HighId"
+        ],
+        [
+          "17",
+          "1100",
+          "10284450",
+          "9358.5",
+          "1",
+          "1100"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Groups\tPopulation\tTotal\tMeans\tLowId\tHighId\n17\t1100\t10284450\t9358.5\t1\t1100\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "text-inner-outer-group",
+      "streaming": false,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT CLng(N Mod 2) AS [Parity],Count(*) AS [Groups],Sum(N) AS [Population],Avg(A) AS [MeanOfMeans],Min(Lo) AS [LowId],Max(Hi) AS [HighId] FROM (SELECT Left(Label,8) AS [K],Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment GROUP BY Left(Label,8)) Q GROUP BY CLng(N Mod 2)",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Parity",
+          "Groups",
+          "Population",
+          "MeanOfMeans",
+          "LowId",
+          "HighId"
+        ],
+        [
+          "1",
+          "2",
+          "100",
+          "575",
+          "1",
+          "1100"
+        ],
+        [
+          "0",
+          "10",
+          "1000",
+          "599.5",
+          "100",
+          "1099"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Parity\tGroups\tPopulation\tMeanOfMeans\tLowId\tHighId\n1\t2\t100\t575\t1\t1100\n0\t10\t1000\t599.5\t100\t1099\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "text-inner-outer-group",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT CLng(N Mod 2) AS [Parity],Count(*) AS [Groups],Sum(N) AS [Population],Avg(A) AS [MeanOfMeans],Min(Lo) AS [LowId],Max(Hi) AS [HighId] FROM (SELECT Left(Label,8) AS [K],Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment GROUP BY Left(Label,8)) Q GROUP BY CLng(N Mod 2)",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Parity",
+          "Groups",
+          "Population",
+          "MeanOfMeans",
+          "LowId",
+          "HighId"
+        ],
+        [
+          "1",
+          "2",
+          "100",
+          "575",
+          "1",
+          "1100"
+        ],
+        [
+          "0",
+          "10",
+          "1000",
+          "599.5",
+          "100",
+          "1099"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Parity\tGroups\tPopulation\tMeanOfMeans\tLowId\tHighId\n1\t2\t100\t575\t1\t1100\n0\t10\t1000\t599.5\t100\t1099\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "inner-having-before-outer-global",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [Groups],Sum(N) AS [Population],Sum(S) AS [Total] FROM (SELECT Id Mod 17 AS [K],Count(*) AS [N],Sum(Score) AS [S] FROM LargeDeployment GROUP BY Id Mod 17 HAVING Count(*)=64) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Groups",
+          "Population",
+          "Total"
+        ],
+        [
+          "5",
+          "320",
+          "2991840"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Groups\tPopulation\tTotal\n5\t320\t2991840\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "middle-filter-top-before-outer-global",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [Groups],Sum(N) AS [Population],Sum(J) AS [Keys] FROM (SELECT TOP 4 K,N,CLng(K+1) AS [J] FROM (SELECT Id Mod 17 AS [K],Count(*) AS [N] FROM LargeDeployment GROUP BY Id Mod 17) I WHERE N=64) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Groups",
+          "Population",
+          "Keys"
+        ],
+        [
+          "4",
+          "256",
+          "62"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Groups\tPopulation\tKeys\n4\t256\t62\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "three-stateful-barriers",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [Rows],Sum(G) AS [Groups],Sum(P) AS [Population] FROM (SELECT N,Count(*) AS [G],Sum(N) AS [P] FROM (SELECT Id Mod 17 AS [K],Count(*) AS [N] FROM LargeDeployment GROUP BY Id Mod 17) I GROUP BY N) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Rows",
+          "Groups",
+          "Population"
+        ],
+        [
+          "2",
+          "17",
+          "1100"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Rows\tGroups\tPopulation\n2\t17\t1100\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "empty-global-one-versus-keyed-zero",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [N] FROM (SELECT Count(*) AS [N] FROM LargeDeployment WHERE False) Q UNION ALL SELECT Count(*) FROM (SELECT Id,Count(*) AS [N] FROM LargeDeployment WHERE False GROUP BY Id) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "N"
+        ],
+        [
+          "1"
+        ],
+        [
+          "0"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "N\n1\n0\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "retained-raw-error-and-natural-carriers",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT LenB(R) AS [Bytes],AscW(R) AS [Unit],CLng(E) AS [Code],VarType(N) AS [NT],VarType(C) AS [CT],VarType(D) AS [DT],CLng(C) AS [Money],CLng(D) AS [Mean] FROM (SELECT Min(ChrW(55296)) AS [R],Min(CVErr(Id)) AS [E],Count(*) AS [N],Sum(CCur(Score)) AS [C],Avg(CDec(Id)) AS [D] FROM LargeDeployment WHERE Id=1) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Bytes",
+          "Unit",
+          "Code",
+          "NT",
+          "CT",
+          "DT",
+          "Money",
+          "Mean"
+        ],
+        [
+          "2",
+          "-10240",
+          "1",
+          "20",
+          "6",
+          "14",
+          "8",
+          "1"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Bytes\tUnit\tCode\tNT\tCT\tDT\tMoney\tMean\n2\t-10240\t1\t20\t6\t14\t8\t1\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "inner-having-selected-suppression",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [N] FROM (SELECT Sum(1/0) AS [Bad] FROM LargeDeployment HAVING False) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "N"
+        ],
+        [
+          "0"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "N\n0\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "inner-late-error-outer-row-prefix",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT TOP 1 K FROM (SELECT Left(Label,8) AS [K],10\\(Max(Id)-1100) AS [Bad] FROM LargeDeployment GROUP BY Left(Label,8)) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "1"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "K"
+        ],
+        [
+          "\"row-0000\""
+        ]
+      ],
+      "expected_error_fragment": "division by zero",
+      "exit_code": 2,
+      "stdout": "K\n\"\"\"row-0000\"\"\"\n",
+      "stderr": "error: division by zero\n",
+      "matched": true
+    },
+    {
+      "case": "inner-late-error-no-outer-global-eof",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [N] FROM (SELECT Left(Label,8) AS [K],10\\(Max(Id)-1100) AS [Bad] FROM LargeDeployment GROUP BY Left(Label,8)) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "1"
+      ],
+      "expected_rows_or_prefix": null,
+      "expected_error_fragment": "division by zero",
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: division by zero\n",
+      "matched": true
+    },
+    {
+      "case": "low-query-work",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) FROM (SELECT Count(*) AS [N] FROM LargeDeployment) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128",
+        "--execution-steps",
+        "1"
+      ],
+      "expected_rows_or_prefix": null,
+      "expected_error_fragment": "resource",
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: Steps resource limit exceeded (0 remaining)\n",
+      "matched": true
+    },
+    {
+      "case": "inner-global-all-kernels",
+      "streaming": false,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT N,S,A,Lo,Hi,VarType(N) AS [NT],VarType(S) AS [ST],VarType(A) AS [AT] FROM (SELECT Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "N",
+          "S",
+          "A",
+          "Lo",
+          "Hi",
+          "NT",
+          "ST",
+          "AT"
+        ],
+        [
+          "1100",
+          "10284450",
+          "550.5",
+          "1",
+          "1100",
+          "20",
+          "20",
+          "5"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "N\tS\tA\tLo\tHi\tNT\tST\tAT\n1100\t10284450\t550.5\t1\t1100\t20\t20\t5\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "inner-global-all-kernels",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT N,S,A,Lo,Hi,VarType(N) AS [NT],VarType(S) AS [ST],VarType(A) AS [AT] FROM (SELECT Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "1"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "N",
+          "S",
+          "A",
+          "Lo",
+          "Hi",
+          "NT",
+          "ST",
+          "AT"
+        ],
+        [
+          "1100",
+          "10284450",
+          "550.5",
+          "1",
+          "1100",
+          "20",
+          "20",
+          "5"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "N\tS\tA\tLo\tHi\tNT\tST\tAT\n1100\t10284450\t550.5\t1\t1100\t20\t20\t5\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "inner-global-all-kernels",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT N,S,A,Lo,Hi,VarType(N) AS [NT],VarType(S) AS [ST],VarType(A) AS [AT] FROM (SELECT Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "N",
+          "S",
+          "A",
+          "Lo",
+          "Hi",
+          "NT",
+          "ST",
+          "AT"
+        ],
+        [
+          "1100",
+          "10284450",
+          "550.5",
+          "1",
+          "1100",
+          "20",
+          "20",
+          "5"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "N\tS\tA\tLo\tHi\tNT\tST\tAT\n1100\t10284450\t550.5\t1\t1100\t20\t20\t5\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "exact-inner-outer-global",
+      "streaming": false,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [Groups],Sum(N) AS [Population],Sum(S) AS [Total],Sum(A) AS [Means],Min(Lo) AS [LowId],Max(Hi) AS [HighId] FROM (SELECT Id Mod 17 AS [K],Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment GROUP BY Id Mod 17) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Groups",
+          "Population",
+          "Total",
+          "Means",
+          "LowId",
+          "HighId"
+        ],
+        [
+          "17",
+          "1100",
+          "10284450",
+          "9358.5",
+          "1",
+          "1100"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Groups\tPopulation\tTotal\tMeans\tLowId\tHighId\n17\t1100\t10284450\t9358.5\t1\t1100\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "exact-inner-outer-global",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [Groups],Sum(N) AS [Population],Sum(S) AS [Total],Sum(A) AS [Means],Min(Lo) AS [LowId],Max(Hi) AS [HighId] FROM (SELECT Id Mod 17 AS [K],Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment GROUP BY Id Mod 17) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Groups",
+          "Population",
+          "Total",
+          "Means",
+          "LowId",
+          "HighId"
+        ],
+        [
+          "17",
+          "1100",
+          "10284450",
+          "9358.5",
+          "1",
+          "1100"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Groups\tPopulation\tTotal\tMeans\tLowId\tHighId\n17\t1100\t10284450\t9358.5\t1\t1100\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "text-inner-outer-group",
+      "streaming": false,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT CLng(N Mod 2) AS [Parity],Count(*) AS [Groups],Sum(N) AS [Population],Avg(A) AS [MeanOfMeans],Min(Lo) AS [LowId],Max(Hi) AS [HighId] FROM (SELECT Left(Label,8) AS [K],Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment GROUP BY Left(Label,8)) Q GROUP BY CLng(N Mod 2)",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Parity",
+          "Groups",
+          "Population",
+          "MeanOfMeans",
+          "LowId",
+          "HighId"
+        ],
+        [
+          "1",
+          "2",
+          "100",
+          "575",
+          "1",
+          "1100"
+        ],
+        [
+          "0",
+          "10",
+          "1000",
+          "599.5",
+          "100",
+          "1099"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Parity\tGroups\tPopulation\tMeanOfMeans\tLowId\tHighId\n1\t2\t100\t575\t1\t1100\n0\t10\t1000\t599.5\t100\t1099\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "text-inner-outer-group",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT CLng(N Mod 2) AS [Parity],Count(*) AS [Groups],Sum(N) AS [Population],Avg(A) AS [MeanOfMeans],Min(Lo) AS [LowId],Max(Hi) AS [HighId] FROM (SELECT Left(Label,8) AS [K],Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment GROUP BY Left(Label,8)) Q GROUP BY CLng(N Mod 2)",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Parity",
+          "Groups",
+          "Population",
+          "MeanOfMeans",
+          "LowId",
+          "HighId"
+        ],
+        [
+          "1",
+          "2",
+          "100",
+          "575",
+          "1",
+          "1100"
+        ],
+        [
+          "0",
+          "10",
+          "1000",
+          "599.5",
+          "100",
+          "1099"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Parity\tGroups\tPopulation\tMeanOfMeans\tLowId\tHighId\n1\t2\t100\t575\t1\t1100\n0\t10\t1000\t599.5\t100\t1099\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "inner-having-before-outer-global",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [Groups],Sum(N) AS [Population],Sum(S) AS [Total] FROM (SELECT Id Mod 17 AS [K],Count(*) AS [N],Sum(Score) AS [S] FROM LargeDeployment GROUP BY Id Mod 17 HAVING Count(*)=64) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Groups",
+          "Population",
+          "Total"
+        ],
+        [
+          "5",
+          "320",
+          "2991840"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Groups\tPopulation\tTotal\n5\t320\t2991840\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "middle-filter-top-before-outer-global",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [Groups],Sum(N) AS [Population],Sum(J) AS [Keys] FROM (SELECT TOP 4 K,N,CLng(K+1) AS [J] FROM (SELECT Id Mod 17 AS [K],Count(*) AS [N] FROM LargeDeployment GROUP BY Id Mod 17) I WHERE N=64) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Groups",
+          "Population",
+          "Keys"
+        ],
+        [
+          "4",
+          "256",
+          "62"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Groups\tPopulation\tKeys\n4\t256\t62\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "three-stateful-barriers",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [Rows],Sum(G) AS [Groups],Sum(P) AS [Population] FROM (SELECT N,Count(*) AS [G],Sum(N) AS [P] FROM (SELECT Id Mod 17 AS [K],Count(*) AS [N] FROM LargeDeployment GROUP BY Id Mod 17) I GROUP BY N) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Rows",
+          "Groups",
+          "Population"
+        ],
+        [
+          "2",
+          "17",
+          "1100"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Rows\tGroups\tPopulation\n2\t17\t1100\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "empty-global-one-versus-keyed-zero",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [N] FROM (SELECT Count(*) AS [N] FROM LargeDeployment WHERE False) Q UNION ALL SELECT Count(*) FROM (SELECT Id,Count(*) AS [N] FROM LargeDeployment WHERE False GROUP BY Id) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "N"
+        ],
+        [
+          "1"
+        ],
+        [
+          "0"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "N\n1\n0\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "retained-raw-error-and-natural-carriers",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT LenB(R) AS [Bytes],AscW(R) AS [Unit],CLng(E) AS [Code],VarType(N) AS [NT],VarType(C) AS [CT],VarType(D) AS [DT],CLng(C) AS [Money],CLng(D) AS [Mean] FROM (SELECT Min(ChrW(55296)) AS [R],Min(CVErr(Id)) AS [E],Count(*) AS [N],Sum(CCur(Score)) AS [C],Avg(CDec(Id)) AS [D] FROM LargeDeployment WHERE Id=1) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Bytes",
+          "Unit",
+          "Code",
+          "NT",
+          "CT",
+          "DT",
+          "Money",
+          "Mean"
+        ],
+        [
+          "2",
+          "-10240",
+          "1",
+          "20",
+          "6",
+          "14",
+          "8",
+          "1"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Bytes\tUnit\tCode\tNT\tCT\tDT\tMoney\tMean\n2\t-10240\t1\t20\t6\t14\t8\t1\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "inner-having-selected-suppression",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [N] FROM (SELECT Sum(1/0) AS [Bad] FROM LargeDeployment HAVING False) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "N"
+        ],
+        [
+          "0"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "N\n0\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "inner-late-error-outer-row-prefix",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT TOP 1 K FROM (SELECT Left(Label,8) AS [K],10\\(Max(Id)-1100) AS [Bad] FROM LargeDeployment GROUP BY Left(Label,8)) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "1"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "K"
+        ],
+        [
+          "\"row-0000\""
+        ]
+      ],
+      "expected_error_fragment": "division by zero",
+      "exit_code": 2,
+      "stdout": "K\n\"\"\"row-0000\"\"\"\n",
+      "stderr": "error: division by zero\n",
+      "matched": true
+    },
+    {
+      "case": "inner-late-error-no-outer-global-eof",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [N] FROM (SELECT Left(Label,8) AS [K],10\\(Max(Id)-1100) AS [Bad] FROM LargeDeployment GROUP BY Left(Label,8)) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "1"
+      ],
+      "expected_rows_or_prefix": null,
+      "expected_error_fragment": "division by zero",
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: division by zero\n",
+      "matched": true
+    },
+    {
+      "case": "low-query-work",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) FROM (SELECT Count(*) AS [N] FROM LargeDeployment) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128",
+        "--execution-steps",
+        "1"
+      ],
+      "expected_rows_or_prefix": null,
+      "expected_error_fragment": "resource",
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: Steps resource limit exceeded (0 remaining)\n",
+      "matched": true
+    },
+    {
+      "case": "inner-global-all-kernels",
+      "streaming": false,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT N,S,A,Lo,Hi,VarType(N) AS [NT],VarType(S) AS [ST],VarType(A) AS [AT] FROM (SELECT Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "N",
+          "S",
+          "A",
+          "Lo",
+          "Hi",
+          "NT",
+          "ST",
+          "AT"
+        ],
+        [
+          "1100",
+          "10284450",
+          "550.5",
+          "1",
+          "1100",
+          "20",
+          "20",
+          "5"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "N\tS\tA\tLo\tHi\tNT\tST\tAT\n1100\t10284450\t550.5\t1\t1100\t20\t20\t5\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "inner-global-all-kernels",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT N,S,A,Lo,Hi,VarType(N) AS [NT],VarType(S) AS [ST],VarType(A) AS [AT] FROM (SELECT Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "1"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "N",
+          "S",
+          "A",
+          "Lo",
+          "Hi",
+          "NT",
+          "ST",
+          "AT"
+        ],
+        [
+          "1100",
+          "10284450",
+          "550.5",
+          "1",
+          "1100",
+          "20",
+          "20",
+          "5"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "N\tS\tA\tLo\tHi\tNT\tST\tAT\n1100\t10284450\t550.5\t1\t1100\t20\t20\t5\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "inner-global-all-kernels",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT N,S,A,Lo,Hi,VarType(N) AS [NT],VarType(S) AS [ST],VarType(A) AS [AT] FROM (SELECT Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "N",
+          "S",
+          "A",
+          "Lo",
+          "Hi",
+          "NT",
+          "ST",
+          "AT"
+        ],
+        [
+          "1100",
+          "10284450",
+          "550.5",
+          "1",
+          "1100",
+          "20",
+          "20",
+          "5"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "N\tS\tA\tLo\tHi\tNT\tST\tAT\n1100\t10284450\t550.5\t1\t1100\t20\t20\t5\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "exact-inner-outer-global",
+      "streaming": false,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [Groups],Sum(N) AS [Population],Sum(S) AS [Total],Sum(A) AS [Means],Min(Lo) AS [LowId],Max(Hi) AS [HighId] FROM (SELECT Id Mod 17 AS [K],Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment GROUP BY Id Mod 17) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Groups",
+          "Population",
+          "Total",
+          "Means",
+          "LowId",
+          "HighId"
+        ],
+        [
+          "17",
+          "1100",
+          "10284450",
+          "9358.5",
+          "1",
+          "1100"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Groups\tPopulation\tTotal\tMeans\tLowId\tHighId\n17\t1100\t10284450\t9358.5\t1\t1100\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "exact-inner-outer-global",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [Groups],Sum(N) AS [Population],Sum(S) AS [Total],Sum(A) AS [Means],Min(Lo) AS [LowId],Max(Hi) AS [HighId] FROM (SELECT Id Mod 17 AS [K],Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment GROUP BY Id Mod 17) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Groups",
+          "Population",
+          "Total",
+          "Means",
+          "LowId",
+          "HighId"
+        ],
+        [
+          "17",
+          "1100",
+          "10284450",
+          "9358.5",
+          "1",
+          "1100"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Groups\tPopulation\tTotal\tMeans\tLowId\tHighId\n17\t1100\t10284450\t9358.5\t1\t1100\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "text-inner-outer-group",
+      "streaming": false,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT CLng(N Mod 2) AS [Parity],Count(*) AS [Groups],Sum(N) AS [Population],Avg(A) AS [MeanOfMeans],Min(Lo) AS [LowId],Max(Hi) AS [HighId] FROM (SELECT Left(Label,8) AS [K],Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment GROUP BY Left(Label,8)) Q GROUP BY CLng(N Mod 2)",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Parity",
+          "Groups",
+          "Population",
+          "MeanOfMeans",
+          "LowId",
+          "HighId"
+        ],
+        [
+          "1",
+          "2",
+          "100",
+          "575",
+          "1",
+          "1100"
+        ],
+        [
+          "0",
+          "10",
+          "1000",
+          "599.5",
+          "100",
+          "1099"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Parity\tGroups\tPopulation\tMeanOfMeans\tLowId\tHighId\n1\t2\t100\t575\t1\t1100\n0\t10\t1000\t599.5\t100\t1099\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "text-inner-outer-group",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT CLng(N Mod 2) AS [Parity],Count(*) AS [Groups],Sum(N) AS [Population],Avg(A) AS [MeanOfMeans],Min(Lo) AS [LowId],Max(Hi) AS [HighId] FROM (SELECT Left(Label,8) AS [K],Count(*) AS [N],Sum(Score) AS [S],Avg(Id) AS [A],Min(Id) AS [Lo],Max(Id) AS [Hi] FROM LargeDeployment GROUP BY Left(Label,8)) Q GROUP BY CLng(N Mod 2)",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Parity",
+          "Groups",
+          "Population",
+          "MeanOfMeans",
+          "LowId",
+          "HighId"
+        ],
+        [
+          "1",
+          "2",
+          "100",
+          "575",
+          "1",
+          "1100"
+        ],
+        [
+          "0",
+          "10",
+          "1000",
+          "599.5",
+          "100",
+          "1099"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Parity\tGroups\tPopulation\tMeanOfMeans\tLowId\tHighId\n1\t2\t100\t575\t1\t1100\n0\t10\t1000\t599.5\t100\t1099\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "inner-having-before-outer-global",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [Groups],Sum(N) AS [Population],Sum(S) AS [Total] FROM (SELECT Id Mod 17 AS [K],Count(*) AS [N],Sum(Score) AS [S] FROM LargeDeployment GROUP BY Id Mod 17 HAVING Count(*)=64) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Groups",
+          "Population",
+          "Total"
+        ],
+        [
+          "5",
+          "320",
+          "2991840"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Groups\tPopulation\tTotal\n5\t320\t2991840\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "middle-filter-top-before-outer-global",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [Groups],Sum(N) AS [Population],Sum(J) AS [Keys] FROM (SELECT TOP 4 K,N,CLng(K+1) AS [J] FROM (SELECT Id Mod 17 AS [K],Count(*) AS [N] FROM LargeDeployment GROUP BY Id Mod 17) I WHERE N=64) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Groups",
+          "Population",
+          "Keys"
+        ],
+        [
+          "4",
+          "256",
+          "62"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Groups\tPopulation\tKeys\n4\t256\t62\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "three-stateful-barriers",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [Rows],Sum(G) AS [Groups],Sum(P) AS [Population] FROM (SELECT N,Count(*) AS [G],Sum(N) AS [P] FROM (SELECT Id Mod 17 AS [K],Count(*) AS [N] FROM LargeDeployment GROUP BY Id Mod 17) I GROUP BY N) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Rows",
+          "Groups",
+          "Population"
+        ],
+        [
+          "2",
+          "17",
+          "1100"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Rows\tGroups\tPopulation\n2\t17\t1100\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "empty-global-one-versus-keyed-zero",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [N] FROM (SELECT Count(*) AS [N] FROM LargeDeployment WHERE False) Q UNION ALL SELECT Count(*) FROM (SELECT Id,Count(*) AS [N] FROM LargeDeployment WHERE False GROUP BY Id) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "N"
+        ],
+        [
+          "1"
+        ],
+        [
+          "0"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "N\n1\n0\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "retained-raw-error-and-natural-carriers",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT LenB(R) AS [Bytes],AscW(R) AS [Unit],CLng(E) AS [Code],VarType(N) AS [NT],VarType(C) AS [CT],VarType(D) AS [DT],CLng(C) AS [Money],CLng(D) AS [Mean] FROM (SELECT Min(ChrW(55296)) AS [R],Min(CVErr(Id)) AS [E],Count(*) AS [N],Sum(CCur(Score)) AS [C],Avg(CDec(Id)) AS [D] FROM LargeDeployment WHERE Id=1) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "Bytes",
+          "Unit",
+          "Code",
+          "NT",
+          "CT",
+          "DT",
+          "Money",
+          "Mean"
+        ],
+        [
+          "2",
+          "-10240",
+          "1",
+          "20",
+          "6",
+          "14",
+          "8",
+          "1"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "Bytes\tUnit\tCode\tNT\tCT\tDT\tMoney\tMean\n2\t-10240\t1\t20\t6\t14\t8\t1\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "inner-having-selected-suppression",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [N] FROM (SELECT Sum(1/0) AS [Bad] FROM LargeDeployment HAVING False) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "N"
+        ],
+        [
+          "0"
+        ]
+      ],
+      "expected_error_fragment": null,
+      "exit_code": 0,
+      "stdout": "N\n0\n",
+      "stderr": "",
+      "matched": true
+    },
+    {
+      "case": "inner-late-error-outer-row-prefix",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT TOP 1 K FROM (SELECT Left(Label,8) AS [K],10\\(Max(Id)-1100) AS [Bad] FROM LargeDeployment GROUP BY Left(Label,8)) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "1"
+      ],
+      "expected_rows_or_prefix": [
+        [
+          "K"
+        ],
+        [
+          "\"row-0000\""
+        ]
+      ],
+      "expected_error_fragment": "division by zero",
+      "exit_code": 2,
+      "stdout": "K\n\"\"\"row-0000\"\"\"\n",
+      "stderr": "error: division by zero\n",
+      "matched": true
+    },
+    {
+      "case": "inner-late-error-no-outer-global-eof",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS [N] FROM (SELECT Left(Label,8) AS [K],10\\(Max(Id)-1100) AS [Bad] FROM LargeDeployment GROUP BY Left(Label,8)) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "1"
+      ],
+      "expected_rows_or_prefix": null,
+      "expected_error_fragment": "division by zero",
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: division by zero\n",
+      "matched": true
+    },
+    {
+      "case": "low-query-work",
+      "streaming": true,
+      "command": [
+        ".cache/tablecraft-bin/progressive-stateful-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) FROM (SELECT Count(*) AS [N] FROM LargeDeployment) Q",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal",
+        "--stream",
+        "--batch-rows",
+        "128",
+        "--execution-steps",
+        "1"
+      ],
+      "expected_rows_or_prefix": null,
+      "expected_error_fragment": "resource",
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: Steps resource limit exceeded (0 remaining)\n",
+      "matched": true
+    }
+  ]
+}
