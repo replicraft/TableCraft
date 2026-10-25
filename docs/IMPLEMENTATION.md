@@ -9,7 +9,10 @@ tests and 65 regressions pass across standalone casing, scalar evaluation, query
 composition and CLI paths. Generated word-state controls, raw ranges, parameter
 reuse, encoding round trips, cancellation and intermediate Text ceilings pass.
 Strict linting and formatting pass; native Access/NLS qualification and other
-DBCS cultures remain separate. See the [profile and evidence](STRCONV.md#japanese-proper-case-word-boundaries).
+DBCS cultures remain separate. The expanded independent replay passes 5,680 CLI
+commands, comparing 17,280 cells with 176 expected buffered failures over scalar
+and native-field expressions; all 34 immutable hashes remain unchanged. See the
+[profile and evidence](STRCONV.md#japanese-proper-case-word-boundaries).
 
 ## Combined Japanese StrConv operations
 
@@ -24,10 +27,10 @@ linting, minimal features and formatting pass. Existing bounded mapping and nati
 NLS/Access qualification gaps remain explicit. See the
 [working profile](STRCONV.md#combined-japanese-case-width-and-kana) and
 [verification](testing/results/strconv-japanese-combinations-2026-10-25.json).
-The [independent Unicode/native-field replay](testing/STRCONV_COMBINATIONS_REPLAY.md)
-now passes 5,528 CLI commands with 16,436 compared cells and 176 expected buffered
-failures. Four originals and 28 source/tool/executable pins remain unchanged;
-no product code or allowance changed during replay.
+The initial independent replay passed 5,528 CLI commands with 16,436 compared
+cells and 176 expected buffered failures, retaining four originals and 28 source/
+tool/executable pins. The [expanded replay](testing/STRCONV_COMBINATIONS_REPLAY.md)
+above includes the later Japanese word-boundary behavior.
 
 ## Declared numeric/String baseline coverage
 

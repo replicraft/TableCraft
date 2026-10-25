@@ -676,13 +676,20 @@ qualification or new write eligibility.
 
 ## Combined Japanese StrConv native-field replay
 
+The expanded Japanese word-boundary run now passes 5,680 CLI commands, comparing
+17,280 cells with 176 expected buffered failures. In each of the same four
+registered files it checks both stored Label and an explicit composed expression
+adding an ideographic-space word, without creating or modifying fixtures. All
+four input and 30 source/tool/executable hashes remain unchanged. See the
+[current record](testing/results/japanese-proper-space-replay-2026-10-25.json).
+
 The [combined-operation replay](testing/STRCONV_COMBINATIONS_REPLAY.md) reuses the
 four registered Scalar inputs below without mutation or new fixture generation.
 Read-only Jackcess getters supply Label values; independent Unicode-property,
-Unicode-name and selected casing models supply expected transformations. Both
-CLI query modes and four native sources pass 5,528 commands with 16,436 compared
-cells and 176 expected buffered failures. All four database hashes and 28
-source/tool/executable pins remain unchanged. No third-party source, binary or
+Unicode-name and selected casing models supply expected transformations. The
+initial composition run passed 5,528 commands with 16,436 compared cells and 176
+expected buffered failures, retaining all four database hashes and 28 source/tool/
+executable pins; the expanded word-boundary run is recorded above. No third-party source, binary or
 new mapping table is copied; native Access/NLS qualification remains unrun.
 
 ## Interrupted-seek scalar replay

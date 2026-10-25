@@ -513,9 +513,9 @@ parser-free component checks preserve the legacy public recipes. Strict scoped
 linting and formatting pass; the [verification record](testing/results/strconv-japanese-combinations-2026-10-25.json)
 retains initial authoring errors and the pre-qualification implicit-widening
 correction rather than counting earlier passes as final evidence. The independent
-[combined-mode replay](testing/STRCONV_COMBINATIONS_REPLAY.md) now passes 5,528 CLI
-commands, comparing 16,436 result cells and 176 buffered failures across both query
-modes and four unchanged native inputs. All 32 original/source/tool hashes remain
+[combined-mode replay](testing/STRCONV_COMBINATIONS_REPLAY.md) now passes 5,680 CLI
+commands, comparing 17,280 result cells and 176 buffered failures across both query
+modes and four unchanged native inputs. All 34 original/source/tool hashes remain
 unchanged. Native Windows qualification remains separate; component and composition
 models do not establish native NLS equivalence.
 
@@ -556,3 +556,10 @@ to eight bytes before narrowing to six; its seven-byte intermediate allowance
 still refuses. No default limit, normalization, dependency, stored type or native
 write eligibility changes. See the
 [scoped verification](testing/results/japanese-proper-space-2026-10-25.json).
+
+The expanded [independent replay](testing/STRCONV_COMBINATIONS_REPLAY.md) now
+passes 5,680 CLI commands with 17,280 compared cells and 176 expected buffered
+failures. It retains all original composition cases, adds explicit Japanese word
+boundaries for every mode, and checks stored/composed field expressions in four
+unchanged native databases. Four original and 30 source/tool/executable hashes
+remain unchanged; native Access/NLS qualification remains separate.

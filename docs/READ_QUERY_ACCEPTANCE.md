@@ -501,16 +501,19 @@ Compatible Japanese StrConv width/kana/case settings now compose under exact
 LCID 1041, adding 27 previously refused flag values. The frozen baseline verifies
 those refusals; current scoped controls cover explicit widening versus narrow
 Hiragana, proper-case boundaries, raw slices and shared failure/budget behavior.
-The independent composition replay now passes 5,528 CLI commands, comparing
-16,436 cells with 176 expected buffered failures and 32 unchanged immutable pins.
+The initial composition replay passed 5,528 CLI commands, comparing 16,436 cells
+with 176 expected buffered failures and 32 unchanged immutable pins. The later
+word-boundary expansion below retains separate current evidence.
 This expands the query text-function profile without supplying further database
 locale providers or native NLS equivalence. See the
 [composition contract](STRCONV.md#combined-japanese-case-width-and-kana).
 
 Explicit Japanese proper case now recognizes the ideographic space as a word
 boundary while preserving locale isolation and all other delimiter rules. This
-closes a documented DBCS-space gap for that explicit language profile; other
-cultures and native Access/NLS qualification remain open. See the
+closes a documented DBCS-space gap for that explicit language profile. The
+expanded independent replay passes 5,680 CLI commands with 17,280 compared cells
+and 176 buffered failures, retaining all 34 immutable hashes. Other cultures and
+native Access/NLS qualification remain open. See the
 [contract and scoped evidence](STRCONV.md#japanese-proper-case-word-boundaries).
 
 ### P0 implementation boundaries reviewed 24 October 2026
