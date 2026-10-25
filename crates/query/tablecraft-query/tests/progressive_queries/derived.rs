@@ -1,5 +1,6 @@
 //! Inline continuations retain eager work, layer-local TOP and expression cells.
 use super::*;
+use tablecraft_core::values::Double;
 use tablecraft_expressions::EvalError;
 
 fn stream(sql: &str, source: &Rows, declared: bool) -> Result<Vec<Vec<Value>>, StreamError<()>> {
@@ -145,4 +146,36 @@ fn existing_global_and_grouped_aggregates_consume_only_delivered_layer_rows() {
         ]
     );
     assert_eq!(source.visits.get(), 4);
+}
+
+#[test]
+fn stateful_outputs_feed_later_row_filters_and_fresh_group_populations() {
+    let source = Rows::new([3, 1, 3, 2, 1]);
+    let sql = "SELECT Count(*),Sum(Population)
+               FROM (SELECT Population,Count(*) AS Categories
+                     FROM (SELECT N,Count(*) AS Population
+                           FROM T GROUP BY N HAVING Count(*)>1) A
+                     WHERE N>0 GROUP BY Population) B";
+    assert_eq!(
+        stream(sql, &source, false).unwrap(),
+        [vec![Value::Int64(1), Value::Int64(2)]]
+    );
+    assert_eq!(source.scans.get(), 1);
+    assert_eq!(source.visits.get(), 5);
+}
+
+#[test]
+fn root_union_converts_completed_stage_outputs_only_at_publication() {
+    let source = Rows::new([1, 2, 3]);
+    let sql = "SELECT S FROM (SELECT Sum(N) AS S FROM T) Q
+               UNION ALL SELECT CDbl(N) FROM T WHERE N=1";
+    assert_eq!(
+        stream(sql, &source, false).unwrap(),
+        [
+            vec![Value::Double(Double::from_float(6.0))],
+            vec![Value::Double(Double::from_float(1.0))],
+        ]
+    );
+    assert_eq!(source.scans.get(), 2);
+    assert_eq!(source.visits.get(), 6);
 }

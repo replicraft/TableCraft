@@ -10,8 +10,7 @@ the API itself never writes stdout.
 
 ## Admitted query shape
 
-The service accepts a scalar table input or a static row-local named/derived
-SELECT input chain, including already authorized external namespaces. A flat
+The service accepts a scalar table input or a static named/derived SELECT input chain, including already authorized external namespaces. A flat
 UNION ALL combines such SELECT arms, with optional aliases, declared parameters, row-local WHERE, scalar
 projections and positive unordered TOP counts. Wildcards use the ordinary qualified
 scalar metadata. Global COUNT(*), COUNT(expr), SUM(expr), AVG(expr), MIN(expr)
@@ -19,8 +18,7 @@ and MAX(expr) projections
 over the same admitted input are also supported. Proven Boolean/integral/Currency/Decimal/NULL
 GROUP BY tuples use the same aggregates and retained final key values. Proven
 Text tuples with those key families use a separate complete-cohort partition
-service. Terminal
-aggregate/grouped HAVING filters use the deferred projection service described
+service. Aggregate/grouped HAVING filters use the deferred projection service described
 below. Original source order and eager
 predicate/projection kernels are retained. Scalar conversion, arithmetic, text and inspection services
 use the same explicit execution policies as buffered queries. Prior explicitly
@@ -32,7 +30,7 @@ or introduce new WHERE/aggregate/subquery scopes.
 
 Admission rejects ordering, TOP PERCENT, DISTINCT/active DISTINCTROW, other
 grouping key families, nonaggregate HAVING,
-duplicate-eliminating UNION/crosstabs, joins/products, inner stateful/set stages,
+duplicate-eliminating UNION/crosstabs, joins/products, inner set stages,
 subqueries, domains, collections, Eval and volatile
 clock/random calls. Rejection
 occurs before scanning or visiting output, including false filters and empty
@@ -369,9 +367,9 @@ Already admitted global and proven-key grouped SELECTs can filter their final
 populations with HAVING. The current Count/Sum/Avg/Min/Max expression profile is
 available in the predicate, including aggregates not selected for output. The
 ordinary binder keeps projection aliases unavailable to HAVING: writing an output
-alias does not create a new predicate scope. Inner pipeline stages remain
-row-local; this feature does not admit inner aggregate/HAVING stages or additional
-group key families.
+alias does not create a new predicate scope. This terminal service also supplies
+the admitted [stateful retained stages](#stateful-retained-stages), with the same
+predicate suppression and group-key families.
 
 HAVING executes after checked source EOF and complete group-key policy cohorts.
 A False or Unknown predicate suppresses every selected scalar expression and
@@ -420,8 +418,8 @@ empty keyed input has no groups.
 
 ## Static named and derived input pipelines
 
-A row-local SELECT/WHERE/positive unordered TOP chain can feed the ordinary
-outer row, global aggregate or grouped service. Each chain ends in one explicitly
+A static SELECT chain can combine row-local WHERE/projection/positive unordered
+TOP layers with the admitted global aggregate, grouping and HAVING services. Each chain ends in one explicitly
 progressive scalar table cursor. Root flat UNION ALL arms may use independent
 chains. Input definitions and output schemas must already be static at metadata
 preparation; no data/schema discovery or buffered fallback supplies a stream.
@@ -466,19 +464,45 @@ across an exclusive callback. Stored tokens never authorize paths or providers.
 Source-owned progressive capability/read failures retain their existing stream
 error behavior; the query layer never silently materializes an unsupported source.
 
-The first implementation accepts only row-local inner SELECT stages. Inner
-aggregates/grouping, every inner UNION, crosstabs, sorting, TOP PERCENT and active
-duplicate elimination refuse during full-tree preflight, even in a later empty
-arm. These remain follow-up composition work. Inner UNION requires its own active
-conversions and complete policy cohorts before outer consumers; merely flattening
-its arms would not preserve the current contracts. Outer supported aggregates
-and grouping remain available over a row-local chain.
+### Stateful retained stages
+
+Inner SELECT stages support the same global Count/Sum/Avg/Min/Max, exact and
+Text grouping, and HAVING services as the terminal SELECT. A stage receives
+retained cells and finishes through a borrowed receiver; it does not create a
+Source, snapshot, queue of completed output or named cache. For example:
+
+```sql
+SELECT Count(*) AS Categories, Sum(Population) AS Total
+FROM (SELECT Label, Count(*) AS Population
+      FROM Items GROUP BY Label HAVING Count(*) > 1) Q;
+```
+
+Physical source EOF starts a sequence of logical stage completions. A finishing
+inner stage can deliver results to later stages, but those downstream aggregate
+or grouped states finish only after the entire upstream stage succeeds. This
+includes accepted upstream projections omitted by TOP. A late inner error can
+therefore follow an outer row prefix while preventing an outer Count, Sum,
+grouping or HAVING result. Empty global stages deliver one aggregate row;
+empty keyed groups deliver none. A failed sink immediately stops pending inner
+finalization and later UNION arms.
+
+Intermediate output descriptors do not overwrite actual cell declarations.
+In particular, Min/Max retain unknown aggregate provenance even when their
+successful result has a known scalar carrier. Outer declaration-sensitive
+arithmetic therefore uses the same retained declaration as buffered execution.
+Only the terminal public boundary applies enclosing UNION conversion and strict
+scalar publication.
+
+Every inner UNION, crosstab, sort, TOP PERCENT and active duplicate elimination
+still refuses during full-tree preflight, even in a later empty arm. Inner UNION
+requires its own active conversions and complete policy cohorts before outer
+consumers; merely flattening its arms would not preserve the current contracts.
 
 Pipeline evaluation interleaves layer work per row rather than materializing a
 whole inner read before evaluating the outer layer. Consequently a later upstream
 error can follow earlier accepted output, and cross-row error precedence need not
-match buffered execution. EOF/input failures prevent terminal aggregate/grouped
-publication. The first query or sink failure stays sticky even if a broken source
+match buffered execution. EOF/input failures and unsuccessful upstream logical completion prevent
+downstream aggregate/grouped publication. The first query or sink failure stays sticky even if a broken source
 continues callbacks; no more frame/provider/visitor work follows it. No complete
 named/result cache is published, even after successful EOF.
 
@@ -494,7 +518,7 @@ candidate populations; this is not an arbitrary-size or constant-memory claim.
 Flat UNION ALL arms execute sequentially in their written order, with no complete
 arm/result snapshot or implicit buffered fallback. Every arm must satisfy the
 same admitted expression profile; source-free arms and inner UNION plans remain
-outside this slice. Static row-local named/derived chains are admitted. The complete shape and every
+outside this slice. Static named/derived chains, including the admitted stateful stages, are supported. The complete shape and every
 selected schema are checked before the first progressive record callback. Each
 arm's schema is checked again before starting its cursor; no schema callback is
 introduced inside an exclusive cursor callback.
@@ -574,15 +598,27 @@ Earlier accepted rows remain visible if later evaluation, native decoding,
 cancellation, limits or checked EOF fails. Progressive encounter order can expose
 a different competing cross-row error than buffered load-before-evaluation.
 
-Live retained memory consists of current-row work, the admitted per-aggregate
-numeric states and any resolver-dependent String extrema candidates. Allocation
-charges remain cumulative after buffers
+Live retained memory includes current-row work, per-stage aggregate/group
+states, retained grouping keys, optional HAVING/Text replay rows and
+resolver-dependent String extrema candidates. Each stateful layer pays for its
+own live populations. Allocation charges remain cumulative after buffers
 are dropped. Query byte/row/work limits never
 refill. Raising limits is explicit and does not change provider or output budgets.
 Transport framing, batching, output quotas and stdout behavior belong to hosts;
 this library does not write a header or open files/providers.
 
 ## Verification and remaining work
+
+The stateful named/derived extension passes 550 distinct query tests, including
+23 new controls: 220 progressive/value/policy tests, 38 runtime units and 292
+related buffered metadata, policy, named, crosstab and key regressions. Strict
+query library/tests Clippy and standalone minimal-feature checking pass. The
+[scoped query record](testing/results/read-query-progressive-stateful-stages-2026-10-25.json)
+retains exact commands, log hashes and excluded compile/Decimal representation
+probes. Logical-EOF tests cover late TOP-omitted inner errors, retained unknown
+extrema declarations and downstream provider suppression. Existing direct Count
+under 8 KiB passes unchanged. Native/CLI integration and original replay are
+separate checkpoints.
 
 Parent native/CLI integration adds 107 distinct passing controls, including five
 new tests. The Text-group total is 632 unique tests with 27 new controls. Stored

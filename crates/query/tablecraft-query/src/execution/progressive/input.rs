@@ -24,6 +24,16 @@ struct Frame<'p> {
     delivered: u64,
 }
 
+impl<'p> Input<'p> {
+    pub(super) fn frame_count(&self) -> usize {
+        self.frames.len()
+    }
+
+    pub(super) fn reads(&self) -> impl DoubleEndedIterator<Item = &'p ReadPlan> + '_ {
+        self.frames.iter().map(|frame| frame.read)
+    }
+}
+
 impl<'a, 'source> Runtime<'a, 'source> {
     pub(super) fn with_progressive_owner<T, E>(
         &mut self,
@@ -68,12 +78,41 @@ impl<'a, 'source> Runtime<'a, 'source> {
             &mut StreamSummary,
         ) -> Result<(), StreamError<E>>,
     ) -> Result<(), StreamError<E>> {
+        let leaf = input.leaf;
+        let mut forward =
+            |runtime: &mut Self, mut cells: Vec<CellValue>, summary: &mut StreamSummary| {
+                for frame in input.frames.iter_mut().rev() {
+                    runtime.tick()?;
+                    let next = runtime.with_progressive_owner(frame.read.owner, |runtime| {
+                        runtime.progressive_frame(frame, &cells)
+                    })?;
+                    let Some(next) = next else {
+                        return Ok(());
+                    };
+                    cells = next;
+                }
+                runtime.with_progressive_owner(owner, |runtime| consumer(runtime, cells, summary))
+            };
+        self.scan_progressive_leaf(source, leaf, summary, &mut forward)
+    }
+
+    pub(super) fn scan_progressive_leaf<E>(
+        &mut self,
+        source: &'source dyn Source,
+        leaf: &Relation,
+        summary: &mut StreamSummary,
+        consumer: &mut impl FnMut(
+            &mut Self,
+            Vec<CellValue>,
+            &mut StreamSummary,
+        ) -> Result<(), StreamError<E>>,
+    ) -> Result<(), StreamError<E>> {
         let RelationNode::Table {
             name,
             columns,
             projection,
             ..
-        } = &input.leaf.node
+        } = &leaf.node
         else {
             return Err(QueryError::Unsupported.into());
         };
@@ -88,24 +127,12 @@ impl<'a, 'source> Runtime<'a, 'source> {
             }
             let result: Result<(), StreamError<E>> = (|| {
                 self.tick()?;
-                let mut cells = self.copy_projected_row(columns, projection, row)?;
+                let cells = self.copy_projected_row(columns, projection, row)?;
                 summary.scanned_rows = summary
                     .scanned_rows
                     .checked_add(1)
                     .ok_or(QueryError::StructureLimit)?;
-                // Collection stores outer-to-inner references without reversal;
-                // iteration evaluates them from the physical leaf upward.
-                for frame in input.frames.iter_mut().rev() {
-                    self.tick()?;
-                    let next = self.with_progressive_owner(frame.read.owner, |runtime| {
-                        runtime.progressive_frame(frame, &cells)
-                    })?;
-                    let Some(next) = next else {
-                        return Ok(());
-                    };
-                    cells = next;
-                }
-                self.with_progressive_owner(owner, |runtime| consumer(runtime, cells, summary))
+                consumer(self, cells, summary)
             })();
             match result {
                 Ok(()) => Ok(()),
@@ -136,6 +163,16 @@ impl<'a, 'source> Runtime<'a, 'source> {
         frame: &mut Frame<'_>,
         cells: &[CellValue],
     ) -> Result<Option<Vec<CellValue>>, QueryError> {
+        self.progressive_row_cells(frame.read, frame.select, &mut frame.delivered, cells)
+    }
+
+    pub(super) fn progressive_row_cells(
+        &mut self,
+        read: &ReadPlan,
+        select: &SelectPlan,
+        delivered: &mut u64,
+        cells: &[CellValue],
+    ) -> Result<Option<Vec<CellValue>>, QueryError> {
         let environment = Environment {
             aggregate_results: None,
             row: cells,
@@ -145,23 +182,19 @@ impl<'a, 'source> Runtime<'a, 'source> {
             group: None,
             group_keys: None,
         };
-        if let Some(filter) = &frame.select.filter
+        if let Some(filter) = &select.filter
             && !self.eval_predicate(filter, environment)?.is_true()
         {
             return Ok(None);
         }
-        let cells = self.progressive_select_projection(frame.select, environment)?;
-        if frame
-            .read
+        let cells = self.progressive_select_projection(select, environment)?;
+        if read
             .top
-            .is_some_and(|(count, _)| frame.delivered >= u64::from(count))
+            .is_some_and(|(count, _)| *delivered >= u64::from(count))
         {
             return Ok(None);
         }
-        frame.delivered = frame
-            .delivered
-            .checked_add(1)
-            .ok_or(QueryError::StructureLimit)?;
+        *delivered = delivered.checked_add(1).ok_or(QueryError::StructureLimit)?;
         Ok(Some(cells))
     }
 }

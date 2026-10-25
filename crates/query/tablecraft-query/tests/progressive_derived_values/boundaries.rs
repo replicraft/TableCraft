@@ -56,10 +56,10 @@ fn unused_inner_operations_remain_eager_under_outer_filters_and_publication_caps
 #[test]
 fn every_forbidden_inner_shape_later_empty_arm_cycle_and_parameter_scope_refuses_before_rows() {
     for inner in [
-        "SELECT Count(*) AS N FROM Data",
+        "SELECT Last(Id) AS N FROM Data",
         "SELECT 1 AS Id",
         "SELECT TOP 0 Id FROM Data",
-        "SELECT Id,Count(*) AS N FROM Data GROUP BY Id",
+        "SELECT Id,Last(Id) AS N FROM Data GROUP BY Id",
         "SELECT Id FROM Data UNION ALL SELECT Id FROM Other",
         "SELECT DISTINCT Id FROM Data",
         "SELECT Id FROM Data ORDER BY Id",
@@ -115,7 +115,7 @@ fn every_forbidden_inner_shape_later_empty_arm_cycle_and_parameter_scope_refuses
     }
     let source = Inputs::new(0, &[]);
     let result = run(
-        "SELECT Id FROM (SELECT Id FROM Data) A UNION ALL SELECT N FROM (SELECT Count(*) AS N FROM Other WHERE False) B",
+        "SELECT Id FROM (SELECT Id FROM Data) A UNION ALL SELECT N FROM (SELECT Last(Id) AS N FROM Other WHERE False) B",
         &source,
         &[],
         Default::default(),

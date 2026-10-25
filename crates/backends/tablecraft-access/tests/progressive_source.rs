@@ -376,3 +376,6 @@ mod grouped;
 
 #[path = "progressive_source/text_groups.rs"]
 mod text_groups;
+
+#[path = "progressive_source/stateful_stages.rs"]
+mod stateful_stages;

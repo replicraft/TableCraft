@@ -90,3 +90,28 @@ fn direct_inputs_allocate_no_frame_storage_and_a_layer_prepays_its_actual_width(
         });
     }
 }
+
+#[test]
+fn stateful_detection_adds_no_storage_to_direct_or_row_local_inputs() {
+    for (sql, stateful) in [
+        ("SELECT Count(*) FROM T", false),
+        ("SELECT N FROM (SELECT N FROM T) Q", false),
+        ("SELECT N FROM (SELECT Count(*) AS N FROM T) Q", true),
+    ] {
+        with_runtime(sql, |body, runtime| {
+            let PreparedBody::Read(read) = body else {
+                panic!("read fixture")
+            };
+            let ReadNode::Select(select) = &read.node else {
+                panic!("select fixture")
+            };
+            let input = runtime.progressive_input(&select.source).unwrap();
+            let before = runtime.budget.remaining(Resource::Bytes);
+            assert_eq!(
+                runtime.progressive_stateful_input(&input).unwrap(),
+                stateful
+            );
+            assert_eq!(runtime.budget.remaining(Resource::Bytes), before);
+        });
+    }
+}

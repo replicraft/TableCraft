@@ -84,18 +84,7 @@ impl Runtime<'_, '_> {
     ) -> Result<(), QueryError> {
         let (select, aggregates) = self.progressive_select(read)?;
         let input = self.progressive_input(&select.source)?;
-        let group_lookup = if select.group.is_empty() {
-            None
-        } else {
-            if select.group_types.len() != select.group.len() {
-                return Err(QueryError::Width);
-            }
-            let lookup = self.exact_profiled_keys(&select.group_types)?;
-            if lookup.is_none() && !self.progressive_text_profile(&select.group_types)? {
-                return Err(QueryError::Unsupported);
-            }
-            lookup
-        };
+        let group_lookup = self.progressive_group_lookup(select)?;
         arms.push(ProgressiveArm {
             read,
             select,
@@ -104,5 +93,22 @@ impl Runtime<'_, '_> {
             input,
         });
         Ok(())
+    }
+
+    pub(super) fn progressive_group_lookup(
+        &mut self,
+        select: &SelectPlan,
+    ) -> Result<Option<ExactKeys>, QueryError> {
+        if select.group.is_empty() {
+            return Ok(None);
+        }
+        if select.group_types.len() != select.group.len() {
+            return Err(QueryError::Width);
+        }
+        let lookup = self.exact_profiled_keys(&select.group_types)?;
+        if lookup.is_none() && !self.progressive_text_profile(&select.group_types)? {
+            return Err(QueryError::Unsupported);
+        }
+        Ok(lookup)
     }
 }

@@ -19,19 +19,18 @@ Delivered read/query and engineering foundations:
 - [x] Qualified [encryption opens and fresh-copy password management](NATIVE_ENCRYPTION.md).
 - [x] [Progressive rows and queries](STREAMING_QUERIES.md): eligible SELECT,
   five global aggregates, Text/exact-key grouping, terminal HAVING, flat UNION ALL
-  and static row-local named/derived chains. Text membership uses complete policies.
+  and static named/derived chains with eligible row-local or aggregate/HAVING
+  stages. Text membership uses complete policies.
 - [x] [Cursor/read failure controls](NATIVE_READ_FAILURES.md), cumulative limits,
   cancellation and [high-offset Memo/OLE checks](NATIVE_HIGH_OFFSET_PAYLOADS.md).
 - [x] Offline Jet 4 fixed Int32 UPDATE copies and separate
   [ACE 16 engineering write previews](testing/ACE16_WRITE_PREVIEWS.md).
   General ACE 16 saves are still unavailable.
 
-Current implementation work:
-
-- [ ] Progressive stateful saved/named/derived aggregate stages: lifecycle
-  extraction is in progress. These queries already work through bounded buffered
-  execution; the missing capability is progressive composition with correct
-  per-stage completion, retained values and failure handling.
+- [x] [Stateful streaming composition](PROGRESSIVE_QUERIES.md#stateful-retained-stages)
+  for static saved/named/derived SELECT chains, with retained intermediate values,
+  independent TOP/HAVING phases and successful logical EOF before outer totals.
+  Inner UNION, sorting, joins and runtime schema discovery remain outside streaming.
 
 Major gates still open before the full backend is complete:
 

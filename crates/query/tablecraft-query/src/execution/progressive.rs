@@ -8,6 +8,7 @@ mod plan;
 mod publication;
 mod retained;
 mod rows;
+mod stages;
 mod text_groups;
 
 use super::{ExecutionContext, ExecutionOptions, execute::ExecutionFrame};

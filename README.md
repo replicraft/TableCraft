@@ -48,12 +48,13 @@ until complete comparison policies are known, then partition before aggregate
 work; operand-bearing queries can retain input rows. Terminal HAVING filters
 these populations before SELECT evaluation; selected aggregate operands can require
 budgeted retained rows for deferred replay. Aggregate state is independently budgeted; text extrema can retain
-candidates until the final comparison policy is known. Static row-local named and
-inline derived SELECT chains can feed these operations, including explicit
-`--saved` and `--external` selection. Inner grouping, aggregates, UNION, ordering,
-distinctness and schema discovery remain refused; root flat UNION ALL and outer
-aggregates retain their existing streaming profile. Sorting, joins and other
-unsupported shapes retain buffered execution.
+candidates until the final comparison policy is known. Static named and inline
+derived SELECT chains can compose row-local stages and the same eligible global,
+grouped and HAVING stages, including explicit `--saved` and `--external` selection.
+Each aggregate stage waits for successful completion of its complete upstream
+population; a late inner error cannot publish a partial outer total. Inner UNION,
+ordering, distinctness and schema discovery remain refused. Sorting, joins and
+other unsupported shapes retain buffered execution.
 
 For larger Memo/OLE/attachment query results, explicit `query run --text-bytes
 1048576 --output-bytes 8388608 --format tsv` raises the separate per-Text and

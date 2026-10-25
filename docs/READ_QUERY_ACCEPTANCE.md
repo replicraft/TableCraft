@@ -172,7 +172,8 @@ and [progressive contract](PROGRESSIVE_QUERIES.md).
 | Other GROUP BY families or Dynamic descriptors | Implemented bounded strict-key profiles | Refused; no observation-based type guessing |
 | HAVING | Implemented | Implemented terminal global/proven-key grouping; rejected SELECT work suppressed, selected operands can require budgeted replay rows |
 | Outer flat UNION ALL | Implemented | Implemented admitted arms and shared conversions |
-| Stateful named/derived stage or inner UNION | Implemented bounded profiles | Refused; stage completion/conversions need explicit composition |
+| Static named/derived global or eligible grouped/HAVING stage | Implemented bounded profiles | Implemented, retained values and successful per-stage logical EOF; no complete intermediate relation cache |
+| Inner UNION | Implemented bounded profiles | Refused; root flat UNION ALL remains supported |
 | Joins, sorting, DISTINCT/active DISTINCTROW | Implemented bounded profiles | Refused; no silent buffered fallback |
 | Crosstabs and runtime schema discovery | Implemented qualified profiles | Refused; preparation remains metadata-only |
 | Subqueries, domain calls and closed Eval | Implemented qualified profiles | Refused source-dependent/stateful expressions |
