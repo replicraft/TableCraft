@@ -1,5 +1,15 @@
 # Implementation status
 
+## Explicit widening and Hiragana
+
+StrConv conversion 36 now applies the existing widening kernel before Hiragana
+under exact explicit LCID 1041. Other previously unsupported combinations remain
+refused. This is a documented engineering composition; native Access ordering
+remains unqualified. Five new controls and 46 regressions pass across expressions,
+queries and CLI, with strict linting and minimal expression compilation. See
+[scope](STRCONV.md#explicit-wide-then-hiragana-composition) and
+[verification](testing/results/read-query-wide-hiragana-2026-10-25.json).
+
 ## Progressive global MIN and MAX
 
 Explicit streaming queries now admit global Min/Max alongside Count/Sum/Avg,

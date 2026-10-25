@@ -98,3 +98,31 @@ fn strconv_refusals_never_publish_partial_rows() {
         }
     }
 }
+
+#[test]
+fn explicit_japanese_widening_precedes_hiragana_in_both_query_commands() {
+    for mode in ["eval", "run"] {
+        let result = run(&[
+            "query",
+            mode,
+            "SELECT StrConv('ｶﾞﾊﾟｳﾞ ABC',36,1041) AS S,LenB(StrConv('ｶﾞ',36,1041)) AS B",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(row(&result.stdout), ["\"がぱゔ　ＡＢＣ\"", "2"]);
+
+        for expression in [
+            "StrConv('ｶﾞ',36)",
+            "StrConv('ｶﾞ',36,1033)",
+            "StrConv('ｶﾞ',37,1041)",
+        ] {
+            let sql = format!("SELECT 1,{expression}");
+            let refused = run(&["query", mode, &sql]);
+            assert!(!refused.status.success());
+            assert!(refused.stdout.is_empty());
+        }
+    }
+}

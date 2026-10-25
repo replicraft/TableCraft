@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Explicit StrConv conversion 36 with exact LCID1041: existing widening followed by existing Hiragana kernel",
+  "unique_tests": 51,
+  "new_tests": 5,
+  "existing_regression_tests": 46,
+  "targets": {
+    "expression_sql_strconv_filter": 28,
+    "query_strconv_wide_hiragana": 1,
+    "query_strconv_japanese": 7,
+    "query_strconv": 4,
+    "query_strconv_options": 3,
+    "query_strconv_kana": 2,
+    "query_strconv_width": 2,
+    "cli_strconv": 4
+  },
+  "new_test_breakdown": {
+    "scalar_evaluator_composition_and_controls": 3,
+    "bound_query_composition": 1,
+    "cli_eval_and_run": 1
+  },
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-expressions --features sql --lib strconv -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/wide-hiragana-expression-20261025.log",
+      "sha256": "79f3abbf424856ec4999e3acc5e11f61bd94c7e1bb4be17b1453656d9a5061e0",
+      "tests": 28
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test strconv_wide_hiragana --test strconv_japanese --test strconv --test strconv_options --test strconv_kana --test strconv_width -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/wide-hiragana-query-20261025.log",
+      "sha256": "0ae4c3f7172381c3cf5b03c1dbde3fa29256853582bd7260e1a5b15dcb199009",
+      "tests": 19
+    },
+    {
+      "command": "cargo clippy -p tablecraft-expressions --features sql --lib --tests -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/wide-hiragana-expression-clippy-20261025.log",
+      "sha256": "31589f56cf69ba1d520f9822502c1a4553c921e83f3993f070733b4e81c090cf"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --test strconv_wide_hiragana --test strconv_japanese --test strconv --test strconv_options --test strconv_kana --test strconv_width -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/wide-hiragana-query-clippy-20261025.log",
+      "sha256": "42611ec1b013128f5c6cc9acf77d7d75ca04d7307d54a418dac8e467f04049c5"
+    },
+    {
+      "command": "cargo check -p tablecraft-expressions --lib --no-default-features -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/wide-hiragana-minimal-20261025.log",
+      "sha256": "5ef641af534c3d7cbd986bc3e0e3d7900a667cdf601b1a3031d11fe5506934de"
+    },
+    {
+      "command": "rustfmt --edition 2024 --check crates/query/tablecraft-expressions/src/functions/text/strconv/flags.rs crates/query/tablecraft-expressions/src/evaluation/strconv.rs crates/query/tablecraft-expressions/src/evaluation/strconv/wide_hiragana_tests.rs crates/query/tablecraft-query/tests/strconv_wide_hiragana.rs",
+      "exit_code": 0,
+      "private_log": ".cache/wide-hiragana-fmt-20261025.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --test deployment --test browsing --test native_read_budget --test password --test strconv -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/spooled-hiragana-cli-tests-final-20261025.log",
+      "sha256": "01a93cd1e0dc1c4017ea055abf56fb83242bace14e44c730b4a2ebdbd5ceb763",
+      "tests": 4,
+      "counting_note": "Only the four strconv target tests are counted here; other targets belong to the container/CLI integration checkpoint."
+    },
+    {
+      "command": "cargo clippy -p tablecraft-cli --bin tablecraft --test deployment --test browsing --test native_read_budget --test password --test strconv -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/spooled-hiragana-cli-clippy-final-20261025.log",
+      "sha256": "6e81e6c046fa1831a834626cf909ccabc199ec4cbf18a91d31412d27f3c98529"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "private_log": ".cache/spooled-hiragana-fmt-final-20261025.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "independent_controls": [
+    "Explicit halfwidth voiced, semi-voiced, small-vowel, mixed-width punctuation, fullwidth spacing/combining marks and voiced WA/WO outputs are original literal goldens, without invoking the implementation to derive expected values.",
+    "Reversing the two existing standalone operations on halfwidth voiced input produces Katakana rather than Hiragana; the supported 36 route therefore pins the selected engineering order.",
+    "Derived nullable fields, correlated calls, numeric-to-Text UNION promotion and retained CVar/LeftB LenB/AscW consumers exercise actual bound-query paths.",
+    "Exact1041, unsupported LCIDs/aliases/combinations, eager operational failures, NULL and malformed Unicode retain existing validation order; the public Conversion recipe still refuses 36.",
+    "Every observed scalar cancellation checkpoint, cumulative zero-byte/zero-step failures and actual width output expansion beyond the per-Text limit are checked. Both stages share the caller allowance."
+  ],
+  "primary_references": [
+    {
+      "url": "https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/17afbc5b-e1c7-4717-bfe3-9ae938ef0736",
+      "use": "Describes flag values and nonexclusive combinations; does not define universal conversion ordering or independently establish direct query availability."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/intl/handling-sorting-in-your-applications",
+      "use": "Explicitly requires FULLWIDTH with HIRAGANA to map halfwidth Katakana to Hiragana; standalone HIRAGANA preserves halfwidth Katakana."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/winnls/nf-winnls-lcmapstringex",
+      "use": "Documents FULLWIDTH voiced composition, such as fullwidth spacing voiced marks composing with their kana base."
+    }
+  ],
+  "qualification": "This is a TableCraft engineering composition informed by specific Microsoft mapping behavior. The published general StrConv combination rule does not establish a universal operation order; no native Access StrConv or Windows NLS equivalence is claimed.",
+  "limits": [
+    "Only exact conversion36 is newly admitted. All other previously unsupported width/kana/case/encoding combinations remain refused.",
+    "Existing standalone width/kana mapping restrictions apply unchanged. No general normalization, automatic locale or new mapping table is introduced.",
+    "Legacy public Conversion component recipes remain unchanged; the complete operation is private evaluator dispatch.",
+    "Intermediate width Text and final Hiragana Text each consume existing limits and cumulative allocations; budgets are not reset or refunded."
+  ],
+  "excluded_attempts": [],
+  "unrun": [
+    "Full workspace suite",
+    "Native Microsoft Access or Windows NLS execution comparisons"
+  ]
+}
