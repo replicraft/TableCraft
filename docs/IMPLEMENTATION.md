@@ -11,7 +11,10 @@ The focused batch passes 138 query/native/CLI tests and strict Clippy. A generat
 four-profile tests exceed snapshot retention caps without filling a complete cache.
 See [count scope](PROGRESSIVE_QUERIES.md#global-count) and
 [verification record](testing/results/read-query-progressive-count-2026-10-25.json).
-Count(expr), other aggregates and native execution qualification remain separate.
+An [original four-profile CLI replay](testing/PROGRESSIVE_COUNTS.md) also passes
+132 getter-modeled controls, with ten unchanged immutable pins and eleven scoped
+compiled-archive hashes verified separately. Count(expr), other aggregates and
+native execution qualification remain separate.
 
 ## Grouped and progressive projection aliases
 

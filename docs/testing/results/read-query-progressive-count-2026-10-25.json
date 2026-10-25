@@ -78,5 +78,17 @@
     "Full workspace suite",
     "Native Microsoft Access comparison",
     "Real large-file Count replay"
-  ]
+  ],
+  "independent_replay": {
+    "report": "progressive-counts-2026-10-25.json",
+    "sha256": "cee09e0773973b3c066723f110a93aba70ee0d20052503aaea18429d261d1faf",
+    "controls": 132,
+    "successful_controls": 108,
+    "buffered_refusals": 24,
+    "compared_output_rows": 132,
+    "immutable_pins": 10,
+    "compiled_archive_pins": 11,
+    "compiled_revision": "905b885a37f8aed3db7a5de5dcb2caec756eef44",
+    "parent_rehash": "passed"
+  }
 }
