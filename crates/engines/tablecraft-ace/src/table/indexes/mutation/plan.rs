@@ -30,11 +30,10 @@ pub(in crate::table) fn patches(
     // Format admission belongs to the public edit/preview entry points. This
     // private helper receives only already checked schemas/index coverage.
     let mut patches = Vec::new();
-    if updates.is_empty() {
-        return Ok(patches);
-    }
     // Every physical declaration must have a logical owner. Do not change a
     // live page also referenced by an uninspected/obsolete physical definition.
+    // Even empty key updates must prove this: an unowned definition can hide an
+    // affected column, and no-op requests must not imply complete write coverage.
     for number in 0..schema.layout.physical_indexes {
         check(budget, cancelled)?;
         budget
@@ -46,6 +45,9 @@ pub(in crate::table) fn patches(
         {
             return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
         }
+    }
+    if updates.is_empty() {
+        return Ok(patches);
     }
     budget
         .charge_allocation(indexes.len() as u64, size_of::<IndexDataPatch>() as u64)

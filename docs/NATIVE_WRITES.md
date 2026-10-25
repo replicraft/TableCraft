@@ -99,6 +99,16 @@ space, key counts, allocation and unknown padding remain byte-identical. Existin
 nonnull key replacements retain cardinality. Changes requiring a different
 prefix, entry width, split or merge are rejected rather than silently rebuilt.
 
+Physical-definition ownership is checked even when no index-key patch is needed:
+unrelated/nonindexed target changes, equal-value updates and empty assignment
+requests cannot bypass it. An unowned physical declaration may hide an affected
+column from the logical index inventory. Normal Jet 4 plans and optional ACE 16
+previews refuse such tables with `IndexedColumn` before publishing a candidate.
+Fully owned logical aliases and index-free tables retain their existing permits.
+Focused malformed-copy regressions cover complete and partial loss of logical owners,
+normal/preview/no-op requests, cumulative work and late cancellation. These are
+corrupt-metadata refusal controls, not valid-layout or native Access qualification.
+
 The candidate receives a complete structural/index check as well as the existing
 field/rule/relationship audit before publication. No-op assignments leave the
 image unchanged; duplicate keys in unique indexes or later field-rule failures
