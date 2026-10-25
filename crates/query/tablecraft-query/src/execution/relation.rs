@@ -146,7 +146,7 @@ impl Runtime<'_, '_> {
                     self.eval_predicate(
                         e,
                         Environment {
-                            counts: None,
+                            aggregate_results: None,
                             collections: None,
                             row: &row,
                             outer,

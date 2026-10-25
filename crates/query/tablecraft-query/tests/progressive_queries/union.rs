@@ -69,7 +69,7 @@ fn each_union_arm_top_limits_publication_independently_and_still_reaches_eof() {
 fn every_union_arm_shape_is_admitted_before_any_scan_or_publication() {
     for sql in [
         "SELECT N FROM T UNION SELECT N FROM T",
-        "SELECT N FROM T UNION ALL SELECT Sum(N) FROM T WHERE False",
+        "SELECT N FROM T UNION ALL SELECT Max(N) FROM T WHERE False",
         "SELECT N FROM T UNION ALL SELECT N FROM T ORDER BY N",
         "SELECT N FROM T UNION ALL SELECT DISTINCT N FROM T WHERE False",
         "SELECT N FROM T UNION ALL SELECT N FROM (SELECT N FROM T) Q",

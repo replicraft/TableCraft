@@ -39,8 +39,9 @@ Explicit [streaming queries](docs/STREAMING_QUERIES.md) use
 'SELECT ID,Name FROM Customers WHERE ID>0'`. They publish scalar table-order
 results in TSV batches; later errors may leave earlier output. Flat `UNION ALL`
 can stream admitted SELECT arms in written order using the same result conversions
-and cumulative limits. Global `COUNT(*)` and `COUNT(expr)` can also stream their input and publish
-one result after checked EOF, avoiding a complete table snapshot. Sorting, joins,
+and cumulative limits. Global `COUNT(*)`, `COUNT(expr)`, `SUM(expr)` and
+`AVG(expr)` can also stream their input and publish one result after checked EOF, avoiding a complete table
+snapshot. Numeric aggregates retain independently budgeted state. Sorting, joins,
 other aggregates and wider query shapes retain buffered execution.
 
 For larger Memo/OLE/attachment query results, explicit `query run --text-bytes

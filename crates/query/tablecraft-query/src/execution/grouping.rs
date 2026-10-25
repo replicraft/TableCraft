@@ -67,7 +67,7 @@ impl Runtime<'_, '_> {
             keys.push(self.repeatable_comparison_key(
                 expression,
                 Environment {
-                    counts: None,
+                    aggregate_results: None,
                     collections: None,
                     row,
                     outer,

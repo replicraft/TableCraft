@@ -133,14 +133,14 @@ fn final_sink_failure_is_after_cursor_release_and_stops_the_next_arm() {
 fn ineligible_aggregate_shapes_are_refused_before_any_cursor() {
     let source = Generated::new(0);
     for sql in [
-        "SELECT Avg(N) FROM T",
-        "SELECT Sum(N) FROM T",
+        "SELECT Min(N) FROM T",
+        "SELECT Max(N) FROM T",
         "SELECT Count(*) FROM T GROUP BY N",
         "SELECT Count(*) FROM T HAVING Count(*)>0",
         "SELECT DISTINCT Count(*) FROM T",
         "SELECT Count(*) FROM T ORDER BY 1",
         "SELECT Count(*),(SELECT 1) FROM T",
-        "SELECT N FROM T UNION ALL SELECT Avg(N) FROM T",
+        "SELECT N FROM T UNION ALL SELECT Min(N) FROM T",
     ] {
         let syntax = parse_query(sql, Default::default()).unwrap();
         let plan = prepare(syntax.query(), &source).unwrap();

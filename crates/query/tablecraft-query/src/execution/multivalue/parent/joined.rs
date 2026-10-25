@@ -208,7 +208,7 @@ impl Runtime<'_, '_> {
                     self.eval_predicate(
                         condition,
                         Environment {
-                            counts: None,
+                            aggregate_results: None,
                             collections: None,
                             row: &values,
                             outer,

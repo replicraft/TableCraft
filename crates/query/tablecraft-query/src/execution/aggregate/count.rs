@@ -7,21 +7,9 @@ use tablecraft_expressions::{EvalError, functions::text::byte_string::Expression
 impl Runtime<'_, '_> {
     pub(super) fn count(
         &mut self,
-        expression: &Expr,
         argument: Option<&Expr>,
         env: Environment<'_>,
     ) -> Result<Value, QueryError> {
-        if let Some(results) = env.counts {
-            for result in results {
-                self.tick()?;
-                // Borrowed immutable plan nodes distinguish occurrences even
-                // when their operand syntax is identical. No pointer is stored.
-                if std::ptr::eq(result.expression, expression) {
-                    return Ok(Value::Int64(result.count));
-                }
-            }
-            return Err(QueryError::Source);
-        }
         let group = env.group.ok_or(QueryError::Grouping)?;
         let mut count = 0_i64;
 

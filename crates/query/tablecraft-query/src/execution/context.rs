@@ -36,12 +36,12 @@ pub(crate) struct Environment<'a> {
     pub(super) group: Option<&'a [Vec<CellValue>]>,
     pub(super) group_keys: Option<GroupKeys<'a>>,
     pub(super) collections: Option<&'a ParentCollections<'a>>,
-    pub(super) counts: Option<&'a [CountResult<'a>]>,
+    pub(super) aggregate_results: Option<&'a [AggregateResult<'a>]>,
 }
 
-pub(super) struct CountResult<'a> {
+pub(super) struct AggregateResult<'a> {
     pub expression: &'a Expr,
-    pub count: i64,
+    pub value: Value,
 }
 
 #[derive(Clone, Copy)]

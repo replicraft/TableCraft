@@ -306,24 +306,20 @@ fn late_cancellation_and_sink_rejection_publish_no_incomplete_count_or_poisoned_
 
 #[test]
 fn unsupported_count_forms_and_required_indexes_never_fall_back_to_snapshots() {
-    for sql in [
-        "SELECT Sum(Score) FROM Items",
-        "SELECT Score,Count(*) FROM Items GROUP BY Score",
-    ] {
-        let input = Watched::new(database(6, 4));
-        let pages = input.pages.clone();
-        let native = source(input, &|| false);
-        assert!(matches!(
-            refused_without_count(&plan(sql, &native), &native),
-            StreamError::Query(QueryError::Unsupported)
-        ));
-        assert!(
-            !pages
-                .borrow()
-                .iter()
-                .any(|page| (FIRST_DATA_PAGE..FIRST_DATA_PAGE + 4).contains(page))
-        );
-    }
+    let sql = "SELECT Score,Count(*) FROM Items GROUP BY Score";
+    let input = Watched::new(database(6, 4));
+    let pages = input.pages.clone();
+    let native = source(input, &|| false);
+    assert!(matches!(
+        refused_without_count(&plan(sql, &native), &native),
+        StreamError::Query(QueryError::Unsupported)
+    ));
+    assert!(
+        !pages
+            .borrow()
+            .iter()
+            .any(|page| (FIRST_DATA_PAGE..FIRST_DATA_PAGE + 4).contains(page))
+    );
 
     let native = source(Watched::new(database(6, 4)), &|| false)
         .with_index("Items", "MissingIndex")

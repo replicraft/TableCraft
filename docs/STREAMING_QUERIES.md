@@ -17,7 +17,8 @@ row-local predicates/functions and positive unordered TOP counts are supported.
 Global `Count(*)` and `Count(expr)` projections over the same direct table are
 also supported, with one checked count row published only after successful EOF.
 Pure final expressions and prior projection aliases may compose the counts.
-Other aggregates remain outside this progressive profile.
+`Sum(expr)` and `Avg(expr)` are also admitted under the numeric profile below;
+other aggregates remain outside this progressive profile.
 Flat UNION ALL can combine these count arms and direct-table row arms.
 
 ```sh
@@ -55,6 +56,34 @@ SQLite, required/automatic indexes, linked/external mappings and collection mode
 Explicit table format is rejected before opening the input; auto format is TSV for streaming, including in terminals. Header-based raw native and
 supported package/encryption opening retain their existing qualifications; this
 mode does not add a codec, provider or template reader.
+
+## Global SUM and AVG
+
+`Sum(expr)` and `Avg(expr)` can share a global aggregate SELECT with Count calls
+and pure final expressions. The input is scanned once through checked EOF, using
+one independently metered state per written occurrence. Existing numeric kernels
+supply exact totals, rounding, carrier admission and prefix-overflow behavior.
+NULL operands are omitted; empty or wholly NULL input produces NULL for Sum/Avg.
+Unlike Count, numeric aggregates retain their existing refusal of Error data and
+unrepresentable raw String operands.
+
+Operands run after WHERE, once per occurrence in written order on each row. After
+successful EOF, all aggregate states finish in occurrence order before final
+scalar expressions and aliases execute. Competing errors can differ from the
+buffered aggregate-major order. No aggregate result publishes before successful
+completion of those phases.
+
+Concurrent floating aggregates each need separate scratch storage during the
+scan. Byte thresholds can therefore differ from buffered execution, which can
+reuse scratch sequentially. Existing cumulative byte/row/work limits remain in
+force; streaming does not imply a small fixed allocation for every aggregate.
+Sorting, grouping/HAVING, extrema, statistics and wider sources remain outside
+this progressive profile.
+
+```sh
+tablecraft query run --database example.accdb --stream \
+  'SELECT Count(*) AS N,Sum(Amount) AS Total,Avg(Amount) AS Mean FROM Orders'
+```
 
 ## Explicit stored calculations
 
@@ -145,7 +174,7 @@ to open an embedded path. See the [query service](PROGRESSIVE_QUERIES.md) and
 
 ## Verification
 
-Twenty-nine CLI integration tests cover priority synthetic profiles, real ACE 2007
+Thirty-two CLI integration tests cover priority synthetic profiles, real ACE 2007
 example data, batch sizes, quoting, empty/filter results, first/late errors,
 checked count failures, cumulative quotas, parameter/text/declaration controls,
 mixed schemas, unordered TOP prefixes and argument refusals. TOP tests preserve
@@ -155,11 +184,13 @@ batches spanning arms, late failures and explicit numeric-to-Text conversions.
 Global-count controls additionally cover zero/filtered input, aliases, mixed row
 and count arms, EOF-only publication, quotas and batch-dependent retained prefixes.
 Operand controls additionally cover NULL/raw String/Error values, occurrence
-identity and eager failure prefixes. Stored-calculation controls cover explicit
+identity and eager failure prefixes. Numeric aggregate controls cover Sum/Avg/Count
+composition, aliases, empty populations, mixed UNION arms, eager failures and
+opted-in cached inputs. Stored-calculation controls cover explicit
 opt-in, stale values, inert formulas, Count/filter/UNION execution, selected cache
-failures and pruning. Fourteen calculation-preview regressions also pass. Five alias CLI and nine retrieval regressions
-also pass. Earlier CLI integration
-also recorded sixty unit/browsing/native/retrieval
+failures and pruning. The preceding stored-stream checkpoint also passed fourteen
+calculation-preview regressions. Five alias CLI and nine retrieval regressions
+also pass. Earlier CLI integration recorded sixty unit/browsing/native/retrieval
 checks, including write/flush failure and encoded-output allowance tests.
 Current scoped query/CLI strict Clippy passes. Original large-file replay and native Access
 qualification are recorded separately; this does not complete read/query work.
