@@ -1,4 +1,5 @@
 //! Min/Max retain expression data under strict scalar/String key comparison.
+mod policy;
 use super::{Environment, Expr, QueryError, Runtime};
 use crate::{execution::cell::CellValue, source::TextPolicy};
 use std::cmp::Ordering;
@@ -16,10 +17,13 @@ impl Runtime<'_, '_> {
         let mut selected = CellValue::scalar(Value::Null);
         let mut policy = TextPolicy::Default;
         let mut complete = false;
-        // A later runtime field policy can reverse an earlier default ordering.
-        // Stable global/declared field policies keep the existing one-cell path.
+        // Completed construction can discard provisional static contributors,
+        // so even nondefault lineage cannot prove a stable runtime comparator.
+        // Direct retained fields keep the one-cell lane when the whole group's
+        // already available policy metadata proves that it cannot change.
         let deferred = self.options.collation_resolver.is_some()
-            && self.text_policy(argument)? == TextPolicy::Default;
+            && (self.text_policy(argument)? == TextPolicy::Default
+                || !self.stable_extreme_policy(argument, group, 1)?);
         let mut candidates = Vec::new();
 
         for row in group {
@@ -77,6 +81,10 @@ impl Runtime<'_, '_> {
         // NULL contributors still participate in the final policy above.
         for value in candidates {
             self.tick()?;
+            // Key comparison honors completed cells over a provisional fallback.
+            // The completed population policy is authoritative here, including
+            // contributors absent from this particular candidate pair.
+            let value = value.with_policy(policy).with_complete_policy(complete);
             if self.replace_extreme(argument, &selected, &value, policy, maximum)? {
                 selected = value;
             }

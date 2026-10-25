@@ -1,5 +1,26 @@
 # Implementation status
 
+## Completed text policies in Min/Max
+
+Min/Max now retains String candidates when conservative static lineage cannot
+prove a stable runtime comparer. Completed concatenation can remove a latent
+numeric/Boolean/date peer policy; a later actual String policy must govern the
+whole population. Every deferred candidate receives the final policy and
+completion state before comparison. A metered metadata-only proof preserves the
+single-cell path for stable direct fields/CVar wrappers, while non-String
+populations retain their existing path.
+
+The original explicit reverse-provider counterexample returned `mFalse/mFalse`;
+the corrected result is `zFalse/aFalse`. One hundred collation tests and scoped
+strict Clippy pass, including encounter permutations, derived/named boundaries,
+once-only evaluation, NULL contributors, raw values, quotas and cancellation.
+Eleven related Error/Variant aggregate tests also pass.
+[The verification record](testing/results/read-query-extrema-complete-policy-2026-10-24.json)
+retains exact changed-file hashes and logs. See
+[the aggregate contract](EXPRESSION_AGGREGATES.md#retained-string-extrema).
+This fixes the supplied-provider contract without choosing native Access
+mixed-policy precedence or completing P0 semantics.
+
 ## Independent unordered TOP replay
 
 The [four-profile TOP replay](testing/PROGRESSIVE_TOP.md) passes 156 commands

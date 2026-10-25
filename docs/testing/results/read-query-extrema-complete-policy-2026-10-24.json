@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-24",
+  "scope": "Final population text policy and completion in Min/Max under explicit host resolvers; no native mixed-policy qualification",
+  "production_parent": "e0af2a4c",
+  "changed_rust_files": {
+    "crates/query/tablecraft-query/src/execution/aggregate/extrema.rs": "74eec1db3318b5660680a5fe7fb67cd707032394ec1197015a7f528286412ad8",
+    "crates/query/tablecraft-query/src/execution/aggregate/extrema/policy.rs": "d398a457081b6c36aef1a6082a2ee0d4229e736886bc26774496b6763d299458",
+    "crates/query/tablecraft-query/tests/collation_routing/domain_extrema_policy.rs": "8c53f0a316d88cd02979edd17cc7052f804d6207b8abc30dcc3abdef0c520032"
+  },
+  "rust_tests": {
+    "passed_unique_tests": 111,
+    "new_tests": 5,
+    "targets": {
+      "collation_routing": 100,
+      "error_extrema": 5,
+      "variant_aggregates": 6
+    }
+  },
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-query --test collation_routing -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/extrema-complete-policy-cohort-final-20261024.log",
+      "sha256": "5309734f994605b08d0305cf243e8f11cf5d6d4f5123b59770cf39bcc3445a7c"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --test collation_routing -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/extrema-complete-policy-cohort-clippy-20261024.log",
+      "sha256": "7165ef52c223968151d0368b97bfa7d64aa9d4fdd0e0fec6f0960a289172ec8c"
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test error_extrema --test variant_aggregates -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/extrema-complete-policy-related-20261024.log",
+      "sha256": "b02a88d9fdfa277cbd43063bf653f945ef55f595fd0b7fcc11bc295e67473687"
+    }
+  ],
+  "reproduction": {
+    "private_log": ".cache/extrema-complete-policy-reproduction-values-20261024.log",
+    "sha256": "849bc7f6d4f1374d851d26ce37a96ebfd88ce67b6db051834b6a42ae9e110afa",
+    "actual_before": [
+      "mFalse",
+      "mFalse"
+    ],
+    "independent_expected": [
+      "zFalse",
+      "aFalse"
+    ],
+    "oracle": "Explicit reverse host comparer over aFalse,zFalse,mFalse,mFalse; no native Access execution",
+    "coverage": "24 encounter permutations under both declaration profiles across direct/derived/named boundaries; once-only domains, mixed completion and NULL contributors, late failures and cancellation. Mixed-marker control exercises cohort propagation but alone does not prove necessity of completeness stamping for nondefault static fallback."
+  },
+  "implementation": {
+    "stable_field_path": "Metered metadata-only direct Field/CVar group proof, no expression/provider reevaluation or candidate allocation",
+    "dynamic_string_path": "Retain charged candidates until final population policy and completion are known",
+    "non_string_path": "Existing one-cell selection retained"
+  },
+  "unrun": [
+    "Full workspace suite",
+    "Windows native mixed-policy/extrema qualification",
+    "Performance benchmarks"
+  ]
+}
