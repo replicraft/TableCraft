@@ -84,6 +84,14 @@ pub(crate) struct RunArgs {
     #[arg(long = "link", value_names = ["ALIAS", "PATH"], num_args = super::links::MAPPING_FIELDS,
         action = clap::ArgAction::Append, requires = "database", conflicts_with = "sqlite")]
     pub(crate) links: Vec<OsString>,
+    /// Bind an exact SQL IN database token to this explicitly chosen stable database; repeat for more tokens.
+    #[arg(long = "external", value_names = ["DATABASE_TOKEN", "PATH"], num_args = super::external::MAPPING_FIELDS,
+        action = clap::ArgAction::Append, requires = "database", conflicts_with = "sqlite")]
+    pub(crate) external: Vec<OsString>,
+    /// Require this index on one explicitly bound external target's local table.
+    #[arg(long, value_names = ["DATABASE_TOKEN", "TABLE", "INDEX"], num_args = super::external::INDEX_FIELDS,
+        action = clap::ArgAction::Set, requires = "external", conflicts_with = "auto_index")]
+    pub(crate) external_index: Vec<String>,
     /// Query qualified stored calculation caches; results may be stale and are never recalculated.
     #[arg(long, requires = "database", conflicts_with = "sqlite")]
     pub(crate) stored_calculations: bool,

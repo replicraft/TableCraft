@@ -71,6 +71,10 @@ and immutable binding/revision keys, revalidate before scans, and retain actual
 target metadata and callbacks through discovery. Nested SELECTs choose their own
 namespace; root named/domain ownership remains explicit. External named targets
 and native stored remote-source reconstruction are not enabled by this contract.
+The native CLI host uses explicit `--external DATABASE_TOKEN PATH` mappings and
+`--external-index DATABASE_TOKEN TABLE INDEX`; follow
+[NATIVE_EXTERNAL_QUERIES.md](docs/NATIVE_EXTERNAL_QUERIES.md). Stored tokens never
+open files. Preserve shared native allowances and root/link/external index scope.
 With `--database`, the `tablecraft-access` adapter supplies bounded native scalar
 snapshots; follow [NATIVE_QUERIES.md](docs/NATIVE_QUERIES.md) for its supported
 profile. [Named collection presence](docs/COLLECTION_PRESENCE.md) tests complete

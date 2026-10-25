@@ -68,3 +68,44 @@ checks, root reuse, linked-root composition, cancellation, borrow collisions,
 quota exhaustion and failed row reads. These are original synthetic engineering
 controls; they are not native Access compatibility comparisons or permission to
 open an embedded database path.
+
+## CLI target selection
+
+The CLI host opens only paths supplied explicitly to the command. Bind an exact
+SQL database token with repeatable `--external DATABASE_TOKEN PATH`:
+
+```sh
+tablecraft query run --database frontend.accdb \
+  --external remote backend.accdb \
+  'SELECT Id, Name FROM People IN "remote" ORDER BY Id'
+```
+
+The token can be an opaque label. It need not equal the chosen path, and an
+embedded path never becomes permission to open that file. Exact token case
+matters. Duplicate tokens and external-index requests naming an unbound token
+fail. The option requires `--database` and conflicts with SQLite; template roots
+are unsupported. Targets use header-based native format detection and the same
+password behavior as root/linked opens: explicit global `-p/--password`, otherwise
+hidden interactive prompting when the selected file needs authentication.
+
+Root, linked and external native sources share one cumulative native allowance
+and receive distinct catalog scopes. The native payload/Text limits, explicit
+stored-calculation/collection/decoded-attachment views, automatic indexes and
+stored database text policies apply to each selected target. Comparison, query
+and output allowances remain separate. Explicit selected files are opened during
+host setup even if their binding is not ultimately referenced by SQL; no stored
+path or provider is opened in response to query syntax.
+
+`--index TABLE INDEX` continues to select the root table or mapped root link.
+Choose a particular external target with
+`--external-index DATABASE_TOKEN TABLE INDEX`. This preserves scope when the root
+and target have identically named tables. A missing or unsupported selected index
+fails instead of falling back to a sequential read. External index selection
+conflicts with `--auto-index`; both root and external explicit index selections
+can be supplied in one command. Only one external explicit index selection is
+currently accepted per command.
+
+Normal query results remain fully buffered before stdout. Authentication,
+metadata, row, index, budget or formatting failure publishes no partial result.
+Use stable/offline copies; explicit multi-file selection does not establish
+coherent shared-file reads or a cross-file transaction.

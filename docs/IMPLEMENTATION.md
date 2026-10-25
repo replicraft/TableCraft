@@ -1,5 +1,25 @@
 # Implementation status
 
+## Explicit external database selection in query run
+
+Repeatable `--external DATABASE_TOKEN PATH` maps an exact SQL IN token to an
+explicit stable native file. Root/link/external opens share one native allowance,
+distinct catalog scopes, password handling and native view/payload controls.
+`--external-index DATABASE_TOKEN TABLE INDEX` selects a particular target index;
+ordinary `--index` remains root/link scoped. Missing or unsupported selected
+indexes fail without fallback. A shared target-opening helper preserves existing
+linked-source configuration. No SQL or stored token opens a file automatically.
+See [CLI selection](NATIVE_EXTERNAL_QUERIES.md#cli-target-selection).
+
+Eight external CLI tests and nine existing linked CLI tests pass after the final
+accounting/parser changes. They cover priority profiles, different root/target
+rows, nested scopes, linked/external composition, encrypted targets, index routing,
+positive limits, exact/provider/duplicate refusals and buffered failure. Strict
+scoped CLI/test Clippy passes. A prior rerun exhausted disk while writing an
+original test fixture; it is excluded, followed by the successful final batch
+after rebuildable compiler artifacts were removed. Native Access and the complete
+workspace suite were not run; the remaining read/query roadmap stays active.
+
 ## Explicit native external source handles
 
 `ExternalNativeSource` maps exact external database tokens to already-open sealed
