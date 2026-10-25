@@ -3,12 +3,15 @@ use super::super::TableSnapshot;
 use super::super::{TableSchema, read_table};
 use super::key::KeyWork;
 use super::{
-    IndexConstraints, NativeIndex, inspect_table_indexes, key::KeyProfile, profile::IndexProfile,
-    read_table_index,
+    IndexConstraints, IndexProjection, IndexProjectionSelection, NativeIndex,
+    inspect_table_indexes, key::KeyProfile, profile::IndexProfile, read_table_index_projection,
 };
 use crate::InspectError;
+use projection::CheckProjection;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
+
+mod projection;
 
 /// Coverage of one native index in a completed table check.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -96,10 +99,22 @@ pub fn check_table<R: crate::NativeReadSource>(
         tick(budget, cancelled)?;
         let status = match IndexProfile::new(&index, &inspection.schema) {
             Ok(profile) => {
-                let indexed =
-                    read_table_index(source, scope, table, index.name(), budget, cancelled)?;
+                let projection =
+                    CheckProjection::new(&inspection.schema, &index, budget, cancelled)?;
+                let indexed = read_table_index_projection(
+                    source,
+                    scope,
+                    table,
+                    index.name(),
+                    IndexProjection {
+                        columns: projection.names(),
+                        selection: IndexProjectionSelection::All,
+                    },
+                    budget,
+                    cancelled,
+                )?;
                 if indexed.rows().len() != rows
-                    || indexed.columns() != columns
+                    || indexed.schema().scalar_columns_with_budget(budget)? != columns
                     || indexed.schema().object_id() != inspection.schema.object_id()
                     || indexed.schema().definition_page() != inspection.schema.definition_page()
                 {
@@ -107,33 +122,78 @@ pub fn check_table<R: crate::NativeReadSource>(
                 }
                 let constraints = index.constraints().ok_or(InspectError::Unsupported)?;
                 let checked = match profile {
-                    IndexProfile::EncodedTuple(profile) => {
-                        check_keys(&indexed, constraints, profile, budget, cancelled)
-                    }
-                    IndexProfile::Text(profile) => {
-                        check_keys(&indexed, constraints, profile, budget, cancelled)
-                    }
-                    IndexProfile::Binary(profile) => {
-                        check_keys(&indexed, constraints, profile, budget, cancelled)
-                    }
-                    IndexProfile::Single(profile) => {
-                        check_keys(&indexed, constraints, profile, budget, cancelled)
-                    }
-                    IndexProfile::Composite(profile) => {
-                        check_keys(&indexed, constraints, profile, budget, cancelled)
-                    }
-                    IndexProfile::Guid(profile) => {
-                        check_keys(&indexed, constraints, profile, budget, cancelled)
-                    }
-                    IndexProfile::GuidComposite(profile) => {
-                        check_keys(&indexed, constraints, profile, budget, cancelled)
-                    }
-                    IndexProfile::Decimal(profile) => {
-                        check_keys(&indexed, constraints, profile, budget, cancelled)
-                    }
-                    IndexProfile::DecimalComposite(profile) => {
-                        check_keys(&indexed, constraints, profile, budget, cancelled)
-                    }
+                    IndexProfile::EncodedTuple(profile) => check_keys(
+                        &indexed,
+                        &projection,
+                        constraints,
+                        profile,
+                        budget,
+                        cancelled,
+                    ),
+                    IndexProfile::Text(profile) => check_keys(
+                        &indexed,
+                        &projection,
+                        constraints,
+                        profile,
+                        budget,
+                        cancelled,
+                    ),
+                    IndexProfile::Binary(profile) => check_keys(
+                        &indexed,
+                        &projection,
+                        constraints,
+                        profile,
+                        budget,
+                        cancelled,
+                    ),
+                    IndexProfile::Single(profile) => check_keys(
+                        &indexed,
+                        &projection,
+                        constraints,
+                        profile,
+                        budget,
+                        cancelled,
+                    ),
+                    IndexProfile::Composite(profile) => check_keys(
+                        &indexed,
+                        &projection,
+                        constraints,
+                        profile,
+                        budget,
+                        cancelled,
+                    ),
+                    IndexProfile::Guid(profile) => check_keys(
+                        &indexed,
+                        &projection,
+                        constraints,
+                        profile,
+                        budget,
+                        cancelled,
+                    ),
+                    IndexProfile::GuidComposite(profile) => check_keys(
+                        &indexed,
+                        &projection,
+                        constraints,
+                        profile,
+                        budget,
+                        cancelled,
+                    ),
+                    IndexProfile::Decimal(profile) => check_keys(
+                        &indexed,
+                        &projection,
+                        constraints,
+                        profile,
+                        budget,
+                        cancelled,
+                    ),
+                    IndexProfile::DecimalComposite(profile) => check_keys(
+                        &indexed,
+                        &projection,
+                        constraints,
+                        profile,
+                        budget,
+                        cancelled,
+                    ),
                 };
                 // Full indexed reads prove distinct live roots by key/row order
                 // and decoded key agreement. The complete sequential count then
@@ -167,6 +227,7 @@ pub fn check_table<R: crate::NativeReadSource>(
 }
 fn check_keys<P: KeyProfile>(
     table: &TableSnapshot,
+    projection: &CheckProjection<'_>,
     constraints: IndexConstraints,
     profile: P,
     budget: &mut ResourceBudget,
@@ -179,7 +240,7 @@ fn check_keys<P: KeyProfile>(
             Resource::Steps,
             profile.components().saturating_sub(1) as u64,
         )?;
-        let key = profile.row_key(row, &mut KeyWork { budget, cancelled })?;
+        let key = profile.row_key(&projection.row(row), &mut KeyWork { budget, cancelled })?;
         if constraints.unique() && !profile.unique_key_is_exact(&key) {
             return Err(InspectError::Unsupported);
         }

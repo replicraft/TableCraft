@@ -1,0 +1,70 @@
+{
+  "date": "2026-10-25",
+  "scope": "Complete native table checks with key-only per-index payload decoding",
+  "tests": 47,
+  "new_tests": 4,
+  "test_targets": {
+    "check_projection": 4,
+    "checks": 4,
+    "composite_constraints": 29,
+    "composite_indexes": 7,
+    "index_projection": 3
+  },
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-ace --test check_projection --test checks --test index_projection --test composite_indexes --test composite_constraints -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/check-table-projection-primary-retry-20261025.log",
+      "sha256": "338066e5254b10ea22529ce78802cfc015dd61b81ea62d7b2bfcc5c6fd487431",
+      "terminal_session": 50603
+    },
+    {
+      "command": "cargo clippy -p tablecraft-ace --lib --test check_projection --test checks --test index_projection --test composite_indexes --test composite_constraints -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/check-table-projection-clippy-20261025.log",
+      "sha256": "54bb55ef67219a3ba3ee08b40b629d2f39b66f4a2b56fa1877dad9291e197cb0",
+      "terminal_session": 93302
+    }
+  ],
+  "excluded_attempts": [
+    {
+      "command": "cargo test -p tablecraft-ace --test check_projection --test checks --test index_projection --test composite_indexes --test composite_constraints -j2 --locked --offline",
+      "exit_code": 101,
+      "private_log": ".cache/check-table-projection-primary-20261025.log",
+      "sha256": "3b365a87e5f1e2a3788259a049ed855c4e4a76d154fa4addf4b104593e444920",
+      "terminal_session": 27480,
+      "classification": "New test assumed an original decoded Memo exceeded 4096 bytes. Three tests passed; the Memo test failed this authoring assertion before its payload checks. Replaced only that size assumption with nonempty Text; exact LVAL visit multiset, read reduction and corruption expectations remained unchanged. No production correction.",
+      "counted_in_accepted_tests": false
+    }
+  ],
+  "contracts": [
+    "Initial complete sequential scalar decoding and its full schema/object/definition/count checks remain required.",
+    "Each qualified logical index uses existing complete All projection traversal; every key component remains decoded and compared with the physical index entry.",
+    "Key-only returned cells map original logical positions through a bounded private KeyRow view for unchanged unique/required/NULL checks.",
+    "Original USysRibbons data proves exact equality of optimized LVAL page-visit counts with a standalone sequential pass, and fewer total bytes/LVAL visits than full decoding per index.",
+    "Corruption of a counted non-key LVAL page remains rejected by the initial sequential pass.",
+    "Gapped/reversed ACE 16 composite keys retain constraints, including typed duplicate-key and required-NULL failures.",
+    "Existing unsupported-profile coverage, extra-live-root rejection, selected corruption, I/O failures and cumulative budgets remain covered by the focused regressions."
+  ],
+  "limits": [
+    "Local Rust and existing authored/original fixture evidence, not native Microsoft Access integrity qualification.",
+    "No concurrent-file snapshot or arbitrary mutation detection guarantee; callers still supply stable/offline sources.",
+    "No new index profiles, constraints, default allowances, automatic fallback or write eligibility.",
+    "No full workspace suite or timing claim. CLI integration and original-file replay are separate."
+  ],
+  "source_snapshots": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/check.rs",
+      "sha256": "d2df6094836ecb0add3c2476f7bfca881c00fcf85a9e618b2ff27466c01264c9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/check/projection.rs",
+      "sha256": "5d1066b43e459d68373c1967c96bd4b9db04945e8847a9333671f482cd4c0f47"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/check_projection.rs",
+      "sha256": "5318abd67646ddf4e6c720de01d9b768f166ef8eef4442ae7cb5c63a3ee9b85b"
+    }
+  ],
+  "source_snapshot_scope": "Final reviewed working-tree files before logical commit; not an executable compilation manifest."
+}
