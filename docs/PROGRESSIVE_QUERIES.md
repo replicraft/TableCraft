@@ -457,7 +457,9 @@ retains exact commands, log hashes, excluded setup probes and the prepare-only
 depth diagnostic. Existing generated Count under 8 KiB passes unchanged. Native
 and CLI integration adds 134 passing controls, including twelve new facade/host
 checks. The complete scoped total is 538 distinct tests with forty new controls;
-strict native/CLI linting also passes. Actual Access qualification remains separate.
+strict native/CLI linting also passes. The [original native/CAB replay](testing/PROGRESSIVE_DERIVED.md)
+passes all 96 controls, comparing 420 rows and 1,410 cells against independent
+formulas. Actual Access qualification remains separate.
 
 The grouped extension passes 385 distinct query tests, including 25 new tests:
 104 progressive/value/policy controls, 26 runtime units and 255 related buffered

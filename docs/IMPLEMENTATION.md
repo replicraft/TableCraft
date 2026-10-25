@@ -13,7 +13,10 @@ targets and recomputed-column views with `--stream`; stored paths never open fil
 Forty new controls and 498 regressions pass, with strict query/native/CLI linting
 and the minimal query feature check. See [scope](PROGRESSIVE_QUERIES.md) and
 [verification](testing/results/read-query-progressive-derived-2026-10-25.json).
-These checks do not establish native Access execution compatibility.
+The [original native/CAB replay](testing/PROGRESSIVE_DERIVED.md) also passes all
+96 commands, comparing 420 rows and 1,410 cells. Fourteen immutable and thirty-one
+revision-source hashes were independently rechecked. These checks do not
+establish native Access execution compatibility.
 
 ## Progressive integral grouping
 
