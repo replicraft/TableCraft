@@ -67,5 +67,8 @@ The initial minimal-feature test filter selected zero tests because evaluation
 requires the SQL feature; it is not counted as test coverage. The initial CLI
 precision control used an untyped large literal that had already rounded under
 literal preparation; the final control uses exact Text-to-LongLong conversion.
-No product result was adjusted to make that assertion pass. Original-file replay
-and native Access execution remain separate next evidence work.
+No product result was adjusted to make that assertion pass. The independent
+[source-free/native replay](testing/DECLARED_NUMERIC_TEXT_REPLAY.md) now passes
+128 controls comparing 2,592 Boolean/NULL cells and 32 buffered overflow failures
+with all originals and artifact/source pins unchanged. Native Access execution
+remains separate evidence work.

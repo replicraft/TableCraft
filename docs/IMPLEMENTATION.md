@@ -9,8 +9,10 @@ in that explicit profile. Unknown String categories remain usable without
 inventing result provenance; existing Variant/String branches and default
 execution stay intact. Nine new tests and 73 regressions pass across expression,
 query and CLI layers, with strict linting, separate minimal-feature checks and
-formatting. Original/native replay remains separate evidence work. See the
-[working contract](DECLARED_NUMERIC_TEXT.md).
+formatting. The independent [128-control replay](testing/DECLARED_NUMERIC_TEXT_REPLAY.md)
+now compares 2,592 Boolean/NULL cells and 32 buffered overflow failures over
+source-free cases and four unchanged registered native inputs. Native Access
+qualification remains separate. See the [working contract](DECLARED_NUMERIC_TEXT.md).
 
 ## DATE query index constraints
 

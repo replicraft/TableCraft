@@ -490,8 +490,10 @@ are still open.
 Known Scalar numeric/String comparisons now use their selected conversion width
 under the explicit declared profile, retaining exact LongLong precision and
 integer rounding/range failures. This closes another coercion branch without
-inferring aggregate declarations or completing P0. See the
-[contract and scoped verification](DECLARED_NUMERIC_TEXT.md).
+inferring aggregate declarations or completing P0. The independent replay passes
+128 controls with 2,592 compared Boolean/NULL cells and 32 buffered errors across
+source-free cases and four unchanged native inputs; native qualification remains
+pending. See the [contract and scoped verification](DECLARED_NUMERIC_TEXT.md).
 
 ### P0 implementation boundaries reviewed 24 October 2026
 

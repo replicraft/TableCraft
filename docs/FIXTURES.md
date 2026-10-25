@@ -663,6 +663,17 @@ this recipe yet; synthetic portable-test envelopes are not ACCDB fixtures or
 native observations. The working CLI passes its 100 inline exercise controls.
 [Capture/comparison limits](testing/NATIVE_AGGREGATE_ORACLE.md) remain explicit.
 
+## Declared numeric/String field replay
+
+The [independent 128-control replay](testing/DECLARED_NUMERIC_TEXT_REPLAY.md)
+reuses the four unchanged registered Scalar inputs below. No new database or
+third-party fixture is copied. Existing read-only getter values feed an original
+Decimal half-even/range model under explicit en-us/de-de profiles; only TableCraft
+executes SQL. The report records all input, JAR, getter, runner and frozen CLI
+hashes and checks them again after execution. It compares 2,592 successful
+Boolean/NULL cells and 32 buffered overflow failures without native Access
+qualification or new write eligibility.
+
 ## Interrupted-seek scalar replay
 
 On 23 October 2026 the original MIT [ScalarFixture.java](testing/ScalarFixture.java)
