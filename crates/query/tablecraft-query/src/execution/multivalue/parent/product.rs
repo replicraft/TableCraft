@@ -91,6 +91,7 @@ impl Runtime<'_, '_> {
             let value = self.eval(
                 &product.predicate,
                 Environment {
+                    counts: None,
                     collections: None,
                     row: captured.as_deref().unwrap_or(row),
                     outer,

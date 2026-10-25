@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Explicit progressive global Count(expr) over direct tables; shared existing nullness and borrowed completed occurrence results",
+  "unique_tests": 169,
+  "new_tests": 23,
+  "targets": {
+    "query": 99,
+    "native_adapter": 30,
+    "cli": 40
+  },
+  "checks": [
+    {
+      "command": "cargo check -p tablecraft-query -j2 --locked --offline",
+      "private_log": ".cache/progressive-count-operands-check-reviewed-20261025.log",
+      "exit_code": 0,
+      "sha256": "02a0924c86f519192bb0bfb8321ae6832b235303660e95de6faede96999e522e"
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test progressive_count_operands --test progressive_count_execution --test progressive_queries -j2 --locked --offline",
+      "private_log": ".cache/progressive-count-operands-primary-accepted-20261025.log",
+      "exit_code": 0,
+      "sha256": "9d18902e523af0280b2945daa9881032b449c1bdb0cac69d8a352540ba2295c0",
+      "passed_tests": 53
+    },
+    {
+      "command": "cargo test -p tablecraft-query --lib execution::aggregate::count -j2 --locked --offline",
+      "private_log": ".cache/progressive-count-operands-kernel-20261025.log",
+      "exit_code": 0,
+      "sha256": "529077b2268b4de6cbea4d5b1ba3b2bf52d4d03c08c1835b4b054192c31ef1e6",
+      "passed_tests": 1
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test raw_string_count --test variant_aggregates --test grouped_expressions --test grouped_subqueries --test progressive_union_types --test projection_alias_execution --test error_consumers -j2 --locked --offline",
+      "private_log": ".cache/progressive-count-operands-regressions-20261025.log",
+      "exit_code": 0,
+      "sha256": "4606151402efd44f0e765221a7bf081b713bff64c0e1c52d6e896f70c8f9b64e",
+      "passed_tests": 45
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --tests -j2 --locked --offline -- -D warnings",
+      "private_log": ".cache/progressive-count-operands-clippy-20261025.log",
+      "exit_code": 0,
+      "sha256": "bb974ad0b0ed607c146f564fae97df8fe99ba0ae8286015da22ce38a344430b4"
+    },
+    {
+      "command": "cargo test --locked -p tablecraft-access --test progressive_counts --test progressive_source",
+      "private_log": ".cache/progressive-count-operands-native-tests-20261025.log",
+      "exit_code": 0,
+      "sha256": "c4b12c95011e4659ecd3440cdedc2bc8da26a10840e4143c69deef79ad95b004",
+      "passed_tests": 30
+    },
+    {
+      "command": "cargo clippy --locked -p tablecraft-access --lib --test progressive_counts --test progressive_source -- -D warnings",
+      "private_log": ".cache/progressive-count-operands-native-clippy-20261025.log",
+      "exit_code": 0,
+      "sha256": "63afd69d3cd02fbcc1b332fa5e04a2e78191b02e6fd73d538c21309df524bdf9"
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --test progressive_queries --test projection_aliases --test retrieval -j2 --locked --offline",
+      "private_log": ".cache/progressive-count-operands-cli-tests-20261025.log",
+      "exit_code": 0,
+      "sha256": "9a9e7ccd19a5a30cc8efa4378f0977785436ed8061d1754c6fbaa18467535aba",
+      "passed_tests": 40
+    },
+    {
+      "command": "cargo clippy -p tablecraft-cli --bin tablecraft --test progressive_queries --test projection_aliases --test retrieval -j2 --locked --offline -- -D warnings",
+      "private_log": ".cache/progressive-count-operands-cli-clippy-20261025.log",
+      "exit_code": 0,
+      "sha256": "fe0b420389d7cd67364c1fc825ece96cbe4339e1702a73b1079db2228f952ac4"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "private_log": ".cache/progressive-count-operands-fmt-20261025.log",
+      "exit_code": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "review": [
+    "Each syntactic Count occurrence evaluates independently in written order after WHERE.",
+    "Borrowed immutable node identity selects final results; registration, initialization, occurrence evaluation and lookup are metered and cancellable.",
+    "NULL is excluded; raw String and Error data retain existing Count nullness without strict Unicode publication.",
+    "Native selected fields and EOF validate before aggregate publication; failed scans never publish a complete cache."
+  ],
+  "test_authoring_corrections": [
+    "Initial independent Round golden expected Double; buffered parity already passed and the established Int64 result golden was corrected. Initial log is excluded from accepted counts."
+  ],
+  "boundaries": [
+    "Count operand failures occur during scanning; competing failures can differ from buffered aggregate-major evaluation order.",
+    "Other aggregates, grouping/HAVING and wider progressive sources remain refused.",
+    "Existing Int64 Count result carrier is unchanged."
+  ],
+  "unrun": [
+    "Full workspace suite",
+    "Native Microsoft Access comparison",
+    "Original native getter replay for Count(expr); earlier Count(*) replay remains separate"
+  ]
+}

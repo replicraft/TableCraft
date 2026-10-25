@@ -9,7 +9,7 @@ fn unsupported_relational_and_source_using_shapes_publish_nothing() {
         "SELECT TOP 1 Id FROM Items ORDER BY Id",
         "SELECT DISTINCT Id FROM Items",
         "SELECT Sum(Id) FROM Items",
-        "SELECT Count(Id) FROM Items",
+        "SELECT Count(*) FROM Items HAVING Count(*)>0",
         "SELECT Id FROM Items GROUP BY Id",
         "SELECT Id FROM Items UNION SELECT Id FROM Items",
         "SELECT Id FROM Items UNION ALL SELECT Sum(Id) FROM Items WHERE False",

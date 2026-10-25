@@ -1,9 +1,9 @@
-//! Global COUNT(*) retains only its checked counter through source EOF.
+//! Global COUNT occurrences retain only checked counters through source EOF.
 use super::{StreamError, StreamSummary, plan::ProgressiveArm};
 use crate::{
     OutputType, QueryError,
-    execution::{Environment, Runtime},
-    plan::RelationNode,
+    execution::{Environment, Runtime, context::CountResult},
+    plan::{Aggregate, Expr, RelationNode},
     source::ProjectedRow,
 };
 use tablecraft_core::values::Value;
@@ -28,8 +28,21 @@ impl Runtime<'_, '_> {
         else {
             return Err(QueryError::Unsupported.into());
         };
+        self.budget
+            .charge_allocation(arm.counts.len() as u64, size_of::<CountResult<'_>>() as u64)
+            .map_err(QueryError::from)?;
+        let mut counts = Vec::new();
+        counts
+            .try_reserve_exact(arm.counts.len())
+            .map_err(|_| QueryError::Allocation)?;
+        for expression in &arm.counts {
+            self.tick()?;
+            counts.push(CountResult {
+                expression,
+                count: 0,
+            });
+        }
         let source = self.source;
-        let mut count = 0_i64;
         let mut failure: Option<QueryError> = None;
         let mut consume = |row: ProjectedRow<'_>| {
             if let Some(error) = &failure {
@@ -43,6 +56,7 @@ impl Runtime<'_, '_> {
                     .checked_add(1)
                     .ok_or(QueryError::StructureLimit)?;
                 let environment = Environment {
+                    counts: None,
                     row: &row,
                     collections: None,
                     outer: &[],
@@ -55,7 +69,20 @@ impl Runtime<'_, '_> {
                 {
                     return Ok(());
                 }
-                count = count.checked_add(1).ok_or(EvalError::Overflow)?;
+                // Operands run once per occurrence, in written projection/tree
+                // order, after WHERE. Identical counts are deliberately separate.
+                for result in &mut counts {
+                    self.tick()?;
+                    let Expr::Aggregate(Aggregate::Count, argument) = result.expression else {
+                        return Err(QueryError::Source);
+                    };
+                    if let Some(argument) = argument
+                        && !self.count_argument(argument, environment)?
+                    {
+                        continue;
+                    }
+                    result.count = result.count.checked_add(1).ok_or(EvalError::Overflow)?;
+                }
                 Ok(())
             })();
             if let Err(error) = &result {
@@ -70,24 +97,20 @@ impl Runtime<'_, '_> {
         scanned?;
         self.tick()?;
 
-        // Only final global-count projections see this overlay. No source callback
-        // runs with it installed, and every Result path restores the prior value.
-        let previous = self.progressive_count.replace(count);
-        let result = (|| {
-            let environment = Environment {
-                row: &[],
-                collections: None,
-                outer: &[],
-                output: &[],
-                group: None,
-                group_keys: None,
-            };
-            let cells = self.progressive_projection(arm, environment)?;
-            // Admitted TOP counts are positive, so a global aggregate's one row
-            // survives TOP. SQL TOP 0 remains a preparation error.
-            self.progressive_publish(arm, cells, union_types, summary, visitor)
-        })();
-        self.progressive_count = previous;
-        result
+        // Completed results are borrowed only by the final projection. Input
+        // callbacks have returned, and no mutable Runtime overlay can leak.
+        let environment = Environment {
+            counts: Some(&counts),
+            row: &[],
+            collections: None,
+            outer: &[],
+            output: &[],
+            group: None,
+            group_keys: None,
+        };
+        let cells = self.progressive_projection(arm, environment)?;
+        // Admitted TOP counts are positive, so a global aggregate's one row
+        // survives TOP. SQL TOP 0 remains a preparation error.
+        self.progressive_publish(arm, cells, union_types, summary, visitor)
     }
 }

@@ -78,11 +78,11 @@ fn filtered_empty_count_projection_errors_are_not_skipped_and_bad_eof_wins() {
 #[test]
 fn unsupported_aggregate_arms_fail_before_even_an_earlier_valid_count_scan() {
     for sql in [
-        "SELECT Count(N) FROM T",
+        "SELECT Avg(N) FROM T",
         "SELECT Count(*) FROM T GROUP BY N",
         "SELECT Count(*) FROM T HAVING Count(*)>0",
         "SELECT Count(*) FROM T UNION ALL SELECT Sum(N) FROM T",
-        "SELECT N FROM T UNION ALL SELECT Count(N) FROM T WHERE False",
+        "SELECT N FROM T UNION ALL SELECT Avg(N) FROM T WHERE False",
     ] {
         let source = Rows::new([1, 2, 3]);
         let syntax = parse_query(sql, Default::default()).unwrap();
@@ -99,4 +99,58 @@ fn unsupported_aggregate_arms_fail_before_even_an_earlier_valid_count_scan() {
         assert_eq!(source.scans.get(), 0);
         assert_eq!(calls, 0);
     }
+}
+
+#[test]
+fn count_literal_text_remains_a_value_instead_of_dynamic_code_or_a_field_name() {
+    let source = Rows::new([1, 2, 3]);
+    let syntax = parse_query(
+        "SELECT Count('MissingField'),Count('1/0'),Count(''),Count(NULL) FROM T",
+        Default::default(),
+    )
+    .unwrap();
+    let plan = prepare(syntax.query(), &source).unwrap();
+    let mut rows = Vec::new();
+    plan.execute_progressive(&source, &[], Default::default(), &mut |row: &[Value]| {
+        rows.push(row.to_vec());
+        Ok::<(), ()>(())
+    })
+    .unwrap();
+    assert_eq!(
+        rows,
+        [vec![
+            Value::Int64(3),
+            Value::Int64(3),
+            Value::Int64(3),
+            Value::Int64(0)
+        ]]
+    );
+}
+
+#[test]
+fn streaming_count_arguments_follow_row_then_written_occurrence_error_order() {
+    let source = Rows::new([1, 2, 3]);
+    let syntax = parse_query(
+        "SELECT Count(1/(3-N)) AS LateZero,Count(CByte(256/N)) AS EarlyOverflow FROM T",
+        Default::default(),
+    )
+    .unwrap();
+    let plan = prepare(syntax.query(), &source).unwrap();
+    assert_eq!(
+        plan.execute(&source, &[], Default::default()).err(),
+        Some(QueryError::Evaluation(EvalError::DivisionByZero)),
+    );
+    let mut calls = 0;
+    let streamed = plan.execute_progressive(&source, &[], Default::default(), &mut |_| {
+        calls += 1;
+        Ok::<(), ()>(())
+    });
+    assert!(matches!(
+        streamed,
+        Err(StreamError::Query(QueryError::Evaluation(
+            EvalError::Overflow
+        )))
+    ));
+    assert_eq!(source.visits.get(), 1);
+    assert_eq!(calls, 0);
 }

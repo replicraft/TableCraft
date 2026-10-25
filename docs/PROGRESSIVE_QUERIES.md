@@ -13,9 +13,9 @@ the API itself never writes stdout.
 The service accepts a direct root scalar table or a flat UNION ALL of those
 SELECT arms, with optional aliases, declared parameters, row-local WHERE, scalar
 projections and positive unordered TOP counts. Wildcards use the ordinary qualified
-scalar metadata. Global COUNT(*) projections over the same direct table are
-also supported as described below. Original source order and eager predicate/projection
-kernels are retained. Scalar conversion, arithmetic, text and inspection services
+scalar metadata. Global COUNT(*) and COUNT(expr) projections over the same direct
+table are also supported as described below. Original source order and eager
+predicate/projection kernels are retained. Scalar conversion, arithmetic, text and inspection services
 use the same explicit execution policies as buffered queries. Prior explicitly
 named row-local projections can feed later projections through the ordinary
 [projection alias](PROJECTION_ALIASES.md) references. Each definition executes once
@@ -34,28 +34,49 @@ preserves duplicate rows, as in buffered execution. Metadata-only `output_names(
 supplies ordinary read-plan names; top-level crosstabs return None. Output type/policy metadata
 retains its existing conservative contracts.
 
-## Global COUNT(*)
+## Global COUNT
 
-A global aggregate SELECT whose only aggregate nodes are `Count(*)` can scan a
-direct root table progressively. Optional scalar WHERE predicates use the normal
-eager evaluator. The query retains one checked Int64 counter for qualifying rows,
-not a complete input snapshot. COUNT without a filter requests no scalar columns;
-a filtered count requests only its predicate's required fields. Each native row
-still passes the source's selected-read and EOF validation.
+A global aggregate SELECT whose only aggregate nodes are `Count(*)` or
+`Count(expr)` can scan a direct root table progressively. Optional scalar WHERE
+predicates use the normal eager evaluator. The query retains one checked Int64
+counter per written aggregate occurrence, not a complete input snapshot. Each
+native row still passes the source's selected-read and EOF validation. A pure
+`Count(*)` needs no scalar columns; other counts request only fields needed by
+WHERE and their operands.
 
 ```sql
-SELECT Count(*) AS Population, Population + CLngLng(1) AS NextValue
+SELECT Count(*) AS Population, Count(Label) AS PresentLabels,
+       PresentLabels + CLngLng(1) AS NextValue
 FROM Items
 WHERE Active = True;
 ```
 
-Only after successful EOF does the existing evaluator compute the final projection
-and its aliases. Repeated `Count(*)` nodes read the same completed counter through
-a scoped runtime overlay; it is restored on every Result exit. This preserves the
-existing Int64 carrier without introducing a second arithmetic/conversion kernel.
-Empty or wholly filtered inputs produce one count row containing zero, and an
-expression such as `1/Count(*)` still fails when that zero is its divisor. Positive
-TOP counts retain that one aggregate row. SQL TOP 0 remains refused by preparation.
+`Count(expr)` uses the same nullness/state admission as buffered Count. NULL is
+excluded; empty Text, retained odd-byte/unpaired-surrogate Strings and Error data
+are non-NULL. Empty and Missing retain their existing refusal rather than becoming
+NULL. This does not add stored/parameter states or SQL constructors. An operand
+can use the already admitted row-local scalar profile, but not nested aggregates,
+subqueries, domain/Eval calls or volatile clock/random calls. Literal Text remains
+a value: `Count('MissingField')` does not resolve a field or parse executable text.
+
+Each qualifying row evaluates every Count operand in written projection/tree
+order, once for each syntactic occurrence. Repeated identical counts are not
+deduplicated; prior output aliases still reuse their defining count result.
+Operand failures occur during scanning, before the next qualifying row. This is
+an explicit progressive error-order contract: buffered aggregation evaluates one
+aggregate across its whole materialized group before the next projection's
+aggregate, and can therefore report another failure first. Final scalar projection
+expressions still execute only after successful EOF, including on empty or wholly
+filtered inputs. For example, `Count(1/0)` is zero on no matching rows, whereas
+`1/Count(*)` fails on the resulting zero count.
+
+Completed results are borrowed only by the final projection's environment. Full
+immutable aggregate-node identity selects the corresponding occurrence even when
+a scalar function requests its arguments in another order. No raw pointers or
+mutable Runtime count state are retained. The existing evaluator computes final
+scalar expressions, aliases and strict publication. Every count keeps its existing
+Int64 result carrier and declaration metadata. Positive TOP retains the one
+aggregate result row; SQL TOP 0 remains refused during preparation.
 
 Count arms and ordinary row arms can share a flat UNION ALL. Written arm order,
 whole-UNION active-profile promotion, all-arm admission/schema preflight and
@@ -66,14 +87,17 @@ including when a broken source swallows a rejected input callback. Final count
 sink callbacks occur after the source cursor has returned, and a failed sink
 prevents later arms from starting.
 
-Byte/row/work allowances remain cumulative, including per-row predicate copies,
-so bounded live memory does not grant an unlimited scan. No complete cache is
-published. Count(expr), other aggregates, GROUP BY/HAVING and wider sources remain
-outside this progressive slice; ordinary buffered aggregate availability is
-unchanged. Microsoft's [Access SQL Count contract](https://learn.microsoft.com/en-us/office/vba/access/concepts/criteria-expressions/count-function-microsoft-access-sql)
-establishes that the asterisk counts records regardless of NULL fields. Our
-Int64 carrier, EOF/publication/error timing and resource ceilings remain explicit
-engineering contracts, not native Access execution qualification.
+Byte/row/work allowances remain cumulative, including operand evaluation and
+per-row copies, so bounded live memory does not grant an unlimited scan. Slot
+registration, counter initialization, per-row occurrences and final identity
+lookups are metered and cancellable. Counter storage is prepaid, fallible and
+bounded by the existing binding-node ceiling. No complete cache is published.
+Other aggregates, GROUP BY/HAVING and wider sources remain outside this progressive
+slice; ordinary buffered aggregate availability is unchanged. Microsoft's
+[Access SQL Count contract](https://learn.microsoft.com/en-us/office/vba/access/concepts/criteria-expressions/count-function-microsoft-access-sql)
+establishes field/calculation operands and the asterisk's inclusion of records
+with NULL fields. Our Int64 carrier, publication/error timing and resource ceilings
+remain explicit engineering contracts, not native Access execution qualification.
 
 ## Progressive UNION ALL
 
@@ -168,20 +192,24 @@ this library does not write a header or open files/providers.
 
 ## Verification and remaining work
 
-Twenty-seven progressive service tests, nine independent UNION promotion/
-boundary tests and thirteen generated COUNT execution tests pass. They cover buffered parity, exact parameters, field policy
-routing, strict publication, eager failures, unsupported shapes before scans,
+The Count operand scope passes 99 query tests: 29 progressive service tests,
+13 generated Count(*) controls, 11 Count operand controls, one shared nullness
+unit and 45 existing aggregate/group/alias/UNION regressions. They cover buffered
+parity, exact parameters, field policy routing, strict publication, eager failures, unsupported shapes before scans,
 sticky sink/query failures and checked EOF. UNION controls retain written arm
 order, per-arm TOP/EOF, default/declared result descriptors, conversion failures,
 late schema mutation, unused comparison policies and shared cumulative limits.
 Each existing query quota has a one-row successful control followed by cumulative
 exhaustion; every observed cancellation checkpoint is exercised. TOP controls
 also cover omitted raw String publication parity and failures after the last
-emitted row. Count controls include 100,001 generated rows under an 8 KiB query
-allocation allowance, empty/filter counts, EOF before publication, repeated and
+emitted row. A Count(*) control scans 100,001 generated rows under an 8 KiB
+query allocation allowance. Count operand controls cover large generated inputs,
+empty/filter counts, EOF before publication, repeated and
 aliased expressions, mixed count/row arm promotion, final raw/conversion errors,
-sticky failures, every cancellation checkpoint and cumulative quotas. Twenty-eight
-existing alias/grouped-expression controls also pass. Scoped strict query Clippy
+sticky failures, every cancellation checkpoint and cumulative quotas. Operand
+controls also pin non-written scalar argument lookup, separate duplicate
+occurrences, literal Text values, raw/Error nullness and the documented difference
+between row-operand and final-projection error phases. Scoped strict query Clippy
 passes.
 
 At the initial shared-runtime extraction, seventy-six query unit, domain,

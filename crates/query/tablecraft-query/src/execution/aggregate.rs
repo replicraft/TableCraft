@@ -17,12 +17,13 @@ use tablecraft_core::values::Value;
 impl Runtime<'_, '_> {
     pub(super) fn aggregate(
         &mut self,
+        expression: &Expr,
         kind: Aggregate,
         argument: Option<&Expr>,
         env: Environment<'_>,
     ) -> Result<Value, QueryError> {
         if matches!(kind, Aggregate::Count) {
-            return self.count(argument, env);
+            return self.count(expression, argument, env);
         }
         if let Aggregate::Statistic(kind) = kind {
             return self.statistic(kind, argument.ok_or(QueryError::Unsupported)?, env);

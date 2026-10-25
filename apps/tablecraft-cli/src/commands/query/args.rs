@@ -75,8 +75,8 @@ pub(crate) enum Command {
         after_help = concat!(
             "Supports inline SELECT/UNION/crosstab sources, filtering, joins, grouping and ",
             "subqueries. Explicit --stream with --database supports direct row-local ",
-            "SELECT/WHERE, global COUNT(*) and flat UNION ALL as TSV batches. Counts publish only ",
-            "after checked source EOF. Use --batch-rows to bound batch size; a later failure may ",
+            "SELECT/WHERE, global COUNT(*)/COUNT(expr) and flat UNION ALL as TSV batches. ",
+            "Counts publish only after checked source EOF. Use --batch-rows to bound batch size; a later failure may ",
             "leave earlier output. Ordering, grouping, joins, duplicate-eliminating sets, nested ",
             "sources and advanced-field modes keep the buffered execution path. Streaming rejects ",
             "--format table. Use --database with a stable/offline copy for supported local scalar ",

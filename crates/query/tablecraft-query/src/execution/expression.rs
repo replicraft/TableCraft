@@ -382,7 +382,9 @@ impl Runtime<'_, '_> {
                 into_scalar(self.declared_membership(expression, list, *negated, env)?)
                     .map_err(Into::into)
             }
-            Expr::Aggregate(kind, argument) => self.aggregate(*kind, argument.as_deref(), env),
+            Expr::Aggregate(kind, argument) => {
+                self.aggregate(expr, *kind, argument.as_deref(), env)
+            }
             Expr::Subquery(plan) => {
                 let rows = self.nested(plan, env)?;
                 match rows.len() {

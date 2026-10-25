@@ -161,6 +161,7 @@ impl Runtime<'_, '_> {
     ) -> Result<Value, QueryError> {
         self.tick()?;
         let env = Environment {
+            counts: None,
             collections: Some(collections),
             row,
             outer,

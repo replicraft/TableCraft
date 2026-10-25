@@ -3,12 +3,13 @@ use super::super::Runtime;
 use crate::{
     OutputType, QueryError,
     external_sources::SourceNamespace,
-    plan::{PreparedBody, ReadNode, ReadPlan, SelectPlan},
+    plan::{Expr, PreparedBody, ReadNode, ReadPlan, SelectPlan},
 };
 
 pub(super) struct ProgressiveArm<'p> {
     pub(super) read: &'p ReadPlan,
     pub(super) select: &'p SelectPlan,
+    pub(super) counts: Vec<&'p Expr>,
 }
 
 pub(super) struct ProgressivePlan<'p> {
@@ -74,8 +75,12 @@ impl Runtime<'_, '_> {
         read: &'p ReadPlan,
         arms: &mut Vec<ProgressiveArm<'p>>,
     ) -> Result<(), QueryError> {
-        let select = self.progressive_select(read)?;
-        arms.push(ProgressiveArm { read, select });
+        let (select, counts) = self.progressive_select(read)?;
+        arms.push(ProgressiveArm {
+            read,
+            select,
+            counts,
+        });
         Ok(())
     }
 }

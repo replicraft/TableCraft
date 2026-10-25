@@ -9,6 +9,8 @@ mod support;
 mod boundaries;
 #[path = "progressive_queries/count.rs"]
 mod count;
+#[path = "progressive_queries/count_operands.rs"]
+mod count_operands;
 #[path = "progressive_queries/execution.rs"]
 mod execution;
 #[path = "progressive_queries/top.rs"]
