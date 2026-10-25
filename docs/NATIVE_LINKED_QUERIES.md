@@ -153,3 +153,15 @@ files. Provider qualification precedes target open/prompting. ACCDT root sources
 ODBC/unknown providers, target queries and link chains remain outside this path.
 Every input is read-only and query output is published only after successful
 execution and formatting.
+
+
+## Independent getter replay
+
+The [linked-query evidence](testing/LINKED_NATIVE_QUERIES.md) exercises original
+public-writer/getter frontend/backend pairs across Jet 4, ACE 2007 and ACE 16
+families, including mixed stored General orders. Separate already-open example
+and actual CLI replays pass 335 and 330 controls, respectively, with all pinned
+hashes unchanged. They share a getter-derived model and remain separate from
+native Access linked-SQL qualification. Controlled metadata copies, lower-level
+saved records and zero-argument versus positive-runtime limit checks retain their
+explicit evidence boundaries.
