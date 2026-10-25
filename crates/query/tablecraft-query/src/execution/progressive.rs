@@ -1,15 +1,10 @@
 //! Explicit progressive row-local execution; ordinary retrieval stays buffered.
 mod admission;
+mod plan;
+mod rows;
 
-use super::{
-    Environment, ExecutionContext, ExecutionOptions, cell::into_scalar, execute::ExecutionFrame,
-};
-use crate::{
-    PreparedQuery, QueryError, Source,
-    discovery::DiscoveryState,
-    plan::{PreparedBody, RelationNode},
-    source::ProjectedRow,
-};
+use super::{ExecutionContext, ExecutionOptions, execute::ExecutionFrame};
+use crate::{PreparedQuery, QueryError, Source, discovery::DiscoveryState};
 use std::fmt;
 use tablecraft_core::values::Value;
 
@@ -56,9 +51,11 @@ impl<E: std::error::Error + 'static> std::error::Error for StreamError<E> {
 }
 
 impl PreparedQuery {
-    /// Progressively evaluate a direct local scalar SELECT/WHERE in source order.
+    /// Progressively evaluate local scalar SELECT/WHERE arms in written source order.
     /// Unordered positive TOP counts limit publication while all rows are still
-    /// read and evaluated through checked EOF. Sorts, TOP PERCENT, sets, groups,
+    /// read and evaluated through checked EOF. Flat UNION ALL combines admitted
+    /// arms through the ordinary UNION result conversions. Sorts, TOP PERCENT,
+    /// duplicate-eliminating sets, groups,
     /// joins, derived/named sources, collections,
     /// subqueries, domain calls, Eval and volatile functions are refused before
     /// scanning, even for empty inputs. The source must explicitly implement
@@ -103,97 +100,14 @@ impl PreparedQuery {
             },
             &mut budget,
         )?;
-        let select = runtime.progressive_select(&self.body)?;
-        runtime.check_table_schema(&select.source.node)?;
-        runtime.tick()?;
-        let RelationNode::Table {
-            name,
-            columns,
-            projection,
-            ..
-        } = &select.source.node
-        else {
-            return Err(QueryError::Unsupported.into());
-        };
-        let PreparedBody::Read(read) = &self.body else {
-            return Err(QueryError::Unsupported.into());
-        };
+        let plan = runtime.progressive_plan(&self.body)?;
         let mut summary = StreamSummary {
             scanned_rows: 0,
             emitted_rows: 0,
         };
-        let mut failure: Option<QueryError> = None;
-        let mut sink_failure = None;
-        let mut consume = |row: ProjectedRow<'_>| {
-            if let Some(error) = &failure {
-                return Err(error.clone());
-            }
-            let result = (|| {
-                runtime.tick()?;
-                let row = runtime.copy_projected_row(columns, projection, row)?;
-                summary.scanned_rows = summary
-                    .scanned_rows
-                    .checked_add(1)
-                    .ok_or(QueryError::StructureLimit)?;
-                let environment = Environment {
-                    row: &row,
-                    collections: None,
-                    outer: &[],
-                    output: &[],
-                    group: None,
-                    group_keys: None,
-                };
-                if let Some(filter) = &select.filter
-                    && !runtime.eval_predicate(filter, environment)?.is_true()
-                {
-                    return Ok(());
-                }
-                let mut cells = runtime.allocate_expression_row(select.projection.len())?;
-                for expression in &select.projection {
-                    cells.push(runtime.retained_expression_operand(expression, environment)?);
-                }
-                // Buffered TOP discards evaluated cells before final scalar
-                // publication. Keep eager expression failures in omitted rows,
-                // without newly publishing their retained raw String values.
-                if read
-                    .top
-                    .is_some_and(|(count, _)| summary.emitted_rows >= u64::from(count))
-                {
-                    return Ok(());
-                }
-                let mut values = runtime.allocate_row(cells.len())?;
-                for mut cell in cells {
-                    runtime.tick()?;
-                    cell.value = runtime.evaluator().publish_expression_value(cell.value)?;
-                    values.push(into_scalar(cell)?);
-                }
-                if values.len() != read.names.len() {
-                    return Err(QueryError::Width);
-                }
-                runtime.tick()?;
-                if let Err(error) = visitor(&values) {
-                    sink_failure = Some(error);
-                    return Err(QueryError::Source);
-                }
-                summary.emitted_rows = summary
-                    .emitted_rows
-                    .checked_add(1)
-                    .ok_or(QueryError::StructureLimit)?;
-                Ok(())
-            })();
-            if let Err(error) = &result {
-                failure = Some(error.clone());
-            }
-            result
-        };
-        let scanned = source.scan_projected_progressive(name, projection, &mut consume);
-        if let Some(error) = sink_failure {
-            return Err(StreamError::Sink(error));
+        for arm in &plan.arms {
+            runtime.progressive_rows(arm, plan.union_types, &mut summary, visitor)?;
         }
-        if let Some(error) = failure {
-            return Err(StreamError::Query(error));
-        }
-        scanned?;
         runtime.tick()?;
         tracing::debug!(
             scanned_rows = summary.scanned_rows,

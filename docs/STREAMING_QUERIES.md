@@ -14,14 +14,16 @@ cargo run -p tablecraft-cli -- query run \
 
 One direct local scalar table, aliases, qualified wildcards, typed parameters and
 row-local predicates/functions and positive unordered TOP counts are supported.
+Flat UNION ALL of these direct-table SELECT arms is also supported.
 Source order is retained. Explicit text, numeric, date, character, ICU and
 declared-arithmetic policies use the same
 host context as buffered retrieval. Ordinary scalar views of mixed schemas are
 supported; unavailable fields and matching wildcards fail without NULL placeholders.
 
-Ordering, TOP PERCENT, DISTINCT/active DISTINCTROW, groups/HAVING, joins/products, sets,
-named/derived sources, subqueries, domains, collections, Eval and volatile
-clock/random calls remain outside this progressive profile. Single-table
+Ordering, TOP PERCENT, DISTINCT/active DISTINCTROW, groups/HAVING, joins/products,
+duplicate-eliminating sets, nested UNIONs, named/derived sources, subqueries,
+domains, collections, Eval and volatile clock/random calls remain outside this
+progressive profile. Single-table
 DISTINCTROW retains its ordinary inactive behavior. Unsupported plans refuse
 before user-row scans and output, even for empty inputs or false filters.
 
@@ -31,6 +33,23 @@ field modes. Explicit table format is rejected before opening the input; auto
 format is TSV for streaming, including in terminals. Header-based raw native and
 supported package/encryption opening retain their existing qualifications; this
 mode does not add a codec, provider or template reader.
+
+## Flat UNION ALL
+
+Eligible arms stream in written order through one cumulative query/native
+allowance and one TSV batch buffer. A batch may cross an arm boundary. Every
+selected schema and arm shape is preflighted before output, and an arm is checked
+again before its cursor starts. The existing UNION result conversions occur
+before publishing each retained row, including explicit numeric-to-Text policy
+requirements and profile-dependent numeric promotion. Output headings come from
+the first arm. These are the same conversion kernels as buffered queries, not
+new native type or policy qualifications.
+
+TOP limits each arm independently while retaining full EOF/eager validation.
+Later conversion, expression, read, output or EOF failures retain only previously
+completed TSV batches; the remaining batch is discarded. Source-free/nested UNION
+arms and the other unsupported shapes above do not become eligible through an
+empty earlier arm or false predicate.
 
 ## TOP limits output, not validation
 
@@ -90,11 +109,14 @@ to open an embedded path. See the [query service](PROGRESSIVE_QUERIES.md) and
 
 ## Verification
 
-Sixteen CLI integration tests cover priority synthetic profiles, real ACE 2007
+Nineteen CLI integration tests cover priority synthetic profiles, real ACE 2007
 example data, batch sizes, quoting, empty/filter results, first/late errors,
 checked count failures, cumulative quotas, parameter/text/declaration controls,
 mixed schemas, unordered TOP prefixes and argument refusals. TOP tests preserve
 late expression/EOF/quota failures and omitted raw String publication parity.
-Sixty CLI unit/browsing/native/retrieval checks pass, including new write/flush failure and encoded-output allowance tests.
-Scoped strict Clippy passes. Original large-file replay and native Access
+UNION ALL controls additionally check ordered arms, empty results, per-arm TOP,
+batches spanning arms, late failures and explicit numeric-to-Text conversions.
+Earlier CLI integration also recorded sixty unit/browsing/native/retrieval
+checks, including write/flush failure and encoded-output allowance tests.
+Current scoped query/CLI strict Clippy passes. Original large-file replay and native Access
 qualification are recorded separately; this does not complete read/query work.

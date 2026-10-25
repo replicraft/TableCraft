@@ -11,6 +11,8 @@ mod boundaries;
 mod execution;
 #[path = "progressive_queries/top.rs"]
 mod top;
+#[path = "progressive_queries/union.rs"]
+mod union;
 
 struct Rows {
     columns: Vec<Column>,

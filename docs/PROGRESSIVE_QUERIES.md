@@ -5,25 +5,56 @@ It visits one strictly published scalar output row at a time, returning checked
 scanned/emitted counts only after successful source EOF. Ordinary execution
 remains buffered. Working consumers are `MemorySource` and the explicit cursor-backed
 [`NativeSource`](NATIVE_PROGRESSIVE_QUERIES.md). The
-[explicit CLI host](STREAMING_QUERIES.md) supplies TSV batching and publication; the API itself never writes stdout.
+[explicit CLI host](STREAMING_QUERIES.md) supplies TSV batching and publication;
+the API itself never writes stdout.
 
 ## Admitted query shape
 
-The service accepts one direct root scalar table, optional alias, declared
-parameters, row-local WHERE, scalar projections and positive unordered TOP
-counts. Wildcards use the ordinary qualified scalar metadata. Original source order and eager predicate/projection
+The service accepts a direct root scalar table or a flat UNION ALL of those
+SELECT arms, with optional aliases, declared parameters, row-local WHERE, scalar
+projections and positive unordered TOP counts. Wildcards use the ordinary qualified
+scalar metadata. Original source order and eager predicate/projection
 kernels are retained. Scalar conversion, arithmetic, text and inspection services
 use the same explicit execution policies as buffered queries.
 
 Admission rejects ordering, TOP PERCENT, DISTINCT/active DISTINCTROW, grouping/HAVING,
-UNION/crosstabs, joins/products, named/derived sources, subqueries, domains,
-collections, external namespaces, Eval and volatile clock/random calls. Rejection
+duplicate-eliminating UNION/crosstabs, joins/products, named/derived sources,
+subqueries, domains, collections, external namespaces, Eval and volatile
+clock/random calls. Rejection
 occurs before scanning or visiting output, including false filters and empty
 sources. This is a progressive execution profile, not a change to parser or
 ordinary query availability. Single-table DISTINCTROW remains inactive and
-preserves duplicate rows, as in buffered execution. Metadata-only `output_names()` supplies ordinary
-read-plan names; top-level crosstabs return None. Output type/policy metadata
+preserves duplicate rows, as in buffered execution. Metadata-only `output_names()`
+supplies ordinary read-plan names; top-level crosstabs return None. Output type/policy metadata
 retains its existing conservative contracts.
+
+## Progressive UNION ALL
+
+Flat UNION ALL arms execute sequentially in their written order, with no complete
+arm/result snapshot or implicit buffered fallback. Every arm must satisfy the
+same direct-table expression profile; source-free arms, nested UNION plans and
+named/derived sources remain outside this slice. The complete shape and every
+selected schema are checked before the first progressive record callback. Each
+arm's schema is checked again before starting its cursor; no schema callback is
+introduced inside an exclusive cursor callback.
+
+The enclosing UNION's active result descriptors drive the existing per-cell
+result conversions before strict scalar publication. Default and explicit
+declared-arithmetic profiles keep their separate descriptors and conversions.
+Numeric-to-Text conversion still requires the existing number-format policy.
+Projections retain each arm's own predicate/field policies; there is no cross-arm
+comparison or inferred native policy precedence. The output names come from the
+first arm, as in buffered UNION. Later conversion/read/evaluation failures can
+follow an already published prefix in this explicit progressive mode.
+
+Every arm reaches checked EOF before the next one starts. TOP counts apply
+independently to each arm; after its count is satisfied, WHERE/projection still
+execute on later rows, while omitted cells skip enclosing UNION conversion and
+final publication just as they do in buffered execution. A sink/query/source
+failure prevents later arms from starting. The first sink error stays typed even
+if a broken provider swallows it or continues callbacks. Scanned/emitted counts,
+allocation/work controls and native allowances accumulate across all arms without
+resetting. No complete cache is published.
 
 ## Unordered TOP counts
 
@@ -90,16 +121,19 @@ this library does not write a header or open files/providers.
 
 ## Verification and remaining work
 
-Nineteen conformance tests cover buffered parity, exact parameters,
-field policy routing, strict publication, eager failures, metadata changes,
-unsupported shapes before scans, sticky sink/query failures and checked EOF.
-Each query quota has a one-row successful control followed by cumulative
+Twenty-three progressive service tests and nine independent UNION promotion/
+boundary tests pass. They cover buffered parity, exact parameters, field policy
+routing, strict publication, eager failures, unsupported shapes before scans,
+sticky sink/query failures and checked EOF. UNION controls retain written arm
+order, per-arm TOP/EOF, default/declared result descriptors, conversion failures,
+late schema mutation, unused comparison policies and shared cumulative limits.
+Each existing query quota has a one-row successful control followed by cumulative
 exhaustion; every observed cancellation checkpoint is exercised. TOP controls
-cover empty/filtered/duplicate prefixes, full input visits, later eager failures,
-raw String publication parity, malformed suffixes, failed EOF, cancellation and
-resource exhaustion after the last emitted row.
+also cover omitted raw String publication parity and failures after the last
+emitted row. Scoped strict query Clippy passes.
 
-Seventy-six existing query unit, domain, named-crosstab, external-named and static
-declaration tests pass after extracting shared Runtime initialization. Scoped
-strict Clippy and minimal query checking pass. This is engineering evidence,
-not native Access execution qualification or complete read/query acceptance.
+At the initial shared-runtime extraction, seventy-six query unit, domain,
+named-crosstab, external-named and static declaration tests passed, along with
+minimal query checking. The current scoped service checks are engineering
+evidence, not native Access execution qualification or complete read/query
+acceptance.

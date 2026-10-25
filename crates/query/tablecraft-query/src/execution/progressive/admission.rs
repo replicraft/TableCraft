@@ -3,7 +3,7 @@ use super::super::Runtime;
 use crate::{
     QueryError,
     external_sources::SourceNamespace,
-    plan::{Expr, PreparedBody, ReadNode, RelationNode, SelectPlan},
+    plan::{Expr, ReadNode, ReadPlan, RelationNode, SelectPlan},
     profile::MAX_BIND_DEPTH,
 };
 use tablecraft_expressions::functions::math::MathFunction;
@@ -11,12 +11,9 @@ use tablecraft_expressions::functions::math::MathFunction;
 impl Runtime<'_, '_> {
     pub(super) fn progressive_select<'p>(
         &mut self,
-        body: &'p PreparedBody,
+        read: &'p ReadPlan,
     ) -> Result<&'p SelectPlan, QueryError> {
         self.tick()?;
-        let PreparedBody::Read(read) = body else {
-            return Err(QueryError::Unsupported);
-        };
         let ReadNode::Select(select) = &read.node else {
             return Err(QueryError::Unsupported);
         };
