@@ -105,3 +105,6 @@ mod fixed_keys;
 
 #[path = "progressive_queries/text_groups.rs"]
 mod text_groups;
+
+#[path = "progressive_queries/stateful_stages.rs"]
+mod stateful_stages;

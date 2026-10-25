@@ -49,8 +49,9 @@ supported; unavailable fields and matching wildcards fail without NULL placehold
 Ordering, TOP PERCENT, DISTINCT/active DISTINCTROW, nonaggregate HAVING, joins/products,
 duplicate-eliminating sets, nested UNIONs, scalar/predicate subqueries, domains,
 collections, Eval and volatile clock/random calls remain outside this progressive
-profile. Static row-local named/derived inputs are admitted under the narrower
-pipeline contract below; inner stateful queries are not. Single-table
+profile. Static named/derived SELECT chains can contain row-local stages and the
+same eligible aggregate/grouped/HAVING stages under the
+[retained stage contract](PROGRESSIVE_QUERIES.md#stateful-retained-stages). Single-table
 DISTINCTROW retains its ordinary inactive behavior. Unsupported plans refuse
 before user-row scans and output, even for empty inputs or false filters.
 
@@ -183,8 +184,8 @@ Concurrent floating aggregates each need separate scratch storage during the
 scan. Byte thresholds can therefore differ from buffered execution, which can
 reuse scratch sequentially. Existing cumulative byte/row/work limits remain in
 force; streaming does not imply a small fixed allocation for every aggregate.
-Sorting, statistics and unsupported inner stateful sources remain
-outside this progressive profile.
+Sorting, statistics and unsupported inner shapes remain outside this progressive
+profile; eligible static aggregate stages can compose through retained cells.
 
 ```sh
 tablecraft query run --database example.accdb --stream \
@@ -222,7 +223,7 @@ tablecraft query run --database example.accdb --stream \
 
 Eligible `GROUP BY` expressions with proven Text, Boolean, integral, Currency, Decimal or NULL carriers
 can stream the same native tables, explicit mapped targets and eligible
-row-local input chains. Tuple keys,
+static named/derived input chains, including eligible aggregate stages. Tuple keys,
 nullable values, pure row-local key expressions, prior projection aliases and
 flat UNION ALL retain their existing contracts. Floating, date and
 other unproven key families and ordering remain outside this progressive
@@ -279,6 +280,31 @@ final projection or sink error can leave earlier completed batches. These phases
 are explicit; cross-row error priority need not match other progressive modes
 or native Access. Existing numeric-key allocation paths remain separate. See
 [the query contract](PROGRESSIVE_QUERIES.md).
+
+## Nested aggregate stages
+
+A static saved/named or inline derived SELECT can group or aggregate before a
+later SELECT filters, groups or aggregates its retained results:
+
+```sh
+tablecraft query run --database example.accdb --stream \
+  'SELECT Sum(N) AS TotalRows,Count(*) AS Buckets FROM (SELECT ID Mod 17 AS K,Count(*) AS N FROM Items GROUP BY ID Mod 17) Q'
+```
+
+The inner stage completes its entire input before finishing. Only after every
+inner final expression succeeds can an outer aggregate finish. TOP limits delivery
+at its own stage while retaining omitted selected expressions' eager work; an
+outer false filter cannot hide an inner error. Empty global aggregates deliver one
+row, while empty keyed grouping delivers none. Intermediate raw Strings, Error
+values, declarations and comparison policies stay intact until their actual
+consumers. Only terminal output applies scalar publication and root UNION
+conversions. Native scanned-row counts count physical input, not intermediate rows.
+
+The same cumulative allowances apply to every stage. Text grouping, HAVING replay
+and String extrema can retain input-dependent state; nested streaming does not
+promise constant memory. A late inner error may leave earlier completed row
+batches but cannot publish a misleading completed outer total. Inner UNION,
+ordering, joins and schema discovery remain unsupported in streaming.
 
 ## Explicit stored calculations
 

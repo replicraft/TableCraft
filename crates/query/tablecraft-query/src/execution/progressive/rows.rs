@@ -16,6 +16,9 @@ impl Runtime<'_, '_> {
         summary: &mut StreamSummary,
         visitor: &mut dyn FnMut(&[Value]) -> Result<(), E>,
     ) -> Result<(), StreamError<E>> {
+        if self.progressive_stateful_input(&arm.input)? {
+            return self.progressive_staged_rows(arm, union_types, bindings, summary, visitor);
+        }
         if !arm.select.group.is_empty() && arm.group_lookup.is_none() {
             return self.progressive_text_groups(arm, union_types, bindings, summary, visitor);
         }

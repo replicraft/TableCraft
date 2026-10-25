@@ -40,7 +40,11 @@ impl Runtime<'_, '_> {
     ) -> Result<&'p SelectPlan, QueryError> {
         let select = self.progressive_shape(read)?;
         if select.aggregate || select.having.is_some() {
-            return Err(QueryError::Unsupported);
+            let (select, _) = self.progressive_select(read)?;
+            // Stateful inner stages use the same complete metadata profile as
+            // terminal services. No records or inferred first-row types bind it.
+            self.progressive_group_lookup(select)?;
+            return Ok(select);
         }
         let mut aggregates = Vec::new();
         if let Some(filter) = &select.filter {

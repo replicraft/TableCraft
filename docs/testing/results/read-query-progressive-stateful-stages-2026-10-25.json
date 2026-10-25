@@ -1,0 +1,336 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Explicit progressive static named/derived stateful SELECT chains with retained-cell receivers and successful logical EOF frontiers; all current global, exact/Text grouped and HAVING services",
+  "base_revision": "12cd98b8b4b274c3efafc81cfb16064c0cd20852",
+  "unique_tests": 702,
+  "new_tests": 30,
+  "existing_regression_tests": 672,
+  "new_test_breakdown": {
+    "implementation_cross_barrier_and_terminal_union": 2,
+    "private_allocation_free_stage_detection": 1,
+    "independent_stateful_values_and_populations": 11,
+    "independent_logical_eof_policies_declarations_and_owners": 9,
+    "native_cursor_cli_and_saved_stages": 7
+  },
+  "primary_targets": {
+    "exact_fixed_indexing": 3,
+    "exact_fixed_key_policies": 6,
+    "exact_fixed_key_values": 7,
+    "exact_key_conformance": 10,
+    "exact_key_indexing": 3,
+    "progressive_count_execution": 13,
+    "progressive_count_operands": 11,
+    "progressive_derived_policies": 10,
+    "progressive_derived_values": 12,
+    "progressive_extrema_values": 12,
+    "progressive_grouped_policies": 7,
+    "progressive_grouped_values": 11,
+    "progressive_having_policies": 1,
+    "progressive_having_values": 12,
+    "progressive_numeric_aggregate_values": 9,
+    "progressive_queries": 56,
+    "progressive_text_group_policies": 8,
+    "progressive_text_group_values": 9,
+    "progressive_stateful_stage_values": 11,
+    "progressive_stateful_stage_policies": 9
+  },
+  "runtime_unit_tests": 38,
+  "new_runtime_unit_tests": 1,
+  "regression_targets": {
+    "collation_routing": 106,
+    "concatenation_dynamic_types": 4,
+    "crosstab": 16,
+    "crosstab_scalar_headings": 8,
+    "domain": 9,
+    "external_named_sources": 10,
+    "external_table_sources": 8,
+    "grouped_expressions": 5,
+    "grouped_subqueries": 8,
+    "named": 6,
+    "named_crosstabs": 40,
+    "numeric_keys": 8,
+    "output_types": 7,
+    "projection_alias_execution": 11,
+    "projection_alias_values": 12,
+    "raw_string_comparison": 4,
+    "raw_string_predicates": 4,
+    "retained_string_cells": 5,
+    "union_numeric_types": 6,
+    "union_text_types": 8,
+    "union_types": 7
+  },
+  "checks": [
+    {
+      "command": "cargo check -p tablecraft-query --lib -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-stateful-checkpoint2-check-retry-20261025.log",
+      "sha256": "96f76f056d2e74821ca213a564b00bebd32377daf6d627f0c73f82efb5820fe2",
+      "terminal_session": null
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test progressive_stateful_stage_values --test progressive_stateful_stage_policies --test progressive_queries --test progressive_text_group_values --test progressive_text_group_policies --test exact_fixed_indexing --test exact_fixed_key_values --test exact_fixed_key_policies --test exact_key_conformance --test exact_key_indexing --test progressive_grouped_values --test progressive_grouped_policies --test progressive_having_values --test progressive_having_policies --test progressive_derived_values --test progressive_derived_policies --test progressive_count_execution --test progressive_count_operands --test progressive_numeric_aggregate_values --test progressive_extrema_values -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-stateful-checkpoint2-primary-final-20261025.log",
+      "sha256": "51ce899e7e983550fd997f858d6513bcd70b8ada4c3af262b2a1a338647f427c",
+      "terminal_session": 72365,
+      "tests": 220
+    },
+    {
+      "command": "cargo test -p tablecraft-query --lib execution:: -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-stateful-checkpoint2-private-final-20261025.log",
+      "sha256": "1068af944e4ac9b4bc6c92721880c071260ec5adb35cbe101c606f595c003668",
+      "terminal_session": null,
+      "tests": 38
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test collation_routing --test numeric_keys --test raw_string_comparison --test raw_string_predicates --test retained_string_cells --test grouped_expressions --test grouped_subqueries --test domain --test named --test external_named_sources --test external_table_sources --test crosstab --test crosstab_scalar_headings --test named_crosstabs --test union_types --test union_numeric_types --test union_text_types --test projection_alias_values --test projection_alias_execution --test output_types --test concatenation_dynamic_types -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-stateful-checkpoint2-related-final-20261025.log",
+      "sha256": "1c20217815fb5eb66d962135696e83419743cced6b95a83aba997cf3dcee3a34",
+      "terminal_session": 16631,
+      "tests": 292
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --tests -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-stateful-checkpoint2-clippy-20261025.log",
+      "sha256": "099f11ebca534dbb68fabab481f064575cfdacb64e41b5df3087a55d03486903",
+      "terminal_session": 67222
+    },
+    {
+      "command": "cargo check -p tablecraft-query --lib --no-default-features -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-stateful-checkpoint2-minimal-20261025.log",
+      "sha256": "2b34696728dc82b03cbf6311d7e3a6a41658bbde097834c3010a78bc82842c1a",
+      "terminal_session": null
+    },
+    {
+      "command": "cargo test -p tablecraft-access --test progressive_source -p tablecraft-cli --test progressive_queries --test saved_query_definitions --test general_collation --test database_collation -j 2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-stateful-host-20261025.log",
+      "sha256": "b838e0a12d64b75c7b254992d3766eb51b4ba6a53ffba988b10e122959412946",
+      "terminal_session": 91601
+    },
+    {
+      "command": "cargo clippy -p tablecraft-access --lib --test progressive_source -p tablecraft-cli --bin tablecraft --test progressive_queries --test saved_query_definitions --test database_collation --test general_collation --locked --offline -j 2 -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-stateful-host-clippy-20261025.log",
+      "sha256": "c06e8923009d60ff7a9a76cc814a47de841b61bda4b39b402164dbe307fd8826",
+      "terminal_session": 18005
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --test progressive_queries --locked --offline -j 2 -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-stateful-import-clippy-final-20261025.log",
+      "sha256": "a41051563a4cb5fc1b1bcdd9aa0ba28ca80f7736d629d90cc138218756e8e3a9"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-stateful-fmt-confirmed-20261025.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "excluded_attempts": [
+    {
+      "private_log": ".cache/progressive-stateful-checkpoint2-check-20261025.log",
+      "exit_code": 101,
+      "classification": "Initial compilation needed an explicit QueryError return annotation on the stage initialization owner callback. No execution or answer change.",
+      "sha256": "e0a12233563548c2f0a58a72090879693bbea8e5c77dfc46e77ceb3658ab37e2"
+    },
+    {
+      "private_log": ".cache/progressive-stateful-checkpoint2-initial-primary-20261025.log",
+      "terminal_session": 52859,
+      "exit_code": 101,
+      "classification": "Existing progressive54 and independent policy9 passed; values10/11 passed. New Decimal Avg golden expected coefficient1875 scale3; both buffered and progressive controls proved retained coefficient18750 scale4. Only new expected representation corrected, no production change.",
+      "sha256": "a0e273ee9c9e959348ba667c8c1e46f50a4ec9559b0cc5517dcd30deb2f97b30"
+    },
+    {
+      "private_log": ".cache/stateful-decimal-carrier-probe-20261025.log",
+      "terminal_session": 7567,
+      "exit_code": 0,
+      "classification": "Independent buffered/progressive exact coefficient-scale diagnostic, not an additional permanent test. Probe source and original golden source retained privately.",
+      "sha256": "a8c4877f92dbe8b9a392d519ac751c44c7d97b938e365a462a94df66a6ff66ca"
+    },
+    {
+      "private_log": ".cache/progressive-stateful-values-final-20261025.log",
+      "terminal_session": 92042,
+      "exit_code": 0,
+      "classification": "Independent11 corrected-golden retry, overlaps accepted final primary and is not added to totals.",
+      "sha256": "02cce17462911190d4039c473dfb42dcad1f748679c4d0d4ed9075c20699cfc1"
+    },
+    {
+      "private_log": ".cache/progressive-stateful-checkpoint2-focused-20261025.log",
+      "terminal_session": 64740,
+      "exit_code": 0,
+      "classification": "Private progressive filter ran7 overlapping units. Integration targets filtered0; excluded from integration acceptance and unique totals.",
+      "sha256": "e739b014b09217c2b0e0e24316ad9e29d5a21fbb16c94e780a46e3d2985f884b"
+    }
+  ],
+  "authoring_migrations": [
+    "Three existing rejected inner Count shapes became supported; their negative controls now use existing unsupported Last(Id), preserving no-cursor refusal coverage.",
+    "No buffered numeric kernel, declaration inference or source schema contract changed."
+  ],
+  "working_tree_source_snapshots": {
+    "description": "Narrow snapshots of this query feature production/tests and owning contract after accepted query checks. Not a compilation manifest; host/engine work and verification record excluded.",
+    "files": [
+      {
+        "path": "crates/query/tablecraft-query/src/execution/progressive.rs",
+        "sha256": "103d447f7ff9a0a183bc02cc429fa7c84a837b76227fb0234094074f4fa72a8e"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/execution/progressive/admission.rs",
+        "sha256": "32f2a33a0b74b11018b12d34be6304193014b2d4e02cfae87c9eef65fce5e8fc"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/execution/progressive/input.rs",
+        "sha256": "e0e7538a4536f6e0337fa258f853eec28e75604bda56861387dce32e2075d2f6"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/execution/progressive/input/tests.rs",
+        "sha256": "4e55600bd13d9629f84e942863a3c145f8fde7b2572f04bce58dbadc7c89513e"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/execution/progressive/plan.rs",
+        "sha256": "c7e3bfa0aa320ae1b8f9c3cad930a8f7b8f6fb46a44a47be95e2bea769573d43"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/execution/progressive/rows.rs",
+        "sha256": "f1589354dcf87387a1ecc093df51b33060ef1322c814e4927c70ce7e3880855f"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/execution/progressive/stages.rs",
+        "sha256": "e60f55d4ac54fe0bcab3db8df46344bd041311ee88a6886f350ee4b1adb2a8f7"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/execution/progressive/stages/driver.rs",
+        "sha256": "4c65c2753da9b94ea458f93db9de7bf9be63e9d5d83324ef478ed1ae10b3952a"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/execution/progressive/stages/state.rs",
+        "sha256": "25947764da3ac7f8a99cab5ef317a5b7fa4d5150ba28a13cb81131f0eb836b5b"
+      },
+      {
+        "path": "crates/query/tablecraft-query/tests/progressive_derived_values/boundaries.rs",
+        "sha256": "252ee2e5844ae6dce08f3c3f05a3ed629fcdd05cc28fc17a79e469c58c9aeba9"
+      },
+      {
+        "path": "crates/query/tablecraft-query/tests/progressive_queries/derived.rs",
+        "sha256": "20bc14f3ba2d9d0a8774bc4b7b814f6e37863b305baedf0566c8483f41978fdd"
+      },
+      {
+        "path": "crates/query/tablecraft-query/tests/progressive_stateful_stage_policies.rs",
+        "sha256": "9e024c9b460d95691165376b3f661536a568dc8aa4f7038a188e0db1688feb71"
+      },
+      {
+        "path": "crates/query/tablecraft-query/tests/progressive_stateful_stage_policies/lifecycle.rs",
+        "sha256": "11f7244fb59f8b15ee96008dc9bf1b0daeebf31f96dc075c62e9d935673e98c6"
+      },
+      {
+        "path": "crates/query/tablecraft-query/tests/progressive_stateful_stage_policies/provenance.rs",
+        "sha256": "87e2ad7a4afd4bb2f31223834b52904efb4e21c2ab456189fde13193e3ddca5b"
+      },
+      {
+        "path": "crates/query/tablecraft-query/tests/progressive_stateful_stage_values.rs",
+        "sha256": "bcc6a20a7b3e691284bf94e4824f802a6f449aa0333f6a2b9487a3b1cae90f64"
+      },
+      {
+        "path": "crates/query/tablecraft-query/tests/progressive_stateful_stage_values/arithmetic.rs",
+        "sha256": "1327a6761c409588208ccc82c101a626c453c0d52ce7f330839c01dba9d67a0a"
+      },
+      {
+        "path": "crates/query/tablecraft-query/tests/progressive_stateful_stage_values/composition.rs",
+        "sha256": "6ea83c5aa3fabc7397e952fd28ab5147a056533bcf9bd352b22725e291b56ee5"
+      },
+      {
+        "path": "crates/query/tablecraft-query/tests/progressive_stateful_stage_values/retained.rs",
+        "sha256": "337e549897d10428a8f060897b5cef61421b97d64c8198c739d090c0399fed54"
+      },
+      {
+        "path": "docs/PROGRESSIVE_QUERIES.md",
+        "sha256": "5ec959c9e6342ddaa40bcac3032336972130475e8401ca6d5229b80bdec85411"
+      },
+      {
+        "path": "apps/tablecraft-cli/tests/progressive_queries.rs",
+        "sha256": "ef69d2ac0640d3fde1daa6923e5d56461fed0285509a781d92bb3e3c93a88d04"
+      },
+      {
+        "path": "apps/tablecraft-cli/tests/progressive_queries/stateful_stages.rs",
+        "sha256": "164bcceb4758d257e0dde4b366a932263b80e23c3c2cdbdac3f004a315fa41aa"
+      },
+      {
+        "path": "apps/tablecraft-cli/tests/saved_query_definitions.rs",
+        "sha256": "c4310095aba78f5752f8ff52f3cefb1f2601a85bb15f39c1d493b030b0b54a8c"
+      },
+      {
+        "path": "apps/tablecraft-cli/tests/saved_query_definitions/stateful_stages.rs",
+        "sha256": "3b8cc74f9e8b621c6d455232d285fc55fbd21d2ec1b1b23f93b2e478f35aa0bc"
+      },
+      {
+        "path": "crates/backends/tablecraft-access/tests/progressive_source.rs",
+        "sha256": "d998f36b53c42650f621e6eda93f34427e76d762ca18b11916cbc8795b669c2b"
+      },
+      {
+        "path": "crates/backends/tablecraft-access/tests/progressive_source/stateful_stages.rs",
+        "sha256": "031774b2b28b2508249e7fe3daa308c267cf146cb884954e5715358697b3b83b"
+      },
+      {
+        "path": "README.md",
+        "sha256": "0da0194d91f42963f8eb8f0ac24b1c64ad83d96dd5383be27c6c7aa8e2e6e42e"
+      },
+      {
+        "path": "docs/ROADMAP.md",
+        "sha256": "52232d1c73ad4770a409db36e40a72f047fac7c60d08f04dccefbe3174360db5"
+      },
+      {
+        "path": "docs/READ_QUERY_ACCEPTANCE.md",
+        "sha256": "70171be0232e33b5d31d40887d1607a0bdc9c08223c2109d61ff7a7ea8c146c0"
+      },
+      {
+        "path": "docs/STREAMING_QUERIES.md",
+        "sha256": "3b081a429aafe5e18ee439f3dda67e380d57337d81d33be51d2553b0919cec51"
+      },
+      {
+        "path": "docs/IMPLEMENTATION.md",
+        "sha256": "8ba11d582ffcba06b9576fb28eb698b669742ce5d5604993b8b48c5d5c6f2cc7"
+      },
+      {
+        "path": "AGENTS.md",
+        "sha256": "78e9a142ae1a004d1b295e6ec0f991d7610982053c6678140568b4ad474e62fe"
+      }
+    ]
+  },
+  "limits": [
+    "Only static linear SELECT chains; inner UNION, sort, active duplicate elimination, crosstab/discovery, joins, domains and volatile calls remain refused.",
+    "Intermediate rows retain actual expression declarations and raw/Error/policy state; only the terminal public boundary converts root UNION and strictly publishes.",
+    "Physical EOF is not logical EOF: downstream finalization requires all upstream selected and TOP-omitted work to succeed.",
+    "Existing direct/row-local fastpaths retain their allocations; stateful chains charge actual concrete stage and accumulator storage under cumulative budgets.",
+    "These are portable implementation/model checks, not native Microsoft Access execution qualification."
+  ],
+  "private_diagnostic_sources": [
+    {
+      "path": ".cache/stateful-decimal-carrier-probe-20261025.rs",
+      "sha256": "b3adce102176142d3095558439cff60e183dd11911d0192a3af8e9ca75bd6925"
+    },
+    {
+      "path": ".cache/stateful-values-before-average-scale-fix-20261025.rs",
+      "sha256": "9fc4aae45affb35132fba364052b8da17662cc5ee33b1f4ee6acd816acb7f75f"
+    }
+  ],
+  "post_check_import_cleanup": "After all query tests and strict Clippy, moved Double and SelectPlan type references to their owning module imports. Formatting applied; no semantic or test-golden changes and no broad repeat. Production import cleanup followed the observed completed parent host strict log. Parent confirmed the final import-only state with scoped strict query checks and whole-workspace formatting; no runtime goldens changed.",
+  "query_unique_tests": 550,
+  "host_unique_tests": 152,
+  "host_targets": {
+    "access_database_collation": 11,
+    "access_general_collation": 11,
+    "access_progressive_source": 25,
+    "cli_database_collation": 7,
+    "cli_general_collation": 4,
+    "cli_progressive_queries": 55,
+    "cli_saved_query_definitions": 39
+  },
+  "integration_base_revision": "c24eb11a5f4bf82249bcaf2a352971c1aa52e419",
+  "pending_independent_replay": "Original-file replay awaits a frozen CLI built from the committed feature. Native Access qualification remains separate."
+}

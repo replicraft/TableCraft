@@ -1,5 +1,20 @@
 # Implementation status
 
+## Stateful progressive query stages
+
+Static saved/named/derived SELECT chains now compose eligible row-local, global,
+exact/Text grouped and HAVING stages without complete intermediate relation
+snapshots. Retained cells preserve raw Strings, Error data, actual declarations
+and policies. Only a successful complete upstream finish permits downstream
+aggregate completion, including upstream TOP-omitted eager work. Empty global and
+keyed populations remain distinct; only terminal output converts/publishes cells.
+Thirty new controls and 672 regressions pass across query, native and CLI layers,
+including saved definitions and physical EOF failures. Strict query/host linting,
+minimal query features and formatting pass. See the
+[contract](PROGRESSIVE_QUERIES.md#stateful-retained-stages) and
+[scoped verification](testing/results/read-query-progressive-stateful-stages-2026-10-25.json).
+Original-file replay and native Access qualification remain separate.
+
 ## Key-only index payloads during complete checks
 
 Native table checks retain their complete sequential scalar validation, then use
