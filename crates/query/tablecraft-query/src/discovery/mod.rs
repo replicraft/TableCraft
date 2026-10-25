@@ -77,6 +77,7 @@ pub(crate) fn budget(limits: QueryLimits) -> ResourceBudget {
 /// binding or copying completed cells, never held across expression evaluation.
 pub(crate) struct DiscoveryState<'source> {
     pub materialized: RefCell<Vec<Materialized<'source>>>,
+    pub(crate) external_sources: RefCell<Vec<crate::external_sources::ExternalBinding>>,
     active: RefCell<Vec<String>>,
     pub enabled: bool,
 }
@@ -85,6 +86,7 @@ impl<'source> DiscoveryState<'source> {
     pub(crate) fn new(enabled: bool) -> Self {
         Self {
             materialized: RefCell::new(Vec::new()),
+            external_sources: RefCell::new(Vec::new()),
             active: RefCell::new(Vec::new()),
             enabled,
         }

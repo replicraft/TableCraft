@@ -126,6 +126,7 @@ impl PreparedQuery {
             repeatable_dynamic: context.repeatable_dynamic,
             domain_depth: 0,
             source,
+            external_sources: Vec::new(),
             discovery,
             parameters: Vec::new(),
             options,
@@ -163,6 +164,7 @@ impl PreparedQuery {
                 declaration: declared.data_type.declaration(),
             });
         }
+        runtime.register_external_sources(&self.external_sources)?;
         let (rows, names, types) = match &self.body {
             PreparedBody::Read(read) => (
                 runtime.read(read, &[])?,

@@ -2,6 +2,7 @@ use super::Binder;
 use crate::profile::SOURCE_SCHEMA_POLICY;
 use crate::{
     OutputType, QueryError,
+    external_sources::SourceNamespace,
     plan::{MemberSlot, ProfiledType, Relation, RelationNode, Slot},
 };
 use tablecraft_expressions::numeric::OperandDeclaration;
@@ -14,8 +15,10 @@ impl Binder<'_> {
         source: &TableSource,
         outer: &[&[Slot]],
         depth: usize,
+        namespace: SourceNamespace,
     ) -> Result<Relation, QueryError> {
         self.tick(depth)?;
+        let provider = self.namespace_source(namespace, depth)?;
         let relation = match source {
             TableSource::Table(table) => {
                 if table.name.as_str().len() > SOURCE_SCHEMA_POLICY.max_name_bytes
@@ -27,30 +30,27 @@ impl Binder<'_> {
                     return Err(QueryError::StructureLimit);
                 }
                 if self.retrieval
-                    && let Some(query) = self.source.query(table.name.as_str())?
+                    && namespace == SourceNamespace::Root
+                    && let Some(query) = provider.query(table.name.as_str())?
                 {
                     let read = self.named_read(table.name.as_str(), query, depth + 1)?;
                     let qualifier = table.alias.as_ref().unwrap_or(&table.name).as_str();
                     return self.named_relation(read, qualifier);
                 }
-                let columns = self.source.columns(table.name.as_str())?;
-                let unavailable = self.source.unavailable_columns(table.name.as_str())?;
+                let columns = provider.columns(table.name.as_str())?;
+                let unavailable = provider.unavailable_columns(table.name.as_str())?;
                 super::source_schema::validate(columns, unavailable)?;
-                let policies = self.source.text_collations(table.name.as_str())?;
+                let policies = provider.text_collations(table.name.as_str())?;
                 crate::source::validate_text_collations(columns, policies)?;
                 let text_collations = self.copy_text_collations(policies)?;
-                let multivalues = self.source.multivalue_columns(table.name.as_str())?;
-                let members = self.source.collection_members(table.name.as_str())?;
+                let multivalues = provider.multivalue_columns(table.name.as_str())?;
+                let members = provider.collection_members(table.name.as_str())?;
                 super::source_schema::validate_multivalues(columns, unavailable, multivalues)?;
                 super::source_schema::validate_members(columns, unavailable, multivalues, members)?;
-                let policies = self
-                    .source
-                    .multivalue_text_collations(table.name.as_str())?;
+                let policies = provider.multivalue_text_collations(table.name.as_str())?;
                 crate::source::validate_text_collations(multivalues, policies)?;
                 let multivalue_text_collations = self.copy_text_collations(policies)?;
-                let policies = self
-                    .source
-                    .collection_member_text_collations(table.name.as_str())?;
+                let policies = provider.collection_member_text_collations(table.name.as_str())?;
                 crate::source::validate_text_policy_types(
                     members.iter().map(|m| m.column().data_type()),
                     policies,
@@ -174,6 +174,7 @@ impl Binder<'_> {
                         }))
                         .collect(),
                     node: RelationNode::Table {
+                        namespace,
                         name: table.name.as_str().into(),
                         columns: columns.to_vec(),
                         unavailable: unavailable.to_vec(),
@@ -227,7 +228,7 @@ impl Binder<'_> {
                 {
                     return Err(QueryError::StructureLimit);
                 }
-                let mut rel = self.relation(source, outer, depth + 1)?;
+                let mut rel = self.relation(source, outer, depth + 1, namespace)?;
                 if let Some(alias) = alias {
                     for slot in &mut rel.slots {
                         slot.qualifier = Some(alias.as_str().into());
@@ -241,8 +242,8 @@ impl Binder<'_> {
                 kind,
                 condition,
             } => {
-                let left = self.relation(left, outer, depth + 1)?;
-                let right = self.relation(right, outer, depth + 1)?;
+                let left = self.relation(left, outer, depth + 1, namespace)?;
+                let right = self.relation(right, outer, depth + 1, namespace)?;
                 let mut slots = combine_slots(&left.slots, &right.slots)?;
                 let nullable = match kind {
                     JoinKind::Left => left.slots.len()..slots.len(),

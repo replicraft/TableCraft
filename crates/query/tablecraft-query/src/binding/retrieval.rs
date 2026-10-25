@@ -162,8 +162,8 @@ impl Binder<'_> {
         self.tick(depth)?;
         if select.into.is_some()
             || select.into_external.is_some()
-            || select.external.is_some()
             || select.owner_access
+            || (select.external.is_some() && select.from.is_empty())
         {
             return Err(QueryError::Unsupported);
         }
@@ -184,12 +184,13 @@ impl Binder<'_> {
         {
             return Err(QueryError::StructureLimit);
         }
+        let namespace = self.external_namespace(select.external.as_ref(), depth + 1)?;
         let mut source = Relation {
             slots: vec![],
             node: RelationNode::Unit,
         };
         for item in &select.from {
-            let right = self.relation(item, outer, depth + 1)?;
+            let right = self.relation(item, outer, depth + 1, namespace)?;
             if matches!(source.node, RelationNode::Unit) {
                 source = right;
                 continue;

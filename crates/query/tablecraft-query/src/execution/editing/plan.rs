@@ -92,6 +92,7 @@ pub fn plan_update<E: EditableTable>(
         repeatable_dynamic: false,
         domain_depth: 0,
         source: &source,
+        external_sources: Vec::new(),
         discovery: &discovery,
         parameters: Vec::new(),
         options: ExecutionOptions {

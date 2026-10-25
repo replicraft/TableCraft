@@ -34,6 +34,7 @@ impl Runtime<'_, '_> {
             }
             RelationNode::Derived(read) => self.read(read, &[]),
             RelationNode::Table {
+                namespace,
                 name,
                 columns,
                 projection,
@@ -43,8 +44,9 @@ impl Runtime<'_, '_> {
                 ..
             } => {
                 if !expansion.is_empty() {
+                    let source = self.namespace_source(*namespace)?;
                     return self.multivalue_rows(
-                        name,
+                        (source, name),
                         columns,
                         projection,
                         multivalues,
@@ -53,7 +55,7 @@ impl Runtime<'_, '_> {
                     );
                 }
                 let mut rows = Vec::new();
-                let source = self.source;
+                let source = self.namespace_source(*namespace)?;
                 let mut failure: Option<QueryError> = None;
                 let mut visitor = |row: ProjectedRow<'_>| {
                     if let Some(error) = &failure {
@@ -85,8 +87,9 @@ impl Runtime<'_, '_> {
             } => self.join(left, right, Some(*kind), Some(condition), outer),
         }
     }
-    pub(super) fn check_table_schema(&self, node: &RelationNode) -> Result<(), QueryError> {
+    pub(super) fn check_table_schema(&mut self, node: &RelationNode) -> Result<(), QueryError> {
         let RelationNode::Table {
+            namespace,
             name,
             columns,
             unavailable,
@@ -101,13 +104,14 @@ impl Runtime<'_, '_> {
             return Ok(());
         };
 
-        if self.source.columns(name)? != columns
-            || self.source.unavailable_columns(name)? != unavailable
-            || self.source.text_collations(name)? != text_collations
-            || self.source.multivalue_text_collations(name)? != multivalue_text_collations
-            || self.source.collection_member_text_collations(name)? != member_text_collations
-            || self.source.multivalue_columns(name)? != multivalues
-            || self.source.collection_members(name)? != members
+        let source = self.namespace_source(*namespace)?;
+        if source.columns(name)? != columns
+            || source.unavailable_columns(name)? != unavailable
+            || source.text_collations(name)? != text_collations
+            || source.multivalue_text_collations(name)? != multivalue_text_collations
+            || source.collection_member_text_collations(name)? != member_text_collations
+            || source.multivalue_columns(name)? != multivalues
+            || source.collection_members(name)? != members
         {
             return Err(QueryError::SchemaChanged);
         }

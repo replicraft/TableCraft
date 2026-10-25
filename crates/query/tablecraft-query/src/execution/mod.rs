@@ -16,6 +16,7 @@ mod execute;
 pub use editing::{UpdateError, UpdatePlan, plan_update};
 pub(crate) use execute::ExecutionContext;
 mod expression;
+mod external;
 mod grouping;
 mod keys;
 mod multivalue;

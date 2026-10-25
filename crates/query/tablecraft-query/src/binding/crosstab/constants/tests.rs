@@ -27,6 +27,8 @@ fn binder<'a>(
         budget,
         cancelled,
         source: &NoSource,
+        external_sources: Vec::new(),
+        external_providers: Vec::new(),
         materialized: &[],
         discover: false,
         reference_year: None,

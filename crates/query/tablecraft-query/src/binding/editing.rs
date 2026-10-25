@@ -27,6 +27,8 @@ pub(crate) fn bind_update(query: &Query, source: &dyn Source) -> Result<BoundUpd
         budget: None,
         cancelled: None,
         source,
+        external_sources: Vec::new(),
+        external_providers: Vec::new(),
         materialized: &[],
         discover: false,
         reference_year: None,
@@ -41,7 +43,12 @@ pub(crate) fn bind_update(query: &Query, source: &dyn Source) -> Result<BoundUpd
         policy_visits: 0,
         bytes: 0,
     };
-    let relation = binder.relation(table, &[], 1)?;
+    let relation = binder.relation(
+        table,
+        &[],
+        1,
+        crate::external_sources::SourceNamespace::Root,
+    )?;
     let column = resolve(&assignment.target, &relation.slots)?.ok_or(QueryError::UnknownName)?;
     let scopes = [relation.slots.as_slice()];
     let value = binder.expression(&assignment.value, &scopes, false, 1)?;

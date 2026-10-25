@@ -166,6 +166,7 @@ impl Runtime<'_, '_> {
         let constraint = match (&select.source.node, &select.filter) {
             (
                 RelationNode::Table {
+                    namespace,
                     name,
                     columns,
                     projection,
@@ -174,7 +175,9 @@ impl Runtime<'_, '_> {
                 },
                 Some(filter),
             ) if expansion.is_empty() && select.parent.is_none() => {
-                let text_hints = self.source.text_equality_hints(name)?;
+                let text_hints = self
+                    .namespace_source(*namespace)?
+                    .text_equality_hints(name)?;
                 if text_hints {
                     self.check_table_schema(&select.source.node)?;
                 }

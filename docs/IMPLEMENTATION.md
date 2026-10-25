@@ -1,5 +1,25 @@
 # Implementation status
 
+## Explicit host-bound external query sources
+
+The read-only query library now routes existing SELECT/FROM IN syntax through
+`Source::external_source`. Exact database/connection selectors capture immutable
+caller-issued binding keys during metadata-only preparation; execution revalidates
+those keys before scanning root or target records. Actual target schemas,
+policies, hints, optimized projections and aligned collection callbacks retain
+source ownership. Each nested SELECT chooses its own namespace; named definitions
+and domain targets retain the root namespace. Successful discovery stages retain
+binding revisions to reject reuse after remapping. External named targets remain
+unsupported. See [the contract](EXTERNAL_QUERY_SOURCES.md).
+
+Fourteen external-source controls and 96 focused regression tests pass, including
+named crosstabs, runtime domains, collection members and arithmetic-profile result
+typing. The new arithmetic control checks derived/named UNION results under both
+preparation and execution profiles. Strict query library/new-test Clippy and
+formatting pass. This is explicit host-source engineering behavior; broader P0
+semantics, native external saved-query reconstruction and Access qualification
+remain unfinished.
+
 ## External IN after JOIN conditions
 
 The SQL adapter now distinguishes parenthesized membership predicates from

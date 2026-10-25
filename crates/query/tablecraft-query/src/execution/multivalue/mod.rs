@@ -29,16 +29,16 @@ impl Runtime<'_, '_> {
     }
     pub(super) fn multivalue_rows(
         &mut self,
-        name: &str,
+        table: (&dyn crate::Source, &str),
         columns: &[Column],
         projection: &[usize],
         multivalues: &[Column],
         members: &[CollectionMember],
         expansion: &[usize],
     ) -> Result<Vec<Vec<CellValue>>, QueryError> {
+        let (source, name) = table;
         let (values, named) = self.collection_requests(expansion, multivalues.len())?;
         let layout = self.collection_expansion(multivalues, members, expansion)?;
-        let source = self.source;
         let mut rows = Vec::new();
         let mut failure: Option<QueryError> = None;
         let mut visitor = |scalars: ProjectedRow<'_>, lists: &[&dyn MultivalueList]| {

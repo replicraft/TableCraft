@@ -1,4 +1,6 @@
 //! Read-only source contracts and a validated in-memory implementation.
+mod external;
+pub use external::{ExternalSourceRequest, ResolvedExternalSource, SourceKey};
 mod collation;
 pub use collation::{CollationResolver, TextCollationId, TextPolicy};
 pub(crate) use collation::{
@@ -21,6 +23,19 @@ use tablecraft_schema::{Column, SchemaName, validate_row};
 /// Hosts own I/O cancellation/limits before invoking the visitor; the executor
 /// bounds every visited row. No database or provider is opened implicitly.
 pub trait Source {
+    /// Resolve exact external syntax through an explicit host-owned binding.
+    /// Metadata-only: never open files/providers, authenticate, scan records or
+    /// execute definitions. Return None when no authorized binding exists.
+    /// The key and provider must remain immutable; execution revalidates them.
+    /// The synchronous callback owns its own work/time controls; query callers
+    /// check cumulative work/cancellation before and after invoking it.
+    fn external_source(
+        &self,
+        _request: ExternalSourceRequest<'_>,
+    ) -> Result<Option<ResolvedExternalSource<'_>>, QueryError> {
+        Ok(None)
+    }
+
     /// Opt into resolver-issued Text equality hints for this table.
     /// This metadata-only capability must not scan rows or activate providers.
     /// Returning true still requires a matching actual comparer and the original

@@ -78,7 +78,8 @@ impl Runtime<'_, '_> {
                     }
                 }
             };
-            let mut rows = self.read(&plan, &[])?;
+            self.register_external_sources(&plan.external_sources)?;
+            let mut rows = self.read(&plan.read, &[])?;
             self.tick()?;
             if rows.len() != 1 || rows[0].len() != 1 {
                 return Err(QueryError::Width);

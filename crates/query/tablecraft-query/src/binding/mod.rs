@@ -19,6 +19,7 @@ pub(crate) use domain::{DomainContext, bind_domain};
 mod editing;
 mod expression;
 mod expression_identity;
+mod external;
 mod grouping;
 pub(crate) use editing::{BoundUpdate, bind_update};
 mod literals;
@@ -52,12 +53,15 @@ pub struct PreparationOptions {
 pub struct PreparedQuery {
     pub(crate) body: PreparedBody,
     pub(crate) parameters: Vec<Parameter>,
+    pub(crate) external_sources: Vec<crate::external_sources::ExternalBinding>,
 }
 
 pub(super) struct Binder<'a> {
     budget: Option<&'a mut tablecraft_core::limits::ResourceBudget>,
     cancelled: Option<&'a dyn Fn() -> bool>,
     source: &'a dyn Source,
+    external_sources: Vec<crate::external_sources::ExternalBinding>,
+    external_providers: Vec<&'a dyn Source>,
     materialized: &'a [crate::discovery::Materialized<'a>],
     discover: bool,
     reference_year: Option<ReferenceYear>,
@@ -154,6 +158,8 @@ pub(crate) fn prepare_stage<'a>(
         budget,
         cancelled,
         source,
+        external_sources: Vec::new(),
+        external_providers: Vec::new(),
         materialized,
         discover: options.discover,
         reference_year: options.preparation.reference_year,
@@ -189,6 +195,7 @@ pub(crate) fn prepare_stage<'a>(
         Ok(body) => Ok(Ok(PreparedQuery {
             body,
             parameters: binder.parameters,
+            external_sources: binder.external_sources,
         })),
         Err(QueryError::Unsupported) if binder.pending_schema.is_some() => Ok(Err(binder
             .pending_schema
