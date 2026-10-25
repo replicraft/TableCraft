@@ -1,25 +1,26 @@
 //! Checked EOF precedes every grouped final projection and publication.
-use super::{Group, ProgressiveArm, StreamError, StreamSummary};
+use super::Group;
+use crate::execution::progressive::{
+    StreamError,
+    retained::{RetainedReceiver, StageOutput},
+};
 use crate::{
-    OutputType, QueryError,
+    QueryError,
     execution::{Environment, Runtime, context::GroupKeys},
 };
-use tablecraft_core::values::Value;
 
 impl Runtime<'_, '_> {
-    pub(super) fn finish_progressive_groups<E>(
+    pub(super) fn finish_group_cells<E>(
         &mut self,
-        arm: &ProgressiveArm<'_>,
+        output: StageOutput<'_, '_>,
         groups: Vec<Group>,
-        union_types: Option<&[OutputType]>,
-        summary: &mut StreamSummary,
-        visitor: &mut dyn FnMut(&[Value]) -> Result<(), E>,
+        emit: &mut RetainedReceiver<'_, Self, E>,
     ) -> Result<(), StreamError<E>> {
         let mut published = 0_u64;
         for group in groups {
             self.tick()?;
             let results =
-                self.progressive_aggregate_results(&arm.aggregates, group.accumulators)?;
+                self.progressive_aggregate_results(output.aggregates, group.accumulators)?;
             let environment = Environment {
                 aggregate_results: Some(&results),
                 row: &[],
@@ -28,13 +29,13 @@ impl Runtime<'_, '_> {
                 output: &[],
                 group: None,
                 group_keys: Some(GroupKeys {
-                    expressions: &arm.select.group,
+                    expressions: &output.select.group,
                     values: &group.keys,
                     retained_values: true,
                 }),
             };
-            let cells = self.progressive_projection(arm, environment)?;
-            if arm
+            let cells = self.progressive_select_projection(output.select, environment)?;
+            if output
                 .read
                 .top
                 .is_some_and(|(count, _)| published >= u64::from(count))
@@ -43,7 +44,7 @@ impl Runtime<'_, '_> {
                 // and run eager final expressions before publication is omitted.
                 continue;
             }
-            self.progressive_publish(arm, cells, union_types, summary, visitor)?;
+            emit(self, cells)?;
             published = published.checked_add(1).ok_or(QueryError::StructureLimit)?;
         }
         Ok(())

@@ -1,5 +1,5 @@
 //! Shared retained projection, UNION conversion and strict row publication.
-use super::{StreamError, StreamSummary, plan::ProgressiveArm};
+use super::{StreamError, StreamSummary};
 use crate::{
     OutputType, QueryError,
     execution::{
@@ -11,14 +11,6 @@ use crate::{
 use tablecraft_core::values::Value;
 
 impl Runtime<'_, '_> {
-    pub(super) fn progressive_projection(
-        &mut self,
-        arm: &ProgressiveArm<'_>,
-        environment: Environment<'_>,
-    ) -> Result<Vec<CellValue>, QueryError> {
-        self.progressive_select_projection(arm.select, environment)
-    }
-
     pub(super) fn progressive_select_projection(
         &mut self,
         select: &SelectPlan,
@@ -35,17 +27,6 @@ impl Runtime<'_, '_> {
             )?);
         }
         Ok(cells)
-    }
-
-    pub(super) fn progressive_publish<E>(
-        &mut self,
-        arm: &ProgressiveArm<'_>,
-        cells: Vec<CellValue>,
-        union_types: Option<&[OutputType]>,
-        summary: &mut StreamSummary,
-        visitor: &mut dyn FnMut(&[Value]) -> Result<(), E>,
-    ) -> Result<(), StreamError<E>> {
-        self.progressive_publish_read(arm.read, cells, union_types, summary, visitor)
     }
 
     pub(super) fn progressive_publish_read<E>(

@@ -26,7 +26,7 @@ pub(super) struct Operations<'p> {
     pub(super) active_counts_only: bool,
 }
 
-pub(super) struct Captured<'p> {
+pub(in crate::execution::progressive) struct Captured<'p> {
     pub(super) candidates: Vec<Candidate>,
     pub(super) cohort: Vec<KeyPolicy>,
     pub(super) policies: Vec<TextPolicy>,

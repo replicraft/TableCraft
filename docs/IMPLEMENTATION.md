@@ -1,5 +1,19 @@
 # Implementation status
 
+## Progressive aggregate lifecycle extraction
+
+The existing global, exact-key, Text and HAVING streaming consumers now share
+concrete initialization, retained-row input and completion services. Intermediate
+completion preserves raw Strings, natural value carriers and unknown declarations;
+only the terminal wrapper applies scalar publication and UNION conversion. Typed
+receiver failures stop later final expressions. This refactor does not enable
+inner stateful queries; their admission remains refused pending the stage driver.
+Two new receiver controls and 632 existing query/native/CLI regressions pass,
+with strict query/host linting, minimal query features and formatting.
+An initial host build exhausted disk before tests; the identical command passed
+after removing old generated incremental caches. See the
+[scoped verification record](testing/results/read-query-progressive-lifecycle-2026-10-25.json).
+
 ## Progressive Text grouping
 
 Proven Text key tuples now wait for checked EOF and complete comparison-policy

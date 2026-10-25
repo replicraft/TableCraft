@@ -2,22 +2,22 @@
 use super::state::{Captured, Partition};
 use crate::{
     QueryError,
-    execution::{Environment, Runtime, progressive::plan::ProgressiveArm},
+    execution::{Environment, Runtime, progressive::retained::StageOutput},
     plan::Expr,
 };
 
 impl Runtime<'_, '_> {
     pub(super) fn replay_text_group_operands(
         &mut self,
-        arm: &ProgressiveArm<'_>,
+        output: StageOutput<'_, '_>,
         captured: &Captured<'_>,
         partition: &mut Partition,
     ) -> Result<(), QueryError> {
-        let having = arm.select.having.is_some();
+        let having = output.select.having.is_some();
         let expressions = if having {
             &captured.operations.having
         } else {
-            &arm.aggregates
+            output.aggregates
         };
         if !captured.operations.active_counts_only {
             for group in &mut partition.groups {
