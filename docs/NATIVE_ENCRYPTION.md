@@ -502,3 +502,11 @@ Seek/write/cancellation/budget failures can leave an unusable prefix; callers mu
 discard it. The CLI discards failed temporary files, synchronizes successful ones
 and publishes with no-clobber persistence. It does not replace existing files or
 supply a transaction journal. Native Access save/reopen remains unqualified.
+
+The [large-file replay](testing/LARGE_ENCRYPTION.md) passes 92 commands over
+unchanged 77 MiB V2016/V2019 originals. Independent getters/SID/page readers and
+independent encryption removal verify added/changed/removed candidates. Every
+recovered full image matches its original digest, and all data ciphertext stays
+unchanged across Agile password replacement. The report keeps its two
+size-limit baseline refusals separate from current implementation successes.
+This does not qualify the full native file ceiling or native Access saves.
