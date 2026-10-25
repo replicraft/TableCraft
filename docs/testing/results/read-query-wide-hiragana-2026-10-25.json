@@ -112,5 +112,16 @@
   "unrun": [
     "Full workspace suite",
     "Native Microsoft Access or Windows NLS execution comparisons"
-  ]
+  ],
+  "independent_replay": {
+    "report": "docs/testing/results/strconv-wide-hiragana-2026-10-25.json",
+    "report_sha256": "f3886d3039af95a2b36bbccab689f975a3b750e1c510a51f40c624edfaf668b6",
+    "commands": 230,
+    "successful_batches": 206,
+    "intended_refusals": 24,
+    "successful_cells": 616,
+    "immutable_pins": 5,
+    "revision_source_pins": 14,
+    "qualification": "Independent Unicode property/name composition model; no native Access/NLS qualification."
+  }
 }

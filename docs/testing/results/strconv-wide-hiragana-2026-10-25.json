@@ -1,0 +1,7294 @@
+{
+  "scope": "Explicit Japanese StrConv36 width-then-Hiragana engineering composition",
+  "native_qualification": "No native Access or Windows NLS execution",
+  "model": "Reviewed Unicode width-property then Unicode-name kana model; no production imports",
+  "unicode_version": "16.0.0",
+  "model_goldens": 10,
+  "compiled_revision": "bfb5af50a8778185ba24ea99fffa85607e475b3f",
+  "compiled_source_sha256": {
+    "crates/query/tablecraft-expressions/src/evaluation/strconv.rs": "735dc56a50bd25a4fc1de7f904ebdef337b2262651106314f8c23537dac2bd3c",
+    "crates/query/tablecraft-expressions/src/evaluation/strconv/expression_tests.rs": "14f7368dda72b1650d2a3dacd1e89e401f2212584fb2b07e22f5f9efbe75bbe5",
+    "crates/query/tablecraft-expressions/src/evaluation/strconv/kana_tests.rs": "48b9b66686337b20b19707ccddd65fe7d6bac89c1cd474a9657cf5c887ec6d47",
+    "crates/query/tablecraft-expressions/src/evaluation/strconv/tests.rs": "e5063e55f3fe10a62fc14da5e2224269c29c6cede4771b9f9f14ea07c977fbe0",
+    "crates/query/tablecraft-expressions/src/evaluation/strconv/wide_hiragana_tests.rs": "4ac80bdb03459c83ab45bb9e4161ce7fd2c8195d339a96f33a3f8935835cdd7f",
+    "crates/query/tablecraft-expressions/src/evaluation/strconv/width_tests.rs": "8d4fa07fa2b1d374b1d447f37dba08c51081ab0667e9c2cd2978e220a76d43c0",
+    "crates/query/tablecraft-expressions/src/functions/text/strconv/code_page.rs": "c3932dc4cfd5e1d63e893315a78a77badb690e9e3a5fc0524b2b092746d0b6b5",
+    "crates/query/tablecraft-expressions/src/functions/text/strconv/code_page/tests.rs": "90e7bcd009bfd6e89de768d2a78a38f43e9fab0e6b89f0daf0a1a5ab108d120a",
+    "crates/query/tablecraft-expressions/src/functions/text/strconv/flags.rs": "a74b9aedd119b6d46a3adea1c27227e15c413d28bc3e464826027c4771454c5a",
+    "crates/query/tablecraft-expressions/src/functions/text/strconv/kana.rs": "1fe30c7c71001a019b07d5af09f8405500cd03a71c4e3e6ca9282205d8a7d5db",
+    "crates/query/tablecraft-expressions/src/functions/text/strconv/locale.rs": "d209a6c23bdd5f72b77806d6c5f7d5eb3f816cd2876c7bcc86400b564887c0ff",
+    "crates/query/tablecraft-expressions/src/functions/text/strconv/mod.rs": "0514ffe0c13231c6016ea38c6ba4f92b1ee9d54026757987fb0a52eea4d5ae04",
+    "crates/query/tablecraft-expressions/src/functions/text/strconv/tests.rs": "ce8e850ace79abf5bc44c74e8d678d6a3ae5ea176c601bacda76ec6723c3b40e",
+    "crates/query/tablecraft-expressions/src/functions/text/strconv/width.rs": "3a7424f2176f3dc0fa4bdd1596403aa53d5658d9480fdf701808c5c5e86b97c4"
+  },
+  "hashes_before": {
+    "docs/testing/compare_strconv_wide_hiragana.py": "41625b3e526ee9cd72dfa71a17c12227389440318373404c79e46d0b08abbe0d",
+    "docs/testing/compare_strconv_width.py": "2099f5b4939cb5c49e167c506d8f1137d9858ba54c85d38fa684fd731fc674e5",
+    "docs/testing/compare_strconv_kana.py": "0b6140e6db5808dd726a77d76e4c9a6a59dea443464bf83fc3ece0bb0951061a",
+    "docs/testing/compare_browsing.py": "4f1ced3ad3970150683ec720a31ec85f8400fa73b4a7b5e2343a33abbf58d67e",
+    ".cache/tablecraft-bin/spooled-hiragana-cli-20261025": "fbf269865c214d09ce3d6cb07dd02eb558860eef142bd72bd008118db57d026b"
+  },
+  "hashes_after": {
+    "docs/testing/compare_strconv_wide_hiragana.py": "41625b3e526ee9cd72dfa71a17c12227389440318373404c79e46d0b08abbe0d",
+    "docs/testing/compare_strconv_width.py": "2099f5b4939cb5c49e167c506d8f1137d9858ba54c85d38fa684fd731fc674e5",
+    "docs/testing/compare_strconv_kana.py": "0b6140e6db5808dd726a77d76e4c9a6a59dea443464bf83fc3ece0bb0951061a",
+    "docs/testing/compare_browsing.py": "4f1ced3ad3970150683ec720a31ec85f8400fa73b4a7b5e2343a33abbf58d67e",
+    ".cache/tablecraft-bin/spooled-hiragana-cli-20261025": "fbf269865c214d09ce3d6cb07dd02eb558860eef142bd72bd008118db57d026b"
+  },
+  "cli_commands": 230,
+  "success_commands": 206,
+  "refusal_commands": 24,
+  "success_cells": 616,
+  "disagreements": 0,
+  "pins_unchanged": true,
+  "commands": [
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv((' '),36,1041),StrConv(('!'),36,1041),StrConv(('\"'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"　\"",
+          "\"！\"",
+          "\"＂\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"　\"\"\"\t\"\"\"！\"\"\"\t\"\"\"＂\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"　\"",
+          "\"！\"",
+          "\"＂\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('#'),36,1041),StrConv(('$'),36,1041),StrConv(('%'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"＃\"",
+          "\"＄\"",
+          "\"％\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"＃\"\"\"\t\"\"\"＄\"\"\"\t\"\"\"％\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"＃\"",
+          "\"＄\"",
+          "\"％\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('&'),36,1041),StrConv((''''),36,1041),StrConv(('('),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"＆\"",
+          "\"＇\"",
+          "\"（\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"＆\"\"\"\t\"\"\"＇\"\"\"\t\"\"\"（\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"＆\"",
+          "\"＇\"",
+          "\"（\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv((')'),36,1041),StrConv(('*'),36,1041),StrConv(('+'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"）\"",
+          "\"＊\"",
+          "\"＋\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"）\"\"\"\t\"\"\"＊\"\"\"\t\"\"\"＋\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"）\"",
+          "\"＊\"",
+          "\"＋\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv((','),36,1041),StrConv(('-'),36,1041),StrConv(('.'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"，\"",
+          "\"－\"",
+          "\"．\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"，\"\"\"\t\"\"\"－\"\"\"\t\"\"\"．\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"，\"",
+          "\"－\"",
+          "\"．\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('/'),36,1041),StrConv(('0'),36,1041),StrConv(('1'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"／\"",
+          "\"０\"",
+          "\"１\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"／\"\"\"\t\"\"\"０\"\"\"\t\"\"\"１\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"／\"",
+          "\"０\"",
+          "\"１\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('2'),36,1041),StrConv(('3'),36,1041),StrConv(('4'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"２\"",
+          "\"３\"",
+          "\"４\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"２\"\"\"\t\"\"\"３\"\"\"\t\"\"\"４\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"２\"",
+          "\"３\"",
+          "\"４\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('5'),36,1041),StrConv(('6'),36,1041),StrConv(('7'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"５\"",
+          "\"６\"",
+          "\"７\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"５\"\"\"\t\"\"\"６\"\"\"\t\"\"\"７\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"５\"",
+          "\"６\"",
+          "\"７\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('8'),36,1041),StrConv(('9'),36,1041),StrConv((':'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"８\"",
+          "\"９\"",
+          "\"：\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"８\"\"\"\t\"\"\"９\"\"\"\t\"\"\"：\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"８\"",
+          "\"９\"",
+          "\"：\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv((';'),36,1041),StrConv(('<'),36,1041),StrConv(('='),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"；\"",
+          "\"＜\"",
+          "\"＝\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"；\"\"\"\t\"\"\"＜\"\"\"\t\"\"\"＝\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"；\"",
+          "\"＜\"",
+          "\"＝\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('>'),36,1041),StrConv(('?'),36,1041),StrConv(('@'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"＞\"",
+          "\"？\"",
+          "\"＠\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"＞\"\"\"\t\"\"\"？\"\"\"\t\"\"\"＠\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"＞\"",
+          "\"？\"",
+          "\"＠\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('A'),36,1041),StrConv(('B'),36,1041),StrConv(('C'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"Ａ\"",
+          "\"Ｂ\"",
+          "\"Ｃ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"Ａ\"\"\"\t\"\"\"Ｂ\"\"\"\t\"\"\"Ｃ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"Ａ\"",
+          "\"Ｂ\"",
+          "\"Ｃ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('D'),36,1041),StrConv(('E'),36,1041),StrConv(('F'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"Ｄ\"",
+          "\"Ｅ\"",
+          "\"Ｆ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"Ｄ\"\"\"\t\"\"\"Ｅ\"\"\"\t\"\"\"Ｆ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"Ｄ\"",
+          "\"Ｅ\"",
+          "\"Ｆ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('G'),36,1041),StrConv(('H'),36,1041),StrConv(('I'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"Ｇ\"",
+          "\"Ｈ\"",
+          "\"Ｉ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"Ｇ\"\"\"\t\"\"\"Ｈ\"\"\"\t\"\"\"Ｉ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"Ｇ\"",
+          "\"Ｈ\"",
+          "\"Ｉ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('J'),36,1041),StrConv(('K'),36,1041),StrConv(('L'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"Ｊ\"",
+          "\"Ｋ\"",
+          "\"Ｌ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"Ｊ\"\"\"\t\"\"\"Ｋ\"\"\"\t\"\"\"Ｌ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"Ｊ\"",
+          "\"Ｋ\"",
+          "\"Ｌ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('M'),36,1041),StrConv(('N'),36,1041),StrConv(('O'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"Ｍ\"",
+          "\"Ｎ\"",
+          "\"Ｏ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"Ｍ\"\"\"\t\"\"\"Ｎ\"\"\"\t\"\"\"Ｏ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"Ｍ\"",
+          "\"Ｎ\"",
+          "\"Ｏ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('P'),36,1041),StrConv(('Q'),36,1041),StrConv(('R'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"Ｐ\"",
+          "\"Ｑ\"",
+          "\"Ｒ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"Ｐ\"\"\"\t\"\"\"Ｑ\"\"\"\t\"\"\"Ｒ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"Ｐ\"",
+          "\"Ｑ\"",
+          "\"Ｒ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('S'),36,1041),StrConv(('T'),36,1041),StrConv(('U'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"Ｓ\"",
+          "\"Ｔ\"",
+          "\"Ｕ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"Ｓ\"\"\"\t\"\"\"Ｔ\"\"\"\t\"\"\"Ｕ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"Ｓ\"",
+          "\"Ｔ\"",
+          "\"Ｕ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('V'),36,1041),StrConv(('W'),36,1041),StrConv(('X'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"Ｖ\"",
+          "\"Ｗ\"",
+          "\"Ｘ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"Ｖ\"\"\"\t\"\"\"Ｗ\"\"\"\t\"\"\"Ｘ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"Ｖ\"",
+          "\"Ｗ\"",
+          "\"Ｘ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('Y'),36,1041),StrConv(('Z'),36,1041),StrConv(('['),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"Ｙ\"",
+          "\"Ｚ\"",
+          "\"［\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"Ｙ\"\"\"\t\"\"\"Ｚ\"\"\"\t\"\"\"［\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"Ｙ\"",
+          "\"Ｚ\"",
+          "\"［\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('\\'),36,1041),StrConv((']'),36,1041),StrConv(('^'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"＼\"",
+          "\"］\"",
+          "\"＾\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"＼\"\"\"\t\"\"\"］\"\"\"\t\"\"\"＾\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"＼\"",
+          "\"］\"",
+          "\"＾\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('_'),36,1041),StrConv(('`'),36,1041),StrConv(('a'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"＿\"",
+          "\"｀\"",
+          "\"ａ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"＿\"\"\"\t\"\"\"｀\"\"\"\t\"\"\"ａ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"＿\"",
+          "\"｀\"",
+          "\"ａ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('b'),36,1041),StrConv(('c'),36,1041),StrConv(('d'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"ｂ\"",
+          "\"ｃ\"",
+          "\"ｄ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ｂ\"\"\"\t\"\"\"ｃ\"\"\"\t\"\"\"ｄ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ｂ\"",
+          "\"ｃ\"",
+          "\"ｄ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('e'),36,1041),StrConv(('f'),36,1041),StrConv(('g'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"ｅ\"",
+          "\"ｆ\"",
+          "\"ｇ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ｅ\"\"\"\t\"\"\"ｆ\"\"\"\t\"\"\"ｇ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ｅ\"",
+          "\"ｆ\"",
+          "\"ｇ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('h'),36,1041),StrConv(('i'),36,1041),StrConv(('j'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"ｈ\"",
+          "\"ｉ\"",
+          "\"ｊ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ｈ\"\"\"\t\"\"\"ｉ\"\"\"\t\"\"\"ｊ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ｈ\"",
+          "\"ｉ\"",
+          "\"ｊ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('k'),36,1041),StrConv(('l'),36,1041),StrConv(('m'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"ｋ\"",
+          "\"ｌ\"",
+          "\"ｍ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ｋ\"\"\"\t\"\"\"ｌ\"\"\"\t\"\"\"ｍ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ｋ\"",
+          "\"ｌ\"",
+          "\"ｍ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('n'),36,1041),StrConv(('o'),36,1041),StrConv(('p'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"ｎ\"",
+          "\"ｏ\"",
+          "\"ｐ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ｎ\"\"\"\t\"\"\"ｏ\"\"\"\t\"\"\"ｐ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ｎ\"",
+          "\"ｏ\"",
+          "\"ｐ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('q'),36,1041),StrConv(('r'),36,1041),StrConv(('s'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"ｑ\"",
+          "\"ｒ\"",
+          "\"ｓ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ｑ\"\"\"\t\"\"\"ｒ\"\"\"\t\"\"\"ｓ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ｑ\"",
+          "\"ｒ\"",
+          "\"ｓ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('t'),36,1041),StrConv(('u'),36,1041),StrConv(('v'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"ｔ\"",
+          "\"ｕ\"",
+          "\"ｖ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ｔ\"\"\"\t\"\"\"ｕ\"\"\"\t\"\"\"ｖ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ｔ\"",
+          "\"ｕ\"",
+          "\"ｖ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('w'),36,1041),StrConv(('x'),36,1041),StrConv(('y'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"ｗ\"",
+          "\"ｘ\"",
+          "\"ｙ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ｗ\"\"\"\t\"\"\"ｘ\"\"\"\t\"\"\"ｙ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ｗ\"",
+          "\"ｘ\"",
+          "\"ｙ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('z'),36,1041),StrConv(('{'),36,1041),StrConv(('|'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"ｚ\"",
+          "\"｛\"",
+          "\"｜\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ｚ\"\"\"\t\"\"\"｛\"\"\"\t\"\"\"｜\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ｚ\"",
+          "\"｛\"",
+          "\"｜\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('}'),36,1041),StrConv(('~'),36,1041),StrConv(('⦅'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"｝\"",
+          "\"～\"",
+          "\"｟\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"｝\"\"\"\t\"\"\"～\"\"\"\t\"\"\"｟\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"｝\"",
+          "\"～\"",
+          "\"｟\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('⦆'),36,1041),StrConv(('｡'),36,1041),StrConv(('｢'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"｠\"",
+          "\"。\"",
+          "\"「\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"｠\"\"\"\t\"\"\"。\"\"\"\t\"\"\"「\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"｠\"",
+          "\"。\"",
+          "\"「\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('｣'),36,1041),StrConv(('､'),36,1041),StrConv(('･'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"」\"",
+          "\"、\"",
+          "\"・\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"」\"\"\"\t\"\"\"、\"\"\"\t\"\"\"・\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"」\"",
+          "\"、\"",
+          "\"・\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ｦ'),36,1041),StrConv(('ｧ'),36,1041),StrConv(('ｨ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"を\"",
+          "\"ぁ\"",
+          "\"ぃ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"を\"\"\"\t\"\"\"ぁ\"\"\"\t\"\"\"ぃ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"を\"",
+          "\"ぁ\"",
+          "\"ぃ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ｩ'),36,1041),StrConv(('ｪ'),36,1041),StrConv(('ｫ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"ぅ\"",
+          "\"ぇ\"",
+          "\"ぉ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ぅ\"\"\"\t\"\"\"ぇ\"\"\"\t\"\"\"ぉ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ぅ\"",
+          "\"ぇ\"",
+          "\"ぉ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ｬ'),36,1041),StrConv(('ｭ'),36,1041),StrConv(('ｮ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"ゃ\"",
+          "\"ゅ\"",
+          "\"ょ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ゃ\"\"\"\t\"\"\"ゅ\"\"\"\t\"\"\"ょ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ゃ\"",
+          "\"ゅ\"",
+          "\"ょ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ｯ'),36,1041),StrConv(('ｰ'),36,1041),StrConv(('ｱ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"っ\"",
+          "\"ー\"",
+          "\"あ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"っ\"\"\"\t\"\"\"ー\"\"\"\t\"\"\"あ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"っ\"",
+          "\"ー\"",
+          "\"あ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ｲ'),36,1041),StrConv(('ｳ'),36,1041),StrConv(('ｴ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"い\"",
+          "\"う\"",
+          "\"え\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"い\"\"\"\t\"\"\"う\"\"\"\t\"\"\"え\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"い\"",
+          "\"う\"",
+          "\"え\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ｵ'),36,1041),StrConv(('ｶ'),36,1041),StrConv(('ｷ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"お\"",
+          "\"か\"",
+          "\"き\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"お\"\"\"\t\"\"\"か\"\"\"\t\"\"\"き\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"お\"",
+          "\"か\"",
+          "\"き\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ｸ'),36,1041),StrConv(('ｹ'),36,1041),StrConv(('ｺ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"く\"",
+          "\"け\"",
+          "\"こ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"く\"\"\"\t\"\"\"け\"\"\"\t\"\"\"こ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"く\"",
+          "\"け\"",
+          "\"こ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ｻ'),36,1041),StrConv(('ｼ'),36,1041),StrConv(('ｽ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"さ\"",
+          "\"し\"",
+          "\"す\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"さ\"\"\"\t\"\"\"し\"\"\"\t\"\"\"す\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"さ\"",
+          "\"し\"",
+          "\"す\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ｾ'),36,1041),StrConv(('ｿ'),36,1041),StrConv(('ﾀ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"せ\"",
+          "\"そ\"",
+          "\"た\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"せ\"\"\"\t\"\"\"そ\"\"\"\t\"\"\"た\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"せ\"",
+          "\"そ\"",
+          "\"た\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ﾁ'),36,1041),StrConv(('ﾂ'),36,1041),StrConv(('ﾃ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"ち\"",
+          "\"つ\"",
+          "\"て\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ち\"\"\"\t\"\"\"つ\"\"\"\t\"\"\"て\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ち\"",
+          "\"つ\"",
+          "\"て\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ﾄ'),36,1041),StrConv(('ﾅ'),36,1041),StrConv(('ﾆ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"と\"",
+          "\"な\"",
+          "\"に\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"と\"\"\"\t\"\"\"な\"\"\"\t\"\"\"に\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"と\"",
+          "\"な\"",
+          "\"に\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ﾇ'),36,1041),StrConv(('ﾈ'),36,1041),StrConv(('ﾉ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"ぬ\"",
+          "\"ね\"",
+          "\"の\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ぬ\"\"\"\t\"\"\"ね\"\"\"\t\"\"\"の\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ぬ\"",
+          "\"ね\"",
+          "\"の\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ﾊ'),36,1041),StrConv(('ﾋ'),36,1041),StrConv(('ﾌ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"は\"",
+          "\"ひ\"",
+          "\"ふ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"は\"\"\"\t\"\"\"ひ\"\"\"\t\"\"\"ふ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"は\"",
+          "\"ひ\"",
+          "\"ふ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ﾍ'),36,1041),StrConv(('ﾎ'),36,1041),StrConv(('ﾏ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"へ\"",
+          "\"ほ\"",
+          "\"ま\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"へ\"\"\"\t\"\"\"ほ\"\"\"\t\"\"\"ま\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"へ\"",
+          "\"ほ\"",
+          "\"ま\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ﾐ'),36,1041),StrConv(('ﾑ'),36,1041),StrConv(('ﾒ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"み\"",
+          "\"む\"",
+          "\"め\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"み\"\"\"\t\"\"\"む\"\"\"\t\"\"\"め\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"み\"",
+          "\"む\"",
+          "\"め\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ﾓ'),36,1041),StrConv(('ﾔ'),36,1041),StrConv(('ﾕ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"も\"",
+          "\"や\"",
+          "\"ゆ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"も\"\"\"\t\"\"\"や\"\"\"\t\"\"\"ゆ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"も\"",
+          "\"や\"",
+          "\"ゆ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ﾖ'),36,1041),StrConv(('ﾗ'),36,1041),StrConv(('ﾘ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"よ\"",
+          "\"ら\"",
+          "\"り\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"よ\"\"\"\t\"\"\"ら\"\"\"\t\"\"\"り\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"よ\"",
+          "\"ら\"",
+          "\"り\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ﾙ'),36,1041),StrConv(('ﾚ'),36,1041),StrConv(('ﾛ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"る\"",
+          "\"れ\"",
+          "\"ろ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"る\"\"\"\t\"\"\"れ\"\"\"\t\"\"\"ろ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"る\"",
+          "\"れ\"",
+          "\"ろ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ﾜ'),36,1041),StrConv(('ﾝ'),36,1041),StrConv(('ﾞ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"わ\"",
+          "\"ん\"",
+          "\"゙\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"わ\"\"\"\t\"\"\"ん\"\"\"\t\"\"\"゙\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"わ\"",
+          "\"ん\"",
+          "\"゙\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ﾟ'),36,1041),StrConv(('｡ﾞ'),36,1041),StrConv(('｡ﾟ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"゚\"",
+          "\"。゙\"",
+          "\"。゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"゚\"\"\"\t\"\"\"。゙\"\"\"\t\"\"\"。゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"゚\"",
+          "\"。゙\"",
+          "\"。゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('｢ﾞ'),36,1041),StrConv(('｢ﾟ'),36,1041),StrConv(('｣ﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"「゙\"",
+          "\"「゚\"",
+          "\"」゙\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"「゙\"\"\"\t\"\"\"「゚\"\"\"\t\"\"\"」゙\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"「゙\"",
+          "\"「゚\"",
+          "\"」゙\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('｣ﾟ'),36,1041),StrConv(('､ﾞ'),36,1041),StrConv(('､ﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"」゚\"",
+          "\"、゙\"",
+          "\"、゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"」゚\"\"\"\t\"\"\"、゙\"\"\"\t\"\"\"、゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"」゚\"",
+          "\"、゙\"",
+          "\"、゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('･ﾞ'),36,1041),StrConv(('･ﾟ'),36,1041),StrConv(('ｦﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"・゙\"",
+          "\"・゚\"",
+          "\"を゙\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"・゙\"\"\"\t\"\"\"・゚\"\"\"\t\"\"\"を゙\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"・゙\"",
+          "\"・゚\"",
+          "\"を゙\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ｦﾟ'),36,1041),StrConv(('ｧﾞ'),36,1041),StrConv(('ｧﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"を゚\"",
+          "\"ぁ゙\"",
+          "\"ぁ゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"を゚\"\"\"\t\"\"\"ぁ゙\"\"\"\t\"\"\"ぁ゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"を゚\"",
+          "\"ぁ゙\"",
+          "\"ぁ゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ｨﾞ'),36,1041),StrConv(('ｨﾟ'),36,1041),StrConv(('ｩﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"ぃ゙\"",
+          "\"ぃ゚\"",
+          "\"ぅ゙\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ぃ゙\"\"\"\t\"\"\"ぃ゚\"\"\"\t\"\"\"ぅ゙\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ぃ゙\"",
+          "\"ぃ゚\"",
+          "\"ぅ゙\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ｩﾟ'),36,1041),StrConv(('ｪﾞ'),36,1041),StrConv(('ｪﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"ぅ゚\"",
+          "\"ぇ゙\"",
+          "\"ぇ゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ぅ゚\"\"\"\t\"\"\"ぇ゙\"\"\"\t\"\"\"ぇ゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ぅ゚\"",
+          "\"ぇ゙\"",
+          "\"ぇ゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ｫﾞ'),36,1041),StrConv(('ｫﾟ'),36,1041),StrConv(('ｬﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"ぉ゙\"",
+          "\"ぉ゚\"",
+          "\"ゃ゙\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ぉ゙\"\"\"\t\"\"\"ぉ゚\"\"\"\t\"\"\"ゃ゙\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ぉ゙\"",
+          "\"ぉ゚\"",
+          "\"ゃ゙\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ｬﾟ'),36,1041),StrConv(('ｭﾞ'),36,1041),StrConv(('ｭﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"ゃ゚\"",
+          "\"ゅ゙\"",
+          "\"ゅ゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ゃ゚\"\"\"\t\"\"\"ゅ゙\"\"\"\t\"\"\"ゅ゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ゃ゚\"",
+          "\"ゅ゙\"",
+          "\"ゅ゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ｮﾞ'),36,1041),StrConv(('ｮﾟ'),36,1041),StrConv(('ｯﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"ょ゙\"",
+          "\"ょ゚\"",
+          "\"っ゙\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ょ゙\"\"\"\t\"\"\"ょ゚\"\"\"\t\"\"\"っ゙\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ょ゙\"",
+          "\"ょ゚\"",
+          "\"っ゙\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ｯﾟ'),36,1041),StrConv(('ｰﾞ'),36,1041),StrConv(('ｰﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"っ゚\"",
+          "\"ー゙\"",
+          "\"ー゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"っ゚\"\"\"\t\"\"\"ー゙\"\"\"\t\"\"\"ー゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"っ゚\"",
+          "\"ー゙\"",
+          "\"ー゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ｱﾞ'),36,1041),StrConv(('ｱﾟ'),36,1041),StrConv(('ｲﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"あ゙\"",
+          "\"あ゚\"",
+          "\"い゙\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"あ゙\"\"\"\t\"\"\"あ゚\"\"\"\t\"\"\"い゙\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"あ゙\"",
+          "\"あ゚\"",
+          "\"い゙\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ｲﾟ'),36,1041),StrConv(('ｳﾞ'),36,1041),StrConv(('ｳﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"い゚\"",
+          "\"ゔ\"",
+          "\"う゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"い゚\"\"\"\t\"\"\"ゔ\"\"\"\t\"\"\"う゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"い゚\"",
+          "\"ゔ\"",
+          "\"う゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ｴﾞ'),36,1041),StrConv(('ｴﾟ'),36,1041),StrConv(('ｵﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"え゙\"",
+          "\"え゚\"",
+          "\"お゙\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"え゙\"\"\"\t\"\"\"え゚\"\"\"\t\"\"\"お゙\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"え゙\"",
+          "\"え゚\"",
+          "\"お゙\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ｵﾟ'),36,1041),StrConv(('ｶﾞ'),36,1041),StrConv(('ｶﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"お゚\"",
+          "\"が\"",
+          "\"か゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"お゚\"\"\"\t\"\"\"が\"\"\"\t\"\"\"か゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"お゚\"",
+          "\"が\"",
+          "\"か゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ｷﾞ'),36,1041),StrConv(('ｷﾟ'),36,1041),StrConv(('ｸﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"ぎ\"",
+          "\"き゚\"",
+          "\"ぐ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ぎ\"\"\"\t\"\"\"き゚\"\"\"\t\"\"\"ぐ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ぎ\"",
+          "\"き゚\"",
+          "\"ぐ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ｸﾟ'),36,1041),StrConv(('ｹﾞ'),36,1041),StrConv(('ｹﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"く゚\"",
+          "\"げ\"",
+          "\"け゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"く゚\"\"\"\t\"\"\"げ\"\"\"\t\"\"\"け゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"く゚\"",
+          "\"げ\"",
+          "\"け゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ｺﾞ'),36,1041),StrConv(('ｺﾟ'),36,1041),StrConv(('ｻﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"ご\"",
+          "\"こ゚\"",
+          "\"ざ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ご\"\"\"\t\"\"\"こ゚\"\"\"\t\"\"\"ざ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ご\"",
+          "\"こ゚\"",
+          "\"ざ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ｻﾟ'),36,1041),StrConv(('ｼﾞ'),36,1041),StrConv(('ｼﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"さ゚\"",
+          "\"じ\"",
+          "\"し゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"さ゚\"\"\"\t\"\"\"じ\"\"\"\t\"\"\"し゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"さ゚\"",
+          "\"じ\"",
+          "\"し゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ｽﾞ'),36,1041),StrConv(('ｽﾟ'),36,1041),StrConv(('ｾﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"ず\"",
+          "\"す゚\"",
+          "\"ぜ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ず\"\"\"\t\"\"\"す゚\"\"\"\t\"\"\"ぜ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ず\"",
+          "\"す゚\"",
+          "\"ぜ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ｾﾟ'),36,1041),StrConv(('ｿﾞ'),36,1041),StrConv(('ｿﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"せ゚\"",
+          "\"ぞ\"",
+          "\"そ゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"せ゚\"\"\"\t\"\"\"ぞ\"\"\"\t\"\"\"そ゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"せ゚\"",
+          "\"ぞ\"",
+          "\"そ゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ﾀﾞ'),36,1041),StrConv(('ﾀﾟ'),36,1041),StrConv(('ﾁﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"だ\"",
+          "\"た゚\"",
+          "\"ぢ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"だ\"\"\"\t\"\"\"た゚\"\"\"\t\"\"\"ぢ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"だ\"",
+          "\"た゚\"",
+          "\"ぢ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ﾁﾟ'),36,1041),StrConv(('ﾂﾞ'),36,1041),StrConv(('ﾂﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"ち゚\"",
+          "\"づ\"",
+          "\"つ゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ち゚\"\"\"\t\"\"\"づ\"\"\"\t\"\"\"つ゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ち゚\"",
+          "\"づ\"",
+          "\"つ゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ﾃﾞ'),36,1041),StrConv(('ﾃﾟ'),36,1041),StrConv(('ﾄﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"で\"",
+          "\"て゚\"",
+          "\"ど\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"で\"\"\"\t\"\"\"て゚\"\"\"\t\"\"\"ど\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"で\"",
+          "\"て゚\"",
+          "\"ど\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ﾄﾟ'),36,1041),StrConv(('ﾅﾞ'),36,1041),StrConv(('ﾅﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"と゚\"",
+          "\"な゙\"",
+          "\"な゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"と゚\"\"\"\t\"\"\"な゙\"\"\"\t\"\"\"な゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"と゚\"",
+          "\"な゙\"",
+          "\"な゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ﾆﾞ'),36,1041),StrConv(('ﾆﾟ'),36,1041),StrConv(('ﾇﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"に゙\"",
+          "\"に゚\"",
+          "\"ぬ゙\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"に゙\"\"\"\t\"\"\"に゚\"\"\"\t\"\"\"ぬ゙\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"に゙\"",
+          "\"に゚\"",
+          "\"ぬ゙\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ﾇﾟ'),36,1041),StrConv(('ﾈﾞ'),36,1041),StrConv(('ﾈﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"ぬ゚\"",
+          "\"ね゙\"",
+          "\"ね゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ぬ゚\"\"\"\t\"\"\"ね゙\"\"\"\t\"\"\"ね゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ぬ゚\"",
+          "\"ね゙\"",
+          "\"ね゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ﾉﾞ'),36,1041),StrConv(('ﾉﾟ'),36,1041),StrConv(('ﾊﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"の゙\"",
+          "\"の゚\"",
+          "\"ば\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"の゙\"\"\"\t\"\"\"の゚\"\"\"\t\"\"\"ば\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"の゙\"",
+          "\"の゚\"",
+          "\"ば\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ﾊﾟ'),36,1041),StrConv(('ﾋﾞ'),36,1041),StrConv(('ﾋﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"ぱ\"",
+          "\"び\"",
+          "\"ぴ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ぱ\"\"\"\t\"\"\"び\"\"\"\t\"\"\"ぴ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ぱ\"",
+          "\"び\"",
+          "\"ぴ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ﾌﾞ'),36,1041),StrConv(('ﾌﾟ'),36,1041),StrConv(('ﾍﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"ぶ\"",
+          "\"ぷ\"",
+          "\"べ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ぶ\"\"\"\t\"\"\"ぷ\"\"\"\t\"\"\"べ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ぶ\"",
+          "\"ぷ\"",
+          "\"べ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ﾍﾟ'),36,1041),StrConv(('ﾎﾞ'),36,1041),StrConv(('ﾎﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"ぺ\"",
+          "\"ぼ\"",
+          "\"ぽ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ぺ\"\"\"\t\"\"\"ぼ\"\"\"\t\"\"\"ぽ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ぺ\"",
+          "\"ぼ\"",
+          "\"ぽ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ﾏﾞ'),36,1041),StrConv(('ﾏﾟ'),36,1041),StrConv(('ﾐﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"ま゙\"",
+          "\"ま゚\"",
+          "\"み゙\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ま゙\"\"\"\t\"\"\"ま゚\"\"\"\t\"\"\"み゙\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ま゙\"",
+          "\"ま゚\"",
+          "\"み゙\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ﾐﾟ'),36,1041),StrConv(('ﾑﾞ'),36,1041),StrConv(('ﾑﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"み゚\"",
+          "\"む゙\"",
+          "\"む゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"み゚\"\"\"\t\"\"\"む゙\"\"\"\t\"\"\"む゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"み゚\"",
+          "\"む゙\"",
+          "\"む゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ﾒﾞ'),36,1041),StrConv(('ﾒﾟ'),36,1041),StrConv(('ﾓﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"め゙\"",
+          "\"め゚\"",
+          "\"も゙\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"め゙\"\"\"\t\"\"\"め゚\"\"\"\t\"\"\"も゙\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"め゙\"",
+          "\"め゚\"",
+          "\"も゙\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ﾓﾟ'),36,1041),StrConv(('ﾔﾞ'),36,1041),StrConv(('ﾔﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"も゚\"",
+          "\"や゙\"",
+          "\"や゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"も゚\"\"\"\t\"\"\"や゙\"\"\"\t\"\"\"や゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"も゚\"",
+          "\"や゙\"",
+          "\"や゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ﾕﾞ'),36,1041),StrConv(('ﾕﾟ'),36,1041),StrConv(('ﾖﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"ゆ゙\"",
+          "\"ゆ゚\"",
+          "\"よ゙\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ゆ゙\"\"\"\t\"\"\"ゆ゚\"\"\"\t\"\"\"よ゙\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ゆ゙\"",
+          "\"ゆ゚\"",
+          "\"よ゙\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ﾖﾟ'),36,1041),StrConv(('ﾗﾞ'),36,1041),StrConv(('ﾗﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"よ゚\"",
+          "\"ら゙\"",
+          "\"ら゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"よ゚\"\"\"\t\"\"\"ら゙\"\"\"\t\"\"\"ら゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"よ゚\"",
+          "\"ら゙\"",
+          "\"ら゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ﾘﾞ'),36,1041),StrConv(('ﾘﾟ'),36,1041),StrConv(('ﾙﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"り゙\"",
+          "\"り゚\"",
+          "\"る゙\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"り゙\"\"\"\t\"\"\"り゚\"\"\"\t\"\"\"る゙\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"り゙\"",
+          "\"り゚\"",
+          "\"る゙\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ﾙﾟ'),36,1041),StrConv(('ﾚﾞ'),36,1041),StrConv(('ﾚﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"る゚\"",
+          "\"れ゙\"",
+          "\"れ゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"る゚\"\"\"\t\"\"\"れ゙\"\"\"\t\"\"\"れ゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"る゚\"",
+          "\"れ゙\"",
+          "\"れ゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ﾛﾞ'),36,1041),StrConv(('ﾛﾟ'),36,1041),StrConv(('ﾜﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"ろ゙\"",
+          "\"ろ゚\"",
+          "\"わ゙\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ろ゙\"\"\"\t\"\"\"ろ゚\"\"\"\t\"\"\"わ゙\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ろ゙\"",
+          "\"ろ゚\"",
+          "\"わ゙\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ﾜﾟ'),36,1041),StrConv(('ﾝﾞ'),36,1041),StrConv(('ﾝﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"わ゚\"",
+          "\"ん゙\"",
+          "\"ん゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"わ゚\"\"\"\t\"\"\"ん゙\"\"\"\t\"\"\"ん゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"わ゚\"",
+          "\"ん゙\"",
+          "\"ん゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ガパ'),36,1041),StrConv(('カ゛ハ゜'),36,1041),StrConv(('は゛がハ゜'),36,1041)"
+      ],
+      "controls": [
+        "mixed",
+        "mixed",
+        "mixed"
+      ],
+      "expected_rows": [
+        [
+          "\"がぱ\"",
+          "\"がぱ\"",
+          "\"ばがぱ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"がぱ\"\"\"\t\"\"\"がぱ\"\"\"\t\"\"\"ばがぱ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"がぱ\"",
+          "\"がぱ\"",
+          "\"ばがぱ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ガガヵヶヽヾ'),36,1041),StrConv(('ﾜﾞｦﾞ'),36,1041),StrConv(('A゛゜'),36,1041)"
+      ],
+      "controls": [
+        "mixed",
+        "mixed",
+        "mixed"
+      ],
+      "expected_rows": [
+        [
+          "\"ががゕゖゝゞ\"",
+          "\"わ゙を゙\"",
+          "\"Ａ゛゜\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ががゕゖゝゞ\"\"\"\t\"\"\"わ゙を゙\"\"\"\t\"\"\"Ａ゛゜\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ががゕゖゝゞ\"",
+          "\"わ゙を゙\"",
+          "\"Ａ゛゜\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('ﾞﾟ゙゚゛゜'),36,1041),StrConv(('ひらがな①㍑ﬁé😀'),36,1041),StrConv(('ABC 123 !~'),36,1041)"
+      ],
+      "controls": [
+        "mixed",
+        "mixed",
+        "mixed"
+      ],
+      "expected_rows": [
+        [
+          "\"゙゚゙゚゛゜\"",
+          "\"ひらがな①㍑ﬁｅ́😀\"",
+          "\"ＡＢＣ　１２３　！～\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"゙゚゙゚゛゜\"\"\"\t\"\"\"ひらがな①㍑ﬁｅ́😀\"\"\"\t\"\"\"ＡＢＣ　１２３　！～\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"゙゚゙゚゛゜\"",
+          "\"ひらがな①㍑ﬁｅ́😀\"",
+          "\"ＡＢＣ　１２３　！～\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(('''' & ChrW(0) & '\t\n'),36,1041),StrConv((''),36,1041),StrConv(CVar(MidB(ChrW(55296)&('ｶﾞ')&ChrW(56320),3,LenB(('ｶﾞ')))),36,1041)"
+      ],
+      "controls": [
+        "mixed",
+        "mixed",
+        "active_raw_range"
+      ],
+      "expected_rows": [
+        [
+          "\"＇\\u{0000}\\t\\n\"",
+          "\"\"",
+          "\"が\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"＇\\u{0000}\\t\\n\"\"\"\t\"\"\"\"\"\"\t\"\"\"が\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"＇\\u{0000}\\t\\n\"",
+          "\"\"",
+          "\"が\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(LeftB(('ｶﾞ'),LenB(('ｶﾞ'))),36,1041),StrConv(CVar(MidB(ChrW(55296)&('ﾊﾟｳﾞ')&ChrW(56320),3,LenB(('ﾊﾟｳﾞ')))),36,1041),StrConv(LeftB(('ﾊﾟｳﾞ'),LenB(('ﾊﾟｳﾞ'))),36,1041)"
+      ],
+      "controls": [
+        "raw_whole",
+        "active_raw_range",
+        "raw_whole"
+      ],
+      "expected_rows": [
+        [
+          "\"が\"",
+          "\"ぱゔ\"",
+          "\"ぱゔ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"が\"\"\"\t\"\"\"ぱゔ\"\"\"\t\"\"\"ぱゔ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"が\"",
+          "\"ぱゔ\"",
+          "\"ぱゔ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(CVar(MidB(ChrW(55296)&('ﾜﾞｦﾞ')&ChrW(56320),3,LenB(('ﾜﾞｦﾞ')))),36,1041),StrConv(LeftB(('ﾜﾞｦﾞ'),LenB(('ﾜﾞｦﾞ'))),36,1041),StrConv(CVar(MidB(ChrW(55296)&('ABC')&ChrW(56320),3,LenB(('ABC')))),36,1041)"
+      ],
+      "controls": [
+        "active_raw_range",
+        "raw_whole",
+        "active_raw_range"
+      ],
+      "expected_rows": [
+        [
+          "\"わ゙を゙\"",
+          "\"わ゙を゙\"",
+          "\"ＡＢＣ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"わ゙を゙\"\"\"\t\"\"\"わ゙を゙\"\"\"\t\"\"\"ＡＢＣ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"わ゙を゙\"",
+          "\"わ゙を゙\"",
+          "\"ＡＢＣ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(LeftB(('ABC'),LenB(('ABC'))),36,1041),StrConv(CVar(MidB(ChrW(55296)&('カ゛')&ChrW(56320),3,LenB(('カ゛')))),36,1041),StrConv(LeftB(('カ゛'),LenB(('カ゛'))),36,1041)"
+      ],
+      "controls": [
+        "raw_whole",
+        "active_raw_range",
+        "raw_whole"
+      ],
+      "expected_rows": [
+        [
+          "\"ＡＢＣ\"",
+          "\"が\"",
+          "\"が\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ＡＢＣ\"\"\"\t\"\"\"が\"\"\"\t\"\"\"が\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ＡＢＣ\"",
+          "\"が\"",
+          "\"が\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(CVar(MidB(ChrW(55296)&('①😀')&ChrW(56320),3,LenB(('①😀')))),36,1041),StrConv(LeftB(('①😀'),LenB(('①😀'))),36,1041),StrConv(NULL,36,1041)"
+      ],
+      "controls": [
+        "active_raw_range",
+        "raw_whole",
+        "null"
+      ],
+      "expected_rows": [
+        [
+          "\"①😀\"",
+          "\"①😀\"",
+          "NULL"
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"①😀\"\"\"\t\"\"\"①😀\"\"\"\tNULL\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"①😀\"",
+          "\"①😀\"",
+          "NULL"
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT StrConv(StrConv('ｶﾞ',32,1041),4,1041),StrConv('ｶﾞ',36,1041)"
+      ],
+      "controls": [
+        "reverse_order_discriminator",
+        "forward_order_discriminator"
+      ],
+      "expected_rows": [
+        [
+          "\"ガ\"",
+          "\"が\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\n\"\"\"ガ\"\"\"\t\"\"\"が\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ガ\"",
+          "\"が\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT 1,StrConv('ｶﾞ',36)"
+      ],
+      "controls": [
+        "missing_locale"
+      ],
+      "expected_rows": null,
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "error: column 2: expression form is not implemented\n",
+      "actual_rows": null,
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT 1,StrConv('ｶﾞ',36,1033)"
+      ],
+      "controls": [
+        "wrong_locale"
+      ],
+      "expected_rows": null,
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "error: column 2: expression form is not implemented\n",
+      "actual_rows": null,
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT 1,StrConv(NULL,36,1033)"
+      ],
+      "controls": [
+        "null_wrong_locale"
+      ],
+      "expected_rows": null,
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "error: column 2: expression form is not implemented\n",
+      "actual_rows": null,
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT 1,StrConv('ｶﾞ',36,66577)"
+      ],
+      "controls": [
+        "alternate_locale"
+      ],
+      "expected_rows": null,
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "error: column 2: expression form is not implemented\n",
+      "actual_rows": null,
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT 1,StrConv('ｶﾞ',36,NULL)"
+      ],
+      "controls": [
+        "null_locale"
+      ],
+      "expected_rows": null,
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "error: column 2: invalid use of NULL in conversion\n",
+      "actual_rows": null,
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT 1,StrConv('ｶﾞ',37,1041)"
+      ],
+      "controls": [
+        "unsupported_case_combination"
+      ],
+      "expected_rows": null,
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "error: column 2: expression form is not implemented\n",
+      "actual_rows": null,
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT 1,StrConv('ｶﾞ',100,1041)"
+      ],
+      "controls": [
+        "unsupported_encoding_combination"
+      ],
+      "expected_rows": null,
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "error: column 2: expression form is not implemented\n",
+      "actual_rows": null,
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT 1,StrConv('ｶﾞ',44,1041)"
+      ],
+      "controls": [
+        "conflicting_width"
+      ],
+      "expected_rows": null,
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "error: column 2: invalid arithmetic domain\n",
+      "actual_rows": null,
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT 1,StrConv(ChrB(65),36,1041)"
+      ],
+      "controls": [
+        "odd_raw"
+      ],
+      "expected_rows": null,
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "error: column 2: text result cannot be represented without losing UTF-16 data\n",
+      "actual_rows": null,
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT 1,StrConv(ChrW(55296),36,1041)"
+      ],
+      "controls": [
+        "invalid_utf16"
+      ],
+      "expected_rows": null,
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "error: column 2: text result cannot be represented without losing UTF-16 data\n",
+      "actual_rows": null,
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT 1,StrConv(IIf(True,'ｶﾞ',1/0),36,1041)"
+      ],
+      "controls": [
+        "eager_source"
+      ],
+      "expected_rows": null,
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "error: column 2: division by zero\n",
+      "actual_rows": null,
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT 1,StrConv(ChrW(55296),36,1/0)"
+      ],
+      "controls": [
+        "eager_locale"
+      ],
+      "expected_rows": null,
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "error: column 2: division by zero\n",
+      "actual_rows": null,
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv((' '),36,1041),StrConv(('!'),36,1041),StrConv(('\"'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"　\"",
+          "\"！\"",
+          "\"＂\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"　\"\"\"\t\"\"\"！\"\"\"\t\"\"\"＂\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"　\"",
+          "\"！\"",
+          "\"＂\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('#'),36,1041),StrConv(('$'),36,1041),StrConv(('%'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"＃\"",
+          "\"＄\"",
+          "\"％\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"＃\"\"\"\t\"\"\"＄\"\"\"\t\"\"\"％\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"＃\"",
+          "\"＄\"",
+          "\"％\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('&'),36,1041),StrConv((''''),36,1041),StrConv(('('),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"＆\"",
+          "\"＇\"",
+          "\"（\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"＆\"\"\"\t\"\"\"＇\"\"\"\t\"\"\"（\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"＆\"",
+          "\"＇\"",
+          "\"（\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv((')'),36,1041),StrConv(('*'),36,1041),StrConv(('+'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"）\"",
+          "\"＊\"",
+          "\"＋\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"）\"\"\"\t\"\"\"＊\"\"\"\t\"\"\"＋\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"）\"",
+          "\"＊\"",
+          "\"＋\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv((','),36,1041),StrConv(('-'),36,1041),StrConv(('.'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"，\"",
+          "\"－\"",
+          "\"．\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"，\"\"\"\t\"\"\"－\"\"\"\t\"\"\"．\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"，\"",
+          "\"－\"",
+          "\"．\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('/'),36,1041),StrConv(('0'),36,1041),StrConv(('1'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"／\"",
+          "\"０\"",
+          "\"１\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"／\"\"\"\t\"\"\"０\"\"\"\t\"\"\"１\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"／\"",
+          "\"０\"",
+          "\"１\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('2'),36,1041),StrConv(('3'),36,1041),StrConv(('4'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"２\"",
+          "\"３\"",
+          "\"４\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"２\"\"\"\t\"\"\"３\"\"\"\t\"\"\"４\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"２\"",
+          "\"３\"",
+          "\"４\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('5'),36,1041),StrConv(('6'),36,1041),StrConv(('7'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"５\"",
+          "\"６\"",
+          "\"７\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"５\"\"\"\t\"\"\"６\"\"\"\t\"\"\"７\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"５\"",
+          "\"６\"",
+          "\"７\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('8'),36,1041),StrConv(('9'),36,1041),StrConv((':'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"８\"",
+          "\"９\"",
+          "\"：\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"８\"\"\"\t\"\"\"９\"\"\"\t\"\"\"：\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"８\"",
+          "\"９\"",
+          "\"：\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv((';'),36,1041),StrConv(('<'),36,1041),StrConv(('='),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"；\"",
+          "\"＜\"",
+          "\"＝\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"；\"\"\"\t\"\"\"＜\"\"\"\t\"\"\"＝\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"；\"",
+          "\"＜\"",
+          "\"＝\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('>'),36,1041),StrConv(('?'),36,1041),StrConv(('@'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"＞\"",
+          "\"？\"",
+          "\"＠\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"＞\"\"\"\t\"\"\"？\"\"\"\t\"\"\"＠\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"＞\"",
+          "\"？\"",
+          "\"＠\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('A'),36,1041),StrConv(('B'),36,1041),StrConv(('C'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"Ａ\"",
+          "\"Ｂ\"",
+          "\"Ｃ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"Ａ\"\"\"\t\"\"\"Ｂ\"\"\"\t\"\"\"Ｃ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"Ａ\"",
+          "\"Ｂ\"",
+          "\"Ｃ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('D'),36,1041),StrConv(('E'),36,1041),StrConv(('F'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"Ｄ\"",
+          "\"Ｅ\"",
+          "\"Ｆ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"Ｄ\"\"\"\t\"\"\"Ｅ\"\"\"\t\"\"\"Ｆ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"Ｄ\"",
+          "\"Ｅ\"",
+          "\"Ｆ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('G'),36,1041),StrConv(('H'),36,1041),StrConv(('I'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"Ｇ\"",
+          "\"Ｈ\"",
+          "\"Ｉ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"Ｇ\"\"\"\t\"\"\"Ｈ\"\"\"\t\"\"\"Ｉ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"Ｇ\"",
+          "\"Ｈ\"",
+          "\"Ｉ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('J'),36,1041),StrConv(('K'),36,1041),StrConv(('L'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"Ｊ\"",
+          "\"Ｋ\"",
+          "\"Ｌ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"Ｊ\"\"\"\t\"\"\"Ｋ\"\"\"\t\"\"\"Ｌ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"Ｊ\"",
+          "\"Ｋ\"",
+          "\"Ｌ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('M'),36,1041),StrConv(('N'),36,1041),StrConv(('O'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"Ｍ\"",
+          "\"Ｎ\"",
+          "\"Ｏ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"Ｍ\"\"\"\t\"\"\"Ｎ\"\"\"\t\"\"\"Ｏ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"Ｍ\"",
+          "\"Ｎ\"",
+          "\"Ｏ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('P'),36,1041),StrConv(('Q'),36,1041),StrConv(('R'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"Ｐ\"",
+          "\"Ｑ\"",
+          "\"Ｒ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"Ｐ\"\"\"\t\"\"\"Ｑ\"\"\"\t\"\"\"Ｒ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"Ｐ\"",
+          "\"Ｑ\"",
+          "\"Ｒ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('S'),36,1041),StrConv(('T'),36,1041),StrConv(('U'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"Ｓ\"",
+          "\"Ｔ\"",
+          "\"Ｕ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"Ｓ\"\"\"\t\"\"\"Ｔ\"\"\"\t\"\"\"Ｕ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"Ｓ\"",
+          "\"Ｔ\"",
+          "\"Ｕ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('V'),36,1041),StrConv(('W'),36,1041),StrConv(('X'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"Ｖ\"",
+          "\"Ｗ\"",
+          "\"Ｘ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"Ｖ\"\"\"\t\"\"\"Ｗ\"\"\"\t\"\"\"Ｘ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"Ｖ\"",
+          "\"Ｗ\"",
+          "\"Ｘ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('Y'),36,1041),StrConv(('Z'),36,1041),StrConv(('['),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"Ｙ\"",
+          "\"Ｚ\"",
+          "\"［\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"Ｙ\"\"\"\t\"\"\"Ｚ\"\"\"\t\"\"\"［\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"Ｙ\"",
+          "\"Ｚ\"",
+          "\"［\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('\\'),36,1041),StrConv((']'),36,1041),StrConv(('^'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"＼\"",
+          "\"］\"",
+          "\"＾\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"＼\"\"\"\t\"\"\"］\"\"\"\t\"\"\"＾\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"＼\"",
+          "\"］\"",
+          "\"＾\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('_'),36,1041),StrConv(('`'),36,1041),StrConv(('a'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"＿\"",
+          "\"｀\"",
+          "\"ａ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"＿\"\"\"\t\"\"\"｀\"\"\"\t\"\"\"ａ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"＿\"",
+          "\"｀\"",
+          "\"ａ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('b'),36,1041),StrConv(('c'),36,1041),StrConv(('d'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"ｂ\"",
+          "\"ｃ\"",
+          "\"ｄ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ｂ\"\"\"\t\"\"\"ｃ\"\"\"\t\"\"\"ｄ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ｂ\"",
+          "\"ｃ\"",
+          "\"ｄ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('e'),36,1041),StrConv(('f'),36,1041),StrConv(('g'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"ｅ\"",
+          "\"ｆ\"",
+          "\"ｇ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ｅ\"\"\"\t\"\"\"ｆ\"\"\"\t\"\"\"ｇ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ｅ\"",
+          "\"ｆ\"",
+          "\"ｇ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('h'),36,1041),StrConv(('i'),36,1041),StrConv(('j'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"ｈ\"",
+          "\"ｉ\"",
+          "\"ｊ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ｈ\"\"\"\t\"\"\"ｉ\"\"\"\t\"\"\"ｊ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ｈ\"",
+          "\"ｉ\"",
+          "\"ｊ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('k'),36,1041),StrConv(('l'),36,1041),StrConv(('m'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"ｋ\"",
+          "\"ｌ\"",
+          "\"ｍ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ｋ\"\"\"\t\"\"\"ｌ\"\"\"\t\"\"\"ｍ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ｋ\"",
+          "\"ｌ\"",
+          "\"ｍ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('n'),36,1041),StrConv(('o'),36,1041),StrConv(('p'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"ｎ\"",
+          "\"ｏ\"",
+          "\"ｐ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ｎ\"\"\"\t\"\"\"ｏ\"\"\"\t\"\"\"ｐ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ｎ\"",
+          "\"ｏ\"",
+          "\"ｐ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('q'),36,1041),StrConv(('r'),36,1041),StrConv(('s'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"ｑ\"",
+          "\"ｒ\"",
+          "\"ｓ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ｑ\"\"\"\t\"\"\"ｒ\"\"\"\t\"\"\"ｓ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ｑ\"",
+          "\"ｒ\"",
+          "\"ｓ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('t'),36,1041),StrConv(('u'),36,1041),StrConv(('v'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"ｔ\"",
+          "\"ｕ\"",
+          "\"ｖ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ｔ\"\"\"\t\"\"\"ｕ\"\"\"\t\"\"\"ｖ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ｔ\"",
+          "\"ｕ\"",
+          "\"ｖ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('w'),36,1041),StrConv(('x'),36,1041),StrConv(('y'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"ｗ\"",
+          "\"ｘ\"",
+          "\"ｙ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ｗ\"\"\"\t\"\"\"ｘ\"\"\"\t\"\"\"ｙ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ｗ\"",
+          "\"ｘ\"",
+          "\"ｙ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('z'),36,1041),StrConv(('{'),36,1041),StrConv(('|'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"ｚ\"",
+          "\"｛\"",
+          "\"｜\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ｚ\"\"\"\t\"\"\"｛\"\"\"\t\"\"\"｜\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ｚ\"",
+          "\"｛\"",
+          "\"｜\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('}'),36,1041),StrConv(('~'),36,1041),StrConv(('⦅'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"｝\"",
+          "\"～\"",
+          "\"｟\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"｝\"\"\"\t\"\"\"～\"\"\"\t\"\"\"｟\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"｝\"",
+          "\"～\"",
+          "\"｟\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('⦆'),36,1041),StrConv(('｡'),36,1041),StrConv(('｢'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"｠\"",
+          "\"。\"",
+          "\"「\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"｠\"\"\"\t\"\"\"。\"\"\"\t\"\"\"「\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"｠\"",
+          "\"。\"",
+          "\"「\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('｣'),36,1041),StrConv(('､'),36,1041),StrConv(('･'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"」\"",
+          "\"、\"",
+          "\"・\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"」\"\"\"\t\"\"\"、\"\"\"\t\"\"\"・\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"」\"",
+          "\"、\"",
+          "\"・\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ｦ'),36,1041),StrConv(('ｧ'),36,1041),StrConv(('ｨ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"を\"",
+          "\"ぁ\"",
+          "\"ぃ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"を\"\"\"\t\"\"\"ぁ\"\"\"\t\"\"\"ぃ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"を\"",
+          "\"ぁ\"",
+          "\"ぃ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ｩ'),36,1041),StrConv(('ｪ'),36,1041),StrConv(('ｫ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"ぅ\"",
+          "\"ぇ\"",
+          "\"ぉ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ぅ\"\"\"\t\"\"\"ぇ\"\"\"\t\"\"\"ぉ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ぅ\"",
+          "\"ぇ\"",
+          "\"ぉ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ｬ'),36,1041),StrConv(('ｭ'),36,1041),StrConv(('ｮ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"ゃ\"",
+          "\"ゅ\"",
+          "\"ょ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ゃ\"\"\"\t\"\"\"ゅ\"\"\"\t\"\"\"ょ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ゃ\"",
+          "\"ゅ\"",
+          "\"ょ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ｯ'),36,1041),StrConv(('ｰ'),36,1041),StrConv(('ｱ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"っ\"",
+          "\"ー\"",
+          "\"あ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"っ\"\"\"\t\"\"\"ー\"\"\"\t\"\"\"あ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"っ\"",
+          "\"ー\"",
+          "\"あ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ｲ'),36,1041),StrConv(('ｳ'),36,1041),StrConv(('ｴ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"い\"",
+          "\"う\"",
+          "\"え\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"い\"\"\"\t\"\"\"う\"\"\"\t\"\"\"え\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"い\"",
+          "\"う\"",
+          "\"え\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ｵ'),36,1041),StrConv(('ｶ'),36,1041),StrConv(('ｷ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"お\"",
+          "\"か\"",
+          "\"き\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"お\"\"\"\t\"\"\"か\"\"\"\t\"\"\"き\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"お\"",
+          "\"か\"",
+          "\"き\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ｸ'),36,1041),StrConv(('ｹ'),36,1041),StrConv(('ｺ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"く\"",
+          "\"け\"",
+          "\"こ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"く\"\"\"\t\"\"\"け\"\"\"\t\"\"\"こ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"く\"",
+          "\"け\"",
+          "\"こ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ｻ'),36,1041),StrConv(('ｼ'),36,1041),StrConv(('ｽ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"さ\"",
+          "\"し\"",
+          "\"す\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"さ\"\"\"\t\"\"\"し\"\"\"\t\"\"\"す\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"さ\"",
+          "\"し\"",
+          "\"す\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ｾ'),36,1041),StrConv(('ｿ'),36,1041),StrConv(('ﾀ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"せ\"",
+          "\"そ\"",
+          "\"た\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"せ\"\"\"\t\"\"\"そ\"\"\"\t\"\"\"た\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"せ\"",
+          "\"そ\"",
+          "\"た\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ﾁ'),36,1041),StrConv(('ﾂ'),36,1041),StrConv(('ﾃ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"ち\"",
+          "\"つ\"",
+          "\"て\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ち\"\"\"\t\"\"\"つ\"\"\"\t\"\"\"て\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ち\"",
+          "\"つ\"",
+          "\"て\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ﾄ'),36,1041),StrConv(('ﾅ'),36,1041),StrConv(('ﾆ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"と\"",
+          "\"な\"",
+          "\"に\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"と\"\"\"\t\"\"\"な\"\"\"\t\"\"\"に\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"と\"",
+          "\"な\"",
+          "\"に\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ﾇ'),36,1041),StrConv(('ﾈ'),36,1041),StrConv(('ﾉ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"ぬ\"",
+          "\"ね\"",
+          "\"の\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ぬ\"\"\"\t\"\"\"ね\"\"\"\t\"\"\"の\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ぬ\"",
+          "\"ね\"",
+          "\"の\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ﾊ'),36,1041),StrConv(('ﾋ'),36,1041),StrConv(('ﾌ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"は\"",
+          "\"ひ\"",
+          "\"ふ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"は\"\"\"\t\"\"\"ひ\"\"\"\t\"\"\"ふ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"は\"",
+          "\"ひ\"",
+          "\"ふ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ﾍ'),36,1041),StrConv(('ﾎ'),36,1041),StrConv(('ﾏ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"へ\"",
+          "\"ほ\"",
+          "\"ま\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"へ\"\"\"\t\"\"\"ほ\"\"\"\t\"\"\"ま\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"へ\"",
+          "\"ほ\"",
+          "\"ま\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ﾐ'),36,1041),StrConv(('ﾑ'),36,1041),StrConv(('ﾒ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"み\"",
+          "\"む\"",
+          "\"め\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"み\"\"\"\t\"\"\"む\"\"\"\t\"\"\"め\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"み\"",
+          "\"む\"",
+          "\"め\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ﾓ'),36,1041),StrConv(('ﾔ'),36,1041),StrConv(('ﾕ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"も\"",
+          "\"や\"",
+          "\"ゆ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"も\"\"\"\t\"\"\"や\"\"\"\t\"\"\"ゆ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"も\"",
+          "\"や\"",
+          "\"ゆ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ﾖ'),36,1041),StrConv(('ﾗ'),36,1041),StrConv(('ﾘ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"よ\"",
+          "\"ら\"",
+          "\"り\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"よ\"\"\"\t\"\"\"ら\"\"\"\t\"\"\"り\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"よ\"",
+          "\"ら\"",
+          "\"り\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ﾙ'),36,1041),StrConv(('ﾚ'),36,1041),StrConv(('ﾛ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"る\"",
+          "\"れ\"",
+          "\"ろ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"る\"\"\"\t\"\"\"れ\"\"\"\t\"\"\"ろ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"る\"",
+          "\"れ\"",
+          "\"ろ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ﾜ'),36,1041),StrConv(('ﾝ'),36,1041),StrConv(('ﾞ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "width_single",
+        "width_single"
+      ],
+      "expected_rows": [
+        [
+          "\"わ\"",
+          "\"ん\"",
+          "\"゙\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"わ\"\"\"\t\"\"\"ん\"\"\"\t\"\"\"゙\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"わ\"",
+          "\"ん\"",
+          "\"゙\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ﾟ'),36,1041),StrConv(('｡ﾞ'),36,1041),StrConv(('｡ﾟ'),36,1041)"
+      ],
+      "controls": [
+        "width_single",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"゚\"",
+          "\"。゙\"",
+          "\"。゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"゚\"\"\"\t\"\"\"。゙\"\"\"\t\"\"\"。゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"゚\"",
+          "\"。゙\"",
+          "\"。゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('｢ﾞ'),36,1041),StrConv(('｢ﾟ'),36,1041),StrConv(('｣ﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"「゙\"",
+          "\"「゚\"",
+          "\"」゙\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"「゙\"\"\"\t\"\"\"「゚\"\"\"\t\"\"\"」゙\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"「゙\"",
+          "\"「゚\"",
+          "\"」゙\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('｣ﾟ'),36,1041),StrConv(('､ﾞ'),36,1041),StrConv(('､ﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"」゚\"",
+          "\"、゙\"",
+          "\"、゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"」゚\"\"\"\t\"\"\"、゙\"\"\"\t\"\"\"、゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"」゚\"",
+          "\"、゙\"",
+          "\"、゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('･ﾞ'),36,1041),StrConv(('･ﾟ'),36,1041),StrConv(('ｦﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"・゙\"",
+          "\"・゚\"",
+          "\"を゙\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"・゙\"\"\"\t\"\"\"・゚\"\"\"\t\"\"\"を゙\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"・゙\"",
+          "\"・゚\"",
+          "\"を゙\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ｦﾟ'),36,1041),StrConv(('ｧﾞ'),36,1041),StrConv(('ｧﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"を゚\"",
+          "\"ぁ゙\"",
+          "\"ぁ゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"を゚\"\"\"\t\"\"\"ぁ゙\"\"\"\t\"\"\"ぁ゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"を゚\"",
+          "\"ぁ゙\"",
+          "\"ぁ゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ｨﾞ'),36,1041),StrConv(('ｨﾟ'),36,1041),StrConv(('ｩﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"ぃ゙\"",
+          "\"ぃ゚\"",
+          "\"ぅ゙\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ぃ゙\"\"\"\t\"\"\"ぃ゚\"\"\"\t\"\"\"ぅ゙\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ぃ゙\"",
+          "\"ぃ゚\"",
+          "\"ぅ゙\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ｩﾟ'),36,1041),StrConv(('ｪﾞ'),36,1041),StrConv(('ｪﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"ぅ゚\"",
+          "\"ぇ゙\"",
+          "\"ぇ゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ぅ゚\"\"\"\t\"\"\"ぇ゙\"\"\"\t\"\"\"ぇ゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ぅ゚\"",
+          "\"ぇ゙\"",
+          "\"ぇ゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ｫﾞ'),36,1041),StrConv(('ｫﾟ'),36,1041),StrConv(('ｬﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"ぉ゙\"",
+          "\"ぉ゚\"",
+          "\"ゃ゙\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ぉ゙\"\"\"\t\"\"\"ぉ゚\"\"\"\t\"\"\"ゃ゙\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ぉ゙\"",
+          "\"ぉ゚\"",
+          "\"ゃ゙\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ｬﾟ'),36,1041),StrConv(('ｭﾞ'),36,1041),StrConv(('ｭﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"ゃ゚\"",
+          "\"ゅ゙\"",
+          "\"ゅ゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ゃ゚\"\"\"\t\"\"\"ゅ゙\"\"\"\t\"\"\"ゅ゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ゃ゚\"",
+          "\"ゅ゙\"",
+          "\"ゅ゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ｮﾞ'),36,1041),StrConv(('ｮﾟ'),36,1041),StrConv(('ｯﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"ょ゙\"",
+          "\"ょ゚\"",
+          "\"っ゙\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ょ゙\"\"\"\t\"\"\"ょ゚\"\"\"\t\"\"\"っ゙\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ょ゙\"",
+          "\"ょ゚\"",
+          "\"っ゙\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ｯﾟ'),36,1041),StrConv(('ｰﾞ'),36,1041),StrConv(('ｰﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"っ゚\"",
+          "\"ー゙\"",
+          "\"ー゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"っ゚\"\"\"\t\"\"\"ー゙\"\"\"\t\"\"\"ー゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"っ゚\"",
+          "\"ー゙\"",
+          "\"ー゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ｱﾞ'),36,1041),StrConv(('ｱﾟ'),36,1041),StrConv(('ｲﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"あ゙\"",
+          "\"あ゚\"",
+          "\"い゙\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"あ゙\"\"\"\t\"\"\"あ゚\"\"\"\t\"\"\"い゙\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"あ゙\"",
+          "\"あ゚\"",
+          "\"い゙\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ｲﾟ'),36,1041),StrConv(('ｳﾞ'),36,1041),StrConv(('ｳﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"い゚\"",
+          "\"ゔ\"",
+          "\"う゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"い゚\"\"\"\t\"\"\"ゔ\"\"\"\t\"\"\"う゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"い゚\"",
+          "\"ゔ\"",
+          "\"う゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ｴﾞ'),36,1041),StrConv(('ｴﾟ'),36,1041),StrConv(('ｵﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"え゙\"",
+          "\"え゚\"",
+          "\"お゙\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"え゙\"\"\"\t\"\"\"え゚\"\"\"\t\"\"\"お゙\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"え゙\"",
+          "\"え゚\"",
+          "\"お゙\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ｵﾟ'),36,1041),StrConv(('ｶﾞ'),36,1041),StrConv(('ｶﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"お゚\"",
+          "\"が\"",
+          "\"か゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"お゚\"\"\"\t\"\"\"が\"\"\"\t\"\"\"か゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"お゚\"",
+          "\"が\"",
+          "\"か゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ｷﾞ'),36,1041),StrConv(('ｷﾟ'),36,1041),StrConv(('ｸﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"ぎ\"",
+          "\"き゚\"",
+          "\"ぐ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ぎ\"\"\"\t\"\"\"き゚\"\"\"\t\"\"\"ぐ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ぎ\"",
+          "\"き゚\"",
+          "\"ぐ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ｸﾟ'),36,1041),StrConv(('ｹﾞ'),36,1041),StrConv(('ｹﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"く゚\"",
+          "\"げ\"",
+          "\"け゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"く゚\"\"\"\t\"\"\"げ\"\"\"\t\"\"\"け゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"く゚\"",
+          "\"げ\"",
+          "\"け゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ｺﾞ'),36,1041),StrConv(('ｺﾟ'),36,1041),StrConv(('ｻﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"ご\"",
+          "\"こ゚\"",
+          "\"ざ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ご\"\"\"\t\"\"\"こ゚\"\"\"\t\"\"\"ざ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ご\"",
+          "\"こ゚\"",
+          "\"ざ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ｻﾟ'),36,1041),StrConv(('ｼﾞ'),36,1041),StrConv(('ｼﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"さ゚\"",
+          "\"じ\"",
+          "\"し゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"さ゚\"\"\"\t\"\"\"じ\"\"\"\t\"\"\"し゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"さ゚\"",
+          "\"じ\"",
+          "\"し゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ｽﾞ'),36,1041),StrConv(('ｽﾟ'),36,1041),StrConv(('ｾﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"ず\"",
+          "\"す゚\"",
+          "\"ぜ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ず\"\"\"\t\"\"\"す゚\"\"\"\t\"\"\"ぜ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ず\"",
+          "\"す゚\"",
+          "\"ぜ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ｾﾟ'),36,1041),StrConv(('ｿﾞ'),36,1041),StrConv(('ｿﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"せ゚\"",
+          "\"ぞ\"",
+          "\"そ゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"せ゚\"\"\"\t\"\"\"ぞ\"\"\"\t\"\"\"そ゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"せ゚\"",
+          "\"ぞ\"",
+          "\"そ゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ﾀﾞ'),36,1041),StrConv(('ﾀﾟ'),36,1041),StrConv(('ﾁﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"だ\"",
+          "\"た゚\"",
+          "\"ぢ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"だ\"\"\"\t\"\"\"た゚\"\"\"\t\"\"\"ぢ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"だ\"",
+          "\"た゚\"",
+          "\"ぢ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ﾁﾟ'),36,1041),StrConv(('ﾂﾞ'),36,1041),StrConv(('ﾂﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"ち゚\"",
+          "\"づ\"",
+          "\"つ゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ち゚\"\"\"\t\"\"\"づ\"\"\"\t\"\"\"つ゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ち゚\"",
+          "\"づ\"",
+          "\"つ゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ﾃﾞ'),36,1041),StrConv(('ﾃﾟ'),36,1041),StrConv(('ﾄﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"で\"",
+          "\"て゚\"",
+          "\"ど\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"で\"\"\"\t\"\"\"て゚\"\"\"\t\"\"\"ど\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"で\"",
+          "\"て゚\"",
+          "\"ど\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ﾄﾟ'),36,1041),StrConv(('ﾅﾞ'),36,1041),StrConv(('ﾅﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"と゚\"",
+          "\"な゙\"",
+          "\"な゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"と゚\"\"\"\t\"\"\"な゙\"\"\"\t\"\"\"な゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"と゚\"",
+          "\"な゙\"",
+          "\"な゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ﾆﾞ'),36,1041),StrConv(('ﾆﾟ'),36,1041),StrConv(('ﾇﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"に゙\"",
+          "\"に゚\"",
+          "\"ぬ゙\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"に゙\"\"\"\t\"\"\"に゚\"\"\"\t\"\"\"ぬ゙\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"に゙\"",
+          "\"に゚\"",
+          "\"ぬ゙\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ﾇﾟ'),36,1041),StrConv(('ﾈﾞ'),36,1041),StrConv(('ﾈﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"ぬ゚\"",
+          "\"ね゙\"",
+          "\"ね゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ぬ゚\"\"\"\t\"\"\"ね゙\"\"\"\t\"\"\"ね゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ぬ゚\"",
+          "\"ね゙\"",
+          "\"ね゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ﾉﾞ'),36,1041),StrConv(('ﾉﾟ'),36,1041),StrConv(('ﾊﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"の゙\"",
+          "\"の゚\"",
+          "\"ば\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"の゙\"\"\"\t\"\"\"の゚\"\"\"\t\"\"\"ば\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"の゙\"",
+          "\"の゚\"",
+          "\"ば\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ﾊﾟ'),36,1041),StrConv(('ﾋﾞ'),36,1041),StrConv(('ﾋﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"ぱ\"",
+          "\"び\"",
+          "\"ぴ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ぱ\"\"\"\t\"\"\"び\"\"\"\t\"\"\"ぴ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ぱ\"",
+          "\"び\"",
+          "\"ぴ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ﾌﾞ'),36,1041),StrConv(('ﾌﾟ'),36,1041),StrConv(('ﾍﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"ぶ\"",
+          "\"ぷ\"",
+          "\"べ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ぶ\"\"\"\t\"\"\"ぷ\"\"\"\t\"\"\"べ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ぶ\"",
+          "\"ぷ\"",
+          "\"べ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ﾍﾟ'),36,1041),StrConv(('ﾎﾞ'),36,1041),StrConv(('ﾎﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"ぺ\"",
+          "\"ぼ\"",
+          "\"ぽ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ぺ\"\"\"\t\"\"\"ぼ\"\"\"\t\"\"\"ぽ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ぺ\"",
+          "\"ぼ\"",
+          "\"ぽ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ﾏﾞ'),36,1041),StrConv(('ﾏﾟ'),36,1041),StrConv(('ﾐﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"ま゙\"",
+          "\"ま゚\"",
+          "\"み゙\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ま゙\"\"\"\t\"\"\"ま゚\"\"\"\t\"\"\"み゙\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ま゙\"",
+          "\"ま゚\"",
+          "\"み゙\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ﾐﾟ'),36,1041),StrConv(('ﾑﾞ'),36,1041),StrConv(('ﾑﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"み゚\"",
+          "\"む゙\"",
+          "\"む゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"み゚\"\"\"\t\"\"\"む゙\"\"\"\t\"\"\"む゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"み゚\"",
+          "\"む゙\"",
+          "\"む゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ﾒﾞ'),36,1041),StrConv(('ﾒﾟ'),36,1041),StrConv(('ﾓﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"め゙\"",
+          "\"め゚\"",
+          "\"も゙\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"め゙\"\"\"\t\"\"\"め゚\"\"\"\t\"\"\"も゙\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"め゙\"",
+          "\"め゚\"",
+          "\"も゙\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ﾓﾟ'),36,1041),StrConv(('ﾔﾞ'),36,1041),StrConv(('ﾔﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"も゚\"",
+          "\"や゙\"",
+          "\"や゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"も゚\"\"\"\t\"\"\"や゙\"\"\"\t\"\"\"や゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"も゚\"",
+          "\"や゙\"",
+          "\"や゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ﾕﾞ'),36,1041),StrConv(('ﾕﾟ'),36,1041),StrConv(('ﾖﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"ゆ゙\"",
+          "\"ゆ゚\"",
+          "\"よ゙\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ゆ゙\"\"\"\t\"\"\"ゆ゚\"\"\"\t\"\"\"よ゙\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ゆ゙\"",
+          "\"ゆ゚\"",
+          "\"よ゙\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ﾖﾟ'),36,1041),StrConv(('ﾗﾞ'),36,1041),StrConv(('ﾗﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"よ゚\"",
+          "\"ら゙\"",
+          "\"ら゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"よ゚\"\"\"\t\"\"\"ら゙\"\"\"\t\"\"\"ら゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"よ゚\"",
+          "\"ら゙\"",
+          "\"ら゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ﾘﾞ'),36,1041),StrConv(('ﾘﾟ'),36,1041),StrConv(('ﾙﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"り゙\"",
+          "\"り゚\"",
+          "\"る゙\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"り゙\"\"\"\t\"\"\"り゚\"\"\"\t\"\"\"る゙\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"り゙\"",
+          "\"り゚\"",
+          "\"る゙\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ﾙﾟ'),36,1041),StrConv(('ﾚﾞ'),36,1041),StrConv(('ﾚﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"る゚\"",
+          "\"れ゙\"",
+          "\"れ゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"る゚\"\"\"\t\"\"\"れ゙\"\"\"\t\"\"\"れ゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"る゚\"",
+          "\"れ゙\"",
+          "\"れ゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ﾛﾞ'),36,1041),StrConv(('ﾛﾟ'),36,1041),StrConv(('ﾜﾞ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"ろ゙\"",
+          "\"ろ゚\"",
+          "\"わ゙\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ろ゙\"\"\"\t\"\"\"ろ゚\"\"\"\t\"\"\"わ゙\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ろ゙\"",
+          "\"ろ゚\"",
+          "\"わ゙\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ﾜﾟ'),36,1041),StrConv(('ﾝﾞ'),36,1041),StrConv(('ﾝﾟ'),36,1041)"
+      ],
+      "controls": [
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair",
+        "halfwidth_mark_pair"
+      ],
+      "expected_rows": [
+        [
+          "\"わ゚\"",
+          "\"ん゙\"",
+          "\"ん゚\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"わ゚\"\"\"\t\"\"\"ん゙\"\"\"\t\"\"\"ん゚\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"わ゚\"",
+          "\"ん゙\"",
+          "\"ん゚\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ガパ'),36,1041),StrConv(('カ゛ハ゜'),36,1041),StrConv(('は゛がハ゜'),36,1041)"
+      ],
+      "controls": [
+        "mixed",
+        "mixed",
+        "mixed"
+      ],
+      "expected_rows": [
+        [
+          "\"がぱ\"",
+          "\"がぱ\"",
+          "\"ばがぱ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"がぱ\"\"\"\t\"\"\"がぱ\"\"\"\t\"\"\"ばがぱ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"がぱ\"",
+          "\"がぱ\"",
+          "\"ばがぱ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ガガヵヶヽヾ'),36,1041),StrConv(('ﾜﾞｦﾞ'),36,1041),StrConv(('A゛゜'),36,1041)"
+      ],
+      "controls": [
+        "mixed",
+        "mixed",
+        "mixed"
+      ],
+      "expected_rows": [
+        [
+          "\"ががゕゖゝゞ\"",
+          "\"わ゙を゙\"",
+          "\"Ａ゛゜\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ががゕゖゝゞ\"\"\"\t\"\"\"わ゙を゙\"\"\"\t\"\"\"Ａ゛゜\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ががゕゖゝゞ\"",
+          "\"わ゙を゙\"",
+          "\"Ａ゛゜\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('ﾞﾟ゙゚゛゜'),36,1041),StrConv(('ひらがな①㍑ﬁé😀'),36,1041),StrConv(('ABC 123 !~'),36,1041)"
+      ],
+      "controls": [
+        "mixed",
+        "mixed",
+        "mixed"
+      ],
+      "expected_rows": [
+        [
+          "\"゙゚゙゚゛゜\"",
+          "\"ひらがな①㍑ﬁｅ́😀\"",
+          "\"ＡＢＣ　１２３　！～\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"゙゚゙゚゛゜\"\"\"\t\"\"\"ひらがな①㍑ﬁｅ́😀\"\"\"\t\"\"\"ＡＢＣ　１２３　！～\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"゙゚゙゚゛゜\"",
+          "\"ひらがな①㍑ﬁｅ́😀\"",
+          "\"ＡＢＣ　１２３　！～\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(('''' & ChrW(0) & '\t\n'),36,1041),StrConv((''),36,1041),StrConv(CVar(MidB(ChrW(55296)&('ｶﾞ')&ChrW(56320),3,LenB(('ｶﾞ')))),36,1041)"
+      ],
+      "controls": [
+        "mixed",
+        "mixed",
+        "active_raw_range"
+      ],
+      "expected_rows": [
+        [
+          "\"＇\\u{0000}\\t\\n\"",
+          "\"\"",
+          "\"が\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"＇\\u{0000}\\t\\n\"\"\"\t\"\"\"\"\"\"\t\"\"\"が\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"＇\\u{0000}\\t\\n\"",
+          "\"\"",
+          "\"が\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(LeftB(('ｶﾞ'),LenB(('ｶﾞ'))),36,1041),StrConv(CVar(MidB(ChrW(55296)&('ﾊﾟｳﾞ')&ChrW(56320),3,LenB(('ﾊﾟｳﾞ')))),36,1041),StrConv(LeftB(('ﾊﾟｳﾞ'),LenB(('ﾊﾟｳﾞ'))),36,1041)"
+      ],
+      "controls": [
+        "raw_whole",
+        "active_raw_range",
+        "raw_whole"
+      ],
+      "expected_rows": [
+        [
+          "\"が\"",
+          "\"ぱゔ\"",
+          "\"ぱゔ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"が\"\"\"\t\"\"\"ぱゔ\"\"\"\t\"\"\"ぱゔ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"が\"",
+          "\"ぱゔ\"",
+          "\"ぱゔ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(CVar(MidB(ChrW(55296)&('ﾜﾞｦﾞ')&ChrW(56320),3,LenB(('ﾜﾞｦﾞ')))),36,1041),StrConv(LeftB(('ﾜﾞｦﾞ'),LenB(('ﾜﾞｦﾞ'))),36,1041),StrConv(CVar(MidB(ChrW(55296)&('ABC')&ChrW(56320),3,LenB(('ABC')))),36,1041)"
+      ],
+      "controls": [
+        "active_raw_range",
+        "raw_whole",
+        "active_raw_range"
+      ],
+      "expected_rows": [
+        [
+          "\"わ゙を゙\"",
+          "\"わ゙を゙\"",
+          "\"ＡＢＣ\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"わ゙を゙\"\"\"\t\"\"\"わ゙を゙\"\"\"\t\"\"\"ＡＢＣ\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"わ゙を゙\"",
+          "\"わ゙を゙\"",
+          "\"ＡＢＣ\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(LeftB(('ABC'),LenB(('ABC'))),36,1041),StrConv(CVar(MidB(ChrW(55296)&('カ゛')&ChrW(56320),3,LenB(('カ゛')))),36,1041),StrConv(LeftB(('カ゛'),LenB(('カ゛'))),36,1041)"
+      ],
+      "controls": [
+        "raw_whole",
+        "active_raw_range",
+        "raw_whole"
+      ],
+      "expected_rows": [
+        [
+          "\"ＡＢＣ\"",
+          "\"が\"",
+          "\"が\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"ＡＢＣ\"\"\"\t\"\"\"が\"\"\"\t\"\"\"が\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ＡＢＣ\"",
+          "\"が\"",
+          "\"が\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(CVar(MidB(ChrW(55296)&('①😀')&ChrW(56320),3,LenB(('①😀')))),36,1041),StrConv(LeftB(('①😀'),LenB(('①😀'))),36,1041),StrConv(NULL,36,1041)"
+      ],
+      "controls": [
+        "active_raw_range",
+        "raw_whole",
+        "null"
+      ],
+      "expected_rows": [
+        [
+          "\"①😀\"",
+          "\"①😀\"",
+          "NULL"
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\tExpr3\n\"\"\"①😀\"\"\"\t\"\"\"①😀\"\"\"\tNULL\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"①😀\"",
+          "\"①😀\"",
+          "NULL"
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT StrConv(StrConv('ｶﾞ',32,1041),4,1041),StrConv('ｶﾞ',36,1041)"
+      ],
+      "controls": [
+        "reverse_order_discriminator",
+        "forward_order_discriminator"
+      ],
+      "expected_rows": [
+        [
+          "\"ガ\"",
+          "\"が\""
+        ]
+      ],
+      "returncode": 0,
+      "stdout": "Expr1\tExpr2\n\"\"\"ガ\"\"\"\t\"\"\"が\"\"\"\n",
+      "stderr": "",
+      "actual_rows": [
+        [
+          "\"ガ\"",
+          "\"が\""
+        ]
+      ],
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT 1,StrConv('ｶﾞ',36)"
+      ],
+      "controls": [
+        "missing_locale"
+      ],
+      "expected_rows": null,
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "error: expression form is not implemented\n",
+      "actual_rows": null,
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT 1,StrConv('ｶﾞ',36,1033)"
+      ],
+      "controls": [
+        "wrong_locale"
+      ],
+      "expected_rows": null,
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "error: expression form is not implemented\n",
+      "actual_rows": null,
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT 1,StrConv(NULL,36,1033)"
+      ],
+      "controls": [
+        "null_wrong_locale"
+      ],
+      "expected_rows": null,
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "error: expression form is not implemented\n",
+      "actual_rows": null,
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT 1,StrConv('ｶﾞ',36,66577)"
+      ],
+      "controls": [
+        "alternate_locale"
+      ],
+      "expected_rows": null,
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "error: expression form is not implemented\n",
+      "actual_rows": null,
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT 1,StrConv('ｶﾞ',36,NULL)"
+      ],
+      "controls": [
+        "null_locale"
+      ],
+      "expected_rows": null,
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "error: invalid use of NULL in conversion\n",
+      "actual_rows": null,
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT 1,StrConv('ｶﾞ',37,1041)"
+      ],
+      "controls": [
+        "unsupported_case_combination"
+      ],
+      "expected_rows": null,
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "error: expression form is not implemented\n",
+      "actual_rows": null,
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT 1,StrConv('ｶﾞ',100,1041)"
+      ],
+      "controls": [
+        "unsupported_encoding_combination"
+      ],
+      "expected_rows": null,
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "error: expression form is not implemented\n",
+      "actual_rows": null,
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT 1,StrConv('ｶﾞ',44,1041)"
+      ],
+      "controls": [
+        "conflicting_width"
+      ],
+      "expected_rows": null,
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "error: invalid arithmetic domain\n",
+      "actual_rows": null,
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT 1,StrConv(ChrB(65),36,1041)"
+      ],
+      "controls": [
+        "odd_raw"
+      ],
+      "expected_rows": null,
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "error: text result cannot be represented without losing UTF-16 data\n",
+      "actual_rows": null,
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT 1,StrConv(ChrW(55296),36,1041)"
+      ],
+      "controls": [
+        "invalid_utf16"
+      ],
+      "expected_rows": null,
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "error: text result cannot be represented without losing UTF-16 data\n",
+      "actual_rows": null,
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT 1,StrConv(IIf(True,'ｶﾞ',1/0),36,1041)"
+      ],
+      "controls": [
+        "eager_source"
+      ],
+      "expected_rows": null,
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "error: division by zero\n",
+      "actual_rows": null,
+      "matched": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/spooled-hiragana-cli-20261025",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT 1,StrConv(ChrW(55296),36,1/0)"
+      ],
+      "controls": [
+        "eager_locale"
+      ],
+      "expected_rows": null,
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "error: division by zero\n",
+      "actual_rows": null,
+      "matched": true
+    }
+  ]
+}
