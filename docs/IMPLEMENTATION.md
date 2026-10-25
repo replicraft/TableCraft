@@ -1,5 +1,17 @@
 # Implementation status
 
+## Declared numeric/String conversion widths
+
+Known Scalar numeric operands now select their checked comparison conversion
+width for String peers under declared arithmetic. Integer half-even rounding,
+range errors and exact LongLong parsing replace the default Double route only
+in that explicit profile. Unknown String categories remain usable without
+inventing result provenance; existing Variant/String branches and default
+execution stay intact. Nine new tests and 73 regressions pass across expression,
+query and CLI layers, with strict linting, separate minimal-feature checks and
+formatting. Original/native replay remains separate evidence work. See the
+[working contract](DECLARED_NUMERIC_TEXT.md).
+
 ## DATE query index constraints
 
 Direct legacy DATE comparisons with captured date literals and typed parameters

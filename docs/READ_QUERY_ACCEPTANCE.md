@@ -487,6 +487,12 @@ fix was needed for this workload. These are offline engineering checks, with
 explicit work allowances; the remaining P0/native qualification boundaries below
 are still open.
 
+Known Scalar numeric/String comparisons now use their selected conversion width
+under the explicit declared profile, retaining exact LongLong precision and
+integer rounding/range failures. This closes another coercion branch without
+inferring aggregate declarations or completing P0. See the
+[contract and scoped verification](DECLARED_NUMERIC_TEXT.md).
+
 ### P0 implementation boundaries reviewed 24 October 2026
 
 | Boundary | Current implementation | Remaining work |

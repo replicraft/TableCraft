@@ -35,6 +35,13 @@ impl Runtime<'_, '_> {
                 }
                 return Err(QueryError::ArithmeticDeclaration);
             }
+            if let Some(result) = self
+                .evaluator()
+                .compare_scalar_numeric_string(op, &a.value, &b.value, a.declaration, b.declaration)
+                .map_err(predicate_error)?
+            {
+                return Ok(Some(result));
+            }
             let scalar_string = match (a.declaration, b.declaration) {
                 (Some(OperandDeclaration::Scalar), Some(OperandDeclaration::Variant))
                     if expression_string(&a.value) =>

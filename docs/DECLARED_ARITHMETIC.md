@@ -1242,3 +1242,12 @@ as an explicit `CInt` identity cast does. Previously the arithmetic arm's Dynami
 descriptor prevented that conversion, exposing Integer and Currency rows in the
 same output. This corrects TableCraft's explicit profile; it does not establish
 native ACE aggregate subtypes or complete Access SQL declaration inference.
+
+## Selected numeric widths for String predicates
+
+Known Scalar numeric operands now select their existing conversion width for
+String peers, including unknown String declaration provenance. Integer Text
+rounding/ranges and exact LongLong parsing no longer use the default Double
+route under declared execution. Both-Variant ordering, Scalar String/Variant
+coercion, unknown numeric guards and default execution remain separate. See
+[the contract, examples and verification](DECLARED_NUMERIC_TEXT.md).
