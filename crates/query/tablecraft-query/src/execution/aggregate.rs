@@ -1,4 +1,4 @@
-use crate::execution::cell::{into_operator_scalar, into_scalar};
+use crate::execution::cell::{CellValue, into_operator_scalar, into_scalar};
 pub(super) mod accumulator;
 pub(super) mod average;
 pub(super) mod binary;
@@ -16,6 +16,25 @@ use crate::{
 use tablecraft_core::values::Value;
 
 impl Runtime<'_, '_> {
+    pub(super) fn precomputed_aggregate(
+        &mut self,
+        expression: &Expr,
+        env: Environment<'_>,
+    ) -> Result<Option<CellValue>, QueryError> {
+        let Some(results) = env.aggregate_results else {
+            return Ok(None);
+        };
+        for result in results {
+            self.tick()?;
+            // Full node identity retains separate syntactic occurrences even
+            // when a final kernel requests aggregate operands out of order.
+            if std::ptr::eq(result.expression, expression) {
+                return self.copy_expression(&result.value).map(Some);
+            }
+        }
+        Err(QueryError::Source)
+    }
+
     pub(super) fn aggregate(
         &mut self,
         expression: &Expr,
@@ -23,16 +42,9 @@ impl Runtime<'_, '_> {
         argument: Option<&Expr>,
         env: Environment<'_>,
     ) -> Result<Value, QueryError> {
-        if let Some(results) = env.aggregate_results {
-            for result in results {
-                self.tick()?;
-                // Full immutable node identity preserves separate syntactic
-                // occurrences even when the final kernel requests them out of order.
-                if std::ptr::eq(result.expression, expression) {
-                    return Ok(result.value.clone());
-                }
-            }
-            return Err(QueryError::Source);
+        if let Some(mut result) = self.precomputed_aggregate(expression, env)? {
+            result.value = self.evaluator().publish_expression_value(result.value)?;
+            return Ok(into_scalar(result)?);
         }
         if matches!(kind, Aggregate::Count) {
             return self.count(argument, env);

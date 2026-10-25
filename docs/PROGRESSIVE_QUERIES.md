@@ -13,7 +13,8 @@ the API itself never writes stdout.
 The service accepts a direct root scalar table or a flat UNION ALL of those
 SELECT arms, with optional aliases, declared parameters, row-local WHERE, scalar
 projections and positive unordered TOP counts. Wildcards use the ordinary qualified
-scalar metadata. Global COUNT(*), COUNT(expr), SUM(expr) and AVG(expr) projections
+scalar metadata. Global COUNT(*), COUNT(expr), SUM(expr), AVG(expr), MIN(expr)
+and MAX(expr) projections
 over the same direct table are also supported as described below. Original source order and eager
 predicate/projection kernels are retained. Scalar conversion, arithmetic, text and inspection services
 use the same explicit execution policies as buffered queries. Prior explicitly
@@ -155,6 +156,65 @@ nested SQL aggregate arguments. Retained carriers, exact accumulation, resource
 ceilings and streaming phases are TableCraft engineering contracts. These checks
 do not qualify native ACE execution or optimizer behavior.
 
+## Global MIN and MAX
+
+Global `Min(expr)` and `Max(expr)` use the same strict retained-cell extrema
+service as buffered queries. They can appear alongside Count/Sum/Avg, feed prior
+projection aliases and participate in admitted flat UNION ALL arms. Every
+qualifying row evaluates each syntactic aggregate operand once in written order.
+The source must complete checked EOF before an aggregate result is published.
+
+```sql
+SELECT Min(Amount) AS Low, Max(Amount) AS High, High-Low AS Spread,
+       Count(*) AS Population
+FROM Items WHERE Amount IS NOT NULL;
+```
+
+NULL operands are excluded; empty/all-NULL populations return NULL. Equal values
+keep their first encounter representative, carrier and exact String bytes.
+Numeric/date/Boolean and other non-String populations use the existing strict
+per-comparison rules, including mixed binary widening and numeric-family refusals.
+Standard Error codes remain expression data; opaque singleton codes and
+Error/non-NULL scalar mixtures retain their existing refusals. No early exit at
+a possible minimum/maximum bound skips later operands or errors.
+
+The final results remain retained cells. Raw-aware outer expressions such as
+`LenB(Min(ChrW(55296)))` can consume a singleton without unused comparison or
+Unicode publication; directly publishing its unpaired result still refuses.
+Similarly, explicit conversion can consume an Error extremum while the scalar
+visitor itself cannot publish Error data. The result does not inherit the selected
+field's Scalar declaration: aggregate provenance remains unknown under the
+existing [declared profile](DECLARED_ARITHMETIC.md).
+
+With no collation resolver, String selection uses the existing fixed global
+comparison path and retains one selected cell. With a resolver, progressive
+execution conservatively retains every non-NULL String candidate per occurrence
+until EOF, including direct fields. It does not assume that static policy identity
+proves future runtime provenance. All actual policies and completion markers,
+including NULL contributors, merge into the final cohort; both metadata components
+apply to every retained candidate before comparison. No provider activates during
+input for these deferred comparisons, and singleton/all-NULL populations perform
+no unused comparison. Unknown/conflicting required policies still fail when used.
+
+This supports the complete existing
+[retained String and Error extrema contract](EXPRESSION_AGGREGATES.md), rather
+than a numeric-only subset. Retained candidate headers/payloads consume the
+caller's cumulative query allowance, separately for repeated aggregate occurrences.
+Only operand cells are retained, not complete source rows or a native snapshot.
+Resolver-dependent String extrema can therefore require memory proportional to
+their population. Existing numeric and Count state/result widths are also charged
+at their actual sizes; no quota is reset or refunded.
+
+The shared buffered service retains its existing stable-policy proof, selection,
+comparison and allocation timing. Progressive input interleaves aggregate operand
+work by row. Non-String/global-comparer selection errors can consequently precede
+later input errors; resolver-dependent String comparison happens after checked
+EOF, even for a stable field. A source/EOF failure prevents that final comparison.
+Finalized states are available before final projection, including kernels that
+request aggregate operands out of written order. Projection/conversion errors and
+sink failures retain the ordinary sticky stream boundary; no following UNION arm
+starts after failure. These explicit phases do not qualify native error priority.
+
 ## Progressive UNION ALL
 
 Flat UNION ALL arms execute sequentially in their written order, with no complete
@@ -240,14 +300,27 @@ Earlier accepted rows remain visible if later evaluation, native decoding,
 cancellation, limits or checked EOF fails. Progressive encounter order can expose
 a different competing cross-row error than buffered load-before-evaluation.
 
-Live retained memory is bounded to current-row work and the admitted per-aggregate
-exact numeric states, while allocation charges remain cumulative after buffers
+Live retained memory consists of current-row work, the admitted per-aggregate
+numeric states and any resolver-dependent String extrema candidates. Allocation
+charges remain cumulative after buffers
 are dropped. Query byte/row/work limits never
 refill. Raising limits is explicit and does not change provider or output budgets.
 Transport framing, batching, output quotas and stdout behavior belong to hosts;
 this library does not write a header or open files/providers.
 
 ## Verification and remaining work
+
+The global Min/Max extension passes 269 focused query tests: 82 progressive and
+aggregate controls, 147 buffered extrema/policy/group/domain regressions and 40
+buffered numeric-kernel regressions. Sixteen controls are new. They include full
+retained String/Error behavior, final policy/completion cohorts, EOF before
+provider activation, unknown aggregate declarations, exact representative
+carriers, ExtendedDate, GUID/Binary admission parity, mixed binary precision,
+sticky failures and every observed cancellation checkpoint. Existing Count/Sum/Avg
+limits pass unchanged, including the 8 KiB generated Count(*) control. Strict
+query library/tests Clippy and the standalone minimal-feature library check pass.
+The [scoped record](testing/results/read-query-progressive-extrema-2026-10-25.json)
+separates these checks from native/CLI integration and native Access qualification.
 
 The Sum/Avg extension passes 153 focused query tests: 66 progressive/count/numeric
 controls, 54 composition regressions and 33 existing buffered numeric-kernel

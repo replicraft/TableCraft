@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Progressive global Min/Max with complete retained scalar/String/Error cells, checked-EOF resolver cohorts, existing buffered extrema selection and borrowed full-node aggregate result identity",
+  "unique_tests_in_scope": 338,
+  "new_tests": 23,
+  "targets_in_scope": {
+    "progressive_primary": 82,
+    "buffered_extrema_policy_group_domain_regressions": 147,
+    "buffered_numeric_kernel_regressions": 40,
+    "native_progressive_cursor": 20,
+    "cli_progressive": 36,
+    "cli_linked": 13
+  },
+  "primary_target_counts": {
+    "progressive_queries": 37,
+    "progressive_count_execution": 13,
+    "progressive_count_operands": 11,
+    "progressive_numeric_aggregate_values": 9,
+    "progressive_extrema_values": 12
+  },
+  "new_test_counts": {
+    "implementation_progressive_extrema": 4,
+    "independent_progressive_extrema_values": 12,
+    "native_extrema": 3,
+    "cli_extrema": 4
+  },
+  "checks": [
+    {
+      "command": "cargo check -p tablecraft-query --lib -j2 --locked --offline",
+      "private_log": ".cache/progressive-extrema-check-20261025.log",
+      "exit_code": 0,
+      "sha256": "43feaa38a81ccc863382eda45a83b8c1e8d86d4ccd232892aa2707a6a3316db3"
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test progressive_queries --test progressive_count_execution --test progressive_count_operands --test progressive_numeric_aggregate_values --test progressive_extrema_values -j2 --locked --offline",
+      "private_log": ".cache/progressive-extrema-primary-final-20261025.log",
+      "exit_code": 0,
+      "sha256": "5ef6a88f4a8abb32353106780dc091d0d326b8dce2e6b889b2f5028f9edf697f",
+      "observed_passed_tests": 82,
+      "counted_in_this_scope": 82
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test collation_routing --test error_extrema --test numeric_keys --test variant_aggregates --test grouped_expressions --test grouped_subqueries --test domain -j2 --locked --offline",
+      "private_log": ".cache/progressive-extrema-buffered-regressions-20261025.log",
+      "exit_code": 0,
+      "sha256": "ca866be2aaad932eab4abe8ebe9930c180c2202bd0ab63c6fafe14626e3d6329",
+      "observed_passed_tests": 147,
+      "counted_in_this_scope": 147
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test decimal_sum --test decimal_average --test floating_sum --test floating_average --test currency_sum --test currency_average --test integral_sum --test date_average -j2 --locked --offline",
+      "private_log": ".cache/progressive-extrema-numeric-regressions-20261025.log",
+      "exit_code": 0,
+      "sha256": "d3f25c9ae8392caaece924e7e464d7d3785ee5097ceed64dc07e7c43d827b489",
+      "observed_passed_tests": 40,
+      "counted_in_this_scope": 40
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --tests -j2 --locked --offline -- -D warnings",
+      "private_log": ".cache/progressive-extrema-clippy-20261025.log",
+      "exit_code": 0,
+      "sha256": "feeb6930d8d88ebab0b152a74c4512cdabf4849389275f50d7c9797edd22d6af"
+    },
+    {
+      "command": "cargo check -p tablecraft-query --lib --no-default-features -j2 --locked --offline",
+      "private_log": ".cache/progressive-extrema-minimal-20261025.log",
+      "exit_code": 0,
+      "sha256": "45f75b19e5718ce74d75d27dc949e2b0cc21908a1e53dca4d31c24e03ebe8e09"
+    },
+    {
+      "command": "cargo test -p tablecraft-access --test progressive_source -p tablecraft-cli --test progressive_queries --test linked_queries -j2 --locked --offline",
+      "private_log": ".cache/progressive-extrema-native-cli-20261025.log",
+      "exit_code": 0,
+      "sha256": "c7aa377d4c6e6da6b9f631dd426fbe41ac5045365e13850a397dc143f2dcae50",
+      "observed_passed_tests": 69,
+      "counted_in_this_scope": 69
+    },
+    {
+      "command": "cargo clippy -p tablecraft-access --lib --test progressive_source -p tablecraft-cli --bin tablecraft --test progressive_queries --test linked_queries -j2 --locked --offline -- -D warnings",
+      "private_log": ".cache/progressive-extrema-native-cli-clippy-20261025.log",
+      "exit_code": 0,
+      "sha256": "fdbc68a2d1432375faa8485038aa9fb7f59f85660e0b4aecb2b744926c89e639"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "private_log": ".cache/progressive-extrema-fmt-20261025.log",
+      "exit_code": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "counting_note": "Final query primary82, buffered147 and numeric40 use distinct targets; native20 and CLI36+13 add69, totaling338. Earlier79 query primary is superseded and not added. Seven parent integration tests and sixteen query tests are new.",
+  "excluded_attempts": [
+    {
+      "command": "cargo test -p tablecraft-query --test progressive_queries --test progressive_count_execution --test progressive_count_operands --test progressive_numeric_aggregate_values --test progressive_extrema_values -j2 --locked --offline",
+      "private_log": ".cache/progressive-extrema-primary-20261025.log",
+      "sha256": "997c4a5d8ab16161781c3ad004c8e970d931f2725d2dc7c7be199b6e3ccf2a4e",
+      "exit_code": 101,
+      "counted_in_this_scope": 0,
+      "reason": "One new implementation test helper incorrectly multiplied all source scan calls by progressive row visits after a buffered parity run on the same source. Buffered scans increment scans but not progressive visits. Relative counter baselines and the expected total scan count were corrected; no runtime or value golden changed. All nine initial independent extrema tests and prior aggregate targets passed."
+    }
+  ],
+  "review": [
+    "The buffered extrema state extraction adds no tick, evaluation, comparator, allocation or publication step; existing pre-loop policy stability proof and retained candidate replay remain in the original order.",
+    "Progressive resolver-dependent String candidates retain owned cells until checked EOF and receive both final actual policy and completion before comparison. Numeric/non-String and no-resolver selection preserve the original one-cell strict algorithm.",
+    "AggregateResult retains CellValue, and metered full-node identity lookup precedes retained Min/Max dispatch. Unknown aggregate declaration, raw bytes, Error data and policy/completion survive until their actual consumers.",
+    "State/result vectors charge their actual enlarged types; existing generated Count(*) under8KiB and previous Count/Sum/Avg resource controls pass without weakened limits.",
+    "Independent controls cover required/unknown policies, late completed reverse comparison, EOF-before-provider/sink, raw/Error consumers, ExtendedDate, GUID/Binary singleton and multirow refusal parity, signed zero, equal representations, mixed Single/Double exact comparisons, cancellation and all cumulative quotas.",
+    "Old unsupported Min/Max progressive controls now use still-unsupported First/Last; no grouping/named/subquery/domain/volatile admission was broadened.",
+    "Native/CLI controls cover Jet4/ACE2007/ACE16 synthetic profiles, no complete snapshot publication, checked EOF before output, malformed selected fields before filters, retained raw/Error observers, explicit ordinal Text policies, linked target reuse and completed UNION batch prefixes."
+  ],
+  "minimum_profile": "tablecraft-query --lib --no-default-features compiles independently of concrete adapters and application hosts.",
+  "stream_phase_boundary": "WHERE and syntactic aggregate operands run once per qualifying row in written order. Resolver String selection follows checked EOF; all states finish before final projection and strict scalar publication. These explicit phases can differ from buffered load-before-evaluation error priority and do not qualify native ordering.",
+  "unrun": [
+    "Full workspace suite",
+    "Native Microsoft Access aggregate comparison"
+  ],
+  "integration_pending": [
+    "Frozen executable build and original native extrema replay"
+  ]
+}

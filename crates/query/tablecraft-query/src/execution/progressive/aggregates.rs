@@ -41,7 +41,13 @@ impl Runtime<'_, '_> {
             let Expr::Aggregate(kind, _) = expression else {
                 return Err(QueryError::Source.into());
             };
-            accumulators.push(Accumulator::new(*kind)?);
+            // Without an existing materialized group, a resolver's String
+            // population remains provisional until checked EOF. Non-Strings
+            // still select incrementally in the shared extrema state.
+            accumulators.push(Accumulator::new(
+                *kind,
+                self.options.collation_resolver.is_some(),
+            )?);
         }
         let source = self.source;
         let mut failure: Option<QueryError> = None;
@@ -107,7 +113,7 @@ impl Runtime<'_, '_> {
             self.tick()?;
             results.push(AggregateResult {
                 expression,
-                value: self.finish_progressive_aggregate(accumulator)?,
+                value: self.finish_progressive_aggregate(accumulator, expression)?,
             });
         }
 

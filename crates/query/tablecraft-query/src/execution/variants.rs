@@ -38,6 +38,11 @@ impl Runtime<'_, '_> {
         expression: &Expr,
         env: Environment<'_>,
     ) -> Result<CellValue, QueryError> {
+        if matches!(expression, Expr::Aggregate(..))
+            && let Some(result) = self.precomputed_aggregate(expression, env)?
+        {
+            return Ok(result.with_declaration(None));
+        }
         match expression {
             Expr::TextCall(function, arguments) if function.produces_bytes() => {
                 self.tick()?;

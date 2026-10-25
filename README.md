@@ -41,8 +41,9 @@ Explicit [streaming queries](docs/STREAMING_QUERIES.md) use
 results in TSV batches; later errors may leave earlier output. Flat `UNION ALL`
 can stream admitted SELECT arms in written order using the same result conversions
 and cumulative limits. Global `COUNT(*)`, `COUNT(expr)`, `SUM(expr)` and
-`AVG(expr)` can also stream their input and publish one result after checked EOF, avoiding a complete table
-snapshot. Numeric aggregates retain independently budgeted state. Sorting, joins,
+`AVG(expr)`, `MIN(expr)` and `MAX(expr)` can also stream their input and publish one result after checked EOF, avoiding a complete table
+snapshot. Aggregate state is independently budgeted; text extrema can retain
+candidates until the final comparison policy is known. Sorting, joins,
 other aggregates and wider query shapes retain buffered execution.
 
 For larger Memo/OLE/attachment query results, explicit `query run --text-bytes

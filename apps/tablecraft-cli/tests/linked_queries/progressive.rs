@@ -78,9 +78,10 @@ fn mapped_alias_union_arms_share_the_existing_aggregate_evaluator() {
     let (root, target) = databases(6);
     let sql = concat!(
         "SELECT Count(*) AS N FROM Linked UNION ALL ",
-        "SELECT Sum(Score) FROM Linked UNION ALL SELECT Id FROM Linked WHERE Id=3",
+        "SELECT Sum(Score) FROM Linked UNION ALL SELECT Min(Id) FROM Linked UNION ALL ",
+        "SELECT Max(Score) FROM Linked UNION ALL SELECT Id FROM Linked WHERE Id=3",
     );
-    let expected = b"N\n3\n60\n3\n";
+    let expected = b"N\n3\n60\n1\n30\n3\n";
     assert_eq!(success(query(&root, &target, sql, &[])), expected);
     assert_eq!(
         success(query(

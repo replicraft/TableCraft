@@ -22,7 +22,7 @@ use tablecraft_expressions::functions::text::cstr::DateTextFormat;
 #[derive(ClapArgs)]
 #[command(group(clap::ArgGroup::new("comparison_context").args(["collation", "text_locale"]).multiple(true)))]
 pub(crate) struct RunArgs {
-    /// Stream eligible local SELECT/WHERE, COUNT/SUM/AVG and UNION ALL results as TSV;
+    /// Stream eligible local SELECT/WHERE, COUNT/SUM/AVG/MIN/MAX and UNION ALL results as TSV;
     /// later errors may leave earlier batches.
     #[arg(long, requires = "database", conflicts_with_all = ["saved", "sqlite", "index", "auto_index", "external", "external_index", "multivalues", "collections", "decoded_attachments"])]
     pub(crate) stream: bool,
