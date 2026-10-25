@@ -17,7 +17,8 @@ pub use browsing::{
 };
 mod source;
 pub use source::{
-    CalculationError, NativeSavedReadError, NativeSavedSelectError, NativeSource,
+    CalculationError, LinkSourceError, LinkedNativeSource, NativeLinkMapping, NativeSavedReadError,
+    NativeSavedSelectError, NativeSource, NativeSourceHandle, NativeTableIdentity,
     PreparedCalculation,
 };
 mod editing;

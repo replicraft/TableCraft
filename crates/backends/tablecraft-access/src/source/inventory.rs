@@ -1,5 +1,5 @@
 //! Inert table/query entries charged to the source's selected native allowance.
-use super::{Entry, saved};
+use super::{Entry, handle::TableOrigin, saved};
 use std::cell::{OnceCell, RefCell};
 use tablecraft_ace::{InspectError, NativeReadSource, inspect_catalog};
 use tablecraft_core::limits::ResourceBudget;
@@ -24,15 +24,20 @@ pub(super) fn read(
     entries
         .try_reserve_exact(count)
         .map_err(|_| InspectError::Allocation)?;
-    for o in catalog
+    for (o, origin) in catalog
         .catalog()
         .objects()
         .iter()
-        .filter(|o| o.kind() == ObjectKind::Table)
+        .zip(catalog.origins())
+        .filter(|(object, _)| object.kind() == ObjectKind::Table)
     {
         if cancelled() {
             return Err(InspectError::Cancelled);
         }
+        if origin.object_id() != o.id() {
+            return Err(InspectError::Malformed);
+        }
+        let storage = origin.table_storage().ok_or(InspectError::Malformed)?;
         let name = o.name().as_str();
         budget.charge_allocation(name.len() as u64, 1)?;
         let mut owned = String::new();
@@ -42,6 +47,11 @@ pub(super) fn read(
         owned.push_str(name);
         entries.push(Entry {
             name: owned,
+            origin: TableOrigin {
+                object: origin.object_id(),
+                native_id: origin.native_id(),
+                storage,
+            },
             columns: OnceCell::new(),
             table: OnceCell::new(),
             index: None,
