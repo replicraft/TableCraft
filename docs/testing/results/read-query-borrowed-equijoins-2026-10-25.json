@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Whole bare opposite-input equality of proven same Boolean/Byte/Int16/Int32/Int64 fields rejects pairs before candidate row allocation",
+  "unique_tests_in_scope": 126,
+  "new_tests": 13,
+  "targets_in_scope": {
+    "query_focused": 8,
+    "other_query_regressions": 110,
+    "native_adapter": 3,
+    "cli_join_and_sqlite": 5
+  },
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-query --test retrieval --test grouped_subqueries --test external_table_sources --test external_named_sources --test named --test projection_aliases --test projection_alias_values --test borrowed_join_equality -j2 --locked --offline",
+      "private_log": ".cache/union-numeric-policy-join-regressions-20261025.log",
+      "exit_code": 0,
+      "sha256": "850e6a8a9d48228f5b78e5342f520aea760e779a93c8cc04cc9ac81437b9d9c8",
+      "observed_passed_tests": 117,
+      "counted_in_this_scope": 110
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test borrowed_join_equality -j2 --locked --offline",
+      "private_log": ".cache/borrowed-join-final-eight-20261025.log",
+      "exit_code": 0,
+      "sha256": "07901d7f55321b00f5fa295f4d5a36f31d4e1de846b55910a6f4b30407323156",
+      "observed_passed_tests": 8,
+      "counted_in_this_scope": 8
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --test borrowed_join_equality -j2 --locked --offline -- -D warnings",
+      "private_log": ".cache/borrowed-join-final-clippy-20261025.log",
+      "exit_code": 0,
+      "sha256": "9d0bd96b3a3ac9c190af589c760dad97adc7746c85244d0def18f6c9ddc1a7b4"
+    },
+    {
+      "command": "cargo test --locked -p tablecraft-access --test borrowed_join_equality",
+      "private_log": ".cache/borrowed-join-native-tests-final-20261025.log",
+      "exit_code": 0,
+      "sha256": "0edbb1f399ee0c4a9e5a61d0511a8c5fef4b684b0d65043dd073e345882c4bcc",
+      "observed_passed_tests": 3,
+      "counted_in_this_scope": 3
+    },
+    {
+      "command": "cargo clippy --locked -p tablecraft-access --lib --test borrowed_join_equality -- -D warnings",
+      "private_log": ".cache/borrowed-join-native-clippy-20261025.log",
+      "exit_code": 0,
+      "sha256": "13ede94744cb381557b72c65ad5d0476ac6eb02cfefa651169208bb64e50465d"
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --test integral_joins --test database_collation --test sqlite_queries -j2 --locked --offline",
+      "private_log": ".cache/borrowed-join-union-cli-tests-accepted-20261025.log",
+      "exit_code": 0,
+      "sha256": "97a6d2e8704dc4d59770c1433feabc57ae10d68ac09fb5355113c16952b91591",
+      "observed_passed_tests": 12,
+      "counted_in_this_scope": 5
+    },
+    {
+      "command": "cargo clippy -p tablecraft-cli --bin tablecraft --test integral_joins --test database_collation --test sqlite_queries -j2 --locked --offline -- -D warnings",
+      "private_log": ".cache/borrowed-join-union-cli-clippy-20261025.log",
+      "exit_code": 0,
+      "sha256": "baad5650eea9c743fb27117920477ca680b4fb70f50fe4a74b99456809e94316"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "private_log": ".cache/borrowed-join-union-fmt-final-20261025.log",
+      "exit_code": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "counting_note": "The 117-test regression batch includes the earlier seven focused tests, superseded by the final eight-test target; only its other 110 tests are added. CLI database-collation tests are counted in the separate UNION record.",
+  "scale_controls": {
+    "query_generated_input_rows_per_side": 1100,
+    "query_row_allowance": 20000,
+    "cli_original_sqlite_rows_per_side": 1100,
+    "cli_query_row_allowance": 10000,
+    "native_rows_per_side": 64,
+    "native_query_row_allowance": 1024
+  },
+  "review": [
+    "Both selected input relations finish existing reads/evaluation before equality proof; unavailable/pruned slots and active paired descriptors are respected.",
+    "Each visited pair uses the existing comparison service once; NULL Unknown, operand direction and outer-unmatched encounter order are preserved.",
+    "Only matches allocate copied candidates; compound predicates and other carriers retain the original eager general evaluator.",
+    "Every pair remains metered and cancellable; the implementation remains nested-loop execution.",
+    "CLI output is compared with independent read-only SQLite query results; native controls preserve original bytes and selected corruption checks."
+  ],
+  "test_authoring_corrections": [
+    "Initial native reused-fixture warning received the established scoped dead_code allowance before accepted strict checks."
+  ],
+  "unrun": [
+    "Full workspace suite",
+    "Native Microsoft Access comparison",
+    "Independent original native equijoin replay"
+  ]
+}
