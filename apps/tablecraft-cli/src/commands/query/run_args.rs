@@ -93,6 +93,12 @@ pub(crate) struct RunArgs {
     #[arg(long = "link", value_names = ["ALIAS", "PATH"], num_args = super::links::MAPPING_FIELDS,
         action = clap::ArgAction::Append, requires = "database", conflicts_with = "sqlite")]
     pub(crate) links: Vec<OsString>,
+    /// Select one ordinary/calculated column for an explicit recomputed view;
+    /// repeat with the same view and table to add ordered columns.
+    #[arg(long = "recomputed-column", value_names = ["VIEW", "TABLE", "COLUMN"],
+        num_args = super::recomputed::SELECTION_FIELDS, action = clap::ArgAction::Append,
+        requires = "database", conflicts_with_all = ["stream", "sqlite", "links", "external", "external_index"])]
+    pub(crate) recomputed_columns: Vec<String>,
     /// Bind an exact SQL IN or per-table database token to this explicitly chosen stable database; repeat for more tokens.
     #[arg(long = "external", value_names = ["DATABASE_TOKEN", "PATH"], num_args = super::external::MAPPING_FIELDS,
         action = clap::ArgAction::Append, requires = "database", conflicts_with = "sqlite")]

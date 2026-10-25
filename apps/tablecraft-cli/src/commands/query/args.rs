@@ -81,6 +81,8 @@ pub(crate) enum Command {
             "sources and collection modes keep the buffered execution path. Explicit ",
             "--stored-calculations also streams cached scalar results without running formulas. ",
             "Explicit --link mappings can stream qualified one-hop native tables. ",
+            "Repeated --recomputed-column VIEW TABLE COLUMN selections create fresh local ",
+            "buffered views using natural formula results; original cached tables stay separate. ",
             "Streaming rejects ",
             "--format table. Use --database with a stable/offline copy for supported local scalar ",
             "tables; use --saved NAME instead of SQL to execute a qualified saved ",

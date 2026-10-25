@@ -1,5 +1,17 @@
 # Implementation status
 
+## Composable explicit recomputed views
+
+Checked same-table calculated expressions now compose as explicitly selected
+named query views through the normal query runtime. Natural carriers, retained
+String cells, paired metadata and provider policies cross filters, joins, groups,
+sets and domain retrieval without casting to stored ResultType. Original tables
+and stale caches retain their separate routes. CLI `--recomputed-column` selects
+ordered view fields; every selected expression remains eager before outer filters.
+Twenty-one new controls and 89 regressions pass with strict native/CLI Clippy,
+formatting and dependency checks. See [scope](RECOMPUTED_CALCULATION_VIEWS.md)
+and [verification](testing/results/read-query-recomputed-views-2026-10-25.json).
+
 ## Local named template schema types
 
 ACCDT table schemas now resolve bounded local named XSD simple restrictions,

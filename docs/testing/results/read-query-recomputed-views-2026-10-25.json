@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Explicit immutable named views of checked same-row native calculations, retaining natural query carriers without replacing stored caches or stored ResultType declarations; explicit buffered CLI column selections",
+  "unique_tests": 110,
+  "new_tests": 21,
+  "existing_regression_tests": 89,
+  "test_breakdown": {
+    "recomputed_calculations": 5,
+    "recomputed_view_conformance": 7,
+    "calculation_preview": 21,
+    "cli_recomputed_queries": 9,
+    "cli_preview_calculation": 14,
+    "cli_linked_queries": 13,
+    "cli_progressive_queries": 32,
+    "cli_retrieval": 9
+  },
+  "checks": [
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-access --lib --test recomputed_calculations --test calculation_preview --test recomputed_view_conformance",
+      "exit_code": 0,
+      "private_log": ".cache/template-named-types-recomputed-tests-final-20261025.log",
+      "sha256": "f74e48ed0474ae1a124cd05761cd593ab98ba7eb533b1f0eb04a6564ff127c2d",
+      "tests_in_combined_command": 92,
+      "tests_in_this_feature_record": 33,
+      "companion_library_tests_observed_but_excluded": 59,
+      "terminal_session": 12091
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-access --lib --tests -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/template-named-types-recomputed-clippy-20261025.log",
+      "sha256": "93d74e1e974f2eb81a9704f554fa2c1e7bfd472d846fa919cb2b208813e419f3",
+      "terminal_session": 6198
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --test recomputed_queries --test preview_calculation --test linked_queries --test progressive_queries --test retrieval -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/recomputed-views-cli-tests-20261025.log",
+      "sha256": "7328d2787a5281c0edfec8f44b182408adf30cb167a04f23a152e593a15f9e80",
+      "tests_in_this_feature_record": 77
+    },
+    {
+      "command": "cargo clippy -p tablecraft-cli --bin tablecraft --test recomputed_queries --test preview_calculation --test linked_queries --test progressive_queries --test retrieval -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/recomputed-views-cli-clippy-20261025.log",
+      "sha256": "94460918a1f749c8020f3794c35fb059a5c12cfc0860b5be3c60df1fe4c7a4a8"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "private_log": ".cache/recomputed-named-fmt-20261025.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "python3 scripts/check_dependency_boundaries.py",
+      "exit_code": 0,
+      "observation": "Dependency boundaries passed for all twelve workspace packages; no dependency declarations changed."
+    }
+  ],
+  "independent_controls": [
+    "Original synthetic calculated-field fixtures contain invalid cached wrappers. Transitive direct, derived, join, grouping and runtime-domain results must therefore come from checked expansion over ordinary Id inputs.",
+    "Long plus Long overflow produces the established natural Double in the materialized profile and Overflow in the explicit declared profile; Boolean, Text and NULL descriptors are not coerced to the stored Int32 ResultType.",
+    "Natural Boolean UNION output promotes to the existing Long representation 0/-1 when paired with CLng(7).",
+    "Recomputed Text concatenation retains String bytes through named and derived evaluation: byte observations succeed while odd-byte scalar publication remains refused.",
+    "The same prepared named-view grouping plan uses the supplied ordinal or ASCII-fold provider on each execution; selected formula errors remain eager through derived, join, grouping and domain composition.",
+    "Implementation and existing preview controls cover metadata-only preparation, unchanged original cached routes, inert unselected formulas, bounded construction, cumulative native quota and constructor cancellation checkpoints.",
+    "CLI end-to-end checks cover stale/malformed-cache separation, natural widened/Text results, joins/sets/domains, selected eager errors, password authentication, immutable originals, source/query/output quotas and explicit argument boundaries."
+  ],
+  "excluded_attempts": [
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-access --lib --test recomputed_calculations --test calculation_preview",
+      "exit_code": 101,
+      "private_log": ".cache/template-named-types-recomputed-tests-20261025.log",
+      "sha256": "0833ab6ae1e9a9685feb1a0e339c8a663e34e4288ea60498170a51783dff848d",
+      "classification": "Actual constructor implementation defect",
+      "reason": "The checked skeleton SELECT [field] parses as Projection::Field. The initial implementation expected Projection::Expression and refused selected formulas. Four implementation tests failed; existing library and preview targets passed. The implementation now replaces the whole field projection with the expanded expression and preserves the canonical name as its alias. No test expectation was weakened."
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-access --lib --test recomputed_calculations --test calculation_preview --test recomputed_view_conformance",
+      "exit_code": 101,
+      "private_log": ".cache/template-named-types-recomputed-carrier-probe-20261025.log",
+      "sha256": "35d8b4d9fb80a96b5337557110878d028a45d502e5dfaed402608d3cff4abb3e",
+      "classification": "Independent new-test expected-carrier authoring correction",
+      "reason": "The new [Id]+[Id] overflow control incorrectly expected Int64 from two Int32 operands. Existing ARITHMETIC_PROMOTION contract and numeric promotion kernel specify Long overflow directly to Double. A pre-feature immutable CLI probe independently returned 4294967294 and VarType 5. Only the expected carrier changed to exact Double(4294967294); declared Overflow and all metadata assertions remain. No production change was made for this mismatch.",
+      "independent_probe": {
+        "command": ".cache/tablecraft-bin/exact-key-cli-20261025 query eval \"SELECT CLng(2147483647)+CLng(2147483647),VarType(CLng(2147483647)+CLng(2147483647))\"",
+        "stdout_observed": "Expr1\tExpr2\n4294967294\t5\n",
+        "qualification": "Observed tool output; no separate private probe log captured."
+      }
+    }
+  ],
+  "counting_notes": [
+    "The accepted combined command ran 92 tests. Only the 5 recomputed implementation, 7 independent conformance and 21 existing preview tests are counted here, each once.",
+    "The companion 59 Access library tests passed in the same command but are excluded from this feature total; named-template work records its own validation separately.",
+    "Repeated passing tests in excluded attempts are not added to the accepted unique total.",
+    "The separately observed 77 CLI tests add nine new feature controls and 68 regressions to the 33 scoped Access tests, for 110 unique tests overall."
+  ],
+  "limits": [
+    "These are TableCraft engineering fixtures and evaluator conformance checks, not Microsoft Access save/reopen or native calculated-field execution comparisons.",
+    "Current independent policy control verifies explicit runtime provider reuse over formula Text, not native stored Text sort-version qualification.",
+    "Raw byte slices are created by the ordinary outer query after a permitted retained concatenation; this does not admit additional functions in stored formulas.",
+    "Views retain existing eager derived-query execution and buffered publication. They do not substitute recomputed values for caches or enable progressive derived scans."
+  ],
+  "unrun_at_record_creation": [
+    "Full workspace suite",
+    "Microsoft Access native formula execution/save/reopen comparisons"
+  ]
+}

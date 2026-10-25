@@ -13,6 +13,8 @@ pub use links::{LinkSourceError, LinkedNativeSource, NativeLinkMapping};
 mod multivalue;
 mod progressive;
 mod projection;
+mod recomputed;
+pub use recomputed::{CalculationView, RecomputedNativeSource};
 mod saved;
 mod schema;
 pub use saved::{NativeSavedReadError, NativeSavedSelectError};
