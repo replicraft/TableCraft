@@ -12,6 +12,10 @@ retention and retain EOF/error guarantees. Thirty new tests and 429 regressions
 pass with strict query/native/CLI linting, minimal query features and formatting.
 See [scope](PROGRESSIVE_QUERIES.md#progressive-grouped-aggregates) and
 [verification](testing/results/read-query-progressive-grouped-2026-10-25.json).
+The [original native/CAB replay](testing/PROGRESSIVE_GROUPED.md) also passes all
+96 commands, comparing 1,374 rows and 5,364 cells across six unchanged inputs.
+Thirteen immutable and twenty-five revision-source hashes were independently
+rechecked. Native Access grouping qualification remains separate.
 
 ## Bounded integral join directories
 
