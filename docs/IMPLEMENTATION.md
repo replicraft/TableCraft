@@ -1,5 +1,19 @@
 # Implementation status
 
+## Consolidated byte-result and kana query regression
+
+The combined all-feature query package passes 1,089 tests across 199 result
+targets, including doctests, with none ignored. The [batch record](testing/results/read-query-kana-byte-regression-2026-10-24.json)
+pins the committed source revision, 865 Rust files, terminal log, lockfile and
+independent replay records. It distinguishes the frozen replay executable from
+the final normal CLI build after SQL-only feature gating. Direct CLI checks
+retain byte-result publication and both Japanese script-conversion directions.
+
+Workspace formatting and dependency boundaries pass. Scoped strict SQL/minimal
+expression, query and native/adapter checks retain their feature-local evidence.
+Native Access remains user-deferred; full read/query and backend acceptance are
+still ongoing.
+
 ## Signed complex-child identity reads
 
 Multivalue, attachment and Memo-history readers now preserve signed Int32 child

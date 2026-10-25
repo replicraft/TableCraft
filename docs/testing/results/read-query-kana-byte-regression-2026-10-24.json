@@ -1,0 +1,45 @@
+{
+  "date": "2026-10-24",
+  "scope": "Consolidated all-feature query regression after retained byte-string Text metadata and explicit Japanese StrConv kana conversion. Signed complex-child native reads retain their separate independent replay.",
+  "command": "cargo test -p tablecraft-query --all-features --locked --no-fail-fast -j 2",
+  "exit_code": 0,
+  "passed": 1089,
+  "failed": 0,
+  "ignored": 0,
+  "result_targets": 199,
+  "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)",
+  "git_head": "a2700450dc29c3e48c155b32b3f38ef01c397c46",
+  "query_expression_source_files": 865,
+  "query_expression_source_sha256": "4cfe78b492f3d42b05cdf357239a78e4bbf20709fe55ed32d9000f74e68f0ad1",
+  "source_digest_algorithm": "SHA-256 over sorted repository-relative .rs paths under both query/expression packages, each encoded as UTF-8 path, NUL, hexadecimal SHA-256 of file bytes, newline.",
+  "source_timing_note": "SQL-only cfg gates for the private StrConv operation parser were added during the test batch after executable freeze. They preserve the enabled SQL operation bodies; separate minimal-profile strict Clippy verifies the gated profile. The source digest identifies the final committed checkout.",
+  "inputs": {
+    ".cache/query-regression-20261024-kana-byte-metadata.log": "795fab0d3338bf00578f0f394783c43e70285594e159889d7bc174bb9f509d48",
+    "Cargo.lock": "68548efc779b592b1d885a02cf21d1c547559091c72b4f814ba75842ebb0a2ab",
+    "Cargo.toml": "4fc24d3479835ff249ea49df6724d81179965c8d6f2a73f236f0f3e00da822a4",
+    ".cache/tablecraft-bin/kana-signed-children-20261024": "4f3049ae09612ea9c54ecbf7a6bffff62b1fd2d7e22026619e821609674903eb",
+    "docs/testing/results/strconv-kana-2026-10-24.json": "c8da9d42da83c5a246a4fbb85d6ffb3fbcf4839948a1f85a3580478587702c91",
+    "docs/testing/results/signed-complex-identities-2026-10-24.json": "3d0e870bd9c6b07b0be746ac41603c48b84a18ec7df9f0955ad3d4c6ff1b5ff8"
+  },
+  "additional_checks": {
+    "byte_metadata_scoped_tests": 29,
+    "strconv_scoped_tests": 23,
+    "signed_child_engine_adapter_tests": 56,
+    "strconv_unicode_success_controls": 3024,
+    "strconv_refusal_controls": 32,
+    "signed_child_replay_controls": 88,
+    "count_note": "Focused tests overlap consolidated query targets; do not sum these as distinct tests."
+  },
+  "native_access": "unrun; user-deferred",
+  "limitations": [
+    "The kana profile is explicit and bounded; width/combined conversions and complete NLS equivalence remain unfinished.",
+    "Signed child identities are independent stored-read evidence, not native validity or write qualification.",
+    "Full Variant/result promotion, broader locale/advanced-field behavior, coherent live shared-file reads and the backend roadmap remain unfinished."
+  ],
+  "final_cli_build": {
+    "command": "cargo build -p tablecraft-cli --locked -j 2",
+    "exit_code": 0,
+    "binary_sha256": "c4a0d61403f0ab6595640573413be5cc732031bf8a62833fb889d4dc041535d9",
+    "scope": "Final committed source including SQL-only cfg gates; independent replay counts belong to the separately pinned frozen executable."
+  }
+}
