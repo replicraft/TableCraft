@@ -180,3 +180,29 @@ key. Unknown collation and ignore-NULL profiles remain explicit gaps. See
 in complete traversal/row-key checks. Exact short-key unique checks and row-derived
 NULL facts retain the shared tuple policy; full-width/digested unique keys remain
 unqualified. Primary/foreign Binary fixture qualification and OLE keys stay pending.
+
+
+## Complete checks with projected index payloads
+
+`check_table` first completes its full sequential scalar read, including Memo and
+OLE payload decoding. Each qualified logical index then uses the existing full
+index projection reader with every physical key field selected. This retains
+page traversal, key/row agreement, complete counts and live-root coverage while
+avoiding repeated decoding of unrelated long payloads. Original logical column
+positions map explicitly to the dense key-only rows before the unchanged
+unique, required and NULL constraint checks run. Full scalar schema, object and
+definition identity checks remain in place.
+
+Four new tests and 43 focused regressions pass. A counted original `USysRibbons`
+source records exactly the same LVAL page-visit multiset as its standalone full
+sequential read, with fewer LVAL visits and total read bytes than full decoding
+through each index. Corrupting an observed non-key payload page still fails.
+Gapped, reversed composite keys retain duplicate-key and required-NULL failures.
+Strict engine linting passes; see the [verification record](testing/results/native-check-projection-2026-10-25.json).
+An initial new-test size assumption failed and was corrected separately from
+production behavior; its log remains excluded in that record.
+
+This changes repeated decoding work, not check coverage, index eligibility or
+default allowances. Sources must still remain stable/offline throughout the
+operation. Fewer rereads do not establish concurrent-file isolation, and this
+evidence does not qualify native Microsoft Access integrity results or writes.

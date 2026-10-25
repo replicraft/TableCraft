@@ -1,5 +1,14 @@
 # Implementation status
 
+## Key-only index payloads during complete checks
+
+Native table checks retain their complete sequential scalar validation, then use
+full index traversals with every key field projected. This avoids repeated
+non-key Memo/OLE decoding while preserving root coverage, full schema identity
+and original-position constraint checks. Four new tests and 43 regressions pass;
+counted LVAL visits match the sequential pass, and corrupt non-key payloads still
+fail. Strict engine linting passes. See [scope and evidence](NATIVE_CHECKS.md#complete-checks-with-projected-index-payloads).
+
 ## Original deletion histories and index membership
 
 A new inert public-writer corpus records sixteen original before/delete histories
