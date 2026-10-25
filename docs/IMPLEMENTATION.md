@@ -1,5 +1,16 @@
 # Implementation status
 
+## Retained operands in the public operator API
+
+`Evaluator::apply_expression_binary` now routes retained String ranges through
+existing arithmetic/addition/concatenation preparation. The previous dispatcher
+returned NonScalarExpression for valid retained numeric inputs that materialized
+Text and SQL evaluation already accepted. Six new tests cover eight operators,
+operand order, active ranges, NULL/Empty/errors, exact numeric carriers, formatting,
+publication limits and cancellation. Thirty-seven existing arithmetic tests and
+strict scoped Clippy also pass; see [the verification record](testing/results/read-query-retained-operators-2026-10-24.json).
+This fixes API consistency without broadening native promotion or default SQL rules.
+
 ## Independent conditional calculation replay
 
 The [original replay](testing/CALCULATED_IIF.md) passes 86 controls and 160 modeled

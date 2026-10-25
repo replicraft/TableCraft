@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-24",
+  "scope": "Public retained-value dispatch parity for eight operators; ordinary SQL paths already used these preparers",
+  "unique_tests": 43,
+  "new_tests": 6,
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-expressions --features sql --lib evaluation::operators::retained_tests -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/retained-operators-tests-final-20261024.log",
+      "sha256": "52b8532266d7a8eee27e861440b58be463e08f493ff613a8212f1f39b4e99b72"
+    },
+    {
+      "command": "cargo test -p tablecraft-expressions --features sql --lib evaluation::arithmetic -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/retained-operators-arithmetic-regressions-20261024.log",
+      "sha256": "2a72c28bf8fee7fcbcc6d4b78e1f47aadd6a6c090e466bf9d947ebf82e3ffc81"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-expressions --features sql --lib --tests -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/retained-operators-clippy-20261024.log",
+      "sha256": "ec516196ec3f02da4e69d3b4f3c13cea3db8f8134db96860f82e1350bbddec88"
+    }
+  ],
+  "observed_before_fix": "Retained active String 4 + Int16 2 returned NonScalarExpression; materialized Text baseline returned Double 6",
+  "development_correction": "A new reverse integer quotient/modulo golden expected Int32 but the existing materialized baseline selects Int16. Corrected test expectation only; no promotion changes.",
+  "unrun": [
+    "Full workspace suite",
+    "Native Windows Access comparisons",
+    "Performance benchmarks"
+  ]
+}

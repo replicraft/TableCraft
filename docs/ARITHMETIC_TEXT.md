@@ -90,6 +90,19 @@ runner passes 1,350 source-free Decimal/arithmetic/Text controls, including raw
 regional numeric spellings, all six NULL operators, unsupported families and eager
 failures. Optional native getter inputs were not supplied for this run.
 
+## Public retained-value operator dispatch
+
+`Evaluator::apply_expression_binary` now normalizes retained active String ranges
+through the same preparation services as SQL evaluation for addition,
+concatenation and the six numeric operators. Valid numeric Strings therefore use
+the existing checked conversion targets; malformed UTF-16 still fails when actual
+publication is required. NULL propagation, Empty divisor behavior, unsupported
+families, explicit formats and cumulative resource/cancellation checks retain their
+owning contracts. The scalar return type still requires strict final publication.
+
+This fixes a public API inconsistency. Ordinary SQL evaluation already used these
+preparation services; no new native promotion or default query policy is inferred.
+
 ## References and evidence
 
 Microsoft's [Access operator reference](https://support.microsoft.com/en-us/access/table-of-operators)
