@@ -17,6 +17,7 @@ function does not execute stored VBA or activate application objects.
 | 3 | Proper case using documented separators and explicit ICU segment titlecasing |
 | 4 / 8 | Bounded Japanese wide/narrow conversion with explicit LCID 1041 |
 | 16 / 32 | Basic fullwidth Katakana/Hiragana conversion with explicit Japanese LCID 1041 |
+| 36 | Explicit wide-then-Hiragana composition with Japanese LCID 1041 |
 | 64 | Decode raw string/Byte-array bytes through an explicit supported string page |
 | 128 | Encode representable Unicode as a lossless string-byte intermediate |
 | Case setting plus 64 or 128 | Decode before casing; case before encoding |
@@ -27,10 +28,11 @@ now accept raw legacy DATE and execution-local numeric Text conversion. The
 [MS-VBAL declaration](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/17afbc5b-e1c7-4717-bfe3-9ae938ef0736)
 describes the flag argument and Long LocaleID; the bounded coercion targets here
 retain their preexisting profile rather than claiming complete native enum/Variant
-call semantics. Unknown
-flag bits, negative flags and mutually exclusive settings fail. Standalone width and kana requests require exact LCID 1041. Combined width/kana,
-case or encoding settings remain unsupported. The bounded profiles below do not
-claim all East Asian locale or native NLS behavior.
+call semantics. Unknown flag bits, negative flags and mutually exclusive settings
+fail. Standalone width and kana requests require exact LCID 1041. The explicit
+36 profile below combines widening and Hiragana conversion. Other combined
+width/kana, case or encoding settings remain unsupported. The bounded profiles
+below do not claim all East Asian locale or native NLS behavior.
 
 Arguments evaluate eagerly in written order, including the optional LCID, before
 flag/locale validation. NULL strings propagate after that validation. Ordinary
@@ -166,8 +168,9 @@ options do not require a number profile. Text options without a profile fail
 rather than infer regional settings.
 
 Flag conversion and flag validation still precede LCID conversion/lookup, followed
-by source NULL propagation and representation checks. Unsupported combined width/kana flags
-and unknown LCIDs are never silently replaced by a supported setting. All written
+by source NULL propagation and representation checks. Other combined width/kana
+flags beyond the explicit 36 profile and unknown LCIDs are never silently replaced
+by a supported setting. All written
 argument expressions remain eager, so a late expression failure remains visible
 before option conversion. NULL options retain InvalidNullConversion. This option-coercion change itself added no LCID, width/kana, DBCS, source
 carrier or default-locale implementation; standalone kana is described below.
@@ -202,7 +205,7 @@ route; raw string intermediates never round-trip through CStr.
 
 Source coercion follows existing flag/LCID validation and NULL propagation.
 `StrConv(1234,0)` produces Text `1234` under an explicit numeric profile. Casing
-and encoding then use the same metered paths as an explicit Text source. Unsupported
+and encoding then use the same metered paths as an explicit Text source. Other
 combined width/kana modes, strict Unicode publication and full native/Variant qualification
 remain open. The shared scalar-source runner exercises these calls alongside the
 byte slices/search/observations without executing database content.
@@ -265,7 +268,8 @@ Standalone conversion 16 maps basic fullwidth Hiragana to Katakana; 32 maps basi
 fullwidth Katakana to Hiragana. Both require the explicit, exact Japanese LCID
 1041. No host locale is inferred, and 1041 does not introduce Japanese casing or
 an ANSI/DBCS page into the preceding locale table. Missing/non-Japanese LCIDs and
-alternate-sort aliases fail; combined case, width and encoding flags remain refused.
+alternate-sort aliases fail. The explicit wide/Hiragana profile below is the only
+combined width/kana mode; other combined case, width and encoding flags remain refused.
 
 ```sh
 tablecraft query eval "SELECT StrConv('ひらがな',16,1041) AS Label"
@@ -366,7 +370,7 @@ Fullwidth small KA/KE and WI/WE, or voiced WI/WE without halfwidth bases, fail w
 narrowing. Halfwidth Hangul and the fullwidth currency/halfwidth symbol block remain
 explicitly unsupported in both directions. These known source forms are refused; other characters outside the qualified
 width mappings retain their representation. Further native mappings, locale
-coverage and combined flags remain compatibility work.
+coverage and other combined flags remain compatibility work.
 
 The original public `Conversion` parser still refuses width flags, preserving its
 component-recipe contract. The evaluator's private exhaustive dispatch selects the
@@ -400,3 +404,56 @@ pinned before the final replay. The failed attempts are not passing evidence or
 included in completed control totals. The earlier kana runner now uses combined
 flag 5 for its unsupported-width-control slot, since standalone 4 is implemented;
 the older kana report remains a historical result for its recorded runner hash.
+
+
+## Explicit wide-then-Hiragana composition
+
+Conversion 36 (`4 | 32`) now applies the existing widening kernel before the
+existing Hiragana kernel, requiring the exact explicit Japanese LCID 1041. This
+is a TableCraft engineering composition informed by Microsoft's documented
+mapping behavior; it is not a native Access StrConv ordering qualification.
+
+The [MS-VBAL StrConv contract](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/17afbc5b-e1c7-4717-bfe3-9ae938ef0736)
+allows nonexclusive flags to be combined but does not establish a universal
+operation order. Microsoft's [mapping guidance](https://learn.microsoft.com/en-us/windows/win32/intl/handling-sorting-in-your-applications)
+specifically requires FULLWIDTH together with HIRAGANA to map halfwidth Katakana
+to Hiragana. Its [LCMapStringEx contract](https://learn.microsoft.com/en-us/windows/win32/api/winnls/nf-winnls-lcmapstringex)
+also documents fullwidth voiced composition, such as `は゛` becoming `ば`.
+Those specific behaviors motivate widening before script conversion here.
+They do not establish ordering for other width, script, case or encoding mixes.
+
+```sh
+tablecraft query eval "SELECT StrConv('ｶﾞﾊﾟｳﾞ ABC',36,1041)"
+```
+
+The result is `がぱゔ　ＡＢＣ`. The existing width and kana coverage/refusals apply
+at each stage. Halfwidth voiced sequences first become composed Katakana, then
+Hiragana; fullwidth voiced WA/WO retain the kana kernel's explicit combining-mark
+representation. Characters outside the qualified mappings keep their existing
+representation. No general normalization or new mapping table is introduced.
+
+Controls validate before source admission, and written expressions remain eager.
+Valid controls allow NULL propagation; missing/non-Japanese/alternate-sort LCIDs,
+malformed raw Unicode, contradictory flags and other unsupported combinations
+retain their existing errors. Input evaluation and coercion occur once. Both
+transformation stages use the same cumulative allocation/work/cancellation pool,
+with each intermediate and final Text subject to the existing per-Text ceiling.
+No partial result is returned if either stage fails.
+
+The legacy public `Conversion` component recipe still refuses 36, so existing
+callers cannot silently omit a newly accepted transformation. The evaluator's
+private exhaustive operation dispatch owns the complete two-stage operation.
+All other previously unsupported combined width/kana/case/encoding values remain
+unsupported, including 20, 37, 100 and 164. Native NLS/Access equivalence and wider
+combined modes remain separate compatibility work.
+
+Three focused scalar evaluator tests and one bound-query test cover the new
+composition. The accepted scoped checks pass 28 expression tests and 19 query
+tests, with strict Clippy, minimal-feature compilation and scoped formatting.
+The [verification record](testing/results/read-query-wide-hiragana-2026-10-25.json)
+retains exact commands/log hashes, the four new controls and 43 existing
+regressions. CLI and native execution evidence are separate.
+
+The scoped wide/Hiragana checkpoint passes 51 distinct expression/query/CLI tests,
+including five new controls, strict linting, minimal expression features and
+formatting. See [verification](testing/results/read-query-wide-hiragana-2026-10-25.json).

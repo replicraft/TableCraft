@@ -94,7 +94,10 @@ impl Evaluator<'_> {
                 };
                 let id = u32::try_from(code).map_err(|_| EvalError::Domain)?;
                 let id = LocaleId::new(id)?;
-                if matches!(operation, Operation::Kana(_) | Operation::Width(_)) {
+                if matches!(
+                    operation,
+                    Operation::Kana(_) | Operation::Width(_) | Operation::WideHiragana
+                ) {
                     if id.raw() != JAPANESE_LCID {
                         return Err(EvalError::UnsupportedExpression);
                     }
@@ -105,7 +108,11 @@ impl Evaluator<'_> {
             })
             .transpose()?
             .flatten();
-        if matches!(operation, Operation::Kana(_) | Operation::Width(_)) && !has_locale {
+        if matches!(
+            operation,
+            Operation::Kana(_) | Operation::Width(_) | Operation::WideHiragana
+        ) && !has_locale
+        {
             return Err(EvalError::UnsupportedExpression);
         }
         let input = source()?;
@@ -117,6 +124,10 @@ impl Evaluator<'_> {
         let conversion = match operation {
             Operation::Kana(kana) => return self.strconv_kana(input, kana),
             Operation::Width(width) => return self.strconv_width(input, width),
+            Operation::WideHiragana => {
+                let wide = self.strconv_width(input, WidthConversion::Wide)?;
+                return self.strconv_kana(wide, KanaConversion::Hiragana);
+            }
             Operation::Standard(conversion) => conversion,
         };
         let page = locale
@@ -247,3 +258,6 @@ mod kana_tests;
 
 #[cfg(test)]
 mod width_tests;
+
+#[cfg(test)]
+mod wide_hiragana_tests;

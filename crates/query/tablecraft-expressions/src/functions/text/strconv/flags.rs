@@ -10,6 +10,8 @@ const KATAKANA: i16 = 16;
 const HIRAGANA: i16 = 32;
 const TO_UNICODE: i16 = 64;
 const FROM_UNICODE: i16 = 128;
+#[cfg(feature = "sql")]
+const WIDE_HIRAGANA: i16 = WIDE | HIRAGANA;
 const KNOWN_FLAGS: i16 =
     CASE_MASK | WIDE | NARROW | KATAKANA | HIRAGANA | TO_UNICODE | FROM_UNICODE;
 
@@ -110,6 +112,7 @@ pub(crate) enum Operation {
     Standard(Conversion),
     Kana(KanaConversion),
     Width(WidthConversion),
+    WideHiragana,
 }
 
 #[cfg(feature = "sql")]
@@ -120,6 +123,7 @@ impl Operation {
             NARROW => Ok(Self::Width(WidthConversion::Narrow)),
             KATAKANA => Ok(Self::Kana(KanaConversion::Katakana)),
             HIRAGANA => Ok(Self::Kana(KanaConversion::Hiragana)),
+            WIDE_HIRAGANA => Ok(Self::WideHiragana),
             _ => Conversion::from_code(code).map(Self::Standard),
         }
     }
