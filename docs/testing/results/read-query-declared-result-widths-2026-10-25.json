@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Guaranteed successful carriers for known Scalar declarations in explicit declared arithmetic only",
+  "unique_tests": 38,
+  "new_tests": 4,
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-query --test declared_result_widths --test arithmetic_output_types --test negation_declarations --test floating_declarations --test date_declarations --test arithmetic_agreement --test decimal_division_profiles --test union_numeric_types -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/declared-result-widths-regressions-accepted-20261025.log",
+      "sha256": "de10cd364ed1b50d056018cb865ff5fa611ffac140f28d284e2d30c9661e6b9e"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --test declared_result_widths -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/declared-result-widths-clippy-20261025.log",
+      "sha256": "d702924d4718ffc907ae12f39e64964f95ef0a811f7ad807f47a5ac2ef08111b"
+    }
+  ],
+  "observed_before_fix": "Explicit-profile arithmetic Int16 + Int16 UNION Currency retained Int16/Currency; redundant identity CInt around the arithmetic selected Currency/Currency. Frozen reproduction retained privately.",
+  "development_corrections": [
+    "Test helper used the existing public checked constructor and avoided reserved alias Sum; runtime kernels unchanged."
+  ],
+  "unrun": [
+    "Full workspace suite",
+    "Native Access declared result/overflow comparisons"
+  ]
+}

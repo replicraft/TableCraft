@@ -18,6 +18,7 @@ use tablecraft_expressions::functions::{
     conversions::Conversion, dates::clock::ClockFunction,
     inspection::types::ValueInspectionFunction,
 };
+use tablecraft_expressions::numeric::OperandDeclaration;
 use tablecraft_schema::ScalarType;
 use tablecraft_sql::select::{BinaryOperator, Expression};
 
@@ -94,7 +95,10 @@ impl Binder<'_> {
             }
             Expr::Unary(operator, argument) => {
                 let input = self.result_type(argument, scopes, depth + 1, profile)?;
-                unary::result(*operator, input)
+                let scalar = matches!(profile, ResultProfile::Declared)
+                    && self.result_declaration(argument, scopes, depth + 1)?
+                        == Some(OperandDeclaration::Scalar);
+                unary::result(*operator, input, scalar)
             }
             Expr::Convert(conversion, _) => OutputType::scalar(
                 match conversion {
@@ -217,9 +221,12 @@ impl Binder<'_> {
                 logical::binary(*operator, left, right)
             }
             Expr::Binary(operator, left, right) => {
+                let scalar = matches!(profile, ResultProfile::Declared)
+                    && self.result_declaration(expression, scopes, depth)?
+                        == Some(OperandDeclaration::Scalar);
                 let left = self.result_type(left, scopes, depth + 1, profile)?;
                 let right = self.result_type(right, scopes, depth + 1, profile)?;
-                arithmetic::result(*operator, left, right, profile)
+                arithmetic::result(*operator, left, right, profile, scalar)
             }
             Expr::IIf(condition, yes, no) => {
                 self.iif_result_type(condition, yes, no, scopes, depth + 1, profile)?

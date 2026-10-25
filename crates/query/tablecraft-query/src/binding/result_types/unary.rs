@@ -3,7 +3,11 @@ use crate::OutputType;
 use tablecraft_schema::ScalarType;
 use tablecraft_sql::select::UnaryOperator;
 
-pub(super) fn result(operator: UnaryOperator, input: OutputType) -> OutputType {
+pub(super) fn result(
+    operator: UnaryOperator,
+    input: OutputType,
+    scalar_declared: bool,
+) -> OutputType {
     if operator == UnaryOperator::Not {
         return super::logical::complement(input);
     }
@@ -37,6 +41,11 @@ pub(super) fn result(operator: UnaryOperator, input: OutputType) -> OutputType {
         ) => input,
         (UnaryOperator::Minus, ScalarType::Byte | ScalarType::Boolean) => {
             OutputType::scalar(ScalarType::Int16, nullable)
+        }
+        (UnaryOperator::Minus, ScalarType::Int16 | ScalarType::Int32 | ScalarType::DateTime)
+            if scalar_declared =>
+        {
+            OutputType::scalar(scalar, nullable)
         }
         (
             UnaryOperator::Minus,

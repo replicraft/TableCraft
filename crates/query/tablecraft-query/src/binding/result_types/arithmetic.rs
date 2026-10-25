@@ -14,6 +14,7 @@ pub(super) fn result(
     left: OutputType,
     right: OutputType,
     profile: ResultProfile,
+    scalar_declared: bool,
 ) -> OutputType {
     if !matches!(
         operator,
@@ -59,7 +60,7 @@ pub(super) fn result(
         return OutputType::Dynamic;
     }
 
-    let scalar = carrier(operator, left, right, profile);
+    let scalar = carrier(operator, left, right, profile, scalar_declared);
     scalar.map_or(OutputType::Dynamic, |scalar| {
         OutputType::scalar(scalar, a || b)
     })
@@ -70,6 +71,7 @@ fn carrier(
     left: ScalarType,
     right: ScalarType,
     profile: ResultProfile,
+    scalar_declared: bool,
 ) -> Option<ScalarType> {
     if operator == Power {
         return Some(Double);
@@ -78,7 +80,8 @@ fn carrier(
         let target = rounded_target(left, right);
         // Remainders fit their converted operand width. Quotients may widen at
         // MIN / -1 except Byte; LongLong retains checked overflow instead.
-        return (operator == Modulo || matches!(target, Byte | Int64)).then_some(target);
+        return (scalar_declared || operator == Modulo || matches!(target, Byte | Int64))
+            .then_some(target);
     }
     if operator == Add && left == Text && right == Text {
         return Some(Text);
@@ -98,6 +101,7 @@ fn carrier(
         return match operator {
             Multiply | Divide => Some(Double),
             Subtract if left == DateTime && right == DateTime => Some(Double),
+            Add | Subtract if scalar_declared => Some(DateTime),
             // DATE +/- may leave the valid civil envelope and return Double.
             _ => None,
         };
@@ -122,7 +126,7 @@ fn carrier(
     }
     if left == Single || right == Single {
         return if small_float_operand(left) && small_float_operand(right) {
-            None // Single overflow can produce Double even for division.
+            scalar_declared.then_some(Single)
         } else {
             Some(Double)
         };
@@ -132,7 +136,19 @@ fn carrier(
     }
     // Narrow integer arithmetic widens with materialized values. LongLong
     // deliberately raises overflow instead of selecting a wider carrier.
-    (left == Int64 || right == Int64).then_some(Int64)
+    if left == Int64 || right == Int64 {
+        Some(Int64)
+    } else if scalar_declared {
+        Some(if left == Int32 || right == Int32 {
+            Int32
+        } else if left == Byte && right == Byte {
+            Byte
+        } else {
+            Int16
+        })
+    } else {
+        None
+    }
 }
 
 fn rounded_target(left: ScalarType, right: ScalarType) -> ScalarType {

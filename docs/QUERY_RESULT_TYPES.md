@@ -430,3 +430,10 @@ can therefore retain one guaranteed output carrier, without widening input cells
 or evaluating selectors during preparation. Unknown and differing aggregate
 outcomes remain Dynamic. See [aggregate output descriptions](AGGREGATE_OUTPUT_TYPES.md)
 for the boundaries and 800-case/1,600-execution matrix.
+
+Known Scalar arithmetic now supplies selected-width guarantees to the declared
+side of paired result metadata. Overflow still fails at execution; Variant or
+unknown declarations retain value-dependent widening. Default and public
+conservative descriptors are unchanged. These guarantees also feed UNION
+conversion before downstream consumers observe the values. See
+[successful Scalar widths](DECLARED_ARITHMETIC.md#successful-scalar-arithmetic-result-widths).
