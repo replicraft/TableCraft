@@ -80,7 +80,7 @@ valid codes use the explicit unknown-message fallback. The source selection is
 reference-based engineering evidence, not observed native Access mapping.
 [Source hashes and attribution](../crates/query/tablecraft-expressions/data/error_messages/NOTICE)
 accompany the catalog. The adapted data is CC-BY-4.0; original Rust and generator
-code remain MIT. Retain the data's attribution/license in distributions including
+code use Apache-2.0. Retain the data's attribution/license in distributions including
 compiled consumers. See [dependency records](DEPENDENCIES.md#localized-error-messages).
 
 ## References and remaining compatibility work

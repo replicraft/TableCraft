@@ -3,8 +3,8 @@ name = "tablecraft-expressions"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
-# Rust code is MIT; the optional reference message data is CC-BY-4.0.
-license = "MIT AND CC-BY-4.0"
+# Rust code is Apache-2.0; the optional reference message data is CC-BY-4.0.
+license = "Apache-2.0 AND CC-BY-4.0"
 repository.workspace = true
 description = "Bounded scalar expression semantics for TableCraft"
 publish = false

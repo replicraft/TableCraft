@@ -16,7 +16,7 @@ below; none of its different message wording or implementation code was copied.
 https://github.com/dotnet/runtime/blob/v10.0.0/src/libraries/Microsoft.VisualBasic.Core/src/Resources/Strings.resx
 
 provenance.json records exact input/output SHA-256 hashes and per-topic source
-names/hashes. scripts/generate_error_messages.py is original MIT TableCraft code.
+names/hashes. scripts/generate_error_messages.py is original TableCraft code under Apache-2.0.
 No Microsoft endorsement or native Access result equivalence is implied. Retain
 this attribution and license when distributing the adapted message data, including
-compiled consumers. Other original TableCraft code remains MIT-licensed.
+compiled consumers. Other original TableCraft code also uses Apache-2.0.

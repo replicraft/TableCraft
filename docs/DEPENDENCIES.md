@@ -287,9 +287,8 @@ The ACE engine now adopts Apache-2.0 General legacy/General 2010 weight data and
 an adapted bounded Rust encoder from the reviewed Jackcess 5.0.4 reference.
 The [artifact record](../crates/engines/tablecraft-ace/data/general/README.md)
 records exact binary/source hashes, generator, normalized format, output hashes,
-license and retained attribution. The ACE package records `MIT AND Apache-2.0`;
-original project code retains MIT, and the two adapted encoder source files carry
-Apache-2.0 identifiers. Distributors must retain the bundled license/notices.
+license and retained attribution. The ACE package inherits workspace Apache-2.0;
+original project code and the two adapted encoder source files use Apache-2.0. Distributors must retain the bundled license/notices.
 
 The three data artifacts total 1,884,928 bytes and use existing zerocopy/byteorder
 types for borrowed lookups, without loading/allocating a runtime table. No registry
@@ -457,8 +456,10 @@ fallibly reserved sink under the existing 1 MiB output limit, including quote
 expansion; dependency-internal allocations remain infallible APIs. TSV carries
 escaped display cells as described in [CLI browsing](CLI_BROWSING.md).
 
-Recorded on 17 October 2026. The repository's existing source license
-is MIT, copyright 2026 RepliCraft. No source license change is introduced.
+Recorded on 17 October 2026, when the repository source license was MIT.
+The upstream license changed to Apache-2.0 on 25 October 2026; current package
+metadata follows that change. Historical dependency and fixture license records
+retain their original provenance.
 
 The saved SELECT adapter promotes the existing local `tablecraft-sql` dependency
 from Access's development graph to its normal graph, with unchanged workspace
