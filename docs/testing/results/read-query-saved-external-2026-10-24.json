@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-24",
+  "production_base_commit": "97a0ab35f360a4b084fd9f578df502fd244ceccc",
+  "scope": "Native saved SELECT/crosstab global external-source reconstruction and explicitly host-mapped read execution; not native Access save-query/execution qualification",
+  "rust_source_inventory": {
+    "roots": [
+      "apps",
+      "crates"
+    ],
+    "files": 1840,
+    "algorithm": "Relative paths ordered lexicographically by components (Python pathlib.Path ordering); UTF-8 path + NUL + lowercase hex SHA256(file bytes) + newline; SHA256 of the complete UTF-8 manifest",
+    "sha256": "3cb6e9d663cf33d8314d351c0cc0c79e54e1e2e69ca4e1decdd97be0486b71ed",
+    "private_manifest": ".cache/saved-external-rust-source-20261024.manifest",
+    "verified_against": "Committed source archive; complete inventory is not complete test coverage"
+  },
+  "rust_tests": {
+    "passed_unique_tests": 127,
+    "integration_targets": {
+      "tablecraft-access/saved_select": 77,
+      "tablecraft-cli/saved_query_definitions": 33,
+      "tablecraft-cli/external_queries": 8,
+      "tablecraft-cli/linked_queries": 9
+    },
+    "new_tests": 11,
+    "overlap_note": "Initial focused adapter/CLI runs are superseded by complete target reruns and are not added."
+  },
+  "checks": [
+    {
+      "scope": "Strict saved adapter library and saved_select target Clippy",
+      "exit_code": 0
+    },
+    {
+      "scope": "Strict CLI binary and saved/external/linked targets Clippy",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo check -p tablecraft-access --no-default-features -j2 --locked --offline",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo build -p tablecraft-cli --bin tablecraft -j2 --locked --offline",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "note": "Final pass after module declaration ordering correction; initial formatter-only diff excluded."
+    },
+    {
+      "command": "python3 scripts/check_dependency_boundaries.py",
+      "exit_code": 0,
+      "packages": 12
+    },
+    {
+      "command": "python3 -m unittest discover -s scripts -p 'test_*.py'",
+      "exit_code": 0,
+      "passed": 41
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "logs": [
+    {
+      "kind": "adapter-tests",
+      "path": ".cache/saved-external-adapter-regressions-20261024.log",
+      "sha256": "523249cced6cc72aeb2ae27c0c2c73229784a15661c9039da6cac5aff57b4e8b",
+      "tracked": false
+    },
+    {
+      "kind": "adapter-clippy",
+      "path": ".cache/saved-external-adapter-clippy-20261024.log",
+      "sha256": "5bfb1c2fd76a1b7c2ad62b9c30d1bed7911f32b519693c4d00df4bda51e2309e",
+      "tracked": false
+    },
+    {
+      "kind": "cli-tests",
+      "path": ".cache/saved-external-cli-regressions-20261024.log",
+      "sha256": "0f3dc5bfd056080ce2a1ec5138d27a59263c7f3247b49b020c4399954f3d1a30",
+      "tracked": false
+    },
+    {
+      "kind": "cli-clippy",
+      "path": ".cache/saved-external-cli-clippy-20261024.log",
+      "sha256": "6539623245a1a91a13e5b1a16c0405ece21b4f132eec51d9abe57113136b5b77",
+      "tracked": false
+    },
+    {
+      "kind": "adapter-minimal",
+      "path": ".cache/saved-external-adapter-minimal-20261024.log",
+      "sha256": "970f765b3f2b11d2bc942de381fd38c10dd34106d401efb1456a88b9431e80b5",
+      "tracked": false
+    },
+    {
+      "kind": "cli-build",
+      "path": ".cache/saved-external-cli-build-20261024.log",
+      "sha256": "8b1fd2394f7b6f177ede882431154a419bd9f404f00add314c912e91a7fc0ec0",
+      "tracked": false
+    }
+  ],
+  "candidate": {
+    "path": ".cache/tablecraft-bin/saved-external-cli-20261024",
+    "sha256": "dc67d1ae174734112b412892c5bc8054d4408abffc1cc5f79ac6769bdbd09007"
+  },
+  "not_run": [
+    "Full workspace test suites",
+    "Windows Microsoft Access comparisons",
+    "Performance/release benchmarks"
+  ],
+  "remaining": [
+    "Other native stored remote layouts and external named targets",
+    "Broader P0 value/text semantics",
+    "Remaining read/query, storage and backend acceptance work"
+  ],
+  "independent_replay": {
+    "report": "docs/testing/results/saved-external-2026-10-24.json",
+    "sha256": "574c35163f1f62a073637d6286fb7aea67d862b91fe4cb8053e363ca917bff1e",
+    "controls": 188,
+    "successes": 132,
+    "classified_refusals": 56,
+    "raw_inspection_controls": 48,
+    "reconstruction_controls": 48,
+    "unchanged_hashes": 109,
+    "log": {
+      "path": ".cache/saved-external-final-20261024.log",
+      "sha256": "0482fddc0ee631bdca9ab5e8ae164d0c9174dfd3165b13b0bd34ba751efcf829",
+      "tracked": false
+    },
+    "scope_note": "Reconstruction checks exact remote tokens/escaping; focused Rust tests compare complete owned queries. Reference getters never execute SQL."
+  }
+}
