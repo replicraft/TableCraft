@@ -225,9 +225,23 @@ impl Binder<'_> {
                 let scalar = matches!(profile, ResultProfile::Declared)
                     && self.result_declaration(expression, scopes, depth)?
                         == Some(OperandDeclaration::Scalar);
-                let left = self.result_type(left, scopes, depth + 1, profile)?;
-                let right = self.result_type(right, scopes, depth + 1, profile)?;
-                arithmetic::result(*operator, left, right, profile, scalar)
+                let left_type = self.result_type(left, scopes, depth + 1, profile)?;
+                let right_type = self.result_type(right, scopes, depth + 1, profile)?;
+                let declared_addition = if *operator == BinaryOperator::Add
+                    && matches!(profile, ResultProfile::Declared)
+                {
+                    let declarations = (
+                        self.result_declaration(left, scopes, depth + 1)?,
+                        self.result_declaration(right, scopes, depth + 1)?,
+                    );
+                    arithmetic::declared_addition(left_type, right_type, declarations)
+                } else {
+                    None
+                };
+
+                declared_addition.unwrap_or_else(|| {
+                    arithmetic::result(*operator, left_type, right_type, profile, scalar)
+                })
             }
             Expr::IIf(condition, yes, no) => {
                 self.iif_result_type(condition, yes, no, scopes, depth + 1, profile)?

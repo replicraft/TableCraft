@@ -1,5 +1,6 @@
 //! Successful carrier guarantees of existing arithmetic, without evaluating operands.
 use crate::{OutputType, plan::ResultProfile};
+use tablecraft_expressions::numeric::OperandDeclaration;
 use tablecraft_schema::ScalarType;
 use tablecraft_schema::ScalarType::{
     Boolean, Byte, Currency, DateTime, Decimal, Double, Int16, Int32, Int64, Single, Text,
@@ -54,9 +55,8 @@ pub(super) fn result(
         return OutputType::Dynamic;
     }
     if operator == Add && (left == Text) != (right == Text) {
-        // The same prepared plan can execute with materialized or declared
-        // arithmetic. Mixed String/numeric + can then produce numeric or Text
-        // results, so neither carrier is a metadata guarantee.
+        // The materialized profile and unknown declarations retain this
+        // conservative fallback. Known declared operands are handled separately.
         return OutputType::Dynamic;
     }
 
@@ -64,6 +64,51 @@ pub(super) fn result(
     scalar.map_or(OutputType::Dynamic, |scalar| {
         OutputType::scalar(scalar, a || b)
     })
+}
+
+/// Select only successful mixed-String carriers guaranteed by known declarations.
+/// NULL-only operands retain the ordinary arithmetic path and its propagation.
+pub(super) fn declared_addition(
+    left: OutputType,
+    right: OutputType,
+    declarations: (Option<OperandDeclaration>, Option<OperandDeclaration>),
+) -> Option<OutputType> {
+    let (
+        OutputType::Scalar {
+            data_type: left,
+            nullable: a,
+        },
+        OutputType::Scalar {
+            data_type: right,
+            nullable: b,
+        },
+    ) = (left, right)
+    else {
+        return None;
+    };
+    let (left, right) = (left.scalar_type(), right.scalar_type());
+    if (left == Text) == (right == Text) || !numeric_operand(left) || !numeric_operand(right) {
+        return None;
+    }
+
+    let (string, numeric) = if left == Text {
+        declarations
+    } else {
+        (declarations.1, declarations.0)
+    };
+    let scalar = match (string, numeric) {
+        (Some(OperandDeclaration::Scalar), Some(OperandDeclaration::Variant)) => Some(Text),
+        (Some(OperandDeclaration::Variant), Some(_)) => {
+            carrier(Add, left, right, ResultProfile::Declared, false)
+        }
+        // Scalar/String with Scalar/numeric cannot succeed; an unknown category
+        // can change the operation family. Neither establishes a result carrier.
+        _ => None,
+    };
+
+    Some(scalar.map_or(OutputType::Dynamic, |scalar| {
+        OutputType::scalar(scalar, a || b)
+    }))
 }
 
 fn carrier(

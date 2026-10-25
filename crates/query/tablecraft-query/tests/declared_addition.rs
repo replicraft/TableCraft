@@ -126,7 +126,16 @@ fn mixed_result_metadata_is_conservative_across_plan_reuse_and_composition() {
         assert_eq!(plan.output_types().unwrap(), [OutputType::Dynamic], "{sql}");
         for declared in [false, true, false] {
             let result = plan.execute(&source, &[], options(declared)).unwrap();
-            assert_eq!(result.output_types(), [OutputType::Dynamic]);
+            let output = result.output_types()[0];
+            if declared {
+                assert!(matches!(
+                    output,
+                    OutputType::Scalar { data_type, .. }
+                        if data_type.scalar_type() == ScalarType::Text
+                ));
+            } else {
+                assert_eq!(output, OutputType::Dynamic);
+            }
             let first = &result.rows()[0][0];
             assert_eq!(matches!(first, Value::Text(_)), declared, "{sql}");
         }
