@@ -52,10 +52,31 @@ DISTINCTROW retains its ordinary inactive behavior. Unsupported plans refuse
 before user-row scans and output, even for empty inputs or false filters.
 
 `--stream` requires a native database and conflicts with saved-query selection,
-SQLite, required/automatic indexes, linked/external mappings and collection modes.
+SQLite, required/automatic indexes, external mappings and collection modes.
 Explicit table format is rejected before opening the input; auto format is TSV for streaming, including in terminals. Header-based raw native and
 supported package/encryption opening retain their existing qualifications; this
 mode does not add a codec, provider or template reader.
+
+## Explicit linked tables
+
+`--stream --link ALIAS PATH` can stream a qualified one-hop native linked table
+through the same explicitly opened target used by buffered queries. Stored paths
+remain inert; missing mappings and targets that are themselves linked fail
+explicitly. No target names enter the root query namespace.
+
+```sh
+tablecraft query run --database frontend.accdb --link Customers backend.accdb \
+  --stream --batch-rows 128 'SELECT ID,Name FROM Customers'
+```
+
+Targets use the supplied password, stored-calculation opt-in and native read
+options. Database comparison retains each target field's own policy and the root
+literal default. Native/query/comparison/output budgets remain cumulative across
+root and mapped sources and repeated UNION ALL arms. Snapshot retention limits
+do not truncate a progressive cursor, and neither EOF nor a failed suffix
+publishes a complete table cache. The single-table/flat UNION ALL shape limits
+above still apply; mapping a target does not admit joins, collections, external
+providers or live cross-file consistency. See [linked reads](NATIVE_LINKED_QUERIES.md).
 
 ## Global SUM and AVG
 
@@ -174,7 +195,7 @@ to open an embedded path. See the [query service](PROGRESSIVE_QUERIES.md) and
 
 ## Verification
 
-Thirty-two CLI integration tests cover priority synthetic profiles, real ACE 2007
+Thirty-two ordinary progressive CLI integration tests cover priority synthetic profiles, real ACE 2007
 example data, batch sizes, quoting, empty/filter results, first/late errors,
 checked count failures, cumulative quotas, parameter/text/declaration controls,
 mixed schemas, unordered TOP prefixes and argument refusals. TOP tests preserve
@@ -194,3 +215,11 @@ also pass. Earlier CLI integration recorded sixty unit/browsing/native/retrieval
 checks, including write/flush failure and encoded-output allowance tests.
 Current scoped query/CLI strict Clippy passes. Original large-file replay and native Access
 qualification are recorded separately; this does not complete read/query work.
+
+Explicit linked streaming additionally passes thirteen linked-query CLI controls
+and thirty-five native linked/progressive controls, with strict Clippy. Four
+new CLI tests and eight new native tests cover routing, repeated aggregate/row
+UNION arms, late prefixes, pruning, EOF, shared limits and refusal boundaries.
+Existing option controls also exercise password authentication, cached-value
+opt-in and target field/root literal comparison policies in streaming mode.
+See the [scoped verification](testing/results/read-query-linked-progressive-2026-10-25.json).

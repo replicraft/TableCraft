@@ -80,6 +80,7 @@ pub(crate) enum Command {
             "leave earlier output. Ordering, grouping, joins, duplicate-eliminating sets, nested ",
             "sources and collection modes keep the buffered execution path. Explicit ",
             "--stored-calculations also streams cached scalar results without running formulas. ",
+            "Explicit --link mappings can stream qualified one-hop native tables. ",
             "Streaming rejects ",
             "--format table. Use --database with a stable/offline copy for supported local scalar ",
             "tables; use --saved NAME instead of SQL to execute a qualified saved ",
