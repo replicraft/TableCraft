@@ -13,7 +13,10 @@ including saved definitions and physical EOF failures. Strict query/host linting
 minimal query features and formatting pass. See the
 [contract](PROGRESSIVE_QUERIES.md#stateful-retained-stages) and
 [scoped verification](testing/results/read-query-progressive-stateful-stages-2026-10-25.json).
-Original-file replay and native Access qualification remain separate.
+The [original-file replay](testing/PROGRESSIVE_STATEFUL_STAGES.md) now passes all
+96 commands, comparing 96 successful rows/480 cells and six exact earlier
+error-prefix rows separately. Fifteen immutable and fifty committed-source hashes
+were independently rechecked. Native Access qualification remains separate.
 
 ## Key-only index payloads during complete checks
 
