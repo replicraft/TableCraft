@@ -1,4 +1,5 @@
 //! Strict relational keys over retained scalar, String and standard Error data.
+mod numeric;
 use super::{Environment, Runtime};
 use crate::{QueryError, execution::cell::CellValue, plan::Expr, source::TextPolicy};
 use std::cmp::Ordering;
@@ -83,6 +84,21 @@ impl Runtime<'_, '_> {
         )
     }
 
+    pub(super) fn compare_relational_values(
+        &mut self,
+        operator: Comparison,
+        left: &Value,
+        right: &Value,
+        policy: TextPolicy,
+    ) -> Result<Truth, QueryError> {
+        // Scalar mixed-precision narrowing is not transitive across a key set.
+        // Compare exact widened views without changing retained result cells.
+        match numeric::mixed_float_views(left, right) {
+            Some((left, right)) => self.compare_policy(operator, &left, &right, policy),
+            None => self.compare_policy(operator, left, right, policy),
+        }
+    }
+
     fn compare_key(
         &mut self,
         operator: Comparison,
@@ -95,7 +111,7 @@ impl Runtime<'_, '_> {
         }
         match (&left.value, &right.value) {
             (ExpressionValue::Value(left), ExpressionValue::Value(right)) => {
-                self.compare_policy(operator, left, right, policy)
+                self.compare_relational_values(operator, left, right, policy)
             }
             (
                 ExpressionValue::StringBytes(_),

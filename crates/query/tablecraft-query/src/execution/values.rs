@@ -134,7 +134,7 @@ impl Runtime<'_, '_> {
         if matches!((left, right), (Value::Null, Value::Null)) {
             return Ok(true);
         }
-        Ok(self.compare_policy(Comparison::Equal, left, right, policy)? == Truth::True)
+        Ok(self.compare_relational_values(Comparison::Equal, left, right, policy)? == Truth::True)
     }
     pub(super) fn same_expression_row(
         &mut self,
@@ -177,11 +177,12 @@ impl Runtime<'_, '_> {
             (_, Value::Null) => return Ok(Ordering::Greater),
             _ => {}
         }
-        if self.compare_policy(Comparison::Equal, left, right, policy)? == Truth::True {
+        if self.compare_relational_values(Comparison::Equal, left, right, policy)? == Truth::True {
             return Ok(Ordering::Equal);
         }
         Ok(
-            if self.compare_policy(Comparison::Less, left, right, policy)? == Truth::True {
+            if self.compare_relational_values(Comparison::Less, left, right, policy)? == Truth::True
+            {
                 Ordering::Less
             } else {
                 Ordering::Greater

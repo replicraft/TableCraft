@@ -23,6 +23,11 @@ consumers retain their existing statement/operation restrictions.
 | Legacy DATE beside Text | Convert Text through CDate under an explicit date policy, then compare temporally |
 | Extended DATE, GUID or unsupported carriers mixed with Text | Existing refusal; no implicit narrowing or GUID parsing |
 
+[Relational keys](NUMERIC_KEYS.md) retain a separate strict contract. Mixed
+Single/Double keys widen Single exactly instead of narrowing Double; scalar
+Single/Double predicates keep their effective Single rule. Key comparison does
+not acquire numeric Text parsing or the wider scalar family conversions above.
+
 Mixed numeric/Text predicates require NumberFormat; missing policy is an explicit
 NumberFormatRequired failure. Malformed numeric Text fails, rather than sorting
 by type name or becoming zero/NULL. Converted fractions are not rounded to an

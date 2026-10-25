@@ -22,12 +22,13 @@ String therefore still fails when its bytes must be compared. NULL key identity
 and ordering need no String decoding: NULL equals NULL for grouping/set keys and
 sorts before non-NULL values in ascending order.
 
-Key comparison retains the strict scalar type rules, independently of predicate
-numeric/date coercion and the explicit Variant String/numeric category exception.
-Raw String/numeric keys fail TypeMismatch; Error keys do not implicitly unwrap
-their codes. Existing singleton DISTINCT Error data can still survive when no
-comparison is needed; actual Error key comparisons remain unqualified/refused.
-Group/sort key admission keeps its existing Error/Empty/Missing refusal.
+Key comparison retains strict type rules, independently of predicate numeric/date
+coercion and the explicit Variant String/numeric category exception. The
+[numeric key contract](NUMERIC_KEYS.md) separately gives mixed Single/Double keys
+exact widened views. Raw String/numeric keys fail TypeMismatch.
+[Standard Error keys](VARIANT_ERRORS.md) compare their explicit codes without
+becoming stored numeric data; mixed Error/scalar comparisons remain refused.
+Empty/Missing and unsupported expression states remain non-scalar key failures.
 
 Query runtime and static field policies travel with the retained cells. Existing
 policy unification, encounter representatives, stable ordering, TOP ties and

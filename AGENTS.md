@@ -110,6 +110,8 @@ are caller-issued, and unresolved parents/unknown kinds must remain visible.
 Core values, identity scopes, budgets and their reference documents are described
 in [CORE_TYPES.md](docs/CORE_TYPES.md). Value equality is representational; do not
 use it as SQL equality or silently coerce expression-only states into stored NULL.
+Use the [strict relational key service](docs/NUMERIC_KEYS.md) for sets, groups,
+sorting, extrema and pivot matching; scalar predicate coercion is separate.
 Core errors use `thiserror`; generated tests use `proptest`; `serde` support is
 optional and must preserve constructor validation. Keep format-specific output
 policies at the application/protocol boundary. The requested libraries and their
