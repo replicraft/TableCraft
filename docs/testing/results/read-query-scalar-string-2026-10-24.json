@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-24",
+  "production_base_commit": "9d3e0b42f35a8ccf4d99c3dca4974099f673297b",
+  "scope": "Explicit declared Scalar String/Variant predicate conversion; engineering profile, not native ACE declaration/NLS or complete P0 qualification",
+  "rust_source_inventory": {
+    "roots": [
+      "apps",
+      "crates"
+    ],
+    "files": 1849,
+    "algorithm": "Sorted relative UTF-8 path + NUL + lowercase hex SHA256(file bytes) + newline; SHA256 of the complete UTF-8 manifest",
+    "sha256": "ec3f7808c617daf80477f51af569cdcde4d6e5c7b1cf9826b8de223b720a7024",
+    "private_manifest": ".cache/declared-string-rust-source-20261024.manifest",
+    "verification": "Every source hash verified before/after replay; parent independently compared manifest with committed source archive. Complete inventory is not complete test coverage."
+  },
+  "rust_tests": {
+    "passed_unique_tests": 143,
+    "expression_unit_tests": 5,
+    "query_integration_targets": {
+      "collation_routing": 86,
+      "context_function_declarations": 3,
+      "declared_string_comparisons": 7,
+      "effective_comparisons": 4,
+      "membership_declarations": 4,
+      "predicate_declarations": 4,
+      "raw_string_predicates": 4,
+      "text_function_declarations": 2,
+      "variant_text_comparison": 4
+    },
+    "cli_integration_targets": {
+      "declared_integral": 17,
+      "declared_string_comparisons": 3
+    },
+    "new_tests": 15,
+    "overlap_note": "Earlier focused/probe/retry runs are not added to final target counts."
+  },
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-expressions --features sql --lib declared_strings -j2 --locked --offline",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test declared_string_comparisons --test variant_text_comparison --test text_function_declarations --test context_function_declarations --test effective_comparisons --test predicate_declarations --test membership_declarations --test raw_string_predicates --test collation_routing -j2 --locked --offline",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo clippy -p tablecraft-expressions --features sql --lib --tests -p tablecraft-query --test declared_string_comparisons --test variant_text_comparison --test text_function_declarations --test context_function_declarations --test effective_comparisons --test predicate_declarations --test membership_declarations --test raw_string_predicates --test collation_routing -j2 --locked --offline -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --test declared_string_comparisons --test declared_integral -j2 --locked --offline",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo clippy -p tablecraft-cli --bin tablecraft --test declared_string_comparisons --test declared_integral -j2 --locked --offline -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo check -p tablecraft-expressions --no-default-features -j2 --locked --offline",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo build -p tablecraft-cli --bin tablecraft -j2 --locked --offline",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_dependency_boundaries.py",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m unittest discover -s scripts -p 'test_*.py'",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "logs": [
+    {
+      "path": ".cache/declared-string-expression-final2.log",
+      "sha256": "1f6b735a3ec573a07f2623faf56414275fc63a1c7aede2d43048aba3f7fc4097",
+      "tracked": false
+    },
+    {
+      "path": ".cache/declared-string-regressions-final2.log",
+      "sha256": "65164f1e7c246d224e40fdbebb2a7f5a49340a85dd259e07190a21e190a9b1e7",
+      "tracked": false
+    },
+    {
+      "path": ".cache/declared-string-clippy-final.log",
+      "sha256": "bde57c14f46734a021e46ffc29c539f26fe007b8e1a2dda107324ac0c4f84f68",
+      "tracked": false
+    },
+    {
+      "path": ".cache/declared-string-cli-final-20261024.log",
+      "sha256": "6411975132f780aad52aa167500e44b7d3e51888ff752af3c162ed7d54e21b28",
+      "tracked": false
+    },
+    {
+      "path": ".cache/declared-string-cli-clippy-20261024.log",
+      "sha256": "bbb08198d243cc3e7e25582af21932dec43e8869f1e75b636dfabaa0c0674621",
+      "tracked": false
+    },
+    {
+      "path": ".cache/declared-string-expressions-minimal-20261024.log",
+      "sha256": "8e6e7e79731dc559b8bb615817d29c3badabdc98d0eb7601456d29e18db2d766",
+      "tracked": false
+    },
+    {
+      "path": ".cache/declared-string-cli-build-20261024.log",
+      "sha256": "06e6706b086b3bdf2308e43957427cd7df120f1213e5435d3c1ec9737a76fa92",
+      "tracked": false
+    },
+    {
+      "path": ".cache/scalar-string-final-20261024.log",
+      "sha256": "4dcc028ab8b0dd898586d0c2183cca37d116b76289887bee99ef4c8351dcb09d",
+      "tracked": false
+    }
+  ],
+  "independent_replay": {
+    "report": "docs/testing/results/scalar-string-2026-10-24.json",
+    "sha256": "6ca17c3facb9b58d7021d53650e40f061446e3ffab8b17802f3c78b1d30c864e",
+    "controls": 224,
+    "source_free_controls": 144,
+    "native_controls": 80,
+    "successes": 196,
+    "classified_refusals": 28,
+    "modeled_values": {
+      "boolean_values": 6433,
+      "null_values": 718,
+      "direct_comparison_values": 6804
+    },
+    "unchanged_hashes": 1869,
+    "scope_note": "Expected ordinal comparisons derive from explicit rendered goldens and raw native getters; reference SQL never executes."
+  },
+  "candidate": {
+    "path": ".cache/tablecraft-bin/declared-string-cli-20261024",
+    "sha256": "8aa578c621fe989b5034853e946a942f3700cb90aee8be12ee3d4970866cc5ce"
+  },
+  "excluded_attempts": [
+    "Initial query regression expectations used old numeric coercion for Scalar String/Variant and were corrected narrowly; an exploratory global collation helper change was removed to retain an existing no-provider refusal control.",
+    "First CLI test used an unbracketed reserved alias; corrected before the final passing target.",
+    "Existing CLI Chr$ control expected TypeMismatch; updated to require collation and separately prove successful String comparison.",
+    "Native replay probe used CVDate on an intentional NULL Date and correctly failed; CVar retains the original Date/NULL operand without that unrelated conversion. No production behavior changed for the probe."
+  ],
+  "not_run": [
+    "Full expression/query/workspace suites",
+    "Windows Microsoft Access comparisons",
+    "Release/performance benchmarks"
+  ],
+  "remaining": [
+    "Complete Variant/result promotion and Error behavior",
+    "Native mixed-policy precedence and broader locale providers",
+    "External named target composition and remaining read/query/storage/backend work"
+  ]
+}

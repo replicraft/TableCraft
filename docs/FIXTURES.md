@@ -7787,3 +7787,43 @@ reproduction and excluded argument-spelling probes. Frozen CLI, original binary
 files, getters, tools and local logs stay ignored. Native Access creation of these
 saved definitions, execution, provider behavior, coherent cross-file snapshots,
 writes and application save/reopen remain unqualified.
+
+
+## Original Scalar String/Variant comparison fields
+
+[ScalarStringFixture.java](testing/ScalarStringFixture.java),
+[ScalarStringOracle.java](testing/ScalarStringOracle.java) and
+[compare_scalar_string.py](testing/compare_scalar_string.py) are original
+repository MIT recipes. Public builders author 17 ordinary TextOperands rows per
+profile, with Short Text, Int32, Boolean, Currency and legacy Date fields.
+Spellings include numeric-looking and nonnumeric Strings, empty, Unicode,
+trailing space and NULL. Independent read-only getters retain exact column types,
+values and NULL distinctions, with expression evaluation disabled and a throwing
+link resolver. No reference SQL or active database content executes.
+
+The reviewed Jackcess 5.0.4 JAR is Apache-2.0, SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+No upstream implementation or fixture bytes are copied. Original files, getters,
+actual generation commands and source hashes remain ignored under
+`.cache/tablecraft-fixtures/scalar-string-20261024/`.
+
+| Original | Bytes | SHA-256 |
+| --- | ---: | --- |
+| V2000.mdb | 114,688 | `54a40bf570945c667436ede7334a508d461e69a51692a0f6b48ebc8f5c7c0f0b` |
+| V2007.accdb | 344,064 | `2256c80607fd36cd641a63b97778cfd55fa44b8490482aadd3f74ac825b328ba` |
+| V2016.accdb | 380,928 | `b4a64a473006b77c8e362cb75e0facfd64fdf7bb6f31b04c47943a897f654c34` |
+| V2019.accdb | 450,560 | `a9aa6dccc9bc5c242893aad5e42cd6559f3c61f91cac4518998d38e797da98d1` |
+
+The [accepted replay](testing/results/scalar-string-2026-10-24.json) passes
+224 CLI controls: 144 source-free and 80 native, including 196 successes and
+28 classified buffered refusals. It checks 6,433 Boolean and 718 NULL values;
+6,804 direct comparison values are a subset. All 1,869 hashes remain unchanged,
+including every entry in the frozen 1,849-file Rust source inventory. Ordinal
+expectations derive from explicit short rendered goldens and original native
+getters rather than numeric parsing or reference SQL execution.
+
+The [feature evidence](testing/SCALAR_STRING_VARIANT_COMPARISONS.md) records
+reproduction, NULL-Date conversion probe exclusion and exact modeling limits.
+Original files remain unchanged; there are no save/edit experiments here.
+Native Access declaration inference, regional/NLS equivalence, full Variant
+behavior and application compatibility remain unqualified.

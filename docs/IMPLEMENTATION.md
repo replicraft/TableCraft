@@ -1,5 +1,24 @@
 # Implementation status
 
+## Independent Scalar String/Variant field replay
+
+The [Scalar String/Variant replay](testing/SCALAR_STRING_VARIANT_COMPARISONS.md)
+passes 224 CLI controls: 144 source-free and 80 native across original Jet 4,
+ACE 2007 and both ACE 16-family files. It checks 6,433 Boolean and 718 NULL values
+against explicit rendered goldens and complete ordinal Strings, including
+trailing spaces. All 1,869 pinned hashes remain unchanged, including every
+entry in the complete 1,849-file Rust inventory. Original getters never run SQL.
+
+The [verification record](testing/results/read-query-scalar-string-2026-10-24.json)
+pins production base `9d3e0b42`, 143 focused Rust tests and final logs. Four
+17-row originals exercise integer, Boolean, Currency and legacy Date peers,
+regional formatting, NULLs, six operators in both directions and native
+composition. Twenty-eight classified refusals retain empty stdout. A NULL-Date
+CVDate probe correctly refused; the final model uses CVar to retain the actual
+Date/NULL operand without unrelated conversion. This does not qualify native ACE
+declarations, Windows collation or complete P0/read-query acceptance. Next is
+externally mapped named-query composition with scoped identities and discovery.
+
 ## Declared Scalar String/Variant predicates
 
 The explicit declared profile now compares a known Scalar String with a known
