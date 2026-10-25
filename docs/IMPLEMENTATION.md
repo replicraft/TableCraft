@@ -1,5 +1,17 @@
 # Implementation status
 
+## Declared arithmetic result widths
+
+The explicit declared profile now retains guaranteed successful Byte/Integer/Long,
+Single and legacy DATE arithmetic result carriers when operand declarations are
+known Scalar. Downstream UNION conversion no longer changes merely because an
+identity cast wraps such an expression. Default, Variant and unknown descriptors
+remain conservative; checked runtime overflow and coercion kernels are unchanged.
+Four new matrix tests and thirty-four related regressions pass with strict query
+Clippy. See [the result contract](QUERY_RESULT_TYPES.md) and
+[verification record](testing/results/read-query-declared-result-widths-2026-10-25.json).
+Native Access subtype/overflow equivalence remains unqualified.
+
 ## Progressive UNION ALL
 
 Explicit streaming now accepts flat UNION ALL chains of admitted direct-table

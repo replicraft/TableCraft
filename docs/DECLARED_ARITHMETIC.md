@@ -1179,3 +1179,28 @@ ordering supply expected results; the reference never executes SQL. The
 [verification record](testing/results/read-query-scalar-string-2026-10-24.json)
 records 143 focused Rust tests, strict scoped Clippy and the frozen source/executable
 inventory. These are engineering checks, not native ACE declaration qualification.
+
+## Successful Scalar arithmetic result widths
+
+The declared execution profile now uses known Scalar declarations when describing
+successful arithmetic results. The selected Byte, Integer, Long, Single or Date
+carrier is guaranteed when its overflow would fail rather than widen. This covers
+addition, subtraction, multiplication, selected-width division and integer
+quotients, plus Integer/Long/Date unary negation. Existing operator exceptions,
+including Double division of integrals and Date-minus-Date, retain their carriers.
+NULL propagation retains nullable descriptors; this inference does not evaluate
+operands or promise that an operation succeeds.
+
+This follows the effective-type and Scalar overflow rules in the
+[MS-VBAL arithmetic contract](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/e070115f-8d40-40cf-ac6d-ab18b9c6c906)
+and the [unary minus override](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/181ac001-7156-4fed-a518-fb90b828ec59).
+Variant and unknown declarations retain their conservative widening descriptors.
+Materialized/default execution is unchanged. Public prepared metadata still merges
+both profiles conservatively, while execution selects the matching descriptor.
+
+The distinction matters for composed queries. Under declared arithmetic,
+`CInt(1)+CInt(2)` followed by a Currency UNION arm now promotes to Currency exactly
+as an explicit `CInt` identity cast does. Previously the arithmetic arm's Dynamic
+descriptor prevented that conversion, exposing Integer and Currency rows in the
+same output. This corrects TableCraft's explicit profile; it does not establish
+native ACE aggregate subtypes or complete Access SQL declaration inference.
