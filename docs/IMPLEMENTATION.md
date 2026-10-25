@@ -1,5 +1,25 @@
 # Implementation status
 
+## Independent mixed Decimal division replay
+
+The [exact-ratio replay](testing/DECIMAL_DIVISION.md) passes 269 CLI controls and
+11 independent IEEE model checks against an immutable executable. It rounds
+operands and quotients separately using integer-ratio arithmetic, checking exact
+Double bits, retained Decimal types, raw/regional Strings, signed zero,
+subnormal/overflow boundaries, eager errors and composed queries. Another 120
+observational default-profile pairs match the previous frozen CLI exactly; these
+pairs are recorded separately from independent expectations. All 32 pinned hashes
+remain unchanged across 509 total invocations.
+
+The [scoped verification record](testing/results/read-query-decimal-division-2026-10-24.json)
+pins the committed production base, complete audited Rust source digest and
+terminal 91-test query log. Fifty-seven expression, 91 query and 36 CLI tests
+pass, with overlapping minimal-feature controls recorded separately. Scoped
+strict Clippy, normal CLI build, standalone query checking, formatting and
+policy checks pass. No full-workspace suite, Windows Access comparison, new
+dependency or write expansion is claimed. Complete P0 value/text semantics and
+the broader read/query/backend roadmap remain unfinished.
+
 ## Composed query typing across arithmetic profiles
 
 Query execution now applies the explicit mixed Decimal division rule without

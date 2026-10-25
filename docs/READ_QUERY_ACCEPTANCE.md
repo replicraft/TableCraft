@@ -810,3 +810,19 @@ remain in the root namespace. Unmapped links fail only when accessed. This close
 the adapter routing prerequisite without opening stored paths, claiming native
 Access linked SQL, supporting chains/providers or granting writes. Broader host,
 large-file, policy and native qualification work remains explicit above.
+
+
+## Mixed Decimal division and profile-specific composition
+
+The explicit declared-arithmetic profile now applies the reviewed operator-specific
+Double selection to Decimal paired with Double, Currency, legacy Date or numeric
+Text. Default materialized arithmetic remains Decimal-first. [Paired result
+metadata](QUERY_RESULT_TYPES.md#runtime-profile-sensitive-division) preserves
+static default UNION conversions while permitting the different declared carrier
+through nested, named, aggregate and crosstab composition. Metadata inference
+remains bounded and reads no source records.
+
+The [independent replay](testing/DECIMAL_DIVISION.md) checks exact IEEE results and
+separately verifies 120 unchanged default observations. This closes one finite
+P0 operator/composition gap; complete Variant promotion, native result typing,
+text policy precedence and Access execution qualification remain unfinished.

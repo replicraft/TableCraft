@@ -1,0 +1,70 @@
+{
+  "recorded_at_utc": "2026-10-25T02:30:01.605567+00:00",
+  "base_commit": "28bb4c0e357c3807abf215472e70f1f3da9c3308",
+  "source_snapshot": {
+    "files": 1797,
+    "sha256": "491bdfde5f8c1a806d43df9bb43a7328342b71ea51724678d88a9e37dc0b8bc9",
+    "algorithm": "sorted relative UTF-8 path + NUL + hexadecimal SHA-256(file bytes) + newline",
+    "manifest": ".cache/decimal-division-source-20261024.manifest",
+    "scope": "Rust source/tests in CLI, Access, ACE, query, expressions, SQL, foundation and I/O. The digest is a source inventory, not proof all files were tested."
+  },
+  "focused_tests": {
+    "expressions": {
+      "passed": 57,
+      "scope": "evaluation::arithmetic34 and numeric::promotion23; includes9newdivisiontests",
+      "additional_minimal_division_controls": 6,
+      "counts_overlap_minimal": true
+    },
+    "query": {
+      "passed": 91,
+      "targets": {
+        "decimal_division_profiles": 8,
+        "arithmetic_output_types": 8,
+        "arithmetic_agreement": 4,
+        "decimal_arithmetic": 3,
+        "raw_numeric_arithmetic": 2,
+        "union_numeric_types": 6,
+        "named_crosstabs": 34,
+        "selector_output_constraints": 7,
+        "crosstab": 16,
+        "zero_divisors": 3
+      },
+      "log": ".cache/decimal-division-query-tests-20261024.log",
+      "log_sha256": "e7c36ca3441602e71c8c567ae461cfdf600b8364217384a06f463d8bb35085f3"
+    },
+    "cli": {
+      "passed": 36,
+      "targets": {
+        "arithmetic_promotion": 1,
+        "arithmetic_text": 2,
+        "cached_queries": 2,
+        "database_collation": 5,
+        "linked_queries": 9,
+        "declared_integral": 17
+      }
+    }
+  },
+  "verification": {
+    "expression_sql_scoped_strict_clippy": "passed",
+    "query_scoped_strict_clippy": "passed",
+    "normal_cli_build": "passed",
+    "standalone_no_default_query_check": "passed",
+    "workspace_formatting": "passed",
+    "python_replay_compilation": "passed",
+    "dependency_boundaries_packages": 12,
+    "policy_script_tests_passed": 41,
+    "full_workspace_suite": "not run in this batch",
+    "native_access_comparison": "not run; deferred",
+    "write_scope": "unchanged"
+  },
+  "independent_replay": {
+    "path": "docs/testing/results/decimal-division-2026-10-24.json",
+    "sha256": "0ffa64eba50f29fa611465a6b8fc4a131a830f6f70cb6dd78296a84eae89fcce",
+    "independent_cli_controls": 269,
+    "model_controls": 11,
+    "observational_default_pairs": 120,
+    "total_cli_invocations": 509,
+    "unchanged_hashes": 32
+  },
+  "scope": "Explicit declared mixed Decimal division and paired-profile query metadata. Default materialized operations remain unchanged; public prepared metadata is conservative across modes. Independent language/IEEE evidence does not establish native Access equivalence."
+}

@@ -7621,3 +7621,21 @@ counts. Reference JAR, compiled outputs, fixture databases and frozen executable
 remain local ignored artifacts. Native Access linked SQL, cross-file atomic
 snapshots, provider/authentication qualification, linked writes and application
 save/reopen remain unqualified.
+
+
+## Original mixed Decimal division expression corpus
+
+The [source-free SQL replay](testing/compare_decimal_division.py) is original
+repository MIT code. It imports no database fixtures or third-party implementation.
+An integer-ratio IEEE model supplies expected binary64 results; Microsoft language
+contracts guide the explicit declared-profile cases without claiming native Access
+query qualification. Existing rust_decimal and conversion services remain the
+production implementation.
+
+The [accepted record](testing/results/decimal-division-2026-10-24.json) pins 269
+CLI controls, 11 model checks and 120 separate observational default baseline pairs
+(509 total executable invocations), with all 32 source/artifact hashes unchanged.
+The [evidence document](testing/DECIMAL_DIVISION.md) records exact commands,
+immutable executable hashes, baseline scope and excluded exploratory reports.
+Executables, raw local logs and preliminary reports remain ignored local artifacts.
+There are no newly tracked binary fixture bytes or additional license notices.
