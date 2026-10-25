@@ -1,5 +1,16 @@
 # Implementation status
 
+## Boolean index equality selections
+
+Qualified single-Boolean indexes now support exact typed equality selections.
+Automatic query hints accept Boolean field/literal equality in either order,
+retain the original filter and return sequential table order. Unsafe conjunctions,
+coercions, ranges and NULL predicates receive no new hint; selected malformed
+indexes fail explicitly. Ten engine, fifty-six retrieval and three Access adapter
+tests pass with scoped strict Clippy. See [index scope](NATIVE_INDEXES.md) and
+[verification record](testing/results/read-query-boolean-selections-2026-10-25.json).
+Independent fixture replay and native Access comparisons remain separate evidence.
+
 ## Policy-free constant String pivot headings
 
 Named crosstab preparation now evaluates sixteen existing policy-free Text/byte

@@ -1,6 +1,31 @@
 //! Exact logical integer bounds, independent of native key encoding/direction.
-use super::page::KeyRef;
+use super::{boolean::value_key, page::KeyRef};
 use std::ops::Bound;
+
+/// Exact Boolean selection through a qualified single-Boolean index.
+/// This two-value storage domain has no NULL or numeric-coercion interpretation.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum BooleanIndexSelection {
+    /// Complete traversal; still requires a Boolean key declaration.
+    All,
+    /// Only the exact stored Boolean value.
+    Equal(bool),
+}
+
+impl BooleanIndexSelection {
+    pub(super) fn keyed(self) -> Int64IndexSelection {
+        match self {
+            Self::All => Int64IndexSelection::All,
+            Self::Equal(value) => {
+                let key = value_key(value);
+                Int64IndexSelection::Range {
+                    lower: Bound::Included(key),
+                    upper: Bound::Included(key),
+                }
+            }
+        }
+    }
+}
 
 /// Selection for a width-qualified native integer index reader.
 /// Range bounds use numeric ascending order regardless of index direction.

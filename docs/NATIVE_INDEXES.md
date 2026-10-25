@@ -489,7 +489,7 @@ ACE writes remain blocked. Actual Access, SQL non-finite behavior, floating seek
 mutation and legacy DateTime indexes have separate qualification requirements;
 the latter now use the explicit DATE profile above.
 
-## Complete Boolean indexes
+## Boolean indexes
 
 Native Yes/No fields now qualify for complete single-key and two-to-ten-component
 mixed index reads/checks. Their row mask represents the value, so both true and
@@ -523,7 +523,30 @@ two-value model, compressed row-reference prefixes, every possible value byte,
 NULL/key mismatches, typed seeks, mixed carriers, constraints, budgets and
 cancellation. Unrelated eligible Jet 4 Int32 edits retain every byte outside the
 field; the Jet 4 Int32 editor still rejects Boolean targets and normal ACE saves
-stay blocked. Boolean seeks and production mutation remain unimplemented.
+stay blocked. Production Boolean mutation remains unimplemented.
+
+Exact single-key Boolean seeks now use `BooleanIndexSelection::Equal(bool)`
+through `IndexProjectionSelection::Boolean`. `All` still requires a Boolean key;
+Byte, numeric and composite declarations are refused even for empty outputs.
+The reader reuses the two-value codec and existing branch bounds, validates
+omitted key fields against returned rows, and caps retained matching rows rather
+than the complete table declaration. Bounded reads validate visited subtrees only;
+skipped corrupt branches are not qualified. NULL selections and ranges are not
+part of this Boolean API.
+
+[Automatic selection](AUTOMATIC_INDEXES.md) can use direct Boolean field/literal
+equality in either operand order. The original filter remains authoritative.
+There is no new numeric/Text coercion, NULL predicate or partial-AND extraction.
+Selected corruption, cancellation and limit failures retain their typed errors
+and never trigger sequential fallback. Four focused engine tests cover the four
+priority profiles, both directions, zero-width projections, disjoint branch
+pruning, key/row disagreement, wrong declarations, retention, cancellation and
+resource limits. Adapter tests cover required/automatic routing and partial-cache
+isolation; backend-neutral tests cover exact hints and declined unsafe predicates.
+Microsoft documents True/False criteria for Yes/No fields in
+[query criteria examples](https://support.microsoft.com/en-us/access/examples-of-query-criteria).
+That query contract and the independently observed native codec support this
+engineering access path; native Access optimizer equivalence remains unqualified.
 [Read-only Boolean foreign-key membership](NATIVE_CONSTRAINTS.md#stored-boolean-relationship-membership)
 now has a separate exact stored-tuple audit; it does not qualify mutation or actual
 Microsoft Access behavior.

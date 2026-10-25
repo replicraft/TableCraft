@@ -8,6 +8,8 @@ use tablecraft_query::source::ScanConstraint;
 
 #[path = "constraints/binary.rs"]
 mod binary;
+#[path = "constraints/boolean.rs"]
+mod boolean;
 #[path = "constraints/guid.rs"]
 mod guid;
 
@@ -76,6 +78,12 @@ impl Source for Restricted {
         self.source.scan(table, &mut |row| {
             let matches = match (constraint, &row[constraint.column()]) {
                 (ScanConstraint::Null { .. }, Value::Null) => true,
+                (
+                    ScanConstraint::Boolean {
+                        value: expected, ..
+                    },
+                    Value::Boolean(value),
+                ) => expected == *value,
                 (
                     ScanConstraint::Guid {
                         value: expected, ..

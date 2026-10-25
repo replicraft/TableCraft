@@ -21,9 +21,14 @@ explicit choice takes priority, including its normal eligibility/error rules.
 Selection starts only when execution supplies an existing wholly safe constraint.
 Preparation discovers schema without reading index pages or user records. The
 first matching single-key definition in native definition order is used. Eligible
-keys are Byte, Int16, Int32, Int64, Currency and GUID under their existing engine
+keys are Boolean, Byte, Int16, Int32, Int64, Currency and GUID under their existing engine
 profiles: exact typed intervals/equality and qualified NULL tests retain their
-existing semantics. NULL-only constraints also select qualified single General
+existing semantics. Boolean eligibility is narrower: exact direct field/Boolean
+literal equality only, in either operand order. Boolean NULL tests, ranges,
+parameters and coercive numeric/Text or conversion-call comparisons do not
+produce hints. Repeated identical Boolean equality conjuncts can retain the
+complete safe constraint; conflicting or partly unsupported conjunctions decline
+it entirely. NULL-only constraints also select qualified single General
 Text and Short Binary indexes; empty strings/bytes are separate non-NULL values.
 These NULL constraints require no SQL string comparator or locale provider.
 Single direct Short Text equality can additionally use
@@ -42,7 +47,7 @@ Once a candidate is selected, read, corruption, unsupported-profile, cancellatio
 and quota failures propagate. No other index or sequential scan is tried after
 that failure. Both dense and pruned projections use the same selection service.
 The original WHERE remains mandatory. Partial AND extraction, coercive predicates,
-SQL Text inequalities and non-NULL Binary bounds, Boolean/floating/date seeks and composite seeks
+SQL Text inequalities and non-NULL Binary bounds, Boolean ranges, floating/date seeks and composite seeks
 remain unsupported. Physical Text/Binary ranges are not SQL predicate semantics.
 Non-NULL Binary comparisons currently raise TypeMismatch in the query evaluator.
 Even an exact native Binary interval is therefore unsafe as a SQL hint: pruning

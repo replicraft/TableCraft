@@ -1,10 +1,11 @@
 use super::{NativeSource, query_error, schema::ScalarSchema};
 use crate::collation::identity;
 use tablecraft_ace::{
-    BinaryIndexSelection, ByteIndexSelection, CurrencyIndexSelection, GeneralEqualityPrefix,
-    GuidIndexSelection, IndexInspection, IndexProjectionSelection, IndexReadRequest,
-    Int16IndexSelection, Int32IndexSelection, Int64IndexSelection, NativeIndex, TextIndexSelection,
-    inspect_table_indexes, read_table_index_in_table_order, read_table_index_with_request,
+    BinaryIndexSelection, BooleanIndexSelection, ByteIndexSelection, CurrencyIndexSelection,
+    GeneralEqualityPrefix, GuidIndexSelection, IndexInspection, IndexProjectionSelection,
+    IndexReadRequest, Int16IndexSelection, Int32IndexSelection, Int64IndexSelection, NativeIndex,
+    TextIndexSelection, inspect_table_indexes, read_table_index_in_table_order,
+    read_table_index_with_request,
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_query::{QueryError, Source, source::ScanConstraint};
@@ -116,6 +117,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
 }
 
 enum Selection {
+    Boolean(BooleanIndexSelection),
     Byte(ByteIndexSelection),
     Int16(Int16IndexSelection),
     Currency(CurrencyIndexSelection),
@@ -128,6 +130,9 @@ enum Selection {
 
 fn selection(constraint: ScanConstraint, kind: ScalarType) -> Option<Selection> {
     match (constraint, kind) {
+        (ScanConstraint::Boolean { value, .. }, ScalarType::Boolean) => {
+            Some(Selection::Boolean(BooleanIndexSelection::Equal(value)))
+        }
         (ScanConstraint::Null { .. }, ScalarType::Text) => {
             Some(Selection::Text(TextIndexSelection::Null))
         }
@@ -246,6 +251,7 @@ fn candidate_selection(
     }
 
     match key.and_then(|field| selection(constraint, field.scalar_type()?)) {
+        Some(Selection::Boolean(selection)) => IndexProjectionSelection::Boolean(selection),
         Some(Selection::Byte(selection)) => IndexProjectionSelection::Byte(selection),
         Some(Selection::Int16(selection)) => IndexProjectionSelection::Int16(selection),
         Some(Selection::Currency(selection)) => IndexProjectionSelection::Currency(selection),
