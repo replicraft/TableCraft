@@ -89,7 +89,17 @@
   ],
   "unrun": [
     "Full workspace suite",
-    "Native Microsoft Access comparison",
-    "Independent original native equijoin replay"
-  ]
+    "Native Microsoft Access comparison"
+  ],
+  "independent_replay": {
+    "report": "native-equijoins-2026-10-25.json",
+    "sha256": "af08142f83dd1c443e1ded065a38cf021b753696f3dd3852279184f0f9bbaf09",
+    "controls": 20,
+    "disagreements": 0,
+    "compared_rows": 16012,
+    "compared_cells": 32024,
+    "independently_rechecked_immutable_pins": 9,
+    "independently_rechecked_compiled_source_pins": 12,
+    "qualification": "Independent inert getters and integer model; no native Access SQL comparison or timing claim"
+  }
 }
