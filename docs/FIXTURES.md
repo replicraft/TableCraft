@@ -1,5 +1,23 @@
 # Candidate Access fixtures
 
+## Conditional calculation preview inputs
+
+Original MIT [CalculatedIIfFixture.java](testing/CalculatedIIfFixture.java),
+SHA-256 `24367523568a67cf314ba78bdac118ab273102fbddb7fca9b2d94fb4e4d31257`,
+creates fresh inert V2016/V2019 inputs through the reviewed Jackcess 5.0.4 public
+builders. No upstream fixture/code is copied. Formula evaluation stays disabled;
+ordinary getter observations remain separate from independently modeled previews.
+Originals remain ignored under calculated-iif-20261024.
+
+| Original | Bytes | SHA-256 |
+| --- | ---: | --- |
+| V2016.accdb | 393,216 | `0918d2bcf67eb8ab12a9f1439149262ba6bb8ab165f0d303b16f28950ea9be3d` |
+| V2019.accdb | 466,944 | `ffd7835b2498bfe670b8c87c4eeee2823c3f80ca622a8d6228599c6ad91e0a9f` |
+
+The [86-control replay](testing/CALCULATED_IIF.md) retains unchanged original and
+producer/getter/source/executable hashes. Negative persisted declarations do not
+establish native formula availability; no cache freshness is inferred.
+
 ## Cached calculated Memo inputs
 
 Original MIT [CalculatedMemoFixture.java](testing/CalculatedMemoFixture.java),

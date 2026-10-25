@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-24",
+  "production_base_commit": "11ccd44d",
+  "scope": "Explicit deterministic IIf calculation previews; no native conversions or freshness qualification",
+  "rust_tests": {
+    "passed_unique_tests": 76,
+    "new_tests": 8,
+    "targets": {
+      "access_lib": 41,
+      "calculation_preview": 21,
+      "cli_preview_calculation": 14
+    }
+  },
+  "checks": [
+    {
+      "command": "cargo test --locked -p tablecraft-access --lib --test calculation_preview",
+      "exit_code": 0,
+      "private_log": ".cache/calculation-iif-tests-20261024.log",
+      "sha256": "48585d6ff35c5090963276797d6318d76743b4134c1bae297249173384267d17"
+    },
+    {
+      "command": "cargo clippy --locked -p tablecraft-access --lib --test calculation_preview -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/calculation-iif-clippy-20261024.log",
+      "sha256": "553e85d0103bbbc35f8050bbbe1936b5f56758e6cb3d8381e1cabba6fffd10d0"
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --test preview_calculation -j 2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/calculation-iif-cli-tests-20261024.log",
+      "sha256": "0dfd791c5ef52e644424735fbcebd23582928821c0ed37adca899bdf006cf7f5"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-cli --bin tablecraft --test preview_calculation -j 2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/calculation-iif-cli-clippy-20261024.log",
+      "sha256": "78122bea88818110cd5b5748c48bcafcb4040611be585acc7e5a5bc6881ab9d0"
+    },
+    {
+      "command": "cargo build -p tablecraft-cli -j 2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/calculation-iif-cli-build-20261024.log",
+      "sha256": "c2ccae29be8ebbd8973f3201e5f6646ec32bdad22fe9c3866ff8d1618ed74896"
+    },
+    {
+      "command": "cargo check -p tablecraft-access --no-default-features --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/calculation-iif-access-minimal-20261024.log",
+      "sha256": "f249f63e76d77c8b3505e1acc5f2b60aa298a0c231be8c9d661335677a66176b"
+    }
+  ],
+  "additional_passed_checks": [
+    "cargo fmt --all -- --check",
+    "git diff --check",
+    "All replay pins independently rehashed",
+    "1892-file manifest exactly matches committed archive11ccd44d"
+  ],
+  "independent_replay": {
+    "report": "docs/testing/results/calculated-iif-2026-10-24.json",
+    "sha256": "cb73069aaf458683df9dee7b61c699bc8d8f9d34a7dad8c5db984d115b499bb4",
+    "controls": 86,
+    "matched_cells": 160,
+    "preview_values_differing_from_raw_caches": 66,
+    "unchanged_hashes": 1906,
+    "successes": 34,
+    "refusals": 52
+  },
+  "rust_source_inventory": {
+    "files": 1892,
+    "private_manifest": ".cache/calculation-iif-rust-source-20261024.manifest",
+    "sha256": "ad7a88b8f9742169d056cd3206bed292c639ef7e727d825ab08020db139c7186"
+  },
+  "unrun": [
+    "Full workspace suite",
+    "Windows Access comparison",
+    "Performance qualification"
+  ]
+}

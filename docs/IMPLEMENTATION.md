@@ -1,5 +1,13 @@
 # Implementation status
 
+## Independent conditional calculation replay
+
+The [original replay](testing/CALCULATED_IIF.md) passes 86 controls and 160 modeled
+cells across V2016/V2019 inputs, with 66 recomputed values differing from raw caches
+and separate stored-cache preservation checks. All 1,906 pins remain unchanged;
+the 1,892-file Rust inventory exactly matches committed archive `11ccd44d`.
+Native Access conversions, freshness and wider function admission remain unqualified.
+
 ## Deterministic IIf calculation previews
 
 Explicit calculation previews now admit unqualified three-expression `IIf` calls.
