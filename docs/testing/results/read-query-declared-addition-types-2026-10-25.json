@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Successful mixed String/numeric plus descriptors only under explicit known declared categories",
+  "unique_tests": 156,
+  "new_tests": 5,
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-query --test declared_addition_types --test declared_addition -j2 --locked --offline",
+      "private_log": ".cache/declared-addition-types-primary-20261025.log",
+      "exit_code": 0,
+      "sha256": "ef113af587043b3cff58ae9fe2f6587362c14e200378a0f76cd98642eb552f25",
+      "passed_tests": 10
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test declared_result_widths --test arithmetic_output_types --test arithmetic_agreement --test union_numeric_types --test union_text_types --test variant_text_comparison --test collation_routing --test projection_alias_values -j2 --locked --offline",
+      "private_log": ".cache/declared-addition-types-regressions-20261025.log",
+      "exit_code": 0,
+      "sha256": "481227116f90e7a38b114c8bfd1e19292c18e470427409ffe0a5987a41ea02fd",
+      "passed_tests": 146
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --tests -j2 --locked --offline -- -D warnings",
+      "private_log": ".cache/declared-addition-types-clippy-20261025.log",
+      "exit_code": 0,
+      "sha256": "4c75eb459b5ad53a66794204b6d271ddca877bd1bdbd1a0e3a13b780872517b6"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "private_log": ".cache/declared-addition-types-fmt-20261025.log",
+      "exit_code": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "review": [
+    "Default/materialized mixed-plus metadata remains Dynamic; prepared public metadata stays conservative across plan reuse.",
+    "Known Scalar String plus Variant numeric guarantees unconstrained Text in both operand orders.",
+    "Known Variant String numeric addition uses existing guaranteed Double/Currency/Decimal result rules; Date and unresolved declarations remain Dynamic.",
+    "NULL-only propagation, nullable metadata, eager failures and explicit formatting requirements retain runtime behavior."
+  ],
+  "unrun": [
+    "Full workspace suite",
+    "Native Microsoft Access comparison"
+  ]
+}

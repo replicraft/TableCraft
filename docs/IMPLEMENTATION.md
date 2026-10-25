@@ -1,5 +1,16 @@
 # Implementation status
 
+## Declared mixed-plus result types
+
+Known String/numeric `+` operations now expose their guaranteed successful result
+under the explicit declared-arithmetic profile. Scalar String with Variant numeric
+produces Text metadata, allowing UNION to apply the same result conversion as an
+explicit String operation. Variant String/numeric uses existing numeric carrier
+guarantees; Date, unknown declarations and default mixed-plus metadata retain
+conservative behavior. Five new tests and 151 regressions pass with strict query
+Clippy. See [descriptor scope](DECLARED_ARITHMETIC.md#mixed-plus-result-descriptors)
+and [verification](testing/results/read-query-declared-addition-types-2026-10-25.json).
+
 ## Progressive Count operands
 
 Explicit progressive global counts now support `Count(expr)` alongside `Count(*)`.

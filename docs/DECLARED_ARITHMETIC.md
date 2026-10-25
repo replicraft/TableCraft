@@ -23,6 +23,44 @@ Numeric cases then return to the same selected-width/agreement paths. Decoding a
 raw string does not establish a Scalar declaration or remove an explicit Variant
 participant. Default materialized execution is unchanged.
 
+### Mixed-plus result descriptors
+
+Known mixed String/numeric operands now have a successful-result descriptor in
+the explicit declared execution profile. Scalar String with Variant numeric
+produces unconstrained Text; Variant String with a known numeric declaration
+uses the existing numeric result rule. The latter guarantees Double for ordinary
+integral/Boolean/floating peers, Currency for a Currency peer, and Decimal for a
+Decimal peer. Legacy Date remains Dynamic because its existing Variant envelope
+rule can return Date or Double. Both operand orders use the same selection.
+
+The materialized profile retains its existing Dynamic mixed-plus descriptor.
+Public prepared metadata remains Dynamic when the two profiles differ; execution
+selects the captured profile description, including for empty results. Unknown
+categories and Scalar String/Scalar numeric refusal do not acquire a descriptor.
+NULL-only operands keep the existing NULL result rule; nullable numeric/String
+inputs allow NULL because mixed-plus NULL propagation differs from ampersand.
+No value, formatting policy, comparer or source record is evaluated during
+inference. Input length and numeric precision constraints do not constrain the
+constructed result.
+
+This fixes a composition discrepancy: in the declared profile,
+`SELECT 'x'+CVar(1) AS V UNION ALL SELECT CLng(2)` now converts both successful
+cells to Text, just as the explicit String operation `'x' & CVar(1)` already did.
+Previously the first arm's Dynamic descriptor left the second cell as Long.
+The same prepared query in the default profile retains its prior conversion
+behavior. Formatting failures, malformed raw Strings, eager operand errors and
+unknown declaration refusals still fail through their existing runtime paths;
+inference neither performs conversions nor suppresses errors.
+
+Five focused tests cover the ten admitted numeric peer families, known category
+pairs and operand orders, active versus public metadata, both UNION arm orders,
+grouped/derived results, empty nullable outputs and checked errors. These are
+guarantees of the existing engineering profile, not native Access subtype or
+new operator-availability qualification. The existing
+[MS-VBAL plus contract](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/91621d4b-3da3-4fe9-9581-adda857efe05)
+and [reviewed mixed-plus dispatch](CONCATENATION.md#declared-mixed-string-and-numeric-addition)
+remain the semantic references.
+
 ## Captured decimal integer literals
 
 The same explicit `query run --declared-arithmetic` profile now captures
