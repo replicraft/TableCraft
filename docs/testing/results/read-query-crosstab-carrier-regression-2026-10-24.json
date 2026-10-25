@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-24",
+  "scope": "Consolidated all-feature query regression after crosstab group-policy correction, retained math/financial/date-constructor APIs and additional calculated cached carrier reads. Native adapter replay is recorded separately.",
+  "command": "cargo test -p tablecraft-query --all-features --locked -j 2",
+  "exit_code": 0,
+  "passed": 1069,
+  "ignored": 0,
+  "result_targets": 197,
+  "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)",
+  "git_head": "14ef1f6023a5cc0c9c7873ef936f4eccd7aaf902",
+  "query_expression_source_files": 856,
+  "query_expression_source_sha256": "6953d41ea2b0b6409ba74c304f9131d8d785eecebbcb2e459787f3094d802fba",
+  "source_digest_algorithm": "SHA-256 over sorted repository-relative .rs paths under both query/expression packages, each encoded as UTF-8 path, NUL, hexadecimal SHA-256 of file bytes, newline.",
+  "inputs": {
+    ".cache/query-regression-20261024-crosstab-carriers.log": "f011efa28c7784608fa470a789a4bb12058f29a082ee9a11dcde5d1be3fa2194",
+    "Cargo.lock": "68548efc779b592b1d885a02cf21d1c547559091c72b4f814ba75842ebb0a2ab",
+    "Cargo.toml": "4fc24d3479835ff249ea49df6724d81179965c8d6f2a73f236f0f3e00da822a4",
+    ".cache/tablecraft-bin/calculated-carriers-20261024": "021a072d23e21e8d65fcf7e7331cc3100db24d4fda15337e31ded8cc01e34e11",
+    "crates/engines/tablecraft-ace/src/table/calculated/encoding.rs": "7b07218801344bca52f57287ff39d74ed66c28ac900451e9d942c5a67b7591cf"
+  },
+  "native_access": "unrun; user-deferred",
+  "limitations": [
+    "Passing engineering regression does not establish complete Variant promotion, NLS/ACE equivalence, native formula freshness or saves.",
+    "Independent calculated-carrier replay uses unchanged original reference-generated files; query non-finite admission remains distinct from successful raw cached inspection."
+  ]
+}
