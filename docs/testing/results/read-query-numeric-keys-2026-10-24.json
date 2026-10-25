@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-24",
+  "production_base_commit": "f9df858ae42069a53588dfb223c1fc97d7e65a05",
+  "scope": "Exact mixed Single/Double relational views; bounded engineering evidence, not native Access heterogeneous grouping or complete P0/read-query qualification",
+  "rust_source_inventory": {
+    "roots": [
+      "apps",
+      "crates"
+    ],
+    "files": 1837,
+    "algorithm": "Sorted relative UTF-8 path + NUL + lowercase hex SHA256(file bytes) + newline; SHA256 of the complete UTF-8 manifest",
+    "sha256": "b1fcff8c39f19d190884bf5b529cfd35d55acc96329aad50c2f17c1b5f8ec766",
+    "private_manifest": ".cache/numeric-keys-rust-source-20261024.manifest",
+    "qualification": "A complete source inventory is not complete test coverage"
+  },
+  "rust_tests": {
+    "passed_unique_tests": 78,
+    "integration_targets": {
+      "numeric_keys": 8,
+      "crosstab": 16,
+      "crosstab_scalar_headings": 8,
+      "domain": 9,
+      "error_extrema": 5,
+      "error_keys": 7,
+      "grouped_expressions": 5,
+      "raw_string_comparison": 4,
+      "union_numeric_types": 6
+    },
+    "key_unit_tests": 10,
+    "generated_properties": 5,
+    "cases_per_generated_property": 512,
+    "unit_command": "cargo test -p tablecraft-query --lib execution::keys -j2 --locked --offline",
+    "exit_code": 0,
+    "logs": [
+      {
+        "path": ".cache/numeric-keys-query-tests-20261024.log",
+        "sha256": "eb915b09e20ae1c22fa294dac593c67d1256ba87a98f005aa664cd13940a6eb0",
+        "tracked": false
+      },
+      {
+        "path": ".cache/numeric-keys-query-final-20261024.log",
+        "sha256": "94945fe02448cba44e58e4ead34c31b5f1efd779fce847a162ac18e04dbcd476",
+        "tracked": false
+      },
+      {
+        "path": ".cache/numeric-keys-unit-final-20261024.log",
+        "sha256": "fe7fccfaa685050f411a6af931b7f0ac7834cbccb87dc304f821b9ecec142858",
+        "tracked": false
+      }
+    ],
+    "count_note": "Final eight numeric_keys tests replace their earlier eight-test run; overlapping tests are not added."
+  },
+  "checks": [
+    {
+      "command": "cargo clippy -p tablecraft-query --tests -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "scope": "All query test targets including unit-test code; tests are not executed by Clippy",
+      "log": {
+        "path": ".cache/numeric-keys-query-all-tests-clippy-20261024.log",
+        "sha256": "85d12c1b2259528a2d08e617a68a40077b058e8af75acd0e037ff04141dd4749",
+        "tracked": false
+      }
+    },
+    {
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/numeric-keys-query-final-clippy-20261024.log",
+        "sha256": "ee4d15bd751d7c47ffd952d33249034f3c87368c8c64634beeb1ad54dff954af",
+        "tracked": false
+      },
+      "scope": "Strict query library and numeric_keys integration-target Clippy",
+      "command": "cargo clippy -j2 -p tablecraft-query --lib --test numeric_keys --locked --offline -- -D warnings"
+    },
+    {
+      "command": "cargo check -p tablecraft-query --no-default-features -j2 --locked --offline",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/numeric-keys-query-minimal-final-20261024.log",
+        "sha256": "8bfc99d7c4e322d588702be6c8dfc66930f130baf38f8a1dee003c198dc3a6f5",
+        "tracked": false
+      }
+    },
+    {
+      "command": "cargo build -p tablecraft-cli --bin tablecraft -j2 --locked --offline",
+      "exit_code": 0,
+      "note": "Final-v2 artifact follows production formatting; earlier pre-format artifact remains excluded."
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_dependency_boundaries.py",
+      "exit_code": 0,
+      "packages": 12
+    },
+    {
+      "command": "python3 -m unittest discover -s scripts -p 'test_*.py'",
+      "exit_code": 0,
+      "passed": 41
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "independent_replay": {
+    "report": "docs/testing/results/numeric-keys-2026-10-24.json",
+    "sha256": "96fb50c927f39e2f4a934de1017b5b0cb8b54ebb7700f03b63050d48905b73ad",
+    "model_goldens": 9,
+    "candidate_controls": 2910,
+    "candidate_agreed": 2910,
+    "native_candidate_controls": 1584,
+    "baseline_controls": 144,
+    "baseline_agreed": 66,
+    "baseline_differed": 78,
+    "unchanged_hashes": 25,
+    "log": {
+      "path": ".cache/numeric-keys-final-replay-20261024.log",
+      "sha256": "1a9248a5fe3cdf79d39aba51ce30b2fb8fdd5c9d804b6a06c2fef761b3159fd2",
+      "tracked": false
+    },
+    "count_note": "Current 144 baseline controls are separate from the embedded earlier 720-command audit and its 70 binary-family discrepancies."
+  },
+  "preserved_boundaries": [
+    "Scalar predicate narrowing",
+    "Static UNION conversions",
+    "Retained carriers/declarations/text policies",
+    "Existing fixed/float and inexact integral/float refusals",
+    "NULL/Error/raw String rules",
+    "Finite checks, work/cancellation, buffered publication and pivot heading-name collisions"
+  ],
+  "excluded_attempts": [
+    "Old 720-command audit retains 48 diagnostic-wording classifications and four valid TOP results without global comparison-domain preflight; neither is counted as a new defect.",
+    "Early observer-generator probes exceeded existing binding depth; generators were flattened without changing execution ceilings.",
+    "Early pivot-label model treated rounded labels as exact keys; corrected independent 7/15-digit rounding preserves label collisions separately.",
+    "Earlier edfd758e executable precedes one production formatting wrap and is excluded from accepted replay."
+  ],
+  "not_run": [
+    "Full query/workspace test suites",
+    "Windows Microsoft Access comparisons",
+    "Performance or release benchmarks"
+  ],
+  "remaining": [
+    "Native heterogeneous Variant grouping qualification",
+    "Broader P0 value/text semantics",
+    "Remaining read/query, storage and backend acceptance work"
+  ]
+}
