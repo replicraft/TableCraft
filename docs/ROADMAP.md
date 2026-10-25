@@ -1,5 +1,55 @@
 # Compatibility-driven roadmap
 
+## Delivery snapshot — 25 October 2026
+
+The numbered milestones below are broad epics, rather than individual tasks.
+Recent delivery has primarily advanced local reads, query composition and scale;
+it has not completed the general writer or application runtime. This checklist
+makes delivered subtasks visible without reducing the full milestone scope.
+Each item retains the limits in its linked contract.
+
+Delivered read/query and engineering foundations:
+
+- [x] Local catalog/table browsing, system-table filtering, stored counts and
+  scalar row pages through the [CLI](CLI_BROWSING.md).
+- [x] Bounded [buffered SQL retrieval](QUERY_EXECUTION.md), including joins,
+  grouping/HAVING, UNION, qualified crosstabs and saved/named dependencies.
+- [x] Explicitly authorized [linked](NATIVE_LINKED_QUERIES.md) and
+  [external native query sources](NATIVE_EXTERNAL_QUERIES.md).
+- [x] Qualified [encryption opens and fresh-copy password management](NATIVE_ENCRYPTION.md).
+- [x] [Progressive rows and queries](STREAMING_QUERIES.md): eligible SELECT,
+  five global aggregates, Text/exact-key grouping, terminal HAVING, flat UNION ALL
+  and static row-local named/derived chains. Text membership uses complete policies.
+- [x] [Cursor/read failure controls](NATIVE_READ_FAILURES.md), cumulative limits,
+  cancellation and [high-offset Memo/OLE checks](NATIVE_HIGH_OFFSET_PAYLOADS.md).
+- [x] Offline Jet 4 fixed Int32 UPDATE copies and separate
+  [ACE 16 engineering write previews](testing/ACE16_WRITE_PREVIEWS.md).
+  General ACE 16 saves are still unavailable.
+
+Current implementation work:
+
+- [ ] Progressive stateful saved/named/derived aggregate stages: lifecycle
+  extraction is in progress. These queries already work through bounded buffered
+  execution; the missing capability is progressive composition with correct
+  per-stage completion, retained values and failure handling.
+
+Major gates still open before the full backend is complete:
+
+- [ ] Remaining [read/query acceptance](READ_QUERY_ACCEPTANCE.md), including full
+  Variant/result promotion, native text semantics and wider native definitions.
+- [ ] Broader ACE 16 validation/preservation and required data-macro safety.
+- [ ] General physical mutation: record growth/allocation, index splits/merges,
+  INSERT/DELETE and wider relationship/write-query actions.
+- [ ] Production transaction/recovery qualification, native shared-file
+  coordination and mixed-client behavior.
+- [ ] Remaining backend contracts, application session/cursor lifecycle, object lifecycle, background
+  work and change notifications; further SQLite work retains the native-first order.
+
+Windows Access comparisons are deferred by the user. Their evidence status is
+separate from implemented engineering functionality; independent fixtures do not
+establish native conformance. The detailed milestone and acceptance tables below
+remain authoritative and are not replaced by this delivery snapshot.
+
 Priority decision updated 18 October 2026. The native Jet/ACE engine, Access
 interoperability, visual application builder and SQLite lead implementation.
 This orders work without imposing a strict sequence; UI and compatibility testing
