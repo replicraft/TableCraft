@@ -27,11 +27,13 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
         comparison_budget: ResourceBudget,
     ) -> Result<(Self, GeneralCollation<'a>), InspectError> {
         self.check_text_policy_selection(false)?;
-        let order = inspect_database_sort_order(
-            self.source.get_mut(),
-            self.budget.get_mut(),
-            self.cancelled,
-        )?;
+        let order = {
+            let mut budget = self
+                .budget
+                .try_borrow_mut()
+                .map_err(|_| InspectError::Unsupported)?;
+            inspect_database_sort_order(self.source.get_mut(), &mut budget, self.cancelled)?
+        };
         let policy = GeneralCollation::new(order, comparison_budget, self.cancelled)?;
         self.text_policy_scope = TextPolicyScope::Homogeneous(order);
         Ok((self, policy))
@@ -52,12 +54,20 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
         'a: 'b,
     {
         let _span = tracing::debug_span!("native.query.collation.configure").entered();
+        if self.budget.aliases(comparison_budget) {
+            if (self.cancelled)() {
+                return Err(InspectError::Cancelled);
+            }
+            return Err(InspectError::Unsupported);
+        }
         self.check_text_policy_selection(true)?;
-        let order = inspect_database_sort_order(
-            self.source.get_mut(),
-            self.budget.get_mut(),
-            self.cancelled,
-        )?;
+        let order = {
+            let mut budget = self
+                .budget
+                .try_borrow_mut()
+                .map_err(|_| InspectError::Unsupported)?;
+            inspect_database_sort_order(self.source.get_mut(), &mut budget, self.cancelled)?
+        };
         let resolver = NativeCollationResolver::new(order, comparison_budget, self.cancelled)?;
         self.text_policy_scope = TextPolicyScope::PerField;
         Ok((self, resolver))
@@ -70,7 +80,10 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
             if (self.cancelled)() {
                 return Err(InspectError::Cancelled);
             }
-            self.budget.get_mut().charge(Resource::Steps, 1)?;
+            self.budget
+                .try_borrow_mut()
+                .map_err(|_| InspectError::Unsupported)?
+                .charge(Resource::Steps, 1)?;
             if entry.columns.get().is_some() {
                 return Err(InspectError::Unsupported);
             }

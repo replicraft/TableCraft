@@ -35,17 +35,24 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
         name: &str,
         limits: ParseLimits,
     ) -> Result<SavedRead, NativeSavedReadError> {
+        if self.budget.shared() && (self.cancelled)() {
+            return Err(InspectError::Cancelled.into());
+        }
+        let mut budget = self
+            .budget
+            .try_borrow_mut()
+            .map_err(|_| InspectError::Unsupported)?;
         let definition = read_saved_query_definition(
             self.source.get_mut(),
             self.scope,
             name,
-            self.budget.get_mut(),
+            &mut budget,
             self.cancelled,
         )?;
         Ok(reconstruct_saved_read(
             definition,
             limits,
-            self.budget.get_mut(),
+            &mut budget,
             self.cancelled,
         )?)
     }
@@ -61,17 +68,24 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
         name: &str,
         limits: ParseLimits,
     ) -> Result<SavedSelect, NativeSavedReadError> {
+        if self.budget.shared() && (self.cancelled)() {
+            return Err(InspectError::Cancelled.into());
+        }
+        let mut budget = self
+            .budget
+            .try_borrow_mut()
+            .map_err(|_| InspectError::Unsupported)?;
         let definition = read_saved_query_definition(
             self.source.get_mut(),
             self.scope,
             name,
-            self.budget.get_mut(),
+            &mut budget,
             self.cancelled,
         )?;
         Ok(reconstruct_saved_select(
             definition,
             limits,
-            self.budget.get_mut(),
+            &mut budget,
             self.cancelled,
         )?)
     }

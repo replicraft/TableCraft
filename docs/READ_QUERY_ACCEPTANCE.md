@@ -49,6 +49,10 @@ qualification recorded separately.
 - Native CLI reads now use shared OS locks, excluding cooperating exclusive
   writers. Offline/stable input remains required; this is not live Access
   coordination or coherent capture during noncooperating changes.
+- The engine exposes [inert linked definitions](NATIVE_LINKED_TABLES.md), and
+  explicitly supplied Access sources can share [one native allowance](NATIVE_SOURCE_BUDGETS.md).
+  Target authorization, validated routing and linked-query execution remain
+  unimplemented; neither API follows stored paths or activates providers.
 
 CLI declared parameters now include exact Decimal and finite Single/Double
 carriers. They retain explicit syntax and strict carrier matching; see

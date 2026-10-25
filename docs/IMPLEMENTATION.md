@@ -1,5 +1,22 @@
 # Implementation status
 
+## Shared cumulative native source allowances
+
+The Access adapter now accepts one caller-owned native resource pool across
+explicitly supplied stable sources. Catalogs, schemas, saved definitions, index
+configuration and row/payload loads retain existing charges through that pool.
+Owned constructors and zero-I/O cache accounting remain unchanged. Pools never
+refill or refund; query/comparison/output controls remain separate. Borrow
+conflicts fail through typed errors, and exact native/comparison pool aliasing is
+refused before descriptor I/O while observing cancellation.
+
+The [source-budget contract](NATIVE_SOURCE_BUDGETS.md) passes seven new host-level
+controls plus 43 existing source/saved/collation/collection regressions and strict
+scoped Clippy. Tests include a routed join exceeding combined quotas, distinct
+source scopes, nested visitor reads, cached reuse and failure accounting. This
+provides a working resource prerequisite for future explicit linked-source routing;
+it opens no targets and grants no cross-file snapshot, transaction or write guarantee.
+
 ## Inert native linked-table definitions
 
 The engine now reads selected linked-table Database, ForeignName and Connect
