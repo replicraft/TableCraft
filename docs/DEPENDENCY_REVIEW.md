@@ -567,3 +567,14 @@ introduced. [Observed comparisons](testing/ENCRYPTED_MODERN_HISTORIES.md) establ
 engineering interoperability; native Access qualification and cryptographic audit
 remain distinct. The general dependency summary now reflects both reference
 versions rather than assigning the older baseline to every helper.
+
+
+## Working external JDBC aggregate reference
+
+The original [aggregate metadata probe](testing/JDBC_AGGREGATE_METADATA.md) now
+executes against reviewed UCanAccess 5.2.0, Jackcess 5.2.0 and HSQLDB 2.7.4 JARs.
+They remain ignored external engineering artifacts with recorded licenses/hashes;
+Cargo, production runtime and ordinary CI dependencies are unchanged. JDBC metadata,
+actual object classes and TableCraft carriers remain separate. Integral-average,
+rounding and execution differences in this route explicitly prevent treating it
+as a native Access oracle or importing HSQLDB semantics into TableCraft.

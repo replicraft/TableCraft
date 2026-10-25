@@ -1,5 +1,16 @@
 # Implementation status
 
+## Independent aggregate metadata reference
+
+An original inert Java/Python probe now records 58 queries in each of four
+registered native fixture profiles. It separates JDBC metadata, actual Java
+objects and TableCraft carriers: 232 TableCraft queries complete; eight of 232
+reference queries retain explicit execution errors. Originals, copies and ten
+immutable pins remain unchanged. The observations support retaining the current
+64-bit count/sum profile but expose independent average/metadata differences;
+no production numeric behavior or native qualification claim follows. See the
+[artifact review and observations](testing/JDBC_AGGREGATE_METADATA.md).
+
 ## Stateful progressive query stages
 
 Static saved/named/derived SELECT chains now compose eligible row-local, global,

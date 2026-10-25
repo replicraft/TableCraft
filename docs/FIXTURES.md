@@ -8386,3 +8386,19 @@ native write/save qualification is established. See the
 | `Delete-V2019-delete-one.accdb` | `22ba734e7bec9ac27c25da334afaea8f8db781230d901360e916376f73e29545` |
 | `Delete-V2019-delete-null.accdb` | `5a761613d016bbae1709478553f0967fd9f315fe26f46e312ea9dbadbfa04150` |
 | `Delete-V2019-delete-all.accdb` | `6f7ffe4c3c799b3f981be20eec775440ea343cea9f07d59e96e15e48d7b7cdbb` |
+
+
+## External JDBC aggregate metadata probe
+
+`testing/JdbcAggregateMetadataProbe.java` and
+`testing/compare_jdbc_aggregate_metadata.py` are original Apache-2.0 tools. They
+reuse the four registered `scalar-seek-20261023` original Scalar fixtures listed
+above, copy them into fresh ignored work directories and verify unchanged original
+and copy hashes. No new third-party fixture or implementation bytes are tracked.
+The [observations](testing/JDBC_AGGREGATE_METADATA.md) record exact external
+UCanAccess 5.2.0/Jackcess 5.2.0/HSQLDB 2.7.4 artifact hashes, POM/license sources
+and checksum review; their JARs/notices remain in the ignored artifact cache.
+The [report](testing/results/jdbc-aggregate-metadata-final-2026-10-25.json) retains
+232 independent reference queries (including eight reference errors) and 232
+successful TableCraft queries. This is JDBC metadata/value evidence, without
+native Access qualification or a changed TableCraft numeric profile.
