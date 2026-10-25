@@ -4,8 +4,8 @@
 It visits one strictly published scalar output row at a time, returning checked
 scanned/emitted counts only after successful source EOF. Ordinary execution
 remains buffered. Working consumers are `MemorySource` and the explicit cursor-backed
-[`NativeSource`](NATIVE_PROGRESSIVE_QUERIES.md). CLI query streaming is a separate
-implementation step, not a feature supplied by this API alone.
+[`NativeSource`](NATIVE_PROGRESSIVE_QUERIES.md). The [explicit CLI host](STREAMING_QUERIES.md) supplies TSV batching and
+publication; the API itself never writes stdout.
 
 ## Admitted query shape
 

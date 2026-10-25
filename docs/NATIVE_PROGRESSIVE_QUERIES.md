@@ -43,5 +43,5 @@ leave ordinary later reads complete. A deliberately small snapshot-retention cap
 does not truncate an independently budgeted progressive scan.
 
 These are independent synthetic engine/adapter checks. Original-file CLI replay
-and Microsoft Access qualification are separate evidence; this API alone does
-not enable progressive CLI publication or complete the read/query roadmap.
+and Microsoft Access qualification are separate evidence; the [explicit CLI host](STREAMING_QUERIES.md) now supplies publication, while
+the broader read/query roadmap remains unfinished.

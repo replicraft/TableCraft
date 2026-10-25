@@ -27,6 +27,12 @@ use `query run --database frontend.accdb --external remote backend.accdb
 file; SQL never opens an embedded path. Linked and external targets share the
 same native allowance, and results remain buffered before stdout.
 
+Explicit [streaming SELECT queries](docs/STREAMING_QUERIES.md) use
+`query run --database example.accdb --stream --batch-rows 128
+'SELECT ID,Name FROM Customers WHERE ID>0'`. They publish scalar table-order
+results in TSV batches; later errors may leave earlier output. Sorting, joins,
+aggregates and other wider query shapes retain buffered execution.
+
 For larger Memo/OLE/attachment query results, explicit `query run --text-bytes
 1048576 --output-bytes 8388608 --format tsv` raises the separate per-Text and
 output allowances. Native and query budgets still apply; see [larger payloads](docs/LARGE_PAYLOADS.md).

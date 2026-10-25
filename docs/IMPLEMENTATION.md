@@ -1,5 +1,20 @@
 # Implementation status
 
+## Explicit streaming SELECT command
+
+`query run --database PATH --stream --batch-rows ROWS SQL` now composes the
+[progressive query service](PROGRESSIVE_QUERIES.md), fresh native cursor adapter
+and [bounded TSV publisher](STREAMING_QUERIES.md). Header publication waits for
+a successful batch or checked empty EOF. Typed write/flush failures propagate,
+operation failures drop the pending batch, and encoded output has one cumulative
+allowance. Ordinary commands retain buffered behavior and shared policy context.
+
+Twelve new CLI integration tests and 60 unit/browsing/native/retrieval checks pass
+alongside scoped strict Clippy. Unsupported shapes/modes, quotas, source counts,
+late errors, policies, projections and unchanged originals are covered. Original
+large-file replay and Microsoft Access qualification remain separate. Wider SQL
+streaming and the full read/query/backend roadmap remain unfinished.
+
 ## Native progressive query sources
 
 NativeSource now implements the [progressive projection contract](NATIVE_PROGRESSIVE_QUERIES.md)
@@ -11,7 +26,8 @@ retention ceilings do not truncate progressive scans.
 
 Eleven focused adapter tests and scoped strict Clippy pass across supported
 layout selectors, batch sizes, failures, quotas, cancellation and cache isolation.
-CLI publication and original-file/native Access qualification remain separate.
+CLI publication is now implemented explicitly; original-file/native Access
+qualification remains separate.
 
 ## Wide-variable Memo history replay
 
@@ -30,7 +46,7 @@ The [explicit progressive API](PROGRESSIVE_QUERIES.md) evaluates admitted direct
 scalar SELECT/WHERE queries with one Runtime and cumulative query budget. It
 requires an explicit projected-source capability, preserves original sink errors
 and rejects source-using/global query shapes before scanning. MemorySource and NativeSource are
-working consumers; CLI streaming remains a separate step.
+working consumers; an explicit CLI host now provides TSV batching.
 No partial relation cache or buffered-default change is introduced.
 
 Thirteen new conformance tests and 76 buffered regressions pass, alongside scoped
