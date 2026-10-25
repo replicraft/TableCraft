@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-24",
+  "production_base_commit": "3fbf14ea482965ae690ee4d1358effd280b0172f",
+  "scope": "Existing ArrayBound Scalar Long signatures in explicit query declaration profile, no native Access qualification",
+  "rust_source_inventory": {
+    "roots": [
+      "apps",
+      "crates"
+    ],
+    "files": 1862,
+    "algorithm": "Relative UTF-8 path sorted lexically; each path + NUL + lowercase hex SHA256(file bytes) + newline; SHA256 of complete UTF-8 manifest",
+    "sha256": "8f377ddf7734b22c74ba71f79defbd12ddd116d93c5bbeacb86ddda084e50541",
+    "private_manifest": ".cache/array-bound-declaration-rust-source-20261024.manifest",
+    "verification": "All source entries pinned before/after replay; parent independently verified committed source archive. Inventory is not complete test coverage."
+  },
+  "rust_tests": {
+    "passed_unique_tests": 19,
+    "new_tests": 6,
+    "targets": {
+      "inspection_declarations": 1,
+      "static_declarations": 4,
+      "value_inspection": 14
+    },
+    "overlap_note": "Superseded focused batches excluded; final exact-source targets counted once."
+  },
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-query --test value_inspection --test inspection_declarations --test static_declarations -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/array-bound-declaration-tests-final-20261024.log",
+      "sha256": "977cb3ac2fbcf906aaf270f3390cb27c0e2c84f5c02fba029a6995d23159a61d"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --test value_inspection --test inspection_declarations --test static_declarations -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/array-bound-declaration-clippy-final-20261024.log",
+      "sha256": "502a95e7ff12eabb523b416b662a680be72440d223b11759576e1d855f09841e"
+    },
+    {
+      "command": "cargo build -p tablecraft-cli --bin tablecraft -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/array-bound-declaration-cli-build-20261024.log",
+      "sha256": "fcfcf54037d7e2c193ff41d68cffbfb1d286dc7f5db42a27825616b579495b28"
+    }
+  ],
+  "additional_passed_checks": [
+    "cargo fmt --all -- --check",
+    "git diff --check"
+  ],
+  "independent_replay": {
+    "report": "docs/testing/results/array-bound-declarations-2026-10-24.json",
+    "sha256": "1b895ce94817b29ef72599ab441a0070078cf792419dc961e137c55930191977",
+    "controls": 77,
+    "candidate_controls": 40,
+    "baseline_controls": 37,
+    "candidate_successes": 17,
+    "candidate_refusals": 23,
+    "baseline_successes": 17,
+    "baseline_refusals": 20,
+    "modeled_cells_per_binary": 123,
+    "corrected_diagnostics": 6,
+    "retained_pairs": 31,
+    "unchanged_hashes": 1867
+  },
+  "unrun": [
+    "Complete workspace suite",
+    "Windows Access declarations/overflow qualification",
+    "Release/performance qualification"
+  ]
+}

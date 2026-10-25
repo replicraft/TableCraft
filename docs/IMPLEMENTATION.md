@@ -1,5 +1,18 @@
 # Implementation status
 
+## Independent array-bound declaration replay
+
+The [source-free replay](testing/ARRAY_BOUND_DECLARATIONS.md) passes 77 commands
+and all 1,867 unchanged hashes. It checks 123 modeled cells per binary, corrects
+six unknown-declaration diagnostics to Scalar Long overflow and retains 31 paired
+outcomes. Candidate controls include 17 successes and 23 classified refusals.
+No database or reference runtime is invoked.
+
+The [verification record](testing/results/read-query-array-bound-declarations-2026-10-24.json)
+pins production base `3fbf14ea`, the complete 1,862-file Rust inventory and 19
+passing scoped Rust tests. Wider array behavior, native query typing and complete
+P0 semantics remain unfinished.
+
 ## Array-bound Scalar Long declarations
 
 Existing LBound/UBound results now retain their reviewed Scalar Long category
