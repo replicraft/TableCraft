@@ -1,5 +1,23 @@
 # Implementation status
 
+## Explicit native external source handles
+
+`ExternalNativeSource` maps exact external database tokens to already-open sealed
+native handles. Targets expose local base tables only, preserving original
+metadata/policies, scalar and collection callbacks, index failures and complete
+cache behavior. All native handles share one cumulative borrowed allowance;
+distinct handles use distinct catalog scopes. Exact root-handle reuse stays
+local-only. Composition with `LinkedNativeSource` preserves root saved-query and
+link ownership without activating target saved queries, chains or providers.
+Native stored external-source reconstruction remains refused. See
+[the adapter contract](NATIVE_EXTERNAL_QUERIES.md).
+
+Eight new native external-source tests and 20 linked/handle/shared-budget
+regressions pass. Strict adapter library/new-test Clippy and engineering example
+checking pass. These checks establish bounded synthetic engineering behavior,
+not physical file identity, cross-file snapshot coherence or native Access
+qualification. No dependency or writer boundary changed.
+
 ## Explicit host-bound external query sources
 
 The read-only query library now routes existing SELECT/FROM IN syntax through

@@ -3,6 +3,8 @@ mod calculation;
 pub use calculation::{CalculationError, PreparedCalculation};
 mod collation;
 mod collections;
+mod external;
+pub use external::{ExternalNativeSource, ExternalSourceError, NativeExternalMapping};
 mod handle;
 pub use handle::{NativeSourceHandle, NativeTableIdentity};
 mod inventory;

@@ -103,6 +103,23 @@ impl<'a> LinkedNativeSource<'a> {
         Ok(Self { root, routes })
     }
 
+    pub(super) fn root_handle(&self) -> NativeSourceHandle<'a> {
+        self.root
+    }
+
+    pub(super) fn validate_external_target(
+        &self,
+        target: NativeSourceHandle<'a>,
+    ) -> Result<(), LinkSourceError> {
+        if self.root.same_source(target) {
+            self.root.check()?;
+            target.check()?;
+            return Ok(());
+        }
+
+        validate_handle(self.root, target, &self.routes)
+    }
+
     fn route(&self, table: &str) -> Result<(&'a dyn Source, &'a str), QueryError> {
         self.root.check()?;
         for route in &self.routes {
@@ -125,6 +142,13 @@ impl<'a> LinkedNativeSource<'a> {
             Err(error) => Err(error),
         }
     }
+}
+
+pub(super) fn validate_external_handles(
+    root: NativeSourceHandle<'_>,
+    target: NativeSourceHandle<'_>,
+) -> Result<(), LinkSourceError> {
+    validate_handle(root, target, &[])
 }
 
 fn validate_handle(
