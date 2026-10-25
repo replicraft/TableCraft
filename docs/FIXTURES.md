@@ -7693,3 +7693,53 @@ excluded ignored diagnostics. Final inputs, reference JAR, getter records, froze
 executables and local logs remain ignored. Native Access SQL, external target
 named queries/providers, cross-file snapshots, writes and save/reopen are not
 qualified by this read-only corpus.
+
+
+## Original finite mixed numeric-key fields
+
+[NumericKeyFixture.java](testing/NumericKeyFixture.java),
+[NumericKeyOracle.java](testing/NumericKeyOracle.java) and
+[compare_numeric_keys.py](testing/compare_numeric_keys.py) are original repository
+MIT code. Public table/column builders author twelve inert rows per file with
+Int32 Family/Ordinal fields, Boolean Kind and nullable SingleValue/DoubleValue
+columns. Four families exercise normal, subnormal, large finite and signed-zero
+values; the unused floating branch is NULL. No third-party fixture or source
+implementation is copied or tracked.
+
+The reviewed Jackcess 5.0.4 JAR is Apache-2.0, SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+Ignored original files and captured getter outputs are under
+`.cache/tablecraft-fixtures/numeric-keys-20261024/`.
+
+| Original | Bytes | SHA-256 |
+| --- | ---: | --- |
+| V2000.mdb | 114,688 | `2c9c0ef430ac9197480c9c4f83988f3e73df2a8abc5c9bcd9e9fa345e9656b64` |
+| V2007.accdb | 344,064 | `2280eb8913eff335d2bb9299f4ab7125204b302fad0f9a41bdb739c63d8cab66` |
+| V2016.accdb | 380,928 | `ce711942917bfe4dd31581868f27898a9119fdb2901aa307878100a08fa5b2e9` |
+| V2019.accdb | 450,560 | `b953f6cf9b23b7275763a6712f842273e0f52ff6d3801648c17bb9aaa6a33481` |
+
+The getter opens each original read-only with expression evaluation disabled
+and a throwing link resolver; observed resolver calls remain zero. It records
+public schema getters and actual raw Single/Double IEEE bits. Neither reference
+SQL nor active database content executes. Independent Fraction/IEEE models use
+those bits, all six encounter permutations and both arithmetic profiles; native
+SELECT observers retain original carriers and signed-zero bits. Default scalar
+predicates and static UNION promotion are separately checked.
+
+The [feature record](testing/NUMERIC_KEYS.md) and
+[accepted report](testing/results/numeric-keys-2026-10-24.json) retain 2,910
+candidate controls (1,326 source-free and 1,584 native), 144 baseline observations,
+nine model goldens and all 25 unchanged source/artifact/input/getter hashes.
+All candidate outcomes agree, including explicit comparison and pivot-name
+refusals. Four native files contribute 396 controls each. The report preserves
+the original 720-command audit unchanged: its 70 real binary-family disagreements
+remain separate from 48 diagnostic-wording classifications and four correct TOP
+successes without global domain preflight. The stronger current baseline set
+has 78 disagreements and is not presented as the same observation set.
+
+Observer depth/heading probes and the successful 2,856/144-control preliminary
+run remain excluded ignored diagnostics. Original files, getter records, reference
+JAR, frozen executables and local logs stay ignored and unchanged. Numeric heading
+collisions retain AmbiguousName independently of exact key partitioning. Native
+Access grouping/coercion, NULL/Error qualification, writes and application
+save/reopen are not established by this finite read-only corpus.

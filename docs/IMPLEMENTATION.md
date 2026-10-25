@@ -1,5 +1,27 @@
 # Implementation status
 
+## Independent numeric key replay over stored floats
+
+The [exact numeric-key replay](testing/NUMERIC_KEYS.md) passes all 2,910 candidate
+controls, including 1,584 native CLI controls across four original Jet 4,
+ACE 2007 and ACE 16-family databases. Nine independent model goldens and all
+25 pinned hashes pass unchanged. Raw getter Float/Double bits feed exact Fraction
+classes; typed outer observers check retained carriers separately from key
+identity and rounded pivot names. All six encounter orders and both arithmetic
+profiles cover groups, sets, sorting/TOP, extrema and pivots. Native domain
+extrema and scalar/static-UNION controls also pass.
+
+The same current-model runner records 144 previous-CLI controls: 66 agree and
+78 differ. The older 720-command audit's 70 binary-family discrepancies remain
+separate from its diagnostic-wording and comparison-path classifications.
+[The verification record](testing/results/read-query-numeric-keys-2026-10-24.json)
+pins production base `f9df858a`, the 1,837-file Rust source inventory and focused
+78-test logs. Depth/label-model probes remain excluded; no execution limit was
+raised. Original fixtures remain unchanged. This is engineering evidence, not
+Windows Access qualification or complete P0/read-query/backend acceptance.
+Next is native saved SELECT/crosstab external-source reconstruction; stored UNION
+arms already containing explicit IN retain their working parser path.
+
 ## Consistent mixed Single/Double relational keys
 
 Strict query keys now compare mixed Single/Double values through exact binary64

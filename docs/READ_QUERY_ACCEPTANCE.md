@@ -844,3 +844,20 @@ these lexical rules remain engineering behavior pending Access comparison.
 External named targets, native stored remote-source reconstruction, linked chains
 and wider providers remain unfinished. This closes a direct-source execution gap
 without completing P0 value/text semantics or read/query acceptance.
+
+
+## Exact mixed floating relational keys
+
+Mixed Single/Double key views now widen Single exactly while retaining Double.
+This removes encounter-dependent equivalence classes across groups, sets,
+ordering/TOP, extrema and pivot matching. Scalar predicates retain their effective
+Single comparison; result carriers, declarations, static UNION conversions and
+strict family refusals remain separate. Rounded heading-name collisions still
+fail instead of merging distinct buckets. See [the contract](NUMERIC_KEYS.md).
+
+[Independent replay](testing/NUMERIC_KEYS.md) passes 2,910 candidate controls,
+including 1,584 native controls over original typed Float/Double fields in four
+priority-format databases; all 25 selected hashes remain unchanged. Seventy-eight
+focused Rust tests and test-aware strict Clippy pass. This closes a concrete
+binary-key inconsistency; broader Variant/subtype/coercion, native heterogeneous
+grouping, text semantics and the remaining read/query roadmap remain unfinished.
