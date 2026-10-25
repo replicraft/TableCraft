@@ -260,3 +260,6 @@ mod wide_hiragana_tests;
 
 #[cfg(test)]
 mod combination_tests;
+
+#[cfg(test)]
+mod japanese_proper_tests;

@@ -82,12 +82,13 @@ system/custom aliases and other multibyte profiles fail without fallback.
 LCID 0/reserved-bit identities fail structural validation. This bounded table
 does not claim complete Windows locale coverage.
 
-Proper casing splits only at NUL, tab, LF, VT, FF, CR and ASCII space, preserving
-the separator characters. Each segment titlecases its first cased character and
+Proper casing splits at NUL, tab, LF, VT, FF, CR and ASCII space. Explicit
+Japanese casing additionally recognizes U+3000 IDEOGRAPHIC SPACE; all separator
+characters are preserved. Each segment titlecases its first cased character and
 lowercases the suffix through ICU, retaining contextual language behavior.
 Apostrophes and hyphens do not introduce new segments. Leading uncased characters,
-DBCS separators, Unicode titlecase expansions and native word-start behavior
-remain unqualified. This profile is not generic whitespace splitting or Unicode
+Further DBCS separators, Unicode titlecase expansions and native word-start
+behavior remain unqualified. This profile is not generic whitespace splitting or Unicode
 word segmentation.
 
 ## Representation and resource boundaries
@@ -487,9 +488,9 @@ establishes direct query availability and compatible flag combinations. Its
 [mapping guidance](https://learn.microsoft.com/en-us/windows/win32/intl/handling-sorting-in-your-applications)
 requires explicit widening for halfwidth-to-Hiragana conversion. These motivate
 this engineering composition; they do not establish universal native case/shape
-ordering. ICU casing, the existing ASCII proper-case separator profile and
+ordering. ICU casing, explicit Japanese ideographic-space word boundaries and
 bounded Japanese mappings retain their documented native NLS/Access qualification
-gaps, including wider DBCS proper-case separator behavior.
+gaps, including other DBCS cultures and broader word-start behavior.
 
 Both width directions or both kana scripts remain contradictory errors. Negative
 and unknown bits, wrong/missing/alternate LCIDs, malformed raw Unicode and eager
@@ -517,3 +518,41 @@ commands, comparing 16,436 result cells and 176 buffered failures across both qu
 modes and four unchanged native inputs. All 32 original/source/tool hashes remain
 unchanged. Native Windows qualification remains separate; component and composition
 models do not establish native NLS equivalence.
+
+## Japanese proper-case word boundaries
+
+An explicitly selected Japanese casing language now treats U+3000 IDEOGRAPHIC
+SPACE as an additional proper-case word boundary. This includes StrConv LCID 1041
+and an execution-local `ja` casing language when the function omits its LCID.
+The separator stays unchanged; each following segment uses the existing ICU
+first-cased-character titlecase and lowercased suffix. Width/script/encoding
+composition retains its existing order and limits.
+
+```sh
+tablecraft query eval "SELECT StrConv('hello　WORLD',3,1041),StrConv('ｈＥＬＬＯ　ｗＯＲＬＤ',11,1041)"
+```
+
+Results are `Hello　World` and `Hello World`. The frozen pre-change CLI produced
+`Hello　world` and `Hello world`. Nine proper-case flag variants retain that
+baseline in the verification record. An explicit English LCID still selects the
+ASCII separator profile, even when the host casing language is Japanese. Neither
+source characters, the machine locale nor a code-page setting invents a language.
+NBSP, EM SPACE, apostrophes and hyphens remain outside these word boundaries;
+this does not enable general Unicode whitespace or word segmentation.
+
+Microsoft's [Access StrConv contract](https://support.microsoft.com/en-us/access/functions/strconv-function)
+documents DBCS-dependent spaces. Its published
+[CP932 mapping](https://www.unicode.org/Public/MAPPINGS/VENDORS/MICSFT/WINDOWS/CP932.TXT)
+identifies the Japanese double-byte space as U+3000. These motivate the explicit
+Japanese profile; they are not native Access/NLS comparison evidence, nor do they
+qualify other DBCS cultures or complete native proper-case behavior.
+
+Seven new tests and 65 regressions pass in 72 scoped tests. An independent
+256-case word-state property covers Japanese versus English, alongside literal
+fullwidth/Latin/kana/expansion goldens, locale overrides, raw ranges, repeated
+prepared executions and encoding round trips. Every observed casing/evaluator
+checkpoint preserves cancellation and sink errors. A seven-byte input can expand
+to eight bytes before narrowing to six; its seven-byte intermediate allowance
+still refuses. No default limit, normalization, dependency, stored type or native
+write eligibility changes. See the
+[scoped verification](testing/results/japanese-proper-space-2026-10-25.json).

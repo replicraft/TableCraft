@@ -70,6 +70,9 @@ collation, database locale inference or runtime dependency is added.
 [StrConv](STRCONV.md) now shares this output bridge and language policy for
 upper/lower casing. Its proper-case recipe uses documented separator-delimited
 segments and ICU first-cased-character titlecasing with a lowercased suffix.
+An explicit Japanese language also recognizes U+3000 IDEOGRAPHIC SPACE, preserving
+it as a boundary; other languages retain the ASCII separator profile. NBSP and
+EM SPACE do not become separators. See [Japanese proper case](STRCONV.md#japanese-proper-case-word-boundaries).
 It retains the same conservative context preflight and output accounting; this
 addition does not qualify native Windows word-start or titlecase behavior.
 

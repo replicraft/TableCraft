@@ -15,6 +15,10 @@ const MAX_LANGUAGE_BYTES: usize = 128;
 // Reserve four complete input scans, plus conservative Greek uppercase context.
 const CONTEXT_SCAN_PASSES: usize = 4;
 
+// CP932's double-byte space is U+3000. It is an additional word boundary only
+// under an explicitly selected Japanese casing language.
+const IDEOGRAPHIC_SPACE: char = '\u{3000}';
+
 /// Validated language/script/region/variants, without extensions or OS discovery.
 /// `und` explicitly chooses ICU root casing. Other unrecognized languages use
 /// ICU's root rules, rather than inventing Windows behavior for those languages.
@@ -113,8 +117,11 @@ impl<'a> Casing<'a> {
             Operation::Proper => {
                 let mut options = TitlecaseOptions::default();
                 options.leading_adjustment = Some(LeadingAdjustment::ToCased);
+                let japanese = locale.0.language.as_str() == "ja";
                 self.text
-                    .split_inclusive(proper_separator)
+                    .split_inclusive(|character| {
+                        proper_separator(character) || japanese && character == IDEOGRAPHIC_SPACE
+                    })
                     .try_for_each(|segment| {
                         mapper
                             .titlecase_segment_with_only_case_data(segment, &locale.0, options)

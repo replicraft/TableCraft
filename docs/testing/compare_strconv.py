@@ -28,12 +28,13 @@ def spelling(text):
     return display("T" + text.encode("utf-8").hex())
 
 
-def proper(text):
+def proper(text, additional_separators=()):
     # Explicit first-cased-letter model for the selected ASCII/Latin controls.
+    separators = SEPARATORS.union(additional_separators)
     output = []
     first = True
     for character in text:
-        if character in SEPARATORS:
+        if character in separators:
             first = True
             output.append(character)
         elif first and character.lower() != character.upper():

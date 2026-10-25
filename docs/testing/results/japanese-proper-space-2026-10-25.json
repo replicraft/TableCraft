@@ -1,0 +1,294 @@
+{
+  "date": "2026-10-25",
+  "scope": "Additional U+3000 proper-case boundary under explicit Japanese casing language; preservation, locale isolation and shared limits. Engineering profile, not native Access/NLS qualification.",
+  "unique_tests": 72,
+  "new_tests": 7,
+  "existing_regression_tests": 65,
+  "counting_note": "Seven parser-free casing tests, 33 SQL-enabled expression tests, 24 query tests and eight CLI tests. Distinct test names counted once; the new generated state model uses 256 cases.",
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-expressions --lib functions::text::casing --no-default-features --locked --offline -j 2",
+      "exit_code": 0,
+      "private_log": ".cache/japanese-proper-space-kernels-20261025.log",
+      "sha256": "acf70ca38ba740a6081617f9fe01dab1b552200a85919d2cf168878f47d8af69",
+      "tests": 7
+    },
+    {
+      "command": "cargo test -p tablecraft-expressions --all-features --lib strconv --locked --offline -j 2",
+      "exit_code": 0,
+      "private_log": ".cache/japanese-proper-space-expressions-20261025.log",
+      "sha256": "086ca27f6b7138b76ccc82a4df0baa018f609ff5574a9532edd1641d6c096f33",
+      "tests": 33
+    },
+    {
+      "command": "cargo test -p tablecraft-query -p tablecraft-cli --test strconv --test strconv_options --test strconv_combinations --test strconv_japanese_proper --test strconv_kana --test strconv_width --test strconv_japanese --test strconv_wide_hiragana --locked --offline -j 2",
+      "exit_code": 0,
+      "private_log": ".cache/japanese-proper-space-hosts-20261025.log",
+      "sha256": "4cf637f8363498c8f55618bfbc07f409fe8032dde1bfefc5eeddc527b3a9f0c9",
+      "tests": 32
+    },
+    {
+      "command": "cargo clippy -p tablecraft-expressions --lib --tests --all-features --locked --offline -j 2 -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/japanese-proper-space-expression-clippy-20261025.log",
+      "sha256": "cfc8a3bb09d3fe19ec0e7091382f9e49b0d35b96791a5d0b74849db9425b9b4f"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query -p tablecraft-cli --lib --test strconv_japanese_proper --test strconv_combinations --all-features --locked --offline -j 2 -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/japanese-proper-space-host-clippy-20261025.log",
+      "sha256": "a51d1b4b6394dd464c8978d069a5a7a91900657d07f3afff684e9401ff71fb48"
+    },
+    {
+      "command": "cargo check -p tablecraft-query --no-default-features --locked --offline -j 2",
+      "exit_code": 0,
+      "private_log": ".cache/japanese-proper-space-minimal-query-20261025.log",
+      "sha256": "c0fd6f19fb06b67a05c80a5f95e3085a836a9e4eb401540e71d24feb1c631f0c"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "private_log": ".cache/japanese-proper-space-fmt-20261025.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "baseline": {
+    "compiled_revision": "8389ed63f2788eec783aaba8fcc80a361633fa38",
+    "private_record": ".cache/japanese-proper-space-baseline-20261025.json",
+    "sha256": "8051c9d31431cc970371319db93380e5786f43ab4cf130969aa2793e769b73a5",
+    "cli_sha256": "2a143bd8cab69b2fca85ba60533a06d7ebd23addb6e46479b0dd371f996fd35d",
+    "controls": [
+      {
+        "code": 3,
+        "command": [
+          ".cache/tablecraft-bin/strconv-combinations-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('hello\u3000WORLD',3,1041)",
+          "--format",
+          "tsv"
+        ],
+        "cells": [
+          [
+            "Expr1"
+          ],
+          [
+            "\"Hello\u3000world\""
+          ]
+        ],
+        "exit_code": 0
+      },
+      {
+        "code": 7,
+        "command": [
+          ".cache/tablecraft-bin/strconv-combinations-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('hello\u3000WORLD',7,1041)",
+          "--format",
+          "tsv"
+        ],
+        "cells": [
+          [
+            "Expr1"
+          ],
+          [
+            "\"\uff28\uff45\uff4c\uff4c\uff4f\u3000\uff57\uff4f\uff52\uff4c\uff44\""
+          ]
+        ],
+        "exit_code": 0
+      },
+      {
+        "code": 11,
+        "command": [
+          ".cache/tablecraft-bin/strconv-combinations-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('hello\u3000WORLD',11,1041)",
+          "--format",
+          "tsv"
+        ],
+        "cells": [
+          [
+            "Expr1"
+          ],
+          [
+            "\"Hello world\""
+          ]
+        ],
+        "exit_code": 0
+      },
+      {
+        "code": 19,
+        "command": [
+          ".cache/tablecraft-bin/strconv-combinations-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('hello\u3000WORLD',19,1041)",
+          "--format",
+          "tsv"
+        ],
+        "cells": [
+          [
+            "Expr1"
+          ],
+          [
+            "\"Hello\u3000world\""
+          ]
+        ],
+        "exit_code": 0
+      },
+      {
+        "code": 23,
+        "command": [
+          ".cache/tablecraft-bin/strconv-combinations-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('hello\u3000WORLD',23,1041)",
+          "--format",
+          "tsv"
+        ],
+        "cells": [
+          [
+            "Expr1"
+          ],
+          [
+            "\"\uff28\uff45\uff4c\uff4c\uff4f\u3000\uff57\uff4f\uff52\uff4c\uff44\""
+          ]
+        ],
+        "exit_code": 0
+      },
+      {
+        "code": 27,
+        "command": [
+          ".cache/tablecraft-bin/strconv-combinations-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('hello\u3000WORLD',27,1041)",
+          "--format",
+          "tsv"
+        ],
+        "cells": [
+          [
+            "Expr1"
+          ],
+          [
+            "\"Hello world\""
+          ]
+        ],
+        "exit_code": 0
+      },
+      {
+        "code": 35,
+        "command": [
+          ".cache/tablecraft-bin/strconv-combinations-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('hello\u3000WORLD',35,1041)",
+          "--format",
+          "tsv"
+        ],
+        "cells": [
+          [
+            "Expr1"
+          ],
+          [
+            "\"Hello\u3000world\""
+          ]
+        ],
+        "exit_code": 0
+      },
+      {
+        "code": 39,
+        "command": [
+          ".cache/tablecraft-bin/strconv-combinations-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('hello\u3000WORLD',39,1041)",
+          "--format",
+          "tsv"
+        ],
+        "cells": [
+          [
+            "Expr1"
+          ],
+          [
+            "\"\uff28\uff45\uff4c\uff4c\uff4f\u3000\uff57\uff4f\uff52\uff4c\uff44\""
+          ]
+        ],
+        "exit_code": 0
+      },
+      {
+        "code": 43,
+        "command": [
+          ".cache/tablecraft-bin/strconv-combinations-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('hello\u3000WORLD',43,1041)",
+          "--format",
+          "tsv"
+        ],
+        "cells": [
+          [
+            "Expr1"
+          ],
+          [
+            "\"Hello world\""
+          ]
+        ],
+        "exit_code": 0
+      }
+    ]
+  },
+  "references": [
+    "https://support.microsoft.com/en-us/access/functions/strconv-function",
+    "https://www.unicode.org/Public/MAPPINGS/VENDORS/MICSFT/WINDOWS/CP932.TXT"
+  ],
+  "reference_note": "Access documents country/region-dependent DBCS spaces; the Microsoft CP932 mapping assigns byte pair 0x8140 to U+3000. This motivates the explicit Japanese rule without claiming native runtime comparison evidence.",
+  "contracts": [
+    "Only explicit Japanese casing language adds ideographic space to the existing ASCII separators. Exact LCID 1041 and host-selected Japanese use the same service; explicit English overrides remain authoritative.",
+    "Separators, empty segments and unrelated characters are preserved. No general Unicode whitespace splitting, normalization, locale discovery or additional numeric LCID aliases.",
+    "Locale checks, raw-range publication, parameterized plan reuse and encoding/width composition keep their existing boundaries.",
+    "A seven-byte source expands to eight bytes before later narrowing to six; its seven-byte intermediate cap still fails. Sink errors and every observed kernel/evaluator cancellation checkpoint propagate.",
+    "No dependency, runtime, stored type, default allowance or write qualification changes. Broader DBCS cultures and native word-start/NLS behavior remain open.",
+    "Reference models now select the Japanese delimiter explicitly; original default ASCII callers keep their prior model. The next combined replay includes new Japanese word cases and composed native fields."
+  ],
+  "source_snapshots": [
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/casing/mod.rs",
+      "sha256": "122d72543e6df574e6e7aaf1e34f8e5da29d86f592063ab1bc13d8162ea71655"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/casing/tests.rs",
+      "sha256": "9a3cea2843e0d6dbd22a5b7ea71d7dd6f23ea6e31153d4910ab883864e5e5254"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/casing/tests/japanese_proper.rs",
+      "sha256": "53aafbcb55c6290b930963e96a39a2c1d92e158d20aa469581b723f55a691a9c"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/strconv.rs",
+      "sha256": "178e7e3f55d3bb6f621648b079fc5c1403569afc2d842f504b34b8af76178c1d"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/strconv/japanese_proper_tests.rs",
+      "sha256": "c53dec761e134fe5fb8a0170e38254a8d0b150e5941ddbcc5d64cfd5ba667fe4"
+    },
+    {
+      "path": "crates/query/tablecraft-query/tests/strconv_japanese_proper.rs",
+      "sha256": "7a555ab79fdd54b24df31d660d80bcf4a4c3d3c1e6f1dfa6e76448228c94dd02"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/strconv_japanese_proper.rs",
+      "sha256": "d71428c49582e1313271064f2caf3bf6be7594326a125ae0639e9af319e4fc84"
+    },
+    {
+      "path": "docs/testing/compare_strconv.py",
+      "sha256": "ebf85abcff6f292aca39a787163affceb8f73b7b9d018611094627a6f6ffb0d8"
+    },
+    {
+      "path": "docs/testing/compare_strconv_combinations.py",
+      "sha256": "690399b1b08674e740c71c13fd2804dfd3f7f53c3eb3af2ca0224f6740959ec0"
+    }
+  ]
+}
