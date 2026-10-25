@@ -13,14 +13,19 @@ linting, minimal features and formatting pass. Existing bounded mapping and nati
 NLS/Access qualification gaps remain explicit. See the
 [working profile](STRCONV.md#combined-japanese-case-width-and-kana) and
 [verification](testing/results/strconv-japanese-combinations-2026-10-25.json).
+The [independent Unicode/native-field replay](testing/STRCONV_COMBINATIONS_REPLAY.md)
+now passes 5,528 CLI commands with 16,436 compared cells and 176 expected buffered
+failures. Four originals and 28 source/tool/executable pins remain unchanged;
+no product code or allowance changed during replay.
 
 ## Declared numeric/String baseline coverage
 
 The existing declared predicate service selects checked numeric widths for
 String peers, including integer rounding/ranges and exact LongLong parsing.
 The frozen pre-change CLI passes the same 128-control independent replay as the
-later helper build. The redundant helper has been removed; production query and
-expression sources match the pre-change tree. Six useful query/CLI regressions
+later helper build. The redundant helper has been removed, restoring the original numeric predicate
+path. The baseline audit verified complete production-source equality at that
+correction, before subsequent StrConv work. Six useful query/CLI regressions
 remain, with 79 current scoped tests, strict linting and formatting passing.
 The replay compares 2,592 Boolean/NULL cells and 32 buffered failures over
 source-free cases and four unchanged native inputs. This adds coverage rather

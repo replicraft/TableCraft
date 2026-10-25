@@ -501,6 +501,8 @@ Compatible Japanese StrConv width/kana/case settings now compose under exact
 LCID 1041, adding 27 previously refused flag values. The frozen baseline verifies
 those refusals; current scoped controls cover explicit widening versus narrow
 Hiragana, proper-case boundaries, raw slices and shared failure/budget behavior.
+The independent composition replay now passes 5,528 CLI commands, comparing
+16,436 cells with 176 expected buffered failures and 32 unchanged immutable pins.
 This expands the query text-function profile without supplying further database
 locale providers or native NLS equivalence. See the
 [composition contract](STRCONV.md#combined-japanese-case-width-and-kana).
