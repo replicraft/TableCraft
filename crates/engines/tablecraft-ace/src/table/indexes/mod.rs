@@ -14,6 +14,7 @@ pub use guid::GuidIndexSelection;
 pub use read::read_table_guid_index;
 mod key;
 mod legacy_datetime;
+pub use legacy_datetime::DateTimeIndexSelection;
 mod numeric;
 mod text;
 pub use constraints::{IndexConstraintViolation, IndexConstraints};

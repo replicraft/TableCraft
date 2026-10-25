@@ -457,8 +457,10 @@ Physical order follows the encoded serial, separately from civil time. For
 example `-0.25` and `+0.25` remain different physical keys but denote the same
 epoch-day time; `-1.75` sorts before `-1.25` physically while its civil time is
 later. TableCraft's residual equality and ORDER BY retain their existing temporal
-semantics. No DateTime seek/pushdown or foreign-key qualification is enabled.
-Typed integer seeks still reject this distinct carrier even for All/Null.
+semantics. Engine-only [calendar candidate selections](DATE_INDEX_CANDIDATES.md)
+now retain conservative temporal bounds through explicit projected requests.
+SQL pushdown and new foreign-key qualification remain separate. Typed integer
+seeks still reject this distinct carrier even for All/Null.
 
 The reviewed Jackcess 5.0.4 `FloatingPointColumnDescriptor`, big-endian DATE writer
 and bit-preserving Date carrier establish the independent transform. The original

@@ -244,6 +244,9 @@ fn projected_selection(selection: IndexProjectionSelection<'_>) -> Option<ReadSe
             KeyType::Currency,
             selection.scaled(),
         )),
+        IndexProjectionSelection::DateTime(selection) => {
+            Some(ReadSelection::Integer(KeyType::DateTime, selection.keyed()))
+        }
         IndexProjectionSelection::Guid(selection) => Some(ReadSelection::Guid(selection)),
         IndexProjectionSelection::Decimal(selection) => Some(ReadSelection::Decimal(selection)),
         IndexProjectionSelection::Binary(selection) => Some(ReadSelection::Binary(selection)),

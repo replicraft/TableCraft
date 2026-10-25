@@ -1,5 +1,16 @@
 # Implementation status
 
+## Native calendar DATE candidates
+
+Explicit native index requests now accept typed calendar DATE candidates. Bounds
+preserve negative-date ordering and epoch aliases without changing stored bits;
+callers retain the complete temporal residual predicate. Five unit and five new
+native-reader tests plus nine regressions pass, including projection ceilings,
+wrong-carrier refusal, corruption and cancellation. Strict all-feature engine
+linting, minimal adapter compilation and formatting pass. SQL/automatic-index
+integration and original-file replay remain separate next work. See the
+[working API and limits](DATE_INDEX_CANDIDATES.md).
+
 ## Independent aggregate metadata reference
 
 An original inert Java/Python probe now records 58 queries in each of four
