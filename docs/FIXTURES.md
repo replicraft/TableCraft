@@ -8487,3 +8487,22 @@ plaintext recoveries per profile match the original full-image digests. Actual
 Access save/reopen, VBA application behavior and the full 2 GiB envelope remain
 unqualified. Temporary randomized candidates are deleted; original hashes and
 selected source/tool/executable hashes are independently rechecked.
+
+
+## Mixed fixed/binary key replay (25 October 2026)
+
+The [original replay](testing/FIXED_BINARY_KEYS.md) reuses the four registered
+`scalar-seek-20261023` originals and their reviewed Jackcess getter. No fixture,
+third-party code or dependency is added. The new parameter cohorts use public
+synthetic exact values and the existing VALUE binding contract; native cohorts
+consume original Money/Numeric coefficients and actual IEEE/Boolean/integer
+getters. Historical numeric-key evidence remains unchanged.
+
+The [4,289-observation report](testing/results/fixed-binary-key-replay-2026-10-25.json)
+records 3,956 passing current queries and 333 baseline controls, including 275
+former mixed-key refusals. Four separate getter calls reopen all originals
+read-only with expression evaluation disabled. All twelve immutable fingerprints
+and seventeen committed/live source snapshots are separately rehashed. Earlier
+structural/identifier authoring attempts retain private report hashes; native
+Access SQL, dynamic column headings and larger compound queries remain outside
+this evidence.

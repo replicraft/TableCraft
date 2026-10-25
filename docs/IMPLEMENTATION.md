@@ -20,6 +20,15 @@ Variant/result promotion and native Access grouping remain unqualified. See the
 [contract](NUMERIC_KEYS.md#exact-fixedbinary-numeric-cohorts) and
 [scoped verification](testing/results/fixed-binary-keys-2026-10-25.json).
 
+A separate [mixed-key replay](testing/FIXED_BINARY_KEYS.md) now passes 3,956
+current queries over fifteen host VALUE cohorts and getter-derived fields from
+four unchanged Jet 4/ACE originals. The 333 baseline controls retain 275 former
+mixed-key refusals and 58 already-correct answers. Independent Fraction/IEEE
+models verify 8,648 returned query rows and 25,112 cells; all twelve immutable
+pins and seventeen selected committed/live sources are rehashed. No Microsoft
+Access SQL is executed and larger compound expressions retain the current
+binding-depth boundary.
+
 ## Page-buffered encryption management
 
 `rewrite_encryption_to` now creates unpublished encryption add/remove/password

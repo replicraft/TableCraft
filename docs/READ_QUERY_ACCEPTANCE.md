@@ -1156,3 +1156,13 @@ See [numeric keys](NUMERIC_KEYS.md#exact-fixedbinary-numeric-cohorts).
 This closes a strict numeric cohort gap, not full P0 Variant/result promotion,
 native mixed-policy text semantics or native Access qualification. Native storage,
 indexes and write eligibility are unchanged.
+
+
+The [mixed fixed/binary replay](testing/FIXED_BINARY_KEYS.md) now supplies 3,956
+passing current queries over exact VALUE cohorts and actual stored numeric fields
+from four unchanged priority-layout originals, plus 333 explicit baseline
+observations. Independent Fraction/IEEE models verify returned carriers,
+partitions, order, TOP membership, extrema and crosstab row groups. The default
+binding depth stays 16; those limits and broader native query/result semantics
+are not completed by this evidence. Inputs, selected sources and frozen tools
+retain separately audited hashes.
