@@ -1,5 +1,16 @@
 # Implementation status
 
+## Consolidated crosstab and retained-input regression
+
+The combined all-feature query package passes 1,069 tests across 197 result
+targets, including doctests, with none ignored. This covers the committed
+crosstab group-policy correction and retained math, financial and date-constructor
+API changes. The [recorded batch](testing/results/read-query-crosstab-carrier-regression-2026-10-24.json)
+pins the source revision, explicit source digest algorithm, lockfile, terminal log
+and immutable native-replay CLI. Native calculated-cache evidence remains in its
+separate feature record. This establishes regression coverage for the implemented
+engineering profile, not complete Access compatibility or backend completion.
+
 ## Retained String financial API consistency
 
 All eleven scalar financial APIs and the NPV/IRR/MIRR scalar controls now lazily
