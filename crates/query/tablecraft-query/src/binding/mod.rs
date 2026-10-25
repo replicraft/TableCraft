@@ -246,6 +246,16 @@ fn resolve(
 }
 
 impl PreparedQuery {
+    /// Captured output names for an ordinary read plan, without executing it.
+    /// Top-level crosstabs return None because headings can require execution.
+    /// Names preserve aliases and possible duplicates, as ordinary results do.
+    pub fn output_names(&self) -> Option<&[String]> {
+        match &self.body {
+            PreparedBody::Read(read) => Some(&read.names),
+            PreparedBody::Crosstab(_) => None,
+        }
+    }
+
     /// Conservative output carrier/constraint/nullability metadata, established
     /// without scanning records. Dynamic crosstabs have no static output width.
     /// Describes both materialized and declared runtime arithmetic: differing
