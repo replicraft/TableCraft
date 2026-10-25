@@ -8214,3 +8214,16 @@ All ten immutable pins and fourteen compiled source hashes were independently
 rechecked. No new binary fixture, dependency or third-party code is adopted;
 original recipe, hashes and notices remain authoritative. Native Access SQL
 qualification and throughput claims are separate.
+
+## Original composable recomputed-view replay reuse
+
+The 2026-10-25 [recomputed-view replay](testing/RECOMPUTED_VIEWS.md) reuses the
+registered original calculated-dependency V2016/V2019 files, reviewed reader,
+existing inert Java getter and independent ordinary-value formula models. Fresh
+getter output matches the original observations. No new binary fixture,
+dependency or copied third-party code is adopted. The
+[accepted report](testing/results/recomputed-views-2026-10-25.json) passes
+80 controls; all twelve immutable pins and thirteen scoped compiled-source hashes
+were independently rechecked. A reserved-identifier runner correction preserves
+the failed report/log/source privately; original database bytes never changed.
+Native Access calculation/freshness qualification remains separate.

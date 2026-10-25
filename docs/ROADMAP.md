@@ -574,7 +574,9 @@ contract retains the primary references, algorithms, provenance and exact limits
    with complete caches and independent three-profile evidence. Native history SQL
    and latest-version behavior remain separately unqualified. ACE 16 calculated
    fields have explicit
-   cached reads, not expression evaluation or freshness guarantees. Jet 4/ACE 12
+   cached reads and [selected recomputed query views](RECOMPUTED_CALCULATION_VIEWS.md)
+   using the existing same-row syntax/dependency service. Natural carriers remain
+   separate from stored ResultType conversion and native freshness qualification. Jet 4/ACE 12
    are not required to implement field types absent from those formats. See
    [advanced fields](features/ACCESS_ADVANCED_FIELDS.md).
 4. Broaden native storage variants and scale. Deleted fixed/variable histories

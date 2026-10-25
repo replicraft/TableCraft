@@ -334,7 +334,7 @@ semantics. See [metadata contracts](NATIVE_TABLES.md#attachment-metadata-project
 | P0 | Value semantics | Declared-expression/Variant result promotion, complete coercion and Error operator/aggregate behavior; independently modeled boundaries and later native comparisons |
 | P0 | Native text | Complete mixed-policy precedence, additional locale providers and explicit LCID search implementations; consistent predicates, sets, groups, sort and LIKE behavior |
 | P1 | Query composition | Remaining admitted saved/named definitions, heading names and wider native syntax; qualify whether proposed inline TRANSFORM forms are actually accepted by Access before adding grammar |
-| P1 | Advanced fields | Native FileData SQL/DAO byte qualification, wider history/collection semantics and calculated-field evaluation/freshness beyond the explicit row-local preview |
+| P1 | Advanced fields | Native FileData SQL/DAO byte qualification, wider history/collection semantics and broader calculated syntax, native ResultType conversion and freshness beyond explicit selected recomputed query views |
 | P1 | Storage and scale | Wider column-type/row histories, broader collection sizes and file locality, predictable limits and unchanged originals |
 | Qualification | Native Access | Build/locale-qualified values, ordering, errors, saved queries and representative application outcomes on Windows |
 
@@ -420,6 +420,14 @@ without formula execution or inferred freshness. Ninety-two independent getter/
 query controls pass; ordinary sources keep their prior eligibility. This closes
 a cached-read gap without completing formula freshness or native query
 qualification. See [cached queries](CACHED_CALCULATION_QUERIES.md).
+
+Explicit [recomputed query views](RECOMPUTED_CALCULATION_VIEWS.md) now compose
+selected same-row formulas through ordinary filtering, grouping, joins, sets,
+derived queries and runtime domains. They retain natural result types and one
+query runtime, leaving stored caches and original table routes intact. Native
+ResultType conversion, broader formula syntax and freshness remain separate.
+The focused feature batch passes 110 tests; a separate original two-profile
+replay passes 80 getter/model controls.
 
 The consolidated all-feature query regression batch passes 1,041 tests across
 190 targets after the current composition/value fixes. The separate
