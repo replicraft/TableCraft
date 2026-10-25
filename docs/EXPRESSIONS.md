@@ -719,7 +719,9 @@ zero base with a zero exponent returns Double 1. This follows the explicit
 [MS-VBAL power error contract](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/c3f526af-9d58-47f9-a6be-22ab81e8747a).
 Operand admission, conversion and eager failures still precede the power kernel;
 an actual division-by-zero expression used as an operand keeps its own error.
-Integer division and Mod
+The [Power replay](testing/POWER.md) checks 627 CLI commands against exact
+bounded-power and explicit error models; broader real-power/native qualification
+remains separate. Integer division and Mod
 retain the existing half-even-to-Int64 coercion and checked range contracts.
 Decimal/float comparisons are not enabled by arithmetic support. Currency-only
 operations and the non-Decimal promotion ladder are unchanged.

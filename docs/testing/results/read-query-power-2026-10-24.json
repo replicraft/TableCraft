@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-24",
+  "production_base_commit": "80750158d9650496b54d70d54cbd258a29ffdcf1",
+  "scope": "Power converted-zero/negative-exponent Domain boundary; no complete Variant or native Access compatibility claim",
+  "rust_source_inventory": {
+    "roots": [
+      "apps",
+      "crates"
+    ],
+    "files": 1843,
+    "algorithm": "Sorted relative UTF-8 path + NUL + lowercase hex SHA256(file bytes) + newline; SHA256 of the complete UTF-8 manifest",
+    "sha256": "266f0ffaf9c3669b4750092bc3d32c9feec837ab00e1b44d27c050cd606ee8fd",
+    "private_manifest": ".cache/power-rust-source-20261024.manifest",
+    "qualification": "Complete source inventory is not complete test coverage"
+  },
+  "rust_tests": {
+    "passed_unique_tests": 22,
+    "new_tests": 13,
+    "expression_power_tests": 8,
+    "query_power_tests": 7,
+    "existing_query_error_operand_tests": 4,
+    "existing_query_admission_tests": 3,
+    "overlap_note": "Final seven-test query target replaces its earlier five-test run; overlapping runs are not added."
+  },
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-expressions --features sql --lib power -j2 --locked --offline",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test power_boundaries --test arithmetic_error_operands --test arithmetic_admission -j2 --locked --offline",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test power_boundaries -j2 --locked --offline",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo clippy -p tablecraft-expressions --features sql --lib --tests -p tablecraft-query --test power_boundaries -j2 --locked --offline -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo build -p tablecraft-cli --bin tablecraft -j2 --locked --offline",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "logs": [
+    {
+      "path": ".cache/power-expression-tests.log",
+      "sha256": "4749ea951d28c903cdf39ae7e92cc2e30650bb64b1556dc205319664e0bd1835",
+      "tracked": false
+    },
+    {
+      "path": ".cache/power-query-tests-final.log",
+      "sha256": "909ad634c895e37c5f8d86892c043e640f91579c41df827572b931f0c2b30e6f",
+      "tracked": false
+    },
+    {
+      "path": ".cache/power-query-tests-final2.log",
+      "sha256": "faf45093f8f96d1b004666bef97e3a13603130e5bafadacec1756fc36136f07c",
+      "tracked": false
+    },
+    {
+      "path": ".cache/power-clippy.log",
+      "sha256": "470874516b6191235e1a6088030fbde834d8f7ee31234807972cff48cc1110d7",
+      "tracked": false
+    },
+    {
+      "path": ".cache/power-cli-build-20261024.log",
+      "sha256": "1602a2181e9aa68bb25f1921d237852e9fcf8633891dbbd5de1bb680d49098f0",
+      "tracked": false
+    },
+    {
+      "path": ".cache/power-final-replay-v2-20261024.log",
+      "sha256": "b90bc5dd3c82380a5ad4ef9ee8998b6256b47d60d6ae55360d796b37c51e9059",
+      "tracked": false
+    }
+  ],
+  "independent_replay": {
+    "report": "docs/testing/results/power-2026-10-24.json",
+    "sha256": "e34a0dc968b6a2fc924e3866cb5893e2fe7a2617e1a6783efa7cf04aff88852d",
+    "commands": 627,
+    "disagreements": 0,
+    "model_goldens": 7,
+    "unchanged_hashes": 7,
+    "query_run_carrier_matrix": 390,
+    "query_run_controls_both_profiles": 158,
+    "query_eval_default_controls": 79
+  },
+  "candidate": {
+    "path": ".cache/tablecraft-bin/power-cli-20261024",
+    "sha256": "bde91ce6702cf0b7e6b931024a27c6760e2f6f70aef5699c02e78e83172c9430"
+  },
+  "excluded_attempts": [
+    "First query test compile used a nonexistent test-only error variant; corrected to existing UnrepresentableText before final successful batch.",
+    "Initial 706-command replay had 82 runner mismatches: unsupported --declared-arithmetic in query eval and a diagnostic spelling mismatch. Preserved as .cache/power-replay-runner-probe-20261024.json; no production behavior changed to satisfy it."
+  ],
+  "not_run": [
+    "Full expression/query/workspace test suites",
+    "Windows Microsoft Access comparisons",
+    "Performance/release benchmarks"
+  ],
+  "remaining": [
+    "Complete Variant/result promotion and Error operator matrices",
+    "Mixed-policy text precedence and wider locales",
+    "Remaining read/query/storage and backend acceptance work"
+  ]
+}
