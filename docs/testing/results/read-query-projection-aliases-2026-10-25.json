@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Prior-written explicit aliases in buffered non-grouped SELECT projections",
+  "unique_alias_scope_tests": 260,
+  "new_tests": 19,
+  "targets": {
+    "primary_query": 4,
+    "independent_query": 12,
+    "existing_query_regressions": 241,
+    "cli": 3
+  },
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-query --test projection_alias_values --test projection_aliases -j2 --locked --offline",
+      "private_log": ".cache/projection-alias-primary-accepted-20261025.log",
+      "exit_code": 0,
+      "sha256": "11daace9d9d641297fafcd694ea5c76836609c0fad9dc2be7ae7b936fd7f1a1c"
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test retrieval --test declared_result_widths --test named --test named_crosstabs --test collation_routing --test progressive_queries --test output_types --test retained_string_cells -j2 --locked --offline",
+      "private_log": ".cache/projection-alias-regressions-20261025.log",
+      "exit_code": 0,
+      "sha256": "e4add91fb8ce022e9513e57e02e11b8e5f2072c9db218c004dc3b5c323c0b679"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --tests -j2 --locked --offline -- -D warnings",
+      "private_log": ".cache/projection-alias-clippy-20261025.log",
+      "exit_code": 0,
+      "sha256": "13ad64afbe6982bc8278062b7087cff7e2c0d285edf5827bcd308b1360b89381"
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --test projection_aliases -j2 --locked --offline",
+      "private_log": ".cache/projection-alias-cli-tests-20261025.log",
+      "exit_code": 0,
+      "sha256": "588c3d889f451fe77948e8bce0c23a42782416f7993b16e5bfea9971aeba0d52"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-cli --bin tablecraft --test projection_aliases -j2 --locked --offline -- -D warnings",
+      "private_log": ".cache/projection-alias-cli-clippy-20261025.log",
+      "exit_code": 0,
+      "sha256": "1cbc45843c24196ed94abe3db9642771d76c6bd5ccb7cc2fc9e90689c033263c"
+    }
+  ],
+  "composed_regression_tests": 244,
+  "composed_regression_note": "The retrieval target also includes three pending Decimal seek tests; these are excluded from the 241 existing alias regressions and 260 alias-scope count.",
+  "review_corrections": [
+    "Read-level scope restoration prevents nested UNION sorts from capturing outer projection aliases.",
+    "New plan structure boundaries manually spaced after formatter review."
+  ],
+  "test_authoring_corrections": [
+    "Named/UNION literal expected carriers corrected from Int32 to existing default Int64 without runtime changes."
+  ],
+  "native_evidence": "Microsoft direct-query tutorial supplies the correlated subquery/alias subtraction contract; actual Access execution unrun.",
+  "unrun": [
+    "Full workspace suite",
+    "Microsoft Access evaluation counts and name-precedence comparisons"
+  ]
+}

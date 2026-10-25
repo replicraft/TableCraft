@@ -43,9 +43,10 @@ impl Runtime<'_, '_> {
                 Ok(value.clone())
             }
             Expr::Literal(literal) => Ok(self.evaluator().evaluate(literal)?),
-            Expr::Field { .. } | Expr::CollectionItem { .. } | Expr::Output(..) => {
-                Ok(into_scalar(self.expression_operand(expr, env)?)?)
-            }
+            Expr::Field { .. }
+            | Expr::CollectionItem { .. }
+            | Expr::Output(..)
+            | Expr::Projected(_) => Ok(into_scalar(self.expression_operand(expr, env)?)?),
             Expr::Parameter(index) => self.copy(self.parameters[*index].value),
             Expr::Unary(U::Plus | U::Minus, _) => {
                 Ok(into_scalar(self.expression_operand(expr, env)?)?)

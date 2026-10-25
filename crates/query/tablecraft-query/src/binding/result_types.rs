@@ -69,6 +69,7 @@ impl Binder<'_> {
                 .and_then(|scope| scope.iter().filter(|slot| slot.available).nth(*index))
                 .map(|slot| slot.output_type.selected(profile))
                 .ok_or(QueryError::Source)?,
+            Expr::Projected(reference) => reference.output_type.selected(profile),
             Expr::Parameter(index) => self
                 .parameters
                 .get(*index)

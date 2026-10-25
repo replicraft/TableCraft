@@ -24,6 +24,7 @@ fn binder<'a>(
     cancelled: Option<&'a dyn Fn() -> bool>,
 ) -> Binder<'a> {
     Binder {
+        aliases: Default::default(),
         budget,
         cancelled,
         source: &NoSource,

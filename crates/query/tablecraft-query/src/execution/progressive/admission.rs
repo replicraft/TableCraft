@@ -130,6 +130,7 @@ impl Runtime<'_, '_> {
             Expr::DomainCall(..)
             | Expr::Field { .. }
             | Expr::Output(..)
+            | Expr::Projected(_)
             | Expr::CollectionItem { .. }
             | Expr::CollectionEmpty(..)
             | Expr::ParentPresence { .. }

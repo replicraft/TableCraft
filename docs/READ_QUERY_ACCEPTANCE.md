@@ -985,3 +985,13 @@ by its TOP. Distinct sets, sorting, grouping, joins and named/discovered sources
 retain buffered execution. Native cursor reuse, schema preflight, typed sticky
 sink failures and late-error prefix behavior remain checked; shared-file coherence
 and native Access qualification remain separate work.
+
+## Prior projection alias dependencies
+
+[Earlier explicit aliases](PROJECTION_ALIASES.md) now compose inside ordinary
+buffered non-grouped SELECT projections. Correlated scalar-subquery results can
+feed later calculations without expression duplication or row scans during binding.
+Paired descriptors, retained raw cells and runtime policies cross the dependency;
+read/SELECT scopes prevent nested capture. The alias scope passes 260 query/CLI
+tests. Grouped/progressive references, forward dependencies and native name/evaluation
+qualification remain separate work.

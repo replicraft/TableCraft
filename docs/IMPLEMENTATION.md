@@ -1,5 +1,16 @@
 # Implementation status
 
+## Prior calculated projection aliases
+
+Buffered non-grouped SELECT projections can now consume an earlier explicit alias,
+including a correlated scalar subquery's result. References reuse retained cells
+with paired arithmetic metadata, raw Strings and runtime policies. Lexical read
+scopes prevent nested capture; eager failures and cumulative limits remain active.
+Nineteen new query/CLI tests and 241 related regressions pass with strict query
+and CLI Clippy. See [alias scope](PROJECTION_ALIASES.md) and
+[verification record](testing/results/read-query-projection-aliases-2026-10-25.json).
+Grouped, progressive and wider native alias semantics remain unfinished.
+
 ## Boolean index equality selections
 
 Qualified single-Boolean indexes now support exact typed equality selections.

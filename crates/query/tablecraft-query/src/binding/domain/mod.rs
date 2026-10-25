@@ -64,6 +64,7 @@ pub(crate) fn bind_domain(
         (syntax, value, filter)
     };
     let mut binder = Binder {
+        aliases: Default::default(),
         source,
         external_sources: Vec::new(),
         external_providers: Vec::new(),

@@ -137,6 +137,15 @@ pub(crate) struct SelectPlan {
     pub record_keys: Vec<Expr>,
     pub parent: Option<ParentFilter>,
 }
+
+#[derive(Clone, Copy)]
+pub(crate) struct ProjectionReference {
+    pub index: usize,
+    pub output_type: ProfiledType,
+    pub declaration: Option<OperandDeclaration>,
+    pub text_policy: TextPolicy,
+}
+
 pub(crate) enum Expr {
     DomainCall(DomainFunction, Vec<Expr>),
     Literal(Expression),
@@ -150,6 +159,7 @@ pub(crate) enum Expr {
         index: usize,
     },
     Output(usize, TextPolicy),
+    Projected(ProjectionReference),
     // Current membership item in this query scope or a correlated outer scope.
     CollectionItem {
         text_policy: TextPolicy,

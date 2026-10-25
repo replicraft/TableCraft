@@ -42,18 +42,20 @@ impl Binder<'_> {
                 if field.qualifier.is_some() {
                     return Err(QueryError::UnknownName);
                 }
-                Expr::Parameter(
-                    self.parameter_scope
-                        .iter()
-                        .copied()
-                        .find(|index| {
-                            let p = &self.parameters[*index];
-                            crate::profile::SOURCE_SCHEMA_POLICY
-                                .names
-                                .equals(p.name.as_str(), field.name.as_str())
-                        })
-                        .ok_or(QueryError::UnknownName)?,
-                )
+                let parameter = self.parameter_scope.iter().copied().find(|index| {
+                    let parameter = &self.parameters[*index];
+                    crate::profile::SOURCE_SCHEMA_POLICY
+                        .names
+                        .equals(parameter.name.as_str(), field.name.as_str())
+                });
+                if let Some(index) = parameter {
+                    Expr::Parameter(index)
+                } else if aggregates {
+                    self.projection_alias(field.name.as_str(), depth + 1)?
+                        .ok_or(QueryError::UnknownName)?
+                } else {
+                    return Err(QueryError::UnknownName);
+                }
             }
             E::Member {
                 expression,
