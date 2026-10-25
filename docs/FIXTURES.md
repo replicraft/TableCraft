@@ -7895,3 +7895,35 @@ Conservative conditional NULL, actual String and empty UNION-arm policies remain
 explicit refusals; ASCII result identities do not qualify native comparison
 weights or Windows behavior. See [the evidence contract](testing/CONCATENATION_POLICIES.md)
 and [verification record](testing/results/read-query-concatenation-policies-2026-10-24.json).
+
+
+## Original wide-variable Memo history corpus
+
+[VariableMemoHistoryFixture.java](testing/VariableMemoHistoryFixture.java) and
+[compare_variable_memo_histories.py](testing/compare_variable_memo_histories.py)
+are original repository MIT recipes. They create fresh V2016/V2019 ordinary
+tables with ID plus 254 variable fields, including nine interspersed Memo fields,
+untouched older roots and multi-page Unicode Memo growth. Read-only getters
+record exact values/types; pinned Jackcess implementation row-data helpers also
+confirm physical field counts 17/128/129/255. No reference SQL executes.
+
+The reviewed Apache-2.0 Jackcess 5.0.4 JAR retains SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+No upstream fixture bytes or source are copied. Originals, getter captures and
+actual generation commands remain ignored under
+`.cache/tablecraft-fixtures/variable-memo-histories-20261024/`.
+
+| Original | SHA-256 |
+| --- | --- |
+| V2016.accdb | `ff533b105a2cccb8e3b5d6e2433a7d5ebb4cd2269a296b0edb61c2c8707a82fa` |
+| V2019.accdb | `014b4fc3850019fbf1f9bc4ab4ad0e34481a5c6d59fcc13fb4ac242907a0b224` |
+
+The [accepted replay](testing/results/variable-memo-histories-2026-10-24.json)
+passes 16 controls and 33,422 getter-modeled cells, including full/projected
+sequential/indexed reads. All 13 selected hashes remain unchanged. Every file
+in the frozen 1,862-entry source manifest matches committed archive `3fbf14ea`;
+this is not a claim about the later live worktree. Initial default-step refusals
+remain excluded exploratory limits, with final reads using explicit ceilings.
+No decoder change was needed. This adds Memo locality/history coverage beside
+existing wide-variable fixtures, not first-time 255-column or native Access
+qualification. See [the evidence contract](testing/VARIABLE_MEMO_HISTORIES.md).
