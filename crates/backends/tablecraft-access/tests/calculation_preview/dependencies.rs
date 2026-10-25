@@ -1,6 +1,9 @@
 use super::*;
 use tablecraft_expressions::EvalError;
 
+#[path = "iif.rs"]
+mod iif;
+
 #[path = "dependencies/fixture.rs"]
 mod fixture;
 

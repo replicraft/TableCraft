@@ -12,6 +12,9 @@ mod fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/support/mod.rs"]
 mod support;
 
+#[path = "preview_calculation/iif.rs"]
+mod iif;
+
 use cli_support::run;
 use std::{fs, path::PathBuf, process::Output};
 
@@ -147,7 +150,7 @@ fn late_arithmetic_failures_never_publish_a_successful_prefix() {
 }
 
 #[test]
-fn active_nonlocal_and_calculated_dependencies_remain_refused() {
+fn active_nonlocal_and_self_dependencies_remain_refused() {
     for expression in [
         "Now()",
         "Shell('never')",

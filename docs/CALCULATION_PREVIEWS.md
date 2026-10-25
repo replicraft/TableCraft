@@ -60,7 +60,8 @@ including its CSV-crate quoting of displayed Text values.
 `--number-format` and `--date-format` explicitly supply the conversion/concatenation
 policies used by the admitted expression profile. There are no clock/random,
 collection, index, cached-source or declared-arithmetic options: these would not
-expand the existing preparation contract. All calls and unsupported dependencies
+expand the existing preparation contract. Calls other than the admitted `IIf`
+profile and unsupported dependencies
 remain refused before user records are read, even when those records are corrupt.
 Qualified same-table calculated dependencies are explicitly recomputed through the
 bounded dependency profile below.
@@ -129,7 +130,8 @@ not duplicate dependencies.
 Query rules still determine operator behavior and eager failures; admitting syntax
 does not assert complete Variant promotion or native calculated-field behavior.
 
-Calls of every kind, domain/aggregate functions, clocks, UDFs, subqueries, identity,
+Calls other than exact-arity unqualified `IIf`, domain/aggregate functions, clocks,
+UDFs, subqueries, identity,
 parameters, external/qualified references, collection members, date/GUID literals
 and LIKE/IN/BETWEEN forms remain refused before row access. Self/cyclic calculated
 dependencies remain refused through explicit active-path detection. Unknown fields
@@ -138,6 +140,46 @@ an admitted string literal remains inert data; expressions are moved into a
 checked query model rather than interpolated into a SQL statement. Table names
 containing closing brackets or control characters remain unsupported by this
 preview's current identifier boundary.
+
+## Deterministic IIf calls
+
+Unqualified, ASCII-insensitive `IIf(condition, truepart, falsepart)` is the only
+admitted function call. All three arguments must be present expressions; omitted
+arguments, wildcard arguments, extra arguments, module qualifiers and `IIf$`
+spellings remain refused. Arguments can contain the existing admitted operators,
+ordinary fields, qualified calculated dependencies and further admitted `IIf`
+calls. The `IS NULL` operator remains available; the `IsNull` function is not
+admitted by this profile.
+
+Microsoft's Access 2013 article
+[Add functions to Access expressions](https://support.microsoft.com/en-us/office/add-functions-to-access-expressions-72a471a0-4f0e-4d49-923b-be97b0fa4bb0)
+explicitly describes a three-argument `IIf` expression as usable in a calculated
+field in a table. Its illustrated condition also contains `Date()`. This preview
+admits the deterministic `IIf` structure only; it supplies no clock and continues
+to refuse `Date()` and every unrelated function. The article establishes a narrow
+table-calculation context, not complete ACE 16 formula compatibility.
+
+Preparation recursively visits every argument before reading user rows, even
+when a constant condition would select another arm. Hidden missing fields,
+unsupported calls, invalid calculated declarations and dependency cycles therefore
+fail on populated and empty tables. Argument traversal retains the same expanded
+node/depth ceilings, cumulative native accounting and cancellation checks as
+operators. No constant-folding shortcut bypasses that preflight.
+
+Execution uses the existing query `IIf` implementation, including its eager
+argument evaluation and NULL-condition behavior. Both branches are evaluated;
+a division failure in an unselected branch still fails the complete buffered
+preview. Selected results keep their natural expression carriers. Intermediate
+calculated fields are not coerced to their native ResultType, caches remain
+unread as operands, and successful previews establish neither cache freshness nor
+native Access result equivalence.
+
+Five focused adapter tests cover direct and transitive calls, NULL conditions,
+natural mixed result carriers, corrupt-cache pruning, empty-table preflight,
+hidden cycles and unsupported calls, eager late errors, structural limits,
+cancellation and execution quotas. Existing declaration and dependency controls
+remain active. Original public-writer/getter comparison evidence is recorded
+separately; these focused tests do not establish native Access qualification.
 
 ## Same-table calculated dependencies
 
@@ -153,7 +195,7 @@ reachable calculated field must pass the existing native calculated-result,
 Expression and typed ResultType gates before any user row is read. Dependencies
 use existing ASCII-insensitive identifier resolution and canonical stored names.
 Unrelated calculated formulas are not expanded. Cycles, missing fields,
-unsupported reachable declarations, complex/nonlocal inputs and calls fail even
+unsupported reachable declarations, complex/nonlocal inputs and unsupported calls fail even
 on empty tables or in operands whose value could otherwise hide them.
 
 `PreparedCalculation::dependencies()` reports distinct ordinary leaf names;

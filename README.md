@@ -62,7 +62,8 @@ stale; formulas do not execute. See [cached queries](docs/CACHED_CALCULATION_QUE
 Explicitly recompute a supported same-row formula with
 `tablecraft query preview-calculation --database example.accdb Items Score`.
 The separate `Recomputed` result uses TableCraft expression rules, including
-bounded same-table calculated dependencies, and leaves stored caches intact.
+bounded same-table calculated dependencies and deterministic `IIf` calls, and
+leaves stored caches intact.
 Intermediate results retain their recomputed carriers; this does not certify
 freshness or native conversion equivalence. See
 [calculation previews](docs/CALCULATION_PREVIEWS.md).

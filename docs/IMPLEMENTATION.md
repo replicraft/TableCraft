@@ -1,5 +1,18 @@
 # Implementation status
 
+## Deterministic IIf calculation previews
+
+Explicit calculation previews now admit unqualified three-expression `IIf` calls.
+Preparation checks every argument and reachable calculated dependency before user
+rows, including hidden cycles and unsupported calls on empty tables. Execution
+retains the existing eager evaluator, natural carriers and buffered failures;
+cached results never become operands. Other function calls remain refused.
+
+The focused adapter batch passes 62 tests and the CLI preview batch passes 14,
+with strict scoped Clippy. Microsoft's table-calculation example supports this
+narrow admission; it does not qualify native ACE result conversions or freshness.
+See [the preview contract](CALCULATION_PREVIEWS.md#deterministic-iif-calls).
+
 ## Independent per-table external replay
 
 The [twelve-file replay](testing/PER_TABLE_EXTERNAL.md) passes 184 commands and

@@ -173,7 +173,7 @@ fn unsupported_active_nonlocal_and_calculated_dependencies_fail_before_rows() {
         "(SELECT Id FROM Items)",
         "[Id]; SELECT 1",
         "Forms!Example!Name",
-        "IIf(True,[Id],0)",
+        "IsNull([Id])",
     ] {
         let source = NativeSource::new(
             Watching {
