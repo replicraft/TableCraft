@@ -1,5 +1,6 @@
 //! Explicit StrConv conversion flags and strict single-byte encoding kernels.
 mod flags;
+mod kana;
 mod locale;
 
 use super::{
@@ -7,7 +8,10 @@ use super::{
     output::{ByteOutput, TextOutput},
 };
 use crate::EvalError;
+#[cfg(feature = "sql")]
+pub(crate) use flags::Operation;
 pub use flags::{CaseConversion, Conversion, EncodingConversion};
+pub use kana::KanaConversion;
 pub use locale::LocaleProfile;
 
 /// Convert representable Unicode characters to exact single-byte string data.

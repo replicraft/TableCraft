@@ -7,11 +7,15 @@ use crate::{
         conversions::Conversion as NumericConversion,
         text::{
             byte_string::{ByteOperand, ByteString, ExpressionByteOperand},
-            strconv::{self, CaseConversion, Conversion, EncodingConversion, LocaleProfile},
+            strconv::{
+                self, CaseConversion, EncodingConversion, KanaConversion, LocaleProfile, Operation,
+            },
         },
     },
 };
 use tablecraft_core::values::{ExpressionValue, Value};
+
+const JAPANESE_LCID: u32 = 1041;
 
 impl Evaluator<'_> {
     /// Admit eager controls before the source while preserving raw string bytes.
@@ -76,7 +80,7 @@ impl Evaluator<'_> {
         else {
             return Err(EvalError::TypeMismatch);
         };
-        let conversion = Conversion::from_code(code)?;
+        let operation = Operation::from_code(code)?;
         let locale = has_locale
             .then(|| {
                 let value = argument(1)?;
@@ -88,15 +92,31 @@ impl Evaluator<'_> {
                     return Err(EvalError::TypeMismatch);
                 };
                 let id = u32::try_from(code).map_err(|_| EvalError::Domain)?;
-                LocaleProfile::from_lcid(LocaleId::new(id)?)
+                let id = LocaleId::new(id)?;
+                if matches!(operation, Operation::Kana(_)) {
+                    if id.raw() != JAPANESE_LCID {
+                        return Err(EvalError::UnsupportedExpression);
+                    }
+                    Ok(None)
+                } else {
+                    LocaleProfile::from_lcid(id).map(Some)
+                }
             })
-            .transpose()?;
+            .transpose()?
+            .flatten();
+        if matches!(operation, Operation::Kana(_)) && !has_locale {
+            return Err(EvalError::UnsupportedExpression);
+        }
         let input = source()?;
         if matches!(&input, ByteOperand::Scalar(Value::Null)) {
             return Ok(ByteOperand::Scalar(Value::Null));
         }
 
         let input = self.coerce_byte_string_source(input)?;
+        let conversion = match operation {
+            Operation::Kana(kana) => return self.strconv_kana(input, kana),
+            Operation::Standard(conversion) => conversion,
+        };
         let page = locale
             .as_ref()
             .map(LocaleProfile::code_page)
@@ -164,6 +184,27 @@ impl Evaluator<'_> {
         }
         Ok(ByteOperand::Scalar(Value::Text(text)))
     }
+
+    fn strconv_kana(
+        &mut self,
+        input: ByteOperand,
+        kana: KanaConversion,
+    ) -> Result<ByteOperand, EvalError> {
+        let Value::Text(text) = self.publish_byte_operand(input)? else {
+            return Err(EvalError::TypeMismatch);
+        };
+        if text.len() > self.limits.max_text_bytes {
+            return Err(EvalError::TextLimit);
+        }
+        let mut output = super::text_output::Output {
+            budget: self.budget,
+            cancelled: self.cancelled,
+            max_bytes: self.limits.max_text_bytes,
+            text: String::new(),
+        };
+        kana.write(&text, &mut output)?;
+        Ok(ByteOperand::Scalar(Value::Text(output.text)))
+    }
 }
 
 #[cfg(test)]
@@ -171,3 +212,6 @@ mod tests;
 
 #[cfg(test)]
 mod expression_tests;
+
+#[cfg(test)]
+mod kana_tests;

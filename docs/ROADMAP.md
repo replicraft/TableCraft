@@ -36,7 +36,9 @@ NULL/default rules. [Replace start/count coercion](TEXT_REPLACEMENT.md#contextua
 now also shares those kernels without source copies. [Comparison modes, character codes and raw-byte numeric slots](STRING_COMPARISON.md#contextual-comparison-mode-conversion)
 now also share checked DATE and explicit-policy SQL Text conversion.
 [StrConv flag/LCID options](STRCONV.md#contextual-flag-and-lcid-conversion) now
-reuse their Integer/Long targets without widening locale/flag support.
+reuse their Integer/Long targets. [Standalone Japanese kana](STRCONV.md#explicit-japanese-kana-conversion)
+now adds basic fullwidth script conversion with exact LCID 1041; width/combined
+modes, broader kana and native NLS qualification remain open.
 [Named numeric/date formatting options](STYLED_NUMBER_FORMATTING.md#contextual-numeric-options)
 now also accept explicit-policy SQL numeric Text with progressive validation.
 [General Format/DatePart/DateDiff/Weekday week options](WEEK_SETTINGS.md#contextual-week-option-conversion)
