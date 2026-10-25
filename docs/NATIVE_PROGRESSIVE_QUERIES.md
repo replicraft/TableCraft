@@ -142,3 +142,13 @@ Eight new native numeric-aggregate controls and thirty existing Count/progressiv
 controls pass with strict Clippy. Four layout profiles exceed a snapshot ceiling
 of one, retain independent Decimal/NULL goldens, and preserve checked EOF, cache
 isolation, pruning, cancellation and shared native budgets.
+
+## Global extrema consumers
+
+The same cursor also supplies progressive global Min/Max through the retained-cell
+query service. Selected malformed payloads still fail before outer filters, and
+checked EOF precedes any aggregate result callback. Native snapshot ceilings
+remain independent: a streamed result never publishes a complete input cache.
+Three new native controls cover priority layouts, failed final pages/counts and
+pruned malformed fields; the combined [338-test checkpoint](testing/results/read-query-progressive-extrema-2026-10-25.json)
+keeps native Access qualification separate.
