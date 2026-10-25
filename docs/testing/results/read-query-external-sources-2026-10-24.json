@@ -1,0 +1,199 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-24",
+  "production_base_commit": "6204cae4d0772aaba5462e54b41f405c40ecd722",
+  "scope": "Explicit read-only external IN sources over stable host-selected native files; finite engineering evidence, not full read/query or native Access qualification",
+  "rust_source_inventory": {
+    "roots": [
+      "apps",
+      "crates"
+    ],
+    "files": 1831,
+    "algorithm": "Sorted relative UTF-8 path + NUL + lowercase hex SHA256(file bytes) + newline, SHA256 over the complete manifest",
+    "sha256": "3aee7fca7c92e23708453a9d5a1c13a68c99d881f9a3cbd7b7a4dd4e72bf4bec",
+    "private_manifest": ".cache/external-native-rust-source-20261024.manifest",
+    "qualification": "A complete Rust source inventory does not establish complete test coverage"
+  },
+  "rust_tests": [
+    {
+      "package": "tablecraft-sql",
+      "command": "cargo test -p tablecraft-sql --lib -j2 --locked --offline",
+      "passed": 65,
+      "exit_code": 0
+    },
+    {
+      "package": "tablecraft-query",
+      "targets": {
+        "arithmetic_output_types": 8,
+        "collection_members": 37,
+        "decimal_division_profiles": 8,
+        "domain": 9,
+        "named_crosstabs": 34,
+        "external_sources": 14
+      },
+      "passed_unique_tests": 110,
+      "exit_code": 0,
+      "logs": [
+        {
+          "path": ".cache/external-in-query-tests-20261024.log",
+          "sha256": "d210f6dd59bb0e8d5c56c59a85677dfacec622a2ab333a120facd00ba9167b2e",
+          "tracked": false
+        },
+        {
+          "path": ".cache/external-in-query-final-20261024.log",
+          "sha256": "e1f1243331aa66fb96e28a9cc9d1be5f26e9b44a891079400a6ad0bc6a0d1796",
+          "tracked": false
+        }
+      ],
+      "count_note": "The final external_sources target replaces the earlier 13-test result; overlapping runs are not added."
+    },
+    {
+      "package": "tablecraft-access",
+      "command": "cargo test -p tablecraft-access --test external_sources --test linked_sources --test native_source_handle --test shared_native_budget -j2 --locked --offline",
+      "targets": {
+        "external_sources": 8,
+        "linked_sources": 10,
+        "native_source_handle": 3,
+        "shared_native_budget": 7
+      },
+      "passed": 28,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/external-native-access-tests-final-20261024.log",
+        "sha256": "f517c8594880d39fb23df3e583a32b964b353a717941f3552189cc5f259b8d25",
+        "tracked": false
+      }
+    },
+    {
+      "package": "tablecraft-cli",
+      "command": "cargo test -p tablecraft-cli --test external_queries --test linked_queries -j2 --locked --offline",
+      "targets": {
+        "external_queries": 8,
+        "linked_queries": 9
+      },
+      "passed": 17,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/external-native-cli-tests-final-20261024.log",
+        "sha256": "450bab7843142377c4f700ecb40c966e215f1b70e6d5102281a0050193c2526f",
+        "tracked": false
+      }
+    }
+  ],
+  "checks": [
+    {
+      "command": "cargo clippy -p tablecraft-sql --lib --tests -j2 --locked --offline -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --test external_sources -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/external-in-query-clippy-20261024.log",
+        "sha256": "3e9805de894f7da6bf74ee016dd3bda5a4ca10f55abc3034bc836eb26b947715",
+        "tracked": false
+      }
+    },
+    {
+      "command": "cargo check -p tablecraft-query --no-default-features -j2 --locked --offline",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/external-in-query-minimal-20261024.log",
+        "sha256": "4cbadfd3733ac4e9ebfda7d5f21c7b2187f6678144ea2b81f18b0e0d7974ac31",
+        "tracked": false
+      }
+    },
+    {
+      "command": "cargo clippy -p tablecraft-access --lib --test external_sources -j2 --locked -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo check -p tablecraft-access --no-default-features -j2 --locked --offline",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo clippy -p tablecraft-cli --bin tablecraft --test external_queries --test linked_queries -j2 --locked --offline -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo build -p tablecraft-cli --bin tablecraft -p tablecraft-access --example external_query -j2 --locked --offline",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo build -p tablecraft-access --example external_query -j2 --locked --offline",
+      "exit_code": 0,
+      "note": "Final-v2 example admits the Int16 VarType result carrier."
+    },
+    {
+      "command": "cargo clippy -p tablecraft-access --example external_query -j2 --locked --offline -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_dependency_boundaries.py",
+      "exit_code": 0,
+      "packages": 12
+    },
+    {
+      "command": "python3 -m unittest discover -s scripts -p 'test_*.py'",
+      "exit_code": 0,
+      "passed": 41
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "independent_replay": {
+    "report": "docs/testing/results/external-native-2026-10-24.json",
+    "sha256": "a2dbe29d9c9245aab272516c5ccd5905feb995796957bee1e1f530aaaaee8d1a",
+    "controls": {
+      "engineering": 350,
+      "cli": 375
+    },
+    "model_cells": {
+      "engineering": 2154,
+      "cli": 2214
+    },
+    "unchanged_hashes": 75,
+    "log": {
+      "path": ".cache/external-native-final-v2-replay-20261024.log",
+      "sha256": "dfa1a89c645e494c8ff1299f78034fa672affb1a7ea9c90f1aa98eab13eeea75",
+      "tracked": false
+    }
+  },
+  "excluded_attempts": [
+    {
+      "log": {
+        "path": ".cache/external-native-cli-tests-20261024.log",
+        "sha256": "b53134bf57847160e20a9bd608acb3e51abdf33387e4bfebf01f3fe82dd6b5aa",
+        "tracked": false
+      },
+      "reason": "Test fixture creation failed with OS StorageFull; successful final rerun follows deletion of rebuildable compiler artifacts."
+    },
+    {
+      "reason": "Initial unparenthesized JOIN probe exposed the parser gap, subsequently fixed and covered by the accepted replay."
+    },
+    {
+      "log": {
+        "path": ".cache/external-native-final-replay-20261024.log",
+        "sha256": "5a3f0016d06d51135cfe6a00c6bbc1010514c89f419d9674bdf3b54bb237fddb",
+        "tracked": false
+      },
+      "reason": "Initial final example lacked Int16 formatting for VarType; example corrected and final-v2 replay passed."
+    }
+  ],
+  "not_run": [
+    "Full workspace test suite",
+    "Windows Microsoft Access execution comparisons",
+    "Release/performance benchmarks"
+  ],
+  "remaining": [
+    "External named targets and stored native remote-source reconstruction",
+    "Broader P0 value/text semantics",
+    "Remaining read/query, storage and broader backend roadmap"
+  ]
+}

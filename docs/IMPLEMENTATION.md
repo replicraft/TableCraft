@@ -1,5 +1,28 @@
 # Implementation status
 
+## Independent external IN read/query replay
+
+The [external-source getter replay](testing/EXTERNAL_NATIVE_QUERIES.md) passes
+350 engineering controls/2,154 modeled cells and 375 actual CLI controls/2,214
+modeled cells across Jet 4, ACE 2007, ACE 16-family and mixed-format pairs. All
+75 pinned source, executable, reference, getter and database hashes remain
+unchanged. Different root/target rows, policies and indexes distinguish actual
+source routing. Both grouped and unparenthesized joins, nested/correlated scopes,
+root named/domain composition, exact tokens, explicit alternative host bindings,
+late errors, positive quotas and target-specific indexes are exercised. Reference
+getters never execute SQL or traverse links. Native Access qualification remains
+pending; nested namespace rules are an explicit engineering contract.
+
+The [scoped verification record](testing/results/read-query-external-sources-2026-10-24.json)
+pins production base `6204cae4`, the 1,831-file Rust source inventory, terminal
+logs and separate replay counts. Sixty-five parser, 110 query, 28 adapter and 17
+CLI tests pass; overlapping query reruns are not added. Scoped strict Clippy,
+standalone query/adapter checks, CLI/example builds, formatting and dependency
+checks pass. Initial parser, example-carrier and disk-exhaustion probes are
+explicitly excluded. No full-workspace, Windows Access or performance claim is
+made. Next is consistent mixed Single/Double relational key behavior, followed by
+the remaining P0 value/text and read/query/backend acceptance work.
+
 ## Explicit external database selection in query run
 
 Repeatable `--external DATABASE_TOKEN PATH` maps an exact SQL IN token to an
