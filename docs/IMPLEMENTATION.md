@@ -1,5 +1,16 @@
 # Implementation status
 
+## Explicit linked-table streaming
+
+`query run --stream --link ALIAS PATH` now routes eligible scalar queries through
+the existing authorized one-hop target and progressive cursor. Stored paths remain
+inert; selected fields, EOF and cumulative budgets retain existing checks, without
+publishing complete snapshot caches. CLI controls also cover encrypted targets,
+cached results and differing target/root text policies. Twelve new controls and
+68 regressions pass with strict native/CLI Clippy. See
+[streaming scope](STREAMING_QUERIES.md#explicit-linked-tables) and
+[verification](testing/results/read-query-linked-progressive-2026-10-25.json).
+
 ## Strict UTF-16 template XML
 
 ACCDT control/object/table XML now accepts BOM-qualified UTF-16LE/BE alongside

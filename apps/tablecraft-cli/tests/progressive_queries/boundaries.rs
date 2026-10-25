@@ -38,7 +38,6 @@ fn batch_ranges_and_incompatible_modes_fail_before_missing_source_is_opened() {
         vec!["--stream", "--sqlite", "missing-stream.sqlite"],
         vec!["--stream", "--index", "Items", "Missing"],
         vec!["--stream", "--auto-index"],
-        vec!["--stream", "--link", "Items", "missing-link.accdb"],
         vec!["--stream", "--external", "token", "missing-external.accdb"],
         vec!["--stream", "--collections"],
         vec!["--stream", "--multivalues"],

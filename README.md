@@ -19,7 +19,8 @@ goal above does not imply complete current read/query support.
 Explicit [linked-table queries](docs/NATIVE_LINKED_QUERIES.md#cli-target-selection)
 can select a stable target with `query run --database frontend.accdb --link
 'People link' backend.accdb 'SELECT * FROM [People link]'`. Stored paths never
-open automatically; selected files share cumulative native read limits.
+open automatically; selected files share cumulative native read limits. Add
+`--stream` for eligible scalar TSV batches through the explicit linked target.
 
 Explicit [external database queries](docs/NATIVE_EXTERNAL_QUERIES.md#cli-target-selection)
 use `query run --database frontend.accdb --external remote backend.accdb

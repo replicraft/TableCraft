@@ -47,37 +47,43 @@ fn encrypted_target_uses_explicit_password_even_when_root_is_plaintext() {
     let arguments = [
         "query",
         "run",
-        "SELECT Id,Score FROM Linked ORDER BY Id",
+        "SELECT Id,Score FROM Linked",
         "--database",
         root.path(),
         "--link",
         "Linked",
         target.path(),
     ];
-    let mut correct = arguments.to_vec();
-    correct.extend(["-p", "public linked password"]);
-    let output = run(&correct);
-    assert!(
-        output.status.success(),
-        "{}",
-        String::from_utf8_lossy(&output.stderr)
-    );
-    assert!(output.stderr.is_empty());
-    assert_eq!(output.stdout, b"Id\tScore\n1\t10\n2\t20\n3\t30\n");
-
-    let mut wrong = arguments.to_vec();
-    wrong.extend(["-p", "incorrect linked password"]);
-    for arguments in [arguments.to_vec(), wrong] {
-        // run() captures output with noninteractive stdin: omission must not hang
-        // or publish a result before an encrypted target can be authenticated.
-        let output = run(&arguments);
-        assert!(!output.status.success());
-        assert!(output.stdout.is_empty());
+    for streaming in [false, true] {
+        let mut selected = arguments.to_vec();
+        if streaming {
+            selected.extend(["--stream", "--batch-rows", "1"]);
+        }
+        let mut correct = selected.clone();
+        correct.extend(["-p", "public linked password"]);
+        let output = run(&correct);
         assert!(
+            output.status.success(),
+            "{}",
             String::from_utf8_lossy(&output.stderr)
-                .to_ascii_lowercase()
-                .contains("password")
         );
+        assert!(output.stderr.is_empty());
+        assert_eq!(output.stdout, b"Id\tScore\n1\t10\n2\t20\n3\t30\n");
+
+        let mut wrong = selected.clone();
+        wrong.extend(["-p", "incorrect linked password"]);
+        for arguments in [selected, wrong] {
+            // Captured noninteractive stdin must not hang or publish before
+            // an explicitly selected encrypted target is authenticated.
+            let output = run(&arguments);
+            assert!(!output.status.success());
+            assert!(output.stdout.is_empty());
+            assert!(
+                String::from_utf8_lossy(&output.stderr)
+                    .to_ascii_lowercase()
+                    .contains("password")
+            );
+        }
     }
     // Database's drop guard compares both original files byte for byte.
 }
@@ -89,27 +95,32 @@ fn stored_calculation_opt_in_reaches_target_and_never_recomputes_cached_values()
     let arguments = [
         "query",
         "run",
-        "SELECT Id,Score FROM Linked ORDER BY Id",
+        "SELECT Id,Score FROM Linked",
         "--database",
         root.path(),
         "--link",
         "Linked",
         target.path(),
     ];
-    let refused = run(&arguments);
-    assert!(!refused.status.success());
-    assert!(refused.stdout.is_empty());
+    for streaming in [false, true] {
+        let mut selected = arguments.to_vec();
+        if streaming {
+            selected.extend(["--stream", "--batch-rows", "1"]);
+        }
+        let refused = run(&selected);
+        assert!(!refused.status.success());
+        assert!(refused.stdout.is_empty());
 
-    let mut allowed = arguments.to_vec();
-    allowed.push("--stored-calculations");
-    let output = run(&allowed);
-    assert!(
-        output.status.success(),
-        "{}",
-        String::from_utf8_lossy(&output.stderr)
-    );
-    assert!(output.stderr.is_empty());
-    assert_eq!(output.stdout, b"Id\tScore\n1\t999\n2\tNULL\n3\t41\n");
+        selected.push("--stored-calculations");
+        let output = run(&selected);
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert!(output.stderr.is_empty());
+        assert_eq!(output.stdout, b"Id\tScore\n1\t999\n2\tNULL\n3\t41\n");
+    }
 }
 
 #[test]
@@ -203,24 +214,31 @@ fn database_policy_uses_target_field_order_and_root_literal_default_independentl
             b"Id\tFieldPolicy\tRootPolicy\n1\tTRUE\tFALSE\n".as_slice(),
         ),
     ] {
-        let output = run(&[
-            "query",
-            "run",
-            "SELECT Id,Score>ChrW(769) AS FieldPolicy,ChrW(128)<ChrW(769) AS RootPolicy FROM Linked",
-            "--database",
-            root.path(),
-            "--link",
-            "Linked",
-            target.path(),
-            "--collation",
-            policy,
-        ]);
-        assert!(
-            output.status.success(),
-            "{}",
-            String::from_utf8_lossy(&output.stderr)
-        );
-        assert!(output.stderr.is_empty());
-        assert_eq!(output.stdout, expected, "{policy}");
+        for streaming in [false, true] {
+            let mut arguments = vec![
+                "query",
+                "run",
+                "SELECT Id,Score>ChrW(769) AS FieldPolicy,ChrW(128)<ChrW(769) AS RootPolicy FROM Linked",
+                "--database",
+                root.path(),
+                "--link",
+                "Linked",
+                target.path(),
+                "--collation",
+                policy,
+            ];
+            if streaming {
+                arguments.extend(["--stream", "--batch-rows", "1"]);
+            }
+
+            let output = run(&arguments);
+            assert!(
+                output.status.success(),
+                "{}",
+                String::from_utf8_lossy(&output.stderr)
+            );
+            assert!(output.stderr.is_empty());
+            assert_eq!(output.stdout, expected, "{policy}; streaming={streaming}");
+        }
     }
 }

@@ -7,14 +7,14 @@ use super::{
 use crate::{commands::ExecutionError, native, presentation::Format};
 use publisher::Publisher;
 use std::{cell::RefCell, io::Write};
-use tablecraft_access::NativeSource;
+use tablecraft_access::{LinkedNativeSource, NativeSource};
 use tablecraft_ace::{
     LongTextReadLimits, LongValueReadLimits, LongValueReadSource, TableSnapshotLimits,
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_expressions::comparison::Collation;
 use tablecraft_query::{
-    PreparationOptions, StreamError, prepare_with_options, source::CollationResolver,
+    PreparationOptions, Source, StreamError, prepare_with_options, source::CollationResolver,
 };
 
 pub(super) const MAX_BATCH_ROWS: u32 = 1_000;
@@ -116,9 +116,26 @@ impl RunArgs {
             .as_ref()
             .map(|policy| policy as &dyn CollationResolver);
 
+        let input = self.native_input(password).ok_or(Error::Parameter)?;
+        let targets = super::links::load(
+            &source,
+            &input,
+            &native_pool,
+            &comparison_pool,
+            database_policy,
+            snapshot_limits,
+        )?;
+        let mappings = targets.mappings(source.handle(), &native_pool)?;
+        let linked = if self.links.is_empty() {
+            None
+        } else {
+            Some(LinkedNativeSource::new(source.handle(), &mappings).map_err(Error::Links)?)
+        };
+        let query_source: &dyn Source = linked.as_ref().map_or(&source as &dyn Source, |s| s);
+
         let prepared = prepare_with_options(
             query.query(),
-            &source,
+            query_source,
             PreparationOptions {
                 declared_arithmetic: controls.declared_integral,
                 reference_year: controls.reference_year,
@@ -129,7 +146,7 @@ impl RunArgs {
         let mut publisher = Publisher::new(names, batch_rows, controls.output_bytes, writer)?;
         execution_context::with_context(&controls, collation, resolver, |options| {
             prepared
-                .execute_progressive(&source, &bindings, options, &mut |row| {
+                .execute_progressive(query_source, &bindings, options, &mut |row| {
                     publisher.append(row)
                 })
                 .map_err(|error| match error {

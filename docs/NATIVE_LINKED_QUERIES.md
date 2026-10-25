@@ -45,6 +45,21 @@ local root queries and other mapped links remain usable, while accessing an
 unmapped linked table fails explicitly. No target table name is added to the
 root namespace by its mapping.
 
+## Native linking scope
+
+Microsoft's [import/link guidance](https://support.microsoft.com/en-us/access/import-or-link-to-data-in-another-access-database)
+for Access 2016/2019 and current versions describes linking directly to tables.
+Its linking workflow excludes source tables that are themselves linked and directs
+users to the original table instead. Importing an existing link is a separate
+operation that establishes a link to that original source. The facade therefore
+keeps chained targets refused; it does not interpret a persisted chain as
+permission to open another file. Target queries, forms, reports, macros and
+modules are outside this table-linking path.
+
+This documented workflow does not qualify TableCraft's SQL or physical decoding
+against native Access. Stored link metadata remains inert, and explicit host
+mapping remains the only authority to supply an already-open target.
+
 ## Query and cache boundaries
 
 Named retrieval definitions always come from the root source. Targets supply
@@ -56,11 +71,25 @@ existing separate contracts.
 Every Source capability forwards directly using the resolved target name:
 scalar columns, unavailable names, scalar/collection text policy IDs, multivalue
 and named-member metadata, equality hints, projected/constrained scans and
-aligned collection scans. There is no fallback to a less capable default Source
-method. Original filters, selected-index failures, source row order, parent/child
+aligned collection scans. Explicit progressive scalar projections also forward
+through the same authorized mapping to the target's existing native cursor.
+There is no fallback to a less capable default Source method. Original filters, selected-index failures, source row order, parent/child
 alignment, visitor rejection and complete-cache publication remain owned by the
 target adapter and query executor. A failed or selected subset is not installed
 as a complete table.
+
+Progressive calls start a fresh target cursor and retain target projection,
+complete-schema, continuation and EOF checks. The target snapshot-retention cap
+does not truncate the stream, and neither successful EOF nor a failed prefix
+publishes a complete table/projection cache. Sequential UNION ALL arms release
+the previous cursor before opening the next, including repeated references to
+the same mapped alias. Native allowances remain cumulative across root and
+all targets; the budget borrow is released before callbacks, while target reader
+reentry still fails through the existing typed source-exclusive boundary.
+Required target indexes and configured collection/decoded modes retain their
+existing progressive refusal. Root-local progressive reads remain available
+without any mappings. External IN/per-table namespaces keep their separate
+query-admission restrictions; forwarding a root alias does not broaden them.
 
 Handles and mappings remain immutable while preparing/executing. Query binding
 reads target metadata without scanning parent or child records. The normal query
@@ -106,6 +135,33 @@ Ten adapter tests in `tests/linked_sources.rs` and its feature modules pass:
 - Cancellation and exhausted cumulative lookup/setup work return typed failures.
 - Real projected reads avoid malformed unrequested Date values; target equality
   hints and multivalue/history metadata and aligned query results are retained.
+
+Eight progressive controls in `tests/linked_progressive.rs` and its boundary
+module pass alongside the ten linked-source and seventeen ordinary progressive
+regressions (35 tests total), with strict scoped Clippy. They cover four synthetic
+priority layout selectors and batch sizes 1/2/5, metadata-only preparation,
+root-local routing, exact stored versus canonical target spelling, repeated-alias
+UNION EOF/borrow release, source-exclusive callback reentry, snapshot-cap bypass
+without complete-cache publication, unchanged input bytes, sink retry, shared
+native limits and cancellation. Late selected invalid Date, declared-count and
+eager expression failures preserve only prior callbacks and stop later arms;
+unselected invalid cells remain pruned. Required indexes, advanced modes,
+unmapped targets and chains still refuse.
+
+```sh
+cargo test --locked -p tablecraft-access \
+  --test linked_progressive --test linked_sources --test progressive_source
+cargo clippy --locked -p tablecraft-access --lib \
+  --test linked_progressive --test linked_sources --test progressive_source \
+  -- -D warnings
+```
+
+Final local logs are `.cache/linked-progressive-native-tests-final-20261025.log`
+and `.cache/linked-progressive-native-clippy-20261025.log`. Initial excluded runs
+corrected two original test-helper expectations: the host mapping must match
+stored `items` before resolving canonical `Items`, and a synthetic Jet 4 header
+must carry Jet rather than ACE magic. Neither changed production admission or
+weakened metadata checks. Original-file CLI replay remains separate evidence.
 
 These controls establish the explicit adapter composition contract. They do not
 qualify native Access linked SQL, authentication, concurrent multi-file reads,
@@ -174,3 +230,15 @@ as its root while resolving exact external IN tokens to already-open native
 handles. This composition preserves root named-query and mapped-link behavior;
 external targets still expose local base tables only. It adds no path opening,
 provider activation or cross-file transaction guarantee.
+
+## CLI progressive composition
+
+Explicit `query run --stream --link ALIAS PATH` uses the same authorized target
+loader and facade as buffered retrieval. Thirteen linked-query CLI controls and
+thirty-two ordinary progressive regressions pass with strict CLI Clippy. The
+linked controls include all four priority synthetic profiles, buffered/streamed
+parity, repeated aggregate/row UNION ALL arms, completed-batch failure prefixes,
+unmapped/chained refusals, encrypted targets, stored-calculation opt-in, and
+independent target-field/root-literal text policy selection. Stored paths never
+open automatically. See [streaming behavior](STREAMING_QUERIES.md#explicit-linked-tables)
+and the [combined 80-test record](testing/results/read-query-linked-progressive-2026-10-25.json).

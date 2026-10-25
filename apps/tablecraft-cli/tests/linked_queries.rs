@@ -5,6 +5,8 @@ mod cli_support;
 mod linked_fixture;
 #[path = "linked_queries/options.rs"]
 mod options;
+#[path = "linked_queries/progressive.rs"]
+mod progressive;
 #[path = "../../../crates/engines/tablecraft-ace/tests/support/mod.rs"]
 mod support;
 #[allow(dead_code)]

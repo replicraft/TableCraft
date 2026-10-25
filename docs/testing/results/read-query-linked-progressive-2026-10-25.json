@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Explicit one-hop native linked-table progressive projections through shared adapter and CLI mapping services",
+  "unique_tests": 80,
+  "new_tests": 12,
+  "targets": {
+    "native_linked_progressive": 8,
+    "native_existing_linked_sources": 10,
+    "native_existing_progressive_source": 17,
+    "cli_linked_queries": 13,
+    "cli_existing_progressive_queries": 32
+  },
+  "checks": [
+    {
+      "command": "cargo test --locked -p tablecraft-access --test linked_progressive --test linked_sources --test progressive_source",
+      "private_log": ".cache/linked-progressive-native-tests-final-20261025.log",
+      "sha256": "23a042ed29137fea7e0dbb86b7b833c55e2310820016984b68bb187c45b5a973",
+      "exit_code": 0,
+      "tests": 35
+    },
+    {
+      "command": "cargo clippy --locked -p tablecraft-access --lib --test linked_progressive --test linked_sources --test progressive_source -- -D warnings",
+      "private_log": ".cache/linked-progressive-native-clippy-20261025.log",
+      "sha256": "e1d7db16f2a5c567de35661eb5d588da3b3bdd678353df080b3f5d5c8bae9fc3",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --test linked_queries --test progressive_queries -j2 --locked --offline",
+      "private_log": ".cache/linked-progressive-cli-tests-20261025.log",
+      "sha256": "6bf2e1c03d506471ca883e90386a5e4707c10e82aa972044513fc71070621327",
+      "exit_code": 0,
+      "tests": 45
+    },
+    {
+      "command": "cargo clippy -p tablecraft-cli --bin tablecraft --test linked_queries --test progressive_queries -j2 --locked --offline -- -D warnings",
+      "private_log": ".cache/linked-progressive-cli-clippy-20261025.log",
+      "sha256": "811dc841cae540d17aca2f3b0a209f53cef78dedcfe96e5b3b25b2db43f80510",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "private_log": ".cache/linked-progressive-fmt-20261025.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "review": [
+    "The same explicitly authorized facade is used for binding and execution; stored paths remain inert and canonical target names stay scoped.",
+    "Target projected cursors retain selected-value validation, checked EOF, callback budget release and source exclusivity; neither successful nor failed streams publish complete snapshot caches.",
+    "Root and targets share native allowances while query/comparison/output retain separate pools; repeated UNION ALL references do not reset budgets.",
+    "CLI buffered/streaming controls cover encrypted targets, explicit cached-calculation opt-in and differing root/target field policies.",
+    "Late errors retain only completed TSV batches; unmapped/chained targets refuse without publication."
+  ],
+  "excluded_authoring_attempts": [
+    "Initial native fixture helpers used mismatched Jet/ACE header magic and expected a different stored table-name case; independent fixture setup was corrected before accepted checks, without weakening runtime checks."
+  ],
+  "unrun": [
+    "Full workspace suite",
+    "Native Microsoft Access linked-query comparisons",
+    "Coherent live multi-file Access reads",
+    "Original-file linked progressive replay with final frozen executable"
+  ]
+}
