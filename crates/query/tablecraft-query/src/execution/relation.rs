@@ -1,3 +1,4 @@
+mod directory;
 mod equality;
 
 use super::{Environment, Runtime};
@@ -141,6 +142,18 @@ impl Runtime<'_, '_> {
             .try_reserve_exact(rhs.len())
             .map_err(|_| QueryError::Allocation)?;
         matched.resize(rhs.len(), false);
+        if let Some(equality) = &equality
+            && let Some(rows) = self.directory_join(
+                equality,
+                &lhs,
+                &rhs,
+                kind,
+                (left.row_width(), right.row_width()),
+                &mut matched,
+            )?
+        {
+            return Ok(rows);
+        }
         for l in &lhs {
             let mut hit = false;
             for (j, r) in rhs.iter().enumerate() {

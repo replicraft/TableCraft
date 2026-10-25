@@ -1,7 +1,7 @@
-# Borrowed checks for integral equijoins
+# Bounded directory checks for integral equijoins
 
-Buffered joins can reject a pair using borrowed validated key cells before
-allocating a combined intermediate row. This applies only when the entire ON
+Buffered joins use a bounded candidate directory and borrowed validated key
+cells before allocating combined intermediate rows. This applies only when the entire ON
 predicate is a bare equality between depth-zero fields from opposite inputs,
 and both active result descriptors guarantee the same Boolean, Byte, Int16,
 Int32 or Int64 carrier. Operand order can be reversed. Nullable fields retain
@@ -13,8 +13,11 @@ FROM Orders INNER JOIN Customers ON Orders.CustomerId = Customers.Id;
 ```
 
 The executor finishes both input relations and validates selected source cells
-under their existing read/evaluation contracts, then visits pairs in the existing left-major/right-minor order. It calls the existing scalar
-comparison service once for each pair. Accepted pairs use the original combined
+under their existing read/evaluation contracts. For nonempty proven inputs, it
+checks every actual key against the descriptor, then indexes non-NULL right keys
+without copying rows. Each left key probes candidate right rows in their original
+encounter order. Every matching fingerprint candidate passes through the existing
+scalar comparison service; fingerprints never establish SQL equality themselves. Accepted pairs use the original combined
 row copy, retaining values, declarations and text policies. LEFT/RIGHT joins keep
 their existing unmatched-row placement and nullable padding. No table, field or
 provider is opened implicitly.
@@ -24,16 +27,28 @@ pruning. Unknown descriptors, mixed carriers, Text, Currency, GUIDs, floats,
 outer-field references, casts, function calls and compound ON predicates keep
 the original general evaluator. In particular, an equality inside AND is never
 extracted: doing so could suppress an eager failure elsewhere in that predicate.
-No representational Value equality or new numeric promotion rule is introduced.
+Unexpected actual carriers or key widths disable the directory for the whole
+operation before any joined rows are produced, retaining the original borrowed
+comparison path and its errors. Empty inputs retain their existing behavior.
+Resource, cancellation, allocation and selected-source failures are propagated;
+they never trigger a silent retry. No representational Value equality or new
+numeric promotion rule is introduced.
 
-Previously, every pair allocated a complete candidate before ON evaluation,
-including rejected pairs. A 1,100-row one-to-one self-join therefore exhausted
-the hard one-million intermediate-row ceiling despite returning only 1,100 rows.
-The borrowed check allocates candidates only for matches. This changes allocation
-and row-quota consumption intentionally; cancellation and work remain checked
-for every visited pair. It remains bounded nested-loop work, not a hash join or
-an unlimited query path. Source snapshots, native allowances, result buffering,
-structural ceilings and complete-result publication remain unchanged.
+The earlier borrowed check removed combined-row allocations for nonmatching
+pairs but retained all-pairs comparison work. The candidate directory now avoids
+those proven nonmatching comparisons as well. Append-linked buckets and rebuilds
+retain right duplicate order, preserving left-major/right-minor matched output.
+RIGHT unmatched rows still follow all matched rows; LEFT unmatched rows follow
+their corresponding left input. NULL keys are not indexed and never match.
+
+Every actual-key check, fingerprint, bucket initialization, entry insertion,
+rehash and probe is metered and cancellable. Bucket and entry capacities are
+prepaid at their actual Rust widths before fallible reservation. Empty directories
+allocate nothing; retained allocations are not refunded. The added index storage
+and changed work can alter resource thresholds intentionally. This is not an
+unlimited query path or a timing/performance claim. Full source materialization,
+structural ceilings, complete-result publication and all unqualified predicate
+paths remain unchanged.
 
 Microsoft's [Access SQL INNER JOIN contract](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/inner-join-operation-microsoft-access-sql)
 establishes field equality joins and ordinary matching semantics. This slice
@@ -41,7 +56,9 @@ changes TableCraft's candidate materialization, not admitted SQL syntax or nativ
 Access compatibility claims. Other comparison families retain their existing
 engineering boundaries.
 
-Eight focused query tests and 110 existing retrieval, grouped-subquery,
+## Earlier borrowed-pair verification
+
+The earlier slice passed eight focused query tests and 110 existing retrieval, grouped-subquery,
 named/external and alias regressions pass, along with strict query library/tests
 Clippy. Controls cover all five admitted carriers, both arithmetic profiles,
 swapped operands, duplicate/NULL keys, every join kind, empty inputs, unchanged
@@ -57,3 +74,28 @@ order and selected-corrupt/pruned payloads. Two new CLI controls and three SQLit
 regressions also pass; the 1,100-row CLI join matches independent read-only SQLite
 results under a 10,000-row query allowance. Scoped query/native/CLI Clippy and
 formatting pass. See the [verification record](testing/results/read-query-borrowed-equijoins-2026-10-25.json).
+
+## Directory implementation checks
+
+Two focused implementation tests check the original 1,100-row default-work
+self-join and 12,000-key joins under explicit bounded allowances, in both
+arithmetic profiles. A declared-only integral descriptor also flows through
+nested derived outputs without using the public conservative descriptor as a
+runtime proof. Five private units exercise forced fingerprint collisions,
+duplicate ordering through rebuilds, actual storage charges, every growth
+cancellation checkpoint and whole-operation fallback for unexpected carrier,
+Error or missing-key cells. The original eight borrowed-join tests remain
+unchanged and pass. Ten independent conformance tests and 110 related
+retrieval/named/external/alias regressions also pass: 135 distinct query tests,
+including 17 new tests. Strict query library/tests Clippy and the standalone
+minimal-feature check pass. The
+[query verification record](testing/results/read-query-directory-joins-2026-10-25.json)
+retains exact commands, raw log hashes and excluded test-authoring/lint attempts.
+Native/CLI integration and replay evidence are recorded separately.
+
+Four native and three CLI integration controls also pass with strict linting and
+formatting, bringing the scoped checkpoint to 142 unique tests and 19 new tests.
+The new native control checks 1,100-row joins with default query work across the
+priority layouts and both arithmetic profiles; CLI SQLite controls keep exact
+read-only reference results with the previous large work override removed.
+Native Access and timing qualification remain separate.

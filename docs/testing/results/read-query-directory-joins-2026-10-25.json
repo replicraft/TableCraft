@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Bounded right-row candidate directory for existing whole bare equality between same proven Boolean/Byte/Int16/Int32/Int64 fields; original scalar comparator and input validation remain authoritative",
+  "unique_tests": 142,
+  "new_tests": 19,
+  "existing_regression_tests": 123,
+  "new_test_breakdown": {
+    "independent_directory_join_values": 10,
+    "implementation_directory_join_indexing": 2,
+    "private_directory_and_fallback": 5,
+    "native_default_work": 1,
+    "cli_default_work": 1
+  },
+  "primary_targets": {
+    "directory_join_values": 10,
+    "directory_join_indexing": 2,
+    "borrowed_join_equality": 8
+  },
+  "regression_targets": {
+    "retrieval": 59,
+    "grouped_subqueries": 8,
+    "named": 6,
+    "external_named_sources": 10,
+    "external_table_sources": 8,
+    "projection_aliases": 7,
+    "projection_alias_values": 12
+  },
+  "checks": [
+    {
+      "command": "cargo check -p tablecraft-query --lib -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/directory-join-check-20261025.log",
+      "sha256": "0e63a8ea3001b5c0b2ba64d28ed582aea9003e00c87b75b18ff61828958d439e",
+      "terminal_session": 30215
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-query --test directory_join_values --test directory_join_indexing --test borrowed_join_equality",
+      "exit_code": 0,
+      "private_log": ".cache/directory-join-query-primary-final-20261025.log",
+      "sha256": "1b5ca0cc32a3c64f2695e1c3aeeaba16bcaa2a13dd8b1f12d682389064c1a3a1",
+      "tests": 20,
+      "terminal_session": 94615
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-query --lib execution::relation::",
+      "exit_code": 0,
+      "private_log": ".cache/directory-join-private-units-final-20261025.log",
+      "sha256": "d97df4f0c1100d3fefe27a1d31d3e468052757ee90a53a4d55a93cd468797943",
+      "tests": 5,
+      "terminal_session": 51496
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-query --test retrieval --test grouped_subqueries --test named --test external_named_sources --test external_table_sources --test projection_aliases --test projection_alias_values",
+      "exit_code": 0,
+      "private_log": ".cache/directory-join-related-regressions-final-20261025.log",
+      "sha256": "61278c43e112259d110d8a1c61a121fced3557e3b9ab3a4ff5cd53a946438721",
+      "tests": 110,
+      "terminal_session": 42214
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-query --lib --tests -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/directory-join-query-clippy-final-20261025.log",
+      "sha256": "ce93ab218298b89a523712054a870834ff6112e536468e40c98654b4580dae26",
+      "terminal_session": 47106
+    },
+    {
+      "command": "cargo check --locked --offline -j2 -p tablecraft-query --lib --no-default-features",
+      "exit_code": 0,
+      "private_log": ".cache/directory-join-query-minimal-20261025.log",
+      "sha256": "2cf4281b44ddb8c38cabf244a65ab492671200595bb88d8668604b1adcd6444f",
+      "terminal_session": 62083
+    },
+    {
+      "command": "cargo test -p tablecraft-access --test borrowed_join_equality -p tablecraft-cli --test integral_joins -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/directory-join-native-cli-20261025.log",
+      "sha256": "e7c06a8a77f3855360eaf9d5cb2e0fac07a189bdc3bf8eb224c004d5681f74df",
+      "tests": 7
+    },
+    {
+      "command": "cargo clippy -p tablecraft-access --lib --test borrowed_join_equality -p tablecraft-cli --bin tablecraft --test integral_joins -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/directory-join-native-cli-clippy-20261025.log",
+      "sha256": "864c38bd65a852ef226b18d23f5bf164d6204b697f02f0bf0fc2b5fd88d0d327"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "private_log": ".cache/directory-join-fmt-20261025.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "source_timing": "The 110 regression tests passed before the mechanical nested-if to let-chain cleanup. Final primary (20 tests), private (5 tests), strict and minimal checks passed afterward; the cleanup changes no runtime branch or output. Superseded primary/private passes are not counted again.",
+  "contracts": [
+    "Both ordinary input relations finish materialization and validation before directory construction. Whole-operation actual-key mismatch falls back before output; cancellation, resource, allocation and selected-source errors never silently retry.",
+    "Exact active paired descriptors establish the existing five-carrier proof. No first-row inference, mixed numeric coercion, Text policy relaxation, partial AND extraction or new grammar.",
+    "NULL has no join fingerprint and never matches NULL. Hashes only select candidates; existing written-direction scalar equality evaluates matching fingerprints.",
+    "Append-linked buckets and rebuilds preserve original right encounter and duplicate order. Left-major matched order, LEFT NULL padding and final RIGHT unmatched order remain unchanged.",
+    "Actual bucket/entry capacities are prepaid/fallibly reserved; hashes, preflight, probes, collision traversal and growth are metered and cancellable. Directory allocation and work intentionally change quota thresholds."
+  ],
+  "independent_controls": [
+    "Independent encounter-order model across all five proven carriers, nullable and boundary keys including LongLong neighbours above 2^53, both operand directions, both arithmetic profiles and INNER/LEFT/RIGHT joins.",
+    "Generated 1,100 default-work and 12,000 bounded joins; active declared-only Int16 proof through derived reads, pruned/nested slot mapping and retained payload/declaration/policy behavior.",
+    "Raw String observers, selected bad-source/EOF failures, empty opposite input, unchanged general-predicate error paths, every observed cancellation checkpoint, cumulative limits and reuse.",
+    "Private forced bucket/full-fingerprint collisions, append/rebuild ordering, exact charged storage, growth cancellation and late unexpected carrier/Error/missing-key fallback."
+  ],
+  "excluded_attempts": [
+    {
+      "private_log": ".cache/directory-join-private-units-authoring-probe-20261025.log",
+      "sha256": "42b97bdabd44ce686643d67cbbaff3a2072c2a9b7b6370173d6406ba6d8bedea",
+      "exit_code": 101,
+      "reason": "New private test lacked a Value import; cfg(test) compile failed before tests ran. Only the import changed, with no production or expected-outcome correction.",
+      "counted_as_acceptance": false
+    },
+    {
+      "private_log": ".cache/directory-join-values-tests-20261025.log",
+      "sha256": "7867e4ad34eae502f4f6b551cc9a8a08f6133ca54ea182b969486d19a3745f75",
+      "exit_code": 101,
+      "reason": "New independent tests used bare JOIN where the existing parser requires explicit INNER JOIN. Three passed and seven parser setup cases failed; only new test syntax changed, no production or result golden correction.",
+      "counted_as_acceptance": false
+    },
+    {
+      "private_log": ".cache/directory-join-related-regressions-20261025.log",
+      "sha256": "54f32cebfada72e7daf27b906924577455fd59591cd96cf6c93363eb9b557a14",
+      "exit_code": 101,
+      "reason": "Requested stale named_sources target does not exist; changed requested target to existing named. No tests ran in this configuration attempt.",
+      "counted_as_acceptance": false
+    },
+    {
+      "private_log": ".cache/directory-join-query-clippy-20261025.log",
+      "sha256": "bc84619915a5d95de752403709229fa1958c1cc2f02d27ff09a3e82c10ecd9c6",
+      "exit_code": 101,
+      "reason": "Strict Clippy reported collapsible_if in new dispatch. Equivalent expanded multiline let-chain replaced nested if statements; no semantic or expected-answer change. Final primary/private/strict/minimal checks compile the equivalent final source.",
+      "counted_as_acceptance": false
+    }
+  ],
+  "validation_limits": [
+    "No full workspace suite or native Microsoft Access optimizer/ordering qualification.",
+    "Frozen original-file replay and end-to-end benchmark are pending separately."
+  ],
+  "integration_targets": {
+    "native_borrowed_join_equality": 4,
+    "cli_integral_joins": 3
+  }
+}

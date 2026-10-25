@@ -246,3 +246,6 @@ fn selected_invalid_native_payloads_are_not_hidden_by_empty_or_rejected_join_pai
         assert_eq!(execute(pruned, &native, false, 1000).unwrap().len(), 3);
     }
 }
+
+#[path = "borrowed_join_equality/large.rs"]
+mod large;
