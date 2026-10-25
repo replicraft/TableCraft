@@ -1,16 +1,17 @@
-//! Global COUNT occurrences retain only checked counters through source EOF.
+//! Global aggregate occurrences retain independent bounded states through EOF.
 use super::{StreamError, StreamSummary, plan::ProgressiveArm};
 use crate::{
     OutputType, QueryError,
-    execution::{Environment, Runtime, context::CountResult},
-    plan::{Aggregate, Expr, RelationNode},
+    execution::{
+        Environment, Runtime, aggregate::accumulator::Accumulator, context::AggregateResult,
+    },
+    plan::{Expr, RelationNode},
     source::ProjectedRow,
 };
 use tablecraft_core::values::Value;
-use tablecraft_expressions::EvalError;
 
 impl Runtime<'_, '_> {
-    pub(super) fn progressive_count_rows<E>(
+    pub(super) fn progressive_aggregate_rows<E>(
         &mut self,
         arm: &ProgressiveArm<'_>,
         union_types: Option<&[OutputType]>,
@@ -29,18 +30,18 @@ impl Runtime<'_, '_> {
             return Err(QueryError::Unsupported.into());
         };
         self.budget
-            .charge_allocation(arm.counts.len() as u64, size_of::<CountResult<'_>>() as u64)
+            .charge_allocation(arm.aggregates.len() as u64, size_of::<Accumulator>() as u64)
             .map_err(QueryError::from)?;
-        let mut counts = Vec::new();
-        counts
-            .try_reserve_exact(arm.counts.len())
+        let mut accumulators = Vec::new();
+        accumulators
+            .try_reserve_exact(arm.aggregates.len())
             .map_err(|_| QueryError::Allocation)?;
-        for expression in &arm.counts {
+        for expression in &arm.aggregates {
             self.tick()?;
-            counts.push(CountResult {
-                expression,
-                count: 0,
-            });
+            let Expr::Aggregate(kind, _) = expression else {
+                return Err(QueryError::Source.into());
+            };
+            accumulators.push(Accumulator::new(*kind)?);
         }
         let source = self.source;
         let mut failure: Option<QueryError> = None;
@@ -56,7 +57,7 @@ impl Runtime<'_, '_> {
                     .checked_add(1)
                     .ok_or(QueryError::StructureLimit)?;
                 let environment = Environment {
-                    counts: None,
+                    aggregate_results: None,
                     row: &row,
                     collections: None,
                     outer: &[],
@@ -70,18 +71,13 @@ impl Runtime<'_, '_> {
                     return Ok(());
                 }
                 // Operands run once per occurrence, in written projection/tree
-                // order, after WHERE. Identical counts are deliberately separate.
-                for result in &mut counts {
+                // order, after WHERE. Identical aggregates are deliberately separate.
+                for (expression, accumulator) in arm.aggregates.iter().zip(&mut accumulators) {
                     self.tick()?;
-                    let Expr::Aggregate(Aggregate::Count, argument) = result.expression else {
+                    let Expr::Aggregate(_, argument) = expression else {
                         return Err(QueryError::Source);
                     };
-                    if let Some(argument) = argument
-                        && !self.count_argument(argument, environment)?
-                    {
-                        continue;
-                    }
-                    result.count = result.count.checked_add(1).ok_or(EvalError::Overflow)?;
+                    self.push_progressive_aggregate(accumulator, argument.as_deref(), environment)?;
                 }
                 Ok(())
             })();
@@ -97,10 +93,28 @@ impl Runtime<'_, '_> {
         scanned?;
         self.tick()?;
 
+        self.budget
+            .charge_allocation(
+                arm.aggregates.len() as u64,
+                size_of::<AggregateResult<'_>>() as u64,
+            )
+            .map_err(QueryError::from)?;
+        let mut results = Vec::new();
+        results
+            .try_reserve_exact(arm.aggregates.len())
+            .map_err(|_| QueryError::Allocation)?;
+        for (expression, accumulator) in arm.aggregates.iter().zip(accumulators) {
+            self.tick()?;
+            results.push(AggregateResult {
+                expression,
+                value: self.finish_progressive_aggregate(accumulator)?,
+            });
+        }
+
         // Completed results are borrowed only by the final projection. Input
         // callbacks have returned, and no mutable Runtime overlay can leak.
         let environment = Environment {
-            counts: Some(&counts),
+            aggregate_results: Some(&results),
             row: &[],
             collections: None,
             outer: &[],

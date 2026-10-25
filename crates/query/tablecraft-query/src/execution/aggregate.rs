@@ -1,4 +1,5 @@
 use crate::execution::cell::{into_operator_scalar, into_scalar};
+pub(super) mod accumulator;
 pub(super) mod average;
 pub(super) mod binary;
 mod count;
@@ -22,8 +23,19 @@ impl Runtime<'_, '_> {
         argument: Option<&Expr>,
         env: Environment<'_>,
     ) -> Result<Value, QueryError> {
+        if let Some(results) = env.aggregate_results {
+            for result in results {
+                self.tick()?;
+                // Full immutable node identity preserves separate syntactic
+                // occurrences even when the final kernel requests them out of order.
+                if std::ptr::eq(result.expression, expression) {
+                    return Ok(result.value.clone());
+                }
+            }
+            return Err(QueryError::Source);
+        }
         if matches!(kind, Aggregate::Count) {
-            return self.count(expression, argument, env);
+            return self.count(argument, env);
         }
         if let Aggregate::Statistic(kind) = kind {
             return self.statistic(kind, argument.ok_or(QueryError::Unsupported)?, env);
@@ -52,18 +64,15 @@ impl Runtime<'_, '_> {
         let mut mean = average::Mean::default();
         for row in group {
             self.tick()?;
-            let value = match argument {
-                Some(e) => into_operator_scalar(self.expression_operand(
-                    e,
-                    Environment {
-                        row,
-                        group: None,
-                        group_keys: None,
-                        ..env
-                    },
-                )?)?,
-                None => Value::Int64(1),
-            };
+            let value = self.numeric_aggregate_argument(
+                argument,
+                Environment {
+                    row,
+                    group: None,
+                    group_keys: None,
+                    ..env
+                },
+            )?;
             if matches!(value, Value::Null) {
                 continue;
             }
@@ -104,5 +113,18 @@ impl Runtime<'_, '_> {
             self.options.cancelled,
             &mut self.numeric_scratch,
         )
+    }
+
+    fn numeric_aggregate_argument(
+        &mut self,
+        argument: Option<&Expr>,
+        environment: Environment<'_>,
+    ) -> Result<Value, QueryError> {
+        match argument {
+            Some(argument) => Ok(into_operator_scalar(
+                self.expression_operand(argument, environment)?,
+            )?),
+            None => Ok(Value::Int64(1)),
+        }
     }
 }

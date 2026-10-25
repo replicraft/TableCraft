@@ -13,8 +13,8 @@ the API itself never writes stdout.
 The service accepts a direct root scalar table or a flat UNION ALL of those
 SELECT arms, with optional aliases, declared parameters, row-local WHERE, scalar
 projections and positive unordered TOP counts. Wildcards use the ordinary qualified
-scalar metadata. Global COUNT(*) and COUNT(expr) projections over the same direct
-table are also supported as described below. Original source order and eager
+scalar metadata. Global COUNT(*), COUNT(expr), SUM(expr) and AVG(expr) projections
+over the same direct table are also supported as described below. Original source order and eager
 predicate/projection kernels are retained. Scalar conversion, arithmetic, text and inspection services
 use the same explicit execution policies as buffered queries. Prior explicitly
 named row-local projections can feed later projections through the ordinary
@@ -92,12 +92,68 @@ per-row copies, so bounded live memory does not grant an unlimited scan. Slot
 registration, counter initialization, per-row occurrences and final identity
 lookups are metered and cancellable. Counter storage is prepaid, fallible and
 bounded by the existing binding-node ceiling. No complete cache is published.
-Other aggregates, GROUP BY/HAVING and wider sources remain outside this progressive
-slice; ordinary buffered aggregate availability is unchanged. Microsoft's
+SUM/AVG can share this execution service as described below. Other aggregates,
+GROUP BY/HAVING and wider sources remain outside this progressive slice; ordinary
+buffered aggregate availability is unchanged. Microsoft's
 [Access SQL Count contract](https://learn.microsoft.com/en-us/office/vba/access/concepts/criteria-expressions/count-function-microsoft-access-sql)
 establishes field/calculation operands and the asterisk's inclusion of records
 with NULL fields. Our Int64 carrier, publication/error timing and resource ceilings
 remain explicit engineering contracts, not native Access execution qualification.
+
+## Global SUM and AVG
+
+Global `Sum(expr)` and `Avg(expr)` use the existing buffered numeric aggregate
+kernels over the same direct-table progressive inputs. They can share a SELECT
+with Count occurrences, scalar expressions and prior output aliases, and can
+share a flat UNION ALL with other admitted aggregate or row arms. No complete
+input group is retained. Arguments remain ordinary row-local expressions; nested
+aggregates, domains, subqueries and volatile calls remain refused before scanning.
+
+```sql
+SELECT Sum(Amount) AS Total, Avg(Amount) AS Mean, Count(Amount) AS Present,
+       Total / Present AS Ratio
+FROM Items
+WHERE Active = True;
+```
+
+Numeric operands follow the existing strict scalar admission before reaching
+Sum/Avg. NULL is omitted; an empty or wholly NULL population returns NULL. This
+is distinct from Count's nullness observation: retained malformed Strings and
+Error values cannot silently become numeric or NULL. The kernels retain their
+existing Boolean/integral/Currency admission, checked prefix overflow, exact
+floating accumulation, bounded wide Decimal totals, Decimal rounding and Date
+handling. In particular, Avg uses admitted Date serials; this does not grant Sum
+new Date behavior. The default and declared-arithmetic result descriptors and
+UNION conversions remain unchanged.
+
+Every written occurrence has its own state and non-NULL counter. WHERE runs
+first, then every aggregate argument runs in written projection/tree order on
+each matching row. Repeated occurrences are not deduplicated. After checked EOF,
+the service finalizes states in occurrence order, then evaluates surrounding
+scalar projections and aliases using borrowed immutable node identities. An
+empty population skips argument evaluation but still executes final scalar
+expressions. No aggregate output is published before its source returns EOF.
+A later argument failure can precede an earlier occurrence's finalization error;
+ordinary buffered execution instead completes one aggregate across its group
+before evaluating the next. These are explicit progressive phases, not native
+Access error-order claims.
+
+State vectors, result slots, operand copies, exact numeric scratch and identity
+lookup work remain charged to one cumulative query allowance. Each live floating
+state acquires its own metered scratch. Buffered aggregates can release and reuse
+one scratch sequentially, whereas concurrent progressive Sum/Avg occurrences may
+require multiple live scratch buffers and therefore fail a smaller byte allowance
+that buffered execution satisfies. No quota is reset or refunded, and no failed
+prefix is cached as a complete result. Cancellation and source failures prevent
+final aggregate publication; a prior UNION arm's published output remains visible
+only in this explicit progressive mode.
+
+Microsoft's [Access SQL Sum contract](https://learn.microsoft.com/en-us/office/vba/access/concepts/criteria-expressions/sum-function-microsoft-access-sql)
+and [Avg contract](https://learn.microsoft.com/en-us/office/vba/access/concepts/criteria-expressions/avg-function-microsoft-access-sql)
+establish numeric field/calculation operands, NULL omission and exclusion of
+nested SQL aggregate arguments. Retained carriers, exact accumulation, resource
+ceilings and streaming phases are TableCraft engineering contracts. These checks
+do not qualify native ACE execution or optimizer behavior.
 
 ## Progressive UNION ALL
 
@@ -184,15 +240,28 @@ Earlier accepted rows remain visible if later evaluation, native decoding,
 cancellation, limits or checked EOF fails. Progressive encounter order can expose
 a different competing cross-row error than buffered load-before-evaluation.
 
-Live retained memory is bounded to current-row work, while allocation charges
-remain cumulative after buffers are dropped. Query byte/row/work limits never
+Live retained memory is bounded to current-row work and the admitted per-aggregate
+exact numeric states, while allocation charges remain cumulative after buffers
+are dropped. Query byte/row/work limits never
 refill. Raising limits is explicit and does not change provider or output budgets.
 Transport framing, batching, output quotas and stdout behavior belong to hosts;
 this library does not write a header or open files/providers.
 
 ## Verification and remaining work
 
-The Count operand scope passes 99 query tests: 29 progressive service tests,
+The Sum/Avg extension passes 153 focused query tests: 66 progressive/count/numeric
+controls, 54 composition regressions and 33 existing buffered numeric-kernel
+controls. Strict query library/tests Clippy passes. Numeric controls cover exact
+floating cancellation, Decimal rounding/finish failures, Date averaging, unchanged
+integral/Currency prefix overflow, both arithmetic profiles, per-occurrence aliases,
+empty/filtered inputs, EOF before publication, late UNION failures and separate
+concurrent scratch charges. A generated 100,001-row input verifies progressive
+execution without buffered fallback; cancellation checkpoints, cumulative quotas
+and sticky source/sink failures are exercised. Initial failures in new test
+constructors and representation goldens were corrected without runtime changes.
+These are engineering checks, not native ACE aggregate qualification.
+
+At the Count operand checkpoint, 99 query tests passed: 29 progressive service tests,
 13 generated Count(*) controls, 11 Count operand controls, one shared nullness
 unit and 45 existing aggregate/group/alias/UNION regressions. They cover buffered
 parity, exact parameters, field policy routing, strict publication, eager failures, unsupported shapes before scans,

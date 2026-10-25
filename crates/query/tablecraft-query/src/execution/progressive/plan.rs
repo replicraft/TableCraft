@@ -9,7 +9,7 @@ use crate::{
 pub(super) struct ProgressiveArm<'p> {
     pub(super) read: &'p ReadPlan,
     pub(super) select: &'p SelectPlan,
-    pub(super) counts: Vec<&'p Expr>,
+    pub(super) aggregates: Vec<&'p Expr>,
 }
 
 pub(super) struct ProgressivePlan<'p> {
@@ -75,11 +75,11 @@ impl Runtime<'_, '_> {
         read: &'p ReadPlan,
         arms: &mut Vec<ProgressiveArm<'p>>,
     ) -> Result<(), QueryError> {
-        let (select, counts) = self.progressive_select(read)?;
+        let (select, aggregates) = self.progressive_select(read)?;
         arms.push(ProgressiveArm {
             read,
             select,
-            counts,
+            aggregates,
         });
         Ok(())
     }

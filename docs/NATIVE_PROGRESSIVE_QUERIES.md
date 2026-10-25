@@ -123,3 +123,22 @@ Both commands completed successfully. Logs are
 `.cache/progressive-stored-calculation-clippy-20261025.log`.
 Formatting and whitespace checks also pass. These are synthetic bounded adapter
 checks; original-file replay and native Access qualification remain separate.
+
+## Global numeric aggregate consumers
+
+The same cursor now supplies [global Sum/Avg](PROGRESSIVE_QUERIES.md#global-sum-and-avg)
+through the shared query service. The adapter decodes only required predicate and
+operand fields. Selected corrupt payloads and late read/count failures prevent
+aggregate publication; unselected payloads remain pruned. Retention ceilings and
+complete-cache isolation remain independent of cumulative native limits.
+
+Numeric state and finalization belong to the query layer. The engine keeps its
+existing Decimal/carrier decoding, and stored calculations still require explicit
+opt-in. Query results do not establish native Access aggregate equivalence or
+whole-file integrity. Each eligible UNION arm reaches checked EOF before the next
+one starts; a failed arm cannot open later user data.
+
+Eight new native numeric-aggregate controls and thirty existing Count/progressive
+controls pass with strict Clippy. Four layout profiles exceed a snapshot ceiling
+of one, retain independent Decimal/NULL goldens, and preserve checked EOF, cache
+isolation, pruning, cancellation and shared native budgets.

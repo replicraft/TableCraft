@@ -1008,5 +1008,19 @@ budgets and publication rules. A 138-test query/native/CLI batch covers generate
 late failures and complete/pending batch behavior. The subsequent Count(expr)
 extension evaluates each written operand through the existing nullness kernel
 without whole-table retention; occurrence order, eager failures, raw String/Error
-values and cache isolation retain explicit checks. Other progressive aggregates
-and native qualification remain separate acceptance work.
+values and cache isolation retain explicit checks. Sum/Avg have the additional
+contract below; further progressive aggregates and native qualification remain
+separate acceptance work.
+
+## Progressive numeric aggregates
+
+[Global Sum/Avg](PROGRESSIVE_QUERIES.md#global-sum-and-avg) now reuse the existing
+numeric kernels without retaining a complete input group. Per-occurrence states
+support mixed Count calls, prior aliases and row/aggregate UNION ALL arms. Exact
+rounding, strict operands and prefix-overflow rules remain shared with buffered
+execution; progressive occurrence/finalization phases and concurrent scratch
+budgets are explicit. Twenty-four new controls and 213 related regressions pass
+with strict query/native/CLI Clippy. See
+[verification](testing/results/read-query-progressive-numeric-aggregates-2026-10-25.json).
+Extrema, statistics, grouping and wider progressive sources remain separate work;
+this does not establish complete read/query or native execution qualification.

@@ -1,5 +1,17 @@
 # Implementation status
 
+## Progressive global Sum and Avg
+
+Explicit progressive queries now support global Sum/Avg alongside Count, prior
+projection aliases and mixed row/aggregate UNION ALL arms. Existing numeric
+kernels retain exact accumulation, Decimal rounding and checked prefix overflow;
+selected native fields and EOF remain checked without complete input retention.
+Concurrent states have independent scratch charges, and operand/finalization
+error phases remain explicit. Twenty-four new controls and 213 regressions pass
+with strict query/native/CLI Clippy and formatting. See
+[scope](PROGRESSIVE_QUERIES.md#global-sum-and-avg) and
+[verification](testing/results/read-query-progressive-numeric-aggregates-2026-10-25.json).
+
 ## Progressive stored calculation reads
 
 Explicit `query run --stream --stored-calculations` now reads qualified cached

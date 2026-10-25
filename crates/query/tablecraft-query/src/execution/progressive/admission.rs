@@ -39,14 +39,14 @@ impl Runtime<'_, '_> {
         if !expansion.is_empty() {
             return Err(QueryError::Unsupported);
         }
-        let mut counts = Vec::new();
+        let mut aggregates = Vec::new();
         if let Some(filter) = &select.filter {
-            self.progressive_expression(filter, false, 1, &mut counts)?;
+            self.progressive_expression(filter, false, 1, &mut aggregates)?;
         }
         for expression in &select.projection {
-            self.progressive_expression(expression, select.aggregate, 1, &mut counts)?;
+            self.progressive_expression(expression, select.aggregate, 1, &mut aggregates)?;
         }
-        Ok((select, counts))
+        Ok((select, aggregates))
     }
 
     fn progressive_expression<'p>(
@@ -54,28 +54,33 @@ impl Runtime<'_, '_> {
         expression: &'p Expr,
         count: bool,
         depth: usize,
-        counts: &mut Vec<&'p Expr>,
+        aggregates: &mut Vec<&'p Expr>,
     ) -> Result<(), QueryError> {
         self.tick()?;
         if depth > MAX_BIND_DEPTH {
             return Err(QueryError::StructureLimit);
         }
         match expression {
-            Expr::Aggregate(Aggregate::Count, argument) if count => {
-                if counts.len() >= MAX_BIND_NODES {
+            Expr::Aggregate(Aggregate::Count | Aggregate::Sum | Aggregate::Average, argument)
+                if count =>
+            {
+                if aggregates.len() >= MAX_BIND_NODES {
                     return Err(QueryError::StructureLimit);
                 }
-                if counts.len() == counts.capacity() {
-                    let additional = counts.len().max(1).min(MAX_BIND_NODES - counts.len());
+                if aggregates.len() == aggregates.capacity() {
+                    let additional = aggregates
+                        .len()
+                        .max(1)
+                        .min(MAX_BIND_NODES - aggregates.len());
                     self.budget
                         .charge_allocation(additional as u64, size_of::<&Expr>() as u64)?;
-                    counts
+                    aggregates
                         .try_reserve_exact(additional)
                         .map_err(|_| QueryError::Allocation)?;
                 }
-                counts.push(expression);
+                aggregates.push(expression);
                 if let Some(argument) = argument {
-                    self.progressive_expression(argument, false, depth + 1, counts)?;
+                    self.progressive_expression(argument, false, depth + 1, aggregates)?;
                 }
                 Ok(())
             }
@@ -99,48 +104,48 @@ impl Runtime<'_, '_> {
             | Expr::Inspect(_, value)
             | Expr::ValueInspect(_, value)
             | Expr::DateConvert(_, value) => {
-                self.progressive_expression(value, count, depth + 1, counts)
+                self.progressive_expression(value, count, depth + 1, aggregates)
             }
             Expr::Binary(_, left, right)
             | Expr::Like(left, right, _)
             | Expr::ArrayBound(_, left, right) => {
-                self.progressive_expression(left, count, depth + 1, counts)?;
-                self.progressive_expression(right, count, depth + 1, counts)
+                self.progressive_expression(left, count, depth + 1, aggregates)?;
+                self.progressive_expression(right, count, depth + 1, aggregates)
             }
             Expr::IIf(first, second, third)
             | Expr::DateAdd(first, second, third)
             | Expr::Between(first, second, third, _) => {
-                self.progressive_expression(first, count, depth + 1, counts)?;
-                self.progressive_expression(second, count, depth + 1, counts)?;
-                self.progressive_expression(third, count, depth + 1, counts)
+                self.progressive_expression(first, count, depth + 1, aggregates)?;
+                self.progressive_expression(second, count, depth + 1, aggregates)?;
+                self.progressive_expression(third, count, depth + 1, aggregates)
             }
             Expr::DateDiff(first, second, third, options) => {
-                self.progressive_expression(first, count, depth + 1, counts)?;
-                self.progressive_expression(second, count, depth + 1, counts)?;
-                self.progressive_expression(third, count, depth + 1, counts)?;
+                self.progressive_expression(first, count, depth + 1, aggregates)?;
+                self.progressive_expression(second, count, depth + 1, aggregates)?;
+                self.progressive_expression(third, count, depth + 1, aggregates)?;
                 for option in options.iter().flatten() {
-                    self.progressive_expression(option, count, depth + 1, counts)?;
+                    self.progressive_expression(option, count, depth + 1, aggregates)?;
                 }
                 Ok(())
             }
             Expr::DatePart(first, second, options) => {
-                self.progressive_expression(first, count, depth + 1, counts)?;
-                self.progressive_expression(second, count, depth + 1, counts)?;
+                self.progressive_expression(first, count, depth + 1, aggregates)?;
+                self.progressive_expression(second, count, depth + 1, aggregates)?;
                 for option in options.iter().flatten() {
-                    self.progressive_expression(option, count, depth + 1, counts)?;
+                    self.progressive_expression(option, count, depth + 1, aggregates)?;
                 }
                 Ok(())
             }
             Expr::Nz(value, option) | Expr::Weekday(value, option) => {
-                self.progressive_expression(value, count, depth + 1, counts)?;
+                self.progressive_expression(value, count, depth + 1, aggregates)?;
                 if let Some(option) = option {
-                    self.progressive_expression(option, count, depth + 1, counts)?;
+                    self.progressive_expression(option, count, depth + 1, aggregates)?;
                 }
                 Ok(())
             }
             Expr::InList(value, items, _) => {
-                self.progressive_expression(value, count, depth + 1, counts)?;
-                self.progressive_arguments(items, count, depth + 1, counts)
+                self.progressive_expression(value, count, depth + 1, aggregates)?;
+                self.progressive_arguments(items, count, depth + 1, aggregates)
             }
             Expr::MathCall(MathFunction::Rnd, _) => Err(QueryError::Unsupported),
             Expr::TextCall(_, arguments)
@@ -150,7 +155,7 @@ impl Runtime<'_, '_> {
             | Expr::ConstructorCall(_, arguments)
             | Expr::ConditionalCall(_, arguments)
             | Expr::Array(arguments) => {
-                self.progressive_arguments(arguments, count, depth + 1, counts)
+                self.progressive_arguments(arguments, count, depth + 1, aggregates)
             }
             Expr::DomainCall(..)
             | Expr::Field { .. }
@@ -173,10 +178,10 @@ impl Runtime<'_, '_> {
         arguments: &'p [Expr],
         count: bool,
         depth: usize,
-        counts: &mut Vec<&'p Expr>,
+        aggregates: &mut Vec<&'p Expr>,
     ) -> Result<(), QueryError> {
         for argument in arguments {
-            self.progressive_expression(argument, count, depth, counts)?;
+            self.progressive_expression(argument, count, depth, aggregates)?;
         }
         Ok(())
     }

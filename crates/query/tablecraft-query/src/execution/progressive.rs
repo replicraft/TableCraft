@@ -1,6 +1,6 @@
 //! Explicit progressive row-local execution; ordinary retrieval stays buffered.
 mod admission;
-mod count;
+mod aggregates;
 mod plan;
 mod publication;
 mod rows;
@@ -56,10 +56,12 @@ impl PreparedQuery {
     /// Progressively evaluate local scalar SELECT/WHERE arms in written source order.
     /// Unordered positive TOP counts limit publication while all rows are still
     /// read and evaluated through checked EOF. Flat UNION ALL combines admitted
-    /// arms through the ordinary UNION result conversions. Global Count arms
-    /// retain a checked counter per occurrence and evaluate their final scalar
-    /// projection only after successful EOF. Count operands use the shared
-    /// nullness/state rules during scanning; other aggregates are refused.
+    /// arms through the ordinary UNION result conversions. Global Count, Sum and Avg
+    /// arms retain one bounded state per occurrence and evaluate final scalar
+    /// projections only after successful EOF. Count observes shared nullness/state
+    /// rules; Sum/Avg reuse the buffered numeric kernels. Operands run per row in
+    /// written occurrence order, then states finish after EOF. Other aggregates
+    /// are refused.
     /// Sorts, TOP PERCENT,
     /// duplicate-eliminating sets, groups,
     /// joins, derived/named sources, collections,

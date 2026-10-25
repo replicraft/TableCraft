@@ -33,7 +33,7 @@ impl Runtime<'_, '_> {
         let cell = select.projection.last().ok_or(QueryError::Grouping)?;
         let width = select.projection.len() - 1;
         let empty = Environment {
-            counts: None,
+            aggregate_results: None,
             collections: None,
             row: &[],
             outer: &[],

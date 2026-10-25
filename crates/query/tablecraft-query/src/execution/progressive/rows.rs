@@ -17,7 +17,7 @@ impl Runtime<'_, '_> {
         visitor: &mut dyn FnMut(&[Value]) -> Result<(), E>,
     ) -> Result<(), StreamError<E>> {
         if arm.select.aggregate {
-            return self.progressive_count_rows(arm, union_types, summary, visitor);
+            return self.progressive_aggregate_rows(arm, union_types, summary, visitor);
         }
         // All schemas were preflighted before the first arm. Check the selected
         // arm again before its exclusive cursor, never from inside a callback.
@@ -48,7 +48,7 @@ impl Runtime<'_, '_> {
                     .checked_add(1)
                     .ok_or(QueryError::StructureLimit)?;
                 let environment = Environment {
-                    counts: None,
+                    aggregate_results: None,
                     row: &row,
                     collections: None,
                     outer: &[],

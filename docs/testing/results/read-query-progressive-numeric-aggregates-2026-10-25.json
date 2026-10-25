@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Explicit progressive global Sum/Avg with Count, pure final projections, aliases and flat row/aggregate UNION ALL",
+  "unique_tests": 237,
+  "new_tests": 24,
+  "targets": {
+    "query": 153,
+    "native_adapter": 38,
+    "cli": 46
+  },
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-query --test progressive_numeric_aggregate_values --test progressive_count_operands --test progressive_count_execution --test progressive_queries -j2 --locked --offline",
+      "private_log": ".cache/progressive-numeric-values-primary-final2-20261025.log",
+      "exit_code": 0,
+      "sha256": "0bd5d455b311b9cebef6368aac0528428f45bda2cb7fbf5b7c450054de5a1a88",
+      "passed_tests": 66
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test decimal_sum --test variant_aggregates --test grouped_expressions --test grouped_subqueries --test progressive_union_types --test projection_alias_execution --test arithmetic_output_types -j2 --locked --offline",
+      "private_log": ".cache/progressive-numeric-values-regressions-20261025.log",
+      "exit_code": 0,
+      "sha256": "85150bdcc2748f9325e7d9c1e1bc36a34a1127298b6917c54ab9b3627873347c",
+      "passed_tests": 54
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test decimal_average --test floating_average --test floating_sum --test currency_average --test date_average -j2 --locked --offline",
+      "private_log": ".cache/progressive-numeric-values-buffered-20261025.log",
+      "exit_code": 0,
+      "sha256": "2372ab3754d3e2f345d0914c89f1d6b411d7d2ebd10b7728205e1656b0c57940",
+      "passed_tests": 27
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test integral_sum --test currency_sum -j2 --locked --offline",
+      "private_log": ".cache/progressive-numeric-values-prefix-20261025.log",
+      "exit_code": 0,
+      "sha256": "cd8a9668f8d95e0ba63f878e261d0c90be6885721a304e78ec1e5b32ee090edc",
+      "passed_tests": 6
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --tests -j2 --locked --offline -- -D warnings",
+      "private_log": ".cache/progressive-numeric-values-clippy-20261025.log",
+      "exit_code": 0,
+      "sha256": "945fe4b6da20ab391fcd7725d404e89543cad45c9b026b9617e39aadd5cc9e51"
+    },
+    {
+      "command": "cargo test --locked -p tablecraft-access --test progressive_numeric_aggregates --test progressive_counts --test progressive_source",
+      "private_log": ".cache/progressive-numeric-native-tests-20261025.log",
+      "exit_code": 0,
+      "sha256": "705f1129c1efedfbf2dfa915a5a04d9776a1f1d939694ed3d3c8f6f20db1a4ef",
+      "passed_tests": 38
+    },
+    {
+      "command": "cargo clippy --locked -p tablecraft-access --lib --test progressive_numeric_aggregates --test progressive_counts --test progressive_source -- -D warnings",
+      "private_log": ".cache/progressive-numeric-native-clippy-20261025.log",
+      "exit_code": 0,
+      "sha256": "f86aa3744a88541dcd892bf267f8a879dbbd7d02cbccb6bd832603abfc2cff45"
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --test progressive_queries --test projection_aliases --test retrieval -j2 --locked --offline",
+      "private_log": ".cache/progressive-numeric-cli-tests-20261025.log",
+      "exit_code": 0,
+      "sha256": "c32ee7be28512d5fbad8fe9289f9b03f0894ec906bec47de6a1592c7edc40298",
+      "passed_tests": 46
+    },
+    {
+      "command": "cargo clippy -p tablecraft-cli --bin tablecraft --test progressive_queries --test projection_aliases --test retrieval -j2 --locked --offline -- -D warnings",
+      "private_log": ".cache/progressive-numeric-cli-clippy-20261025.log",
+      "exit_code": 0,
+      "sha256": "d9e3c4f0871310122f781f9ece7ca680d788183b2aac62a203fabc5e2bdc596b"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "private_log": ".cache/progressive-numeric-fmt-20261025.log",
+      "exit_code": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "review": [
+    "Existing buffered Sum/Mean state construction, scalar admission, prefix counters, scratch reuse and finalization remain unchanged; numeric kernel files are untouched.",
+    "Each written progressive occurrence retains its own metered state; completed values are borrowed only by final projection after checked EOF.",
+    "Concurrent floating states charge separate scratch buffers; progressive byte thresholds can differ from sequential buffered reuse.",
+    "Operand evaluation is row-major, state finalization follows EOF in occurrence order, and surrounding scalar expressions run last.",
+    "Selected native values and EOF validate before aggregate output; failed scans never publish complete snapshot caches."
+  ],
+  "test_authoring_corrections": [
+    "Extracted helper required explicit EvalError-to-QueryError conversion wrapping during initial compile.",
+    "New test error variant corrected to existing UnrepresentableText; Double test literals received existing wrapper constructors.",
+    "Tiny Decimal goldens switched from representational equality to independent exact scale-28 integer-unit assertions; successful numeric answers and carriers were unchanged. Excluded attempts remain in ignored logs."
+  ],
+  "boundaries": [
+    "Empty/all-NULL Sum/Avg produce NULL; strict numeric operand admission differs from Count nullness.",
+    "Existing Int64 prefix overflow, exact floating totals, wide Decimal rounding and Date admission remain authoritative.",
+    "Grouping/HAVING, extrema/statistics and wider progressive sources remain refused."
+  ],
+  "unrun": [
+    "Full workspace suite",
+    "Native Microsoft Access comparison",
+    "Independent original-file Sum/Avg replay"
+  ]
+}
