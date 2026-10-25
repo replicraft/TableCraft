@@ -154,11 +154,11 @@ Microsoft's [NLS sorting guidance](https://learn.microsoft.com/en-us/windows/win
 describes distinct linguistic/ordinal and locale-sensitive behavior. It does not
 establish that ICU weights equal NLS or the database's persisted sort weights.
 
-Seven provider tests cover documented ICU secondary examples, locale contrasts,
+The original seven provider tests cover documented ICU secondary examples, locale contrasts,
 canonical/ligature consumed spans, exact LCID registration, base delegation,
 input ceilings, cumulative quotas and every observed cancellation checkpoint.
 A seeded property test uses an independent ASCII caseless-position model.
-Six CLI tests cover explicit text operations, locale/LCID selection, binary/raw
+The original six CLI tests cover explicit text operations, locale/LCID selection, binary/raw
 refusal, native database field resolution with automatic indexing, budgets and
 pre-I/O option validation. Existing General/database and comparison-limit tests
 remain applicable. Native Access comparison remains unrun; wider LCID providers,
@@ -186,9 +186,16 @@ python3 docs/testing/compare_icu_text.py \
   --report path/to/fresh-icu-report.json
 ```
 
-The current recipe additionally covers all nineteen selected host profiles with
-script-specific tailoring and original-span search inputs. Its fresh report is
-separate from the original four-profile result above.
+The expanded recipe passes **14,498 controls across all nineteen host profiles**
+against ICU4C 74.1, adding script-specific tailoring and original-span search inputs.
+The [expanded report](testing/results/icu-text-expanded-2026-10-25.json) records
+per-locale counts, exact host registrations, input/runner/CLI hashes and reference
+versions separately from the original four-profile result. No profile or mismatch
+was dropped. Its fixed CLI's 1,914-file Rust source inventory matches committed
+archive `67ef6925`; the [verification record](testing/results/read-query-icu-expanded-2026-10-25.json)
+retains the private manifest hash. Ten current provider tests and eight CLI tests
+pass with scoped strict Clippy. This is independent engineering evidence, with
+Windows NLS and actual Access comparisons still unrun.
 
 The recipe uses an available ICU4C library, with --icu-library for explicit
 selection; no system package is installed or downloaded. Its C ABI calls follow
