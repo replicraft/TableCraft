@@ -1,11 +1,21 @@
 # Native saved-query join forests
 
-Native local SELECT and crosstab reconstruction now accept up to sixteen declared
+Native local SELECT and crosstab reconstruction now accept up to thirty-two declared
 sources and sixteen ordered join fragments. Sources may also be
-[stored derived reads](NATIVE_SAVED_DERIVED.md). These are current adapter ceilings,
-not Microsoft Access limits. Parser byte/token/depth and execution budgets may
+[stored derived reads](NATIVE_SAVED_DERIVED.md). These are separately enforced adapter ceilings,
+not a guarantee of complete Microsoft Access behavior at those bounds. Parser byte/token/depth and execution budgets may
 reject smaller queries. Source-free queries remain supported. No dependency,
 native storage layout, writer or backend-neutral query contract changed.
+
+The source ceiling now matches Microsoft's documented
+[32 tables per query](https://support.microsoft.com/en-us/access/access-specifications).
+The same specification lists 16 joins; this adapter retains its separate ceiling
+of 16 stored join fragments, including multiple conditions on an existing pair.
+Membership uses a 32-bit arena mask, including source position 31. A 33rd source
+is refused before any membership shift. Existing cumulative syntax, allocation,
+work and cancellation allowances still apply and may refuse smaller definitions.
+This does not increase those allowances or qualify every Access query at its
+published product maxima.
 
 ## Reconstruction
 
@@ -56,7 +66,9 @@ their separate binding/discovery contract. Unknown functions can reconstruct as 
 remain execution failures unless an explicit callable contract supplies them.
 Source bytes, native identity and original fragments remain unchanged.
 
-External native table qualifiers, native Unicode/NLS label equivalence,
+Qualified [per-table external selectors](PER_TABLE_EXTERNAL_QUERIES.md) retain
+their inert metadata and require explicit execution authority. Native Unicode/NLS
+label equivalence,
 unqualified stored name forms and graphs exceeding consumer limits remain gaps.
 This work does not implement Access's full mixed outer-join admissibility,
 optimizer behavior, native collation, error order or Windows qualification.

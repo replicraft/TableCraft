@@ -1,5 +1,16 @@
 # Implementation status
 
+## Thirty-two saved source declarations
+
+Saved SELECT/crosstab reconstruction now uses a 32-bit source membership mask,
+admitting 32 declared table references while preserving the separate 16 stored
+join-fragment ceiling. Four new adapter tests cover source bit 31, disconnected
+joins, 17/32-source execution, 33-source refusal and resource/cancellation limits.
+All 89 saved SELECT tests and strict scoped Clippy pass with the expanded query
+FROM allowance. See [the join contract](NATIVE_SAVED_JOINS.md) and
+[verification record](testing/results/read-query-saved32-2026-10-24.json).
+Native Access execution qualification remains separate.
+
 ## Thirty-two flat FROM items
 
 Query preparation now admits 32 top-level FROM items, with unchanged depth,

@@ -69,12 +69,12 @@ fn nested_and_disconnected_forests_preserve_orientation_root_order_and_inner_con
 }
 #[test]
 fn source_and_condition_caps_ambiguity_conflicts_and_injection_are_bounded() {
-    for count in [1, 2, 16, 17] {
+    for count in [1, 2, 16, 17, 32, 33] {
         let names: Vec<_> = (0..count).map(|i| format!("T{i}")).collect();
         let mut rows = vec![column("1")];
         rows.extend(names.iter().map(|name| source(name, None)));
         let result = compile(&rows);
-        if count <= 16 {
+        if count <= 32 {
             let saved = result.unwrap();
             let tablecraft_sql::query::Statement::Read(read) = &saved.query().statement else {
                 panic!()

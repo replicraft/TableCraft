@@ -1,12 +1,11 @@
 //! Arena construction retains endpoint orientation and innermost ON placement.
 use super::{Context, E, Source, conditions::Condition, kind};
-use crate::saved::fragments::{Fragments, expression};
+use crate::saved::fragments::{Fragments, SourceMembers, expression};
 use tablecraft_core::limits::Resource;
 use tablecraft_sql::select::JoinKind;
 
-type Members = u16;
 pub(super) struct Node<'a> {
-    pub members: Members,
+    pub members: SourceMembers,
     pub body: Body<'a>,
 }
 pub(super) enum Body<'a> {
@@ -135,7 +134,7 @@ impl<'a> Forest<'a> {
     fn target(
         &self,
         mut index: usize,
-        members: Members,
+        members: SourceMembers,
         kind: JoinKind,
         context: &mut Context<'_>,
     ) -> Result<usize, E> {

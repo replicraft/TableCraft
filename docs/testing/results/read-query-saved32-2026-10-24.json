@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-24",
+  "scope": "32 saved SELECT/crosstab source declarations; 16 stored join fragments retained",
+  "unique_tests": 89,
+  "new_tests": 4,
+  "checks": [
+    {
+      "command": "cargo test --locked -p tablecraft-access --test saved_select",
+      "exit_code": 0,
+      "private_log": ".cache/saved-many-sources-tests-composed-final-20261024.log",
+      "sha256": "6d05690847c53c429694c7ac8646e349555a7263d2b894579c61fe3bd6070089"
+    },
+    {
+      "command": "cargo clippy --locked -p tablecraft-access --lib --test saved_select -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/saved-many-sources-clippy-composed-final-20261024.log",
+      "sha256": "d9e175f15c392ecc4e507514751fd098d5bd22c3a9a0af9922dff80b9ce329ce"
+    }
+  ],
+  "development_correction": "Initial new comma execution cases exposed the separate 16-root query cap; expanded that boundary in commit4e4381c5, retained successful 17/32-source expectations and reran89 tests. Prior intermediate passes do not count as additional tests.",
+  "unrun": [
+    "Full workspace suite",
+    "Native Microsoft Access execution comparison"
+  ],
+  "independent_replay": "Separate original four-profile getter/CLI replay pending final frozen executable"
+}

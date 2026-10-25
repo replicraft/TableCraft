@@ -90,7 +90,7 @@ expansion, provider access or execution. The native engine retains storage facts
 the Access adapter owns their mapping into syntax. SELECT owner-access is a
 retained syntax flag, never a grant of authority.
 
-The current profile supports up to sixteen named sources/aliases in bounded
+The current profile supports up to thirty-two named sources/aliases in bounded
 [INNER/LEFT/RIGHT join forests and comma products](NATIVE_SAVED_JOINS.md), including
 [stored derived SELECT/UNION sources](NATIVE_SAVED_DERIVED.md). It retains ordered
 expression projections/aliases, explicit `*` and qualified `source.*` projections,
@@ -106,8 +106,9 @@ than becoming synthetic stored rows. Duplicate singleton clauses fail. Unknown/
 NULL attributes, unused non-NULL extra/name/expression metadata, nonzero unhandled
 row flags, unqualified parameter types/names, excessive join graphs, unqualified remote-source layouts and action/DDL/pass-through/
 union/crosstab families fail explicitly. A table expression with NULL Name1 is a
-guarded derived read; an expression with a named table remains an unsupported
-remote qualifier. Literal object identifiers must be nonempty and exclude controls,
+guarded derived read; an expression with a named table retains the exact inert
+per-table database selector through the
+[qualified leaf contract](PER_TABLE_EXTERNAL_QUERIES.md#native-saved-metadata). Literal object identifiers must be nonempty and exclude controls,
 dot/bang/grave-accent and bracket content. One complete
 [stored bracket delimiter pair](NATIVE_SAVED_NAMES.md) now normalizes to the literal
 owned name; qualified stored forms remain unqualified. Expression text uses the existing owned parser, including
@@ -117,7 +118,10 @@ execution or resolve nested sources.
 Qualified [global external sources](NATIVE_SAVED_EXTERNAL_QUERIES.md) now retain
 exact database and optional connection tokens for SELECT and crosstab FROM
 expressions. This metadata does not open files; execution needs an explicit host
-binding. Per-table remote qualifiers remain unsupported.
+binding. Qualified per-table selectors override the global source namespace for
+their own leaves under the explicit
+[per-table source contract](PER_TABLE_EXTERNAL_QUERIES.md); reconstruction grants
+no provider or file-opening authority.
 
 All reconstruction families share [native fragment ordering](NATIVE_SAVED_ORDERING.md):
 when every row has an Order value, sort by attribute and unsigned key bytes,
