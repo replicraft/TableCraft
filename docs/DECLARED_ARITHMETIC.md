@@ -816,9 +816,11 @@ operator-specific conversion path with default arithmetic and preserves original
 caller-issued declaration categories after conversion. No host locale is inferred.
 
 With `--number-format de-de --declared-arithmetic`,
-`CDate(2958465)+'1,0'` reports Overflow, while
-`CDate(2958465)+CVar('1,0')` returns Double 2958466. Both operand orders retain
-the same rules. Missing number-format policy remains an explicit error; invalid
+`CDate(2958465)-'-1,0'` reports Overflow, while
+`CDate(2958465)+CVar('1,0')` returns Double 2958466. The
+[declared mixed-plus selection](CONCATENATION.md#declared-mixed-string-and-numeric-addition)
+now rejects Scalar Date plus Scalar String as TypeMismatch before numeric
+conversion. Numeric branches retain explicit missing-format errors and invalid
 numeric Text remains TypeMismatch. Contextual NULL propagation, eager argument
 failures, cancellation and conversion budgeting retain their existing boundaries.
 Non-Text calls retain standalone kernel validation; defaults keep their previous
