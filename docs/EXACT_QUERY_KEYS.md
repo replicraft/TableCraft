@@ -113,6 +113,14 @@ The initial lint attempt is excluded: it flagged a complex tuple type in the new
 test helper, corrected with readable aliases. No test-answer or runtime correction
 was required.
 
-The final-executable native exact-key replay is a separate pending check. These
-Rust controls establish the bounded engineering profile; native Access SQL,
-optimizer behavior and timing comparisons remain unrun.
+The [native exact-key replay](testing/NATIVE_EXACT_KEYS.md)
+passes 76 controls: 64 successes and 12 intended buffered refusals, comparing
+48,304 rows and 72,584 cells. Ordinary read-only Jackcess getters supply the IDs
+and encounter order from four immutable registered originals. Independent integer
+models cover field/derived grouping, DISTINCT, NULL keys and written UNION
+boundaries in both execution profiles. The 1,000-row native populations fit the
+explicit 500,000-step query allowance; work, native-row and output ceilings still
+refuse without partial stdout. All ten immutable tool/input pins remain unchanged,
+and scoped source hashes come from the frozen executable's committed revision.
+Only TableCraft executes SQL. Native Access SQL, optimizer behavior and timing
+comparisons remain unrun.

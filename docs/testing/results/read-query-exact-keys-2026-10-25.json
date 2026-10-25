@@ -85,5 +85,19 @@
     "Full workspace suite",
     "Native Microsoft Access SQL/optimizer comparisons",
     "Native exact-key replay with the final executable, pending a separate frozen-binary report"
-  ]
+  ],
+  "independent_replay": {
+    "report": "native-exact-keys-2026-10-25.json",
+    "sha256": "639e6dad021fc5751e380f06b2fd38258074a560219e99cb089f23b399e3182d",
+    "controls": 76,
+    "successful_queries": 64,
+    "intended_refusals": 12,
+    "disagreements": 0,
+    "compared_rows": 48304,
+    "compared_cells": 72584,
+    "independently_rechecked_immutable_pins": 10,
+    "independently_rechecked_compiled_source_pins": 14,
+    "qualification": "Independent inert getters and exact integer models; no Access SQL or timing claim"
+  },
+  "checkpoint_note": "Checks and unrun entries retain the implementation checkpoint; the subsequent native exact-key replay is recorded separately above."
 }

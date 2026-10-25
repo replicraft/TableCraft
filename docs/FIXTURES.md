@@ -8201,3 +8201,16 @@ source hashes, getter encounter order and 20 modeled observations. Original
 bytes and all nine immutable pins were rechecked unchanged; twelve scoped
 compiled-revision hashes were also independently verified. Integer join modeling
 is separate from native Access SQL qualification.
+
+## Original native exact-key replay reuse
+
+The 2026-10-25 [exact-key replay](testing/NATIVE_EXACT_KEYS.md) reuses the same
+four registered Decimal corpus originals, reviewed Jackcess reader and inert
+getter as the native integral join replay above. Its runner pins that helper
+separately and uses independent integer/NULL ordered-count models. The
+[accepted report](testing/results/native-exact-keys-2026-10-25.json) records
+76 controls, unchanged original/tool hashes and scoped compiled-source hashes.
+All ten immutable pins and fourteen compiled source hashes were independently
+rechecked. No new binary fixture, dependency or third-party code is adopted;
+original recipe, hashes and notices remain authoritative. Native Access SQL
+qualification and throughput claims are separate.
