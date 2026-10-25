@@ -940,3 +940,14 @@ separate. The 19 focused passing tests include fixed crosstab execution and reta
 the existing named constant-fold admission guard. This closes one declaration
 omission without inferring aggregate/UNION categories or native query behavior.
 See [the bound-result contract](VALUE_INSPECTION.md#bound-result-declaration-provenance).
+
+
+## Same-table calculated dependency previews
+
+Explicit [calculation previews](CALCULATION_PREVIEWS.md#same-table-calculated-dependencies)
+now recompute qualified same-table dependency chains and diamonds over ordinary
+scalar leaves. Metadata-only preparation rejects cycles and unsupported reachable
+formulas under shared structural/resource limits. Natural intermediate carriers
+remain separate from declared ResultType conversion, cached queries and freshness.
+This closes the preview dependency refusal without completing native calculated
+query semantics or recalculation qualification.

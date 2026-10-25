@@ -7959,3 +7959,34 @@ including 1,879 Rust sources independently matched to committed archive
 `3aadd736`. These originals and independent models establish the documented
 engineering slice, not native Microsoft Access or arbitrary-scale qualification.
 See [the evidence contract](testing/PROGRESSIVE_QUERIES.md).
+
+
+## Original calculated dependency corpus
+
+[CalculatedDependencyFixture.java](testing/CalculatedDependencyFixture.java) and
+[compare_calculated_dependencies.py](testing/compare_calculated_dependencies.py)
+are original MIT recipes. Public Jackcess builders create fresh V2016/V2019
+ordinary tables with chains, a shared diamond, aliases, constants and Text
+calculation declarations. Expression evaluation is disabled. Stored calculated
+results deliberately differ from the independent formulas over ordinary getters.
+Read-only getters capture all raw caches, fields, formulas and ResultType values
+with a throwing link resolver; no reference SQL or active content executes.
+
+The reviewed Apache-2.0 Jackcess 5.0.4 JAR retains SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+No third-party fixture bytes or source are copied. Original inputs/getters and
+actual generation commands remain ignored under
+`.cache/tablecraft-fixtures/calculated-dependencies-20261024/`.
+
+| Original | SHA-256 |
+| --- | --- |
+| V2016.accdb | `87b70b3e8182981966a6a77a022c37d463d7ef049c6c99e2c0e04bcf1618e150` |
+| V2019.accdb | `f3a8c0a7e3c842b6bfa9b492e5409935c337d6f24e2bbecd06f4fcb3395dce6d` |
+
+The [accepted replay](testing/results/calculated-dependencies-2026-10-24.json)
+passes 50 commands and 170 exact modeled cells. All 80 recomputed values differ
+from raw cached getters; separate cached queries preserve 90 original cache/ID
+cells. All 1,899 hashes remain unchanged, including every file in the 1,885-entry
+Rust inventory independently matched to committed archive `39f35d04`.
+Natural intermediate carriers, stored ResultType conversion and native freshness
+remain distinct. See [the evidence contract](testing/CALCULATED_DEPENDENCIES.md).

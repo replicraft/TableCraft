@@ -50,6 +50,9 @@ requiring query execution and buffers results before stdout.
 [restricted row-local preview](docs/CALCULATION_PREVIEWS.md). Keep its natural
 `Recomputed` results separate from stored caches and declared result conversion;
 query-callable functions do not automatically belong in calculated-field formulas.
+Qualified same-table calculated dependencies expand only during explicit preview
+preparation under cycle/structural/resource guards. Never substitute cached
+operands or coerce intermediate values to their stored ResultType implicitly.
 `query saved --database PATH NAME` reconstructs the
 qualified native SELECT/UNION/crosstab profiles without binding, source expansion or execution;
 follow [saved-query boundaries](docs/NATIVE_SAVED_QUERIES.md).

@@ -1,5 +1,16 @@
 # Implementation status
 
+## Independent calculated dependency replay
+
+The [original ACE 16-family replay](testing/CALCULATED_DEPENDENCIES.md) passes
+50 commands and 170 modeled cells. All 80 recomputed values differ from deliberately
+stale raw caches, while separate cached queries preserve 90 cache/ID cells.
+All 1,899 pins remain unchanged; the 1,885-file source inventory exactly matches
+committed archive `39f35d04`. [The verification record](testing/results/read-query-calculated-dependencies-2026-10-24.json)
+retains 57 focused Rust tests, strict Clippy, minimal-feature checks and final CLI
+build evidence. Native intermediate conversions, freshness and broader read/query
+acceptance remain unqualified.
+
 ## Same-table calculated dependency previews
 
 Explicit calculation previews now expand qualified same-table calculated
