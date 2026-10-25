@@ -250,7 +250,7 @@ fn declared_date_envelope_overflow_is_buffered_and_variant_can_widen() {
 }
 
 #[test]
-fn numeric_text_does_not_bypass_declared_date_overflow() {
+fn declared_mixed_text_selects_type_mismatch_before_date_numeric_conversion() {
     for flag in ["--declared-arithmetic", "--declared-integral"] {
         let scalar = run(&[
             "query",
@@ -262,7 +262,7 @@ fn numeric_text_does_not_bypass_declared_date_overflow() {
         ]);
         assert_eq!(scalar.status.code(), Some(2));
         assert!(scalar.stdout.is_empty());
-        assert!(String::from_utf8_lossy(&scalar.stderr).contains("overflow"));
+        assert!(String::from_utf8_lossy(&scalar.stderr).contains("type mismatch"));
         let variant = run(&[
             "query",
             "run",
@@ -467,5 +467,47 @@ fn unknown_binary_arithmetic_uses_agreement_and_keeps_late_failures_buffered() {
                 "{sql}"
             );
         }
+    }
+}
+
+#[test]
+fn declared_mixed_plus_uses_categories_under_both_flag_names() {
+    for flag in ["--declared-arithmetic", "--declared-integral"] {
+        for (expression, expected) in [
+            ("'2'+CVar(CInt(3))", b"N\n\"\"\"23\"\"\"\n".as_slice()),
+            ("CVar('2')+CInt(3)", b"N\n5\n".as_slice()),
+            ("('2'+CVar(3))+1", b"N\n24\n".as_slice()),
+        ] {
+            let result = run(&[
+                "--format",
+                "tsv",
+                "query",
+                "run",
+                &format!("SELECT {expression} AS N"),
+                "--number-format",
+                "invariant",
+                flag,
+            ]);
+
+            assert!(
+                result.status.success(),
+                "{}",
+                String::from_utf8_lossy(&result.stderr)
+            );
+            assert_eq!(result.stdout, expected);
+        }
+
+        let refused = run(&[
+            "query",
+            "run",
+            "SELECT 1,'2'+CInt(3)",
+            "--number-format",
+            "invariant",
+            flag,
+        ]);
+
+        assert_eq!(refused.status.code(), Some(2));
+        assert!(refused.stdout.is_empty());
+        assert!(String::from_utf8_lossy(&refused.stderr).contains("type mismatch"));
     }
 }

@@ -778,3 +778,13 @@ aggregates still use their own rows and operand policies. Named parameter reuse,
 correlated keys, NULL/conflicting groups, omitted pivot buckets, explicit provider
 controls and no-partial-result failures have focused regression coverage. This
 closes an execution-context defect without qualifying native mixed-policy rules.
+
+
+## Explicit declared mixed-plus operation selection
+
+The [declared mixed String/numeric plus rule](CONCATENATION.md#declared-mixed-string-and-numeric-addition)
+now selects addition, concatenation or TypeMismatch from retained Scalar/Variant
+categories before conversion. Conservative Dynamic output metadata preserves
+plan reuse when execution options change the result family. Default materialized
+arithmetic remains unchanged. This closes a missing explicit declaration-profile
+family; it does not qualify native ACE expression categories or complete P0.

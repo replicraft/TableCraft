@@ -47,6 +47,13 @@ pub(super) fn result(operator: BinaryOperator, left: OutputType, right: OutputTy
     if !numeric_operand(left) || !numeric_operand(right) {
         return OutputType::Dynamic;
     }
+    if operator == Add && (left == Text) != (right == Text) {
+        // The same prepared plan can execute with materialized or declared
+        // arithmetic. Mixed String/numeric + can then produce numeric or Text
+        // results, so neither carrier is a metadata guarantee.
+        return OutputType::Dynamic;
+    }
+
     let scalar = carrier(operator, left, right);
     scalar.map_or(OutputType::Dynamic, |scalar| {
         OutputType::scalar(scalar, a || b)

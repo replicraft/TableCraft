@@ -36,10 +36,21 @@ impl Runtime<'_, '_> {
         let right = self.string_cell(right, env)?;
         let policy = left.policy.merge(right.policy);
         let declaration = combined(left.declaration, right.declaration);
-        match self
-            .evaluator()
-            .prepare_expression_addition(left.value, right.value)?
-        {
+        let prepared = if self.options.declared_integral {
+            self.evaluator()
+                .prepare_declared_expression_addition(
+                    left.value,
+                    right.value,
+                    left.declaration,
+                    right.declaration,
+                )?
+                .ok_or(QueryError::ArithmeticDeclaration)?
+        } else {
+            self.evaluator()
+                .prepare_expression_addition(left.value, right.value)?
+        };
+
+        match prepared {
             PreparedAddition::StringResult(value) => Ok(StringCell {
                 value: value.into(),
                 policy,
