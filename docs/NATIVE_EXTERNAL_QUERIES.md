@@ -1,6 +1,7 @@
-# Explicit native external IN sources
+# Explicit native external database sources
 
-`ExternalNativeSource` resolves an Access query's external `IN` database token
+`ExternalNativeSource` resolves an Access query's global `IN` or
+[per-table database token](PER_TABLE_EXTERNAL_QUERIES.md)
 through explicit host bindings to already-open `NativeSourceHandle` values.
 `NativeExternalMapping::new(database, key, handle)` borrows the exact token and
 an immutable host-issued `SourceKey`. Neither token nor key is a filesystem

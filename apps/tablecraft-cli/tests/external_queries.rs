@@ -12,6 +12,9 @@ mod support;
 #[path = "../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]
 mod target_fixture;
 
+#[path = "external_queries/per_table.rs"]
+mod per_table;
+
 use cli_support::run;
 use std::{
     fs,

@@ -13,13 +13,18 @@ pub(super) struct Source<'a> {
     pub alias: Option<&'a str>,
     stored_label: Option<&'a str>,
 }
+
 pub(super) enum Body<'a> {
-    Named(&'a str),
+    Named {
+        name: &'a str,
+        database: Option<&'a str>,
+    },
     Derived {
         text: &'a str,
         query: Box<ReadQuery>,
     },
 }
+
 impl<'a> Source<'a> {
     pub fn read(row: &'a SavedQueryRow, context: &mut Context<'_>) -> Result<Self, E> {
         context.check()?;
@@ -29,9 +34,22 @@ impl<'a> Source<'a> {
         }
         let alias = row.name2().map(identifier::literal).transpose()?;
         let body = match (row.name1(), row.expression()) {
-            (Some(name), None) => {
+            (Some(name), database) => {
                 context.budget.charge(Resource::Steps, name.len() as u64)?;
-                Body::Named(identifier::literal(name)?)
+                if let Some(database) = database {
+                    context
+                        .budget
+                        .charge(Resource::Steps, database.len() as u64)?;
+                }
+                if database
+                    .is_some_and(|value| value.is_empty() || value.chars().any(char::is_control))
+                {
+                    return Err(E::Unsupported);
+                }
+                Body::Named {
+                    name: identifier::literal(name)?,
+                    database,
+                }
             }
             (None, Some(text)) => {
                 let (query, text) = context.source_query(text)?;
@@ -48,7 +66,6 @@ impl<'a> Source<'a> {
                 }
                 Body::Derived { text, query }
             }
-            (Some(_), Some(_)) => return Err(E::Unsupported),
             (None, None) => return Err(E::InvalidMetadata),
         };
         Ok(Self {
@@ -57,12 +74,14 @@ impl<'a> Source<'a> {
             stored_label,
         })
     }
+
     pub fn label(&self) -> Option<&str> {
         self.alias.or(match &self.body {
-            Body::Named(name) => Some(*name),
+            Body::Named { name, .. } => Some(*name),
             Body::Derived { .. } => None,
         })
     }
+
     pub fn stored_label(&self) -> Option<&str> {
         self.stored_label
     }

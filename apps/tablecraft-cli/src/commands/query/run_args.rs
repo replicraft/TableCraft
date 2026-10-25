@@ -92,7 +92,7 @@ pub(crate) struct RunArgs {
     #[arg(long = "link", value_names = ["ALIAS", "PATH"], num_args = super::links::MAPPING_FIELDS,
         action = clap::ArgAction::Append, requires = "database", conflicts_with = "sqlite")]
     pub(crate) links: Vec<OsString>,
-    /// Bind an exact SQL IN database token to this explicitly chosen stable database; repeat for more tokens.
+    /// Bind an exact SQL IN or per-table database token to this explicitly chosen stable database; repeat for more tokens.
     #[arg(long = "external", value_names = ["DATABASE_TOKEN", "PATH"], num_args = super::external::MAPPING_FIELDS,
         action = clap::ArgAction::Append, requires = "database", conflicts_with = "sqlite")]
     pub(crate) external: Vec<OsString>,

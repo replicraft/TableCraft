@@ -211,15 +211,6 @@ fn duplicate_unknown_payload_and_sourcefree_remote_metadata_remain_rejected() {
         .err(),
         Some(E::InvalidMetadata)
     );
-
-    let per_table = Fragment {
-        expression: Some("remote-token"),
-        ..source("Items")
-    };
-    assert_eq!(
-        compile(&[per_table, column("Id")]).err(),
-        Some(E::Unsupported)
-    );
 }
 
 #[test]

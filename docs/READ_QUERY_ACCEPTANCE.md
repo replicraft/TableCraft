@@ -951,3 +951,16 @@ formulas under shared structural/resource limits. Natural intermediate carriers
 remain separate from declared ResultType conversion, cached queries and freshness.
 This closes the preview dependency refusal without completing native calculated
 query semantics or recalculation qualification.
+
+
+## Per-table external database references
+
+[Per-table prefixes](PER_TABLE_EXTERNAL_QUERIES.md) now preserve exact opaque
+selectors on ordinary named table leaves, including native saved reconstruction.
+Explicit bindings support mixed local/remote joins and target named dependencies
+without changing lexical ownership. A SELECT-level IN remains the default for
+unqualified leaves; explicit prefixes override it under the documented engineering
+profile. Normal buffered failure, source revision/schema checks, selected indexes,
+shared allowances and external edit refusal remain active. Broader providers,
+field qualification, live-file coherence and native Access qualification remain
+separate work.

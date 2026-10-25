@@ -68,7 +68,7 @@ prepare remains metadata-only. Parameterless runtime domain targets can initiate
 or reuse the same discovery; transitive parameter declarations remain refused.
 Inline TRANSFORM sources remain unsupported. Binding must not scan rows to invent their schema. `query run` uses the
 retrieval layer for inline rows, typed parameters and explicitly chosen collation.
-Explicit SQL external `IN` sources use the metadata-only host contract in
+Explicit SQL external `IN` and per-table database sources use the metadata-only host contract in
 [EXTERNAL_QUERY_SOURCES.md](docs/EXTERNAL_QUERY_SOURCES.md). Capture exact selectors
 and immutable binding/revision keys, revalidate before scans, and retain actual
 target metadata and callbacks through discovery. Nested SELECTs choose their own
@@ -77,11 +77,14 @@ namespace; root named/domain ownership remains explicit. Qualified
 definition namespace for local/nested/domain references. Keep cache and cycle
 identities scoped, retain owner bindings before discovery scans, and restore
 caller ownership on errors. Explicit IN always uses the operation root's authorized
-registry; closed Eval strings still have no name bindings.
+registry; closed Eval strings still have no name bindings. Explicit per-table
+selectors override SELECT-level IN defaults without changing lexical ownership.
+Keep the external edit refusal even though read/action syntax shares table nodes.
 Qualified native saved SELECT/crosstab global remote-source
 fragments now reconstruct through [the saved-source contract](docs/NATIVE_SAVED_EXTERNAL_QUERIES.md);
-per-table qualifiers remain refused. Reconstruct opaque tokens directly into
-owned fields rather than interpolating stored path/provider text into SQL.
+[per-table qualifiers](docs/PER_TABLE_EXTERNAL_QUERIES.md) now compose onto exact
+verified relation leaves. Reconstruct opaque tokens directly into owned fields
+rather than interpolating stored path/provider text into SQL.
 The native CLI host uses explicit `--external DATABASE_TOKEN PATH` mappings and
 `--external-index DATABASE_TOKEN TABLE INDEX`; follow
 [NATIVE_EXTERNAL_QUERIES.md](docs/NATIVE_EXTERNAL_QUERIES.md). Stored tokens never

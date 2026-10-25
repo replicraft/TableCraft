@@ -89,7 +89,23 @@ fn atom(
             source
         })
     } else {
+        let database = match p.peek_tokens::<2>() {
+            [Token::Word(word), Token::Period] if word.quote_style == Some('[') => {
+                if word.value.is_empty() || word.value.chars().any(char::is_control) {
+                    return Err(ParseError::at(
+                        p,
+                        K::Unsupported,
+                        "invalid database selector",
+                    ));
+                }
+                p.next_token();
+                p.next_token();
+                Some(word.value)
+            }
+            _ => None,
+        };
         Ok(TableSource::Table(Table {
+            database,
             name: name(p)?,
             alias: alias(p)?,
         }))

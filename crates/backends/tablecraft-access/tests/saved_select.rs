@@ -11,6 +11,8 @@ mod domains;
 mod execution;
 #[path = "saved_select/external.rs"]
 mod external;
+#[path = "saved_select/external_tables.rs"]
+mod external_tables;
 #[path = "../../../engines/tablecraft-ace/tests/saved_queries/fixture.rs"]
 #[allow(dead_code)]
 mod fixture;
@@ -264,13 +266,6 @@ fn metadata_profile_rejects_unhandled_fields_actions_ambiguous_clauses_and_order
     assert_eq!(
         compile(&[column("1"), bad_type]).err(),
         Some(E::InvalidMetadata)
-    );
-    let mut external = row(5);
-    external.name1 = Some("Items");
-    external.expression = Some("external.accdb");
-    assert_eq!(
-        compile(&[column("1"), external]).err(),
-        Some(E::Unsupported)
     );
     let mut bad_order = row(11);
     bad_order.expression = Some("1");

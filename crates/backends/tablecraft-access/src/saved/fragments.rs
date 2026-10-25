@@ -124,11 +124,8 @@ pub(super) fn validate_profile<'a>(
                 unique(&mut result.external, row)?;
             }
             Some(A::Table) => {
-                // A named table plus expression denotes a remote qualifier;
-                // an expression without a name is a stored derived query.
-                if row.name1().is_some() && row.expression().is_some() {
-                    return Err(SavedSelectError::Unsupported);
-                }
+                // With Name1, Expression is an inert per-table database token;
+                // without Name1 it remains a guarded stored derived query.
                 zero_flag(row)?;
                 if result.table_count == MAX_SOURCES {
                     return Err(SavedSelectError::Unsupported);

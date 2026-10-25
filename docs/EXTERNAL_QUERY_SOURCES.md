@@ -1,7 +1,8 @@
 # Explicit external query sources
 
-The query library executes the existing Access `SELECT ... FROM ... IN`
-syntax through an explicit host resolver. An external database token is opaque
+The query library executes Access `SELECT ... FROM ... IN` and
+[per-table database references](PER_TABLE_EXTERNAL_QUERIES.md) through an explicit
+host resolver. An external database token is opaque
 metadata, not a filename to open. The library has no filesystem, provider,
 credential or password discovery. This is a read-only engineering contract;
 it does not establish native Access execution qualification.

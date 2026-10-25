@@ -92,6 +92,9 @@ pub enum Projection {
 /// A single table name and optional explicit AS alias.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Table {
+    /// Exact opaque per-table database selector, without source resolution or
+    /// identifier normalization. A host must authorize it before any access.
+    pub database: Option<String>,
     /// Source name, without schema or external database qualification.
     pub name: Name,
     /// Local alias; binding is not performed by the parser.

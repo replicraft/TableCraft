@@ -17,8 +17,9 @@ use tablecraft_sql::{
 /// Supports bounded named/derived-source join forests and comma products, expression
 /// projections, an optional appended wildcard, filters, grouping, sorting and
 /// SELECT flags and qualified ordered parameter declarations. Excessive join graphs,
-/// per-table external qualifiers, actions and unknown/conflicting metadata
-/// fail explicitly. Expression subqueries retain their unresolved syntax.
+/// actions and unknown/conflicting metadata fail explicitly. Global and per-table
+/// external selectors remain inert owned metadata. Expression subqueries retain
+/// their unresolved syntax.
 ///
 /// This does not bind sources/functions, open providers or execute content. The
 /// native source must have been stable/offline while reading the definition.
