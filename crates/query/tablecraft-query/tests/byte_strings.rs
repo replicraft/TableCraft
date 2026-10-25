@@ -258,3 +258,6 @@ fn instrb_retains_scopes_group_identity_and_aggregate_dependencies() {
         assert_eq!(run(sql).err(), Some(QueryError::Unsupported));
     }
 }
+
+#[path = "byte_strings/output_types.rs"]
+mod output_types;

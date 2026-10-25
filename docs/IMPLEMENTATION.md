@@ -1,5 +1,19 @@
 # Implementation status
 
+## Retained byte-string result metadata
+
+ChrB, LeftB, RightB, MidB and StrConv now expose their existing successful Text
+publication guarantee during metadata-only binding. This fixes the admitted
+`SELECT LeftB('12',4) UNION SELECT 12` TypeMismatch: the existing common-Text
+conversion now runs before duplicate removal. Raw String bytes still pass
+through named/derived outputs and UNION ALL without decoding; LenB and IsNull
+can observe them, while strict final publication retains representation failures.
+
+The [byte-result controls](BYTE_STRING_FUNCTIONS.md#query-result-metadata)
+pass with function metadata, NULL and UNION regressions: 29 focused tests,
+strict scoped Clippy and formatting. No function availability, stored Binary
+carrier or native Access type qualification changes.
+
 ## Storage-history replay after query metadata corrections
 
 The rebuilt CLI and native row example pass 45 mixed-scalar and 37 modern-scalar
