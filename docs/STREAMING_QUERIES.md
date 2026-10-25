@@ -220,11 +220,11 @@ tablecraft query run --database example.accdb --stream \
 
 ## Grouped results
 
-Eligible `GROUP BY` expressions with proven Boolean, integral, Currency, Decimal or NULL carriers
+Eligible `GROUP BY` expressions with proven Text, Boolean, integral, Currency, Decimal or NULL carriers
 can stream the same native tables, explicit mapped targets and eligible
 row-local input chains. Tuple keys,
 nullable values, pure row-local key expressions, prior projection aliases and
-flat UNION ALL retain their existing contracts. Text, floating, date and
+flat UNION ALL retain their existing contracts. Floating, date and
 other unproven key families and ordering remain outside this progressive
 profile. Unsupported shapes refuse before user-row scans; ordinary buffered
 grouping remains available.
@@ -234,7 +234,8 @@ tablecraft query run --database example.accdb --stream \
   'SELECT ID Mod 17 AS Bucket,Count(*) AS N,Sum(Amount) AS Total FROM Orders GROUP BY ID Mod 17'
 ```
 
-Without HAVING, the cursor discards input rows after WHERE, key evaluation and aggregate updates.
+For non-Text keys without HAVING, the cursor discards input rows after WHERE,
+key evaluation and aggregate updates.
 Each encountered group retains its first key tuple and independent accumulator
 states. All current Count/Sum/Avg/Min/Max argument behavior remains available;
 String extrema can retain candidates until final policy comparison, so memory
@@ -248,6 +249,36 @@ final calculations; a late calculation or sink failure can retain completed
 earlier batches. Empty or wholly filtered input produces no grouped rows.
 This is a progressive execution contract and does not qualify native Access
 error precedence or optimizer behavior. See the [query service](PROGRESSIVE_QUERIES.md).
+
+## Text group membership
+
+Text grouping retains each qualified key tuple until checked EOF. It first
+applies the complete comparison-policy cohort to every key, then partitions the
+whole population with the existing strict SQL comparer. A later policy can change
+which earlier strings belong together; no provisional groups or Text hashes are
+used. First spelling, raw String ranges, NULL equality and tuple comparison order
+retain their existing contracts. Explicit comparison policies remain required
+when an actual comparison needs one; binding does not resolve providers.
+
+```sh
+tablecraft query run --database example.accdb --stream --collation database \
+  'SELECT Category,Count(*) AS N FROM Items GROUP BY Category HAVING Count(*)>10'
+```
+
+Count(*)-only and key/scalar outputs retain key candidates and group counts,
+without source-row replay frames. Queries with aggregate operands retain paid
+input rows for replay after membership is complete. HAVING still suppresses all
+selected work for rejected groups. Key storage includes owned String backing
+buffers; it grows with the selected input population even when there are few
+groups. Membership can take quadratic work with many distinct Text keys, so
+streaming does not promise fixed memory or arbitrary-size grouping.
+
+Source EOF and every membership comparison precede aggregate operands and output
+in this mode. A late key-policy error prevents all results for that arm. A later
+final projection or sink error can leave earlier completed batches. These phases
+are explicit; cross-row error priority need not match other progressive modes
+or native Access. Existing numeric-key allocation paths remain separate. See
+[the query contract](PROGRESSIVE_QUERIES.md).
 
 ## Explicit stored calculations
 

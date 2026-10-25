@@ -12,7 +12,7 @@ use crate::{
 use tablecraft_core::values::Value;
 
 impl Runtime<'_, '_> {
-    pub(super) fn finish_progressive_having<E>(
+    pub(in crate::execution::progressive) fn finish_progressive_having<E>(
         &mut self,
         arm: &ProgressiveArm<'_>,
         population: HavingPopulation<'_>,
@@ -24,8 +24,11 @@ impl Runtime<'_, '_> {
         let mut published = 0_u64;
         for group in population.groups {
             self.tick()?;
-            let having_results =
-                self.progressive_aggregate_results(&population.expressions, group.accumulators)?;
+            let having_results = if population.predicate_count_only {
+                self.progressive_count_results(&population.expressions, group.count)?
+            } else {
+                self.progressive_aggregate_results(&population.expressions, group.accumulators)?
+            };
             let environment = Environment {
                 aggregate_results: Some(&having_results),
                 row: &[],
@@ -45,7 +48,7 @@ impl Runtime<'_, '_> {
                 continue;
             }
             let results = if population.count_only {
-                self.having_count_results(&arm.aggregates, group.count)?
+                self.progressive_count_results(&arm.aggregates, group.count)?
             } else {
                 let mut accumulators = self.progressive_accumulators(&arm.aggregates)?;
                 for row in group.rows {
@@ -90,7 +93,7 @@ impl Runtime<'_, '_> {
         Ok(())
     }
 
-    fn having_count_results<'p>(
+    pub(in crate::execution::progressive) fn progressive_count_results<'p>(
         &mut self,
         expressions: &[&'p Expr],
         count: i64,

@@ -1,25 +1,26 @@
-//! Deferred rows belong only to the explicit HAVING operation, never a cache.
+//! Deferred group rows belong to explicit query operations, never a source cache.
 use crate::{
     QueryError,
     execution::{Runtime, aggregate::accumulator::Accumulator, cell::CellValue},
     plan::Expr,
 };
 
-pub(super) struct HavingPopulation<'p> {
-    pub(super) expressions: Vec<&'p Expr>,
-    pub(super) groups: Vec<HavingGroup>,
-    pub(super) count_only: bool,
+pub(in crate::execution::progressive) struct HavingPopulation<'p> {
+    pub(in crate::execution::progressive) expressions: Vec<&'p Expr>,
+    pub(in crate::execution::progressive) groups: Vec<DeferredGroup>,
+    pub(in crate::execution::progressive) count_only: bool,
+    pub(in crate::execution::progressive) predicate_count_only: bool,
 }
 
-pub(super) struct HavingGroup {
-    pub(super) keys: Vec<CellValue>,
-    pub(super) accumulators: Vec<Accumulator>,
-    pub(super) rows: Vec<Vec<CellValue>>,
-    pub(super) count: i64,
+pub(in crate::execution::progressive) struct DeferredGroup {
+    pub(in crate::execution::progressive) keys: Vec<CellValue>,
+    pub(in crate::execution::progressive) accumulators: Vec<Accumulator>,
+    pub(in crate::execution::progressive) rows: Vec<Vec<CellValue>>,
+    pub(in crate::execution::progressive) count: i64,
 }
 
 impl Runtime<'_, '_> {
-    pub(super) fn retain_having_row(
+    pub(in crate::execution::progressive) fn retain_having_row(
         &mut self,
         rows: &mut Vec<Vec<CellValue>>,
         row: Vec<CellValue>,
@@ -40,8 +41,8 @@ impl Runtime<'_, '_> {
         &mut self,
         keys: Vec<CellValue>,
         expressions: &[&Expr],
-    ) -> Result<HavingGroup, QueryError> {
-        Ok(HavingGroup {
+    ) -> Result<DeferredGroup, QueryError> {
+        Ok(DeferredGroup {
             keys,
             accumulators: self.progressive_accumulators(expressions)?,
             rows: Vec::new(),

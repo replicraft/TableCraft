@@ -7,11 +7,11 @@ fn unsupported_shapes_and_later_key_families_refuse_before_every_cursor() {
         "SELECT Id,Count(*) FROM T GROUP BY Id ORDER BY Id",
         "SELECT Id,Count(*) FROM T GROUP BY Id HAVING Last(Id)>0",
         "SELECT TOP 50 PERCENT Id,Count(*) FROM T GROUP BY Id",
-        "SELECT CStr(Id),Count(*) FROM T GROUP BY CStr(Id)",
+        "SELECT CDate(Id),Count(*) FROM T GROUP BY CDate(Id)",
         "SELECT CDbl(Id),Count(*) FROM T GROUP BY CDbl(Id)",
         "SELECT CSng(Id),Count(*) FROM T GROUP BY CSng(Id)",
-        "SELECT ChrW(Id),Count(*) FROM T GROUP BY ChrW(Id)",
-        "SELECT Id,Count(*) FROM T GROUP BY Id UNION ALL SELECT CStr(Id),Count(*) FROM Later GROUP BY CStr(Id)",
+        "SELECT IIf(Id>0,CStr(Id),Id),Count(*) FROM T GROUP BY IIf(Id>0,CStr(Id),Id)",
+        "SELECT Id,Count(*) FROM T GROUP BY Id UNION ALL SELECT CDate(Id),Count(*) FROM Later GROUP BY CDate(Id)",
     ] {
         let source = Inputs::generated(1, 0);
         let result = stream(sql, &source, Default::default());

@@ -373,3 +373,6 @@ fn progressive_scan_never_reuses_a_previous_complete_snapshot() {
 
 #[path = "progressive_source/grouped.rs"]
 mod grouped;
+
+#[path = "progressive_source/text_groups.rs"]
+mod text_groups;
