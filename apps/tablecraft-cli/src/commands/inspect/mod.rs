@@ -43,8 +43,9 @@ pub(crate) fn run(
     mode: Mode<'_>,
     format: crate::presentation::Format,
     password: Option<&str>,
+    native_bytes: Option<u64>,
 ) -> Result<String, Error> {
-    let mut budget = native::budget();
+    let mut budget = native::read_budget(native_bytes.unwrap_or(native::DEFAULT_NATIVE_BYTES));
     if let Some(report) = template::try_run(path, &mode, format, &mut budget)? {
         return Ok(report);
     }

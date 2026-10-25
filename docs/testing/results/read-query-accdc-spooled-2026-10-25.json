@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Explicit bounded ACCDC host-owned spooling, hybrid preservation of existing small captures and logical CAB decoder windows",
+  "unique_tests": 56,
+  "new_tests": 15,
+  "targets": {
+    "internal_layout": 4,
+    "deployment_spooled": 10,
+    "existing_deployment": 5,
+    "cli_browsing": 25,
+    "cli_deployment": 2,
+    "cli_native_read_budget": 8,
+    "cli_password": 2
+  },
+  "checks": [
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-access --lib input::deployment::layout::tests",
+      "exit_code": 0,
+      "private_log": ".cache/accdc-spooled-layout-tests-final-20261025.log",
+      "sha256": "ca648c6052b056625dbbb2d7a106046602c3fc539fa2003151df2397277b6ed1",
+      "passed_tests": 4
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-access --test deployment_spooled --test deployment",
+      "exit_code": 0,
+      "private_log": ".cache/accdc-spooled-final-tests-20261025.log",
+      "sha256": "ceddbbe35a390eddc31bae2b8d201a02d29c31d484c0d2b5bba88ec0f24cf3bd",
+      "passed_tests": 15
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-access --lib --tests -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/accdc-spooled-final-clippy-20261025.log",
+      "sha256": "414eaf7f8265bffbe9ac3c50ad5add2f2e7fb11e3d9c683b11c6e2f60d8335bb"
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --test deployment --test browsing --test native_read_budget --test password --test strconv -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/spooled-hiragana-cli-tests-final-20261025.log",
+      "sha256": "01a93cd1e0dc1c4017ea055abf56fb83242bace14e44c730b4a2ebdbd5ceb763",
+      "passed_tests": 37,
+      "counting_note": "Counted37 CLI tests exclude the four strconv tests recorded separately."
+    },
+    {
+      "command": "cargo clippy -p tablecraft-cli --bin tablecraft --test deployment --test browsing --test native_read_budget --test password --test strconv -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/spooled-hiragana-cli-clippy-final-20261025.log",
+      "sha256": "6e81e6c046fa1831a834626cf909ccabc199ec4cbf18a91d31412d27f3c98529"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "private_log": ".cache/spooled-hiragana-fmt-final-20261025.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "source_sha256": {
+    "crates/backends/tablecraft-access/src/input/mod.rs": "8bd061f70b6eb7e66f1774e9998d027442b9666abe5dd925ab9c3310c232592f",
+    "crates/backends/tablecraft-access/src/input/deployment.rs": "9697343a7b87101b02240312725b5f090dc07f416dcbb993bd8bee4105b2639f",
+    "crates/backends/tablecraft-access/src/input/deployment/bounded.rs": "b2cba077e63570b557a2f9608bb62a3d1d2c614ae8cfd3560ead971a7998944b",
+    "crates/backends/tablecraft-access/src/input/deployment/hybrid.rs": "17129947a0a2d6937ed6d99e5a84015723e36d42587ada210b8db2d6dfc26944",
+    "crates/backends/tablecraft-access/src/input/deployment/layout.rs": "baa53a8b66cd02573f2c345d07cf093d634fbe65b120b76ae14269e13085e7ea",
+    "crates/backends/tablecraft-access/src/input/deployment/layout/tests.rs": "59073d168e7a4d9947777c76b7340b190136b305ca0e84dba37b6c2ebcfe7705",
+    "crates/backends/tablecraft-access/src/input/deployment/spool.rs": "ecea827a0a533b14006a8b93516521db3f038f8d1f34219a31c72ffc81aa5b5f",
+    "crates/backends/tablecraft-access/tests/deployment_spooled.rs": "82da95a3a0a0b784789917a4655717c4a251a9af3319ee79d5ee6c7a4df7c3c6",
+    "crates/backends/tablecraft-access/tests/deployment_spooled/mod.rs": "5538e84917957fea66ba71e6a74e522cbf5a4f0ca529b85ba323bb7591667438"
+  },
+  "fixture_dependency_sha256": {
+    "crates/backends/tablecraft-access/tests/support/deployment.rs": "b1aacb22b234598d19f05c048b656479fcfc10facc561a8c7c234c88f717eae2",
+    "docs/examples/Access_Example_VBA.accdb": "3cd1fc88d70bc93909ae6d190fa9692e709d5641b205fd2f66185c905e42cfbf"
+  },
+  "acceptance": [
+    "Existing AccessInput::open retains its 64 MiB memory API and caps. AccessInput<R,S> defaults S to Cursor<Vec<u8>>; explicit always-spooled and hybrid constructors use caller-owned lazy fresh Read+Write+Seek storage without new dependencies or path selection.",
+    "Hybrid memory selection requires both validated physical package and decoded database lengths <=64 MiB; larger qualified inputs use the spool. Raw inputs and small captures never call the factory. No failed capture is retried or silently switched.",
+    "One folder/file, zero folder/file offsets, existing compression and filename restrictions, streamed checked block geometry and exact expanded size precede decoder/factory publication.",
+    "CAB single-folder payload 0x7fff8000, logical cabinet 0x7fffffff and separate 64 MiB overlay ceilings; internal virtual tests walk 65535 headers, reject payload/logical/overlay overflow and charge retained per-block reserve metadata without allocating large images.",
+    "Both strategies exclude unverified overlay bytes from the CAB decoder; original physical capture charging is retained in the memory path.",
+    "Stored/MSZIP extraction across ACE header codes 2/3/5/6 preserves exact original bytes and seek behavior. Always-spooled capture publishes only after checksum/fullEOF/flush/exact extent/header qualification/rewind.",
+    "Short and Interrupted writes, factory refusal, nonempty storage, zero writes, source/seek/flush errors, repeated source Interrupted quota exhaustion and cancellation retain typed errors and drop partial storage.",
+    "A bad final block checksum discards a previously written 32768-byte prefix; no partial database handle is published. Package signatures remain unverified.",
+    "Actual existing 3,387,392-byte example stored/MSZIP captures retain the default 16 MiB allowance through the hybrid memory lane without requesting storage; CLI count/read regression checks are separately parent-owned.",
+    "One cumulative native budget accounts metadata/reserves/decoder/scratch, requested source callback bytes, decoded logical chunks and spool writes. Short reads can overcharge conservatively. Budget borrows end before host callbacks."
+  ],
+  "excluded_initial_checks": [
+    {
+      "private_log": ".cache/accdc-spooled-tests-20261025.log",
+      "sha256": "805706342705822e3ba7e519a5d07fe8b8527af451b8f31454432a0bd07ea408",
+      "reason": "Initial integration batch: existing five tests passed, new eight of nine passed. A new malformed-geometry test mistakenly rewrote block count at offset 40 to its existing value 2; the intended unsupported-compression mutation was corrected to independent offset 42. No production gate was relaxed."
+    },
+    {
+      "private_log": ".cache/spooled-hiragana-cli-tests-20261025.log",
+      "sha256": "a50ba36495af49787ea66e818b8c3b13f4d3a6147896e3dd7be28800e0a61daf",
+      "reason": "Parent pre-hybrid CLI batch: existing packaged plain/encrypted command regression failed at the default 16 MiB native budget; always-spooled extraction correctly charged compressed source reads, decoded chunks and spool writes, leaving less budget for catalog reading than the existing memory path. This is excluded from accepted counts and corrected by explicit hybrid strategy selection, not raised defaults or weakened charges."
+    },
+    {
+      "private_log": ".cache/accdc-default-budget-debug-20261025.log",
+      "sha256": "eb74e26c4c4cf3b7133e1a9d755c026aad1db8d92a0fc8a344c7e9a07aac12fd",
+      "reason": "Parent diagnostic isolated the pre-hybrid default-budget regression to the plain uncompressed tables lane. This diagnostic is not accepted passing evidence."
+    }
+  ],
+  "counting_notes": [
+    "Final hardened source checks are four internal units plus ten new integration tests plus five existing deployment tests,19 unique total. The14 new tests comprise nine always-spool integration tests, one hybrid integration test and four geometry/strategy units.",
+    "Final handle 2817 executed the three recorded commands sequentially; all test summaries and strict linting completed successfully. Earlier overlapping green runs are not additional unique tests.",
+    "Memory capture was hardened after initial tests to truncate only the owned CAB decoder view at validated logical end; the final 19 checks and strict linting reran after that production change.",
+    "Strict lib/tests compiles and lints test targets but is not an additional broad executed suite. Parent CLI tests, build, formatter and independent large originals are separate evidence.",
+    "Parent integration adds37 distinct CLI tests, one new explicit allowance control, for56 unique tests and15 new controls. CLI default plain/encrypted stored/MSZIP commands now pass without increased default budgets. Inspect/tables/normal rows accept explicit1..=256MiB cumulative byte allowances."
+  ],
+  "limitations": [
+    "Virtual maximum-size controls contain deliberately invalid compressed payload bytes: they establish only layout arithmetic, bounded reads and strategy selection, not successful multi-gigabyte extraction or native Access-created package validity.",
+    "No original >64 MiB producer/getter/CLI replay is claimed by this scoped record; that independent evidence is separate.",
+    "CAB block checksum validation is not signature/publisher verification. No VBA, external provider or active package content is executed.",
+    "Generic host storage cleanup follows its owning type; only hosts choosing an unnamed temporary file gain that type's deletion semantics.",
+    "Native 2 GiB source addressing does not raise the separate 64 MiB whole-image encryption-management or mutation ceilings; no write eligibility or live-file coherence is added."
+  ],
+  "primary_references": [
+    "https://download.microsoft.com/download/4/D/A/4DA14F27-B4EF-4170-A6E6-5B1EF85B1BAA/%5BMS-CAB%5D.pdf",
+    "https://docs.rs/cab/0.6.0/cab/struct.Cabinet.html",
+    "https://docs.rs/cab/0.6.0/src/cab/cabinet.rs.html",
+    "https://docs.rs/tempfile/3.27.0/tempfile/fn.tempfile.html"
+  ],
+  "existing_regression_tests": 41
+}

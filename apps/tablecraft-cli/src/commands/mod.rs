@@ -47,6 +47,7 @@ impl Command {
                     args.show_system,
                     args.count,
                     password,
+                    args.native_bytes,
                 ),
                 format,
             ),

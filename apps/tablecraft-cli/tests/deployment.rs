@@ -33,7 +33,11 @@ fn packaged_plain_and_encrypted_databases_feed_the_same_read_commands() {
                     .contains("Package signature\tNot verified")
             );
             let tables = run(&["tables", path, "--count", "-p", "public test password"]);
-            assert!(tables.status.success(), "{:?}", tables.stderr);
+            assert!(
+                tables.status.success(),
+                "encrypted={encrypted}, compressed={compressed}: {}",
+                String::from_utf8_lossy(&tables.stderr),
+            );
             assert!(String::from_utf8_lossy(&tables.stdout).contains("ROULETTE_TB\tUser\t38"));
             let query = run(&[
                 "query",
@@ -67,4 +71,48 @@ fn packaged_plain_and_encrypted_databases_feed_the_same_read_commands() {
             }
         }
     }
+}
+
+#[test]
+fn inspection_and_inventory_keep_explicit_container_allowances_bounded() {
+    let original = fs::read(
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("../../docs/examples/Access_Example_VBA.accdb"),
+    )
+    .unwrap();
+    let directory = tempfile::tempdir().unwrap();
+    let package = fixture::cabinet(&original, true);
+    let path = directory.path().join("allowance.accdc");
+    fs::write(&path, &package).unwrap();
+    let path = path.to_str().unwrap();
+
+    for command in ["inspect", "tables"] {
+        let admitted = run(&[command, path, "--native-bytes", "33554432"]);
+        assert!(admitted.status.success(), "{:?}", admitted.stderr);
+
+        let exhausted = run(&[command, path, "--native-bytes", "1"]);
+        assert_eq!(exhausted.status.code(), Some(2));
+        assert!(exhausted.stdout.is_empty());
+
+        for amount in ["0", "268435457"] {
+            let refused = run(&[command, "missing.accdc", "--native-bytes", amount]);
+            assert_eq!(refused.status.code(), Some(2));
+            assert!(refused.stdout.is_empty());
+            assert!(String::from_utf8_lossy(&refused.stderr).contains("invalid value"));
+        }
+    }
+    let rows = run(&[
+        "rows",
+        path,
+        "ROULETTE_TB",
+        "--limit",
+        "1",
+        "--native-bytes",
+        "33554432",
+    ]);
+    assert!(rows.status.success(), "{:?}", rows.stderr);
+    let exhausted = run(&["rows", path, "ROULETTE_TB", "--native-bytes", "1"]);
+    assert_eq!(exhausted.status.code(), Some(2));
+    assert!(exhausted.stdout.is_empty());
+
+    assert_eq!(fs::read(path).unwrap(), package);
 }

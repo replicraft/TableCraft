@@ -1,5 +1,17 @@
 # Implementation status
 
+## Larger read-only deployment packages
+
+Qualified ACCDC inputs can now complete extraction into host-owned seekable
+storage under cumulative budgets, without a whole cabinet/database Vec. The CLI
+keeps existing small captures and creates an unnamed temporary file only for
+larger qualified packages; failed extraction publishes no database. Inspect,
+tables and ordinary rows now accept explicit native byte allowances. Fifteen
+new controls and 41 regressions pass with strict Access/CLI linting and formatting.
+Encryption rewrite limits and signature verification remain separate. See
+[scope](ACCDC_SPOOLED_READS.md) and
+[verification](testing/results/read-query-accdc-spooled-2026-10-25.json).
+
 ## Explicit widening and Hiragana
 
 StrConv conversion 36 now applies the existing widening kernel before Hiragana

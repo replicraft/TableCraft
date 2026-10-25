@@ -56,12 +56,18 @@ filename routing only; no native compiled or package fixture is qualified yet.
 
 ## Working ACCDC read profile
 
-`tablecraft-access::AccessInput` detects CAB by `MSCF` content and captures the
-contained ACE database in memory. Ordinary native inputs remain streaming.
+`tablecraft-access::AccessInput` detects CAB by `MSCF` content. Its default
+`open` constructor captures a small contained ACE database in memory; explicit
+`open_spooled` completes extraction into fresh host-owned seekable storage. The
+CLI retains in-memory capture for packages/databases within the existing
+64 MiB limits and supplies an unnamed temporary file lazily for larger
+qualified deployment inputs through `open_with_spool`. Ordinary
+native inputs remain streaming and do not create temporary storage.
 The CLI uses this input for `inspect`, `tables`, `rows`, saved-query retrieval,
 `query run --database` and `encryption inspect`. Supported encrypted contained
 databases use the ordinary `-p` / hidden prompt and native codec. The original
-package stays untouched; no database is extracted to disk. Encryption rewrites
+package stays untouched; temporary extraction is removed when its host-owned
+file handle closes. Stored CAB names never select a filesystem path. Encryption rewrites
 and table-update commands do not accept packages or silently produce a package
 with an invalid signature.
 
@@ -79,15 +85,34 @@ This does not reproduce Access's package trust or installation workflow.
 
 Current profile: CAB 1.3, one folder and one file at decompressed offset zero,
 no split/previous/next cabinets, a plain basename of at most 255 bytes, and a
-contained recognized ACE database. Compressed input including any signature
-overlay and decompressed database are each capped at 64 MiB, subject to shared
-host limits. Header/folder/data reservations are bounded and retained only as
+contained recognized ACE database. The in-memory constructor retains separate
+64 MiB package/database limits. The explicit spool reader instead accepts logical
+CAB lengths up to `0x7FFFFFFF` and database payloads up to CAB's `0x7FFF8000`
+byte single-folder limit, under cumulative host budgets. A trailing unverified
+overlay has its own 64 MiB ceiling and never reaches the decoder. These are
+addressability limits, not promises that default budgets admit every such file. Header/folder/data reservations are bounded and retained only as
 unverified container data. Compressed block bounds, aggregate expanded length
 and geometry are checked before library decompression. Each output chunk is
-bounded to 32 KiB with cumulative cancellation/steps; four MiB of decoder work
-storage is charged. Quantum and unsupported compression parameters fail.
+bounded to 32 KiB with cumulative cancellation/steps. The spool reader charges
+metadata/reserve allocations, four MiB of decoder workspace, compressed reads,
+decoded bytes and temporary writes. It validates full length, checksums and EOF,
+flushes and rewinds before exposing a database. Failed extraction returns no
+selected source. Generic supplied storage retains its host cleanup contract. Quantum and unsupported compression parameters fail.
 MSZIP and uncompressed fixtures pass exact-byte checks; the decoder also accepts
 LZX windows 15–21, which still need Access-package fixture qualification.
+
+For larger packages, explicitly increase the cumulative allowance, for example:
+
+```sh
+tablecraft inspect application.accdc --native-bytes 268435456
+tablecraft tables application.accdc --count --native-bytes 268435456
+tablecraft query run --database application.accdc --stream \
+  --native-bytes 268435456 'SELECT Count(*) FROM Contacts'
+```
+
+The default remains 16 MiB. Compressed and decoded data plus temporary writes
+share that allowance; raising it does not expand encryption rewrites, editing,
+signature trust or unsupported CAB layouts.
 
 Original independently laid-out CAB fixtures wrap the registered MIT example,
 including password-encrypted ACE derivatives. Tests compare exact extracted

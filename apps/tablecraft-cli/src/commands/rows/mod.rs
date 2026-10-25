@@ -32,8 +32,8 @@ pub(crate) struct Args {
     /// Ordinary scalar column to stream; repeat for a subset of a mixed schema.
     #[arg(long = "column", requires = "stream")]
     pub(super) columns: Vec<String>,
-    /// Cumulative native bytes for streaming or collection pages, including metadata and failures.
-    #[arg(long, requires = "rows_native_modes", value_parser = clap::value_parser!(u64).range(1..=native::MAX_QUERY_READ_BYTES))]
+    /// Cumulative native read/container bytes, including temporary extraction and failures.
+    #[arg(long, value_parser = clap::value_parser!(u64).range(1..=native::MAX_QUERY_READ_BYTES))]
     pub(super) native_bytes: Option<u64>,
     /// Cumulative native rows; collection pages also use this as the parent/child table ceiling.
     #[arg(long, requires = "rows_native_modes", value_parser = clap::value_parser!(u64).range(1..=native::MAX_NATIVE_READ_ROWS))]

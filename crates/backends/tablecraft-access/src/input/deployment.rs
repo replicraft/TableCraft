@@ -1,5 +1,11 @@
 //! CAB geometry gates ahead of the library's parser/decompressor allocations.
+mod bounded;
+mod hybrid;
+mod layout;
+pub(super) use hybrid::{Selected, read as read_with_spool};
+mod spool;
 use super::AccessInputError;
+pub(super) use spool::read as read_spooled;
 use std::io::{Cursor, Read, Seek, SeekFrom};
 use tablecraft_ace::{FileFormat, Header, InspectError};
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -41,6 +47,10 @@ pub(super) fn read<R: Read + Seek>(
     tablecraft_io::read_exact_at(source, 0, &mut bytes, budget, cancelled)
         .map_err(InspectError::from)?;
     let size = preflight(&bytes, budget, cancelled)?;
+    // Preflight validated this logical end. Retain the physical capture charge,
+    // but never present an unverified signature overlay to the CAB decoder.
+    let cabinet_bytes = dword(&bytes, SIZE_OFFSET)?;
+    bytes.truncate(cabinet_bytes);
     budget
         .charge(Resource::Bytes, DECOMPRESSOR_WORK_BYTES)
         .map_err(InspectError::from)?;
