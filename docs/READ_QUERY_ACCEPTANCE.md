@@ -658,6 +658,17 @@ their formal Variant return category separately from
 the Long carrier. Broader static inference and carrier
 rules remain P0 work; default queries retain their existing materialized profile.
 
+## Independent aggregate type evidence
+
+The [external JDBC probe](testing/JDBC_AGGREGATE_METADATA.md) now records declared
+metadata and actual object values across all four priority fixture families.
+Its Count/DCount/integral Sum use 64-bit values, while its integer Avg, fixed-point
+rounding and some First/Last calls diverge from the existing TableCraft profile.
+These observations do not identify native Access Scalar/Variant categories or
+justify narrowing Count to Int32. Native aggregate/result-promotion acceptance
+remains open; no production type/default change was made from an independent
+implementation alone.
+
 ## Transition to broader writes
 
 Read/query completion does not itself authorize ordinary ACE saves. Existing

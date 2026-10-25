@@ -1253,3 +1253,15 @@ audit. Distributors retain the supplied license and copyright notices.
 Sources: [normalization package](https://docs.rs/crate/unicode-normalization/0.1.25),
 [character APIs](https://docs.rs/unicode-normalization/0.1.25/unicode_normalization/char/index.html)
 and [tinyvec package](https://docs.rs/crate/tinyvec/1.13.3).
+
+
+## Optional JDBC engineering probe
+
+The [independent aggregate probe](testing/JDBC_AGGREGATE_METADATA.md) uses external
+UCanAccess 5.2.0 (Apache-2.0), Jackcess 5.2.0 (Apache-2.0) and HSQLDB 2.7.4
+(BSD-style upstream terms). Exact JAR hashes, primary license references and
+retrieval checks are recorded there and in the fixture ledger. They are not
+Cargo dependencies, redistributed JARs or requirements of ordinary builds/CI.
+The Java/Python probe is original repository code and runs only when explicitly
+invoked over registered original fixture copies; numerical differences remain
+observations rather than native conformance findings.

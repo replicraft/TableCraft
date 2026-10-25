@@ -1,0 +1,109 @@
+{
+  "scope": "External aggregate engineering reference artifact/probe review; no production dependencies or native Access qualification",
+  "artifacts": [
+    {
+      "path": ".cache/ucanaccess-reference-20261025/ucanaccess-5.2.0.jar",
+      "coordinate": "io.github.spannm:ucanaccess:5.2.0",
+      "sha256": "ed8f33f30b9d08c7dc0bead139180ea70061beea915677ce2fe47e4b7aea2490",
+      "bytes": 462477,
+      "license_review": "Apache-2.0; embedded NOTICE retained"
+    },
+    {
+      "path": ".cache/ucanaccess-reference-20261025/jackcess-5.2.0.jar",
+      "coordinate": "io.github.spannm:jackcess:5.2.0",
+      "sha256": "9451d6f336cfaa82f5af178d5f6668b933cda4f27e261f29a1faa83630f95775",
+      "bytes": 1359716,
+      "license_review": "Apache-2.0 declared by published POM"
+    },
+    {
+      "path": ".cache/ucanaccess-reference-20261025/hsqldb-2.7.4.jar",
+      "coordinate": "org.hsqldb:hsqldb:2.7.4",
+      "sha256": "5fab2bb4384ac06b762638c8fa2740c944b8d080e4796c0c6c2af8b90dd4e5ad",
+      "bytes": 1662185,
+      "license_review": "HSQLDB BSD-style license declared by published POM"
+    }
+  ],
+  "checksum_review": "Official SHA256 sidecars verified for UCanAccess and Jackcess. HSQLDB official SHA256 sidecar returned404; published SHA1 verified and local SHA256 pinned.",
+  "optional_dependencies": "Jackcess optional Apache POI not downloaded or enabled; no OLE interpretation requested. Test/provided dependencies excluded. SLF4J POM inspected but runtime JAR not downloaded; no runtime declaration in these reviewed POMs.",
+  "license_primary_references": [
+    "https://github.com/spannm/ucanaccess",
+    "https://repo.maven.apache.org/maven2/io/github/spannm/jackcess/5.2.0/jackcess-5.2.0.pom",
+    "https://hsqldb.org/web/hsqlLicense.html"
+  ],
+  "initial_probe": {
+    "source_path": ".cache/ucanaccess-reference-20261025/initial-JdbcAggregateMetadataProbe.java",
+    "source_sha256": "f0094acd814fbece4ba79296c21c9bddc05df624892614f9122d90bbaad3bb4b",
+    "queries": 57,
+    "successful_queries": 55,
+    "reference_sql_errors": 2,
+    "stdout_sha256": "e2b7cddafbde613024d3c450fa53419ae5e88844a741f51742f86b59a6018e07",
+    "scope": "Original successful first probe; First/Last Double reference execution errors retained. Added one distinct integer-fraction average diagnostic afterward; no production change."
+  },
+  "consulted_source_artifact": {
+    "path": ".cache/ucanaccess-reference-20261025/ucanaccess-5.2.0-sources.jar",
+    "sha256": "0cb3a900d8368be474381a5f61aaef1b6366c2958342aa91a722d13c4b3a1045",
+    "use": "Review public opener contract and driver resolver replacement; no third-party implementation copied."
+  },
+  "published_poms": [
+    {
+      "path": ".cache/ucanaccess-reference-20261025/hsqldb-2.7.4.pom",
+      "sha256": "a35fed78af44919a72c244db57197bf7883a79d0ba64e521fc1d3312fac092b7"
+    },
+    {
+      "path": ".cache/ucanaccess-reference-20261025/jackcess-5.2.0.pom",
+      "sha256": "40965b4d6988c343a31448890784749899dcbb9b795fa72569d2f8ec5b688ce2"
+    },
+    {
+      "path": ".cache/ucanaccess-reference-20261025/slf4j-api-2.0.20.pom",
+      "sha256": "2e625c3f553cddd49f8554cea9926cbf70673b3d6833464f0c5a02f4d9130594"
+    },
+    {
+      "path": ".cache/ucanaccess-reference-20261025/ucanaccess-5.2.0.pom",
+      "sha256": "581db0cb3cd5c2c92c4068035e3c5b17385d0b324212571153295631481c2f2d"
+    }
+  ],
+  "guard_control": {
+    "command": [
+      "java",
+      "-Xmx256m",
+      "-cp",
+      ".cache/ucanaccess-aggregate-guarded-20261025/classes:.cache/ucanaccess-reference-20261025/ucanaccess-5.2.0.jar:.cache/ucanaccess-reference-20261025/jackcess-5.2.0.jar:.cache/ucanaccess-reference-20261025/hsqldb-2.7.4.jar",
+      "JdbcAggregateMetadataProbe",
+      ".cache/ucanaccess-aggregate-guarded-20261025/StoredQueryRefusal.accdb"
+    ],
+    "exit_code": 1,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "d8aa53a3d18d5829cfda554948a159b7e5f1dbaf7c25761375654c5ac0b92440",
+    "expected_error": "Stored query definitions are outside this original fixture probe",
+    "source": "docs/examples/Access_Example_VBA.accdb",
+    "source_and_copy_sha256": "3cd1fc88d70bc93909ae6d190fa9692e709d5641b205fd2f66185c905e42cfbf",
+    "original_and_copy_unchanged": true,
+    "query_output_records": 0,
+    "scope": "Original registered application copy refused during inert metadata preflight, before opening JDBC or translating stored SQL."
+  },
+  "accepted_report": {
+    "path": "docs/testing/results/jdbc-aggregate-metadata-final-2026-10-25.json",
+    "sha256": "0469a0b3f9ef3c8b717d38fc920e2684321926b8ba8ce0b297b989b331a88399",
+    "profiles": 4,
+    "reference_queries": 232,
+    "reference_completed": 224,
+    "reference_execution_errors": 8,
+    "tablecraft_queries": 232,
+    "tablecraft_completed": 232,
+    "immutable_pins_rehashed": 10,
+    "original_and_copy_bytes_unchanged": true
+  },
+  "intermediate_captures": [
+    {
+      "path": ".cache/ucanaccess-reference-20261025/first-full-aggregate-metadata-report.json",
+      "sha256": "6ac7c1592b55f46a7b8faf755156a2b139fd1784fd04c8f7cdf4a6b2609fce92",
+      "classification": "Preserved observed matrix before mechanical resource-constant naming or stricter inert metadata/open-target guards; final query observations independently verified identical."
+    },
+    {
+      "path": ".cache/ucanaccess-reference-20261025/before-opener-preflight-report.json",
+      "sha256": "0f9c0b9140b2018c54161b6df3a59396fe0a92db88b929b6505d9615818f4090",
+      "classification": "Preserved observed matrix before mechanical resource-constant naming or stricter inert metadata/open-target guards; final query observations independently verified identical."
+    }
+  ],
+  "driver_review": "UCanAccess replaces an opener-supplied link resolver. The probe therefore authorizes exactly one canonical root path in the custom opener and independently refuses linked tables and stored query definitions before JDBC initialization; it does not rely on a replaceable resolver callback."
+}
