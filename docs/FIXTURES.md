@@ -7743,3 +7743,47 @@ JAR, frozen executables and local logs stay ignored and unchanged. Numeric headi
 collisions retain AmbiguousName independently of exact key partitioning. Native
 Access grouping/coercion, NULL/Error qualification, writes and application
 save/reopen are not established by this finite read-only corpus.
+
+
+## Original saved external-source metadata and target pairs
+
+[SavedExternalFixture.java](testing/SavedExternalFixture.java),
+[SavedExternalOracle.java](testing/SavedExternalOracle.java) and
+[compare_saved_external.py](testing/compare_saved_external.py) are original
+repository MIT recipes. Public table builders create distinct root/target data;
+original system-table rows author twelve inert saved definitions per frontend.
+Read-only reopened getters retain exact raw fields, path/connection options and
+ordinary cells with expression evaluation disabled and a throwing link resolver.
+No third-party implementation or fixture bytes are copied or tracked.
+
+The reviewed Jackcess 5.0.4 JAR is Apache-2.0, SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+Original files and getter captures remain ignored under
+`.cache/tablecraft-fixtures/saved-external-20261024/`; its pinned `generation.json`
+retains actual authoring/getter commands. Originals are never modified in replay.
+
+| Original | Bytes | SHA-256 |
+| --- | ---: | --- |
+| V2000/backend.mdb | 131,072 | `6728ade21af48ca31f0de1510d380a70d4e66b6381ac1e1cb65a397ed88ded4c` |
+| V2000/frontend.mdb | 122,880 | `4b2e4b07aefc766687300b9c3220911ba8d9de27de86261971f98f09810b0276` |
+| V2007/backend.accdb | 360,448 | `458bb6f1278b83e29d34ba44281caadfd346b091fb1189828b2bc13a3d2d6c72` |
+| V2007/frontend.accdb | 356,352 | `ac7f2b5ab08522d1725dd7adee1888e575fd2e1003155668b550d6625c92b9e5` |
+| V2016/backend.accdb | 397,312 | `2fdfc48421ed50f986cc5c664161995131eb2911a1f6a1227ab0e875aa215b5e` |
+| V2016/frontend.accdb | 393,216 | `f398ec96ce932aa30827731880d017f9c74ea415dafd5723c25255f71f3a7650` |
+| V2019/backend.accdb | 466,944 | `76320956c37381e0095c740c11659101c09eb3411026d7e61141b0f131e602e4` |
+| V2019/frontend.accdb | 462,848 | `81d0746adbb4f8c92cc53454dbf3e25f68fa94ad18077b85359d68dc816774a4` |
+
+The [accepted report](testing/results/saved-external-2026-10-24.json) passes
+188 CLI controls and all 109 unchanged source/artifact/input/getter hashes:
+48 exact raw inspections, 48 qualifier reconstructions, 36 successful mapped/local
+execution controls and 56 classified buffered refusals. Reconstruction checks
+opaque qualifier strings rather than complete AST identity; Rust tests cover
+owned-model equality. Root and target same-name rows distinguish source routing.
+Present-empty versus absent connections and NULL-to-empty owned path behavior
+have separate reopened getter controls. Reference SQL never executes.
+
+The [feature evidence](testing/SAVED_EXTERNAL_QUERIES.md) records exact scope,
+reproduction and excluded argument-spelling probes. Frozen CLI, original binary
+files, getters, tools and local logs stay ignored. Native Access creation of these
+saved definitions, execution, provider behavior, coherent cross-file snapshots,
+writes and application save/reopen remain unqualified.

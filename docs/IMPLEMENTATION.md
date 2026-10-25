@@ -1,5 +1,26 @@
 # Implementation status
 
+## Independent native saved external-source replay
+
+The [saved external-source replay](testing/SAVED_EXTERNAL_QUERIES.md) passes
+188 CLI controls over four original frontend/backend pairs: Jet 4, ACE 2007 and
+both ACE 16-family layouts. All 109 pinned hashes remain unchanged. Forty-eight
+raw inspections compare every stored fragment field; 48 reconstructions check
+opaque qualifier strings. Thirty-six successful execution controls distinguish
+root/target data through explicit mappings, named dependencies, parameterized
+joins, independently scoped UNION arms, fixed/dynamic crosstabs and root-owned
+domain calls. Fifty-six classified refusals preserve buffered publication.
+Original getters independently retain absent/empty connections, empty/NULL paths
+and punctuation. The reference never executes SQL or resolves a target.
+
+The [verification record](testing/results/read-query-saved-external-2026-10-24.json)
+pins production base `97a0ab35`, the complete 1,840-file Rust inventory and
+127 focused test results. It records scoped strict Clippy, minimal adapter
+checking, normal CLI building and format/dependency checks. Neither these tests
+nor the original metadata/getter corpus qualify native Access saved-query
+creation/execution or complete the read/query roadmap. Next is the confirmed
+Power zero-negative error boundary, followed by broader P0 value/text work.
+
 ## Native saved external-source reconstruction
 
 Qualified saved SELECT and crosstab definitions now retain one global native

@@ -75,5 +75,10 @@ refusals, buffered late errors and exhausted allowances. Strict scoped Clippy,
 standalone adapter checking and normal CLI building pass. These are bounded
 engineering checks, not native Access comparisons.
 
+The [independent replay](testing/SAVED_EXTERNAL_QUERIES.md) passes 188 CLI
+controls across four original priority-profile frontend/backend pairs, with
+109 unchanged hashes. It separately checks raw metadata, qualifier display,
+mapped/local results and classified refusals; reference SQL never executes.
+
 Unknown native layouts, full provider support, coherent cross-file snapshots and
 Windows Access compatibility remain separate acceptance work.
