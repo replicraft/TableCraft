@@ -53,8 +53,8 @@ pub fn read_stored_int32_calculation<R: crate::NativeReadSource>(
     })
 }
 
-/// Read qualified ACE 16-family stored Boolean, Int32, Double, Currency,
-/// legacy DateTime, Decimal, Short Text or Long Text results, with matching typed ResultType
+/// Read qualified ACE 16-family stored Boolean, Byte, Int16/32/64, Single/Double,
+/// Guid, Currency, legacy DateTime, Decimal, Short Text or Long Text results, with matching typed ResultType
 /// and nonempty Expression declarations. No formula or active content executes;
 /// values may be stale. Failure returns no partial result, including empty-table
 /// declaration failures. Ordinary scalar query eligibility is unchanged.

@@ -1,6 +1,8 @@
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/calculated_storage/fixture.rs"]
 mod calculated_fixture;
+#[path = "cached_calculation_queries/carriers.rs"]
+mod carriers;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/mutation/fixture.rs"]
 mod fixture;
@@ -9,6 +11,9 @@ mod hyperlink;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/calculated_memos/fixture.rs"]
 mod memo_fixture;
+#[allow(dead_code)]
+#[path = "../../../engines/tablecraft-ace/tests/calculated_storage/scalar_fixture.rs"]
+mod scalar_fixture;
 #[path = "../../../engines/tablecraft-ace/tests/support/mod.rs"]
 mod support;
 

@@ -11,7 +11,7 @@ use crate::{
 };
 use tablecraft_core::{
     limits::ResourceBudget,
-    values::{Currency, Double, LegacyDateTime, Value},
+    values::{Currency, Double, Guid, LegacyDateTime, Single, Value},
 };
 use tablecraft_schema::ScalarType;
 
@@ -58,8 +58,13 @@ pub(in crate::table) fn kind(column: &NativeColumn) -> Option<ScalarType> {
     }
     Some(match column.native_type() {
         data_type::BOOLEAN => ScalarType::Boolean,
+        data_type::BYTE => ScalarType::Byte,
+        data_type::INT16 => ScalarType::Int16,
         data_type::INT32 => ScalarType::Int32,
+        data_type::INT64 => ScalarType::Int64,
+        data_type::SINGLE => ScalarType::Single,
         data_type::DOUBLE => ScalarType::Double,
+        data_type::GUID => ScalarType::Guid,
         data_type::CURRENCY => ScalarType::Currency,
         data_type::DATE_TIME => ScalarType::DateTime,
         data_type::NUMERIC if column.decimal_parameters() == Some((0, 0)) => ScalarType::Decimal,
@@ -106,12 +111,28 @@ pub(in crate::table) fn decode(
     }
     Ok(match kind {
         ScalarType::Decimal => Value::Decimal(decimal::decode(bytes)?),
+        ScalarType::Byte => Value::Byte(u8::from_le_bytes(
+            bytes.try_into().map_err(|_| InspectError::Malformed)?,
+        )),
+        ScalarType::Int16 => Value::Int16(i16::from_le_bytes(
+            bytes.try_into().map_err(|_| InspectError::Malformed)?,
+        )),
         ScalarType::Int32 => Value::Int32(i32::from_le_bytes(
             bytes.try_into().map_err(|_| InspectError::Malformed)?,
         )),
+        ScalarType::Int64 => Value::Int64(i64::from_le_bytes(
+            bytes.try_into().map_err(|_| InspectError::Malformed)?,
+        )),
+        ScalarType::Single => Value::Single(Single::from_bits(u32::from_le_bytes(
+            bytes.try_into().map_err(|_| InspectError::Malformed)?,
+        ))),
         ScalarType::Double => Value::Double(Double::from_bits(u64::from_le_bytes(
             bytes.try_into().map_err(|_| InspectError::Malformed)?,
         ))),
+        ScalarType::Guid => Value::Guid(Guid::from_bytes(
+            uuid::Uuid::from_bytes_le(bytes.try_into().map_err(|_| InspectError::Malformed)?)
+                .into_bytes(),
+        )),
         ScalarType::Currency => Value::Currency(Currency::from_scaled(i64::from_le_bytes(
             bytes.try_into().map_err(|_| InspectError::Malformed)?,
         ))),

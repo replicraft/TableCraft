@@ -26,10 +26,15 @@ raw precision/scale bytes do not become ordinary Decimal field constraints.
 The engine's explicit `TableCursor::open_stored_projection` reuses its existing
 source-bound traversal and complete materialization. Columns retain native logical
 order. Selected cached fields use their qualified stored decoders, including
-Decimal and Memo; ordinary-only and zero-width projections do not decode caches.
+Byte, Int16, Int64, Single, GUID, Decimal and Memo; ordinary-only and zero-width projections do not decode caches.
 Complete caches publish only after EOF, count/schema and cumulative control checks.
 A failed/advanced cursor suffix cannot become a complete table. TOP and WHERE do
 not suppress malformed selected cache values later in the native snapshot.
+
+Stored Single/Double caches may be inspected or browsed with non-finite IEEE
+values, while query snapshots retain their existing finite-number admission
+policy. A selected non-finite source value therefore refuses the whole query
+snapshot before output; this is separate from malformed cached storage.
 
 Required indexes refuse cached selections before reading a selected index.
 Automatic selection declines that path before traversal; it does not retry a
