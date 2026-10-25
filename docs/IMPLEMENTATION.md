@@ -1,5 +1,15 @@
 # Implementation status
 
+## Independent unordered TOP replay
+
+The [four-profile TOP replay](testing/PROGRESSIVE_TOP.md) passes 156 commands
+and 1,220,688 modeled cells, including previous buffered-binary parity, omitted
+raw-String publication and late errors/quotas after the output cap. All 1,900
+pins match accepted artifacts and committed source archive `88380c9b`.
+[The verification record](testing/results/read-query-progressive-top-2026-10-24.json)
+retains 88 unique Rust tests and scoped strict Clippy/build evidence. Wider
+streaming shapes, P0 semantics and native Access qualification remain unfinished.
+
 ## Unordered TOP query streaming
 
 Explicit native streaming now admits positive unordered `TOP n`, preserving the

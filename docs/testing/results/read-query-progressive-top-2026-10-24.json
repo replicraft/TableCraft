@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-24",
+  "production_base_commit": "88380c9b156924cbbdaf011dd0c271916b8262a3",
+  "scope": "Unordered positive TOP counts in explicit progressive native SELECT; full-source eager validation retained",
+  "rust_source_inventory": {
+    "files": 1881,
+    "roots": [
+      "apps",
+      "crates"
+    ],
+    "algorithm": "Relative UTF-8 path sorted lexically; each path + NUL + lowercase hex SHA256(file bytes) + newline; SHA256 of complete UTF-8 manifest",
+    "private_manifest": ".cache/progressive-top-rust-source-20261024.manifest",
+    "sha256": "2f14fd22dcfca0ee53819261d1d02e2aa76da877a1658a27c5110cd47eba771e",
+    "verification": "Runner verified live inventory before/after replay. Parent independently verified all report pins against immutable committed source archive and unchanged non-source artifacts after subsequent work resumed. Inventory is not complete test coverage."
+  },
+  "rust_tests": {
+    "passed_unique_tests": 88,
+    "new_tests": 10,
+    "targets": {
+      "progressive_queries": 19,
+      "retrieval": 53,
+      "cli_progressive": 16
+    }
+  },
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-query --test progressive_queries --test retrieval -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-top-query-tests-final-20261024.log",
+      "sha256": "0e51bc191d800eb5ed00d1d6f127b667eab51e8040f259a3f8adc66674b6eb7e"
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --test progressive_queries -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-top-cli-tests-20261024.log",
+      "sha256": "3f65b071413f2adb46d703b72d7ed2c450ab5d8fb5f3ce23a503bd8d59205f9c"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --test progressive_queries --test retrieval -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-top-query-clippy-20261024.log",
+      "sha256": "936fb4b472c278f29eb3653cb8bc2b28db5e6d976a0a86c4b01d6c65f7ae846a"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-cli --bin tablecraft --test progressive_queries -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-top-cli-clippy-20261024.log",
+      "sha256": "fe909eb55241c16d4baedf7867b5910a5d1f40e415dbd685bf58317e288a6e0e"
+    },
+    {
+      "command": "cargo build -p tablecraft-cli --bin tablecraft -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-top-cli-build-20261024.log",
+      "sha256": "8b1fd2394f7b6f177ede882431154a419bd9f404f00add314c912e91a7fc0ec0"
+    }
+  ],
+  "exploration": {
+    "private_log": ".cache/progressive-top-query-tests-20261024.log",
+    "note": "Initial new cancellation assertion accepted only QueryError::Cancelled; expanded to existing QueryError::Evaluation(EvalError::Cancelled) route. No runtime cancellation behavior changed."
+  },
+  "independent_replay": {
+    "report": "docs/testing/results/progressive-top-2026-10-24.json",
+    "sha256": "fe7053913ed99b8ac6e031eed636b729c60db60c5fa8fffe28062ffd011ceaa0",
+    "controls": 156,
+    "candidate_controls": 128,
+    "baseline_controls": 28,
+    "matched_cells": 1220688,
+    "unchanged_hashes": 1900,
+    "successful_commands": 120,
+    "division_errors": 20,
+    "resource_refusals": 8,
+    "unsupported_shapes": 8,
+    "profiles": [
+      "V2000",
+      "V2007",
+      "V2016",
+      "V2019"
+    ]
+  },
+  "additional_passed_checks": [
+    "Scoped rustfmt and git diff --check",
+    "Original Python runner syntax check"
+  ],
+  "unrun": [
+    "Full workspace suite",
+    "Windows Access TOP encounter order/error precedence",
+    "Release/performance qualification"
+  ]
+}
