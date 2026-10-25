@@ -55,7 +55,9 @@ impl Runtime<'_, '_> {
         env: Environment<'_>,
     ) -> Result<StringCell, QueryError> {
         self.tick()?;
-        let condition = self.expression_operand(condition, env)?;
+        let condition = self
+            .expression_byte_operand(condition, env)?
+            .into_expression_value();
         let yes = self.string_cell(yes, env)?;
         let no = self.string_cell(no, env)?;
         let policy = yes.policy.merge(no.policy);

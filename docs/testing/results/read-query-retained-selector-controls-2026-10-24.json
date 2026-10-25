@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-24",
+  "scope": "Retained String controls for evaluator/query IIf, Switch and Choose; native error precedence unqualified",
+  "unique_scoped_tests": 53,
+  "new_tests": 11,
+  "additional_cli_integration_tests": 50,
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-expressions --features sql --lib evaluation::conditional -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/retained-selector-expression-20261024.log",
+      "sha256": "5160385587dda3cd94f324e6ff323db7cc4ee20b4b91f21b720786b90edead84"
+    },
+    {
+      "command": "cargo test -p tablecraft-expressions --features sql --lib functions::conditional -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/retained-selector-kernel-regressions-20261024.log",
+      "sha256": "80f057807883167801ba95928b6a0c6f5be1031d96ebfc9d3aba175256f5c270"
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test retained_selector_controls -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/retained-selector-query-20261024.log",
+      "sha256": "23bfa74bc0cc6538e2a90d0af5f3ba92ce15eb65c342b2040237bdd513165828"
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test conditional_functions --test selector_coercion --test selector_output_constraints --test aggregate_selector_types -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/retained-selector-query-regressions-20261024.log",
+      "sha256": "81da96c72af484a9d96fc590043c1dcab6ab9b671f592f11bb2128aa75514609"
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test raw_string_iif --test raw_string_selection -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/retained-selector-raw-regressions-20261024.log",
+      "sha256": "f5af62380320297c511cbe13a439a32d72ceb8e722b047d4a349b4f03c56163e"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-expressions -p tablecraft-query --features tablecraft-expressions/sql --lib --tests -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/retained-selector-clippy-final-20261024.log",
+      "sha256": "37002c8b78abbc8b7e88484204e8c440cec44cf2fbfaca8f28c38d685d59008d"
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --test preview_calculation --test saved_query_definitions -j 2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/read-query-integration-cli-20261024.log",
+      "sha256": "c94c6b5f9a936add8d488333d290bfdcdfc7f775ba683cb47753e96a35c638c7"
+    },
+    {
+      "command": "cargo build -p tablecraft-cli -j 2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/read-query-integration-cli-build-20261024.log",
+      "sha256": "45f75b19e5718ce74d75d27dc949e2b0cc21908a1e53dca4d31c24e03ebe8e09"
+    }
+  ],
+  "observed_before_fix": "Malformed retained controls published before eager branches, unlike materialized Text controls; raw control numeric input also failed public selector admission.",
+  "unrun": [
+    "Full workspace suite",
+    "Windows Access error-priority comparisons",
+    "Performance benchmarks"
+  ]
+}

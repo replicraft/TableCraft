@@ -50,9 +50,11 @@ impl Runtime<'_, '_> {
 
         for argument in arguments {
             if selection.is_control() {
-                let value = self.expression_operand(argument, env)?;
+                let value = self
+                    .expression_byte_operand(argument, env)?
+                    .into_expression_value();
                 self.evaluator()
-                    .push_selection_control(&mut selection, value.value)?;
+                    .push_selection_control(&mut selection, value)?;
             } else {
                 let value = self.string_cell(argument, env)?;
                 policy = policy.merge(value.policy);

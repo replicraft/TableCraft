@@ -49,12 +49,30 @@ and returns Option for no match; callers supply their own NULL representation.
 Evaluator entry points retain shared work/cancellation and existing Text control
 policies. Bound calls merge choice policies, preserve Variant declaration and
 enrich grouped runtime provenance. Direct final publication remains strict; raw
-control expressions and relational cells retain their separate admission limits.
+control expressions now share the retained-control admission below; relational
+cells retain their separate storage limits.
 
 The original [selection runner](testing/compare_raw_string_selection.py) passes
 1,806 independent source-free controls in both CLI modes. Existing IIf, raw NULL
 and Count recipes also pass. Native Access execution/result promotion remains
 unqualified; this supplies no VBA runtime or stored raw-string carrier.
+
+## Retained String controls
+
+Evaluator-backed `IIf`, `Switch` and `Choose` now accept valid active String ranges
+through the same strict, metered Unicode publication and explicit Boolean/Single
+conversion as materialized Text. Both scalar SQL evaluation and bound query
+execution retain raw controls until their owning conversion. This does not admit
+malformed Unicode as numeric or Boolean data.
+
+`IIf` evaluates both branches before converting its condition. Switch/Choose latch
+ordinary control-conversion failures, including unrepresentable retained Text,
+until the remaining expressions have evaluated; a later division error therefore
+remains visible. Resource, allocation, Text limits and cancellation remain immediate
+operational failures. Invalid String constructors fail during expression evaluation.
+Public evaluator selector APIs use the same conversion service and preserve ignored
+operational-error latching. Choice carriers, declarations and text-policy provenance
+are unchanged. Native Access error precedence remains unqualified.
 
 ## Switch and Choose control rules
 

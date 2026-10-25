@@ -15,6 +15,8 @@ impl Evaluator<'_> {
     /// Move one already evaluated branch, preserving the caller's payload type.
     /// This permits lossless Strings as well as ordinary expression data.
     /// Text conditions use the execution's explicit Boolean conversion policy.
+    /// Retained Strings strictly publish only their active range at this boundary,
+    /// after the caller has evaluated both branches in written order.
     pub fn apply_iif<T>(
         &mut self,
         condition: &ExpressionValue,
@@ -23,6 +25,11 @@ impl Evaluator<'_> {
     ) -> Result<T, EvalError> {
         self.check(0)?;
 
+        if let ExpressionValue::StringBytes(bytes) = condition {
+            let value = self.publish_expression_string(bytes)?;
+            let condition = self.apply_conversion(Conversion::Boolean, &value)?;
+            return expression::iif(&ExpressionValue::Value(condition), yes, no);
+        }
         if let ExpressionValue::Value(value @ Value::Text(_)) = condition {
             let condition = self.apply_conversion(Conversion::Boolean, value)?;
             expression::iif(&ExpressionValue::Value(condition), yes, no)
@@ -59,6 +66,9 @@ impl Evaluator<'_> {
     }
 
     /// Convert a control slot under the existing eager/deferred error contract.
+    /// Retained String publication shares Text conversion and cumulative limits.
+    /// Malformed Unicode is a deferred control-conversion failure; allocation,
+    /// cancellation and resource failures still stop argument evaluation now.
     pub fn push_selection_control<T>(
         &mut self,
         selection: &mut Selection<T>,
@@ -71,7 +81,18 @@ impl Evaluator<'_> {
         let Some(conversion) = selection.input_conversion() else {
             return selection.push_control(value);
         };
-        let ExpressionValue::Value(input @ Value::Text(_)) = &value else {
+        let published = match &value {
+            ExpressionValue::StringBytes(bytes) => match self.publish_expression_string(bytes) {
+                Ok(value) => Some(value),
+                Err(error) => return selection.push_failure(error),
+            },
+            _ => None,
+        };
+        let input = if let Some(input) = published.as_ref() {
+            input
+        } else if let ExpressionValue::Value(input @ Value::Text(_)) = &value {
+            input
+        } else {
             return selection.push_control(value);
         };
         match self.apply_conversion(conversion, input) {
@@ -83,3 +104,6 @@ impl Evaluator<'_> {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod retained_tests;
