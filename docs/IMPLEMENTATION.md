@@ -1,5 +1,16 @@
 # Implementation status
 
+## Crosstab cell group-policy correction
+
+Crosstab cells now retain the complete row group's final key policies, matching
+ordinary grouped projections and HAVING. A reproduced grouped SELECT result of
+4 previously became 0 in its corresponding TRANSFORM cell. Per-bucket aggregate
+membership and per-row operand policies remain separate. The
+[group-policy controls](RUNTIME_TEXT_POLICIES.md#crosstab-cell-expressions-and-row-group-policies)
+pass alongside the focused crosstab, named and Error regression batch: 142 distinct
+tests across the scoped runs, plus strict scoped Clippy. Native mixed-policy
+precedence and Access comparison remain unqualified.
+
 ## Retained String date constructor consistency
 
 DateSerial and TimeSerial now lazily publish valid retained numeric component

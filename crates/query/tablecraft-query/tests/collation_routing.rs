@@ -2,6 +2,7 @@ mod collation_routing {
     mod bounds;
     mod collections;
     mod crosstab;
+    mod crosstab_group_policy;
     mod domain;
     mod domain_distinct_sort;
     mod domain_extrema_policy;

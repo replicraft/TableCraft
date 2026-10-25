@@ -767,3 +767,14 @@ TOP ties, retaining expression carriers across named/domain/crosstab composition
 Opaque codes, Empty/Missing and Error/NULL or mixed-scalar comparisons retain
 explicit refusals. This closes a finite key-consumer gap; broader Error aggregate,
 Variant promotion and native grouping/order qualification remain unfinished.
+
+
+## Crosstab grouped cell policy correction
+
+The [runtime group-policy correction](RUNTIME_TEXT_POLICIES.md#crosstab-cell-expressions-and-row-group-policies)
+fixes a reproduced wrong result within the admitted crosstab profile: cell
+expressions now reuse the complete row group's retained key policies. Bucket
+aggregates still use their own rows and operand policies. Named parameter reuse,
+correlated keys, NULL/conflicting groups, omitted pivot buckets, explicit provider
+controls and no-partial-result failures have focused regression coverage. This
+closes an execution-context defect without qualifying native mixed-policy rules.

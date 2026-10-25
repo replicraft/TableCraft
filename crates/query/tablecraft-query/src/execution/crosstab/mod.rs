@@ -1,7 +1,7 @@
 //! Bounded, buffered row groups and pivot cells. No source-schema discovery I/O.
 use crate::execution::cell::CellValue;
 mod headings;
-use super::{CellQueryResult, Environment, Runtime, retrieval::OutputRow};
+use super::{CellQueryResult, Environment, Runtime, context::GroupKeys, retrieval::OutputRow};
 use crate::{
     QueryError,
     plan::{CrosstabPlan, ReadNode},
@@ -121,13 +121,14 @@ impl Runtime<'_, '_> {
         }
         let mut output = Vec::new();
         for group in self.groups(rows, select, &[])? {
+            let group_keys = Some(GroupKeys {
+                expressions: &select.group,
+                values: &group.keys,
+            });
             let env = Environment {
                 row: group.rows.first().map_or(&[], Vec::as_slice),
                 group: Some(&group.rows),
-                group_keys: Some(super::context::GroupKeys {
-                    expressions: &select.group,
-                    values: &group.keys,
-                }),
+                group_keys,
                 ..empty
             };
             if let Some(having) = &select.having
@@ -179,6 +180,10 @@ impl Runtime<'_, '_> {
                     Environment {
                         row: bucket.first().ok_or(QueryError::Grouping)?.as_slice(),
                         group: Some(bucket),
+                        // Cell expressions may reuse row-group keys outside
+                        // their aggregate operands. Keep the complete group's
+                        // accumulated policies, not only this bucket's rows.
+                        group_keys,
                         ..empty
                     },
                 )?);
