@@ -36,7 +36,7 @@ qualification recorded separately.
   decoded bytes and stored history DATE bits. These do not establish arbitrary
   million-row throughput or native Access equivalence.
   Ordinary SQL results remain buffered with separate row, byte, work and output
-  ceilings. Explicit [streaming SELECT/WHERE and flat UNION ALL](STREAMING_QUERIES.md) uses fresh
+  ceilings. Explicit [streaming SELECT/WHERE, global Count/Sum/Avg and flat UNION ALL](STREAMING_QUERIES.md) uses fresh
   native cursors and cumulative budgets without complete-table materialization;
   wider query shapes retain buffered execution.
   Absolute I/O now rejects reported seek-position mismatches before reading or
@@ -57,7 +57,20 @@ qualification recorded separately.
   [Explicit one-hop routing](NATIVE_LINKED_QUERIES.md) validates host-authorized
   targets and metadata; [external named queries](EXTERNAL_NAMED_QUERIES.md) retain
   scoped dependency identities and lexical ownership. Neither API follows stored
-  paths or activates providers. Linked chains and broader providers remain open.
+  paths or activates providers. Explicit mapped targets now also support eligible
+  progressive scalar queries. Microsoft directs links to original tables;
+  chained-target refusal remains an explicit workflow boundary rather than a
+  newly established parity requirement. Broader providers remain future work.
+- [Proven integral query keys](EXACT_QUERY_KEYS.md) use metered directories for
+  GROUP/DISTINCT/UNION while retaining SQL comparison and first encounter order.
+  Twelve-thousand-row controls fit finite work allowances. [Borrowed integral
+  equijoins](QUERY_EQUIJOINS.md) retain full input validation and reject pairs
+  before copied candidate allocation; 20 independent native getter/model controls
+  pass separately from Access SQL qualification.
+- ACCDT XML accepts UTF-8 and BOM-qualified UTF-16LE/BE, with strict declaration
+  and scalar decoding. Metadata-only schema discovery stops before malformed
+  record suffixes; complete row reads still reject them. Wider schemas remain
+  unfinished under the [template contract](ACCESS_TEMPLATE_DATA.md).
 
 CLI declared parameters now include exact Decimal and finite Single/Double
 carriers. They retain explicit syntax and strict carrier matching; see
@@ -847,7 +860,8 @@ root and mapped links; explicit target indexes use `--external-index`.
 pinned hashes unchanged. Nested SELECTs choose their own root/external namespace;
 these lexical rules remain engineering behavior pending Access comparison.
 Qualified external named targets and stored global remote-source reconstruction
-now work. Linked chains, wider stored layouts and providers remain unfinished. This closes a direct-source execution gap
+now work. Wider stored layouts and providers remain unfinished; chained linked
+targets retain the explicit direct-to-original workflow boundary. This closes a direct-source execution gap
 without completing P0 value/text semantics or read/query acceptance.
 
 
