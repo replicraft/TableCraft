@@ -110,3 +110,46 @@ Ten adapter tests in `tests/linked_sources.rs` and its feature modules pass:
 These controls establish the explicit adapter composition contract. They do not
 qualify native Access linked SQL, authentication, concurrent multi-file reads,
 linked writes, arbitrary providers or automatic target discovery.
+
+
+## CLI target selection
+
+`query run` accepts repeatable `--link ALIAS PATH` pairs alongside the root
+`--database`. The alias names an existing native Access link; the explicit path
+selects its already chosen stable/offline target. The stored ForeignName selects
+an ordinary target table, using existing native name matching. Stored Database is
+reread and checked as metadata, and is never used to choose a path.
+
+```sh
+tablecraft query run \
+  'SELECT p.ID, p.Name FROM [People link] AS p ORDER BY p.ID' \
+  --database frontend.accdb --link 'People link' backend.accdb
+```
+
+Supply one pair for each link the query needs. Unrelated unmapped links remain
+inert. Multiple pairs can select the same file; this CLI currently opens each
+explicit target independently, with distinct invocation-local scopes and caches,
+under one cumulative native pool. The library also supports reusing one supplied
+target handle across multiple aliases. Neither establishes cross-file coherence.
+
+The root and every selected target share `--native-bytes`, `--native-rows` and
+`--native-steps`; allowances do not restart per file. Per-source snapshot and
+payload ceilings, the separate query budget and buffered output limit still
+apply. Existing `--auto-index`, collection/decoded-attachment and cached-calculation
+options configure target views too. `--index ALIAS INDEX` applies to the mapped
+target table; unknown or unsupported selected indexes fail without sequential
+fallback. Original query filtering and target order remain intact.
+
+With `--collation database`, every source retains its actual stored field policy
+IDs and uses the shared comparison quota. Execution keeps the root default and
+the existing General legacy/2010 resolver; conflicting or unknown required
+policies fail explicitly. Link routing introduces no new native precedence rule.
+
+Global `-p` applies to explicit root and target opens. When omitted, existing
+hidden terminal prompting handles each encrypted input that requires a password;
+noninteractive missing/wrong passwords fail without publishing query rows. A
+single explicit password does not supply distinct credentials for different
+files. Provider qualification precedes target open/prompting. ACCDT root sources,
+ODBC/unknown providers, target queries and link chains remain outside this path.
+Every input is read-only and query output is published only after successful
+execution and formatting.

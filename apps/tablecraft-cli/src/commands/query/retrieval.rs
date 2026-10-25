@@ -2,11 +2,10 @@ use super::{Error, comparison_limits::Args as ComparisonArgs, output::TableOutpu
 use crate::native;
 use clap::ValueEnum;
 use std::sync::{Arc, atomic::AtomicBool};
-use std::{cell::RefCell, path::Path};
-use tablecraft_access::{NativeSource, template::TemplateSource};
+use std::{cell::RefCell, ffi::OsString, path::Path};
+use tablecraft_access::{LinkedNativeSource, NativeSource, template::TemplateSource};
 use tablecraft_ace::{
-    AttachmentDecodeLimits, LongTextReadLimits, LongValueReadLimits, LongValueReadSource,
-    TableSnapshotLimits,
+    LongTextReadLimits, LongValueReadLimits, LongValueReadSource, TableSnapshotLimits,
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_expressions::comparison::Collation;
@@ -55,6 +54,7 @@ impl<'a> Input<'a> {
 pub(super) struct NativeInput<'a> {
     pub password: Option<&'a str>,
     pub path: &'a Path,
+    pub links: &'a [OsString],
     pub bytes: u64,
     pub rows: u64,
     pub steps: u64,
@@ -137,7 +137,8 @@ pub(super) fn run(
         if let Some(package) =
             native::open_template(input_config.path, &mut budget).map_err(Error::Template)?
         {
-            if database_policy
+            if !input_config.links.is_empty()
+                || database_policy
                 || !input_config.index.is_empty()
                 || input_config.auto_index
                 || input_config.multivalues
@@ -169,41 +170,16 @@ pub(super) fn run(
                 .map_err(Error::Native)?
                 .unwrap_or_default();
             let file = LongValueReadSource::new(file, value_limits).with_text_limits(text_limits);
-            let source = NativeSource::new_with_snapshot_limits(
+            let native_pool = RefCell::new(budget);
+            let source = NativeSource::new_with_shared_budget_and_snapshot_limits(
                 file,
                 native::CATALOG_SCOPE,
-                budget,
+                &native_pool,
                 &|| false,
                 snapshot_limits,
             )
             .map_err(Error::Native)?;
-            let source = if input_config.stored_calculations {
-                source.with_stored_calculations().map_err(Error::Native)?
-            } else {
-                source
-            };
-            let source = if input_config.auto_index {
-                source.with_auto_indexes()
-            } else {
-                source
-            };
-            let source = if input_config.decoded_attachments {
-                let limits = input_config
-                    .attachment_bytes
-                    .map(AttachmentDecodeLimits::new)
-                    .transpose()
-                    .map_err(Error::Native)?
-                    .unwrap_or_default()
-                    .with_encoded_bytes(value_limits.maximum_bytes())
-                    .map_err(Error::Native)?;
-                source.with_decoded_attachment_limits(limits)
-            } else if input_config.collections {
-                source.with_collections()
-            } else if input_config.multivalues {
-                source.with_multivalues()
-            } else {
-                source
-            };
+            let source = super::native_options::configure(source, &input_config, value_limits)?;
             let comparison_pool = RefCell::new(controls.comparison_limits.budget());
             let (source, database_collation) = if database_policy {
                 let (source, policy) = source
@@ -235,9 +211,24 @@ pub(super) fn run(
                 Some(saved) => saved.query(),
                 None => input.sql()?,
             };
+            let targets = super::links::load(
+                &source,
+                &input_config,
+                &native_pool,
+                &comparison_pool,
+                database_policy,
+                snapshot_limits,
+            )?;
+            let mappings = targets.mappings(source.handle(), &native_pool)?;
+            let linked = if input_config.links.is_empty() {
+                None
+            } else {
+                Some(LinkedNativeSource::new(source.handle(), &mappings).map_err(Error::Links)?)
+            };
+            let query_source: &dyn Source = linked.as_ref().map_or(&source as &dyn Source, |s| s);
             execute(
                 query,
-                &source,
+                query_source,
                 &bindings,
                 &controls,
                 database_collation

@@ -22,7 +22,10 @@ No application host, native provider, GUI, network runtime or new registry depen
 is required. ACE and query do not depend on the adapter; query still performs no
 native I/O. Backend-neutral connection/cursor/runtime services remain unimplemented.
 
-The CLI opens only an explicit `--database PATH`, read-only. Qualified Agile
+The CLI opens an explicit `--database PATH`, read-only. Optional repeatable
+[`--link ALIAS PATH`](NATIVE_LINKED_QUERIES.md#cli-target-selection) mappings authorize
+additional explicit native targets under the same cumulative read allowance.
+Stored link paths never open automatically. Qualified Agile
 inputs accept global `--password`/`-p`; metadata/key derivation and native reads
 consume the same allowance. [The encryption contract](NATIVE_ENCRYPTION.md)
 separates original raw bytes from decoded native pages. Other schemes fail

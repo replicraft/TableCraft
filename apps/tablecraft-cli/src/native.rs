@@ -1,6 +1,6 @@
 //! Explicit native inspection/retrieval host policy; not native format maxima.
 mod source;
-pub(crate) use source::{open, open_raw};
+pub(crate) use source::{NativeFile, open, open_raw};
 
 use std::path::Path;
 use tablecraft_access::template::{TemplateError, TemplatePackage};
@@ -9,7 +9,7 @@ use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::SharedFile;
 use tablecraft_model::CatalogScope;
 
-// One source per invocation; this namespace is never persisted as a file identity.
+// Root source namespace; explicit linked sources receive distinct invocation-local scopes.
 pub(crate) const CATALOG_SCOPE: CatalogScope = CatalogScope::new(1);
 pub(crate) const DEFAULT_NATIVE_BYTES: u64 = 16 * 1024 * 1024;
 pub(crate) const MAX_QUERY_READ_BYTES: u64 = 256 * 1024 * 1024;

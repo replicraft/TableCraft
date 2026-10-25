@@ -1,5 +1,25 @@
 # Implementation status
 
+## Explicit linked targets in the CLI
+
+`query run --database FRONTEND --link ALIAS TARGET` now opens only the target
+paths explicitly supplied by the host, then delegates identity/schema validation
+and routing to the Access adapter. Repeatable mappings share the root native
+allowance with distinct scopes; root named queries, target field policies,
+collection/cache/payload options and separate comparison/query/output controls
+remain intact. Explicit index selections on mapped aliases reach the target and
+fail without sequential fallback. Unsupported providers refuse before target
+opening or password prompting. Final results remain buffered.
+
+Nine new CLI tests and seven existing cached-query/database-collation controls
+pass, alongside strict scoped CLI Clippy and a normal CLI/example build. Controls
+cover priority profile layouts, an inaccessible stored path with a valid explicit
+target, provider/mapping/index failures, encrypted targets with correct/wrong/missing
+passwords, stored calculation caches, history collections, and distinct root/target
+General orders. The [CLI contract](NATIVE_LINKED_QUERIES.md#cli-target-selection)
+records credential behavior and current provider/chain/coherence limits. No new
+dependency, native Access qualification or write permission is introduced.
+
 ## Explicit authorized linked-table query sources
 
 The Access adapter now routes explicitly mapped root links to already-open native

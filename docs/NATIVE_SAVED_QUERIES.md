@@ -410,9 +410,12 @@ or native shared-file transaction.
 
 Successful execution requires the intersection of the reconstructed metadata
 profile and [bounded retrieval](QUERY_EXECUTION.md). A reconstructable query can
-still fail preparation: owner-access, DISTINCTROW, TOP 0, UDFs and other unsupported
-expressions remain rejected. Named local saved SELECT/UNION sources now resolve under the bounded dependency
-contract below; linked sources and implicit parameter prompting remain unavailable.
+still fail preparation: owner-access, TOP 0, UDFs and other unsupported
+expressions remain rejected. DISTINCTROW follows the bounded record-identity
+contract in [query execution](QUERY_EXECUTION.md). Named local saved SELECT/UNION
+sources resolve under the bounded dependency contract below; explicitly authorized
+[linked native sources](NATIVE_LINKED_QUERIES.md) can supply their table aliases.
+Unmapped links and implicit parameter prompting remain unavailable.
 No owner flag grants authority and no application event/provider/VBA is activated.
 Text comparisons still require an explicit policy; LIKE additionally requires
 an explicit wildcard mode. Native ANSI/locale settings are not inferred.

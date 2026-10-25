@@ -599,8 +599,10 @@ contract retains the primary references, algorithms, provenance and exact limits
    file require compatible snapshot/coordination behavior. [Linked-table definitions](NATIVE_LINKED_TABLES.md)
    now expose inert target/provider fields without opening them. The Access
    adapter's [shared native quotas](NATIVE_SOURCE_BUDGETS.md) can bound explicitly
-   supplied sources together; authorized target mapping, schema validation and
-   linked execution remain separate implementation work.
+   supplied sources together. [Explicit one-hop routing](NATIVE_LINKED_QUERIES.md)
+   now validates authorized handles and target metadata, forwarding root linked
+   aliases to local target tables. CLI `--link ALIAS PATH` selects explicit targets;
+   providers, chains and live cross-file coherence remain separate work.
 6. Expand real Access qualification. Independent Jackcess fixtures, corruption
    tests and unchanged-source checks cover the bounded profiles; they do not
    establish native Access SQL, locale or file-variant compatibility. Compare
