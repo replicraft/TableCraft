@@ -220,11 +220,11 @@ tablecraft query run --database example.accdb --stream \
 
 ## Grouped results
 
-Eligible `GROUP BY` expressions with proven Boolean, integral or NULL carriers
+Eligible `GROUP BY` expressions with proven Boolean, integral, Currency, Decimal or NULL carriers
 can stream the same native tables, explicit mapped targets and eligible
 row-local input chains. Tuple keys,
 nullable values, pure row-local key expressions, prior projection aliases and
-flat UNION ALL retain their existing contracts. Text, floating, Decimal, date and
+flat UNION ALL retain their existing contracts. Text, floating, date and
 other unproven key families and ordering remain outside this progressive
 profile. Unsupported shapes refuse before user-row scans; ordinary buffered
 grouping remains available.

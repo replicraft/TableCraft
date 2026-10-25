@@ -1,5 +1,19 @@
 # Implementation status
 
+## Exact Currency and Decimal relational directories
+
+Uniform Currency/Decimal GROUP BY, DISTINCT, qualified DISTINCTROW and UNION
+keys now use bounded candidate directories with the existing SQL comparer as the
+answer authority. Decimal fingerprints normalize a local coefficient/scale view;
+retained representatives keep their original values, scale and policy lineage.
+Active paired metadata also admits these keys in progressive grouping/HAVING.
+Mixed carriers retain the original path. Twelve-thousand-row fixed-key controls
+fit finite work allowances. Twenty-four new controls and 427 regressions pass,
+with strict query/native/CLI linting, minimal query features and formatting.
+See [proof and fallback](EXACT_QUERY_KEYS.md) and
+[verification](testing/results/read-query-exact-fixed-keys-2026-10-25.json).
+This changes execution strategy, without qualifying native Access numeric behavior.
+
 ## Progressive terminal HAVING
 
 Eligible global and proven-key grouped queries now apply HAVING after checked EOF,

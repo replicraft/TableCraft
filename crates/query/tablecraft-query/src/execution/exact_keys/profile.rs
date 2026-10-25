@@ -1,5 +1,5 @@
 //! Metadata proof and exact typed fingerprints; no first-row type inference.
-use super::{ExactKeys, check, directory::Directory};
+use super::{ExactKeys, check, directory::Directory, fixed::canonical_decimal};
 use crate::{
     OutputType, QueryError,
     execution::{Runtime, cell::CellValue},
@@ -21,6 +21,8 @@ pub(super) enum Kind {
     Int16,
     Int32,
     Int64,
+    Currency,
+    Decimal,
 }
 
 impl Kind {
@@ -33,6 +35,8 @@ impl Kind {
                 ScalarType::Int16 => Some(Self::Int16),
                 ScalarType::Int32 => Some(Self::Int32),
                 ScalarType::Int64 => Some(Self::Int64),
+                ScalarType::Currency => Some(Self::Currency),
+                ScalarType::Decimal => Some(Self::Decimal),
                 _ => None,
             },
             OutputType::Dynamic => None,
@@ -180,6 +184,8 @@ pub(super) fn valid(
                 | (Kind::Int16, ExpressionValue::Value(Value::Int16(_)))
                 | (Kind::Int32, ExpressionValue::Value(Value::Int32(_)))
                 | (Kind::Int64, ExpressionValue::Value(Value::Int64(_)))
+                | (Kind::Currency, ExpressionValue::Value(Value::Currency(_)))
+                | (Kind::Decimal, ExpressionValue::Value(Value::Decimal(_)))
         ) {
             return Ok(false);
         }
@@ -210,6 +216,14 @@ pub(super) fn fingerprint(
             (Kind::Int16, ExpressionValue::Value(Value::Int16(value))) => value.hash(&mut hash),
             (Kind::Int32, ExpressionValue::Value(Value::Int32(value))) => value.hash(&mut hash),
             (Kind::Int64, ExpressionValue::Value(Value::Int64(value))) => value.hash(&mut hash),
+            (Kind::Currency, ExpressionValue::Value(Value::Currency(value))) => {
+                value.scaled().hash(&mut hash);
+            }
+            (Kind::Decimal, ExpressionValue::Value(Value::Decimal(value))) => {
+                let (coefficient, scale) = canonical_decimal(*value, budget, cancelled)?;
+                coefficient.hash(&mut hash);
+                scale.hash(&mut hash);
+            }
             _ => return Ok(None),
         }
     }

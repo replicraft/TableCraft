@@ -99,3 +99,6 @@ mod derived;
 
 #[path = "progressive_queries/having.rs"]
 mod having;
+
+#[path = "progressive_queries/fixed_keys.rs"]
+mod fixed_keys;

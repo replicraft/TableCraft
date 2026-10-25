@@ -166,7 +166,7 @@ and [progressive contract](PROGRESSIVE_QUERIES.md).
 | Scalar table SELECT/WHERE, positive unordered TOP | Implemented bounded profile | Implemented bounded profile |
 | Static row-local named/derived SELECT chain | Implemented | Implemented, including qualified saved/native external/recomputed sources |
 | Global Count/Sum/Avg/Min/Max | Implemented | Implemented, checked EOF before result |
-| Boolean/integral/NULL GROUP BY | Implemented | Implemented, retained groups and checked EOF |
+| Boolean/integral/Currency/Decimal/NULL GROUP BY | Implemented | Implemented, retained groups and checked EOF |
 | Text/other GROUP BY keys | Implemented strict-key profile | Refused; complete key policy cohorts need preservation |
 | HAVING | Implemented | Implemented terminal global/proven-key grouping; rejected SELECT work suppressed, selected operands can require budgeted replay rows |
 | Outer flat UNION ALL | Implemented | Implemented admitted arms and shared conversions |
