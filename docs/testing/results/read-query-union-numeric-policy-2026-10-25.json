@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Successful existing UNION numeric/Boolean-to-Text rendering supplies fresh complete CStr policy provenance",
+  "unique_tests_in_scope": 141,
+  "new_tests": 8,
+  "targets_in_scope": {
+    "query": 134,
+    "cli_database_collation": 7
+  },
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-query --test collation_routing --test union_text_types --test union_numeric_types --test progressive_union_types --test declared_addition_types -j2 --locked --offline",
+      "private_log": ".cache/union-numeric-policy-primary-retry-20261025.log",
+      "exit_code": 0,
+      "sha256": "6e9ea93effe1e3b278702bd1ddba1c4dd07b782133488daea42e5fd868c26761",
+      "observed_passed_tests": 134,
+      "counted_in_this_scope": 134
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --tests -j2 --locked --offline -- -D warnings",
+      "private_log": ".cache/union-numeric-policy-clippy-20261025.log",
+      "exit_code": 0,
+      "sha256": "341f1e060776c6ebd0c1244beba884e62eb9db30b778c19c8fdac72018935a46"
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --test integral_joins --test database_collation --test sqlite_queries -j2 --locked --offline",
+      "private_log": ".cache/borrowed-join-union-cli-tests-accepted-20261025.log",
+      "exit_code": 0,
+      "sha256": "97a6d2e8704dc4d59770c1433feabc57ae10d68ac09fb5355113c16952b91591",
+      "observed_passed_tests": 12,
+      "counted_in_this_scope": 7
+    },
+    {
+      "command": "cargo clippy -p tablecraft-cli --bin tablecraft --test integral_joins --test database_collation --test sqlite_queries -j2 --locked --offline -- -D warnings",
+      "private_log": ".cache/borrowed-join-union-cli-clippy-20261025.log",
+      "exit_code": 0,
+      "sha256": "baad5650eea9c743fb27117920477ca680b4fb70f50fe4a74b99456809e94316"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "private_log": ".cache/borrowed-join-union-fmt-final-20261025.log",
+      "exit_code": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "counting_note": "CLI batch also passes two join tests and three SQLite regressions, counted separately in the join verification record.",
+  "review": [
+    "Only successful actual numeric/Boolean CStr conversion resets policy to Default and marks runtime provenance complete.",
+    "Actual Text/raw String, NULL and empty-arm fallback remain unchanged; UNION DISTINCT stages retain written-prefix order.",
+    "No conversion dispatch, result carrier, comparer or declaration rule is added.",
+    "Native CLI controls use actual legacy and modern field policies and two actual Strings when testing required NULL-origin comparison."
+  ],
+  "test_authoring_corrections": [
+    "Initial query test compile added missing EvalError import.",
+    "CLI negative controls corrected to use actual required field policies rather than fresh literal Text; a NULL plus singleton String does not require Text comparison, so the NULL-origin conflict control now includes two actual Strings.",
+    "Initial module-order formatting difference corrected; excluded logs remain outside accepted counts."
+  ],
+  "unrun": [
+    "Full workspace suite",
+    "Native Microsoft Access comparison"
+  ]
+}

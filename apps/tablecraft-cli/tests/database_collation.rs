@@ -1,4 +1,7 @@
 mod support;
+
+#[path = "database_collation/union_numeric.rs"]
+mod union_numeric;
 use std::{
     io::Write,
     path::PathBuf,

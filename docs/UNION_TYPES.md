@@ -178,6 +178,14 @@ set-stage policy routing are retained; final sort/group consumers use their norm
 output provenance. Required unknown/conflicting policies still fail without a
 fallback. UNION ALL without comparisons does not activate a comparer unnecessarily.
 
+Successful numeric/Boolean-to-Text rendering now supplies CStr's fresh Default
+policy and complete runtime provenance. A numeric expression's latent policy from
+an unselected String arm no longer conflicts with the actual Text arm. An arm
+selecting `IIf(True,2,B)` can sort with actual Text from A under A's policy even
+when B has an incompatible identity. Explicit CStr of that number already had this behavior. Actual Text,
+NULL and empty-arm fallback retain their previous authority, and prefix DISTINCT
+stages remain written-order operations. See [runtime policy provenance](RUNTIME_TEXT_POLICIES.md#numeric-union-rendering).
+
 Microsoft's [Access SQL overview](https://support.microsoft.com/en-us/access/access-sql-basic-concepts-vocabulary-and-syntax)
 explicitly permits Number/Text compatibility in UNION. It does not establish our
 Text dominance, rendering/precision, complete first-arm effects or policy precedence.
