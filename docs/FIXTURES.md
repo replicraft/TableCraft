@@ -8286,3 +8286,33 @@ lookup, new mapping file or third-party fixture is copied. The 230 commands
 cover 616 successful cells and 24 intended refusals. All five immutable tool/CLI
 pins and fourteen committed source hashes were independently rechecked. This
 qualifies the explicit engineering composition, not native Access/NLS ordering.
+
+## Original larger deployment corpus (25 October 2026)
+
+[LargeDeploymentFixture.java](testing/LargeDeploymentFixture.java) is an original
+repository MIT recipe using the already reviewed Jackcess public builder/getter.
+[The original streaming wrapper](testing/build_large_deployment.py) creates stored
+and MSZIP CAB copies. No third-party fixture or CAB implementation is copied.
+Two ACE 16-family originals contain deterministic public synthetic Id/Score/Label
+and Memo values, with active expression evaluation disabled. All files remain
+ignored; source originals are preserved. See [evidence](testing/LARGE_DEPLOYMENT.md)
+and the [58-control report](testing/results/large-deployment-2026-10-25.json).
+
+Files below reside under `.cache/tablecraft-fixtures/large-deployment-20261025/`.
+
+| Original or derivative | SHA-256 |
+| --- | --- |
+| `V2016.accdb` | `51b4a6bf4477b2c1dca061e95179b5ccd70de158623edeafc96c5e38186bf630` |
+| `V2019.accdb` | `cbb12a433c622b6d2a91e72d627b1cfab0eb6192953eaca7510c8d97668cc4f7` |
+| `V2016-mszip.accdc` | `2fa3d571373a185be5533b92d88f229ca5d1d3cb1c287d7e8b44dc1a1b93988e` |
+| `V2016-stored.accdc` | `eda9cf10176d158edac0b3b5ff64f3bc5f812a192e45bd5863360fa73f62e034` |
+| `V2019-mszip.accdc` | `d7de049f456b4a50584bd0cdde26fabde9d7de7c20901613bc17577979c3217a` |
+| `V2019-stored.accdc` | `56ba170ad9c7fa9db405e9ca41751a4ec8bad5db486a781916dc4db8ef55ef64` |
+
+Reopened getters and an independent integer/byte model verify all 1,100 records
+and selected payload hashes; blockwise package recovery matches each original
+image digest. Twelve immutable inputs and fourteen committed source snapshots
+were independently rehashed. An eight-control earlier-executable baseline shows
+raw-file success and refusal of both package-size and expanded-image ceilings.
+This is unsigned container/read evidence, not native Access deployment signing,
+installation or package trust qualification. The six files total 313,943,080 bytes.
