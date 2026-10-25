@@ -7927,3 +7927,35 @@ remain excluded exploratory limits, with final reads using explicit ceilings.
 No decoder change was needed. This adds Memo locality/history coverage beside
 existing wide-variable fixtures, not first-time 255-column or native Access
 qualification. See [the evidence contract](testing/VARIABLE_MEMO_HISTORIES.md).
+
+
+## Original native streaming query corpus
+
+[ProgressiveQueryFixture.java](testing/ProgressiveQueryFixture.java) and
+[compare_progressive_queries.py](testing/compare_progressive_queries.py) are
+original repository MIT recipes. Public Jackcess builders create four fresh
+20,000-row ordinary tables with nullable integers and escaped Unicode Text.
+Read-only getters capture exact values/types with expression evaluation disabled
+and a throwing link resolver. No reference SQL or active database content runs.
+
+The reviewed Apache-2.0 Jackcess 5.0.4 JAR retains SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+No upstream fixture bytes or implementation source are copied. Original files,
+getter captures, compiled class and generation commands remain ignored under
+`.cache/tablecraft-fixtures/progressive-query-20261024/` and the local class cache.
+
+| Original | SHA-256 |
+| --- | --- |
+| V2000.mdb | `e83fc99852eef28386a978ea355d0f542eb9588c264968b4cbbbd3215063e7e2` |
+| V2007.accdb | `e8b3ef27a7165e232e3ff55b60e1e813afb5800c2f3405fac7260b3be6ea3e36` |
+| V2016.accdb | `eef29d5909afa8a88dc4a90f75a092d0255d1b2f1ce97895a90407cd9384cb87` |
+| V2019.accdb | `b8b97165fee79f6d2288aa55573e1d19d5a37c9d60a7cb41bf7a04d11ff1735d` |
+
+The [accepted replay](testing/results/progressive-queries-2026-10-24.json)
+passes 88 commands and 1,341,336 modeled cells. Complete stdout is compared before
+retaining byte counts/hashes; late-error prefixes and cumulative quota failures
+are checked separately from successful EOF. All 1,898 hashes remain unchanged,
+including 1,879 Rust sources independently matched to committed archive
+`3aadd736`. These originals and independent models establish the documented
+engineering slice, not native Microsoft Access or arbitrary-scale qualification.
+See [the evidence contract](testing/PROGRESSIVE_QUERIES.md).
