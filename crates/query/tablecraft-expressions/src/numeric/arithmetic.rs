@@ -109,7 +109,7 @@ pub fn arithmetic(operator: Arithmetic, left: &Value, right: &Value) -> Result<V
         }
         Arithmetic::Power => {
             if a == 0.0 && b < 0.0 {
-                return Err(EvalError::DivisionByZero);
+                return Err(EvalError::Domain);
             }
             a.powf(b)
         }
@@ -248,3 +248,6 @@ mod tests {
 
 #[cfg(test)]
 mod zero_divisors;
+
+#[cfg(test)]
+mod power_tests;

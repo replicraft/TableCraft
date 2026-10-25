@@ -712,8 +712,14 @@ query grouping, duplicate removal and comparisons retain numeric equality. Store
 field declarations/codecs remain separate and impose their own checked scale.
 
 Exponentiation converts numeric operands to finite Double and uses the existing
-Double power kernel; it does not return Decimal. Invalid real powers and zero to
-a negative power retain Domain/DivisionByZero errors. Integer division and Mod
+Double power kernel; it does not return Decimal. Invalid real powers and a
+converted zero base raised to a negative exponent fail with Domain. This includes
+both zero signs and inputs whose existing conversion yields zero. A non-NULL
+zero base with a zero exponent returns Double 1. This follows the explicit
+[MS-VBAL power error contract](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/c3f526af-9d58-47f9-a6be-22ab81e8747a).
+Operand admission, conversion and eager failures still precede the power kernel;
+an actual division-by-zero expression used as an operand keeps its own error.
+Integer division and Mod
 retain the existing half-even-to-Int64 coercion and checked range contracts.
 Decimal/float comparisons are not enabled by arithmetic support. Currency-only
 operations and the non-Decimal promotion ladder are unchanged.
