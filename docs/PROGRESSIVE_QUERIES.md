@@ -588,7 +588,11 @@ Parent native/CLI integration adds 107 distinct passing controls, including five
 new tests. The Text-group total is 632 unique tests with 27 new controls. Stored
 comparison policies on the original Access example, four priority synthetic
 profiles, exact late-error prefixes and raw observers pass, alongside strict
-query/native/CLI linting, minimal query features and repository formatting.
+query/native/CLI linting, minimal query features and repository formatting. The
+[original native/CAB replay](testing/PROGRESSIVE_TEXT_GROUPS.md) also passes
+96 commands, comparing 1,272 successful rows/4,296 cells and six exact earlier
+error-prefix rows. Six rich Ordinal controls use explicit 10M query work; other
+limits and all SQL/independent numerical goldens remain unchanged.
 
 The Text grouping extension passes 525 distinct query tests, including 22 new
 controls: 198 progressive/exact/value/policy tests, 35 runtime units and 292

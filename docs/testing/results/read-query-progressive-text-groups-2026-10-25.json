@@ -175,7 +175,7 @@
   "historical_negative_controls": "Three obsolete grouping refusals migrated to genuinely unsupported Date and mixed Dynamic key profiles; no old positive result or raw capability golden was weakened.",
   "source_timing": "Text production compiled on first library check. Final primary, runtime units, related regressions, strict lib/tests Clippy and minimal query check cover the coherent source after the separately committed metadata prerequisite. Text runtime needed no answer/lint correction; authored raw construction was corrected only after ordinary buffered failure.",
   "validation_limits": [
-    "Scoped632 query/native/CLI tests with strict linting, minimal query features and repository formatting. Original frozen-binary Text-group replay remains pending separate evidence.",
+    "Scoped 632 query/native/CLI tests with strict linting, minimal query features and repository formatting, plus a separate immutable native/CAB Text-group replay.",
     "Many distinct Text groups can require quadratic strict comparisons and per-input key storage; optional aggregate/HAVING operands can retain complete selected rows. Existing cumulative limits bound these costs.",
     "No full workspace suite, Windows/NLS or native Access SQL grouping qualification, throughput or constant-memory claim."
   ],
@@ -189,8 +189,26 @@
   },
   "parent_verification": {
     "query_logs": "Parent independently rehashed all six accepted query-check logs before integration.",
-    "native_cli": "All107 pass first attempt, including five new controls. The original American roulette table has independently modeled first-digit counts for38 records, with snapshot ceiling1 under explicit ordinal or actual stored database policies; full Source::scan still refuses after streaming. Synthetic four-profile CLI controls pin case/space equality, retained spelling, raw singleton observers and exact late-final-error prefixes.",
+    "native_cli": "All 107 pass first attempt, including five new controls. The original American roulette table has independently modeled first-digit counts for38 records, with snapshot ceiling1 under explicit ordinal or actual stored database policies; full Source::scan still refuses after streaming. Synthetic four-profile CLI controls pin case/space equality, retained spelling, raw singleton observers and exact late-final-error prefixes.",
     "fixture_sha256": "3cd1fc88d70bc93909ae6d190fa9692e709d5641b205fd2f66185c905e42cfbf",
     "independent_review": "Separate source reviewers found no runtime blockers; Count/key-only rowframe absence and required actual-value/Error distinctions have private probes."
+  },
+  "original_native_replay": {
+    "report": "docs/testing/results/progressive-text-groups-2026-10-25.json",
+    "sha256": "e8829985aa2806fd2e8b384cac228d0444f12c7e330c5e67a9212ec6e5fa5f1d",
+    "terminal_session": 52517,
+    "matched_commands": 96,
+    "success_commands": 78,
+    "success_rows": 1272,
+    "success_cells": 4296,
+    "expected_failures": 18,
+    "retained_failure_prefix_rows": 6,
+    "retained_failure_prefix_cells": 12,
+    "immutable_pins_independently_rehashed": 15,
+    "revision_sources_independently_rehashed": 45,
+    "initial_and_final_sql_goldens_unchanged": true,
+    "explicit_query_work_controls": 6,
+    "scope": "Rich Ordinal cases alone use explicit 10M query steps after observed default Steps refusals; all SQL/models unchanged. ASCII-only General case/pad model, not arbitrary Unicode/NLS or timing qualification.",
+    "native_access_qualified": false
   }
 }
