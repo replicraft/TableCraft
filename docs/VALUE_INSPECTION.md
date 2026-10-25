@@ -100,6 +100,23 @@ when the first input will later fail array conversion. Byte inputs use bounds
 zero through length minus one, with an empty upper bound of -1. Empty bounds,
 dimension coercion/error precedence and native limits await Access comparison.
 
+## Bound result composition
+
+LBound/UBound now expose their existing nonnullable Long/Int32 success guarantee
+in query output metadata. Binding does not inspect arrays, read table rows or
+evaluate elements/dimensions. Invalid inputs still fail, including NULL and an
+out-of-range dimension; a later dimension error retains its existing precedence.
+No new array inputs or query functions are admitted.
+
+This fixes `SELECT LBound(Array(1,2)) UNION SELECT '0'`: omitted metadata formerly
+left Dynamic carriers and refused mixed integer/Text deduplication. The existing
+[UNION conversion](UNION_TYPES.md) now converts the bound result to Text using an
+explicit number format before deduplication. Wider integral arms receive their
+common integer carrier; named/derived and scalar-subquery consumers retain the
+Int32 descriptor, and aggregate/empty results retain their existing NULL rules.
+These are guarantees of the current materialized query profile, not native Access
+query-availability or array-typing qualification.
+
 ## Budget, binding and evidence
 
 Pure metadata/bound kernels use constant work and borrowed inputs. The evaluator
