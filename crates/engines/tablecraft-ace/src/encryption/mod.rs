@@ -5,6 +5,7 @@ pub use add::check_encryption_add;
 pub(crate) mod legacy;
 mod native_header;
 mod rewrite;
+mod streaming;
 use crate::{FileFormat, InspectError, inspect_header};
 pub use agile::{
     AgileEncryption, AgileHashAlgorithm, AgilePageDecoder, AgileParameters, read_agile_encryption,
@@ -13,6 +14,7 @@ pub use rewrite::{
     EncryptionCopy, EncryptionRewrite, check_encryption_rewrite, rewrite_encryption,
 };
 use std::io::{Read, Seek};
+pub use streaming::rewrite_encryption_to;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const OFFICE_INFO_LENGTH_OFFSET: usize = 0x299;

@@ -150,6 +150,13 @@ pub(crate) fn remask<R: NativeReadSource>(
 
 pub(crate) struct SecurityPatches(Vec<Patch>);
 impl SecurityPatches {
+    pub(crate) fn into_pages(self) -> SecurityPages {
+        SecurityPages {
+            patches: self.0,
+            next: 0,
+        }
+    }
+
     pub(crate) fn apply(
         self,
         image: &mut [u8],
@@ -179,4 +186,134 @@ fn copy(bytes: &[u8]) -> Result<Zeroizing<Vec<u8>>, InspectError> {
         .map_err(|_| InspectError::Allocation)?;
     result.extend_from_slice(bytes);
     Ok(Zeroizing::new(result))
+}
+
+// Sorted patches are checked against the original decoded page before mutation.
+// A caller must discard its unpublished output after any error.
+pub(crate) struct SecurityPages {
+    patches: Vec<Patch>,
+    next: usize,
+}
+
+impl SecurityPages {
+    pub(crate) fn apply(
+        &mut self,
+        offset: usize,
+        page: &mut [u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), InspectError> {
+        check(budget, cancelled)?;
+        let end = offset
+            .checked_add(page.len())
+            .ok_or(InspectError::Malformed)?;
+        let mut next = self.next;
+
+        while let Some(patch) = self.patches.get(next) {
+            check(budget, cancelled)?;
+            if patch.range.start >= end {
+                break;
+            }
+            if patch.range.start < offset || patch.range.end > end {
+                return Err(InspectError::Malformed);
+            }
+            let range = patch.range.start - offset..patch.range.end - offset;
+            if page.get(range) != Some(patch.before.as_slice()) {
+                return Err(InspectError::Malformed);
+            }
+            next += 1;
+        }
+
+        for patch in &self.patches[self.next..next] {
+            check(budget, cancelled)?;
+            let range = patch.range.start - offset..patch.range.end - offset;
+            page[range].copy_from_slice(&patch.after);
+        }
+        self.next = next;
+        Ok(())
+    }
+
+    pub(crate) fn finish(self) -> Result<(), InspectError> {
+        if self.next != self.patches.len() {
+            return Err(InspectError::Malformed);
+        }
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn patches() -> SecurityPatches {
+        SecurityPatches(vec![
+            Patch {
+                range: 18..20,
+                before: Zeroizing::new(vec![2, 3]),
+                after: Zeroizing::new(vec![8, 9]),
+            },
+            Patch {
+                range: 25..26,
+                before: Zeroizing::new(vec![9]),
+                after: Zeroizing::new(vec![7]),
+            },
+        ])
+    }
+
+    fn budget() -> ResourceBudget {
+        ResourceBudget::new(1024, 100, 1000)
+    }
+
+    #[test]
+    fn page_patches_match_image_application_and_require_complete_consumption() {
+        let original: Vec<u8> = (0..32).map(|value| value % 16).collect();
+        let mut expected = original.clone();
+        patches()
+            .apply(&mut expected, &mut budget(), &|| false)
+            .unwrap();
+
+        let mut pages = patches().into_pages();
+        let mut actual = original;
+        for (number, page) in actual.chunks_mut(8).enumerate() {
+            pages
+                .apply(number * 8, page, &mut budget(), &|| false)
+                .unwrap();
+        }
+        pages.finish().unwrap();
+        assert_eq!(actual, expected);
+        assert_eq!(
+            patches().into_pages().finish(),
+            Err(InspectError::Malformed)
+        );
+    }
+
+    #[test]
+    fn invalid_page_ranges_and_before_bytes_refuse_without_mutating_page() {
+        for (offset, mut page) in [
+            (19, vec![3, 4, 5]),
+            (16, vec![0, 1, 2]),
+            (16, vec![0, 1, 99, 3]),
+        ] {
+            let original = page.clone();
+            let mut pages = patches().into_pages();
+            assert_eq!(
+                pages.apply(offset, &mut page, &mut budget(), &|| false),
+                Err(InspectError::Malformed),
+            );
+            assert_eq!(page, original);
+        }
+    }
+
+    #[test]
+    fn all_before_images_on_a_page_are_checked_before_first_patch() {
+        let mut pages = patches().into_pages();
+        let mut page: Vec<u8> = (0..16).collect();
+        page[9] = 99;
+        let original = page.clone();
+        assert_eq!(
+            pages.apply(16, &mut page, &mut budget(), &|| false),
+            Err(InspectError::Malformed),
+        );
+        assert_eq!(page, original);
+    }
 }

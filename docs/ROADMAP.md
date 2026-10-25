@@ -291,9 +291,10 @@ Encrypted local-file reads are implemented for the qualified schemes in
 [NATIVE_ENCRYPTION.md](NATIVE_ENCRYPTION.md): Jet 4 page encoding and bounded
 Agile, Binary RC4, CryptoAPI RC4 and standard/compatibility AES Office profiles.
 Global -p/hidden terminal prompting and fresh add/remove/change-password copies
-are working. Whole-image management retains its 64 MiB ceiling and checked native
-password/SID layout restrictions. This is separate from the 2 GiB read-source
-envelope and does not qualify encrypted table edits or native Access save/reopen.
+are working. Page-buffered management now avoids the whole-image ceiling under
+checked native password/SID layouts and cumulative allowances; the image API
+retains its 64 MiB cap. Page copies share the 2 GiB read-source
+envelope; neither API qualifies encrypted table edits or native Access save/reopen.
 Do not treat encryption discovery/opening as an unstarted implementation task.
 
 | Acceptance area | Working baseline | Remaining work |

@@ -2,7 +2,7 @@ use super::Error;
 use std::{io::IsTerminal, path::Path};
 use tablecraft_ace::{
     EncryptionRewrite, InspectError, check_encryption_add, check_encryption_rewrite,
-    rewrite_encryption,
+    rewrite_encryption_to,
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::SharedFile;
@@ -11,7 +11,6 @@ use zeroize::Zeroizing;
 const REWRITE_BYTES: u64 = 512 * 1024 * 1024;
 const REWRITE_ROWS: u64 = 100_000;
 const REWRITE_STEPS: u64 = 100_000_000;
-const COPY_CHUNK_BYTES: usize = 64 * 1024;
 
 #[derive(Clone, Copy)]
 pub(super) enum Operation {
@@ -88,24 +87,20 @@ pub(super) fn run(
         },
         Operation::Remove => EncryptionRewrite::Remove { password },
     };
-    let copy =
-        rewrite_encryption(&mut source, rewrite, &mut budget, &|| false).map_err(Error::Read)?;
     let parent = output
         .parent()
         .filter(|p| !p.as_os_str().is_empty())
         .unwrap_or_else(|| Path::new("."));
     let mut temporary =
         tempfile::NamedTempFile::new_in(parent).map_err(|e| Error::Copy(e.kind()))?;
-    for (number, chunk) in copy.as_bytes().chunks(COPY_CHUNK_BYTES).enumerate() {
-        tablecraft_io::write_exact_at(
-            temporary.as_file_mut(),
-            (number * COPY_CHUNK_BYTES) as u64,
-            chunk,
-            &mut budget,
-            &|| false,
-        )
-        .map_err(|e| Error::Read(e.into()))?;
-    }
+    rewrite_encryption_to(
+        &mut source,
+        temporary.as_file_mut(),
+        rewrite,
+        &mut budget,
+        &|| false,
+    )
+    .map_err(Error::Read)?;
     temporary
         .as_file()
         .sync_all()

@@ -267,6 +267,41 @@ fn legacy_password_changes_and_removal_preserve_all_native_pages_across_profiles
             )
             .unwrap();
             assert_eq!(&removed.as_bytes()[4096..], &plain[4096..]);
+            let mut paged = Cursor::new(Vec::new());
+            crate::rewrite_encryption_to(
+                &mut source,
+                &mut paged,
+                crate::EncryptionRewrite::Remove {
+                    password: Some("A😀é"),
+                },
+                &mut allowance(),
+                &|| false,
+            )
+            .unwrap();
+            assert!(paged.get_ref() == removed.as_bytes());
+
+            let mut changed_pages = Cursor::new(Vec::new());
+            crate::rewrite_encryption_to(
+                &mut source,
+                &mut changed_pages,
+                crate::EncryptionRewrite::ChangePassword {
+                    password: Some("A😀é"),
+                    new_password: "new 😀 public password",
+                },
+                &mut allowance(),
+                &|| false,
+            )
+            .unwrap();
+            let recovered_pages = crate::rewrite_encryption(
+                &mut changed_pages,
+                crate::EncryptionRewrite::Remove {
+                    password: Some("new 😀 public password"),
+                },
+                &mut allowance(),
+                &|| false,
+            )
+            .unwrap();
+            assert!(recovered_pages.as_bytes() == removed.as_bytes());
             assert!(
                 !crate::inspect_header(
                     &mut Cursor::new(removed.as_bytes()),
