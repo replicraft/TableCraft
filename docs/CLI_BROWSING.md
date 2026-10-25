@@ -214,7 +214,8 @@ not read. The request, row count and EOF metadata remain explicit.
 
 This operation validates every column and materializes complete parent-key and
 flat-child snapshots for each collection, even for empty/out-of-range requests.
-Existing positive/unique key/identity checks, orphan rejection, 100 values per
+Positive parent/foreign keys, unique signed Int32 child identities, orphan
+rejection, 100 values per
 parent and 16,384-row complete-snapshot ceilings remain. Multiple collections
 share cumulative budgets and can exceed the CLI limits. Stored-column metadata
 must match the page's original native layout, and selected keys must match their

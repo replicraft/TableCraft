@@ -9,7 +9,8 @@ use std::{cell::Cell, io::Cursor};
 
 use tablecraft_ace::{
     AttachmentColumn, CollectionPageRequest, InspectError, TablePageRequest, TableSnapshotLimits,
-    read_attachment_column, read_multivalue_column, read_stored_collection_table_page_with_request,
+    read_attachment_column, read_attachment_metadata, read_multivalue_column,
+    read_stored_collection_table_page_with_request,
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
@@ -388,4 +389,66 @@ fn explicit_attachment_pages_keep_typed_whole_table_limits_and_visible_ranges() 
         3
     );
     assert_eq!(bytes, database());
+}
+
+#[test]
+fn signed_attachment_ids_preserve_full_and_metadata_only_values() {
+    const CHILD_PAGE: usize = 22;
+    const PAGE_BYTES: usize = 4096;
+    const SLOT_DIRECTORY: usize = 14;
+    const IDENTITY_OFFSET: usize = 6;
+
+    for code in [2, 5, 6] {
+        for identities in [[i32::MIN, -1, 0], [-7, -2, i32::MAX]] {
+            let mut bytes = database();
+            bytes[20] = code;
+            for (slot, identity) in identities.into_iter().enumerate() {
+                let at = CHILD_PAGE * PAGE_BYTES + SLOT_DIRECTORY + slot * 2;
+                let start = u16::from_le_bytes(bytes[at..at + 2].try_into().unwrap()) as usize;
+                support::put32(
+                    &mut bytes,
+                    CHILD_PAGE * PAGE_BYTES + start + IDENTITY_OFFSET,
+                    identity as u32,
+                );
+            }
+
+            let full = inspect(&bytes).unwrap();
+            let observed = (0..2)
+                .flat_map(|parent| full.attachments(parent).unwrap())
+                .map(|value| value.unwrap().identity())
+                .collect::<Vec<_>>();
+            assert_eq!(observed, identities);
+            assert_eq!(
+                full.attachments(0)
+                    .unwrap()
+                    .next()
+                    .unwrap()
+                    .unwrap()
+                    .encoded_file_data(),
+                Some(PAYLOAD)
+            );
+
+            let metadata = read_attachment_metadata(
+                &mut Cursor::new(&bytes),
+                CatalogScope::new(1),
+                "Items",
+                "Score",
+                &mut budget(),
+                &|| false,
+            )
+            .unwrap();
+            let snapshot = metadata.child_snapshot();
+            let identity = snapshot
+                .columns()
+                .iter()
+                .position(|column| column.name() == "ChildID")
+                .unwrap();
+            let observed = snapshot
+                .rows()
+                .iter()
+                .map(|row| row[identity].clone())
+                .collect::<Vec<_>>();
+            assert_eq!(observed, identities.map(Value::Int32));
+        }
+    }
 }

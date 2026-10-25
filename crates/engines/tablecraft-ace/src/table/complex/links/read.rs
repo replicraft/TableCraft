@@ -10,8 +10,10 @@ use tablecraft_model::CatalogScope;
 use tablecraft_schema::ScalarType;
 
 /// Resolve one complex column and read its parent keys and raw flat children on
-/// a stable/offline source. Assigned keys/child identities must be positive and
-/// unique in their own scopes; absent keys retain NULL and empty membership.
+/// a stable/offline source. Assigned parent keys and child foreign keys must be
+/// positive; child identities retain every signed Int32 value. Parent keys and
+/// child identities are unique in their own scopes. Absent parent keys retain
+/// NULL and empty membership.
 /// Rejects orphan/ambiguous/NULL child references without partial publication.
 /// No expressions, scripts, providers or attachment decompression execute.
 pub fn read_complex_column_links<R: crate::NativeReadSource>(

@@ -380,3 +380,68 @@ fn selected_indexes_budgets_and_execution_cancellation_keep_their_boundaries() {
         assert_eq!(run(), Err(QueryError::Cancelled));
     }
 }
+
+#[test]
+fn signed_attachment_identities_keep_metadata_encoded_and_decoded_members() {
+    const SLOT_DIRECTORY: usize = 14;
+    const IDENTITY_OFFSET: usize = 6;
+
+    for code in [2, 5, 6] {
+        let mut bytes = attachment_fixture::with_payloads(attachment_fixture::PAYLOAD, EMPTY_FILE);
+        bytes[20] = code;
+        for (slot, identity) in [i32::MIN, -1, 0_i32].into_iter().enumerate() {
+            let at = CHILD_PAGE * PAGE_BYTES + SLOT_DIRECTORY + slot * 2;
+            let start = u16::from_le_bytes(bytes[at..at + 2].try_into().unwrap()) as usize;
+            support::put32(
+                &mut bytes,
+                CHILD_PAGE * PAGE_BYTES + start + IDENTITY_OFFSET,
+                identity as u32,
+            );
+        }
+        for decoded in [false, true] {
+            let source = NativeSource::new(
+                Cursor::new(bytes.clone()),
+                CatalogScope::new(1),
+                budget(),
+                &|| false,
+            )
+            .unwrap();
+            let source = if decoded {
+                source.with_decoded_attachments()
+            } else {
+                source.with_collections()
+            };
+            let payload = if decoded {
+                vec![0, 1, 2, 255]
+            } else {
+                attachment_fixture::PAYLOAD.to_vec()
+            };
+            let expected = vec![
+                vec![Value::Binary(payload)],
+                vec![Value::Null],
+                vec![Value::Binary(if decoded {
+                    vec![]
+                } else {
+                    EMPTY_FILE.to_vec()
+                })],
+                vec![Value::Null],
+            ];
+            assert_eq!(
+                execute(&source, "SELECT Score.FileData FROM Items").unwrap(),
+                expected
+            );
+            assert_eq!(
+                execute(&source, "SELECT Id FROM Items WHERE Score IS NOT NULL").unwrap(),
+                vec![vec![Value::Int32(1)], vec![Value::Int32(2)]]
+            );
+            assert_eq!(
+                execute(&source, "SELECT Id FROM Items WHERE Score IS NULL").unwrap(),
+                vec![vec![Value::Int32(3)]]
+            );
+            assert_eq!(
+                execute(&source, "SELECT Score.FileData FROM Items").unwrap(),
+                expected
+            );
+        }
+    }
+}

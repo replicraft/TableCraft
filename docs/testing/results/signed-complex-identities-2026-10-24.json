@@ -1,0 +1,493 @@
+{
+  "date": "2026-10-24",
+  "controls": 88,
+  "profiles": [
+    "V2016",
+    "V2019"
+  ],
+  "identities": [
+    1,
+    -2147483648,
+    -7,
+    -2,
+    -1,
+    0,
+    7,
+    2147483647
+  ],
+  "hashes": {
+    "crates/backends/tablecraft-access/src/source/collections/load.rs": "e64d090fd3673600ef652241eed6d1563c5a92a3938fa99d827c1978e3a78a60",
+    "crates/engines/tablecraft-ace/src/table/complex/attachments/metadata_only/read.rs": "fb02c4c246d68c7c6203717d1fdac9757bbe8efb978334e7cb9b616e7ade244d",
+    "crates/engines/tablecraft-ace/src/table/complex/attachments/read.rs": "75098aba8a7687642cd953edb9c7e88015e5d08b3082299247e1aee83ad312ae",
+    "crates/engines/tablecraft-ace/src/table/complex/attachments/record.rs": "3c1dba9a3b34a65fe4fb191b097504f1d1a6d09bd080c4a35b7a09ce66001d74",
+    "crates/engines/tablecraft-ace/src/table/complex/history/read.rs": "8243e73df2d084f1ce3dc2df0063d5e3c68919a282afddd6fd361dca918a38bc",
+    "crates/engines/tablecraft-ace/src/table/complex/history/record.rs": "a5104b3f65b8ab334f3cf3166d7af942154ad0b7c1ee4429f394f76a5ddd6ddc",
+    "crates/engines/tablecraft-ace/src/table/complex/links/membership.rs": "3add03c66a6c6707474aa5c71c15b79e0ee11bacb792b032def049d1ec931139",
+    "docs/testing/SignedComplexIdentityFixture.java": "ee075afd5cb094d440b829316a8e327d4a60b8ecc7713431965f27f705e34daa",
+    "docs/testing/SignedComplexIdentityOracle.java": "0225a0b477016aa912778c9b7cb60941ffc86b61c052176d57f304b04fa7f7de",
+    "docs/testing/compare_signed_complex_identities.py": "fdc3175c7a3398544026a33f64feb25b8eb971700bb747d98556c93b206e0532",
+    ".cache/tablecraft-bin/kana-signed-children-20261024": "4f3049ae09612ea9c54ecbf7a6bffff62b1fd2d7e22026619e821609674903eb",
+    ".cache/tablecraft-fixtures/jackcess-5.0.4.jar": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    ".cache/tablecraft-fixtures/signed-complex-identities-final-20261024/V2016.accdb": "428db39c2aebbec6ecc52b205d15a8343f9e989d908ff4fc00c085531fd2d75a",
+    ".cache/tablecraft-fixtures/signed-complex-identities-final-20261024/V2019.accdb": "4941d658a11284ef1c1781254eb448ea88cdc7f317a777bd3a15bffa0bd117d0"
+  },
+  "queries": [
+    {
+      "profile": "V2016",
+      "collation": "ordinal",
+      "sql": "SELECT ID,[Values].Value FROM Identities",
+      "options": [],
+      "rows": 9
+    },
+    {
+      "profile": "V2016",
+      "collation": "ordinal",
+      "sql": "SELECT ID,Files.FileName FROM Identities",
+      "options": [],
+      "rows": 9
+    },
+    {
+      "profile": "V2016",
+      "collation": "ordinal",
+      "sql": "SELECT ID,[VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880].[Notes] FROM Identities",
+      "options": [],
+      "rows": 9
+    },
+    {
+      "profile": "V2016",
+      "collation": "ordinal",
+      "sql": "SELECT [VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880].[Modified_F9B5E312-4155-4c59-9AAE-391C1B295827] FROM Identities",
+      "options": [],
+      "rows": 9
+    },
+    {
+      "profile": "V2016",
+      "collation": "ordinal",
+      "sql": "SELECT Files.FileName,Files.FileData FROM Identities",
+      "options": [],
+      "rows": 9
+    },
+    {
+      "profile": "V2016",
+      "collation": "ordinal",
+      "sql": "SELECT Files.FileName,Files.FileData FROM Identities",
+      "options": [
+        "--decoded-attachments"
+      ],
+      "rows": 9
+    },
+    {
+      "profile": "V2016",
+      "collation": "ordinal",
+      "sql": "SELECT Count(*) FROM Identities WHERE Files IS NOT NULL",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2016",
+      "collation": "ordinal",
+      "sql": "SELECT Count([Values].Value) FROM Identities",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2016",
+      "collation": "ordinal",
+      "sql": "SELECT ID FROM Identities WHERE [Values].Value IS NULL",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2016",
+      "collation": "ordinal",
+      "sql": "SELECT Count(*) FROM Identities",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2016",
+      "collation": "ordinal",
+      "sql": "SELECT Count(*) FROM Identities WHERE ID=99",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2016",
+      "collation": "ordinal",
+      "sql": "SELECT TOP 1 Files.FileName FROM Identities",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2016",
+      "collation": "ordinal",
+      "sql": "SELECT Count([VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880].[Notes]) FROM Identities",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2016",
+      "collation": "ordinal",
+      "sql": "SELECT ID FROM Identities WHERE Files IS NULL",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2016",
+      "collation": "ordinal",
+      "sql": "SELECT ID FROM Identities WHERE [VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880] IS NULL",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2016",
+      "collation": "ordinal",
+      "sql": "SELECT ID,Files.FileName FROM Identities WHERE ID=2",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2016",
+      "collation": "database",
+      "sql": "SELECT ID,[Values].Value FROM Identities",
+      "options": [],
+      "rows": 9
+    },
+    {
+      "profile": "V2016",
+      "collation": "database",
+      "sql": "SELECT ID,Files.FileName FROM Identities",
+      "options": [],
+      "rows": 9
+    },
+    {
+      "profile": "V2016",
+      "collation": "database",
+      "sql": "SELECT ID,[VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880].[Notes] FROM Identities",
+      "options": [],
+      "rows": 9
+    },
+    {
+      "profile": "V2016",
+      "collation": "database",
+      "sql": "SELECT [VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880].[Modified_F9B5E312-4155-4c59-9AAE-391C1B295827] FROM Identities",
+      "options": [],
+      "rows": 9
+    },
+    {
+      "profile": "V2016",
+      "collation": "database",
+      "sql": "SELECT Files.FileName,Files.FileData FROM Identities",
+      "options": [],
+      "rows": 9
+    },
+    {
+      "profile": "V2016",
+      "collation": "database",
+      "sql": "SELECT Files.FileName,Files.FileData FROM Identities",
+      "options": [
+        "--decoded-attachments"
+      ],
+      "rows": 9
+    },
+    {
+      "profile": "V2016",
+      "collation": "database",
+      "sql": "SELECT Count(*) FROM Identities WHERE Files IS NOT NULL",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2016",
+      "collation": "database",
+      "sql": "SELECT Count([Values].Value) FROM Identities",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2016",
+      "collation": "database",
+      "sql": "SELECT ID FROM Identities WHERE [Values].Value IS NULL",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2016",
+      "collation": "database",
+      "sql": "SELECT Count(*) FROM Identities",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2016",
+      "collation": "database",
+      "sql": "SELECT Count(*) FROM Identities WHERE ID=99",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2016",
+      "collation": "database",
+      "sql": "SELECT TOP 1 Files.FileName FROM Identities",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2016",
+      "collation": "database",
+      "sql": "SELECT Count([VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880].[Notes]) FROM Identities",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2016",
+      "collation": "database",
+      "sql": "SELECT ID FROM Identities WHERE Files IS NULL",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2016",
+      "collation": "database",
+      "sql": "SELECT ID FROM Identities WHERE [VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880] IS NULL",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2016",
+      "collation": "database",
+      "sql": "SELECT ID,Files.FileName FROM Identities WHERE ID=2",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2019",
+      "collation": "ordinal",
+      "sql": "SELECT ID,[Values].Value FROM Identities",
+      "options": [],
+      "rows": 9
+    },
+    {
+      "profile": "V2019",
+      "collation": "ordinal",
+      "sql": "SELECT ID,Files.FileName FROM Identities",
+      "options": [],
+      "rows": 9
+    },
+    {
+      "profile": "V2019",
+      "collation": "ordinal",
+      "sql": "SELECT ID,[VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880].[Notes] FROM Identities",
+      "options": [],
+      "rows": 9
+    },
+    {
+      "profile": "V2019",
+      "collation": "ordinal",
+      "sql": "SELECT [VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880].[Modified_F9B5E312-4155-4c59-9AAE-391C1B295827] FROM Identities",
+      "options": [],
+      "rows": 9
+    },
+    {
+      "profile": "V2019",
+      "collation": "ordinal",
+      "sql": "SELECT Files.FileName,Files.FileData FROM Identities",
+      "options": [],
+      "rows": 9
+    },
+    {
+      "profile": "V2019",
+      "collation": "ordinal",
+      "sql": "SELECT Files.FileName,Files.FileData FROM Identities",
+      "options": [
+        "--decoded-attachments"
+      ],
+      "rows": 9
+    },
+    {
+      "profile": "V2019",
+      "collation": "ordinal",
+      "sql": "SELECT Count(*) FROM Identities WHERE Files IS NOT NULL",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2019",
+      "collation": "ordinal",
+      "sql": "SELECT Count([Values].Value) FROM Identities",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2019",
+      "collation": "ordinal",
+      "sql": "SELECT ID FROM Identities WHERE [Values].Value IS NULL",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2019",
+      "collation": "ordinal",
+      "sql": "SELECT Count(*) FROM Identities",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2019",
+      "collation": "ordinal",
+      "sql": "SELECT Count(*) FROM Identities WHERE ID=99",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2019",
+      "collation": "ordinal",
+      "sql": "SELECT TOP 1 Files.FileName FROM Identities",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2019",
+      "collation": "ordinal",
+      "sql": "SELECT Count([VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880].[Notes]) FROM Identities",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2019",
+      "collation": "ordinal",
+      "sql": "SELECT ID FROM Identities WHERE Files IS NULL",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2019",
+      "collation": "ordinal",
+      "sql": "SELECT ID FROM Identities WHERE [VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880] IS NULL",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2019",
+      "collation": "ordinal",
+      "sql": "SELECT ID,Files.FileName FROM Identities WHERE ID=2",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2019",
+      "collation": "database",
+      "sql": "SELECT ID,[Values].Value FROM Identities",
+      "options": [],
+      "rows": 9
+    },
+    {
+      "profile": "V2019",
+      "collation": "database",
+      "sql": "SELECT ID,Files.FileName FROM Identities",
+      "options": [],
+      "rows": 9
+    },
+    {
+      "profile": "V2019",
+      "collation": "database",
+      "sql": "SELECT ID,[VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880].[Notes] FROM Identities",
+      "options": [],
+      "rows": 9
+    },
+    {
+      "profile": "V2019",
+      "collation": "database",
+      "sql": "SELECT [VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880].[Modified_F9B5E312-4155-4c59-9AAE-391C1B295827] FROM Identities",
+      "options": [],
+      "rows": 9
+    },
+    {
+      "profile": "V2019",
+      "collation": "database",
+      "sql": "SELECT Files.FileName,Files.FileData FROM Identities",
+      "options": [],
+      "rows": 9
+    },
+    {
+      "profile": "V2019",
+      "collation": "database",
+      "sql": "SELECT Files.FileName,Files.FileData FROM Identities",
+      "options": [
+        "--decoded-attachments"
+      ],
+      "rows": 9
+    },
+    {
+      "profile": "V2019",
+      "collation": "database",
+      "sql": "SELECT Count(*) FROM Identities WHERE Files IS NOT NULL",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2019",
+      "collation": "database",
+      "sql": "SELECT Count([Values].Value) FROM Identities",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2019",
+      "collation": "database",
+      "sql": "SELECT ID FROM Identities WHERE [Values].Value IS NULL",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2019",
+      "collation": "database",
+      "sql": "SELECT Count(*) FROM Identities",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2019",
+      "collation": "database",
+      "sql": "SELECT Count(*) FROM Identities WHERE ID=99",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2019",
+      "collation": "database",
+      "sql": "SELECT TOP 1 Files.FileName FROM Identities",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2019",
+      "collation": "database",
+      "sql": "SELECT Count([VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880].[Notes]) FROM Identities",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2019",
+      "collation": "database",
+      "sql": "SELECT ID FROM Identities WHERE Files IS NULL",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2019",
+      "collation": "database",
+      "sql": "SELECT ID FROM Identities WHERE [VersionHistory_F5F8918F-0A3F-4DA9-AE71-184EE5012880] IS NULL",
+      "options": [],
+      "rows": 1
+    },
+    {
+      "profile": "V2019",
+      "collation": "database",
+      "sql": "SELECT ID,Files.FileName FROM Identities WHERE ID=2",
+      "options": [],
+      "rows": 1
+    }
+  ],
+  "qualification": "Independent persisted reads only; native Access remains unqualified"
+}

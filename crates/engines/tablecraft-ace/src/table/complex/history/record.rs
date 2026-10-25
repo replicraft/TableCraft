@@ -7,7 +7,7 @@ pub(super) fn read<'a>(
     columns: &Columns,
 ) -> Result<StoredVersion<'a>, InspectError> {
     let identity = match row.get(columns.identity) {
-        Some(Value::Int32(id)) if *id > 0 => *id,
+        Some(Value::Int32(id)) => *id,
         _ => return Err(InspectError::Malformed),
     };
     let value = match row.get(columns.value) {

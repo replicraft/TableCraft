@@ -424,3 +424,35 @@ fn unsupported_history_candidate_keeps_unrelated_members_and_scalars_available()
         }
     }
 }
+
+#[test]
+fn signed_history_identities_keep_all_query_members_and_presence() {
+    let identities = [i32::MIN, -7, -2, -1, 0, 7, i32::MAX];
+    let records = identities.map(|identity| (10, identity, Some("history"), Some(0)));
+    for code in [2, 5, 6] {
+        let mut bytes = fixture::database_with(&records);
+        bytes[20] = code;
+        let source = NativeSource::new(Cursor::new(bytes), CatalogScope::new(1), budget(), &|| {
+            false
+        })
+        .unwrap()
+        .with_collections();
+        let expected = vec![vec![Value::Text("history".into())]; identities.len()];
+        assert_eq!(
+            execute(&source, "SELECT Score.Notes FROM Items WHERE Id=1").unwrap(),
+            expected
+        );
+        assert_eq!(
+            execute(&source, "SELECT Id FROM Items WHERE Score IS NOT NULL").unwrap(),
+            vec![vec![Value::Int32(1)]]
+        );
+        assert_eq!(
+            execute(&source, "SELECT Id FROM Items WHERE Score IS NULL").unwrap(),
+            vec![vec![Value::Int32(2)], vec![Value::Int32(3)]]
+        );
+        assert_eq!(
+            execute(&source, "SELECT Score.Notes FROM Items WHERE Id=1").unwrap(),
+            expected
+        );
+    }
+}
