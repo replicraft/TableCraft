@@ -1,6 +1,8 @@
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/calculated_storage/fixture.rs"]
 mod calculated_fixture;
+#[path = "calculation_preview/dependencies.rs"]
+mod dependencies;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/mutation/fixture.rs"]
 mod fixture;

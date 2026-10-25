@@ -60,8 +60,9 @@ including its CSV-crate quoting of displayed Text values.
 `--number-format` and `--date-format` explicitly supply the conversion/concatenation
 policies used by the admitted expression profile. There are no clock/random,
 collection, index, cached-source or declared-arithmetic options: these would not
-expand the existing preparation contract. All calls and calculated dependencies
-remain refused before user records are read, even when those records are corrupt.
+expand the existing preparation contract. All calls and unsupported dependencies remain refused before user records are
+read, even when those records are corrupt. Qualified same-table calculated dependencies
+are explicitly recomputed through the bounded dependency profile below.
 
 Resource controls retain their existing defaults and independent ceilings:
 
@@ -95,10 +96,12 @@ nonempty Expression properties without reading user records. The returned
 metadata. It does not parse the formula or inspect a cached wrapper.
 
 `NativeSource::prepare_calculation` then parses one complete expression, checks
-its restricted syntax and resolves every dependency to an ordinary scalar field
-of that same native table. It returns the dependency names in first-reference
-order, the original declaration, an owned query model and a bound plan. Binding
-reads no user records and activates no formula, clock, provider or function.
+its restricted syntax and resolves dependencies within that same native table.
+Qualified calculated dependencies are recursively recomputed; the resulting query
+reads only ordinary scalar leaves. It returns ordinary leaf dependency names and
+separate calculated dependency names in first-reference order, the original root
+declaration, an owned query model and a bound plan. Binding
+reads no user records and evaluates no formula, clock, provider or function.
 `PreparedCalculation` borrows its originating source; callers cannot substitute
 another source at execution. Existing prepared-query schema checks remain active.
 This lifetime relationship does not create a coherent live-file snapshot or a
@@ -126,14 +129,65 @@ Query rules still determine operator behavior and eager failures; admitting synt
 does not assert complete Variant promotion or native calculated-field behavior.
 
 Calls of every kind, domain/aggregate functions, clocks, UDFs, subqueries, identity,
-parameters, external/qualified references, collection members, calculated-field
-dependencies, date/GUID literals and LIKE/IN/BETWEEN forms remain refused before row
-access. This also prevents self/cyclic calculated dependencies in the current
-profile. Unknown fields never become implicit parameters. SQL-like text inside
+parameters, external/qualified references, collection members, date/GUID literals
+and LIKE/IN/BETWEEN forms remain refused before row access. Self/cyclic calculated
+dependencies remain refused through explicit active-path detection. Unknown fields
+never become implicit parameters. SQL-like text inside
 an admitted string literal remains inert data; expressions are moved into a
 checked query model rather than interpolated into a SQL statement. Table names
 containing closing brackets or control characters remain unsupported by this
 preview's current identifier boundary.
+
+## Same-table calculated dependencies
+
+Qualified calculated fields may now reference other calculated fields in the same
+table under this explicit preview. Microsoft's native table
+[Calculated-data-type training](https://support.microsoft.com/en-us/access/training/video-combine-fields-using-the-calculated-data-type)
+specifically permits calculated results as inputs to other calculated fields.
+This establishes the same-table dependency boundary; it does not establish a
+function whitelist or native intermediate conversion semantics.
+
+Preparation uses the root declaration's captured schema/property set. Every
+reachable calculated field must pass the existing native calculated-result,
+Expression and typed ResultType gates before any user row is read. Dependencies
+use existing ASCII-insensitive identifier resolution and canonical stored names.
+Unrelated calculated formulas are not expanded. Cycles, missing fields,
+unsupported reachable declarations, complex/nonlocal inputs and calls fail even
+on empty tables or in operands whose value could otherwise hide them.
+
+`PreparedCalculation::dependencies()` reports distinct ordinary leaf names;
+`calculated_dependencies()` separately reports distinct referenced calculated
+names, both in first-reference order. The selected root remains available through
+`declaration()`. A diamond references a shared calculated name once in that
+metadata, while the final deterministic expression may contain multiple copies
+of its computation. No cached value becomes an ordinary input, including when
+the originating source separately enables cached calculation queries.
+
+Expansion allows at most 32 distinct referenced calculated dependencies and an
+active dependency path of at most 32 declarations including the root. Visited
+expansion nodes, including replaced alias references, are bounded by the caller's
+`max_tokens` clamped to `ParseLimits::MAX_TOKENS`; expanded expression depth is
+bounded by the similarly clamped `max_depth`. These structural controls prevent
+unbounded alias chains and exponential shared-subgraph expansion. Cancellation
+and cumulative native work/storage accounting remain active. Each formula parse
+also retains its own existing byte/token/depth bounds; temporary parser workspace
+remains structurally bounded separately from retained query storage.
+
+Every intermediate uses its **recomputed expression carrier**, with no conversion
+to the dependency's native ResultType. For example, a native LONG declaration
+`Twice = [Input]*2` can naturally recompute an Int64 in the current default query
+profile, and another expression receives that Int64. It receives neither a stale
+LONG cache nor an implicitly narrowed replacement. The root likewise retains its
+natural result carrier. This is engineering preview behavior; native Access
+intermediate conversions, complete calculation semantics and freshness remain
+unqualified. No result is written or substituted into an ordinary query source.
+
+Six focused dependency tests cover chain/diamond/alias expansion, canonical name
+reporting, declared LONG versus recomputed Int64, corrupt-cache pruning in ordinary
+and cached-source modes, constant leaves, unrelated unsupported formulas, cycles,
+unsupported transitive inputs, reachable declaration gates, late eager errors and
+chain/expanded-node/caller limits. The existing native/query limits, cancellation,
+metadata-only preparation and unsupported-call tests continue to pass.
 
 ## Controls and evidence
 
