@@ -33,6 +33,11 @@ representatives. Twelve-thousand-row GROUP/DISTINCT controls fit finite work
 allowances without raising defaults. Eighteen new controls and 205 regressions
 pass with strict query Clippy and formatting. See [scope](EXACT_QUERY_KEYS.md)
 and [verification](testing/results/read-query-exact-keys-2026-10-25.json).
+An [original four-profile replay](testing/NATIVE_EXACT_KEYS.md) separately passes
+76 getter/integer-model controls: 64 successful queries and twelve intended
+refusals, comparing 48,304 rows and 72,584 cells. Ten immutable and fourteen
+scoped compiled-source hashes were independently rechecked. Native Access
+qualification remains separate.
 
 ## Borrowed integral equijoin checks
 
