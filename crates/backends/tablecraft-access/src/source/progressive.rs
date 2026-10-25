@@ -1,4 +1,4 @@
-//! Explicit cursor-backed ordinary projections without snapshot cache publication.
+//! Explicit cursor-backed scalar projections without snapshot cache publication.
 use super::{NativeSource, query_error};
 use tablecraft_ace::{NativeReadSource, NativeTableStorage, TableCursor};
 use tablecraft_query::{
@@ -20,7 +20,6 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
             || self.multivalues
             || self.collections
             || self.decoded_attachments
-            || self.stored_calculations
         {
             return Err(QueryError::Unsupported);
         }
@@ -39,7 +38,12 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
         let names = declared
             .selected_names(indices, &mut budget)
             .map_err(query_error)?;
-        let mut cursor = TableCursor::open_projection(
+        let open = if self.stored_calculations && declared.has_cached(Some(indices)) {
+            TableCursor::open_stored_projection
+        } else {
+            TableCursor::open_projection
+        };
+        let mut cursor = open(
             &mut *source,
             self.scope,
             &entry.name,

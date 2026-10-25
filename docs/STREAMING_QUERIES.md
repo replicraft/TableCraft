@@ -51,11 +51,24 @@ DISTINCTROW retains its ordinary inactive behavior. Unsupported plans refuse
 before user-row scans and output, even for empty inputs or false filters.
 
 `--stream` requires a native database and conflicts with saved-query selection,
-SQLite, required/automatic indexes, linked/external mappings and stored advanced
-field modes. Explicit table format is rejected before opening the input; auto
-format is TSV for streaming, including in terminals. Header-based raw native and
+SQLite, required/automatic indexes, linked/external mappings and collection modes.
+Explicit table format is rejected before opening the input; auto format is TSV for streaming, including in terminals. Header-based raw native and
 supported package/encryption opening retain their existing qualifications; this
 mode does not add a codec, provider or template reader.
+
+## Explicit stored calculations
+
+`--stream --stored-calculations` admits qualified stored scalar calculation
+results through the existing cached-value cursor. Values may be stale: formulas
+are never evaluated, and this option does not certify freshness. Unselected cached
+fields remain pruned, including for a pure `Count(*)`. Selected malformed caches
+fail explicitly; complete earlier TSV batches can remain while the pending batch
+is discarded. No progressive scan publishes a complete snapshot cache.
+
+```sh
+tablecraft query run --database example.accdb --stream --stored-calculations \
+  'SELECT ID,Score FROM Items'
+```
 
 ## Flat UNION ALL
 
@@ -132,7 +145,7 @@ to open an embedded path. See the [query service](PROGRESSIVE_QUERIES.md) and
 
 ## Verification
 
-Twenty-six CLI integration tests cover priority synthetic profiles, real ACE 2007
+Twenty-nine CLI integration tests cover priority synthetic profiles, real ACE 2007
 example data, batch sizes, quoting, empty/filter results, first/late errors,
 checked count failures, cumulative quotas, parameter/text/declaration controls,
 mixed schemas, unordered TOP prefixes and argument refusals. TOP tests preserve
@@ -142,7 +155,9 @@ batches spanning arms, late failures and explicit numeric-to-Text conversions.
 Global-count controls additionally cover zero/filtered input, aliases, mixed row
 and count arms, EOF-only publication, quotas and batch-dependent retained prefixes.
 Operand controls additionally cover NULL/raw String/Error values, occurrence
-identity and eager failure prefixes. Five alias CLI and nine retrieval regressions
+identity and eager failure prefixes. Stored-calculation controls cover explicit
+opt-in, stale values, inert formulas, Count/filter/UNION execution, selected cache
+failures and pruning. Fourteen calculation-preview regressions also pass. Five alias CLI and nine retrieval regressions
 also pass. Earlier CLI integration
 also recorded sixty unit/browsing/native/retrieval
 checks, including write/flush failure and encoded-output allowance tests.

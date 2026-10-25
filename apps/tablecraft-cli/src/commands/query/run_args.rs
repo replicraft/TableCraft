@@ -24,7 +24,7 @@ use tablecraft_expressions::functions::text::cstr::DateTextFormat;
 pub(crate) struct RunArgs {
     /// Stream eligible local SELECT/WHERE, COUNT and UNION ALL results as TSV;
     /// later errors may leave earlier batches.
-    #[arg(long, requires = "database", conflicts_with_all = ["saved", "sqlite", "index", "auto_index", "links", "external", "external_index", "multivalues", "collections", "decoded_attachments", "stored_calculations"])]
+    #[arg(long, requires = "database", conflicts_with_all = ["saved", "sqlite", "index", "auto_index", "links", "external", "external_index", "multivalues", "collections", "decoded_attachments"])]
     pub(crate) stream: bool,
     /// Rows per streaming batch; default 128, maximum 1,000.
     #[arg(long, requires = "stream", value_name = "ROWS", value_parser = clap::value_parser!(u32).range(1..=super::stream::MAX_BATCH_ROWS as i64))]

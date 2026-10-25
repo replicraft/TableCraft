@@ -60,7 +60,9 @@ Memo/OLE/attachment reads from 2 MiB to at most 32 MiB under cumulative budgets
 
 To query qualified cached calculation results, explicitly pass
 `query run --database example.accdb --stored-calculations`. These values can be
-stale; formulas do not execute. See [cached queries](docs/CACHED_CALCULATION_QUERIES.md).
+stale; formulas do not execute. Add `--stream` for explicit TSV batches without
+a complete input snapshot. See [cached queries](docs/CACHED_CALCULATION_QUERIES.md)
+and [cached streams](docs/STREAMING_QUERIES.md#explicit-stored-calculations).
 
 Explicitly recompute a supported same-row formula with
 `tablecraft query preview-calculation --database example.accdb Items Score`.

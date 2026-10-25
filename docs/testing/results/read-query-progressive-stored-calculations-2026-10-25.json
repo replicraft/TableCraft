@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Explicit progressive stored scalar calculation reads using existing native cached-value cursors",
+  "unique_tests": 77,
+  "new_tests": 12,
+  "targets": {
+    "native_adapter": 34,
+    "cli": 43
+  },
+  "checks": [
+    {
+      "command": "cargo test --locked -p tablecraft-access --test progressive_stored_calculations --test progressive_source --test cached_calculation_queries",
+      "private_log": ".cache/progressive-stored-calculation-tests-final-20261025.log",
+      "exit_code": 0,
+      "sha256": "5b80de162b56b09e517f768c9bc1bfad28a2a3fe035262aa1bfb2109aa5b3044",
+      "passed_tests": 34
+    },
+    {
+      "command": "cargo clippy --locked -p tablecraft-access --lib --test progressive_stored_calculations --test progressive_source --test cached_calculation_queries -- -D warnings",
+      "private_log": ".cache/progressive-stored-calculation-clippy-20261025.log",
+      "exit_code": 0,
+      "sha256": "6630a72f85b99ebd561173dbc77fd2c3e8670c8c10704532ea76a2a9ef3fc2b6"
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --test progressive_queries --test preview_calculation -j2 --locked --offline",
+      "private_log": ".cache/progressive-stored-calculation-cli-tests-final-20261025.log",
+      "exit_code": 0,
+      "sha256": "df9cb87171b48b3d5d7126a39ecb91895a76513749e76ec5e8eb8943bfcfc502",
+      "passed_tests": 43
+    },
+    {
+      "command": "cargo clippy -p tablecraft-cli --bin tablecraft --test progressive_queries --test preview_calculation -j2 --locked --offline -- -D warnings",
+      "private_log": ".cache/progressive-stored-calculation-cli-clippy-20261025.log",
+      "exit_code": 0,
+      "sha256": "811dc841cae540d17aca2f3b0a209f53cef78dedcfe96e5b3b25b2db43f80510"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "private_log": ".cache/progressive-stored-calculation-fmt-20261025.log",
+      "exit_code": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "review": [
+    "Host opt-in precedes binding and cache cursor dispatch requires selected cached fields.",
+    "All thirteen qualified cached scalar/Memo kinds retain existing storage carriers and validation.",
+    "Ordinary and zero-width projections retain payload pruning; selected corruption and EOF failures remain explicit.",
+    "Progressive reads never promote a complete snapshot cache, including after a successful prefix.",
+    "CLI retains complete TSV batches only, and never executes stored formulas."
+  ],
+  "test_corrections": [
+    "First CLI batch exposed missing with_stored_calculations initialization in the separate stream host; added explicit flag application before binding. Initial failed log is excluded from accepted counts."
+  ],
+  "boundaries": [
+    "Stored results may be stale; no formula execution or freshness qualification.",
+    "Existing ACE 16-family cached storage gates remain unchanged.",
+    "Stable/offline input only; no coherent live shared-file guarantee."
+  ],
+  "unrun": [
+    "Full workspace suite",
+    "Native Microsoft Access comparison",
+    "Independent original-file cached-stream replay"
+  ]
+}
