@@ -60,5 +60,12 @@
     "Full workspace suite",
     "Windows Access error-priority comparisons",
     "Performance benchmarks"
-  ]
+  ],
+  "cli_smoke": {
+    "report": "docs/testing/results/retained-selector-cli-2026-10-24.json",
+    "sha256": "6fec5dc969dfd4817f122b22da5c4cea1f3dc2139cd31b78aea57e6928db2dd7",
+    "controls": 12,
+    "successes": 6,
+    "buffered_eager_division_refusals": 6
+  }
 }
