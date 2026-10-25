@@ -42,7 +42,7 @@ fn unknown_binary_results_use_agreement_across_integral_single_date_and_rounding
         ("First('7,5')\\CInt(2)", Value::Int32(4)),
         ("First(CInt(7))\\'2,5'", Value::Int16(3)),
         (
-            "First(CDate(2.25))+'0,5'",
+            "First(CDate(2.25))+CVar('0,5')",
             Value::DateTime(LegacyDateTime::from_ole_days(2.75).unwrap()),
         ),
     ] {
@@ -62,6 +62,7 @@ fn widening_requires_provenance_and_agreement_does_not_assign_it() {
         "First(CLng(-2147483648))-CInt(1)",
         "First(CSng(3.4028234663852886e38))*CInt(2)",
         "First(CDate(2958465))+CInt(1)",
+        "First(CDate(2.25))+'0,5'",
         "First(CInt(-32768))\\CInt(-1)",
         "CInt(-32768)\\((First(CInt(2))+CInt(1))=CInt(3))",
         "Q.N+CInt(32767) FROM (SELECT First(CInt(1))+CInt(1) AS N) AS Q",
