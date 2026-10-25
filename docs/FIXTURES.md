@@ -8120,3 +8120,36 @@ six buffered structural/resource/output refusals. All 14 scoped pins and origina
 bytes remain unchanged. These getter/model comparisons qualify the bounded
 engineering access path; native Microsoft Access execution, optimizer behavior
 and Boolean writes remain unqualified.
+
+## Original exact Decimal equality selection replay inputs
+
+The 2026-10-25 [Decimal selection evidence](testing/DECIMAL_INDEX_SELECTIONS.md)
+uses fresh outputs from the original MIT
+[DecimalIndexFixture.java](testing/DecimalIndexFixture.java), source SHA-256
+`dfbb9d98ab48c68f35ece47225e314373dcf66efd6beb515b5a432b68e2663fa`.
+The unchanged read-only [IndexRowsOracle.java](testing/IndexRowsOracle.java) hash is
+`06cf3882a64d5509b2cf93bd3d30ad30bcb70f685afe546c5d200fe2dce315f4`.
+The reviewed Jackcess 5.0.4 artifact remains
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+No third-party fixture/source was copied; no reference SQL or active content ran.
+
+| Ignored fresh original | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `decimal-seeks-V2000-20261025.mdb` | 618,496 | `0ec45083fd4aea8cde561ecac5a6bec472a019d9a62249914120c9ad6fc1782a` |
+| `decimal-seeks-V2007-20261025.accdb` | 847,872 | `7d6bf4d00e6da1a674e2ac8dbc5fea9e6ab84a26fc09ae7e98010c22cc6ffc21` |
+| `decimal-seeks-V2016-20261025.accdb` | 888,832 | `be4d1f2d6bc9005263ff1ae90f442897f2d63b7d02f7e2b2bfcbfc00a26dc63c` |
+| `decimal-seeks-V2019-20261025.accdb` | 958,464 | `555d1544d87d54d82648a36a2e46148dc1c9911d07b2070909dfd3710799cb37` |
+
+These originals remain under `.cache/tablecraft-fixtures/`, separate from the
+earlier complete Decimal-index corpus. The owning record preserves exact producer
+and replay commands and all three raw getter hashes, shared across the profiles.
+Each selected table has 1,000 rows, 16 exact boundary points and 91 NULLs, at scale
+0, 4 or 28. The independent model uses exact Fractions of getter values.
+
+The [accepted report](testing/results/decimal-index-selections-2026-10-25.json)
+passes 788 controls: 696 successful queries comparing 38,772 returned IDs and
+92 buffered structural/resource/output/eager-error refusals. All 19 scoped pins
+and four original byte hashes remain unchanged. This qualifies bounded engineering
+Decimal equality/NULL access paths, including legacy descending keys; native
+Access optimizer/execution equivalence, Decimal ranges and native saves remain
+unqualified. Existing write permits and preview boundaries are unchanged.

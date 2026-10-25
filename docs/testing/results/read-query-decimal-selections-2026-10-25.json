@@ -30,7 +30,17 @@
       "sha256": "cae0b458e843a18e9a5787be9057bea6c35911759d8e5679dbfcfdba36231223"
     }
   ],
-  "independent_replay": "Pending fixed final CLI; original four-profile inputs generated separately",
+  "independent_replay": {
+    "report": "decimal-index-selections-2026-10-25.json",
+    "sha256": "96d00011059fcb1b84e974e31e878911d0f914394d8a01ca8e97d532e42204b9",
+    "controls": 788,
+    "successful_queries": 696,
+    "buffered_refusals": 92,
+    "compared_id_rows": 38772,
+    "unchanged_pins": 19,
+    "parent_rehash": "passed",
+    "source_commit": "c6e70f14d9ec033ae07386fe5d062f69acb78448"
+  },
   "boundaries": [
     "No Decimal ranges, float/Text hints or speculative CDec evaluation",
     "Original predicate, selected-error propagation, table order and incomplete-cache isolation retained",
