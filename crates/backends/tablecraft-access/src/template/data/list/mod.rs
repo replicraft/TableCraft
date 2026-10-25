@@ -1,4 +1,5 @@
 //! Inert List Definition declaration state and agreement with stored inline XSD.
+mod choices;
 mod fields;
 mod requests;
 
@@ -67,7 +68,7 @@ pub(super) fn validate(
         let kind = field.kind.as_deref().ok_or(TemplateError::Unsupported)?;
         let type_matches = matches!(
             (kind, stored.kind),
-            ("Text" | "Note", Kind::String)
+            ("Text" | "Note" | "Choice", Kind::String)
                 | ("Boolean", Kind::Boolean)
                 | ("Counter" | "Integer", Kind::Int)
                 | ("Number", Kind::Double)
@@ -79,6 +80,7 @@ pub(super) fn validate(
                 kind,
                 "Text"
                     | "Note"
+                    | "Choice"
                     | "Boolean"
                     | "Counter"
                     | "Integer"
@@ -87,6 +89,9 @@ pub(super) fn validate(
                     | "DateTime"
             )
         {
+            return Err(TemplateError::Unsupported);
+        }
+        if kind == "Choice" && field.choice_storage == fields::ChoiceStorage::Other {
             return Err(TemplateError::Unsupported);
         }
         if !type_matches {

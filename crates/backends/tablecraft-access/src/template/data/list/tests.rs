@@ -264,3 +264,5 @@ fn named_restrictions_still_require_exact_list_definition_type_and_facet_agreeme
         );
     }
 }
+
+mod choices;

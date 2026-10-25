@@ -1,5 +1,15 @@
 # Implementation status
 
+## Stored single-Choice template fields
+
+Qualified ACCDT List Definition Choice fields now expose their actual stored
+Text with resolved XSD agreement. Explicit nontext storage overrides remain
+refused across partial updates; options, defaults, display and navigation metadata
+stay inert. Stored values are not replaced or rejected by option membership.
+Seven new controls and 52 template regressions pass with strict Access Clippy
+and formatting. See [scope](ACCESS_TEMPLATE_LISTS.md) and
+[verification](testing/results/read-query-template-choice-2026-10-25.json).
+
 ## Composable explicit recomputed views
 
 Checked same-table calculated expressions now compose as explicitly selected
