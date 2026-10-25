@@ -8090,3 +8090,33 @@ pre-relative-label report from accepted evidence. Their original inputs and tool
 snapshots remain preserved privately. Windows Access execution, native save and
 reopen remain unrun; ordinary engine reads and query execution leave originals
 unchanged.
+
+## Original ACE 16 Boolean equality selection replay inputs
+
+The 2026-10-25 [selection evidence](testing/BOOLEAN_INDEX_SELECTIONS.md) reuses the
+original MIT [BooleanIndexFixture.java](testing/BooleanIndexFixture.java) recipe
+with the reviewed Jackcess 5.0.4 artifact to generate two fresh inert files. It
+retains the earlier registered originals separately. No third-party fixture or
+source was copied, and no reference SQL or active database content was executed.
+Generated binaries remain ignored under `.cache/tablecraft-fixtures/`.
+
+| Fresh original | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `boolean-seeks-V2016-20261025.accdb` | 729,088 | `b98be4717e8eaf2d8ed91633aed70cb7cdc30afd071619ffe32d6bed165be484` |
+| `boolean-seeks-V2019-20261025.accdb` | 798,720 | `34fccdca50890054130d8620f3f10f238752b95e443295fb1a82cb2558f37f44` |
+
+The unchanged producer SHA-256 is
+`81d341059c537c0d71dbf8975e0d7264e23572922e1f0385515046090de6b2e0`;
+the read-only [IndexRowsOracle.java](testing/IndexRowsOracle.java) SHA-256 is
+`06cf3882a64d5509b2cf93bd3d30ad30bcb70f685afe546c5d200fe2dce315f4`.
+Both complete raw BooleanIndexed getter captures have SHA-256
+`62a1142bd031613c2ee65889dc68b80b0af0a3983168dcd450e457395f6bd5ef`,
+with 286 true and 714 false rows/profile. Exact fresh producer/replay commands
+and reviewed artifact hash are in the owning evidence document.
+
+The [accepted report](testing/results/boolean-index-selections-2026-10-25.json)
+records 22 controls: 16 successful queries comparing 8,000 returned ID rows and
+six buffered structural/resource/output refusals. All 14 scoped pins and original
+bytes remain unchanged. These getter/model comparisons qualify the bounded
+engineering access path; native Microsoft Access execution, optimizer behavior
+and Boolean writes remain unqualified.
