@@ -4,8 +4,8 @@ These are normalized Apache-2.0 Jackcess 5.0.4 weight tables for General legacy
 and General 2010, including surrogate-unit weights and the kana vowel mapping.
 Read [NOTICE](NOTICE) and [LICENSE-APACHE-2.0.txt](LICENSE-APACHE-2.0.txt). The Rust
 encoder in `src/collation/key/encode.rs` and `tail.rs` is also an Apache-2.0
-adaptation. Other original TableCraft code retains its MIT license; the package
-SPDX expression is `MIT AND Apache-2.0` to retain both obligations.
+adaptation. Original TableCraft code also uses Apache-2.0; the package inherits
+that workspace SPDX identifier. Retain the bundled attribution and notices.
 
 Inputs reviewed:
 

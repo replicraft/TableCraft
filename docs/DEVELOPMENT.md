@@ -1,6 +1,6 @@
 # Development baseline
 
-The repository retains its existing MIT license. Implemented behavior and its
+Original repository code uses the Apache-2.0 license in [LICENSE](../LICENSE). Implemented behavior and its
 verification are recorded in [IMPLEMENTATION.md](IMPLEMENTATION.md). Repository
 working guidance lives in [AGENTS.md](../AGENTS.md). Private planning materials
 stay under the ignored `docs/temp/` directory and are not required to build or
