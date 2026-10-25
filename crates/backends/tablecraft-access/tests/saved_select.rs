@@ -22,6 +22,8 @@ mod forests;
 mod identifiers;
 #[path = "saved_select/joins.rs"]
 mod joins;
+#[path = "saved_select/many_sources.rs"]
+mod many_sources;
 #[path = "saved_select/ordering.rs"]
 mod ordering;
 #[path = "saved_select/parameter_prompts.rs"]
