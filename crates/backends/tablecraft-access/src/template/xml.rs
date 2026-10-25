@@ -1,11 +1,10 @@
 //! Flat OPC control XML with explicit namespace and allocation/work ceilings.
-use super::{TemplateError, check};
+use super::{TemplateError, check, encoding};
 use quick_xml::{NsReader, XmlVersion, events::Event, name::ResolveResult};
 use std::collections::BTreeMap;
 use tablecraft_ace::InspectError;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
-const MAX_XML_BYTES: usize = 8 * 1024 * 1024;
 const MAX_ATTRIBUTES: usize = 32;
 const MAX_RECORDS: usize = 4096;
 const ATTRIBUTE_WORK_BYTES: usize = 128;
@@ -22,9 +21,8 @@ pub(super) fn records(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<Record>, TemplateError> {
-    if bytes.len() > MAX_XML_BYTES || std::str::from_utf8(bytes).is_err() {
-        return Err(TemplateError::Unsupported);
-    }
+    let decoded = encoding::decode(bytes, budget, cancelled)?;
+    let bytes = decoded.text.as_bytes();
     budget
         .charge(Resource::Steps, bytes.len() as u64)
         .map_err(InspectError::from)?;
@@ -121,14 +119,7 @@ pub(super) fn records(
             Event::Comment(_) => {}
             Event::Decl(declaration) if !seen_root && !seen_declaration => {
                 seen_declaration = true;
-                if declaration
-                    .encoding()
-                    .transpose()
-                    .map_err(|_| TemplateError::Malformed)?
-                    .is_some_and(|encoding| !encoding.eq_ignore_ascii_case("UTF-8"))
-                {
-                    return Err(TemplateError::Unsupported);
-                }
+                encoding::declaration(&declaration, decoded.encoding)?;
             }
             Event::Eof if seen_root && finished => return Ok(records),
             _ => return Err(TemplateError::Malformed),

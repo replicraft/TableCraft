@@ -1,5 +1,6 @@
 //! Inert ACCDT package inventory; schema/data interpretation is a separate layer.
 mod archive;
+mod encoding;
 mod objects;
 mod part_uri;
 mod relationships;
