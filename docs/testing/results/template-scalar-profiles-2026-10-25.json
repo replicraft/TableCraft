@@ -1,0 +1,359 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "compiled_revision": "1286af1ea0ea39c0d350c4d64bb235fb8132f196",
+  "compiled_source_sha256": {
+    "apps/tablecraft-cli/src/commands/query/args.rs": "1aae6187177de61977231a77cc962db17a8fa4087df48c3273f0e01aba0059ec",
+    "apps/tablecraft-cli/src/commands/query/retrieval.rs": "c4af751c320def9263648e74ef39800fb341470d7d1741254490272a3bd8a51d",
+    "apps/tablecraft-cli/src/commands/query/run_args.rs": "7a7df046eb35dad910a57cf273876257dd9a08c098a13bb08c7b0e9f3ff89c63",
+    "apps/tablecraft-cli/src/output.rs": "adcaab8850c50f62781ca3aafec79ce50e033c10b21c149f26e514698f5cab1a",
+    "crates/backends/tablecraft-access/src/template/archive.rs": "d39ab74b448dccd3b31e4ba8bba131221ac9b181b7a16e86bfc4568e81b9b92b",
+    "crates/backends/tablecraft-access/src/template/data/list/choices.rs": "b636b89341140292e0d841588cc2f4620ea9a46c4a317828ba5f50239229fbb8",
+    "crates/backends/tablecraft-access/src/template/data/list/fields.rs": "6c61dddd38cf5aa15659fcafc0f39bd25be00ad9947fe1f0346021522fa40ff5",
+    "crates/backends/tablecraft-access/src/template/data/list/mod.rs": "325e186a8fccdbeb3e7fe9e32aa4d80e4cad3209aed18def8f4fa3ca7c550656",
+    "crates/backends/tablecraft-access/src/template/data/list/requests.rs": "9fd815a00f41bfef410d0f0944d6bca2628d560003ba7d798b0a2aad822e0244",
+    "crates/backends/tablecraft-access/src/template/data/list/tests.rs": "43d2678a5deb8c865c859c321ba6d5b20ca38255d50f6d8bb87cff97cdaae1fd",
+    "crates/backends/tablecraft-access/src/template/data/list/tests/choices.rs": "bab64135ef11cccc022af480529b059bab04e41981c0781f7debfee2e6137552",
+    "crates/backends/tablecraft-access/src/template/data/mod.rs": "08600171c6fa8c05bfcd1c7e32b23c7f11c94accaefedf87896da951017bc816",
+    "crates/backends/tablecraft-access/src/template/data/names.rs": "4cd6eed0f5a70a60fb87a1c2437aad85b40c23ab9cd37c8c14b1d333b84f4fbb",
+    "crates/backends/tablecraft-access/src/template/data/schema.rs": "5f3dcaadfc91cda751dccac7738c2c40fb5649ab42c1ef6cd961dd8a8d7b5116",
+    "crates/backends/tablecraft-access/src/template/data/schema/local_types.rs": "38ce3b3bcd3b74d8be1a8c8e90e45b41c154a0360902f4038da5a97cdf048437",
+    "crates/backends/tablecraft-access/src/template/data/tests.rs": "209cb0bd0b633c9e6ecac2934cf3385e790f64f7aad4939ecb541869dc6fa9db",
+    "crates/backends/tablecraft-access/src/template/data/tests/encoding.rs": "af8d8af72b4a4fe0655c040d2743b23e339b90141649372af2855aa0fcf5b030",
+    "crates/backends/tablecraft-access/src/template/data/tests/named_types.rs": "af37222c69561fcef2677748068561012d5b7c5ff4c40fa28a7ef418c0fedb5f",
+    "crates/backends/tablecraft-access/src/template/data/values.rs": "08be60e61184ee3a6b752bf19bc7d81ada8feed7de1759797a7561eb65767b4f",
+    "crates/backends/tablecraft-access/src/template/encoding.rs": "fcf61cf0d14a8bd54805f52699814ac7dca4a4aeb147d4fe6cefe6b75c7e49aa",
+    "crates/backends/tablecraft-access/src/template/encoding/prefix.rs": "3bab0ed607153bf26f9a3001f77f0dbdfa5e59d6c89433e595fddab11f7ccef9",
+    "crates/backends/tablecraft-access/src/template/encoding/tests.rs": "65763e27c97e1514915a54ebc0f56ef72e25ae95e19dfba1fb2a0a8b02cd8ebc",
+    "crates/backends/tablecraft-access/src/template/mod.rs": "b33396eb7c72ef62d28017367aed901e3fb5516efa0f6ed4666c94847f86b7bf",
+    "crates/backends/tablecraft-access/src/template/objects.rs": "8bb522f49abba3f46d3e76d48ce30e0b8f55fdadfd3e79d8ad69601c0f7d9d45",
+    "crates/backends/tablecraft-access/src/template/part_uri.rs": "36536fae611561e950eae0d879e41417c90e308000d2306b132aa6f7a448be69",
+    "crates/backends/tablecraft-access/src/template/relationships.rs": "c75d2b800323624227e648df00e96f2c5aa0ea47492c29771dd0dc51ce943113",
+    "crates/backends/tablecraft-access/src/template/source.rs": "d1aa8a91cba37ee94214fd8d4a9a26e58e0c1af31c468febd9dff11abb3e6962",
+    "crates/backends/tablecraft-access/src/template/tests.rs": "2aebb6a9b94e1b96ba8ed97b377ee6780ba98ba0fc74f8efc3db27b5a85fa325",
+    "crates/backends/tablecraft-access/src/template/tree.rs": "6acc21f4e52e1618860f873ca22cc4086f8502ca17113987a25edae728d8e62d",
+    "crates/backends/tablecraft-access/src/template/xml.rs": "f93d70f79b94aeb180eb13ecb3ba8fa1e651a8281b34708649b0b9b0b71eeeb4"
+  },
+  "compiled_sources_unchanged": true,
+  "immutable_sha256_before": {
+    ".cache/tablecraft-bin/japanese-string-cli-20261025": "398b9c4f4b9e41521c2fd70750b5f946d5fcfa38133f3f66304f11c92ea91808",
+    "docs/testing/compare_template_scalar_profiles.py": "63de1f1d01392635c6d7104c09db3f7ac655729a73fe3edbc0edc367048a0411",
+    ".cache/storage-read-audit-20261025/typed-utf8.accdt": "95adcfbebc6e75ac46a83b3be4a39082cd64c1c2a504e93c4038b79f321ce55d",
+    ".cache/storage-read-audit-20261025/typed-utf16.accdt": "871d72e6bb2dc40518c6aa6491d2d24546d48f808a6ce2eb85dbb852e915937c",
+    ".cache/storage-read-audit-20261025/typed-local-named-type.accdt": "3a9759e2565159852fdd59ee6767bbe2e0b12f30d3f10dc2009db3cbbfe55e27",
+    ".cache/storage-read-audit-20261025/list-note.accdt": "2ad73278023bed67c7471a806b58ed5184d0982606f2b4acab11a47308e1e344",
+    ".cache/storage-read-audit-20261025/list-single-choice.accdt": "76de18416ff4297bf7b3ef11f4bb005195ddd54114eac0a9360f9fd277299f90",
+    ".cache/storage-read-audit-20261025/list-single-choice-valid-default.accdt": "4e56add6c11ece32b61b70d78471107c00b43dd40270346d28029d43068dc67c",
+    ".cache/storage-read-audit-20261025/unicode-ncname.accdt": "cd6349cafd5a1c670507ed2604671f715a8e4a0542b36fb7bee8cc16bf179bd6",
+    "docs/testing/compare_template_packages.py": "b7bcc721d685f1b3be0bf7232282feaf5d6e3d350136573b565d83a9cf2384f3",
+    "docs/testing/compare_template_tables.py": "f86553a3525b7064e0d71cca2562513d8e27d4e139c719d560c091e1d0c2aba3",
+    "docs/testing/compare_template_lists.py": "e639b7c817a707b43d315469e6e5adf22d81fef69e0c0d69ecedff81dfbe4b63"
+  },
+  "immutable_sha256_after": {
+    ".cache/tablecraft-bin/japanese-string-cli-20261025": "398b9c4f4b9e41521c2fd70750b5f946d5fcfa38133f3f66304f11c92ea91808",
+    "docs/testing/compare_template_scalar_profiles.py": "63de1f1d01392635c6d7104c09db3f7ac655729a73fe3edbc0edc367048a0411",
+    ".cache/storage-read-audit-20261025/typed-utf8.accdt": "95adcfbebc6e75ac46a83b3be4a39082cd64c1c2a504e93c4038b79f321ce55d",
+    ".cache/storage-read-audit-20261025/typed-utf16.accdt": "871d72e6bb2dc40518c6aa6491d2d24546d48f808a6ce2eb85dbb852e915937c",
+    ".cache/storage-read-audit-20261025/typed-local-named-type.accdt": "3a9759e2565159852fdd59ee6767bbe2e0b12f30d3f10dc2009db3cbbfe55e27",
+    ".cache/storage-read-audit-20261025/list-note.accdt": "2ad73278023bed67c7471a806b58ed5184d0982606f2b4acab11a47308e1e344",
+    ".cache/storage-read-audit-20261025/list-single-choice.accdt": "76de18416ff4297bf7b3ef11f4bb005195ddd54114eac0a9360f9fd277299f90",
+    ".cache/storage-read-audit-20261025/list-single-choice-valid-default.accdt": "4e56add6c11ece32b61b70d78471107c00b43dd40270346d28029d43068dc67c",
+    ".cache/storage-read-audit-20261025/unicode-ncname.accdt": "cd6349cafd5a1c670507ed2604671f715a8e4a0542b36fb7bee8cc16bf179bd6",
+    "docs/testing/compare_template_packages.py": "b7bcc721d685f1b3be0bf7232282feaf5d6e3d350136573b565d83a9cf2384f3",
+    "docs/testing/compare_template_tables.py": "f86553a3525b7064e0d71cca2562513d8e27d4e139c719d560c091e1d0c2aba3",
+    "docs/testing/compare_template_lists.py": "e639b7c817a707b43d315469e6e5adf22d81fef69e0c0d69ecedff81dfbe4b63"
+  },
+  "originals_and_tools_unchanged": true,
+  "controls": [
+    {
+      "case": "typed-utf8",
+      "input": ".cache/storage-read-audit-20261025/typed-utf8.accdt",
+      "sql": "SELECT [ID],[Full Name],[Tiny],[Large] FROM [Sample Table] ORDER BY [ID]",
+      "exit_code": 0,
+      "stdout": "ID\tFull Name\tTiny\tLarge\n1\t\"\"\" A&🦀 \"\"\"\t-128\t-9223372036854775808\n2\t\"\"\"\"\"\"\t127\t9223372036854775807\n",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "Full Name",
+          "Tiny",
+          "Large"
+        ],
+        [
+          "1",
+          "\" A&🦀 \"",
+          "-128",
+          "-9223372036854775808"
+        ],
+        [
+          "2",
+          "\"\"",
+          "127",
+          "9223372036854775807"
+        ]
+      ],
+      "model_rows": [
+        [
+          1,
+          " A&🦀 ",
+          -128,
+          -9223372036854775808
+        ],
+        [
+          2,
+          "",
+          127,
+          9223372036854775807
+        ]
+      ],
+      "data_part_sha256": "e65a21f243aee65e887acc237a83d6665bcfb73a3167b97cba34480877217e1d",
+      "agrees": true
+    },
+    {
+      "case": "typed-utf16",
+      "input": ".cache/storage-read-audit-20261025/typed-utf16.accdt",
+      "sql": "SELECT [ID],[Full Name],[Tiny],[Large] FROM [Sample Table] ORDER BY [ID]",
+      "exit_code": 0,
+      "stdout": "ID\tFull Name\tTiny\tLarge\n1\t\"\"\" A&🦀 \"\"\"\t-128\t-9223372036854775808\n2\t\"\"\"\"\"\"\t127\t9223372036854775807\n",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "Full Name",
+          "Tiny",
+          "Large"
+        ],
+        [
+          "1",
+          "\" A&🦀 \"",
+          "-128",
+          "-9223372036854775808"
+        ],
+        [
+          "2",
+          "\"\"",
+          "127",
+          "9223372036854775807"
+        ]
+      ],
+      "model_rows": [
+        [
+          1,
+          " A&🦀 ",
+          -128,
+          -9223372036854775808
+        ],
+        [
+          2,
+          "",
+          127,
+          9223372036854775807
+        ]
+      ],
+      "data_part_sha256": "a49caa883e077103149e3cd1b276cc1ee3c7b4c4c69f0d9f699dce2b4d5941e4",
+      "agrees": true
+    },
+    {
+      "case": "typed-local-named-type",
+      "input": ".cache/storage-read-audit-20261025/typed-local-named-type.accdt",
+      "sql": "SELECT [ID],[Full Name],[Tiny],[Large] FROM [Sample Table] ORDER BY [ID]",
+      "exit_code": 0,
+      "stdout": "ID\tFull Name\tTiny\tLarge\n1\t\"\"\" A&🦀 \"\"\"\t-128\t-9223372036854775808\n2\t\"\"\"\"\"\"\t127\t9223372036854775807\n",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "Full Name",
+          "Tiny",
+          "Large"
+        ],
+        [
+          "1",
+          "\" A&🦀 \"",
+          "-128",
+          "-9223372036854775808"
+        ],
+        [
+          "2",
+          "\"\"",
+          "127",
+          "9223372036854775807"
+        ]
+      ],
+      "model_rows": [
+        [
+          1,
+          " A&🦀 ",
+          -128,
+          -9223372036854775808
+        ],
+        [
+          2,
+          "",
+          127,
+          9223372036854775807
+        ]
+      ],
+      "data_part_sha256": "5c3dce430467b3073f3ab896c341aab95056e941ff5448f5b7d8a6335837ec76",
+      "agrees": true
+    },
+    {
+      "case": "list-note",
+      "input": ".cache/storage-read-audit-20261025/list-note.accdt",
+      "sql": "SELECT [ID],[Notes],[Full Name] FROM [Sample Table] ORDER BY [ID]",
+      "exit_code": 0,
+      "stdout": "ID\tNotes\tFull Name\n1\t\"\"\"Data & <inert>\"\"\"\t\"\"\" A&🦀 \"\"\"\n2\t\"\"\"Data & <inert>\"\"\"\t\"\"\"\"\"\"\n",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "Notes",
+          "Full Name"
+        ],
+        [
+          "1",
+          "\"Data & <inert>\"",
+          "\" A&🦀 \""
+        ],
+        [
+          "2",
+          "\"Data & <inert>\"",
+          "\"\""
+        ]
+      ],
+      "model_rows": [
+        [
+          1,
+          "Data & <inert>",
+          " A&🦀 "
+        ],
+        [
+          2,
+          "Data & <inert>",
+          ""
+        ]
+      ],
+      "data_part_sha256": "0c4a7e6365cd33e65e6e535858b56ec9591fe5ab7c39e73a8e385fca08d2d3f4",
+      "agrees": true
+    },
+    {
+      "case": "list-single-choice",
+      "input": ".cache/storage-read-audit-20261025/list-single-choice.accdt",
+      "sql": "SELECT [ID],[Notes],[Full Name] FROM [Sample Table] ORDER BY [ID]",
+      "exit_code": 0,
+      "stdout": "ID\tNotes\tFull Name\n1\t\"\"\"Data & <inert>\"\"\"\t\"\"\" A&🦀 \"\"\"\n2\t\"\"\"Data & <inert>\"\"\"\t\"\"\"\"\"\"\n",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "Notes",
+          "Full Name"
+        ],
+        [
+          "1",
+          "\"Data & <inert>\"",
+          "\" A&🦀 \""
+        ],
+        [
+          "2",
+          "\"Data & <inert>\"",
+          "\"\""
+        ]
+      ],
+      "model_rows": [
+        [
+          1,
+          "Data & <inert>",
+          " A&🦀 "
+        ],
+        [
+          2,
+          "Data & <inert>",
+          ""
+        ]
+      ],
+      "data_part_sha256": "0c4a7e6365cd33e65e6e535858b56ec9591fe5ab7c39e73a8e385fca08d2d3f4",
+      "agrees": true
+    },
+    {
+      "case": "list-single-choice-valid-default",
+      "input": ".cache/storage-read-audit-20261025/list-single-choice-valid-default.accdt",
+      "sql": "SELECT [ID],[Notes],[Full Name] FROM [Sample Table] ORDER BY [ID]",
+      "exit_code": 0,
+      "stdout": "ID\tNotes\tFull Name\n1\t\"\"\"Data & <inert>\"\"\"\t\"\"\" A&🦀 \"\"\"\n2\t\"\"\"Data & <inert>\"\"\"\t\"\"\"\"\"\"\n",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "Notes",
+          "Full Name"
+        ],
+        [
+          "1",
+          "\"Data & <inert>\"",
+          "\" A&🦀 \""
+        ],
+        [
+          "2",
+          "\"Data & <inert>\"",
+          "\"\""
+        ]
+      ],
+      "model_rows": [
+        [
+          1,
+          "Data & <inert>",
+          " A&🦀 "
+        ],
+        [
+          2,
+          "Data & <inert>",
+          ""
+        ]
+      ],
+      "data_part_sha256": "0c4a7e6365cd33e65e6e535858b56ec9591fe5ab7c39e73a8e385fca08d2d3f4",
+      "agrees": true
+    },
+    {
+      "case": "unicode-ncname",
+      "input": ".cache/storage-read-audit-20261025/unicode-ncname.accdt",
+      "sql": "SELECT [编号] FROM [Sample Table] ORDER BY [编号]",
+      "exit_code": 0,
+      "stdout": "编号\n1\n2\n",
+      "stderr": "",
+      "expected": [
+        [
+          "编号"
+        ],
+        [
+          "1"
+        ],
+        [
+          "2"
+        ]
+      ],
+      "model_rows": [
+        [
+          1
+        ],
+        [
+          2
+        ]
+      ],
+      "data_part_sha256": "e46ccfea9d75199a386c80a6b29513743eb533cb2929a4de12a79adc03e78138",
+      "agrees": true
+    }
+  ],
+  "compared_rows": 14,
+  "compared_cells": 44,
+  "successful_controls": 7,
+  "total_controls": 7,
+  "accepted": true,
+  "scope": "Independent stdlib XML/ZIP stored-cell model; no reference SQL or native Access qualification",
+  "provenance": "Original repository-owned synthetic audit packages based on the pinned template helpers; no byte-reproducible historical authoring claim",
+  "exclusions": [
+    "Earlier frozen audit CLI refused UTF16, local named types and Choice; historical probe reports are preserved separately.",
+    "The existing Chinese-name input already worked before this replay; it is a regression control, not a newly fixed NCName case.",
+    "This frozen CLI predates the exact XML lexical-name correction; no new lexical-boundary CLI qualification is claimed."
+  ]
+}

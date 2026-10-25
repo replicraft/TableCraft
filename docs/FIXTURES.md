@@ -8227,3 +8227,18 @@ dependency or copied third-party code is adopted. The
 were independently rechecked. A reserved-identifier runner correction preserves
 the failed report/log/source privately; original database bytes never changed.
 Native Access calculation/freshness qualification remains separate.
+
+## Original synthetic template profile replay
+
+The seven inputs in the [template scalar replay](testing/TEMPLATE_SCALAR_PROFILES.md)
+are original repository-owned synthetic XML/ZIP audit packages, based on the
+existing original package/table/List Definition helpers under this repository's
+MIT license. No third-party fixture bytes, extra binaries or new dependency are
+adopted. Their authoring history is not asserted byte-reproducible; exact original
+hashes and source/projection details are recorded in the owning document and
+[accepted report](testing/results/template-scalar-profiles-2026-10-25.json).
+The unchanged originals remain ignored under `.cache/storage-read-audit-20261025/`.
+Seven CLI queries compare 14 independently modeled rows and 44 actual stored
+cells, including Notes rather than IDs alone. Twelve immutable pins and thirty
+scoped revision-source hashes were independently rechecked. These are authored
+engineering inputs, not Access-created template or native runtime qualification.
