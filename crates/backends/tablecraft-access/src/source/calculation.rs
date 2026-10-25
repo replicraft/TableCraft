@@ -66,8 +66,8 @@ impl PreparedCalculation<'_> {
 
 impl<R: NativeReadSource> NativeSource<'_, R> {
     /// Prepare one explicitly selected stored formula without reading user rows.
-    /// Only pure literal/ordinary same-row arithmetic, concatenation and NULL
-    /// tests are admitted. Calls, subqueries, calculated/complex dependencies,
+    /// Only pure literal/ordinary same-row arithmetic, concatenation, comparison,
+    /// logical operators and NULL tests are admitted. Calls, subqueries, calculated/complex dependencies,
     /// qualified names and unresolved parameters remain refused. This neither
     /// changes ordinary query eligibility nor inspects/replaces cached results.
     pub fn prepare_calculation(

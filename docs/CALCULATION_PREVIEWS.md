@@ -118,15 +118,16 @@ validate normally.
 ## Admitted expression profile
 
 The current profile admits NULL/Boolean/integer/numeric/Text literals, unqualified
-ordinary same-table field references, unary numeric plus/minus, IS NULL/IS NOT
-NULL, arithmetic `+`, `-`, `*`, `/`, `\`, `Mod`, `^` and explicit Text
-concatenation `&`. Duplicate field references do not duplicate dependencies.
+ordinary same-table field references, unary plus/minus/Not, IS NULL/IS NOT
+NULL, arithmetic `+`, `-`, `*`, `/`, `\`, `Mod`, `^`, explicit Text concatenation
+`&`, all six comparisons and And/Or/Xor/Eqv/Imp. Duplicate field references do
+not duplicate dependencies.
 Query rules still determine operator behavior and eager failures; admitting syntax
 does not assert complete Variant promotion or native calculated-field behavior.
 
 Calls of every kind, domain/aggregate functions, clocks, UDFs, subqueries, identity,
 parameters, external/qualified references, collection members, calculated-field
-dependencies, date/GUID literals and other operators remain refused before row
+dependencies, date/GUID literals and LIKE/IN/BETWEEN forms remain refused before row
 access. This also prevents self/cyclic calculated dependencies in the current
 profile. Unknown fields never become implicit parameters. SQL-like text inside
 an admitted string literal remains inert data; expressions are moved into a
@@ -165,9 +166,39 @@ continues to own cached storage decoding and preservation.
 
 ## Independent CLI replay
 
-The [ordinary-getter replay](testing/CALCULATION_PREVIEW_REPLAY.md) passes 44
+The earlier [ordinary-getter replay](testing/CALCULATION_PREVIEW_REPLAY.md) records 44
 controls and 1,018 independently modeled result cells across 20 selected
 ACE 2016/2019 declarations. It compares recomputation separately from stale caches,
 including ordinary NULL propagation, empty inputs, refusal and corrupted-cache
-pruning. All 26 pinned hashes remain unchanged. This strengthens the explicit
-engineering preview without qualifying native formula evaluation or freshness.
+pruning. Its 26 pinned hashes describe the recorded earlier implementation.
+Comparison declarations refused in that record are now admitted by the current
+operator preview; function calls remain refused. Native formula evaluation and
+freshness are still unqualified.
+
+
+## Same-row predicate previews
+
+Comparison and logical operators now reuse ordinary same-row inputs through the
+same metadata-only preparation path. Every operand is validated and every
+ordinary dependency is collected before row access, including operands of False
+And or True Or. Calculated/nonlocal dependencies and function calls cannot hide
+in an inactive operand. Execution remains eager: a later division error refuses
+the complete result even when a Boolean operand could determine the truth value.
+
+Nullable Boolean truth tables and integer bit masks retain the existing query
+kernels. A declared Int32 calculation can therefore preview a natural Boolean
+result without narrowing it to a stored carrier. Text comparisons still require
+an explicit host comparer; the CLI supplies no inferred locale or new comparer
+option in this slice, so unsupported Text comparisons fail explicitly. Numeric
+and Boolean previews need no ambient locale. Stored caches stay unused and can
+be deliberately stale or NULL; successful recomputation proves no freshness or
+native Access result equivalence.
+
+
+The focused predicate batch passes five syntax tests, ten adapter tests and eleven
+CLI tests with strict scoped adapter/CLI Clippy. The
+[independent predicate replay](testing/PREDICATE_PREVIEW_REPLAY.md) passes 248
+controls and 312 recomputed cells over fresh ACE 2016/2019 originals. Every
+recomputed cell differs from its stale cache, and all twelve pinned hashes match.
+These are engineering formula-model checks; native Access execution remains
+unqualified.
