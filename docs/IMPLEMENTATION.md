@@ -11,6 +11,10 @@ controls retain explicit finite budgets. Nineteen new controls and 123 regressio
 pass with strict linting, minimal query features and formatting. See
 [scope](QUERY_EQUIJOINS.md) and
 [verification](testing/results/read-query-directory-joins-2026-10-25.json).
+An [original six-input replay](testing/DIRECTORY_JOINS.md) passes 76 commands,
+comparing 51,848 rows and 105,896 cells. Old default-work refusals and new successes
+are pinned separately; sixteen immutable and 37 revision-source hashes were
+independently rechecked.
 
 ## Larger read-only deployment packages
 
