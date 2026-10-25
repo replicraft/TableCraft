@@ -1,4 +1,4 @@
-use super::MathFunction;
+use super::{MathContext, MathFunction};
 use crate::{
     EvalError,
     functions::conversions::Conversion,
@@ -16,24 +16,25 @@ const CURRENCY_MULTIPLIER: i64 = 10_i64.pow(Currency::SCALE as u32);
 // Preserve the existing multiply/round/divide profile in its original range.
 const MAX_SCALED_FLOAT_PLACES: u32 = 28;
 
-pub(super) fn apply_with_input<'a>(
+pub(super) fn apply_with_context<'a>(
     count: usize,
-    argument: &mut impl FnMut(usize) -> Result<&'a Value, EvalError>,
-    convert: &mut impl FnMut(Conversion, &Value) -> Result<Value, EvalError>,
+    context: &mut impl MathContext<'a>,
 ) -> Result<Value, EvalError> {
     let places = if count == MathFunction::ROUND_ARGUMENTS {
-        Some(argument(1)?)
+        Some(context.argument(1)?)
     } else {
         None
     };
-    let places = checked_places(places, convert)?;
-    let value = argument(0)?;
-    let converted_value = if matches!(value, Value::Text(_)) {
-        Some(convert(Conversion::Double, value)?)
+    let places = checked_places(places.as_deref(), &mut |target, value| {
+        context.convert(target, value)
+    })?;
+    let value = context.argument(0)?;
+    let converted_value = if matches!(value.as_ref(), Value::Text(_)) {
+        Some(context.convert(Conversion::Double, &value)?)
     } else {
         None
     };
-    rounded(converted_value.as_ref().unwrap_or(value), places)
+    rounded(converted_value.as_ref().unwrap_or(&value), places)
 }
 
 fn checked_places(

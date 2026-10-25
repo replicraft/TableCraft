@@ -1,5 +1,5 @@
 //! Pure packed Access color numbers, independent of platform/UI color objects.
-use super::MathFunction;
+use super::{MathContext, MathFunction};
 use crate::{EvalError, functions::conversions::Conversion};
 use tablecraft_core::values::Value;
 
@@ -26,21 +26,27 @@ fn channel(
     Ok(i32::from(value))
 }
 
-pub(super) fn apply_with_input<'a>(
+pub(super) fn apply_with_context<'a>(
     function: MathFunction,
-    argument: &mut impl FnMut(usize) -> Result<&'a Value, EvalError>,
-    convert: &mut impl FnMut(Conversion, &Value) -> Result<Value, EvalError>,
+    context: &mut impl MathContext<'a>,
 ) -> Result<Value, EvalError> {
     let packed = match function {
         MathFunction::Rgb => {
-            let red = channel(argument(0)?, convert)?.min(CHANNEL_MAX);
-            let green = channel(argument(1)?, convert)?.min(CHANNEL_MAX);
-            let blue = channel(argument(2)?, convert)?.min(CHANNEL_MAX);
+            let value = context.argument(0)?;
+            let red = channel(&value, &mut |target, value| context.convert(target, value))?
+                .min(CHANNEL_MAX);
+            let value = context.argument(1)?;
+            let green = channel(&value, &mut |target, value| context.convert(target, value))?
+                .min(CHANNEL_MAX);
+            let value = context.argument(2)?;
+            let blue = channel(&value, &mut |target, value| context.convert(target, value))?
+                .min(CHANNEL_MAX);
 
             red | (green << GREEN_SHIFT) | (blue << BLUE_SHIFT)
         }
         MathFunction::QbColor => {
-            let Value::Int16(index) = convert(Conversion::Integer, argument(0)?)? else {
+            let value = context.argument(0)?;
+            let Value::Int16(index) = context.convert(Conversion::Integer, &value)? else {
                 return Err(EvalError::TypeMismatch);
             };
             let index = usize::try_from(index).map_err(|_| EvalError::Domain)?;

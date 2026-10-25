@@ -280,3 +280,58 @@ results and Double carriers against exact binary input converted to Python Decim
 with half-even quantization. Subnormals, both signs, signed zero, random finite
 bits and maximum Long counts are covered. Native Access precision, admissible
 counts, return subtype and error-order qualification remain pending.
+
+## Retained String evaluator parity
+
+All fifteen evaluator math calls now admit valid active String ranges wherever
+materialized numeric Text already worked. This covers Abs, Sgn, Int, Fix, Round,
+Sqr, Exp, Log, Sin, Cos, Tan, Atn, RGB, QBColor and explicitly hosted Rnd. The
+previous public retained-value API returned NonScalarExpression for, for example,
+Abs of retained "-2.5", although its materialized Text control returned Double
+2.5. Ordinary scalar and bound queries already published valid String operands;
+their supported numerical results and function availability are unchanged.
+
+One private argument/conversion context admits each reached operand lazily and
+passes it to the existing semantic kernel. Borrowed scalar inputs remain borrowed;
+only selected String bytes undergo strict Unicode publication. No eager input
+vector or backing-buffer copy is introduced. The pure public MathFunction APIs
+retain their contextual-policy-free behavior and existing Text refusal.
+
+Admission order remains explicit: arity is checked first, Round converts and
+validates its optional place count before admitting its value, and RGB admits and
+checks red, green and blue progressively. Rnd checks repeatability and host-state
+requirements before admitting its argument; failed publication/conversion does
+not consume a draw. Its Single conversion and state transition occur once. The
+existing Empty exceptions, NULL behavior, Error/Missing refusals, numerical
+carrier retention and exact Decimal/Currency paths remain unchanged.
+
+Selected odd-byte ranges and unpaired surrogates fail UnrepresentableText.
+Publication uses the shared byte/work budget, current per-Text ceiling and
+cancellation callback before contextual conversion. A missing NumberFormat does
+not suppress malformed reached String data; conversely an earlier invalid Round
+count or RGB channel does not inspect a later malformed argument. Callers still
+evaluate SQL operand expressions eagerly, including unselected IIf branches.
+
+Microsoft's [Access Abs](https://support.microsoft.com/en-us/access/functions/abs-function),
+[Access Round](https://support.microsoft.com/en-us/access/functions/round-function)
+and [Access Rnd](https://support.microsoft.com/en-us/access/functions/rnd-function)
+references supply query examples and the existing numeric argument, rounding and
+state-control contracts. They do not establish a native retained representation,
+new coercion rules or native failure precedence. This is public API consistency;
+no Windows compatibility comparison was run.
+
+Four added evaluator tests compare all fifteen retained/materialized calls under
+two explicit number formats (60 successful controls), exercise independently
+expected progressive failures, preserve active-range-only decoding and probe
+every observed cancellation point plus byte/work/per-Text exhaustion. The Rnd
+control uses an independent integer recurrence to check one successful advance.
+A separate kernel test records exact interleaved argument/conversion order for
+all fifteen functions. Two query tests add 60 scalar/bound retained compositions
+and 45 malformed/eager-error refusals, checking that failed calls leave the random
+sequence unchanged.
+
+The focused batch passes 69 distinct tests: 13 evaluator math tests, 28 kernel
+math tests and 28 query tests covering retained compositions, numeric Text,
+random state, declarations, NULL metadata, date operands and expression states.
+Strict scoped Clippy passes for SQL-enabled expression library/tests and the new
+query target; no-default-features compilation, formatting and diff checks pass.
