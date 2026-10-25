@@ -3,7 +3,11 @@ mod calculation;
 pub use calculation::{CalculationError, PreparedCalculation};
 mod collation;
 mod collections;
+mod handle;
+pub use handle::{NativeSourceHandle, NativeTableIdentity};
 mod inventory;
+mod links;
+pub use links::{LinkSourceError, LinkedNativeSource, NativeLinkMapping};
 mod multivalue;
 mod projection;
 mod saved;
@@ -27,6 +31,7 @@ use tablecraft_schema::Column;
 
 struct Entry {
     name: String,
+    origin: handle::TableOrigin,
     columns: OnceCell<schema::ScalarSchema>,
     table: OnceCell<TableSnapshot>,
     index: Option<tablecraft_schema::SchemaName>,

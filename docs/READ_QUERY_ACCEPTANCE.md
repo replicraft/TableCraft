@@ -797,3 +797,16 @@ categories before conversion. Conservative Dynamic output metadata preserves
 plan reuse when execution options change the result family. Default materialized
 arithmetic remains unchanged. This closes a missing explicit declaration-profile
 family; it does not qualify native ACE expression categories or complete P0.
+
+
+## Explicit linked native source routing
+
+[One-hop linked reads](NATIVE_LINKED_QUERIES.md) now compose explicitly supplied
+already-open native sources, including different concrete reader types. Root and
+targets borrow one cumulative native allowance with distinct catalog scopes;
+metadata-only setup validates selected link declarations and target base-table
+identities. Every Source capability forwards to its target, while named queries
+remain in the root namespace. Unmapped links fail only when accessed. This closes
+the adapter routing prerequisite without opening stored paths, claiming native
+Access linked SQL, supporting chains/providers or granting writes. Broader host,
+large-file, policy and native qualification work remains explicit above.

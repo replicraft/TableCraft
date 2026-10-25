@@ -80,3 +80,37 @@ regressions also pass (43 controls), along with strict scoped adapter Clippy.
 
 This is an adapter resource/correctness contract. It provides no new native Access
 compatibility, implicit linked-file opening, concurrent snapshot or write guarantee.
+
+## Borrowed native handles and captured identities
+
+`NativeSource::handle` returns an opaque, copyable `NativeSourceHandle` that erases
+the reader type while borrowing the already-open source. Its private implementation
+accepts only `NativeSource`; a host cannot substitute an arbitrary query provider.
+Obtaining/copying a handle performs no I/O or allocation. It does not identify a
+filesystem object, authorize a path or extend the source's lifetime.
+
+`scope()` returns the caller-issued catalog scope. `table_identity(name)` resolves
+the existing name comparison against the inert inventory and returns borrowed
+canonical spelling, the captured scoped object ID, exact signed native ID and
+stored local/linked/ODBC classification. It reads no table schema or records.
+Unknown/non-table catalog kinds stay outside that table inventory; missing names
+fail explicitly. A local declaration does not qualify its physical definition or
+claim that the table is readable. Retaining these captured identities increases
+the entry storage charged by catalog construction; the normal counted allocation
+uses the actual entry size for both owned and borrowed modes.
+
+`read_linked_table_definition(name)` explicitly reads the selected inert catalog
+fields with the source's existing pool and cancellation callback. Raw target and
+connection fields remain untrusted data, never filesystem authority. No target is
+opened and no connection is activated. Cancellation, quota failures and borrow
+collisions preserve typed errors and successful prior charges; the method returns
+no partial definition. It does not infer root/target schema agreement from link
+metadata. The handle's native-pool identity and provider forwarding stay internal
+to the Access adapter.
+
+Three focused handle controls pass for owned/shared readers, mixed concrete reader
+types, scoped identity separation, canonical names, local/nonlocal/unknown storage,
+zero-I/O identity lookup, explicit declaration reading, cancellation, quota and
+borrow refusal. The seven shared-budget controls also pass with captured identity
+retention. This metadata API itself grants no linked-query execution or cross-file
+snapshot guarantee; an explicitly supplied routing facade is a separate consumer.

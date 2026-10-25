@@ -1,5 +1,23 @@
 # Implementation status
 
+## Explicit authorized linked-table query sources
+
+The Access adapter now routes explicitly mapped root links to already-open native
+base tables. Borrowed sealed handles support different reader/encryption wrapper
+types, capture scoped native identities and require one shared native resource
+pool across root and targets. Setup rereads selected link declarations, checks
+exact host expectations and target identities, and discovers target schema without
+reading user records. Stored paths grant no opening or authentication authority.
+
+The [routing contract](NATIVE_LINKED_QUERIES.md) covers full scalar, optimized scan,
+collection and text-policy forwarding, immutable mappings and root-only named
+queries. Unrelated unmapped links remain inert; using them fails explicitly.
+Ten focused routing tests and three handle tests pass, together with existing
+shared-budget controls and strict scoped adapter Clippy. These checks establish
+explicit host composition, not native Access linked-SQL equivalence, shared-file
+coherence, provider discovery, link chains or linked writes. App CLI integration
+and independent public-writer/getter replay are separate acceptance steps.
+
 ## Final scoped width, native-text and source-composition batch
 
 The engine unit batch passes 163 tests with one intentionally ignored derived-data
