@@ -1,0 +1,193 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Explicit progressive direct-table grouped execution with metadata-proven Boolean/Byte/Int16/Int32/Int64/NULL key tuples and full current Count/Sum/Avg/Min/Max argument kernels",
+  "unique_tests": 459,
+  "new_tests": 30,
+  "existing_regression_tests": 429,
+  "new_test_breakdown": {
+    "implementation_key_bridge_top_empty": 4,
+    "private_bridge_profile": 3,
+    "independent_grouped_values": 11,
+    "independent_grouped_policies": 7,
+    "native_grouped": 2,
+    "cli_grouped": 3
+  },
+  "primary_targets": {
+    "progressive_queries": 41,
+    "progressive_count_execution": 13,
+    "progressive_count_operands": 11,
+    "progressive_numeric_aggregate_values": 9,
+    "progressive_extrema_values": 12,
+    "progressive_grouped_policies": 7,
+    "progressive_grouped_values": 11
+  },
+  "runtime_unit_tests": 26,
+  "new_runtime_unit_tests": 3,
+  "regression_targets": {
+    "collation_routing": 106,
+    "crosstab": 16,
+    "crosstab_scalar_headings": 8,
+    "declared_result_widths": 4,
+    "domain": 9,
+    "exact_key_conformance": 10,
+    "exact_key_indexing": 3,
+    "external_named_sources": 10,
+    "grouped_expressions": 5,
+    "grouped_subqueries": 8,
+    "named": 6,
+    "named_crosstabs": 40,
+    "output_types": 7,
+    "projection_alias_execution": 11,
+    "projection_alias_values": 12
+  },
+  "checks": [
+    {
+      "command": "cargo check -p tablecraft-query --lib -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-grouped-check-20261025.log",
+      "sha256": "1034c028483a9e5256b31ebbe51a78a8ce6a80d04add2cb9da5edcaa416d066e",
+      "terminal_session": 19630
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test progressive_queries --test progressive_count_execution --test progressive_count_operands --test progressive_numeric_aggregate_values --test progressive_extrema_values --test progressive_grouped_policies --test progressive_grouped_values -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-grouped-primary-final-20261025.log",
+      "sha256": "740a890fd13e2e7950d2f86a0189ce081ff7ef65dafbc6fc014fad6b6a381396",
+      "tests": 104,
+      "terminal_session": 15842
+    },
+    {
+      "command": "cargo test -p tablecraft-query --lib execution:: -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-grouped-private-units-final-20261025.log",
+      "sha256": "a7e2bb682ea113176e48648154940a7733d7e4c5c2551e00684fe90385df9bc1",
+      "tests": 26,
+      "terminal_session": 21527
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test crosstab --test crosstab_scalar_headings --test named_crosstabs --test grouped_expressions --test grouped_subqueries --test domain --test named --test external_named_sources --test projection_alias_execution --test projection_alias_values --test collation_routing --test exact_key_conformance --test exact_key_indexing --test output_types --test declared_result_widths -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-grouped-related-regressions-20261025.log",
+      "sha256": "f3842d2319f09cb6352859d42a0e05e6a71eee207376e3c9e39e732065e68cd2",
+      "tests": 255,
+      "terminal_session": 34452
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --tests -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-grouped-clippy-20261025.log",
+      "sha256": "080603761417aa18ee89601f0d9b53fe6f4d6a886f8ae134147bcb2334cf4333",
+      "terminal_session": 51118
+    },
+    {
+      "command": "cargo check -p tablecraft-query --lib --no-default-features -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-grouped-minimal-20261025.log",
+      "sha256": "0f9deba9ec32169edcb898a30b5276441434f2ce7c47725a70f3af16fdff1759",
+      "terminal_session": 25987
+    },
+    {
+      "command": "cargo test -p tablecraft-access --test progressive_source -p tablecraft-cli --test progressive_queries --test linked_queries -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-grouped-native-cli-final-20261025.log",
+      "sha256": "0ea91db165fc1ed9a87336d65049d1df9143dc73a7ed1fbb6a7cb6739256762c",
+      "tests": 74
+    },
+    {
+      "command": "cargo clippy -p tablecraft-access --lib --test progressive_source -p tablecraft-cli --bin tablecraft --test progressive_queries --test linked_queries -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-grouped-native-cli-clippy-20261025.log",
+      "sha256": "10c86d1da7a0f2091d9525ea46dbe47288869e210dad1671009787c0c49c39b0"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-grouped-fmt-20261025.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "contracts": [
+    "Binding captures a paid paired grouping descriptor vector using existing inference before pruning; ordinary/domain constructors and temporary crosstab pivot alignment retain consistency. No provider or row scan supplies metadata.",
+    "Only the active proven integral/Boolean/NULL profile admits streaming grouping. Actual key cells are checked before directory lookup; no first-row inference, carrier coercion or dynamic policy regroup.",
+    "Groups retain first key values/declarations, merge within-group policies/completion, and with a resolver apply the complete global per-key-column policy/completion cohort after checked EOF, including numeric/NULL lineage.",
+    "Final key substitution is explicitly gated on progressive final GroupKeys. Metered structural matching/cell copies serve scalar, retained, String and byte argument paths; ordinary buffered representative-row evaluation stays inactive/unchanged.",
+    "Per-group syntactic aggregate states reuse current Count/Sum/Avg/Min/Max kernels, including raw/Error nullness and resolver-dependent String candidates. No complete source row group or result cache is retained; candidate/scratch/index/state/result allocations are fully charged.",
+    "Key and operand work is per qualified row in written order. EOF precedes all output; final group finish/projection may fail after earlier groups, TOP still evaluates omitted groups, and typed sink failure stops groups/arms."
+  ],
+  "independent_controls": [
+    "Generated 100,003 inputs reduce to seventeen modeled groups without a parent snapshot, with exact integer/Fraction answers, Decimal half-even residuals, five key carriers, nullable tuples, negative Mod and first encounter order.",
+    "Crossed preparation/execution profiles preserve active grouping descriptors and final carriers; Dynamic default keys reject before cursors even for small actual values. Final aliases and complete key expressions never require an invented representative row.",
+    "Interleaved groups preserve independently modeled late reverse-policy String extrema, actual String conflicts, singleton unused-policy behavior, conservative NULL-key provenance, raw/Error observers and UNKNOWN extrema declarations.",
+    "False filters, empty groups, later unsupported arms, EOF/first-callback failures, every observed cancellation checkpoint, cumulative quotas, sink-stop behavior, omitted TOP final errors and reuse retain explicit controls.",
+    "Existing generated global Count under 8 KiB, Count operand, Sum/Avg and full extrema conformance pass unchanged apart from obsolete unsupported-grouping controls now using still-unsupported Double keys."
+  ],
+  "excluded_attempts": [
+    {
+      "private_log": ".cache/progressive-grouped-primary-20261025.log",
+      "sha256": "7a9c2503f060cdffcbb5763bc2b9972b62211c7172eb6fed47ca8b17bc31bad3",
+      "exit_code": 101,
+      "reason": "New policy test used nonexistent EvalError::CollationConflict; corrected only to existing QueryError::CollationConflict. Compile-only authoring failure, no executed answer or runtime correction.",
+      "counted_as_acceptance": false
+    },
+    {
+      "private_log": ".cache/progressive-grouped-primary-retry-20261025.log",
+      "sha256": "3d1c2dba74587ba7cc02a1304be6e1231e96716e7377e27eee8f6a6817b53b45",
+      "exit_code": 101,
+      "reason": "New implementation test used assert_eq on StreamError, which intentionally has no PartialEq. Replaced only with matches!, preserving expected Unsupported refusal.",
+      "counted_as_acceptance": false
+    },
+    {
+      "private_log": ".cache/progressive-grouped-primary-retry2-20261025.log",
+      "sha256": "39dec19cc6c02fa0354a4eb948623657fdb431ea6037409fa47a3e77b3e04ce9",
+      "exit_code": 101,
+      "reason": "New independent cancellation assertion accepted only QueryError::Cancelled. Exact checkpoint29 was QueryError::Evaluation(EvalError::Cancelled), an existing pure-kernel contract; corrected only the new assertion to accept both typed cancellation variants. No production normalization or result change.",
+      "counted_as_acceptance": false
+    },
+    {
+      "private_log": ".cache/progressive-grouped-values-cancellation-probe-20261025.log",
+      "sha256": "faf08b1634a3326b9b0f6f3364cb8a9816118c19a0b43091e2e869817240ee15",
+      "exit_code": 0,
+      "reason": "Diagnostic exact test filter omitted module path and selected zero tests. Not passing acceptance.",
+      "counted_as_acceptance": false
+    },
+    {
+      "private_log": ".cache/progressive-grouped-values-cancellation-actual-20261025.log",
+      "sha256": "4944f98c079f68ab8cf1466614ed7fa356208db9d3bb1a7a91da3c8e88ac997a",
+      "exit_code": 101,
+      "reason": "Single-test diagnostic captured Query(Evaluation(Cancelled)) at checkpoint29 before the new assertion correction. Excluded from accepted counts.",
+      "counted_as_acceptance": false
+    },
+    {
+      "private_log": ".cache/progressive-grouped-private-units-20261025.log",
+      "sha256": "5be11f2ff7547ef3e65c99187311a83b47695a9d1d7a642f989951a888150779",
+      "exit_code": 101,
+      "reason": "New private test used nonexistent TextPolicy::Required; corrected only to actual Column variant. Compile-only authoring failure.",
+      "counted_as_acceptance": false
+    },
+    {
+      "private_log": ".cache/progressive-grouped-private-units-accepted-20261025.log",
+      "sha256": "8e27f146b2e23b54502c14347ab98aadfc8b2664ccfe1dbe8f127dce2dec6c06",
+      "exit_code": 101,
+      "reason": "Filename is historical, not accepted evidence. New inactive-bridge test expected Width for eval(Field) against an empty row; existing evaluator returns UnknownName. Corrected only test expectation; 25 other units already passed.",
+      "counted_as_acceptance": false
+    },
+    {
+      "private_log": ".cache/progressive-grouped-native-cli-20261025.log",
+      "sha256": "f13d3d0da9851975e4049a1fb219cba76c7eb711fc057cca392e569e5ae164e1",
+      "exit_code": 101,
+      "reason": "Existing CLI negative control still classified GROUP BY Id as unsupported. The newly admitted profile correctly succeeded. Moved the refusal control to CDbl(Id), an unsupported Double key, preserving negative coverage. All five new integration tests already passed; no production change or numeric/transport golden correction. Final full74 scoped integration batch passes.",
+      "counted_as_acceptance": false
+    }
+  ],
+  "source_timing": "Production compiled on the first source check. Subsequent corrections were new-test enum/assertion/diagnostic expectations only; no production answer correction occurred. Final primary, private units, related regressions, strict Clippy and minimal check cover the coherent source. Diagnostic/superseded partial passes are not added to 385.",
+  "validation_limits": [
+    "Scoped459 query/native/CLI tests, strict linting, minimal query features and formatting; no full workspace suite or native Microsoft Access execution qualification.",
+    "Original native/CAB frozen-CLI replay remains pending separately. String candidates and concurrent numeric scratch retain their actual cumulative budgets; no constant-memory or timing claim."
+  ],
+  "integration_targets": {
+    "native_progressive_source": 22,
+    "cli_progressive_queries": 39,
+    "cli_linked_queries": 13
+  }
+}

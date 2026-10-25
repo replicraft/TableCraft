@@ -1,5 +1,5 @@
 //! Preflight every selected arm before any progressive record callback.
-use super::super::Runtime;
+use super::super::{Runtime, exact_keys::ExactKeys};
 use crate::{
     OutputType, QueryError,
     external_sources::SourceNamespace,
@@ -10,6 +10,7 @@ pub(super) struct ProgressiveArm<'p> {
     pub(super) read: &'p ReadPlan,
     pub(super) select: &'p SelectPlan,
     pub(super) aggregates: Vec<&'p Expr>,
+    pub(super) group_lookup: Option<ExactKeys>,
 }
 
 pub(super) struct ProgressivePlan<'p> {
@@ -76,10 +77,22 @@ impl Runtime<'_, '_> {
         arms: &mut Vec<ProgressiveArm<'p>>,
     ) -> Result<(), QueryError> {
         let (select, aggregates) = self.progressive_select(read)?;
+        let group_lookup = if select.group.is_empty() {
+            None
+        } else {
+            if select.group_types.len() != select.group.len() {
+                return Err(QueryError::Width);
+            }
+            Some(
+                self.exact_profiled_keys(&select.group_types)?
+                    .ok_or(QueryError::Unsupported)?,
+            )
+        };
         arms.push(ProgressiveArm {
             read,
             select,
             aggregates,
+            group_lookup,
         });
         Ok(())
     }

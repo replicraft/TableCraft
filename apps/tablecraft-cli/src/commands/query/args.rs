@@ -75,10 +75,10 @@ pub(crate) enum Command {
         after_help = concat!(
             "Supports inline SELECT/UNION/crosstab sources, filtering, joins, grouping and ",
             "subqueries. Explicit --stream with --database supports direct row-local ",
-            "SELECT/WHERE, global COUNT(*)/COUNT(expr), SUM/AVG/MIN/MAX and flat UNION ALL as TSV batches. ",
+            "SELECT/WHERE, global COUNT(*)/COUNT(expr), SUM/AVG/MIN/MAX, eligible Boolean/integral/NULL GROUP BY keys and flat UNION ALL as TSV batches. ",
             "Aggregate results publish only after checked source EOF. Use --batch-rows to bound batch size; a later failure may ",
-            "leave earlier output. Ordering, grouping, joins, duplicate-eliminating sets, nested ",
-            "sources and collection modes keep the buffered execution path. Explicit ",
+            "leave earlier output. Other grouping keys, HAVING, ordering, joins, duplicate-eliminating sets, nested ",
+            "sources and collection modes require buffered execution; --stream refuses unsupported plans. Explicit ",
             "--stored-calculations also streams cached scalar results without running formulas. ",
             "Explicit --link mappings can stream qualified one-hop native tables. ",
             "Repeated --recomputed-column VIEW TABLE COLUMN selections create fresh local ",

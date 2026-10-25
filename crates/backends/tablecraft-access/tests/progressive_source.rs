@@ -370,3 +370,6 @@ fn progressive_scan_never_reuses_a_previous_complete_snapshot() {
     source.scan("Items", &mut |_| Ok(())).unwrap();
     assert_eq!(collect(&source, &[0]), Err(QueryError::Source));
 }
+
+#[path = "progressive_source/grouped.rs"]
+mod grouped;

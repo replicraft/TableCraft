@@ -1,6 +1,7 @@
 //! Explicit progressive row-local execution; ordinary retrieval stays buffered.
 mod admission;
 mod aggregates;
+mod groups;
 mod plan;
 mod publication;
 mod rows;
@@ -56,14 +57,13 @@ impl PreparedQuery {
     /// Progressively evaluate local scalar SELECT/WHERE arms in written source order.
     /// Unordered positive TOP counts limit publication while all rows are still
     /// read and evaluated through checked EOF. Flat UNION ALL combines admitted
-    /// arms through the ordinary UNION result conversions. Global Count, Sum and Avg
-    /// arms retain one bounded state per occurrence and evaluate final scalar
-    /// projections only after successful EOF. Count observes shared nullness/state
-    /// rules; Sum/Avg reuse the buffered numeric kernels. Operands run per row in
-    /// written occurrence order, then states finish after EOF. Other aggregates
-    /// are refused.
+    /// arms through the ordinary UNION result conversions. Global and proven
+    /// Boolean/integral/NULL grouped Count, Sum, Avg, Min and Max retain one state
+    /// per occurrence and group. Group keys and aggregate operands run per row;
+    /// checked EOF precedes final projections. Min/Max retain resolver-dependent
+    /// String candidates under the cumulative budget. Other aggregates are refused.
     /// Sorts, TOP PERCENT,
-    /// duplicate-eliminating sets, groups,
+    /// duplicate-eliminating sets, other grouping keys, HAVING,
     /// joins, derived/named sources, collections,
     /// subqueries, domain calls, Eval and volatile functions are refused before
     /// scanning, even for empty inputs. The source must explicitly implement
@@ -74,6 +74,8 @@ impl PreparedQuery {
     /// accepted rows. Cumulative budgets never refill and no result cache is
     /// published. Cross-row failure precedence follows progressive encounter
     /// order, rather than a buffered provider's load-before-evaluation order.
+    /// Group finalization/projection errors may follow earlier accepted groups;
+    /// EOF or input-operand failure prevents every result from that arm.
     ///
     /// Providers may retain exclusive cursor access across callbacks. The visitor
     /// and supplied expression providers must not reenter the source. The first
@@ -108,12 +110,12 @@ impl PreparedQuery {
             },
             &mut budget,
         )?;
-        let plan = runtime.progressive_plan(&self.body)?;
+        let mut plan = runtime.progressive_plan(&self.body)?;
         let mut summary = StreamSummary {
             scanned_rows: 0,
             emitted_rows: 0,
         };
-        for arm in &plan.arms {
+        for arm in &mut plan.arms {
             runtime.progressive_rows(arm, plan.union_types, &mut summary, visitor)?;
         }
         runtime.tick()?;

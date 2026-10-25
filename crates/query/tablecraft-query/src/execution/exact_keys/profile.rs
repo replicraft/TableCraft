@@ -3,7 +3,7 @@ use super::{ExactKeys, check, directory::Directory};
 use crate::{
     OutputType, QueryError,
     execution::{Runtime, cell::CellValue},
-    plan::{Expr, Relation},
+    plan::{Expr, ProfiledType, Relation},
 };
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
@@ -41,6 +41,36 @@ impl Kind {
 }
 
 impl Runtime<'_, '_> {
+    pub(in crate::execution) fn exact_profiled_keys(
+        &mut self,
+        types: &[ProfiledType],
+    ) -> Result<Option<ExactKeys>, QueryError> {
+        let declared = self.options.declared_integral;
+        let selected = |types: &ProfiledType| {
+            if declared {
+                types.declared
+            } else {
+                types.materialized
+            }
+        };
+        for types in types {
+            self.tick()?;
+            if Kind::from_output(selected(types)).is_none() {
+                return Ok(None);
+            }
+        }
+        let mut profile = self.exact_profile(types.len())?;
+        for types in types {
+            self.tick()?;
+            profile.push(Kind::from_output(selected(types)).ok_or(QueryError::Source)?);
+        }
+        Ok(Some(ExactKeys {
+            profile,
+            directory: Directory::default(),
+            enabled: true,
+        }))
+    }
+
     pub(in crate::execution) fn exact_output_keys(
         &mut self,
         types: &[OutputType],
@@ -127,6 +157,34 @@ impl Runtime<'_, '_> {
             .map_err(|_| QueryError::Allocation)?;
         Ok(profile)
     }
+}
+
+pub(super) fn valid(
+    profile: &[Kind],
+    row: &[CellValue],
+    budget: &mut ResourceBudget,
+    cancelled: Option<&dyn Fn() -> bool>,
+) -> Result<bool, QueryError> {
+    if profile.len() != row.len() {
+        return Ok(false);
+    }
+    for (kind, cell) in profile.iter().zip(row) {
+        check(budget, cancelled)?;
+        if matches!(cell.value, ExpressionValue::Value(Value::Null)) {
+            continue;
+        }
+        if !matches!(
+            (kind, &cell.value),
+            (Kind::Boolean, ExpressionValue::Value(Value::Boolean(_)))
+                | (Kind::Byte, ExpressionValue::Value(Value::Byte(_)))
+                | (Kind::Int16, ExpressionValue::Value(Value::Int16(_)))
+                | (Kind::Int32, ExpressionValue::Value(Value::Int32(_)))
+                | (Kind::Int64, ExpressionValue::Value(Value::Int64(_)))
+        ) {
+            return Ok(false);
+        }
+    }
+    Ok(true)
 }
 
 pub(super) fn fingerprint(

@@ -142,6 +142,7 @@ impl Runtime<'_, '_> {
         let mut output = Vec::new();
         for group in self.groups(rows, select, &[])? {
             let group_keys = Some(GroupKeys {
+                retained_values: false,
                 expressions: &select.group,
                 values: &group.keys,
             });

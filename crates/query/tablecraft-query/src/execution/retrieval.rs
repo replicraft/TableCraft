@@ -283,6 +283,7 @@ impl Runtime<'_, '_> {
                     output: &[],
                     group: Some(&group.rows),
                     group_keys: Some(super::context::GroupKeys {
+                        retained_values: false,
                         expressions: &select.group,
                         values: &group.keys,
                     }),

@@ -152,3 +152,12 @@ remain independent: a streamed result never publishes a complete input cache.
 Three new native controls cover priority layouts, failed final pages/counts and
 pruned malformed fields; the combined [338-test checkpoint](testing/results/read-query-progressive-extrema-2026-10-25.json)
 keeps native Access qualification separate.
+
+## Grouped consumers
+
+The shared query service also consumes this cursor for eligible integral/NULL
+grouping. Two new native controls traverse 1,100 rows across priority layouts
+and batches while snapshot retention stays one. A failed final page or declared
+count mismatch prevents every grouped result callback, including TOP 1.
+No complete table cache is published. The [459-test checkpoint](testing/results/read-query-progressive-grouped-2026-10-25.json)
+keeps native Access grouping/order qualification separate.

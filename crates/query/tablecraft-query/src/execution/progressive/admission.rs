@@ -21,7 +21,6 @@ impl Runtime<'_, '_> {
             || !read.sort.is_empty()
             || read.distinct
             || read.top.is_some_and(|(_, percent)| percent)
-            || !select.group.is_empty()
             || select.having.is_some()
             || !select.record_keys.is_empty()
             || select.parent.is_some()
@@ -42,6 +41,9 @@ impl Runtime<'_, '_> {
         let mut aggregates = Vec::new();
         if let Some(filter) = &select.filter {
             self.progressive_expression(filter, false, 1, &mut aggregates)?;
+        }
+        for key in &select.group {
+            self.progressive_expression(key, false, 1, &mut aggregates)?;
         }
         for expression in &select.projection {
             self.progressive_expression(expression, select.aggregate, 1, &mut aggregates)?;

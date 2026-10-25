@@ -38,6 +38,23 @@ fn with_runtime(test: impl FnOnce(&mut Runtime<'_, '_>)) {
 }
 
 #[test]
+fn required_profile_validation_refuses_unexpected_cells_without_disabling_other_consumers() {
+    with_runtime(|runtime| {
+        let lookup = runtime
+            .exact_output_keys(&[crate::OutputType::scalar(ScalarType::Int32, true)])
+            .unwrap()
+            .unwrap();
+        for value in [Value::Int64(7), Value::Text("7".into())] {
+            let row = [CellValue::scalar(value)];
+            assert!(!lookup.valid(&row, runtime.budget, None).unwrap());
+            assert!(lookup.enabled);
+        }
+        let row = [CellValue::scalar(Value::Null)];
+        assert!(lookup.valid(&row, runtime.budget, None).unwrap());
+    });
+}
+
+#[test]
 fn unexpected_carrier_disables_lookup_and_keeps_every_representative_visible() {
     with_runtime(|runtime| {
         let mut lookup = runtime

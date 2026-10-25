@@ -92,6 +92,22 @@ fn mapped_alias_union_arms_share_the_existing_aggregate_evaluator() {
         )),
         expected
     );
+
+    let grouped =
+        "SELECT CLng(Id Mod 2) AS K,Count(*) AS N,Sum(Score) AS S FROM Linked GROUP BY Id Mod 2";
+    let expected = b"K\tN\tS\n1\t2\t40\n0\t1\t20\n";
+    assert_eq!(success(query(&root, &target, grouped, &[])), expected);
+    for batch in ["1", "2"] {
+        assert_eq!(
+            success(query(
+                &root,
+                &target,
+                grouped,
+                &["--stream", "--batch-rows", batch]
+            )),
+            expected
+        );
+    }
 }
 
 #[test]

@@ -237,10 +237,16 @@ impl Binder<'_> {
             .iter()
             .map(|e| self.expression(e, &scopes, false, depth + 1))
             .collect::<Result<Vec<_>, _>>()?;
+        self.charge(size_of::<Vec<ProfiledType>>() + group.len() * size_of::<ProfiledType>())?;
+        let mut group_types = Vec::new();
+        group_types
+            .try_reserve_exact(group.len())
+            .map_err(|_| QueryError::Allocation)?;
         for key in &group {
             if !self.scalar_group_key(key, depth + 1)? {
                 return Err(QueryError::Unsupported);
             }
+            group_types.push(self.profiled_result_type(key, &scopes, depth + 1)?);
         }
         let mut projection = Vec::new();
         let mut names = Vec::new();
@@ -444,6 +450,7 @@ impl Binder<'_> {
                 projection,
                 filter,
                 group,
+                group_types,
                 having,
                 aggregate,
                 record_keys,

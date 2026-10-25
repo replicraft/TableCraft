@@ -174,6 +174,7 @@ pub(crate) fn bind_domain(
             projection,
             filter,
             group: Vec::new(),
+            group_types: Vec::new(),
             having: None,
             aggregate: true,
             record_keys: Vec::new(),
