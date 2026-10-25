@@ -15,7 +15,8 @@ pub(crate) use compare::compare;
 pub(crate) use promotion::integer_operand_conversion;
 pub use promotion::{
     ArithmeticDeclarations, OperandDeclaration, arithmetic_agreement, declared_integral_arithmetic,
-    declared_numeric_arithmetic, promoted_arithmetic, promoted_negate, uses_declared_overflow,
+    declared_numeric_arithmetic, promoted_arithmetic, promoted_negate,
+    uses_declared_double_division, uses_declared_overflow,
 };
 
 pub(super) fn integer(value: &Value) -> Option<i64> {

@@ -318,6 +318,34 @@ integers and computes truncated quotient/remainder with unbounded integers.
 Native controls also check rounded arithmetic using unchanged stored Long fields.
 
 
+## Division-specific mixed Decimal selection
+
+The existing explicit declared-arithmetic profile applies the operator-specific
+[MS-VBAL division table, §5.6.9.3.5](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/8628f21c-3f02-42b1-908c-201bd7ffe1b5):
+Decimal divided by Double, Currency, legacy Date or numeric Text selects Double,
+in either operand order. Decimal is included in the specification's numeric value
+types. This rule is independent of Scalar/Variant categories; unknown categories
+can therefore agree on the same result. The existing default materialized profile
+continues to select Decimal for these pairs.
+
+Text conversion selects Double from the original operands before converting the
+Text, using the caller's explicit number-format policy. Consequently a finite
+Double such as `1e-100` does not become Decimal zero, and `1e100` does not overflow
+a Decimal intermediate. Actual Decimal operations still use the existing
+`rust_decimal` implementation. Decimal with Single, integral or Decimal retains
+its checked Decimal quotient. NULL propagation follows family admission; operand
+expression failures remain eager. Double-selected zero/zero is Overflow, while
+Decimal zero/zero remains DivisionByZero. This is an explicit language-contract
+engineering profile, not a native Access comparison qualification.
+
+`numeric::uses_declared_double_division` identifies this category-independent
+selection separately from `uses_declared_overflow`. Contextual conversion and
+arithmetic agreement share the same selection without changing the default
+`promoted_arithmetic` kernel. Focused kernel tests cover both orders, all four
+Scalar/Variant pairings, retained Decimal peers, tiny/huge Double boundaries and
+zero errors. Contextual tests cover number policies, NULL/admission precedence,
+shared byte limits and cancellation at each observed checkpoint.
+
 ## Single-selected overflow and the numeric kernel
 
 `declared_numeric_arithmetic` accepts nullable Boolean/Byte/Integer/Long/LongLong,
@@ -334,7 +362,7 @@ decision. Power retains the existing Double profile. Currency, Decimal, LongLong
 and Double retain their checked range rules regardless of declaration category.
 Signed zero, finite Single rounding and underflow retain their existing behavior.
 Floating-selected zero/zero now fails with Overflow independently of declaration
-category; Decimal and rounded integer zero divisors retain DivisionByZero. See
+category; Decimal-selected and rounded integer zero divisors retain DivisionByZero. See
 [error selection](ARITHMETIC_PROMOTION.md#zero-divisor-error-selection).
 
 `numeric::uses_declared_overflow` shares this dispatch decision with the query

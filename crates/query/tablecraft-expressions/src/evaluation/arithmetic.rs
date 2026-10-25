@@ -60,6 +60,7 @@ impl Evaluator<'_> {
             left,
             right,
             Some(Value::Null),
+            true,
             numeric::arithmetic_agreement,
         )
     }
@@ -99,6 +100,7 @@ impl Evaluator<'_> {
             left,
             right,
             Value::Null,
+            declarations.is_some(),
             |operator, left, right| {
                 if let Some(declarations) = declarations {
                     numeric::declared_numeric_arithmetic(operator, left, right, declarations)
@@ -115,6 +117,7 @@ impl Evaluator<'_> {
         left: &Value,
         right: &Value,
         null: T,
+        declared: bool,
         compute: impl FnOnce(Arithmetic, &Value, &Value) -> Result<T, EvalError>,
     ) -> Result<T, EvalError> {
         for operand in [left, right] {
@@ -131,8 +134,12 @@ impl Evaluator<'_> {
         let serial = date && matches!(operator, Arithmetic::Add | Arithmetic::Subtract);
         // Text must not pass through binary floating point on its way to Decimal
         // or rounded integer division. Currency addition/subtraction round at the
-        // existing checked four-place conversion boundary.
+        // existing checked four-place conversion boundary. The explicit division
+        // override instead selects Double directly from the original operands.
+        let double_division =
+            declared && numeric::uses_declared_double_division(operator, left, right);
         let target = match operator {
+            Arithmetic::Divide if double_division => Conversion::Double,
             Arithmetic::Power => Conversion::Double,
             Arithmetic::IntegerDivide | Arithmetic::Modulo => {
                 numeric::integer_operand_conversion(left, right)?
@@ -170,3 +177,6 @@ mod admission_tests;
 
 #[cfg(test)]
 mod agreement_tests;
+
+#[cfg(test)]
+mod division_tests;

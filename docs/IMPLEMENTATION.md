@@ -1,5 +1,22 @@
 # Implementation status
 
+## Division-specific Decimal selection in the expression library
+
+The explicit declared/agreement arithmetic APIs now select Double for Decimal
+paired with Double, Currency, legacy Date or contextual numeric Text in either
+order, following the reviewed operator-specific language contract. Text selects
+its target before conversion, preventing a tiny Double/Text divisor from becoming
+Decimal zero. Materialized arithmetic remains Decimal-first, while genuine
+Decimal quotients continue using the existing rust_decimal path.
+
+The [arithmetic contract](DECLARED_ARITHMETIC.md#division-specific-mixed-decimal-selection)
+records category-independent selection, explicit number policies and zero/error
+behavior. Fifty-seven focused expression regressions pass, including nine new
+kernel/contextual tests; the minimal feature division controls and strict scoped
+SQL-enabled Clippy also pass. Query dispatch and profile-specific composed-result
+metadata remain a separate integration step. This is engineering evidence from
+MS-VBAL, not a new native Access comparison or default-profile change.
+
 ## Independent linked-query corpus and scoped verification
 
 Original public-writer/getter pairs now exercise explicit linked queries across

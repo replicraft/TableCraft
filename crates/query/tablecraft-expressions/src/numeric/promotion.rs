@@ -10,7 +10,7 @@ mod declaration;
 mod division;
 pub use declaration::{
     ArithmeticDeclarations, OperandDeclaration, arithmetic_agreement, declared_integral_arithmetic,
-    declared_numeric_arithmetic, uses_declared_overflow,
+    declared_numeric_arithmetic, uses_declared_double_division, uses_declared_overflow,
 };
 mod negation;
 pub(crate) use division::integer_operand_conversion;

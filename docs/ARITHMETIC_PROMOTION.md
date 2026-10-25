@@ -125,7 +125,8 @@ owning profiles. SQL numeric Text is converted to Double first. The standalone
 
 | Operation / operands | Current result |
 | --- | --- |
-| Division with a Decimal | Decimal through the existing checked conversion/kernel profile |
+| Default materialized division with a Decimal | Decimal through the existing checked conversion/kernel profile |
+| Explicit declared-profile Decimal division with Double, Currency, legacy Date or numeric Text | Double in either operand order; see [declared arithmetic](DECLARED_ARITHMETIC.md#division-specific-mixed-decimal-selection) |
 | Division with Currency or legacy DATE, without Decimal | Double after checked numeric conversion |
 | Division with Single and Byte/Boolean/Integer/Single | Single, widening on Single overflow |
 | Other admitted numeric division | Double with checked nearest-even operand conversion and finite-result checks |

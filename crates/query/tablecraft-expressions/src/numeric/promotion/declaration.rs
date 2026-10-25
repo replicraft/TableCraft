@@ -6,7 +6,10 @@ use crate::{
     functions::conversions::Conversion,
     numeric::{Arithmetic, integer},
 };
-pub use numeric::{arithmetic_agreement, declared_numeric_arithmetic, uses_declared_overflow};
+pub use numeric::{
+    arithmetic_agreement, declared_numeric_arithmetic, uses_declared_double_division,
+    uses_declared_overflow,
+};
 use tablecraft_core::values::Value;
 
 /// Caller-established declaration category, separate from a value's carrier.

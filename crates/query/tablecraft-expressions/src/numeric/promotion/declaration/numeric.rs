@@ -3,9 +3,10 @@ use super::{ArithmeticDeclarations, OperandDeclaration, retains_integral_carrier
 use crate::{
     EvalError,
     numeric::{
-        Arithmetic, integer,
+        Arithmetic, admission, integer,
         promotion::{
-            integer_operand_conversion, integral_target, promoted_arithmetic, small_float_operand,
+            doubles, integer_operand_conversion, integral_target, promoted_arithmetic,
+            small_float_operand,
         },
     },
 };
@@ -41,6 +42,23 @@ fn date_operation(operator: Arithmetic, left: &Value, right: &Value) -> bool {
         && (date(left) || numeric_operand(left) || matches!(left, Value::Text(_)))
         && (date(right) || numeric_operand(right) || matches!(right, Value::Text(_)))
         && !(operator == Arithmetic::Subtract && date(left) && date(right))
+}
+
+/// Division-specific effective Double selection in the explicit declared profile.
+/// MS-VBAL 5.6.9.3.5 overrides generic Decimal dominance for these peers.
+/// This predicate performs no admission, conversion or declaration inference.
+/// Text still requires the contextual evaluator and its explicit number policy.
+pub fn uses_declared_double_division(operator: Arithmetic, left: &Value, right: &Value) -> bool {
+    let peer = |value: &Value| {
+        matches!(
+            value,
+            Value::Double(_) | Value::Currency(_) | Value::DateTime(_) | Value::Text(_)
+        )
+    };
+
+    operator == Arithmetic::Divide
+        && ((matches!(left, Value::Decimal(_)) && peer(right))
+            || (matches!(right, Value::Decimal(_)) && peer(left)))
 }
 
 /// Whether the current materialized arithmetic profile enforces an integral or
@@ -116,7 +134,15 @@ fn evaluated(
     left: &Value,
     right: &Value,
 ) -> Result<(Value, bool), EvalError> {
-    let result = promoted_arithmetic(operator, left, right)?;
+    let result = if uses_declared_double_division(operator, left, right) {
+        for operand in [left, right] {
+            admission::materialized(operand)?;
+        }
+
+        doubles(operator, left, right)?
+    } else {
+        promoted_arithmetic(operator, left, right)?
+    };
     if matches!(result, Value::Null) {
         return Ok((result, true));
     }
@@ -144,3 +170,6 @@ mod tests;
 
 #[cfg(test)]
 mod agreement_tests;
+
+#[cfg(test)]
+mod division_tests;
