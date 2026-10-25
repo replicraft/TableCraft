@@ -4,7 +4,7 @@ mod schema;
 use super::{Binder, projection, retrieval::has_aggregate};
 use crate::{
     OutputType, QueryError,
-    plan::{CrosstabPlan, Expr, ReadNode, ReadPlan},
+    plan::{CrosstabPlan, Expr, ProfiledType, ReadNode, ReadPlan},
     profile::SOURCE_SCHEMA_POLICY,
 };
 use tablecraft_sql::{query::Crosstab, select::SelectPredicate};
@@ -41,7 +41,16 @@ impl Binder<'_> {
         // Temporarily collect the pivot as a key so the shared pruner retains
         // its fields and rewrites every slot consistently. It does not become a
         // row grouping key in the executable plan.
+        let pivot_type = self.profiled_result_type(&pivot, &[&bound.source.slots], 2)?;
+        if bound.group_types.len() == bound.group_types.capacity() {
+            self.charge(size_of::<ProfiledType>())?;
+            bound
+                .group_types
+                .try_reserve_exact(1)
+                .map_err(|_| QueryError::Allocation)?;
+        }
         bound.group.push(pivot);
+        bound.group_types.push(pivot_type);
         // Pivot-only collections are displayed too. Classify hidden WHERE
         // members only after the complete expansion domain is known.
         let filter = bound.filter.take();
@@ -63,6 +72,7 @@ impl Binder<'_> {
             return Err(QueryError::Unsupported);
         };
         let pivot = bound.group.pop().ok_or(QueryError::Grouping)?;
+        bound.group_types.pop().ok_or(QueryError::Grouping)?;
         let headings = if let Some(headings) = &cross.headings {
             if headings.is_empty() || headings.len() > SOURCE_SCHEMA_POLICY.max_columns - row_width
             {

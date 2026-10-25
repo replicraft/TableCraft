@@ -132,6 +132,7 @@ pub(crate) struct SelectPlan {
     pub projection: Vec<Expr>,
     pub filter: Option<Expr>,
     pub group: Vec<Expr>,
+    pub group_types: Vec<ProfiledType>,
     pub having: Option<Expr>,
     pub aggregate: bool,
     pub record_keys: Vec<Expr>,

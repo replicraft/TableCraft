@@ -29,26 +29,7 @@ impl Runtime<'_, '_> {
         else {
             return Err(QueryError::Unsupported.into());
         };
-        self.budget
-            .charge_allocation(arm.aggregates.len() as u64, size_of::<Accumulator>() as u64)
-            .map_err(QueryError::from)?;
-        let mut accumulators = Vec::new();
-        accumulators
-            .try_reserve_exact(arm.aggregates.len())
-            .map_err(|_| QueryError::Allocation)?;
-        for expression in &arm.aggregates {
-            self.tick()?;
-            let Expr::Aggregate(kind, _) = expression else {
-                return Err(QueryError::Source.into());
-            };
-            // Without an existing materialized group, a resolver's String
-            // population remains provisional until checked EOF. Non-Strings
-            // still select incrementally in the shared extrema state.
-            accumulators.push(Accumulator::new(
-                *kind,
-                self.options.collation_resolver.is_some(),
-            )?);
-        }
+        let mut accumulators = self.progressive_accumulators(&arm.aggregates)?;
         let source = self.source;
         let mut failure: Option<QueryError> = None;
         let mut consume = |row: ProjectedRow<'_>| {
@@ -99,23 +80,7 @@ impl Runtime<'_, '_> {
         scanned?;
         self.tick()?;
 
-        self.budget
-            .charge_allocation(
-                arm.aggregates.len() as u64,
-                size_of::<AggregateResult<'_>>() as u64,
-            )
-            .map_err(QueryError::from)?;
-        let mut results = Vec::new();
-        results
-            .try_reserve_exact(arm.aggregates.len())
-            .map_err(|_| QueryError::Allocation)?;
-        for (expression, accumulator) in arm.aggregates.iter().zip(accumulators) {
-            self.tick()?;
-            results.push(AggregateResult {
-                expression,
-                value: self.finish_progressive_aggregate(accumulator, expression)?,
-            });
-        }
+        let results = self.progressive_aggregate_results(&arm.aggregates, accumulators)?;
 
         // Completed results are borrowed only by the final projection. Input
         // callbacks have returned, and no mutable Runtime overlay can leak.
@@ -132,5 +97,54 @@ impl Runtime<'_, '_> {
         // Admitted TOP counts are positive, so a global aggregate's one row
         // survives TOP. SQL TOP 0 remains a preparation error.
         self.progressive_publish(arm, cells, union_types, summary, visitor)
+    }
+
+    pub(super) fn progressive_accumulators(
+        &mut self,
+        expressions: &[&Expr],
+    ) -> Result<Vec<Accumulator>, QueryError> {
+        self.budget
+            .charge_allocation(expressions.len() as u64, size_of::<Accumulator>() as u64)?;
+        let mut accumulators = Vec::new();
+        accumulators
+            .try_reserve_exact(expressions.len())
+            .map_err(|_| QueryError::Allocation)?;
+        for expression in expressions {
+            self.tick()?;
+            let Expr::Aggregate(kind, _) = expression else {
+                return Err(QueryError::Source);
+            };
+            // Resolver-dependent String populations remain provisional through
+            // EOF; non-String extrema use the same incremental shared state.
+            accumulators.push(Accumulator::new(
+                *kind,
+                self.options.collation_resolver.is_some(),
+            )?);
+        }
+        Ok(accumulators)
+    }
+
+    pub(super) fn progressive_aggregate_results<'p>(
+        &mut self,
+        expressions: &[&'p Expr],
+        accumulators: Vec<Accumulator>,
+    ) -> Result<Vec<AggregateResult<'p>>, QueryError> {
+        self.budget.charge_allocation(
+            expressions.len() as u64,
+            size_of::<AggregateResult<'_>>() as u64,
+        )?;
+        let mut results = Vec::new();
+        results
+            .try_reserve_exact(expressions.len())
+            .map_err(|_| QueryError::Allocation)?;
+        for (expression, accumulator) in expressions.iter().zip(accumulators) {
+            self.tick()?;
+            results.push(AggregateResult {
+                expression,
+                value: self.finish_progressive_aggregate(accumulator, expression)?,
+            });
+        }
+
+        Ok(results)
     }
 }

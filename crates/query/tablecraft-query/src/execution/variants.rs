@@ -38,6 +38,9 @@ impl Runtime<'_, '_> {
         expression: &Expr,
         env: Environment<'_>,
     ) -> Result<CellValue, QueryError> {
+        if let Some(value) = self.retained_group_value(expression, env)? {
+            return Ok(value);
+        }
         if matches!(expression, Expr::Aggregate(..))
             && let Some(result) = self.precomputed_aggregate(expression, env)?
         {

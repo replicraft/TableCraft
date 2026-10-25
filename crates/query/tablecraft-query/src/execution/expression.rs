@@ -26,6 +26,10 @@ impl Runtime<'_, '_> {
 
     pub(super) fn eval(&mut self, expr: &Expr, env: Environment<'_>) -> Result<Value, QueryError> {
         self.tick()?;
+        if let Some(mut value) = self.retained_group_value(expr, env)? {
+            value.value = self.evaluator().publish_expression_value(value.value)?;
+            return Ok(into_scalar(value)?);
+        }
         match expr {
             Expr::Array(_) => Err(QueryError::Unsupported),
             Expr::ValueInspect(function, input) => self.value_inspection(*function, input, env),

@@ -45,7 +45,7 @@ declared-arithmetic policies use the same
 host context as buffered retrieval. Ordinary scalar views of mixed schemas are
 supported; unavailable fields and matching wildcards fail without NULL placeholders.
 
-Ordering, TOP PERCENT, DISTINCT/active DISTINCTROW, groups/HAVING, joins/products,
+Ordering, TOP PERCENT, DISTINCT/active DISTINCTROW, HAVING, joins/products,
 duplicate-eliminating sets, nested UNIONs, named/derived sources, subqueries,
 domains, collections, Eval and volatile clock/random calls remain outside this
 progressive profile. Single-table
@@ -99,7 +99,7 @@ Concurrent floating aggregates each need separate scratch storage during the
 scan. Byte thresholds can therefore differ from buffered execution, which can
 reuse scratch sequentially. Existing cumulative byte/row/work limits remain in
 force; streaming does not imply a small fixed allocation for every aggregate.
-Sorting, grouping/HAVING, statistics and wider sources remain outside
+Sorting, HAVING, statistics and wider sources remain outside
 this progressive profile.
 
 ```sh
@@ -133,6 +133,36 @@ produce a different competing-error priority from buffered execution. See the
 tablecraft query run --database example.accdb --stream \
   'SELECT Min(Amount) AS Lowest,Max(Amount) AS Highest,Count(*) AS N FROM Orders'
 ```
+
+## Grouped results
+
+Eligible `GROUP BY` expressions with proven Boolean, integral or NULL carriers
+can stream the same direct native tables and explicit linked targets. Tuple keys,
+nullable values, pure row-local key expressions, prior projection aliases and
+flat UNION ALL retain their existing contracts. Text, floating, Decimal, date and
+other unproven key families, HAVING and ordering remain outside this progressive
+profile. Unsupported shapes refuse before user-row scans; ordinary buffered
+grouping remains available.
+
+```sh
+tablecraft query run --database example.accdb --stream \
+  'SELECT ID Mod 17 AS Bucket,Count(*) AS N,Sum(Amount) AS Total FROM Orders GROUP BY ID Mod 17'
+```
+
+The cursor discards input rows after WHERE, key evaluation and aggregate updates.
+Each encountered group retains its first key tuple and independent accumulator
+states. All current Count/Sum/Avg/Min/Max argument behavior remains available;
+String extrema can retain candidates until final policy comparison, so memory
+is not promised to be constant. Group keys retain complete policy cohorts and
+natural carriers without inventing a representative input row for final expressions.
+Native/query/comparison/output limits remain separate and cumulative.
+
+Checked EOF precedes every group result. Groups finish and publish in first
+encounter order. Unordered TOP caps publication while omitted groups still run
+final calculations; a late calculation or sink failure can retain completed
+earlier batches. Empty or wholly filtered input produces no grouped rows.
+This is a progressive execution contract and does not qualify native Access
+error precedence or optimizer behavior. See the [query service](PROGRESSIVE_QUERIES.md).
 
 ## Explicit stored calculations
 

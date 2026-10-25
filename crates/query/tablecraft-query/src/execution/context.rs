@@ -53,6 +53,9 @@ pub(super) struct OuterScope<'a> {
 pub(super) struct GroupKeys<'a> {
     pub expressions: &'a [Expr],
     pub values: &'a [CellValue],
+    // Only final progressive groups substitute these complete values. Buffered
+    // reads keep their original representative-row evaluation and policy overlay.
+    pub retained_values: bool,
 }
 impl Runtime<'_, '_> {
     pub(super) fn allocate_expression_row(

@@ -89,6 +89,9 @@ impl Runtime<'_, '_> {
         expression: &Expr,
         env: Environment<'_>,
     ) -> Result<StringCell, QueryError> {
+        if let Some(value) = self.retained_group_value(expression, env)? {
+            return StringCell::try_from(value);
+        }
         let mut cell = match expression {
             Expr::IIf(condition, yes, no) => self.iif_string_cell(condition, yes, no, env),
             Expr::Nz(value, replacement) => self.nz_string_cell(value, replacement.as_deref(), env),

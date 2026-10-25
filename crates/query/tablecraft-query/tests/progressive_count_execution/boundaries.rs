@@ -135,7 +135,7 @@ fn ineligible_aggregate_shapes_are_refused_before_any_cursor() {
     for sql in [
         "SELECT First(N) FROM T",
         "SELECT Last(N) FROM T",
-        "SELECT Count(*) FROM T GROUP BY N",
+        "SELECT Count(*) FROM T GROUP BY CDbl(N)",
         "SELECT Count(*) FROM T HAVING Count(*)>0",
         "SELECT DISTINCT Count(*) FROM T",
         "SELECT Count(*) FROM T ORDER BY 1",

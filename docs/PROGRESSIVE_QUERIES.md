@@ -15,7 +15,9 @@ SELECT arms, with optional aliases, declared parameters, row-local WHERE, scalar
 projections and positive unordered TOP counts. Wildcards use the ordinary qualified
 scalar metadata. Global COUNT(*), COUNT(expr), SUM(expr), AVG(expr), MIN(expr)
 and MAX(expr) projections
-over the same direct table are also supported as described below. Original source order and eager
+over the same direct table are also supported. Proven Boolean/integral/NULL
+GROUP BY tuples use the same aggregates and retained final key values, as
+described below. Original source order and eager
 predicate/projection kernels are retained. Scalar conversion, arithmetic, text and inspection services
 use the same explicit execution policies as buffered queries. Prior explicitly
 named row-local projections can feed later projections through the ordinary
@@ -24,7 +26,8 @@ at its written position, and consumers preserve its retained carrier/declaration
 and text policy. Alias references do not bypass the complete arm admission check
 or introduce new WHERE/aggregate/subquery scopes.
 
-Admission rejects ordering, TOP PERCENT, DISTINCT/active DISTINCTROW, grouping/HAVING,
+Admission rejects ordering, TOP PERCENT, DISTINCT/active DISTINCTROW, other
+grouping key families and HAVING,
 duplicate-eliminating UNION/crosstabs, joins/products, named/derived sources,
 subqueries, domains, collections, external namespaces, Eval and volatile
 clock/random calls. Rejection
@@ -94,7 +97,7 @@ registration, counter initialization, per-row occurrences and final identity
 lookups are metered and cancellable. Counter storage is prepaid, fallible and
 bounded by the existing binding-node ceiling. No complete cache is published.
 SUM/AVG and MIN/MAX can share this execution service as described below. Other aggregates,
-GROUP BY/HAVING and wider sources remain outside this progressive slice; ordinary
+HAVING and wider sources remain outside this progressive slice; ordinary
 buffered aggregate availability is unchanged. Microsoft's
 [Access SQL Count contract](https://learn.microsoft.com/en-us/office/vba/access/concepts/criteria-expressions/count-function-microsoft-access-sql)
 establishes field/calculation operands and the asterisk's inclusion of records
@@ -215,6 +218,68 @@ request aggregate operands out of written order. Projection/conversion errors an
 sink failures retain the ordinary sticky stream boundary; no following UNION arm
 starts after failure. These explicit phases do not qualify native error priority.
 
+## Progressive grouped aggregates
+
+A direct-table grouped SELECT can use Boolean, Byte, Int16, Int32, Int64 and NULL
+key columns, including tuples and pure row-local computed expressions. Every
+active result descriptor must prove one of those carriers. Binding captures both
+existing arithmetic profiles using the ordinary metadata inference; execution
+selects its own matching profile without rescanning, rebinding or guessing from
+the first value. Other key carriers and Dynamic descriptors refuse before any
+cursor, including empty/false-filtered later UNION arms. Actual keys are checked
+against the admitted profile before directory comparison; an unexpected carrier
+fails rather than inventing a new policy cohort or reinterpreting its value.
+
+```sql
+SELECT Id Mod 17 AS Bucket, Count(*) AS Population,
+       Sum(Score) AS Total, Avg(Score) AS Mean,
+       Min(Label) AS FirstLabel, Max(Label) AS LastLabel
+FROM Items
+GROUP BY Id Mod 17;
+```
+
+The first encountered key tuple represents each group. NULL keys group under
+the existing SQL key equality contract. A bounded exact-key directory narrows
+candidates; the existing relational comparator remains authoritative. Selected
+source rows and key temporaries are evaluated and discarded. Each group retains
+its key cells and one existing accumulator for every written aggregate occurrence,
+without a representative source row, complete input relation or result cache.
+Group-only projections without aggregates use the same key service. Empty or
+completely filtered input yields zero grouped rows.
+
+WHERE runs before the key expressions. Qualified keys run once in written GROUP
+BY order, followed by each aggregate operand in written projection-tree order.
+Repeated aggregate syntax remains separate work. Count, Sum, Avg, Min and Max
+keep their full current argument and state contracts, including raw String/Error
+Count operands and resolver-dependent String extrema candidates. String Min/Max
+can retain a candidate per input value under the query budget; grouped execution
+does not promise constant memory. Concurrent numeric scratch, keys, candidate
+payloads, directories, state/results vectors and final outputs are charged at
+their actual widths. Discarding input rows does not refund cumulative allowances.
+
+Key cells retain first values and declarations, and merge incoming policy and
+completion within each group. With a field-policy resolver, a compact cohort also
+accumulates across the entire qualified key column, including numeric and NULL
+cells. Checked EOF precedes applying that final cohort to all retained keys,
+matching the conservative buffered grouping contract. No Text grouping or native
+mixed-policy precedence is inferred from the integral membership proof.
+
+Final projections explicitly borrow completed key cells. Metered structural
+identity and charged cell copies preserve their value, declaration, policy and
+completion through scalar/string/byte builtins and prior aliases. Keys are not
+re-evaluated against an invented row. The substitution is inactive for ordinary
+buffered evaluation, per-row keys and aggregate operands. Aggregate results keep
+their existing full-node occurrence identities and declaration boundaries.
+
+No group output escapes before successful source EOF. Groups then finish their
+states and final projections in first-encounter order. An admitted TOP count caps
+publication only: omitted groups still finish and evaluate eager final errors,
+while skipping enclosing UNION conversion and strict output publication. A late
+finalization/projection error may follow an earlier accepted group; input-operand,
+source or EOF failures prevent every output from that arm. Sink failure stops
+later groups and arms. These explicit progressive phases are separate from
+buffered load/group/aggregate error order and native Access qualification.
+
 ## Progressive UNION ALL
 
 Flat UNION ALL arms execute sequentially in their written order, with no complete
@@ -310,6 +375,16 @@ this library does not write a header or open files/providers.
 
 ## Verification and remaining work
 
+The grouped extension passes 385 distinct query tests, including 25 new tests:
+104 progressive/value/policy controls, 26 runtime units and 255 related buffered
+metadata/grouping/crosstab/named/alias/key regressions. Strict query library/tests
+Clippy and standalone minimal-feature checking pass. The
+[scoped record](testing/results/read-query-progressive-grouped-2026-10-25.json)
+retains exact commands, log hashes and excluded new-test authoring/diagnostic
+attempts. No production answer correction was required. Native/CLI integration
+and original getter replay evidence are recorded separately.
+
+
 The global Min/Max extension passes 269 focused query tests: 82 progressive and
 aggregate controls, 147 buffered extrema/policy/group/domain regressions and 40
 buffered numeric-kernel regressions. Sixteen controls are new. They include full
@@ -359,3 +434,12 @@ named-crosstab, external-named and static declaration tests passed, along with
 minimal query checking. The current scoped service checks are engineering
 evidence, not native Access execution qualification or complete read/query
 acceptance.
+
+The parent integration checkpoint additionally passes 22 native cursor, 39 CLI
+progressive and thirteen linked CLI tests, with strict linting and formatting.
+Two new native controls exceed a snapshot ceiling of one with 1,100 input rows
+and prevent every group result on late page/count failures. Three new CLI tests
+cover exact profile results, Text extrema and final-error batch/UNION prefixes;
+linked grouped execution also shares the existing forwarded source. The combined
+checkpoint is 459 distinct tests, thirty new. Original/native Access qualification
+remains separate.

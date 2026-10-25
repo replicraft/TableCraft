@@ -14,6 +14,9 @@ impl Runtime<'_, '_> {
         expression: &Expr,
         env: Environment<'_>,
     ) -> Result<ExpressionByteOperand, QueryError> {
+        if let Some(value) = self.retained_group_value(expression, env)? {
+            return Ok(ExpressionByteOperand::try_from(value.value)?);
+        }
         match expression {
             Expr::Nz(..) | Expr::ConditionalCall(..) => {
                 self.string_cell(expression, env).map(|value| value.value)
@@ -45,6 +48,9 @@ impl Runtime<'_, '_> {
         expression: &Expr,
         env: Environment<'_>,
     ) -> Result<ByteOperand, QueryError> {
+        if let Some(value) = self.retained_group_value(expression, env)? {
+            return Ok(ByteOperand::Scalar(super::cell::into_scalar(value)?));
+        }
         match expression {
             Expr::Binary(
                 operator @ (BinaryOperator::Add | BinaryOperator::Concatenate),

@@ -1,5 +1,18 @@
 # Implementation status
 
+## Progressive integral grouping
+
+Eligible Boolean/integral/NULL GROUP BY keys now retain encounter-ordered groups
+and current Count/Sum/Avg/Min/Max states through native cursors. Paired binding
+metadata proves key carriers; completed key values and global policy cohorts feed
+final expressions without inventing input rows. Checked EOF precedes group output,
+and String extrema keep their explicit candidate budgets. The generated 100,003-row
+case reduces to seventeen modeled groups; native controls exceed snapshot
+retention and retain EOF/error guarantees. Thirty new tests and 429 regressions
+pass with strict query/native/CLI linting, minimal query features and formatting.
+See [scope](PROGRESSIVE_QUERIES.md#progressive-grouped-aggregates) and
+[verification](testing/results/read-query-progressive-grouped-2026-10-25.json).
+
 ## Bounded integral join directories
 
 Whole bare equality joins between the same proven Boolean/integral carriers now

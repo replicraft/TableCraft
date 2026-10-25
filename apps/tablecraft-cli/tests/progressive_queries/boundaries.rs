@@ -10,7 +10,7 @@ fn unsupported_relational_and_source_using_shapes_publish_nothing() {
         "SELECT DISTINCT Id FROM Items",
         "SELECT Last(Id) FROM Items",
         "SELECT Count(*) FROM Items HAVING Count(*)>0",
-        "SELECT Id FROM Items GROUP BY Id",
+        "SELECT CDbl(Id) FROM Items GROUP BY CDbl(Id)",
         "SELECT Id FROM Items UNION SELECT Id FROM Items",
         "SELECT Id FROM Items UNION ALL SELECT Last(Id) FROM Items WHERE False",
         "SELECT A.Id FROM Items A INNER JOIN Items B ON A.Id=B.Id",

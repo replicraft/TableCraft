@@ -18,6 +18,7 @@ pub(crate) use execute::ExecutionContext;
 mod exact_keys;
 mod expression;
 mod external;
+mod group_values;
 mod grouping;
 mod keys;
 mod multivalue;

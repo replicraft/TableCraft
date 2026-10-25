@@ -11,11 +11,14 @@ use tablecraft_core::values::Value;
 impl Runtime<'_, '_> {
     pub(super) fn progressive_rows<E>(
         &mut self,
-        arm: &ProgressiveArm<'_>,
+        arm: &mut ProgressiveArm<'_>,
         union_types: Option<&[OutputType]>,
         summary: &mut StreamSummary,
         visitor: &mut dyn FnMut(&[Value]) -> Result<(), E>,
     ) -> Result<(), StreamError<E>> {
+        if !arm.select.group.is_empty() {
+            return self.progressive_group_rows(arm, union_types, summary, visitor);
+        }
         if arm.select.aggregate {
             return self.progressive_aggregate_rows(arm, union_types, summary, visitor);
         }

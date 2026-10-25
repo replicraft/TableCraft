@@ -18,6 +18,15 @@ pub(super) struct ExactKeys {
 }
 
 impl ExactKeys {
+    pub(super) fn valid(
+        &self,
+        row: &[CellValue],
+        budget: &mut ResourceBudget,
+        cancelled: Option<&dyn Fn() -> bool>,
+    ) -> Result<bool, QueryError> {
+        profile::valid(&self.profile, row, budget, cancelled)
+    }
+
     pub(super) fn find(
         &self,
         fingerprint: u64,

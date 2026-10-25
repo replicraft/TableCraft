@@ -90,3 +90,6 @@ fn failure(output: Output) -> Vec<u8> {
     assert!(!output.stderr.is_empty());
     output.stdout
 }
+
+#[path = "progressive_queries/grouped.rs"]
+mod grouped;
