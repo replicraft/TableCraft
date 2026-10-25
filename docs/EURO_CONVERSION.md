@@ -130,3 +130,11 @@ validation. Error data fails TypeMismatch at its requested position, preserving
 an earlier unknown-currency Domain failure. Host Empty numeric controls use zero
 under the existing targets; Empty currency codes remain refused. No fixed rates,
 rounding, option defaults or native qualification claims change.
+
+The public retained-value API now also accepts active String ranges in currency
+code and numeric/Boolean/Integer option positions, using
+[staged financial admission](FINANCIAL_FUNCTIONS.md#retained-string-evaluator-parity).
+It publishes each reached range strictly, then reuses the existing parser or
+converter. Source/target validation still precedes option admission; codes do
+not gain numeric conversion or a NumberFormat requirement. Ordinary supported
+query results and native qualification limits are unchanged.

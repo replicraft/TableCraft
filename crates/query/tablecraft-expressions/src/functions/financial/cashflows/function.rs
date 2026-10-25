@@ -1,6 +1,7 @@
 //! Closed function identities and numeric argument conversion.
 use super::{CashFlows, Work, finite, number};
 use crate::EvalError;
+use std::borrow::Cow;
 use tablecraft_core::{
     limits::ResourceBudget,
     values::{Double, Value},
@@ -58,7 +59,7 @@ impl CashFlowFunction {
     ) -> Result<Value, EvalError> {
         self.apply_with_input(
             arguments.len(),
-            &mut |index| Ok(&arguments[index]),
+            &mut |index, _| Ok(Cow::Borrowed(&arguments[index])),
             values.len(),
             &mut |index| Ok(&values[index]),
             &mut Work { budget, cancelled },
@@ -69,7 +70,7 @@ impl CashFlowFunction {
     pub(crate) fn apply_with_input<'a>(
         self,
         scalar_count: usize,
-        scalar: &mut impl FnMut(usize) -> Result<&'a Value, EvalError>,
+        scalar: &mut impl FnMut(usize, &mut ResourceBudget) -> Result<Cow<'a, Value>, EvalError>,
         element_count: usize,
         element: &mut impl FnMut(usize) -> Result<&'a Value, EvalError>,
         work: &mut Work<'_>,
@@ -81,7 +82,8 @@ impl CashFlowFunction {
 
         let result = match self {
             Self::NPV => {
-                let rate = convert(scalar(0)?, work.budget)?;
+                let rate = scalar(0, work.budget)?;
+                let rate = convert(&rate, work.budget)?;
                 let flows = CashFlows::new_with_input(element_count, element, work)?;
                 flows.npv(rate, work.budget, work.cancelled)?
             }
@@ -90,18 +92,104 @@ impl CashFlowFunction {
                 let guess = if scalar_count == 0 {
                     None
                 } else {
-                    Some(convert(scalar(0)?, work.budget)?)
+                    Some({
+                        let guess = scalar(0, work.budget)?;
+                        convert(&guess, work.budget)?
+                    })
                 };
                 flows.irr(guess, work.budget, work.cancelled)?
             }
             Self::MIRR => {
                 let flows = CashFlows::new_with_input(element_count, element, work)?;
-                let finance = convert(scalar(0)?, work.budget)?;
-                let reinvest = convert(scalar(1)?, work.budget)?;
+                let finance = scalar(0, work.budget)?;
+                let finance = convert(&finance, work.budget)?;
+                let reinvest = scalar(1, work.budget)?;
+                let reinvest = convert(&reinvest, work.budget)?;
                 flows.mirr(finance, reinvest, work.budget, work.cancelled)?
             }
         };
 
         finite(result).map(|v| Value::Double(Double::from_float(v)))
+    }
+}
+
+#[cfg(test)]
+mod input_tests {
+    use super::*;
+    use std::cell::RefCell;
+
+    #[derive(Debug, PartialEq, Eq)]
+    enum Event {
+        Scalar(usize),
+        Element(usize),
+        Conversion,
+    }
+
+    #[test]
+    fn cashflow_kernels_admit_each_scalar_and_element_once_in_function_order() {
+        let elements = [Value::Int16(-100), Value::Int16(0), Value::Int16(121)];
+        for (function, controls, expected) in [
+            (
+                CashFlowFunction::NPV,
+                vec![Value::Int16(0)],
+                vec![
+                    Event::Scalar(0),
+                    Event::Conversion,
+                    Event::Element(0),
+                    Event::Element(1),
+                    Event::Element(2),
+                ],
+            ),
+            (
+                CashFlowFunction::IRR,
+                vec![Value::Double(Double::from_float(0.1))],
+                vec![
+                    Event::Element(0),
+                    Event::Element(1),
+                    Event::Element(2),
+                    Event::Scalar(0),
+                    Event::Conversion,
+                ],
+            ),
+            (
+                CashFlowFunction::MIRR,
+                vec![Value::Int16(0), Value::Int16(0)],
+                vec![
+                    Event::Element(0),
+                    Event::Element(1),
+                    Event::Element(2),
+                    Event::Scalar(0),
+                    Event::Conversion,
+                    Event::Scalar(1),
+                    Event::Conversion,
+                ],
+            ),
+        ] {
+            let events = RefCell::new(Vec::new());
+            let mut budget = ResourceBudget::new(65536, 0, 100000);
+            function
+                .apply_with_input(
+                    controls.len(),
+                    &mut |index, _| {
+                        events.borrow_mut().push(Event::Scalar(index));
+                        Ok(Cow::Borrowed(&controls[index]))
+                    },
+                    elements.len(),
+                    &mut |index| {
+                        events.borrow_mut().push(Event::Element(index));
+                        Ok(&elements[index])
+                    },
+                    &mut Work {
+                        budget: &mut budget,
+                        cancelled: None,
+                    },
+                    &mut |value, _| {
+                        events.borrow_mut().push(Event::Conversion);
+                        number(value)
+                    },
+                )
+                .unwrap();
+            assert_eq!(events.into_inner(), expected, "{function:?}");
+        }
     }
 }

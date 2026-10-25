@@ -16,21 +16,22 @@ const ROUNDTRIP_DIGITS: i16 = 17;
 const MAX_DECIMAL_POWER: i32 = f64::MAX_10_EXP;
 const EXACT_INTEGER_BOUND: f64 = (1_u64 << f64::MANTISSA_DIGITS) as f64;
 
-pub(super) fn apply_with_input<'a>(
+pub(super) fn apply_with_context<'a>(
     count: usize,
-    argument: &mut impl FnMut(usize) -> Result<&'a Value, EvalError>,
-    context: &mut impl FinancialContext,
+    context: &mut impl FinancialContext<'a>,
 ) -> Result<Value, EvalError> {
     context.step()?;
-    let Value::Double(amount) = context.convert(Conversion::Double, argument(0)?)? else {
+    let amount = context.argument(0)?;
+    let Value::Double(amount) = context.convert(Conversion::Double, &amount)? else {
         return Err(EvalError::TypeMismatch);
     };
-    let source = Currency::parse(argument(1)?, &mut || context.step())?;
-    let target = Currency::parse(argument(2)?, &mut || context.step())?;
+    let source = context.argument(1)?;
+    let source = Currency::parse(&source, &mut || context.step())?;
+    let target = context.argument(2)?;
+    let target = Currency::parse(&target, &mut || context.step())?;
     let full = if count > FULL_PRECISION_INDEX {
-        let Value::Boolean(value) =
-            context.convert(Conversion::Boolean, argument(FULL_PRECISION_INDEX)?)?
-        else {
+        let argument = context.argument(FULL_PRECISION_INDEX)?;
+        let Value::Boolean(value) = context.convert(Conversion::Boolean, &argument)? else {
             return Err(EvalError::TypeMismatch);
         };
         value
@@ -38,9 +39,8 @@ pub(super) fn apply_with_input<'a>(
         false
     };
     let precision = if count > TRIANGULATION_INDEX {
-        let Value::Int16(value) =
-            context.convert(Conversion::Integer, argument(TRIANGULATION_INDEX)?)?
-        else {
+        let argument = context.argument(TRIANGULATION_INDEX)?;
+        let Value::Int16(value) = context.convert(Conversion::Integer, &argument)? else {
             return Err(EvalError::TypeMismatch);
         };
         if value < MIN_TRIANGULATION_DIGITS {

@@ -7,6 +7,7 @@ use crate::{
         financial::{FinancialContext, FinancialFunction},
     },
 };
+use std::borrow::Cow;
 use tablecraft_core::values::{ExpressionValue, Value};
 
 impl Evaluator<'_> {
@@ -17,55 +18,93 @@ impl Evaluator<'_> {
         function: FinancialFunction,
         arguments: &[Value],
     ) -> Result<Value, EvalError> {
-        self.apply_financial_arguments(function, arguments.len(), |index| Ok(&arguments[index]))
+        self.apply_financial_arguments(function, FinancialValues::Scalar(arguments))
     }
 
-    /// Apply evaluated expression data at the kernel's conversion position.
+    /// Admit evaluated expression data at the kernel's conversion position.
     /// Supplied SQL expressions must already have evaluated eagerly.
     pub fn apply_expression_financial(
         &mut self,
         function: FinancialFunction,
         arguments: &[ExpressionValue],
     ) -> Result<Value, EvalError> {
-        let empty = Value::Int16(0);
-        self.apply_financial_arguments(function, arguments.len(), |index| match &arguments[index] {
-            ExpressionValue::Value(value) => Ok(value),
-            ExpressionValue::Error(_) => Err(EvalError::TypeMismatch),
-            ExpressionValue::StringBytes(_) => Err(EvalError::NonScalarExpression),
-            ExpressionValue::Missing => Err(EvalError::NonScalarExpression),
-            ExpressionValue::Empty
-                if function == FinancialFunction::EuroConvert && matches!(index, 1 | 2) =>
-            {
-                Err(EvalError::TypeMismatch)
-            }
-            ExpressionValue::Empty => Ok(&empty),
-        })
+        self.apply_financial_arguments(function, FinancialValues::Expression(arguments))
     }
 
-    fn apply_financial_arguments<'a>(
+    fn apply_financial_arguments(
         &mut self,
         function: FinancialFunction,
-        count: usize,
-        mut argument: impl FnMut(usize) -> Result<&'a Value, EvalError>,
+        arguments: FinancialValues<'_>,
     ) -> Result<Value, EvalError> {
+        let count = arguments.len();
         if !function.accepts_arity(count) {
             return Err(EvalError::UnsupportedExpression);
         }
         self.check(0)?;
-        function.apply_with_input(count, &mut argument, self)
+        function.apply_with_context(
+            count,
+            &mut FinancialEvaluation {
+                evaluator: self,
+                function,
+                arguments,
+            },
+        )
     }
 }
 
-impl FinancialContext for Evaluator<'_> {
+enum FinancialValues<'a> {
+    Scalar(&'a [Value]),
+    Expression(&'a [ExpressionValue]),
+}
+
+impl FinancialValues<'_> {
+    fn len(&self) -> usize {
+        match self {
+            Self::Scalar(values) => values.len(),
+            Self::Expression(values) => values.len(),
+        }
+    }
+}
+
+struct FinancialEvaluation<'a, 'evaluator, 'host> {
+    evaluator: &'evaluator mut Evaluator<'host>,
+    function: FinancialFunction,
+    arguments: FinancialValues<'a>,
+}
+
+impl<'a> FinancialContext<'a> for FinancialEvaluation<'a, '_, '_> {
+    fn argument(&mut self, index: usize) -> Result<Cow<'a, Value>, EvalError> {
+        match self.arguments {
+            FinancialValues::Scalar(values) => Ok(Cow::Borrowed(&values[index])),
+            FinancialValues::Expression(values) => match &values[index] {
+                ExpressionValue::Value(value) => Ok(Cow::Borrowed(value)),
+                ExpressionValue::StringBytes(value) => self
+                    .evaluator
+                    .publish_expression_string(value)
+                    .map(Cow::Owned),
+                ExpressionValue::Error(_) => Err(EvalError::TypeMismatch),
+                ExpressionValue::Missing => Err(EvalError::NonScalarExpression),
+                ExpressionValue::Empty
+                    if self.function == FinancialFunction::EuroConvert
+                        && matches!(index, 1 | 2) =>
+                {
+                    Err(EvalError::TypeMismatch)
+                }
+                ExpressionValue::Empty => Ok(Cow::Owned(Value::Int16(0))),
+            },
+        }
+    }
+
     fn convert(&mut self, target: Conversion, value: &Value) -> Result<Value, EvalError> {
         if matches!(value, Value::Text(_)) {
-            self.apply_conversion(target, value)
+            self.evaluator.apply_conversion(target, value)
         } else {
             target.apply(value)
         }
     }
+
     fn step(&mut self) -> Result<(), EvalError> {
-        self.check(0)
+        self.evaluator.check(0)
     }
 }
 
@@ -74,3 +113,6 @@ mod tests;
 
 #[cfg(test)]
 mod expression_tests;
+
+#[cfg(test)]
+mod retained_tests;
