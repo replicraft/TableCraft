@@ -1,5 +1,8 @@
 //! Explicit SQL streams publish completed TSV batches and preserve original inputs.
 #[allow(dead_code)]
+#[path = "../../../crates/engines/tablecraft-ace/tests/calculated_storage/fixture.rs"]
+mod calculated_fixture;
+#[allow(dead_code)]
 #[path = "../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]
 mod fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/support/mod.rs"]
@@ -13,6 +16,8 @@ mod count;
 mod count_operands;
 #[path = "progressive_queries/execution.rs"]
 mod execution;
+#[path = "progressive_queries/stored_calculations.rs"]
+mod stored_calculations;
 #[path = "progressive_queries/top.rs"]
 mod top;
 #[path = "progressive_queries/transport.rs"]

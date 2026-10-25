@@ -78,6 +78,11 @@ impl RunArgs {
             snapshot_limits,
         )
         .map_err(Error::Native)?;
+        let source = if self.stored_calculations {
+            source.with_stored_calculations().map_err(Error::Native)?
+        } else {
+            source
+        };
         let comparison_pool = RefCell::new(controls.comparison_limits.budget());
         let database_policy = matches!(controls.collation, Some(TextCollation::Database));
         let (source, database_collation) = if database_policy {

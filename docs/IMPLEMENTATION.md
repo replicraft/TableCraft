@@ -1,5 +1,16 @@
 # Implementation status
 
+## Progressive stored calculation reads
+
+Explicit `query run --stream --stored-calculations` now reads qualified cached
+scalar results through the existing native stored-value cursor. Formulas remain
+inert and caches may be stale. Selected values retain their existing storage
+validation; ordinary-only and zero-column projections prune cached payloads.
+No scan fills a complete snapshot cache. Nine native and three CLI controls plus
+65 related regressions pass with strict Clippy and formatting. See
+[cached streams](STREAMING_QUERIES.md#explicit-stored-calculations) and
+[verification](testing/results/read-query-progressive-stored-calculations-2026-10-25.json).
+
 ## Declared mixed-plus result types
 
 Known String/numeric `+` operations now expose their guaranteed successful result

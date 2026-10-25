@@ -284,14 +284,13 @@ fn bound_schema_changes_and_invalid_projections_fail_before_callback() {
 
 #[test]
 fn explicit_indexes_advanced_modes_and_linked_tables_refuse_before_callbacks() {
-    for mode in 0..5 {
+    for mode in 0..4 {
         let source = source(watched(fixture::database()), 1);
         let source = match mode {
             0 => source.with_index("Items", "MissingIndex").unwrap(),
             1 => source.with_multivalues(),
             2 => source.with_collections(),
-            3 => source.with_decoded_attachments(),
-            _ => source.with_stored_calculations().unwrap(),
+            _ => source.with_decoded_attachments(),
         };
         assert_eq!(
             source

@@ -42,7 +42,6 @@ fn batch_ranges_and_incompatible_modes_fail_before_missing_source_is_opened() {
         vec!["--stream", "--external", "token", "missing-external.accdb"],
         vec!["--stream", "--collections"],
         vec!["--stream", "--multivalues"],
-        vec!["--stream", "--stored-calculations"],
         vec!["--stream", "--output-bytes", "0"],
         vec!["--stream", "--output-bytes", "16777217"],
     ] {

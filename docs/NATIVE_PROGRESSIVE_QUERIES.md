@@ -3,7 +3,8 @@
 `NativeSource` implements the explicit
 [progressive query capability](PROGRESSIVE_QUERIES.md) through a fresh native
 `TableCursor`. It supports ordinary local scalar projections, including qualified
-scalar views of mixed schemas. It never substitutes a complete snapshot or fills
+scalar views of mixed schemas, and explicitly enabled qualified cached-calculation
+projections. It never substitutes a complete snapshot or fills
 a table/projection/selected-row cache with a progressive prefix.
 
 ## Source and cursor contract
@@ -14,7 +15,7 @@ opens the requested native projection and checks both complete bound metadata
 and exact selected-column alignment. Changed metadata fails explicitly.
 
 Selected required indexes, linked tables and configured multivalue/collection/
-decoded-attachment/stored-calculation modes are refused before visiting rows.
+decoded-attachment modes are refused before visiting rows.
 Automatic index hints are not used for this unconstrained sequential capability;
 there is no fallback from a required selected index. Other normal source methods
 retain their existing complete-cache behavior.
@@ -73,3 +74,52 @@ fails. This is a selected-read count, not a whole-file consistency check. Late p
 I/O, count, predicate, cancellation and resource failures publish no aggregate row,
 and prevent later UNION arms from opening their data. Final count publication runs
 after the cursor and native-budget borrows are released.
+
+## Explicit cached calculation projections
+
+A source configured with `with_stored_calculations()` can stream the same
+qualified cached fields exposed by its ordinary buffered interface. The host must
+opt in before binding. When the selected projection includes a cached field, the
+adapter opens the existing `TableCursor::open_stored_projection`; ordinary-only
+and zero-width projections continue using the ordinary cursor. Unselected caches
+remain pruned, including unsupported declarations and malformed cached payloads.
+
+The existing ACE 16 cached-field declaration, ResultType, wrapper and native
+carrier gates remain authoritative. Values are stored results and may be stale.
+No formula executes, no cache freshness is inferred and no declared storage
+conversion is added. Ordinary and cached result columns retain their existing
+metadata and exact projected order. Short Text, Memo, effective Decimal scale and
+IEEE bits use the same bounded decoder as buffered reads. Existing encoded-value
+and decoded-text policies, native work budgets, cancellation and checked EOF apply.
+
+Successful streams and failed prefixes never fill a complete table, selected or
+projected snapshot cache. Explicit retries start a fresh cursor. The snapshot
+retention ceiling is independent of cumulative native allowances; a stream may
+exceed that ceiling, while a later buffered read still refuses it. Required
+indexes and collection/decoded-attachment modes retain their existing refusal
+boundaries. This remains a stable/offline read capability, without native
+Microsoft Access or live shared-file qualification.
+
+Nine focused stored-stream controls pass with seventeen existing progressive-source
+and eight cached-query regressions, plus scoped strict Clippy. They cover both
+ACE 16-family profiles, all thirteen qualified cached scalar/Memo kinds, signed
+zero and effective Decimal scale, selected alignment, metadata-only binding,
+changed storage geometry, invalid/unknown cached declarations, cache pruning,
+retention ceilings, failed-prefix isolation, checked EOF, cumulative native
+byte/row/step limits, source reentry, cancellation and visitor failures. The test
+values deliberately differ from the stored expression's recomputed values.
+
+```sh
+cargo test --locked -p tablecraft-access \
+  --test progressive_stored_calculations --test progressive_source \
+  --test cached_calculation_queries
+cargo clippy --locked -p tablecraft-access --lib \
+  --test progressive_stored_calculations --test progressive_source \
+  --test cached_calculation_queries -- -D warnings
+```
+
+Both commands completed successfully. Logs are
+`.cache/progressive-stored-calculation-tests-final-20261025.log` and
+`.cache/progressive-stored-calculation-clippy-20261025.log`.
+Formatting and whitespace checks also pass. These are synthetic bounded adapter
+checks; original-file replay and native Access qualification remain separate.
