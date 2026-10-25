@@ -1,5 +1,15 @@
 # Implementation status
 
+## Retained String date constructor consistency
+
+DateSerial and TimeSerial now lazily publish valid retained numeric component
+Strings before the existing Integer conversion. Written component error order,
+explicit number/year policies and relative calendar normalization remain intact.
+The [constructor batch](DATE_CONSTRUCTORS.md#retained-string-constructor-components)
+passes 20 focused tests, scoped strict Clippy and minimal-feature compilation.
+Ordinary query results were already supported; this fixes public API consistency
+without claiming native coercion or failure-order qualification.
+
 ## Retained String math API consistency
 
 All fifteen math evaluator APIs now admit valid retained String ranges at the

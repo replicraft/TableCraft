@@ -83,34 +83,26 @@ impl DateConstructor {
         arguments: &[Value],
         window: TwoDigitYearWindow,
     ) -> Result<Value, EvalError> {
-        self.apply_with_input(
-            arguments.len(),
-            &mut |index| Ok(&arguments[index]),
-            window,
-            |value| match Conversion::Integer.apply(value)? {
+        self.apply_with_components(arguments.len(), window, |index| {
+            match Conversion::Integer.apply(&arguments[index])? {
                 Value::Int16(value) => Ok(value),
                 _ => Err(EvalError::TypeMismatch),
-            },
-        )
+            }
+        })
     }
 
-    pub(crate) fn apply_with_input<'a>(
+    pub(crate) fn apply_with_components(
         self,
         count: usize,
-        argument: &mut impl FnMut(usize) -> Result<&'a Value, EvalError>,
         window: TwoDigitYearWindow,
-        mut convert: impl FnMut(&Value) -> Result<i16, EvalError>,
+        mut component: impl FnMut(usize) -> Result<i16, EvalError>,
     ) -> Result<Value, EvalError> {
         if !self.accepts_arity(count) {
             return Err(EvalError::UnsupportedExpression);
         }
         let mut components = [0_i16; ARGUMENTS];
         for (index, slot) in components.iter_mut().enumerate() {
-            let value = argument(index)?;
-            if matches!(value, Value::Null) {
-                return Err(EvalError::InvalidNullConversion);
-            }
-            *slot = convert(value)?;
+            *slot = component(index)?;
         }
         let [a, b, c] = components;
         let date = match self {
