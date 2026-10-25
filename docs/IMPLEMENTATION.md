@@ -31,6 +31,10 @@ stay inert. Stored values are not replaced or rejected by option membership.
 Seven new controls and 52 template regressions pass with strict Access Clippy
 and formatting. See [scope](ACCESS_TEMPLATE_LISTS.md) and
 [verification](testing/results/read-query-template-choice-2026-10-25.json).
+A separate [seven-template replay](testing/TEMPLATE_SCALAR_PROFILES.md) also checks
+UTF-16, local named types and actual stored Choice/Text values: 14 modeled rows
+and 44 cells agree. Twelve immutable pins and thirty scoped revision-source hashes
+were independently rechecked. Native Access qualification remains separate.
 
 ## Composable explicit recomputed views
 

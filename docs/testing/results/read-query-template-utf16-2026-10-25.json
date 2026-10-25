@@ -77,5 +77,15 @@
   "primary_references": [
     "https://www.w3.org/TR/REC-xml/#charencoding",
     "https://learn.microsoft.com/en-us/openspecs/sharepoint_protocols/ms-accdt/606146d3-514f-4555-9d7e-039be4b3f40c"
-  ]
+  ],
+  "independent_replay": {
+    "report": "template-scalar-profiles-2026-10-25.json",
+    "sha256": "808816d507218a3f4815478956a90db84eaecc87dc8bfeb916d1beb6bf91362a",
+    "controls": 7,
+    "compared_rows": 14,
+    "compared_cells": 44,
+    "independently_rechecked_immutable_pins": 12,
+    "independently_rechecked_scoped_revision_files": 30,
+    "qualification": "Original synthetic ZIP/XML stored-cell model, actual Notes and typed values; no Access-created template or new lexical-boundary qualification."
+  }
 }

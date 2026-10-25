@@ -63,5 +63,15 @@
     "https://learn.microsoft.com/en-us/sharepoint/dev/schema/choice-element-list",
     "https://learn.microsoft.com/en-us/openspecs/sharepoint_protocols/ms-wsscaml/bc8fc7a6-9ba5-42f2-bdec-6261f6a00621",
     "https://learn.microsoft.com/en-us/openspecs/sharepoint_protocols/ms-wssfo3/cc07cf37-4602-44da-a778-a31ff165bce7"
-  ]
+  ],
+  "independent_replay": {
+    "report": "template-scalar-profiles-2026-10-25.json",
+    "sha256": "808816d507218a3f4815478956a90db84eaecc87dc8bfeb916d1beb6bf91362a",
+    "controls": 7,
+    "compared_rows": 14,
+    "compared_cells": 44,
+    "independently_rechecked_immutable_pins": 12,
+    "independently_rechecked_scoped_revision_files": 30,
+    "qualification": "Original synthetic ZIP/XML stored-cell model, actual Notes and typed values; no Access-created template or new lexical-boundary qualification."
+  }
 }
