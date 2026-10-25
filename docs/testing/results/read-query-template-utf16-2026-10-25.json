@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Inert ACCDT XML 1.0 mandatory UTF-8/UTF-16 encodings, strict BOM/declaration/scalar boundaries and lazy schema-only decoding",
+  "unique_tests": 49,
+  "new_tests": 10,
+  "targets": {
+    "template_library": 44,
+    "deployment_input_regressions": 5
+  },
+  "new_targets": {
+    "encoding_unit_controls": 7,
+    "template_data_encoding_integration_controls": 3
+  },
+  "checks": [
+    {
+      "command": "cargo test --locked -p tablecraft-access --lib template:: --test deployment",
+      "exit_code": 0,
+      "private_log": ".cache/template-utf16-tests-final-20261025.log",
+      "sha256": "0a29acee9c5e3f4c19a2dfa5d28767a7f18f92c838398420814fc29b806c046a",
+      "tests_passed": 44
+    },
+    {
+      "command": "cargo test --locked -p tablecraft-access --test deployment",
+      "exit_code": 0,
+      "private_log": ".cache/template-utf16-deployment-tests-20261025.log",
+      "sha256": "74c6b1a9ed43c543ce025a2017c2045061891790f70adaae04594470debf224d",
+      "tests_passed": 5
+    },
+    {
+      "command": "cargo clippy --locked -p tablecraft-access --lib --tests -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/template-utf16-clippy-final-20261025.log",
+      "sha256": "0004654784a7a964b502edb74efb527bac7eca3cf06046e860d0412cfe62d356"
+    }
+  ],
+  "source_sha256": {
+    "crates/backends/tablecraft-access/src/template/encoding.rs": "fcf61cf0d14a8bd54805f52699814ac7dca4a4aeb147d4fe6cefe6b75c7e49aa",
+    "crates/backends/tablecraft-access/src/template/encoding/prefix.rs": "3bab0ed607153bf26f9a3001f77f0dbdfa5e59d6c89433e595fddab11f7ccef9",
+    "crates/backends/tablecraft-access/src/template/encoding/tests.rs": "65763e27c97e1514915a54ebc0f56ef72e25ae95e19dfba1fb2a0a8b02cd8ebc",
+    "crates/backends/tablecraft-access/src/template/mod.rs": "b33396eb7c72ef62d28017367aed901e3fb5516efa0f6ed4666c94847f86b7bf",
+    "crates/backends/tablecraft-access/src/template/xml.rs": "f93d70f79b94aeb180eb13ecb3ba8fa1e651a8281b34708649b0b9b0b71eeeb4",
+    "crates/backends/tablecraft-access/src/template/tree.rs": "6acc21f4e52e1618860f873ca22cc4086f8502ca17113987a25edae728d8e62d",
+    "crates/backends/tablecraft-access/src/template/data/mod.rs": "08600171c6fa8c05bfcd1c7e32b23c7f11c94accaefedf87896da951017bc816",
+    "crates/backends/tablecraft-access/src/template/data/tests.rs": "9673e0339fbcc4e2074b7b02fee0a420a1cf9d2987d3c1affb9af2cb287ed2a5",
+    "crates/backends/tablecraft-access/src/template/data/tests/encoding.rs": "ae80b433c48458426ab3893a482dc7316d1d50e87c265b1b02d2920a3a0501be"
+  },
+  "excluded_initial_checks": [
+    {
+      "private_log": ".cache/template-utf16-tests-20261025.log",
+      "sha256": "99c0c9d76f146a99a185d1d5045cfea52e2f56297a1016e1f8aa5c3ad2891b7e",
+      "exit_code": 101,
+      "reason": "Two new schema assertions required deliberately absent Column::Debug; test-only equality assertions corrected, no production behavior correction."
+    },
+    {
+      "private_log": ".cache/template-utf16-clippy-20261025.log",
+      "sha256": "20bb83956e5c04193bb3689a545b8db1c5604a25eccfdd6ef3f9cc58e0ac0762",
+      "exit_code": 101,
+      "reason": "New prefix-reader nested if triggered collapsible_if; equivalent let-chain correction, then all 44 template tests and strict checks rerun."
+    }
+  ],
+  "counting_notes": [
+    "The template:: filter in the combined final command selects 44 library tests and zero deployment tests. All five deployment tests were run by the separate unfiltered integration command.",
+    "Existing TemplateSource binding/execution and package/object/List Definition integration behavior is tested in the library template modules; no standalone template integration target exists."
+  ],
+  "contracts": [
+    "Original package and part bytes remain unchanged; ZIP/OPC name decoding is unchanged.",
+    "Both encoded XML and decoded UTF-8 have independent 8MiB ceilings; BOM-less wide encodings and charset labels other than UTF-8/UTF-16 remain refused.",
+    "Schema discovery stops at actual raw consumption through closing schema, even when the immediately following unit is malformed; complete table read still refuses that suffix.",
+    "DTD/PI/general-entity/provider/network execution remain refused; only existing numeric and predefined character references are interpreted."
+  ],
+  "limitations": [
+    "No Microsoft Access-created template or native Access execution qualification.",
+    "No other charset registry, general XSD expansion, external resolution or implicit document execution.",
+    "No new independent original-file CLI replay in this scoped record; focused original XML/ZIP unit fixtures exercise package inspection, schema discovery and stored row equivalence."
+  ],
+  "primary_references": [
+    "https://www.w3.org/TR/REC-xml/#charencoding",
+    "https://learn.microsoft.com/en-us/openspecs/sharepoint_protocols/ms-accdt/606146d3-514f-4555-9d7e-039be4b3f40c"
+  ]
+}

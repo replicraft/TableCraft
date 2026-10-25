@@ -4,7 +4,7 @@ mod names;
 pub(super) mod schema;
 mod values;
 
-use super::{TemplateError, TemplateObject, TemplatePackage, check, tree};
+use super::{TemplateError, TemplateObject, TemplatePackage, check, encoding, tree};
 use jiff::{Timestamp, civil::DateTime};
 use quick_xml::{NsReader, events::Event, name::ResolveResult};
 use tablecraft_ace::InspectError;
@@ -17,7 +17,6 @@ use tablecraft_schema::{Column, validate_row};
 
 const MAX_COLUMNS: usize = 256;
 const MAX_ROWS: usize = 100_000;
-const MAX_SCHEMA_BYTES: usize = 8 * 1024 * 1024;
 const MAX_SCHEMA_DEPTH: usize = 64;
 const ROOT_END: &[u8] = b"</root>";
 const XSI: &str = "http://www.w3.org/2001/XMLSchema-instance";
@@ -207,13 +206,18 @@ fn schema_prefix(
 ) -> Result<schema::Schema, TemplateError> {
     // Copy only the first complete inline schema with its root namespace context.
     // No data-instance event or record value is requested during schema discovery.
-    let mut reader = NsReader::from_reader(&bytes[..bytes.len().min(MAX_SCHEMA_BYTES)]);
+    let mut reader = NsReader::from_reader(encoding::PrefixReader::new(bytes, budget, cancelled));
     reader.config_mut().check_comments = true;
     let mut depth = 0usize;
     let mut schema_seen = false;
+    let mut event_buffer = Vec::new();
     loop {
-        check(budget, cancelled)?;
-        match reader.read_event().map_err(|_| TemplateError::Malformed)? {
+        reader.get_mut().check()?;
+        let event = match reader.read_event_into(&mut event_buffer) {
+            Ok(event) => event,
+            Err(_) => return Err(reader.get_mut().take_error()),
+        };
+        match event {
             Event::Start(element) => {
                 depth += 1;
                 if depth == 1 && element.local_name().as_ref() != "root" {
@@ -243,21 +247,28 @@ fn schema_prefix(
                 }
             }
             Event::Empty(_) if depth < 2 => return Err(TemplateError::Unsupported),
+            Event::Decl(value) => encoding::declaration(&value, reader.get_ref().encoding())?,
             Event::DocType(_) | Event::PI(_) | Event::Eof => return Err(TemplateError::Malformed),
             _ => {}
         }
+        event_buffer.clear();
     }
-    let end = reader.buffer_position() as usize;
+    let end = reader.get_ref().position();
+    let source_encoding = reader.get_ref().encoding();
+    drop(reader);
+    let decoded = encoding::decode(&bytes[..end], budget, cancelled)?;
+    let text = decoded.text.as_bytes();
     budget
-        .charge(Resource::Bytes, (end + ROOT_END.len()) as u64)
+        .charge(Resource::Bytes, (text.len() + ROOT_END.len()) as u64)
         .map_err(InspectError::from)?;
     let mut prefix = Vec::new();
     prefix
-        .try_reserve_exact(end + ROOT_END.len())
+        .try_reserve_exact(text.len() + ROOT_END.len())
         .map_err(|_| InspectError::Allocation)?;
-    prefix.extend_from_slice(&bytes[..end]);
+    prefix.extend_from_slice(text);
     prefix.extend_from_slice(ROOT_END);
-    let root = tree::parse(&prefix, budget, cancelled)?;
+    let text = std::str::from_utf8(&prefix).map_err(|_| TemplateError::Malformed)?;
+    let root = tree::parse_decoded(text, source_encoding, budget, cancelled)?;
     if !root.is("", "root") || !root.attributes.is_empty() || root.children.len() != 1 {
         return Err(TemplateError::Unsupported);
     }

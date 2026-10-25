@@ -1,5 +1,16 @@
 # Implementation status
 
+## Strict UTF-16 template XML
+
+ACCDT control/object/table XML now accepts BOM-qualified UTF-16LE/BE alongside
+UTF-8 through strict bounded decoding. Declaration mismatches, invalid surrogate
+pairs and malformed units fail explicitly. Metadata-only inline schema discovery
+stops before the data suffix, including an immediately malformed suffix; complete
+row reads still validate it. Ten new controls and 39 regressions pass with strict
+Access Clippy. Package names and original bytes remain unchanged. See
+[template scope](ACCESS_TEMPLATES.md) and
+[verification](testing/results/read-query-template-utf16-2026-10-25.json).
+
 ## Bounded exact-key grouping and sets
 
 Proven uniform Boolean/integral/NULL tuples now use a metered fingerprint

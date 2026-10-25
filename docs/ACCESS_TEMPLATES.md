@@ -74,13 +74,27 @@ expanded content, estimated metadata (8 KiB per entry), central-directory copies
 are charged cumulatively. The CLI retains its existing 16 MiB shared read allowance;
 the format ceilings do not override that budget.
 
-OPC control XML is UTF-8, at most 8 MiB per part, with at most 4,096 records,
-32 attributes per element and root/record nesting only. XML bytes, records,
-attribute copies and work are charged. DTDs, processing instructions, unsupported
+OPC control XML accepts UTF-8 with an optional BOM and BOM-qualified UTF-16
+in either byte order. The encoded part and its decoded UTF-8 representation each
+have an 8 MiB ceiling, with at most 4,096 records, 32 attributes per element and
+root/record nesting only. The XML 1.0 declaration, when present, must name the
+actual UTF-8 or UTF-16 encoding; other character-set labels and XML versions
+remain refused. BOMless wide input, mismatched declarations, odd/truncated units,
+unpaired surrogates and forbidden XML characters fail without replacement.
+Stored part bytes and ZIP/OPC name rules remain unchanged. XML conversion,
+records, attribute copies and work are charged before owned allocation. DTDs, processing instructions, unsupported
 attributes/elements, malformed or repeated roots and external entities fail.
 These limits apply to control parsing; content bytes are not treated as control
 XML merely because their content type contains XML. Failure publishes no package
 or partial CLI output. Tracing records only a payload-free operation span.
+
+This encoding boundary follows [XML 1.0 section 4.3.3](https://www.w3.org/TR/REC-xml/#charencoding),
+which requires UTF-8 and UTF-16 support and a BOM for UTF-16. It does not enable
+other encodings, DTDs, entity loading or network access. The existing `quick-xml`
+reader receives strict UTF-8 after this local boundary; no optional encoding
+registry or dependency is added. The [Microsoft List Data contract](https://learn.microsoft.com/en-us/openspecs/sharepoint_protocols/ms-accdt/606146d3-514f-4555-9d7e-039be4b3f40c)
+defines table-data XML with inline schema; this is engineering XML/package
+support, separate from native Access-created template qualification.
 
 Signatures are **not verified**. A well-formed package/relationship inventory
 confers no signer trust, writable capability or permission to execute code.
@@ -114,3 +128,20 @@ The URI profile follows [ECMA-376 Part 2, fifth edition](https://ecma-internatio
 sections 6.2.2 (part syntax/identity), 6.4 (references), 6.5 (relationship paths)
 and 7.3.3–7.3.5 (ZIP mapping). The implementation uses bounded strings only;
 using a URI library does not create a network provider or execute part contents.
+
+## Mandatory XML encoding checks
+
+Ten new original encoding controls pass alongside 34 existing template controls
+and five deployment-input regressions (49 tests total). The new controls compare
+exact metadata, schema and stored values across UTF-8 with/without BOM and both
+BOM-qualified UTF-16 byte orders, in stored and deflated packages. They preserve
+original package/part bytes and exercise strict declarations, illegal/truncated
+units, supplementary characters, encoded/decoded ceilings, quotas, cancellation
+and raw-prefix consumption. Metadata discovery succeeds when the first unit
+after schema EOF is malformed; full row decoding still refuses that suffix.
+
+Strict Access library/test Clippy passes. Commands, log hashes, nine scoped Rust
+source hashes and excluded initial test/lint corrections are recorded in the
+[scoped verification record](testing/results/read-query-template-utf16-2026-10-25.json).
+The template integration checks live in the library modules; no independent
+native Access or original-file CLI qualification is claimed by this test record.

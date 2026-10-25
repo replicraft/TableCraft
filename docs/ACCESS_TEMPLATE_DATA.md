@@ -38,7 +38,10 @@ as directed by the specification; application bodies and properties stay opaque.
 This is not complete validation of every object's application schema.
 
 `table_columns` reads only the selected inline schema prefix with its namespace
-context. It requests no data-instance event. `read_table` explicitly parses the
+context. It requests no data-instance event. The strict encoding reader emits
+one Unicode scalar at a time and records actual consumed source offsets, so it
+does not decode or validate a malformed UTF-8/UTF-16 suffix after schema EOF.
+Only that consumed prefix is normalized and parsed as a schema tree. `read_table` explicitly parses the
 complete stored table and validates every row before returning a TemplateTable.
 Both APIs accept cumulative budgets and cancellation. `TemplateSource` bridges
 these contracts to the existing read-only query evaluator: columns are cached per
@@ -112,9 +115,11 @@ must remain distinct under the shared ASCII-insensitive name policy.
 
 ## Limits, CLI and evidence
 
-[Package limits](ACCESS_TEMPLATES.md) still apply. Metadata/data trees are UTF-8,
-at most 8 MiB, 64 levels and 100,000 nodes, with 64 attributes per element. XML
-bytes, estimated parser/tree work, copied namespace identities, schemas, row cells
+[Package limits](ACCESS_TEMPLATES.md) still apply. Metadata/data trees accept
+UTF-8 with an optional BOM or BOM-qualified UTF-16 in either byte order, with
+matching optional XML 1.0 declarations. Both encoded and normalized UTF-8 bytes
+are bounded at 8 MiB, with 64 levels and 100,000 nodes, and 64 attributes per
+element. XML bytes, estimated parser/tree work, copied namespace identities, schemas, row cells
 and decoded payload storage share caller quotas. Table reads have a 100,000-row
 hard ceiling; host row/byte/step allowances can be lower. The CLI retains its
 16 MiB browsing allowance and per-command row/work limits. Native query byte

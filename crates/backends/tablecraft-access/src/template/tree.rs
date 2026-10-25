@@ -1,5 +1,5 @@
 //! Bounded inert XML trees for template metadata and inline table schemas.
-use super::{TemplateError, check};
+use super::{TemplateError, check, encoding};
 use quick_xml::{
     NsReader, XmlVersion,
     events::Event,
@@ -10,7 +10,6 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 
 pub(super) const XSD: &str = "http://www.w3.org/2001/XMLSchema";
 pub(super) const OD: &str = "urn:schemas-microsoft-com:officedata";
-const MAX_XML_BYTES: usize = 8 * 1024 * 1024;
 const MAX_DEPTH: usize = 64;
 const MAX_NODES: usize = 100_000;
 const MAX_ATTRIBUTES: usize = 64;
@@ -96,9 +95,20 @@ pub(super) fn parse(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Node, TemplateError> {
-    if bytes.len() > MAX_XML_BYTES || std::str::from_utf8(bytes).is_err() {
+    let decoded = encoding::decode(bytes, budget, cancelled)?;
+    parse_decoded(&decoded.text, decoded.encoding, budget, cancelled)
+}
+
+pub(super) fn parse_decoded(
+    text: &str,
+    source_encoding: encoding::Encoding,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Node, TemplateError> {
+    if text.len() > encoding::MAX_XML_BYTES {
         return Err(TemplateError::Unsupported);
     }
+    let bytes = text.as_bytes();
     check(budget, cancelled)?;
     budget
         .charge(Resource::Bytes, bytes.len() as u64 * PARSER_WORK_FACTOR)
@@ -106,13 +116,9 @@ pub(super) fn parse(
     budget
         .charge(Resource::Steps, bytes.len() as u64)
         .map_err(InspectError::from)?;
-    if std::str::from_utf8(bytes)
-        .map_err(|_| TemplateError::Malformed)?
-        .chars()
-        .any(|c| {
-            !matches!(c, '\t' | '\r' | '\n') && (c < ' ' || matches!(c, '\u{fffe}' | '\u{ffff}'))
-        })
-    {
+    if text.chars().any(|c| {
+        !matches!(c, '\t' | '\r' | '\n') && (c < ' ' || matches!(c, '\u{fffe}' | '\u{ffff}'))
+    }) {
         return Err(TemplateError::Malformed);
     }
     let mut reader = NsReader::from_reader(bytes);
@@ -227,14 +233,7 @@ pub(super) fn parse(
             Event::Comment(_) => {}
             Event::Decl(value) if !declaration && root.is_none() && stack.is_empty() => {
                 declaration = true;
-                if value
-                    .encoding()
-                    .transpose()
-                    .map_err(|_| TemplateError::Malformed)?
-                    .is_some_and(|value| !value.eq_ignore_ascii_case("UTF-8"))
-                {
-                    return Err(TemplateError::Unsupported);
-                }
+                encoding::declaration(&value, source_encoding)?;
             }
             Event::Eof if stack.is_empty() => return root.ok_or(TemplateError::Malformed),
             _ => return Err(TemplateError::Malformed),

@@ -379,3 +379,5 @@ fn mixed_case_package_references_feed_the_same_stored_table() {
         Some("Data.Xml")
     );
 }
+
+mod encoding;
