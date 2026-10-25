@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-24",
+  "controls": 542,
+  "compared_cli_cells": 4662,
+  "streams": 259,
+  "hashes": {
+    ".cache/tablecraft-fixtures/mdbtools-iconv-6a8a4b0.c": "05f7d775b5860ca2e0948fbf32a93f7a831c4b2dc8012269010cb0e176f14045",
+    "crates/engines/tablecraft-ace/src/format/text.rs": "c9e3185064c7341fb0106df2dc928019868931a8ada2c68c02fef75e1579fd05",
+    "crates/engines/tablecraft-ace/src/table/long_text.rs": "899431cb15af2ae4bc029428340e9c440c8930a2f27b938b5a8415eb7f10937e",
+    "crates/engines/tablecraft-ace/src/table/record.rs": "24658b3c29603dc3030e59e53390f83c58b38c9f54b5034e454f9592db7092be",
+    "docs/testing/CompressedWideFixture.java": "bb8b855f212807b743d0fc944562ed9411ba9befde3507792e1459ca0facf271",
+    "docs/testing/compare_compressed_wide.py": "bc299924e490b5ff80d27a455fb3a6b8a83b85ebf555c77281011b5530ea9eb8",
+    ".cache/tablecraft-bin/width-wide-grammar-20261024": "91d0b78a139b582711fe665d2ecb0e369db906aa5a9b64c60cd5dd36bb2756de",
+    ".cache/tablecraft-fixtures/compressed-wide-final-20261024/streams.tsv": "e09b38aec936012cc3fcb672a6ff1d1c8038c42bc9934ea61a2489106075c07c",
+    ".cache/tablecraft-fixtures/jackcess-5.0.4.jar": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    ".cache/tablecraft-fixtures/compressed-wide-final-20261024/invalid-Short-V2016.accdb": "4185e13d3399f70a5803a4bfb2e6bbe7307fbf461abee228289f386e8f2cd3fe",
+    ".cache/tablecraft-fixtures/compressed-wide-final-20261024/invalid-Memo-V2016.accdb": "5248526474541da56d877d7ba180913d7fce9e18586cd42a1079168fb30490af",
+    ".cache/tablecraft-fixtures/compressed-wide-final-20261024/seed-V2016.accdb": "a23ea9ff231fc819b8645be91df802eada48a276feb9d7db903caf2acfd9ebd9",
+    ".cache/tablecraft-fixtures/compressed-wide-final-20261024/grammar-V2016.accdb": "37fdcccd53e73ed4865d71aa0463d70df0f16f1b4cb9f28be064273401145184",
+    ".cache/tablecraft-fixtures/compressed-wide-final-20261024/invalid-Short-V2019.accdb": "7f206095fe981b2d4b3b33d946c997e41b37fa985a65afbf04c3b3d1c62d35a7",
+    ".cache/tablecraft-fixtures/compressed-wide-final-20261024/invalid-Memo-V2019.accdb": "f243f034469dae10ea05277761b835a85006372e53a272ea5af52770e60bae6b",
+    ".cache/tablecraft-fixtures/compressed-wide-final-20261024/seed-V2019.accdb": "f7de48e25b0f2ef891e76bb4be38a9aa2c0ddfd495874d021e803ade7192abaf",
+    ".cache/tablecraft-fixtures/compressed-wide-final-20261024/grammar-V2019.accdb": "69091b022acbf7d6722c68827b2e3a617530e62fbbeeae13c566ea34ba340dc2"
+  },
+  "copies": [
+    {
+      "profile": "V2016",
+      "seed": "seed-V2016.accdb",
+      "grammar_copy": "grammar-V2016.accdb",
+      "payload_substitutions": 518
+    },
+    {
+      "profile": "V2019",
+      "seed": "seed-V2019.accdb",
+      "grammar_copy": "grammar-V2019.accdb",
+      "payload_substitutions": 518
+    }
+  ],
+  "qualification": "Original grammar streams and explicit derived payload controls; no native validity claim"
+}

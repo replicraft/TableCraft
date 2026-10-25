@@ -165,9 +165,8 @@ fn decode_bounded(
                 let pair = bytes
                     .get(pos..pos + UTF16_UNIT_BYTES)
                     .ok_or(InspectError::Truncated)?;
-                if pair[1] == 0 {
-                    return Err(InspectError::Malformed);
-                }
+                // A zero switches modes only at the next character boundary.
+                // The high byte belongs to this UTF-16 unit, including zero.
                 units.push(u16::from_le_bytes([pair[0], pair[1]]));
                 pos += UTF16_UNIT_BYTES;
             }
@@ -226,12 +225,7 @@ mod tests {
             .unwrap(),
             "A中B"
         );
-        for invalid in [
-            &[0][..],
-            &[0, 0xd8],
-            &[0xff, 0xfe, 0, 1],
-            &[0xff, 0xfe, 0, 1, 0],
-        ] {
+        for invalid in [&[0][..], &[0, 0xd8], &[0xff, 0xfe, 0, 1]] {
             assert!(decode(invalid, true, &mut budget).is_err());
         }
     }
@@ -263,3 +257,7 @@ mod tests {
 #[cfg(test)]
 #[path = "text/long_tests.rs"]
 mod long_tests;
+
+#[cfg(test)]
+#[path = "text/wide_tests.rs"]
+mod wide_tests;
