@@ -7827,3 +7827,45 @@ reproduction, NULL-Date conversion probe exclusion and exact modeling limits.
 Original files remain unchanged; there are no save/edit experiments here.
 Native Access declaration inference, regional/NLS equivalence, full Variant
 behavior and application compatibility remain unqualified.
+
+
+## Original external named-query trios
+
+[ExternalNamedFixture.java](testing/ExternalNamedFixture.java),
+[ExternalNamedOracle.java](testing/ExternalNamedOracle.java) and
+[compare_external_named.py](testing/compare_external_named.py) are original MIT
+repository tools. Public builders create ordinary Items data; public system-table
+row APIs author inert saved-query fragments. Query IDs and names intentionally
+collide across root/A/B files. Read-only getters record raw fragments, public
+query descriptions and ordinary cells with expression execution disabled and a
+throwing link resolver. No reference SQL executes.
+
+The reviewed Apache-2.0 Jackcess 5.0.4 JAR has SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+No third-party source or fixture bytes are copied. Original files, getter captures
+and generation commands remain ignored under
+`.cache/tablecraft-fixtures/external-named-20261024/`.
+
+| Original relative to corpus | SHA-256 |
+| --- | --- |
+| V2000/one.mdb | `dba3d0aeccc64af71f89cf8c4056cbf49470e597f575edc879070266d34601b1` |
+| V2000/root.mdb | `c24dcc5ee6b343dea7748e244873151caac3afc52e15647fcb0d9fcc883b4a95` |
+| V2000/two.mdb | `c1777a8cae72c3a5822b46ac007c6f87cdf37465fb812e7064f4e11bdf311363` |
+| V2007/one.accdb | `0661222d3776ef7cecc09f55f14c6cbead23bee9e8bd7b52c9957cfd7bb06c4e` |
+| V2007/root.accdb | `8f6fea307f7d6da1a08e9c44f59bef58bbb6a0e4529677b7eaa7e928b4cd8557` |
+| V2007/two.accdb | `f507cf238eebeba23bf4f7c09c20e9fd7a0e47b6d45d5d0abd3cebcffcd3fe30` |
+| V2016/one.accdb | `659b2cd4a332cb20134ac4bd45f358ca79946a4f28da602b26a902c718f359c4` |
+| V2016/root.accdb | `c4cc0907426278667a615f1ade38f79059e36fd9767fb332ec7f2d511a4189c6` |
+| V2016/two.accdb | `ba8d0d39d1b5042837743ba54c9c416cc8fcd906c40176ec00bbc3eaf626cdcd` |
+| V2019/one.accdb | `72727fe2e96fea4aeff92569742b3cb7f19e93fe2aaf81707e3bda9fbb7b0c1a` |
+| V2019/root.accdb | `849b806bc789b9b46e100c6b57370061110c46ac6e9c54f7c0c72b7b58872c5a` |
+| V2019/two.accdb | `958b90d3f69672614d89f3108617a9e08457c106b534119509d9ef304184ad8e` |
+
+The [accepted replay](testing/results/external-named-2026-10-24.json) passes
+588 controls and 1,368 getter-modeled cells with all 1,902 pinned hashes unchanged.
+The [evidence contract](testing/EXTERNAL_NAMED_QUERIES.md) records exact modeling,
+original authoring limits and reproduction. The
+[verification record](testing/results/read-query-external-named-2026-10-24.json)
+pins the committed 1,857-file Rust inventory and 196 focused passing Rust tests.
+No source file is edited, no provider is activated and native Access execution,
+namespace equivalence, shared-file coherence and save/reopen remain unqualified.

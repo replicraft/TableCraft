@@ -1,5 +1,18 @@
 # Implementation status
 
+## Independent external named-source replay
+
+The [external named replay](testing/EXTERNAL_NAMED_QUERIES.md) passes 588 controls
+and 1,368 getter-modeled cells across 12 original Jet 4/ACE 2007/ACE 16-family
+root/A/B files. All 1,902 hashes remain unchanged. Matching names/native IDs,
+parameters, UNION/crosstabs, lexical domains, closed Eval, explicit redirection
+and buffered refusals are covered. Original getters never execute SQL.
+
+The [verification record](testing/results/read-query-external-named-2026-10-24.json)
+pins production base `12b031c6`, all 1,857 committed Rust sources and 196 focused
+passing Rust tests. Native Access qualification, full P0 value/text behavior and
+read/query acceptance remain unfinished.
+
 ## Explicit external named queries
 
 Explicitly mapped native targets now expose qualified saved SELECT/UNION/crosstab

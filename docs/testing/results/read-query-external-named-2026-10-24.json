@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-24",
+  "production_base_commit": "12b031c60e271233df69aa76ca9812a67b703d1e",
+  "scope": "Explicit authorized external named queries with lexical ownership; independent engineering evidence, not native Microsoft Access execution qualification",
+  "rust_source_inventory": {
+    "roots": [
+      "apps",
+      "crates"
+    ],
+    "files": 1857,
+    "algorithm": "Relative UTF-8 paths sorted lexically; each path + NUL + lowercase hex SHA256(file bytes) + newline; SHA256 of complete UTF-8 manifest",
+    "sha256": "267d68a4ddc530286bae948e58a494bf04ff5b533af56cecb9cc00e8a90def9d",
+    "private_manifest": ".cache/external-named-rust-source-20261024.manifest",
+    "verification": "All entries checked before/after replay; parent independently verified complete manifest against committed source archive. Inventory does not imply complete test coverage."
+  },
+  "rust_tests": {
+    "passed_unique_tests": 196,
+    "query_integration_tests": 94,
+    "query_unit_tests": 19,
+    "native_adapter_tests": 30,
+    "cli_tests": 53,
+    "overlap_note": "Focused probes, retries and superseded runs are not added."
+  },
+  "checks": [
+    {
+      "command": "cargo test -j2 -p tablecraft-query --locked --offline --test external_named_sources --test external_sources --test named_crosstabs --test domain --test dynamic_eval --test decimal_division_profiles --test grouped_subqueries",
+      "exit_code": 0,
+      "log": ".cache/external-named-query-regressions-20261024.log",
+      "sha256": "5deae4afd52f191eab86b404c53754243ff2f20dd7fca2b1bf3fc0597e413349"
+    },
+    {
+      "command": "cargo test -j2 -p tablecraft-query --lib --locked --offline",
+      "exit_code": 0,
+      "log": ".cache/external-named-query-lib-final-20261024.log",
+      "sha256": "5d307a467628a50adcdfbd32b54852b26acafdac2926c6960ca7a9515b7ff808"
+    },
+    {
+      "command": "cargo clippy -j2 -p tablecraft-query --lib --test external_named_sources --test external_sources --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "log": ".cache/external-named-query-clippy-20261024.log",
+      "sha256": "2148e18f7999c8f215689e191ee4bde143e409ae7267a1af093b333428cbeeda"
+    },
+    {
+      "command": "cargo check -j2 -p tablecraft-query --no-default-features --locked --offline",
+      "exit_code": 0,
+      "log": ".cache/external-named-query-minimal-20261024.log",
+      "sha256": "ea5e59c6076d6cbb5b03aaf6e3afec84fb78a9ac06ed6e19b8cedcb9eb97285f"
+    },
+    {
+      "command": "cargo test -p tablecraft-access --test external_sources --test linked_sources --test native_source_handle --test shared_native_budget -j2 --locked --offline",
+      "exit_code": 0,
+      "log": ".cache/external-named-adapter-regressions-20261024.log",
+      "sha256": "cbfa13102a25c7d100ce42f4e1533ceab122aa8915c3b074bb88308c88f8ca9c"
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --test saved_query_definitions --test external_queries --test linked_queries -j2 --locked --offline",
+      "exit_code": 0,
+      "log": ".cache/external-named-cli-regressions-20261024.log",
+      "sha256": "2d2fc51ecba7c0f2c40d867afd722f05752755b621e6ab99e997def649d54f1a"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-access --lib --test external_sources --test linked_sources --test native_source_handle --test shared_native_budget -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "log": ".cache/external-named-adapter-clippy-20261024.log",
+      "sha256": "9b81f921dbde4d125ad622201aa76008c3fe436e2927760c07c4cc95c4471318"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-cli --bin tablecraft --test saved_query_definitions --test external_queries --test linked_queries -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "log": ".cache/external-named-cli-clippy-20261024.log",
+      "sha256": "25feed57fee32bb8476ac4f15fdd4df8be1681ed5e296d2ac6ac7e94079a990c"
+    },
+    {
+      "command": "cargo check -p tablecraft-access --no-default-features -j2 --locked --offline",
+      "exit_code": 0,
+      "log": ".cache/external-named-adapter-minimal-20261024.log",
+      "sha256": "4ca96491f8fe8aaca9be2fb6f427100d0b3bea2f9e1a224693047c8d0ffd671c"
+    },
+    {
+      "command": "cargo build -p tablecraft-cli --bin tablecraft -j2 --locked --offline",
+      "exit_code": 0,
+      "log": ".cache/external-named-cli-build-20261024.log",
+      "sha256": "45d8f7d972875790a6cec7ca48e9acc17c5af68372da1940633becec3b4cd60a"
+    }
+  ],
+  "additional_passed_checks": [
+    "cargo fmt --all -- --check",
+    "python3 scripts/check_dependency_boundaries.py (12 packages)",
+    "python3 -m unittest discover -s scripts -p test_*.py (41 tests)",
+    "git diff --check"
+  ],
+  "excluded_attempts": [
+    {
+      "log": ".cache/external-named-query-lib-20261024.log",
+      "reason": "Initial linker exhausted disk; completed rebuildable objects removed only after all Cargo processes terminal; final successful retry counted once."
+    }
+  ],
+  "independent_replay": {
+    "report": "docs/testing/results/external-named-2026-10-24.json",
+    "sha256": "6351f80e356a7ff4641ae836c0c03047ade2810c82ef12e1ab35725c57899591",
+    "controls": 588,
+    "modeled_cells": 1368,
+    "unchanged_hashes": 1902,
+    "original_files": 12,
+    "raw_inspections": 192,
+    "inert_reconstructions": 192,
+    "successful_execution_commands": 124,
+    "classified_refusals": 80
+  },
+  "unrun": [
+    "Complete workspace suite",
+    "Windows Microsoft Access authoring/execution/save-reopen comparison",
+    "Release/performance qualification"
+  ]
+}
