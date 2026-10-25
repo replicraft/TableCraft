@@ -179,3 +179,57 @@ NPV/IRR/MIRR now have their own [ordered expression-state path](CASHFLOW_FUNCTIO
 all written controls/elements evaluate before conversion, array states remain
 strict and NPV-versus-IRR/MIRR validation order is retained. Their numeric kernels,
 period positions and native qualification limits remain separate.
+
+## Retained String evaluator parity
+
+The public retained-value evaluator now accepts valid active String ranges for
+all eleven scalar financial functions, including EuroConvert's currency codes and
+optional full-precision/triangulation controls. It strictly publishes each reached
+String and reuses the same converter or currency parser as materialized Text.
+Previously the retained accessor refused every StringBytes input, although the
+materialized API accepted its Text equivalent. Ordinary scalar and bound query
+paths already admitted valid String operands; this fixes API representation
+consistency, without introducing a new query function or numerical profile.
+
+The private argument/conversion context retains each kernel's admission order.
+All supplied numeric arguments convert in written order before formula/domain
+validation. EuroConvert admits amount, validates source currency, validates target
+currency, converts its Boolean option and converts/validates Integer precision,
+in that order. Currency codes are not numerically converted and do not require a
+NumberFormat when the other inputs are already numeric. Explicit numeric Text
+still requires the supplied number policy. Rate's existing solver checkpoints,
+convergence/refusal rules and defaults remain intact.
+
+Publication only decodes the selected byte range, rejecting selected unpaired
+surrogates and odd byte counts. Invalid discarded backing bytes are ignored. It
+uses the same cumulative byte/work budget, cancellation callback and per-Text
+ceiling as conversion and solver work; it does not clone an argument vector or
+copy a raw backing buffer. Borrowed scalar inputs retain their original carriers.
+Reached arguments and conversions execute once. Earlier operational SQL failures
+remain eager, including failures in unselected IIf branches. Existing NULL,
+Empty/Error/Missing rules are unchanged, including refusal of Empty currency
+codes and the distinction between omitted and explicitly zero-valued controls.
+
+Microsoft's [Access SLN reference](https://support.microsoft.com/en-us/access/functions/sln-function)
+provides concrete query examples and Double argument/result rules. Its
+[EuroConvert reference](https://support.microsoft.com/en-us/access/functions/euroconvert-function)
+distinguishes currency String expressions from numeric amount and precision
+controls. These support the existing semantic kernels, not a new native retained
+representation or native failure precedence. Windows qualification remains open.
+
+Three added financial evaluator tests cover all eleven functions and every
+supported optional-argument prefix under two number formats, active ranges,
+independently expected conversion/currency failure order, policy separation and
+all observed cancellation points plus byte/work/per-Text exhaustion. The
+cashflow scalar controls have the corresponding
+[three-function contract](CASHFLOW_FUNCTIONS.md#retained-string-scalar-controls).
+Two kernel instrumentation tests record exact argument/conversion order and
+once-only admission across both families, including Euro's unchanged currency
+lookup checkpoints. Two query tests cover 56 successful scalar/bound retained
+compositions and 42 malformed/eager-error refusals across all fourteen calls.
+
+The combined focused batch passes 78 distinct tests: 17 financial/cashflow
+evaluator tests, 36 financial/cashflow kernel tests and 25 query tests. Strict
+scoped Clippy, no-default-features expression compilation, formatting and diff
+checks pass. No new CLI replay or native Windows comparison was run for this
+API-parity slice.

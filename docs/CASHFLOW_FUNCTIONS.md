@@ -193,3 +193,30 @@ still charges f64 elements separately. This can exhaust an existing byte allowan
 earlier; limits are not raised. Construction, conversion, solver passes and final
 publication share the existing work/cancellation budget. Numeric algorithms,
 solver limits and formal Double output categories remain unchanged.
+
+## Retained String scalar controls
+
+NPV's rate, IRR's explicit guess and MIRR's finance/reinvestment rates now accept
+valid active retained String ranges through the existing contextual Double
+converter. Admission remains lazy under the same caller budget: NPV admits and
+converts its rate before constructing the array; IRR constructs its array before
+admitting a supplied guess; MIRR constructs its array before admitting/converting
+finance and then reinvestment rates. The scalar callback now receives the shared
+budget for strict publication, without creating a second argument/element vector
+or consulting bindings or other host providers.
+
+This is retained-value API consistency with materialized Text. Existing scalar
+and bound queries already admitted these valid String controls. Array element
+admission is unchanged: materialized Text still fails TypeMismatch and retained
+String array elements still fail NonScalarExpression; neither is implicitly
+parsed, skipped or converted to zero. Empty/Error/Missing array states retain
+their existing refusals. The explicit Array query profile and its native
+qualification limits remain unchanged.
+
+Three added evaluator tests cover both number formats, active ranges with invalid
+discarded backing bytes, independently expected array/control error order,
+unchanged array refusals, cumulative allocation/work/per-Text ceilings and every
+observed cancellation point. A kernel trace proves once-only scalar/element
+admission in function-specific order. The shared
+[financial parity matrix](FINANCIAL_FUNCTIONS.md#retained-string-evaluator-parity)
+records the combined tests and validation results.

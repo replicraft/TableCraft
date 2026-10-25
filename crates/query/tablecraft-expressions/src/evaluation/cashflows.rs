@@ -7,7 +7,11 @@ use crate::{
         financial::cashflows::{CashFlowFunction, Work, sql_arguments},
     },
 };
-use tablecraft_core::values::{ExpressionValue, Value};
+use std::borrow::Cow;
+use tablecraft_core::{
+    limits::ResourceBudget,
+    values::{ExpressionValue, Value},
+};
 use tablecraft_sql::select::FunctionArgument;
 
 impl Evaluator<'_> {
@@ -22,7 +26,7 @@ impl Evaluator<'_> {
         self.apply_cashflow_inputs(
             function,
             arguments.len(),
-            |index| Ok(&arguments[index]),
+            |index, _| Ok(Cow::Borrowed(&arguments[index])),
             values.len(),
             |index| Ok(&values[index]),
         )
@@ -37,14 +41,20 @@ impl Evaluator<'_> {
         values: &[ExpressionValue],
     ) -> Result<Value, EvalError> {
         let empty = Value::Int16(0);
+        let limits = self.limits;
+        let cancelled = self.cancelled;
         self.apply_cashflow_inputs(
             function,
             arguments.len(),
-            |index| match &arguments[index] {
-                ExpressionValue::Value(value) => Ok(value),
-                ExpressionValue::Empty => Ok(&empty),
+            |index, budget| match &arguments[index] {
+                ExpressionValue::Value(value) => Ok(Cow::Borrowed(value)),
+                ExpressionValue::Empty => Ok(Cow::Borrowed(&empty)),
                 ExpressionValue::Error(_) => Err(EvalError::TypeMismatch),
-                ExpressionValue::StringBytes(_) => Err(EvalError::NonScalarExpression),
+                ExpressionValue::StringBytes(value) => {
+                    let mut publisher = Evaluator::new(&NoBindings, budget, limits);
+                    publisher.cancelled = cancelled;
+                    publisher.publish_expression_string(value).map(Cow::Owned)
+                }
                 ExpressionValue::Missing => Err(EvalError::NonScalarExpression),
             },
             values.len(),
@@ -61,7 +71,7 @@ impl Evaluator<'_> {
         &mut self,
         function: CashFlowFunction,
         scalar_count: usize,
-        mut scalar: impl FnMut(usize) -> Result<&'a Value, EvalError>,
+        mut scalar: impl FnMut(usize, &mut ResourceBudget) -> Result<Cow<'a, Value>, EvalError>,
         element_count: usize,
         mut element: impl FnMut(usize) -> Result<&'a Value, EvalError>,
     ) -> Result<Value, EvalError> {
@@ -140,3 +150,6 @@ impl Evaluator<'_> {
 
 #[cfg(test)]
 mod expression_tests;
+
+#[cfg(test)]
+mod retained_tests;

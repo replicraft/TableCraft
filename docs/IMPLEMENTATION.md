@@ -1,5 +1,17 @@
 # Implementation status
 
+## Retained String financial API consistency
+
+All eleven scalar financial APIs and the NPV/IRR/MIRR scalar controls now lazily
+publish valid retained Strings at their existing admission positions. EuroConvert
+currency Strings and optional controls retain their distinct policies; cashflow
+arrays keep their existing strict element rules. The
+[financial batch](FINANCIAL_FUNCTIONS.md#retained-string-evaluator-parity)
+passes 78 focused tests, scoped strict Clippy and minimal-feature compilation.
+Ordinary supported queries already admitted these valid operands. This fixes
+representation consistency without changing numerical models or claiming native
+coercion/failure-order qualification.
+
 ## Additional calculated cached scalar reads
 
 Explicit cached readers now admit authored Byte, Int16, Int64, Single and GUID
