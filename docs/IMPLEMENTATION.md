@@ -1,5 +1,15 @@
 # Implementation status
 
+## Retained String math API consistency
+
+All fifteen math evaluator APIs now admit valid retained String ranges at the
+same validation positions as numeric Text, preserving Round control ordering,
+progressive RGB checks and explicit Rnd state semantics. This fixes a public API
+inconsistency; ordinary bound queries already admitted these valid operands.
+The [focused math batch](MATH_FUNCTIONS.md#retained-string-evaluator-parity)
+passes 69 tests, strict scoped Clippy and minimal-feature compilation. Native
+coercion and failure-precedence qualification remain separate.
+
 ## Consolidated Error-key and retained-date query regression
 
 The all-feature query package passes 1,056 tests across 194 result targets,

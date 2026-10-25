@@ -1,6 +1,13 @@
 //! Meter math calls and supply explicit numeric Text conversions and random state.
 use super::Evaluator;
-use crate::{EvalError, functions::math::MathFunction};
+use crate::{
+    EvalError,
+    functions::{
+        conversions::Conversion,
+        math::{MathContext, MathFunction},
+    },
+};
+use std::borrow::Cow;
 use tablecraft_core::values::{ExpressionValue, Value};
 
 impl Evaluator<'_> {
@@ -11,35 +18,25 @@ impl Evaluator<'_> {
         function: MathFunction,
         values: &[Value],
     ) -> Result<Value, EvalError> {
-        self.apply_math_arguments(function, values.len(), |index| Ok(&values[index]))
+        self.apply_math_arguments(function, MathValues::Scalar(values))
     }
 
-    /// Apply evaluated expression data at each kernel's validation position.
+    /// Admit each evaluated argument at the kernel's validation position.
     /// Callers evaluate all arguments eagerly before entering this method.
     pub fn apply_expression_math(
         &mut self,
         function: MathFunction,
         values: &[ExpressionValue],
     ) -> Result<Value, EvalError> {
-        let empty = Value::Int16(0);
-        self.apply_math_arguments(function, values.len(), |index| match &values[index] {
-            ExpressionValue::Value(value) => Ok(value),
-            ExpressionValue::Error(_) => Err(EvalError::TypeMismatch),
-            ExpressionValue::StringBytes(_) => Err(EvalError::NonScalarExpression),
-            ExpressionValue::Missing => Err(EvalError::NonScalarExpression),
-            ExpressionValue::Empty if function == MathFunction::Round && index == 0 => {
-                Err(EvalError::NonScalarExpression)
-            }
-            ExpressionValue::Empty => Ok(&empty),
-        })
+        self.apply_math_arguments(function, MathValues::Expression(values))
     }
 
-    fn apply_math_arguments<'a>(
+    fn apply_math_arguments(
         &mut self,
         function: MathFunction,
-        count: usize,
-        mut argument: impl FnMut(usize) -> Result<&'a Value, EvalError>,
+        values: MathValues<'_>,
     ) -> Result<Value, EvalError> {
+        let count = values.len();
         if !function.accepts_arity(count) {
             return Err(EvalError::UnsupportedExpression);
         }
@@ -48,13 +45,64 @@ impl Evaluator<'_> {
             return Err(EvalError::DynamicNotRepeatable);
         }
         let random = self.random;
-        function.apply_with_input(count, &mut argument, random, &mut |target, value| {
-            if matches!(value, Value::Text(_)) {
-                self.apply_conversion(target, value)
-            } else {
-                target.apply(value)
-            }
-        })
+        function.apply_with_context(
+            count,
+            &mut MathEvaluation {
+                evaluator: self,
+                function,
+                values,
+            },
+            random,
+        )
+    }
+}
+
+enum MathValues<'a> {
+    Scalar(&'a [Value]),
+    Expression(&'a [ExpressionValue]),
+}
+
+impl MathValues<'_> {
+    fn len(&self) -> usize {
+        match self {
+            Self::Scalar(values) => values.len(),
+            Self::Expression(values) => values.len(),
+        }
+    }
+}
+
+struct MathEvaluation<'a, 'evaluator, 'host> {
+    evaluator: &'evaluator mut Evaluator<'host>,
+    function: MathFunction,
+    values: MathValues<'a>,
+}
+
+impl<'a> MathContext<'a> for MathEvaluation<'a, '_, '_> {
+    fn argument(&mut self, index: usize) -> Result<Cow<'a, Value>, EvalError> {
+        match self.values {
+            MathValues::Scalar(values) => Ok(Cow::Borrowed(&values[index])),
+            MathValues::Expression(values) => match &values[index] {
+                ExpressionValue::Value(value) => Ok(Cow::Borrowed(value)),
+                ExpressionValue::StringBytes(value) => self
+                    .evaluator
+                    .publish_expression_string(value)
+                    .map(Cow::Owned),
+                ExpressionValue::Error(_) => Err(EvalError::TypeMismatch),
+                ExpressionValue::Missing => Err(EvalError::NonScalarExpression),
+                ExpressionValue::Empty if self.function == MathFunction::Round && index == 0 => {
+                    Err(EvalError::NonScalarExpression)
+                }
+                ExpressionValue::Empty => Ok(Cow::Owned(Value::Int16(0))),
+            },
+        }
+    }
+
+    fn convert(&mut self, target: Conversion, value: &Value) -> Result<Value, EvalError> {
+        if matches!(value, Value::Text(_)) {
+            self.evaluator.apply_conversion(target, value)
+        } else {
+            target.apply(value)
+        }
     }
 }
 
@@ -63,3 +111,6 @@ mod random_tests;
 
 #[cfg(test)]
 mod expression_tests;
+
+#[cfg(test)]
+mod retained_tests;

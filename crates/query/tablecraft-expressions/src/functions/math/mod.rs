@@ -1,8 +1,11 @@
 //! Closed, allocation-free numeric functions over explicit scalar carriers.
 use crate::{EvalError, functions::conversions::Conversion};
+pub(crate) use input::MathContext;
+use input::ScalarArguments;
 use tablecraft_core::values::Value;
 
 mod colors;
+mod input;
 pub mod random;
 mod rounding;
 mod transcendental;
@@ -103,42 +106,46 @@ impl MathFunction {
         arguments: &[Value],
         random: Option<&random::RndState>,
     ) -> Result<Value, EvalError> {
-        self.apply_with_input(
+        self.apply_with_context(
             arguments.len(),
-            &mut |index| Ok(&arguments[index]),
+            &mut ScalarArguments { values: arguments },
             random,
-            &mut |target, value| target.apply(value),
         )
     }
 
-    pub(crate) fn apply_with_input<'a>(
+    pub(crate) fn apply_with_context<'a>(
         self,
         count: usize,
-        argument: &mut impl FnMut(usize) -> Result<&'a Value, EvalError>,
+        context: &mut impl MathContext<'a>,
         random: Option<&random::RndState>,
-        convert: &mut impl FnMut(Conversion, &Value) -> Result<Value, EvalError>,
     ) -> Result<Value, EvalError> {
         if !self.accepts_arity(count) {
             return Err(EvalError::UnsupportedExpression);
         }
         if self == Self::Rnd {
             let random = random.ok_or(EvalError::RandomStateRequired)?;
-            let number = if count == 0 { None } else { Some(argument(0)?) };
-            return random.apply_with_converter(number, convert);
+            let number = if count == 0 {
+                None
+            } else {
+                Some(context.argument(0)?)
+            };
+            return random.apply_with_converter(number.as_deref(), &mut |target, value| {
+                context.convert(target, value)
+            });
         }
         if matches!(self, Self::Rgb | Self::QbColor) {
-            return colors::apply_with_input(self, argument, convert);
+            return colors::apply_with_context(self, context);
         }
         if matches!(self, Self::Round) {
-            return rounding::apply_with_input(count, argument, convert);
+            return rounding::apply_with_context(count, context);
         }
-        let value = argument(0)?;
-        let converted = if matches!(value, Value::Text(_)) {
-            Some(convert(Conversion::Double, value)?)
+        let value = context.argument(0)?;
+        let converted = if matches!(value.as_ref(), Value::Text(_)) {
+            Some(context.convert(Conversion::Double, &value)?)
         } else {
             None
         };
-        let value = converted.as_ref().unwrap_or(value);
+        let value = converted.as_ref().unwrap_or(&value);
         if matches!(
             self,
             Self::Sqr | Self::Exp | Self::Log | Self::Sin | Self::Cos | Self::Tan | Self::Atn
