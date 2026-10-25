@@ -1,0 +1,82 @@
+{
+  "recorded_at_utc": "2026-10-25T01:24:55.299857+00:00",
+  "scope": "Inert linked catalog metadata, not linked query execution or native Access qualification",
+  "controls_passed": 16,
+  "reader": {
+    "path": ".cache/tablecraft-bin/linked-metadata-20261024",
+    "sha256": "d1efa3f0dc6b7d137b7c5230c7c3fd425b840383736b3ba437172825d1acdb23"
+  },
+  "jackcess_sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+  "lockfile_sha256": "334969af4290e8cc8e10015296551e3ca7cee1d31494f96c8c7230fd7b31f54d",
+  "sources": {
+    "docs/testing/LinkedTableFixture.java": "a5c951ec6e886881f4d8939732fa1f81b13dfeb02353cc967c7c7555f85bf186",
+    "docs/testing/LinkedTableOracle.java": "a512d2ab047d9784f7d3ad2c9191516bf46ee2eab2562e8aedea431f757cf67b",
+    "docs/testing/compare_linked_tables.py": "08be72689a5625659345d2e78965c28a07c64e9386b5141792f2d22c83d74a90",
+    "crates/engines/tablecraft-ace/examples/linked_table_data.rs": "a37cf35bd7daa91db4cbd24c97455dd75398ab60dc583b073ad1f7dc9af38c9b",
+    "crates/engines/tablecraft-ace/src/catalog/linked/fields.rs": "2fc3e4f2e4e16ea5b0a01e74030aed462530441f3c228e7229d9f877986903d4",
+    "crates/engines/tablecraft-ace/src/catalog/linked/metadata.rs": "93126c4f66a6dff1e7120708ac7102b22dbd4d799bb3fed60b3a140a0aa4c82d",
+    "crates/engines/tablecraft-ace/src/catalog/linked/read.rs": "ca4f6d0b0df9b4330a610ed5132f9934306b0852a8b4b6e017c549eb66bbefce"
+  },
+  "inputs": [
+    {
+      "profile": "V2000",
+      "frontend": {
+        "path": ".cache/tablecraft-fixtures/linked-metadata-20261024/V2000/frontend.mdb",
+        "sha256": "dd1a23a90328727851b25b52c13fdd2caf36fe5dfb3a493b7ee869895207ae4f"
+      },
+      "backend": {
+        "path": ".cache/tablecraft-fixtures/linked-metadata-20261024/V2000/backend.mdb",
+        "sha256": "c5df71254a31548ee6b4f465cde1db28871b97ffe487d519dc84e8f4f47c3b11"
+      },
+      "definitions": 4,
+      "getter_catalog_agreement": true,
+      "target_resolution_trap_calls": 0,
+      "originals_unchanged": true
+    },
+    {
+      "profile": "V2007",
+      "frontend": {
+        "path": ".cache/tablecraft-fixtures/linked-metadata-20261024/V2007/frontend.accdb",
+        "sha256": "6522d7b920e206ca47accda1672dc4331f94cf8e3c09ea377d1d175b8c1e89d8"
+      },
+      "backend": {
+        "path": ".cache/tablecraft-fixtures/linked-metadata-20261024/V2007/backend.accdb",
+        "sha256": "57c75633cf459cd9309e9855acc382b4ba821d13dad9885854bffffa8a58de46"
+      },
+      "definitions": 4,
+      "getter_catalog_agreement": true,
+      "target_resolution_trap_calls": 0,
+      "originals_unchanged": true
+    },
+    {
+      "profile": "V2016",
+      "frontend": {
+        "path": ".cache/tablecraft-fixtures/linked-metadata-20261024/V2016/frontend.accdb",
+        "sha256": "ab848c8b621b7a422887b36a60d47337e11d7cd1c21147e6018c3c6f925f81c0"
+      },
+      "backend": {
+        "path": ".cache/tablecraft-fixtures/linked-metadata-20261024/V2016/backend.accdb",
+        "sha256": "feb883efd484514e6355b8dec80eb9bfb43c582b47edd311ee6b15aaed31cad6"
+      },
+      "definitions": 4,
+      "getter_catalog_agreement": true,
+      "target_resolution_trap_calls": 0,
+      "originals_unchanged": true
+    },
+    {
+      "profile": "V2019",
+      "frontend": {
+        "path": ".cache/tablecraft-fixtures/linked-metadata-20261024/V2019/frontend.accdb",
+        "sha256": "9b81cd5deebcb98183d42cff3e42b48e8c73c3b3963ec384176d863a603f7d3b"
+      },
+      "backend": {
+        "path": ".cache/tablecraft-fixtures/linked-metadata-20261024/V2019/backend.accdb",
+        "sha256": "3b227458be2e82e9a44c5988cb7abd1414f3fa635abeb74990059db373ef51a0"
+      },
+      "definitions": 4,
+      "getter_catalog_agreement": true,
+      "target_resolution_trap_calls": 0,
+      "originals_unchanged": true
+    }
+  ]
+}

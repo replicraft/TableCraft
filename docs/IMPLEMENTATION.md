@@ -1,5 +1,21 @@
 # Implementation status
 
+## Inert native linked-table definitions
+
+The engine now reads selected linked-table Database, ForeignName and Connect
+metadata without opening a target or activating a provider. Missing, NULL, Text
+and unsupported declarations remain distinct; opaque identifiers never become
+filesystem authority. Access-target interpretation requires non-ODBC storage,
+nonempty target identifiers and an exactly NULL/empty provider field. Direct
+catalog rereads verify native ID, containment, flags, name and type.
+
+The [linked-definition contract](NATIVE_LINKED_TABLES.md) passes eight focused
+tests and strict scoped Clippy. Sixteen independent public-writer/reopened-getter
+controls cover Jet 4, ACE 2007 and ACE 16-family files with zero resolver calls
+and all eight originals unchanged. The engine example is an explicit engineering
+consumer. App CLI linking and linked-query execution remain separate; this
+metadata API grants no target-open, credential, write or native Access authority.
+
 ## Compressed-text wide UTF-16 grammar correction
 
 Native text decoding now accepts zero high bytes inside wide UTF-16 units. Mode
