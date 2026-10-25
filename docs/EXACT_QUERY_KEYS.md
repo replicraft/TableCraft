@@ -139,7 +139,9 @@ retains exact commands and hashes; its excluded initial regression used an obsol
 Decimal-refusal control, corrected to the still-unsupported Single profile.
 Parent native/CLI integration adds 57 passing controls, including three new tests.
 The scoped total is 451 distinct tests with 24 new controls; strict native/CLI
-linting and repository formatting also pass. Original replay remains separate.
+linting and repository formatting also pass. The [original native/CAB replay](testing/EXACT_FIXED_KEYS.md)
+adds 84 new-query successes comparing 14,088 rows and 41,802 cells, four old-work
+baselines and two representation probes. Actual Access qualification remains separate.
 
 The initial integral-directory checkpoint passed 223 unique query tests: ten independent conformance
 tests, three implementation scale controls, five private directory/profile tests
