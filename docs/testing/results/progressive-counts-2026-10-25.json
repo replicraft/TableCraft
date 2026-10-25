@@ -1,0 +1,1515 @@
+{
+  "date": "2026-10-25",
+  "scope": "Independent getter-model engineering Count(*) replay; no native Access qualification",
+  "compiled_revision": "905b885a37f8aed3db7a5de5dcb2caec756eef44",
+  "compiled_revision_source_sha256": {
+    "crates/query/tablecraft-query/src/execution/progressive.rs": "a4c72eec5c3ec33d09c5d602a9b85ae601178bf96d5338a9e2312884e8279de7",
+    "crates/query/tablecraft-query/src/execution/progressive/admission.rs": "ef2a4cebd97779b5d00ddbbf5d05a185042314a49c2bb6be47d873137f4f6634",
+    "crates/query/tablecraft-query/src/execution/progressive/count.rs": "1a4cfd7c7fed59be8115e9b67fe3eba3e7117c8acc2a7e448739a398c4926451",
+    "crates/query/tablecraft-query/src/execution/progressive/publication.rs": "552bcb45a0c65e386a5a3bf3034ed0d13493756ce9ab7692846e1a397b07b56b",
+    "crates/query/tablecraft-query/src/execution/progressive/rows.rs": "51169eef7ac0a7c54499bf84e879c0031b32f727043ba10c750acb9ba0b08004",
+    "crates/query/tablecraft-query/src/execution/aggregate/count.rs": "cb550cee91f83438206c76b463b6dfb11527f774a723d69e93968401f1a30829",
+    "crates/query/tablecraft-query/src/execution/context.rs": "b263b39058a91e49df7b993739e289b5ab2d9cbb7c5e7403de5ce84ec8380c24",
+    "crates/query/tablecraft-query/src/execution/execute.rs": "717f755950058fd76aeebb62bd174c77b661f0f2e303775ce70289ea6d1a07da",
+    "crates/backends/tablecraft-access/src/source/progressive.rs": "acf0220637e59511f6acb462edbb7214a8757a99f07e8be4c7e83385b6c1d0f5",
+    "apps/tablecraft-cli/src/commands/query/run_args.rs": "e4388197ed5fd1d085f28188bbb14f2025290f8148e7cd0001c8ebfc23390ed3",
+    "apps/tablecraft-cli/src/commands/query/args.rs": "c1f0db5cfd4cc21fbd9ab30b6446e15539cb7e9ddfcff5a186da50fb981fa872"
+  },
+  "compiled_source_note": "git show revision:path, not mutable live source; scoped inventory only",
+  "immutable_sha256_before": {
+    ".cache/tablecraft-bin/progressive-count-cli-20261025": "b51b570ab768359f734a6a3f37e88deb8d1b8f693d99e5bd83fa209a3402d0d4",
+    ".cache/tablecraft-fixtures/jackcess-5.0.4.jar": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    "docs/testing/compare_progressive_counts.py": "5682f2a46d98eefc2cc56173601d77884993c0ad68289eb61cc9983ab41e69c8",
+    ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb": "0ec45083fd4aea8cde561ecac5a6bec472a019d9a62249914120c9ad6fc1782a",
+    ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb": "7d6bf4d00e6da1a674e2ac8dbc5fea9e6ab84a26fc09ae7e98010c22cc6ffc21",
+    ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb": "be4d1f2d6bc9005263ff1ae90f442897f2d63b7d02f7e2b2bfcbfc00a26dc63c",
+    ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb": "555d1544d87d54d82648a36a2e46148dc1c9911d07b2070909dfd3710799cb37",
+    "docs/testing/compare_decimal_seeks.py": "eedf7e0c24856d566280641930e434ed340e80a55443ceebc451caf859bbcc48",
+    "docs/testing/DecimalIndexFixture.java": "dfbb9d98ab48c68f35ece47225e314373dcf66efd6beb515b5a432b68e2663fa",
+    "docs/testing/IndexRowsOracle.java": "06cf3882a64d5509b2cf93bd3d30ad30bcb70f685afe546c5d200fe2dce315f4"
+  },
+  "immutable_sha256_after": {
+    ".cache/tablecraft-bin/progressive-count-cli-20261025": "b51b570ab768359f734a6a3f37e88deb8d1b8f693d99e5bd83fa209a3402d0d4",
+    ".cache/tablecraft-fixtures/jackcess-5.0.4.jar": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    "docs/testing/compare_progressive_counts.py": "5682f2a46d98eefc2cc56173601d77884993c0ad68289eb61cc9983ab41e69c8",
+    ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb": "0ec45083fd4aea8cde561ecac5a6bec472a019d9a62249914120c9ad6fc1782a",
+    ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb": "7d6bf4d00e6da1a674e2ac8dbc5fea9e6ab84a26fc09ae7e98010c22cc6ffc21",
+    ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb": "be4d1f2d6bc9005263ff1ae90f442897f2d63b7d02f7e2b2bfcbfc00a26dc63c",
+    ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb": "555d1544d87d54d82648a36a2e46148dc1c9911d07b2070909dfd3710799cb37",
+    "docs/testing/compare_decimal_seeks.py": "eedf7e0c24856d566280641930e434ed340e80a55443ceebc451caf859bbcc48",
+    "docs/testing/DecimalIndexFixture.java": "dfbb9d98ab48c68f35ece47225e314373dcf66efd6beb515b5a432b68e2663fa",
+    "docs/testing/IndexRowsOracle.java": "06cf3882a64d5509b2cf93bd3d30ad30bcb70f685afe546c5d200fe2dce315f4"
+  },
+  "models": {
+    ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb": {
+      "getter_sha256": "ede9a228e39462288251fa9205415eae6b3a301221fcbc69712e5a5bc903f1f9",
+      "counts": {
+        "all": 1000,
+        "null": 91,
+        "nonnull": 909,
+        "positive": 457,
+        "negative": 395,
+        "equal": 57,
+        "false": 0
+      }
+    },
+    ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb": {
+      "getter_sha256": "ede9a228e39462288251fa9205415eae6b3a301221fcbc69712e5a5bc903f1f9",
+      "counts": {
+        "all": 1000,
+        "null": 91,
+        "nonnull": 909,
+        "positive": 457,
+        "negative": 395,
+        "equal": 57,
+        "false": 0
+      }
+    },
+    ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb": {
+      "getter_sha256": "ede9a228e39462288251fa9205415eae6b3a301221fcbc69712e5a5bc903f1f9",
+      "counts": {
+        "all": 1000,
+        "null": 91,
+        "nonnull": 909,
+        "positive": 457,
+        "negative": 395,
+        "equal": 57,
+        "false": 0
+      }
+    },
+    ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb": {
+      "getter_sha256": "ede9a228e39462288251fa9205415eae6b3a301221fcbc69712e5a5bc903f1f9",
+      "counts": {
+        "all": 1000,
+        "null": 91,
+        "nonnull": 909,
+        "positive": 457,
+        "negative": 395,
+        "equal": 57,
+        "false": 0
+      }
+    }
+  },
+  "control_count": 132,
+  "successful_controls": 108,
+  "refusal_controls": 24,
+  "compared_rows": 132,
+  "observations": [
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "all",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "70382f0af9f6afba02f72a0aee4c4031e9bc75ffc608abfcf01d9cdaf70f5a71",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "null",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value] IS NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "10ccd2c0b58139fc8ab9ad3dd1779027b284b15ca0943e34b519b204c4505176",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "nonnull",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value] IS NOT NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "42f9494b91b0e0da1b402186c4a573b857a7869f75e9420bf4e0abf69672b64c",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "positive",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "6059dc67fc3d841b0ddea7d06663f45f342a3ccef740632b95e807cd1b48f638",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "negative",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "0f622fa9368ff26f54d4a748ae1610103cc2bd065caf05c2deb6d4810b3755e9",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "equal",
+      "mode": "buffered",
+      "sql": "PARAMETERS P Decimal(28,4); SELECT Count(*) AS N FROM Decimal4 WHERE [Value]=P",
+      "extra": [
+        "--param",
+        "P=decimal:0.0001"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "d45a97e7d1f32d28da933897ee56b983b920cb9d3666dd2856ffc8554329b7c1",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "false",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "2ae42eca646e644938913be8ee03dd06b8a039252544e73cbcb197f35d03f52f",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "aliases",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,N+1 AS NextValue FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "90d8f198a585608d856d59a62e0dbf9caa97e5fba17780ea256f5842a45d1a29",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "mixed-arms",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 UNION ALL SELECT ID FROM Decimal4 WHERE ID=1 UNION ALL SELECT Count(*) FROM Decimal4 WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "92e3eecb6ce558ab84440f4ecff84903165dbe08dfd90a8c8f6c05a576897b53",
+      "rows": 3
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "all",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "70382f0af9f6afba02f72a0aee4c4031e9bc75ffc608abfcf01d9cdaf70f5a71",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "null",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value] IS NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "10ccd2c0b58139fc8ab9ad3dd1779027b284b15ca0943e34b519b204c4505176",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "nonnull",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value] IS NOT NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "42f9494b91b0e0da1b402186c4a573b857a7869f75e9420bf4e0abf69672b64c",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "positive",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "6059dc67fc3d841b0ddea7d06663f45f342a3ccef740632b95e807cd1b48f638",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "negative",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "0f622fa9368ff26f54d4a748ae1610103cc2bd065caf05c2deb6d4810b3755e9",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "equal",
+      "mode": "stream1",
+      "sql": "PARAMETERS P Decimal(28,4); SELECT Count(*) AS N FROM Decimal4 WHERE [Value]=P",
+      "extra": [
+        "--param",
+        "P=decimal:0.0001"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "d45a97e7d1f32d28da933897ee56b983b920cb9d3666dd2856ffc8554329b7c1",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "false",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "2ae42eca646e644938913be8ee03dd06b8a039252544e73cbcb197f35d03f52f",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "aliases",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,N+1 AS NextValue FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "90d8f198a585608d856d59a62e0dbf9caa97e5fba17780ea256f5842a45d1a29",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "mixed-arms",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 UNION ALL SELECT ID FROM Decimal4 WHERE ID=1 UNION ALL SELECT Count(*) FROM Decimal4 WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "92e3eecb6ce558ab84440f4ecff84903165dbe08dfd90a8c8f6c05a576897b53",
+      "rows": 3
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "all",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "70382f0af9f6afba02f72a0aee4c4031e9bc75ffc608abfcf01d9cdaf70f5a71",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "null",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value] IS NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "10ccd2c0b58139fc8ab9ad3dd1779027b284b15ca0943e34b519b204c4505176",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "nonnull",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value] IS NOT NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "42f9494b91b0e0da1b402186c4a573b857a7869f75e9420bf4e0abf69672b64c",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "positive",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "6059dc67fc3d841b0ddea7d06663f45f342a3ccef740632b95e807cd1b48f638",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "negative",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "0f622fa9368ff26f54d4a748ae1610103cc2bd065caf05c2deb6d4810b3755e9",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "equal",
+      "mode": "stream128",
+      "sql": "PARAMETERS P Decimal(28,4); SELECT Count(*) AS N FROM Decimal4 WHERE [Value]=P",
+      "extra": [
+        "--param",
+        "P=decimal:0.0001"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "d45a97e7d1f32d28da933897ee56b983b920cb9d3666dd2856ffc8554329b7c1",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "false",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "2ae42eca646e644938913be8ee03dd06b8a039252544e73cbcb197f35d03f52f",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "aliases",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,N+1 AS NextValue FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "90d8f198a585608d856d59a62e0dbf9caa97e5fba17780ea256f5842a45d1a29",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "mixed-arms",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 UNION ALL SELECT ID FROM Decimal4 WHERE ID=1 UNION ALL SELECT Count(*) FROM Decimal4 WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "92e3eecb6ce558ab84440f4ecff84903165dbe08dfd90a8c8f6c05a576897b53",
+      "rows": 3
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "native-rows",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) FROM Decimal4",
+      "extra": [
+        "--native-rows",
+        "1"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "resource",
+      "stderr": "error: Rows resource limit exceeded (0 remaining)\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "query-steps",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) FROM Decimal4",
+      "extra": [
+        "--execution-steps",
+        "1"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "resource",
+      "stderr": "error: Steps resource limit exceeded (0 remaining)\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "output",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) FROM Decimal4",
+      "extra": [
+        "--output-bytes",
+        "1"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "output",
+      "stderr": "error: evaluation output limit exceeded\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "eager-filter",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) FROM Decimal4 WHERE False And 1/0=0",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "division",
+      "stderr": "error: division by zero\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "late-filter",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) FROM Decimal4 WHERE ID Mod (ID-999)=0",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "division",
+      "stderr": "error: division by zero\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb",
+      "case": "aggregate-error",
+      "mode": "stream1",
+      "sql": "SELECT 1/Count(*) FROM Decimal4 WHERE False",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "division",
+      "stderr": "error: division by zero\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "all",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "70382f0af9f6afba02f72a0aee4c4031e9bc75ffc608abfcf01d9cdaf70f5a71",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "null",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value] IS NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "10ccd2c0b58139fc8ab9ad3dd1779027b284b15ca0943e34b519b204c4505176",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "nonnull",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value] IS NOT NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "42f9494b91b0e0da1b402186c4a573b857a7869f75e9420bf4e0abf69672b64c",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "positive",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "6059dc67fc3d841b0ddea7d06663f45f342a3ccef740632b95e807cd1b48f638",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "negative",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "0f622fa9368ff26f54d4a748ae1610103cc2bd065caf05c2deb6d4810b3755e9",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "equal",
+      "mode": "buffered",
+      "sql": "PARAMETERS P Decimal(28,4); SELECT Count(*) AS N FROM Decimal4 WHERE [Value]=P",
+      "extra": [
+        "--param",
+        "P=decimal:0.0001"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "d45a97e7d1f32d28da933897ee56b983b920cb9d3666dd2856ffc8554329b7c1",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "false",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "2ae42eca646e644938913be8ee03dd06b8a039252544e73cbcb197f35d03f52f",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "aliases",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,N+1 AS NextValue FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "90d8f198a585608d856d59a62e0dbf9caa97e5fba17780ea256f5842a45d1a29",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "mixed-arms",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 UNION ALL SELECT ID FROM Decimal4 WHERE ID=1 UNION ALL SELECT Count(*) FROM Decimal4 WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "92e3eecb6ce558ab84440f4ecff84903165dbe08dfd90a8c8f6c05a576897b53",
+      "rows": 3
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "all",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "70382f0af9f6afba02f72a0aee4c4031e9bc75ffc608abfcf01d9cdaf70f5a71",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "null",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value] IS NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "10ccd2c0b58139fc8ab9ad3dd1779027b284b15ca0943e34b519b204c4505176",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "nonnull",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value] IS NOT NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "42f9494b91b0e0da1b402186c4a573b857a7869f75e9420bf4e0abf69672b64c",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "positive",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "6059dc67fc3d841b0ddea7d06663f45f342a3ccef740632b95e807cd1b48f638",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "negative",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "0f622fa9368ff26f54d4a748ae1610103cc2bd065caf05c2deb6d4810b3755e9",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "equal",
+      "mode": "stream1",
+      "sql": "PARAMETERS P Decimal(28,4); SELECT Count(*) AS N FROM Decimal4 WHERE [Value]=P",
+      "extra": [
+        "--param",
+        "P=decimal:0.0001"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "d45a97e7d1f32d28da933897ee56b983b920cb9d3666dd2856ffc8554329b7c1",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "false",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "2ae42eca646e644938913be8ee03dd06b8a039252544e73cbcb197f35d03f52f",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "aliases",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,N+1 AS NextValue FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "90d8f198a585608d856d59a62e0dbf9caa97e5fba17780ea256f5842a45d1a29",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "mixed-arms",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 UNION ALL SELECT ID FROM Decimal4 WHERE ID=1 UNION ALL SELECT Count(*) FROM Decimal4 WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "92e3eecb6ce558ab84440f4ecff84903165dbe08dfd90a8c8f6c05a576897b53",
+      "rows": 3
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "all",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "70382f0af9f6afba02f72a0aee4c4031e9bc75ffc608abfcf01d9cdaf70f5a71",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "null",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value] IS NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "10ccd2c0b58139fc8ab9ad3dd1779027b284b15ca0943e34b519b204c4505176",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "nonnull",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value] IS NOT NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "42f9494b91b0e0da1b402186c4a573b857a7869f75e9420bf4e0abf69672b64c",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "positive",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "6059dc67fc3d841b0ddea7d06663f45f342a3ccef740632b95e807cd1b48f638",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "negative",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "0f622fa9368ff26f54d4a748ae1610103cc2bd065caf05c2deb6d4810b3755e9",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "equal",
+      "mode": "stream128",
+      "sql": "PARAMETERS P Decimal(28,4); SELECT Count(*) AS N FROM Decimal4 WHERE [Value]=P",
+      "extra": [
+        "--param",
+        "P=decimal:0.0001"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "d45a97e7d1f32d28da933897ee56b983b920cb9d3666dd2856ffc8554329b7c1",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "false",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "2ae42eca646e644938913be8ee03dd06b8a039252544e73cbcb197f35d03f52f",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "aliases",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,N+1 AS NextValue FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "90d8f198a585608d856d59a62e0dbf9caa97e5fba17780ea256f5842a45d1a29",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "mixed-arms",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 UNION ALL SELECT ID FROM Decimal4 WHERE ID=1 UNION ALL SELECT Count(*) FROM Decimal4 WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "92e3eecb6ce558ab84440f4ecff84903165dbe08dfd90a8c8f6c05a576897b53",
+      "rows": 3
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "native-rows",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) FROM Decimal4",
+      "extra": [
+        "--native-rows",
+        "1"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "resource",
+      "stderr": "error: Rows resource limit exceeded (0 remaining)\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "query-steps",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) FROM Decimal4",
+      "extra": [
+        "--execution-steps",
+        "1"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "resource",
+      "stderr": "error: Steps resource limit exceeded (0 remaining)\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "output",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) FROM Decimal4",
+      "extra": [
+        "--output-bytes",
+        "1"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "output",
+      "stderr": "error: evaluation output limit exceeded\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "eager-filter",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) FROM Decimal4 WHERE False And 1/0=0",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "division",
+      "stderr": "error: division by zero\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "late-filter",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) FROM Decimal4 WHERE ID Mod (ID-999)=0",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "division",
+      "stderr": "error: division by zero\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2007-20261025.accdb",
+      "case": "aggregate-error",
+      "mode": "stream1",
+      "sql": "SELECT 1/Count(*) FROM Decimal4 WHERE False",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "division",
+      "stderr": "error: division by zero\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "all",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "70382f0af9f6afba02f72a0aee4c4031e9bc75ffc608abfcf01d9cdaf70f5a71",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "null",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value] IS NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "10ccd2c0b58139fc8ab9ad3dd1779027b284b15ca0943e34b519b204c4505176",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "nonnull",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value] IS NOT NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "42f9494b91b0e0da1b402186c4a573b857a7869f75e9420bf4e0abf69672b64c",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "positive",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "6059dc67fc3d841b0ddea7d06663f45f342a3ccef740632b95e807cd1b48f638",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "negative",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "0f622fa9368ff26f54d4a748ae1610103cc2bd065caf05c2deb6d4810b3755e9",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "equal",
+      "mode": "buffered",
+      "sql": "PARAMETERS P Decimal(28,4); SELECT Count(*) AS N FROM Decimal4 WHERE [Value]=P",
+      "extra": [
+        "--param",
+        "P=decimal:0.0001"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "d45a97e7d1f32d28da933897ee56b983b920cb9d3666dd2856ffc8554329b7c1",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "false",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "2ae42eca646e644938913be8ee03dd06b8a039252544e73cbcb197f35d03f52f",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "aliases",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,N+1 AS NextValue FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "90d8f198a585608d856d59a62e0dbf9caa97e5fba17780ea256f5842a45d1a29",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "mixed-arms",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 UNION ALL SELECT ID FROM Decimal4 WHERE ID=1 UNION ALL SELECT Count(*) FROM Decimal4 WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "92e3eecb6ce558ab84440f4ecff84903165dbe08dfd90a8c8f6c05a576897b53",
+      "rows": 3
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "all",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "70382f0af9f6afba02f72a0aee4c4031e9bc75ffc608abfcf01d9cdaf70f5a71",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "null",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value] IS NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "10ccd2c0b58139fc8ab9ad3dd1779027b284b15ca0943e34b519b204c4505176",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "nonnull",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value] IS NOT NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "42f9494b91b0e0da1b402186c4a573b857a7869f75e9420bf4e0abf69672b64c",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "positive",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "6059dc67fc3d841b0ddea7d06663f45f342a3ccef740632b95e807cd1b48f638",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "negative",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "0f622fa9368ff26f54d4a748ae1610103cc2bd065caf05c2deb6d4810b3755e9",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "equal",
+      "mode": "stream1",
+      "sql": "PARAMETERS P Decimal(28,4); SELECT Count(*) AS N FROM Decimal4 WHERE [Value]=P",
+      "extra": [
+        "--param",
+        "P=decimal:0.0001"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "d45a97e7d1f32d28da933897ee56b983b920cb9d3666dd2856ffc8554329b7c1",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "false",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "2ae42eca646e644938913be8ee03dd06b8a039252544e73cbcb197f35d03f52f",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "aliases",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,N+1 AS NextValue FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "90d8f198a585608d856d59a62e0dbf9caa97e5fba17780ea256f5842a45d1a29",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "mixed-arms",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 UNION ALL SELECT ID FROM Decimal4 WHERE ID=1 UNION ALL SELECT Count(*) FROM Decimal4 WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "92e3eecb6ce558ab84440f4ecff84903165dbe08dfd90a8c8f6c05a576897b53",
+      "rows": 3
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "all",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "70382f0af9f6afba02f72a0aee4c4031e9bc75ffc608abfcf01d9cdaf70f5a71",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "null",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value] IS NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "10ccd2c0b58139fc8ab9ad3dd1779027b284b15ca0943e34b519b204c4505176",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "nonnull",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value] IS NOT NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "42f9494b91b0e0da1b402186c4a573b857a7869f75e9420bf4e0abf69672b64c",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "positive",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "6059dc67fc3d841b0ddea7d06663f45f342a3ccef740632b95e807cd1b48f638",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "negative",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "0f622fa9368ff26f54d4a748ae1610103cc2bd065caf05c2deb6d4810b3755e9",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "equal",
+      "mode": "stream128",
+      "sql": "PARAMETERS P Decimal(28,4); SELECT Count(*) AS N FROM Decimal4 WHERE [Value]=P",
+      "extra": [
+        "--param",
+        "P=decimal:0.0001"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "d45a97e7d1f32d28da933897ee56b983b920cb9d3666dd2856ffc8554329b7c1",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "false",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "2ae42eca646e644938913be8ee03dd06b8a039252544e73cbcb197f35d03f52f",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "aliases",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,N+1 AS NextValue FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "90d8f198a585608d856d59a62e0dbf9caa97e5fba17780ea256f5842a45d1a29",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "mixed-arms",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 UNION ALL SELECT ID FROM Decimal4 WHERE ID=1 UNION ALL SELECT Count(*) FROM Decimal4 WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "92e3eecb6ce558ab84440f4ecff84903165dbe08dfd90a8c8f6c05a576897b53",
+      "rows": 3
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "native-rows",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) FROM Decimal4",
+      "extra": [
+        "--native-rows",
+        "1"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "resource",
+      "stderr": "error: Rows resource limit exceeded (0 remaining)\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "query-steps",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) FROM Decimal4",
+      "extra": [
+        "--execution-steps",
+        "1"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "resource",
+      "stderr": "error: Steps resource limit exceeded (0 remaining)\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "output",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) FROM Decimal4",
+      "extra": [
+        "--output-bytes",
+        "1"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "output",
+      "stderr": "error: evaluation output limit exceeded\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "eager-filter",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) FROM Decimal4 WHERE False And 1/0=0",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "division",
+      "stderr": "error: division by zero\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "late-filter",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) FROM Decimal4 WHERE ID Mod (ID-999)=0",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "division",
+      "stderr": "error: division by zero\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2016-20261025.accdb",
+      "case": "aggregate-error",
+      "mode": "stream1",
+      "sql": "SELECT 1/Count(*) FROM Decimal4 WHERE False",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "division",
+      "stderr": "error: division by zero\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "all",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "70382f0af9f6afba02f72a0aee4c4031e9bc75ffc608abfcf01d9cdaf70f5a71",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "null",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value] IS NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "10ccd2c0b58139fc8ab9ad3dd1779027b284b15ca0943e34b519b204c4505176",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "nonnull",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value] IS NOT NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "42f9494b91b0e0da1b402186c4a573b857a7869f75e9420bf4e0abf69672b64c",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "positive",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "6059dc67fc3d841b0ddea7d06663f45f342a3ccef740632b95e807cd1b48f638",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "negative",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "0f622fa9368ff26f54d4a748ae1610103cc2bd065caf05c2deb6d4810b3755e9",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "equal",
+      "mode": "buffered",
+      "sql": "PARAMETERS P Decimal(28,4); SELECT Count(*) AS N FROM Decimal4 WHERE [Value]=P",
+      "extra": [
+        "--param",
+        "P=decimal:0.0001"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "d45a97e7d1f32d28da933897ee56b983b920cb9d3666dd2856ffc8554329b7c1",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "false",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "2ae42eca646e644938913be8ee03dd06b8a039252544e73cbcb197f35d03f52f",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "aliases",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N,N+1 AS NextValue FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "90d8f198a585608d856d59a62e0dbf9caa97e5fba17780ea256f5842a45d1a29",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "mixed-arms",
+      "mode": "buffered",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 UNION ALL SELECT ID FROM Decimal4 WHERE ID=1 UNION ALL SELECT Count(*) FROM Decimal4 WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "92e3eecb6ce558ab84440f4ecff84903165dbe08dfd90a8c8f6c05a576897b53",
+      "rows": 3
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "all",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "70382f0af9f6afba02f72a0aee4c4031e9bc75ffc608abfcf01d9cdaf70f5a71",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "null",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value] IS NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "10ccd2c0b58139fc8ab9ad3dd1779027b284b15ca0943e34b519b204c4505176",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "nonnull",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value] IS NOT NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "42f9494b91b0e0da1b402186c4a573b857a7869f75e9420bf4e0abf69672b64c",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "positive",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "6059dc67fc3d841b0ddea7d06663f45f342a3ccef740632b95e807cd1b48f638",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "negative",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "0f622fa9368ff26f54d4a748ae1610103cc2bd065caf05c2deb6d4810b3755e9",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "equal",
+      "mode": "stream1",
+      "sql": "PARAMETERS P Decimal(28,4); SELECT Count(*) AS N FROM Decimal4 WHERE [Value]=P",
+      "extra": [
+        "--param",
+        "P=decimal:0.0001"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "d45a97e7d1f32d28da933897ee56b983b920cb9d3666dd2856ffc8554329b7c1",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "false",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "2ae42eca646e644938913be8ee03dd06b8a039252544e73cbcb197f35d03f52f",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "aliases",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N,N+1 AS NextValue FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "90d8f198a585608d856d59a62e0dbf9caa97e5fba17780ea256f5842a45d1a29",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "mixed-arms",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 UNION ALL SELECT ID FROM Decimal4 WHERE ID=1 UNION ALL SELECT Count(*) FROM Decimal4 WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "92e3eecb6ce558ab84440f4ecff84903165dbe08dfd90a8c8f6c05a576897b53",
+      "rows": 3
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "all",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE True",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "70382f0af9f6afba02f72a0aee4c4031e9bc75ffc608abfcf01d9cdaf70f5a71",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "null",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value] IS NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "10ccd2c0b58139fc8ab9ad3dd1779027b284b15ca0943e34b519b204c4505176",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "nonnull",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value] IS NOT NULL",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "42f9494b91b0e0da1b402186c4a573b857a7869f75e9420bf4e0abf69672b64c",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "positive",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value]>0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "6059dc67fc3d841b0ddea7d06663f45f342a3ccef740632b95e807cd1b48f638",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "negative",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE [Value]<0",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "0f622fa9368ff26f54d4a748ae1610103cc2bd065caf05c2deb6d4810b3755e9",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "equal",
+      "mode": "stream128",
+      "sql": "PARAMETERS P Decimal(28,4); SELECT Count(*) AS N FROM Decimal4 WHERE [Value]=P",
+      "extra": [
+        "--param",
+        "P=decimal:0.0001"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "d45a97e7d1f32d28da933897ee56b983b920cb9d3666dd2856ffc8554329b7c1",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "false",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "2ae42eca646e644938913be8ee03dd06b8a039252544e73cbcb197f35d03f52f",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "aliases",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N,N+1 AS NextValue FROM Decimal4",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "90d8f198a585608d856d59a62e0dbf9caa97e5fba17780ea256f5842a45d1a29",
+      "rows": 1
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "mixed-arms",
+      "mode": "stream128",
+      "sql": "SELECT Count(*) AS N FROM Decimal4 UNION ALL SELECT ID FROM Decimal4 WHERE ID=1 UNION ALL SELECT Count(*) FROM Decimal4 WHERE False",
+      "extra": [],
+      "exit_code": 0,
+      "stdout_sha256": "92e3eecb6ce558ab84440f4ecff84903165dbe08dfd90a8c8f6c05a576897b53",
+      "rows": 3
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "native-rows",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) FROM Decimal4",
+      "extra": [
+        "--native-rows",
+        "1"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "resource",
+      "stderr": "error: Rows resource limit exceeded (0 remaining)\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "query-steps",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) FROM Decimal4",
+      "extra": [
+        "--execution-steps",
+        "1"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "resource",
+      "stderr": "error: Steps resource limit exceeded (0 remaining)\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "output",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) FROM Decimal4",
+      "extra": [
+        "--output-bytes",
+        "1"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "output",
+      "stderr": "error: evaluation output limit exceeded\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "eager-filter",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) FROM Decimal4 WHERE False And 1/0=0",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "division",
+      "stderr": "error: division by zero\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "late-filter",
+      "mode": "stream1",
+      "sql": "SELECT Count(*) FROM Decimal4 WHERE ID Mod (ID-999)=0",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "division",
+      "stderr": "error: division by zero\n"
+    },
+    {
+      "database": ".cache/tablecraft-fixtures/decimal-seeks-V2019-20261025.accdb",
+      "case": "aggregate-error",
+      "mode": "stream1",
+      "sql": "SELECT 1/Count(*) FROM Decimal4 WHERE False",
+      "extra": [],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": "division",
+      "stderr": "error: division by zero\n"
+    }
+  ]
+}

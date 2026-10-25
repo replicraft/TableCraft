@@ -8153,3 +8153,23 @@ and four original byte hashes remain unchanged. This qualifies bounded engineeri
 Decimal equality/NULL access paths, including legacy descending keys; native
 Access optimizer/execution equivalence, Decimal ranges and native saves remain
 unqualified. Existing write permits and preview boundaries are unchanged.
+
+## Original native progressive Count replay reuse
+
+The 2026-10-25 [progressive Count evidence](testing/PROGRESSIVE_COUNTS.md) reuses
+the four unchanged originals, original producer and read-only getter registered
+under [exact Decimal equality selection inputs](#original-exact-decimal-equality-selection-replay-inputs).
+No database or third-party fixture was added. Getter records provide independent
+row/NULL counts and exact Fraction predicate models; no reference SQL or active
+content executes. Decimal4 getter stdout retains SHA-256
+`ede9a228e39462288251fa9205415eae6b3a301221fcbc69712e5a5bc903f1f9`
+across all four profiles.
+
+The [accepted report](testing/results/progressive-counts-2026-10-25.json) records
+132 controls: 108 successful buffered/streamed queries comparing 132 output rows
+and 24 runtime resource/output/division refusals with empty stdout. Ten immutable
+pins agree before/after; eleven compiled production paths are hashed separately
+from committed revision `905b885a`, rather than mutable live source. Original bytes
+remain unchanged. These engineering results do not qualify native Access execution
+or larger-than-default CLI snapshot scale. The owning record preserves exact
+commands, hashes, model counts and excluded oracle-setup probes.
