@@ -23,7 +23,7 @@ impl Runtime<'_, '_> {
         if read.owner != SourceNamespace::Root
             || !read.sort.is_empty()
             || read.distinct
-            || read.top.is_some()
+            || read.top.is_some_and(|(_, percent)| percent)
             || select.aggregate
             || !select.group.is_empty()
             || select.having.is_some()

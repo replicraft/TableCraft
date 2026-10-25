@@ -13,12 +13,13 @@ cargo run -p tablecraft-cli -- query run \
 ```
 
 One direct local scalar table, aliases, qualified wildcards, typed parameters and
-row-local predicates/functions are supported. Source order is retained. Explicit
-text, numeric, date, character, ICU and declared-arithmetic policies use the same
+row-local predicates/functions and positive unordered TOP counts are supported.
+Source order is retained. Explicit text, numeric, date, character, ICU and
+declared-arithmetic policies use the same
 host context as buffered retrieval. Ordinary scalar views of mixed schemas are
 supported; unavailable fields and matching wildcards fail without NULL placeholders.
 
-Ordering, TOP, DISTINCT/active DISTINCTROW, groups/HAVING, joins/products, sets,
+Ordering, TOP PERCENT, DISTINCT/active DISTINCTROW, groups/HAVING, joins/products, sets,
 named/derived sources, subqueries, domains, collections, Eval and volatile
 clock/random calls remain outside this progressive profile. Single-table
 DISTINCTROW retains its ordinary inactive behavior. Unsupported plans refuse
@@ -30,6 +31,22 @@ field modes. Explicit table format is rejected before opening the input; auto
 format is TSV for streaming, including in terminals. Header-based raw native and
 supported package/encryption opening retain their existing qualifications; this
 mode does not add a codec, provider or template reader.
+
+## TOP limits output, not validation
+
+`SELECT TOP n ...` without ORDER BY streams the first n qualifying rows in source
+order. It still reads to checked EOF and eagerly computes later WHERE/projection
+expressions. Later read, evaluation, count, cancellation and resource errors
+remain failures, potentially after an earlier output batch. This limits exported
+rows and output bytes; it does not promise less source work. Ordered TOP and
+PERCENT remain refused in streaming mode, and TOP 0 keeps its existing binder
+refusal. Ordinary buffered TOP behavior is unchanged.
+
+Discarded expression cells are not strictly published after TOP, preserving the
+buffered handling of unrepresentable raw String intermediates in omitted rows.
+Their construction, eager branch errors and work/allocation charges still apply.
+See [the query TOP contract](PROGRESSIVE_QUERIES.md#unordered-top-counts) for the
+primary reference and engineering/native qualification boundary.
 
 ## Batches and output
 
@@ -73,10 +90,11 @@ to open an embedded path. See the [query service](PROGRESSIVE_QUERIES.md) and
 
 ## Verification
 
-Twelve CLI integration tests cover priority synthetic profiles, real ACE 2007
+Sixteen CLI integration tests cover priority synthetic profiles, real ACE 2007
 example data, batch sizes, quoting, empty/filter results, first/late errors,
 checked count failures, cumulative quotas, parameter/text/declaration controls,
-mixed schemas and argument refusals. Sixty CLI unit/browsing/native/retrieval
-checks pass, including new write/flush failure and encoded-output allowance tests.
+mixed schemas, unordered TOP prefixes and argument refusals. TOP tests preserve
+late expression/EOF/quota failures and omitted raw String publication parity.
+Sixty CLI unit/browsing/native/retrieval checks pass, including new write/flush failure and encoded-output allowance tests.
 Scoped strict Clippy passes. Original large-file replay and native Access
 qualification are recorded separately; this does not complete read/query work.

@@ -9,6 +9,8 @@ use tablecraft_sql::parse_query;
 mod boundaries;
 #[path = "progressive_queries/execution.rs"]
 mod execution;
+#[path = "progressive_queries/top.rs"]
+mod top;
 
 struct Rows {
     columns: Vec<Column>,
