@@ -11,6 +11,8 @@ use tablecraft_core::limits::ResourceBudget;
 use tablecraft_expressions::functions::dates::parsing::ReferenceYear;
 
 pub(crate) struct DomainContext<'a> {
+    pub owner: crate::external_sources::SourceNamespace,
+    pub external_sources: &'a [crate::external_sources::ExternalBinding],
     pub source: &'a dyn Source,
     pub materialized: &'a [Materialized<'a>],
     pub budget: &'a mut ResourceBudget,
@@ -27,7 +29,7 @@ pub(crate) struct BoundDomain {
     pub external_sources: Vec<crate::external_sources::ExternalBinding>,
 }
 
-type DomainPreparation = Result<Option<BoundDomain>, String>;
+type DomainPreparation = Result<Option<BoundDomain>, crate::named_identity::SchemaRequest>;
 
 pub(crate) fn bind_domain(
     context: DomainContext<'_>,
@@ -37,6 +39,8 @@ pub(crate) fn bind_domain(
     criteria: Option<&str>,
 ) -> Result<DomainPreparation, QueryError> {
     let DomainContext {
+        owner,
+        external_sources,
         source,
         materialized,
         budget,
@@ -75,15 +79,17 @@ pub(crate) fn bind_domain(
         retrieval: true,
         collection_criteria: false,
         active_queries: Vec::new(),
+        owner,
         nodes: 0,
         policy_visits: 0,
         bytes: 0,
     };
+    binder.seed_external_sources(external_sources)?;
     let relation = binder.relation(
         syntax.from.first().ok_or(QueryError::Unsupported)?,
         &[],
         1,
-        crate::external_sources::SourceNamespace::Root,
+        owner,
     );
     // Declarations observed before a schema request must fail before discovery.
     if !binder.parameters.is_empty() {
@@ -92,10 +98,13 @@ pub(crate) fn bind_domain(
     let relation = match relation {
         Ok(relation) => relation,
         Err(QueryError::Unsupported) if binder.pending_schema.is_some() => {
-            return Ok(Err(binder
-                .pending_schema
-                .take()
-                .ok_or(QueryError::Unsupported)?));
+            return Ok(Err(crate::named_identity::SchemaRequest {
+                identity: binder
+                    .pending_schema
+                    .take()
+                    .ok_or(QueryError::Unsupported)?,
+                external_sources: binder.external_sources,
+            }));
         }
         Err(error) => return Err(error),
     };
@@ -152,6 +161,7 @@ pub(crate) fn bind_domain(
     let declared_types = binder.unknown_types(1)?;
     let declarations = binder.unknown_declarations(1)?;
     let mut plan = ReadPlan {
+        owner,
         declarations,
         output_types,
         materialized_types,

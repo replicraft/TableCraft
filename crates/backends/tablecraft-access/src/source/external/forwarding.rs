@@ -11,6 +11,11 @@ use tablecraft_schema::{CollectionMember, Column, SchemaName};
 use tablecraft_sql::query::Query;
 
 impl Source for LocalSource<'_> {
+    fn query(&self, name: &str) -> Result<Option<&Query>, QueryError> {
+        self.handle.check()?;
+        self.handle.source().query(name)
+    }
+
     fn text_equality_hints(&self, table: &str) -> Result<bool, QueryError> {
         let (source, table) = self.route(table)?;
         source.text_equality_hints(table)

@@ -66,13 +66,14 @@ pub(super) struct Binder<'a> {
     discover: bool,
     reference_year: Option<ReferenceYear>,
     declared_arithmetic: bool,
-    pending_schema: Option<String>,
+    pending_schema: Option<crate::named_identity::NamedIdentity>,
     parameters: Vec<Parameter>,
     parameter_scope: Vec<usize>,
     // Named sources and scalar calls remain unavailable to UPDATE binding.
     retrieval: bool,
     collection_criteria: bool,
-    active_queries: Vec<String>,
+    active_queries: Vec<crate::named_identity::NamedIdentity>,
+    owner: crate::external_sources::SourceNamespace,
     nodes: usize,
     policy_visits: usize,
     bytes: usize,
@@ -130,10 +131,12 @@ pub fn prepare_with_options(
     }
 }
 
-pub(crate) type Preparation = Result<PreparedQuery, String>;
+pub(crate) type Preparation = Result<PreparedQuery, crate::named_identity::SchemaRequest>;
 
 #[derive(Clone, Copy, Default)]
-pub(crate) struct StageOptions {
+pub(crate) struct StageOptions<'a> {
+    pub owner: crate::external_sources::SourceNamespace,
+    pub external_sources: &'a [crate::external_sources::ExternalBinding],
     pub preparation: PreparationOptions,
     pub discover: bool,
     pub parameterless: bool,
@@ -170,11 +173,13 @@ pub(crate) fn prepare_stage<'a>(
         retrieval: true,
         collection_criteria: false,
         active_queries: Vec::new(),
+        owner: options.owner,
         nodes: 0,
         policy_visits: 0,
         bytes: 0,
     };
     let result = (|| {
+        binder.seed_external_sources(options.external_sources)?;
         binder.parameters = binder.bind_parameters(&query.parameters)?;
         binder.parameter_scope = binder.scope_indices(binder.parameters.len())?;
         let body = match &query.statement {
@@ -197,10 +202,15 @@ pub(crate) fn prepare_stage<'a>(
             parameters: binder.parameters,
             external_sources: binder.external_sources,
         })),
-        Err(QueryError::Unsupported) if binder.pending_schema.is_some() => Ok(Err(binder
-            .pending_schema
-            .take()
-            .ok_or(QueryError::Unsupported)?)),
+        Err(QueryError::Unsupported) if binder.pending_schema.is_some() => {
+            Ok(Err(crate::named_identity::SchemaRequest {
+                identity: binder
+                    .pending_schema
+                    .take()
+                    .ok_or(QueryError::Unsupported)?,
+                external_sources: binder.external_sources,
+            }))
+        }
         Err(error) => Err(error),
     }
 }

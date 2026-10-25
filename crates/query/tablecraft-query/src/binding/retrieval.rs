@@ -37,7 +37,11 @@ impl Binder<'_> {
             ReadBody::Select(select) => self.select(select, sort, outer, depth + 1, None),
             ReadBody::Reference(name) | ReadBody::Table(name) => {
                 if matches!(body, ReadBody::Reference(_))
-                    && (!self.retrieval || self.source.query(name.as_str())?.is_none())
+                    && (!self.retrieval
+                        || self
+                            .namespace_source(self.owner, depth)?
+                            .query(name.as_str())?
+                            .is_none())
                 {
                     return Err(QueryError::Unsupported);
                 }
@@ -134,6 +138,7 @@ impl Binder<'_> {
                 let order = self.sort(sort, &[], &slots, outer, false, depth + 1)?;
                 let declarations = self.unknown_declarations(output_types.len())?;
                 Ok(ReadPlan {
+                    owner: self.owner,
                     declarations,
                     output_types,
                     materialized_types,
@@ -390,6 +395,7 @@ impl Binder<'_> {
             return Err(QueryError::Unsupported);
         }
         Ok(ReadPlan {
+            owner: self.owner,
             declarations,
             output_types,
             materialized_types,

@@ -16,6 +16,8 @@ mod derived;
 mod execution;
 #[path = "saved_query_definitions/external.rs"]
 mod external;
+#[path = "saved_query_definitions/external_named.rs"]
+mod external_named;
 #[path = "saved_query_definitions/forests.rs"]
 mod forests;
 #[path = "saved_query_definitions/identifiers.rs"]

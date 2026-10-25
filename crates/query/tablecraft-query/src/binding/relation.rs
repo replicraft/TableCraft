@@ -30,10 +30,9 @@ impl Binder<'_> {
                     return Err(QueryError::StructureLimit);
                 }
                 if self.retrieval
-                    && namespace == SourceNamespace::Root
                     && let Some(query) = provider.query(table.name.as_str())?
                 {
-                    let read = self.named_read(table.name.as_str(), query, depth + 1)?;
+                    let read = self.named_read(namespace, table.name.as_str(), query, depth + 1)?;
                     let qualifier = table.alias.as_ref().unwrap_or(&table.name).as_str();
                     return self.named_relation(read, qualifier);
                 }

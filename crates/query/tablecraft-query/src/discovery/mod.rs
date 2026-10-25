@@ -1,12 +1,14 @@
 //! Explicit execution staging for named crosstab schemas; binding never scans.
+mod bindings;
 use crate::{
     ExecutionOptions, ExpressionQueryResult, PreparedQuery, QueryError, QueryLimits, Source,
     binding::{PreparationOptions, StageOptions, prepare_stage},
     execution::{CellQueryResult, ExecutionContext, publish_cells},
     plan::PreparedBody,
-    profile::{MAX_NAMED_DEPTH, SOURCE_SCHEMA_POLICY},
+    profile::MAX_NAMED_DEPTH,
     source::TextPolicy,
 };
+use crate::{external_sources::SourceNamespace, named_identity::NamedIdentity};
 use std::cell::RefCell;
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -18,6 +20,7 @@ use tablecraft_sql::query::{Query, Statement};
 const MAX_DISCOVERED_QUERIES: usize = 256;
 
 pub(crate) struct Materialized<'a> {
+    pub namespace: SourceNamespace,
     pub name: String,
     pub definition: &'a Query,
     pub result: CellQueryResult,
@@ -50,7 +53,7 @@ pub fn execute_with_schema_discovery<'a>(
         parameterless: false,
         repeatable_dynamic: false,
     };
-    let plan = operation.prepare(query)?;
+    let plan = operation.prepare(query, SourceNamespace::Root)?;
     let result = plan.execute_discovered(
         source,
         parameters,
@@ -78,7 +81,7 @@ pub(crate) fn budget(limits: QueryLimits) -> ResourceBudget {
 pub(crate) struct DiscoveryState<'source> {
     pub materialized: RefCell<Vec<Materialized<'source>>>,
     pub(crate) external_sources: RefCell<Vec<crate::external_sources::ExternalBinding>>,
-    active: RefCell<Vec<String>>,
+    active: RefCell<Vec<NamedIdentity>>,
     pub enabled: bool,
 }
 
@@ -94,7 +97,7 @@ impl<'source> DiscoveryState<'source> {
 
     pub(crate) fn discover_domain(
         &self,
-        name: String,
+        name: NamedIdentity,
         source: &'source dyn Source,
         options: ExecutionOptions<'_>,
         budget: &mut ResourceBudget,
@@ -135,7 +138,11 @@ impl<'source> Operation<'_, 'source> {
         Ok(())
     }
 
-    fn prepare(&mut self, query: &Query) -> Result<PreparedQuery, QueryError> {
+    fn prepare(
+        &mut self,
+        query: &Query,
+        owner: SourceNamespace,
+    ) -> Result<PreparedQuery, QueryError> {
         loop {
             self.tick()?;
             let stage = prepare_stage(
@@ -145,6 +152,8 @@ impl<'source> Operation<'_, 'source> {
                 Some(self.budget),
                 self.options.cancelled,
                 StageOptions {
+                    owner,
+                    external_sources: &self.discovery.external_sources.borrow(),
                     preparation: PreparationOptions {
                         reference_year: self.options.reference_year,
                         declared_arithmetic: self.options.declared_integral,
@@ -155,17 +164,26 @@ impl<'source> Operation<'_, 'source> {
             )?;
             match stage {
                 Ok(plan) => return Ok(plan),
-                Err(name) => self.discover(name)?,
+                Err(request) => {
+                    self.discovery.remember_bindings(
+                        request.external_sources,
+                        self.budget,
+                        self.options.cancelled,
+                    )?;
+                    self.discover(request.identity)?;
+                }
             }
         }
     }
 
-    fn discover(&mut self, name: String) -> Result<(), QueryError> {
+    fn discover(&mut self, name: NamedIdentity) -> Result<(), QueryError> {
         self.tick()?;
         for active in self.discovery.active.borrow().iter() {
-            self.budget
-                .charge(Resource::Steps, (active.len() + name.len()) as u64)?;
-            if SOURCE_SCHEMA_POLICY.names.equals(active, &name) {
+            self.budget.charge(
+                Resource::Steps,
+                (active.name.len() + name.name.len()) as u64,
+            )?;
+            if active.matches(name.namespace, &name.name) {
                 return Err(QueryError::DependencyCycle);
             }
         }
@@ -175,7 +193,7 @@ impl<'source> Operation<'_, 'source> {
             return Err(QueryError::StructureLimit);
         }
         self.budget
-            .charge(Resource::Bytes, size_of::<String>() as u64)?;
+            .charge(Resource::Bytes, size_of::<NamedIdentity>() as u64)?;
         {
             let mut active = self.discovery.active.borrow_mut();
             active.try_reserve(1).map_err(|_| QueryError::Allocation)?;
@@ -200,7 +218,8 @@ impl<'source> Operation<'_, 'source> {
             .try_reserve(1)
             .map_err(|_| QueryError::Allocation)?;
         materialized.push(Materialized {
-            name,
+            namespace: name.namespace,
+            name: name.name,
             definition,
             result,
             policies,
@@ -208,13 +227,48 @@ impl<'source> Operation<'_, 'source> {
         Ok(())
     }
 
+    fn source_for(
+        &mut self,
+        namespace: SourceNamespace,
+    ) -> Result<&'source dyn Source, QueryError> {
+        self.tick()?;
+        if namespace == SourceNamespace::Root {
+            return Ok(self.source);
+        }
+        let discovery = self.discovery;
+        let bindings = discovery.external_sources.borrow();
+        for binding in bindings.iter() {
+            self.tick()?;
+            if namespace != SourceNamespace::External(binding.key) {
+                continue;
+            }
+            self.budget
+                .charge(Resource::Steps, binding.comparison_work(binding.request())?)?;
+            let root = self.source;
+            let resolved = root
+                .external_source(binding.request())?
+                .ok_or(QueryError::SchemaChanged)?;
+            self.tick()?;
+            if resolved.key() != binding.key {
+                return Err(QueryError::SchemaChanged);
+            }
+            return Ok(resolved.source());
+        }
+        Err(QueryError::SchemaChanged)
+    }
+
     fn materialize_active(
         &mut self,
     ) -> Result<(&'source Query, CellQueryResult, Vec<TextPolicy>), QueryError> {
-        let definition = {
-            let active = self.discovery.active.borrow();
-            let name = active.last().ok_or(QueryError::Source)?;
-            self.source.query(name)?.ok_or(QueryError::UnknownName)?
+        let discovery = self.discovery;
+        let (owner, definition) = {
+            let active = discovery.active.borrow();
+            let identity = active.last().ok_or(QueryError::Source)?;
+            let provider = self.source_for(identity.namespace)?;
+            let definition = provider
+                .query(&identity.name)?
+                .ok_or(QueryError::UnknownName)?;
+            (identity.namespace, definition)
         };
         if self.parameterless && !definition.parameters.is_empty() {
             return Err(QueryError::Parameter);
@@ -222,7 +276,7 @@ impl<'source> Operation<'_, 'source> {
         if !matches!(definition.statement, Statement::Crosstab(_)) {
             return Err(QueryError::SchemaChanged);
         }
-        let plan = self.prepare(definition)?;
+        let plan = self.prepare(definition, owner)?;
         let result = plan.execute_discovered(
             self.source,
             self.parameters,

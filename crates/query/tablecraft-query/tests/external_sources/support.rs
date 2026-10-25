@@ -137,7 +137,7 @@ impl Provider {
 impl Source for Provider {
     fn query(&self, _: &str) -> Result<Option<&Query>, QueryError> {
         self.named_calls.set(self.named_calls.get() + 1);
-        Err(QueryError::Source)
+        Ok(None)
     }
 
     fn columns(&self, table: &str) -> Result<&[Column], QueryError> {

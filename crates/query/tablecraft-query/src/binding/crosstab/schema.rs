@@ -61,6 +61,7 @@ impl Binder<'_> {
             declared_types.extend_from_slice(cached.result.output_types());
             let declarations = self.crosstab_declarations(&cross, names.len())?;
             return Ok(ReadPlan {
+                owner: self.owner,
                 declarations,
                 output_types,
                 materialized_types,
@@ -126,6 +127,7 @@ impl Binder<'_> {
         declared_types.extend_from_slice(cross.declared_types.as_ref().ok_or(QueryError::Source)?);
         let declarations = self.crosstab_declarations(&cross, names.len())?;
         Ok(ReadPlan {
+            owner: self.owner,
             declarations,
             output_types,
             materialized_types,
@@ -163,7 +165,7 @@ impl Binder<'_> {
         for (index, cached) in materialized.iter().enumerate() {
             self.tick(1)?;
             let name = self.active_queries.last().ok_or(QueryError::Source)?;
-            if SOURCE_SCHEMA_POLICY.names.equals(name, &cached.name) {
+            if name.matches(cached.namespace, &cached.name) {
                 if !std::ptr::eq(definition, cached.definition) {
                     if let Some(budget) = &mut self.budget {
                         budget.charge(Resource::Steps, self.bytes as u64)?;
@@ -180,13 +182,15 @@ impl Binder<'_> {
 
     fn request_schema(&mut self) -> Result<ReadPlan, QueryError> {
         if self.discover && self.pending_schema.is_none() {
-            let length = self.active_queries.last().ok_or(QueryError::Source)?.len();
-            self.charge(length)?;
+            let identity = self.active_queries.last().ok_or(QueryError::Source)?;
+            let namespace = identity.namespace;
+            let length = identity.name.len();
+            self.charge(length + size_of::<crate::named_identity::NamedIdentity>())?;
             let mut name = String::new();
             name.try_reserve_exact(length)
                 .map_err(|_| QueryError::Allocation)?;
-            name.push_str(self.active_queries.last().ok_or(QueryError::Source)?);
-            self.pending_schema = Some(name);
+            name.push_str(&self.active_queries.last().ok_or(QueryError::Source)?.name);
+            self.pending_schema = Some(crate::named_identity::NamedIdentity { namespace, name });
         }
         Err(QueryError::Unsupported)
     }

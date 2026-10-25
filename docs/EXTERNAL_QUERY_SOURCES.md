@@ -7,7 +7,7 @@ credential or password discovery. This is a read-only engineering contract;
 it does not establish native Access execution qualification.
 
 Microsoft documents `IN` as identifying the external database containing the
-tables in a table expression, including a join:
+tables or a saved query in a table expression, including a join:
 [IN clause](https://support.microsoft.com/en-au/access/in-clause).
 
 ## Host contract
@@ -30,8 +30,9 @@ records as a side effect.
 Preparation records bounded owned selectors and keys, without reading records.
 Execution revalidates all captured bindings before scanning either root or
 external records. Missing bindings or changed keys fail with `SchemaChanged`.
-Runtime schema discovery retains successful binding revisions across its stages,
-so a completed named crosstab cannot silently supply cached cells after remapping.
+Runtime schema discovery retains successful and pending owner binding revisions
+across stages before scanning a requested dependency. A completed named crosstab
+cannot silently supply cached cells after remapping.
 Query work and allocation ceilings include registry lookup, retained selectors
 and runtime provider references; the registry has an independent 256-binding cap.
 Native I/O and comparison budgets remain separate host responsibilities.
@@ -39,17 +40,25 @@ Native I/O and comparison budgets remain separate host responsibilities.
 ## Namespace and callback behavior
 
 An external clause selects the source for every direct table leaf in that
-SELECT's FROM expression, including comma sources and joins. Each nested SELECT
-has its own namespace: without an external clause it uses the root source; with
-its own clause it resolves that selector. Correlated references retain their
-actual captured outer frame.
+SELECT's FROM expression, including comma sources and joins. Initial submitted
+SQL belongs to the root namespace. Nested SELECTs without an external clause
+retain their defining query's owner; an explicit clause selects only that
+SELECT's direct FROM leaves. Correlated references retain their captured frame.
 
-Named definitions and domain targets are resolved in the root namespace. A root
-named definition can itself contain an external clause. Direct external FROM
-names resolve only base tables in this first slice: the external provider's
-`query` callback is never invoked. External named targets require future
-namespaced definition, domain and discovery-cache contracts; they are not
-silently interpreted as root definitions.
+[External named definitions](EXTERNAL_NAMED_QUERIES.md) now resolve through the
+selected provider's metadata-only `query` callback before base-table lookup.
+Their bodies belong to the selected database namespace. Nested local references,
+domain targets and named dependencies inherit that owner. Root definitions and
+root-written domain calls retain root ownership, even when the surrounding FROM
+selects external tables. Explicit IN clauses inside external definitions use only
+the operation root's already authorized selector registry; no relative path or
+recursive provider activation is introduced.
+
+Namespaced identities keep root and multiple targets' same-named definitions,
+cycle paths and discovery results distinct. Fixed and explicitly discovered
+crosstabs retain paired result types and policies under that identity. Standalone
+preparation remains metadata-only. Eval strings retain their existing closed
+NoBindings grammar; ownership does not admit field/domain lookup inside them.
 
 Schemas, unavailable columns, text policies, equality hints, projected and
 constrained scans, multivalue values, collection members and parent-presence

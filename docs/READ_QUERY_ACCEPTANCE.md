@@ -841,8 +841,8 @@ root and mapped links; explicit target indexes use `--external-index`.
 350 engineering and 375 CLI controls across five profile pairs, with all 75
 pinned hashes unchanged. Nested SELECTs choose their own root/external namespace;
 these lexical rules remain engineering behavior pending Access comparison.
-External named targets, native stored remote-source reconstruction, linked chains
-and wider providers remain unfinished. This closes a direct-source execution gap
+Qualified external named targets and stored global remote-source reconstruction
+now work. Linked chains, wider stored layouts and providers remain unfinished. This closes a direct-source execution gap
 without completing P0 value/text semantics or read/query acceptance.
 
 
@@ -872,8 +872,7 @@ Connections remain inert metadata; the native facade admits only absent
 connections. Labelled UNION arms retain their existing independent IN scopes.
 Per-table qualifiers, global UNION remote rows and malformed metadata remain
 refused. See [the saved-source contract](NATIVE_SAVED_EXTERNAL_QUERIES.md).
-This closes one persisted composition gap; broader definitions, external named
-targets, full P0 semantics and native Access qualification remain unfinished.
+This closes one persisted composition gap; broader definitions, full P0 semantics and native Access qualification remain unfinished.
 
 
 ### Power zero-negative error classification
@@ -898,3 +897,16 @@ retain separate paths; strict keys and default execution are unchanged. See
 [the declared contract](DECLARED_ARITHMETIC.md#scalar-string-compared-with-variant).
 Complete declaration inference, Variant/Error behavior, native text precedence
 and Access qualification remain unfinished.
+
+
+### Explicit external named sources
+
+Qualified target saved SELECT/UNION/crosstab reads now retain their lexical owner
+across nested queries, domains, parameter scopes and schema discovery. Scoped
+identities distinguish identical names and native IDs across files. Explicit IN
+uses only operation-root authorized mappings; no stored path opens implicitly.
+Closed Eval and target linked-table refusals remain enforced.
+
+The [feature contract](EXTERNAL_NAMED_QUERIES.md) records 196 passing focused Rust
+tests and explicit boundaries. Wider query definitions, native heading semantics,
+P0 value/text behavior and native Access comparisons remain unfinished.

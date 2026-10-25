@@ -122,6 +122,7 @@ impl PreparedQuery {
         } = frame;
         let _span = tracing::debug_span!("query.execute", parameters = parameters.len()).entered();
         let mut runtime = Runtime {
+            owner: crate::external_sources::SourceNamespace::Root,
             numeric_scratch: Vec::new(),
             repeatable_dynamic: context.repeatable_dynamic,
             domain_depth: 0,

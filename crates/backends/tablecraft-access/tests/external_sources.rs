@@ -16,6 +16,11 @@ mod complex_fixture;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/version_history/fixture.rs"]
 mod history_fixture;
+#[path = "external_sources/named.rs"]
+mod named;
+#[allow(dead_code)]
+#[path = "../../../engines/tablecraft-ace/tests/saved_queries/fixture.rs"]
+mod saved_fixture;
 
 use std::{
     cell::{Cell, RefCell},

@@ -51,6 +51,8 @@ impl Runtime<'_, '_> {
             let plan = loop {
                 let stage = bind_domain(
                     DomainContext {
+                        owner: self.owner,
+                        external_sources: &self.discovery.external_sources.borrow(),
                         source: self.source,
                         materialized: &self.discovery.materialized.borrow(),
                         budget: self.budget,
@@ -67,9 +69,14 @@ impl Runtime<'_, '_> {
                 match stage {
                     Ok(Some(plan)) => break plan,
                     Ok(None) => return Ok(CellValue::scalar(Value::Null)),
-                    Err(name) => {
+                    Err(request) => {
+                        self.discovery.remember_bindings(
+                            request.external_sources,
+                            self.budget,
+                            self.options.cancelled,
+                        )?;
                         self.discovery.discover_domain(
-                            name,
+                            request.identity,
                             self.source,
                             self.options,
                             self.budget,
