@@ -53,7 +53,7 @@ fn conversion_flags_reject_conflicts_without_silently_dropping_requested_work() 
     for code in [-1, 256, 12, 48, 192, 255] {
         assert_eq!(Conversion::from_code(code), Err(EvalError::Domain));
     }
-    for code in [4, 8, 16, 32, 5, 132] {
+    for code in [4, 8, 16, 32, 17, 33, 80, 160, 5, 132] {
         assert_eq!(
             Conversion::from_code(code),
             Err(EvalError::UnsupportedExpression)

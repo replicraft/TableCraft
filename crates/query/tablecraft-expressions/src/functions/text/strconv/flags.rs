@@ -1,4 +1,6 @@
 use super::super::casing::Casing;
+#[cfg(feature = "sql")]
+use super::KanaConversion;
 use crate::EvalError;
 
 const CASE_MASK: i16 = 3;
@@ -98,5 +100,24 @@ impl Conversion {
     /// Selected string representation operation.
     pub const fn encoding(self) -> EncodingConversion {
         self.encoding
+    }
+}
+
+/// Complete evaluator operation; legacy public component recipes stay unchanged.
+#[cfg(feature = "sql")]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum Operation {
+    Standard(Conversion),
+    Kana(KanaConversion),
+}
+
+#[cfg(feature = "sql")]
+impl Operation {
+    pub(crate) fn from_code(code: i16) -> Result<Self, EvalError> {
+        match code {
+            KATAKANA => Ok(Self::Kana(KanaConversion::Katakana)),
+            HIRAGANA => Ok(Self::Kana(KanaConversion::Hiragana)),
+            _ => Conversion::from_code(code).map(Self::Standard),
+        }
     }
 }

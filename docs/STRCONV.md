@@ -1,4 +1,4 @@
-# StrConv casing and string encoding
+# StrConv casing, kana and string encoding
 
 StrConv now executes in scalar and bound read-only queries. Microsoft's
 [Access reference](https://support.microsoft.com/en-us/access/functions/strconv-function)
@@ -15,6 +15,7 @@ function does not execute stored VBA or activate application objects.
 | 0 | Preserve the owned string representation; no-op native behavior remains unqualified |
 | 1 / 2 | Upper/lowercase through the existing explicit ICU casing profile |
 | 3 | Proper case using documented separators and explicit ICU segment titlecasing |
+| 16 / 32 | Basic fullwidth Katakana/Hiragana conversion with explicit Japanese LCID 1041 |
 | 64 | Decode raw string/Byte-array bytes through an explicit single-byte page |
 | 128 | Encode representable Unicode as a lossless single-byte string intermediate |
 | Case setting plus 64 or 128 | Decode before casing; case before encoding |
@@ -26,10 +27,9 @@ now accept raw legacy DATE and execution-local numeric Text conversion. The
 describes the flag argument and Long LocaleID; the bounded coercion targets here
 retain their preexisting profile rather than claiming complete native enum/Variant
 call semantics. Unknown
-flag bits, negative flags and mutually exclusive settings fail. Width/kana
-requests (4/8/16/32), even in combinations, report unsupported rather than
-silently omitting the requested transformation. These modes remain implementation
-work, not permanently excluded native features.
+flag bits, negative flags and mutually exclusive settings fail. Width requests (4/8), combined kana flags and kana requests without exact LCID
+1041 report unsupported. Standalone 16/32 use the bounded profile below; further
+width and kana behavior remains implementation and qualification work.
 
 Arguments evaluate eagerly in written order, including the optional LCID, before
 flag/locale validation. NULL strings propagate after that validation. Ordinary
@@ -142,7 +142,7 @@ eleven existing pages; selected Python casing models and explicit language golde
 cover casing; original native Hyperlink fixtures supply independent decoded fields
 in Jet 4/ACE 2007/2016/2019 files. All original hashes remain unchanged. Jackcess
 supplies values without executing StrConv. Actual Microsoft Access evaluation,
-full native error/coercion/NLS behavior, width/kana modes, more LCIDs, DBCS and
+full native error/coercion/NLS behavior, width and broader kana modes, more LCIDs, DBCS and
 best-fit policies remain open, so StrConv stays **Partial**.
 
 ## Contextual flag and LCID conversion
@@ -156,11 +156,11 @@ options do not require a number profile. Text options without a profile fail
 rather than infer regional settings.
 
 Flag conversion and flag validation still precede LCID conversion/lookup, followed
-by source NULL propagation and representation checks. Unsupported width/kana flags
+by source NULL propagation and representation checks. Unsupported width/combined kana flags
 and unknown LCIDs are never silently replaced by a supported setting. All written
 argument expressions remain eager, so a late expression failure remains visible
-before option conversion. NULL options retain InvalidNullConversion. No new LCID,
-width/kana, DBCS, source carrier or default-locale implementation is supplied.
+before option conversion. NULL options retain InvalidNullConversion. This option-coercion change itself added no LCID, width/kana, DBCS, source
+carrier or default-locale implementation; standalone kana is described below.
 
 Both normalizations and casing/encoding output share cumulative limits. An exact
 eight-byte control permits three flag bytes, four LCID bytes and a one-byte cased
@@ -193,7 +193,7 @@ route; raw string intermediates never round-trip through CStr.
 Source coercion follows existing flag/LCID validation and NULL propagation.
 `StrConv(1234,0)` produces Text `1234` under an explicit numeric profile. Casing
 and encoding then use the same metered paths as an explicit Text source. Unsupported
-width/kana modes, strict Unicode publication and full native/Variant qualification
+width/combined kana modes, strict Unicode publication and full native/Variant qualification
 remain open. The shared scalar-source runner exercises these calls alongside the
 byte slices/search/observations without executing database content.
 
@@ -247,3 +247,64 @@ The original [state runner](testing/compare_strconv_states.py) passes 154 contro
 inputs. The existing mapping/casing runner also passes 12,046 scalar controls;
 its optional native branch was not rerun. Only TableCraft executes SQL. Native
 Access/Windows, full Variant and remaining byte/Format semantics stay open.
+
+
+## Explicit Japanese kana conversion
+
+Standalone conversion 16 maps basic fullwidth Hiragana to Katakana; 32 maps basic
+fullwidth Katakana to Hiragana. Both require the explicit, exact Japanese LCID
+1041. No host locale is inferred, and 1041 does not introduce Japanese casing or
+an ANSI/DBCS page into the preceding locale table. Missing/non-Japanese LCIDs and
+alternate-sort aliases fail; combined case, width and encoding flags remain refused.
+
+```sh
+tablecraft query eval "SELECT StrConv('ひらがな',16,1041) AS Label"
+tablecraft query run "SELECT StrConv('カタカナ',32,1041) AS Label"
+```
+
+The results are `ヒラガナ` and `かたかな`. The Access
+[StrConv query contract](https://support.microsoft.com/en-us/access/functions/strconv-function)
+defines these Japanese-only flags. Unicode documents the corresponding scripts
+and voiced marks in [chapter 18](https://www.unicode.org/versions/Unicode18.0.0/core-spec/chapter-18/).
+The implementation maps corresponding basic letters and iteration marks, including
+small KA/KE and VU. Katakana voiced WA/WI/WE/WO expand to the corresponding
+Hiragana base plus combining voiced mark, since those precomposed Hiragana letters
+do not exist. Existing combining and spacing marks retain their code points;
+there is no whole-string normalization. Halfwidth Katakana remains unchanged:
+Microsoft's [mapping guidance](https://learn.microsoft.com/en-us/windows/win32/intl/handling-sorting-in-your-applications)
+distinguishes script conversion from the separate fullwidth flag.
+
+Unrelated text remains unchanged. Source digraphs without a qualified counterpart,
+Katakana phonetic extensions when converting to Hiragana, and historical or
+supplementary kana fail explicitly. This is a bounded TableCraft conversion
+profile, not a claim of full Windows NLS or native Access equivalence.
+
+All written arguments remain eager. Flags and LCID are validated before source
+NULL propagation or strict publication of retained String bytes. Odd bytes and
+unpaired UTF-16 fail; byte slices inspect only their active range. Scalar sources
+retain the existing explicit CStr policies. Conversion shares work, cancellation,
+allocation and per-Text limits; voiced-mark expansion can exceed the output limit
+although the input fits. A reused plan does not retain a prior Japanese selection.
+
+Parser-free hosts retain the original public `Conversion::from_code` contract:
+it still refuses 16/32, so existing casing/encoding component recipes cannot
+silently omit a newly accepted transformation. The evaluator uses a private,
+exhaustive operation dispatch. The separate `KanaConversion` streaming writer
+exposes the bounded mapping itself; its caller owns locale validation and output
+limits.
+
+The focused batch passes 17 expression tests and six bound-query tests, including
+existing StrConv controls, explicit public-parser refusals, natural Text/NULL
+results, aggregate/correlated visitors, raw intermediates, plan reuse, exact locale
+selection, eager failures, cancellation and expansion limits.
+
+The original [kana comparison runner](testing/compare_strconv_kana.py) passes
+3,024 success controls and 32 refusals through both CLI modes (1,040 commands).
+Python Unicode 16.0 character-name counterpart lookup supplies the independent
+answers; canonical decomposition is used only when a voiced source lacks a
+precomposed counterpart. It does not import production mappings or normalize
+whole strings. Single letters, iteration marks, deterministic mixed strings,
+voiced expansions, halfwidth/combining preservation, NUL and retained byte slices
+are covered. The [retained report](testing/results/strconv-kana-2026-10-24.json)
+records runner, source and unchanged executable hashes. Native Access/NLS execution
+remains deferred; StrConv remains **Partial**.

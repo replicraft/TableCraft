@@ -1,0 +1,24 @@
+{
+  "scope": "Explicit standalone StrConv16/32 with exact Japanese LCID1041; no Windows/Access execution",
+  "model": "Python Unicode character-name counterpart lookup, NFD expansion only when no precomposed counterpart exists",
+  "unicode_version": "16.0.0",
+  "success_controls": 3024,
+  "refusal_controls": 32,
+  "cli_commands": 1040,
+  "cli_sha256_before": "4f3049ae09612ea9c54ecbf7a6bffff62b1fd2d7e22026619e821609674903eb",
+  "cli_sha256_after": "4f3049ae09612ea9c54ecbf7a6bffff62b1fd2d7e22026619e821609674903eb",
+  "source_hash_scope": "Checkout during replay; private SQL-only cfg gates were added after executable freeze without changing SQL operation bodies",
+  "source_sha256_before": {
+    "crates/query/tablecraft-expressions/src/evaluation/strconv.rs": "4ab2ef5c2286af12b2ca294dd38ee3e0b83bdacff73e67566fc25ebd15badc23",
+    "crates/query/tablecraft-expressions/src/functions/text/strconv/flags.rs": "5d46f7a02ed30401087ee623bbedb3de77bc7ab1f63e92306709894cf5edeecb",
+    "crates/query/tablecraft-expressions/src/functions/text/strconv/kana.rs": "1fe30c7c71001a019b07d5af09f8405500cd03a71c4e3e6ca9282205d8a7d5db",
+    "docs/testing/compare_browsing.py": "4f1ced3ad3970150683ec720a31ec85f8400fa73b4a7b5e2343a33abbf58d67e"
+  },
+  "source_sha256_after": {
+    "crates/query/tablecraft-expressions/src/evaluation/strconv.rs": "4ab2ef5c2286af12b2ca294dd38ee3e0b83bdacff73e67566fc25ebd15badc23",
+    "crates/query/tablecraft-expressions/src/functions/text/strconv/flags.rs": "5d46f7a02ed30401087ee623bbedb3de77bc7ab1f63e92306709894cf5edeecb",
+    "crates/query/tablecraft-expressions/src/functions/text/strconv/kana.rs": "1fe30c7c71001a019b07d5af09f8405500cd03a71c4e3e6ca9282205d8a7d5db",
+    "docs/testing/compare_browsing.py": "4f1ced3ad3970150683ec720a31ec85f8400fa73b4a7b5e2343a33abbf58d67e"
+  },
+  "runner_sha256": "90292e08189ea1145ec44407862e216100fb80cc2e146af29f38bc2c4b434e98"
+}

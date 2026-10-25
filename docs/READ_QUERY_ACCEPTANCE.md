@@ -554,7 +554,10 @@ source NULL, policy and ordered option/source admission without payload copies.
 FormatDateTime and calendar-name calls now also retain states through their
 selector/ordinal/control/policy stages with explicit host Empty targets.
 StrConv now also retains states through flag/LCID/source admission while
-preserving CVar and raw string buffers. Byte producers, observations and InStrB
+preserving CVar and raw string buffers. [Standalone Japanese kana](STRCONV.md#explicit-japanese-kana-conversion)
+now converts basic fullwidth letters/iteration marks with explicit LCID 1041;
+width/combined and broader kana behavior and native NLS equivalence remain open.
+Byte producers, observations and InStrB
 now also retain explicit states through their control/NULL/progressive source
 stages. General Format now retains states through NULL-week, ordered controls,
 mask and source admission. Masked host Empty sources remain explicitly

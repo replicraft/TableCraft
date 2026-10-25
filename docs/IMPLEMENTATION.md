@@ -1,5 +1,20 @@
 # Implementation status
 
+## Explicit Japanese StrConv kana conversion
+
+Standalone StrConv flags 16/32 now convert basic fullwidth Japanese letters and
+iteration marks with exact explicit LCID 1041. Voiced WA-series Katakana expand
+to Hiragana plus combining marks; existing halfwidth and combining representations
+retain their code points. Unsupported combinations and wider kana remain refused.
+The old public casing/encoding recipe still rejects kana flags, while a private
+exhaustive operation handles query conversion without silently omitting it.
+
+The [kana contract](STRCONV.md#explicit-japanese-kana-conversion) records primary
+references and native limits. Validation passes 23 focused expression/query tests,
+strict scoped SQL/minimal-profile Clippy and formatting. The independent Unicode
+model passes 3,024 successful results and 32 refusals across both CLI query modes.
+StrConv remains Partial; Windows NLS and native Access equivalence are unqualified.
+
 ## Retained byte-string result metadata
 
 ChrB, LeftB, RightB, MidB and StrConv now expose their existing successful Text
