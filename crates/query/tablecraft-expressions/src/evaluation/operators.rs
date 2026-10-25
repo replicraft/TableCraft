@@ -1,4 +1,4 @@
-use super::{Evaluator, PreparedAddition, arithmetic_operands, empty_division_operand};
+use super::{Evaluator, PreparedAddition, PreparedNumericArithmetic};
 use crate::{
     EvalError,
     comparison::Comparison as C,
@@ -18,6 +18,8 @@ impl Evaluator<'_> {
     /// Hosts evaluate both operands before this call. Arithmetic admits Empty at
     /// operator-specific targets; ampersand uses empty Text. Logical operators
     /// admit Empty and raw Strings; comparisons admit standard Error/Error pairs.
+    /// Arithmetic and concatenation normalize retained active String ranges through
+    /// the same preparation and strict publication boundaries as SQL evaluation.
     pub fn apply_expression_binary(
         &mut self,
         operator: B,
@@ -36,15 +38,10 @@ impl Evaluator<'_> {
             return self.apply_expression_logical(logical, left, right);
         }
 
-        if operator == B::Divide
-            && let Some(numerator) = empty_division_operand(&left, &right)
-        {
-            return self.apply_empty_division(numerator);
-        }
         if operator == B::Add {
             return match self.prepare_expression_addition(
-                ExpressionByteOperand::Scalar(left),
-                ExpressionByteOperand::Scalar(right),
+                ExpressionByteOperand::try_from(left)?,
+                ExpressionByteOperand::try_from(right)?,
             )? {
                 PreparedAddition::StringResult(value) => self.publish_byte_operand(value),
                 PreparedAddition::ScalarOperands { left, right } => {
@@ -54,8 +51,8 @@ impl Evaluator<'_> {
         }
         if operator == B::Concatenate {
             let result = self.apply_expression_concatenation(
-                ExpressionByteOperand::Scalar(left),
-                ExpressionByteOperand::Scalar(right),
+                ExpressionByteOperand::try_from(left)?,
+                ExpressionByteOperand::try_from(right)?,
             )?;
             return self.publish_byte_operand(result);
         }
@@ -73,20 +70,24 @@ impl Evaluator<'_> {
                 .compare_expression_values(comparison, &left, &right)
                 .map(Truth::into_value);
         }
-        let (left, right) = if matches!(
+        if matches!(
             operator,
-            B::Add
-                | B::Subtract
-                | B::Multiply
-                | B::Divide
-                | B::IntegerDivide
-                | B::Modulo
-                | B::Power
+            B::Subtract | B::Multiply | B::Divide | B::IntegerDivide | B::Modulo | B::Power
         ) {
-            arithmetic_operands(operator, left, right)?
-        } else {
-            (into_operator_scalar(left)?, into_operator_scalar(right)?)
-        };
+            return match self.prepare_expression_numeric_arithmetic(
+                operator,
+                ExpressionByteOperand::try_from(left)?,
+                ExpressionByteOperand::try_from(right)?,
+            )? {
+                PreparedNumericArithmetic::Result(value) => Ok(value),
+                PreparedNumericArithmetic::Operands { left, right } => {
+                    self.apply_binary(operator, &left, &right)
+                }
+            };
+        }
+
+        let left = into_operator_scalar(left)?;
+        let right = into_operator_scalar(right)?;
         self.apply_binary(operator, &left, &right)
     }
 
@@ -182,3 +183,6 @@ impl Evaluator<'_> {
         }
     }
 }
+
+#[cfg(test)]
+mod retained_tests;
