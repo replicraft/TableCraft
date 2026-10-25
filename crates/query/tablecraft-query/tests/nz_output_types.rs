@@ -212,12 +212,21 @@ fn checked_conversion_outputs_are_nonnull_without_suppressing_runtime_null_error
 
     let parsed = parse_query("SELECT Nz(NULL)+1", Default::default()).unwrap();
     let plan = prepare(parsed.query(), &source).unwrap();
-    assert_eq!(
-        plan.output_types().unwrap(),
-        [scalar(ScalarType::Double, false)]
-    );
-    assert_eq!(
-        plan.execute(&source, &[], Default::default()).err(),
-        Some(QueryError::Evaluation(EvalError::NumberFormatRequired))
-    );
+    // Mixed Text/numeric plus no longer promises one carrier for both profiles.
+    assert_eq!(plan.output_types().unwrap(), [OutputType::Dynamic]);
+
+    for declared_integral in [false, true] {
+        assert_eq!(
+            plan.execute(
+                &source,
+                &[],
+                ExecutionOptions {
+                    declared_integral,
+                    ..Default::default()
+                }
+            )
+            .err(),
+            Some(QueryError::Evaluation(EvalError::NumberFormatRequired))
+        );
+    }
 }
