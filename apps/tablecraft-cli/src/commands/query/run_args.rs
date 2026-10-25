@@ -24,7 +24,7 @@ use tablecraft_expressions::functions::text::cstr::DateTextFormat;
 pub(crate) struct RunArgs {
     /// Stream eligible SELECT/WHERE, global or grouped aggregates, and UNION ALL as TSV;
     /// later errors may leave earlier batches.
-    #[arg(long, requires = "database", conflicts_with_all = ["saved", "sqlite", "index", "auto_index", "external", "external_index", "multivalues", "collections", "decoded_attachments"])]
+    #[arg(long, requires = "database", conflicts_with_all = ["sqlite", "index", "auto_index", "external_index", "multivalues", "collections", "decoded_attachments"])]
     pub(crate) stream: bool,
     /// Rows per streaming batch; default 128, maximum 1,000.
     #[arg(long, requires = "stream", value_name = "ROWS", value_parser = clap::value_parser!(u32).range(1..=super::stream::MAX_BATCH_ROWS as i64))]
@@ -97,7 +97,7 @@ pub(crate) struct RunArgs {
     /// repeat with the same view and table to add ordered columns.
     #[arg(long = "recomputed-column", value_names = ["VIEW", "TABLE", "COLUMN"],
         num_args = super::recomputed::SELECTION_FIELDS, action = clap::ArgAction::Append,
-        requires = "database", conflicts_with_all = ["stream", "sqlite", "links", "external", "external_index"])]
+        requires = "database", conflicts_with_all = ["sqlite", "links", "external", "external_index"])]
     pub(crate) recomputed_columns: Vec<String>,
     /// Bind an exact SQL IN or per-table database token to this explicitly chosen stable database; repeat for more tokens.
     #[arg(long = "external", value_names = ["DATABASE_TOKEN", "PATH"], num_args = super::external::MAPPING_FIELDS,

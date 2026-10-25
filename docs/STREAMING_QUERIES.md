@@ -20,7 +20,8 @@ Pure final expressions and prior projection aliases may compose the counts.
 `Sum(expr)` and `Avg(expr)` are admitted under the numeric profile below;
 `Min(expr)` and `Max(expr)` use the retained-value profile below. Other
 aggregates remain outside this progressive profile.
-Flat UNION ALL can combine these count arms and direct-table row arms.
+Flat UNION ALL can combine eligible aggregate and row arms. Static row-local
+named and inline derived SELECT chains can supply each arm as described below.
 
 ```sh
 tablecraft query run --database example.accdb --stream \
@@ -46,17 +47,71 @@ host context as buffered retrieval. Ordinary scalar views of mixed schemas are
 supported; unavailable fields and matching wildcards fail without NULL placeholders.
 
 Ordering, TOP PERCENT, DISTINCT/active DISTINCTROW, HAVING, joins/products,
-duplicate-eliminating sets, nested UNIONs, named/derived sources, subqueries,
-domains, collections, Eval and volatile clock/random calls remain outside this
-progressive profile. Single-table
+duplicate-eliminating sets, nested UNIONs, scalar/predicate subqueries, domains,
+collections, Eval and volatile clock/random calls remain outside this progressive
+profile. Static row-local named/derived inputs are admitted under the narrower
+pipeline contract below; inner stateful queries are not. Single-table
 DISTINCTROW retains its ordinary inactive behavior. Unsupported plans refuse
 before user-row scans and output, even for empty inputs or false filters.
 
-`--stream` requires a native database and conflicts with saved-query selection,
-SQLite, required/automatic indexes, external mappings and collection modes.
+`--stream` requires a native database and conflicts with SQLite, required/automatic
+indexes and collection modes. Explicit `--saved`, `--external` and local
+`--recomputed-column` selection can supply eligible streaming plans.
 Explicit table format is rejected before opening the input; auto format is TSV for streaming, including in terminals. Header-based raw native and
 supported package/encryption opening retain their existing qualifications; this
 mode does not add a codec, provider or template reader.
+
+## Static named and derived inputs
+
+An eligible arm can read a linear chain of static named queries or inline derived
+SELECTs ending at one qualified native scalar table. Each inner layer admits
+row-local projections, WHERE and positive unordered TOP. All selected inner
+projections remain eager, including outputs unused by an outer filter or count.
+Each layer owns its TOP counter; reaching that cap still validates its later
+input through checked EOF. Retained intermediate cells preserve their actual
+carriers and comparison policies without premature display conversion.
+
+```sh
+tablecraft query run --database example.accdb --stream \
+  'SELECT Count(*),Sum(Amount) FROM (SELECT Amount FROM Orders WHERE Active=True) Q'
+tablecraft query run --database example.accdb --stream --saved ActiveOrders
+```
+
+`--saved` reconstructs the explicitly selected root definition before preparation;
+it does not activate other saved content during file inspection. Named definitions
+retain their lexical source ownership. Inner aggregates, GROUP BY, UNION,
+crosstabs, ORDER BY, DISTINCT/active DISTINCTROW and data-dependent schema discovery
+remain refused. These restrictions apply throughout the input chain, even behind
+an empty input or false filter. The existing outer global/grouped aggregates and
+root flat UNION ALL remain available. Parser, binder depth and other structural
+ceilings still apply to every nested query and expression.
+
+The pipeline does not create a complete intermediate table or promote a prefix
+into a named-result cache. Errors are checked in pipeline encounter order, which
+can differ from buffered materialization order. Earlier complete TSV batches can
+remain after a later inner expression, source or output failure.
+
+## Explicit external and recomputed inputs
+
+Explicit external mappings also supply eligible static input chains:
+
+```sh
+tablecraft query run --database frontend.accdb --external remote backend.accdb \
+  --stream 'SELECT Id,Name FROM People IN "remote"'
+```
+
+The exact token selects an already authorized target. Stored paths never open
+files, target linked tables remain refused, and native files share the cumulative
+read allowance. External named definitions retain their own lexical namespace;
+explicit selectors inside them still use the operation root's authorized registry.
+No provider or automatic link traversal is added. See
+[external sources](NATIVE_EXTERNAL_QUERIES.md).
+
+Local `--recomputed-column VIEW TABLE COLUMN` views can stream through the same
+row-local pipeline. Every selected formula stays eager before outer predicates,
+and cached values remain separate. Natural recomputed carriers are not coerced
+to stored ResultType. This CLI mode remains incompatible with linked/external
+mappings; see [recomputed views](RECOMPUTED_CALCULATION_VIEWS.md).
 
 ## Explicit linked tables
 
@@ -76,7 +131,7 @@ literal default. Native/query/comparison/output budgets remain cumulative across
 root and mapped sources and repeated UNION ALL arms. Snapshot retention limits
 do not truncate a progressive cursor, and neither EOF nor a failed suffix
 publishes a complete table cache. The single-table/flat UNION ALL shape limits
-above still apply; mapping a target does not admit joins, collections, external
+above still apply; mapping a target does not admit joins, collections, network
 providers or live cross-file consistency. See [linked reads](NATIVE_LINKED_QUERIES.md).
 
 ## Global SUM and AVG
@@ -99,8 +154,8 @@ Concurrent floating aggregates each need separate scratch storage during the
 scan. Byte thresholds can therefore differ from buffered execution, which can
 reuse scratch sequentially. Existing cumulative byte/row/work limits remain in
 force; streaming does not imply a small fixed allocation for every aggregate.
-Sorting, HAVING, statistics and wider sources remain outside
-this progressive profile.
+Sorting, HAVING, statistics and unsupported inner stateful sources remain
+outside this progressive profile.
 
 ```sh
 tablecraft query run --database example.accdb --stream \
@@ -137,7 +192,8 @@ tablecraft query run --database example.accdb --stream \
 ## Grouped results
 
 Eligible `GROUP BY` expressions with proven Boolean, integral or NULL carriers
-can stream the same direct native tables and explicit linked targets. Tuple keys,
+can stream the same native tables, explicit mapped targets and eligible
+row-local input chains. Tuple keys,
 nullable values, pure row-local key expressions, prior projection aliases and
 flat UNION ALL retain their existing contracts. Text, floating, Decimal, date and
 other unproven key families, HAVING and ordering remain outside this progressive

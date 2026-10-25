@@ -1,0 +1,185 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Explicit progressive static named/derived row-local SELECT chains feeding current outer row/global/grouped execution, including authorized external leaf namespaces",
+  "unique_tests": 538,
+  "new_tests": 40,
+  "existing_regression_tests": 498,
+  "new_test_breakdown": {
+    "implementation_pipeline": 4,
+    "private_owner_and_frame_accounting": 2,
+    "independent_values": 12,
+    "independent_policies_and_namespaces": 10,
+    "native_external_facades": 4,
+    "cli_derived": 3,
+    "cli_external": 2,
+    "cli_recomputed": 1,
+    "cli_saved": 2
+  },
+  "primary_targets": {
+    "progressive_count_execution": 13,
+    "progressive_count_operands": 11,
+    "progressive_derived_policies": 10,
+    "progressive_derived_values": 12,
+    "progressive_extrema_values": 12,
+    "progressive_grouped_policies": 7,
+    "progressive_grouped_values": 11,
+    "progressive_numeric_aggregate_values": 9,
+    "progressive_queries": 45
+  },
+  "runtime_unit_tests": 28,
+  "new_runtime_unit_tests": 2,
+  "regression_targets": {
+    "collation_routing": 106,
+    "declared_addition_types": 5,
+    "declared_result_widths": 4,
+    "external_named_sources": 10,
+    "external_sources": 14,
+    "external_table_sources": 8,
+    "named": 6,
+    "named_crosstabs": 40,
+    "progressive_union_types": 9,
+    "projection_alias_execution": 11,
+    "projection_alias_values": 12,
+    "union_numeric_types": 6,
+    "union_text_types": 8,
+    "union_types": 7
+  },
+  "checks": [
+    {
+      "command": "cargo check -p tablecraft-query --lib -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-derived-check-20261025.log",
+      "sha256": "e07934123d8987a12bb40eae9dac4a132abff8a4cd6b78bc777afc3c93146220",
+      "terminal_session": 34280
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test progressive_queries --test progressive_derived_values --test progressive_derived_policies --test progressive_count_execution --test progressive_count_operands --test progressive_numeric_aggregate_values --test progressive_extrema_values --test progressive_grouped_values --test progressive_grouped_policies -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-derived-primary-final-20261025.log",
+      "sha256": "49d8875757903c5c30c4332536abf1fc0c94721c45a14ce3e1877f0ef9cdaa7e",
+      "terminal_session": 20158,
+      "tests": 130
+    },
+    {
+      "command": "cargo test -p tablecraft-query --lib execution:: -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-derived-private-units-20261025.log",
+      "sha256": "1cd2a181a7cb3a82378fd8680b13fdf4668539952a160e965f36abb765e2ee44",
+      "terminal_session": 30907,
+      "tests": 28
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test named --test external_sources --test external_named_sources --test external_table_sources --test named_crosstabs --test projection_alias_values --test projection_alias_execution --test declared_result_widths --test declared_addition_types --test union_types --test union_numeric_types --test union_text_types --test progressive_union_types --test collation_routing -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-derived-related-regressions-20261025.log",
+      "sha256": "a23acbf4f39393eada51f17fd18655bc8228c02b621064eee202d289625a02f8",
+      "terminal_session": 91413,
+      "tests": 246
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --tests -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-derived-clippy-20261025.log",
+      "sha256": "f94cc90dd59aac2450318ad7f4359f8bc93ffc06ddd6fb9e7815a6172f5c71dd",
+      "terminal_session": 17213
+    },
+    {
+      "command": "cargo check -p tablecraft-query --lib --no-default-features -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-derived-minimal-20261025.log",
+      "sha256": "0f9deba9ec32169edcb898a30b5276441434f2ce7c47725a70f3af16fdff1759",
+      "terminal_session": 75643
+    },
+    {
+      "command": "cargo test -p tablecraft-access --test external_sources -p tablecraft-cli --test progressive_queries --test external_queries --test recomputed_queries --test saved_query_definitions --test linked_queries -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-derived-native-cli-final-20261025.log",
+      "sha256": "e24e9b39b37f174d9c3d44f1c57a3203e543678b0dc247cbf9cdd48a217e57b4",
+      "terminal_session": 45591,
+      "tests": 134
+    },
+    {
+      "command": "cargo clippy -p tablecraft-access --lib --test external_sources -p tablecraft-cli --bin tablecraft --test progressive_queries --test external_queries --test recomputed_queries --test saved_query_definitions --test linked_queries -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-derived-native-cli-clippy-20261025.log",
+      "sha256": "9657a8a2c1df5aa4ac4b1dbf2e484af6a5da8854b35d215be518159511f46e81",
+      "terminal_session": 76527
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-derived-fmt-20261025.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "terminal_session": 45388
+    }
+  ],
+  "contracts": [
+    "All selected inner projections execute eagerly in written order. Retained CellValue rows move across stages without stored-schema coercion or intermediate strict publication; aliases, raw UTF-16, Error, declarations and policy completion survive.",
+    "Each positive unordered TOP counter advances at its own delivery boundary before downstream filters; omitted rows still perform upstream eager checks and physical EOF remains mandatory.",
+    "Each stage and terminal accumulator phase restores lexical ownership on Result failure. Terminal leaf namespace resolution remains separate and uses only operation-root authorized immutable bindings.",
+    "All table leaf schemas are preflighted across all arms, then rechecked before each cursor outside callbacks. Captured keys are re-resolved and provider identity is pinned within execution, not asserted across prepare as physical identity.",
+    "Only row-local inner SELECT stages are admitted. Inner UNION, stateful aggregation/grouping, crosstab, active duplicate elimination, sorting and discovery refuse before any cursor; no Runtime read/materialized-cache fallback exists.",
+    "Direct zero-stage arms allocate no frame capacity. Cumulative query/native work remains separate; existing generated Count under 8 KiB passes unchanged. Sticky first sink/query failure stops later callbacks, stages and arms."
+  ],
+  "independent_controls": [
+    "Root and two external sources reuse same table/named names without lexical leakage; explicit target selectors still use the root registry. Equal-schema provider remap after initial runtime registration is independently detected before scans.",
+    "Generated 100,003 inputs cross three named stages without buffered callbacks, with exact aggregate models. Repeated named uses have independent counters and cumulative limits.",
+    "Raw/Error observers, full String policy/completion cohorts, real String conflicts, paired prepare/execute metadata, typed parameters, EOF-first final aggregates, late schema drift, all observed cancellation points and sink/source failures are covered."
+  ],
+  "excluded_attempts": [
+    {
+      "private_log": ".cache/progressive-derived-primary-20261025.log",
+      "sha256": "6ec42a9d8333518c437122f312943478e3ffcc81a5a85cf792bb84ac82db9d23",
+      "reason": "Superseded partial primary: new general fixture used reserved Second and supplied parameter P to parameterless refusal cases; no production correction.",
+      "counted_as_acceptance": false
+    },
+    {
+      "private_log": ".cache/progressive-derived-values-final-20261025.log",
+      "sha256": "4c522c0d1bf1a505e4b16299000a93986fd4409827474653b1aaf2a1ee769bd8",
+      "reason": "Superseded independent setup retry: parameter replacement missed one call; deep inline predicate shape exceeded the existing prepare StructureLimit. Diagnostic below proves the failure phase, with zero source scans.",
+      "counted_as_acceptance": false
+    },
+    {
+      "private_log": ".cache/progressive-derived-values-accepted-20261025.log",
+      "sha256": "49575ee3bc7fdd3fccd32769cbd38230568993e2a381b546e1450e54e1db9273",
+      "reason": "Passing standalone twelve-test retry is superseded by the final primary130 and not counted twice.",
+      "counted_as_acceptance": false
+    },
+    {
+      "private_log": ".cache/progressive-derived-native-cli-initial-20261025.log",
+      "sha256": "baa0e9b16dae147a4e4eb8ccaa4072b8f01cd0a728a364fcde64edaa686e66c6",
+      "reason": "Initial host batch passed native controls, then reached an obsolete external --stream refusal expectation. Streaming is now intentionally supported; migrated only that negative control to explicitly prohibited --external-index. No production correction. Entire host batch retried.",
+      "counted_as_acceptance": false
+    }
+  ],
+  "prepare_depth_diagnostic": {
+    "private_source": ".cache/progressive-derived-prepare-depth-probe-20261025.rs",
+    "private_log": ".cache/progressive-derived-prepare-depth-probe-20261025.log",
+    "sha256": "6fc9e0a72bd5f610c79526833504608b95e44d07f5b6d7ec419b106fafe184b2",
+    "terminal_session": 70335,
+    "result": "Exact original deep predicate SQL fails prepare with StructureLimit; same three-stage model with predicate one layer outward prepares. Source scans zero. Temporary diagnostic target removed; not included in accepted test count."
+  },
+  "strengthened_pointer_probe": {
+    "private_snapshots": ".cache/progressive-derived-pointer-probe-20261025",
+    "reason": "Original passing discriminator could detect differing target policy metadata rather than pointer identity. Final primary uses identical schemas and a post-registration remap callback; no runtime change."
+  },
+  "source_timing": "Production compiled on first check. Final primary, units, regressions, strict Clippy and minimal check cover frozen source. Corrections affected new fixture syntax/parameter/depth setup and strengthened a test discriminator, with no production answer correction.",
+  "validation_limits": [
+    "Scoped query/native/CLI checks only. Original native pipeline replay is pending separate frozen-binary evidence.",
+    "No full workspace suite, Microsoft Access execution qualification, timing or constant-memory claim. Pipeline cross-row error precedence may differ from buffered full-inner materialization."
+  ],
+  "native_cli_targets": {
+    "tablecraft-access/external_sources": 14,
+    "tablecraft-cli/external_queries": 17,
+    "tablecraft-cli/linked_queries": 13,
+    "tablecraft-cli/progressive_queries": 42,
+    "tablecraft-cli/recomputed_queries": 10,
+    "tablecraft-cli/saved_query_definitions": 38
+  },
+  "parent_verification": {
+    "query_log_hashes": "Parent independently rehashed every query check against this record before integration.",
+    "native_cli": "134 integration controls pass across four priority native profiles where parametrized, including late EOF/sink failures, explicit namespaces, inert saved reconstruction, natural recomputed values and unchanged source bytes.",
+    "independent_review": "Separate agent reviewed forwarding and CLI source composition; no blockers found."
+  }
+}

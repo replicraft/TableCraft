@@ -38,8 +38,8 @@ This does not expand the engine's existing native format/readability profile.
 
 The target wrapper forwards all existing table capabilities directly: scalar
 and unavailable columns, text comparison policy IDs, multivalue/named collection
-metadata and policies, equality hints, projected and constrained reads, scalar
-rows and aligned collection visitors. Target flags, selected-index failures,
+metadata and policies, equality hints, projected, constrained and progressive
+reads, scalar rows and aligned collection visitors. Target flags, selected-index failures,
 source order, visitor errors and complete-cache boundaries remain intact. There
 is no fallback to a weaker source method and no recomputed calculation value
 substituted for a cached field.
@@ -109,6 +109,13 @@ fails instead of falling back to a sequential read. External index selection
 conflicts with `--auto-index`; both root and external explicit index selections
 can be supplied in one command. Only one external explicit index selection is
 currently accepted per command.
+
+Explicit `--stream` also accepts external mappings for qualified scalar tables
+and static row-local named/derived input chains. The local-table storage guard,
+exact token authorization and shared native allowance remain in force for each
+progressive cursor. Selected indexes and collection modes remain incompatible
+with streaming; no failed suffix becomes a complete snapshot cache. See the
+[streaming shape and publication contract](STREAMING_QUERIES.md).
 
 Normal query results remain fully buffered before stdout. Authentication,
 metadata, row, index, budget or formatting failure publishes no partial result.

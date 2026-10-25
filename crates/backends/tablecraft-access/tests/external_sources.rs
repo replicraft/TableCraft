@@ -511,3 +511,6 @@ fn external_targets_preserve_collection_metadata_policies_and_aligned_rows() {
         assert_eq!(scores(&facade, sql).unwrap(), expected);
     }
 }
+
+#[path = "external_sources/progressive.rs"]
+mod progressive;

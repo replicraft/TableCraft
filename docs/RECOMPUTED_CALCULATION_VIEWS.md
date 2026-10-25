@@ -101,9 +101,13 @@ Original Source metadata, projected/constrained scans, collection reads and poli
 callbacks retain their native implementation. The unchanged/offline source
 precondition remains required; this wrapper supplies no live-file snapshot.
 
-Current progressive execution refuses derived inputs, so these views use buffered
-execution. A late formula, source, resource or cancellation failure publishes no
-query result. The original file is never modified. Successful recomputation proves
+Ordinary execution remains buffered: a late formula, source, resource or
+cancellation failure publishes no query result. Explicit progressive execution
+can consume these static row-local views without retaining a complete input
+snapshot. It evaluates every selected formula before outer filters and retains
+intermediate cells until their consumers. Earlier complete output batches can
+survive later failures; no prefix becomes a complete relation cache. The original
+file is never modified. Successful recomputation proves
 neither cache freshness nor native Access formula equivalence and enables no
 write, save, validation-macro or recalculation policy.
 
@@ -126,9 +130,12 @@ base table fails. Ordinary fields can be selected alongside calculated fields;
 only the explicit output list is authorized. Existing table names and
 `--stored-calculations` continue to address original stored values.
 
-This first CLI composition is buffered and local. It conflicts with `--stream`,
-SQLite and linked/external target mappings, and refuses template sources. The
-same password, comparison/formatting context, arithmetic preparation profile and
+This CLI composition is local. It supports explicit `--stream` for eligible
+static row-local pipelines and otherwise stays buffered. SQLite, linked/external
+target mappings and template sources remain unavailable. Inner aggregate/grouped,
+UNION, ordered, distinct or discovery-dependent inputs are refused by the
+[streaming profile](STREAMING_QUERIES.md#static-named-and-derived-inputs); outer
+admitted aggregates and root flat UNION ALL remain available. The same password, comparison/formatting context, arithmetic preparation profile and
 separate native/query/output limits apply. Natural recomputed output may differ
 from the native stored ResultType; no automatic cast or freshness qualification
 is implied. Selected view expressions remain eager before an outer WHERE/TOP,

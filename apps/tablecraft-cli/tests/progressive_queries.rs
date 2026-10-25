@@ -93,3 +93,6 @@ fn failure(output: Output) -> Vec<u8> {
 
 #[path = "progressive_queries/grouped.rs"]
 mod grouped;
+
+#[path = "progressive_queries/derived.rs"]
+mod derived;

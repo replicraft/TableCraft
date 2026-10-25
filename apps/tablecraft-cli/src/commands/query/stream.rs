@@ -7,7 +7,9 @@ use super::{
 use crate::{commands::ExecutionError, native, presentation::Format};
 use publisher::Publisher;
 use std::{cell::RefCell, io::Write};
-use tablecraft_access::{LinkedNativeSource, NativeSource};
+use tablecraft_access::{
+    ExternalNativeSource, LinkedNativeSource, NativeSource, RecomputedNativeSource,
+};
 use tablecraft_ace::{
     LongTextReadLimits, LongValueReadLimits, LongValueReadSource, TableSnapshotLimits,
 };
@@ -34,8 +36,10 @@ impl RunArgs {
             ));
         }
         let path = self.database.as_deref().ok_or(Error::Parameter)?;
-        let sql = self.sql.as_deref().ok_or(Error::Parameter)?;
-        let query = parse(sql)?;
+        let parsed = self.sql.as_deref().map(parse).transpose()?;
+        if parsed.is_some() == self.saved.is_some() {
+            return Err(Error::Parameter.into());
+        }
         let controls = self.controls();
         let parameters = parameters::parse(&self.parameters)?;
         let bindings = parameters
@@ -85,7 +89,7 @@ impl RunArgs {
         };
         let comparison_pool = RefCell::new(controls.comparison_limits.budget());
         let database_policy = matches!(controls.collation, Some(TextCollation::Database));
-        let (source, database_collation) = if database_policy {
+        let (mut source, database_collation) = if database_policy {
             let (source, policy) = source
                 .with_database_collation_resolver(&comparison_pool)
                 .map_err(Error::Native)?;
@@ -116,6 +120,18 @@ impl RunArgs {
             .as_ref()
             .map(|policy| policy as &dyn CollationResolver);
 
+        let saved = self
+            .saved
+            .as_deref()
+            .map(|name| source.read_saved_query(name, Default::default()))
+            .transpose()
+            .map_err(Error::SavedRead)?;
+        let query = match (&saved, &parsed) {
+            (Some(saved), None) => saved.query(),
+            (None, Some(parsed)) => parsed.query(),
+            _ => return Err(Error::Parameter.into()),
+        };
+
         let input = self.native_input(password).ok_or(Error::Parameter)?;
         let targets = super::links::load(
             &source,
@@ -131,10 +147,41 @@ impl RunArgs {
         } else {
             Some(LinkedNativeSource::new(source.handle(), &mappings).map_err(Error::Links)?)
         };
-        let query_source: &dyn Source = linked.as_ref().map_or(&source as &dyn Source, |s| s);
+        let external_targets = super::external::load(
+            &input,
+            &native_pool,
+            &comparison_pool,
+            database_policy,
+            snapshot_limits,
+        )?;
+        let external_mappings = external_targets.mappings(&native_pool)?;
+        let external = if self.external.is_empty() {
+            None
+        } else {
+            Some(
+                match &linked {
+                    Some(linked) => ExternalNativeSource::with_links(linked, &external_mappings),
+                    None => ExternalNativeSource::new(source.handle(), &external_mappings),
+                }
+                .map_err(Error::External)?,
+            )
+        };
+        let selections = super::recomputed::group(&self.recomputed_columns)?;
+        let requests = super::recomputed::requests(&selections);
+        let recomputed = if requests.is_empty() {
+            None
+        } else {
+            Some(
+                RecomputedNativeSource::new(&source, &requests, Default::default())
+                    .map_err(Error::Recomputed)?,
+            )
+        };
+        let root_source: &dyn Source = linked.as_ref().map_or(&source as &dyn Source, |s| s);
+        let root_source: &dyn Source = recomputed.as_ref().map_or(root_source, |s| s);
+        let query_source: &dyn Source = external.as_ref().map_or(root_source, |s| s);
 
         let prepared = prepare_with_options(
-            query.query(),
+            query,
             query_source,
             PreparationOptions {
                 declared_arithmetic: controls.declared_integral,

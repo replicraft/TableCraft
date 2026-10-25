@@ -269,13 +269,13 @@ fn duplicate_columns_existing_names_and_inconsistent_tables_are_refused() {
 }
 
 #[test]
-fn help_and_argument_refusals_expose_explicit_buffered_local_views() {
+fn help_and_argument_refusals_expose_explicit_local_views() {
     let help = success(run(&["query", "run", "--help"]));
     let help = String::from_utf8(help).unwrap();
     assert!(help.contains("--recomputed-column <VIEW> <TABLE> <COLUMN>"));
 
     for extra in [
-        vec!["--stream"],
+        vec!["--stream", "--index", "Items", "Missing"],
         vec!["--link", "Linked", "unused.accdb"],
         vec!["--external", "remote", "unused.accdb"],
     ] {
@@ -295,4 +295,50 @@ fn help_and_argument_refusals_expose_explicit_buffered_local_views() {
         assert!(String::from_utf8_lossy(&output.stderr).contains("cannot be used with"));
         failure(output);
     }
+}
+
+#[test]
+fn fresh_view_streams_preserve_natural_values_and_eager_formula_failures() {
+    let database = Database::new(calculated_fixture::database(&[Some(999), None, Some(41)]));
+    assert_eq!(
+        success(database.query(
+            "SELECT Id,Score FROM Fresh WHERE Score>2",
+            &["Id", "Score"],
+            &["--stream"]
+        )),
+        b"Id\tScore\n2\t4\n3\t6\n"
+    );
+    assert_eq!(
+        success(database.query(
+            "SELECT Score,Count(*) AS N FROM Fresh GROUP BY Score",
+            &["Score"],
+            &["--stream"]
+        )),
+        b"Score\tN\n2\t1\n4\t1\n6\t1\n"
+    );
+    let text = Database::new(calculated_fixture::database_with_expression(
+        &[Some(999)],
+        "'row=' & [Id]",
+    ));
+    assert_eq!(
+        success(text.query(
+            "SELECT Score,VarType(Score) AS T FROM Fresh",
+            &["Score"],
+            &["--stream", "--number-format", "invariant"]
+        )),
+        b"Score\tT\n\"\"\"row=1\"\"\"\t8\n"
+    );
+
+    let late = Database::new(calculated_fixture::database_with_expression(
+        &[Some(999), Some(999)],
+        "1/([Id]-2)",
+    ));
+    let failed = late.query(
+        "SELECT TOP 1 Id FROM Fresh",
+        &["Id", "Score"],
+        &["--stream", "--batch-rows", "1"],
+    );
+    assert_eq!(failed.status.code(), Some(2));
+    assert_eq!(failed.stdout, b"Id\n1\n");
+    assert!(String::from_utf8_lossy(&failed.stderr).contains("division by zero"));
 }

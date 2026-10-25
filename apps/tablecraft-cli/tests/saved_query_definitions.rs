@@ -373,3 +373,6 @@ fn saved_parameter_declarations_print_without_values_or_prompts_and_unknown_type
         }
     }
 }
+
+#[path = "saved_query_definitions/progressive.rs"]
+mod progressive;

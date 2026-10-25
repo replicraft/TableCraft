@@ -2,8 +2,7 @@
 use super::super::Runtime;
 use crate::{
     QueryError,
-    external_sources::SourceNamespace,
-    plan::{Aggregate, Expr, ReadNode, ReadPlan, RelationNode, SelectPlan},
+    plan::{Aggregate, Expr, ReadNode, ReadPlan, SelectPlan},
     profile::{MAX_BIND_DEPTH, MAX_BIND_NODES},
 };
 use tablecraft_expressions::functions::math::MathFunction;
@@ -13,31 +12,7 @@ impl Runtime<'_, '_> {
         &mut self,
         read: &'p ReadPlan,
     ) -> Result<(&'p SelectPlan, Vec<&'p Expr>), QueryError> {
-        self.tick()?;
-        let ReadNode::Select(select) = &read.node else {
-            return Err(QueryError::Unsupported);
-        };
-        if read.owner != SourceNamespace::Root
-            || !read.sort.is_empty()
-            || read.distinct
-            || read.top.is_some_and(|(_, percent)| percent)
-            || select.having.is_some()
-            || !select.record_keys.is_empty()
-            || select.parent.is_some()
-        {
-            return Err(QueryError::Unsupported);
-        }
-        let RelationNode::Table {
-            namespace: SourceNamespace::Root,
-            expansion,
-            ..
-        } = &select.source.node
-        else {
-            return Err(QueryError::Unsupported);
-        };
-        if !expansion.is_empty() {
-            return Err(QueryError::Unsupported);
-        }
+        let select = self.progressive_shape(read)?;
         let mut aggregates = Vec::new();
         if let Some(filter) = &select.filter {
             self.progressive_expression(filter, false, 1, &mut aggregates)?;
@@ -49,6 +24,41 @@ impl Runtime<'_, '_> {
             self.progressive_expression(expression, select.aggregate, 1, &mut aggregates)?;
         }
         Ok((select, aggregates))
+    }
+
+    pub(super) fn progressive_inner_select<'p>(
+        &mut self,
+        read: &'p ReadPlan,
+    ) -> Result<&'p SelectPlan, QueryError> {
+        let select = self.progressive_shape(read)?;
+        if select.aggregate {
+            return Err(QueryError::Unsupported);
+        }
+        let mut aggregates = Vec::new();
+        if let Some(filter) = &select.filter {
+            self.progressive_expression(filter, false, 1, &mut aggregates)?;
+        }
+        for expression in &select.projection {
+            self.progressive_expression(expression, false, 1, &mut aggregates)?;
+        }
+        Ok(select)
+    }
+
+    fn progressive_shape<'p>(&mut self, read: &'p ReadPlan) -> Result<&'p SelectPlan, QueryError> {
+        self.tick()?;
+        let ReadNode::Select(select) = &read.node else {
+            return Err(QueryError::Unsupported);
+        };
+        if !read.sort.is_empty()
+            || read.distinct
+            || read.top.is_some_and(|(_, percent)| percent)
+            || select.having.is_some()
+            || !select.record_keys.is_empty()
+            || select.parent.is_some()
+        {
+            return Err(QueryError::Unsupported);
+        }
+        Ok(select)
     }
 
     fn progressive_expression<'p>(
