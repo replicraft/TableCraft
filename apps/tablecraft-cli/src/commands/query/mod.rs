@@ -6,6 +6,7 @@ mod comparison_limits;
 mod date_text;
 mod editing;
 mod eval;
+mod execution_context;
 mod execution_limits;
 mod external;
 mod large_values;
@@ -20,9 +21,9 @@ mod preview_calculation;
 mod retrieval;
 mod run_args;
 mod saved;
+mod stream;
 mod text_policy;
 pub(crate) use args::Command;
-use run_args::RunArgs;
 use std::fmt;
 use tablecraft_access::{
     CalculationError, ExternalSourceError, LinkSourceError, template::TemplateError,
@@ -110,99 +111,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
                 random_seed,
             },
         ),
-        Command::Run(arguments) => {
-            let RunArgs {
-                year_window,
-                character_code_page,
-                number_format,
-                date_format,
-                reference_year,
-                first_day_of_week,
-                first_week_of_year,
-                case_locale,
-                clock,
-                random_seed,
-                sql,
-                saved,
-                parameters,
-                collation,
-                like_mode,
-                database,
-                links,
-                external,
-                external_index,
-                native_bytes,
-                native_rows,
-                native_steps,
-                execution_limits,
-                comparison_limits,
-                text_policy,
-                declared_integral,
-                large_values,
-                multivalues,
-                collections,
-                decoded_attachments,
-                stored_calculations,
-                attachment_bytes,
-                native_value_bytes,
-                native_text_bytes,
-                sqlite,
-                index,
-                auto_index,
-            } = *arguments;
-            let parsed = sql.as_deref().map(parse).transpose()?;
-            let input = match (parsed.as_ref(), saved.as_deref()) {
-                (Some(query), None) => retrieval::Input::Sql(query.query()),
-                (None, Some(name)) => retrieval::Input::Saved(name),
-                _ => return Err(Error::Parameter),
-            };
-            retrieval::run(
-                input,
-                &parameters,
-                retrieval::Controls {
-                    declared_integral,
-                    max_text_bytes: large_values.text_bytes.map(|bytes| bytes as usize),
-                    output_bytes: large_values
-                        .output_bytes
-                        .map_or(crate::output::MAX_OUTPUT_BYTES, |bytes| bytes as usize),
-                    execution_limits: execution_limits.limits(),
-                    comparison_limits,
-                    text_policy,
-                    collation,
-                    like_mode,
-                    year_window,
-                    character_code_page,
-                    number_format,
-                    date_format,
-                    reference_year,
-                    first_day_of_week,
-                    first_week_of_year,
-                    case_locale,
-                    clock,
-                    random_seed,
-                },
-                database.as_deref().map(|path| retrieval::NativeInput {
-                    path,
-                    links: &links,
-                    external: &external,
-                    external_index: &external_index,
-                    bytes: native_bytes.unwrap_or(crate::native::DEFAULT_NATIVE_BYTES),
-                    rows: native_rows.unwrap_or(crate::native::DEFAULT_NATIVE_ROWS),
-                    steps: native_steps.unwrap_or(crate::native::DEFAULT_NATIVE_STEPS),
-                    index: &index,
-                    auto_index,
-                    multivalues,
-                    collections,
-                    decoded_attachments,
-                    stored_calculations,
-                    attachment_bytes,
-                    native_value_bytes,
-                    native_text_bytes,
-                    password,
-                }),
-                sqlite.as_deref(),
-            )
-        }
+        Command::Run(arguments) => arguments.run_buffered(password),
         Command::Update {
             sql,
             database,

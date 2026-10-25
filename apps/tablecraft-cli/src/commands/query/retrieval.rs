@@ -11,15 +11,13 @@ use tablecraft_ace::{
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_expressions::comparison::Collation;
-use tablecraft_expressions::functions::error_messages::EnglishErrorMessages;
-use tablecraft_expressions::functions::session::AccessSessionContext;
+use tablecraft_expressions::functions::conversions::text::NumberFormat;
 use tablecraft_expressions::functions::text::cstr::DateTextFormat;
-use tablecraft_expressions::functions::{conversions::text::NumberFormat, math::random::RndState};
 use tablecraft_expressions::functions::{
     dates::TwoDigitYearWindow, text::code_page::CharacterCodePage,
 };
 use tablecraft_query::{
-    ExecutionOptions, ExpressionQueryResult, QueryLimits, Source, execute_with_schema_discovery,
+    ExpressionQueryResult, QueryLimits, Source, execute_with_schema_discovery,
     source::{CollationResolver, MemorySource},
 };
 use tablecraft_sql::query::Query;
@@ -305,42 +303,7 @@ fn execute(
     collation: Option<&dyn Collation>,
     collation_resolver: Option<&dyn CollationResolver>,
 ) -> Result<ExpressionQueryResult, Error> {
-    let text_policy = controls
-        .text_policy
-        .build(collation, controls.comparison_limits.budget(), &|| false)
-        .map_err(|error| Error::Retrieval(tablecraft_query::QueryError::Evaluation(error)))?;
-    let collation = text_policy
-        .as_ref()
-        .map(|provider| provider as &dyn Collation)
-        .or(collation);
-    let clock = super::clock::HostClock::new(controls.clock);
-    let error_messages = EnglishErrorMessages::default();
-    let random = RndState::new(controls.random_seed).map_err(|_| Error::Parameter)?;
-    execute_with_schema_discovery(
-        query,
-        source,
-        bindings,
-        ExecutionOptions {
-            declared_integral: controls.declared_integral,
-            max_text_bytes: controls.max_text_bytes,
-            limits: controls.execution_limits,
-            error_messages: Some(&error_messages),
-            access_session: Some(AccessSessionContext::unsecured()),
-            case_locale: controls.case_locale.as_ref(),
-            clock: Some(&clock),
-            random: Some(&random),
-            year_window: controls.year_window,
-            character_code_page: controls.character_code_page,
-            number_format: controls.number_format,
-            date_format: controls.date_format,
-            reference_year: controls.reference_year,
-            first_day_of_week: controls.first_day_of_week,
-            first_week_of_year: controls.first_week_of_year,
-            like_mode: controls.like_mode.map(Into::into),
-            collation,
-            collation_resolver,
-            ..Default::default()
-        },
-    )
-    .map_err(Error::Retrieval)
+    super::execution_context::with_context(controls, collation, collation_resolver, |options| {
+        execute_with_schema_discovery(query, source, bindings, options).map_err(Error::Retrieval)
+    })
 }

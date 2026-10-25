@@ -1,3 +1,5 @@
+mod dispatch;
+
 use super::comparison_limits::Args as ComparisonArgs;
 use super::execution_limits::Args as ExecutionArgs;
 use super::large_values::Args as LargeValueArgs;
@@ -20,6 +22,12 @@ use tablecraft_expressions::functions::text::cstr::DateTextFormat;
 #[derive(ClapArgs)]
 #[command(group(clap::ArgGroup::new("comparison_context").args(["collation", "text_locale"]).multiple(true)))]
 pub(crate) struct RunArgs {
+    /// Stream eligible local SELECT/WHERE results as TSV; later errors may leave earlier batches.
+    #[arg(long, requires = "database", conflicts_with_all = ["saved", "sqlite", "index", "auto_index", "links", "external", "external_index", "multivalues", "collections", "decoded_attachments", "stored_calculations"])]
+    pub(crate) stream: bool,
+    /// Rows per streaming batch; default 128, maximum 1,000.
+    #[arg(long, requires = "stream", value_name = "ROWS", value_parser = clap::value_parser!(u32).range(1..=super::stream::MAX_BATCH_ROWS as i64))]
+    pub(crate) batch_rows: Option<u32>,
     /// Last year of DateSerial's 100-year window; default 2029 (1930..2029).
     #[arg(long = "two-digit-year-max", value_name = "YEAR", value_parser = calendar::parse_window)]
     pub(crate) year_window: Option<TwoDigitYearWindow>,
