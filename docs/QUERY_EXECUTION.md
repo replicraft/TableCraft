@@ -334,11 +334,23 @@ silently discarded because an input table is empty.
 
 Preparation bounds recursive syntax planning depth within each definition to 16,
 combined plan visits to 2,048,
-retained-plan estimates to 1 MiB, input/output width to 256, sources per SELECT to
-16, grouping/sort keys to 10 and IN/UNION arm counts to 256. These include work on
-publicly constructed syntax models, independently of parser limits. Larger names
+retained-plan estimates to 1 MiB, input/output width to 256, top-level FROM items
+per SELECT to 32, grouping/sort keys to 10 and IN/UNION arm counts to 256. These
+include work on publicly constructed syntax models, independently of parser limits.
+Larger names
 or literal carriers are rejected. Depth counts planning helper calls as well as
 syntax nesting, so the accepted syntax subset can be shallower than the parser's.
+
+The 32-item FROM allowance admits flat comma lists through ordinary SELECT and
+crosstab execution. A 33rd top-level item fails before source metadata callbacks.
+This aligns that consumer boundary with Microsoft's documented
+[32-table query limit](https://support.microsoft.com/en-us/access/access-specifications).
+It is not a global physical-table counter: nested/explicit join shapes still have
+their existing depth, node and combined-schema limits. Cartesian products remain
+subject to cumulative execution budgets; allowing the syntax does not guarantee
+that large products fit those allowances. Focused host-source tests cover all
+32 projected fields, filtered/empty inputs, crosstabs, refusal and controls;
+this is engineering acceptance, not native Access execution qualification.
 
 Execution defaults to 16 MiB cumulative logical payload/container allocation,
 100,000 cumulative scanned/intermediate/output rows and 1,000,000 work steps. Byte/row

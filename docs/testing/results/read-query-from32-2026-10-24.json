@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-24",
+  "scope": "32 top-level FROM items; existing global depth/schema/execution budgets remain",
+  "unique_tests": 74,
+  "new_tests": 5,
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-query --test from_items -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/query-from32-tests-final-20261024.log",
+      "sha256": "be1f7aa5fe467c501842d0bace4181d5ebb16f98b68255c9798c17334d6f5f8b"
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test retrieval --test crosstab -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/query-from32-regressions-20261024.log",
+      "sha256": "d2b006db0ebc3c8f983ea1baf402cd8620e9d23b24d8fd78637281feea057ecd"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --test from_items -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/query-from32-clippy-20261024.log",
+      "sha256": "65d744003a9dce99a4869ff88413dedf082875082e8b5b57593ce040d1ac476b"
+    }
+  ],
+  "development_correction": "Initial new test used reserved alias First; corrected to StartId/EndId without runtime change.",
+  "unrun": [
+    "Full workspace suite",
+    "Native Microsoft Access execution comparison"
+  ]
+}
