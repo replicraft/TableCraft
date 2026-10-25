@@ -1,5 +1,21 @@
 # Implementation status
 
+## Consolidated declared-addition regression
+
+The combined all-feature query package passes 1,075 tests across 198 result
+targets, including doctests, with none ignored. The
+[recorded batch](testing/results/read-query-declared-addition-regression-2026-10-24.json)
+pins the committed source revision/digest, lockfile, final terminal log and frozen
+CLI. Earlier failed runs exposed two previous-profile test expectations; those
+attempts are explicitly excluded from passing evidence. The corrected controls
+retain numeric DATE agreement with an explicit Variant String, refuse unresolved
+mixed-plus provenance and check conservative Nz metadata under both profiles.
+
+Scoped strict expression/query/adapter/CLI Clippy, minimal expression compilation,
+workspace formatting and the normal CLI build pass. The independent predicate
+preview replay remains separate. Native Access categories, formula freshness,
+wider read/query acceptance and backend completion remain unqualified.
+
 ## Same-row calculation predicate previews
 
 The explicit calculation preview now admits six comparisons and unary/binary
