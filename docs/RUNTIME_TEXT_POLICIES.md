@@ -27,6 +27,28 @@ merge policies from the argument cells they evaluate, even when a different cell
 becomes the selected value. Fresh text built-ins/conversions retain their existing
 Default policy; this extension does not infer native Left/LCase/CStr precedence.
 
+### Numeric UNION rendering
+
+An actual Boolean or numeric cell promoted to Text by UNION now establishes fresh
+Default policy after successful CStr rendering. A numeric cell can retain a latent
+policy from an unselected String branch; that field did not contribute characters
+to the rendered number. Keeping its identity caused otherwise valid set/group/sort
+comparisons to fail. Explicit CStr of the same numeric expression already used the
+fresh policy.
+
+The rendered cell marks its runtime provenance complete so that its own arm's
+conservative static metadata cannot reintroduce the discarded numeric-source
+policy. Actual Text/raw String cells, NULL cells and other expression states are
+unchanged. Per-arm policy merging still retains actual String contributors and
+static fallback for empty arms, including empty String declarations. NULL-origin
+policies remain conservative. Written-prefix DISTINCT stages keep their existing
+order; no later arm retroactively changes an earlier stage.
+
+Rendering still happens once through the existing metered CStr kernel before
+comparison. Failed conversion, missing formatting, nonfinite values, limits and
+cancellation do not publish a completed result. This corrects the existing host
+policy model; it does not qualify native Access UNION collation precedence.
+
 ## Comparison consumers
 
 Min/Max and their domain equivalents likewise defer uncertain String selection

@@ -25,4 +25,5 @@ mod collation_routing {
     mod selectors;
     mod sets;
     mod support;
+    mod union_numeric_policy;
 }

@@ -2,7 +2,7 @@
 mod policies;
 use super::Runtime;
 use crate::execution::cell::CellValue;
-use crate::{OutputType, QueryError};
+use crate::{OutputType, QueryError, source::TextPolicy};
 use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_expressions::functions::{conversions::Conversion, text::TextFunction};
 use tablecraft_schema::ScalarType;
@@ -18,13 +18,13 @@ impl Runtime<'_, '_> {
             if row.len() != types.len() {
                 return Err(QueryError::Width);
             }
-            for (value, kind) in row.iter_mut().zip(types) {
+            for (cell, kind) in row.iter_mut().zip(types) {
                 self.tick()?;
                 // UNION declaration rules are not qualified; row presence or a
                 // selected duplicate must not manufacture scalar provenance.
-                value.declaration = None;
+                cell.declaration = None;
                 let (ExpressionValue::Value(value), OutputType::Scalar { data_type, .. }) =
-                    (&mut value.value, kind)
+                    (&mut cell.value, kind)
                 else {
                     // Dynamic columns and expression-only states retain their
                     // existing consumers; none becomes a stored NULL or scalar.
@@ -42,9 +42,17 @@ impl Runtime<'_, '_> {
                         | Value::Double(_)
                         | Value::Currency(_)
                         | Value::Decimal(_),
-                    ) => self
-                        .evaluator()
-                        .apply_text_function(TextFunction::CStr, std::slice::from_ref(value))?,
+                    ) => {
+                        let converted = self
+                            .evaluator()
+                            .apply_text_function(TextFunction::CStr, std::slice::from_ref(value))?;
+                        // A rendered number has fresh CStr lineage. Its numeric
+                        // source may carry policies from unselected String arms;
+                        // those fields did not contribute to the new String.
+                        cell.policy = TextPolicy::Default;
+                        cell.policy_complete = true;
+                        converted
+                    }
                     (ScalarType::Int16, Value::Boolean(value)) => {
                         Value::Int16(if *value { -1 } else { 0 })
                     }

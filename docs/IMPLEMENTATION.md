@@ -1,5 +1,15 @@
 # Implementation status
 
+## Numeric UNION text-policy provenance
+
+Existing UNION numeric/Boolean-to-Text conversion now establishes CStr's fresh
+complete policy provenance. Unselected String branches no longer contribute a
+policy to the rendered number. Actual String and NULL policies, empty-arm fallback
+and written-prefix DISTINCT stages retain their existing authority. Eight new
+controls and 133 regressions pass with strict query/CLI Clippy and formatting.
+See [policy scope](RUNTIME_TEXT_POLICIES.md#numeric-union-rendering) and
+[verification](testing/results/read-query-union-numeric-policy-2026-10-25.json).
+
 ## Progressive global Sum and Avg
 
 Explicit progressive queries now support global Sum/Avg alongside Count, prior
