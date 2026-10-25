@@ -1,5 +1,17 @@
 # Implementation status
 
+## Original deletion histories and index membership
+
+A new inert public-writer corpus records sixteen original before/delete histories
+across Jet 4 and ACE 2007/2016/2019. Independent byte checks retain deleted payloads,
+verify slot flags/live counts, shared logical index aliases, empty leaves and
+change locality. The frozen CLI passes 192 controls over the unchanged inputs,
+including sixteen explicit unsupported ignore-NULL index selections. Full checks
+use an explicit work allowance; the initial default-work refusals remain recorded.
+Thirty-seven input/tool/capture hashes were independently rechecked. These are
+read and storage observations, without a new deletion API or native Access
+qualification. See [evidence](testing/DELETE_STORAGE_OBSERVATIONS.md).
+
 ## Explicit inspection work allowance
 
 `inspect --native-steps` now accepts an explicit cumulative work allowance under
