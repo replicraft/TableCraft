@@ -1,5 +1,8 @@
 //! Explicit ICU host text policy, independent of native database/NLS qualification.
+mod locale;
 mod search;
+
+pub use locale::IcuTextLocale;
 
 use super::{
     Collation, LikeProfile, LikeSpanState, LocaleId, StringCompareMode, StringComparisonProfile,
@@ -10,34 +13,8 @@ use icu_collator::{
     Collator, CollatorBorrowed,
     options::{AlternateHandling, CaseLevel, CollatorOptions, Strength},
 };
-use icu_locale_core::locale;
 use std::{cell::RefCell, cmp::Ordering, ops::Range};
 use tablecraft_core::limits::{Resource, ResourceBudget};
-
-/// Closed, explicitly selected ICU linguistic locales. No OS discovery occurs.
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum IcuTextLocale {
-    /// English (United States).
-    EnUs,
-    /// German (Germany), standard collation.
-    DeDe,
-    /// Swedish (Sweden).
-    SvSe,
-    /// Turkish (Turkey).
-    TrTr,
-}
-
-impl IcuTextLocale {
-    /// Exact host locale name, separate from any LCID registration.
-    pub const fn as_str(self) -> &'static str {
-        match self {
-            Self::EnUs => "en-US",
-            Self::DeDe => "de-DE",
-            Self::SvSe => "sv-SE",
-            Self::TrTr => "tr-TR",
-        }
-    }
-}
 
 /// Validated ceilings for atomic ICU calls and exhaustive substring enumeration.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -102,12 +79,7 @@ impl<'a> IcuTextCollation<'a> {
         if cancelled() {
             return Err(EvalError::Cancelled);
         }
-        let preferences = match locale {
-            IcuTextLocale::EnUs => locale!("en-US").into(),
-            IcuTextLocale::DeDe => locale!("de-DE").into(),
-            IcuTextLocale::SvSe => locale!("sv-SE").into(),
-            IcuTextLocale::TrTr => locale!("tr-TR").into(),
-        };
+        let preferences = locale.preferences();
         let mut options = CollatorOptions::default();
         options.strength = Some(Strength::Secondary);
         options.case_level = Some(CaseLevel::Off);
@@ -273,5 +245,7 @@ impl Collation for IcuTextCollation<'_> {
     }
 }
 
+#[cfg(test)]
+mod expanded_tests;
 #[cfg(test)]
 mod tests;

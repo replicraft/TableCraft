@@ -2,7 +2,7 @@
 
 `query run --text-locale` supplies a working, opt-in linguistic provider for
 StrComp text mode and InStr/InStrRev/Replace text searches. It accepts the closed
-locale set en-US, de-DE, sv-SE and tr-TR. No OS locale is read. These are ICU host
+locale set below. No OS locale is read. These are ICU host
 profiles; they do not establish Windows NLS, Jet/ACE database or native Access
 query equivalence. Native General field/database providers retain their existing
 separate implementation and qualification limits.
@@ -22,12 +22,59 @@ aliases from a locale name. Without registration, numeric LCID dispatch remains
 unavailable. Registering one complete LCID does not register its base/alternate
 sort identities or qualify native sort semantics. Hosts own these mappings.
 
+## Explicit host locales
+
+| Language / region | Profile name |
+| --- | --- |
+| Arabic / Saudi Arabia | `ar-SA` |
+| Chinese / China | `zh-CN` |
+| Chinese / Taiwan | `zh-TW` |
+| Czech / Czechia | `cs-CZ` |
+| Dutch / Netherlands | `nl-NL` |
+| English / United States | `en-US` |
+| French / France | `fr-FR` |
+| German / Germany | `de-DE` |
+| Greek / Greece | `el-GR` |
+| Hebrew / Israel | `he-IL` |
+| Italian / Italy | `it-IT` |
+| Japanese / Japan | `ja-JP` |
+| Korean / South Korea | `ko-KR` |
+| Polish / Poland | `pl-PL` |
+| Portuguese / Brazil | `pt-BR` |
+| Russian / Russia | `ru-RU` |
+| Spanish / Spain | `es-ES` |
+| Swedish / Sweden | `sv-SE` |
+| Turkish / Turkey | `tr-TR` |
+
+`IcuTextLocale::ALL`, `as_str` and `from_name` expose the same closed profile set
+to hosts. Names ignore ASCII letter case only; language-only names, alternate
+separators, whitespace and Unicode extensions remain refused. This does not expose
+arbitrary ICU options or silently accept unknown locales. The CLI derives its
+accepted-name lookup and invalid-value list from that shared registry.
+
+These profiles select each locale's default ICU collation. Spanish is the modern
+standard profile, with no traditional contraction extension. Chinese China and
+Taiwan retain their distinct default ICU orders. Japanese kana and Greek final
+sigma examples retain the selected secondary-strength behavior; those examples
+do not define Windows NLS or native database rules. Unicode's
+[collation concepts](https://unicode-org.github.io/icu/userguide/collation/concepts.html)
+describe locale tailoring. Numeric IDs used in the independent recipe are explicit
+host registrations; Microsoft's
+[LCID structure](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-lcid/63d3d639-7fd2-4afb-abbe-0d5b5551eef8)
+does not authorize treating ICU and native sort identities as equivalent.
+
+The fifteen added host profiles do not expand the native General database provider,
+SQL field collation, LIKE routing or automatic text-index qualification. Exact
+LCID registration remains per execution, with no automatic numeric mapping.
+Input ceilings, shared provider quotas, cancellation and strict invalid-UTF16
+publication boundaries stay unchanged.
+
 ## Comparison and search contracts
 
 ICU secondary strength ignores case, retains accent differences and enables
 canonical normalization. Case level is off and punctuation is nonignorable.
 The profile has no numeric-ordering or arbitrary locale-extension switches.
-English/German/Swedish/Turkish locale data remain distinct: Swedish places ö
+Locale data remain distinct: Swedish places ö
 after z, while German places it before z; Turkish distinguishes I/i while pairing
 I/ı and İ/i. No SQL source is scanned to select these settings.
 
@@ -117,7 +164,7 @@ pre-I/O option validation. Existing General/database and comparison-limit tests
 remain applicable. Native Access comparison remains unrun; wider LCID providers,
 NLS error/ordering equivalence and mixed database-policy precedence remain P0.
 
-The original [ICU4C comparison runner](testing/compare_icu_text.py) passes **3,032
+The original four-profile [ICU4C comparison runner](testing/compare_icu_text.py) passes **3,032
 controls** against a fixed CLI copy. It calls the separately installed ICU4C 74.1
 ucol_strcoll implementation, with explicit matching secondary/case/normalization/
 punctuation/numeric settings. Pairwise anchors, seeded mixed text, canonical and
@@ -138,6 +185,10 @@ python3 docs/testing/compare_icu_text.py \
   --cli path/to/fixed/tablecraft \
   --report path/to/fresh-icu-report.json
 ```
+
+The current recipe additionally covers all nineteen selected host profiles with
+script-specific tailoring and original-span search inputs. Its fresh report is
+separate from the original four-profile result above.
 
 The recipe uses an available ICU4C library, with --icu-library for explicit
 selection; no system package is installed or downloaded. Its C ABI calls follow

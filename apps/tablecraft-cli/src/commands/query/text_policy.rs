@@ -12,7 +12,8 @@ use tablecraft_expressions::{
 #[derive(Clone, Copy, Default, ClapArgs)]
 #[group(id = "icu_text_policy")]
 pub(crate) struct Args {
-    /// Opt-in ICU case-insensitive/accent-sensitive text profile: en-US, de-DE, sv-SE or tr-TR. Not native NLS qualification.
+    /// Opt-in ICU case-insensitive/accent-sensitive host text profile.
+    /// Use an explicit supported language-region name, such as en-US or ja-JP.
     #[arg(long, value_name = "LOCALE", value_parser = parse_locale)]
     pub(crate) text_locale: Option<IcuTextLocale>,
     /// Explicitly register the selected ICU profile for this exact InStr LCID; no numeric aliases are inferred.
@@ -41,14 +42,15 @@ impl Args {
     }
 }
 
-fn parse_locale(value: &str) -> Result<IcuTextLocale, &'static str> {
-    match value.to_ascii_lowercase().as_str() {
-        "en-us" => Ok(IcuTextLocale::EnUs),
-        "de-de" => Ok(IcuTextLocale::DeDe),
-        "sv-se" => Ok(IcuTextLocale::SvSe),
-        "tr-tr" => Ok(IcuTextLocale::TrTr),
-        _ => Err("expected explicit ICU locale en-US, de-DE, sv-SE or tr-TR"),
-    }
+fn parse_locale(value: &str) -> Result<IcuTextLocale, String> {
+    IcuTextLocale::from_name(value).ok_or_else(|| {
+        let supported = IcuTextLocale::ALL
+            .iter()
+            .map(|locale| locale.as_str())
+            .collect::<Vec<_>>()
+            .join(", ");
+        format!("expected explicit ICU locale: {supported}")
+    })
 }
 
 fn parse_lcid(value: &str) -> Result<LocaleId, &'static str> {
