@@ -31,9 +31,9 @@ pub enum CaseConversion {
 pub enum EncodingConversion {
     /// Retain the input string representation.
     Unchanged,
-    /// Decode single-byte string data to Unicode.
+    /// Decode the selected string page's bytes to Unicode.
     ToUnicode,
-    /// Encode Unicode to single-byte string data.
+    /// Encode Unicode to the selected string page's bytes.
     FromUnicode,
 }
 

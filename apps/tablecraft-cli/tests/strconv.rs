@@ -85,7 +85,7 @@ fn strconv_refusals_never_publish_partial_rows() {
         for expression in [
             "StrConv('x',1)",
             "StrConv('x',4,1033)",
-            "StrConv('x',1,1041)",
+            "StrConv('x',1,1042)",
             "StrConv('€',128,1033)",
             "StrConv('🦀',128,1033)",
             "StrConv(Null,1,1/0)",

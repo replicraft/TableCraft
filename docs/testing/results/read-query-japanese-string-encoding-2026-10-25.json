@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Complete explicit Japanese StrConv string encoding through StringCodePage/StringLocaleProfile; legacy single-byte character APIs unchanged",
+  "unique_tests_in_scope": 47,
+  "new_tests": 12,
+  "targets_in_scope": {
+    "expression_strconv_unit_tests": 25,
+    "new_query_japanese_conformance": 7,
+    "existing_query_strconv": 4,
+    "existing_query_strconv_options": 3,
+    "existing_query_kana": 2,
+    "existing_query_width": 2,
+    "cli_strconv": 3,
+    "cli_strconv_options": 1
+  },
+  "new_test_breakdown": {
+    "string_codec_kernel_and_complete_api": 5,
+    "independent_query_conformance": 7
+  },
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-expressions --features sql --lib strconv -j2 --locked --offline",
+      "private_log": ".cache/cp932-strconv-unit-20261025.log",
+      "exit_code": 0,
+      "sha256": "d26a89badc2d0d19ba7adb4ecbec16b020a3da8a466b2614e7be85a044e90e3c",
+      "observed_passed_tests": 25,
+      "counted_in_this_scope": 25
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test strconv_japanese --test strconv --test strconv_options --test strconv_kana --test strconv_width -j2 --locked --offline",
+      "private_log": ".cache/cp932-strconv-query-accepted-20261025.log",
+      "exit_code": 0,
+      "sha256": "6f553203616e69fd5ba9344c4225fbc895765e8e6269ce8e227ab4e63fbe9bc3",
+      "observed_passed_tests": 18,
+      "counted_in_this_scope": 18
+    },
+    {
+      "command": "cargo clippy -p tablecraft-expressions --features sql --lib --tests -j2 --locked --offline -- -D warnings",
+      "private_log": ".cache/cp932-strconv-expressions-clippy-20261025.log",
+      "exit_code": 0,
+      "sha256": "3c497fa8e916f12f6410df4fdbfc600b02efaef12558147468d00c948f2fe066"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --test strconv_japanese --test strconv --test strconv_options --test strconv_kana --test strconv_width -j2 --locked --offline -- -D warnings",
+      "private_log": ".cache/cp932-strconv-query-clippy-20261025.log",
+      "exit_code": 0,
+      "sha256": "a80a7d720e8bbdbf13a40c8355e585666a40a0a481d9b88e70f5cf77c664cbcf"
+    },
+    {
+      "command": "cargo check -p tablecraft-expressions --lib --no-default-features -j2 --locked --offline",
+      "private_log": ".cache/cp932-strconv-minimal-20261025.log",
+      "exit_code": 0,
+      "sha256": "47053897aef781821da4d1ca134d4949ac38f771545a24f1b29fce8d2fb36129"
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --test strconv --test strconv_options -j2 --locked --offline",
+      "private_log": ".cache/cp932-strconv-cli-tests-20261025.log",
+      "exit_code": 0,
+      "sha256": "48355dd6e3600b58556974a3feb83adf35512bffd1c224972f5c57e5c2655b4b",
+      "counted_in_this_scope": 4
+    },
+    {
+      "command": "cargo clippy -p tablecraft-cli --bin tablecraft --test strconv --test strconv_options -j2 --locked --offline -- -D warnings",
+      "private_log": ".cache/cp932-strconv-cli-clippy-20261025.log",
+      "exit_code": 0,
+      "sha256": "bf180995293f3469e3984b446f499bb1bf95c7a6d9ec143128cf238e23a43fe3"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "private_log": ".cache/choice-cp932-fmt-final-20261025.log",
+      "exit_code": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "minimum_profile": "The public codec/locale APIs compile with tablecraft-expressions --no-default-features; SQL-enabled evaluator tests are a separate check.",
+  "counting_note": "All five query targets ran together after the test-input correction; no passing subset from the failed attempt is counted again. The expression SQL StrConv filter includes five new codec tests and twenty existing tests.",
+  "excluded_attempts": [
+    {
+      "command": "cargo test -p tablecraft-query --test strconv_japanese --test strconv --test strconv_options --test strconv_kana --test strconv_width -j2 --locked --offline",
+      "private_log": ".cache/cp932-strconv-query-20261025.log",
+      "sha256": "5b8841e21b0e95d8af3406b88f531dba7254f6657c828582f42075d5c8f43d57",
+      "exit_code": 101,
+      "counted_in_this_scope": 0,
+      "reason": "Two new query tests constructed multibyte inputs by joining odd-length ChrB values with &, which the established UTF16-unit concatenation contract refuses before the codec. Tests now use even packed ChrW units and active ranges, and explicitly preserve the odd-join refusal. No production change or relaxed concatenation rule was required.",
+      "private_pre_correction_test_snapshots": ".cache/cp932-conformance-input-probe-20261025"
+    }
+  ],
+  "review": [
+    "The fourteen existing locale identities and single-byte CharacterCodePage/LocaleProfile APIs remain unchanged; complete string APIs represent Japanese encoding without dummy legacy accessors.",
+    "The maintained encoding_rs codec uses non-replacing fixed-stack token conversions plus exact Unicode encode round-trip admission; yen/overline/minus aliases refuse.",
+    "Raw String64/128 active ranges, explicit Binary64, strict final publication, source/flag/locale eagerness and caller-owned budgets/cancellation retain their established boundaries.",
+    "Japanese casing+encoding follows the existing decode-before-casing / encode-after-casing pipeline, with explicit call-local locale selection.",
+    "Only module/enum Rustdoc wording changed after these Rust checks; no runtime or test behavior changed. Parent integration records final formatting/CLI checks separately."
+  ],
+  "primary_reference_inputs": [
+    {
+      "url": "https://unicode.org/Public/MAPPINGS/VENDORS/MICSFT/WINDOWS/CP932.TXT",
+      "private_file": ".cache/cp932-strconv-next-20261025/CP932.TXT",
+      "sha256": "c9bc0b0cd42e0fbcb82a09635bb5abed86afbdd4abc9e76fa5716638217cb59f",
+      "identity": "Microsoft-authored CP932 table 2.01; Unicode2.0; 1998-04-15"
+    },
+    {
+      "url": "https://encoding.spec.whatwg.org/index-jis0208.txt",
+      "private_file": ".cache/cp932-strconv-next-20261025/index-jis0208.txt",
+      "sha256": "341dcde7e8b984e9c7bbf5ed75c8da7c6087d47083a1a2b3ed558bfd5bef9468",
+      "identity": "WHATWG index dated2024-09-18; identifier cbaa91f3deb7d0841faf5c33041fc15a285da0e87e64ab802c4bf04b7c4da861"
+    }
+  ],
+  "reference_distribution": "Primary reference files remain private ignored inputs. Unicode/WHATWG provenance and licensing were reviewed and documented in JAPANESE_STRING_ENCODING.md; no mapping table or third-party implementation is copied into production or redistributed. Production uses the existing encoding_rs dependency.",
+  "unrun": [
+    "Full workspace suite",
+    "Native Microsoft Access or Windows NLS comparison"
+  ],
+  "integration_pending": [
+    "Parent frozen executable build and independent primary mapping matrix"
+  ]
+}

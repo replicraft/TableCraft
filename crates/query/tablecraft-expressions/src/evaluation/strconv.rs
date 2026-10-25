@@ -8,8 +8,8 @@ use crate::{
         text::{
             byte_string::{ByteOperand, ByteString, ExpressionByteOperand},
             strconv::{
-                self, CaseConversion, EncodingConversion, KanaConversion, LocaleProfile, Operation,
-                WidthConversion,
+                self, CaseConversion, EncodingConversion, KanaConversion, Operation,
+                StringLocaleProfile, WidthConversion,
             },
         },
     },
@@ -100,7 +100,7 @@ impl Evaluator<'_> {
                     }
                     Ok(None)
                 } else {
-                    LocaleProfile::from_lcid(id).map(Some)
+                    StringLocaleProfile::from_lcid(id).map(Some)
                 }
             })
             .transpose()?
@@ -121,11 +121,11 @@ impl Evaluator<'_> {
         };
         let page = locale
             .as_ref()
-            .map(LocaleProfile::code_page)
-            .or(self.character_code_page);
+            .map(StringLocaleProfile::code_page)
+            .or_else(|| self.character_code_page.map(Into::into));
         let language = locale
             .as_ref()
-            .map(LocaleProfile::case_locale)
+            .map(StringLocaleProfile::case_locale)
             .or(self.case_locale);
 
         let input = if conversion.encoding() == EncodingConversion::ToUnicode {
@@ -141,7 +141,10 @@ impl Evaluator<'_> {
                 max_bytes: self.limits.max_text_bytes,
                 text: String::new(),
             };
-            strconv::decode_ansi(bytes.as_bytes(), page, &mut output)?;
+            match page {
+                Some(page) => page.decode(bytes.as_bytes(), &mut output)?,
+                None => strconv::decode_ansi(bytes.as_bytes(), None, &mut output)?,
+            }
             ByteOperand::Scalar(Value::Text(output.text))
         } else {
             if matches!(&input, ByteOperand::Scalar(value) if !matches!(value, Value::Text(_))) {
@@ -181,7 +184,10 @@ impl Evaluator<'_> {
                 max_bytes: self.limits.max_text_bytes,
                 bytes: Vec::new(),
             };
-            strconv::encode_ansi(&text, page, &mut output)?;
+            match page {
+                Some(page) => page.encode(&text, &mut output)?,
+                None => strconv::encode_ansi(&text, None, &mut output)?,
+            }
             return ByteString::from_owned(output.bytes).map(ByteOperand::Bytes);
         }
         Ok(ByteOperand::Scalar(Value::Text(text)))

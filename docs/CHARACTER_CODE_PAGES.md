@@ -3,7 +3,9 @@
 Numeric character construction now accepts a validated execution-local
 `CharacterCodePage`. Consumers include `String(number, character)`, [Chr and Asc](CHARACTER_FUNCTIONS.md).
 [StrConv](STRCONV.md) also uses these pages for explicit Unicode/single-byte
-string conversion. For String, a numeric character operand is checked/rounded to Int32, reduced modulo 256,
+string conversion. Explicit Japanese StrConv instead uses its separate complete
+[string codec](JAPANESE_STRING_ENCODING.md), without changing this character API.
+For String, a numeric character operand is checked/rounded to Int32, reduced modulo 256,
 then decoded using the selected page before bounded repetition. Chr enforces a
 byte range without modulo; Asc uses exact non-replacing single-byte encoding.
 

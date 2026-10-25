@@ -93,7 +93,16 @@ def main():
                 assert execute(args.cli, mode, "SELECT " + ",".join(expressions), options) == [expected], (mode, page, offset)
                 count += len(expected)
 
-        for expression in ["StrConv('x',1)", "StrConv('x',4,1033)", "StrConv('x',1,1041)", "StrConv('x',192)", "StrConv('x',1,0)", "StrConv('€',128,1033)", "StrConv('🦀',128,1033)", "StrConv(Null,1,1/0)"]:
+        for expression in [
+            "StrConv('x',1)",
+            "StrConv('x',4,1033)",
+            "StrConv('x',1,1042)",
+            "StrConv('x',192)",
+            "StrConv('x',1,0)",
+            "StrConv('€',128,1033)",
+            "StrConv('🦀',128,1033)",
+            "StrConv(Null,1,1/0)",
+        ]:
             execute(args.cli, mode, "SELECT 1," + expression, succeeds=False)
             count += 1
         for expression, expected in [

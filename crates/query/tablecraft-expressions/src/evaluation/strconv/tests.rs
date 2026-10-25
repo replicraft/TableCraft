@@ -58,6 +58,15 @@ fn strconv_casing_encoding_and_nested_byte_results_retain_representation() {
         ("IsArray(StrConv('€',128,1033))", Value::Boolean(false)),
         ("LenB(StrConv(ChrB(65),0))", Value::Int32(1)),
         ("StrConv(Null,1)", Value::Null),
+        ("StrConv('a',1,1041)", Value::Text("A".into())),
+        (
+            "StrConv(StrConv('a日本',129,1041),64,1041)",
+            Value::Text("A日本".into()),
+        ),
+        (
+            "StrConv(StrConv('a日本',128,1041),65,1041)",
+            Value::Text("A日本".into()),
+        ),
     ] {
         assert_eq!(evaluate(sql), Ok(expected), "{sql}");
     }
@@ -68,7 +77,7 @@ fn strconv_refuses_unsupported_requests_and_keeps_eager_error_order() {
     for (sql, expected) in [
         ("StrConv('x',1)", EvalError::CaseLocaleRequired),
         ("StrConv('x',4,1033)", EvalError::UnsupportedExpression),
-        ("StrConv('x',1,1041)", EvalError::UnsupportedExpression),
+        ("StrConv('x',1,1042)", EvalError::UnsupportedExpression),
         ("StrConv('x',1,66569)", EvalError::UnsupportedExpression),
         ("StrConv('x',192)", EvalError::Domain),
         ("StrConv('x',256)", EvalError::Domain),
@@ -165,7 +174,7 @@ fn contextual_options_preserve_flag_range_locale_validation_and_null_precedence(
         ("4", "bad", EvalError::TypeMismatch),
         ("0", "bad", EvalError::TypeMismatch),
         ("0", "0", EvalError::Domain),
-        ("0", "1041", EvalError::UnsupportedExpression),
+        ("0", "1042", EvalError::UnsupportedExpression),
     ] {
         let result = evaluator.apply_strconv(
             ByteOperand::Scalar(Value::Null),
