@@ -60,6 +60,7 @@ impl RunArgs {
             path,
             password,
             links: &self.links,
+            recomputed_columns: &self.recomputed_columns,
             external: &self.external,
             external_index: &self.external_index,
             bytes: self

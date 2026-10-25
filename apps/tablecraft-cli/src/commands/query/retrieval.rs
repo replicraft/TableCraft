@@ -4,7 +4,8 @@ use clap::ValueEnum;
 use std::sync::{Arc, atomic::AtomicBool};
 use std::{cell::RefCell, ffi::OsString, path::Path};
 use tablecraft_access::{
-    ExternalNativeSource, LinkedNativeSource, NativeSource, template::TemplateSource,
+    ExternalNativeSource, LinkedNativeSource, NativeSource, RecomputedNativeSource,
+    template::TemplateSource,
 };
 use tablecraft_ace::{
     LongTextReadLimits, LongValueReadLimits, LongValueReadSource, TableSnapshotLimits,
@@ -55,6 +56,7 @@ pub(super) struct NativeInput<'a> {
     pub password: Option<&'a str>,
     pub path: &'a Path,
     pub links: &'a [OsString],
+    pub recomputed_columns: &'a [String],
     pub external: &'a [OsString],
     pub external_index: &'a [String],
     pub bytes: u64,
@@ -140,6 +142,7 @@ pub(super) fn run(
             native::open_template(input_config.path, &mut budget).map_err(Error::Template)?
         {
             if !input_config.links.is_empty()
+                || !input_config.recomputed_columns.is_empty()
                 || !input_config.external.is_empty()
                 || database_policy
                 || !input_config.index.is_empty()
@@ -249,7 +252,18 @@ pub(super) fn run(
                     .map_err(Error::External)?,
                 )
             };
+            let selections = super::recomputed::group(input_config.recomputed_columns)?;
+            let requests = super::recomputed::requests(&selections);
+            let recomputed = if requests.is_empty() {
+                None
+            } else {
+                Some(
+                    RecomputedNativeSource::new(&source, &requests, Default::default())
+                        .map_err(Error::Recomputed)?,
+                )
+            };
             let root_source: &dyn Source = linked.as_ref().map_or(&source as &dyn Source, |s| s);
+            let root_source: &dyn Source = recomputed.as_ref().map_or(root_source, |s| s);
             let query_source: &dyn Source = external.as_ref().map_or(root_source, |s| s);
             execute(
                 query,

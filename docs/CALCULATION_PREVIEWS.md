@@ -7,6 +7,11 @@ coerce results into their declared stored type, certify cached freshness, update
 the database or establish Microsoft Access equivalence. The CLI exposes this same
 explicit preview through `query preview-calculation`.
 
+Hosts can separately compose selected formulas into buffered queries using
+[explicit recomputed calculation views](RECOMPUTED_CALCULATION_VIEWS.md). Those
+fresh named views preserve the same formula admission and natural intermediate
+carriers without changing original table names or the standalone preview.
+
 ```rust,no_run
 use std::fs::File;
 use tablecraft_access::NativeSource;

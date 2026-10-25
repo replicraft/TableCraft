@@ -96,6 +96,12 @@ pub(super) struct QueryEntry {
     native_id: i32,
     definition: OnceCell<SavedRead>,
 }
+
+impl QueryEntry {
+    pub(super) fn has_name(&self, name: &str) -> bool {
+        self.name.eq_ignore_ascii_case(name)
+    }
+}
 pub(super) fn entries(
     catalog: &CatalogInspection,
     budget: &mut ResourceBudget,

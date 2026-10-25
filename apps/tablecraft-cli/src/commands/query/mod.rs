@@ -18,6 +18,7 @@ use crate::output;
 mod args;
 mod parameters;
 mod preview_calculation;
+mod recomputed;
 mod retrieval;
 mod run_args;
 mod saved;
@@ -35,6 +36,7 @@ pub(super) enum Error {
     Links(LinkSourceError),
     External(ExternalSourceError),
     Calculation(CalculationError),
+    Recomputed(CalculationError),
     Template(TemplateError),
     Parse(tablecraft_sql::ParseError),
     Unsupported,
@@ -62,6 +64,7 @@ impl fmt::Display for Error {
                 CalculationError::Query(error) => write!(f, "calculation preview: {error}"),
                 error => error.fmt(f),
             },
+            Self::Recomputed(error) => write!(f, "recomputed view: {error}"),
             Self::Template(error) => error.fmt(f),
             Self::Parse(error) => error.fmt(f),
             Self::Unsupported => f.write_str("query eval requires a source-free SELECT with scalar projections and no query clauses or parameters"),

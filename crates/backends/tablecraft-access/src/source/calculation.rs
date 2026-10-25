@@ -38,6 +38,13 @@ pub struct PreparedCalculation<'a> {
     plan: PreparedQuery,
 }
 
+pub(super) struct CalculationDefinition {
+    pub(super) declaration: CalculationDeclaration,
+    pub(super) dependencies: Vec<String>,
+    pub(super) calculated_dependencies: Vec<String>,
+    pub(super) query: Query,
+}
+
 impl PreparedCalculation<'_> {
     /// Original qualified expression/result metadata, without cached payloads.
     pub fn declaration(&self) -> &CalculationDeclaration {
@@ -88,6 +95,24 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
         limits: ParseLimits,
     ) -> Result<PreparedCalculation<'_>, CalculationError> {
         let _span = tracing::debug_span!("native.calculation.prepare").entered();
+        let definition = self.calculation_definition(table, column, limits)?;
+        let plan = prepare(&definition.query, self)?;
+        Ok(PreparedCalculation {
+            source: self,
+            declaration: definition.declaration,
+            dependencies: definition.dependencies,
+            calculated_dependencies: definition.calculated_dependencies,
+            query: definition.query,
+            plan,
+        })
+    }
+
+    pub(super) fn calculation_definition(
+        &self,
+        table: &str,
+        column: &str,
+        limits: ParseLimits,
+    ) -> Result<CalculationDefinition, CalculationError> {
         let entry = self.entry(table)?;
         let declaration = {
             let mut source = self
@@ -146,15 +171,11 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
                 return Err(CalculationError::Unsupported);
             }
         }
-        drop(budget);
-        let plan = prepare(&query, self)?;
-        Ok(PreparedCalculation {
-            source: self,
+        Ok(CalculationDefinition {
             declaration,
             dependencies,
             calculated_dependencies,
             query,
-            plan,
         })
     }
 }

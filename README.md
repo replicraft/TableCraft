@@ -75,6 +75,14 @@ Intermediate results retain their recomputed carriers; this does not certify
 freshness or native conversion equivalence. See
 [calculation previews](docs/CALCULATION_PREVIEWS.md).
 
+For explicitly recomputed values inside ordinary queries, select a fresh local
+view with repeated `query run --recomputed-column FreshItems Items ID
+--recomputed-column FreshItems Items Score`, then query
+`SELECT ID,Score FROM FreshItems WHERE Score>10`. These buffered
+[calculation views](docs/RECOMPUTED_CALCULATION_VIEWS.md) use natural expression
+results and leave original table/cache routes intact; selected view expressions
+remain eager before outer filters.
+
 For larger local scalar tables, `tablecraft rows example.accdb Customers --stream`
 continues in TSV batches, with optional scalar `--column` selections and explicit
 cumulative read limits. [Streaming output](docs/STREAMING_ROWS.md) can retain earlier

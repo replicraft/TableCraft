@@ -17,10 +17,10 @@ pub use browsing::{
 };
 mod source;
 pub use source::{
-    CalculationError, ExternalNativeSource, ExternalSourceError, LinkSourceError,
+    CalculationError, CalculationView, ExternalNativeSource, ExternalSourceError, LinkSourceError,
     LinkedNativeSource, NativeExternalMapping, NativeLinkMapping, NativeSavedReadError,
     NativeSavedSelectError, NativeSource, NativeSourceHandle, NativeTableIdentity,
-    PreparedCalculation,
+    PreparedCalculation, RecomputedNativeSource,
 };
 mod editing;
 pub use editing::{NativeEditError, NativeEditor};
