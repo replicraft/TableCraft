@@ -8316,3 +8316,15 @@ were independently rehashed. An eight-control earlier-executable baseline shows
 raw-file success and refusal of both package-size and expanded-image ceilings.
 This is unsigned container/read evidence, not native Access deployment signing,
 installation or package trust qualification. The six files total 313,943,080 bytes.
+
+## Original directory-join replay (25 October 2026)
+
+[The independent runner](testing/compare_directory_joins.py) reuses the unchanged
+four-profile Decimal corpus and both original large ACE 16 databases above.
+Public inert getters and original integer encounter-order models supply expected
+results; only TableCraft executes Access SQL. No new fixture or third-party code
+is copied. The [76-command report](testing/results/directory-joins-2026-10-25.json)
+compares 51,848 rows and 105,896 cells, including 62 successes and fourteen intended
+refusals. Sixteen immutable inputs and 21 new/16 baseline committed source hashes
+were independently rechecked. See [scope](testing/DIRECTORY_JOINS.md); native
+Access optimizer/ordering and performance qualification are separate.

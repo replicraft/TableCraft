@@ -90,6 +90,12 @@
       "exit_code": 0,
       "private_log": ".cache/directory-join-fmt-20261025.log",
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "cargo build -p tablecraft-cli -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/directory-join-cli-build-20261025.log",
+      "sha256": "6920cd307aa51a0c193a9733c3e3ee82b508c3b95c3d6b5fbe4a6b6cc7d77a31"
     }
   ],
   "source_timing": "The 110 regression tests passed before the mechanical nested-if to let-chain cleanup. Final primary (20 tests), private (5 tests), strict and minimal checks passed afterward; the cleanup changes no runtime branch or output. Superseded primary/private passes are not counted again.",
@@ -143,5 +149,18 @@
   "integration_targets": {
     "native_borrowed_join_equality": 4,
     "cli_integral_joins": 3
+  },
+  "independent_replay": {
+    "report": "docs/testing/results/directory-joins-2026-10-25.json",
+    "report_sha256": "c23a4651ed662f5a54f4767358b5bb0393df313027e10ccd4f67844006cf7a2b",
+    "commands": 76,
+    "successful_commands": 62,
+    "intended_refusals": 14,
+    "compared_rows": 51848,
+    "compared_cells": 105896,
+    "immutable_pins": 16,
+    "compiled_revision_source_pins": 21,
+    "baseline_revision_source_pins": 16,
+    "qualification": "Original getter/integer model evidence; baseline defaultSteps refusal and new defaultSteps success, with explicit other allowances. No native Access optimizer claim."
   }
 }
