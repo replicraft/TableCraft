@@ -7869,3 +7869,29 @@ original authoring limits and reproduction. The
 pins the committed 1,857-file Rust inventory and 196 focused passing Rust tests.
 No source file is edited, no provider is activated and native Access execution,
 namespace equivalence, shared-file coherence and save/reopen remain unqualified.
+
+
+## Getter-backed concatenation policy replay
+
+[ConcatenationPolicyOracle.java](testing/ConcatenationPolicyOracle.java) and
+[compare_concatenation_policies.py](testing/compare_concatenation_policies.py)
+are original repository MIT tools. They reuse the four registered unchanged
+[native per-field policy originals](#native-per-field-general-policy-inputs)
+in `.cache/tablecraft-fixtures/native-policy-20261024-provenance/`; no new
+database or mutation is authored. The getter records ordinary values and exact
+LCID/version/variant descriptors read-only, with expressions disabled and a
+throwing link resolver. It executes no SQL or reference weight algorithms.
+
+The existing reviewed Apache-2.0 Jackcess 5.0.4 JAR retains SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+No upstream source or fixture bytes are copied. Captures remain local and their
+hashes are pinned in the [accepted report](testing/results/concatenation-policies-2026-10-24.json).
+
+The replay passes 300 commands: 164 candidate and 136 frozen-baseline controls.
+It models 116 candidate and 28 baseline cells, corrects 76 paired false policy
+conflicts and retains 60 paired outcomes. All 1,882 pinned hashes remain
+unchanged, including every file in the 1,861-entry frozen Rust inventory.
+Conservative conditional NULL, actual String and empty UNION-arm policies remain
+explicit refusals; ASCII result identities do not qualify native comparison
+weights or Windows behavior. See [the evidence contract](testing/CONCATENATION_POLICIES.md)
+and [verification record](testing/results/read-query-concatenation-policies-2026-10-24.json).
