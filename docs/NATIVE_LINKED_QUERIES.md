@@ -165,3 +165,12 @@ hashes unchanged. They share a getter-derived model and remain separate from
 native Access linked-SQL qualification. Controlled metadata copies, lower-level
 saved records and zero-argument versus positive-runtime limit checks retain their
 explicit evidence boundaries.
+
+
+## Explicit external database clauses
+
+An outer [ExternalNativeSource](NATIVE_EXTERNAL_QUERIES.md) can retain this facade
+as its root while resolving exact external IN tokens to already-open native
+handles. This composition preserves root named-query and mapped-link behavior;
+external targets still expose local base tables only. It adds no path opening,
+provider activation or cross-file transaction guarantee.
