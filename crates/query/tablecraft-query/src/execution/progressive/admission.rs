@@ -61,9 +61,14 @@ impl Runtime<'_, '_> {
             return Err(QueryError::StructureLimit);
         }
         match expression {
-            Expr::Aggregate(Aggregate::Count | Aggregate::Sum | Aggregate::Average, argument)
-                if count =>
-            {
+            Expr::Aggregate(
+                Aggregate::Count
+                | Aggregate::Sum
+                | Aggregate::Average
+                | Aggregate::Minimum
+                | Aggregate::Maximum,
+                argument,
+            ) if count => {
                 if aggregates.len() >= MAX_BIND_NODES {
                     return Err(QueryError::StructureLimit);
                 }

@@ -1,7 +1,8 @@
-//! Independent streaming states reuse the buffered numeric aggregate kernels.
-use super::{Environment, Runtime, average::Mean, sum::Sum};
+//! Independent streaming states reuse buffered numeric and retained extrema kernels.
+use super::{Environment, Runtime, average::Mean, extrema::ExtremeState, sum::Sum};
 use crate::{
     QueryError,
+    execution::cell::CellValue,
     plan::{Aggregate, Expr},
 };
 use tablecraft_core::values::Value;
@@ -15,10 +16,14 @@ enum State {
     Count(i64),
     Sum { count: i64, state: Sum },
     Average { count: i64, state: Mean },
+    Extreme(ExtremeState),
 }
 
 impl Accumulator {
-    pub(in crate::execution) fn new(kind: Aggregate) -> Result<Self, QueryError> {
+    pub(in crate::execution) fn new(
+        kind: Aggregate,
+        defer_strings: bool,
+    ) -> Result<Self, QueryError> {
         match kind {
             Aggregate::Count => Ok(Self {
                 state: State::Count(0),
@@ -34,6 +39,12 @@ impl Accumulator {
                     count: 0,
                     state: Mean::default(),
                 },
+            }),
+            Aggregate::Minimum | Aggregate::Maximum => Ok(Self {
+                state: State::Extreme(ExtremeState::new(
+                    matches!(kind, Aggregate::Maximum),
+                    defer_strings,
+                )),
             }),
             _ => Err(QueryError::Unsupported),
         }
@@ -56,6 +67,11 @@ impl Runtime<'_, '_> {
             *count = count.checked_add(1).ok_or(EvalError::Overflow)?;
             return Ok(());
         }
+        if let State::Extreme(state) = &mut accumulator.state {
+            let argument = argument.ok_or(QueryError::Unsupported)?;
+            let value = self.retained_expression_operand(argument, environment)?;
+            return self.push_extreme(state, argument, value);
+        }
 
         let value = self.numeric_aggregate_argument(argument, environment)?;
         if matches!(value, Value::Null) {
@@ -65,7 +81,9 @@ impl Runtime<'_, '_> {
         // before handing the unchanged carrier to the owning numeric kernel.
         let count = match &mut accumulator.state {
             State::Sum { count, .. } | State::Average { count, .. } => count,
-            State::Count(_) => unreachable!("handled before numeric publication"),
+            State::Count(_) | State::Extreme(_) => {
+                unreachable!("handled before numeric publication")
+            }
         };
         *count = count.checked_add(1).ok_or(EvalError::Overflow)?;
 
@@ -82,27 +100,39 @@ impl Runtime<'_, '_> {
                 self.options.cancelled,
                 &mut self.numeric_scratch,
             ),
-            State::Count(_) => unreachable!("handled before numeric publication"),
+            State::Count(_) | State::Extreme(_) => {
+                unreachable!("handled before numeric publication")
+            }
         }
     }
 
     pub(in crate::execution) fn finish_progressive_aggregate(
         &mut self,
         accumulator: Accumulator,
-    ) -> Result<Value, QueryError> {
-        match accumulator.state {
-            State::Count(count) => Ok(Value::Int64(count)),
+        expression: &Expr,
+    ) -> Result<CellValue, QueryError> {
+        let value = match accumulator.state {
+            State::Count(count) => Value::Int64(count),
             State::Sum { state, .. } => state.finish(
                 self.budget,
                 self.options.cancelled,
                 &mut self.numeric_scratch,
-            ),
+            )?,
             State::Average { count, state } => state.finish(
                 count,
                 self.budget,
                 self.options.cancelled,
                 &mut self.numeric_scratch,
-            ),
-        }
+            )?,
+            State::Extreme(state) => {
+                let Expr::Aggregate(_, Some(argument)) = expression else {
+                    return Err(QueryError::Source);
+                };
+                return self
+                    .finish_extreme(state, argument)
+                    .map(|value| value.with_declaration(None));
+            }
+        };
+        Ok(CellValue::scalar(value))
     }
 }

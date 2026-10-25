@@ -41,7 +41,7 @@ pub(crate) struct Environment<'a> {
 
 pub(super) struct AggregateResult<'a> {
     pub expression: &'a Expr,
-    pub value: Value,
+    pub value: CellValue,
 }
 
 #[derive(Clone, Copy)]

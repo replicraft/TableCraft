@@ -16,6 +16,8 @@ mod count;
 mod count_operands;
 #[path = "progressive_queries/execution.rs"]
 mod execution;
+#[path = "progressive_queries/extrema.rs"]
+mod extrema;
 #[path = "progressive_queries/numeric_aggregates.rs"]
 mod numeric_aggregates;
 #[path = "progressive_queries/stored_calculations.rs"]

@@ -10,7 +10,7 @@ fn unsupported_shapes_are_rejected_before_scan_even_when_empty_or_false() {
             "SELECT TOP 1 PERCENT N FROM T WHERE False",
             "SELECT TOP 1 N FROM T WHERE False ORDER BY N",
             "SELECT N FROM T WHERE False ORDER BY N",
-            "SELECT Max(N) FROM T WHERE False",
+            "SELECT Last(N) FROM T WHERE False",
             "SELECT N FROM T WHERE False GROUP BY N",
             "SELECT N FROM T WHERE False UNION SELECT N FROM T",
             "SELECT A.N FROM T AS A INNER JOIN T AS B ON A.N=B.N WHERE False",

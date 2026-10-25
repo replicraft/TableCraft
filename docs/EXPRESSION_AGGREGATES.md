@@ -42,6 +42,11 @@ odd bytes, explicit CStr/CVar identity, filtering, NULL results and failures.
 
 ## Retained String extrema
 
+Eligible direct-table global Min/Max can also use the explicit
+[progressive aggregate service](PROGRESSIVE_QUERIES.md#global-min-and-max).
+It retains the same result cells and comparisons, with a documented checked-EOF
+policy cohort and stream error phases; ordinary buffered extrema remain unchanged.
+
 Min/Max and DMin/DMax now retain the selected String cell instead of forcing each
 candidate to Unicode. NULL is omitted; empty/all-NULL populations return NULL.
 A singleton, including an odd byte range or isolated surrogate, performs no

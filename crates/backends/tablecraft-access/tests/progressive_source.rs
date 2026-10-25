@@ -9,6 +9,8 @@ mod map_fixture;
 #[path = "../../../engines/tablecraft-ace/tests/support/mod.rs"]
 mod support;
 
+#[path = "progressive_source/extrema.rs"]
+mod extrema;
 #[path = "progressive_source/union.rs"]
 mod union;
 

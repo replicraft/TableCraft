@@ -17,8 +17,9 @@ row-local predicates/functions and positive unordered TOP counts are supported.
 Global `Count(*)` and `Count(expr)` projections over the same direct table are
 also supported, with one checked count row published only after successful EOF.
 Pure final expressions and prior projection aliases may compose the counts.
-`Sum(expr)` and `Avg(expr)` are also admitted under the numeric profile below;
-other aggregates remain outside this progressive profile.
+`Sum(expr)` and `Avg(expr)` are admitted under the numeric profile below;
+`Min(expr)` and `Max(expr)` use the retained-value profile below. Other
+aggregates remain outside this progressive profile.
 Flat UNION ALL can combine these count arms and direct-table row arms.
 
 ```sh
@@ -98,12 +99,39 @@ Concurrent floating aggregates each need separate scratch storage during the
 scan. Byte thresholds can therefore differ from buffered execution, which can
 reuse scratch sequentially. Existing cumulative byte/row/work limits remain in
 force; streaming does not imply a small fixed allocation for every aggregate.
-Sorting, grouping/HAVING, extrema, statistics and wider sources remain outside
+Sorting, grouping/HAVING, statistics and wider sources remain outside
 this progressive profile.
 
 ```sh
 tablecraft query run --database example.accdb --stream \
   'SELECT Count(*) AS N,Sum(Amount) AS Total,Avg(Amount) AS Mean FROM Orders'
+```
+
+## Global MIN and MAX
+
+`Min(expr)` and `Max(expr)` can share a global SELECT with Count/Sum/Avg,
+pure final expressions and earlier projection aliases. They use the same
+retained cells and comparison rules as buffered extrema: actual numeric carriers,
+String policy/completion, raw String intermediates and admitted Error data survive
+until their consumers. NULL operands are omitted; empty or wholly NULL populations
+produce NULL. Existing unsupported comparisons still refuse.
+
+Resolver-dependent String candidates remain retained until checked EOF so that
+comparison uses the complete actual policy cohort. This can require storage
+proportional to the selected population; streaming does not promise constant
+memory. Other admitted comparisons retain the selected cell. Native, query and
+output quotas remain separate and cumulative.
+
+Operands run in written occurrence order per qualifying row. After checked EOF,
+all states finish before final projections and strict scalar publication. No
+result from this arm publishes after an input, comparison or final projection
+failure; already completed earlier UNION batches can remain. These phases can
+produce a different competing-error priority from buffered execution. See the
+[query contract](PROGRESSIVE_QUERIES.md).
+
+```sh
+tablecraft query run --database example.accdb --stream \
+  'SELECT Min(Amount) AS Lowest,Max(Amount) AS Highest,Count(*) AS N FROM Orders'
 ```
 
 ## Explicit stored calculations
@@ -195,7 +223,7 @@ to open an embedded path. See the [query service](PROGRESSIVE_QUERIES.md) and
 
 ## Verification
 
-Thirty-two ordinary progressive CLI integration tests cover priority synthetic profiles, real ACE 2007
+Thirty-six ordinary progressive CLI integration tests cover priority synthetic profiles, real ACE 2007
 example data, batch sizes, quoting, empty/filter results, first/late errors,
 checked count failures, cumulative quotas, parameter/text/declaration controls,
 mixed schemas, unordered TOP prefixes and argument refusals. TOP tests preserve
@@ -223,3 +251,9 @@ UNION arms, late prefixes, pruning, EOF, shared limits and refusal boundaries.
 Existing option controls also exercise password authentication, cached-value
 opt-in and target field/root literal comparison policies in streaming mode.
 See the [scoped verification](testing/results/read-query-linked-progressive-2026-10-25.json).
+
+Global Min/Max adds four CLI and three native cursor controls, including retained
+raw/Error consumers, explicit Text comparison, EOF-only publication and failure
+prefixes. The complete scoped checkpoint passes 338 distinct query/native/CLI
+tests with strict Clippy and minimal query features; see
+[verification](testing/results/read-query-progressive-extrema-2026-10-25.json).

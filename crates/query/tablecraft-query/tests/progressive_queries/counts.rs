@@ -78,11 +78,11 @@ fn filtered_empty_count_projection_errors_are_not_skipped_and_bad_eof_wins() {
 #[test]
 fn unsupported_aggregate_arms_fail_before_even_an_earlier_valid_count_scan() {
     for sql in [
-        "SELECT Min(N) FROM T",
+        "SELECT First(N) FROM T",
         "SELECT Count(*) FROM T GROUP BY N",
         "SELECT Count(*) FROM T HAVING Count(*)>0",
-        "SELECT Count(*) FROM T UNION ALL SELECT Max(N) FROM T",
-        "SELECT N FROM T UNION ALL SELECT Min(N) FROM T WHERE False",
+        "SELECT Count(*) FROM T UNION ALL SELECT Last(N) FROM T",
+        "SELECT N FROM T UNION ALL SELECT First(N) FROM T WHERE False",
     ] {
         let source = Rows::new([1, 2, 3]);
         let syntax = parse_query(sql, Default::default()).unwrap();

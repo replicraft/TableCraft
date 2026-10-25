@@ -1,5 +1,17 @@
 # Implementation status
 
+## Progressive global MIN and MAX
+
+Explicit streaming queries now admit global Min/Max alongside Count/Sum/Avg,
+using the existing retained-value and comparison rules. Resolver-dependent String
+candidates wait for the complete policy cohort at checked EOF; raw String and
+Error consumers retain their ordinary semantics. This avoids complete native
+snapshots, while retained candidates remain independently budgeted. Twenty-three
+new controls and 315 regressions pass across query, native and CLI targets with
+strict Clippy and minimal query features. See [scope](PROGRESSIVE_QUERIES.md) and
+[verification](testing/results/read-query-progressive-extrema-2026-10-25.json).
+Native Access comparison remains separate.
+
 ## Exact template XML names
 
 Template XML now validates NCName/QName spellings against the exact XML 1.0

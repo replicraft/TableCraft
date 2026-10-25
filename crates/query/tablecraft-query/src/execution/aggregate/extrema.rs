@@ -1,10 +1,12 @@
 //! Min/Max retain expression data under strict scalar/String key comparison.
 mod policy;
+mod state;
 use super::{Environment, Expr, QueryError, Runtime};
 use crate::{execution::cell::CellValue, source::TextPolicy};
+pub(in crate::execution) use state::ExtremeState;
 use std::cmp::Ordering;
 use tablecraft_core::values::{ExpressionValue, Value};
-use tablecraft_expressions::{EvalError, comparison::Comparison, logic::Truth};
+use tablecraft_expressions::{comparison::Comparison, logic::Truth};
 
 impl Runtime<'_, '_> {
     pub(in crate::execution) fn extreme_aggregate(
@@ -14,9 +16,6 @@ impl Runtime<'_, '_> {
         maximum: bool,
     ) -> Result<CellValue, QueryError> {
         let group = env.group.ok_or(QueryError::Grouping)?;
-        let mut selected = CellValue::scalar(Value::Null);
-        let mut policy = TextPolicy::Default;
-        let mut complete = false;
         // Completed construction can discard provisional static contributors,
         // so even nondefault lineage cannot prove a stable runtime comparator.
         // Direct retained fields keep the one-cell lane when the whole group's
@@ -24,7 +23,7 @@ impl Runtime<'_, '_> {
         let deferred = self.options.collation_resolver.is_some()
             && (self.text_policy(argument)? == TextPolicy::Default
                 || !self.stable_extreme_policy(argument, group, 1)?);
-        let mut candidates = Vec::new();
+        let mut state = ExtremeState::new(maximum, deferred);
 
         for row in group {
             self.tick()?;
@@ -37,60 +36,10 @@ impl Runtime<'_, '_> {
                     ..env
                 },
             )?;
-            policy = policy.merge(value.policy);
-            complete |= value.policy_complete;
-            match &value.value {
-                ExpressionValue::Value(Value::Null) => continue,
-                ExpressionValue::Value(_) | ExpressionValue::StringBytes(_) => {}
-                ExpressionValue::Error(_) => {
-                    // Even a singleton must have a qualified standard code.
-                    self.evaluator().compare_expression_values(
-                        Comparison::Equal,
-                        &value,
-                        &value,
-                    )?;
-                }
-                ExpressionValue::Empty | ExpressionValue::Missing => {
-                    return Err(EvalError::NonScalarExpression.into());
-                }
-            }
-
-            let string = matches!(
-                value.value,
-                ExpressionValue::Value(Value::Text(_)) | ExpressionValue::StringBytes(_)
-            );
-            if deferred && string {
-                if !matches!(selected.value, ExpressionValue::Value(Value::Null)) {
-                    return Err(EvalError::TypeMismatch.into());
-                }
-                self.push(&mut candidates, value)?;
-            } else {
-                // Strict extrema do not mix Strings with numeric/Error/other
-                // scalar families. This refusal needs no comparer; non-String
-                // populations keep one selected cell even with a resolver.
-                if !candidates.is_empty() {
-                    return Err(EvalError::TypeMismatch.into());
-                }
-                if self.replace_extreme(argument, &selected, &value, policy, maximum)? {
-                    selected = value;
-                }
-            }
+            self.push_extreme(&mut state, argument, value)?;
         }
 
-        // Evaluate no expression twice: only retained cells are compared here.
-        // NULL contributors still participate in the final policy above.
-        for value in candidates {
-            self.tick()?;
-            // Key comparison honors completed cells over a provisional fallback.
-            // The completed population policy is authoritative here, including
-            // contributors absent from this particular candidate pair.
-            let value = value.with_policy(policy).with_complete_policy(complete);
-            if self.replace_extreme(argument, &selected, &value, policy, maximum)? {
-                selected = value;
-            }
-        }
-
-        Ok(selected.with_policy(policy).with_complete_policy(complete))
+        self.finish_extreme(state, argument)
     }
 
     fn replace_extreme(
