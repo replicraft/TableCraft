@@ -21,6 +21,9 @@ qualification recorded separately.
   Page-buffered encryption management shares the 2 GiB read-source envelope under
   cumulative budgets; complete-image APIs retain their separate 64 MiB cap.
   Encryption is not an unstarted read milestone.
+  A [92-command replay](testing/LARGE_ENCRYPTION.md) now independently verifies
+  page-copy management and read/query results on both unchanged 77 MiB ACE 16-family
+  originals; the full source envelope and native saves remain unqualified.
 - Independent comparisons include 20,000-row indexed inputs and 99,110-row
   sequential scalar histories with added columns, Memo growth and deleted roots.
   A separate [mixed scalar history corpus](testing/MIXED_SCALAR_HISTORIES.md)

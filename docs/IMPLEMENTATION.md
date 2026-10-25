@@ -20,6 +20,16 @@ Access save/reopen remains unrun; this does not authorize normal encrypted edits
 or establish live-file coherence. See the [encryption contract](NATIVE_ENCRYPTION.md)
 and [scoped verification](testing/results/encryption-page-copies-2026-10-25.json).
 
+A separate [92-command large-file replay](testing/LARGE_ENCRYPTION.md) now passes
+on both original V2016/V2019 databases, each about 77 MiB. Independent getters,
+decoded SIDs, page digests and encryption-library removal agree; all eight
+recovered full images match their originals. CLI projections and getters each
+compare 8,800 row observations across four states per original. All seventeen
+immutable inputs/tools and fourteen committed source snapshots were separately
+rehashed. Both earlier-executable controls refuse the same files at the former
+size ceiling. This is independent engineering evidence, not native Access
+qualification or complete 2 GiB scale coverage.
+
 ## Japanese proper-case word boundaries
 
 Explicit Japanese casing now recognizes U+3000 IDEOGRAPHIC SPACE as an additional

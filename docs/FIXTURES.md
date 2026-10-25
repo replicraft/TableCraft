@@ -8471,3 +8471,19 @@ the test's temporary directory. No additional database bytes or external fixture
 license are introduced. This proves the larger page-copy path, not a 65 MiB native
 application or the complete 2 GiB envelope. See the
 [verification record](testing/results/encryption-page-copies-2026-10-25.json).
+
+## Large encryption page-copy replay (25 October 2026)
+
+The [original replay and getter driver](testing/LARGE_ENCRYPTION.md) reuse both
+unchanged V2016/V2019 originals from the large deployment corpus. No new database
+fixture, third-party code or reference dependency is introduced. Existing reviewed
+Jackcess 5.0.4, Jackcess Encrypt 5.0.2 and Bouncy Castle 1.86 artifacts supply inert
+getters, SID/page reads and independent removal of newly generated candidates.
+
+The [92-command report](testing/results/large-encryption-2026-10-25.json) retains
+all seventeen immutable fingerprints, fourteen versioned source snapshots and
+eight expected refusals, including the two former-size-limit controls. Four
+plaintext recoveries per profile match the original full-image digests. Actual
+Access save/reopen, VBA application behavior and the full 2 GiB envelope remain
+unqualified. Temporary randomized candidates are deleted; original hashes and
+selected source/tool/executable hashes are independently rechecked.
