@@ -3,6 +3,7 @@ mod compile;
 mod context;
 mod crosstab;
 mod error;
+mod external;
 mod fragments;
 mod identifier;
 mod ordering;

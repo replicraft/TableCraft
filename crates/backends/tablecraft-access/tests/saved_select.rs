@@ -9,6 +9,8 @@ mod derived;
 mod domains;
 #[path = "saved_select/execution.rs"]
 mod execution;
+#[path = "saved_select/external.rs"]
+mod external;
 #[path = "../../../engines/tablecraft-ace/tests/saved_queries/fixture.rs"]
 #[allow(dead_code)]
 mod fixture;

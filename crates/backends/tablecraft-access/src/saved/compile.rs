@@ -1,6 +1,7 @@
 use super::{
     SavedSelect, SavedSelectError,
     context::Context,
+    external,
     fragments::{self, expression},
     ordering, parameters, predicate, relations,
 };
@@ -16,7 +17,7 @@ use tablecraft_sql::{
 /// Supports bounded named/derived-source join forests and comma products, expression
 /// projections, an optional appended wildcard, filters, grouping, sorting and
 /// SELECT flags and qualified ordered parameter declarations. Excessive join graphs,
-/// native external-source fragments, actions and unknown/conflicting metadata
+/// per-table external qualifiers, actions and unknown/conflicting metadata
 /// fail explicitly. Expression subqueries retain their unresolved syntax.
 ///
 /// This does not bind sources/functions, open providers or execute content. The
@@ -97,6 +98,7 @@ pub(super) fn select_body(
         return Err(SavedSelectError::InvalidMetadata);
     }
     let from = relations::read(fragments, context)?;
+    let external = external::read(fragments.external, !from.is_empty(), context)?;
     let selection = fragments
         .selection
         .map(|row| context.expression(expression(row)?))
@@ -113,7 +115,7 @@ pub(super) fn select_body(
         having,
         into: None,
         into_external: None,
-        external: None,
+        external,
         owner_access: predicate.owner_access,
         selection,
         order_by,

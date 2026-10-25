@@ -20,9 +20,9 @@ prepared binding-key checks and namespace routing.
 `LinkedNativeSource` for ordinary root tables and saved queries. Root names do
 not acquire target table aliases merely because an external mapping exists.
 An explicit SQL query can combine a qualified root saved-query dependency or
-mapped link with an external IN subquery through this composed facade. Native
-saved-query reconstruction still refuses stored external-source fragments;
-this facade does not qualify or enable those persisted definitions.
+mapped link with an external IN subquery through this composed facade. Qualified [saved SELECT/crosstab definitions](NATIVE_SAVED_EXTERNAL_QUERIES.md)
+now reconstruct their stored global external tokens and use the same explicit
+bindings. Unqualified persisted layouts remain refused.
 
 An external target exposes local base tables only. Each table lookup validates
 its captured native storage classification before forwarding. Linked/ODBC target
