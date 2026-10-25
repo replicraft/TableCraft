@@ -7,6 +7,7 @@ mod input;
 mod plan;
 mod publication;
 mod rows;
+mod text_groups;
 
 use super::{ExecutionContext, ExecutionOptions, execute::ExecutionFrame};
 use crate::{PreparedQuery, QueryError, Source, discovery::DiscoveryState};

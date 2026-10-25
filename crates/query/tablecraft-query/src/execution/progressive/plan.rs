@@ -90,10 +90,11 @@ impl Runtime<'_, '_> {
             if select.group_types.len() != select.group.len() {
                 return Err(QueryError::Width);
             }
-            Some(
-                self.exact_profiled_keys(&select.group_types)?
-                    .ok_or(QueryError::Unsupported)?,
-            )
+            let lookup = self.exact_profiled_keys(&select.group_types)?;
+            if lookup.is_none() && !self.progressive_text_profile(&select.group_types)? {
+                return Err(QueryError::Unsupported);
+            }
+            lookup
         };
         arms.push(ProgressiveArm {
             read,

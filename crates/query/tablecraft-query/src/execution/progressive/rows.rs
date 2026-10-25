@@ -16,6 +16,9 @@ impl Runtime<'_, '_> {
         summary: &mut StreamSummary,
         visitor: &mut dyn FnMut(&[Value]) -> Result<(), E>,
     ) -> Result<(), StreamError<E>> {
+        if !arm.select.group.is_empty() && arm.group_lookup.is_none() {
+            return self.progressive_text_groups(arm, union_types, bindings, summary, visitor);
+        }
         if arm.select.having.is_some() {
             return self.progressive_having_rows(arm, union_types, bindings, summary, visitor);
         }

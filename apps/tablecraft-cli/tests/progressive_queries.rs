@@ -102,3 +102,6 @@ mod having;
 
 #[path = "progressive_queries/fixed_keys.rs"]
 mod fixed_keys;
+
+#[path = "progressive_queries/text_groups.rs"]
+mod text_groups;

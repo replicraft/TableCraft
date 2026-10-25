@@ -9,7 +9,7 @@ use crate::{
     external_sources::ExternalBinding,
     plan::{Aggregate, Expr},
 };
-use state::{HavingGroup, HavingPopulation};
+pub(super) use state::{DeferredGroup, HavingPopulation};
 use tablecraft_core::values::Value;
 use tablecraft_expressions::EvalError;
 
@@ -99,7 +99,7 @@ impl Runtime<'_, '_> {
                     index
                 }
             };
-            let group: &mut HavingGroup = groups.get_mut(index).ok_or(QueryError::Source)?;
+            let group: &mut DeferredGroup = groups.get_mut(index).ok_or(QueryError::Source)?;
             for (expression, accumulator) in expressions.iter().zip(&mut group.accumulators) {
                 runtime.tick()?;
                 let Expr::Aggregate(_, argument) = expression else {
@@ -134,6 +134,7 @@ impl Runtime<'_, '_> {
                     expressions,
                     groups,
                     count_only,
+                    predicate_count_only: false,
                 },
                 union_types,
                 summary,

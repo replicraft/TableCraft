@@ -10,6 +10,7 @@ use crate::{
     plan::Expr,
 };
 use state::Group;
+pub(super) use state::KeyPolicy;
 use tablecraft_core::values::Value;
 
 impl Runtime<'_, '_> {

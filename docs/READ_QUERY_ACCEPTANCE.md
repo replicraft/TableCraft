@@ -38,7 +38,8 @@ qualification recorded separately.
   Ordinary SQL results remain buffered with separate row, byte, work and output
   ceilings. Explicit [streaming SELECT/WHERE, global Count/Sum/Avg/Min/Max and flat UNION ALL](STREAMING_QUERIES.md) uses fresh
   native cursors and cumulative budgets without complete-table materialization.
-  Eligible integral grouping and static named/derived pipelines also stream;
+  Eligible Text/fixed/integral grouping, terminal HAVING and static named/derived
+  pipelines also stream;
   wider query shapes retain buffered execution.
   Absolute I/O now rejects reported seek-position mismatches before reading or
   writing; failpoints cover scalar, Memo and indexed snapshot publication.
@@ -167,7 +168,8 @@ and [progressive contract](PROGRESSIVE_QUERIES.md).
 | Static row-local named/derived SELECT chain | Implemented | Implemented, including qualified saved/native external/recomputed sources |
 | Global Count/Sum/Avg/Min/Max | Implemented | Implemented, checked EOF before result |
 | Boolean/integral/Currency/Decimal/NULL GROUP BY | Implemented | Implemented, retained groups and checked EOF |
-| Text/other GROUP BY keys | Implemented strict-key profile | Refused; complete key policy cohorts need preservation |
+| Proven Text GROUP BY tuples with current exact families | Implemented strict-key profile | Implemented, complete key policies and membership after checked EOF; retained candidates are budgeted |
+| Other GROUP BY families or Dynamic descriptors | Implemented bounded strict-key profiles | Refused; no observation-based type guessing |
 | HAVING | Implemented | Implemented terminal global/proven-key grouping; rejected SELECT work suppressed, selected operands can require budgeted replay rows |
 | Outer flat UNION ALL | Implemented | Implemented admitted arms and shared conversions |
 | Stateful named/derived stage or inner UNION | Implemented bounded profiles | Refused; stage completion/conversions need explicit composition |

@@ -1,0 +1,196 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Explicit progressive terminal Text grouping with complete EOF key-policy cohorts, strict deferred partition, full five aggregate kernels and HAVING suppression",
+  "unique_tests": 632,
+  "new_tests": 27,
+  "existing_regression_tests": 605,
+  "new_test_breakdown": {
+    "implementation_buffered_parity_eof_and_top": 3,
+    "private_wide_retention_and_actual_carrier_contracts": 2,
+    "independent_membership_raw_and_scale": 9,
+    "independent_policies_phases_and_failures": 8,
+    "native_original_text_with_explicit_and_stored_policies": 1,
+    "cli_text_membership_raw_having_and_prefix": 4
+  },
+  "primary_targets": {
+    "exact_fixed_indexing": 3,
+    "exact_fixed_key_policies": 6,
+    "exact_fixed_key_values": 7,
+    "exact_key_conformance": 10,
+    "exact_key_indexing": 3,
+    "progressive_count_execution": 13,
+    "progressive_count_operands": 11,
+    "progressive_derived_policies": 10,
+    "progressive_derived_values": 12,
+    "progressive_extrema_values": 12,
+    "progressive_grouped_policies": 7,
+    "progressive_grouped_values": 11,
+    "progressive_having_policies": 1,
+    "progressive_having_values": 12,
+    "progressive_numeric_aggregate_values": 9,
+    "progressive_queries": 54,
+    "progressive_text_group_policies": 8,
+    "progressive_text_group_values": 9
+  },
+  "runtime_unit_tests": 35,
+  "new_runtime_unit_tests": 2,
+  "regression_targets": {
+    "collation_routing": 106,
+    "concatenation_dynamic_types": 4,
+    "crosstab": 16,
+    "crosstab_scalar_headings": 8,
+    "domain": 9,
+    "external_named_sources": 10,
+    "external_table_sources": 8,
+    "grouped_expressions": 5,
+    "grouped_subqueries": 8,
+    "named": 6,
+    "named_crosstabs": 40,
+    "numeric_keys": 8,
+    "output_types": 7,
+    "projection_alias_execution": 11,
+    "projection_alias_values": 12,
+    "raw_string_comparison": 4,
+    "raw_string_predicates": 4,
+    "retained_string_cells": 5,
+    "union_numeric_types": 6,
+    "union_text_types": 8,
+    "union_types": 7
+  },
+  "checks": [
+    {
+      "command": "cargo check -p tablecraft-query --lib -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-text-groups-check-20261025.log",
+      "sha256": "bc463c8588ab51226fa4c129c1d75b4adc45b32887ad548043e29948f2a079dd",
+      "terminal_session": 61695
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test progressive_queries --test progressive_text_group_values --test progressive_text_group_policies --test exact_fixed_indexing --test exact_fixed_key_values --test exact_fixed_key_policies --test exact_key_conformance --test exact_key_indexing --test progressive_grouped_values --test progressive_grouped_policies --test progressive_having_values --test progressive_having_policies --test progressive_derived_values --test progressive_derived_policies --test progressive_count_execution --test progressive_count_operands --test progressive_numeric_aggregate_values --test progressive_extrema_values -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-text-groups-primary-final-20261025.log",
+      "sha256": "5055ab2e9183fa9e63766e1b19dffafc509020e69144395307e8194932b1b7a7",
+      "terminal_session": 36712,
+      "tests": 198
+    },
+    {
+      "command": "cargo test -p tablecraft-query --lib execution:: -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-text-groups-private-units-20261025.log",
+      "sha256": "d19b1db8bafeee076d822b96f4e371b32321126578d08ca43253941755668b99",
+      "terminal_session": 79373,
+      "tests": 35
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test collation_routing --test numeric_keys --test raw_string_comparison --test raw_string_predicates --test retained_string_cells --test grouped_expressions --test grouped_subqueries --test domain --test named --test external_named_sources --test external_table_sources --test crosstab --test crosstab_scalar_headings --test named_crosstabs --test union_types --test union_numeric_types --test union_text_types --test projection_alias_values --test projection_alias_execution --test output_types --test concatenation_dynamic_types -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-text-groups-related-regressions-20261025.log",
+      "sha256": "c5a30d8c95f4e0ed68c7db470c349f94443e8c990a8063054738b11895311054",
+      "terminal_session": 16594,
+      "tests": 292
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --tests -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-text-groups-clippy-20261025.log",
+      "sha256": "0859d78974ad57d63c7fe822b2c7dd64c068b83488714176f787830e4e6ff07e",
+      "terminal_session": 20519
+    },
+    {
+      "command": "cargo check -p tablecraft-query --lib --no-default-features -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-text-groups-minimal-20261025.log",
+      "sha256": "60d6ed14d2e61caad7a81c7908977b5b0f57f7cdbbc2193312e37c2e879b5b52"
+    },
+    {
+      "command": "cargo test -p tablecraft-access --test progressive_source -p tablecraft-cli --test progressive_queries --test general_collation --test database_collation -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-text-groups-native-cli-20261025.log",
+      "sha256": "4f821ade315115f7dc2535462dd8c28f91e03ba8eeeb773d8db555f7e8e5b6aa",
+      "terminal_session": 60333,
+      "tests": 107
+    },
+    {
+      "command": "cargo clippy -p tablecraft-access --lib --test progressive_source -p tablecraft-cli --bin tablecraft --test progressive_queries --test general_collation --test database_collation -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-text-groups-native-cli-clippy-20261025.log",
+      "sha256": "a031b80745be478fc431a7b5a61569649fe7806b3136cb623b52f2479e546ea1",
+      "terminal_session": 71147
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-text-groups-fmt-20261025.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "terminal_session": 15340
+    }
+  ],
+  "prerequisite": {
+    "revision": "c0571184",
+    "record": "docs/testing/results/read-query-concatenation-dynamic-types-2026-10-25.json",
+    "reason": "The original mixed-selector ampersand key produced Text but had Dynamic paired descriptors. A separately committed metadata-only successful-return fix restores nullable/nonnullable Text proofs without relaxing Dynamic group admission. Its four test functions are existing dependency regressions in this record, not four additional new Text tests."
+  },
+  "contracts": [
+    "Admission uses existing active paired group_types: at least one Text column plus current exact scalar/NULL families. Actual successful carriers are checked without conversion/provider activation; raw String bytes belong only to Text, while standard expression Error keeps its original validated strict-key path.",
+    "Qualified keys evaluate once and retain their complete cells. Checked source EOF and full per-column policy/completion cohorts precede every membership comparison; the whole strict partition finishes before any aggregate operand/state/provider work. No Text or partial-key fingerprint/stable-policy guess is used.",
+    "First encountered key spelling, raw representation, fixed scale, declaration and merged lineage remain original cells. NULL tuples, singleton unused-provider behavior, raw decode/provider priority and column short-circuiting use the existing authoritative comparer.",
+    "Count/key/scalar-only captures no source-row frames and allocates no row-assignment capacity. Operand-bearing HAVING or SELECT captures paid moved rows; a post-partition assignment sequence preserves original global input and written aggregate occurrence order.",
+    "HAVING active operands run only after partition; selected aggregate states/operands remain suppressed until their group passes. Count(*) result slots use checked group counts with full node identities. Key and aggregate operand policy cohorts stay separate.",
+    "Final retained GroupKeys avoid invented representative source rows. TOP retains later accepted eager final work; typed sink/query/source failures stop later groups/arms and owner restoration wraps capture, partition, replay and finish.",
+    "Live storage is O(retained key storage), including raw backing buffers outside active ranges, plus optional rows/assignments/states/candidates. Cumulative Bytes still charge per-input projected/key copies even when they drop. No complete source/named prefix cache, spill, snapshot fallback or constant-memory claim.",
+    "Existing exact-key and global/no-group paths retain prior charged allocation layouts and phases; the shared HAVING population adds only a stack predicate-count flag, false on the existing path. Date/float/GUID/Binary/Dynamic key profiles and inner stateful/set/ordering/join extensions are not admitted."
+  ],
+  "independent_controls": [
+    "Final all-equal versus ordinal providers change actual early-row memberships and aggregate populations. Comparison traces prove every key membership precedes operand comparisons; independent reverse-ordinal operand cohorts are not overwritten by key policies.",
+    "Ordinal/case-equivalence/nullable spelling classes and Text tuples with every existing exact family retain first representatives across all four preparation/execution profile combinations and derived aliases.",
+    "Raw odd/unpaired singleton observers, strict final publication, repeated-key missing-provider/decode priorities, explicit UTF16 support, Error/raw pair refusals and NULL short-circuit cases are pinned first against ordinary buffered capabilities.",
+    "A generated 100,003-row source groups seventeen independently modeled categories under explicit budgets with Label-only source projection and no buffered fallback. This establishes snapshot avoidance and finite bounded work, not retained-live-memory measurement.",
+    "A private allocation contract passes selected three-field inner rows including a 4 KiB payload, then proves Count/key-only candidates contain no source row and partition assignment length/capacity remain zero; selected or HAVING operands retain original rows. A second probe verifies wrong successful Date/Float/Int values under Text descriptors fail while standard Error data remains accepted.",
+    "Final-group prefix overflow, HAVING false/NULL projection suppression, failed EOF before membership, swallowed immediate callback errors, late key error before selected errors, original typed sink stops, quotas, every observed cancellation checkpoint and prepared reuse are covered.",
+    "Existing Count under 8 KiB, all current exact/fixed/grouped/HAVING/pipeline services, and buffered key/raw/policy/crosstab/UNION/alias metadata regressions remain green."
+  ],
+  "excluded_attempts": [
+    {
+      "command": "cargo test -p tablecraft-query --test progressive_queries --test progressive_text_group_values --test progressive_text_group_policies --test exact_fixed_indexing --test exact_fixed_key_values --test exact_fixed_key_policies --test exact_key_conformance --test exact_key_indexing --test progressive_grouped_values --test progressive_grouped_policies --test progressive_having_values --test progressive_having_policies --test progressive_derived_values --test progressive_derived_policies --test progressive_count_execution --test progressive_count_operands --test progressive_numeric_aggregate_values --test progressive_extrema_values -j2 --locked --offline",
+      "terminal_session": 58104,
+      "exit_code": 101,
+      "private_log": ".cache/progressive-text-groups-primary-20261025.log",
+      "sha256": "584829da4cab4ac0f3b29a7e142fd9a955055d271864cdf6b143b805e2658776",
+      "reason": "Eight independent policy cases refused at metadata admission because their mixed-selector ampersand key was Dynamic in both bound profiles despite buffered Text output. Exact diagnostic and separate prerequisite c0571184 fix this successful-return metadata gap; no Dynamic admission relaxation or policy golden rewrite. Partial passes are superseded by final primary198.",
+      "counted_as_acceptance": false
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test progressive_queries --test progressive_text_group_values --test progressive_text_group_policies --test exact_fixed_indexing --test exact_fixed_key_values --test exact_fixed_key_policies --test exact_key_conformance --test exact_key_indexing --test progressive_grouped_values --test progressive_grouped_policies --test progressive_having_values --test progressive_having_policies --test progressive_derived_values --test progressive_derived_policies --test progressive_count_execution --test progressive_count_operands --test progressive_numeric_aggregate_values --test progressive_extrema_values -j2 --locked --offline",
+      "terminal_session": 94209,
+      "exit_code": 101,
+      "private_log": ".cache/progressive-text-groups-primary-retry-20261025.log",
+      "sha256": "d36e2d6264af8f4756f9bd0b531e68ba619cb2900d7049f5b37bfcedcf7eb85e",
+      "private_source_before_correction": ".cache/progressive-text-groups-raw-before-valid-producer-fix-20261025.rs",
+      "source_sha256": "98e723360ea5dd36bd8b5cdcd44cd923829c384afe9542df76467155373f4dad",
+      "reason": "One new raw test failed its FIRST BUFFERED assertion: ChrB(65)&ChrB(0) rejects odd operands before joining, so it was not a valid UTF16 constructor. Changed only the valid-raw/missing-comparer input to ChrW(65); original odd/unpaired goldens remain. No Text runtime correction. Final full primary passes.",
+      "counted_as_acceptance": false
+    }
+  ],
+  "historical_negative_controls": "Three obsolete grouping refusals migrated to genuinely unsupported Date and mixed Dynamic key profiles; no old positive result or raw capability golden was weakened.",
+  "source_timing": "Text production compiled on first library check. Final primary, runtime units, related regressions, strict lib/tests Clippy and minimal query check cover the coherent source after the separately committed metadata prerequisite. Text runtime needed no answer/lint correction; authored raw construction was corrected only after ordinary buffered failure.",
+  "validation_limits": [
+    "Scoped632 query/native/CLI tests with strict linting, minimal query features and repository formatting. Original frozen-binary Text-group replay remains pending separate evidence.",
+    "Many distinct Text groups can require quadratic strict comparisons and per-input key storage; optional aggregate/HAVING operands can retain complete selected rows. Existing cumulative limits bound these costs.",
+    "No full workspace suite, Windows/NLS or native Access SQL grouping qualification, throughput or constant-memory claim."
+  ],
+  "native_cli_targets": {
+    "tablecraft-access/database_collation": 11,
+    "tablecraft-access/general_collation": 11,
+    "tablecraft-access/progressive_source": 23,
+    "tablecraft-cli/database_collation": 7,
+    "tablecraft-cli/general_collation": 4,
+    "tablecraft-cli/progressive_queries": 51
+  },
+  "parent_verification": {
+    "query_logs": "Parent independently rehashed all six accepted query-check logs before integration.",
+    "native_cli": "All107 pass first attempt, including five new controls. The original American roulette table has independently modeled first-digit counts for38 records, with snapshot ceiling1 under explicit ordinal or actual stored database policies; full Source::scan still refuses after streaming. Synthetic four-profile CLI controls pin case/space equality, retained spelling, raw singleton observers and exact late-final-error prefixes.",
+    "fixture_sha256": "3cd1fc88d70bc93909ae6d190fa9692e709d5641b205fd2f66185c905e42cfbf",
+    "independent_review": "Separate source reviewers found no runtime blockers; Count/key-only rowframe absence and required actual-value/Error distinctions have private probes."
+  }
+}

@@ -1,5 +1,19 @@
 # Implementation status
 
+## Progressive Text grouping
+
+Proven Text key tuples now wait for checked EOF and complete comparison-policy
+cohorts before strict SQL partitioning. First values and raw String ranges remain
+intact. Count/key-only selections retain keys without source-row replay frames;
+operand-bearing groups use budgeted rows, with HAVING still suppressing rejected
+SELECT work. Key storage can grow with the input, and many distinct Text groups
+can require quadratic comparison work. Twenty-seven new controls and 605
+regressions pass, including the original example under stored database policies
+with snapshot ceiling one. Strict query/native/CLI linting, minimal query features
+and formatting pass. See [phases and limits](PROGRESSIVE_QUERIES.md) and
+[verification](testing/results/read-query-progressive-text-groups-2026-10-25.json).
+Native Access grouping and mixed-policy qualification remain separate.
+
 ## Exact Currency and Decimal relational directories
 
 Uniform Currency/Decimal GROUP BY, DISTINCT, qualified DISTINCTROW and UNION

@@ -21,6 +21,8 @@ mod groups;
 mod having;
 #[path = "progressive_queries/numeric.rs"]
 mod numeric;
+#[path = "progressive_queries/text_groups.rs"]
+mod text_groups;
 #[path = "progressive_queries/top.rs"]
 mod top;
 #[path = "progressive_queries/union.rs"]

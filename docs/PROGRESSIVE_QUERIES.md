@@ -17,7 +17,9 @@ projections and positive unordered TOP counts. Wildcards use the ordinary qualif
 scalar metadata. Global COUNT(*), COUNT(expr), SUM(expr), AVG(expr), MIN(expr)
 and MAX(expr) projections
 over the same admitted input are also supported. Proven Boolean/integral/Currency/Decimal/NULL
-GROUP BY tuples use the same aggregates and retained final key values. Terminal
+GROUP BY tuples use the same aggregates and retained final key values. Proven
+Text tuples with those key families use a separate complete-cohort partition
+service. Terminal
 aggregate/grouped HAVING filters use the deferred projection service described
 below. Original source order and eager
 predicate/projection kernels are retained. Scalar conversion, arithmetic, text and inspection services
@@ -270,8 +272,9 @@ Key cells retain first values and declarations, and merge incoming policy and
 completion within each group. With a field-policy resolver, a compact cohort also
 accumulates across the entire qualified key column, including numeric and NULL
 cells. Checked EOF precedes applying that final cohort to all retained keys,
-matching the conservative buffered grouping contract. No Text grouping or native
-mixed-policy precedence is inferred from the exact numeric membership proof.
+matching the conservative buffered grouping contract. This exact membership
+proof supplies no Text equality rule; Text grouping uses the separate service
+below. No native mixed-policy precedence is inferred.
 
 Final projections explicitly borrow completed key cells. Metered structural
 identity and charged cell copies preserve their value, declaration, policy and
@@ -288,6 +291,77 @@ finalization/projection error may follow an earlier accepted group; input-operan
 source or EOF failures prevent every output from that arm. Sink failure stops
 later groups and arms. These explicit progressive phases are separate from
 buffered load/group/aggregate error order and native Access qualification.
+
+## Progressive Text grouping
+
+Terminal GROUP BY tuples with at least one statically proven Text column can
+combine Text with the current Boolean/integral/Currency/Decimal/NULL families.
+The active paired group descriptors supply admission; actual rows never invent
+an observed-type profile. Successful retained scalars are checked against each
+column's promised carrier, with NULL allowed and raw String bytes restricted to
+Text. Standard expression Error data retains the existing strict-key validation
+and pair-refusal path; it is not reinterpreted as a stored scalar or NULL. Date,
+floating, GUID/Binary and Dynamic key profiles remain outside this slice. Static named/derived inputs, authorized external
+namespaces, all five current aggregate kernels and terminal HAVING retain their
+existing services. Text does not acquire a hash or a guessed stable provider.
+
+Every qualified key expression executes once at its input position. Complete
+retained keys are held until successful physical EOF. With a resolver, the final
+policy/completion cohort for the entire key column is stamped on every key
+before any group-membership comparison. This can change the actual partition:
+a late provider that equates early distinct strings must merge their populations.
+Stamping a final policy onto already formed groups would not preserve that
+contract. Without a resolver, the supplied global comparer retains its existing
+fallback behavior; no locale is inferred.
+
+After EOF the existing strict tuple comparator partitions all keys in first
+encounter order, preserving NULL equality, column short-circuiting, singleton
+validation and raw String/provider refusal boundaries. No aggregate operand or
+final result runs until the entire partition succeeds. A singleton does not
+activate an otherwise unused provider. Identical byte payloads still undergo the
+ordinary comparison when duplicate rows require it; they are not pre-collapsed
+by representation. First spelling, raw carrier, scale in mixed fixed tuples,
+declaration and merged key provenance remain retained cells.
+
+Count(*)-only and key/scalar-only consumers retain keys and checked group counts,
+with no retained source rows or row-assignment capacity. Aggregate operands in
+either HAVING or SELECT require paid moved source-row cells; a post-partition
+assignment sequence preserves original global input order for their replay.
+No source cell is coerced or strictly published between these phases. Key cohorts
+and per-group aggregate operand cohorts remain separate populations. In
+particular String Min/Max still use their complete per-group operand policy and
+completion markers rather than the grouping provider.
+
+Without HAVING, aggregate states are constructed after partition and operand
+rows replay in original input/written occurrence order before group finish.
+With HAVING, only its states run first; selected states and operands remain
+suppressed until that group passes its predicate. Count(*) result slots can use
+checked group counts while preserving full syntactic occurrence identity and
+Int64 carriers. Prior aliases and final group-key observers use the existing
+retained key bridge, with no fabricated representative input row.
+
+This profile has an explicit EOF/partition barrier before aggregate work. Failed
+source EOF or a later key comparison therefore precedes aggregate operands and
+prevents every result from the arm. Once replay starts, evaluated operands remain
+eager and follow the progressive row-major/written occurrence contract, rather
+than buffered aggregate-at-a-time access. An explicit comparison inside a key
+expression still executes at its original input position and can use its provider
+there; the barrier concerns membership comparisons and aggregate work. TOP never
+cuts capture/partition or later accepted final work. First typed failures and
+lexical owner restoration retain the existing stage/arm rules.
+
+Live storage is honestly O(retained key storage), including backing buffers
+outside a raw String's active range, plus optional operand rows, assignments,
+group states and String extrema candidates. Count/key-only avoids
+retaining wide input rows, but still retains every qualified key; many distinct
+categories can require quadratic comparisons under the supplied work limit.
+All capture, growth, cohort, partition and replay work is paid and cancellable.
+Cumulative Bytes also charge each input projected-row/key copy even when it later
+drops, so this is a live-payload and snapshot-avoidance capability under explicit
+allowances, not a claim of constant memory or free scans. No prefix is cached as
+a complete source or named result, and no hidden spill/fallback is introduced.
+Existing no-Text exact groups and global/ordinary row plans keep their allocation
+paths and phases, including the small-budget Count(*) controls.
 
 ## Terminal HAVING and deferred selected operands
 
@@ -308,7 +382,9 @@ strictly publish a raw String. WHERE and selected native-carrier validation
 remain unconditional input boundaries; malformed selected source data and failed
 EOF cannot be hidden by HAVING.
 
-The scan accumulates a separate registry of HAVING aggregate occurrences. When
+For global/exact-key grouping, the scan accumulates a separate registry of
+HAVING aggregate occurrences. Text grouping defers these operands until its
+checked EOF and full partition barrier, as described above. When
 selected aggregates require operands, the operation moves complete retained input
 rows into paid per-group replay vectors. Only after a group passes HAVING are its
 selected aggregate states constructed, its operands replayed in input/written
@@ -507,6 +583,24 @@ Transport framing, batching, output quotas and stdout behavior belong to hosts;
 this library does not write a header or open files/providers.
 
 ## Verification and remaining work
+
+Parent native/CLI integration adds 107 distinct passing controls, including five
+new tests. The Text-group total is 632 unique tests with 27 new controls. Stored
+comparison policies on the original Access example, four priority synthetic
+profiles, exact late-error prefixes and raw observers pass, alongside strict
+query/native/CLI linting, minimal query features and repository formatting.
+
+The Text grouping extension passes 525 distinct query tests, including 22 new
+controls: 198 progressive/exact/value/policy tests, 35 runtime units and 292
+related buffered key/raw/policy, named, crosstab, UNION and metadata regressions.
+Strict query library/tests Clippy and the standalone minimal-feature check pass.
+The [scoped record](testing/results/read-query-progressive-text-groups-2026-10-25.json)
+retains exact commands, log hashes, the separately committed ampersand metadata
+prerequisite and the new-test raw-construction correction established first by
+buffered execution. Private probes establish zero Count/key-only retained source
+rows/assignment capacity even after selected wide inner projections, and validate
+actual carrier versus retained Error boundaries. Native/CLI integration and
+original replay remain separate checkpoints.
 
 Parent integration adds 153 distinct controls, including four new CLI tests and
 one independent actual-policy conflict test. The total is 554 unique tests with
