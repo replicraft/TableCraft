@@ -65,6 +65,12 @@ prepare remains metadata-only. Parameterless runtime domain targets can initiate
 or reuse the same discovery; transitive parameter declarations remain refused.
 Inline TRANSFORM sources remain unsupported. Binding must not scan rows to invent their schema. `query run` uses the
 retrieval layer for inline rows, typed parameters and explicitly chosen collation.
+Explicit SQL external `IN` sources use the metadata-only host contract in
+[EXTERNAL_QUERY_SOURCES.md](docs/EXTERNAL_QUERY_SOURCES.md). Capture exact selectors
+and immutable binding/revision keys, revalidate before scans, and retain actual
+target metadata and callbacks through discovery. Nested SELECTs choose their own
+namespace; root named/domain ownership remains explicit. External named targets
+and native stored remote-source reconstruction are not enabled by this contract.
 With `--database`, the `tablecraft-access` adapter supplies bounded native scalar
 snapshots; follow [NATIVE_QUERIES.md](docs/NATIVE_QUERIES.md) for its supported
 profile. [Named collection presence](docs/COLLECTION_PRESENCE.md) tests complete

@@ -83,6 +83,7 @@ impl Relation {
 pub(crate) enum RelationNode {
     Unit,
     Table {
+        namespace: crate::external_sources::SourceNamespace,
         name: String,
         columns: Vec<Column>,
         unavailable: Vec<tablecraft_schema::SchemaName>,

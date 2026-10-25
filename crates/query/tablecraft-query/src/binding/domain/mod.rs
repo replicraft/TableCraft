@@ -22,7 +22,12 @@ pub(crate) struct DomainContext<'a> {
 
 // Inner Err requests explicit execution staging; the outer Err is an actual
 // binding failure. None retains the existing missing-criteria-field result.
-type DomainPreparation = Result<Option<ReadPlan>, String>;
+pub(crate) struct BoundDomain {
+    pub read: ReadPlan,
+    pub external_sources: Vec<crate::external_sources::ExternalBinding>,
+}
+
+type DomainPreparation = Result<Option<BoundDomain>, String>;
 
 pub(crate) fn bind_domain(
     context: DomainContext<'_>,
@@ -56,6 +61,8 @@ pub(crate) fn bind_domain(
     };
     let mut binder = Binder {
         source,
+        external_sources: Vec::new(),
+        external_providers: Vec::new(),
         materialized,
         discover,
         reference_year,
@@ -72,7 +79,12 @@ pub(crate) fn bind_domain(
         policy_visits: 0,
         bytes: 0,
     };
-    let relation = binder.relation(syntax.from.first().ok_or(QueryError::Unsupported)?, &[], 1);
+    let relation = binder.relation(
+        syntax.from.first().ok_or(QueryError::Unsupported)?,
+        &[],
+        1,
+        crate::external_sources::SourceNamespace::Root,
+    );
     // Declarations observed before a schema request must fail before discovery.
     if !binder.parameters.is_empty() {
         return Err(QueryError::Parameter);
@@ -162,5 +174,8 @@ pub(crate) fn bind_domain(
     };
     projection::prune(&mut plan, &mut binder)?;
     binder.tick(1)?;
-    Ok(Ok(Some(plan)))
+    Ok(Ok(Some(BoundDomain {
+        read: plan,
+        external_sources: binder.external_sources,
+    })))
 }

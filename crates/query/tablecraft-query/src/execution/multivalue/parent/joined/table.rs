@@ -17,6 +17,7 @@ impl Runtime<'_, '_> {
         store: &mut Vec<Vec<Value>>,
     ) -> Result<Vec<ParentRow>, QueryError> {
         let RelationNode::Table {
+            namespace,
             name,
             columns,
             unavailable,
@@ -31,13 +32,14 @@ impl Runtime<'_, '_> {
         else {
             return Err(QueryError::Source);
         };
-        if self.source.columns(name)? != columns
-            || self.source.unavailable_columns(name)? != unavailable
-            || self.source.text_collations(name)? != text_collations
-            || self.source.multivalue_text_collations(name)? != multivalue_text_collations
-            || self.source.collection_member_text_collations(name)? != member_text_collations
-            || self.source.multivalue_columns(name)? != multivalues
-            || self.source.collection_members(name)? != members
+        let source = self.namespace_source(*namespace)?;
+        if source.columns(name)? != columns
+            || source.unavailable_columns(name)? != unavailable
+            || source.text_collations(name)? != text_collations
+            || source.multivalue_text_collations(name)? != multivalue_text_collations
+            || source.collection_member_text_collations(name)? != member_text_collations
+            || source.multivalue_columns(name)? != multivalues
+            || source.collection_members(name)? != members
         {
             return Err(QueryError::SchemaChanged);
         }
@@ -56,7 +58,6 @@ impl Runtime<'_, '_> {
         requested.dedup();
         let layout = self.collection_expansion(multivalues, members, expansion)?;
         let (values, named) = self.collection_requests(&requested, multivalues.len())?;
-        let source = self.source;
         let mut rows = Vec::new();
         let mut failure: Option<QueryError> = None;
         let mut visitor = |scalars: crate::source::ProjectedRow<'_>,
