@@ -96,3 +96,6 @@ mod grouped;
 
 #[path = "progressive_queries/derived.rs"]
 mod derived;
+
+#[path = "progressive_queries/having.rs"]
+mod having;

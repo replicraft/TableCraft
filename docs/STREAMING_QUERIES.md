@@ -46,7 +46,7 @@ declared-arithmetic policies use the same
 host context as buffered retrieval. Ordinary scalar views of mixed schemas are
 supported; unavailable fields and matching wildcards fail without NULL placeholders.
 
-Ordering, TOP PERCENT, DISTINCT/active DISTINCTROW, HAVING, joins/products,
+Ordering, TOP PERCENT, DISTINCT/active DISTINCTROW, nonaggregate HAVING, joins/products,
 duplicate-eliminating sets, nested UNIONs, scalar/predicate subqueries, domains,
 collections, Eval and volatile clock/random calls remain outside this progressive
 profile. Static row-local named/derived inputs are admitted under the narrower
@@ -60,6 +60,35 @@ indexes and collection modes. Explicit `--saved`, `--external` and local
 Explicit table format is rejected before opening the input; auto format is TSV for streaming, including in terminals. Header-based raw native and
 supported package/encryption opening retain their existing qualifications; this
 mode does not add a codec, provider or template reader.
+
+## HAVING filters
+
+Eligible terminal global/grouped SELECTs can use HAVING with the current
+Count/Sum/Avg/Min/Max profile, including aggregates absent from the output list.
+The predicate runs after checked EOF. False or NULL suppresses every selected
+expression and selected aggregate operation; `SELECT Sum(1/0) FROM Items HAVING
+False` therefore does not evaluate the selected division. Projection aliases
+remain unavailable in HAVING under the existing binder.
+
+```sh
+tablecraft query run --database example.accdb --stream \
+  'SELECT ID Mod 17 AS Bucket,Count(*) AS N FROM Orders GROUP BY ID Mod 17 HAVING Count(*)>10'
+```
+
+HAVING aggregate states scan normally. When selected aggregates have operands,
+the query retains input cells under its cumulative allocation budget and replays
+those operands only for accepted groups. These queries can need memory
+proportional to selected inputs; they do not create a complete source or named
+cache. Pure key/scalar and Count(*)-only outputs avoid per-input replay rows.
+Queries without HAVING retain their current allocation paths.
+
+TOP counts accepted groups, while later accepted groups still perform eager
+SELECT work and can fail after earlier batches. Rejected groups remain suppressed.
+Failed source EOF prevents all HAVING results. Aggregate input processing is
+row-wise, so competing error order can differ from buffered execution; see
+[exact suppression and retained-state scope](PROGRESSIVE_QUERIES.md#terminal-having-and-deferred-selected-operands).
+Inner pipeline stages still require row-local SELECTs; HAVING does not enable
+inner grouping or expand the admitted group-key families.
 
 ## Static named and derived inputs
 
@@ -154,7 +183,7 @@ Concurrent floating aggregates each need separate scratch storage during the
 scan. Byte thresholds can therefore differ from buffered execution, which can
 reuse scratch sequentially. Existing cumulative byte/row/work limits remain in
 force; streaming does not imply a small fixed allocation for every aggregate.
-Sorting, HAVING, statistics and unsupported inner stateful sources remain
+Sorting, statistics and unsupported inner stateful sources remain
 outside this progressive profile.
 
 ```sh
@@ -196,7 +225,7 @@ can stream the same native tables, explicit mapped targets and eligible
 row-local input chains. Tuple keys,
 nullable values, pure row-local key expressions, prior projection aliases and
 flat UNION ALL retain their existing contracts. Text, floating, Decimal, date and
-other unproven key families, HAVING and ordering remain outside this progressive
+other unproven key families and ordering remain outside this progressive
 profile. Unsupported shapes refuse before user-row scans; ordinary buffered
 grouping remains available.
 
@@ -205,7 +234,7 @@ tablecraft query run --database example.accdb --stream \
   'SELECT ID Mod 17 AS Bucket,Count(*) AS N,Sum(Amount) AS Total FROM Orders GROUP BY ID Mod 17'
 ```
 
-The cursor discards input rows after WHERE, key evaluation and aggregate updates.
+Without HAVING, the cursor discards input rows after WHERE, key evaluation and aggregate updates.
 Each encountered group retains its first key tuple and independent accumulator
 states. All current Count/Sum/Avg/Min/Max argument behavior remains available;
 String extrema can retain candidates until final policy comparison, so memory

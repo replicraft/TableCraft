@@ -43,7 +43,9 @@ can stream admitted SELECT arms in written order using the same result conversio
 and cumulative limits. Global `COUNT(*)`, `COUNT(expr)`, `SUM(expr)` and
 `AVG(expr)`, `MIN(expr)` and `MAX(expr)` can also stream their input and publish one result after checked EOF, avoiding a complete table
 snapshot. Eligible Boolean/integral/NULL `GROUP BY` keys also retain group states
-and publish groups in encounter order after checked EOF. Aggregate state is independently budgeted; text extrema can retain
+and publish groups in encounter order after checked EOF. Terminal HAVING filters
+these populations before SELECT evaluation; selected aggregate operands can require
+budgeted retained rows for deferred replay. Aggregate state is independently budgeted; text extrema can retain
 candidates until the final comparison policy is known. Static row-local named and
 inline derived SELECT chains can feed these operations, including explicit
 `--saved` and `--external` selection. Inner grouping, aggregates, UNION, ordering,

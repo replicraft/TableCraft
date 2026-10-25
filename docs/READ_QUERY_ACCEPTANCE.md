@@ -168,7 +168,7 @@ and [progressive contract](PROGRESSIVE_QUERIES.md).
 | Global Count/Sum/Avg/Min/Max | Implemented | Implemented, checked EOF before result |
 | Boolean/integral/NULL GROUP BY | Implemented | Implemented, retained groups and checked EOF |
 | Text/other GROUP BY keys | Implemented strict-key profile | Refused; complete key policy cohorts need preservation |
-| HAVING | Implemented | Refused; rejected groups must not evaluate selected expressions |
+| HAVING | Implemented | Implemented terminal global/proven-key grouping; rejected SELECT work suppressed, selected operands can require budgeted replay rows |
 | Outer flat UNION ALL | Implemented | Implemented admitted arms and shared conversions |
 | Stateful named/derived stage or inner UNION | Implemented bounded profiles | Refused; stage completion/conversions need explicit composition |
 | Joins, sorting, DISTINCT/active DISTINCTROW | Implemented bounded profiles | Refused; no silent buffered fallback |

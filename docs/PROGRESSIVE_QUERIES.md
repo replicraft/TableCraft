@@ -17,8 +17,9 @@ projections and positive unordered TOP counts. Wildcards use the ordinary qualif
 scalar metadata. Global COUNT(*), COUNT(expr), SUM(expr), AVG(expr), MIN(expr)
 and MAX(expr) projections
 over the same admitted input are also supported. Proven Boolean/integral/NULL
-GROUP BY tuples use the same aggregates and retained final key values, as
-described below. Original source order and eager
+GROUP BY tuples use the same aggregates and retained final key values. Terminal
+aggregate/grouped HAVING filters use the deferred projection service described
+below. Original source order and eager
 predicate/projection kernels are retained. Scalar conversion, arithmetic, text and inspection services
 use the same explicit execution policies as buffered queries. Prior explicitly
 named row-local projections can feed later projections through the ordinary
@@ -28,7 +29,7 @@ and text policy. Alias references do not bypass the complete arm admission check
 or introduce new WHERE/aggregate/subquery scopes.
 
 Admission rejects ordering, TOP PERCENT, DISTINCT/active DISTINCTROW, other
-grouping key families and HAVING,
+grouping key families, nonaggregate HAVING,
 duplicate-eliminating UNION/crosstabs, joins/products, inner stateful/set stages,
 subqueries, domains, collections, Eval and volatile
 clock/random calls. Rejection
@@ -98,8 +99,9 @@ per-row copies, so bounded live memory does not grant an unlimited scan. Slot
 registration, counter initialization, per-row occurrences and final identity
 lookups are metered and cancellable. Counter storage is prepaid, fallible and
 bounded by the existing binding-node ceiling. No complete cache is published.
-SUM/AVG and MIN/MAX can share this execution service as described below. Other aggregates,
-HAVING and wider sources remain outside this progressive slice; ordinary
+SUM/AVG and MIN/MAX can share this execution service as described below. HAVING
+uses its separate suppression path; other aggregates and wider sources remain
+outside this progressive slice. Ordinary
 buffered aggregate availability is unchanged. Microsoft's
 [Access SQL Count contract](https://learn.microsoft.com/en-us/office/vba/access/concepts/criteria-expressions/count-function-microsoft-access-sql)
 establishes field/calculation operands and the asterisk's inclusion of records
@@ -282,6 +284,59 @@ source or EOF failures prevent every output from that arm. Sink failure stops
 later groups and arms. These explicit progressive phases are separate from
 buffered load/group/aggregate error order and native Access qualification.
 
+## Terminal HAVING and deferred selected operands
+
+Already admitted global and proven-key grouped SELECTs can filter their final
+populations with HAVING. The current Count/Sum/Avg/Min/Max expression profile is
+available in the predicate, including aggregates not selected for output. The
+ordinary binder keeps projection aliases unavailable to HAVING: writing an output
+alias does not create a new predicate scope. Inner pipeline stages remain
+row-local; this feature does not admit inner aggregate/HAVING stages or additional
+group key families.
+
+HAVING executes after checked source EOF and complete group-key policy cohorts.
+A False or Unknown predicate suppresses every selected scalar expression and
+selected aggregate operation. For example, `SELECT Sum(1/0) FROM Items HAVING
+False` does not evaluate the projected division. A rejected group does not
+activate projection-only comparison providers, apply number formatting, or
+strictly publish a raw String. WHERE and selected native-carrier validation
+remain unconditional input boundaries; malformed selected source data and failed
+EOF cannot be hidden by HAVING.
+
+The scan accumulates a separate registry of HAVING aggregate occurrences. When
+selected aggregates require operands, the operation moves complete retained input
+rows into paid per-group replay vectors. Only after a group passes HAVING are its
+selected aggregate states constructed, its operands replayed in input/written
+occurrence order, and its states finished. Final scalar projections and prior
+aliases then run normally. Identical-looking aggregate text in HAVING and SELECT
+still has separate syntactic identity and evaluation work. Pure key/scalar outputs
+and Count(*)-only selected aggregates need only checked group counts, with no
+per-input replay rows. This shortcut preserves the ordinary Int64 Count carrier.
+
+Replay retains original field indices, raw/Error cells, declaration provenance
+and complete text-policy cells without intermediate publication or stored-schema
+coercion. It can retain complete selected input widths and is bounded by the
+cumulative query allowance; this is not a constant-memory profile. Capture,
+capacity growth, replay, state/result allocation and identity lookup remain
+metered and cancellable. No source or named-result cache is published. Queries
+without HAVING retain their existing state layout and allocation path.
+
+HAVING aggregate operands retain the explicit streaming scan phase: multiple
+occurrences run row by row before final predicate evaluation, rather than the
+buffered evaluator's aggregate-at-a-time access order. Resource/cancellation and
+operand failures can therefore precede final scalar predicate failures. Rejected
+SELECT projections nevertheless stay entirely suppressed. Accepted projection
+replay retains the existing progressive operand-then-final-expression phase;
+cross-row error precedence is not claimed identical to buffered or native Access
+execution. Branch operands within evaluated expressions remain eager.
+
+TOP counts HAVING-accepted groups. Later rejected groups still evaluate HAVING;
+later accepted groups still replay operands and run final projections even after
+the output count is reached. A later accepted-group failure may follow earlier
+published output. First query/sink failure stays sticky, and a failed sink prevents
+later groups or UNION arms. Empty global input still has one population to test;
+empty keyed input has no groups.
+
 ## Static named and derived input pipelines
 
 A row-local SELECT/WHERE/positive unordered TOP chain can feed the ordinary
@@ -447,6 +502,20 @@ Transport framing, batching, output quotas and stdout behavior belong to hosts;
 this library does not write a header or open files/providers.
 
 ## Verification and remaining work
+
+Parent integration adds 153 distinct controls, including four new CLI tests and
+one independent actual-policy conflict test. The total is 554 unique tests with
+23 new controls; the repeated 51-test query target is counted once. Strict
+native/CLI/policy-target linting and repository formatting also pass.
+
+The terminal HAVING extension passes 401 distinct query tests, including eighteen
+new controls: 148 progressive/value/policy tests, 28 runtime units and 225 related
+buffered grouping/HAVING, text, crosstab, named and alias regressions. Strict query
+library/tests Clippy and standalone minimal-feature checking pass. The
+[scoped record](testing/results/read-query-progressive-having-2026-10-25.json)
+records exact commands and log hashes, the initial compile integration correction,
+and obsolete negative-control updates. All executed tests passed on their first
+run. Native/CLI integration and original replay remain separate checkpoints.
 
 The static named/derived pipeline extension passes 404 distinct query tests,
 including 28 new controls: 130 progressive/value/policy tests, 28 runtime units
