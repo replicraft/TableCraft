@@ -2,16 +2,17 @@ use super::{NativeSource, query_error, schema::ScalarSchema};
 use crate::collation::identity;
 use tablecraft_ace::{
     BinaryIndexSelection, BooleanIndexSelection, ByteIndexSelection, CurrencyIndexSelection,
-    GeneralEqualityPrefix, GuidIndexSelection, IndexInspection, IndexProjectionSelection,
-    IndexReadRequest, Int16IndexSelection, Int32IndexSelection, Int64IndexSelection, NativeIndex,
-    TextIndexSelection, inspect_table_indexes, read_table_index_in_table_order,
-    read_table_index_with_request,
+    DecimalIndexSelection, GeneralEqualityPrefix, GuidIndexSelection, IndexInspection,
+    IndexProjectionSelection, IndexReadRequest, Int16IndexSelection, Int32IndexSelection,
+    Int64IndexSelection, NativeIndex, TextIndexSelection, inspect_table_indexes,
+    read_table_index_in_table_order, read_table_index_with_request,
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_query::{QueryError, Source, source::ScanConstraint};
 use tablecraft_schema::ScalarType;
 
 mod automatic;
+mod decimal;
 
 impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
     pub(super) fn selected_scan(
@@ -121,6 +122,7 @@ enum Selection {
     Byte(ByteIndexSelection),
     Int16(Int16IndexSelection),
     Currency(CurrencyIndexSelection),
+    Decimal(DecimalIndexSelection),
     Guid(GuidIndexSelection),
     Int32(Int32IndexSelection),
     Int64(Int64IndexSelection),
@@ -130,6 +132,9 @@ enum Selection {
 
 fn selection(constraint: ScanConstraint, kind: ScalarType) -> Option<Selection> {
     match (constraint, kind) {
+        (ScanConstraint::Null { .. }, ScalarType::Decimal) => {
+            Some(Selection::Decimal(DecimalIndexSelection::Null))
+        }
         (ScanConstraint::Boolean { value, .. }, ScalarType::Boolean) => {
             Some(Selection::Boolean(BooleanIndexSelection::Equal(value)))
         }
@@ -230,6 +235,12 @@ fn candidate_selection(
     if dense != Some(constraint.column()) {
         return IndexProjectionSelection::All;
     }
+    if let ScanConstraint::Decimal { value, .. } = constraint {
+        return key
+            .and_then(|field| decimal::equality(field, value))
+            .map(IndexProjectionSelection::Decimal)
+            .unwrap_or(IndexProjectionSelection::All);
+    }
     if let ScanConstraint::TextEqual { key: hint, .. } = constraint {
         let Some(field) = key else {
             return IndexProjectionSelection::All;
@@ -255,6 +266,7 @@ fn candidate_selection(
         Some(Selection::Byte(selection)) => IndexProjectionSelection::Byte(selection),
         Some(Selection::Int16(selection)) => IndexProjectionSelection::Int16(selection),
         Some(Selection::Currency(selection)) => IndexProjectionSelection::Currency(selection),
+        Some(Selection::Decimal(selection)) => IndexProjectionSelection::Decimal(selection),
         Some(Selection::Guid(selection)) => IndexProjectionSelection::Guid(selection),
         Some(Selection::Int32(selection)) => IndexProjectionSelection::Int32(selection),
         Some(Selection::Int64(selection)) => IndexProjectionSelection::Int64(selection),

@@ -1,7 +1,11 @@
 use super::super::schema::TableSchema;
 use super::{
-    Int64IndexSelection, NativeIndex, composite::CompositeProfile, constraints::IGNORE_NULLS,
-    guid::GuidProfile, key::SingleKey,
+    Int64IndexSelection, NativeIndex,
+    composite::CompositeProfile,
+    constraints::IGNORE_NULLS,
+    decimal::{DecimalIndexSelection, DecimalProfile, DecimalType},
+    guid::GuidProfile,
+    key::SingleKey,
 };
 use crate::InspectError;
 use crate::NativeColumn;
@@ -148,10 +152,11 @@ impl<'a> IndexProfile<'a> {
             }));
         }
         if schema.columns[column].scalar_type() == Some(ScalarType::Decimal) {
-            return Ok(Self::Decimal(super::decimal::DecimalProfile {
+            return Ok(Self::Decimal(DecimalProfile {
                 column,
                 descending: index.columns[0].descending(),
-                kind: super::decimal::DecimalType::from_column(&schema.columns[column])?,
+                kind: DecimalType::from_column(&schema.columns[column])?,
+                selection: DecimalIndexSelection::All,
             }));
         }
         let key_type = KeyType::from_column(&schema.columns[column])?;

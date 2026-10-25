@@ -1,7 +1,10 @@
 //! Physical fixed-point index keys; exact field scale stays separate from SQL coercion.
+mod selection;
+pub use selection::DecimalIndexSelection;
+
 use super::{
     key::{ASC_NULL, ASC_VALUE, DESC_NULL, DESC_VALUE, KeyProfile, MARKER_BYTES},
-    page::{CHILD_BYTES, ROW_BYTES},
+    page::{CHILD_BYTES, KeyRef, ROW_BYTES},
 };
 use crate::table::indexes::key::KeyRow;
 use crate::table::indexes::key::KeyWork;
@@ -182,6 +185,7 @@ pub(super) struct DecimalProfile {
     pub column: usize,
     pub descending: bool,
     pub kind: DecimalType,
+    pub selection: DecimalIndexSelection,
 }
 impl KeyProfile for DecimalProfile {
     type Key = Option<i128>;
@@ -215,6 +219,20 @@ impl KeyProfile for DecimalProfile {
             row.get(self.column).ok_or(InspectError::Malformed)?,
             self.descending,
         )
+    }
+    fn complete(&self) -> bool {
+        self.selection == DecimalIndexSelection::All
+    }
+    fn contains(&self, key: &Self::Key) -> bool {
+        self.selection.contains(self.kind, self.descending, *key)
+    }
+    fn may_match(
+        &self,
+        lower: Option<&KeyRef<Self::Key>>,
+        upper: Option<&KeyRef<Self::Key>>,
+    ) -> bool {
+        self.selection
+            .may_match(self.kind, self.descending, lower, upper)
     }
     fn constraint_nulls(&self, key: &Self::Key) -> Result<(bool, bool), InspectError> {
         Ok((key.is_none(), key.is_none()))

@@ -1,9 +1,9 @@
 use super::TextEqualityKey;
 use std::ops::Bound;
-use tablecraft_core::values::{Currency, Guid};
+use tablecraft_core::values::{Currency, Decimal, Guid};
 
 /// Optional backend-neutral restriction on one source column.
-/// Typed intervals/equality apply to exact Boolean, integer, Currency or GUID carriers;
+/// Typed intervals/equality apply to exact Boolean, integer, Decimal, Currency or GUID carriers;
 /// NULL tests may also target other carriers supported by the source. Ordinals
 /// refer to Source::columns. Numeric bounds exclude NULL and use ascending value
 /// order. Empty/reversed intervals match no rows.
@@ -23,6 +23,14 @@ pub enum ScanConstraint {
         column: usize,
         /// Exact Boolean carrier.
         value: bool,
+    },
+    /// Select numerically equal actual Decimal values, retaining scale equivalence.
+    /// A source must not narrow this to representational equality across scales.
+    Decimal {
+        /// Zero-based source column ordinal.
+        column: usize,
+        /// Exact Decimal operand, without float or Text conversion.
+        value: Decimal,
     },
     /// Select NULL values in the specified column.
     Null {
@@ -89,6 +97,7 @@ impl ScanConstraint {
             Self::Null { column }
             | Self::TextEqual { column, .. }
             | Self::Boolean { column, .. }
+            | Self::Decimal { column, .. }
             | Self::Guid { column, .. }
             | Self::Byte { column, .. }
             | Self::Int16 { column, .. }

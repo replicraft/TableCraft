@@ -15,6 +15,8 @@ mod guid;
 
 #[path = "constraints/currency.rs"]
 mod currency;
+#[path = "constraints/decimal.rs"]
+mod decimal;
 #[path = "constraints/int64.rs"]
 mod int64;
 #[path = "constraints/narrow.rs"]
@@ -78,6 +80,14 @@ impl Source for Restricted {
         self.source.scan(table, &mut |row| {
             let matches = match (constraint, &row[constraint.column()]) {
                 (ScanConstraint::Null { .. }, Value::Null) => true,
+                (
+                    ScanConstraint::Decimal {
+                        value: expected, ..
+                    },
+                    Value::Decimal(value),
+                ) => expected
+                    .rescale_exact(value.scale())
+                    .is_ok_and(|point| point == *value),
                 (
                     ScanConstraint::Boolean {
                         value: expected, ..

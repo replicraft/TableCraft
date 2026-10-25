@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Single-Decimal exact native equality/NULL selections with losslessly normalized typed-parameter query hints",
+  "unique_tests": 84,
+  "new_tests": 11,
+  "targets": {
+    "engine_decimal_indexes": 14,
+    "existing_decimal_previews": 8,
+    "query_retrieval": 59,
+    "access_decimal_selection": 3
+  },
+  "checks": [
+    {
+      "command": "cargo test --locked -p tablecraft-ace --features ace16-write-preview --test decimal_indexes --test decimal_updates",
+      "private_log": ".cache/decimal-selection-engine-tests-20261025.log",
+      "exit_code": 0,
+      "sha256": "a115bcf5700bd03e61a2ae368377e00f5edea4ff6451f82246c9dd7b3e54e3fb"
+    },
+    {
+      "command": "cargo test --locked -p tablecraft-query -p tablecraft-access --test retrieval --test decimal_selection",
+      "private_log": ".cache/decimal-selection-query-adapter-tests-20261025.log",
+      "exit_code": 0,
+      "sha256": "acb3c51b4444c4e8112820856c682e42f02f7a929581c2e41c47c296b8845359"
+    },
+    {
+      "command": "cargo clippy --locked -p tablecraft-ace -p tablecraft-query -p tablecraft-access --features tablecraft-ace/ace16-write-preview --lib --test decimal_indexes --test decimal_updates --test retrieval --test decimal_selection -- -D warnings",
+      "private_log": ".cache/decimal-selection-clippy-20261025.log",
+      "exit_code": 0,
+      "sha256": "cae0b458e843a18e9a5787be9057bea6c35911759d8e5679dbfcfdba36231223"
+    }
+  ],
+  "independent_replay": "Pending fixed final CLI; original four-profile inputs generated separately",
+  "boundaries": [
+    "No Decimal ranges, float/Text hints or speculative CDec evaluation",
+    "Original predicate, selected-error propagation, table order and incomplete-cache isolation retained",
+    "Native mutation preview initializer remains All; write gates unchanged"
+  ],
+  "unrun": [
+    "Full workspace suite",
+    "Microsoft Access optimizer/query/native save comparisons"
+  ]
+}

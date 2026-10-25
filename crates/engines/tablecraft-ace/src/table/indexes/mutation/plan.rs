@@ -1,7 +1,7 @@
 use super::super::{IndexCheck, IndexCheckStatus, NativeIndex, composite, page::KeyRef};
 use super::super::{
     composite::{DecimalColumns, DecimalValue, MixedValue},
-    decimal::{self, DecimalProfile, DecimalType},
+    decimal::{self, DecimalIndexSelection, DecimalProfile, DecimalType},
     guid::{self, GuidProfile},
 };
 use super::{
@@ -115,6 +115,7 @@ pub(in crate::table) fn patches(
                     column,
                     descending: index.columns()[0].descending(),
                     kind: DecimalType::from_column(&schema.columns[column])?,
+                    selection: DecimalIndexSelection::All,
                 };
                 edit::<_, { decimal::MAX_ENTRY_BYTES }>(
                     image,
