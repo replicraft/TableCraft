@@ -1,9 +1,22 @@
 //! Deferred group rows belong to explicit query operations, never a source cache.
 use crate::{
     QueryError,
-    execution::{Runtime, aggregate::accumulator::Accumulator, cell::CellValue},
+    execution::{
+        Runtime, aggregate::accumulator::Accumulator, cell::CellValue, exact_keys::ExactKeys,
+        progressive::groups::KeyPolicy,
+    },
     plan::Expr,
+    source::TextPolicy,
 };
+
+pub(in crate::execution::progressive) struct HavingInput<'p> {
+    pub(super) expressions: Vec<&'p Expr>,
+    pub(super) count_only: bool,
+    pub(super) lookup: Option<ExactKeys>,
+    pub(super) policies: Vec<TextPolicy>,
+    pub(super) cohort: Vec<KeyPolicy>,
+    pub(super) groups: Vec<DeferredGroup>,
+}
 
 pub(in crate::execution::progressive) struct HavingPopulation<'p> {
     pub(in crate::execution::progressive) expressions: Vec<&'p Expr>,

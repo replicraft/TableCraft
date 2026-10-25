@@ -1,9 +1,18 @@
 //! Key cells retain first values and complete conservative provenance.
 use crate::{
     QueryError,
-    execution::{Runtime, aggregate::accumulator::Accumulator, cell::CellValue},
+    execution::{
+        Runtime, aggregate::accumulator::Accumulator, cell::CellValue, exact_keys::ExactKeys,
+    },
     source::TextPolicy,
 };
+
+pub(in crate::execution::progressive) struct GroupInput {
+    pub(super) lookup: Option<ExactKeys>,
+    pub(super) policies: Vec<TextPolicy>,
+    pub(super) cohort: Vec<KeyPolicy>,
+    pub(super) groups: Vec<Group>,
+}
 
 pub(super) struct Group {
     pub(super) keys: Vec<CellValue>,

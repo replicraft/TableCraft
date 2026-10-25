@@ -1,7 +1,8 @@
 //! Predicate rejection suppresses every selected aggregate and scalar operation.
-use super::{ProgressiveArm, StreamError, StreamSummary, state::HavingPopulation};
+use super::{StreamError, state::HavingPopulation};
+use crate::execution::progressive::retained::{RetainedReceiver, StageOutput};
 use crate::{
-    OutputType, QueryError,
+    QueryError,
     execution::{
         Environment, Runtime,
         cell::CellValue,
@@ -12,15 +13,13 @@ use crate::{
 use tablecraft_core::values::Value;
 
 impl Runtime<'_, '_> {
-    pub(in crate::execution::progressive) fn finish_progressive_having<E>(
+    pub(in crate::execution::progressive) fn finish_having_cells<E>(
         &mut self,
-        arm: &ProgressiveArm<'_>,
+        output: StageOutput<'_, '_>,
         population: HavingPopulation<'_>,
-        union_types: Option<&[OutputType]>,
-        summary: &mut StreamSummary,
-        visitor: &mut dyn FnMut(&[Value]) -> Result<(), E>,
+        emit: &mut RetainedReceiver<'_, Self, E>,
     ) -> Result<(), StreamError<E>> {
-        let having = arm.select.having.as_ref().ok_or(QueryError::Source)?;
+        let having = output.select.having.as_ref().ok_or(QueryError::Source)?;
         let mut published = 0_u64;
         for group in population.groups {
             self.tick()?;
@@ -37,7 +36,7 @@ impl Runtime<'_, '_> {
                 output: &[],
                 group: None,
                 group_keys: Some(GroupKeys {
-                    expressions: &arm.select.group,
+                    expressions: &output.select.group,
                     values: &group.keys,
                     retained_values: true,
                 }),
@@ -48,9 +47,9 @@ impl Runtime<'_, '_> {
                 continue;
             }
             let results = if population.count_only {
-                self.progressive_count_results(&arm.aggregates, group.count)?
+                self.progressive_count_results(output.aggregates, group.count)?
             } else {
-                let mut accumulators = self.progressive_accumulators(&arm.aggregates)?;
+                let mut accumulators = self.progressive_accumulators(output.aggregates)?;
                 for row in group.rows {
                     self.tick()?;
                     let input = Environment {
@@ -62,7 +61,8 @@ impl Runtime<'_, '_> {
                         group: None,
                         group_keys: None,
                     };
-                    for (expression, accumulator) in arm.aggregates.iter().zip(&mut accumulators) {
+                    for (expression, accumulator) in output.aggregates.iter().zip(&mut accumulators)
+                    {
                         self.tick()?;
                         let Expr::Aggregate(_, argument) = expression else {
                             return Err(QueryError::Source.into());
@@ -70,16 +70,16 @@ impl Runtime<'_, '_> {
                         self.push_progressive_aggregate(accumulator, argument.as_deref(), input)?;
                     }
                 }
-                self.progressive_aggregate_results(&arm.aggregates, accumulators)?
+                self.progressive_aggregate_results(output.aggregates, accumulators)?
             };
-            let cells = self.progressive_projection(
-                arm,
+            let cells = self.progressive_select_projection(
+                output.select,
                 Environment {
                     aggregate_results: Some(&results),
                     ..environment
                 },
             )?;
-            if arm
+            if output
                 .read
                 .top
                 .is_some_and(|(count, _)| published >= u64::from(count))
@@ -87,7 +87,7 @@ impl Runtime<'_, '_> {
                 // TOP does not suppress accepted omitted groups' eager work.
                 continue;
             }
-            self.progressive_publish(arm, cells, union_types, summary, visitor)?;
+            emit(self, cells)?;
             published = published.checked_add(1).ok_or(QueryError::StructureLimit)?;
         }
         Ok(())

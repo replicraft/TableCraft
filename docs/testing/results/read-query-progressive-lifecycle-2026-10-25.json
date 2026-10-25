@@ -1,0 +1,167 @@
+{
+  "date": "2026-10-25",
+  "scope": "Checkpoint1 working existing progressive service init/push/retained finish factoring; stateful inner admission remains refused",
+  "unique_tests": 634,
+  "new_receiver_tests": 2,
+  "existing_regression_tests": 632,
+  "checks": [
+    {
+      "command": "cargo check -p tablecraft-query --lib -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-lifecycle-check-20261025.log",
+      "sha256": "0ef0c6a824fa4c31bd12ce6db36e3214a26ce8c84c3dbc4f751295373af32e37",
+      "terminal_session": 81114
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test progressive_queries --test progressive_text_group_values --test progressive_text_group_policies --test exact_fixed_indexing --test exact_fixed_key_values --test exact_fixed_key_policies --test exact_key_conformance --test exact_key_indexing --test progressive_grouped_values --test progressive_grouped_policies --test progressive_having_values --test progressive_having_policies --test progressive_derived_values --test progressive_derived_policies --test progressive_count_execution --test progressive_count_operands --test progressive_numeric_aggregate_values --test progressive_extrema_values -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-lifecycle-primary-20261025.log",
+      "sha256": "5dd30fdcc2de292edde9bba3283ab9c565b3719bc6f159b41804005600e384ea",
+      "terminal_session": 60560,
+      "tests": 198
+    },
+    {
+      "command": "cargo test -p tablecraft-query --lib execution:: -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-lifecycle-private-units-20261025.log",
+      "sha256": "eba6630b20612eb04cab437183ef87a703d7e642380daa0d1bdcb167afca549f",
+      "terminal_session": 34879,
+      "tests": 37
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test collation_routing --test numeric_keys --test raw_string_comparison --test raw_string_predicates --test retained_string_cells --test grouped_expressions --test grouped_subqueries --test domain --test named --test external_named_sources --test external_table_sources --test crosstab --test crosstab_scalar_headings --test named_crosstabs --test union_types --test union_numeric_types --test union_text_types --test projection_alias_values --test projection_alias_execution --test output_types --test concatenation_dynamic_types -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-lifecycle-related-regressions-20261025.log",
+      "sha256": "460d6d0e830c9ffbb7cf984f90c2c093459f3d313531365af114b8d5eeef68c7",
+      "terminal_session": 42610,
+      "tests": 292
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --tests -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-lifecycle-clippy-final-20261025.log",
+      "sha256": "9ef881deb7452217615f1fcb2a93ec3619d61e75ed7a217f2ce9f8fa8fc3e5a0",
+      "terminal_session": 40262
+    },
+    {
+      "command": "cargo check -p tablecraft-query --lib --no-default-features -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-lifecycle-minimal-20261025.log",
+      "sha256": "4cf86278c1e6d659943a46a3d7e3da429ac15be90f0f17742e24ef85228e7d3e"
+    },
+    {
+      "command": "cargo test -p tablecraft-access --test progressive_source -p tablecraft-cli --test progressive_queries --test general_collation --test database_collation -j 2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-lifecycle-host-retry-20261025.log",
+      "sha256": "9d1660dbe78fd405ef3a893566d74eb91e8a3eeb9a089884951db7da846ae057",
+      "terminal_session": 19794,
+      "tests": 107
+    },
+    {
+      "command": "cargo clippy -p tablecraft-access --lib -p tablecraft-cli --bin tablecraft -j 2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-lifecycle-host-clippy-20261025.log",
+      "sha256": "5e749048cce024aeb3a4d05a284c9cf922b0e388e08fdd611cf3b1a3bf088cf4",
+      "terminal_session": 32926
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-lifecycle-fmt-20261025.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "terminal_session": 64164
+    }
+  ],
+  "source_snapshots": [
+    {
+      "path": "crates/query/tablecraft-query/src/execution/progressive.rs",
+      "sha256": "cf6716bfc687aaf403025aaaac4f8923956d3cd8dd1d20147e5df2f125288b47"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/progressive/aggregates.rs",
+      "sha256": "fb34fe6bf229a9945734952e7fd3aed66723666c6bb786f92ce62a2285246fd3"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/progressive/groups.rs",
+      "sha256": "8ca8383a15173cc10041eeda5d45cc67544fd74846c94736c9aa4ef24b318c03"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/progressive/groups/state.rs",
+      "sha256": "51ee31501f877b3151d3d05048d46837b24ab77f8e8fdaec010364bb8d8954eb"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/progressive/groups/finish.rs",
+      "sha256": "1f11b0d0da65bcc136767c881c271e8c5c854369a6caaafe8e4bbcfd989bd072"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/progressive/having.rs",
+      "sha256": "092809478c2c9f675dded44c54b23bbb5f901cf3aaa2ed801a860195e6814055"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/progressive/having/state.rs",
+      "sha256": "9433a17a3f9bf4ed85050a90f924ea817199136f85e7725d2c32880e2ead4bc1"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/progressive/having/finish.rs",
+      "sha256": "2becbc1752be01a99ff34257ca854857c868708a9f3294fdce7a038ddb4c7d06"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/progressive/publication.rs",
+      "sha256": "e535ca74cc2fb982a6a1678714b09a9813deb18ec947fe002600c422f47178cc"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/progressive/text_groups.rs",
+      "sha256": "93255121de683047ac23fa1c81d677abde83a68c5c492aba01a99eecf76f0c0e"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/progressive/text_groups/capture.rs",
+      "sha256": "cc7602ba3c63e2429423aa6ad7e06dd0b9cbd5ed347cf4bf3b14906cdc9e9e74"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/progressive/text_groups/finish.rs",
+      "sha256": "697176a903ab45910f56b2c559a54c43fc036fdd61eac6cc5deba5a8119bfd7e"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/progressive/text_groups/replay.rs",
+      "sha256": "31c963f11d88e5c16c60365bfd6760009398dd3dfa24c8d145fcdf579ebaff68"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/progressive/text_groups/state.rs",
+      "sha256": "0d24b5db399c73057e4b21ce76c7de4fd194c97f89916c70b81ba87edade073e"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/progressive/retained.rs",
+      "sha256": "37db8740efb971e73448ff6b16d5fca8b4937a9aa7e45a6c2004a725183ee7e3"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/progressive/retained/tests.rs",
+      "sha256": "79ef6c1272fe18da32ffe76ba78db74a9dd789df0b9b9827385703b83b9db381"
+    }
+  ],
+  "source_snapshot_scope": "Explicit owned working-tree files, before parent logical commit; not an executable compilation manifest. No Git mutation or commit by subagent.",
+  "contracts": [
+    "Existing direct global/exact/HAVING/Text consumers use concrete source-free init/push/finish helpers with their original per-group/arm/counter heap item widths and operation order.",
+    "Retained finish emits owned Vec<CellValue> through a borrowed callback with no queue/box. Only root wrapper invokes existing UNION conversion, strict scalar publication, sink and emitted counter.",
+    "Unknown Min/Max declaration remains None and raw unpaired String reaches retained receiver without publication; original receiver failure stops later final expression errors.",
+    "No new stateful inner shape is admitted in checkpoint1. Future independent twenty tests compile during strict linting but are deliberately not executed or claimed passing."
+  ],
+  "excluded_attempts": [
+    {
+      "private_log": ".cache/progressive-lifecycle-clippy-20261025.log",
+      "sha256": "1203d41bcd84469f80e7d20de854db6d789fe8ae2741684dc4981f809d72fcaa",
+      "exit_code": 101,
+      "terminal_session": 27906,
+      "reason": "Strict all-tests compilation found unnecessary expected.clone in future independent stage test (not executed). Author replaced only slice assertion with std::slice::from_ref; no runtime or golden change. Final strict passes."
+    },
+    {
+      "private_log": ".cache/progressive-lifecycle-host-20261025.log",
+      "sha256": "d49b3b35806046c693f7262abca72dc61ce9faba1213ecf09a8a13c7f2359464",
+      "exit_code": 101,
+      "terminal_session": 92015,
+      "reason": "Build failed before tests with ENOSPC. Removed only generated incremental directories unused for at least two hours; fixtures, frozen executables, logs and sources preserved. Exact command then passed."
+    }
+  ],
+  "validation_limits": [
+    "No full workspace, performance or native Access qualification claim. Scoped CLI/native regression tests supplement query checks; public functionality is unchanged and stateful admission/driver follows in a separate commit."
+  ]
+}
