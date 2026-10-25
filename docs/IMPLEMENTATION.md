@@ -1,5 +1,28 @@
 # Implementation status
 
+## Native saved external-source reconstruction
+
+Qualified saved SELECT and crosstab definitions now retain one global native
+remote-database fragment as owned external-source syntax. Exact path and optional
+connection text remain opaque; reconstruction does not interpolate them into SQL
+or open providers. Explicit native mappings execute path-only definitions through
+the existing shared-budget source facade. Empty present connections remain
+separate from absent connections and are refused by the native facade. Per-table
+remote qualifiers, unknown flags/payloads, duplicate rows and source-free remote
+metadata still fail. Existing labelled UNION arms retain their own parsed IN
+clauses; global UNION remote rows remain unsupported. See
+[the saved-source contract](NATIVE_SAVED_EXTERNAL_QUERIES.md).
+
+The complete saved adapter target passes 77 tests, including eight new controls
+for literal tokens, aliases/joins/parameters, fixed/dynamic crosstab execution,
+UNION scopes, missing/remapped bindings, cumulative limits and early/final
+cancellation. The CLI saved/external/linked batch passes 50 tests, including three new
+end-to-end controls across all four priority layouts. Strict scoped adapter/CLI
+Clippy, standalone adapter checking, normal CLI building, formatting and dependency
+checks pass. Independent stored getter evidence is being assembled separately;
+this does not establish
+native Access saved-query execution or complete the read/query roadmap.
+
 ## Independent numeric key replay over stored floats
 
 The [exact numeric-key replay](testing/NUMERIC_KEYS.md) passes all 2,910 candidate

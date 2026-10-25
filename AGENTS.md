@@ -70,7 +70,10 @@ Explicit SQL external `IN` sources use the metadata-only host contract in
 and immutable binding/revision keys, revalidate before scans, and retain actual
 target metadata and callbacks through discovery. Nested SELECTs choose their own
 namespace; root named/domain ownership remains explicit. External named targets
-and native stored remote-source reconstruction are not enabled by this contract.
+remain unavailable. Qualified native saved SELECT/crosstab global remote-source
+fragments now reconstruct through [the saved-source contract](docs/NATIVE_SAVED_EXTERNAL_QUERIES.md);
+per-table qualifiers remain refused. Reconstruct opaque tokens directly into
+owned fields rather than interpolating stored path/provider text into SQL.
 The native CLI host uses explicit `--external DATABASE_TOKEN PATH` mappings and
 `--external-index DATABASE_TOKEN TABLE INDEX`; follow
 [NATIVE_EXTERNAL_QUERIES.md](docs/NATIVE_EXTERNAL_QUERIES.md). Stored tokens never

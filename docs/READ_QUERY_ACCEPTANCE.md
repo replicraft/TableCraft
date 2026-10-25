@@ -861,3 +861,16 @@ priority-format databases; all 25 selected hashes remain unchanged. Seventy-eigh
 focused Rust tests and test-aware strict Clippy pass. This closes a concrete
 binary-key inconsistency; broader Variant/subtype/coercion, native heterogeneous
 grouping, text semantics and the remaining read/query roadmap remain unfinished.
+
+
+### Native saved external FROM sources
+
+Qualified stored SELECT/crosstab definitions now reconstruct their global
+attribute-4 qualifier into exact owned external tokens. Explicit mapped execution
+uses the existing external-source facade, including named root dependencies.
+Connections remain inert metadata; the native facade admits only absent
+connections. Labelled UNION arms retain their existing independent IN scopes.
+Per-table qualifiers, global UNION remote rows and malformed metadata remain
+refused. See [the saved-source contract](NATIVE_SAVED_EXTERNAL_QUERIES.md).
+This closes one persisted composition gap; broader definitions, external named
+targets, full P0 semantics and native Access qualification remain unfinished.

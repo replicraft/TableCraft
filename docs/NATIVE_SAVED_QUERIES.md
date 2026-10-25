@@ -90,7 +90,7 @@ expansion, provider access or execution. The native engine retains storage facts
 the Access adapter owns their mapping into syntax. SELECT owner-access is a
 retained syntax flag, never a grant of authority.
 
-The current profile supports up to sixteen local named sources/aliases in bounded
+The current profile supports up to sixteen named sources/aliases in bounded
 [INNER/LEFT/RIGHT join forests and comma products](NATIVE_SAVED_JOINS.md), including
 [stored derived SELECT/UNION sources](NATIVE_SAVED_DERIVED.md). It retains ordered
 expression projections/aliases, explicit `*` and qualified `source.*` projections,
@@ -104,7 +104,7 @@ Native query-object family bits must identify SELECT. A present type row must
 agree; omitted type/start/end rows follow the observed reference profile rather
 than becoming synthetic stored rows. Duplicate singleton clauses fail. Unknown/
 NULL attributes, unused non-NULL extra/name/expression metadata, nonzero unhandled
-row flags, unqualified parameter types/names, excessive join graphs, remote-source fragments and action/DDL/pass-through/
+row flags, unqualified parameter types/names, excessive join graphs, unqualified remote-source layouts and action/DDL/pass-through/
 union/crosstab families fail explicitly. A table expression with NULL Name1 is a
 guarded derived read; an expression with a named table remains an unsupported
 remote qualifier. Literal object identifiers must be nonempty and exclude controls,
@@ -113,6 +113,11 @@ dot/bang/grave-accent and bracket content. One complete
 owned name; qualified stored forms remain unqualified. Expression text uses the existing owned parser, including
 unresolved calls and read subqueries. This does not qualify those expressions for
 execution or resolve nested sources.
+
+Qualified [global external sources](NATIVE_SAVED_EXTERNAL_QUERIES.md) now retain
+exact database and optional connection tokens for SELECT and crosstab FROM
+expressions. This metadata does not open files; execution needs an explicit host
+binding. Per-table remote qualifiers remain unsupported.
 
 All reconstruction families share [native fragment ordering](NATIVE_SAVED_ORDERING.md):
 when every row has an Order value, sort by attribute and unsigned key bytes,

@@ -14,6 +14,8 @@ mod crosstabs;
 mod derived;
 #[path = "saved_query_definitions/execution.rs"]
 mod execution;
+#[path = "saved_query_definitions/external.rs"]
+mod external;
 #[path = "saved_query_definitions/forests.rs"]
 mod forests;
 #[path = "saved_query_definitions/identifiers.rs"]

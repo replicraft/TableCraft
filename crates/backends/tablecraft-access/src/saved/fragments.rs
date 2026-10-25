@@ -1,4 +1,4 @@
-use super::{SavedSelectError, context::Context, crosstab, parameters::MAX_DECLARATIONS};
+use super::{SavedSelectError, context::Context, crosstab, external, parameters::MAX_DECLARATIONS};
 use tablecraft_ace::{QueryAttribute as A, SavedQueryDefinition, SavedQueryRow};
 use tablecraft_core::limits::Resource;
 
@@ -21,6 +21,7 @@ pub(super) struct Fragments<'a> {
     pub pivot: Option<&'a SavedQueryRow>,
     pub pivot_group: Option<&'a SavedQueryRow>,
     pub flags: Option<&'a SavedQueryRow>,
+    pub external: Option<&'a SavedQueryRow>,
     pub tables: [Option<&'a SavedQueryRow>; MAX_SOURCES],
     pub table_count: usize,
     pub joins: [Option<&'a SavedQueryRow>; MAX_JOIN_PARTS],
@@ -67,6 +68,7 @@ pub(super) fn validate_profile<'a>(
         pivot: None,
         pivot_group: None,
         flags: None,
+        external: None,
         tables: [None; MAX_SOURCES],
         table_count: 0,
         joins: [None; MAX_JOIN_PARTS],
@@ -116,6 +118,10 @@ pub(super) fn validate_profile<'a>(
                     return Err(SavedSelectError::SyntaxLimit);
                 }
                 result.parameters += 1;
+            }
+            Some(A::RemoteDatabase) => {
+                external::validate(row)?;
+                unique(&mut result.external, row)?;
             }
             Some(A::Table) => {
                 // A named table plus expression denotes a remote qualifier;

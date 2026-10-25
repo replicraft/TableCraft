@@ -26,7 +26,9 @@ payload fields fail. Wider grouping layouts remain unqualified.
 SELECT and crosstab now share validated SELECT-body composition. Existing source/
 join orientation, column/group/sort order, WHERE/HAVING, flags and parameter rules
 retain their limits, including the [bounded join-forest profile](NATIVE_SAVED_JOINS.md)
-and qualified parameter types/names. Stored derived SELECT/UNION sources use
+and qualified parameter types/names. Qualified
+[global external sources](NATIVE_SAVED_EXTERNAL_QUERIES.md) apply to the complete
+FROM expression and require explicit bindings for execution. Stored derived SELECT/UNION sources use
 [the shared guarded source adapter](NATIVE_SAVED_DERIVED.md). Column/grouping/source rows use the shared
 [native ordered view](NATIVE_SAVED_ORDERING.md), retaining byte keys and stable
 ties or whole-definition NULL encounter order. Original native fragments, scope, identity and flags are
