@@ -226,7 +226,9 @@ qualification remain open; this does not complete read/query acceptance.
 typed parameters and wholly safe temporal bounds to explicit/automatic native
 index candidates. Residual filtering, source ordering, candidate ceilings and
 selected failures remain intact. This closes the typed DATE selection gap;
-original-file replay and native semantics qualification remain pending.
+the original four-format 192-control replay now passes, including oversized-table
+selections and complete-cache refusals. Native semantics qualification remains
+pending.
 
 The engine now offers explicit [Short Text equality candidates](NATIVE_TEXT.md#conservative-short-text-equality-candidates)
 under the current General model. They conservatively retain primary-prefix

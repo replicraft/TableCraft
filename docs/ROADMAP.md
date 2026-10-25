@@ -722,7 +722,10 @@ and chained definitions have bounded corruption/budget and Jet 4/ACE evidence.
 Writes still require preservation, required macro semantics, transactions and
 recovery qualification; successful reads do not supply those guarantees.
 Native [Byte/Int16](NARROW_RANGES.md), Int32/Int64 and [Currency seeks](CURRENCY_RANGES.md), plus [safe predicate pushdown](QUERY_EXECUTION.md#safe-source-constraints)
-now work through explicitly selected indexes. The engine also has
+now work through explicitly selected indexes. Qualified [legacy DATE constraints](DATE_INDEX_CANDIDATES.md)
+now retain calendar-safe candidates through explicit or opt-in automatic indexes;
+the original four-format 20,000-row replay passes 192 controls without changing
+snapshot defaults or residual filtering. The engine also has
 [exact GUID/NULL point selection](NATIVE_INDEXES.md#exact-guid-point-selections);
 backend-neutral GUID equality/NULL predicate integration now uses it for explicit
 matching single-GUID indexes, including mixed-schema scalar projections. Broader typed

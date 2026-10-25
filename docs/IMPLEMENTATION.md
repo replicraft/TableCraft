@@ -8,8 +8,12 @@ opt-in automatic selection. Safe same-field bounds and NULL tests preserve the
 full original filter, raw bits, eager errors, source-order rules and cache/limit
 boundaries. Twelve new tests and 94 regressions pass across query, native adapter
 and CLI targets; strict linting, minimal-feature checks and formatting pass.
-Original-file candidate replay and native Access qualification remain pending.
-See the [contract and verification](DATE_INDEX_CANDIDATES.md).
+The [original-file replay](testing/DATE_QUERY_CANDIDATE_REPLAY.md) now passes
+192 controls over four 20,000-row inputs, comparing 539,848 ID rows with exact
+rational date predicates and independent physical order. Default-limit selections,
+wide-candidate/cache refusals and buffered corrupt-root errors pass; all original
+and artifact/source hashes remain unchanged. Native Access qualification remains
+pending. See the [contract and verification](DATE_INDEX_CANDIDATES.md).
 
 ## Native calendar DATE candidates
 
@@ -19,7 +23,8 @@ callers retain the complete temporal residual predicate. Five unit and five new
 native-reader tests plus nine regressions pass, including projection ceilings,
 wrong-carrier refusal, corruption and cancellation. Strict all-feature engine
 linting, minimal adapter compilation and formatting pass. SQL/automatic-index
-integration is now implemented above; original-file replay remains next work. See the
+integration and original-file replay are now implemented above; native SQL
+qualification remains separate. See the
 [working API and limits](DATE_INDEX_CANDIDATES.md).
 
 ## Independent aggregate metadata reference
