@@ -1,5 +1,20 @@
 # Implementation status
 
+## Independent per-table external replay
+
+The [twelve-file replay](testing/PER_TABLE_EXTERNAL.md) passes 184 commands and
+260 getter-modeled cells across four priority profiles, including direct/saved/
+named references, local/remote joins, target ownership and exact opaque selectors.
+All 1,923 pins remain unchanged; the 1,890-file Rust inventory exactly matches
+committed archive `cf7a501b`. The accepted run has 156 successes and 28 intended
+refusals, with zero disagreements. Original authoring and diagnostic-label
+corrections remain documented as separate excluded attempts.
+
+[The verification record](testing/results/read-query-per-table-external-2026-10-24.json)
+retains 270 unique Rust tests, scoped strict Clippy, minimal-feature checks and
+final CLI build evidence. Native Access precedence, broader provider/field
+qualification and complete read/query/backend acceptance remain unfinished.
+
 ## Per-table external database sources
 
 Owned SQL table leaves now retain exact bracketed database selectors separately

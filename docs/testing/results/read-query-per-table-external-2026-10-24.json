@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-24",
+  "production_base_commit": "cf7a501b7c008f5971c53df968be21ee54b61836",
+  "scope": "Per-table external read sources and native saved reconstruction over explicit host bindings; no native Access qualification",
+  "rust_source_inventory": {
+    "roots": [
+      "apps",
+      "crates"
+    ],
+    "files": 1890,
+    "algorithm": "Relative UTF-8 path sorted lexically; each path + NUL + lowercase hex SHA256(file bytes) + newline; SHA256 of complete UTF-8 manifest",
+    "private_manifest": ".cache/per-table-remote-rust-source-20261024.manifest",
+    "sha256": "18f05c27b12f55deed0be398e503b463d1da7df083d2e65a8aeb7c3af1302ec9",
+    "verification": "Runner verified live source pins before/after replay. Parent independently verified all report pins and exact committed source archive. Inventory is not complete test coverage."
+  },
+  "rust_tests": {
+    "passed_unique_tests": 270,
+    "new_tests": 29,
+    "targets": {
+      "sql_lib": 70,
+      "query_external_table_sources": 8,
+      "query_edit_guard": 1,
+      "native_saved_select": 85,
+      "existing_external_sources": 14,
+      "existing_external_named_sources": 10,
+      "cli_bin": 15,
+      "cli_external_queries": 15,
+      "cli_progressive_queries": 16,
+      "cli_saved_query_definitions": 36
+    },
+    "overlap_note": "Final five SQL tests replace the same tests in the seventy-test batch; superseded attempts and repeats excluded from unique counts."
+  },
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-sql --lib -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/per-table-remote-sql-tests-20261024.log",
+      "sha256": "b7ba9040f445bfbcde56299b6f0b737fe5481a4742b6d455f0b48ab875b3e566"
+    },
+    {
+      "command": "cargo test -p tablecraft-sql --lib parser::tests::external_tables -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/per-table-remote-sql-tests-final-20261024.log",
+      "sha256": "da597c7e19002ba058a53b80c3a1bdc54492635c3035c518d18b2c46798ff079"
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test external_table_sources -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/per-table-remote-query-tests-final-20261024.log",
+      "sha256": "228254fdc877145750b39705a73e4cb318f7c829f63897ee07245c12f9afed8f"
+    },
+    {
+      "command": "cargo test -p tablecraft-query --lib binding::external::tests -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/per-table-remote-edit-guard-tests-20261024.log",
+      "sha256": "84039264286d27723001a2187720fa060c340cd80ea8a0f090beba8dbb512a6d"
+    },
+    {
+      "command": "cargo test -p tablecraft-access --test saved_select -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/per-table-remote-saved-tests-final-20261024.log",
+      "sha256": "c4151ff6c712841943095fb157defb208534c91c8253a51f32ae27c57c7acceb"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-sql --lib --tests -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/per-table-remote-sql-clippy-final-20261024.log",
+      "sha256": "b9a1532238ad16daaaac0aa810dab5eb73078c3746d665f6591357cbfb129cac"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --test external_table_sources -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/per-table-remote-query-clippy-20261024.log",
+      "sha256": "385c54e9c29877d8763a35f279eac6e6444423c9496fb0a775d6197dd466da33"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-access --lib --test saved_select -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/per-table-remote-saved-clippy-20261024.log",
+      "sha256": "2002d423728816ce36ab542081a987ae4df560449cc135875a0565a593b3bc7e"
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --bin tablecraft --test external_queries --test saved_query_definitions --test progressive_queries -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/per-table-remote-cli-tests-20261024.log",
+      "sha256": "2a4261c2fa14c2f17e26e69dc3f6e837f4f04d4d59b9bdbdfe53e6cc0d9064eb"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-cli --bin tablecraft --test external_queries --test saved_query_definitions --test progressive_queries -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/per-table-remote-cli-clippy-20261024.log",
+      "sha256": "d76397f692090f56a39608bcf10408462c2a47f551afb3644c29c0e68338b8fa"
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test external_sources --test external_named_sources -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/per-table-remote-existing-query-tests-20261024.log",
+      "sha256": "d57e72c4bf558001e80d76188bb8fd5ffac8b253fd69168709633869adec93a6"
+    },
+    {
+      "command": "cargo check -p tablecraft-query --no-default-features -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/per-table-remote-query-minimal-20261024.log",
+      "sha256": "98f9c2823f478e5a4cb51b2f23f46a92dbd31a486ebf958401a7013d91c9d786"
+    },
+    {
+      "command": "cargo check -p tablecraft-access --no-default-features -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/per-table-remote-access-minimal-20261024.log",
+      "sha256": "a34e818b1fde4ef9345ef8ebb48ed836d6075d525eef28b62829e8b722f73def"
+    },
+    {
+      "command": "cargo build -p tablecraft-cli --bin tablecraft -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/per-table-remote-cli-build-20261024.log",
+      "sha256": "32d47f791eadf1ea833d9f8c84fbfea5cab1f438e113e93be05bd5b908e1c2ac"
+    }
+  ],
+  "additional_passed_checks": [
+    "cargo fmt --all -- --check",
+    "Dependency boundary guard: 12 workspace packages",
+    "Python script tests: 41 passed",
+    "Original Java compilation/Python syntax and six decode/escaping goldens",
+    "git diff --check"
+  ],
+  "independent_replay": {
+    "report": "docs/testing/results/per-table-external-2026-10-24.json",
+    "sha256": "5608bec2895ddae5a8f103b1943f89b6fbd2c101096dbb8a947cc98ff1cb8cac",
+    "commands": 184,
+    "modeled_cells": 260,
+    "successful_commands": 156,
+    "intended_refusals": 28,
+    "disagreements": 0,
+    "unchanged_hashes": 1923,
+    "original_files": 12,
+    "profiles": [
+      "V2016",
+      "V2019",
+      "V2000",
+      "V2007"
+    ],
+    "qualified_generation": ".cache/tablecraft-fixtures/per-table-external-20261024-qualified/generation.json",
+    "generation_sha256": "3739dd812852a407449c7a5176561bd8cd06c2eb70a2583ed5e4380b1c786a59"
+  },
+  "exploration": {
+    "unit_tests": "Initial query 7/8 required an unimplemented all-schema preflight; test corrected to retain existing per-reached-leaf schema validation and strict revision-key preflight. Initial native 83/85 retained a stale per-table refusal and a new malformed crosstab grouping fixture; corrected without production changes. Initial SQL Clippy required test-only initializer formatting.",
+    "excluded_original_replay": ".cache/per-table-external-exploration-20261024/report.json",
+    "excluded_original_report_sha256": "07abc5eba7c59453e44fb846004bb8b4e0a2af4f4fca9695256f7e5dca819164",
+    "original_authoring": "GlobalAndLeaf used NULL instead of the qualified attribute-4 Flag2. Eight failures among180 commands/244 cells; corrected twelve new originals in a fresh directory, old originals and exact Java/runner/class snapshots retained. Four conditional owned reparses and sixteen modeled cells absent from failed attempt; no weaker expectations.",
+    "excluded_machine_label_report": ".cache/per-table-external-label-paths-20261024.json",
+    "label_correction": "Passed intermediate replay retained four machine-specific diagnostic labels; static labels substituted, with the same commands/expectations and frozen runtime. Excluded run retained privately, not added to accepted counts."
+  },
+  "boundaries": [
+    "Opaque selectors authorize no path/provider opens; host supplies exact mappings",
+    "Leaf prefix overrides global IN default under defined engineering semantics, lexical definition ownership retained",
+    "Revision keys checked before all scans; schemas validated when leaves are reached, earlier unchanged-source reads remain allowed",
+    "External UPDATE targets refused before resolver/schema callbacks; normal CLI results stay buffered"
+  ],
+  "unrun": [
+    "Complete workspace suite",
+    "Windows Access remote/global-IN precedence and stored-query qualification",
+    "Release/performance benchmarks",
+    "Live cross-file coherence and external editing qualification"
+  ]
+}
