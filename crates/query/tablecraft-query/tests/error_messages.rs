@@ -222,3 +222,6 @@ fn numbered_message_recognition_does_not_suppress_operational_operand_failures()
     }
     assert_eq!(messages.0.load(AtomicOrdering::Relaxed), 0);
 }
+
+#[path = "error_messages/metadata.rs"]
+mod metadata;

@@ -47,6 +47,7 @@ qualification; binding neither evaluates operands nor inspects source rows.
 | Financial/cashflow functions | Nullable Double |
 | IsNumeric/IsDate and value inspection | Non-NULL Boolean, Int16 subtype code or Text type name |
 | GUIDFromString / StringFromGUID | Binary GUID-structure bytes / Text; no inferred semantic GUID conversion |
+| Error(number) and Error$(number) | Nonnullable Text on success; no catalog lookup during inference, and argument/provider failures remain errors |
 | CurrentUser and CVar | Text session identity / unchanged input descriptor; no host lookup during binding |
 | IS NULL and EXISTS | Non-NULL Boolean |
 | Comparisons, LIKE, BETWEEN, IN and quantified predicates | Boolean with conservative NULL allowance |

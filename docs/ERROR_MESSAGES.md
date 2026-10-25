@@ -39,6 +39,23 @@ ambient default. The CLI explicitly selects the lazy English provider for both
 buffered before publication. No OS locale, database language or UI language is
 inferred, and no `sys-locale` dependency is needed for this explicit choice.
 
+## Composition metadata
+
+Successful `Error(number)` and `Error$(number)` results now declare nonnullable
+Text during metadata-only binding. No message provider is consulted, and a NULL
+or invalid argument still fails at execution rather than producing a nullable
+message. Named/derived queries and First/Last inherit that descriptor under their
+existing NULL rules.
+
+This fixes an admitted composition failure: `SELECT Error$(0) UNION SELECT 1`
+previously kept Dynamic metadata and refused mixed Text/integer duplicate
+comparison. It now uses the [existing UNION common-Text conversion](UNION_TYPES.md)
+with explicit numeric formatting, yielding empty Text and Text `1`. Conversion
+precedes deduplication, so a provider message `1` and numeric `1` collapse under
+an explicit equal-text comparer. Missing catalog/format policy, provider failures
+and later arm errors remain errors with no complete result. The descriptor is a
+current evaluator guarantee, not native Access expression-type qualification.
+
 ## Optional Fluent catalog
 
 The `tablecraft-expressions/fluent-catalog` feature implements ErrorMessages using
