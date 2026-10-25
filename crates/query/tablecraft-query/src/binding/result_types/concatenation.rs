@@ -14,7 +14,7 @@ pub(super) fn result(left: OutputType, right: OutputType) -> OutputType {
 
 fn nullable(input: OutputType) -> Option<bool> {
     match input {
-        OutputType::Null => Some(true),
+        OutputType::Null | OutputType::Dynamic => Some(true),
         OutputType::Scalar {
             data_type,
             nullable,

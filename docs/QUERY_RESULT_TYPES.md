@@ -106,7 +106,7 @@ engineering composition checks, not native ACE result-type qualification.
 | Switch/Choose | Union of value branches, permitting NULL for no selection; conditions/index do not supply result types |
 | Explicit Nz | Known nonnullable input is preserved; NULL-only input uses replacement metadata; otherwise compatible descriptors combine |
 | Nz without replacement | Nonnullable input is preserved; NULL-only input yields nonnullable Text; nullable Text retains its constraints without NULL; other nullable carriers stay Dynamic because they can also produce empty Text. |
-| `&` concatenation | Unconstrained Text for known supported scalar operands; NULL only if both can be NULL. Two NULL-only operands remain NULL. No formatting during binding. |
+| `&` concatenation | Unconstrained Text for supported scalar or Dynamic operands; Dynamic conservatively permits NULL. NULL only if both can be NULL; two NULL-only operands remain NULL. Known unsupported families stay Dynamic. No formatting during binding. |
 | Stable binary arithmetic | Successful fixed carriers and NULL propagation under the profile below; value-dependent widening stays Dynamic |
 | Logical NOT | Boolean/exact integer carrier, or Long for floating/fixed/legacy DATE/Text; preserves nullability and removes changed-value constraints. |
 | AND / OR / XOR / EQV / IMP | Stable Boolean/integer carrier after accounting for possible NULL substitutions; conflicting successful carriers stay Dynamic. Known admitted NULL-only XOR/EQV results stay NULL-only. |
@@ -252,6 +252,37 @@ orders, selectors, empty results and fixed crosstab cells against actual rows.
 These are current evaluator guarantees, not native Access static type rules or
 complete heterogeneous Variant promotion.
 
+
+## Ampersand with unknown input carriers
+
+A Dynamic operand does not erase the successful return-carrier guarantee of `&`.
+The shared evaluator converts admitted operands through the existing explicit
+String rules: successful output is Text/retained String, or NULL when both
+operands are NULL. Unsupported carriers, missing formatting policies and eager
+operand failures remain errors; inference does not make those calls succeed.
+
+Metadata therefore treats Dynamic as possibly NULL for this operator. Two
+Dynamic operands, or Dynamic beside NULL-only input, yield nullable Text. A
+known nonnullable convertible peer makes successful output nonnullable Text,
+even when the other operand is Dynamic. Two known NULL-only inputs retain their
+NULL-only descriptor. Explicitly known unsupported families such as GUID and
+Binary retain their existing Dynamic result descriptions. No rows, formatting
+providers or number conversions run during this inference.
+
+Both materialized and declared descriptions preserve this guarantee through
+aliases, named/derived reads and UNION. For example, a saved String construction
+with mixed numeric/Text selector inputs can establish Text output before any
+records are scanned; its UNION with an integral arm applies the existing common
+Text conversion. This does not infer Scalar/Variant declaration provenance,
+change mixed `+`, admit Dynamic group keys or change runtime conversion policies.
+
+Four independent tests cross preparation/execution profiles and compare actual
+String carriers, nullable/NULL-only metadata, named/derived UNION conversions,
+metadata-only preparation and unchanged format/error/unsupported boundaries.
+The focused 56-test batch and strict library/new-target Clippy pass. The
+[scoped record](testing/results/read-query-concatenation-dynamic-types-2026-10-25.json)
+separates before-fix metadata evidence and authoring probes from accepted checks.
+These are successful-return engineering guarantees, not native DAO typing.
 
 ## Stable binary arithmetic metadata
 

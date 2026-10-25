@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Metadata-only successful Text/NULL result inference for ampersand with Dynamic operands; no runtime, arithmetic or declaration change",
+  "unique_tests": 56,
+  "new_tests": 4,
+  "existing_regression_tests": 52,
+  "targets": {
+    "arithmetic_output_types": 8,
+    "concatenation": 4,
+    "concatenation_dynamic_types": 4,
+    "declared_addition_types": 5,
+    "output_types": 7,
+    "retained_string_cells": 5,
+    "union_numeric_types": 6,
+    "union_text_types": 8,
+    "union_types": 7,
+    "utf16_concatenation": 2
+  },
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-query --test concatenation_dynamic_types --test concatenation --test utf16_concatenation --test output_types --test arithmetic_output_types --test declared_addition_types --test union_types --test union_numeric_types --test union_text_types --test retained_string_cells -j2 --locked --offline",
+      "exit_code": 0,
+      "tests": 56,
+      "terminal_session": 31783,
+      "private_log": ".cache/concatenation-dynamic-types-focused-20261025.log",
+      "sha256": "b1f442eff9ea36af436939a0c6069f52cd4d94959b099762b43f2ef8c183f942"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --test concatenation_dynamic_types -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "terminal_session": 78897,
+      "private_log": ".cache/concatenation-dynamic-types-clippy-20261025.log",
+      "sha256": "d371ae1325a6424e069cb251d39223f29942de06e3dafec62b14eb6c0c136982"
+    }
+  ],
+  "before_fix_evidence": {
+    "command": "cargo test -p tablecraft-query --test concatenation_dynamic_types -j2 --locked --offline",
+    "exit_code": 101,
+    "terminal_session": 52985,
+    "tests_passed": 1,
+    "tests_failed": 3,
+    "reason": "Actual KEY buffered rows and VarType8 pass in all four preparation/execution profile pairs, then descriptor assertions show Dynamic. Dynamic/Dynamic and Dynamic/NULL lose nullable Text metadata; named/derived UNION leaves its numeric arm unconverted. These failures demonstrate the fixed inference gap, not a runtime concatenation answer correction.",
+    "private_log": ".cache/concatenation-dynamic-types-before-actual-20261025.log",
+    "sha256": "5a77df0179d072d8c014823bfbbe2f1e65d75d168d85627a4464d58a68b6e63d"
+  },
+  "bound_group_diagnostic": {
+    "command": "cargo test -p tablecraft-query --lib execution::progressive::text_groups::tests::concat_key_metadata_before_diagnostic -j2 --locked --offline -- --exact --nocapture",
+    "exit_code": 0,
+    "terminal_session": 75704,
+    "private_source": ".cache/progressive-text-groups-concat-metadata-before-20261025.rs",
+    "source_sha256": "d180c299ad2be352b080332306f33cb9c90e75d8135406d8ac5364f25fdcd2f2",
+    "result": "Both bound group profiles Dynamic while ordinary buffered execution in both arithmetic modes returns asserted Text10/20/150 and VarType8. Temporary diagnostic removed; not counted in accepted56.",
+    "private_log": ".cache/progressive-text-groups-concat-metadata-before-actual-20261025.log",
+    "sha256": "97bda84f736f4e8c5678040713f9e0b40adad9dff41e64905663a6505906d244"
+  },
+  "contracts": [
+    "Successful ampersand evaluation is Text/retained String or both-NULL. Dynamic is conservatively possibly NULL; known nonnullable convertible peers establish nonnullable Text. Null/Null and explicit unsupported-family metadata retain existing handling.",
+    "Runtime String conversions, eager errors, number/date formatting policies, raw publication and declaration provenance are unchanged. This narrows successful-result descriptors without admitting Dynamic group keys or changing mixed addition.",
+    "Binding reads no source rows and activates no formatting/comparison provider. Paired metadata flows to named/derived and UNION consumers through existing propagation."
+  ],
+  "source_inventory": [
+    "crates/query/tablecraft-query/src/binding/result_types/concatenation.rs",
+    "crates/query/tablecraft-query/tests/concatenation_dynamic_types.rs",
+    "docs/QUERY_RESULT_TYPES.md"
+  ],
+  "excluded_attempts": [
+    {
+      "exit_code": 101,
+      "reason": "New test used unwrap_err on Result<QueryResult,...>, but QueryResult intentionally lacks Debug. Replaced only error extraction with err().unwrap(); no test ran.",
+      "private_log": ".cache/concatenation-dynamic-types-before-20261025.log",
+      "sha256": "3eaf99bda71ff9a613d913bbf5bdd5e1e51af7154f4d8fd5a7ee58ef91bd2d8d"
+    },
+    {
+      "exit_code": 1,
+      "reason": "Diagnostic command placed --exact before the Cargo test separator; Cargo refused the flag and ran no tests. Corrected command appears in the diagnostic evidence.",
+      "private_log": ".cache/progressive-text-groups-concat-metadata-before-20261025.log",
+      "sha256": "146933654a515eb3e7fb0d611b189a9aad550db9a5eec1055d02c8751d63960e"
+    }
+  ],
+  "validation_limits": [
+    "Focused buffered/metadata tests have no dependency on progressive Text execution; worktree also contains that separate upcoming implementation. Parent stages this metadata prerequisite as a separate logical change.",
+    "No full workspace suite, native Access/DAO return-type qualification or performance claim."
+  ]
+}
