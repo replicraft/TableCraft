@@ -1,3 +1,5 @@
+mod equality;
+
 use super::{Environment, Runtime};
 use crate::execution::cell::CellValue;
 use crate::execution::context::OuterScope;
@@ -129,6 +131,7 @@ impl Runtime<'_, '_> {
     ) -> Result<Vec<Vec<CellValue>>, QueryError> {
         let lhs = self.relation(left, outer)?;
         let rhs = self.relation(right, outer)?;
+        let equality = self.borrowed_join_equality(condition, left, right)?;
         let mut result = Vec::new();
         // Matched flags are bounded by the materialized source and charged.
         self.budget
@@ -141,6 +144,18 @@ impl Runtime<'_, '_> {
         for l in &lhs {
             let mut hit = false;
             for (j, r) in rhs.iter().enumerate() {
+                // A whole proven equality can reject a pair without copying
+                // unrelated projected cells into a discarded intermediate row.
+                // Compound predicates retain the original eager evaluator path.
+                if let Some(equality) = &equality {
+                    if self.borrowed_join_matches(equality, l, r)? {
+                        hit = true;
+                        matched[j] = true;
+                        let row = self.join_row(l, r)?;
+                        self.push(&mut result, row)?;
+                    }
+                    continue;
+                }
                 let row = self.join_row(l, r)?;
                 let accepted = if let Some(e) = condition {
                     self.eval_predicate(

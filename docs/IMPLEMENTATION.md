@@ -1,5 +1,17 @@
 # Implementation status
 
+## Borrowed integral equijoin checks
+
+Proven bare same-carrier integral equality now rejects join pairs before copying
+combined candidates. All selected inputs still finish their existing validation;
+NULL, duplicate and outer-join ordering use the existing comparison service.
+A 1,100-row CLI self-join matches independent SQLite results within a 10,000-row
+query allowance, and four native profiles pass tight-budget controls. Thirteen
+new controls and 113 regressions pass with strict query/native/CLI Clippy and
+formatting. This remains metered nested-loop execution. See
+[scope](QUERY_EQUIJOINS.md) and
+[verification](testing/results/read-query-borrowed-equijoins-2026-10-25.json).
+
 ## Numeric UNION text-policy provenance
 
 Existing UNION numeric/Boolean-to-Text conversion now establishes CStr's fresh
