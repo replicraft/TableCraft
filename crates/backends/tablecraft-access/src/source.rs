@@ -11,6 +11,7 @@ mod inventory;
 mod links;
 pub use links::{LinkSourceError, LinkedNativeSource, NativeLinkMapping};
 mod multivalue;
+mod progressive;
 mod projection;
 mod saved;
 mod schema;
@@ -27,7 +28,7 @@ use tablecraft_core::{
 use tablecraft_model::{CatalogScope, ModelError};
 use tablecraft_query::{
     QueryError,
-    source::{ScanConstraint, Source},
+    source::{ProjectedRow, ScanConstraint, Source},
 };
 use tablecraft_schema::Column;
 
@@ -407,14 +408,20 @@ impl<R: tablecraft_ace::NativeReadSource> Source for NativeSource<'_, R> {
         }
         Ok(())
     }
+    fn scan_projected_progressive(
+        &self,
+        table: &str,
+        indices: &[usize],
+        visitor: &mut dyn FnMut(ProjectedRow<'_>) -> Result<(), QueryError>,
+    ) -> Result<(), QueryError> {
+        self.progressive_scan(table, indices, visitor)
+    }
     fn scan_projected(
         &self,
         table: &str,
         indices: &[usize],
         constraint: Option<ScanConstraint>,
-        visitor: &mut dyn FnMut(
-            tablecraft_query::source::ProjectedRow<'_>,
-        ) -> Result<(), QueryError>,
+        visitor: &mut dyn FnMut(ProjectedRow<'_>) -> Result<(), QueryError>,
     ) -> Result<(), QueryError> {
         self.projected_scan(table, indices, constraint, visitor)
     }

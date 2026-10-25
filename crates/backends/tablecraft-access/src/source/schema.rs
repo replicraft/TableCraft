@@ -94,7 +94,7 @@ impl ScalarSchema {
             None => self.cached.iter().any(Option::is_some),
         }
     }
-    fn matches_native(&self, schema: &TableSchema) -> bool {
+    pub(super) fn matches_native(&self, schema: &TableSchema) -> bool {
         let mut available = self.columns.iter().zip(&self.cached).peekable();
         let mut unavailable = self.unavailable.iter();
         let mut policies = self.text_collations.iter();
