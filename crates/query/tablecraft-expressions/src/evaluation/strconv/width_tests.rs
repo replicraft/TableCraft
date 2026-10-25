@@ -46,8 +46,6 @@ fn width_controls_raw_data_and_unqualified_forms_fail_in_existing_order() {
         ("StrConv(NULL,8,1033)", EvalError::UnsupportedExpression),
         ("StrConv('A',4,66577)", EvalError::UnsupportedExpression),
         ("StrConv('A',12,1041)", EvalError::Domain),
-        ("StrConv('A',5,1041)", EvalError::UnsupportedExpression),
-        ("StrConv('A',20,1041)", EvalError::UnsupportedExpression),
         ("StrConv('A',4,NULL)", EvalError::InvalidNullConversion),
         (
             "StrConv(ChrW(55296),4,1041)",

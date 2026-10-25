@@ -149,7 +149,7 @@ def main():
                 commands += 1
         for expression in [
             "StrConv('A',4)", "StrConv(NULL,8,1033)", "StrConv('A',4,66577)",
-            "StrConv('A',12,1041)", "StrConv('A',5,1041)", "StrConv('A',20,1041)",
+            "StrConv('A',12,1041)", "StrConv('A',68,1041)", "StrConv('A',132,1041)",
             "StrConv('A',4,NULL)", "StrConv(ChrW(55296),4,1041)",
             "StrConv(ChrB(65),8,1041)", "StrConv(ChrW(55296),4,1/0)",
             "StrConv(IIf(True,'A',1/0),4,1041)", "StrConv('ヵ',8,1041)",

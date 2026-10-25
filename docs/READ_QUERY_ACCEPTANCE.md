@@ -497,6 +497,14 @@ declarations or complete P0. The independent replay passes
 source-free cases and four unchanged native inputs; native qualification remains
 pending. See the [contract and scoped verification](DECLARED_NUMERIC_TEXT.md).
 
+Compatible Japanese StrConv width/kana/case settings now compose under exact
+LCID 1041, adding 27 previously refused flag values. The frozen baseline verifies
+those refusals; current scoped controls cover explicit widening versus narrow
+Hiragana, proper-case boundaries, raw slices and shared failure/budget behavior.
+This expands the query text-function profile without supplying further database
+locale providers or native NLS equivalence. See the
+[composition contract](STRCONV.md#combined-japanese-case-width-and-kana).
+
 ### P0 implementation boundaries reviewed 24 October 2026
 
 | Boundary | Current implementation | Remaining work |

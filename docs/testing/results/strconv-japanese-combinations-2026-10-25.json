@@ -1,0 +1,541 @@
+{
+  "date": "2026-10-25",
+  "scope": "Compatible Japanese StrConv case/width/kana composition under exact explicit LCID 1041; bounded existing mappings, not native NLS or ACE qualification.",
+  "unique_tests": 61,
+  "new_tests": 9,
+  "existing_regression_tests": 52,
+  "counting_note": "32 expression plus 22 query plus seven CLI tests; ten parser-free component tests repeat existing function tests under a distinct feature profile and are not added to the unique total.",
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-expressions --all-features --lib strconv --locked --offline -j 2",
+      "private_log": ".cache/strconv-japanese-combinations-expressions-qualified-20261025.log",
+      "sha256": "3acfa6f3005d7046f5f9e2fea751af8e900c2f1bf481a60051d2b6204dd1fcab",
+      "exit_code": 0,
+      "tests": 32
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test strconv --test strconv_options --test strconv_kana --test strconv_width --test strconv_japanese --test strconv_wide_hiragana --test strconv_combinations -p tablecraft-cli --test strconv --test strconv_options --test strconv_combinations --locked --offline -j 2",
+      "private_log": ".cache/strconv-japanese-combinations-host-qualified-20261025.log",
+      "sha256": "0609045d913ffada4afe73f2cf395ebe839df73e8e8722cf93b84b923639b65d",
+      "exit_code": 0,
+      "tests": 29
+    },
+    {
+      "command": "cargo test -p tablecraft-expressions --lib functions::text::strconv --no-default-features --locked --offline -j 2",
+      "private_log": ".cache/strconv-japanese-combinations-minimal-expressions-20261025.log",
+      "sha256": "202e2dc6ec87eac6743b249f076ced3b9d2a130ba0227076a70c63009db7bbbf",
+      "exit_code": 0,
+      "tests": 10
+    },
+    {
+      "command": "cargo clippy -p tablecraft-expressions --lib --tests --all-features --locked --offline -j 2 -- -D warnings",
+      "private_log": ".cache/strconv-japanese-combinations-clippy-qualified-20261025.log",
+      "sha256": "751d2c91e6e1b9f634fe141599e9242c33bc23260311d89be8fc8a913005706e",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query -p tablecraft-cli --lib --test strconv --test strconv_options --test strconv_combinations --all-features --locked --offline -j 2 -- -D warnings",
+      "private_log": ".cache/strconv-japanese-combinations-host-clippy-qualified-20261025.log",
+      "sha256": "9b4a453ac2e6143ac2579b64d4f034f315a2844c106dbd6426a4c0a2e3622c53",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo check -p tablecraft-query --lib --no-default-features --locked --offline -j 2",
+      "private_log": ".cache/strconv-japanese-combinations-minimal-query-qualified-20261025.log",
+      "sha256": "78071190d95ccaeee3c1739b833a57a25902369d3e9246f63f20200b6d341c83",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "private_log": ".cache/strconv-japanese-combinations-fmt-qualified-20261025.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0
+    }
+  ],
+  "baseline": {
+    "build_commit": "3b1e2344617b8dfffe14cf556e33bc8deff7f5f1",
+    "private_record": ".cache/strconv-japanese-combinations-baseline-all-20261025.json",
+    "sha256": "190c3d91966fcb78c422263a8ede6858d5419c34bed02da45c3009f851198b36",
+    "cli_sha256": "e80e680c42646eb712696c8b14405d279682a3769f2f0393d94358f252c64064",
+    "controls": [
+      {
+        "code": 17,
+        "command": [
+          ".cache/tablecraft-bin/date-query-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('abc \uff76\uff9e \u304c',17,1041)",
+          "--format",
+          "tsv"
+        ],
+        "exit_code": 2,
+        "stdout": "",
+        "stderr": "error: column 1: expression form is not implemented\n"
+      },
+      {
+        "code": 18,
+        "command": [
+          ".cache/tablecraft-bin/date-query-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('abc \uff76\uff9e \u304c',18,1041)",
+          "--format",
+          "tsv"
+        ],
+        "exit_code": 2,
+        "stdout": "",
+        "stderr": "error: column 1: expression form is not implemented\n"
+      },
+      {
+        "code": 19,
+        "command": [
+          ".cache/tablecraft-bin/date-query-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('abc \uff76\uff9e \u304c',19,1041)",
+          "--format",
+          "tsv"
+        ],
+        "exit_code": 2,
+        "stdout": "",
+        "stderr": "error: column 1: expression form is not implemented\n"
+      },
+      {
+        "code": 33,
+        "command": [
+          ".cache/tablecraft-bin/date-query-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('abc \uff76\uff9e \u304c',33,1041)",
+          "--format",
+          "tsv"
+        ],
+        "exit_code": 2,
+        "stdout": "",
+        "stderr": "error: column 1: expression form is not implemented\n"
+      },
+      {
+        "code": 34,
+        "command": [
+          ".cache/tablecraft-bin/date-query-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('abc \uff76\uff9e \u304c',34,1041)",
+          "--format",
+          "tsv"
+        ],
+        "exit_code": 2,
+        "stdout": "",
+        "stderr": "error: column 1: expression form is not implemented\n"
+      },
+      {
+        "code": 35,
+        "command": [
+          ".cache/tablecraft-bin/date-query-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('abc \uff76\uff9e \u304c',35,1041)",
+          "--format",
+          "tsv"
+        ],
+        "exit_code": 2,
+        "stdout": "",
+        "stderr": "error: column 1: expression form is not implemented\n"
+      },
+      {
+        "code": 5,
+        "command": [
+          ".cache/tablecraft-bin/date-query-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('abc \uff76\uff9e \u304c',5,1041)",
+          "--format",
+          "tsv"
+        ],
+        "exit_code": 2,
+        "stdout": "",
+        "stderr": "error: column 1: expression form is not implemented\n"
+      },
+      {
+        "code": 6,
+        "command": [
+          ".cache/tablecraft-bin/date-query-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('abc \uff76\uff9e \u304c',6,1041)",
+          "--format",
+          "tsv"
+        ],
+        "exit_code": 2,
+        "stdout": "",
+        "stderr": "error: column 1: expression form is not implemented\n"
+      },
+      {
+        "code": 7,
+        "command": [
+          ".cache/tablecraft-bin/date-query-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('abc \uff76\uff9e \u304c',7,1041)",
+          "--format",
+          "tsv"
+        ],
+        "exit_code": 2,
+        "stdout": "",
+        "stderr": "error: column 1: expression form is not implemented\n"
+      },
+      {
+        "code": 20,
+        "command": [
+          ".cache/tablecraft-bin/date-query-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('abc \uff76\uff9e \u304c',20,1041)",
+          "--format",
+          "tsv"
+        ],
+        "exit_code": 2,
+        "stdout": "",
+        "stderr": "error: column 1: expression form is not implemented\n"
+      },
+      {
+        "code": 21,
+        "command": [
+          ".cache/tablecraft-bin/date-query-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('abc \uff76\uff9e \u304c',21,1041)",
+          "--format",
+          "tsv"
+        ],
+        "exit_code": 2,
+        "stdout": "",
+        "stderr": "error: column 1: expression form is not implemented\n"
+      },
+      {
+        "code": 22,
+        "command": [
+          ".cache/tablecraft-bin/date-query-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('abc \uff76\uff9e \u304c',22,1041)",
+          "--format",
+          "tsv"
+        ],
+        "exit_code": 2,
+        "stdout": "",
+        "stderr": "error: column 1: expression form is not implemented\n"
+      },
+      {
+        "code": 23,
+        "command": [
+          ".cache/tablecraft-bin/date-query-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('abc \uff76\uff9e \u304c',23,1041)",
+          "--format",
+          "tsv"
+        ],
+        "exit_code": 2,
+        "stdout": "",
+        "stderr": "error: column 1: expression form is not implemented\n"
+      },
+      {
+        "code": 37,
+        "command": [
+          ".cache/tablecraft-bin/date-query-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('abc \uff76\uff9e \u304c',37,1041)",
+          "--format",
+          "tsv"
+        ],
+        "exit_code": 2,
+        "stdout": "",
+        "stderr": "error: column 1: expression form is not implemented\n"
+      },
+      {
+        "code": 38,
+        "command": [
+          ".cache/tablecraft-bin/date-query-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('abc \uff76\uff9e \u304c',38,1041)",
+          "--format",
+          "tsv"
+        ],
+        "exit_code": 2,
+        "stdout": "",
+        "stderr": "error: column 1: expression form is not implemented\n"
+      },
+      {
+        "code": 39,
+        "command": [
+          ".cache/tablecraft-bin/date-query-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('abc \uff76\uff9e \u304c',39,1041)",
+          "--format",
+          "tsv"
+        ],
+        "exit_code": 2,
+        "stdout": "",
+        "stderr": "error: column 1: expression form is not implemented\n"
+      },
+      {
+        "code": 9,
+        "command": [
+          ".cache/tablecraft-bin/date-query-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('abc \uff76\uff9e \u304c',9,1041)",
+          "--format",
+          "tsv"
+        ],
+        "exit_code": 2,
+        "stdout": "",
+        "stderr": "error: column 1: expression form is not implemented\n"
+      },
+      {
+        "code": 10,
+        "command": [
+          ".cache/tablecraft-bin/date-query-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('abc \uff76\uff9e \u304c',10,1041)",
+          "--format",
+          "tsv"
+        ],
+        "exit_code": 2,
+        "stdout": "",
+        "stderr": "error: column 1: expression form is not implemented\n"
+      },
+      {
+        "code": 11,
+        "command": [
+          ".cache/tablecraft-bin/date-query-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('abc \uff76\uff9e \u304c',11,1041)",
+          "--format",
+          "tsv"
+        ],
+        "exit_code": 2,
+        "stdout": "",
+        "stderr": "error: column 1: expression form is not implemented\n"
+      },
+      {
+        "code": 24,
+        "command": [
+          ".cache/tablecraft-bin/date-query-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('abc \uff76\uff9e \u304c',24,1041)",
+          "--format",
+          "tsv"
+        ],
+        "exit_code": 2,
+        "stdout": "",
+        "stderr": "error: column 1: expression form is not implemented\n"
+      },
+      {
+        "code": 25,
+        "command": [
+          ".cache/tablecraft-bin/date-query-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('abc \uff76\uff9e \u304c',25,1041)",
+          "--format",
+          "tsv"
+        ],
+        "exit_code": 2,
+        "stdout": "",
+        "stderr": "error: column 1: expression form is not implemented\n"
+      },
+      {
+        "code": 26,
+        "command": [
+          ".cache/tablecraft-bin/date-query-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('abc \uff76\uff9e \u304c',26,1041)",
+          "--format",
+          "tsv"
+        ],
+        "exit_code": 2,
+        "stdout": "",
+        "stderr": "error: column 1: expression form is not implemented\n"
+      },
+      {
+        "code": 27,
+        "command": [
+          ".cache/tablecraft-bin/date-query-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('abc \uff76\uff9e \u304c',27,1041)",
+          "--format",
+          "tsv"
+        ],
+        "exit_code": 2,
+        "stdout": "",
+        "stderr": "error: column 1: expression form is not implemented\n"
+      },
+      {
+        "code": 40,
+        "command": [
+          ".cache/tablecraft-bin/date-query-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('abc \uff76\uff9e \u304c',40,1041)",
+          "--format",
+          "tsv"
+        ],
+        "exit_code": 2,
+        "stdout": "",
+        "stderr": "error: column 1: expression form is not implemented\n"
+      },
+      {
+        "code": 41,
+        "command": [
+          ".cache/tablecraft-bin/date-query-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('abc \uff76\uff9e \u304c',41,1041)",
+          "--format",
+          "tsv"
+        ],
+        "exit_code": 2,
+        "stdout": "",
+        "stderr": "error: column 1: expression form is not implemented\n"
+      },
+      {
+        "code": 42,
+        "command": [
+          ".cache/tablecraft-bin/date-query-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('abc \uff76\uff9e \u304c',42,1041)",
+          "--format",
+          "tsv"
+        ],
+        "exit_code": 2,
+        "stdout": "",
+        "stderr": "error: column 1: expression form is not implemented\n"
+      },
+      {
+        "code": 43,
+        "command": [
+          ".cache/tablecraft-bin/date-query-cli-20261025",
+          "query",
+          "eval",
+          "SELECT StrConv('abc \uff76\uff9e \u304c',43,1041)",
+          "--format",
+          "tsv"
+        ],
+        "exit_code": 2,
+        "stdout": "",
+        "stderr": "error: column 1: expression form is not implemented\n"
+      }
+    ]
+  },
+  "excluded_attempts": [
+    {
+      "private_log": ".cache/strconv-japanese-combinations-expressions-initial-20261025.log",
+      "sha256": "a0c7b6cb366d2eb2870fb8256243681c1f843c67b8457270654a10430b8d9b4e",
+      "exit_code": 101,
+      "reason": "One old test expected unsupported flag 5 before malformed LCID conversion. Flag 5 is now admitted, so the intended new error is TypeMismatch from the LCID. All other 31 tests passed at that stage."
+    },
+    {
+      "private_log": ".cache/strconv-japanese-combinations-query-20261025.log",
+      "sha256": "910422c53d414bb39d00d6cc9f78a99691946392b685132e25c327ed18e19646",
+      "exit_code": 101,
+      "reason": "New test incorrectly used unwrap_err on QueryResult without Debug. Replaced only assertion extraction with err(); no product result changed."
+    },
+    {
+      "private_log": ".cache/strconv-japanese-combinations-cli-20261025.log",
+      "sha256": "17191b1d081b646a024372cc3e7f4f8326d4701c6d7453c742ce4cbe71e8985e",
+      "exit_code": 101,
+      "reason": "New test compared escaped display cells to raw CSV TSV bytes. Corrected the assertion to parse transport with the existing csv crate. No output implementation or semantic expected cells changed."
+    }
+  ],
+  "prequalification_correction": "Earlier passing private batches included an implicit widening step for narrow+script. Microsoft mapping guidance requires explicit FULLWIDTH for halfwidth-to-Hiragana conversion. Removed the extra widening and replaced those candidate expectations with narrow/script preservation controls; only qualified batches count as current evidence.",
+  "references": [
+    "https://support.microsoft.com/en-us/access/functions/strconv-function",
+    "https://learn.microsoft.com/en-us/windows/win32/intl/handling-sorting-in-your-applications",
+    "https://learn.microsoft.com/en-us/windows/win32/api/winnls/nf-winnls-lcmapstringex"
+  ],
+  "contracts": [
+    "Thirty-two compatible Japanese shape/case flags are admitted, adding 27 verified baseline refusals. Exact LCID 1041 is mandatory; no aliases or host locale inferred.",
+    "The explicit engineering order is case first, requested wide, requested script, then requested narrow. No implicit fullwidth transformation or fictitious halfwidth Hiragana.",
+    "Existing public case/encoding Conversion recipes remain unchanged. Unknown/contradictory flags and shape+encoding refuse before source admission.",
+    "Each operation uses existing ICU/width/kana services and their qualified mappings. No new normalization table, dependency, stored carrier or default allowance.",
+    "Raw range publication, source/control eager errors, NULL handling, prepared parameter reuse, per-Text ceilings and cumulative bytes/work/cancellation remain explicit.",
+    "Derived/correlated/grouped query composition and CLI buffered errors pass. Native ordering/NLS/Access qualification and independent combined-mode Unicode replay remain separate next evidence work."
+  ],
+  "source_snapshots": [
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/strconv/flags.rs",
+      "sha256": "aead8e38c9b211c472d54a9bb3ca95327edd6b3eab0f9cfb93c0e0bbf4c566de"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/strconv.rs",
+      "sha256": "c36e2f5bc8de8e97d7f2cb587edcdfd732f718f9b6ce05e37b65389543ac1404"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/strconv/japanese.rs",
+      "sha256": "870ae3fb29f1d2ce73707ccdf87015c055809e6b6ab18ebb4dbfdd1c38049fc4"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/strconv/combination_tests.rs",
+      "sha256": "b511f4c7a7dc90ce781ec0343230ad76d4475f5ffc958352a70122d7201d5cc2"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/strconv/tests.rs",
+      "sha256": "951c9ffe6bdc34f53a01fd794b152bd4920d29e163572fd43cf0620c7e2b2b4e"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/strconv/width_tests.rs",
+      "sha256": "10a3cae6fa29d3ff96f176c4c5687abf90446690851c2e921cff587007eaea84"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/strconv/kana_tests.rs",
+      "sha256": "9b1248f73beeb26047623d73f3f4191d84afb51a27e1073d500c2978c3334178"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/strconv/wide_hiragana_tests.rs",
+      "sha256": "f235b77f73b90164274620a8ac7ad0bcd831783cf257a4cc119ef5cf13fb2c8e"
+    },
+    {
+      "path": "crates/query/tablecraft-query/tests/strconv_combinations.rs",
+      "sha256": "542c55894ee9a91ce2115b0ec0bdd53cb56c87341f4a2199350fad3713c50522"
+    },
+    {
+      "path": "crates/query/tablecraft-query/tests/strconv_width.rs",
+      "sha256": "05fe21293257a24d53f76f4ef1f17bb759a703ecbd1e02898b8bff8fb2b36baf"
+    },
+    {
+      "path": "crates/query/tablecraft-query/tests/strconv_kana.rs",
+      "sha256": "de5eab622b2db044b3263b38f857ac9d740130715cf8f26d2cf1822662bb17f7"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/strconv_combinations.rs",
+      "sha256": "1d3a8bced29c048e2bd1164dc3d94ec4370173264589c5d510388f8d5f74bfb6"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/strconv.rs",
+      "sha256": "53bfd38eda2d5a54db094069186c6c2ff3008514fccdff2a0b45bf06c3ee167d"
+    },
+    {
+      "path": "docs/testing/compare_strconv_width.py",
+      "sha256": "19e011434f572075abd10a81bb46295ec4c3fb7ec90f164920c728dd48bda681"
+    },
+    {
+      "path": "docs/testing/compare_strconv_kana.py",
+      "sha256": "dad45f8e68a8d5cfea4aea16264efd4b873507c856f4c53c16e4667fd3dbf035"
+    },
+    {
+      "path": "docs/testing/compare_strconv_wide_hiragana.py",
+      "sha256": "321265e24fbd7eedfcf49e673f23d19c9b6f549b8ee4bd4da1997ae053653e77"
+    }
+  ]
+}

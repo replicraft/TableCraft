@@ -18,6 +18,8 @@ use tablecraft_core::values::{ExpressionValue, Value};
 
 const JAPANESE_LCID: u32 = 1041;
 
+mod japanese;
+
 impl Evaluator<'_> {
     /// Admit eager controls before the source while preserving raw string bytes.
     pub fn apply_expression_strconv(
@@ -94,25 +96,18 @@ impl Evaluator<'_> {
                 };
                 let id = u32::try_from(code).map_err(|_| EvalError::Domain)?;
                 let id = LocaleId::new(id)?;
-                if matches!(
-                    operation,
-                    Operation::Kana(_) | Operation::Width(_) | Operation::WideHiragana
-                ) {
+                if matches!(operation, Operation::Japanese { .. }) {
                     if id.raw() != JAPANESE_LCID {
                         return Err(EvalError::UnsupportedExpression);
                     }
-                    Ok(None)
+                    StringLocaleProfile::from_lcid(id).map(Some)
                 } else {
                     StringLocaleProfile::from_lcid(id).map(Some)
                 }
             })
             .transpose()?
             .flatten();
-        if matches!(
-            operation,
-            Operation::Kana(_) | Operation::Width(_) | Operation::WideHiragana
-        ) && !has_locale
-        {
+        if matches!(operation, Operation::Japanese { .. }) && !has_locale {
             return Err(EvalError::UnsupportedExpression);
         }
         let input = source()?;
@@ -121,14 +116,9 @@ impl Evaluator<'_> {
         }
 
         let input = self.coerce_byte_string_source(input)?;
-        let conversion = match operation {
-            Operation::Kana(kana) => return self.strconv_kana(input, kana),
-            Operation::Width(width) => return self.strconv_width(input, width),
-            Operation::WideHiragana => {
-                let wide = self.strconv_width(input, WidthConversion::Wide)?;
-                return self.strconv_kana(wide, KanaConversion::Hiragana);
-            }
-            Operation::Standard(conversion) => conversion,
+        let (conversion, japanese) = match operation {
+            Operation::Japanese { width, kana, case } => (case, Some((width, kana))),
+            Operation::Standard(conversion) => (conversion, None),
         };
         let page = locale
             .as_ref()
@@ -170,7 +160,10 @@ impl Evaluator<'_> {
             {
                 return Err(EvalError::TextLimit);
             }
-            return Ok(input);
+            return match japanese {
+                Some((width, kana)) => self.strconv_japanese(input, width, kana),
+                None => Ok(input),
+            };
         }
         let Value::Text(mut text) = self.publish_byte_operand(input)? else {
             return Err(EvalError::TypeMismatch);
@@ -187,6 +180,9 @@ impl Evaluator<'_> {
             };
             recipe.write(language, &mut output)?;
             text = output.text;
+        }
+        if let Some((width, kana)) = japanese {
+            return self.strconv_japanese(ByteOperand::Scalar(Value::Text(text)), width, kana);
         }
         if conversion.encoding() == EncodingConversion::FromUnicode {
             let mut output = super::byte_output::Output {
@@ -261,3 +257,6 @@ mod width_tests;
 
 #[cfg(test)]
 mod wide_hiragana_tests;
+
+#[cfg(test)]
+mod combination_tests;

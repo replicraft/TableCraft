@@ -67,7 +67,8 @@ fn a_reused_kana_plan_does_not_capture_mode_locale_or_failed_execution() {
         ("かな", 16, 1041, Ok(Value::Text("カナ".into()))),
         ("カナ", 32, 1041, Ok(Value::Text("かな".into()))),
         ("かな", 16, 1033, Err(EvalError::UnsupportedExpression)),
-        ("かな", 17, 1041, Err(EvalError::UnsupportedExpression)),
+        ("かな", 17, 1041, Ok(Value::Text("カナ".into()))),
+        ("かな", 80, 1041, Err(EvalError::UnsupportedExpression)),
         ("ABC", 2, 1033, Ok(Value::Text("abc".into()))),
         ("カナ", 32, 1041, Ok(Value::Text("かな".into()))),
     ] {
