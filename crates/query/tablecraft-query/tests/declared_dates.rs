@@ -56,17 +56,17 @@ fn declared_date_binary_and_unary_overflow_preserve_variant_widening() {
 fn contextual_numeric_text_keeps_date_overflow_categories_and_explicit_policies() {
     let source = MemorySource::default();
     for (expression, expected) in [
-        ("CDate(2958465)+'1,0'", Err(EvalError::Overflow.into())),
-        ("'1,0'+CDate(2958465)", Err(EvalError::Overflow.into())),
-        ("CVDate(2958465)+'1,0'", Ok(2958466.0)),
+        ("CDate(2958465)+'1,0'", Err(EvalError::TypeMismatch.into())),
+        ("'1,0'+CDate(2958465)", Err(EvalError::TypeMismatch.into())),
+        ("CVDate(2958465)+CVar('1,0')", Ok(2958466.0)),
         ("CDate(2958465)+CVar('1,0')", Ok(2958466.0)),
         (
             "CDate(2958465)+CStr(LeftB('1,0',6))",
-            Err(EvalError::Overflow.into()),
+            Err(EvalError::TypeMismatch.into()),
         ),
         (
             "CStr(LeftB('1,0',6))+CDate(2958465)",
-            Err(EvalError::Overflow.into()),
+            Err(EvalError::TypeMismatch.into()),
         ),
         ("CDate(2958465)+LeftB('1,0',6)", Ok(2958466.0)),
         ("CDate(2958465)+CVar(CStr(LeftB('1,0',6)))", Ok(2958466.0)),
@@ -90,6 +90,14 @@ fn contextual_numeric_text_keeps_date_overflow_categories_and_explicit_policies(
                 ..Default::default()
             },
         );
+        let unformatted_error = if matches!(
+            &expected,
+            Err(QueryError::Evaluation(EvalError::TypeMismatch))
+        ) {
+            EvalError::TypeMismatch
+        } else {
+            EvalError::NumberFormatRequired
+        };
         match expected {
             Ok(serial) => assert_eq!(
                 result.unwrap().rows(),
@@ -108,7 +116,7 @@ fn contextual_numeric_text_keeps_date_overflow_categories_and_explicit_policies(
                 }
             )
             .err(),
-            Some(EvalError::NumberFormatRequired.into()),
+            Some(unformatted_error.into()),
             "{expression}"
         );
     }

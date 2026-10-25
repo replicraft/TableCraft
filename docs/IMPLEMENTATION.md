@@ -1,5 +1,21 @@
 # Implementation status
 
+## Declared mixed String and numeric addition
+
+The explicit declared-arithmetic profile now chooses mixed `+` from the original
+Scalar/Variant operand categories: Scalar String with Scalar numeric refuses,
+Scalar String with Variant numeric concatenates, and Variant String selects
+numeric addition. Needed unknown categories remain unresolved. Default arithmetic
+is unchanged. Mixed Text/numeric addition metadata is now conservatively Dynamic
+because the same prepared plan can execute under either profile.
+
+The [operator contract](CONCATENATION.md#declared-mixed-string-and-numeric-addition)
+records the reviewed primary references and native qualification limits. The
+focused expression/query/CLI batch passes 144 distinct tests, including both CLI
+flag names, nested categories, composition, text policies and buffered failures.
+Strict scoped expression/query Clippy and minimal-feature compilation pass; native
+ACE SQL category selection remains unqualified.
+
 ## Consolidated crosstab and retained-input regression
 
 The combined all-feature query package passes 1,069 tests across 197 result

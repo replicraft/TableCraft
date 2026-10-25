@@ -99,10 +99,10 @@ than silently concatenating or producing NULL.
 The shared evaluator's `PreparedAddition` returns either a completed raw
 String/NULL result or materialized operands for existing scalar/declared dispatch.
 Query execution retains each operand's text policy and original Scalar/Variant
-category through that handoff. Under declared arithmetic,
-`CDate(2958465)+CStr(LeftB('1,0',6))` still overflows, while a Variant string
-participant can retain the existing Double widening with the de-DE number policy.
-No declaration is inferred from decoded values or a successful conversion.
+category through that handoff. The explicit declared profile additionally uses
+those categories to select the mixed String/numeric operation below; the default
+materialized profile retains numeric addition. No declaration is inferred from
+decoded values or a successful conversion.
 
 Scalar-only pairs retain existing dispatch and borrowed Text joins. Raw String
 joins reuse the checked, cumulatively charged ampersand buffer-copy kernel;
@@ -165,3 +165,58 @@ establish `&` use in calculated query fields. The
 and [MS-VBAL operator contract](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/9f072ffc-e943-4fcc-a4d0-f3c7db96abd9)
 describe string coercion and NULL handling. They are implementation references,
 not native qualification of our explicit rendering policies or deferred operands.
+
+## Declared mixed String and numeric addition
+
+The existing explicit `--declared-arithmetic` profile now selects mixed `+` from
+the original declarations before Unicode publication or numeric conversion.
+Default materialized execution and source-free `query eval` retain their previous
+mixed numeric-addition behavior. No new profile flag or function is added.
+
+| String operand declaration | Numeric operand declaration | Explicit declared result |
+| --- | --- | --- |
+| Scalar | Scalar | TypeMismatch |
+| Scalar | Variant | String concatenation through existing CStr policies |
+| Variant | Scalar, Variant or unknown | Numeric addition through existing conversion/promotion |
+| Scalar | Unknown | ArithmeticDeclaration |
+| Unknown | Scalar, Variant or unknown | ArithmeticDeclaration |
+
+The same table applies in either written order. For example, `'2'+CInt(3)` fails
+TypeMismatch, `'2'+CVar(CInt(3))` returns Text `23`, and
+`CVar('2')+CInt(3)` returns Double 5 under the declared profile with the explicit
+en-US number policy. Reversing the concatenating operands returns `32`.
+A known Variant numeric operand cannot resolve an unknown String declaration:
+that String could select concatenation or addition. No record sample or
+successful parsing invents a category.
+
+String/String still concatenates independently of categories. Numeric/numeric
+still enters the existing selected-width/overflow logic. NULL, host Empty and
+Error/Missing retain their existing plus admission; operand expressions execute
+eagerly before any branch decision. Unsupported/nonnumeric and nonfinite scalar
+carriers remain refused. The query planner conservatively describes successful
+mixed Text/numeric plus output as Dynamic because execution options can now change
+its carrier; prepare remains metadata-only.
+
+The String branch retains raw complete UTF-16 units, including an unpaired
+surrogate that a later unit consumer can inspect. It formats the numeric operand
+through existing CStr, preserving exact LongLong, Currency and Decimal output and
+requiring the existing numeric/date output policies. It never parses a nonnumeric
+String prefix merely to concatenate it. Odd-byte joins remain refused. The
+numeric branch strictly publishes reached raw Strings and reuses the existing
+NumberFormat and numeric target rules. Scalar/Scalar mismatch or an unresolved
+category does not first decode a malformed String. Entry work, formatting,
+copying, final Text ceilings and cancellation remain cumulatively charged.
+
+Microsoft's [plus operator reference](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/plus-operator)
+separately specifies non-Variant versus Variant String/numeric selection. The
+[MS-VBAL plus contract](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/91621d4b-3da3-4fe9-9581-adda857efe05)
+provides the runtime String/String branch and general arithmetic linkage. These
+motivate this additional explicit declaration policy. They do not establish how
+native ACE SQL classifies every expression, parameter, field or function; no
+Windows comparison qualified the new branch selection.
+
+Five direct API tests cover the complete nine-category mixed matrix in both
+orders over materialized/active-range Strings, exact carrier/formatting controls,
+String/String and expression states, malformed branch-specific admission,
+unknown categories, final Text ceilings and every observed cancellation point.
+Prepared-query composition and metadata controls live in `declared_addition`.

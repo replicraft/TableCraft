@@ -15,6 +15,15 @@ single scalar descriptor. It can represent varying carriers, expression-only
 states or inference that has not been implemented. Dynamic is not stored NULL,
 a conversion request or permission to guess a type from a successful row.
 
+Mixed Text/numeric `+` has Dynamic metadata because the same prepared plan can
+run with either the default materialized operator or explicit declared arithmetic.
+The latter can select concatenation from Scalar/Variant operand categories; a
+fixed Double, Currency or Decimal descriptor would then misdescribe successful
+Text results and could incorrectly coerce a derived or UNION output. Both-Text
+addition retains its Text guarantee. This is conservative metadata for the
+[declared engineering profile](DECLARED_ARITHMETIC.md), not native Access typing
+qualification; binding neither evaluates operands nor inspects source rows.
+
 ## Implemented propagation
 
 | Expression or composition | Metadata |
@@ -202,7 +211,7 @@ an unsupported field into NULL; eager failures in either operand still fail exec
 
 Working cases include LongLong integral addition/subtraction/multiplication;
 fixed Decimal/Currency selection; ordinary Double results, contextual numeric Text
-and Text+Text addition; ordinary `/` with integer operands; exponentiation; legacy
+for non-addition operators and Text+Text addition; ordinary `/` with integer operands; exponentiation; legacy
 DATE subtraction from DATE; and converted-width Mod remainders. Rounded integer
 quotients retain fixed Byte or checked LongLong descriptors. Other Integer/Long
 quotients, narrow integer arithmetic, small Single arithmetic/division, and DATE

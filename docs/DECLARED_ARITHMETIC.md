@@ -14,9 +14,14 @@ do not establish complete native SQL compatibility.
 
 Lossless string operands in [overloaded plus](CONCATENATION.md#lossless-string-addition)
 now retain their original declaration categories through numeric Text publication.
-String/String joins complete without numeric dispatch; numeric cases return to
-the same selected-width/agreement paths. Decoding a raw string does not establish
-a Scalar declaration or remove an explicit Variant participant.
+String/String joins complete without numeric dispatch. The explicit profile now
+also selects [mixed String/numeric plus](CONCATENATION.md#declared-mixed-string-and-numeric-addition)
+from each operand's original category: Scalar String with Scalar numeric fails,
+Scalar String with Variant numeric concatenates, and Variant String participates
+in numeric addition. Unresolved categories fail when they can change that branch.
+Numeric cases then return to the same selected-width/agreement paths. Decoding a
+raw string does not establish a Scalar declaration or remove an explicit Variant
+participant. Default materialized execution is unchanged.
 
 ## Captured decimal integer literals
 

@@ -7,7 +7,7 @@ use crate::{
         conversions::errors::into_operator_scalar,
         text::byte_string::{ByteOperand, ExpressionByteOperand},
     },
-    numeric::admission,
+    numeric::{OperandDeclaration, admission},
 };
 use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_sql::select::{BinaryOperator, Expression};
@@ -40,6 +40,50 @@ impl Evaluator<'_> {
             PreparedAddition::ScalarOperands { left, right } => self
                 .apply_binary(BinaryOperator::Add, &left, &right)
                 .map(ByteOperand::Scalar),
+        }
+    }
+
+    /// Select mixed String/numeric addition from explicit declaration categories.
+    /// None means the supplied unknown category can change the operation family.
+    /// Other operand families retain ordinary preparation and numeric dispatch.
+    /// Callers must evaluate both operands eagerly before invoking this method.
+    pub fn prepare_declared_expression_addition(
+        &mut self,
+        left: ExpressionByteOperand,
+        right: ExpressionByteOperand,
+        left_declaration: Option<OperandDeclaration>,
+        right_declaration: Option<OperandDeclaration>,
+    ) -> Result<Option<PreparedAddition>, EvalError> {
+        let declarations = if is_string(&left) && is_numeric(&right) {
+            Some((left_declaration, right_declaration))
+        } else if is_numeric(&left) && is_string(&right) {
+            Some((right_declaration, left_declaration))
+        } else {
+            None
+        };
+        let Some((string, numeric)) = declarations else {
+            return self.prepare_expression_addition(left, right).map(Some);
+        };
+
+        self.check(0)?;
+        for operand in [&left, &right] {
+            if let ExpressionByteOperand::Scalar(ExpressionValue::Value(value)) = operand {
+                admission::contextual(value)?;
+            }
+        }
+
+        match (string, numeric) {
+            (Some(OperandDeclaration::Scalar), Some(OperandDeclaration::Scalar)) => {
+                Err(EvalError::TypeMismatch)
+            }
+            (Some(OperandDeclaration::Scalar), Some(OperandDeclaration::Variant)) => self
+                .apply_expression_concatenation(left, right)
+                .map(PreparedAddition::StringResult)
+                .map(Some),
+            (Some(OperandDeclaration::Variant), _) => {
+                self.prepare_expression_addition(left, right).map(Some)
+            }
+            _ => Ok(None),
         }
     }
 
@@ -133,3 +177,32 @@ fn admit(operand: ExpressionByteOperand) -> Result<ByteOperand, EvalError> {
 
 #[cfg(test)]
 mod tests;
+
+fn is_string(operand: &ExpressionByteOperand) -> bool {
+    matches!(
+        operand,
+        ExpressionByteOperand::Bytes(_)
+            | ExpressionByteOperand::Scalar(ExpressionValue::Value(Value::Text(_)))
+    )
+}
+
+fn is_numeric(operand: &ExpressionByteOperand) -> bool {
+    matches!(
+        operand,
+        ExpressionByteOperand::Scalar(ExpressionValue::Value(
+            Value::Boolean(_)
+                | Value::Byte(_)
+                | Value::Int16(_)
+                | Value::Int32(_)
+                | Value::Int64(_)
+                | Value::Single(_)
+                | Value::Double(_)
+                | Value::Currency(_)
+                | Value::Decimal(_)
+                | Value::DateTime(_)
+        ))
+    )
+}
+
+#[cfg(test)]
+mod declared_tests;

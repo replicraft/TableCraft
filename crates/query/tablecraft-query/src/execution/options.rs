@@ -76,6 +76,8 @@ pub struct ExecutionOptions<'a> {
     /// Known Scalar/Variant provenance is required for qualified integral,
     /// Single-selected and legacy Date-envelope arithmetic. Two known Variants use the reviewed String/numeric
     /// comparison exception before reviewed effective numeric predicate coercion.
+    /// Mixed String/numeric + selects addition, concatenation or TypeMismatch
+    /// from the supplied Scalar/Variant categories; unresolved needed categories fail.
     /// Other comparison families retain their owning profiles.
     /// Staged preparation also captures decimal integer-literal widths; execution
     /// never retypes literals in an already prepared plan.
