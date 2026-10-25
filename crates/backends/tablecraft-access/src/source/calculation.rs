@@ -77,8 +77,9 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
     /// Pure same-row arithmetic, concatenation, comparison, logical operators and
     /// NULL tests may use ordinary fields or qualified calculated dependencies.
     /// Dependencies are recomputed under bounded cycle-checked expansion, without
-    /// cached inputs or intermediate declared-type conversion. Calls, subqueries,
-    /// complex/nonlocal inputs and unresolved parameters remain refused. This neither
+    /// cached inputs or intermediate declared-type conversion. Calls other than
+    /// deterministic exact-arity IIf, subqueries, complex/nonlocal inputs and
+    /// unresolved parameters remain refused. This neither
     /// changes ordinary query eligibility nor inspects/replaces cached results.
     pub fn prepare_calculation(
         &self,

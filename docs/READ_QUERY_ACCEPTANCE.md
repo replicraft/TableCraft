@@ -964,3 +964,12 @@ profile. Normal buffered failure, source revision/schema checks, selected indexe
 shared allowances and external edit refusal remain active. Broader providers,
 field qualification, live-file coherence and native Access qualification remain
 separate work.
+
+
+## Deterministic conditional calculation previews
+
+Explicit [calculation previews](CALCULATION_PREVIEWS.md#deterministic-iif-calls)
+now admit exact-arity unqualified `IIf` calls. Metadata preparation visits all
+arguments and calculated dependencies; execution retains eager errors, natural
+result carriers and unchanged stored caches. This expands the bounded preview
+without completing native recalculation, freshness or general function admission.

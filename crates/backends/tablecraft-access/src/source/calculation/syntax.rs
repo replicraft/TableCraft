@@ -5,9 +5,13 @@ use tablecraft_schema::Column;
 use tablecraft_sql::{
     ParseLimits, parse_expression_strict, parse_query,
     query::{Query, ReadBody, ReadQuery, Statement},
-    select::{BinaryOperator, Expression, Projection, Select, TableSource, UnaryOperator},
+    select::{
+        BinaryOperator, Expression, FunctionArgument, Name, Projection, Select, TableSource,
+        UnaryOperator,
+    },
 };
 
+const IIF_ARGUMENTS: usize = 3;
 const QUERY_PREFIX: &str = "SELECT 0 AS Recomputed FROM [";
 const QUERY_MODEL_BYTES: usize = size_of::<Query>()
     + size_of::<ReadQuery>()
@@ -103,6 +107,19 @@ pub(super) fn prepare_expression(
     Ok((query, dependencies))
 }
 
+pub(super) fn admitted_iif(
+    qualifier: &[Name],
+    name: &Name,
+    arguments: &[FunctionArgument],
+) -> bool {
+    qualifier.is_empty()
+        && name.as_str().eq_ignore_ascii_case("IIf")
+        && arguments.len() == IIF_ARGUMENTS
+        && arguments
+            .iter()
+            .all(|argument| matches!(argument, FunctionArgument::Expression(_)))
+}
+
 fn check(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -164,6 +181,24 @@ fn validate(
             budget
                 .charge_allocation(field.name.as_str().len() as u64, 1)
                 .map_err(QueryError::from)?;
+        }
+        Expression::Call {
+            qualifier,
+            name,
+            arguments,
+        } if admitted_iif(qualifier, name, arguments) => {
+            budget
+                .charge_allocation(arguments.len() as u64, size_of::<FunctionArgument>() as u64)
+                .map_err(QueryError::from)?;
+            budget
+                .charge_allocation(name.as_str().len() as u64, 1)
+                .map_err(QueryError::from)?;
+            for argument in arguments {
+                let FunctionArgument::Expression(expression) = argument else {
+                    return Err(CalculationError::Unsupported);
+                };
+                validate(expression, columns, dependencies, budget, cancelled)?;
+            }
         }
         Expression::Unary {
             operator: UnaryOperator::Plus | UnaryOperator::Minus | UnaryOperator::Not,

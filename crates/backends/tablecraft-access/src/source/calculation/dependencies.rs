@@ -3,7 +3,10 @@ use super::{CalculationError, syntax};
 use tablecraft_ace::{CalculationDeclaration, InspectError, TableFeatures};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_query::QueryError;
-use tablecraft_sql::{ParseLimits, select::Expression};
+use tablecraft_sql::{
+    ParseLimits,
+    select::{Expression, FunctionArgument},
+};
 
 const MAX_CALCULATED_DEPENDENCIES: usize = 32;
 
@@ -148,6 +151,22 @@ impl Expansion<'_, '_> {
                 let expanded = self.expression(nested, depth)?;
                 self.active.pop();
                 Ok(expanded)
+            }
+            Expression::Call {
+                qualifier,
+                name,
+                arguments,
+            } if syntax::admitted_iif(qualifier, name, arguments) => {
+                // Validate and expand every arm before binding, even if the
+                // condition could hide it. Runtime eagerness belongs to query.
+                for argument in arguments {
+                    let FunctionArgument::Expression(operand) = argument else {
+                        return Err(CalculationError::Unsupported);
+                    };
+                    let nested = std::mem::replace(operand, Expression::Null);
+                    *operand = self.expression(nested, depth + 1)?;
+                }
+                Ok(expression)
             }
             Expression::Unary {
                 expression: operand,
