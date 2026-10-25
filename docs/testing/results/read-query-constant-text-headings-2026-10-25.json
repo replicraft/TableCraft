@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Metadata-only constant String crosstab headings using sixteen existing query functions; no source scans or native heading qualification",
+  "unique_tests": 78,
+  "new_tests": 13,
+  "targets": {
+    "constant_units": 14,
+    "crosstab": 16,
+    "scalar_headings": 8,
+    "named_crosstabs": 40
+  },
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-query --lib binding::crosstab::constants -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/constant-text-heading-unit-parent-final-20261025.log",
+      "sha256": "cc54771f608773d6acaec2e7f9f77ee2d8c82cd6e4c7306a736665ddb0e98f35"
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test named_crosstabs --test crosstab --test crosstab_scalar_headings -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/constant-text-heading-integration-reviewed-20261025.log",
+      "sha256": "7ad918c4d3684aea76d00904ede4ac14c60e9a2ea4003ed4c531b156dcbe8905"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --test named_crosstabs --test crosstab --test crosstab_scalar_headings -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/constant-text-heading-clippy-parent-final-20261025.log",
+      "sha256": "605a48db6c666af417f300ef35bd015a65c1f0fc588cba7ab299e82ac95e644e"
+    }
+  ],
+  "review_corrections": [
+    "Pure kernels now debit actual shared work including failures instead of receiving independently refreshed step allowances.",
+    "Root raw String concatenation and selectors now preserve intermediate units until final-name publication.",
+    "Eager control eligibility errors are deferred until all constant arguments evaluate.",
+    "Existing Date controls and invalid non-Text carrier kernel errors are preserved separately from narrow new text-function numeric controls."
+  ],
+  "test_authoring_corrections": [
+    "Reserved alias changed to Combined; expected existing Total column retained; runtime Text pivot comparison supplied its existing explicit Ordinal provider."
+  ],
+  "parent_review": "Constructor widths derive from u8/u16 and reversal reserves explicit source/output extents; final units and strict Clippy rerun.",
+  "unrun": [
+    "Full workspace suite",
+    "Microsoft Access computed pivot-name comparisons"
+  ]
+}

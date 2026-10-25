@@ -199,3 +199,6 @@ fn every_conditional_checkpoint_can_cancel_without_source_access() {
 
 #[path = "tests/negation.rs"]
 mod negation;
+
+#[path = "tests/text.rs"]
+mod text_constants;

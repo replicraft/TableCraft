@@ -428,3 +428,6 @@ mod conditional;
 
 #[path = "named_crosstabs/discovery.rs"]
 mod discovery;
+
+#[path = "named_crosstabs/text_constants.rs"]
+mod text_constants;
