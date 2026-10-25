@@ -32,12 +32,13 @@ pub(super) fn read(forest: &Forest<'_>, context: &mut Context<'_>) -> Result<Vec
     if parsed.selection.is_some() || parsed.from.len() != forest.roots.len() {
         return Err(E::InvalidMetadata);
     }
-    for (&root, actual) in forest.roots.iter().zip(&parsed.from) {
+    for (&root, actual) in forest.roots.iter().zip(&mut parsed.from) {
         verify(forest, root, actual, context)?;
     }
     context.check()?;
     Ok(std::mem::take(&mut parsed.from))
 }
+
 fn render<'a>(
     forest: &'a Forest<'a>,
     index: usize,
@@ -50,7 +51,7 @@ fn render<'a>(
         Body::Leaf(source) => {
             let source = &forest.sources[*source];
             match &source.body {
-                SourceBody::Named(name) => parts.extend(["[", name, "]"]),
+                SourceBody::Named { name, .. } => parts.extend(["[", name, "]"]),
                 SourceBody::Derived { text, .. } => parts.extend(["(", text, "\n)"]),
             }
             if let Some(alias) = source.alias {
@@ -89,10 +90,11 @@ fn render<'a>(
     }
     Ok(())
 }
+
 fn verify(
     forest: &Forest<'_>,
     index: usize,
-    actual: &TableSource,
+    actual: &mut TableSource,
     context: &mut Context<'_>,
 ) -> Result<(), E> {
     context.check()?;
@@ -100,9 +102,22 @@ fn verify(
         Body::Leaf(source) => {
             let expected = &forest.sources[*source];
             let matches = match (&expected.body, actual) {
-                (SourceBody::Named(name), TableSource::Table(table)) => {
-                    table.name.as_str() == *name
-                        && table.alias.as_ref().map(|name| name.as_str()) == expected.alias
+                (SourceBody::Named { name, database }, TableSource::Table(table)) => {
+                    if table.name.as_str() != *name
+                        || table.alias.as_ref().map(|name| name.as_str()) != expected.alias
+                        || table.database.is_some()
+                    {
+                        return Err(E::InvalidMetadata);
+                    }
+                    // The guarded tree identifies this exact native leaf. Copy
+                    // opaque selectors directly, never through SQL interpolation.
+                    table.database = database
+                        .map(|value| {
+                            context.syntax(3)?;
+                            context.text(&[value])
+                        })
+                        .transpose()?;
+                    true
                 }
                 (
                     SourceBody::Derived { query, .. },

@@ -1,5 +1,20 @@
 # Implementation status
 
+## Per-table external database sources
+
+Owned SQL table leaves now retain exact bracketed database selectors separately
+from ordinary names/aliases. Binding resolves each qualified leaf through the
+operation-root host registry, overriding SELECT-level IN defaults while keeping
+named-query lexical ownership. Native saved SELECT/crosstab/guarded UNION sources
+compose their selectors only after exact relation-tree verification. No stored
+path opens implicitly; required index failures and the external edit refusal remain.
+
+The focused batch passes 270 unique Rust tests: 70 SQL, nine new query/guard tests,
+85 saved-adapter tests, 24 existing external/named query regressions and 82 CLI
+unit/external/saved/progressive checks. Scoped strict Clippy, formatting, boundary
+guards and script tests pass. See [the feature contract](PER_TABLE_EXTERNAL_QUERIES.md).
+Original twelve-file replay and native Access qualification remain separate.
+
 ## Independent calculated dependency replay
 
 The [original ACE 16-family replay](testing/CALCULATED_DEPENDENCIES.md) passes

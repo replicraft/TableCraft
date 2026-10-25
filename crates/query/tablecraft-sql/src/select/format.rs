@@ -227,6 +227,17 @@ impl Display for super::TableSource {
                 Ok(())
             }
             Self::Table(table) => {
+                if let Some(database) = &table.database {
+                    f.write_str("[")?;
+                    for character in database.chars() {
+                        if character == ']' {
+                            f.write_str("]]")?;
+                        } else {
+                            write!(f, "{character}")?;
+                        }
+                    }
+                    f.write_str("].")?;
+                }
                 table.name.fmt(f)?;
                 if let Some(alias) = &table.alias {
                     write!(f, " AS {alias}")?;

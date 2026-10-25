@@ -135,8 +135,9 @@ IF EXISTS/IF NOT EXISTS and multi-operation ALTER TABLE are also rejected. Multi
 (such as NCHAR VARYING), signed type arguments and provider-specific schema
 extensions are outside this bounded grammar. Transaction, privilege and
 pass-through command languages are not query-model features. Parameter references use Access names.
-Provider-specific object qualification beyond the documented external IN forms
-is not implemented. Unsupported is not a native Access validity verdict.
+[Per-table database prefixes](PER_TABLE_EXTERNAL_QUERIES.md) use bracketed opaque
+selectors in the owned table model, separately from global IN. Other provider
+qualification is not implemented. Unsupported is not a native Access validity verdict.
 
 ## Primary references and acceptance evidence
 

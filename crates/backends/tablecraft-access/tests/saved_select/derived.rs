@@ -88,7 +88,7 @@ fn derived_sources_preserve_owned_reads_aliases_nesting_union_and_anonymous_root
 }
 
 #[test]
-fn derived_sources_reject_remote_qualifiers_actions_parameters_injection_and_duplicate_labels() {
+fn derived_sources_reject_actions_parameters_injection_and_duplicate_labels() {
     for text in [
         "UPDATE Items SET Id=1",
         "DELETE FROM Items",
@@ -108,17 +108,6 @@ fn derived_sources_reject_remote_qualifiers_actions_parameters_injection_and_dup
             "{text}"
         );
     }
-    assert_eq!(
-        compile(&[
-            column("1"),
-            Fragment {
-                name1: Some("Items"),
-                ..derived("external.accdb", Some("d"))
-            }
-        ])
-        .err(),
-        Some(E::Unsupported)
-    );
     assert_eq!(
         compile(&[
             column("1"),

@@ -52,6 +52,7 @@ impl Binder<'_> {
                         from: vec![TableSource::Table(Table {
                             name: name.clone(),
                             alias: None,
+                            database: None,
                         })],
                         group_by: vec![],
                         having: None,

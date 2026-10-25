@@ -25,8 +25,9 @@ joins and comma roots. SELECT and crosstab share this composition step. External
 metadata without FROM sources fails. Duplicate global fragments, unknown flags,
 unexpected payloads and both fields NULL fail without publishing a query.
 
-Per-table qualifiers stored in a Table row with both Name1 and Expression remain
-unsupported; they are a different native representation. Action, DDL and
+[Per-table qualifiers](PER_TABLE_EXTERNAL_QUERIES.md#native-saved-metadata) stored
+in a Table row with both Name1 and Expression now use a separate guarded owned
+leaf composition. Action, DDL and
 pass-through queries remain outside read reconstruction. A global attribute-4
 row on a UNION wrapper remains unsupported. Labelled UNION arms already containing
 their own explicit SQL IN clauses use the existing guarded arm parser.
@@ -46,8 +47,9 @@ tokens fail; stored tokens are never interpreted as paths to open.
 
 The native facade accepts path-only tokens. A stored connection string remains
 inspectable and reconstructable, but native execution refuses it, including an
-empty present connection. No connection parsing, network provider, target named
-query expansion or recursive link traversal is introduced. Library hosts may
+empty present connection. Qualified [target saved queries](EXTERNAL_NAMED_QUERIES.md)
+retain their selected definition namespace. Connection parsing, network providers
+and recursive link traversal remain unsupported. Library hosts may
 explicitly supply other resolvers through the existing backend-neutral contract.
 
 The [external-source binding contract](EXTERNAL_QUERY_SOURCES.md) still captures

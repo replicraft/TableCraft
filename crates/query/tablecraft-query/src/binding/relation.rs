@@ -18,9 +18,13 @@ impl Binder<'_> {
         namespace: SourceNamespace,
     ) -> Result<Relation, QueryError> {
         self.tick(depth)?;
-        let provider = self.namespace_source(namespace, depth)?;
         let relation = match source {
             TableSource::Table(table) => {
+                // A written leaf selector overrides the SELECT's default source
+                // namespace. It does not change the read's lexical owner.
+                let namespace =
+                    self.table_namespace(table.database.as_deref(), namespace, depth)?;
+                let provider = self.namespace_source(namespace, depth)?;
                 if table.name.as_str().len() > SOURCE_SCHEMA_POLICY.max_name_bytes
                     || table
                         .alias

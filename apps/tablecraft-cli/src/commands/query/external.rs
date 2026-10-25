@@ -1,4 +1,4 @@
-//! Explicit CLI paths authorize exact IN tokens; stored tokens never open files.
+//! Explicit CLI paths authorize exact database tokens; stored tokens never open files.
 use super::{
     Error,
     native_target::{self, TargetSource},

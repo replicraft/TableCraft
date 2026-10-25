@@ -8,7 +8,36 @@ use crate::{
 use tablecraft_core::limits::Resource;
 use tablecraft_sql::select::ExternalDatabase;
 
+#[cfg(test)]
+mod tests;
+
 impl<'a> Binder<'a> {
+    pub(super) fn table_namespace(
+        &mut self,
+        database: Option<&str>,
+        default: SourceNamespace,
+        depth: usize,
+    ) -> Result<SourceNamespace, QueryError> {
+        match database {
+            Some(database) => {
+                self.tick(depth)?;
+                if let Some(budget) = &mut self.budget {
+                    budget.charge(Resource::Steps, database.len() as u64)?;
+                }
+                if !self.retrieval || database.is_empty() || database.chars().any(char::is_control)
+                {
+                    return Err(QueryError::Unsupported);
+                }
+                self.capture_external_source(
+                    ExternalSourceRequest::new(database, None, false),
+                    None,
+                    depth,
+                )
+            }
+            None => Ok(default),
+        }
+    }
+
     pub(super) fn external_namespace(
         &mut self,
         external: Option<&ExternalDatabase>,

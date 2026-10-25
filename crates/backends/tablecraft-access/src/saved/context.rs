@@ -104,7 +104,9 @@ impl<'a> Context<'a> {
         let guarded = matches!(
             query.from.as_slice(),
             [TableSource::Table(table)]
-                if table.name.as_str() == PROJECTION_GUARD && table.alias.is_none()
+                if table.name.as_str() == PROJECTION_GUARD
+                    && table.alias.is_none()
+                    && table.database.is_none()
         );
         if !guarded
             || query.predicate != SelectPredicate::All

@@ -27,6 +27,13 @@ use `query run --database frontend.accdb --external remote backend.accdb
 file; SQL never opens an embedded path. Linked and external targets share the
 same native allowance, and results remain buffered before stdout.
 
+[Per-table database prefixes](docs/PER_TABLE_EXTERNAL_QUERIES.md) can mix local
+and explicitly mapped external sources, for example
+`SELECT l.ID,r.Name FROM LocalPeople l INNER JOIN [remote].[People] r ON l.ID=r.ID`.
+The same `--external remote backend.accdb` binding authorizes that exact token.
+Qualified saved definitions retain their own source namespace; no embedded path
+opens automatically.
+
 Explicit [streaming SELECT queries](docs/STREAMING_QUERIES.md) use
 `query run --database example.accdb --stream --batch-rows 128
 'SELECT ID,Name FROM Customers WHERE ID>0'`. They publish scalar table-order
