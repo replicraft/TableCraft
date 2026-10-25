@@ -19,6 +19,7 @@ mod args;
 pub(crate) use args::Args;
 use std::path::Path;
 use tablecraft_ace::{Header, InspectError, inspect_catalog, inspect_header};
+use tablecraft_core::limits::ResourceBudget;
 
 pub(crate) enum Mode<'a> {
     Header,
@@ -44,8 +45,13 @@ pub(crate) fn run(
     format: crate::presentation::Format,
     password: Option<&str>,
     native_bytes: Option<u64>,
+    native_steps: Option<u64>,
 ) -> Result<String, Error> {
-    let mut budget = native::read_budget(native_bytes.unwrap_or(native::DEFAULT_NATIVE_BYTES));
+    let mut budget = ResourceBudget::new(
+        native_bytes.unwrap_or(native::DEFAULT_NATIVE_BYTES),
+        native::DEFAULT_NATIVE_ROWS,
+        native_steps.unwrap_or(native::DEFAULT_NATIVE_STEPS),
+    );
     if let Some(report) = template::try_run(path, &mode, format, &mut budget)? {
         return Ok(report);
     }

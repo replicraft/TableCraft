@@ -23,6 +23,12 @@ gaps; it is not a database integrity certificate. A supported-path failure exits
 2 with no partial stdout. Existing escaped/buffered output and sanitized errors
 remain; original bytes are unchanged.
 
+The CLI's explicit `--native-steps STEPS` can increase cumulative inspection work
+from the 1,000,000 default up to 100,000,000. It does not increase byte/row limits
+or turn unchecked index profiles into checked ones. Long payloads can be decoded
+again for each eligible index, so row count alone does not predict the required
+work allowance. Exhaustion publishes no partial report.
+
 ## What the check establishes
 
 Historical [known fixed-prefix reads](NATIVE_TABLES.md#deleted-column-histories)

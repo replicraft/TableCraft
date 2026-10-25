@@ -1,5 +1,15 @@
 # Implementation status
 
+## Explicit inspection work allowance
+
+`inspect --native-steps` now accepts an explicit cumulative work allowance under
+the existing 100,000,000-step cap. Defaults and independent byte/row limits remain
+unchanged. This lets callers budget full long-payload/index checks without changing
+which profiles qualify. Sixteen CLI checks pass, including one new control for
+work exhaustion, independent byte exhaustion, range rejection, unchanged complete
+output and original bytes. Strict CLI linting and formatting pass. See the
+[verification record](testing/results/inspect-native-work-2026-10-25.json).
+
 ## Progressive aggregate lifecycle extraction
 
 The existing global, exact-key, Text and HAVING streaming consumers now share
