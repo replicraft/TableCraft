@@ -11,6 +11,10 @@ ordered view fields; every selected expression remains eager before outer filter
 Twenty-one new controls and 89 regressions pass with strict native/CLI Clippy,
 formatting and dependency checks. See [scope](RECOMPUTED_CALCULATION_VIEWS.md)
 and [verification](testing/results/read-query-recomputed-views-2026-10-25.json).
+An [original two-profile replay](testing/RECOMPUTED_VIEWS.md) passes 80 independent
+getter/model controls, comparing 212 rows and 460 cells. Twelve immutable and
+thirteen scoped compiled-source hashes were independently rechecked. Native
+Access formula qualification remains separate.
 
 ## Local named template schema types
 

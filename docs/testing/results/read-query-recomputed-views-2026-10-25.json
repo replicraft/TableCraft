@@ -105,5 +105,29 @@
   "unrun_at_record_creation": [
     "Full workspace suite",
     "Microsoft Access native formula execution/save/reopen comparisons"
-  ]
+  ],
+  "independent_replay": {
+    "report": "recomputed-views-2026-10-25.json",
+    "sha256": "96c580d90d4f8d9bc2c6ab935d9369ac175150827425f2e1e726eb6fbdee9f97",
+    "controls": 80,
+    "successful_queries": 48,
+    "intended_refusals": 32,
+    "disagreements": 0,
+    "compared_rows": 212,
+    "compared_cells": 460,
+    "independently_rechecked_immutable_pins": 12,
+    "independently_rechecked_compiled_source_pins": 13,
+    "qualification": "Inert getters and independent ordinary-value formula models; no native Access execution qualification",
+    "excluded_initial_replay": {
+      "controls": 80,
+      "disagreements": 4,
+      "reason": "Unbracketed reserved Input field in runner UNION SQL; corrected selector only, no runtime/golden change.",
+      "private_artifacts": ".cache/recomputed-views-exploration-20261025/",
+      "artifact_sha256": {
+        ".cache/recomputed-views-exploration-20261025/compare_recomputed_views.py": "1565b324c9ce29cb3d11cd1fc10a2812a59238d0506ec25c75916a0525ad449c",
+        ".cache/recomputed-views-exploration-20261025/recomputed-views-2026-10-25.json": "c196ffc3907d97effb65be0f75d72d75204bd232a34ebaa685f962a16abb4f9b",
+        ".cache/recomputed-views-exploration-20261025/recomputed-views-replay-20261025.log": "2a6dcabb3c65aba10ba28ab583f894a4a1daae97c4f6631dbec476f85e177a31"
+      }
+    }
+  }
 }
