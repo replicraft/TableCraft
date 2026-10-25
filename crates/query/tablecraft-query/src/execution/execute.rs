@@ -113,59 +113,10 @@ impl PreparedQuery {
             CellQueryResult,
         ) -> Result<QueryResult<T>, QueryError>,
     ) -> Result<QueryResult<T>, QueryError> {
-        let ExecutionFrame {
-            source,
-            parameters,
-            options,
-            discovery,
-            context,
-        } = frame;
-        let _span = tracing::debug_span!("query.execute", parameters = parameters.len()).entered();
-        let mut runtime = Runtime {
-            owner: crate::external_sources::SourceNamespace::Root,
-            numeric_scratch: Vec::new(),
-            repeatable_dynamic: context.repeatable_dynamic,
-            domain_depth: 0,
-            source,
-            external_sources: Vec::new(),
-            discovery,
-            parameters: Vec::new(),
-            options,
-            budget,
-        };
-        runtime.tick()?;
-        if context.strict_parameters && parameters.len() != self.parameters.len() {
-            return Err(QueryError::Parameter);
-        }
-        runtime.budget.charge_allocation(
-            self.parameters.len() as u64,
-            std::mem::size_of::<ParameterValue<'_>>() as u64,
-        )?;
-        runtime
-            .parameters
-            .try_reserve_exact(self.parameters.len())
-            .map_err(|_| QueryError::Allocation)?;
-        for declared in &self.parameters {
-            let mut matches = parameters.iter().filter(|(name, _)| {
-                crate::profile::SOURCE_SCHEMA_POLICY
-                    .names
-                    .equals(name, declared.name.as_str())
-            });
-            let (_, value) = matches.next().ok_or(QueryError::Parameter)?;
-            if matches.next().is_some()
-                || !declared.data_type.accepts(value)
-                || matches!(value, Value::Text(text) if text.len() > options.text_limit())
-                || matches!(value, Value::Single(value) if !value.to_float().is_finite())
-                || matches!(value, Value::Double(value) if !value.to_float().is_finite())
-            {
-                return Err(QueryError::Parameter);
-            }
-            runtime.parameters.push(ParameterValue {
-                value,
-                declaration: declared.data_type.declaration(),
-            });
-        }
-        runtime.register_external_sources(&self.external_sources)?;
+        let _span =
+            tracing::debug_span!("query.execute", parameters = frame.parameters.len()).entered();
+        let mut runtime = self.initialize_runtime(frame, budget)?;
+        let options = runtime.options;
         let (rows, names, types) = match &self.body {
             PreparedBody::Read(read) => (
                 runtime.read(read, &[])?,
@@ -211,14 +162,74 @@ impl PreparedQuery {
         );
         Ok(result)
     }
+
+    pub(super) fn initialize_runtime<'a, 'source>(
+        &self,
+        frame: ExecutionFrame<'a, 'source>,
+        budget: &'a mut ResourceBudget,
+    ) -> Result<Runtime<'a, 'source>, QueryError> {
+        let ExecutionFrame {
+            source,
+            parameters,
+            options,
+            discovery,
+            context,
+        } = frame;
+        let mut runtime = Runtime {
+            owner: crate::external_sources::SourceNamespace::Root,
+            numeric_scratch: Vec::new(),
+            repeatable_dynamic: context.repeatable_dynamic,
+            domain_depth: 0,
+            source,
+            external_sources: Vec::new(),
+            discovery,
+            parameters: Vec::new(),
+            options,
+            budget,
+        };
+        runtime.tick()?;
+        if context.strict_parameters && parameters.len() != self.parameters.len() {
+            return Err(QueryError::Parameter);
+        }
+        runtime.budget.charge_allocation(
+            self.parameters.len() as u64,
+            std::mem::size_of::<ParameterValue<'_>>() as u64,
+        )?;
+        runtime
+            .parameters
+            .try_reserve_exact(self.parameters.len())
+            .map_err(|_| QueryError::Allocation)?;
+        for declared in &self.parameters {
+            let mut matches = parameters.iter().filter(|(name, _)| {
+                crate::profile::SOURCE_SCHEMA_POLICY
+                    .names
+                    .equals(name, declared.name.as_str())
+            });
+            let (_, value) = matches.next().ok_or(QueryError::Parameter)?;
+            if matches.next().is_some()
+                || !declared.data_type.accepts(value)
+                || matches!(value, Value::Text(text) if text.len() > options.text_limit())
+                || matches!(value, Value::Single(value) if !value.to_float().is_finite())
+                || matches!(value, Value::Double(value) if !value.to_float().is_finite())
+            {
+                return Err(QueryError::Parameter);
+            }
+            runtime.parameters.push(ParameterValue {
+                value,
+                declaration: declared.data_type.declaration(),
+            });
+        }
+        runtime.register_external_sources(&self.external_sources)?;
+        Ok(runtime)
+    }
 }
 
-struct ExecutionFrame<'a, 'source> {
-    source: &'source dyn Source,
-    parameters: &'a [(&'a str, Value)],
-    options: ExecutionOptions<'a>,
-    discovery: &'a DiscoveryState<'source>,
-    context: ExecutionContext,
+pub(super) struct ExecutionFrame<'a, 'source> {
+    pub(super) source: &'source dyn Source,
+    pub(super) parameters: &'a [(&'a str, Value)],
+    pub(super) options: ExecutionOptions<'a>,
+    pub(super) discovery: &'a DiscoveryState<'source>,
+    pub(super) context: ExecutionContext,
 }
 
 pub(crate) struct ExecutionContext {

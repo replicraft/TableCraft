@@ -11,6 +11,7 @@ mod equality;
 pub use equality::TextEqualityKey;
 mod multivalue;
 pub use multivalue::{MultivalueList, MultivalueVisitor};
+mod progressive;
 mod projection;
 pub use constraint::ScanConstraint;
 pub use projection::{ProjectedRow, validate_projection};
@@ -152,6 +153,21 @@ pub trait Source {
         table: &str,
         visitor: &mut dyn FnMut(&[Value]) -> Result<(), QueryError>,
     ) -> Result<(), QueryError>;
+    /// Explicit progressive scalar projection in source order, without a complete
+    /// snapshot requirement or cache publication. Indices are sorted and unique.
+    /// Stop on the first visitor rejection and propagate later read/EOF failures;
+    /// successful earlier callbacks do not establish complete input. Sources may
+    /// retain exclusive cursor access across callbacks, so callbacks must not
+    /// reenter this source. Hosts own cumulative native controls. The default
+    /// refuses this capability rather than materializing an ordinary scan.
+    fn scan_projected_progressive(
+        &self,
+        _table: &str,
+        _indices: &[usize],
+        _visitor: &mut dyn FnMut(ProjectedRow<'_>) -> Result<(), QueryError>,
+    ) -> Result<(), QueryError> {
+        Err(QueryError::Unsupported)
+    }
     /// Visit explicitly requested scalar columns in sorted unique source order.
     /// Constraint positions still refer to the complete columns() schema. Hosts
     /// may avoid decoding unrequested payloads; unavailable fields are not cells.
@@ -268,5 +284,14 @@ impl Source for MemorySource {
             visitor(row)?;
         }
         Ok(())
+    }
+
+    fn scan_projected_progressive(
+        &self,
+        table: &str,
+        indices: &[usize],
+        visitor: &mut dyn FnMut(ProjectedRow<'_>) -> Result<(), QueryError>,
+    ) -> Result<(), QueryError> {
+        self.progressive_projection(table, indices, visitor)
     }
 }

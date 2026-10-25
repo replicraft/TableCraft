@@ -1,5 +1,20 @@
 # Implementation status
 
+## Progressive query service
+
+The [explicit progressive API](PROGRESSIVE_QUERIES.md) evaluates admitted direct
+scalar SELECT/WHERE queries with one Runtime and cumulative query budget. It
+requires an explicit projected-source capability, preserves original sink errors
+and rejects source-using/global query shapes before scanning. MemorySource is
+the current working consumer; native cursor/CLI streaming remain separate steps.
+No partial relation cache or buffered-default change is introduced.
+
+Thirteen new conformance tests and 76 buffered regressions pass, alongside scoped
+strict Clippy and minimal query checking. New tests cover metadata, eager errors,
+strict publication, every observed cancellation checkpoint, cumulative quotas
+and broken-provider callback behavior. Native Access/shared-file qualification
+and the wider backend roadmap remain unfinished.
+
 ## Independent array-bound declaration replay
 
 The [source-free replay](testing/ARRAY_BOUND_DECLARATIONS.md) passes 77 commands

@@ -22,6 +22,8 @@ mod keys;
 mod multivalue;
 mod numeric_arithmetic;
 mod options;
+mod progressive;
+pub use progressive::{StreamError, StreamSummary};
 mod relation;
 mod result;
 mod retrieval;
