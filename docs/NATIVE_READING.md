@@ -200,6 +200,13 @@ fields, object binaries, saved SQL, table contents and active content are not
 interpreted. The live row total must agree with the table-definition count;
 malformed/unsupported layouts fail without a partial inventory.
 
+Compressed Unicode mode switches apply at character boundaries. A zero high byte
+inside a wide UTF-16 unit is retained as data, including wide ASCII. Odd wide
+tails and unpaired surrogates still fail. The
+[wide-segment grammar controls](testing/COMPRESSED_TEXT_WIDE_SEGMENTS.md) compare
+original streams with pinned independent decoders and explicitly distinguish
+derived payload controls from native-writer or Access qualification.
+
 The shared [model](MODEL.md) retains unknown categories and unresolved parent IDs.
 NativeObjectOrigin retains the original signed IDs/type, raw flags and root page/slot
 in catalog order. It is inspection metadata, not a mutation handle. Flags are

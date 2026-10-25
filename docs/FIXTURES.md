@@ -7475,3 +7475,47 @@ compiled classes, the reference JAR and frozen CLI remain ignored. Preliminary
 probes and failed harness iterations are excluded from accepted counts. No active
 content executes; native Access SQL, application behavior and writes remain
 unqualified.
+
+
+## Original compressed-text wide-segment controls
+
+The original [seed producer/getter oracle](testing/CompressedWideFixture.java),
+[stream/copy replay](testing/compare_compressed_wide.py) and authored stream
+vectors are repository MIT code. No third-party source or fixture bytes are
+copied into tracked files. Jackcess 5.0.4 retains its reviewed Apache-2.0 artifact
+provenance and SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+The reviewed MDB Tools `iconv.c` at commit
+`6a8a4b0785c20f683d2460c9016f5f52039bd8ec` is reference-only LGPL-2.0-or-later
+source, retained locally under ignored `.cache/tablecraft-fixtures/` with SHA-256
+`05f7d775b5860ca2e0948fbf32a93f7a831c4b2dc8012269010cb0e176f14045`.
+It is not compiled, linked, copied into implementation or redistributed.
+
+Fresh original seeds and explicit derived controls generated on 24 October 2026
+remain ignored under `.cache/tablecraft-fixtures/compressed-wide-final-20261024/`:
+
+| File | Bytes | SHA-256 |
+| --- | ---: | --- |
+| seed-V2016.accdb | 393,216 | `a23ea9ff231fc819b8645be91df802eada48a276feb9d7db903caf2acfd9ebd9` |
+| seed-V2019.accdb | 462,848 | `f7de48e25b0f2ef891e76bb4be38a9aa2c0ddfd495874d021e803ade7192abaf` |
+| grammar-V2016.accdb | 393,216 | `37fdcccd53e73ed4865d71aa0463d70df0f16f1b4cb9f28be064273401145184` |
+| grammar-V2019.accdb | 462,848 | `69091b022acbf7d6722c68827b2e3a617530e62fbbeeae13c566ea34ba340dc2` |
+
+Each seed contains 259 ordinary ShortText/Memo rows authored through public
+builders with inert ASCII values. Original grammar streams are independently
+passed to public pinned `ColumnImpl.read` calls for ShortText and inline Memo.
+The grammar files change only same-width selected payload ranges, including inline
+and single-external-row Memo bytes. They are explicit derived grammar controls,
+not evidence of ordinary encoder or native Access writer validity. Four further
+copies contain late unpaired-surrogate payloads and are explicitly invalid;
+the accepted report pins all eight databases plus stream/source/helper references.
+Original seeds remain unchanged. No formula, imported action or application runs.
+
+The [feature record](testing/COMPRESSED_TEXT_WIDE_SEGMENTS.md) and
+[accepted report](testing/results/compressed-wide-2026-10-24.json) retain
+542 controls, 4,662 main CLI projection cells and seventeen unchanged hashes.
+Exploratory literal-leading-U+FEFF writer collisions, rejected multivalue carrier
+probes and two supplementary before-fix CLI failures are excluded from accepted
+counts. Native Access SQL, native writer validity, concurrency and saves remain
+unqualified. Databases, decoded oracle output, reference source/JAR and frozen
+executables remain ignored local artifacts.

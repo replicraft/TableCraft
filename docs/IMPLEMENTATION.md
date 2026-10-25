@@ -1,5 +1,20 @@
 # Implementation status
 
+## Compressed-text wide UTF-16 grammar correction
+
+Native text decoding now accepts zero high bytes inside wide UTF-16 units. Mode
+switches apply only at character boundaries; the previous guard imposed a
+canonical compression choice absent from both reviewed reference decoders.
+Pair completeness, strict Unicode, quotas and cancellation remain enforced.
+
+The [grammar replay](testing/COMPRESSED_TEXT_WIDE_SEGMENTS.md) passes 542 controls
+and 4,662 displayed CLI cells with seventeen unchanged hashes. Original streams
+and explicitly derived same-width ShortText/Memo copies are distinguished from
+ordinary writer output. Six focused decoder/source tests and strict scoped
+Clippy pass, including late malformed tails, TOP/filter refusal and intact-column
+projection. The previous immutable executable reproduces the refusal separately.
+No native writer validity, save/reopen or new mutation permission is established.
+
 ## Explicit Japanese StrConv width conversion
 
 Standalone flags 4/8 now convert qualified Japanese width forms with exact LCID
