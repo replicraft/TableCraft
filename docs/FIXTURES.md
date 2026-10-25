@@ -7559,3 +7559,65 @@ catalog metadata from target activation. No credentials, active content or saved
 queries execute. Native Access execution, automatic provider/path resolution,
 linked query semantics and writes remain unqualified. Fixture databases, decoded
 oracle output, reference JAR and frozen executable remain ignored local artifacts.
+
+
+## Original explicit linked-query inputs
+
+The original [producer](testing/LinkedQueryFixture.java),
+[read-only getter oracle](testing/LinkedQueryOracle.java),
+[public case-addition recipe](testing/LinkedQueryCaseFixture.java),
+[engineering replay](testing/compare_linked_queries.py) and
+[actual CLI replay](testing/compare_linked_cli.py) are repository MIT code. No
+third-party source or fixture bytes were copied. The reviewed Jackcess 5.0.4 JAR
+retains its Apache-2.0 provenance and SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+
+Fresh original pairs generated on 24 October 2026 remain ignored under
+`.cache/tablecraft-fixtures/linked-query-final-20261024/`:
+
+| File | Bytes | SHA-256 |
+| --- | ---: | --- |
+| V2000/frontend.mdb | 118,784 | `87b4664a4c33d77f8f2dd9bfc9fef345f9d311b7d21a0654ae99ed770245b2fd` |
+| V2000/backend.mdb | 139,264 | `05481644426cdd1c4a0979fe99066769e9c0eb9c0ce42cf6ead1b0fd8d8bb6c4` |
+| V2007/frontend.accdb | 352,256 | `30cab0e505164d861954369108914b1d6a181a0c20f8b58b32f7877700a545f8` |
+| V2007/backend.accdb | 368,640 | `54d9c7fb17750b226b5654fca6e48f5a1d59a59b317dbaa49762bf41be6c9a51` |
+| V2016/frontend.accdb | 389,120 | `e9ca3c9f67ef4e8ab7d00915c86683e3e048b8400fdd5d6c3b9adab533d406ef` |
+| V2016/backend.accdb | 405,504 | `d8cc3e957b2c77b449376a3aab0632a5c279c2cbc51ba623665748a47b7e8d9d` |
+| V2019/frontend.accdb | 458,752 | `5d4fc44a9ce067d1d7086ad6868630a8db097987eef529251df9851198e5b60d` |
+| V2019/backend.accdb | 479,232 | `9fd6551c7c3ee11dd1ed78314b953270f91606402b2a97874b7b0798baf325b5` |
+| Mixed/frontend.mdb | 118,784 | `750b077a621aaa9e4150d0c93944e08cc00e4797bdafebc8f9f0d01851b50bf2` |
+| Mixed/backend.accdb | 405,504 | `119daa9054034eecc13d5a335b09b313ebe358b3c4cd4f48df62c7973843d1f5` |
+
+Public table/link builders create ordinary frontend/backend data and explicit
+link aliases. The saved root uses lower-level inert QueryImpl.Row/MSysQueries
+START/SELECT/source/projection/filter/order fragments under the existing syntax
+profile; it is not ordinary saved-query authoring or reference execution evidence.
+The getter oracle opens both supplied originals read-only with expression
+evaluation disabled and throwing link resolvers. All resolver-call counts stay
+zero. Raw ordinary values and pinned metadata getters feed the independent model;
+neither reference SQL nor active content executes.
+
+Each profile has five separately named `control-*` frontend copies authored
+through explicit lower-level MSysObjects updates for provider, ODBC type, Database,
+native identity or link-chain refusals. These are controlled metadata cases,
+not additional native writer qualifications. Five `lowercase-frontend.*` copies
+receive a public createLinkedTable addition whose stored ForeignName is lowercase.
+All original pairs stay unchanged. The final reports pin every selected controlled
+copy and lowercase addition; database bytes are not tracked.
+
+The [feature record](testing/LINKED_NATIVE_QUERIES.md) links separate accepted
+[engineering](testing/results/linked-queries-final-2026-10-24.json) and
+[CLI](testing/results/linked-cli-final-2026-10-24.json) reports: 335 controls and
+1,779 main cells with 49 unchanged hashes for the already-open example, and
+330 controls and the same 1,779 modeled main cells with 48 unchanged hashes for
+the actual CLI. These consumer counts remain separate. CLI zero-limit arguments
+are not counted as runtime depletion evidence; positive-one runtime controls
+are recorded separately. Explicit host paths/handles provide target authority;
+stored Database text does not.
+
+Initial V2016 authoring probes and preliminary example/CLI reports remain
+preserved privately in the ignored corpus directory and are excluded from final
+counts. Reference JAR, compiled outputs, fixture databases and frozen executables
+remain local ignored artifacts. Native Access linked SQL, cross-file atomic
+snapshots, provider/authentication qualification, linked writes and application
+save/reopen remain unqualified.

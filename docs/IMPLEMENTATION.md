@@ -1,5 +1,30 @@
 # Implementation status
 
+## Independent linked-query corpus and scoped verification
+
+Original public-writer/getter pairs now exercise explicit linked queries across
+Jet 4, ACE 2007, ACE 2016, ACE 2019 and a mixed Jet 4/ACE 2016 pair. The
+[engineering replay](testing/results/linked-queries-final-2026-10-24.json) passes
+335 controls; the [actual CLI replay](testing/results/linked-cli-final-2026-10-24.json)
+passes 330. Each checks 1,779 main result cells through a separate executable;
+the overlapping getter model is not counted as independent native SQL evidence.
+All pinned hashes remain unchanged, with reference link traversal disabled.
+
+The [feature evidence](testing/LINKED_NATIVE_QUERIES.md) distinguishes ordinary
+public table/link authoring, lower-level inert saved-query records, controlled
+catalog copies, argument refusals and positive runtime limits. It records joins,
+aggregates, correlated/root saved queries, repeated aliases, unmapped links,
+provider/identity/chain refusals, real stored policy differences and exact
+ForeignName case handling. No reference engine executes SQL or active content.
+
+The [scoped batch record](testing/results/read-query-linked-sources-2026-10-24.json)
+pins final immutable binaries, source digest and lockfiles. Sixty-three focused
+adapter tests and sixteen CLI tests pass, plus scoped strict Clippy, standalone
+no-default Access checking, normal builds, formatting, dependency boundaries and
+41 policy-script tests. No full-workspace suite or Windows Access comparison was
+run for this batch. Linked writes, live shared-file coherence and the wider
+read/query/backend roadmap remain unfinished.
+
 ## Explicit linked targets in the CLI
 
 `query run --database FRONTEND --link ALIAS TARGET` now opens only the target

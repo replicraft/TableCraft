@@ -1,0 +1,74 @@
+{
+  "recorded_at_utc": "2026-10-25T02:02:05.739056+00:00",
+  "base_commit": "fda6f5b5221d5f789b491d259288c41c818c2b0a",
+  "source_snapshot": {
+    "files": 1793,
+    "sha256": "33c748d4ae860d2725923f42e1cf15fd1cdea0361bb28a351f3e860cfd99b5a7",
+    "algorithm": "sorted relative UTF-8 path + NUL + hexadecimal SHA-256(file bytes) + newline",
+    "manifest": ".cache/linked-native-source-20261024.manifest",
+    "scope": "Rust source and tests in CLI, Access, ACE, query, expressions, SQL, foundation and I/O; listing files does not claim all were tested"
+  },
+  "artifacts": {
+    ".cache/tablecraft-bin/linked-native-cli-final-20261024": "820562569b83061a0129c9140ac95f4225849f404c831d4718202c0e40dd1b46",
+    ".cache/tablecraft-bin/linked-native-example-final-20261024": "b8903dd27c229da51687b6607164e053f619b6d09335f8d6d5ad68a980dd3607",
+    "Cargo.lock": "334969af4290e8cc8e10015296551e3ca7cee1d31494f96c8c7230fd7b31f54d",
+    "Cargo.toml": "a0872950f24314dabe8ce92a00e9284d0dafaf29286fbe5da48bf863338234f9",
+    "apps/tablecraft-cli/Cargo.toml": "0423ed1762dd85df975528a675e6a37a910477d358135d437802a644c6b4649b",
+    "crates/backends/tablecraft-access/Cargo.toml": "497f5e8c196eaa0cbc2b6a8b14c01e1e9bcff75d61d268aada68ec593e90c93d"
+  },
+  "focused_tests": {
+    "adapter": {
+      "passed": 63,
+      "breakdown": {
+        "linked_routing": 10,
+        "borrowed_handles": 3,
+        "shared_budget": 7,
+        "existing_compact_regressions": 43
+      }
+    },
+    "cli": {
+      "passed": 16,
+      "targets": {
+        "linked_queries": 9,
+        "cached_queries": 2,
+        "database_collation": 5
+      }
+    }
+  },
+  "verification": {
+    "adapter_scoped_clippy": "passed",
+    "cli_scoped_clippy": "passed",
+    "engineering_example_strict_clippy": "passed",
+    "standalone_access_no_default_check": "passed",
+    "dependency_boundaries": {
+      "passed_packages": 12
+    },
+    "policy_script_tests": {
+      "passed": 41
+    },
+    "full_workspace_test_suite": "not run in this batch",
+    "native_access_comparison": "not run; deferred",
+    "write_scope": "unchanged",
+    "normal_cli_build": "passed",
+    "normal_engineering_example_build": "passed",
+    "workspace_formatting": "passed",
+    "python_replay_compilation": "passed"
+  },
+  "independent_replays": [
+    {
+      "path": "docs/testing/results/linked-queries-final-2026-10-24.json",
+      "controls": 335,
+      "result_cells": 1779,
+      "unchanged_hashes": 49,
+      "sha256": "9050c604aa0e8d9b0211bdb8aa88b334a312a83218bfd62953e84b946dcf963d"
+    },
+    {
+      "path": "docs/testing/results/linked-cli-final-2026-10-24.json",
+      "controls": 330,
+      "main_result_cells": 1779,
+      "unchanged_hashes": 48,
+      "sha256": "d36baf9d794be7d1bbe81b093e0d3780379e145972918942368d29851f498d5d"
+    }
+  ],
+  "scope": "Explicit host-authorized one-hop native reads and buffered CLI queries. Replay paths share underlying getter data; counts are recorded separately. No native linked-SQL, cross-file coherence, provider discovery or linked-write qualification."
+}
