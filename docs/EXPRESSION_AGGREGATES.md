@@ -65,11 +65,17 @@ Every selected row's argument still evaluates normally. An unrepresentable Strin
 is data; invalid constructors, division by zero, cancellation and resource errors
 remain failures. A later operational failure is not hidden by an earlier String
 candidate or a possible minimum/maximum bound. Shared allocations/work remain
-cumulative. Stable global/declared policies and non-String populations retain one
-selected cell. With a resolver and initially Default provenance, String candidates
-are retained under explicit cumulative allocation limits until the final runtime
-policy is known; no argument is evaluated twice. A late field order can otherwise
-make an already discarded candidate the actual minimum/maximum. NULL contributors
+cumulative. Global policies and non-String populations retain one selected cell.
+With a resolver, direct retained fields (including CVar wrappers) keep that path
+only when a metered pass over the group's existing cells proves identical policy
+identity and completion metadata. The pass evaluates no expressions or providers
+and allocates no candidate storage. Other String expressions retain charged
+candidates until the final runtime policy is known; no argument evaluates twice.
+Conservative nondefault static lineage alone cannot establish stability: completed
+construction can discard a numeric/Boolean/date peer's latent Text policy.
+A late field order can make an already discarded candidate the true extremum.
+The final cohort policy and completion apply to every candidate comparison,
+including pairs preceding the contributor that completed the cohort. NULL contributors
 still supply policy, singleton raw Strings require no unused comparison, and
 numeric/Error/String admission remains explicit. This can require more storage
 for dynamic String extrema; it does not define native mixed-policy precedence.
