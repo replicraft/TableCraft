@@ -1,0 +1,31 @@
+{
+  "scope": "Explicit Japanese standalone StrConv4/8, LCID1041; no Windows or Access execution",
+  "model": "Unicode width decomposition properties with local kana NFC/NFD only",
+  "unicode_version": "16.0.0",
+  "success_controls": 5544,
+  "refusal_controls": 30,
+  "cli_commands": 1878,
+  "cli_sha256_before": "91d0b78a139b582711fe665d2ecb0e369db906aa5a9b64c60cd5dd36bb2756de",
+  "cli_sha256_after": "91d0b78a139b582711fe665d2ecb0e369db906aa5a9b64c60cd5dd36bb2756de",
+  "source_sha256_before": {
+    "Cargo.lock": "334969af4290e8cc8e10015296551e3ca7cee1d31494f96c8c7230fd7b31f54d",
+    "Cargo.toml": "a0872950f24314dabe8ce92a00e9284d0dafaf29286fbe5da48bf863338234f9",
+    "crates/query/tablecraft-expressions/Cargo.toml": "83f0bc5a68d94a66f7caf86660eb4be797624d8d4401e6bf0ef0eb5c54b9546e",
+    "crates/query/tablecraft-expressions/src/functions/text/strconv/mod.rs": "350c17ba5175eab65892d607abffd0cb4d61f8fd407091833976ea85455d7417",
+    "crates/query/tablecraft-expressions/src/evaluation/strconv.rs": "25a786ecfe250562edb490be616e92634679e28b12c27fbca2f23f1c786f1b65",
+    "crates/query/tablecraft-expressions/src/functions/text/strconv/flags.rs": "bcc59e516fa55d7963165f844f0908ef20425aa6f121902516b00d8958fc4eb3",
+    "crates/query/tablecraft-expressions/src/functions/text/strconv/width.rs": "3a7424f2176f3dc0fa4bdd1596403aa53d5658d9480fdf701808c5c5e86b97c4",
+    "docs/testing/compare_browsing.py": "4f1ced3ad3970150683ec720a31ec85f8400fa73b4a7b5e2343a33abbf58d67e"
+  },
+  "source_sha256_after": {
+    "Cargo.lock": "334969af4290e8cc8e10015296551e3ca7cee1d31494f96c8c7230fd7b31f54d",
+    "Cargo.toml": "a0872950f24314dabe8ce92a00e9284d0dafaf29286fbe5da48bf863338234f9",
+    "crates/query/tablecraft-expressions/Cargo.toml": "83f0bc5a68d94a66f7caf86660eb4be797624d8d4401e6bf0ef0eb5c54b9546e",
+    "crates/query/tablecraft-expressions/src/functions/text/strconv/mod.rs": "350c17ba5175eab65892d607abffd0cb4d61f8fd407091833976ea85455d7417",
+    "crates/query/tablecraft-expressions/src/evaluation/strconv.rs": "25a786ecfe250562edb490be616e92634679e28b12c27fbca2f23f1c786f1b65",
+    "crates/query/tablecraft-expressions/src/functions/text/strconv/flags.rs": "bcc59e516fa55d7963165f844f0908ef20425aa6f121902516b00d8958fc4eb3",
+    "crates/query/tablecraft-expressions/src/functions/text/strconv/width.rs": "3a7424f2176f3dc0fa4bdd1596403aa53d5658d9480fdf701808c5c5e86b97c4",
+    "docs/testing/compare_browsing.py": "4f1ced3ad3970150683ec720a31ec85f8400fa73b4a7b5e2343a33abbf58d67e"
+  },
+  "runner_sha256": "2099f5b4939cb5c49e167c506d8f1137d9858ba54c85d38fa684fd731fc674e5"
+}

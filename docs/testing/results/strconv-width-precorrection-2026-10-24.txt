@@ -1,0 +1,11 @@
+Excluded pre-correction independent replay (diagnostic captured after run).
+Executable: .cache/tablecraft-bin/strconv-width-20261024
+SHA256: 1d32ba0d0d80ec47e61e952a856d8813c6cafc71cb512e130bba8fea11cbcc97
+The first attempt stopped at a bare equality assertion. A diagnostic-only runner
+change repeated the attempt and captured this actual discrepancy:
+
+AssertionError: ('eval', 4, "SELECT StrConv(('⦅'),4,1041),StrConv(CVar(Mid(('⦅'),1)),4,1041),StrConv(LeftB(('⦅'),LenB(('⦅'))),4,1041)", [['"⦅"', '"⦅"', '"⦅"']], [['"｟"', '"｟"', '"｟"']])
+
+Both attempts failed; neither is passing evidence. Final source now adds the
+Unicode width pairs U+2985/U+2986 <-> U+FF5F/U+FF60 and regression goldens.
+No complete control count is attributed to either failed attempt.

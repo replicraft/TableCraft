@@ -94,7 +94,8 @@ tempfile = "3.27.0"
 # Explicit legacy character-code decoding (allocation-free consumer)
 encoding_rs = { version = "0.8.42", default-features = false }
 
-# Explicit Unicode casing and collation with compiled data
+# Explicit Unicode casing, qualified kana composition and collation
+unicode-normalization = { version = "0.1.25", default-features = false }
 icu_casemap = { version = "2.3.0", default-features = false, features = ["compiled_data"] }
 icu_collator = { version = "2.3.1", default-features = false, features = ["compiled_data"] }
 icu_locale_core = { version = "2.3.0", default-features = false, features = ["alloc"] }

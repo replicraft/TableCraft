@@ -1,6 +1,6 @@
 use super::super::casing::Casing;
 #[cfg(feature = "sql")]
-use super::KanaConversion;
+use super::{KanaConversion, WidthConversion};
 use crate::EvalError;
 
 const CASE_MASK: i16 = 3;
@@ -109,12 +109,15 @@ impl Conversion {
 pub(crate) enum Operation {
     Standard(Conversion),
     Kana(KanaConversion),
+    Width(WidthConversion),
 }
 
 #[cfg(feature = "sql")]
 impl Operation {
     pub(crate) fn from_code(code: i16) -> Result<Self, EvalError> {
         match code {
+            WIDE => Ok(Self::Width(WidthConversion::Wide)),
+            NARROW => Ok(Self::Width(WidthConversion::Narrow)),
             KATAKANA => Ok(Self::Kana(KanaConversion::Katakana)),
             HIRAGANA => Ok(Self::Kana(KanaConversion::Hiragana)),
             _ => Conversion::from_code(code).map(Self::Standard),

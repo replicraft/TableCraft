@@ -51,7 +51,6 @@ fn kana_controls_keep_explicit_locale_raw_refusals_and_eager_failures() {
         ("StrConv('あ',48,1041)", EvalError::Domain),
         ("StrConv('あ',17,1041)", EvalError::UnsupportedExpression),
         ("StrConv('あ',80,1041)", EvalError::UnsupportedExpression),
-        ("StrConv('あ',4,1041)", EvalError::UnsupportedExpression),
         ("StrConv('あ',16,NULL)", EvalError::InvalidNullConversion),
         ("StrConv('あ',16,CVErr(7))", EvalError::TypeMismatch),
         (

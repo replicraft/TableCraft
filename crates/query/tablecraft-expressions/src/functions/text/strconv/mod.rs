@@ -2,6 +2,7 @@
 mod flags;
 mod kana;
 mod locale;
+mod width;
 
 use super::{
     code_page::CharacterCodePage,
@@ -13,6 +14,7 @@ pub(crate) use flags::Operation;
 pub use flags::{CaseConversion, Conversion, EncodingConversion};
 pub use kana::KanaConversion;
 pub use locale::LocaleProfile;
+pub use width::WidthConversion;
 
 /// Convert representable Unicode characters to exact single-byte string data.
 /// Missing page selection permits ASCII only. No replacement or best-fit mapping.

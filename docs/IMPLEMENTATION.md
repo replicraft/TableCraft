@@ -1,5 +1,24 @@
 # Implementation status
 
+## Explicit Japanese StrConv width conversion
+
+Standalone flags 4/8 now convert qualified Japanese width forms with exact LCID
+1041, including ASCII, ideographic space, white parentheses and Katakana voiced
+pairs. Character-level unicode-normalization composition/decomposition applies
+only to qualified kana. Unrelated compatibility text and standalone spacing marks
+retain their representations; unsupported combinations and broader profiles fail.
+The legacy public conversion recipe still refuses width flags.
+
+The [width contract](STRCONV.md#explicit-japanese-width-conversion) records primary
+references and the exact profile. Twenty expression/kernel and eight query tests
+pass, with strict SQL/minimal expression and focused query Clippy. The independent
+Unicode-property model passes 5,544 successful results and 30 refusals across both
+CLI modes. Its initial omitted white-parenthesis pair failure is retained as an
+excluded attempt. [Dependency records](DEPENDENCIES.md#qualified-japanese-width-composition-24-october-2026)
+document the working library, resolved features and inspected licenses. Dependency
+boundaries and all 41 policy-script tests pass. Native Access/NLS equivalence and
+the remaining read/query/backend acceptance work stay open.
+
 ## Consolidated byte-result and kana query regression
 
 The combined all-feature query package passes 1,089 tests across 199 result
