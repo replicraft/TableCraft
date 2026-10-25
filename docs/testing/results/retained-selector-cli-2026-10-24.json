@@ -1,0 +1,203 @@
+{
+  "scope": "CLI retained conditional-control smoke; no native error-precedence qualification",
+  "cli": ".cache/tablecraft-bin/saved32-selector-cli-20261024",
+  "cli_sha256": "2762809bf145adcfc3631a713ee36b3008e63503d9c94c19570dec9bc6322d7f",
+  "source_commit": "4443cd37",
+  "controls": 12,
+  "development_correction": "Initial ad hoc Switch failure probe mistakenly used three arguments; corrected to two complete condition/value pairs. No runtime change or initial accepted report.",
+  "failures": [],
+  "observations": [
+    {
+      "command": [
+        ".cache/tablecraft-bin/saved32-selector-cli-20261024",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT IIf(ChrW(49),11,22) AS Chosen",
+        "--number-format",
+        "invariant"
+      ],
+      "exit_code": 0,
+      "stdout": "Chosen\n11\n",
+      "stderr": "",
+      "expected_refusal": false
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/saved32-selector-cli-20261024",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT IIf(ChrW(55296),1/0,0) AS Chosen",
+        "--number-format",
+        "invariant"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: column 1: division by zero\n",
+      "expected_refusal": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/saved32-selector-cli-20261024",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT Switch(ChrW(49),11,True,22) AS Chosen",
+        "--number-format",
+        "invariant"
+      ],
+      "exit_code": 0,
+      "stdout": "Chosen\n11\n",
+      "stderr": "",
+      "expected_refusal": false
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/saved32-selector-cli-20261024",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT Switch(ChrW(55296),1/0,True,0) AS Chosen",
+        "--number-format",
+        "invariant"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: column 1: division by zero\n",
+      "expected_refusal": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/saved32-selector-cli-20261024",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT Choose(ChrW(50),11,22) AS Chosen",
+        "--number-format",
+        "invariant"
+      ],
+      "exit_code": 0,
+      "stdout": "Chosen\n22\n",
+      "stderr": "",
+      "expected_refusal": false
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/saved32-selector-cli-20261024",
+        "--format",
+        "tsv",
+        "query",
+        "eval",
+        "SELECT Choose(ChrW(55296),1/0,0) AS Chosen",
+        "--number-format",
+        "invariant"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: column 1: division by zero\n",
+      "expected_refusal": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/saved32-selector-cli-20261024",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT IIf(ChrW(49),11,22) AS Chosen",
+        "--number-format",
+        "invariant"
+      ],
+      "exit_code": 0,
+      "stdout": "Chosen\n11\n",
+      "stderr": "",
+      "expected_refusal": false
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/saved32-selector-cli-20261024",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT IIf(ChrW(55296),1/0,0) AS Chosen",
+        "--number-format",
+        "invariant"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: division by zero\n",
+      "expected_refusal": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/saved32-selector-cli-20261024",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Switch(ChrW(49),11,True,22) AS Chosen",
+        "--number-format",
+        "invariant"
+      ],
+      "exit_code": 0,
+      "stdout": "Chosen\n11\n",
+      "stderr": "",
+      "expected_refusal": false
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/saved32-selector-cli-20261024",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Switch(ChrW(55296),1/0,True,0) AS Chosen",
+        "--number-format",
+        "invariant"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: division by zero\n",
+      "expected_refusal": true
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/saved32-selector-cli-20261024",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Choose(ChrW(50),11,22) AS Chosen",
+        "--number-format",
+        "invariant"
+      ],
+      "exit_code": 0,
+      "stdout": "Chosen\n22\n",
+      "stderr": "",
+      "expected_refusal": false
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/saved32-selector-cli-20261024",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Choose(ChrW(55296),1/0,0) AS Chosen",
+        "--number-format",
+        "invariant"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: division by zero\n",
+      "expected_refusal": true
+    }
+  ]
+}

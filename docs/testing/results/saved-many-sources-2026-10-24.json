@@ -1,0 +1,826 @@
+{
+  "scope": "Original public-builder fragments and getter-only models; native Access unrun",
+  "commands": 60,
+  "reconstruction_comparisons": 16,
+  "executions": 16,
+  "boundary_refusals": 12,
+  "modeled_cells": 20,
+  "hashes": {
+    ".cache/tablecraft-fixtures/jackcess-5.0.4.jar": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    ".cache/tablecraft-bin/saved32-selector-cli-20261024": "2762809bf145adcfc3631a713ee36b3008e63503d9c94c19570dec9bc6322d7f",
+    "docs/testing/compare_saved_many_sources.py": "ff9a6e6a33aa8c97550cd63bbcdc421e9035ef2225e752e8db9d6f421daf50d1",
+    "docs/testing/SavedManySourcesFixture.java": "e46e9096b47611d0618472d6c546752ef2bc83ea5ef38d9861d8eebd8895b292",
+    "crates/backends/tablecraft-access/src/saved/fragments.rs": "5241380aa943fdca97539de5b13f4a1642807cc71cc91331c23874cf1cd9f56e",
+    "crates/backends/tablecraft-access/src/saved/relations/forest.rs": "5279dcd8f99e4762f4369b6b0aa0ef831611d7a51a13b36cdf23dba70f5fe2c2",
+    "crates/query/tablecraft-query/src/profile.rs": "e569062aabcd6d76d1f2350c6fe528312d95e2a43da8adace767556a615ce1cd",
+    ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/generation.json": "ca7ea89dfd76b4cfb23d424ddfe15c441266bc2878ed57587aa6f10d1b69e55f",
+    ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/classes/SavedManySourcesFixture.class": "c8090b808d6ff293cab0d95ba7a554f79df14162a2791e8e5c40fbaabaebdac1",
+    ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2000.mdb": "528297c6d1df8d0fd882de0b74471cccb8493971909e8b2e2e87119e0eae76da",
+    ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2000.getters.tsv": "7aa787967f5bea448ecae6956eb19ced2e74e79e488dd3e2084103f7706a532e",
+    ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2007.accdb": "19d110cd73cd8c00d9dcaa113167235b5460e410df224a02e12362c777ba2c68",
+    ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2007.getters.tsv": "7aa787967f5bea448ecae6956eb19ced2e74e79e488dd3e2084103f7706a532e",
+    ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2016.accdb": "2c3ad5e886e7c0f8013d0cfa0c65d5650b80517a75739913956b52cfef831f28",
+    ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2016.getters.tsv": "7aa787967f5bea448ecae6956eb19ced2e74e79e488dd3e2084103f7706a532e",
+    ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2019.accdb": "a4daea07a15993fdc0ccbbe12b50e411409bc43a7e0dc15a740ebf310a3cc598",
+    ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2019.getters.tsv": "7aa787967f5bea448ecae6956eb19ced2e74e79e488dd3e2084103f7706a532e"
+  },
+  "unchanged": true,
+  "observations": [
+    {
+      "arguments": [
+        "query",
+        "parse",
+        "SELECT [a16].[ID] AS Chosen FROM Items AS a0, Items AS a1, Items AS a2, Items AS a3, Items AS a4, Items AS a5, Items AS a6, Items AS a7, Items AS a8, Items AS a9, Items AS a10, Items AS a11, Items AS a12, Items AS a13, Items AS a14, Items AS a15, Items AS a16;"
+      ],
+      "exit": 0,
+      "stdout_sha256": "dff80d8ebe2d238755e2e101bbe913498c6f7b187572298ff30b2281a8fe9f90",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "query",
+        "saved",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2000.mdb",
+        "Sources17"
+      ],
+      "exit": 0,
+      "stdout_sha256": "dff80d8ebe2d238755e2e101bbe913498c6f7b187572298ff30b2281a8fe9f90",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2000.mdb",
+        "--saved",
+        "Sources17"
+      ],
+      "exit": 0,
+      "stdout_sha256": "ca62faabf0b311a2cd883d225f055bb2668e51f1e4884be3de3bd69034833bcc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "query",
+        "parse",
+        "SELECT [a31].[ID] AS Chosen FROM Items AS a0, Items AS a1, Items AS a2, Items AS a3, Items AS a4, Items AS a5, Items AS a6, Items AS a7, Items AS a8, Items AS a9, Items AS a10, Items AS a11, Items AS a12, Items AS a13, Items AS a14, Items AS a15, Items AS a16, Items AS a17, Items AS a18, Items AS a19, Items AS a20, Items AS a21, Items AS a22, Items AS a23, Items AS a24, Items AS a25, Items AS a26, Items AS a27, Items AS a28, Items AS a29, Items AS a30, Items AS a31;"
+      ],
+      "exit": 0,
+      "stdout_sha256": "4bd01dd2033f22858fa35298632e185f346b23f63a7b5c1a07bc017b99079a5a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "query",
+        "saved",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2000.mdb",
+        "Sources32"
+      ],
+      "exit": 0,
+      "stdout_sha256": "4bd01dd2033f22858fa35298632e185f346b23f63a7b5c1a07bc017b99079a5a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2000.mdb",
+        "--saved",
+        "Sources32"
+      ],
+      "exit": 0,
+      "stdout_sha256": "ca62faabf0b311a2cd883d225f055bb2668e51f1e4884be3de3bd69034833bcc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "query",
+        "parse",
+        "SELECT [a31].[ID] AS Chosen FROM Items AS a0 INNER JOIN Items AS a31 ON [a0].[ID]=[a31].[ID], Items AS a1 INNER JOIN Items AS a30 ON [a1].[ID]=[a30].[ID], Items AS a2 INNER JOIN Items AS a29 ON [a2].[ID]=[a29].[ID], Items AS a3 INNER JOIN Items AS a28 ON [a3].[ID]=[a28].[ID], Items AS a4 INNER JOIN Items AS a27 ON [a4].[ID]=[a27].[ID], Items AS a5 INNER JOIN Items AS a26 ON [a5].[ID]=[a26].[ID], Items AS a6 INNER JOIN Items AS a25 ON [a6].[ID]=[a25].[ID], Items AS a7 INNER JOIN Items AS a24 ON [a7].[ID]=[a24].[ID], Items AS a8 INNER JOIN Items AS a23 ON [a8].[ID]=[a23].[ID], Items AS a9 INNER JOIN Items AS a22 ON [a9].[ID]=[a22].[ID], Items AS a10 INNER JOIN Items AS a21 ON [a10].[ID]=[a21].[ID], Items AS a11 INNER JOIN Items AS a20 ON [a11].[ID]=[a20].[ID], Items AS a12 INNER JOIN Items AS a19 ON [a12].[ID]=[a19].[ID], Items AS a13 INNER JOIN Items AS a18 ON [a13].[ID]=[a18].[ID], Items AS a14 INNER JOIN Items AS a17 ON [a14].[ID]=[a17].[ID], Items AS a15 INNER JOIN Items AS a16 ON [a15].[ID]=[a16].[ID];"
+      ],
+      "exit": 0,
+      "stdout_sha256": "e900417502d46656702738392fe3f855d3367cb81e26cc9863f214bd7012342d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "query",
+        "saved",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2000.mdb",
+        "Mixed32"
+      ],
+      "exit": 0,
+      "stdout_sha256": "e900417502d46656702738392fe3f855d3367cb81e26cc9863f214bd7012342d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2000.mdb",
+        "--saved",
+        "Mixed32"
+      ],
+      "exit": 0,
+      "stdout_sha256": "ca62faabf0b311a2cd883d225f055bb2668e51f1e4884be3de3bd69034833bcc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "query",
+        "parse",
+        "TRANSFORM Count(*) AS Total SELECT 0 AS Bucket FROM Items AS a0, Items AS a1, Items AS a2, Items AS a3, Items AS a4, Items AS a5, Items AS a6, Items AS a7, Items AS a8, Items AS a9, Items AS a10, Items AS a11, Items AS a12, Items AS a13, Items AS a14, Items AS a15, Items AS a16, Items AS a17, Items AS a18, Items AS a19, Items AS a20, Items AS a21, Items AS a22, Items AS a23, Items AS a24, Items AS a25, Items AS a26, Items AS a27, Items AS a28, Items AS a29, Items AS a30, Items AS a31 GROUP BY 0 PIVOT a31.ID IN(7);"
+      ],
+      "exit": 0,
+      "stdout_sha256": "73682fdf82283023772610b72d03e247949c010faf27db8bee341783216beae8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "query",
+        "saved",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2000.mdb",
+        "Cross32"
+      ],
+      "exit": 0,
+      "stdout_sha256": "73682fdf82283023772610b72d03e247949c010faf27db8bee341783216beae8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2000.mdb",
+        "--saved",
+        "Cross32"
+      ],
+      "exit": 0,
+      "stdout_sha256": "580bf8bc75d0f5484b3740f8da82be84b2b4c0c812ae18f72f9648072736ed97",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "query",
+        "saved",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2000.mdb",
+        "Sources33"
+      ],
+      "exit": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "45a82170f6c9392443b74afc571dda3dc91d493fbf340c9eff47d19c8a56fe1f",
+      "expected_error": "unsupported"
+    },
+    {
+      "arguments": [
+        "query",
+        "saved",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2000.mdb",
+        "Cross33"
+      ],
+      "exit": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "45a82170f6c9392443b74afc571dda3dc91d493fbf340c9eff47d19c8a56fe1f",
+      "expected_error": "unsupported"
+    },
+    {
+      "arguments": [
+        "query",
+        "saved",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2000.mdb",
+        "Joins17"
+      ],
+      "exit": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "f200147c75b244084c04fb29f75ab93ab8f6ff2b75129485f15ab74a1ab8f5d8",
+      "expected_error": "syntax limit"
+    },
+    {
+      "arguments": [
+        "query",
+        "parse",
+        "SELECT [a16].[ID] AS Chosen FROM Items AS a0, Items AS a1, Items AS a2, Items AS a3, Items AS a4, Items AS a5, Items AS a6, Items AS a7, Items AS a8, Items AS a9, Items AS a10, Items AS a11, Items AS a12, Items AS a13, Items AS a14, Items AS a15, Items AS a16;"
+      ],
+      "exit": 0,
+      "stdout_sha256": "dff80d8ebe2d238755e2e101bbe913498c6f7b187572298ff30b2281a8fe9f90",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "query",
+        "saved",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2007.accdb",
+        "Sources17"
+      ],
+      "exit": 0,
+      "stdout_sha256": "dff80d8ebe2d238755e2e101bbe913498c6f7b187572298ff30b2281a8fe9f90",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2007.accdb",
+        "--saved",
+        "Sources17"
+      ],
+      "exit": 0,
+      "stdout_sha256": "ca62faabf0b311a2cd883d225f055bb2668e51f1e4884be3de3bd69034833bcc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "query",
+        "parse",
+        "SELECT [a31].[ID] AS Chosen FROM Items AS a0, Items AS a1, Items AS a2, Items AS a3, Items AS a4, Items AS a5, Items AS a6, Items AS a7, Items AS a8, Items AS a9, Items AS a10, Items AS a11, Items AS a12, Items AS a13, Items AS a14, Items AS a15, Items AS a16, Items AS a17, Items AS a18, Items AS a19, Items AS a20, Items AS a21, Items AS a22, Items AS a23, Items AS a24, Items AS a25, Items AS a26, Items AS a27, Items AS a28, Items AS a29, Items AS a30, Items AS a31;"
+      ],
+      "exit": 0,
+      "stdout_sha256": "4bd01dd2033f22858fa35298632e185f346b23f63a7b5c1a07bc017b99079a5a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "query",
+        "saved",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2007.accdb",
+        "Sources32"
+      ],
+      "exit": 0,
+      "stdout_sha256": "4bd01dd2033f22858fa35298632e185f346b23f63a7b5c1a07bc017b99079a5a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2007.accdb",
+        "--saved",
+        "Sources32"
+      ],
+      "exit": 0,
+      "stdout_sha256": "ca62faabf0b311a2cd883d225f055bb2668e51f1e4884be3de3bd69034833bcc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "query",
+        "parse",
+        "SELECT [a31].[ID] AS Chosen FROM Items AS a0 INNER JOIN Items AS a31 ON [a0].[ID]=[a31].[ID], Items AS a1 INNER JOIN Items AS a30 ON [a1].[ID]=[a30].[ID], Items AS a2 INNER JOIN Items AS a29 ON [a2].[ID]=[a29].[ID], Items AS a3 INNER JOIN Items AS a28 ON [a3].[ID]=[a28].[ID], Items AS a4 INNER JOIN Items AS a27 ON [a4].[ID]=[a27].[ID], Items AS a5 INNER JOIN Items AS a26 ON [a5].[ID]=[a26].[ID], Items AS a6 INNER JOIN Items AS a25 ON [a6].[ID]=[a25].[ID], Items AS a7 INNER JOIN Items AS a24 ON [a7].[ID]=[a24].[ID], Items AS a8 INNER JOIN Items AS a23 ON [a8].[ID]=[a23].[ID], Items AS a9 INNER JOIN Items AS a22 ON [a9].[ID]=[a22].[ID], Items AS a10 INNER JOIN Items AS a21 ON [a10].[ID]=[a21].[ID], Items AS a11 INNER JOIN Items AS a20 ON [a11].[ID]=[a20].[ID], Items AS a12 INNER JOIN Items AS a19 ON [a12].[ID]=[a19].[ID], Items AS a13 INNER JOIN Items AS a18 ON [a13].[ID]=[a18].[ID], Items AS a14 INNER JOIN Items AS a17 ON [a14].[ID]=[a17].[ID], Items AS a15 INNER JOIN Items AS a16 ON [a15].[ID]=[a16].[ID];"
+      ],
+      "exit": 0,
+      "stdout_sha256": "e900417502d46656702738392fe3f855d3367cb81e26cc9863f214bd7012342d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "query",
+        "saved",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2007.accdb",
+        "Mixed32"
+      ],
+      "exit": 0,
+      "stdout_sha256": "e900417502d46656702738392fe3f855d3367cb81e26cc9863f214bd7012342d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2007.accdb",
+        "--saved",
+        "Mixed32"
+      ],
+      "exit": 0,
+      "stdout_sha256": "ca62faabf0b311a2cd883d225f055bb2668e51f1e4884be3de3bd69034833bcc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "query",
+        "parse",
+        "TRANSFORM Count(*) AS Total SELECT 0 AS Bucket FROM Items AS a0, Items AS a1, Items AS a2, Items AS a3, Items AS a4, Items AS a5, Items AS a6, Items AS a7, Items AS a8, Items AS a9, Items AS a10, Items AS a11, Items AS a12, Items AS a13, Items AS a14, Items AS a15, Items AS a16, Items AS a17, Items AS a18, Items AS a19, Items AS a20, Items AS a21, Items AS a22, Items AS a23, Items AS a24, Items AS a25, Items AS a26, Items AS a27, Items AS a28, Items AS a29, Items AS a30, Items AS a31 GROUP BY 0 PIVOT a31.ID IN(7);"
+      ],
+      "exit": 0,
+      "stdout_sha256": "73682fdf82283023772610b72d03e247949c010faf27db8bee341783216beae8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "query",
+        "saved",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2007.accdb",
+        "Cross32"
+      ],
+      "exit": 0,
+      "stdout_sha256": "73682fdf82283023772610b72d03e247949c010faf27db8bee341783216beae8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2007.accdb",
+        "--saved",
+        "Cross32"
+      ],
+      "exit": 0,
+      "stdout_sha256": "580bf8bc75d0f5484b3740f8da82be84b2b4c0c812ae18f72f9648072736ed97",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "query",
+        "saved",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2007.accdb",
+        "Sources33"
+      ],
+      "exit": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "45a82170f6c9392443b74afc571dda3dc91d493fbf340c9eff47d19c8a56fe1f",
+      "expected_error": "unsupported"
+    },
+    {
+      "arguments": [
+        "query",
+        "saved",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2007.accdb",
+        "Cross33"
+      ],
+      "exit": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "45a82170f6c9392443b74afc571dda3dc91d493fbf340c9eff47d19c8a56fe1f",
+      "expected_error": "unsupported"
+    },
+    {
+      "arguments": [
+        "query",
+        "saved",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2007.accdb",
+        "Joins17"
+      ],
+      "exit": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "f200147c75b244084c04fb29f75ab93ab8f6ff2b75129485f15ab74a1ab8f5d8",
+      "expected_error": "syntax limit"
+    },
+    {
+      "arguments": [
+        "query",
+        "parse",
+        "SELECT [a16].[ID] AS Chosen FROM Items AS a0, Items AS a1, Items AS a2, Items AS a3, Items AS a4, Items AS a5, Items AS a6, Items AS a7, Items AS a8, Items AS a9, Items AS a10, Items AS a11, Items AS a12, Items AS a13, Items AS a14, Items AS a15, Items AS a16;"
+      ],
+      "exit": 0,
+      "stdout_sha256": "dff80d8ebe2d238755e2e101bbe913498c6f7b187572298ff30b2281a8fe9f90",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "query",
+        "saved",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2016.accdb",
+        "Sources17"
+      ],
+      "exit": 0,
+      "stdout_sha256": "dff80d8ebe2d238755e2e101bbe913498c6f7b187572298ff30b2281a8fe9f90",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2016.accdb",
+        "--saved",
+        "Sources17"
+      ],
+      "exit": 0,
+      "stdout_sha256": "ca62faabf0b311a2cd883d225f055bb2668e51f1e4884be3de3bd69034833bcc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "query",
+        "parse",
+        "SELECT [a31].[ID] AS Chosen FROM Items AS a0, Items AS a1, Items AS a2, Items AS a3, Items AS a4, Items AS a5, Items AS a6, Items AS a7, Items AS a8, Items AS a9, Items AS a10, Items AS a11, Items AS a12, Items AS a13, Items AS a14, Items AS a15, Items AS a16, Items AS a17, Items AS a18, Items AS a19, Items AS a20, Items AS a21, Items AS a22, Items AS a23, Items AS a24, Items AS a25, Items AS a26, Items AS a27, Items AS a28, Items AS a29, Items AS a30, Items AS a31;"
+      ],
+      "exit": 0,
+      "stdout_sha256": "4bd01dd2033f22858fa35298632e185f346b23f63a7b5c1a07bc017b99079a5a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "query",
+        "saved",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2016.accdb",
+        "Sources32"
+      ],
+      "exit": 0,
+      "stdout_sha256": "4bd01dd2033f22858fa35298632e185f346b23f63a7b5c1a07bc017b99079a5a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2016.accdb",
+        "--saved",
+        "Sources32"
+      ],
+      "exit": 0,
+      "stdout_sha256": "ca62faabf0b311a2cd883d225f055bb2668e51f1e4884be3de3bd69034833bcc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "query",
+        "parse",
+        "SELECT [a31].[ID] AS Chosen FROM Items AS a0 INNER JOIN Items AS a31 ON [a0].[ID]=[a31].[ID], Items AS a1 INNER JOIN Items AS a30 ON [a1].[ID]=[a30].[ID], Items AS a2 INNER JOIN Items AS a29 ON [a2].[ID]=[a29].[ID], Items AS a3 INNER JOIN Items AS a28 ON [a3].[ID]=[a28].[ID], Items AS a4 INNER JOIN Items AS a27 ON [a4].[ID]=[a27].[ID], Items AS a5 INNER JOIN Items AS a26 ON [a5].[ID]=[a26].[ID], Items AS a6 INNER JOIN Items AS a25 ON [a6].[ID]=[a25].[ID], Items AS a7 INNER JOIN Items AS a24 ON [a7].[ID]=[a24].[ID], Items AS a8 INNER JOIN Items AS a23 ON [a8].[ID]=[a23].[ID], Items AS a9 INNER JOIN Items AS a22 ON [a9].[ID]=[a22].[ID], Items AS a10 INNER JOIN Items AS a21 ON [a10].[ID]=[a21].[ID], Items AS a11 INNER JOIN Items AS a20 ON [a11].[ID]=[a20].[ID], Items AS a12 INNER JOIN Items AS a19 ON [a12].[ID]=[a19].[ID], Items AS a13 INNER JOIN Items AS a18 ON [a13].[ID]=[a18].[ID], Items AS a14 INNER JOIN Items AS a17 ON [a14].[ID]=[a17].[ID], Items AS a15 INNER JOIN Items AS a16 ON [a15].[ID]=[a16].[ID];"
+      ],
+      "exit": 0,
+      "stdout_sha256": "e900417502d46656702738392fe3f855d3367cb81e26cc9863f214bd7012342d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "query",
+        "saved",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2016.accdb",
+        "Mixed32"
+      ],
+      "exit": 0,
+      "stdout_sha256": "e900417502d46656702738392fe3f855d3367cb81e26cc9863f214bd7012342d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2016.accdb",
+        "--saved",
+        "Mixed32"
+      ],
+      "exit": 0,
+      "stdout_sha256": "ca62faabf0b311a2cd883d225f055bb2668e51f1e4884be3de3bd69034833bcc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "query",
+        "parse",
+        "TRANSFORM Count(*) AS Total SELECT 0 AS Bucket FROM Items AS a0, Items AS a1, Items AS a2, Items AS a3, Items AS a4, Items AS a5, Items AS a6, Items AS a7, Items AS a8, Items AS a9, Items AS a10, Items AS a11, Items AS a12, Items AS a13, Items AS a14, Items AS a15, Items AS a16, Items AS a17, Items AS a18, Items AS a19, Items AS a20, Items AS a21, Items AS a22, Items AS a23, Items AS a24, Items AS a25, Items AS a26, Items AS a27, Items AS a28, Items AS a29, Items AS a30, Items AS a31 GROUP BY 0 PIVOT a31.ID IN(7);"
+      ],
+      "exit": 0,
+      "stdout_sha256": "73682fdf82283023772610b72d03e247949c010faf27db8bee341783216beae8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "query",
+        "saved",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2016.accdb",
+        "Cross32"
+      ],
+      "exit": 0,
+      "stdout_sha256": "73682fdf82283023772610b72d03e247949c010faf27db8bee341783216beae8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2016.accdb",
+        "--saved",
+        "Cross32"
+      ],
+      "exit": 0,
+      "stdout_sha256": "580bf8bc75d0f5484b3740f8da82be84b2b4c0c812ae18f72f9648072736ed97",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "query",
+        "saved",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2016.accdb",
+        "Sources33"
+      ],
+      "exit": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "45a82170f6c9392443b74afc571dda3dc91d493fbf340c9eff47d19c8a56fe1f",
+      "expected_error": "unsupported"
+    },
+    {
+      "arguments": [
+        "query",
+        "saved",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2016.accdb",
+        "Cross33"
+      ],
+      "exit": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "45a82170f6c9392443b74afc571dda3dc91d493fbf340c9eff47d19c8a56fe1f",
+      "expected_error": "unsupported"
+    },
+    {
+      "arguments": [
+        "query",
+        "saved",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2016.accdb",
+        "Joins17"
+      ],
+      "exit": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "f200147c75b244084c04fb29f75ab93ab8f6ff2b75129485f15ab74a1ab8f5d8",
+      "expected_error": "syntax limit"
+    },
+    {
+      "arguments": [
+        "query",
+        "parse",
+        "SELECT [a16].[ID] AS Chosen FROM Items AS a0, Items AS a1, Items AS a2, Items AS a3, Items AS a4, Items AS a5, Items AS a6, Items AS a7, Items AS a8, Items AS a9, Items AS a10, Items AS a11, Items AS a12, Items AS a13, Items AS a14, Items AS a15, Items AS a16;"
+      ],
+      "exit": 0,
+      "stdout_sha256": "dff80d8ebe2d238755e2e101bbe913498c6f7b187572298ff30b2281a8fe9f90",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "query",
+        "saved",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2019.accdb",
+        "Sources17"
+      ],
+      "exit": 0,
+      "stdout_sha256": "dff80d8ebe2d238755e2e101bbe913498c6f7b187572298ff30b2281a8fe9f90",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2019.accdb",
+        "--saved",
+        "Sources17"
+      ],
+      "exit": 0,
+      "stdout_sha256": "ca62faabf0b311a2cd883d225f055bb2668e51f1e4884be3de3bd69034833bcc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "query",
+        "parse",
+        "SELECT [a31].[ID] AS Chosen FROM Items AS a0, Items AS a1, Items AS a2, Items AS a3, Items AS a4, Items AS a5, Items AS a6, Items AS a7, Items AS a8, Items AS a9, Items AS a10, Items AS a11, Items AS a12, Items AS a13, Items AS a14, Items AS a15, Items AS a16, Items AS a17, Items AS a18, Items AS a19, Items AS a20, Items AS a21, Items AS a22, Items AS a23, Items AS a24, Items AS a25, Items AS a26, Items AS a27, Items AS a28, Items AS a29, Items AS a30, Items AS a31;"
+      ],
+      "exit": 0,
+      "stdout_sha256": "4bd01dd2033f22858fa35298632e185f346b23f63a7b5c1a07bc017b99079a5a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "query",
+        "saved",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2019.accdb",
+        "Sources32"
+      ],
+      "exit": 0,
+      "stdout_sha256": "4bd01dd2033f22858fa35298632e185f346b23f63a7b5c1a07bc017b99079a5a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2019.accdb",
+        "--saved",
+        "Sources32"
+      ],
+      "exit": 0,
+      "stdout_sha256": "ca62faabf0b311a2cd883d225f055bb2668e51f1e4884be3de3bd69034833bcc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "query",
+        "parse",
+        "SELECT [a31].[ID] AS Chosen FROM Items AS a0 INNER JOIN Items AS a31 ON [a0].[ID]=[a31].[ID], Items AS a1 INNER JOIN Items AS a30 ON [a1].[ID]=[a30].[ID], Items AS a2 INNER JOIN Items AS a29 ON [a2].[ID]=[a29].[ID], Items AS a3 INNER JOIN Items AS a28 ON [a3].[ID]=[a28].[ID], Items AS a4 INNER JOIN Items AS a27 ON [a4].[ID]=[a27].[ID], Items AS a5 INNER JOIN Items AS a26 ON [a5].[ID]=[a26].[ID], Items AS a6 INNER JOIN Items AS a25 ON [a6].[ID]=[a25].[ID], Items AS a7 INNER JOIN Items AS a24 ON [a7].[ID]=[a24].[ID], Items AS a8 INNER JOIN Items AS a23 ON [a8].[ID]=[a23].[ID], Items AS a9 INNER JOIN Items AS a22 ON [a9].[ID]=[a22].[ID], Items AS a10 INNER JOIN Items AS a21 ON [a10].[ID]=[a21].[ID], Items AS a11 INNER JOIN Items AS a20 ON [a11].[ID]=[a20].[ID], Items AS a12 INNER JOIN Items AS a19 ON [a12].[ID]=[a19].[ID], Items AS a13 INNER JOIN Items AS a18 ON [a13].[ID]=[a18].[ID], Items AS a14 INNER JOIN Items AS a17 ON [a14].[ID]=[a17].[ID], Items AS a15 INNER JOIN Items AS a16 ON [a15].[ID]=[a16].[ID];"
+      ],
+      "exit": 0,
+      "stdout_sha256": "e900417502d46656702738392fe3f855d3367cb81e26cc9863f214bd7012342d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "query",
+        "saved",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2019.accdb",
+        "Mixed32"
+      ],
+      "exit": 0,
+      "stdout_sha256": "e900417502d46656702738392fe3f855d3367cb81e26cc9863f214bd7012342d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2019.accdb",
+        "--saved",
+        "Mixed32"
+      ],
+      "exit": 0,
+      "stdout_sha256": "ca62faabf0b311a2cd883d225f055bb2668e51f1e4884be3de3bd69034833bcc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "query",
+        "parse",
+        "TRANSFORM Count(*) AS Total SELECT 0 AS Bucket FROM Items AS a0, Items AS a1, Items AS a2, Items AS a3, Items AS a4, Items AS a5, Items AS a6, Items AS a7, Items AS a8, Items AS a9, Items AS a10, Items AS a11, Items AS a12, Items AS a13, Items AS a14, Items AS a15, Items AS a16, Items AS a17, Items AS a18, Items AS a19, Items AS a20, Items AS a21, Items AS a22, Items AS a23, Items AS a24, Items AS a25, Items AS a26, Items AS a27, Items AS a28, Items AS a29, Items AS a30, Items AS a31 GROUP BY 0 PIVOT a31.ID IN(7);"
+      ],
+      "exit": 0,
+      "stdout_sha256": "73682fdf82283023772610b72d03e247949c010faf27db8bee341783216beae8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "query",
+        "saved",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2019.accdb",
+        "Cross32"
+      ],
+      "exit": 0,
+      "stdout_sha256": "73682fdf82283023772610b72d03e247949c010faf27db8bee341783216beae8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2019.accdb",
+        "--saved",
+        "Cross32"
+      ],
+      "exit": 0,
+      "stdout_sha256": "580bf8bc75d0f5484b3740f8da82be84b2b4c0c812ae18f72f9648072736ed97",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "arguments": [
+        "query",
+        "saved",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2019.accdb",
+        "Sources33"
+      ],
+      "exit": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "45a82170f6c9392443b74afc571dda3dc91d493fbf340c9eff47d19c8a56fe1f",
+      "expected_error": "unsupported"
+    },
+    {
+      "arguments": [
+        "query",
+        "saved",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2019.accdb",
+        "Cross33"
+      ],
+      "exit": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "45a82170f6c9392443b74afc571dda3dc91d493fbf340c9eff47d19c8a56fe1f",
+      "expected_error": "unsupported"
+    },
+    {
+      "arguments": [
+        "query",
+        "saved",
+        "--database",
+        ".cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/V2019.accdb",
+        "Joins17"
+      ],
+      "exit": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "f200147c75b244084c04fb29f75ab93ab8f6ff2b75129485f15ab74a1ab8f5d8",
+      "expected_error": "syntax limit"
+    }
+  ]
+}

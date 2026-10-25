@@ -23,5 +23,21 @@
     "Full workspace suite",
     "Native Microsoft Access execution comparison"
   ],
-  "independent_replay": "Separate original four-profile getter/CLI replay pending final frozen executable"
+  "independent_replay": {
+    "report": "docs/testing/results/saved-many-sources-2026-10-24.json",
+    "sha256": "739894e8c88c4346b6e45ac4913839594e254c0bece91c3fc0cafc38c06a15ec",
+    "commands": 60,
+    "modeled_cells": 20,
+    "successes": 48,
+    "refusals": 12,
+    "unchanged_scoped_hashes": 17,
+    "parent_verification": "All scoped pins independently rehashed; frozen CLI1897 Rust sources matched archive4443cd37 before subsequent progressive work."
+  },
+  "private_source_inventory": {
+    "files": 1897,
+    "manifest": ".cache/saved32-selector-rust-source-20261024.manifest",
+    "sha256": "55736ad351033a7169c3dd91f5f69211da06b2ef79d8067474b64dc912c5b82e",
+    "archive": "4443cd37",
+    "note": "Private archive comparison, not full test coverage or all-source replay pins."
+  }
 }

@@ -1,5 +1,15 @@
 # Implementation status
 
+## Independent thirty-two-source replay
+
+The [four-profile original corpus](testing/SAVED_MANY_SOURCES.md) passes sixty CLI
+commands and twenty getter-modeled cells: 48 successes and twelve intended boundary
+refusals. All seventeen scoped pins remain unchanged. The frozen executable's
+1,897-file Rust source inventory separately matches committed archive `4443cd37`.
+The twelve retained-control CLI smoke checks also pass in eval/run modes, including
+buffered eager division failures. These checks qualify engineering behavior;
+native Access execution/save comparisons remain unrun.
+
 ## Retained String conditional controls
 
 Evaluator-backed `IIf`, `Switch` and `Choose` now convert retained controls through

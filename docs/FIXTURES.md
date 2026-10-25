@@ -8055,3 +8055,38 @@ See [the evidence contract](testing/PER_TABLE_EXTERNAL.md) and
 [verification record](testing/results/read-query-per-table-external-2026-10-24.json).
 Owned SQL escaping, engineering global/per-leaf precedence and native Access
 qualification remain separate from public getter metadata rendering.
+
+
+## Original saved queries with thirty-two declared sources
+
+[SavedManySourcesFixture.java](testing/SavedManySourcesFixture.java) is original
+repository-licensed code. It uses the reviewed Apache-2.0 Jackcess 5.0.4 artifact
+(SHA-256 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`)
+to create four fresh files with one ordinary Int32 row and seven inert saved
+SELECT/crosstab definitions. Distinct aliases exercise 17/32 table references,
+16 disconnected joins and the final forest-membership bit. Separate 33-source
+and 17-join definitions are explicit out-of-profile controls, not native Access
+qualification. No third-party source or fixture bytes are copied or tracked.
+
+Read-only getters disable expression evaluation and linked opens. They expose
+the ordinary value, stored table/join fragment counts and independently rendered
+SQL; reference SQL never executes. Original files, getters, compiled helper and
+exact generation commands remain ignored under
+`.cache/tablecraft-fixtures/saved-many-sources-20261024-qualified/`.
+
+| Original | SHA-256 |
+| --- | --- |
+| V2000.mdb | `528297c6d1df8d0fd882de0b74471cccb8493971909e8b2e2e87119e0eae76da` |
+| V2007.accdb | `19d110cd73cd8c00d9dcaa113167235b5460e410df224a02e12362c777ba2c68` |
+| V2016.accdb | `2c3ad5e886e7c0f8013d0cfa0c65d5650b80517a75739913956b52cfef831f28` |
+| V2019.accdb | `a4daea07a15993fdc0ccbbe12b50e411409bc43a7e0dc15a740ebf310a3cc598` |
+
+The [accepted replay](testing/results/saved-many-sources-2026-10-24.json) passes
+60 CLI commands, including 16 renderer comparisons, 16 actual getter-modeled
+executions and 12 boundary refusals, with 20 modeled result cells. All 17 scoped
+hashes remain unchanged. The [evidence contract](testing/SAVED_MANY_SOURCES.md)
+separates the initial reserved-alias normalization failure and successful
+pre-relative-label report from accepted evidence. Their original inputs and tool
+snapshots remain preserved privately. Windows Access execution, native save and
+reopen remain unrun; ordinary engine reads and query execution leave originals
+unchanged.
