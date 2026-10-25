@@ -1,0 +1,72 @@
+{
+  "date": "2026-10-24",
+  "scope": "Final scoped native-reader, Japanese width-conversion, inert linked-metadata and shared source-allowance batch. No full workspace/query suite is claimed for this batch.",
+  "git_head": "3ffe46710cb04131a955954e1bc613a7c24073f4",
+  "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)",
+  "engine_unit_tests": {
+    "command": "cargo test -p tablecraft-ace --lib --locked --offline -j 2",
+    "exit_code": 0,
+    "passed": 163,
+    "failed": 0,
+    "ignored": 1,
+    "ignored_reason": "Engineering generator emits derived FST bytes; not run as a normal unit check."
+  },
+  "focused_tests": {
+    "width_expression_and_query": 28,
+    "wide_grammar_decoder_and_source": 6,
+    "linked_metadata": 8,
+    "shared_and_existing_source_contracts": 50,
+    "count_note": "These feature-local runs overlap the engine unit batch; do not sum all counts as unique tests."
+  },
+  "independent_controls": {
+    "width_success": 5544,
+    "width_refusals": 30,
+    "wide_grammar": 542,
+    "wide_grammar_cli_cells": 4662,
+    "linked_metadata": 16,
+    "qualification": "Independent Unicode models, pinned decoders/getters and explicit grammar copies; no native Access execution."
+  },
+  "other_checks": {
+    "workspace_fmt": "passed",
+    "dependency_boundary_guard": "passed for 12 packages",
+    "policy_script_tests": 41,
+    "scoped_clippy": "passed for feature-local SQL/minimal expression, engine and adapter targets",
+    "cli_build": {
+      "command": "cargo build -p tablecraft-cli --locked --offline -j 2",
+      "exit_code": 0
+    },
+    "final_cli_smoke_checks": 3,
+    "standalone_access_check": {
+      "command": "cargo check -p tablecraft-access --no-default-features --locked --offline -j 2",
+      "exit_code": 0
+    }
+  },
+  "source_digest": {
+    "scope": [
+      "crates/query/tablecraft-expressions",
+      "crates/engines/tablecraft-ace",
+      "crates/backends/tablecraft-access"
+    ],
+    "files": 1028,
+    "sha256": "5eb726f94f0f4634dc76b8d198a058dab19d469809f9c49db7e943dffe572491",
+    "algorithm": "SHA-256 over sorted repository-relative .rs paths, each UTF-8 path, NUL, hexadecimal SHA-256 of file bytes, newline. This pins a checkout, not test coverage of every file."
+  },
+  "inputs": {
+    ".cache/ace-lib-width-linked-regression-20261024.log": "02f2b2538aac1e105694e2eb78c1e3b8a805456c4587626aed04eb0810c71978",
+    "Cargo.toml": "a0872950f24314dabe8ce92a00e9284d0dafaf29286fbe5da48bf863338234f9",
+    "Cargo.lock": "334969af4290e8cc8e10015296551e3ca7cee1d31494f96c8c7230fd7b31f54d",
+    ".cache/width-links-final-cli-smoke-20261024.json": "f6bde7cb56fd5a13b2cf68963a85535fd91ac6d4b5210b832f129e5507e65b73",
+    ".cache/tablecraft-bin/width-links-budget-20261024": "78337d4dc371deaba0ea6ad3abf41560fe800230ea96cc51fab7c013ffe71f37",
+    "docs/testing/results/strconv-width-2026-10-24.json": "b0a0bcbcd91d9d4b171f239bf50baff7ec6475efecd275c596970fdb74110874",
+    "docs/testing/results/compressed-wide-2026-10-24.json": "beb01ab8601d79b84a0e7523dc6f46a4edfc434eaab106023cbd2939cff8be8d",
+    "docs/testing/results/linked-metadata-2026-10-24.json": "86e8a3f5aa15c598a2d6864566c7f41dcdefac9cadf760cdf06e09b722323501",
+    ".cache/access-minimal-width-links-20261024.log": "bdf38002fa18759a07bea60a0623a37d359ad834bc6ee28f5a506906d8674a42"
+  },
+  "native_access": "unrun; user-deferred",
+  "limitations": [
+    "StrConv width/script profiles remain bounded and unqualified against Windows NLS/Access.",
+    "Authored wide grammar streams and same-width copies do not qualify native writer output.",
+    "Inert link metadata and shared quotas do not open targets, route linked queries, or provide cross-file snapshots/transactions.",
+    "Full backend acceptance remains unfinished; no write permission expands."
+  ]
+}
