@@ -53,6 +53,12 @@
       "exit_code": 0,
       "private_log": ".cache/spooled-hiragana-fmt-final-20261025.log",
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "cargo build -p tablecraft-cli -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/spooled-hiragana-cli-build-20261025.log",
+      "sha256": "5198d55901c5c79cd16518e3498e8bb7053e7d1c93ea5bd5c746cbd572e44892"
     }
   ],
   "source_sha256": {
@@ -119,5 +125,19 @@
     "https://docs.rs/cab/0.6.0/src/cab/cabinet.rs.html",
     "https://docs.rs/tempfile/3.27.0/tempfile/fn.tempfile.html"
   ],
-  "existing_regression_tests": 41
+  "existing_regression_tests": 41,
+  "independent_replay": {
+    "report": "docs/testing/results/large-deployment-2026-10-25.json",
+    "report_sha256": "be6c3033e1069b3fbafe82fc369f0fe3a5e89175b77a68cadbf1b4e352e33f21",
+    "controls": 58,
+    "successful_commands": 48,
+    "intended_resource_refusals": 10,
+    "immutable_pins": 12,
+    "revision_source_pins": 14,
+    "native_profiles": [
+      "ACE2016",
+      "ACE2019"
+    ],
+    "qualification": "Original77MiB native/getter/payload/CAB engineering evidence; no Access deployment/signature qualification."
+  }
 }

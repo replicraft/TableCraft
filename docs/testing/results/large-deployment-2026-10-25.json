@@ -1,0 +1,1036 @@
+{
+  "date": "2026-10-25",
+  "stage": "cli-replay",
+  "scope": "Original ACE16-family getter/model/CAB engineering evidence, no native Access execution",
+  "immutable_sha256_before": {
+    ".cache/tablecraft-fixtures/jackcess-5.0.4.jar": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    "docs/testing/compare_large_deployment.py": "c1711b06eab9fa7c419f5bf9c973a0a728047d247e0584ce8945aa4eeba704aa",
+    "docs/testing/LargeDeploymentFixture.java": "9c9a15454df976aa133177f6a29e873d7387bc77a926b96490b8ead1f52942ce",
+    "docs/testing/build_large_deployment.py": "4034cb13b9f055aa53d3a18f8387bac3d571cb7f4a4ac5e7c4e435999e6a643a",
+    ".cache/tablecraft-bin/spooled-hiragana-cli-20261025": "fbf269865c214d09ce3d6cb07dd02eb558860eef142bd72bd008118db57d026b",
+    ".cache/large-deployment-provenance-20261025.json": "e5c4e1f575d96bd8552ce05f610505b6987ee0e1946ac740886468cec094d56b",
+    ".cache/tablecraft-fixtures/large-deployment-20261025/V2016.accdb": "51b4a6bf4477b2c1dca061e95179b5ccd70de158623edeafc96c5e38186bf630",
+    ".cache/tablecraft-fixtures/large-deployment-20261025/V2019.accdb": "cbb12a433c622b6d2a91e72d627b1cfab0eb6192953eaca7510c8d97668cc4f7",
+    ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-mszip.accdc": "2fa3d571373a185be5533b92d88f229ca5d1d3cb1c287d7e8b44dc1a1b93988e",
+    ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-stored.accdc": "eda9cf10176d158edac0b3b5ff64f3bc5f812a192e45bd5863360fa73f62e034",
+    ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-mszip.accdc": "d7de049f456b4a50584bd0cdde26fabde9d7de7c20901613bc17577979c3217a",
+    ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-stored.accdc": "56ba170ad9c7fa9db405e9ca41751a4ec8bad5db486a781916dc4db8ef55ef64"
+  },
+  "immutable_sha256_after": {
+    ".cache/tablecraft-fixtures/jackcess-5.0.4.jar": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    "docs/testing/compare_large_deployment.py": "c1711b06eab9fa7c419f5bf9c973a0a728047d247e0584ce8945aa4eeba704aa",
+    "docs/testing/LargeDeploymentFixture.java": "9c9a15454df976aa133177f6a29e873d7387bc77a926b96490b8ead1f52942ce",
+    "docs/testing/build_large_deployment.py": "4034cb13b9f055aa53d3a18f8387bac3d571cb7f4a4ac5e7c4e435999e6a643a",
+    ".cache/tablecraft-bin/spooled-hiragana-cli-20261025": "fbf269865c214d09ce3d6cb07dd02eb558860eef142bd72bd008118db57d026b",
+    ".cache/large-deployment-provenance-20261025.json": "e5c4e1f575d96bd8552ce05f610505b6987ee0e1946ac740886468cec094d56b",
+    ".cache/tablecraft-fixtures/large-deployment-20261025/V2016.accdb": "51b4a6bf4477b2c1dca061e95179b5ccd70de158623edeafc96c5e38186bf630",
+    ".cache/tablecraft-fixtures/large-deployment-20261025/V2019.accdb": "cbb12a433c622b6d2a91e72d627b1cfab0eb6192953eaca7510c8d97668cc4f7",
+    ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-mszip.accdc": "2fa3d571373a185be5533b92d88f229ca5d1d3cb1c287d7e8b44dc1a1b93988e",
+    ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-stored.accdc": "eda9cf10176d158edac0b3b5ff64f3bc5f812a192e45bd5863360fa73f62e034",
+    ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-mszip.accdc": "d7de049f456b4a50584bd0cdde26fabde9d7de7c20901613bc17577979c3217a",
+    ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-stored.accdc": "56ba170ad9c7fa9db405e9ca41751a4ec8bad5db486a781916dc4db8ef55ef64"
+  },
+  "compiled_revision": "bfb5af50a8778185ba24ea99fffa85607e475b3f",
+  "scoped_revision_source_sha256": {
+    "crates/backends/tablecraft-access/src/input/mod.rs": "8bd061f70b6eb7e66f1774e9998d027442b9666abe5dd925ab9c3310c232592f",
+    "crates/backends/tablecraft-access/src/input/deployment.rs": "9697343a7b87101b02240312725b5f090dc07f416dcbb993bd8bee4105b2639f",
+    "crates/backends/tablecraft-access/src/input/deployment/layout.rs": "baa53a8b66cd02573f2c345d07cf093d634fbe65b120b76ae14269e13085e7ea",
+    "crates/backends/tablecraft-access/src/input/deployment/bounded.rs": "b2cba077e63570b557a2f9608bb62a3d1d2c614ae8cfd3560ead971a7998944b",
+    "crates/backends/tablecraft-access/src/input/deployment/spool.rs": "ecea827a0a533b14006a8b93516521db3f038f8d1f34219a31c72ffc81aa5b5f",
+    "crates/backends/tablecraft-access/src/input/deployment/hybrid.rs": "17129947a0a2d6937ed6d99e5a84015723e36d42587ada210b8db2d6dfc26944",
+    "apps/tablecraft-cli/src/native.rs": "c2e658d5d2c0d67131b8eb4e3baf31de770b996265451dd038956e670c482ba1",
+    "apps/tablecraft-cli/src/native/source.rs": "509f2258f21ad039b62d3cc23c826821c0a5caf5d6242c3463e08f08d4c88616",
+    "apps/tablecraft-cli/src/commands/inspect/args.rs": "97cad02db9a713426db5fbf53e7f6c544f74d44f6f43ca9012f56c0c88110432",
+    "apps/tablecraft-cli/src/commands/inspect/mod.rs": "134d41516b06ba66117d38793d3e99c8c62c4580fbdc91f7e08dc13d023d0bbf",
+    "apps/tablecraft-cli/src/commands/tables.rs": "cc74d587dd84430749d23f0c8c7da8ab1c92da987e97f9833372c70c04408d3e",
+    "apps/tablecraft-cli/src/commands/rows/mod.rs": "aafdd776561c565286a7d2c5ce5cbd32f13de0903050753ce513e6abef65eb82",
+    "apps/tablecraft-cli/src/commands/rows/stream.rs": "503b5e7148857ed4528f6f063bcfc7e8f69f2a74db2e620f50db9817d9c12118",
+    "apps/tablecraft-cli/src/commands/query/retrieval.rs": "c4af751c320def9263648e74ef39800fb341470d7d1741254490272a3bd8a51d"
+  },
+  "source_note": "Selected raw git-show snapshots, not a compilation manifest or live-source pins",
+  "models": {
+    "V2016": {
+      "getter_stdout_sha256": "a641847c0b9e2604f32c0275a079157eb48083a280c342235dcef9dcc55a66e7",
+      "rows": 1100,
+      "identity_total": 605550,
+      "score_total": 10284450,
+      "memo_units": 36044800,
+      "all_memos_sha256": "e8bf0a69f1c219b0eee43da5241c075df4e15e9de0b97c849b89d6581e343425",
+      "selected_memo_sha256": {
+        "1": "59eaaa5423732027a324d43bae201c51069804033d6ba86eae939700cf0a6389",
+        "550": "4decb985de8327744b21e7dca619692d6030f877f318950776fd6f12bae18446",
+        "1100": "51cb2d773be2d0e47773592761a249154ae7211cb5279cee9cefbc2ec8399309"
+      },
+      "native_prefix64_hex": "000100005374616e64617264204143452044420005000000b56e03626009c255e9a96772403f009c7e9f90ff859a31c579baed30bcdfcc9d63d9e4c39f46fb8a",
+      "stored": {
+        "bytes": 77060558,
+        "sha256": "eda9cf10176d158edac0b3b5ff64f3bc5f812a192e45bd5863360fa73f62e034",
+        "blocks": 2352,
+        "compression": 0,
+        "expanded_bytes": 77041664,
+        "expanded_sha256": "51b4a6bf4477b2c1dca061e95179b5ccd70de158623edeafc96c5e38186bf630",
+        "file_name": "application.accdb"
+      },
+      "mszip": {
+        "bytes": 2798106,
+        "sha256": "2fa3d571373a185be5533b92d88f229ca5d1d3cb1c287d7e8b44dc1a1b93988e",
+        "blocks": 2352,
+        "compression": 1,
+        "expanded_bytes": 77041664,
+        "expanded_sha256": "51b4a6bf4477b2c1dca061e95179b5ccd70de158623edeafc96c5e38186bf630",
+        "file_name": "application.accdb"
+      }
+    },
+    "V2019": {
+      "getter_stdout_sha256": "a641847c0b9e2604f32c0275a079157eb48083a280c342235dcef9dcc55a66e7",
+      "rows": 1100,
+      "identity_total": 605550,
+      "score_total": 10284450,
+      "memo_units": 36044800,
+      "all_memos_sha256": "e8bf0a69f1c219b0eee43da5241c075df4e15e9de0b97c849b89d6581e343425",
+      "selected_memo_sha256": {
+        "1": "59eaaa5423732027a324d43bae201c51069804033d6ba86eae939700cf0a6389",
+        "550": "4decb985de8327744b21e7dca619692d6030f877f318950776fd6f12bae18446",
+        "1100": "51cb2d773be2d0e47773592761a249154ae7211cb5279cee9cefbc2ec8399309"
+      },
+      "native_prefix64_hex": "000100005374616e64617264204143452044420006000000b56e03626009c255e9a96772403f009c7e9f90ff859a31c579baed30bcdfcc9d63d9e4c39f46fb8a",
+      "stored": {
+        "bytes": 77130206,
+        "sha256": "56ba170ad9c7fa9db405e9ca41751a4ec8bad5db486a781916dc4db8ef55ef64",
+        "blocks": 2354,
+        "compression": 0,
+        "expanded_bytes": 77111296,
+        "expanded_sha256": "cbb12a433c622b6d2a91e72d627b1cfab0eb6192953eaca7510c8d97668cc4f7",
+        "file_name": "application.accdb"
+      },
+      "mszip": {
+        "bytes": 2801250,
+        "sha256": "d7de049f456b4a50584bd0cdde26fabde9d7de7c20901613bc17577979c3217a",
+        "blocks": 2354,
+        "compression": 1,
+        "expanded_bytes": 77111296,
+        "expanded_sha256": "cbb12a433c622b6d2a91e72d627b1cfab0eb6192953eaca7510c8d97668cc4f7",
+        "file_name": "application.accdb"
+      }
+    }
+  },
+  "observations": [
+    {
+      "case": "V2016.accdb/inspect",
+      "arguments": [
+        "inspect",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016.accdb",
+        "--native-bytes",
+        "268435456"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "a6bebd66e5940ea23473758600f6c3d015180b1b654b2dd7b11663ddbda59711",
+      "refusal": false
+    },
+    {
+      "case": "V2016.accdb/tables",
+      "arguments": [
+        "tables",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016.accdb",
+        "--count",
+        "--native-bytes",
+        "268435456"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "eb707843f22e04823f723259baad9f5704d1315e968ee28f5447afb05c69deca",
+      "refusal": false
+    },
+    {
+      "case": "V2016.accdb/memo-1",
+      "arguments": [
+        "rows",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016.accdb",
+        "LargeDeployment",
+        "--offset",
+        "0",
+        "--limit",
+        "1",
+        "--native-bytes",
+        "268435456"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "96a4b1744635667e8a5661d1744a9316db2427ae554783acce31c290f7fd497e",
+      "refusal": false
+    },
+    {
+      "case": "V2016.accdb/memo-550",
+      "arguments": [
+        "rows",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016.accdb",
+        "LargeDeployment",
+        "--offset",
+        "549",
+        "--limit",
+        "1",
+        "--native-bytes",
+        "268435456"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "5d5f3cc3edcbef9989b25391d8798aaef2f7e9c4f92e6ff0fc03fe22eae537b7",
+      "refusal": false
+    },
+    {
+      "case": "V2016.accdb/memo-1100",
+      "arguments": [
+        "rows",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016.accdb",
+        "LargeDeployment",
+        "--offset",
+        "1099",
+        "--limit",
+        "1",
+        "--native-bytes",
+        "268435456"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "a205556344a06f7243cdddd156d221344addff091168a5384301cdacd0542179",
+      "refusal": false
+    },
+    {
+      "case": "V2016.accdb/count",
+      "arguments": [
+        "query",
+        "run",
+        "SELECT Count(*) AS N,Min(Id) AS Low,Max(Id) AS High,Sum(Score) AS S FROM LargeDeployment",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--stream"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "34f8d4cef9bc54824b81de3bd08293c721b7213c89851e737aef736d669db36c",
+      "refusal": false
+    },
+    {
+      "case": "V2016.accdb/rows-1",
+      "arguments": [
+        "query",
+        "run",
+        "SELECT Id,Score,Label FROM LargeDeployment",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--stream",
+        "--batch-rows",
+        "1"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "f3eaccd371abc336bf90fb0478a9cac3fd9970745a370d5529c617c00fffc4dc",
+      "refusal": false
+    },
+    {
+      "case": "V2016.accdb/rows-128",
+      "arguments": [
+        "query",
+        "run",
+        "SELECT Id,Score,Label FROM LargeDeployment",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "f3eaccd371abc336bf90fb0478a9cac3fd9970745a370d5529c617c00fffc4dc",
+      "refusal": false
+    },
+    {
+      "case": "V2016.accdb/low-budget",
+      "arguments": [
+        "inspect",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016.accdb",
+        "--native-bytes",
+        "1"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": true
+    },
+    {
+      "case": "V2016-stored.accdc/inspect",
+      "arguments": [
+        "inspect",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-stored.accdc",
+        "--native-bytes",
+        "268435456"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "7bce813dad48f568f2ab47661f2e334b44f3449e9710d8b5a61b951c69a037da",
+      "refusal": false
+    },
+    {
+      "case": "V2016-stored.accdc/tables",
+      "arguments": [
+        "tables",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-stored.accdc",
+        "--count",
+        "--native-bytes",
+        "268435456"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "eb707843f22e04823f723259baad9f5704d1315e968ee28f5447afb05c69deca",
+      "refusal": false
+    },
+    {
+      "case": "V2016-stored.accdc/memo-1",
+      "arguments": [
+        "rows",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-stored.accdc",
+        "LargeDeployment",
+        "--offset",
+        "0",
+        "--limit",
+        "1",
+        "--native-bytes",
+        "268435456"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "96a4b1744635667e8a5661d1744a9316db2427ae554783acce31c290f7fd497e",
+      "refusal": false
+    },
+    {
+      "case": "V2016-stored.accdc/memo-550",
+      "arguments": [
+        "rows",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-stored.accdc",
+        "LargeDeployment",
+        "--offset",
+        "549",
+        "--limit",
+        "1",
+        "--native-bytes",
+        "268435456"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "5d5f3cc3edcbef9989b25391d8798aaef2f7e9c4f92e6ff0fc03fe22eae537b7",
+      "refusal": false
+    },
+    {
+      "case": "V2016-stored.accdc/memo-1100",
+      "arguments": [
+        "rows",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-stored.accdc",
+        "LargeDeployment",
+        "--offset",
+        "1099",
+        "--limit",
+        "1",
+        "--native-bytes",
+        "268435456"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "a205556344a06f7243cdddd156d221344addff091168a5384301cdacd0542179",
+      "refusal": false
+    },
+    {
+      "case": "V2016-stored.accdc/count",
+      "arguments": [
+        "query",
+        "run",
+        "SELECT Count(*) AS N,Min(Id) AS Low,Max(Id) AS High,Sum(Score) AS S FROM LargeDeployment",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--stream"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "34f8d4cef9bc54824b81de3bd08293c721b7213c89851e737aef736d669db36c",
+      "refusal": false
+    },
+    {
+      "case": "V2016-stored.accdc/rows-1",
+      "arguments": [
+        "query",
+        "run",
+        "SELECT Id,Score,Label FROM LargeDeployment",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--stream",
+        "--batch-rows",
+        "1"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "f3eaccd371abc336bf90fb0478a9cac3fd9970745a370d5529c617c00fffc4dc",
+      "refusal": false
+    },
+    {
+      "case": "V2016-stored.accdc/rows-128",
+      "arguments": [
+        "query",
+        "run",
+        "SELECT Id,Score,Label FROM LargeDeployment",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "f3eaccd371abc336bf90fb0478a9cac3fd9970745a370d5529c617c00fffc4dc",
+      "refusal": false
+    },
+    {
+      "case": "V2016-stored.accdc/low-budget",
+      "arguments": [
+        "inspect",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-stored.accdc",
+        "--native-bytes",
+        "1"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": true
+    },
+    {
+      "case": "V2016-stored.accdc/default-budget",
+      "arguments": [
+        "inspect",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-stored.accdc"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": true
+    },
+    {
+      "case": "V2016-mszip.accdc/inspect",
+      "arguments": [
+        "inspect",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-mszip.accdc",
+        "--native-bytes",
+        "268435456"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "7bce813dad48f568f2ab47661f2e334b44f3449e9710d8b5a61b951c69a037da",
+      "refusal": false
+    },
+    {
+      "case": "V2016-mszip.accdc/tables",
+      "arguments": [
+        "tables",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-mszip.accdc",
+        "--count",
+        "--native-bytes",
+        "268435456"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "eb707843f22e04823f723259baad9f5704d1315e968ee28f5447afb05c69deca",
+      "refusal": false
+    },
+    {
+      "case": "V2016-mszip.accdc/memo-1",
+      "arguments": [
+        "rows",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-mszip.accdc",
+        "LargeDeployment",
+        "--offset",
+        "0",
+        "--limit",
+        "1",
+        "--native-bytes",
+        "268435456"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "96a4b1744635667e8a5661d1744a9316db2427ae554783acce31c290f7fd497e",
+      "refusal": false
+    },
+    {
+      "case": "V2016-mszip.accdc/memo-550",
+      "arguments": [
+        "rows",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-mszip.accdc",
+        "LargeDeployment",
+        "--offset",
+        "549",
+        "--limit",
+        "1",
+        "--native-bytes",
+        "268435456"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "5d5f3cc3edcbef9989b25391d8798aaef2f7e9c4f92e6ff0fc03fe22eae537b7",
+      "refusal": false
+    },
+    {
+      "case": "V2016-mszip.accdc/memo-1100",
+      "arguments": [
+        "rows",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-mszip.accdc",
+        "LargeDeployment",
+        "--offset",
+        "1099",
+        "--limit",
+        "1",
+        "--native-bytes",
+        "268435456"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "a205556344a06f7243cdddd156d221344addff091168a5384301cdacd0542179",
+      "refusal": false
+    },
+    {
+      "case": "V2016-mszip.accdc/count",
+      "arguments": [
+        "query",
+        "run",
+        "SELECT Count(*) AS N,Min(Id) AS Low,Max(Id) AS High,Sum(Score) AS S FROM LargeDeployment",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--stream"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "34f8d4cef9bc54824b81de3bd08293c721b7213c89851e737aef736d669db36c",
+      "refusal": false
+    },
+    {
+      "case": "V2016-mszip.accdc/rows-1",
+      "arguments": [
+        "query",
+        "run",
+        "SELECT Id,Score,Label FROM LargeDeployment",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--stream",
+        "--batch-rows",
+        "1"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "f3eaccd371abc336bf90fb0478a9cac3fd9970745a370d5529c617c00fffc4dc",
+      "refusal": false
+    },
+    {
+      "case": "V2016-mszip.accdc/rows-128",
+      "arguments": [
+        "query",
+        "run",
+        "SELECT Id,Score,Label FROM LargeDeployment",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "f3eaccd371abc336bf90fb0478a9cac3fd9970745a370d5529c617c00fffc4dc",
+      "refusal": false
+    },
+    {
+      "case": "V2016-mszip.accdc/low-budget",
+      "arguments": [
+        "inspect",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-mszip.accdc",
+        "--native-bytes",
+        "1"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": true
+    },
+    {
+      "case": "V2016-mszip.accdc/default-budget",
+      "arguments": [
+        "inspect",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2016-mszip.accdc"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": true
+    },
+    {
+      "case": "V2019.accdb/inspect",
+      "arguments": [
+        "inspect",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019.accdb",
+        "--native-bytes",
+        "268435456"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "419f15e768d9bfaa0af90a423e6c8bea5c90edfa651ee504e925c65926c085d0",
+      "refusal": false
+    },
+    {
+      "case": "V2019.accdb/tables",
+      "arguments": [
+        "tables",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019.accdb",
+        "--count",
+        "--native-bytes",
+        "268435456"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "eb707843f22e04823f723259baad9f5704d1315e968ee28f5447afb05c69deca",
+      "refusal": false
+    },
+    {
+      "case": "V2019.accdb/memo-1",
+      "arguments": [
+        "rows",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019.accdb",
+        "LargeDeployment",
+        "--offset",
+        "0",
+        "--limit",
+        "1",
+        "--native-bytes",
+        "268435456"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "96a4b1744635667e8a5661d1744a9316db2427ae554783acce31c290f7fd497e",
+      "refusal": false
+    },
+    {
+      "case": "V2019.accdb/memo-550",
+      "arguments": [
+        "rows",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019.accdb",
+        "LargeDeployment",
+        "--offset",
+        "549",
+        "--limit",
+        "1",
+        "--native-bytes",
+        "268435456"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "5d5f3cc3edcbef9989b25391d8798aaef2f7e9c4f92e6ff0fc03fe22eae537b7",
+      "refusal": false
+    },
+    {
+      "case": "V2019.accdb/memo-1100",
+      "arguments": [
+        "rows",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019.accdb",
+        "LargeDeployment",
+        "--offset",
+        "1099",
+        "--limit",
+        "1",
+        "--native-bytes",
+        "268435456"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "a205556344a06f7243cdddd156d221344addff091168a5384301cdacd0542179",
+      "refusal": false
+    },
+    {
+      "case": "V2019.accdb/count",
+      "arguments": [
+        "query",
+        "run",
+        "SELECT Count(*) AS N,Min(Id) AS Low,Max(Id) AS High,Sum(Score) AS S FROM LargeDeployment",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--stream"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "34f8d4cef9bc54824b81de3bd08293c721b7213c89851e737aef736d669db36c",
+      "refusal": false
+    },
+    {
+      "case": "V2019.accdb/rows-1",
+      "arguments": [
+        "query",
+        "run",
+        "SELECT Id,Score,Label FROM LargeDeployment",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--stream",
+        "--batch-rows",
+        "1"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "f3eaccd371abc336bf90fb0478a9cac3fd9970745a370d5529c617c00fffc4dc",
+      "refusal": false
+    },
+    {
+      "case": "V2019.accdb/rows-128",
+      "arguments": [
+        "query",
+        "run",
+        "SELECT Id,Score,Label FROM LargeDeployment",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019.accdb",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "f3eaccd371abc336bf90fb0478a9cac3fd9970745a370d5529c617c00fffc4dc",
+      "refusal": false
+    },
+    {
+      "case": "V2019.accdb/low-budget",
+      "arguments": [
+        "inspect",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019.accdb",
+        "--native-bytes",
+        "1"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": true
+    },
+    {
+      "case": "V2019-stored.accdc/inspect",
+      "arguments": [
+        "inspect",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-stored.accdc",
+        "--native-bytes",
+        "268435456"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "11295dc8f3659070d94a125dc2f02bbc57fa7ffe9367253b8b8dac591a6dfc9e",
+      "refusal": false
+    },
+    {
+      "case": "V2019-stored.accdc/tables",
+      "arguments": [
+        "tables",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-stored.accdc",
+        "--count",
+        "--native-bytes",
+        "268435456"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "eb707843f22e04823f723259baad9f5704d1315e968ee28f5447afb05c69deca",
+      "refusal": false
+    },
+    {
+      "case": "V2019-stored.accdc/memo-1",
+      "arguments": [
+        "rows",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-stored.accdc",
+        "LargeDeployment",
+        "--offset",
+        "0",
+        "--limit",
+        "1",
+        "--native-bytes",
+        "268435456"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "96a4b1744635667e8a5661d1744a9316db2427ae554783acce31c290f7fd497e",
+      "refusal": false
+    },
+    {
+      "case": "V2019-stored.accdc/memo-550",
+      "arguments": [
+        "rows",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-stored.accdc",
+        "LargeDeployment",
+        "--offset",
+        "549",
+        "--limit",
+        "1",
+        "--native-bytes",
+        "268435456"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "5d5f3cc3edcbef9989b25391d8798aaef2f7e9c4f92e6ff0fc03fe22eae537b7",
+      "refusal": false
+    },
+    {
+      "case": "V2019-stored.accdc/memo-1100",
+      "arguments": [
+        "rows",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-stored.accdc",
+        "LargeDeployment",
+        "--offset",
+        "1099",
+        "--limit",
+        "1",
+        "--native-bytes",
+        "268435456"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "a205556344a06f7243cdddd156d221344addff091168a5384301cdacd0542179",
+      "refusal": false
+    },
+    {
+      "case": "V2019-stored.accdc/count",
+      "arguments": [
+        "query",
+        "run",
+        "SELECT Count(*) AS N,Min(Id) AS Low,Max(Id) AS High,Sum(Score) AS S FROM LargeDeployment",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--stream"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "34f8d4cef9bc54824b81de3bd08293c721b7213c89851e737aef736d669db36c",
+      "refusal": false
+    },
+    {
+      "case": "V2019-stored.accdc/rows-1",
+      "arguments": [
+        "query",
+        "run",
+        "SELECT Id,Score,Label FROM LargeDeployment",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--stream",
+        "--batch-rows",
+        "1"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "f3eaccd371abc336bf90fb0478a9cac3fd9970745a370d5529c617c00fffc4dc",
+      "refusal": false
+    },
+    {
+      "case": "V2019-stored.accdc/rows-128",
+      "arguments": [
+        "query",
+        "run",
+        "SELECT Id,Score,Label FROM LargeDeployment",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-stored.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "f3eaccd371abc336bf90fb0478a9cac3fd9970745a370d5529c617c00fffc4dc",
+      "refusal": false
+    },
+    {
+      "case": "V2019-stored.accdc/low-budget",
+      "arguments": [
+        "inspect",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-stored.accdc",
+        "--native-bytes",
+        "1"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": true
+    },
+    {
+      "case": "V2019-stored.accdc/default-budget",
+      "arguments": [
+        "inspect",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-stored.accdc"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": true
+    },
+    {
+      "case": "V2019-mszip.accdc/inspect",
+      "arguments": [
+        "inspect",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-mszip.accdc",
+        "--native-bytes",
+        "268435456"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "11295dc8f3659070d94a125dc2f02bbc57fa7ffe9367253b8b8dac591a6dfc9e",
+      "refusal": false
+    },
+    {
+      "case": "V2019-mszip.accdc/tables",
+      "arguments": [
+        "tables",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-mszip.accdc",
+        "--count",
+        "--native-bytes",
+        "268435456"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "eb707843f22e04823f723259baad9f5704d1315e968ee28f5447afb05c69deca",
+      "refusal": false
+    },
+    {
+      "case": "V2019-mszip.accdc/memo-1",
+      "arguments": [
+        "rows",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-mszip.accdc",
+        "LargeDeployment",
+        "--offset",
+        "0",
+        "--limit",
+        "1",
+        "--native-bytes",
+        "268435456"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "96a4b1744635667e8a5661d1744a9316db2427ae554783acce31c290f7fd497e",
+      "refusal": false
+    },
+    {
+      "case": "V2019-mszip.accdc/memo-550",
+      "arguments": [
+        "rows",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-mszip.accdc",
+        "LargeDeployment",
+        "--offset",
+        "549",
+        "--limit",
+        "1",
+        "--native-bytes",
+        "268435456"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "5d5f3cc3edcbef9989b25391d8798aaef2f7e9c4f92e6ff0fc03fe22eae537b7",
+      "refusal": false
+    },
+    {
+      "case": "V2019-mszip.accdc/memo-1100",
+      "arguments": [
+        "rows",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-mszip.accdc",
+        "LargeDeployment",
+        "--offset",
+        "1099",
+        "--limit",
+        "1",
+        "--native-bytes",
+        "268435456"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "a205556344a06f7243cdddd156d221344addff091168a5384301cdacd0542179",
+      "refusal": false
+    },
+    {
+      "case": "V2019-mszip.accdc/count",
+      "arguments": [
+        "query",
+        "run",
+        "SELECT Count(*) AS N,Min(Id) AS Low,Max(Id) AS High,Sum(Score) AS S FROM LargeDeployment",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--stream"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "34f8d4cef9bc54824b81de3bd08293c721b7213c89851e737aef736d669db36c",
+      "refusal": false
+    },
+    {
+      "case": "V2019-mszip.accdc/rows-1",
+      "arguments": [
+        "query",
+        "run",
+        "SELECT Id,Score,Label FROM LargeDeployment",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--stream",
+        "--batch-rows",
+        "1"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "f3eaccd371abc336bf90fb0478a9cac3fd9970745a370d5529c617c00fffc4dc",
+      "refusal": false
+    },
+    {
+      "case": "V2019-mszip.accdc/rows-128",
+      "arguments": [
+        "query",
+        "run",
+        "SELECT Id,Score,Label FROM LargeDeployment",
+        "--database",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-mszip.accdc",
+        "--native-bytes",
+        "268435456",
+        "--native-steps",
+        "10000000",
+        "--stream",
+        "--batch-rows",
+        "128"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "f3eaccd371abc336bf90fb0478a9cac3fd9970745a370d5529c617c00fffc4dc",
+      "refusal": false
+    },
+    {
+      "case": "V2019-mszip.accdc/low-budget",
+      "arguments": [
+        "inspect",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-mszip.accdc",
+        "--native-bytes",
+        "1"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": true
+    },
+    {
+      "case": "V2019-mszip.accdc/default-budget",
+      "arguments": [
+        "inspect",
+        ".cache/tablecraft-fixtures/large-deployment-20261025/V2019-mszip.accdc"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "refusal": true
+    }
+  ],
+  "control_count": 58
+}

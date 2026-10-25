@@ -11,6 +11,10 @@ new controls and 41 regressions pass with strict Access/CLI linting and formatti
 Encryption rewrite limits and signature verification remain separate. See
 [scope](ACCDC_SPOOLED_READS.md) and
 [verification](testing/results/read-query-accdc-spooled-2026-10-25.json).
+The [original large deployment replay](testing/LARGE_DEPLOYMENT.md) passes 58
+controls on two 77 MiB ACE 16 databases and their stored/MSZIP packages, including
+exact selected Memo digests and complete 1,100-row streams. Twelve immutable and
+fourteen revision-source hashes were independently rechecked.
 
 ## Explicit widening and Hiragana
 
