@@ -105,6 +105,12 @@
       "exit_code": 0,
       "private_log": ".cache/progressive-grouped-fmt-20261025.log",
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "cargo build -p tablecraft-cli -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-grouped-cli-build-20261025.log",
+      "sha256": "d51dff7bfd9e10fefaaf282d99b69d14909d13dc7d28e68d0defbf1392aca566"
     }
   ],
   "contracts": [
@@ -183,11 +189,23 @@
   "source_timing": "Production compiled on the first source check. Subsequent corrections were new-test enum/assertion/diagnostic expectations only; no production answer correction occurred. Final primary, private units, related regressions, strict Clippy and minimal check cover the coherent source. Diagnostic/superseded partial passes are not added to 385.",
   "validation_limits": [
     "Scoped459 query/native/CLI tests, strict linting, minimal query features and formatting; no full workspace suite or native Microsoft Access execution qualification.",
-    "Original native/CAB frozen-CLI replay remains pending separately. String candidates and concurrent numeric scratch retain their actual cumulative budgets; no constant-memory or timing claim."
+    "Separate96-command original native/CAB replay passed. String candidates and concurrent numeric scratch retain their actual cumulative budgets; no constant-memory or timing claim."
   ],
   "integration_targets": {
     "native_progressive_source": 22,
     "cli_progressive_queries": 39,
     "cli_linked_queries": 13
+  },
+  "independent_replay": {
+    "report": "docs/testing/results/progressive-grouped-2026-10-25.json",
+    "report_sha256": "546fc780f241b76a59c5ff79d9d20370a29909235442202ac45f102f987d3439",
+    "commands": 96,
+    "successful_commands": 72,
+    "intended_refusals": 24,
+    "compared_rows": 1374,
+    "compared_cells": 5364,
+    "immutable_pins": 13,
+    "revision_source_pins": 25,
+    "qualification": "Original native/getter/CAB integer, Fraction and lexical models; no native Access SQL or timing claim."
   }
 }

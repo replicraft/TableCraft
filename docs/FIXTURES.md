@@ -8328,3 +8328,17 @@ compares 51,848 rows and 105,896 cells, including 62 successes and fourteen inte
 refusals. Sixteen immutable inputs and 21 new/16 baseline committed source hashes
 were independently rechecked. See [scope](testing/DIRECTORY_JOINS.md); native
 Access optimizer/ordering and performance qualification are separate.
+
+## Original progressive grouped replay (25 October 2026)
+
+[The original runner](testing/compare_progressive_grouped.py) reuses both large
+ACE 16 databases and their four stored/MSZIP copies. Existing public getters and
+bounded CAB inspectors validate unchanged data; independent linear grouping,
+integer/Fraction and Python lexical models supply expected answers. No fixture
+or third-party implementation is added. The [96-command report](testing/results/progressive-grouped-2026-10-25.json)
+compares 1,374 rows and 5,364 cells, including 72 successful queries and 24 intended
+refusals. Thirteen immutable pins and twenty-five committed source hashes were
+independently rechecked. The first diagnostic-label attempt remains preserved;
+SQL, expected rows, runtime and input bytes were unchanged. See
+[evidence](testing/PROGRESSIVE_GROUPED.md); native Access SQL and timing
+qualification remain separate.
