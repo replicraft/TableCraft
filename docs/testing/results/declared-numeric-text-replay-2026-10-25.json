@@ -2762,5 +2762,7 @@
     "sha256": "da3a82be6b6a583ab50ca774899fc8869814f497cb3a7dc331ba3ef5671db721",
     "note": "Same 128 observations before readability cleanup and addition of expected-result digests; all retained output hashes, expected-cell counts and exit statuses match. Runs are not added together."
   },
-  "native_access_execution": "Unrun; no native conformance claim."
+  "native_access_execution": "Unrun; no native conformance claim.",
+  "superseded_by": "declared-numeric-text-baseline-audit-2026-10-25.json",
+  "scope_correction": "Historical helper-build evidence only. The existing pre-change effective-type path passes all 128 replay controls identically; the redundant helper has been withdrawn. Do not count it as a new coercion feature."
 }

@@ -110,5 +110,7 @@
       "path": "apps/tablecraft-cli/tests/declared_numeric_text.rs",
       "sha256": "f91b7bdc50151f6d16fbe9cd79f4d0ef2e8a376829b15681ef647d484428ab13"
     }
-  ]
+  ],
+  "superseded_by": "declared-numeric-text-baseline-audit-2026-10-25.json",
+  "scope_correction": "Historical helper-build evidence only. The existing pre-change effective-type path passes all 128 replay controls identically; the redundant helper has been withdrawn. Do not count it as a new coercion feature."
 }
