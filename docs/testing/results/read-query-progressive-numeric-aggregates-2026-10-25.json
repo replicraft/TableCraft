@@ -96,7 +96,19 @@
   ],
   "unrun": [
     "Full workspace suite",
-    "Native Microsoft Access comparison",
-    "Independent original-file Sum/Avg replay"
-  ]
+    "Native Microsoft Access comparison"
+  ],
+  "independent_replay": {
+    "report": "progressive-numeric-2026-10-25.json",
+    "sha256": "4e639ae4d404e30b56b37687f72eeddb8c2d25b946dfe41c7d7eeae0a71b9543",
+    "controls": 244,
+    "successful_controls": 204,
+    "buffered_refusals": 40,
+    "compared_output_rows": 228,
+    "compared_cells": 996,
+    "immutable_pins": 10,
+    "compiled_archive_pins": 26,
+    "compiled_revision": "e837d675137c8df82f296cfe9aab9f7b43ea6bb6",
+    "parent_rehash": "passed"
+  }
 }
