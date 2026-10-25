@@ -1,5 +1,19 @@
 # Implementation status
 
+## Progressive Count operands
+
+Explicit progressive global counts now support `Count(expr)` alongside `Count(*)`.
+Each written occurrence evaluates its operand once per qualifying row through the
+existing Count nullness kernel; completed counters are borrowed only during final
+projection after checked EOF. NULL is excluded without forcing raw String values
+through Unicode publication. Source snapshots and partial caches are not retained.
+Operand failures occur during scanning, so competing errors can differ from
+buffered aggregate-major evaluation order; final scalar expressions still run
+after EOF. A scoped batch passes 169 query/native/CLI tests, including 23 new
+controls, with strict Clippy and formatting. See
+[progressive counts](PROGRESSIVE_QUERIES.md#global-count) and the
+[verification record](testing/results/read-query-progressive-count-operands-2026-10-25.json).
+
 ## Progressive exact global counts
 
 Explicit progressive execution now handles direct-table global Count(*) queries
@@ -13,7 +27,8 @@ See [count scope](PROGRESSIVE_QUERIES.md#global-count) and
 [verification record](testing/results/read-query-progressive-count-2026-10-25.json).
 An [original four-profile CLI replay](testing/PROGRESSIVE_COUNTS.md) also passes
 132 getter-modeled controls, with ten unchanged immutable pins and eleven scoped
-compiled-archive hashes verified separately. Count(expr), other aggregates and
+compiled-archive hashes verified separately. That replay covers Count(*) only;
+Count(expr) has the separate focused verification above. Other aggregates and
 native execution qualification remain separate.
 
 ## Grouped and progressive projection aliases

@@ -176,7 +176,6 @@ impl PreparedQuery {
             context,
         } = frame;
         let mut runtime = Runtime {
-            progressive_count: None,
             owner: crate::external_sources::SourceNamespace::Root,
             numeric_scratch: Vec::new(),
             repeatable_dynamic: context.repeatable_dynamic,

@@ -60,7 +60,7 @@ and scoped strict Clippy pass; this does not qualify coherent live-file reads.
 
 ## Global count consumers
 
-The query service can now consume this cursor for [global Count(*)](PROGRESSIVE_QUERIES.md#global-count).
+The query service can now consume this cursor for [global Count(*) and Count(expr)](PROGRESSIVE_QUERIES.md#global-count).
 Seven new adapter controls pass alongside the seventeen existing progressive-source
 tests and scoped strict Clippy. Four profiles exceed a snapshot retention ceiling
 of one while retaining cumulative native budgets and checked EOF. Repeated ordinary

@@ -48,6 +48,7 @@ impl Runtime<'_, '_> {
                     .checked_add(1)
                     .ok_or(QueryError::StructureLimit)?;
                 let environment = Environment {
+                    counts: None,
                     row: &row,
                     collections: None,
                     outer: &[],

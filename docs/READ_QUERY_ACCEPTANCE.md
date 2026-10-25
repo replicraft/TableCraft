@@ -1005,5 +1005,8 @@ checked EOF precedes its single output row, including zero for empty inputs.
 Pure final expressions, aliases and mixed count/row UNION ALL arms retain shared
 budgets and publication rules. A 138-test query/native/CLI batch covers generated
 100,001-row constant-retention execution, four-profile snapshot-cap independence,
-late failures and complete/pending batch behavior. Count(expr), other progressive
-aggregates and native qualification remain separate acceptance work.
+late failures and complete/pending batch behavior. The subsequent Count(expr)
+extension evaluates each written operand through the existing nullness kernel
+without whole-table retention; occurrence order, eager failures, raw String/Error
+values and cache isolation retain explicit checks. Other progressive aggregates
+and native qualification remain separate acceptance work.

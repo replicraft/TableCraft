@@ -25,6 +25,9 @@ use tablecraft_sql::parse_query;
 mod harness;
 use harness::*;
 
+#[path = "progressive_counts/operands.rs"]
+mod operands;
+
 type CapturedStream = (Vec<Vec<Value>>, u64, u64);
 
 fn plan(sql: &str, source: &dyn Source) -> PreparedQuery {
@@ -304,7 +307,6 @@ fn late_cancellation_and_sink_rejection_publish_no_incomplete_count_or_poisoned_
 #[test]
 fn unsupported_count_forms_and_required_indexes_never_fall_back_to_snapshots() {
     for sql in [
-        "SELECT Count(Score) FROM Items",
         "SELECT Sum(Score) FROM Items",
         "SELECT Score,Count(*) FROM Items GROUP BY Score",
     ] {

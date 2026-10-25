@@ -16,7 +16,6 @@ pub(super) struct ParameterValue<'a> {
 }
 
 pub(crate) struct Runtime<'a, 'source> {
-    pub(super) progressive_count: Option<i64>,
     pub(super) numeric_scratch: Vec<NumericScratch>,
     pub(super) repeatable_dynamic: bool,
     pub(super) domain_depth: usize,
@@ -28,6 +27,7 @@ pub(crate) struct Runtime<'a, 'source> {
     pub(super) options: ExecutionOptions<'a>,
     pub(super) budget: &'a mut ResourceBudget,
 }
+
 #[derive(Clone, Copy)]
 pub(crate) struct Environment<'a> {
     pub(super) row: &'a [CellValue],
@@ -36,7 +36,14 @@ pub(crate) struct Environment<'a> {
     pub(super) group: Option<&'a [Vec<CellValue>]>,
     pub(super) group_keys: Option<GroupKeys<'a>>,
     pub(super) collections: Option<&'a ParentCollections<'a>>,
+    pub(super) counts: Option<&'a [CountResult<'a>]>,
 }
+
+pub(super) struct CountResult<'a> {
+    pub expression: &'a Expr,
+    pub count: i64,
+}
+
 #[derive(Clone, Copy)]
 pub(super) struct OuterScope<'a> {
     pub row: &'a [CellValue],

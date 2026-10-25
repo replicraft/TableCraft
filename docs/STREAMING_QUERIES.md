@@ -14,10 +14,10 @@ cargo run -p tablecraft-cli -- query run \
 
 One direct local scalar table, aliases, qualified wildcards, typed parameters and
 row-local predicates/functions and positive unordered TOP counts are supported.
-Global `Count(*)` projections over the same direct table are also supported,
-with one checked count row published only after successful EOF. Pure final
-expressions and prior projection aliases may compose the count. `Count(expr)`
-and other aggregates remain outside this progressive profile.
+Global `Count(*)` and `Count(expr)` projections over the same direct table are
+also supported, with one checked count row published only after successful EOF.
+Pure final expressions and prior projection aliases may compose the counts.
+Other aggregates remain outside this progressive profile.
 Flat UNION ALL can combine these count arms and direct-table row arms.
 
 ```sh
@@ -25,8 +25,14 @@ tablecraft query run --database example.accdb --stream \
   'SELECT Count(*) AS Population FROM Customers WHERE Active=True'
 ```
 
-A count arm retains its counter and current input batch, then computes its final
-projection after checked EOF. Empty or wholly filtered input produces a zero-count
+A count arm retains one counter per written Count occurrence and its current
+input batch, then computes its final projection after checked EOF. Count operands
+run for each qualifying row in projection order; repeated occurrences run
+separately. `Count(expr)` excludes SQL NULL, while zero, False, empty Text, Error
+values and raw String intermediates count as present. Count operands cannot
+reference earlier output aliases or contain nested aggregates. Operand failures
+occur during the scan; surrounding scalar projection failures occur after EOF.
+Competing failures can therefore differ from buffered aggregate evaluation order. Empty or wholly filtered input produces a zero-count
 row. A later error in another UNION arm can retain that count only if its output
 batch was already completed; a pending batch is discarded. Native/query/output
 allowances remain cumulative, and ordinary buffered counts keep their existing
@@ -126,7 +132,7 @@ to open an embedded path. See the [query service](PROGRESSIVE_QUERIES.md) and
 
 ## Verification
 
-Twenty-three CLI integration tests cover priority synthetic profiles, real ACE 2007
+Twenty-six CLI integration tests cover priority synthetic profiles, real ACE 2007
 example data, batch sizes, quoting, empty/filter results, first/late errors,
 checked count failures, cumulative quotas, parameter/text/declaration controls,
 mixed schemas, unordered TOP prefixes and argument refusals. TOP tests preserve
@@ -135,7 +141,9 @@ UNION ALL controls additionally check ordered arms, empty results, per-arm TOP,
 batches spanning arms, late failures and explicit numeric-to-Text conversions.
 Global-count controls additionally cover zero/filtered input, aliases, mixed row
 and count arms, EOF-only publication, quotas and batch-dependent retained prefixes.
-Five alias CLI and nine retrieval regressions also pass. Earlier CLI integration
+Operand controls additionally cover NULL/raw String/Error values, occurrence
+identity and eager failure prefixes. Five alias CLI and nine retrieval regressions
+also pass. Earlier CLI integration
 also recorded sixty unit/browsing/native/retrieval
 checks, including write/flush failure and encoded-output allowance tests.
 Current scoped query/CLI strict Clippy passes. Original large-file replay and native Access

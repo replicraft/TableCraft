@@ -88,7 +88,6 @@ pub fn plan_update<E: EditableTable>(
     column_name.push_str(target.name());
     let discovery = DiscoveryState::new(false);
     let mut runtime = Runtime {
-        progressive_count: None,
         owner: crate::external_sources::SourceNamespace::Root,
         numeric_scratch: Vec::new(),
         repeatable_dynamic: false,
@@ -117,6 +116,7 @@ pub fn plan_update<E: EditableTable>(
             expression_row.push(CellValue::scalar(runtime.copy(value)?));
         }
         let env = Environment {
+            counts: None,
             collections: None,
             row: &expression_row,
             outer: &[],

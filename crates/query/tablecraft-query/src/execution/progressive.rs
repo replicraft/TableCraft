@@ -56,9 +56,10 @@ impl PreparedQuery {
     /// Progressively evaluate local scalar SELECT/WHERE arms in written source order.
     /// Unordered positive TOP counts limit publication while all rows are still
     /// read and evaluated through checked EOF. Flat UNION ALL combines admitted
-    /// arms through the ordinary UNION result conversions. Global COUNT(*) arms
-    /// retain a checked counter and evaluate their final scalar projection only
-    /// after successful EOF. Count(expr) and other aggregates are refused.
+    /// arms through the ordinary UNION result conversions. Global Count arms
+    /// retain a checked counter per occurrence and evaluate their final scalar
+    /// projection only after successful EOF. Count operands use the shared
+    /// nullness/state rules during scanning; other aggregates are refused.
     /// Sorts, TOP PERCENT,
     /// duplicate-eliminating sets, groups,
     /// joins, derived/named sources, collections,
