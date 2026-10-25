@@ -11,6 +11,10 @@ new controls and 113 regressions pass with strict query/native/CLI Clippy and
 formatting. This remains metered nested-loop execution. See
 [scope](QUERY_EQUIJOINS.md) and
 [verification](testing/results/read-query-borrowed-equijoins-2026-10-25.json).
+An [original four-profile replay](testing/NATIVE_EQUIJOINS.md) separately passes
+20 getter/integer-model controls, comparing 16,012 rows and 32,024 cells. All
+nine immutable pins and twelve scoped compiled-source hashes were independently
+rechecked. This does not establish native Access SQL equivalence.
 
 ## Numeric UNION text-policy provenance
 

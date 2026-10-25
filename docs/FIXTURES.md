@@ -8188,3 +8188,16 @@ passes 244 getter/Fraction controls; 204 successes compare 228 output rows and
 artifact hashes agree before/after and were independently rehashed by the parent;
 twenty-six scoped compiled-revision source hashes also match raw git objects.
 This is independent engineering evidence, without native Access qualification.
+
+## Original native integral join replay reuse
+
+The 2026-10-25 [integral join replay](testing/NATIVE_EQUIJOINS.md) reuses the four
+registered Decimal corpus originals, existing inert `TableDataOracle.java`, and
+reviewed Jackcess 5.0.4 reader. It generates no additional binary fixture and
+adopts no new dependency or third-party code. The
+[accepted report](testing/results/native-equijoins-2026-10-25.json) retains the
+original hashes, frozen CLI hash, runner/getter/recipe hashes, scoped compiled
+source hashes, getter encounter order and 20 modeled observations. Original
+bytes and all nine immutable pins were rechecked unchanged; twelve scoped
+compiled-revision hashes were also independently verified. Integer join modeling
+is separate from native Access SQL qualification.
