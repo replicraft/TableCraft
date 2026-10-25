@@ -103,6 +103,30 @@ existing behavior. Numeric/NULL comparisons do not activate a text resolver mere
 because a cell has provenance. The host still owns the policy namespace and provider
 budgets; no LCID/default locale is inferred.
 
+## Crosstab cell expressions and row-group policies
+
+A crosstab cell now receives the complete row group's retained key policies,
+just as its SELECT projection and HAVING expression do. Previously the cell
+execution frame omitted those keys: a repeated grouped domain expression could
+then compare under the first bucket row's default policy instead of the final
+required field policy. A grouped SELECT could produce 4 while the corresponding
+admitted TRANSFORM expression produced 0. This was an engineering wrong-answer
+bug inside the existing explicit provider profile.
+
+Bucket aggregates still receive only their own member rows. Their operand
+frames still clear group-key reuse and evaluate each input under its original
+policy. Passing the complete group context to an expression outside an aggregate
+does not turn every per-row operand into the group's selected key. No expression
+is cached or skipped, and the change adds no scan or provider inference.
+
+Paired grouped SELECT/TRANSFORM controls cover multiple pivot buckets,
+correlated group-key reuse, parameterized named execution with changed inputs,
+NULL groups, conflicting policies, required-only providers and explicit global
+overrides. Per-row aggregate controls distinguish this context from a blanket
+policy override. Prefix cancellation, shared limits and late eager cell failures
+still return no partial result. These controls do not establish native Access
+TRANSFORM syntax, mixed-policy precedence or optimizer evaluation counts.
+
 ## Memory, work and publication
 
 Cells, key rows and correlated scope frames charge their actual type widths under

@@ -3,7 +3,7 @@ use std::{cell::Cell, cmp::Ordering};
 use tablecraft_expressions::{EvalError, comparison::Collation};
 use tablecraft_query::QueryLimits;
 
-struct TrimProvider;
+pub(super) struct TrimProvider;
 
 impl Collation for TrimProvider {
     fn compare(&self, left: &str, right: &str) -> Result<Ordering, EvalError> {
