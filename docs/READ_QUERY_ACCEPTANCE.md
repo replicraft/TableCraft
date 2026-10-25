@@ -48,6 +48,9 @@ qualification recorded separately.
   controls also traverse the final two pages of a virtual 2 GiB source, retain
   bounded projected cursors and refuse corrupt/failed high-offset tails; this is
   synthetic address/publication evidence, not native large-file throughput.
+  [High-offset Memo/OLE controls](NATIVE_HIGH_OFFSET_PAYLOADS.md) additionally
+  cross the final page and nonadjacent long-value chains, preserving projection
+  pruning, cumulative limits and atomic failed-batch publication in four profiles.
 - Buffered collection pages now accept explicit native read limits, retaining
   complete parent/child validation and output refusal across `--all` sections.
 - Native CLI reads now use shared OS locks, excluding cooperating exclusive

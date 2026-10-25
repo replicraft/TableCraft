@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Synthetic sparse high-offset native Memo/OLE cursor reliability",
+  "production_changes": false,
+  "native_access_qualified": false,
+  "unique_tests": 35,
+  "new_tests": 5,
+  "new_profile_subcases": 44,
+  "profiles": [
+    "Jet 4",
+    "ACE 2007",
+    "ACE 2016",
+    "ACE 2019"
+  ],
+  "source_model": "Original repository-authored sparse Read/Seek helper; virtual 2 GiB length, only explicit prefix and LVAL pages; unmapped holes fail; no third-party fixture bytes.",
+  "results": [
+    {
+      "session_id": 89143,
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --test table_pages large_long_values -- --nocapture",
+      "exit_code": 0,
+      "tests": 5,
+      "log": {
+        "path": ".cache/large-long-values-tests-final-20261025.log",
+        "sha256": "17c4f7f136e7fd47d1e92f48f05aaa816af0c7c0211062188d1fd7f5f1e2d233",
+        "bytes": 910
+      },
+      "source_checkpoint": "Before readability-only numeric fault cases were replaced with named enum variants; identical models."
+    },
+    {
+      "session_id": 17337,
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-ace --lib --test table_pages -- -D warnings",
+      "exit_code": 0,
+      "tests": null,
+      "log": {
+        "path": ".cache/large-long-values-clippy-20261025.log",
+        "sha256": "dc54c7d5033cb16215c23a6d4134c9b0d6c2e29ad34795abd9a3639ecc83fd66",
+        "bytes": 183
+      },
+      "source_checkpoint": "Before readability-only numeric fault cases were replaced with named enum variants; identical models."
+    },
+    {
+      "session_id": 91297,
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --test table_pages",
+      "exit_code": 0,
+      "tests": 35,
+      "log": {
+        "path": ".cache/large-long-values-table-pages-final-20261025.log",
+        "sha256": "c611a295eb9d31db163eae19ceafb50ab5d29a8ad0074495804f1030d3a4603a",
+        "bytes": 3489
+      },
+      "source_checkpoint": "Before readability-only numeric fault cases were replaced with named enum variants; identical models."
+    },
+    {
+      "session_id": 12398,
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --test table_pages large_long_values -- --nocapture",
+      "exit_code": 0,
+      "tests": 5,
+      "source_checkpoint": "Final named fault enum source; same 44 profile/subcases.",
+      "log": {
+        "path": ".cache/large-long-values-enum-tests-final-20261025.log",
+        "sha256": "b200b64290c5b02bf58cae121a11f9c508fb4470c1d34276cae1cce2b04df640",
+        "bytes": 910
+      }
+    }
+  ],
+  "excluded": [
+    {
+      "session_id": 5956,
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --test table_pages large_long_values -- --nocapture",
+      "exit_code": 101,
+      "passed": 4,
+      "failed": 1,
+      "reason": "New test assumed EOF in an exactly full final batch. Corrected only the test to make one explicit empty final fetch; no reader change.",
+      "log": {
+        "path": ".cache/large-long-values-tests-20261025.log",
+        "sha256": "971d0499472a73281958d2b02801c4e516de9bc3ef89db8e1af994024266bc90",
+        "bytes": 1417
+      }
+    }
+  ],
+  "source_pins": [
+    {
+      "path": "crates/engines/tablecraft-ace/tests/table_pages.rs",
+      "sha256": "97de072b1c9395930aec906a9351e8d673df1ef9be2d5b2a19abae25ef2cd45a",
+      "bytes": 10805
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/table_pages/large_long_values.rs",
+      "sha256": "69dc3adb749a23f1091544be812d3c5577e9647ff92637a5161efe9f078e1767",
+      "bytes": 14054
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/mutation/fixture.rs",
+      "sha256": "9d66669d6fce171118e39d07afe54f6f3298f8168f5d088befbc8649baf6bae3",
+      "bytes": 5609
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/support/mod.rs",
+      "sha256": "395145db02a7fc23388bd6ba065ee62992e823df0306bff205a2ae2304438c99",
+      "bytes": 3496
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/long_value.rs",
+      "sha256": "dea48b3e429c636d5e74f7d471c2ccaf4f50060f1cad8beb3a94ff51fd9a977d",
+      "bytes": 4800
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/long_value/visited.rs",
+      "sha256": "a44c718e8c339aec930b6e53bf744a98aa6838e997b632574f7e0f70b7b4eec2",
+      "bytes": 1802
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/long_text.rs",
+      "sha256": "899431cb15af2ae4bc029428340e9c440c8930a2f27b938b5a8415eb7f10937e",
+      "bytes": 7012
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/page/cursor.rs",
+      "sha256": "ba29e20e70ebef3b80bfac22d7fde201b3212aa8722ccb0d7c7630fd7f4b50b5",
+      "bytes": 8292
+    },
+    {
+      "path": "docs/NATIVE_HIGH_OFFSET_PAYLOADS.md",
+      "sha256": "b8e703eb5e90aff982c8a5e3ce8537537f7b23752218ea6d5c2b7da505dcf5c7",
+      "bytes": 3202
+    }
+  ],
+  "limitations": [
+    "No production defect was exposed; this qualifies the intersection of existing sparse high-offset traversal and external long-value decoding.",
+    "No native Access execution, writer-produced corpus, live-file coherence, throughput, new codec or write qualification.",
+    "Source hashes describe this focused test checkpoint, not a workspace suite or immutable executable replay."
+  ]
+}
