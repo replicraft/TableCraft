@@ -1,5 +1,15 @@
 # Implementation status
 
+## High-offset Memo and OLE cursor reliability
+
+Synthetic sparse sources now check external Memo/OLE payloads near the 2 GiB
+boundary, nonadjacent chains, compressed Unicode and exact binary bytes in four
+priority profiles. Failed later payloads discard the entire pending batch and
+close continuation; pruned fields visit no payload pages. Five new tests cover
+44 profile/subcases, alongside thirty existing table-page regressions and strict
+engine linting. No production defect was exposed. See [scope and checkpoints](NATIVE_HIGH_OFFSET_PAYLOADS.md);
+this is synthetic geometry evidence, separate from native large-file qualification.
+
 ## Progressive static named and derived sources
 
 Eligible row-local named/derived SELECT chains now feed a single physical cursor
