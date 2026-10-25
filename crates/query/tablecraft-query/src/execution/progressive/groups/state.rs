@@ -10,13 +10,13 @@ pub(super) struct Group {
     pub(super) accumulators: Vec<Accumulator>,
 }
 
-pub(super) struct KeyPolicy {
+pub(in crate::execution::progressive) struct KeyPolicy {
     policy: TextPolicy,
     complete: bool,
 }
 
 impl Runtime<'_, '_> {
-    pub(super) fn progressive_key_cohort(
+    pub(in crate::execution::progressive) fn progressive_key_cohort(
         &mut self,
         width: usize,
     ) -> Result<Vec<KeyPolicy>, QueryError> {
@@ -39,7 +39,7 @@ impl Runtime<'_, '_> {
         Ok(result)
     }
 
-    pub(super) fn observe_progressive_keys(
+    pub(in crate::execution::progressive) fn observe_progressive_keys(
         &mut self,
         cohort: &mut [KeyPolicy],
         keys: &[CellValue],
@@ -58,7 +58,7 @@ impl Runtime<'_, '_> {
         Ok(())
     }
 
-    pub(super) fn merge_progressive_keys(
+    pub(in crate::execution::progressive) fn merge_progressive_keys(
         &mut self,
         retained: &mut [CellValue],
         incoming: &[CellValue],
@@ -83,14 +83,26 @@ impl Runtime<'_, '_> {
             return Ok(());
         }
         for group in groups {
-            if group.keys.len() != cohort.len() {
-                return Err(QueryError::Width);
-            }
-            for (cell, policy) in group.keys.iter_mut().zip(cohort) {
-                self.tick()?;
-                cell.policy = policy.policy;
-                cell.policy_complete = policy.complete;
-            }
+            self.complete_progressive_key_cells(&mut group.keys, cohort)?;
+        }
+        Ok(())
+    }
+
+    pub(in crate::execution::progressive) fn complete_progressive_key_cells(
+        &mut self,
+        keys: &mut [CellValue],
+        cohort: &[KeyPolicy],
+    ) -> Result<(), QueryError> {
+        if cohort.is_empty() {
+            return Ok(());
+        }
+        if keys.len() != cohort.len() {
+            return Err(QueryError::Width);
+        }
+        for (cell, policy) in keys.iter_mut().zip(cohort) {
+            self.tick()?;
+            cell.policy = policy.policy;
+            cell.policy_complete = policy.complete;
         }
         Ok(())
     }

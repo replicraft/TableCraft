@@ -1,0 +1,193 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Explicit terminal progressive global/proven-key grouped HAVING with exact rejected-projection suppression, deferred selected aggregate replay and Count(*) row-count compression",
+  "unique_tests": 554,
+  "new_tests": 23,
+  "existing_regression_tests": 531,
+  "new_test_breakdown": {
+    "implementation_suppression_replay_top_eof_and_count_budget": 6,
+    "independent_having_values_policies_phases": 12,
+    "independent_actual_conflicted_policy_suppression": 1,
+    "cli_having": 4
+  },
+  "primary_targets": {
+    "progressive_count_execution": 13,
+    "progressive_count_operands": 11,
+    "progressive_derived_policies": 10,
+    "progressive_derived_values": 12,
+    "progressive_extrema_values": 12,
+    "progressive_grouped_policies": 7,
+    "progressive_grouped_values": 11,
+    "progressive_having_values": 12,
+    "progressive_numeric_aggregate_values": 9,
+    "progressive_queries": 51
+  },
+  "runtime_unit_tests": 28,
+  "new_runtime_unit_tests": 0,
+  "regression_targets": {
+    "aggregate_selector_types": 4,
+    "collation_routing": 106,
+    "crosstab": 16,
+    "crosstab_scalar_headings": 8,
+    "domain": 9,
+    "grouped_expressions": 5,
+    "grouped_subqueries": 8,
+    "named": 6,
+    "named_crosstabs": 40,
+    "projection_alias_execution": 11,
+    "projection_alias_values": 12
+  },
+  "checks": [
+    {
+      "command": "cargo check -p tablecraft-query --lib -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-having-check-final-20261025.log",
+      "sha256": "c457cd17ad4fa8319c195c02d5cff1058dac74051951da928c76ecc23bcab4fb",
+      "terminal_session": 7238
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test progressive_queries --test progressive_having_values --test progressive_count_execution --test progressive_count_operands --test progressive_numeric_aggregate_values --test progressive_extrema_values --test progressive_grouped_values --test progressive_grouped_policies --test progressive_derived_values --test progressive_derived_policies -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-having-primary-20261025.log",
+      "sha256": "9c723481c23bf62b7d437a69e497339fab84110916a438656d581a0745f3f02d",
+      "terminal_session": 7085,
+      "tests": 148
+    },
+    {
+      "command": "cargo test -p tablecraft-query --lib execution:: -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-having-private-units-20261025.log",
+      "sha256": "f7df509c4751807bb0be66bbbf702f68b4e4c2a5f7e7977e94dd3293ad4ed7ca",
+      "terminal_session": 54897,
+      "tests": 28
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test collation_routing --test grouped_expressions --test grouped_subqueries --test domain --test named --test named_crosstabs --test crosstab --test crosstab_scalar_headings --test projection_alias_values --test projection_alias_execution --test aggregate_selector_types -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-having-related-regressions-20261025.log",
+      "sha256": "1b0ebb01526e8c99fcf3acf5e28eea27ee950c3fd59546c3b1bdef6e8a05e586",
+      "terminal_session": 35338,
+      "tests": 225
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --tests -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-having-clippy-20261025.log",
+      "sha256": "ce48c9f954a8b247eb02fd045a4899682aed827b1e7d8f28910b5449c3deee3d",
+      "terminal_session": 45032
+    },
+    {
+      "command": "cargo check -p tablecraft-query --lib --no-default-features -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-having-minimal-20261025.log",
+      "sha256": "2461b00c8697c4189b2de92ca6fb05b5d72273c78a0a47b1ce4e83ccca077b70"
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test progressive_having_policies -p tablecraft-access --test external_sources -p tablecraft-cli --test progressive_queries --test external_queries --test recomputed_queries --test saved_query_definitions --test linked_queries -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-having-native-cli-final-20261025.log",
+      "sha256": "057f055de242c01ee884452ec803e363d32fec3517a9bbe2dd714d325d7e56d8",
+      "terminal_session": 94928,
+      "executed_tests": 204,
+      "additional_unique_tests": 153,
+      "duplicate_tests": 51,
+      "duplicate_reason": "The multi-package target selector also reruns tablecraft-query/progressive_queries, already counted in the primary148."
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --test progressive_having_policies -p tablecraft-access --test external_sources -p tablecraft-cli --bin tablecraft --test progressive_queries --test external_queries --test recomputed_queries --test saved_query_definitions --test linked_queries -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-having-native-cli-clippy-20261025.log",
+      "sha256": "f1638f3e745ff864cce004fcf502453343823cf3c107511ad327a929eef6495d",
+      "terminal_session": 39900
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-having-fmt-20261025.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "terminal_session": 38421
+    }
+  ],
+  "contracts": [
+    "HAVING aggregate occurrences have separate borrowed full-Expr-node identities from selected aggregates. Whole-tree admission precedes every cursor, including rejected predicates and unsupported later arms.",
+    "Only HAVING states accumulate during source input. Checked EOF and full group-key policy/completion cohorts precede final predicate evaluation. False/Unknown drops operation-local retained rows without constructing/pushing/finishing selected aggregate states or evaluating selected scalar projections.",
+    "Accepted groups replay paid moved retained rows in original encounter order and selected syntactic occurrence order through existing kernels. Raw/Error cells, field indices, declarations and policy completion remain intact; no AST rewriting, stored-schema coercion, source snapshot cache or named-prefix cache is introduced.",
+    "Pure scalar/key and Count(*)-only selections retain checked per-group signed counts without replay rows. Accepted Count(*) slots retain ordinary Int64 carrier and separate node identities. Queries without HAVING retain their prior state layout and allocation path.",
+    "TOP counts HAVING-accepted groups while later accepted omitted groups still evaluate operands and final projections. Rejected groups still evaluate HAVING. Failed source/EOF and sticky typed source/sink/query failures preserve existing stage/arm stop and lexical-owner restoration.",
+    "HAVING operands retain explicit progressive row-major scan-phase timing rather than buffered aggregate-at-a-time access. Accepted projection operands retain progressive operand-before-final-expression phases; no claim of identical cross-row/native error priority."
+  ],
+  "independent_controls": [
+    "False/NULL HAVING suppresses projected Sum/Avg/Min/Max/Count operand errors, scalar division, invalid raw publication and missing format policy; rejected projection-only required text providers are never resolved.",
+    "Selective groups replay only their own input populations. HAVING-only five-aggregate populations use independent integer answers; empty global population differs from empty keyed groups.",
+    "Independent late String policy/completion models distinguish HAVING and projection populations. Raw/Error aggregate nullness and final observers retain existing cells and aggregate declaration boundaries.",
+    "Accepted TOP counting, later omitted accepted-group errors, scan-vs-final HAVING eager failures, EOF priority, every observed cancellation checkpoint, typed sink stops, repeat execution and UNION arm isolation are exercised.",
+    "Count(*) HAVING scans 100,001 rows with an 8 KiB query allowance; projected Sum(N) replay consumes its declared byte budget even when final HAVING rejects. Original no-HAVING Count8KiB and all current numeric/extrema/grouped/derived controls pass."
+  ],
+  "excluded_attempts": [
+    {
+      "command": "cargo check -p tablecraft-query --lib -j2 --locked --offline",
+      "private_log": ".cache/progressive-having-check-20261025.log",
+      "sha256": "89c9593b60fcea6b7f6ef308f0e038869f4b2afe2a85efeba6555c7017206bec",
+      "exit_code": 101,
+      "terminal_session": 13747,
+      "reason": "Initial source check found checked-count EvalError could not convert directly to StreamError inside the source closure. Added explicit QueryError::Evaluation mapping; compile integration correction only, before any test execution. No numeric answer or refusal golden changed.",
+      "counted_as_acceptance": false
+    },
+    {
+      "private_log": ".cache/progressive-having-native-cli-20261025.log",
+      "sha256": "f9d35690e0fbe2d3718c01b04f0578d3cc58171cdb1f6b8a1dfc0cb7f6dacb10",
+      "reason": "Native/CLI targets passed; new independent policy target incorrectly assumed eager String IIf discarded its unused arm policy. Existing buffered and progressive contracts both reject that expression. Corrected only the authored expression to form genuinely differing actual String policies; stronger rejection/suppression expectations retained.",
+      "counted_as_acceptance": false
+    },
+    {
+      "private_log": ".cache/progressive-having-policy-format-compile-20261025.log",
+      "sha256": "51474b44f023cccf0ae78100fc880ac4e4dd8d60d57ba485dd79d0a4142b748f",
+      "reason": "New policy test used nonexistent NumberFormat::INVARIANT; corrected to existing Invariant variant before any tests executed.",
+      "counted_as_acceptance": false
+    },
+    {
+      "private_log": ".cache/progressive-having-clippy-invocation-20261025.log",
+      "sha256": "a4a3583230142f9c87068b5cb21dc30fff23ecceca792dcf0f792a0fd7510f25",
+      "reason": "Cargo rejected duplicate --lib command selectors before linting; corrected invocation. No source change.",
+      "counted_as_acceptance": false
+    }
+  ],
+  "historical_negative_controls": [
+    {
+      "files": [
+        "tests/progressive_queries/counts.rs",
+        "tests/progressive_count_execution/boundaries.rs",
+        "tests/progressive_grouped_values/boundaries.rs"
+      ],
+      "change": "Replace obsolete unsupported HAVING Count(*) control with still-unsupported HAVING Last(field). Existing no-cursor refusal coverage remains; no success/result golden weakened."
+    }
+  ],
+  "source_timing": "After initial explicit error-conversion compile correction, all executed tests passed on their first run. Strict Clippy and minimal checking required no source edits. Independent helper forbids buffered Source callbacks on both success and failure, and was frozen before the accepted primary.",
+  "validation_limits": [
+    "Scoped query/native/CLI checks only; original native/CAB HAVING replay is pending committed frozen-binary verification.",
+    "No full workspace suite, native Microsoft Access HAVING execution qualification, timing or constant-memory claim. New HAVING projection replay may retain full selected input widths under cumulative query limits."
+  ],
+  "native_cli_targets": {
+    "tablecraft-access/external_sources": 14,
+    "tablecraft-cli/external_queries": 17,
+    "tablecraft-cli/linked_queries": 13,
+    "tablecraft-cli/progressive_queries": 46,
+    "tablecraft-cli/recomputed_queries": 10,
+    "tablecraft-cli/saved_query_definitions": 38,
+    "tablecraft-query/external_sources": 14,
+    "tablecraft-query/progressive_having_policies": 1
+  },
+  "policy_diagnostic": {
+    "private_source": ".cache/progressive-having-iif-policy-probe-20261025.rs",
+    "private_log": ".cache/progressive-having-iif-policy-probe-20261025.log",
+    "log_sha256": "2a3138bd6dcd3427127f0174f9b2e5b8c725260a8732294fc19e37b794ebd8e7",
+    "terminal_session": 95588,
+    "result": "Exact old K=1 SQL fails in buffered and progressive evaluation with CollationConflict and zero provider calls; eager String IIf merges both arm policies. Temporary diagnostic target removed."
+  },
+  "parent_verification": {
+    "query_logs": "Parent independently rehashed all six query checks against this record.",
+    "policy_control": "Actual clean/conflicted group construction and rejected projection suppression pass eight controls, including both execution arithmetic profiles; no materialized scan permitted.",
+    "native_cli": "138 native/CLI controls pass (four new); additional query external-source14 regressions also pass. All original input bytes remain unchanged under existing fixture guards."
+  }
+}

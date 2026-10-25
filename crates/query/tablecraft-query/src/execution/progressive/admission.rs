@@ -23,6 +23,14 @@ impl Runtime<'_, '_> {
         for expression in &select.projection {
             self.progressive_expression(expression, select.aggregate, 1, &mut aggregates)?;
         }
+        if let Some(having) = &select.having {
+            if !select.aggregate {
+                return Err(QueryError::Unsupported);
+            }
+            // Validate the whole predicate before cursors. Its occurrence
+            // registry is separate from deferred selected aggregates.
+            self.progressive_having_aggregates(having)?;
+        }
         Ok((select, aggregates))
     }
 
@@ -31,7 +39,7 @@ impl Runtime<'_, '_> {
         read: &'p ReadPlan,
     ) -> Result<&'p SelectPlan, QueryError> {
         let select = self.progressive_shape(read)?;
-        if select.aggregate {
+        if select.aggregate || select.having.is_some() {
             return Err(QueryError::Unsupported);
         }
         let mut aggregates = Vec::new();
@@ -52,13 +60,21 @@ impl Runtime<'_, '_> {
         if !read.sort.is_empty()
             || read.distinct
             || read.top.is_some_and(|(_, percent)| percent)
-            || select.having.is_some()
             || !select.record_keys.is_empty()
             || select.parent.is_some()
         {
             return Err(QueryError::Unsupported);
         }
         Ok(select)
+    }
+
+    pub(super) fn progressive_having_aggregates<'p>(
+        &mut self,
+        expression: &'p Expr,
+    ) -> Result<Vec<&'p Expr>, QueryError> {
+        let mut aggregates = Vec::new();
+        self.progressive_expression(expression, true, 1, &mut aggregates)?;
+        Ok(aggregates)
     }
 
     fn progressive_expression<'p>(

@@ -17,6 +17,8 @@ mod execution;
 mod extrema;
 #[path = "progressive_queries/groups.rs"]
 mod groups;
+#[path = "progressive_queries/having.rs"]
+mod having;
 #[path = "progressive_queries/numeric.rs"]
 mod numeric;
 #[path = "progressive_queries/top.rs"]

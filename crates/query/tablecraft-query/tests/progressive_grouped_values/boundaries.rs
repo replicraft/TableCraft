@@ -5,7 +5,7 @@ fn unsupported_shapes_and_later_key_families_refuse_before_every_cursor() {
     for sql in [
         "SELECT DISTINCT Id,Count(*) FROM T GROUP BY Id",
         "SELECT Id,Count(*) FROM T GROUP BY Id ORDER BY Id",
-        "SELECT Id,Count(*) FROM T GROUP BY Id HAVING Count(*)>0",
+        "SELECT Id,Count(*) FROM T GROUP BY Id HAVING Last(Id)>0",
         "SELECT TOP 50 PERCENT Id,Count(*) FROM T GROUP BY Id",
         "SELECT CStr(Id),Count(*) FROM T GROUP BY CStr(Id)",
         "SELECT CDbl(Id),Count(*) FROM T GROUP BY CDbl(Id)",

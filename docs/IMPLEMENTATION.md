@@ -1,5 +1,18 @@
 # Implementation status
 
+## Progressive terminal HAVING
+
+Eligible global and proven-key grouped queries now apply HAVING after checked EOF,
+including aggregate calls absent from SELECT. Rejected groups suppress every
+selected expression and aggregate operation. Operand-bearing selected aggregates
+use budgeted retained-row replay only after acceptance; Count(*)-only selections
+avoid those rows, including the 100,001-input control under an 8 KiB query budget.
+TOP counts accepted groups while preserving later accepted groups' eager work.
+Twenty-three new controls and 531 regressions pass with strict query/native/CLI
+linting, minimal query features and formatting. See [semantics and limits](PROGRESSIVE_QUERIES.md#terminal-having-and-deferred-selected-operands)
+and [verification](testing/results/read-query-progressive-having-2026-10-25.json).
+These engineering checks do not establish native Access execution compatibility.
+
 ## High-offset Memo and OLE cursor reliability
 
 Synthetic sparse sources now check external Memo/OLE payloads near the 2 GiB

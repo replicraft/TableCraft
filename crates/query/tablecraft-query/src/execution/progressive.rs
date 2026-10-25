@@ -2,6 +2,7 @@
 mod admission;
 mod aggregates;
 mod groups;
+mod having;
 mod input;
 mod plan;
 mod publication;

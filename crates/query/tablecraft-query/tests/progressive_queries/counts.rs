@@ -80,7 +80,7 @@ fn unsupported_aggregate_arms_fail_before_even_an_earlier_valid_count_scan() {
     for sql in [
         "SELECT First(N) FROM T",
         "SELECT Count(*) FROM T GROUP BY CDbl(N)",
-        "SELECT Count(*) FROM T HAVING Count(*)>0",
+        "SELECT Count(*) FROM T HAVING Last(N)>0",
         "SELECT Count(*) FROM T UNION ALL SELECT Last(N) FROM T",
         "SELECT N FROM T UNION ALL SELECT First(N) FROM T WHERE False",
     ] {
