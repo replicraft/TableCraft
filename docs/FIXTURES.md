@@ -7639,3 +7639,57 @@ The [evidence document](testing/DECIMAL_DIVISION.md) records exact commands,
 immutable executable hashes, baseline scope and excluded exploratory reports.
 Executables, raw local logs and preliminary reports remain ignored local artifacts.
 There are no newly tracked binary fixture bytes or additional license notices.
+
+
+## Original explicit external IN namespace corpus
+
+The original [writer additions](testing/ExternalQueryFixture.java),
+[getter oracle](testing/ExternalQueryOracle.java),
+[independent model](testing/compare_external_queries.py) and
+[engineering consumer](../crates/backends/tablecraft-access/examples/external_query.rs)
+are repository MIT code. They reuse the original LinkedQueryFixture recipe to
+create fresh pairs, then public table/index builders add deliberately different
+same-name root/target tables and RootOnlyIndex/ExternalId indexes. Earlier
+accepted linked inputs remain unchanged. The reviewed Jackcess 5.0.4 JAR is
+Apache-2.0, SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`;
+no third-party source or database binary is copied or tracked.
+
+Ignored originals are under
+`.cache/tablecraft-fixtures/external-query-indexed-20261024/`.
+
+| Relative original | Bytes | SHA-256 |
+| --- | ---: | --- |
+| V2000/backend.mdb | 159,744 | `c0993e183a25db828417c87fef807552333535341de696730819ac1ed35658a4` |
+| V2000/frontend.mdb | 176,128 | `abe84e4fbe2adcb4625d43fbfa996516ccf60a57c19f063c8ad6a76a013f1f81` |
+| V2007/backend.accdb | 389,120 | `a6bd8d8accf184e7499e9b5d641ba05f584a10da83bb7a331d6b198df1c7d5f4` |
+| V2007/frontend.accdb | 405,504 | `542860488bc2d3c6e4323bee60bc7aa770634fe92cf71c198cd077e6c1d9b2b5` |
+| V2016/backend.accdb | 425,984 | `5507b8f8866d35dd26ad6ba4977bc4e26a0f5112cfe38950c2c898e903a87ecf` |
+| V2016/frontend.accdb | 442,368 | `9944eefd5f2d36c996ab9cd71f21531011ea72698742608fbf6631e460a4e143` |
+| V2019/backend.accdb | 499,712 | `550ecdce868d3c79ba1dfa2bb6626754f649367dde238523d844a4c98d772abc` |
+| V2019/frontend.accdb | 512,000 | `9ff593d94d83f592973889d998d10e15e0e755c9c4197ec908606bfe61f5659b` |
+| Mixed/backend.accdb | 425,984 | `dfc7b5093d9f4b9e0d737eb2d4a8f808ae97ecf6ad93bd372635b98b15935de0` |
+| Mixed/frontend.mdb | 176,128 | `e3663f93000fbd4fab6afdd73c63959a64a2b59abe69dfca7b6598cf71adc9bf` |
+
+The oracle disables expression evaluation, opens only explicit local files
+read-only and refuses every link-resolution request; observed resolver calls
+remain zero. Ordinary cell and public index metadata getters supply the model;
+the pinned ColumnImpl sort-order getter supplies stored comparison metadata.
+The existing root saved SELECT uses inert lower-level QueryImpl.Row/MSysQueries
+syntax fragments, not ordinary query authoring or reference SQL execution.
+Neither imported SQL nor active database content executes.
+
+The [feature record](testing/EXTERNAL_NATIVE_QUERIES.md) and
+[accepted report](testing/results/external-native-2026-10-24.json) retain 350
+engineering controls/2,154 modeled cells and 375 actual CLI controls/2,214 cells,
+with all 75 selected source/artifact/input/getter hashes unchanged. These consumer
+counts remain separate. Explicit host paths/borrowed handles authorize target
+bytes; SQL tokens do not authorize opens. Nested/default-root namespace rules
+are explicit engineering contracts rather than native Access comparisons.
+
+The preliminary unindexed original pairs, initial parser refusal, successful
+300/325-control probe and initial Int16 formatter failure remain preserved as
+excluded ignored diagnostics. Final inputs, reference JAR, getter records, frozen
+executables and local logs remain ignored. Native Access SQL, external target
+named queries/providers, cross-file snapshots, writes and save/reopen are not
+qualified by this read-only corpus.

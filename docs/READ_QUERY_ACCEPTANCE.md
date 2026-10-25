@@ -826,3 +826,21 @@ The [independent replay](testing/DECIMAL_DIVISION.md) checks exact IEEE results 
 separately verifies 120 unchanged default observations. This closes one finite
 P0 operator/composition gap; complete Variant promotion, native result typing,
 text policy precedence and Access execution qualification remain unfinished.
+
+
+## Explicit external database source execution
+
+Read-only FROM IN now uses exact host-authorized selectors and immutable revision
+keys, checked before scans and across successful schema-discovery stages.
+Actual target schemas, text policies, hints, scalar/collection callbacks and
+selected-index failures retain ownership. The CLI opens only explicit
+`--external DATABASE_TOKEN PATH` targets under the same native allowance as the
+root and mapped links; explicit target indexes use `--external-index`.
+
+[Independent getter/model evidence](testing/EXTERNAL_NATIVE_QUERIES.md) records
+350 engineering and 375 CLI controls across five profile pairs, with all 75
+pinned hashes unchanged. Nested SELECTs choose their own root/external namespace;
+these lexical rules remain engineering behavior pending Access comparison.
+External named targets, native stored remote-source reconstruction, linked chains
+and wider providers remain unfinished. This closes a direct-source execution gap
+without completing P0 value/text semantics or read/query acceptance.
