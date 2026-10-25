@@ -1,0 +1,114 @@
+{
+  "date": "2026-10-25",
+  "scope": "Selected Scalar numeric/String predicate conversion widths under explicit declared arithmetic; unchanged materialized defaults. No native SQL qualification.",
+  "unique_tests": 82,
+  "new_tests": 9,
+  "existing_regression_tests": 73,
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-expressions --lib evaluation::comparison_values --all-features --locked --offline -j 2",
+      "private_log": ".cache/declared-numeric-text-expressions-final-20261025.log",
+      "sha256": "3d27ccf0b8fb6d14d02e163fa14ccde1e57746dbc56998a34f5c4bc2376174d2",
+      "exit_code": 0,
+      "tests": 38
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test declared_numeric_text --test declared_string_comparisons --test variant_text_comparison --test numeric_text_comparison --test raw_string_predicates --test declared_integral --test effective_comparisons --locked --offline -j 2",
+      "private_log": ".cache/declared-numeric-text-query-final-20261025.log",
+      "sha256": "2735a678755fa858baefeb2a1c1e96afc38d35efa3dfade9e708c828ddb4a1e1",
+      "exit_code": 0,
+      "tests": 40
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --test declared_numeric_text --test numeric_text_comparison --locked --offline -j 2",
+      "private_log": ".cache/declared-numeric-text-cli-final-20261025.log",
+      "sha256": "e4ee15476f79aba4634d5086026145d0c873820bec8d87908065d55b51ffecea",
+      "exit_code": 0,
+      "tests": 4
+    },
+    {
+      "command": "cargo clippy -p tablecraft-expressions --lib --tests --all-features --locked --offline -j 2 -- -D warnings",
+      "private_log": ".cache/declared-numeric-text-expressions-clippy-20261025.log",
+      "sha256": "358d1aa6a7cb065400655ba8d3a3f7bfea2706e26efc088d8fad6eb80e48f0d6",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --test declared_numeric_text -p tablecraft-cli --test declared_numeric_text --all-features --locked --offline -j 2 -- -D warnings",
+      "private_log": ".cache/declared-numeric-text-host-clippy-20261025.log",
+      "sha256": "8ab2bd82d78d3bef43ea42d0fd0c41a47e8dec0998171066d050a1e8aa05f37f",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo check -p tablecraft-expressions --no-default-features --locked --offline -j 2",
+      "private_log": ".cache/declared-numeric-text-minimal-expressions-20261025.log",
+      "sha256": "22e0df986057b9ba5be07526ac5fb348862a3dedef42108383cc3e088acbb889",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo check -p tablecraft-query --no-default-features --locked --offline -j 2",
+      "private_log": ".cache/declared-numeric-text-minimal-query-20261025.log",
+      "sha256": "3824b03c267c4c1547173f4bfa48c581a4d21fb5582addd70c1c6680aa5f15d6",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "private_log": ".cache/declared-numeric-text-fmt-20261025.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0
+    }
+  ],
+  "excluded_attempts": [
+    {
+      "private_log": ".cache/declared-numeric-text-expressions-initial-20261025.log",
+      "sha256": "6227b589ce68935e74cfc739167b68b8ea43ae19debc5506dfbe5dbfffd27772",
+      "exit_code": 0,
+      "tests": 0,
+      "reason": "Evaluation is SQL-feature gated; the initial no-default test filter selected no tests. Not counted as coverage; replaced by all-feature expression tests and separate standalone minimal compile."
+    },
+    {
+      "private_log": ".cache/declared-numeric-text-cli-20261025.log",
+      "sha256": "9bba83634ed29160c9b6577a1d44dbe426f47c4a04cd29d78df773d5978df138",
+      "exit_code": 101,
+      "reason": "The CLI declared literal-preparation profile had already rounded an untyped large decimal literal before CLngLng. Changed the test input to exact CLngLng(Text), rather than altering production literal semantics or successful expected comparison values."
+    }
+  ],
+  "references": [
+    "https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/f8acd631-55c1-4199-bc1e-022aaab6d9c8",
+    "https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/comparison-operators"
+  ],
+  "contracts": [
+    "A known Scalar Boolean/Byte/Integer/Long/LongLong/Single/Double selects its current numeric conversion width for decoded/raw String peers; either order, no invented String/result provenance.",
+    "Existing numeric parsers and checked constructors provide exact LongLong Text parsing, half-even integer rounding and range refusal under explicit NumberFormat.",
+    "Default materialized behavior, both-Variant ordering, Scalar String/Variant formatting, other effective numeric/date families and unknown numeric guards remain separate.",
+    "Predicates compose through filters/HAVING, derived/scalar subqueries, lists/ranges and quantified comparisons; parameters convert anew under the same prepared plan.",
+    "Raw Strings publish strictly only for conversion; no String collation provider or native selected-index hint is activated by the new path.",
+    "NULL, Error states, eager failures, cancellation, text/allocation ceilings and buffered CLI error behavior retain their existing boundaries.",
+    "No new dependency, stored type, default allowance or write eligibility. Original-file and native Access evidence remain separate next work."
+  ],
+  "source_snapshots": [
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/comparison_values.rs",
+      "sha256": "86060d8ad52995e6d1088763ea1bf264a0c4dec45eb65083c16660c48921f85e"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/comparison_values/declared_numeric.rs",
+      "sha256": "8872df7cba04c78647e790cf6e78de1b18c8b87ab08878992659f6eaecc9b41d"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/comparison_values/declared_numeric/tests.rs",
+      "sha256": "1b256c61d0cf895984f859ba14ce3d634b6ae93d5b24e474e32218e0efdf62e2"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/collation/declared_strings.rs",
+      "sha256": "1c930b4795e48a402c55fdc1b65227f23e8303fce68fbbe656d396ecf3e53526"
+    },
+    {
+      "path": "crates/query/tablecraft-query/tests/declared_numeric_text.rs",
+      "sha256": "ed2d65f6d9f46311a16e7552d11c2c97caa6196ca508a2617cccd5c9f6fe0cb4"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/declared_numeric_text.rs",
+      "sha256": "f91b7bdc50151f6d16fbe9cd79f4d0ef2e8a376829b15681ef647d484428ab13"
+    }
+  ]
+}

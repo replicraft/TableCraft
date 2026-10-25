@@ -30,12 +30,16 @@ not acquire numeric Text parsing or the wider scalar family conversions above.
 The explicit [declared profile](DECLARED_ARITHMETIC.md#scalar-string-compared-with-variant)
 additionally selects String coercion for a known Scalar String beside a known
 Variant; that declaration-dependent branch precedes this materialized numeric
-profile. Unknown categories fail when they can change the selected branch.
+profile. Known Scalar numeric peers now also select their own checked Text
+conversion width under the [declared numeric/String rule](DECLARED_NUMERIC_TEXT.md),
+including exact LongLong parsing and integer rounding/ranges. Unknown categories
+fail when they can change the selected branch.
 
 Mixed numeric/Text predicates require NumberFormat; missing policy is an explicit
 NumberFormatRequired failure. Malformed numeric Text fails, rather than sorting
 by type name or becoming zero/NULL. Converted fractions are not rounded to an
-integer field's width. LongLong/Single, LongLong/Double and LongLong/Text predicates now round the
+integer field's width in this default profile. The explicit declared profile
+selects its reviewed numeric width separately. LongLong/Single, LongLong/Double and LongLong/Text predicates now round the
 LongLong through checked nearest-even Double conversion. Integer-only comparisons
 remain exact; explicit Decimal conversion retains its separate fixed-point profile.
 Checked Decimal/Currency range, rounding and underflow rules remain authoritative.
