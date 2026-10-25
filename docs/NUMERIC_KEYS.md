@@ -132,3 +132,12 @@ carriers, exact large-integer output and empty stdout after a later failure.
 This closes an engineering key-admission gap; native Access heterogeneous Variant
 coercion/grouping and full P0 result promotion remain unqualified. See the
 [scoped verification](testing/results/fixed-binary-keys-2026-10-25.json).
+
+
+The [independent mixed-key replay](testing/FIXED_BINARY_KEYS.md) now passes 3,956
+candidate queries and 333 earlier-executable observations across fifteen parameter
+cohorts and four unchanged native scalar files. Exact Fraction/IEEE expectations
+agree on 8,648 returned rows and 25,112 cells. All twelve immutable pins and
+seventeen versioned/live source snapshots were separately rehashed. The report
+keeps the existing depth-16 binder boundary and native Access qualification gaps
+explicit; no input, runtime policy or expected numeric relation changed.
