@@ -117,6 +117,14 @@ impl Runtime<'_, '_> {
                 };
                 self.copy_expression(row.get(*index).ok_or(QueryError::UnknownName)?)
             }
+            Expr::Projected(reference) => {
+                self.tick()?;
+                self.copy_expression(
+                    env.output
+                        .get(reference.index)
+                        .ok_or(QueryError::UnknownName)?,
+                )
+            }
             Expr::Output(index, _) => {
                 self.tick()?;
                 self.copy_expression(env.output.get(*index).ok_or(QueryError::UnknownName)?)

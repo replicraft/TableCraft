@@ -100,6 +100,7 @@ impl Pruner<'_, '_> {
             | Expr::CollectionItem { .. }
             | Expr::ParentPresence { .. }
             | Expr::Output(_, _)
+            | Expr::Projected(_)
             | Expr::Parameter(_)
             | Expr::Aggregate(_, None) => {}
         }

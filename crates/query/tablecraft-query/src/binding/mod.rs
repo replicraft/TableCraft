@@ -8,6 +8,7 @@ use crate::{
 use tablecraft_expressions::functions::dates::parsing::ReferenceYear;
 use tablecraft_sql::query::{Query, Statement};
 
+mod aliases;
 mod arrays;
 mod calls;
 mod cashflows;
@@ -57,6 +58,7 @@ pub struct PreparedQuery {
 }
 
 pub(super) struct Binder<'a> {
+    aliases: aliases::ProjectionAliases,
     budget: Option<&'a mut tablecraft_core::limits::ResourceBudget>,
     cancelled: Option<&'a dyn Fn() -> bool>,
     source: &'a dyn Source,
@@ -158,6 +160,7 @@ pub(crate) fn prepare_stage<'a>(
         return Err(QueryError::StructureLimit);
     }
     let mut binder = Binder {
+        aliases: Default::default(),
         budget,
         cancelled,
         source,

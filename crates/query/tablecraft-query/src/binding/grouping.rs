@@ -24,7 +24,7 @@ impl Binder<'_> {
     ) -> Result<bool, QueryError> {
         self.tick(depth)?;
         Ok(match expr {
-            Expr::MathCall(MathFunction::Rnd, _) => false,
+            Expr::MathCall(MathFunction::Rnd, _) | Expr::Projected(_) => false,
             Expr::Literal(_)
             | Expr::NumericLiteral(_)
             | Expr::DateLiteral(..)

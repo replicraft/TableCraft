@@ -16,6 +16,7 @@ pub(crate) fn expression(
         Expr::Field { text_policy, .. }
         | Expr::CollectionItem { text_policy, .. }
         | Expr::Output(_, text_policy) => *text_policy,
+        Expr::Projected(reference) => reference.text_policy,
         Expr::CVar(value) => expression(value, tick, depth + 1)?,
         Expr::Binary(BinaryOperator::Concatenate | BinaryOperator::Add, left, right) => {
             expression(left, tick, depth + 1)?.merge(expression(right, tick, depth + 1)?)

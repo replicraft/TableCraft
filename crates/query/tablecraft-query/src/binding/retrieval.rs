@@ -16,13 +16,16 @@ impl Binder<'_> {
         outer: &[&[Slot]],
         depth: usize,
     ) -> Result<ReadPlan, QueryError> {
-        self.with_collection_criteria(false, |binder| {
+        let previous = std::mem::take(&mut self.aliases);
+        let result = self.with_collection_criteria(false, |binder| {
             binder.tick(depth)?;
             if read.owner_access {
                 return Err(QueryError::Unsupported);
             }
             binder.body(&read.body, &read.order_by, outer, depth + 1)
-        })
+        });
+        self.aliases = previous;
+        result
     }
 
     fn body(
@@ -165,6 +168,20 @@ impl Binder<'_> {
         depth: usize,
         transform: Option<&E>,
     ) -> Result<ReadPlan, QueryError> {
+        let previous = std::mem::take(&mut self.aliases);
+        let result = self.select_with_aliases(select, final_sort, outer, depth, transform);
+        self.aliases = previous;
+        result
+    }
+
+    fn select_with_aliases(
+        &mut self,
+        select: &Select,
+        final_sort: &[SortKey],
+        outer: &[&[Slot]],
+        depth: usize,
+        transform: Option<&E>,
+    ) -> Result<ReadPlan, QueryError> {
         self.tick(depth)?;
         if select.into.is_some()
             || select.into_external.is_some()
@@ -227,6 +244,7 @@ impl Binder<'_> {
         }
         let mut projection = Vec::new();
         let mut names = Vec::new();
+        self.aliases.enabled = true;
         for item in &select.projection {
             match item {
                 Projection::Wildcard(qualifier) => {
@@ -275,6 +293,24 @@ impl Binder<'_> {
             if projection.len() > SOURCE_SCHEMA_POLICY.max_columns {
                 return Err(QueryError::StructureLimit);
             }
+            let alias = match item {
+                Projection::Expression { alias, .. } | Projection::Field { alias, .. } => alias,
+                Projection::Wildcard(_) => &None,
+            };
+            if let Some(alias) = alias {
+                let index = projection.len() - 1;
+                self.register_projection_alias(
+                    alias.as_str(),
+                    index,
+                    &projection[index],
+                    &scopes,
+                    depth + 1,
+                )?;
+            }
+        }
+        self.aliases.enabled = false;
+        if self.aliases.used && transform.is_some() {
+            return Err(QueryError::Unsupported);
         }
         if let Some(transform) = transform {
             projection.push(self.expression(transform, &scopes, true, depth + 1)?);
@@ -352,6 +388,9 @@ impl Binder<'_> {
                 .chain(having.iter())
                 .chain(sort.iter().map(|(e, _)| e))
                 .any(has_aggregate);
+        if self.aliases.used && aggregate {
+            return Err(QueryError::Unsupported);
+        }
         if having.is_some() && !aggregate {
             return Err(QueryError::Grouping);
         }

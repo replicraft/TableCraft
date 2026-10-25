@@ -55,6 +55,7 @@ impl Binder<'_> {
             | Expr::DateLiteral(..)
             | Expr::CollectionItem { .. }
             | Expr::ParentPresence { .. } => Some(OperandDeclaration::Scalar),
+            Expr::Projected(reference) => reference.declaration,
             Expr::Parameter(index) => Some(
                 self.parameters
                     .get(*index)

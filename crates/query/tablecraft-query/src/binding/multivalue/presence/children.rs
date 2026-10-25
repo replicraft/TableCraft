@@ -70,6 +70,7 @@ pub(super) fn children(expr: &Expr) -> impl Iterator<Item = &Expr> {
         | Expr::DateLiteral(..)
         | Expr::Field { .. }
         | Expr::Output(..)
+        | Expr::Projected(_)
         | Expr::CollectionItem { .. }
         | Expr::ParentPresence { .. }
         | Expr::Parameter(_)
@@ -150,6 +151,7 @@ pub(super) fn children_mut(expr: &mut Expr) -> impl Iterator<Item = &mut Expr> {
         | Expr::DateLiteral(..)
         | Expr::Field { .. }
         | Expr::Output(..)
+        | Expr::Projected(_)
         | Expr::CollectionItem { .. }
         | Expr::ParentPresence { .. }
         | Expr::Parameter(_)

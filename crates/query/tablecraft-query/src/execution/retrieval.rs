@@ -302,7 +302,13 @@ impl Runtime<'_, '_> {
         }
         let mut values = self.allocate_expression_row(select.projection.len())?;
         for expr in &select.projection {
-            values.push(self.retained_expression_operand(expr, env)?);
+            values.push(self.retained_expression_operand(
+                expr,
+                Environment {
+                    output: &values,
+                    ..env
+                },
+            )?);
         }
         let mut keys = self.allocate_expression_row(plan.sort.len())?;
         for (expr, _) in &plan.sort {

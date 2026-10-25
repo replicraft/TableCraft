@@ -103,6 +103,7 @@ impl Binder<'_> {
             | Expr::Field { .. }
             | Expr::Parameter(_)
             | Expr::Output(_, _)
+            | Expr::Projected(_)
             | Expr::CollectionItem { .. }
             | Expr::ParentPresence { .. } => {}
             Expr::Subquery(read) | Expr::Exists(read) => {
