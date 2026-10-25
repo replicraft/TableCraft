@@ -7519,3 +7519,43 @@ probes and two supplementary before-fix CLI failures are excluded from accepted
 counts. Native Access SQL, native writer validity, concurrency and saves remain
 unqualified. Databases, decoded oracle output, reference source/JAR and frozen
 executables remain ignored local artifacts.
+
+
+## Original inert linked-table metadata
+
+The original [public-writer recipe](testing/LinkedTableFixture.java),
+[reopened getter oracle](testing/LinkedTableOracle.java),
+[engine replay](testing/compare_linked_tables.py) and Rust engineering example
+are repository MIT code. No third-party source or fixture bytes are copied into
+tracked files. The local Jackcess 5.0.4 artifact retains its reviewed Apache-2.0
+provenance and SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+
+Fresh original frontend/backend pairs generated on 24 October 2026 remain ignored
+under `.cache/tablecraft-fixtures/linked-metadata-20261024/`:
+
+| File | Bytes | SHA-256 |
+| --- | ---: | --- |
+| V2000/frontend.mdb | 106,496 | `dd1a23a90328727851b25b52c13fdd2caf36fe5dfb3a493b7ee869895207ae4f` |
+| V2000/backend.mdb | 114,688 | `c5df71254a31548ee6b4f465cde1db28871b97ffe487d519dc84e8f4f47c3b11` |
+| V2007/frontend.accdb | 335,872 | `6522d7b920e206ca47accda1672dc4331f94cf8e3c09ea377d1d175b8c1e89d8` |
+| V2007/backend.accdb | 344,064 | `57c75633cf459cd9309e9855acc382b4ba821d13dad9885854bffffa8a58de46` |
+| V2016/frontend.accdb | 376,832 | `ab848c8b621b7a422887b36a60d47337e11d7cd1c21147e6018c3c6f925f81c0` |
+| V2016/backend.accdb | 380,928 | `feb883efd484514e6355b8dec80eb9bfb43c582b47edd311ee6b15aaed31cad6` |
+| V2019/frontend.accdb | 446,464 | `9b81cd5deebcb98183d42cff3e42b48e8c73c3b3963ec384176d863a603f7d3b` |
+| V2019/backend.accdb | 450,560 | `3b227458be2e82e9a44c5988cb7abd1414f3fa635abeb74990059db373ef51a0` |
+
+Each frontend contains four public `createLinkedTable` declarations: a local
+backend basename, Unicode identifiers, opaque whitespace/SQL-looking identifiers
+and an external Memo-sized Database string. The backend contains two inert scalar
+rows. The read-only oracle compares reopened metadata getters with MSysObjects,
+with expression evaluation disabled and a throwing LinkResolver. Sixteen engine
+comparisons pass across all four profiles with zero target-resolution calls and
+all eight original hashes unchanged.
+
+The [feature contract](NATIVE_LINKED_TABLES.md) and
+[accepted report](testing/results/linked-metadata-2026-10-24.json) distinguish inert
+catalog metadata from target activation. No credentials, active content or saved
+queries execute. Native Access execution, automatic provider/path resolution,
+linked query semantics and writes remain unqualified. Fixture databases, decoded
+oracle output, reference JAR and frozen executable remain ignored local artifacts.

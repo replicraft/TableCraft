@@ -28,7 +28,10 @@ mod properties;
 mod relationships;
 mod table;
 mod transaction;
-pub use catalog::{CatalogInspection, NativeObjectOrigin, NativeTableStorage, inspect_catalog};
+pub use catalog::{
+    CatalogInspection, NativeAccessLinkTarget, NativeLinkText, NativeLinkedTableDefinition,
+    NativeObjectOrigin, NativeTableStorage, inspect_catalog, read_linked_table_definition,
+};
 pub use constraints::{
     ConstraintReport, ConstraintViolation, FieldCheck, RelationshipCheck, RelationshipCheckStatus,
     RuleCheckStatus, check_table_constraints,
