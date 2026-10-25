@@ -1170,3 +1170,12 @@ The rule is grounded in [Microsoft's comparison reference](https://learn.microso
 and the [MS-VBAL relational effective-type table](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/f8acd631-55c1-4199-bc1e-022aaab6d9c8).
 These establish the language-level distinction; actual ACE SQL declaration
 inference, regional rendering and collation still require native qualification.
+
+
+The [independent Scalar String/Variant replay](testing/SCALAR_STRING_VARIANT_COMPARISONS.md)
+passes 224 CLI controls and 1,869 unchanged hashes, including native fields in
+four priority layouts. Explicit short rendering goldens and ordinal String
+ordering supply expected results; the reference never executes SQL. The
+[verification record](testing/results/read-query-scalar-string-2026-10-24.json)
+records 143 focused Rust tests, strict scoped Clippy and the frozen source/executable
+inventory. These are engineering checks, not native ACE declaration qualification.
