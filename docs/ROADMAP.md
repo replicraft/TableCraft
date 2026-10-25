@@ -154,7 +154,7 @@ The [distribution read scope](features/ACCESS_DISTRIBUTION.md#required-read-scop
 also includes `.accdr`, `.accde`, `.mde`, `.accdt` and `.accdc`. Raw runtime/compiled
 databases reuse header-selected native readers; templates and deployment packages
 need separate bounded container/data readers. Single-database ACCDC CAB reading
-now works through AccessInput. Bounded ACCDT package inspection, qualified
+now works through AccessInput. Bounded ACCDT package inspection, UTF-8/BOM-qualified UTF-16 XML, qualified
 inline-XSD table reads and CLI queries also work; wider template schemas and
 native package qualification remain pending. Reading them does not depend on VBA
 execution, application instantiation or signing support. Filename-routing tests
@@ -253,8 +253,18 @@ Do not treat encryption discovery/opening as an unstarted implementation task.
 | Named query composition | Local SELECT/UNION dependencies, fixed-heading crosstabs and explicit staged relational/domain schema discovery under shared scopes/budgets | Native heading naming and wider native definitions/semantics; qualify proposed inline TRANSFORM syntax before implementation; binding remains metadata-only |
 | Native text | Exact stored policy identities, runtime domain-result provenance, explicit General legacy/2010 routing, index checks and bounded string/search/LIKE services | Other locales, complete native mixed-policy precedence and safe text pushdown; Windows capture/replay is still pending |
 | Encoding/encryption | Qualified encoded opens and bounded fresh-copy management | Unknown/extensible/unsupported providers and native-authored profile qualification; workgroup authorization is a separate gap |
-| Distribution containers | Header-based raw runtime/compiled reads, bounded single-database ACCDC CAB input and inert ACCDT OPC/URI plus qualified inline-XSD/List Definition reads | Wider ACCDT schemas/defaults/package features, signature verification and native compiled/package qualification |
-| Scale and host behavior | Incremental native scalar cursors/batches, explicit CLI TSV continuation/projections, bounded query materialization, explicit source/row/work/output limits, stable/offline inputs, explicitly authorized one-hop linked native sources and exact host-bound external IN/per-table targets with scoped saved reads and explicit progressive local scalar SELECT/WHERE, global Count/Sum/Avg and flat UNION ALL | Wider streaming/larger SQL execution, coherent shared-file reads, remaining stored remote layouts, linked-source chains and broader providers |
+| Distribution containers | Header-based raw runtime/compiled reads, bounded single-database ACCDC CAB input and inert UTF-8/UTF-16 ACCDT OPC/URI plus qualified inline-XSD/List Definition reads | Wider ACCDT schemas/defaults/package features, signature verification and native compiled/package qualification |
+| Scale and host behavior | Incremental native scalar cursors/batches, explicit CLI TSV continuation/projections, bounded query materialization, explicit source/row/work/output limits, stable/offline inputs, explicitly authorized one-hop linked native sources and exact host-bound external IN/per-table targets with scoped saved reads and explicit progressive local scalar SELECT/WHERE, global Count/Sum/Avg and flat UNION ALL, explicit one-hop linked streams and bounded exact integral GROUP/DISTINCT/UNION keys | Wider streaming/larger SQL execution, coherent shared-file reads, remaining stored remote layouts and broader providers |
+
+Explicit linked streams retain the same target authorization, independent text
+policies and cumulative budgets as buffered linked reads. Microsoft directs links
+to original local tables rather than already linked tables; the current one-hop
+refusal is a documented [workflow boundary](NATIVE_LINKED_QUERIES.md), not an
+unestablished chain-parity milestone. Broader providers remain separate work.
+[Exact integral query keys](EXACT_QUERY_KEYS.md) now avoid representative scans for
+proven GROUP/DISTINCT/UNION tuples, and [borrowed equijoins](QUERY_EQUIJOINS.md)
+reject admitted nonmatching pairs before copying candidates. Both remain bounded
+strategies with explicit general fallbacks, not complete optimizer qualification.
 
 [Continuation failure checks](NATIVE_READ_FAILURES.md) now cover read/seek/page
 hooks after a delivered prefix, terminal cursors and bounded interrupted short
