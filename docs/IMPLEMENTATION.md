@@ -1,5 +1,19 @@
 # Implementation status
 
+## Independent Power operand/error replay
+
+The [Power replay](testing/POWER.md) passes 627 CLI commands, seven exact-model
+goldens and all seven selected executable/source hashes unchanged. It covers
+390 zero-negative carrier combinations and 237 finite/error/NULL controls through
+both retrieval profiles and default scalar eval. Successful values retain Double
+carriers and modeled bits; refusals retain expected error classifications and
+empty stdout. The [verification record](testing/results/read-query-power-2026-10-24.json)
+pins production base `80750158`, the complete 1,843-file Rust inventory and
+22 focused tests. An initial runner probe used an unsupported scalar-eval option
+and mismatched diagnostic spelling; it remains excluded, with no production
+change to accommodate it. This does not qualify arbitrary real-power rounding,
+Windows Access behavior or complete P0/read-query acceptance.
+
 ## Power domain errors after operand conversion
 
 A converted zero base raised to a negative exponent now returns Domain rather
