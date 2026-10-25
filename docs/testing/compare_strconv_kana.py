@@ -118,8 +118,8 @@ def main():
                 commands += 1
         for expression in [
             "StrConv('あ',16)", "StrConv(NULL,32,1033)", "StrConv('あ',16,66577)",
-            "StrConv('あ',48,1041)", "StrConv('あ',17,1041)", "StrConv('あ',80,1041)",
-            "StrConv('あ',5,1041)", "StrConv('あ',16,NULL)",
+            "StrConv('あ',48,1041)", "StrConv('あ',144,1041)", "StrConv('あ',80,1041)",
+            "StrConv('あ',68,1041)", "StrConv('あ',16,NULL)",
             "StrConv(ChrW(55296),16,1041)", "StrConv(ChrB(65),32,1041)",
             "StrConv(ChrW(55296),16,1/0)", "StrConv(IIf(True,'あ',1/0),16,1041)",
             "StrConv('ゟ',16,1041)", "StrConv('ヿ',32,1041)",

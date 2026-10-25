@@ -64,7 +64,8 @@ fn a_reused_width_plan_does_not_capture_mode_locale_or_failed_execution() {
         ("ABC", 4, 1041, Ok(Value::Text("ＡＢＣ".into()))),
         ("ＡＢＣ", 8, 1041, Ok(Value::Text("ABC".into()))),
         ("ABC", 4, 1033, Err(EvalError::UnsupportedExpression)),
-        ("ABC", 5, 1041, Err(EvalError::UnsupportedExpression)),
+        ("ABC", 5, 1041, Ok(Value::Text("ＡＢＣ".into()))),
+        ("ABC", 68, 1041, Err(EvalError::UnsupportedExpression)),
         ("ABC", 2, 1033, Ok(Value::Text("abc".into()))),
         ("ＡＢＣ", 8, 1041, Ok(Value::Text("ABC".into()))),
     ] {

@@ -108,7 +108,7 @@ def refusal_controls():
         ("null_wrong_locale", "StrConv(NULL,36,1033)"),
         ("alternate_locale", "StrConv('ｶﾞ',36,66577)"),
         ("null_locale", "StrConv('ｶﾞ',36,NULL)"),
-        ("unsupported_case_combination", "StrConv('ｶﾞ',37,1041)"),
+        ("unsupported_from_unicode_combination", "StrConv('ｶﾞ',164,1041)"),
         ("unsupported_encoding_combination", "StrConv('ｶﾞ',100,1041)"),
         ("conflicting_width", "StrConv('ｶﾞ',44,1041)"),
         ("odd_raw", "StrConv(ChrB(65),36,1041)"),

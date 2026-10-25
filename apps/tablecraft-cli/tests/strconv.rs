@@ -117,7 +117,7 @@ fn explicit_japanese_widening_precedes_hiragana_in_both_query_commands() {
         for expression in [
             "StrConv('ｶﾞ',36)",
             "StrConv('ｶﾞ',36,1033)",
-            "StrConv('ｶﾞ',37,1041)",
+            "StrConv('ｶﾞ',100,1041)",
         ] {
             let sql = format!("SELECT 1,{expression}");
             let refused = run(&["query", mode, &sql]);

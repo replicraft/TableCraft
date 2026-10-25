@@ -1,5 +1,19 @@
 # Implementation status
 
+## Combined Japanese StrConv operations
+
+Explicit LCID 1041 now admits all 32 compatible combinations of the existing
+Japanese width/kana settings with unchanged/upper/lower/proper case. All 27 newly
+admitted values were verified to refuse on the frozen pre-change CLI. The shared
+kernels apply case, explicit widening, script selection and requested narrowing;
+Hiragana never silently adds widening. Nine new tests and 52 regressions pass
+across 32 expression, 22 query and seven CLI tests, covering raw ranges, voiced
+marks, flag/locale errors, reuse, eager failures, quotas and cancellation. Strict
+linting, minimal features and formatting pass. Existing bounded mapping and native
+NLS/Access qualification gaps remain explicit. See the
+[working profile](STRCONV.md#combined-japanese-case-width-and-kana) and
+[verification](testing/results/strconv-japanese-combinations-2026-10-25.json).
+
 ## Declared numeric/String baseline coverage
 
 The existing declared predicate service selects checked numeric widths for

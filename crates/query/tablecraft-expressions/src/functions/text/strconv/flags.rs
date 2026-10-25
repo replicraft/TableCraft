@@ -10,8 +10,7 @@ const KATAKANA: i16 = 16;
 const HIRAGANA: i16 = 32;
 const TO_UNICODE: i16 = 64;
 const FROM_UNICODE: i16 = 128;
-#[cfg(feature = "sql")]
-const WIDE_HIRAGANA: i16 = WIDE | HIRAGANA;
+const JAPANESE_FLAGS: i16 = WIDE | NARROW | KATAKANA | HIRAGANA;
 const KNOWN_FLAGS: i16 =
     CASE_MASK | WIDE | NARROW | KATAKANA | HIRAGANA | TO_UNICODE | FROM_UNICODE;
 
@@ -50,20 +49,8 @@ impl Conversion {
     /// Validate a checked Integer flag value. Contradictions/unknown bits fail;
     /// East Asian width/kana transformations are explicitly unsupported.
     pub fn from_code(code: i16) -> Result<Self, EvalError> {
-        if code < 0 || code & !KNOWN_FLAGS != 0 {
-            return Err(EvalError::Domain);
-        }
-
-        for pair in [
-            WIDE | NARROW,
-            KATAKANA | HIRAGANA,
-            TO_UNICODE | FROM_UNICODE,
-        ] {
-            if code & pair == pair {
-                return Err(EvalError::Domain);
-            }
-        }
-        if code & (WIDE | NARROW | KATAKANA | HIRAGANA) != 0 {
+        validate(code)?;
+        if code & JAPANESE_FLAGS != 0 {
             return Err(EvalError::UnsupportedExpression);
         }
 
@@ -110,21 +97,58 @@ impl Conversion {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) enum Operation {
     Standard(Conversion),
-    Kana(KanaConversion),
-    Width(WidthConversion),
-    WideHiragana,
+    Japanese {
+        width: Option<WidthConversion>,
+        kana: Option<KanaConversion>,
+        case: Conversion,
+    },
 }
 
 #[cfg(feature = "sql")]
 impl Operation {
     pub(crate) fn from_code(code: i16) -> Result<Self, EvalError> {
-        match code {
-            WIDE => Ok(Self::Width(WidthConversion::Wide)),
-            NARROW => Ok(Self::Width(WidthConversion::Narrow)),
-            KATAKANA => Ok(Self::Kana(KanaConversion::Katakana)),
-            HIRAGANA => Ok(Self::Kana(KanaConversion::Hiragana)),
-            WIDE_HIRAGANA => Ok(Self::WideHiragana),
-            _ => Conversion::from_code(code).map(Self::Standard),
+        validate(code)?;
+        if code & JAPANESE_FLAGS == 0 {
+            return Conversion::from_code(code).map(Self::Standard);
+        }
+        if code & (TO_UNICODE | FROM_UNICODE) != 0 {
+            return Err(EvalError::UnsupportedExpression);
+        }
+
+        let width = if code & WIDE != 0 {
+            Some(WidthConversion::Wide)
+        } else if code & NARROW != 0 {
+            Some(WidthConversion::Narrow)
+        } else {
+            None
+        };
+        let kana = if code & KATAKANA != 0 {
+            Some(KanaConversion::Katakana)
+        } else if code & HIRAGANA != 0 {
+            Some(KanaConversion::Hiragana)
+        } else {
+            None
+        };
+        Ok(Self::Japanese {
+            width,
+            kana,
+            case: Conversion::from_code(code & CASE_MASK)?,
+        })
+    }
+}
+
+fn validate(code: i16) -> Result<(), EvalError> {
+    if code < 0 || code & !KNOWN_FLAGS != 0 {
+        return Err(EvalError::Domain);
+    }
+    for pair in [
+        WIDE | NARROW,
+        KATAKANA | HIRAGANA,
+        TO_UNICODE | FROM_UNICODE,
+    ] {
+        if code & pair == pair {
+            return Err(EvalError::Domain);
         }
     }
+    Ok(())
 }

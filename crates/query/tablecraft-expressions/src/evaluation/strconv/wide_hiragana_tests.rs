@@ -47,8 +47,6 @@ fn composition_keeps_legacy_recipes_and_unsupported_combinations_explicit() {
         ("StrConv('ｶﾞ',36,66577)", EvalError::UnsupportedExpression),
         ("StrConv('ｶﾞ',36,NULL)", EvalError::InvalidNullConversion),
         ("StrConv('ｶﾞ',36,CVErr(7))", EvalError::TypeMismatch),
-        ("StrConv('ｶﾞ',37,1041)", EvalError::UnsupportedExpression),
-        ("StrConv('ｶﾞ',20,1041)", EvalError::UnsupportedExpression),
         ("StrConv('ｶﾞ',100,1041)", EvalError::UnsupportedExpression),
         ("StrConv('ｶﾞ',164,1041)", EvalError::UnsupportedExpression),
         ("StrConv('ｶﾞ',44,1041)", EvalError::Domain),
