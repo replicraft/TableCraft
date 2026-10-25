@@ -1,5 +1,16 @@
 # Implementation status
 
+## Wide-variable Memo history replay
+
+The [original history replay](testing/VARIABLE_MEMO_HISTORIES.md) passes 16
+controls and 33,422 matched cells over two ACE 16-family originals with 255
+columns, nine interspersed Memo fields and retained older physical row shapes.
+Sequential and selected-index reads agree with read-only getters under explicit
+work ceilings. No decoder change was needed; all 13 selected hashes remain
+unchanged, and the frozen source manifest matches committed archive `3fbf14ea`.
+This expands locality/history evidence beside existing wide-variable coverage,
+not native Access qualification or arbitrary-scale acceptance.
+
 ## Progressive query service
 
 The [explicit progressive API](PROGRESSIVE_QUERIES.md) evaluates admitted direct
