@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-24",
+  "production_base_commit": "39f35d04a871f7784a62f2624011dae02d2bb08e",
+  "scope": "Explicit same-table calculated dependency previews; no native intermediate conversion or freshness qualification",
+  "rust_source_inventory": {
+    "roots": [
+      "apps",
+      "crates"
+    ],
+    "files": 1885,
+    "algorithm": "Relative UTF-8 path sorted lexically; each path + NUL + lowercase hex SHA256(file bytes) + newline; SHA256 of complete UTF-8 manifest",
+    "private_manifest": ".cache/calculation-dependencies-rust-source-20261024.manifest",
+    "sha256": "c29f3fd550682eda70568fa2096b9f9239700e62ee57a7cb354236d256459421",
+    "verification": "Runner verified all live source pins before/after replay; parent independently verified all report pins and exact committed archive. Inventory is not complete test coverage."
+  },
+  "rust_tests": {
+    "passed_unique_tests": 57,
+    "new_tests": 6,
+    "targets": {
+      "access_lib": 41,
+      "calculation_preview": 16
+    }
+  },
+  "checks": [
+    {
+      "command": "cargo test --locked -p tablecraft-access --lib --test calculation_preview",
+      "exit_code": 0,
+      "evidence": "Original completed tool transcript; no redirected log",
+      "terminal_handle": 43980
+    },
+    {
+      "command": "cargo clippy --locked -p tablecraft-access --lib --test calculation_preview -- -D warnings",
+      "exit_code": 0,
+      "evidence": "Original completed tool transcript; no redirected log",
+      "terminal_handle": 90727
+    },
+    {
+      "command": "cargo build -p tablecraft-cli --bin tablecraft -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/calculation-dependencies-cli-build-20261024.log",
+      "sha256": "4e7fbab9fff7ecb990bfe4eb5c6c0b56cbf14f115717dc33f687bd261a66c85f"
+    },
+    {
+      "command": "cargo check -p tablecraft-access --no-default-features -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/calculation-dependencies-minimal-20261024.log",
+      "sha256": "2725ccb41bfd321dcc3dd79303897977e4795a572a3f7be41ee4886850b1a4da"
+    }
+  ],
+  "additional_passed_checks": [
+    "cargo fmt --all -- --check",
+    "git diff --check",
+    "Original Java compilation/Python syntax/manual code spacing"
+  ],
+  "independent_replay": {
+    "report": "docs/testing/results/calculated-dependencies-2026-10-24.json",
+    "sha256": "4a2d8588df9aebbe09cbb9d45265778853bc01a0a0ffde3b177a8e9ade84667d",
+    "controls": 50,
+    "matched_cells": 170,
+    "preview_values_differing_from_raw_caches": 80,
+    "preserved_raw_cache_cells": 90,
+    "unchanged_hashes": 1899,
+    "successes": 34,
+    "refusals": 16,
+    "profiles": [
+      "V2016",
+      "V2019"
+    ]
+  },
+  "unrun": [
+    "Full workspace suite",
+    "Windows Access intermediate ResultType conversion/freshness qualification",
+    "Release/performance qualification"
+  ],
+  "exploration": {
+    "terminal_handle": 9439,
+    "note": "Initial new synthetic fixture wrote the variable count at offset41 instead of43 and modified its max-column declaration. Corrected independent test builder; runtime unchanged. Subsequent initial15 integration pass followed by final41 unit+16 integration pass. No accepted original-file replay failed."
+  }
+}

@@ -60,9 +60,10 @@ including its CSV-crate quoting of displayed Text values.
 `--number-format` and `--date-format` explicitly supply the conversion/concatenation
 policies used by the admitted expression profile. There are no clock/random,
 collection, index, cached-source or declared-arithmetic options: these would not
-expand the existing preparation contract. All calls and unsupported dependencies remain refused before user records are
-read, even when those records are corrupt. Qualified same-table calculated dependencies
-are explicitly recomputed through the bounded dependency profile below.
+expand the existing preparation contract. All calls and unsupported dependencies
+remain refused before user records are read, even when those records are corrupt.
+Qualified same-table calculated dependencies are explicitly recomputed through the
+bounded dependency profile below.
 
 Resource controls retain their existing defaults and independent ceilings:
 
