@@ -11,7 +11,11 @@ TOP counts accepted groups while preserving later accepted groups' eager work.
 Twenty-three new controls and 531 regressions pass with strict query/native/CLI
 linting, minimal query features and formatting. See [semantics and limits](PROGRESSIVE_QUERIES.md#terminal-having-and-deferred-selected-operands)
 and [verification](testing/results/read-query-progressive-having-2026-10-25.json).
-These engineering checks do not establish native Access execution compatibility.
+The [original native/CAB replay](testing/PROGRESSIVE_HAVING.md) passes all 96
+commands, comparing 336 successful rows and 696 cells plus six exact earlier
+error-prefix rows. Fifteen immutable and thirty-four revision-source hashes were
+independently checked. These engineering checks do not establish native Access
+execution compatibility.
 
 ## High-offset Memo and OLE cursor reliability
 
