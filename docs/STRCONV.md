@@ -511,6 +511,9 @@ conversion cancellation checkpoint and buffered CLI errors pass. Separate
 parser-free component checks preserve the legacy public recipes. Strict scoped
 linting and formatting pass; the [verification record](testing/results/strconv-japanese-combinations-2026-10-25.json)
 retains initial authoring errors and the pre-qualification implicit-widening
-correction rather than counting earlier passes as final evidence. Independent
-combined-mode Unicode replay and native Windows qualification remain next evidence
-work; previous component replays do not qualify every new composition.
+correction rather than counting earlier passes as final evidence. The independent
+[combined-mode replay](testing/STRCONV_COMBINATIONS_REPLAY.md) now passes 5,528 CLI
+commands, comparing 16,436 result cells and 176 buffered failures across both query
+modes and four unchanged native inputs. All 32 original/source/tool hashes remain
+unchanged. Native Windows qualification remains separate; component and composition
+models do not establish native NLS equivalence.

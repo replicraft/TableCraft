@@ -674,6 +674,17 @@ hashes and checks them again after execution. It compares 2,592 successful
 Boolean/NULL cells and 32 buffered overflow failures without native Access
 qualification or new write eligibility.
 
+## Combined Japanese StrConv native-field replay
+
+The [combined-operation replay](testing/STRCONV_COMBINATIONS_REPLAY.md) reuses the
+four registered Scalar inputs below without mutation or new fixture generation.
+Read-only Jackcess getters supply Label values; independent Unicode-property,
+Unicode-name and selected casing models supply expected transformations. Both
+CLI query modes and four native sources pass 5,528 commands with 16,436 compared
+cells and 176 expected buffered failures. All four database hashes and 28
+source/tool/executable pins remain unchanged. No third-party source, binary or
+new mapping table is copied; native Access/NLS qualification remains unrun.
+
 ## Interrupted-seek scalar replay
 
 On 23 October 2026 the original MIT [ScalarFixture.java](testing/ScalarFixture.java)

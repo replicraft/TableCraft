@@ -81,7 +81,7 @@ frozen pre-change CLI from `3b1e2344` passes all 128 independent replay controls
 with identical outputs and error statuses. Its existing declared predicate
 service already selected these widths for decoded and retained String inputs.
 The extra helper introduced in `79f4c2cb` was redundant and has been removed,
-along with three helper-only tests. Production expression/query sources match
-the pre-change tree; the six useful query/CLI tests and independent replay remain.
+along with three helper-only tests. At that correction, production expression/query
+sources matched the pre-change tree; the six useful query/CLI tests and independent replay remain.
 This is additional verified coverage, not closure of a previously missing P0
 coercion branch. Historical helper-build records remain explicitly superseded.
