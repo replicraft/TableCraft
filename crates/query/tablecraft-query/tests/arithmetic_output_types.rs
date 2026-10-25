@@ -46,6 +46,31 @@ fn samples() -> Vec<(ScalarType, Value)> {
     ]
 }
 
+fn materialized_descriptor(
+    prepared: OutputType,
+    operator: &str,
+    left: ScalarType,
+    right: ScalarType,
+) -> OutputType {
+    let peer = if left == ScalarType::Decimal {
+        right
+    } else {
+        left
+    };
+    if operator == "/"
+        && (left == ScalarType::Decimal || right == ScalarType::Decimal)
+        && matches!(
+            peer,
+            ScalarType::Double | ScalarType::Currency | ScalarType::DateTime | ScalarType::Text
+        )
+    {
+        assert_eq!(prepared, OutputType::Dynamic);
+        scalar(ScalarType::Decimal, true)
+    } else {
+        prepared
+    }
+}
+
 #[test]
 fn every_claimed_binary_descriptor_accepts_successful_runtime_carriers() {
     for (left_kind, left) in samples() {
@@ -74,7 +99,15 @@ fn every_claimed_binary_descriptor_accepts_successful_runtime_carriers() {
                     ..Default::default()
                 };
                 let result = plan.execute(&source, &[], options).unwrap();
-                assert_eq!(result.output_types(), plan.output_types().unwrap());
+                assert_eq!(
+                    result.output_types(),
+                    [materialized_descriptor(
+                        plan.output_types().unwrap()[0],
+                        operator,
+                        left_kind,
+                        right_kind
+                    )]
+                );
                 for row in result.rows() {
                     match result.output_types()[0] {
                         OutputType::Scalar {

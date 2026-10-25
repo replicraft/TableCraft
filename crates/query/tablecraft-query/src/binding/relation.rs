@@ -2,7 +2,7 @@ use super::Binder;
 use crate::profile::SOURCE_SCHEMA_POLICY;
 use crate::{
     OutputType, QueryError,
-    plan::{MemberSlot, Relation, RelationNode, Slot},
+    plan::{MemberSlot, ProfiledType, Relation, RelationNode, Slot},
 };
 use tablecraft_expressions::numeric::OperandDeclaration;
 use tablecraft_schema::Column;
@@ -109,7 +109,7 @@ impl Binder<'_> {
                         .iter()
                         .enumerate()
                         .map(|(index, c)| Slot {
-                            output_type: OutputType::column(c),
+                            output_type: ProfiledType::uniform(OutputType::column(c)),
                             declaration: Some(OperandDeclaration::Scalar),
                             text_policy: text_collations.get(index).copied().flatten().map_or(
                                 crate::source::TextPolicy::Default,
@@ -123,7 +123,7 @@ impl Binder<'_> {
                             ),
                         })
                         .chain(unavailable.iter().map(|name| Slot {
-                            output_type: OutputType::Dynamic,
+                            output_type: ProfiledType::uniform(OutputType::Dynamic),
                             declaration: None,
                             text_policy: crate::source::TextPolicy::Default,
                             available: false,
@@ -135,7 +135,9 @@ impl Binder<'_> {
                         }))
                         .chain(multivalues.iter().enumerate().map(|(index, column)| {
                             Slot {
-                                output_type: OutputType::column(column).with_null(),
+                                output_type: ProfiledType::uniform(
+                                    OutputType::column(column).with_null(),
+                                ),
                                 declaration: Some(OperandDeclaration::Scalar),
                                 text_policy: multivalue_text_collations
                                     .get(index)
@@ -154,7 +156,9 @@ impl Binder<'_> {
                             }
                         }))
                         .chain(members.iter().enumerate().map(|(index, member)| Slot {
-                            output_type: OutputType::column(member.column()).with_null(),
+                            output_type: ProfiledType::uniform(
+                                OutputType::column(member.column()).with_null(),
+                            ),
                             declaration: Some(OperandDeclaration::Scalar),
                             text_policy:
                                 member_text_collations.get(index).copied().flatten().map_or(
@@ -199,8 +203,12 @@ impl Binder<'_> {
                         .zip(&read.text_policies)
                         .zip(&read.output_types)
                         .zip(&read.declarations)
-                        .map(|(((n, policy), output_type), declaration)| Slot {
-                            output_type: *output_type,
+                        .enumerate()
+                        .map(|(index, (((n, policy), _), declaration))| Slot {
+                            output_type: ProfiledType {
+                                materialized: read.materialized_types[index],
+                                declared: read.declared_types[index],
+                            },
                             declaration: *declaration,
                             text_policy: *policy,
                             available: true,

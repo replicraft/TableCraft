@@ -231,6 +231,9 @@ fn resolve(
 impl PreparedQuery {
     /// Conservative output carrier/constraint/nullability metadata, established
     /// without scanning records. Dynamic crosstabs have no static output width.
+    /// Describes both materialized and declared runtime arithmetic: differing
+    /// successful carriers remain Dynamic. Completed results instead describe
+    /// their selected execution profile. No source records establish these types.
     /// Dynamic entries do not assert a carrier or storage representation.
     pub fn output_types(&self) -> Option<&[OutputType]> {
         match &self.body {

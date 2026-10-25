@@ -167,7 +167,7 @@ impl PreparedQuery {
             PreparedBody::Read(read) => (
                 runtime.read(read, &[])?,
                 read.names.as_slice(),
-                read.output_types.as_slice(),
+                read.active_types(options.declared_integral),
             ),
             PreparedBody::Crosstab(cross) => {
                 let result = runtime.crosstab(cross)?;

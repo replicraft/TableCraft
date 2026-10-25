@@ -12,7 +12,7 @@ mod unary;
 use super::{Binder, literals};
 use crate::{
     OutputType, QueryError,
-    plan::{Aggregate, DomainFunction, Expr, Slot},
+    plan::{Aggregate, DomainFunction, Expr, ProfiledType, ResultProfile, Slot},
 };
 use tablecraft_expressions::functions::{
     conversions::Conversion, dates::clock::ClockFunction,
@@ -39,18 +39,34 @@ impl Binder<'_> {
         types.resize(width, OutputType::Dynamic);
         Ok(types)
     }
+    pub(super) fn profiled_result_type(
+        &mut self,
+        expression: &Expr,
+        scopes: &[&[Slot]],
+        depth: usize,
+    ) -> Result<ProfiledType, QueryError> {
+        let materialized =
+            self.result_type(expression, scopes, depth, ResultProfile::Materialized)?;
+        let declared = self.result_type(expression, scopes, depth, ResultProfile::Declared)?;
+        Ok(ProfiledType {
+            materialized,
+            declared,
+        })
+    }
+
     pub(super) fn result_type(
         &mut self,
         expression: &Expr,
         scopes: &[&[Slot]],
         depth: usize,
+        profile: ResultProfile,
     ) -> Result<OutputType, QueryError> {
         self.tick(depth)?;
         Ok(match expression {
             Expr::Field { depth, index, .. } => scopes
                 .get(*depth)
                 .and_then(|scope| scope.iter().filter(|slot| slot.available).nth(*index))
-                .map(|slot| slot.output_type)
+                .map(|slot| slot.output_type.selected(profile))
                 .ok_or(QueryError::Source)?,
             Expr::Parameter(index) => self
                 .parameters
@@ -77,7 +93,7 @@ impl Binder<'_> {
                 OutputType::scalar(scalar, false)
             }
             Expr::Unary(operator, argument) => {
-                let input = self.result_type(argument, scopes, depth + 1)?;
+                let input = self.result_type(argument, scopes, depth + 1, profile)?;
                 unary::result(*operator, input)
             }
             Expr::Convert(conversion, _) => OutputType::scalar(
@@ -98,7 +114,7 @@ impl Binder<'_> {
                 let mut output = text::result(*function);
                 for &index in text::null_inputs(*function, arguments.len()) {
                     let input = arguments.get(index).ok_or(QueryError::Source)?;
-                    if self.result_type(input, scopes, depth + 1)? == OutputType::Null {
+                    if self.result_type(input, scopes, depth + 1, profile)? == OutputType::Null {
                         output = OutputType::Null;
                         break;
                     }
@@ -108,7 +124,7 @@ impl Binder<'_> {
             Expr::MathCall(function, arguments) => {
                 let input = arguments
                     .first()
-                    .map(|argument| self.result_type(argument, scopes, depth + 1))
+                    .map(|argument| self.result_type(argument, scopes, depth + 1, profile))
                     .transpose()?;
                 math::result(*function, input)
             }
@@ -117,21 +133,22 @@ impl Binder<'_> {
             }
             Expr::DateCall(_, input) | Expr::DatePart(_, input, _) | Expr::Weekday(input, _) => {
                 dates::propagating(
-                    self.result_type(input, scopes, depth + 1)?,
+                    self.result_type(input, scopes, depth + 1, profile)?,
                     ScalarType::Int16,
                 )
             }
             Expr::DateDiff(_, first, second, _) => {
-                let first = self.result_type(first, scopes, depth + 1)?;
-                let second = self.result_type(second, scopes, depth + 1)?;
+                let first = self.result_type(first, scopes, depth + 1, profile)?;
+                let second = self.result_type(second, scopes, depth + 1, profile)?;
                 dates::difference(first, second)
             }
-            Expr::DateConvert(function, input) => {
-                dates::conversion(*function, self.result_type(input, scopes, depth + 1)?)
-            }
+            Expr::DateConvert(function, input) => dates::conversion(
+                *function,
+                self.result_type(input, scopes, depth + 1, profile)?,
+            ),
             Expr::ConstructorCall(..) => OutputType::scalar(ScalarType::DateTime, false),
             Expr::DateAdd(_, _, date) => {
-                dates::addition(self.result_type(date, scopes, depth + 1)?)
+                dates::addition(self.result_type(date, scopes, depth + 1, profile)?)
             }
             Expr::Clock(function) => OutputType::scalar(
                 match function {
@@ -161,7 +178,7 @@ impl Binder<'_> {
             Expr::StringFromGuid(_) | Expr::CurrentUser => {
                 OutputType::scalar(ScalarType::Text, true)
             }
-            Expr::CVar(input) => self.result_type(input, scopes, depth + 1)?,
+            Expr::CVar(input) => self.result_type(input, scopes, depth + 1, profile)?,
             Expr::IsNull(..)
             | Expr::CollectionEmpty(..)
             | Expr::ParentPresence { .. }
@@ -182,8 +199,8 @@ impl Binder<'_> {
             | Expr::InQuery(..)
             | Expr::Quantified(..) => OutputType::scalar(ScalarType::Boolean, true),
             Expr::Binary(BinaryOperator::Concatenate, left, right) => {
-                let left = self.result_type(left, scopes, depth + 1)?;
-                let right = self.result_type(right, scopes, depth + 1)?;
+                let left = self.result_type(left, scopes, depth + 1, profile)?;
+                let right = self.result_type(right, scopes, depth + 1, profile)?;
                 concatenation::result(left, right)
             }
             Expr::Binary(
@@ -195,23 +212,23 @@ impl Binder<'_> {
                 left,
                 right,
             ) => {
-                let left = self.result_type(left, scopes, depth + 1)?;
-                let right = self.result_type(right, scopes, depth + 1)?;
+                let left = self.result_type(left, scopes, depth + 1, profile)?;
+                let right = self.result_type(right, scopes, depth + 1, profile)?;
                 logical::binary(*operator, left, right)
             }
             Expr::Binary(operator, left, right) => {
-                let left = self.result_type(left, scopes, depth + 1)?;
-                let right = self.result_type(right, scopes, depth + 1)?;
-                arithmetic::result(*operator, left, right)
+                let left = self.result_type(left, scopes, depth + 1, profile)?;
+                let right = self.result_type(right, scopes, depth + 1, profile)?;
+                arithmetic::result(*operator, left, right, profile)
             }
             Expr::IIf(condition, yes, no) => {
-                self.iif_result_type(condition, yes, no, scopes, depth + 1)?
+                self.iif_result_type(condition, yes, no, scopes, depth + 1, profile)?
             }
             Expr::ConditionalCall(function, arguments) => {
-                self.selection_result_type(*function, arguments, scopes, depth + 1)?
+                self.selection_result_type(*function, arguments, scopes, depth + 1, profile)?
             }
             Expr::Nz(value, replacement) => {
-                let input = self.result_type(value, scopes, depth + 1)?;
+                let input = self.result_type(value, scopes, depth + 1, profile)?;
                 if matches!(
                     input,
                     OutputType::Scalar {
@@ -223,13 +240,15 @@ impl Binder<'_> {
                 } else {
                     let replacement = replacement
                         .as_ref()
-                        .map(|replacement| self.result_type(replacement, scopes, depth + 1))
+                        .map(|replacement| {
+                            self.result_type(replacement, scopes, depth + 1, profile)
+                        })
                         .transpose()?;
                     null_replacement::result(input, replacement)
                 }
             }
             Expr::Aggregate(kind @ (Aggregate::Sum | Aggregate::Average), Some(argument)) => {
-                self.numeric_aggregate_result_type(*kind, argument, scopes, depth + 1)?
+                self.numeric_aggregate_result_type(*kind, argument, scopes, depth + 1, profile)?
             }
             Expr::Aggregate(Aggregate::Statistic(_), _)
             | Expr::DomainCall(
@@ -247,9 +266,11 @@ impl Binder<'_> {
             Expr::Aggregate(
                 Aggregate::Minimum | Aggregate::Maximum | Aggregate::First | Aggregate::Last,
                 Some(value),
-            ) => self.result_type(value, scopes, depth + 1)?.with_null(),
+            ) => self
+                .result_type(value, scopes, depth + 1, profile)?
+                .with_null(),
             Expr::Subquery(read) if read.output_types.len() == 1 => {
-                read.output_types[0].with_null()
+                read.profile_types(profile)[0].with_null()
             }
             // Keep the remaining uncertainty explicit so a new plan expression
             // requires a deliberate inference decision instead of a silent fallback.

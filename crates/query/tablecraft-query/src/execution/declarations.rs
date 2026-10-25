@@ -15,7 +15,8 @@ use tablecraft_expressions::evaluation::{
     arithmetic_operands, arithmetic_unary_operand, empty_division_operand,
 };
 use tablecraft_expressions::numeric::{
-    Arithmetic, ArithmeticDeclarations, OperandDeclaration, uses_declared_overflow,
+    Arithmetic, ArithmeticDeclarations, OperandDeclaration, uses_declared_double_division,
+    uses_declared_overflow,
 };
 use tablecraft_sql::select::{BinaryOperator as B, UnaryOperator as U};
 
@@ -82,7 +83,8 @@ impl Runtime<'_, '_> {
         };
         let value = if self.options.declared_integral
             && let Some(operation) = operation
-            && uses_declared_overflow(operation, &left, &right)
+            && (uses_declared_overflow(operation, &left, &right)
+                || uses_declared_double_division(operation, &left, &right))
         {
             if let Some(declarations) = resolved(declarations.0, declarations.1) {
                 if operation == Arithmetic::IntegerDivide {

@@ -55,10 +55,16 @@ impl Binder<'_> {
             }
             let mut output_types = self.type_vector(names.len())?;
             output_types.extend_from_slice(cached.result.output_types());
+            let mut materialized_types = self.type_vector(names.len())?;
+            materialized_types.extend_from_slice(cached.result.output_types());
+            let mut declared_types = self.type_vector(names.len())?;
+            declared_types.extend_from_slice(cached.result.output_types());
             let declarations = self.crosstab_declarations(&cross, names.len())?;
             return Ok(ReadPlan {
                 declarations,
                 output_types,
+                materialized_types,
+                declared_types,
                 names,
                 text_policies,
                 node: ReadNode::Crosstab(Box::new(cross)),
@@ -109,10 +115,21 @@ impl Binder<'_> {
         );
         let mut output_types = self.type_vector(names.len())?;
         output_types.extend_from_slice(cross.output_types.as_ref().ok_or(QueryError::Source)?);
+        let mut materialized_types = self.type_vector(names.len())?;
+        materialized_types.extend_from_slice(
+            cross
+                .materialized_types
+                .as_ref()
+                .ok_or(QueryError::Source)?,
+        );
+        let mut declared_types = self.type_vector(names.len())?;
+        declared_types.extend_from_slice(cross.declared_types.as_ref().ok_or(QueryError::Source)?);
         let declarations = self.crosstab_declarations(&cross, names.len())?;
         Ok(ReadPlan {
             declarations,
             output_types,
+            materialized_types,
+            declared_types,
             text_policies,
             names,
             node: ReadNode::Crosstab(Box::new(cross)),

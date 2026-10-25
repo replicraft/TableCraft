@@ -1,5 +1,5 @@
 //! Successful carrier guarantees of existing arithmetic, without evaluating operands.
-use crate::OutputType;
+use crate::{OutputType, plan::ResultProfile};
 use tablecraft_schema::ScalarType;
 use tablecraft_schema::ScalarType::{
     Boolean, Byte, Currency, DateTime, Decimal, Double, Int16, Int32, Int64, Single, Text,
@@ -9,7 +9,12 @@ use tablecraft_sql::select::BinaryOperator::{
     Add, Divide, IntegerDivide, Modulo, Multiply, Power, Subtract,
 };
 
-pub(super) fn result(operator: BinaryOperator, left: OutputType, right: OutputType) -> OutputType {
+pub(super) fn result(
+    operator: BinaryOperator,
+    left: OutputType,
+    right: OutputType,
+    profile: ResultProfile,
+) -> OutputType {
     if !matches!(
         operator,
         Add | Subtract | Multiply | Divide | IntegerDivide | Modulo | Power
@@ -54,13 +59,18 @@ pub(super) fn result(operator: BinaryOperator, left: OutputType, right: OutputTy
         return OutputType::Dynamic;
     }
 
-    let scalar = carrier(operator, left, right);
+    let scalar = carrier(operator, left, right, profile);
     scalar.map_or(OutputType::Dynamic, |scalar| {
         OutputType::scalar(scalar, a || b)
     })
 }
 
-fn carrier(operator: BinaryOperator, left: ScalarType, right: ScalarType) -> Option<ScalarType> {
+fn carrier(
+    operator: BinaryOperator,
+    left: ScalarType,
+    right: ScalarType,
+    profile: ResultProfile,
+) -> Option<ScalarType> {
     if operator == Power {
         return Some(Double);
     }
@@ -74,6 +84,13 @@ fn carrier(operator: BinaryOperator, left: ScalarType, right: ScalarType) -> Opt
         return Some(Text);
     }
     if left == Decimal || right == Decimal {
+        let peer = if left == Decimal { right } else { left };
+        if operator == Divide
+            && matches!(profile, ResultProfile::Declared)
+            && matches!(peer, Double | Text | Currency | DateTime)
+        {
+            return Some(Double);
+        }
         return Some(Decimal);
     }
     let date = left == DateTime || right == DateTime;

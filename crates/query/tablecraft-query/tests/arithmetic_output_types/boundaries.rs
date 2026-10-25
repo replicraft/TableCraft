@@ -148,7 +148,12 @@ fn prepared_arithmetic_types_hold_at_carrier_boundaries_and_nulls() {
                         };
 
                         successful += 1;
-                        assert_eq!(result.output_types(), [descriptor]);
+                        assert_eq!(
+                            result.output_types(),
+                            [materialized_descriptor(
+                                descriptor, operator, left_kind, right_kind
+                            )]
+                        );
                         let value = &result.rows()[0][0];
                         match descriptor {
                             OutputType::Scalar {

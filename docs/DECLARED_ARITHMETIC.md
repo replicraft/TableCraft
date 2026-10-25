@@ -346,6 +346,12 @@ Scalar/Variant pairings, retained Decimal peers, tiny/huge Double boundaries and
 zero errors. Contextual tests cover number policies, NULL/admission precedence,
 shared byte limits and cancellation at each observed checkpoint.
 
+[Composed query result metadata](QUERY_RESULT_TYPES.md#runtime-profile-sensitive-division)
+retains both arithmetic profiles internally. Public prepared descriptors are
+conservative across independent execution options; active results and UNION
+conversions select the matching description, preserving default Decimal siblings.
+Literal/closed-heading preparation remains captured separately from runtime mode.
+
 ## Single-selected overflow and the numeric kernel
 
 `declared_numeric_arithmetic` accepts nullable Boolean/Byte/Integer/Long/LongLong,
