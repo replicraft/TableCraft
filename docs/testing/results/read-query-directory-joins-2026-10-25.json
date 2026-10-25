@@ -162,5 +162,13 @@
     "compiled_revision_source_pins": 21,
     "baseline_revision_source_pins": 16,
     "qualification": "Original getter/integer model evidence; baseline defaultSteps refusal and new defaultSteps success, with explicit other allowances. No native Access optimizer claim."
+  },
+  "benchmark": {
+    "summary": "docs/testing/results/directory-joins-benchmark-2026-10-25.json",
+    "summary_sha256": "55e71afaf40f1456923b7ad32ea68ac722fce52426137dcb3c528c24c4b53621",
+    "raw_measurements": "docs/testing/results/directory-joins-hyperfine-2026-10-25.json",
+    "raw_measurements_sha256": "d2b5686a5589db811453a77255e501f8a1265072928d88f667b3e649de27e7d9",
+    "measured_runs": 28,
+    "qualification": "End-to-end debug CLI on two1100-row unique Int32 selfjoins, equal explicit query allowances, independent exact correctness; no broad/release/kernel claim."
   }
 }

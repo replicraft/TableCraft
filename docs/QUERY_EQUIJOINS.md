@@ -99,3 +99,9 @@ The new native control checks 1,100-row joins with default query work across the
 priority layouts and both arithmetic profiles; CLI SQLite controls keep exact
 read-only reference results with the previous large work override removed.
 Native Access and timing qualification remain separate.
+
+A separate [whole-CLI benchmark](testing/DIRECTORY_JOIN_BENCHMARK.md) on the two
+original 1,100-row ACE 16 inputs measures 0.87–1.01 seconds before and about
+15 milliseconds after, with identical exact results and explicit equal allowances.
+All 28 measured samples are retained. This is local development-build evidence,
+not release, kernel, arbitrary-workload or native Access optimizer qualification.
