@@ -8242,3 +8242,26 @@ Seven CLI queries compare 14 independently modeled rows and 44 actual stored
 cells, including Notes rather than IDs alone. Twelve immutable pins and thirty
 scoped revision-source hashes were independently rechecked. These are authored
 engineering inputs, not Access-created template or native runtime qualification.
+
+## Independent Japanese string mapping references
+
+The [Japanese StrConv mapping replay](testing/JAPANESE_STRING_MAPPING.md) uses
+original MIT Python tools with two separately fetched primary data files. The
+Microsoft-authored CP932 table 2.01 (1998-04-15) has SHA-256
+`c9bc0b0cd42e0fbcb82a09635bb5abed86afbdd4abc9e76fa5716638217cb59f`;
+the WHATWG JIS0208 index dated 2024-09-18 has SHA-256
+`341dcde7e8b984e9c7bbf5ed75c8da7c6087d47083a1a2b3ed558bfd5bef9468`.
+Primary URLs, index identity and reviewed Unicode/WHATWG licensing are recorded
+in the owning evidence document. The tables remain ignored/private under
+`.cache/cp932-strconv-next-20261025/`; no mapping data, upstream implementation,
+third-party fixture or new dependency is redistributed or adopted.
+
+The [accepted report](testing/results/strconv-japanese-primary-2026-10-25.json)
+passes 2,172 CLI commands, 17,314 defined mapping cases and 32,158 numeric cells
+with zero disagreements. Five immutable input/tool pins and thirteen scoped
+compiled-revision source pins were independently rehashed. Microsoft historical
+mappings, WHATWG extensions, canonical duplicate spellings and explicit refusal
+controls are classified separately. The oversized first attempt and its exact
+tools/report/log remain preserved privately; reducing batch size changed no
+expected mapping. These are independent codec/round-trip checks, not Microsoft
+Access execution or Windows NLS qualification.
