@@ -31,7 +31,6 @@ fn effective_numeric_predicates_compose_through_relational_consumers() {
         "CInt(2)=ALL(SELECT '1.5')",
         "CInt(2) BETWEEN '1.5' AND '2.5'",
         "CInt(2)=CVar('1.5')",
-        "CVar(CInt(2))='1.5'",
         "CVar(CInt(2))<CVar('bad')",
         "CSng(1)=CDbl(1.0000000000000002)",
     ] {
@@ -42,6 +41,11 @@ fn effective_numeric_predicates_compose_through_relational_consumers() {
             "{sql}"
         );
     }
+    // A Scalar String beside a Variant numeric now compares formatted Strings.
+    assert_eq!(
+        run("SELECT CVar(CInt(2))='1.5'", true).err(),
+        Some(EvalError::CollationRequired.into())
+    );
     assert_eq!(run("SELECT A.N FROM (SELECT CInt(2) AS N) AS A INNER JOIN (SELECT '1.5' AS S) AS B ON A.N=B.S", true).unwrap(), vec![vec![Value::Int16(2)]]);
     assert_eq!(
         run("SELECT CInt(2)='1.5'", false).unwrap(),

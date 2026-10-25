@@ -27,6 +27,10 @@ consumers retain their existing statement/operation restrictions.
 Single/Double keys widen Single exactly instead of narrowing Double; scalar
 Single/Double predicates keep their effective Single rule. Key comparison does
 not acquire numeric Text parsing or the wider scalar family conversions above.
+The explicit [declared profile](DECLARED_ARITHMETIC.md#scalar-string-compared-with-variant)
+additionally selects String coercion for a known Scalar String beside a known
+Variant; that declaration-dependent branch precedes this materialized numeric
+profile. Unknown categories fail when they can change the selected branch.
 
 Mixed numeric/Text predicates require NumberFormat; missing policy is an explicit
 NumberFormatRequired failure. Malformed numeric Text fails, rather than sorting

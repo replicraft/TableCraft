@@ -7,8 +7,8 @@ execution offers this engineering profile through `query run --declared-arithmet
 `ExecutionOptions::declared_integral` and worker option retain their historical
 field names, covering integral/Single-selected and legacy Date-envelope overflow
 and the reviewed
-both-Variant String/numeric comparison exception and effective numeric predicate
-coercion. Default SQL
+both-Variant String/numeric comparison exception, Scalar String/Variant String
+coercion and effective numeric predicate coercion. Default SQL
 execution retains its existing materialized profile. This option and these APIs
 do not establish complete native SQL compatibility.
 
@@ -1001,8 +1001,9 @@ or VBA-only function is introduced.
 
 For example, `CInt(-32768)\Left('-1x',2)` widens to Long 32768 in the explicit
 profile with an explicit numeric format; replacing Left with Val('-1') reports
-Scalar overflow. `CVar(1)=Chr$(49)` can numerically compare equal under that
-format, while `CVar(1)=Chr(49)` uses both-Variant String/numeric ordering and is
+Scalar overflow. `CVar(1)=Chr$(49)` can compare equal through String coercion
+under an explicit numeric output format and collation, while `CVar(1)=Chr(49)`
+uses both-Variant String/numeric ordering and is
 False. Equal returned characters do not establish equal declaration categories.
 
 Two focused query tests cover all 43 admitted text identities through empty
@@ -1124,3 +1125,48 @@ ordinary typed errors; this specifies the engineering policy rather than native
 Access error precedence. The existing reviewed MS-VBAL arithmetic/overflow tables
 remain the reference. Default execution and native declaration qualification are
 unchanged; this does not complete P0 promotion or native SQL compatibility.
+
+
+## Scalar String compared with Variant
+
+The explicit declared profile now compares a known Scalar String with a known
+Variant through String coercion. For example, `'02'=CVar(CLng(2))` is False and
+`'10'<CVar(CLng(2))` is True with invariant numeric output and ordinal collation.
+The Variant number formats to `2`; the Scalar String is not parsed as a number.
+A nonnumeric String such as `bad` therefore participates in this comparison
+without numeric parsing. Operand direction does not change the conversion rule.
+
+The existing CStr services format admitted numeric, Boolean and legacy Date
+peers once under the current explicit policies and shared limits. Empty becomes
+an empty String. Numeric formatting requires NumberFormat; legacy Date output
+requires its separate date-format policy. Actual Text and raw String peers retain
+their representation. Both actual String cells contribute comparison policies;
+a formatted non-String peer does not carry an unrelated field's Text authority.
+No provider or system locale is inferred from a numeric conversion.
+
+Formatting and its failures precede comparison-provider resolution. NULL keeps
+Unknown without formatting the peer or resolving a provider. Existing Error,
+Missing, GUID/Binary and unsupported temporal admission boundaries stay explicit;
+this rule does not implicitly stringify Error values. Raw Strings keep existing
+unit-comparison and publication limits. Byte/unit data is not decoded merely to
+invent a declaration.
+
+Both-Variant String/numeric pairs retain their separate numeric-before-String
+ordering. Scalar numeric paired with Variant String retains numeric coercion.
+Default materialized execution is unchanged. Grouping, sorting, extrema and
+set keys retain their strict relational-key service rather than this predicate
+conversion. BETWEEN, membership and quantified predicates use the same shared
+predicate boundary as direct relational operators.
+
+Unknown declaration provenance is not inferred from a result carrier. When
+Scalar/Variant choice could select different comparison branches, the explicit
+profile refuses with ArithmeticDeclaration. This includes a Scalar String beside
+an aggregate numeric result with unknown provenance, such as
+`'02'=First(CLng(2))`. Category-independent String/String and NULL cases remain
+usable. Explicit CVar or typed casts can supply the intended category. Both
+written expressions still evaluate eagerly before the comparison decision.
+
+The rule is grounded in [Microsoft's comparison reference](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/comparison-operators)
+and the [MS-VBAL relational effective-type table](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/f8acd631-55c1-4199-bc1e-022aaab6d9c8).
+These establish the language-level distinction; actual ACE SQL declaration
+inference, regional rendering and collation still require native qualification.

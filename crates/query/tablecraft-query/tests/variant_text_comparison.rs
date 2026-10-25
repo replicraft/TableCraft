@@ -6,6 +6,13 @@ use tablecraft_expressions::{
 use tablecraft_query::{ExecutionOptions, QueryError, prepare, source::MemorySource};
 use tablecraft_sql::parse_query;
 
+struct Ordinal;
+impl Collation for Ordinal {
+    fn compare(&self, left: &str, right: &str) -> Result<Ordering, EvalError> {
+        Ok(left.cmp(right))
+    }
+}
+
 fn run(
     sql: &str,
     declared: bool,
@@ -18,6 +25,7 @@ fn run(
             &source,
             &[],
             ExecutionOptions {
+                collation: Some(&Ordinal),
                 declared_integral: declared,
                 number_format: format,
                 ..Default::default()
@@ -77,7 +85,6 @@ fn ordinary_one_variant_unknown_and_boolean_pairs_keep_their_conversion_profiles
         "SELECT 1=CVar('1')",
         "SELECT 1='1'",
         "SELECT CVar(True)=CVar('-1')",
-        "SELECT N=CVar('1') FROM (SELECT CVar(1) AS N UNION ALL SELECT CVar(2)) AS Q",
     ] {
         assert_eq!(
             run(sql, true, None),
@@ -85,6 +92,14 @@ fn ordinary_one_variant_unknown_and_boolean_pairs_keep_their_conversion_profiles
             "{sql}"
         );
     }
+    assert_eq!(
+        run(
+            "SELECT N=CVar('1') FROM (SELECT CVar(1) AS N UNION ALL SELECT CVar(2)) AS Q",
+            true,
+            None
+        ),
+        Err(QueryError::ArithmeticDeclaration)
+    );
     assert_eq!(
         run("SELECT CVar(1)='1'", true, Some(NumberFormat::EnUs)).unwrap(),
         vec![vec![Value::Boolean(true)]]

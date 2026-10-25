@@ -885,3 +885,16 @@ retain their separate contracts. Focused controls cover prepared rebinding,
 runtime domain aggregates and bad constant crosstab headings before row scans.
 This closes one operator error-class defect, not complete Variant promotion,
 error precedence or native Access qualification. See [arithmetic](EXPRESSIONS.md).
+
+
+### Scalar String/Variant predicate coercion
+
+The explicit declared profile now formats a known Variant numeric/Boolean/legacy
+Date peer when paired with a known Scalar String, then uses the original String
+comparison policy. Conversion, provider failures, raw units, eager evaluation
+and cumulative allowances remain explicit. Unknown categories fail when they can
+change dispatch. Both-Variant ranking and Scalar numeric/Variant String coercion
+retain separate paths; strict keys and default execution are unchanged. See
+[the declared contract](DECLARED_ARITHMETIC.md#scalar-string-compared-with-variant).
+Complete declaration inference, Variant/Error behavior, native text precedence
+and Access qualification remain unfinished.

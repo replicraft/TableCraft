@@ -1,7 +1,17 @@
+use std::cmp::Ordering;
 use tablecraft_core::values::Value;
-use tablecraft_expressions::{EvalError, functions::conversions::text::NumberFormat};
+use tablecraft_expressions::{
+    EvalError, comparison::Collation, functions::conversions::text::NumberFormat,
+};
 use tablecraft_query::{ExecutionOptions, QueryError, prepare, source::MemorySource};
 use tablecraft_sql::parse_query;
+
+struct Ordinal;
+impl Collation for Ordinal {
+    fn compare(&self, left: &str, right: &str) -> Result<Ordering, EvalError> {
+        Ok(left.cmp(right))
+    }
+}
 
 fn run(sql: &str) -> Result<Vec<Vec<Value>>, QueryError> {
     let source = MemorySource::default();
@@ -11,6 +21,7 @@ fn run(sql: &str) -> Result<Vec<Vec<Value>>, QueryError> {
             &source,
             &[],
             ExecutionOptions {
+                collation: Some(&Ordinal),
                 declared_integral: true,
                 number_format: Some(NumberFormat::EnUs),
                 ..Default::default()
@@ -120,7 +131,7 @@ fn text_and_numeric_runtime_categories_survive_derived_and_scalar_subqueries() {
         vec![vec![Value::Boolean(true), Value::Boolean(false)]]
     );
     assert_eq!(
-        run("SELECT CVar(65)<Chr$(65)"),
-        Err(EvalError::TypeMismatch.into())
+        run("SELECT CVar(65)<Chr$(65)").unwrap(),
+        vec![vec![Value::Boolean(true)]]
     );
 }
