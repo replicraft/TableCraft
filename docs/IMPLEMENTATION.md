@@ -1,5 +1,18 @@
 # Implementation status
 
+## Native progressive query sources
+
+NativeSource now implements the [progressive projection contract](NATIVE_PROGRESSIVE_QUERIES.md)
+using fresh sequential cursors and cumulative native controls. Exact bound and
+selected metadata is checked before callbacks; checked EOF verifies counts. Data
+caches remain untouched, required indexes/links/advanced modes remain explicit
+refusals, and source-exclusive callbacks retain typed reentry checks. Snapshot
+retention ceilings do not truncate progressive scans.
+
+Eleven focused adapter tests and scoped strict Clippy pass across supported
+layout selectors, batch sizes, failures, quotas, cancellation and cache isolation.
+CLI publication and original-file/native Access qualification remain separate.
+
 ## Wide-variable Memo history replay
 
 The [original history replay](testing/VARIABLE_MEMO_HISTORIES.md) passes 16
@@ -16,8 +29,8 @@ not native Access qualification or arbitrary-scale acceptance.
 The [explicit progressive API](PROGRESSIVE_QUERIES.md) evaluates admitted direct
 scalar SELECT/WHERE queries with one Runtime and cumulative query budget. It
 requires an explicit projected-source capability, preserves original sink errors
-and rejects source-using/global query shapes before scanning. MemorySource is
-the current working consumer; native cursor/CLI streaming remain separate steps.
+and rejects source-using/global query shapes before scanning. MemorySource and NativeSource are
+working consumers; CLI streaming remains a separate step.
 No partial relation cache or buffered-default change is introduced.
 
 Thirteen new conformance tests and 76 buffered regressions pass, alongside scoped

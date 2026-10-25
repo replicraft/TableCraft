@@ -3,9 +3,9 @@
 `PreparedQuery::execute_progressive` is an explicit borrowed-row query service.
 It visits one strictly published scalar output row at a time, returning checked
 scanned/emitted counts only after successful source EOF. Ordinary execution
-remains buffered. The current working consumer is `MemorySource`; native cursor
-integration and CLI query streaming are separate implementation steps, not
-features supplied by this API alone.
+remains buffered. Working consumers are `MemorySource` and the explicit cursor-backed
+[`NativeSource`](NATIVE_PROGRESSIVE_QUERIES.md). CLI query streaming is a separate
+implementation step, not a feature supplied by this API alone.
 
 ## Admitted query shape
 
@@ -30,7 +30,8 @@ retains its existing conservative contracts.
 `Source::scan_projected_progressive` visits checked projected rows. Its default
 is Unsupported; it never falls back to a complete snapshot or ordinary scan.
 Selected indices retain the existing sorted/unique projection contract.
-MemorySource implements it over its already validated rows. Other providers
+MemorySource implements it over its already validated rows. NativeSource uses
+a fresh sequential cursor and leaves data snapshots untouched. Other providers
 must implement it explicitly before they can be used with this service.
 
 Before scanning, execution validates parameters, captured scalar/unavailable/
