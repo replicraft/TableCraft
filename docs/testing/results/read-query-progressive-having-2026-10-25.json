@@ -165,7 +165,7 @@
   ],
   "source_timing": "After initial explicit error-conversion compile correction, all executed tests passed on their first run. Strict Clippy and minimal checking required no source edits. Independent helper forbids buffered Source callbacks on both success and failure, and was frozen before the accepted primary.",
   "validation_limits": [
-    "Scoped query/native/CLI checks only; original native/CAB HAVING replay is pending committed frozen-binary verification.",
+    "Scoped query/native/CLI checks and a separate immutable original native/CAB replay; no full workspace or native Access qualification.",
     "No full workspace suite, native Microsoft Access HAVING execution qualification, timing or constant-memory claim. New HAVING projection replay may retain full selected input widths under cumulative query limits."
   ],
   "native_cli_targets": {
@@ -189,5 +189,20 @@
     "query_logs": "Parent independently rehashed all six query checks against this record.",
     "policy_control": "Actual clean/conflicted group construction and rejected projection suppression pass eight controls, including both execution arithmetic profiles; no materialized scan permitted.",
     "native_cli": "138 native/CLI controls pass (four new); additional query external-source14 regressions also pass. All original input bytes remain unchanged under existing fixture guards."
+  },
+  "original_native_replay": {
+    "report": "docs/testing/results/progressive-having-2026-10-25.json",
+    "sha256": "6e66f857a015f5266ed812d851eb516b208170efc6fcaa75c5354ef282e3d556",
+    "terminal_session": 75659,
+    "matched_commands": 96,
+    "success_commands": 72,
+    "success_rows": 336,
+    "success_cells": 696,
+    "expected_failures": 24,
+    "retained_failure_prefix_rows": 6,
+    "retained_failure_prefix_cells": 12,
+    "immutable_pins_independently_rehashed": 15,
+    "revision_sources_independently_rehashed": 34,
+    "native_access_qualified": false
   }
 }

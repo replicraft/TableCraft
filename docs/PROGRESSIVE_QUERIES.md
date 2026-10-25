@@ -506,7 +506,9 @@ this library does not write a header or open files/providers.
 Parent integration adds 153 distinct controls, including four new CLI tests and
 one independent actual-policy conflict test. The total is 554 unique tests with
 23 new controls; the repeated 51-test query target is counted once. Strict
-native/CLI/policy-target linting and repository formatting also pass.
+native/CLI/policy-target linting and repository formatting also pass. A separate
+[original native/CAB replay](testing/PROGRESSIVE_HAVING.md) passes 96 commands,
+comparing 336 successful rows/696 cells and six exact earlier error-prefix rows.
 
 The terminal HAVING extension passes 401 distinct query tests, including eighteen
 new controls: 148 progressive/value/policy tests, 28 runtime units and 225 related
