@@ -1221,3 +1221,34 @@ consumer does not round through CDec or normalize an oversized coefficient.
 Single/Double parameters use Rust's standard parsers and finite-result checks.
 No registry version, shared feature or new resolved package is introduced;
 Cargo.lock records the additional CLI consumer. Package ownership is unchanged.
+
+## Qualified Japanese width composition (24 October 2026)
+
+`tablecraft-expressions` now inherits `unicode-normalization` 0.1.25 with default
+features disabled for character-level `compose` and `decompose_canonical` in
+explicit Japanese StrConv width conversion. Only qualified kana enter those
+operations; unrelated text is not normalized, and stored data and comparison
+identities are preserved. This is not an Access collation provider or a general
+NFC/NFKC policy. See [the StrConv contract](STRCONV.md).
+
+The published manifest, supplied licenses, character API implementation and
+resolved feature tree were inspected locally. The locked closure adds two
+packages without updating existing versions:
+
+| Package | Version | Declared license | Declared Rust minimum |
+| --- | --- | --- | --- |
+| unicode-normalization | 0.1.25 | MIT OR Apache-2.0 | 1.36 |
+| tinyvec | 1.13.3 | Zlib OR Apache-2.0 OR MIT | Undeclared |
+
+The normalization tables identify Unicode 17.0.0. Upstream enables tinyvec's
+`alloc` feature; neither package's `std` feature is enabled by this consumer.
+No build script, OS locale lookup, network or runtime provider is introduced.
+The selected character APIs do not allocate an intermediate normalized string;
+TableCraft retains fallible, metered output. Upstream normalization contains
+unsafe Hangul implementation details outside this qualified kana input path;
+TableCraft adds no unsafe code. This source review is not a complete dependency
+audit. Distributors retain the supplied license and copyright notices.
+
+Sources: [normalization package](https://docs.rs/crate/unicode-normalization/0.1.25),
+[character APIs](https://docs.rs/unicode-normalization/0.1.25/unicode_normalization/char/index.html)
+and [tinyvec package](https://docs.rs/crate/tinyvec/1.13.3).

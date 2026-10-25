@@ -161,7 +161,8 @@ fn contextual_options_preserve_flag_range_locale_validation_and_null_precedence(
         .with_number_format(NumberFormat::EnUs);
     for (flag, locale, expected) in [
         ("32767.5", "1033", EvalError::Overflow),
-        ("4", "bad", EvalError::UnsupportedExpression),
+        ("5", "bad", EvalError::UnsupportedExpression),
+        ("4", "bad", EvalError::TypeMismatch),
         ("0", "bad", EvalError::TypeMismatch),
         ("0", "0", EvalError::Domain),
         ("0", "1041", EvalError::UnsupportedExpression),

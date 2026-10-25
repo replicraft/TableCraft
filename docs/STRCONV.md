@@ -15,6 +15,7 @@ function does not execute stored VBA or activate application objects.
 | 0 | Preserve the owned string representation; no-op native behavior remains unqualified |
 | 1 / 2 | Upper/lowercase through the existing explicit ICU casing profile |
 | 3 | Proper case using documented separators and explicit ICU segment titlecasing |
+| 4 / 8 | Bounded Japanese wide/narrow conversion with explicit LCID 1041 |
 | 16 / 32 | Basic fullwidth Katakana/Hiragana conversion with explicit Japanese LCID 1041 |
 | 64 | Decode raw string/Byte-array bytes through an explicit single-byte page |
 | 128 | Encode representable Unicode as a lossless single-byte string intermediate |
@@ -27,9 +28,9 @@ now accept raw legacy DATE and execution-local numeric Text conversion. The
 describes the flag argument and Long LocaleID; the bounded coercion targets here
 retain their preexisting profile rather than claiming complete native enum/Variant
 call semantics. Unknown
-flag bits, negative flags and mutually exclusive settings fail. Width requests (4/8), combined kana flags and kana requests without exact LCID
-1041 report unsupported. Standalone 16/32 use the bounded profile below; further
-width and kana behavior remains implementation and qualification work.
+flag bits, negative flags and mutually exclusive settings fail. Standalone width and kana requests require exact LCID 1041. Combined width/kana,
+case or encoding settings remain unsupported. The bounded profiles below do not
+claim all East Asian locale or native NLS behavior.
 
 Arguments evaluate eagerly in written order, including the optional LCID, before
 flag/locale validation. NULL strings propagate after that validation. Ordinary
@@ -142,7 +143,7 @@ eleven existing pages; selected Python casing models and explicit language golde
 cover casing; original native Hyperlink fixtures supply independent decoded fields
 in Jet 4/ACE 2007/2016/2019 files. All original hashes remain unchanged. Jackcess
 supplies values without executing StrConv. Actual Microsoft Access evaluation,
-full native error/coercion/NLS behavior, width and broader kana modes, more LCIDs, DBCS and
+full native error/coercion/NLS behavior, broader width/kana modes, more LCIDs, DBCS and
 best-fit policies remain open, so StrConv stays **Partial**.
 
 ## Contextual flag and LCID conversion
@@ -156,7 +157,7 @@ options do not require a number profile. Text options without a profile fail
 rather than infer regional settings.
 
 Flag conversion and flag validation still precede LCID conversion/lookup, followed
-by source NULL propagation and representation checks. Unsupported width/combined kana flags
+by source NULL propagation and representation checks. Unsupported combined width/kana flags
 and unknown LCIDs are never silently replaced by a supported setting. All written
 argument expressions remain eager, so a late expression failure remains visible
 before option conversion. NULL options retain InvalidNullConversion. This option-coercion change itself added no LCID, width/kana, DBCS, source
@@ -193,7 +194,7 @@ route; raw string intermediates never round-trip through CStr.
 Source coercion follows existing flag/LCID validation and NULL propagation.
 `StrConv(1234,0)` produces Text `1234` under an explicit numeric profile. Casing
 and encoding then use the same metered paths as an explicit Text source. Unsupported
-width/combined kana modes, strict Unicode publication and full native/Variant qualification
+combined width/kana modes, strict Unicode publication and full native/Variant qualification
 remain open. The shared scalar-source runner exercises these calls alongside the
 byte slices/search/observations without executing database content.
 
@@ -308,3 +309,85 @@ voiced expansions, halfwidth/combining preservation, NUL and retained byte slice
 are covered. The [retained report](testing/results/strconv-kana-2026-10-24.json)
 records runner, source and unchanged executable hashes. Native Access/NLS execution
 remains deferred; StrConv remains **Partial**.
+
+
+## Explicit Japanese width conversion
+
+Standalone 4 widens qualified Japanese halfwidth characters and ASCII; 8 narrows
+qualified fullwidth counterparts. Both require exact explicit LCID 1041, following
+the same option/state/raw publication boundaries as script conversion. They do not
+supply Japanese casing or a DBCS page. Combined width/script/case/encoding requests
+remain refused; valid NULL sources propagate after control validation.
+
+```sh
+tablecraft query eval "SELECT StrConv('ABC 123 ｶﾞﾊﾟ',4,1041) AS Label"
+tablecraft query run "SELECT StrConv('ＡＢＣ　１２３　ガパ',8,1041) AS Label"
+```
+
+The outputs are `ＡＢＣ　１２３　ガパ` and `ABC 123 ｶﾞﾊﾟ`.
+The [Access contract](https://support.microsoft.com/en-us/access/functions/strconv-function)
+documents width settings 4/8 for East Asian locales. This implementation admits
+only the explicit Japanese selector; other East Asian locale profiles remain open.
+Unicode [width decomposition mappings](https://www.unicode.org/Public/UCD/latest/charts/nameslist/ff00/)
+supply ASCII/fullwidth and Japanese punctuation/Katakana counterpart identities.
+Space maps to/from U+3000; white-parenthesis forms U+2985/U+2986 map to/from
+U+FF5F/U+FF60. No UTF-8 byte width or stored byte-array conversion is
+implied by the historical single-byte/double-byte terminology.
+
+Widening composes adjacent qualified Hiragana/Katakana bases with voiced or
+semi-voiced marks, including halfwidth or spacing marks. Microsoft's
+[LCMapStringEx contract](https://learn.microsoft.com/en-us/windows/win32/api/winnls/nf-winnls-lcmapstringex)
+explicitly describes this behavior for already-fullwidth kana. Narrowing decomposes
+precomposed voiced Katakana when both resulting parts have halfwidth counterparts;
+for example `ガ` becomes `ｶﾞ`. Hiragana keeps its script. Standalone halfwidth marks
+widen to combining U+3099/U+309A, and their combining counterparts narrow to halfwidth marks. Spacing marks are
+preserved unless a qualified widening pair actually composes; their standalone
+compatibility decomposition is not used. Consequently narrowing `カ゛` yields
+`ｶ゛`, while widening it composes `ガ`; this profile does not claim inverse
+representation for spacing-mark sequences. General combining sequences are not reordered or normalized.
+
+The selected `unicode-normalization` library supplies canonical character
+composition/decomposition only inside qualified kana branches. There is no
+whole-string NFC/NFKC: circled digits, ligatures, square unit symbols and unrelated
+compatibility characters retain their representation. Output is streamed with a
+single pending character for widening and a bounded two-character decomposition
+for narrowing; the library's iterator/string normalization APIs are not used.
+
+Fullwidth small KA/KE and WI/WE, or voiced WI/WE without halfwidth bases, fail when
+narrowing. Halfwidth Hangul and the fullwidth currency/halfwidth symbol block remain
+explicitly unsupported in both directions. These known source forms are refused; other characters outside the qualified
+width mappings retain their representation. Further native mappings, locale
+coverage and combined flags remain compatibility work.
+
+The original public `Conversion` parser still refuses width flags, preserving its
+component-recipe contract. The evaluator's private exhaustive dispatch selects the
+separate `WidthConversion` writer. Raw retained Strings strictly publish only their
+active bytes; malformed selected UTF-16 fails. Arguments remain eager, controls
+precede source admission, and numeric/date sources retain explicit CStr policies.
+Every source character and output append shares cancellation/work/allocation
+controls. ASCII widening and voiced narrowing can exceed the per-Text output limit
+even when the source fits. No partial buffered query output is published on failure.
+
+
+Twenty focused expression/kernel tests and eight bound-query controls pass,
+including the five new width tests. They cover field/correlated/aggregate use,
+plan reuse after failed locale/flag selections, public-parser refusals, eager
+errors, NULL/raw publication, discarded invalid slice prefixes, per-Text expansion
+and cancellation at every observed scalar checkpoint. Strict SQL/minimal-feature
+expression and selected query Clippy checks pass. Native Access/NLS width results
+remain unqualified; StrConv remains **Partial**.
+
+
+The original [width comparison runner](testing/compare_strconv_width.py) passes
+5,544 success controls plus 30 refusals across 1,878 CLI commands in eval/run.
+Its independent Python Unicode 16.0 model derives 160 width pairs from character
+properties and uses local kana composition/decomposition only. Single mappings,
+voiced sequences, spacing-mark asymmetry, deterministic mixed strings, unrelated
+compatibility characters, raw slices, NUL and control/error refusals are covered.
+The [retained report](testing/results/strconv-width-2026-10-24.json) records unchanged
+binary, source and manifest hashes. An [excluded initial attempt](testing/results/strconv-width-precorrection-2026-10-24.txt)
+found missing white-parenthesis counterparts; those two pairs were implemented and
+pinned before the final replay. The failed attempts are not passing evidence or
+included in completed control totals. The earlier kana runner now uses combined
+flag 5 for its unsupported-width-control slot, since standalone 4 is implemented;
+the older kana report remains a historical result for its recorded runner hash.

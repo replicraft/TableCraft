@@ -556,7 +556,9 @@ selector/ordinal/control/policy stages with explicit host Empty targets.
 StrConv now also retains states through flag/LCID/source admission while
 preserving CVar and raw string buffers. [Standalone Japanese kana](STRCONV.md#explicit-japanese-kana-conversion)
 now converts basic fullwidth letters/iteration marks with explicit LCID 1041;
-width/combined and broader kana behavior and native NLS equivalence remain open.
+[Japanese width](STRCONV.md#explicit-japanese-width-conversion) now adds standalone
+4/8, ASCII/punctuation/kana pairs and bounded voiced-mark composition; combined
+settings, broader width/kana and native NLS equivalence remain open.
 Byte producers, observations and InStrB
 now also retain explicit states through their control/NULL/progressive source
 stages. General Format now retains states through NULL-week, ordered controls,

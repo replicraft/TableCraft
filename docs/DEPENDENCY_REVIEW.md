@@ -206,7 +206,7 @@ encoder equivalence does not establish native Access SQL or text-index traversal
 | [jiff 0.2.38](https://docs.rs/crate/jiff/0.2.38) | Unlicense OR MIT | Keep; core and expressions | Replaces time for civil validation/conversion, strict date input and shared Gregorian date extraction. Keep exact Access carriers; std/perf-inline only, without automatic timezone discovery. Benchmarks include its conversion cost. |
 | [regex 1.13.1](https://docs.rs/crate/regex/1.13.1) | MIT OR Apache-2.0 | Use with a concrete application feature; Search/import tooling | Bound patterns, compiled size and input. Do not implement Access LIKE by assuming regex syntax/semantics match. |
 | [regex-automata 0.4.18](https://docs.rs/crate/regex-automata/0.4.18) | MIT OR Apache-2.0 | Defer until specialized need; Measured search engines | Lower-level engine controls add complexity; prefer regex unless an actual automaton/streaming requirement justifies them. |
-| [unicode-normalization 0.1.26](https://docs.rs/crate/unicode-normalization/0.1.26) | (MIT OR Apache-2.0) AND Unicode-3.0 | Use for explicit derived views; Search/display helpers | Previously selected; retain original text and specify normalization form. Normalization alone is not Access collation or identifier equality. |
+| [unicode-normalization 0.1.25](https://docs.rs/crate/unicode-normalization/0.1.25) | MIT OR Apache-2.0 (published manifest) | Adopted for qualified kana composition/decomposition; expressions | Explicit Japanese StrConv width conversion uses character APIs without whole-string normalization. Future derived views must retain original text and specify their normalization form. Normalization alone is not Access collation or identifier equality. |
 
 ## Platform I/O, synchronization and caching
 
