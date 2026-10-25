@@ -22,7 +22,10 @@ new tests and 73 related regressions pass with strict engine/query/Access Clippy
 including eight existing Decimal mutation-preview controls. See
 [selection scope](NATIVE_INDEXES.md#exact-decimal-equality-and-null-selections) and
 [verification record](testing/results/read-query-decimal-selections-2026-10-25.json).
-Independent fixture replay and actual Access qualification remain separate gates.
+A fixed-CLI original four-profile replay also passes 788 controls and compares
+38,772 returned IDs against exact getter-derived Fractions; all nineteen pins
+remain unchanged. See [independent evidence](testing/DECIMAL_INDEX_SELECTIONS.md).
+Actual Access query/optimizer qualification remains unrun.
 
 ## Prior calculated projection aliases
 
