@@ -106,7 +106,7 @@ literal evaluator with no bindings, providers or runtime context. Only literal
 forms enter that helper; arbitrary expression evaluation is not part of binding. Query tracing remains payload-free.
 
 Arithmetic that widens by materialized value, unsupported aggregate input/result
-combinations, byte-string/StrConv, broader conditional/domain result inference, heterogeneous
+combinations, broader conditional/domain result inference, heterogeneous
 UNION/conditional promotion, complete Variant/static overflow rules and native
 Access result-type qualification remain unfinished. Dynamic results must stay
 visible while these rules are implemented; no implicit Double/Text/NULL placeholder
@@ -168,11 +168,16 @@ raise an error. A known result carrier does not make an invalid call successful.
 Text-changing functions and numeric transforms drop operand length/precision/scale
 constraints. CVar retains them because it preserves the exact input value.
 
-ChrB/LeftB/RightB/MidB and StrConv remain Dynamic because byte-string intermediates
-are expression-only states and conversion controls can choose a different result
-family. Materialized-value arithmetic widening, mixed conditional/UNION promotion
-and runtime domain target typing remain separate work. No new function is enabled
-by this metadata change, including deferred VBA-only calls.
+ChrB/LeftB/RightB/MidB and StrConv now declare nullable Text on successful scalar
+publication, matching their existing retained-String kernels. Byte/encoding controls
+do not produce a stored Binary result. This descriptor does not decode intermediates:
+LenB, IsNull and selection can still consume odd/unpaired raw Strings through named,
+derived and UNION ALL results. Strict consumers and final publication still reject
+unrepresentable Text. Supported numeric UNION arms use the existing explicit CStr
+policy before deduplication; see [byte-result composition](BYTE_STRING_FUNCTIONS.md#query-result-metadata).
+Materialized-value arithmetic widening, mixed conditional promotion and runtime
+domain target typing remain separate work. No new function is enabled by this
+metadata change, including deferred VBA-only calls.
 
 Focused controls check more than sixty successful function results against their
 claimed descriptors, all nine numeric families for carrier-preserving math,

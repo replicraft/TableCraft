@@ -183,7 +183,10 @@ fn nullable_parameters_and_null_controls_do_not_become_null_only() {
                 data_type: TypeDescriptor::new(ScalarType::Text),
                 nullable: true,
             },
-            OutputType::Dynamic,
+            OutputType::Scalar {
+                data_type: TypeDescriptor::new(ScalarType::Text),
+                nullable: true,
+            },
         ]
     );
     assert_eq!(

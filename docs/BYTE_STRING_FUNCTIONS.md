@@ -459,3 +459,25 @@ four-family sequential/indexed cases) over unchanged registered inputs. The
 existing byte runner additionally passes 3,792 scalar controls; its optional
 native branch was not rerun. Only TableCraft executes SQL. Full Variant, broader
 raw carriers, provider and Windows/native Access qualification remain open.
+
+## Query result metadata
+
+ChrB, LeftB, RightB, MidB and StrConv now expose nullable Text metadata for their
+existing successful publication path. These functions return retained String bytes
+or scalar Text/NULL, never stored Binary. The descriptor is an evaluator guarantee,
+not native DAO typing or additional Access query-availability qualification.
+Binding neither evaluates controls nor scans source rows or activates code-page,
+casing or comparison providers. Existing source-NULL inference remains unchanged.
+
+This fixes `SELECT LeftB('12',4) UNION SELECT 12`, which formerly kept Dynamic
+carriers and failed integer/Text equality. The existing common-Text UNION path
+now formats the numeric arm under an explicit number policy before deduplication.
+Named/derived and empty arms receive the same descriptor without value sampling.
+
+Metadata does not publish raw Strings early. LenB, IsNull and First can still
+observe odd or unpaired results across named/derived queries and UNION ALL; final
+Unicode publication remains strict. StrConv's ANSI bytes likewise remain exact
+String bytes until an explicit decode or ordinary strict publication. For example,
+bytes 0x31,0x32 publish as UTF-16LE U+3231, rather than being silently decoded as
+ANSI `12`. Eager argument, missing-format/provider and late arm failures still
+abort the complete result.

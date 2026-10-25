@@ -43,13 +43,12 @@ pub(super) fn result(function: TextFunction) -> OutputType {
             ScalarType::Int16
         }
         TextFunction::Val => ScalarType::Double,
-        // StrConv can return raw bytes or Unicode depending on its controls.
         TextFunction::ChrB
         | TextFunction::LeftB
         | TextFunction::RightB
         | TextFunction::MidB
-        | TextFunction::StrConv => return OutputType::Dynamic,
-        TextFunction::LCase
+        | TextFunction::StrConv
+        | TextFunction::LCase
         | TextFunction::UCase
         | TextFunction::LTrim
         | TextFunction::RTrim

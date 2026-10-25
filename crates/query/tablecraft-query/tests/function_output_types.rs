@@ -224,18 +224,22 @@ fn derived_functions_preserve_types_for_empty_results() {
 }
 
 #[test]
-fn byte_intermediates_and_value_dependent_inputs_remain_dynamic() {
+fn byte_results_have_text_metadata_while_value_dependent_inputs_remain_dynamic() {
     let source = MetadataOnly(vec![]);
     let parsed = parse_query(
         "PARAMETERS Pick BIT; SELECT ChrB(65),LeftB('abc',1),RightB('abc',1),MidB('abc',1),StrConv('abc',64),Abs(IIf(Pick,CInt(1),CDbl(1)))",
         ParseLimits::default(),
     ).unwrap();
+    let text = OutputType::Scalar {
+        data_type: TypeDescriptor::new(ScalarType::Text),
+        nullable: true,
+    };
     assert_eq!(
         prepare(parsed.query(), &source)
             .unwrap()
             .output_types()
             .unwrap(),
-        [OutputType::Dynamic; 6]
+        [text, text, text, text, text, OutputType::Dynamic]
     );
 }
 
