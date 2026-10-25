@@ -13,6 +13,7 @@ impl Runtime<'_, '_> {
         let group = env.group.ok_or(QueryError::Grouping)?;
         let mut selected = CellValue::scalar(Value::Null);
         let mut policy = crate::source::TextPolicy::Default;
+        let mut complete = false;
         for (index, row) in group.iter().enumerate() {
             self.tick()?;
             let value = self.retained_expression_operand(
@@ -25,10 +26,11 @@ impl Runtime<'_, '_> {
                 },
             )?;
             policy = policy.merge(value.policy);
+            complete |= value.policy_complete;
             if index == 0 || keep_last {
                 selected = value;
             }
         }
-        Ok(selected.with_policy(policy))
+        Ok(selected.with_policy(policy).with_complete_policy(complete))
     }
 }

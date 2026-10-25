@@ -53,6 +53,7 @@ impl Runtime<'_, '_> {
             ReadNode::Select(select) => self.select(select, plan, outer)?,
             ReadNode::Union { first, rest } => {
                 let mut policies = Vec::new();
+                let mut complete = Vec::new();
                 if self.options.collation_resolver.is_some() {
                     self.budget.charge_allocation(
                         first.text_policies.len() as u64,
@@ -61,24 +62,52 @@ impl Runtime<'_, '_> {
                     policies
                         .try_reserve_exact(first.text_policies.len())
                         .map_err(|_| QueryError::Allocation)?;
-                    policies.extend_from_slice(&first.text_policies);
+                    policies.resize(
+                        first.text_policies.len(),
+                        crate::source::TextPolicy::Default,
+                    );
+                    self.budget.charge_allocation(
+                        first.text_policies.len() as u64,
+                        size_of::<bool>() as u64,
+                    )?;
+                    complete
+                        .try_reserve_exact(first.text_policies.len())
+                        .map_err(|_| QueryError::Allocation)?;
+                    complete.resize(first.text_policies.len(), false);
                 }
                 let mut rows = self.read(first, outer)?;
                 self.promote_union_rows(
                     &mut rows,
                     plan.active_types(self.options.declared_integral),
                 )?;
+                if !policies.is_empty() {
+                    self.merge_union_policies(
+                        &rows,
+                        &first.text_policies,
+                        &mut policies,
+                        &mut complete,
+                    )?;
+                    self.apply_union_policies(&mut rows, &policies, &complete)?;
+                }
                 for (all, arm) in rest {
-                    for (policy, other) in policies.iter_mut().zip(&arm.text_policies) {
-                        *policy = policy.merge(*other);
-                    }
                     let mut incoming = self.read(arm, outer)?;
                     self.promote_union_rows(
                         &mut incoming,
                         plan.active_types(self.options.declared_integral),
                     )?;
+                    if !policies.is_empty() {
+                        self.merge_union_policies(
+                            &incoming,
+                            &arm.text_policies,
+                            &mut policies,
+                            &mut complete,
+                        )?;
+                    }
                     for row in incoming {
                         self.push(&mut rows, row)?;
+                    }
+                    if !policies.is_empty() {
+                        self.apply_union_policies(&mut rows, &policies, &complete)?;
                     }
                     if !*all {
                         rows = self.unique(rows, &policies)?;

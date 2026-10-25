@@ -1,4 +1,5 @@
 //! UNION result conversion before duplicate removal and final ordering.
+mod policies;
 use super::Runtime;
 use crate::execution::cell::CellValue;
 use crate::{OutputType, QueryError};

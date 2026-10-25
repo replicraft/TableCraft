@@ -15,6 +15,7 @@ impl Runtime<'_, '_> {
         let group = env.group.ok_or(QueryError::Grouping)?;
         let mut selected = CellValue::scalar(Value::Null);
         let mut policy = TextPolicy::Default;
+        let mut complete = false;
         // A later runtime field policy can reverse an earlier default ordering.
         // Stable global/declared field policies keep the existing one-cell path.
         let deferred = self.options.collation_resolver.is_some()
@@ -33,6 +34,7 @@ impl Runtime<'_, '_> {
                 },
             )?;
             policy = policy.merge(value.policy);
+            complete |= value.policy_complete;
             match &value.value {
                 ExpressionValue::Value(Value::Null) => continue,
                 ExpressionValue::Value(_) | ExpressionValue::StringBytes(_) => {}
@@ -80,7 +82,7 @@ impl Runtime<'_, '_> {
             }
         }
 
-        Ok(selected.with_policy(policy))
+        Ok(selected.with_policy(policy).with_complete_policy(complete))
     }
 
     fn replace_extreme(
@@ -107,7 +109,11 @@ impl Runtime<'_, '_> {
                         ExpressionValue::Value(Value::Text(_)) | ExpressionValue::StringBytes(_)
                     )
                 ) {
-                    self.text_policy(argument)?.merge(policy)
+                    if value.policy_complete || selected.policy_complete {
+                        policy
+                    } else {
+                        self.text_policy(argument)?.merge(policy)
+                    }
                 } else {
                     TextPolicy::Default
                 };

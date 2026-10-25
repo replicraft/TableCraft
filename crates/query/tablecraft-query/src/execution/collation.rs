@@ -33,7 +33,17 @@ impl<'a> Runtime<'a, '_> {
             b.value,
             ExpressionValue::StringBytes(_) | ExpressionValue::Value(Value::Text(_))
         ) {
-            Ok(self.text_policy(left)?.merge(self.text_policy(right)?))
+            let left_policy = if a.policy_complete {
+                a.policy
+            } else {
+                self.text_policy(left)?
+            };
+            let right_policy = if b.policy_complete {
+                b.policy
+            } else {
+                self.text_policy(right)?
+            };
+            Ok(left_policy.merge(right_policy))
         } else {
             Ok(TextPolicy::Default)
         }
@@ -49,6 +59,7 @@ impl<'a> Runtime<'a, '_> {
         if let Some(result) = self.compare_declared_string_variant(op, a, b, policy)? {
             return Ok(result);
         }
+        let policy = super::cell::comparison_policy(a, b, policy);
 
         let declared_variants = self.options.declared_integral
             && a.declaration == Some(OperandDeclaration::Variant)
@@ -141,6 +152,7 @@ impl<'a> Runtime<'a, '_> {
             return Ok(Some(
                 CellValue::scalar(value)
                     .with_policy(cell.policy)
+                    .with_complete_policy(cell.policy_complete)
                     .with_declaration(cell.declaration),
             ));
         }

@@ -15,11 +15,12 @@ impl Runtime<'_, '_> {
         &mut self,
         expression: &Expr,
         current: TextPolicy,
+        mut complete: bool,
         env: Environment<'_>,
-    ) -> Result<TextPolicy, QueryError> {
-        let mut policy = current.merge(self.text_policy(expression)?);
+    ) -> Result<(TextPolicy, bool), QueryError> {
+        let mut policy = current;
         if self.options.collation_resolver.is_none() {
-            return Ok(policy);
+            return Ok((policy, complete));
         }
 
         let scopes = std::iter::once((0, env.group_keys)).chain(
@@ -49,9 +50,13 @@ impl Runtime<'_, '_> {
                     },
                 )? {
                     policy = policy.merge(cell.policy);
+                    complete |= cell.policy_complete;
                 }
             }
         }
-        Ok(policy)
+        if !complete {
+            policy = policy.merge(self.text_policy(expression)?);
+        }
+        Ok((policy, complete))
     }
 }

@@ -1,5 +1,26 @@
 # Implementation status
 
+## Constructed String policy provenance
+
+Concatenation now excludes latent field policies carried by converted non-String
+operands. The explicit declared String-addition path shares this correction.
+Completed runtime provenance survives retained/derived/named cells, grouping,
+sets, aggregates and crosstabs without changing conservative public metadata.
+Actual String conflicts, conservative NULL lineage and empty UNION-arm policies
+remain enforced. Construction-sensitive fixed crosstab heading comparisons occur
+after observing rows; ordinary base-field pivots retain early checks and binding
+stays metadata-only. See [the contract](CONCATENATION.md#constructed-string-policy-provenance).
+
+The focused batch passes 199 unique Rust tests, including nine new policy and
+composition tests: 107 collation/declared comparisons and 92 query unit, named,
+domain, retained-String and UNION regressions. Strict scoped Clippy, minimal query
+checking, normal CLI building, formatting, dependency boundaries and 41 engineering
+script tests pass. Initial probes exposed one module-doc placement error, a
+singleton sorting assertion and an incorrect epoch-date spelling; those failed
+attempts are excluded from passing counts. Native replay is recorded separately.
+This corrects an engineering provenance bug, not native mixed-collation precedence
+or complete P0/read-query acceptance.
+
 ## Independent external named-source replay
 
 The [external named replay](testing/EXTERNAL_NAMED_QUERIES.md) passes 588 controls

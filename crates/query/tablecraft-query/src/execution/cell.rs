@@ -9,6 +9,9 @@ use tablecraft_expressions::{
 pub(crate) struct CellValue {
     pub(super) value: ExpressionValue,
     pub(super) policy: TextPolicy,
+    // Constructed String lineage is already complete; static metadata may be
+    // conservative because an operand could also have returned another carrier.
+    pub(super) policy_complete: bool,
     pub(super) declaration: Option<OperandDeclaration>,
 }
 impl CellValue {
@@ -17,6 +20,10 @@ impl CellValue {
     }
     pub(super) fn with_declaration(mut self, declaration: Option<OperandDeclaration>) -> Self {
         self.declaration = declaration;
+        self
+    }
+    pub(super) fn with_complete_policy(mut self, complete: bool) -> Self {
+        self.policy_complete = complete;
         self
     }
     pub(super) fn with_policy(mut self, policy: TextPolicy) -> Self {
@@ -29,6 +36,7 @@ impl From<ExpressionValue> for CellValue {
         Self {
             value,
             policy: TextPolicy::Default,
+            policy_complete: false,
             declaration: None,
         }
     }
@@ -47,3 +55,18 @@ pub(super) fn into_operator_scalar(value: CellValue) -> Result<Value, EvalError>
 }
 
 pub(crate) type CellQueryResult = super::QueryResult<CellValue>;
+
+/// Complete runtime cells already contain their contributing field policies.
+/// Other cells retain static fallback, never replacing an actual peer policy.
+pub(super) fn comparison_policy(
+    left: &CellValue,
+    right: &CellValue,
+    fallback: TextPolicy,
+) -> TextPolicy {
+    let policy = left.policy.merge(right.policy);
+    if left.policy_complete || right.policy_complete {
+        policy
+    } else {
+        fallback.merge(policy)
+    }
+}

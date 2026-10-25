@@ -220,3 +220,39 @@ orders over materialized/active-range Strings, exact carrier/formatting controls
 String/String and expression states, malformed branch-specific admission,
 unknown categories, final Text ceilings and every observed cancellation point.
 Prepared-query composition and metadata controls live in `declared_addition`.
+
+## Constructed String policy provenance
+
+Concatenation uses field policy only from operands that contribute an actual
+String or a conservatively retained NULL policy. A numeric, Boolean or date
+result does not contribute latent Text policy from an unselected conditional
+branch when the existing conversion service formats that result. For example,
+with different LegacyText and ModernText field policies,
+`LegacyText & IIf(True,2,ModernText)` retains LegacyText's policy. The explicit
+declared profile applies the same rule when `+` selects String construction.
+Numeric `+` retains its separate arithmetic dispatch and failure rules.
+
+Constructed results retain their runtime policy through named/derived reads,
+subqueries, aggregation, grouping and set operations. Conservative public result
+metadata stays available without scanning rows; it cannot overwrite a completed
+runtime construction with a policy belonging only to a converted non-String.
+Actual String policies from all contributing rows still merge and conflicting
+identities still refuse. This does not choose precedence between different
+native String orders.
+
+Stored Text NULLs and conditional NULL results retain their existing conservative
+policy contribution; this change does not establish a distinction between their
+origins. A literal NULL has default provenance and retains existing `&`/`+`
+nullness behavior. Operand evaluation stays eager, conversion errors retain their
+original classification, and raw UTF-16, output and cumulative work limits remain
+unchanged. This is a TableCraft provenance correction, not native Access collation
+qualification.
+
+UNION resolves each arm before merging output provenance; an empty arm retains
+its static policy, including a real declared Text conflict. Crosstabs with
+construction-sensitive or derived pivots retain candidates until runtime policy
+is known. Policy-sensitive fixed-heading duplicate checks then occur during
+explicit execution after observing rows; names, types and NULL headings remain
+validated first. Ordinary base-field pivots retain their earlier duplicate
+checks before scanning. Binding remains metadata-only. Candidate retention stays
+bounded by the existing cumulative allocation and work allowances.
