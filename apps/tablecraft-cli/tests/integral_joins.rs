@@ -53,8 +53,6 @@ impl Fixture {
             "268435456",
             "--execution-rows",
             "10000",
-            "--execution-steps",
-            "100000000",
             sql,
         ])
     }
@@ -103,4 +101,21 @@ fn rejected_pairs_do_not_hide_invalid_selected_source_carriers() {
         fixture.query("SELECT A.N FROM Numbers A INNER JOIN Invalid B ON A.N=B.N WHERE False");
     assert_eq!(output.status.code(), Some(2));
     assert!(output.stdout.is_empty());
+}
+
+#[test]
+fn default_work_keeps_reversed_and_outer_integral_join_results_in_encounter_order() {
+    let fixture = Fixture::new();
+    for kind in ["INNER", "LEFT", "RIGHT"] {
+        for predicate in ["A.N=B.N", "B.N=A.N"] {
+            let sql = format!("SELECT A.N FROM Numbers A {kind} JOIN Numbers B ON {predicate}");
+            let result = fixture.query(&sql);
+            assert!(
+                result.status.success(),
+                "{}",
+                String::from_utf8_lossy(&result.stderr)
+            );
+            assert_eq!(result.stdout, fixture.expected(&sql));
+        }
+    }
 }

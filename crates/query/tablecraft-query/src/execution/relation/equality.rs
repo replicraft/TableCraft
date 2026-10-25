@@ -10,9 +10,13 @@ use tablecraft_expressions::comparison::Comparison;
 use tablecraft_schema::ScalarType;
 use tablecraft_sql::select::BinaryOperator;
 
+#[cfg(test)]
+mod tests;
+
 pub(super) struct BorrowedEquality {
     first: Field,
     second: Field,
+    carrier: ScalarType,
 }
 
 enum Field {
@@ -31,6 +35,26 @@ impl Field {
             Self::Right(index) => right.get(*index),
         };
         value.ok_or(QueryError::Width)
+    }
+}
+
+impl BorrowedEquality {
+    pub(super) fn carrier(&self) -> ScalarType {
+        self.carrier
+    }
+
+    pub(super) fn left_key<'a>(&self, row: &'a [CellValue]) -> Option<&'a CellValue> {
+        match (&self.first, &self.second) {
+            (Field::Left(index), _) | (_, Field::Left(index)) => row.get(*index),
+            _ => None,
+        }
+    }
+
+    pub(super) fn right_key<'a>(&self, row: &'a [CellValue]) -> Option<&'a CellValue> {
+        match (&self.first, &self.second) {
+            (Field::Right(index), _) | (_, Field::Right(index)) => row.get(*index),
+            _ => None,
+        }
     }
 }
 
@@ -79,7 +103,11 @@ impl Runtime<'_, '_> {
         } else {
             (Field::Right(right_index), Field::Left(left_index))
         };
-        Ok(Some(BorrowedEquality { first, second }))
+        Ok(Some(BorrowedEquality {
+            first,
+            second,
+            carrier: left_kind.ok_or(QueryError::Source)?,
+        }))
     }
 
     fn integral_join_field(

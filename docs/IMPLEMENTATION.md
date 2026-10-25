@@ -1,5 +1,17 @@
 # Implementation status
 
+## Bounded integral join directories
+
+Whole bare equality joins between the same proven Boolean/integral carriers now
+index right-row candidates, retaining full input validation, duplicate encounter
+order, outer NULL extension and original SQL comparison. Unexpected actual keys
+fall back for the whole operation before output; resource failures remain errors.
+The 1,100-row native/CLI controls fit default query work, while 12,000-key query
+controls retain explicit finite budgets. Nineteen new controls and 123 regressions
+pass with strict linting, minimal query features and formatting. See
+[scope](QUERY_EQUIJOINS.md) and
+[verification](testing/results/read-query-directory-joins-2026-10-25.json).
+
 ## Larger read-only deployment packages
 
 Qualified ACCDC inputs can now complete extraction into host-owned seekable

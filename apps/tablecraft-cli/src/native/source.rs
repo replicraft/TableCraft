@@ -1,4 +1,5 @@
 use std::{
+    fs::File,
     io::{self, IsTerminal, Read, Seek, SeekFrom},
     path::Path,
 };
@@ -12,8 +13,8 @@ pub(crate) struct NativeFile {
     deployment: bool,
 }
 enum Kind {
-    Plain(AccessInput<SharedFile, std::fs::File>),
-    Encrypted(EncryptedSource<AccessInput<SharedFile, std::fs::File>>),
+    Plain(AccessInput<SharedFile, File>),
+    Encrypted(EncryptedSource<AccessInput<SharedFile, File>>),
 }
 impl NativeFile {
     pub(crate) fn is_deployment(&self) -> bool {
