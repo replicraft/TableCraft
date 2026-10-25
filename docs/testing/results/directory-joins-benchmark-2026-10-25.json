@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "End-to-end debug CLI, raw native 1100-row unique Int32 equality join, identical explicit100M work/10000rows/256MiB query quotas; correctness established independently before timing. No isolated-kernel/release/general-workload claim.",
+  "host": {
+    "system": "Darwin",
+    "machine": "arm64"
+  },
+  "hyperfine_version": "hyperfine 2.0.0",
+  "warmups_per_case": 2,
+  "measured_runs_per_case": 7,
+  "measured_runs_total": 28,
+  "baseline_revision": "ef6d7f50acf9d6068c7ea14bc26f8270a2d8c446",
+  "candidate_revision": "35b6ce8dca59590d316e62bf59ec9511a16d14ca",
+  "immutable_sha256_before_after": {
+    ".cache/tablecraft-fixtures/large-deployment-20261025/V2016.accdb": "51b4a6bf4477b2c1dca061e95179b5ccd70de158623edeafc96c5e38186bf630",
+    ".cache/tablecraft-bin/progressive-extrema-cli-20261025": "b46bd18f59033360e5fcdb4e6b5e562e78698353016a8f9ea3a7c61e7e87aeee",
+    ".cache/tablecraft-bin/directory-join-cli-20261025": "9b5b64282049461ca5590f16d9746ff8fdfcb465801b6ef69f56928e0ed4350f",
+    ".cache/tablecraft-fixtures/large-deployment-20261025/V2019.accdb": "cbb12a433c622b6d2a91e72d627b1cfab0eb6192953eaca7510c8d97668cc4f7"
+  },
+  "independent_expected_rows": 1100,
+  "independent_expected_stdout_sha256": "94ef2ecb56e952bba9ef0d14182394af58e400ffc96e115db4eca0bf23c84a2a",
+  "correctness": "Both baseline high-work commands matched the independent Id/Score model before timing; candidate commands matched before timing; all four commands matched after timing. All frozen binaries and source images retained their hashes.",
+  "raw_measurements": "docs/testing/results/directory-joins-hyperfine-2026-10-25.json",
+  "raw_measurements_sha256": "d2b5686a5589db811453a77255e501f8a1265072928d88f667b3e649de27e7d9",
+  "private_log": ".cache/directory-join-hyperfine-20261025.log",
+  "private_log_sha256": "ef552fda41566573cdde9f46ef50c68b06dcd53bb14ab04acf174f6e33b36c04",
+  "cases": {
+    "V2016-before": {
+      "mean_seconds": 1.010169392857143,
+      "stddev_seconds": 0.10249340975824532,
+      "median_seconds": 0.9674607500000001,
+      "measured_runs": 7
+    },
+    "V2016-after": {
+      "mean_seconds": 0.015406405000000001,
+      "stddev_seconds": 0.0005725370554307679,
+      "median_seconds": 0.015451584,
+      "measured_runs": 7
+    },
+    "V2019-before": {
+      "mean_seconds": 0.8670348632857144,
+      "stddev_seconds": 0.016833661975715394,
+      "median_seconds": 0.859934167,
+      "measured_runs": 7
+    },
+    "V2019-after": {
+      "mean_seconds": 0.015295160714285714,
+      "stddev_seconds": 0.0006072037311086274,
+      "median_seconds": 0.01539475,
+      "measured_runs": 7
+    }
+  },
+  "mean_time_ratio_before_over_after": {
+    "V2016": 65.56814473312514,
+    "V2019": 56.68687498496841
+  },
+  "excluded_timing_samples": [],
+  "postprocessing_note": "The first summary printer assumed Hyperfine1 top-level mean keys and raised KeyError after successful Hyperfine2 execution, correctness/pin checks and raw-report persistence. This report reads the actual schema2 summary; no measurement was rerun, discarded or rewritten."
+}

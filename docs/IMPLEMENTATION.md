@@ -15,6 +15,10 @@ An [original six-input replay](testing/DIRECTORY_JOINS.md) passes 76 commands,
 comparing 51,848 rows and 105,896 cells. Old default-work refusals and new successes
 are pinned separately; sixteen immutable and 37 revision-source hashes were
 independently rechecked.
+A [local whole-CLI benchmark](testing/DIRECTORY_JOIN_BENCHMARK.md) retains all 28
+samples: these 1,100-row joins improve from 0.87–1.01 seconds to about 15 milliseconds
+with equal explicit allowances and exact results. This does not qualify release
+or arbitrary-workload performance.
 
 ## Larger read-only deployment packages
 
