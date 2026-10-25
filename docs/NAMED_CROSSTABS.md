@@ -178,6 +178,45 @@ The resulting constants are stored in the plan; metadata binding still scans no
 rows and invokes no clock or formatting provider. Plain preparation has no implicit
 year. Runtime text-date conversions remain execution dependent.
 
+## Policy-free constant String headings
+
+Named fixed schemas also admit the existing `Len`, `LenB`, `AscW`, `AscB`,
+`Left`, `Right`, `Mid`, `LeftB`, `RightB`, `MidB`, `LTrim`, `RTrim`, `Trim`,
+`StrReverse`, `ChrW` and `ChrB` kernels over closed constant operands. String
+inputs must be Text, retained String bytes or NULL; constructor codes and slice
+controls must be numeric, Boolean or NULL. Existing conditional controls retain
+their ordinary non-Text carrier admission, including Date conversion and typed
+invalid-carrier failures. Existing arity and kernel failures remain authoritative. This admission does not add
+query functions or change their execution contracts; see
+[byte String functions](BYTE_STRING_FUNCTIONS.md),
+[character functions](CHARACTER_FUNCTIONS.md) and
+[retained Strings](RETAINED_STRINGS.md).
+
+For example, `IN (Trim('2 '),ChrW(49),Right('x4',1))` declares names 2, 1 and 4
+without scanning. Raw UTF-16 intermediates stay intact through these kernels,
+Text `+`/`&`, CVar and eager conditional selection. `Len(ChrW(55296))` can
+therefore declare integral heading 1 without publishing an isolated surrogate;
+`ChrW(55357)&ChrW(56832)` publishes the valid final name 😀. Only the final
+heading is strictly converted to Unicode. Odd-byte or unpaired-surrogate final
+names remain unsupported by metadata-only preparation, with no replacement
+characters or guessed encoding.
+
+Every operand is evaluated eagerly, including unused selection branches. Literal
+copies, encoding buffers, kernel outputs and final publication reserve bounded
+allocation allowances before work. Kernel work receives at most the remaining
+shared binding Steps allowance and is debited on success or failure; recursive
+nodes retain the binding node/depth limits. Cancellation remains checked by both
+binding and the original kernels. Focused tests exercise shared small budgets,
+all observed cancellation checkpoints, invalid final names, eager errors and
+no-scan named/derived/UNION schema composition.
+
+Numeric/date formatting, Text-to-number or Text-to-control conversion, casing,
+code pages, locale/search providers and source/parameter operands remain outside
+this constant profile. No provider or source is activated during preparation.
+The original expressions still execute under the normal query evaluator; this
+is an engineering schema-admission improvement, not native Access qualification
+of these computed pivot forms.
+
 ## Constant conditional headings
 
 Named fixed schemas now also admit IIf, Nz, Choose and Switch when every operand

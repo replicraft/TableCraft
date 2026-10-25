@@ -1,5 +1,18 @@
 # Implementation status
 
+## Policy-free constant String pivot headings
+
+Named crosstab preparation now evaluates sixteen existing policy-free Text/byte
+functions over closed constant operands without row scans. Retained raw units
+survive slicing, concatenation and eager selectors until strict final-name
+publication. Existing Date controls and typed failures remain intact; format,
+locale, code-page and source-dependent expressions retain their execution boundary.
+Fourteen unit and sixty-four related crosstab tests pass with strict query Clippy,
+including shared work debit on failure and cancellation checks. See
+[the heading contract](NAMED_CROSSTABS.md#policy-free-constant-string-headings) and
+[verification record](testing/results/read-query-constant-text-headings-2026-10-25.json).
+Native Access heading spelling and broader composition remain unqualified.
+
 ## Additional explicit ICU host locales
 
 The opt-in ICU host text profile now supports nineteen named locales, adding

@@ -1,6 +1,6 @@
 //! Policy-independent fixed headings; reuse scalar kernels without source access.
 mod arithmetic;
-mod conditional;
+mod text;
 
 use super::super::Binder;
 use crate::{
@@ -8,7 +8,10 @@ use crate::{
     plan::Expr,
     profile::{MAX_BIND_BYTES, MAX_BIND_NODES, MAX_TEXT_BYTES},
 };
-use tablecraft_core::{limits::ResourceBudget, values::Value};
+use tablecraft_core::{
+    limits::{Resource, ResourceBudget},
+    values::Value,
+};
 use tablecraft_expressions::{
     EvalError,
     evaluation::{EvalLimits, Evaluator, NoBindings},
@@ -42,6 +45,12 @@ impl Binder<'_> {
                 }
                 self.constant_unary(*operator, input, value, depth + 1)
             }
+            Expr::Binary(BinaryOperator::Add | BinaryOperator::Concatenate, ..)
+            | Expr::TextCall(..)
+            | Expr::CVar(_)
+            | Expr::IIf(..)
+            | Expr::Nz(..)
+            | Expr::ConditionalCall(..) => self.constant_text_heading(expr, depth + 1),
             Expr::Binary(operator, left, right) => {
                 let expressions = (left.as_ref(), right.as_ref());
                 let left = self.constant_heading(left, depth + 1)?;
@@ -99,31 +108,29 @@ impl Binder<'_> {
                     evaluator.apply_math(*function, &values[..arguments.len()])
                 })
             }
-            Expr::CVar(input) => self.constant_heading(input, depth + 1),
-            Expr::IIf(condition, yes, no) => self.constant_iif(condition, yes, no, depth + 1),
-            Expr::Nz(value, replacement) => {
-                self.constant_nz(value, replacement.as_deref(), depth + 1)
-            }
-            Expr::ConditionalCall(function, arguments) => {
-                self.constant_selection(*function, arguments, depth + 1)
-            }
             // Fields, parameters, subqueries and policy/host-dependent calls cannot
             // declare a stable metadata schema. No evaluator or source sees them.
             _ => Err(QueryError::Unsupported),
         }
     }
 
-    fn heading_operation(
+    fn heading_operation<T>(
         &mut self,
         bytes: usize,
-        operation: impl FnOnce(&mut Evaluator<'_>) -> Result<Value, EvalError>,
-    ) -> Result<Value, QueryError> {
-        // Reserve the exact possible Text result in the owning binding budget
-        // before allocation. Numeric kernels cannot allocate a Text result here.
+        operation: impl FnOnce(&mut Evaluator<'_>) -> Result<T, EvalError>,
+    ) -> Result<T, QueryError> {
+        // Reserve the bounded allocation allowance in the owning binding budget
+        // before allocation. Every kernel additionally enforces this allowance.
         // Every recursive node already consumes the global binding work/depth quota.
         self.tick(1)?;
         self.charge(bytes)?;
-        let mut allowance = ResourceBudget::new(bytes as u64, 0, MAX_BIND_NODES as u64);
+        let steps = self
+            .budget
+            .as_ref()
+            .map_or(MAX_BIND_NODES as u64, |budget| {
+                budget.remaining(Resource::Steps).min(MAX_BIND_NODES as u64)
+            });
+        let mut allowance = ResourceBudget::new(bytes as u64, 0, steps);
         let mut evaluator = Evaluator::new(
             &NoBindings,
             &mut allowance,
@@ -135,7 +142,14 @@ impl Binder<'_> {
         if let Some(cancelled) = self.cancelled {
             evaluator = evaluator.with_cancellation(cancelled);
         }
-        operation(&mut evaluator).map_err(|error| match error {
+        let result = operation(&mut evaluator);
+        let used_steps = steps - allowance.remaining(Resource::Steps);
+        if let Some(budget) = &mut self.budget {
+            // The exclusive local allowance cannot exceed the shared remainder.
+            // Debit work on failures too; no kernel receives a refreshed pool.
+            budget.charge(Resource::Steps, used_steps)?;
+        }
+        result.map_err(|error| match error {
             EvalError::Cancelled => QueryError::Cancelled,
             error => QueryError::Evaluation(error),
         })
