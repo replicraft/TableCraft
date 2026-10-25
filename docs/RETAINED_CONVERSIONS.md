@@ -27,7 +27,8 @@ and calendar controls. CDate/CVDate still share their materialized DateTime
 carrier while their query declaration categories remain separate. DateValue and
 TimeValue retain their existing component extraction, discarded-part validation
 and NULL policies. Date components and interval operations additionally use the staged retained-input
-contract below; DateSerial and TimeSerial constructors remain unchanged.
+contract below; DateSerial and TimeSerial use the same lazy publication at each
+[constructor component](DATE_CONSTRUCTORS.md#retained-string-constructor-components).
 
 Only active String bytes are published. Discarded backing bytes are not decoded.
 A selected unpaired surrogate or odd-byte range remains UnrepresentableText, even

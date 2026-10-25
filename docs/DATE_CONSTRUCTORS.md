@@ -162,3 +162,33 @@ Date returns, numeric Text policies and execution-local windows are unchanged.
 Value-only public APIs share the same kernel and retain their host-free Text
 boundary. Entry/conversion checks share cumulative work and cancellation; no
 payload copies beyond ordinary expression materialization are added.
+
+
+## Retained String constructor components
+
+The public DateSerial and TimeSerial expression APIs now accept valid retained
+numeric Strings wherever materialized numeric Text already worked. Only the
+selected active range is strictly published, then converted through the existing
+metered Integer conversion. A private component callback combines admission and
+conversion at each left-to-right position, before the unchanged Gregorian/time
+kernel. It borrows scalar carriers and does not build an eager input vector.
+
+An earlier component conversion failure still precedes a later malformed String;
+NULL, Error, Empty and Missing retain their previous behavior. Arity precedes
+component admission. Malformed reached ranges fail before missing numeric-format
+policy; valid ranges require the explicit NumberFormat. Two-digit-year windows,
+half-even component rounding and relative normalization are unchanged. Ordinary
+supported bound queries already admitted these valid Strings; this closes a
+public API consistency gap without introducing new native semantics.
+
+Three focused retained tests check independent date/time expectations, both
+number formats, an explicit nondefault year window, active-range pruning,
+progressive error precedence, every observed cancellation point and byte/work/
+per-Text limits. Query controls cover retained compositions, malformed data and
+eager unselected-branch errors. Native failure order and coercion remain
+unqualified.
+
+The constructor batch passes 18 focused evaluator/kernel tests and two query
+tests. Strict expression-library and query-target Clippy, minimal-feature
+compilation and scoped formatting pass. These checks preserve the existing
+calendar model; no Windows comparison was run.

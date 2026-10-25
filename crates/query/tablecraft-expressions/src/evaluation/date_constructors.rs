@@ -1,5 +1,5 @@
 //! Date/time constructor components share checked, metered Integer conversion.
-use super::Evaluator;
+use super::{Evaluator, date_input::DateInput};
 use crate::{
     EvalError,
     functions::{conversions::Conversion, dates::DateConstructor},
@@ -15,7 +15,9 @@ impl Evaluator<'_> {
         function: DateConstructor,
         arguments: &[Value],
     ) -> Result<Value, EvalError> {
-        self.apply_constructor_arguments(function, arguments.len(), |index| Ok(&arguments[index]))
+        self.apply_constructor_arguments(function, arguments.len(), |index| {
+            DateInput::Scalar(&arguments[index])
+        })
     }
 
     /// Admit evaluated states at the original component conversion position.
@@ -25,15 +27,8 @@ impl Evaluator<'_> {
         function: DateConstructor,
         arguments: &[ExpressionValue],
     ) -> Result<Value, EvalError> {
-        let empty = Value::Int16(0);
         self.apply_constructor_arguments(function, arguments.len(), |index| {
-            match &arguments[index] {
-                ExpressionValue::Value(value) => Ok(value),
-                ExpressionValue::Empty => Ok(&empty),
-                ExpressionValue::Error(_) => Err(EvalError::TypeMismatch),
-                ExpressionValue::StringBytes(_) => Err(EvalError::NonScalarExpression),
-                ExpressionValue::Missing => Err(EvalError::NonScalarExpression),
-            }
+            DateInput::Expression(&arguments[index])
         })
     }
 
@@ -41,11 +36,16 @@ impl Evaluator<'_> {
         &mut self,
         function: DateConstructor,
         count: usize,
-        mut argument: impl FnMut(usize) -> Result<&'a Value, EvalError>,
+        mut argument: impl FnMut(usize) -> DateInput<'a>,
     ) -> Result<Value, EvalError> {
         self.check(0)?;
-        function.apply_with_input(count, &mut argument, self.year_window, |value| {
-            match self.apply_conversion(Conversion::Integer, value)? {
+        function.apply_with_components(count, self.year_window, |index| {
+            let value = argument(index).materialize(self)?;
+            if matches!(value.as_ref(), Value::Null) {
+                return Err(EvalError::InvalidNullConversion);
+            }
+
+            match self.apply_conversion(Conversion::Integer, &value)? {
                 Value::Int16(value) => Ok(value),
                 _ => Err(EvalError::TypeMismatch),
             }
@@ -58,3 +58,6 @@ mod tests;
 
 #[cfg(test)]
 mod expression_tests;
+
+#[cfg(test)]
+mod retained_tests;
