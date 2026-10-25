@@ -38,6 +38,9 @@ impl Runtime<'_, '_> {
             }
             Expr::IsNull(field, negated) => {
                 field_column(field, columns, projection).and_then(|column| {
+                    if columns[column].data_type() == ScalarType::Boolean {
+                        return None;
+                    }
                     if *negated {
                         if columns[column].data_type() == ScalarType::Currency {
                             Some(ScanConstraint::Currency {
@@ -66,6 +69,17 @@ impl Runtime<'_, '_> {
                     } else {
                         return Ok(None);
                     };
+                if columns[column].data_type() == ScalarType::Boolean {
+                    return Ok(match (op, constant) {
+                        (B::Equal, Expr::Literal(Expression::Boolean(value))) => {
+                            Some(ScanConstraint::Boolean {
+                                column,
+                                value: *value,
+                            })
+                        }
+                        _ => None,
+                    });
+                }
                 if columns[column].data_type() == ScalarType::Text {
                     return if allow_text && *op == B::Equal {
                         let field = if reversed {
@@ -171,7 +185,8 @@ fn field_column(expr: &Expr, columns: &[Column], projection: &[usize]) -> Option
     } = expr
         && matches!(
             columns.get(*projection.get(*index)?)?.data_type(),
-            ScalarType::Byte
+            ScalarType::Boolean
+                | ScalarType::Byte
                 | ScalarType::Int16
                 | ScalarType::Int32
                 | ScalarType::Int64
@@ -244,6 +259,11 @@ fn intersect(left: ScanConstraint, right: ScanConstraint) -> Option<ScanConstrai
     }
     Some(match (left, right) {
         (ScanConstraint::Null { .. }, ScanConstraint::Null { .. }) => left,
+        (ScanConstraint::Boolean { value: a, .. }, ScanConstraint::Boolean { value: b, .. })
+            if a == b =>
+        {
+            left
+        }
         (
             ScanConstraint::Byte {
                 lower: a, upper: b, ..

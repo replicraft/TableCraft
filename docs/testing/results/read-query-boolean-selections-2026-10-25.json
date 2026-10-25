@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Typed single-Boolean native index equality and safe query hints; original predicate and table order retained",
+  "unique_tests": 69,
+  "new_tests": 10,
+  "targets": {
+    "engine_boolean_indexes": 10,
+    "query_retrieval": 56,
+    "access_boolean_selection": 3
+  },
+  "checks": [
+    {
+      "command": "cargo test --locked -p tablecraft-ace -p tablecraft-query -p tablecraft-access --test boolean_indexes --test retrieval --test boolean_selection",
+      "exit_code": 0,
+      "private_log": ".cache/boolean-selection-tests-final-20261025.log",
+      "sha256": "d517710e760e0882ca961c088311ce6d65d1fd7d60225c6331da8358d85dce47"
+    },
+    {
+      "command": "cargo clippy --locked -p tablecraft-ace -p tablecraft-access -p tablecraft-query --lib --test boolean_indexes --test boolean_selection --test retrieval -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/boolean-selection-clippy-current-final-20261025.log",
+      "sha256": "9032ac450ad31e366836e716f52374274eaad93037aac47496eacf2c05c19b03"
+    }
+  ],
+  "limitations": [
+    "All or exact Boolean equality only; no range, NULL or numeric/Text coercion hints",
+    "Selected malformed or unsupported indexes fail without sequential fallback",
+    "Independent original-fixture replay pending separate evidence record",
+    "Microsoft Access comparison unrun"
+  ]
+}

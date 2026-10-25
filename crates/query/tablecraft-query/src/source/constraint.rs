@@ -3,7 +3,7 @@ use std::ops::Bound;
 use tablecraft_core::values::{Currency, Guid};
 
 /// Optional backend-neutral restriction on one source column.
-/// Typed intervals/equality apply to exact integer, Currency or GUID carriers;
+/// Typed intervals/equality apply to exact Boolean, integer, Currency or GUID carriers;
 /// NULL tests may also target other carriers supported by the source. Ordinals
 /// refer to Source::columns. Numeric bounds exclude NULL and use ascending value
 /// order. Empty/reversed intervals match no rows.
@@ -16,6 +16,13 @@ pub enum ScanConstraint {
         column: usize,
         /// Opaque key issued by the actual selected comparer.
         key: TextEqualityKey,
+    },
+    /// Select an exact Boolean value without numeric or Text conversion.
+    Boolean {
+        /// Zero-based source column ordinal.
+        column: usize,
+        /// Exact Boolean carrier.
+        value: bool,
     },
     /// Select NULL values in the specified column.
     Null {
@@ -81,6 +88,7 @@ impl ScanConstraint {
         match self {
             Self::Null { column }
             | Self::TextEqual { column, .. }
+            | Self::Boolean { column, .. }
             | Self::Guid { column, .. }
             | Self::Byte { column, .. }
             | Self::Int16 { column, .. }

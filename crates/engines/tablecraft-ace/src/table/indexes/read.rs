@@ -225,6 +225,9 @@ pub fn read_table_index_in_table_order<R: crate::NativeReadSource>(
 fn projected_selection(selection: IndexProjectionSelection<'_>) -> Option<ReadSelection<'_>> {
     match selection {
         IndexProjectionSelection::All => None,
+        IndexProjectionSelection::Boolean(selection) => {
+            Some(ReadSelection::Integer(KeyType::Boolean, selection.keyed()))
+        }
         IndexProjectionSelection::Byte(selection) => {
             Some(ReadSelection::Integer(KeyType::Byte, selection.widened()))
         }

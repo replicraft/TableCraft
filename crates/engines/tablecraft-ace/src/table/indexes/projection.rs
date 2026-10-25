@@ -1,5 +1,7 @@
 //! Explicit indexed output columns and internal key-validation projection.
-use super::{Int32IndexSelection, Int64IndexSelection, NativeIndex, key::KeyRow};
+use super::{
+    BooleanIndexSelection, Int32IndexSelection, Int64IndexSelection, NativeIndex, key::KeyRow,
+};
 use crate::{InspectError, TableSchema, header::check, table::snapshot};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -12,6 +14,8 @@ use tablecraft_schema::Column;
 pub enum IndexProjectionSelection<'a> {
     /// Complete traversal of any qualified index profile.
     All,
+    /// Only a qualified single-Boolean index, with exact equality and no NULL.
+    Boolean(BooleanIndexSelection),
     /// Only a qualified single-Byte index, including All/Null.
     Byte(super::ByteIndexSelection),
     /// Only a qualified single-Int16 index, including All/Null.
