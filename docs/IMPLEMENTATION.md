@@ -1,5 +1,26 @@
 # Implementation status
 
+## Consistent mixed Single/Double relational keys
+
+Strict query keys now compare mixed Single/Double values through exact binary64
+views. This removes encounter-order-dependent partitions, missing extrema and
+incorrect TOP ties caused by pairwise Single narrowing. Grouping, DISTINCT/UNION,
+sorting, extrema and crosstab heading/bucket matching share the same boundary.
+Stored/result cells, declarations, policies and static UNION conversion retain
+their existing behavior; scalar predicates keep their reviewed effective-type
+rule. Fixed-point, integral precision, Text/Date, NULL/Error and non-finite guards
+remain explicit. See [the key contract](NUMERIC_KEYS.md).
+
+Sixty-eight focused query tests and ten key unit tests pass. Five generated
+properties use 512 cases each with independent IEEE field/rank oracles, covering
+exact widening, order/equality agreement, transitivity, adjacent Double classes
+and exact Int32 third values. Integration controls exercise all six encounter
+orders under both arithmetic profiles, pivot conservation, retained carriers,
+scalar/static-UNION controls and eager/resource failures. Strict Clippy checks
+all query test targets, including unit-test code. Standalone no-default query
+checking and normal CLI building pass. This is an explicit engineering profile,
+not qualification of native heterogeneous Variant grouping or completion of P0.
+
 ## Independent external IN read/query replay
 
 The [external-source getter replay](testing/EXTERNAL_NATIVE_QUERIES.md) passes

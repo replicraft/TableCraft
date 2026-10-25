@@ -17,6 +17,12 @@ crosstabs also retain raw cells for outer observers. Key comparison keeps strict
 type rules and final String publication remains checked; singleton keys do not
 invent unused comparisons or locale lookups.
 
+[Numeric relational keys](NUMERIC_KEYS.md) use exact mixed Single/Double views
+across grouping, duplicate removal, sorting/TOP, extrema and pivot matching.
+Scalar predicates keep their own effective-type coercions; retained result cells
+and static UNION promotions are unchanged. This is an explicit engineering key
+profile, pending native Access comparison.
+
 [CVErr Error data](VARIANT_ERRORS.md) now supports explicit inspection, eager
 selection and numeric consumers. `PreparedQuery::execute_expression` returns
 `ExpressionQueryResult` with explicit Error cells, including through derived rows
