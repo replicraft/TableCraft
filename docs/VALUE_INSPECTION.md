@@ -151,3 +151,22 @@ Primary references:
 - Microsoft [TypeName](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/typename-function) and [VarType](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/vartype-function): names, result widths and named subtype/array codes.
 - Microsoft [IsArray](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/isarray-function), [IsEmpty](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/isempty-function) and [IsError](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/iserror-function): array and language-state distinctions.
 - Microsoft [Array](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/array-function), [LBound](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/lbound-function) and [UBound](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/ubound-function): constructor, dimensional bounds and optional dimension contracts.
+
+
+## Bound-result declaration provenance
+
+The explicit declared-arithmetic query profile now retains the existing
+LBound/UBound Scalar Long signature through direct calls, derived/named reads
+and correlated scalar subqueries. For example,
+`UBound(Array(1,2))+CLng(2147483647)` reports overflow rather than refusing an
+unknown declaration. An explicit CVar wrapper retains Variant widening, and
+default materialized arithmetic stays unchanged. UNION and aggregate outputs
+keep their separate, still-unqualified declaration categories.
+
+This uses the fixed Long return contracts in Microsoft's
+[LBound](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/lbound-function)
+and [UBound](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/ubound-function)
+references. Existing direct-query admission remains the scope recorded above;
+the signature references alone do not establish query availability. Array input,
+dimension, eager error, empty-result and resource/cancellation rules are unchanged.
+Native Access declaration and overflow behavior remain unqualified.

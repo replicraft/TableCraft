@@ -236,3 +236,6 @@ fn array_materialization_and_name_publication_share_query_limits_and_cancellatio
 
 #[path = "value_inspection/bounds_metadata.rs"]
 mod bounds_metadata;
+
+#[path = "value_inspection/bounds_declarations.rs"]
+mod bounds_declarations;

@@ -924,3 +924,14 @@ conflicts, NULL lineage and empty UNION-arm policies remain explicit.
 construction-sensitive fixed-heading timing and 199 passing focused Rust tests.
 This does not choose native precedence between different actual String policies,
 resolve conditional NULL origins or complete broader P0/native qualification.
+
+
+### Existing array-bound result signatures
+
+LBound/UBound now retain their fixed Scalar Long declarations in the explicit
+query profile. Direct and composed scalar arithmetic reports known overflow
+instead of unknown provenance; CVar and default materialized widening remain
+separate. The 19 focused passing tests include fixed crosstab execution and retain
+the existing named constant-fold admission guard. This closes one declaration
+omission without inferring aggregate/UNION categories or native query behavior.
+See [the bound-result contract](VALUE_INSPECTION.md#bound-result-declaration-provenance).

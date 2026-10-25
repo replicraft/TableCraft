@@ -22,6 +22,7 @@ pub(crate) fn result(expression: &Expr) -> Option<OperandDeclaration> {
         | Expr::ParentPresence { .. }
         | Expr::Exists(_)
         | Expr::CurrentUser
+        | Expr::ArrayBound(..)
         | Expr::ErrorMessageString(_) => Some(OperandDeclaration::Scalar),
         Expr::ErrorMessage(_) | Expr::GuidFromString(_) | Expr::StringFromGuid(_) => {
             Some(OperandDeclaration::Variant)
