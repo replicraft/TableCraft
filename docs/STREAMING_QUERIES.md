@@ -14,7 +14,24 @@ cargo run -p tablecraft-cli -- query run \
 
 One direct local scalar table, aliases, qualified wildcards, typed parameters and
 row-local predicates/functions and positive unordered TOP counts are supported.
-Flat UNION ALL of these direct-table SELECT arms is also supported.
+Global `Count(*)` projections over the same direct table are also supported,
+with one checked count row published only after successful EOF. Pure final
+expressions and prior projection aliases may compose the count. `Count(expr)`
+and other aggregates remain outside this progressive profile.
+Flat UNION ALL can combine these count arms and direct-table row arms.
+
+```sh
+tablecraft query run --database example.accdb --stream \
+  'SELECT Count(*) AS Population FROM Customers WHERE Active=True'
+```
+
+A count arm retains its counter and current input batch, then computes its final
+projection after checked EOF. Empty or wholly filtered input produces a zero-count
+row. A later error in another UNION arm can retain that count only if its output
+batch was already completed; a pending batch is discarded. Native/query/output
+allowances remain cumulative, and ordinary buffered counts keep their existing
+snapshot behavior.
+
 Source order is retained. Explicit text, numeric, date, character, ICU and
 declared-arithmetic policies use the same
 host context as buffered retrieval. Ordinary scalar views of mixed schemas are
@@ -109,14 +126,17 @@ to open an embedded path. See the [query service](PROGRESSIVE_QUERIES.md) and
 
 ## Verification
 
-Nineteen CLI integration tests cover priority synthetic profiles, real ACE 2007
+Twenty-three CLI integration tests cover priority synthetic profiles, real ACE 2007
 example data, batch sizes, quoting, empty/filter results, first/late errors,
 checked count failures, cumulative quotas, parameter/text/declaration controls,
 mixed schemas, unordered TOP prefixes and argument refusals. TOP tests preserve
 late expression/EOF/quota failures and omitted raw String publication parity.
 UNION ALL controls additionally check ordered arms, empty results, per-arm TOP,
 batches spanning arms, late failures and explicit numeric-to-Text conversions.
-Earlier CLI integration also recorded sixty unit/browsing/native/retrieval
+Global-count controls additionally cover zero/filtered input, aliases, mixed row
+and count arms, EOF-only publication, quotas and batch-dependent retained prefixes.
+Five alias CLI and nine retrieval regressions also pass. Earlier CLI integration
+also recorded sixty unit/browsing/native/retrieval
 checks, including write/flush failure and encoded-output allowance tests.
 Current scoped query/CLI strict Clippy passes. Original large-file replay and native Access
 qualification are recorded separately; this does not complete read/query work.

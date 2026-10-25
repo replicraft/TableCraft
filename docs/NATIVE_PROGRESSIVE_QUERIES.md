@@ -57,3 +57,19 @@ a complete snapshot cache. Six new controls cover repeated/different tables,
 EOF/read/evaluation failures, TOP tails, cancellation, sink failures and retry
 under four synthetic priority profiles. All seventeen native progressive tests
 and scoped strict Clippy pass; this does not qualify coherent live-file reads.
+
+## Global count consumers
+
+The query service can now consume this cursor for [global Count(*)](PROGRESSIVE_QUERIES.md#global-count).
+Seven new adapter controls pass alongside the seventeen existing progressive-source
+tests and scoped strict Clippy. Four profiles exceed a snapshot retention ceiling
+of one while retaining cumulative native budgets and checked EOF. Repeated ordinary
+buffered counts still refuse that ceiling, demonstrating that progressive counts
+never fill a complete snapshot cache.
+
+Unfiltered Count(*) requests zero scalar columns. It counts framed records without
+validating unselected value payloads; a predicate requiring an invalid field still
+fails. This is a selected-read count, not a whole-file consistency check. Late page,
+I/O, count, predicate, cancellation and resource failures publish no aggregate row,
+and prevent later UNION arms from opening their data. Final count publication runs
+after the cursor and native-budget borrows are released.

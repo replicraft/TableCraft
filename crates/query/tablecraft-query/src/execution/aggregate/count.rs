@@ -10,6 +10,12 @@ impl Runtime<'_, '_> {
         argument: Option<&Expr>,
         env: Environment<'_>,
     ) -> Result<Value, QueryError> {
+        if argument.is_none()
+            && let Some(count) = self.progressive_count
+        {
+            self.tick()?;
+            return Ok(Value::Int64(count));
+        }
         let group = env.group.ok_or(QueryError::Grouping)?;
         let mut count = 0_i64;
 

@@ -2,7 +2,7 @@
 use super::{StreamError, StreamSummary, plan::ProgressiveArm};
 use crate::{
     OutputType, QueryError,
-    execution::{Environment, Runtime, cell::into_scalar},
+    execution::{Environment, Runtime},
     plan::RelationNode,
     source::ProjectedRow,
 };
@@ -16,6 +16,9 @@ impl Runtime<'_, '_> {
         summary: &mut StreamSummary,
         visitor: &mut dyn FnMut(&[Value]) -> Result<(), E>,
     ) -> Result<(), StreamError<E>> {
+        if arm.select.aggregate {
+            return self.progressive_count_rows(arm, union_types, summary, visitor);
+        }
         // All schemas were preflighted before the first arm. Check the selected
         // arm again before its exclusive cursor, never from inside a callback.
         self.check_table_schema(&arm.select.source.node)?;
@@ -57,16 +60,7 @@ impl Runtime<'_, '_> {
                 {
                     return Ok(());
                 }
-                let mut cells = self.allocate_expression_row(arm.select.projection.len())?;
-                for expression in &arm.select.projection {
-                    cells.push(self.retained_expression_operand(
-                        expression,
-                        Environment {
-                            output: &cells,
-                            ..environment
-                        },
-                    )?);
-                }
+                let cells = self.progressive_projection(arm, environment)?;
                 // Each buffered arm applies TOP before the enclosing UNION's
                 // conversion and final publication. Omitted cells still incur
                 // their original eager expression failures and EOF validation.
@@ -77,29 +71,15 @@ impl Runtime<'_, '_> {
                 {
                     return Ok(());
                 }
-                if let Some(types) = union_types {
-                    self.promote_union_rows(std::slice::from_mut(&mut cells), types)?;
-                }
-
-                let mut values = self.allocate_row(cells.len())?;
-                for mut cell in cells {
-                    self.tick()?;
-                    cell.value = self.evaluator().publish_expression_value(cell.value)?;
-                    values.push(into_scalar(cell)?);
-                }
-                if values.len() != arm.read.names.len() {
-                    return Err(QueryError::Width);
-                }
-                self.tick()?;
-                if let Err(error) = visitor(&values) {
-                    sink_failure = Some(error);
-                    return Err(QueryError::Source);
+                match self.progressive_publish(arm, cells, union_types, summary, visitor) {
+                    Ok(()) => {}
+                    Err(StreamError::Query(error)) => return Err(error),
+                    Err(StreamError::Sink(error)) => {
+                        sink_failure = Some(error);
+                        return Err(QueryError::Source);
+                    }
                 }
                 published = published.checked_add(1).ok_or(QueryError::StructureLimit)?;
-                summary.emitted_rows = summary
-                    .emitted_rows
-                    .checked_add(1)
-                    .ok_or(QueryError::StructureLimit)?;
                 Ok(())
             })();
             if let Err(error) = &result {

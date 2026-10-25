@@ -1,6 +1,8 @@
 //! Explicit progressive row-local execution; ordinary retrieval stays buffered.
 mod admission;
+mod count;
 mod plan;
+mod publication;
 mod rows;
 
 use super::{ExecutionContext, ExecutionOptions, execute::ExecutionFrame};
@@ -54,7 +56,10 @@ impl PreparedQuery {
     /// Progressively evaluate local scalar SELECT/WHERE arms in written source order.
     /// Unordered positive TOP counts limit publication while all rows are still
     /// read and evaluated through checked EOF. Flat UNION ALL combines admitted
-    /// arms through the ordinary UNION result conversions. Sorts, TOP PERCENT,
+    /// arms through the ordinary UNION result conversions. Global COUNT(*) arms
+    /// retain a checked counter and evaluate their final scalar projection only
+    /// after successful EOF. Count(expr) and other aggregates are refused.
+    /// Sorts, TOP PERCENT,
     /// duplicate-eliminating sets, groups,
     /// joins, derived/named sources, collections,
     /// subqueries, domain calls, Eval and volatile functions are refused before

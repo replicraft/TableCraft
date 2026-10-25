@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Explicit progressive global Count(*) over direct root tables, pure final projections and flat UNION ALL",
+  "unique_tests": 138,
+  "new_tests": 28,
+  "targets": {
+    "query": 77,
+    "native_adapter": 24,
+    "cli": 37
+  },
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-query --test progressive_count_execution --test progressive_queries -j2 --locked --offline",
+      "private_log": ".cache/progressive-count-primary-20261025.log",
+      "exit_code": 0,
+      "sha256": "0d6af97f4168999dee39e1a6464d5f5b3ad33d065bcf049a42b21fd0db49a7c3"
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test progressive_union_types --test projection_alias_execution --test projection_alias_values --test grouped_expressions -j2 --locked --offline",
+      "private_log": ".cache/progressive-count-regressions-20261025.log",
+      "exit_code": 0,
+      "sha256": "bb50c7e874f3203accebd2c28ddca86e6ab624384492185f0a4aa2a8f8743748"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --tests -j2 --locked --offline -- -D warnings",
+      "private_log": ".cache/progressive-count-clippy-20261025.log",
+      "exit_code": 0,
+      "sha256": "34c58c345d9a236577c1ad263a8d519354c484bc533583493b617a6881dfc1df"
+    },
+    {
+      "command": "cargo test --locked -p tablecraft-access --test progressive_counts --test progressive_source",
+      "private_log": ".cache/progressive-count-native-tests-final-20261025.log",
+      "exit_code": 0,
+      "sha256": "65265cd0c712595783d6ad19ad041c90b2e146a82bea987e16ab270f8e0cfd45"
+    },
+    {
+      "command": "cargo clippy --locked -p tablecraft-access --lib --test progressive_counts --test progressive_source -- -D warnings",
+      "private_log": ".cache/progressive-count-native-clippy-final-20261025.log",
+      "exit_code": 0,
+      "sha256": "85597c84a3ebbb2b4065e1b28cbb021f06f950f5d0912c12b249ea996721e88d"
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --test progressive_queries --test projection_aliases --test retrieval -j2 --locked --offline",
+      "private_log": ".cache/progressive-count-cli-tests-final-20261025.log",
+      "exit_code": 0,
+      "sha256": "09b7c5951caa0f1ddeef6cff01bfe1d8fa363c327c3e0d86dbd13a0fb78c5397"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-cli --bin tablecraft --test progressive_queries --test projection_aliases --test retrieval -j2 --locked --offline -- -D warnings",
+      "private_log": ".cache/progressive-count-cli-clippy-final-20261025.log",
+      "exit_code": 0,
+      "sha256": "c2470058da5303e2d6e051e83c93fe55a2c1cd1c2a0eff6c1449b7e0a2560d7e"
+    }
+  ],
+  "scale_control": {
+    "generated_rows": 100001,
+    "query_allocation_allowance_bytes": 8192,
+    "input_projection_columns": 0,
+    "buffered_source_callbacks": 0,
+    "publication": "One row only after checked source EOF and cursor release"
+  },
+  "review": [
+    "All input rows charge cumulative query rows and work even with zero scalar columns.",
+    "Selected native values and EOF remain checked; unselected payloads are pruned without claiming a whole-file check.",
+    "Shared publication preserves typed sink failures and pending/completed CLI batch boundaries."
+  ],
+  "test_authoring_corrections": [
+    "Invalid native Decimal sign expected classification corrected to existing Unsupported rather than Source.",
+    "Native test helper return tuple received CapturedStream alias after initial Clippy complexity diagnostic."
+  ],
+  "boundaries": [
+    "Count(expr), other aggregates, grouping/HAVING and wider source shapes remain buffered.",
+    "TOP0 retains metadata-only preparation refusal.",
+    "Existing Int64 Count carrier and checked overflow are unchanged."
+  ],
+  "unrun": [
+    "Full workspace suite",
+    "Native Microsoft Access comparison",
+    "Real large-file Count replay"
+  ]
+}

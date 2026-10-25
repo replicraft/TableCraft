@@ -996,3 +996,14 @@ the dependency; read/SELECT scopes prevent nested capture. The initial alias sli
 passes 260 query/CLI tests; the grouped/progressive follow-on passes 180 focused
 controls. Forward/crosstab dependencies and native name/evaluation qualification
 remain separate work.
+
+## Progressive global counts
+
+[Global Count(*)](PROGRESSIVE_QUERIES.md#global-count) now scans direct native
+input without complete-table materialization. Predicate fields alone are decoded;
+checked EOF precedes its single output row, including zero for empty inputs.
+Pure final expressions, aliases and mixed count/row UNION ALL arms retain shared
+budgets and publication rules. A 138-test query/native/CLI batch covers generated
+100,001-row constant-retention execution, four-profile snapshot-cap independence,
+late failures and complete/pending batch behavior. Count(expr), other progressive
+aggregates and native qualification remain separate acceptance work.

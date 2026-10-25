@@ -16,6 +16,7 @@ pub(super) struct ParameterValue<'a> {
 }
 
 pub(crate) struct Runtime<'a, 'source> {
+    pub(super) progressive_count: Option<i64>,
     pub(super) numeric_scratch: Vec<NumericScratch>,
     pub(super) repeatable_dynamic: bool,
     pub(super) domain_depth: usize,
