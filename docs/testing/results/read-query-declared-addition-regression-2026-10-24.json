@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-24",
+  "scope": "Consolidated all-feature query regression after declaration-aware mixed String/numeric plus and conservative result metadata. The separate predicate-preview record owns native adapter evidence.",
+  "command": "cargo test -p tablecraft-query --all-features --locked --no-fail-fast -j 2",
+  "exit_code": 0,
+  "passed": 1075,
+  "ignored": 0,
+  "result_targets": 198,
+  "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)",
+  "git_head": "c9ef6b5b7938040e3eedec6831eb0d2697694dc5",
+  "query_expression_source_files": 859,
+  "query_expression_source_sha256": "f57cab5e21d82adc6c64a04ad421c0d13e5cf9103384c6cde731e8c3be504fb1",
+  "source_digest_algorithm": "SHA-256 over sorted repository-relative .rs paths under both query/expression packages, each encoded as UTF-8 path, NUL, hexadecimal SHA-256 of file bytes, newline.",
+  "inputs": {
+    ".cache/query-regression-20261024-declared-addition-final.log": "6b7c99114b339a5e9922f3383fd7407eb63d871f58e0566ee83fdf07a616c84f",
+    "Cargo.lock": "68548efc779b592b1d885a02cf21d1c547559091c72b4f814ba75842ebb0a2ab",
+    "Cargo.toml": "4fc24d3479835ff249ea49df6724d81179965c8d6f2a73f236f0f3e00da822a4",
+    ".cache/tablecraft-bin/predicate-preview-20261024": "4a6cb30c06f086d3b3416b0c5bbcb98d47c4056934bb3deff2a7dee7ac2589d8"
+  },
+  "excluded_attempts": [
+    {
+      "log": ".cache/query-regression-20261024-declared-addition.log",
+      "exit_code": 101,
+      "reason": "Stopped at the previous unknown-category DATE/String numeric-agreement expectation. The final profile explicitly requires provenance or a Variant String."
+    },
+    {
+      "log": ".cache/query-regression-20261024-declared-addition-complete.log",
+      "exit_code": 101,
+      "reason": "Completed all targets but retained the previous fixed Double descriptor expectation for Nz(NULL)+1. The final test checks Dynamic metadata and both execution profiles."
+    }
+  ],
+  "native_access": "unrun; user-deferred",
+  "limitations": [
+    "Passing explicit declaration policy tests does not qualify native ACE SQL categories or complete Variant promotion.",
+    "Default arithmetic remains unchanged; metadata is conservative across per-execution options.",
+    "Native formula freshness, native Access comparisons, writes and full backend completion are not established by this regression."
+  ]
+}
