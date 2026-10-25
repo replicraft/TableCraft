@@ -12,7 +12,12 @@ regressions pass, including the original example under stored database policies
 with snapshot ceiling one. Strict query/native/CLI linting, minimal query features
 and formatting pass. See [phases and limits](PROGRESSIVE_QUERIES.md) and
 [verification](testing/results/read-query-progressive-text-groups-2026-10-25.json).
-Native Access grouping and mixed-policy qualification remain separate.
+The [original native/CAB replay](testing/PROGRESSIVE_TEXT_GROUPS.md) passes all
+96 commands, comparing 1,272 successful rows/4,296 cells plus six exact earlier
+error-prefix rows. Six rich Ordinal controls use an explicit work allowance after
+default-work refusals; SQL and expected results are unchanged. Fifteen immutable
+and forty-five revision-source hashes were independently rechecked. Native Access
+grouping and mixed-policy qualification remain separate.
 
 ## Exact Currency and Decimal relational directories
 
