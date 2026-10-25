@@ -17,8 +17,8 @@ function does not execute stored VBA or activate application objects.
 | 3 | Proper case using documented separators and explicit ICU segment titlecasing |
 | 4 / 8 | Bounded Japanese wide/narrow conversion with explicit LCID 1041 |
 | 16 / 32 | Basic fullwidth Katakana/Hiragana conversion with explicit Japanese LCID 1041 |
-| 64 | Decode raw string/Byte-array bytes through an explicit single-byte page |
-| 128 | Encode representable Unicode as a lossless single-byte string intermediate |
+| 64 | Decode raw string/Byte-array bytes through an explicit supported string page |
+| 128 | Encode representable Unicode as a lossless string-byte intermediate |
 | Case setting plus 64 or 128 | Decode before casing; case before encoding |
 
 Conversion is checked/rounded to Integer; an explicit LCID is checked/rounded to
@@ -61,6 +61,7 @@ selection. The current exact zero-sort profiles are:
 | 1033 | en-US | 1252 |
 | 1036 | fr-FR | 1252 |
 | 1037 | he-IL | 1255 |
+| 1041 | ja-JP | 932 (WHATWG Shift_JIS string codec) |
 | 1043 | nl-NL | 1252 |
 | 1049 | ru-RU | 1251 |
 | 1054 | th-TH | 874 |
@@ -73,7 +74,7 @@ The language/page identities come from Microsoft's
 [Windows SDK language table](https://learn.microsoft.com/en-us/windows/win32/msi/localizing-the-error-and-actiontext-tables).
 Selecting ICU/encoding_rs for them is TableCraft's explicit provisional profile,
 not evidence of Windows NLS equivalence. Unknown exact LCIDs, alternate sorts,
-system/custom aliases and unsupported multibyte profiles fail without fallback.
+system/custom aliases and other multibyte profiles fail without fallback.
 LCID 0/reserved-bit identities fail structural validation. This bounded table
 does not claim complete Windows locale coverage.
 
@@ -108,10 +109,10 @@ an even result can decode to different Unicode characters. Use an explicit
 conversion 64 to interpret ANSI bytes as their intended text. Arbitrary raw-string
 operators/result carriers are still unfinished.
 
-Encoding uses exact round trips through the selected existing single-byte page.
+Encoding uses exact Unicode round trips through the selected string page.
 Unmappable characters and unmapped bytes fail; no best-fit mapping, replacement
 character or silent byte loss occurs. Native best-fit/replacement behavior and
-full DBCS/Unicode code-page support remain compatibility work. Character-page
+full Windows DBCS/Unicode code-page support remain compatibility work. Character-page
 WHATWG/Windows differences stay explicit in the owning mapping document.
 
 Parser-free hosts can use `Conversion`, `LocaleProfile`, borrowed casing recipes,
@@ -119,6 +120,14 @@ Parser-free hosts can use `Conversion`, `LocaleProfile`, borrowed casing recipes
 allocation and work/cancellation checks; discard prefixes on any failure. The
 SQL-enabled evaluator's owning `apply_strconv` returns a scalar or byte operand.
 The borrowed text::apply*/TextResult API explicitly rejects this owning operation.
+
+The complete `StringCodePage` API also supports Japanese 932 through metered
+`encode`/`decode` methods, and `StringLocaleProfile` supplies its language and
+string encoding. Existing `CharacterCodePage`, `LocaleProfile`, `encode_ansi` and
+`decode_ansi` retain their single-byte contracts. Their constructors still refuse
+Japanese pages/locales; an accepted legacy recipe never silently omits a
+multibyte operation. See [Japanese string encoding](JAPANESE_STRING_ENCODING.md)
+for exact mappings, duplicate spellings and refusal boundaries.
 
 Input Text and all materialized output retain the existing per-value ceilings.
 Raw output charges bytes before fallible reserve; each source character/byte and

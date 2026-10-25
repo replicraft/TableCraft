@@ -92,7 +92,7 @@ fn eager_operands_and_option_failures_do_not_disappear_under_null_sources() {
     for sql in [
         "SELECT StrConv(NULL,'32767.5','1033')",
         "SELECT StrConv(NULL,'4','1033')",
-        "SELECT StrConv(NULL,'1','1041')",
+        "SELECT StrConv(NULL,'1','1042')",
         "SELECT StrConv('🦀','128','1033')",
     ] {
         assert!(run(sql, Some(NumberFormat::EnUs)).is_err(), "{sql}");

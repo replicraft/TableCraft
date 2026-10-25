@@ -1,5 +1,17 @@
 # Implementation status
 
+## Explicit Japanese string encoding
+
+StrConv now accepts explicit LCID 1041 through complete string-codec/locale APIs,
+using the maintained Shift_JIS implementation with exact Unicode encode round
+trips. Raw byte ranges, Binary decoding and caller-owned budgets retain existing
+rules; single-byte Chr/Asc policies remain separate. Twelve new controls and
+35 regressions pass with strict expression/query/CLI Clippy, minimal expression
+features and formatting. This is the explicit WHATWG-based engineering profile,
+with documented Windows/mapping differences. See
+[scope](JAPANESE_STRING_ENCODING.md) and
+[verification](testing/results/read-query-japanese-string-encoding-2026-10-25.json).
+
 ## Stored single-Choice template fields
 
 Qualified ACCDT List Definition Choice fields now expose their actual stored

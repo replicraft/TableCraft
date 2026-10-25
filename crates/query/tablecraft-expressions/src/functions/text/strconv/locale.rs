@@ -1,5 +1,9 @@
 use super::super::{casing::CaseLocale, code_page::CharacterCodePage};
+use super::StringCodePage;
 use crate::{EvalError, comparison::LocaleId};
+
+const JAPANESE_LCID: u32 = 1041;
+const JAPANESE_CODE_PAGE: u16 = 932;
 
 // Reviewed language/code-page identities from Microsoft's Windows SDK table.
 // Match complete LCIDs: alternate sorts and system/default aliases never collapse.
@@ -48,6 +52,46 @@ impl LocaleProfile {
 
     /// Validated explicit single-byte character page.
     pub const fn code_page(&self) -> CharacterCodePage {
+        self.code_page
+    }
+}
+
+/// Complete StrConv string language/encoding selection, including Japanese932.
+/// The legacy single-byte LocaleProfile API remains independently validated.
+/// These explicit ICU/WHATWG identities do not qualify Windows NLS behavior.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct StringLocaleProfile {
+    case_locale: CaseLocale,
+    code_page: StringCodePage,
+}
+
+impl StringLocaleProfile {
+    /// Resolve exact Japanese1041 or one of the existing single-byte LCIDs.
+    /// Alternate-sort/system aliases refuse instead of selecting a default.
+    pub fn from_lcid(locale: LocaleId) -> Result<Self, EvalError> {
+        if locale.raw() == JAPANESE_LCID {
+            return Ok(Self {
+                case_locale: "ja-JP".parse()?,
+                code_page: StringCodePage::from_windows_id(JAPANESE_CODE_PAGE)?,
+            });
+        }
+        let LocaleProfile {
+            case_locale,
+            code_page,
+        } = LocaleProfile::from_lcid(locale)?;
+        Ok(Self {
+            case_locale,
+            code_page: code_page.into(),
+        })
+    }
+
+    /// Explicit casing language; no operating-system locale lookup occurs.
+    pub fn case_locale(&self) -> &CaseLocale {
+        &self.case_locale
+    }
+
+    /// Complete single- or multibyte string encoding for this selection.
+    pub const fn code_page(&self) -> StringCodePage {
         self.code_page
     }
 }
