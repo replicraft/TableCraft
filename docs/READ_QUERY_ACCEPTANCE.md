@@ -36,7 +36,7 @@ qualification recorded separately.
   decoded bytes and stored history DATE bits. These do not establish arbitrary
   million-row throughput or native Access equivalence.
   Ordinary SQL results remain buffered with separate row, byte, work and output
-  ceilings. Explicit [streaming SELECT/WHERE, global Count/Sum/Avg and flat UNION ALL](STREAMING_QUERIES.md) uses fresh
+  ceilings. Explicit [streaming SELECT/WHERE, global Count/Sum/Avg/Min/Max and flat UNION ALL](STREAMING_QUERIES.md) uses fresh
   native cursors and cumulative budgets without complete-table materialization;
   wider query shapes retain buffered execution.
   Absolute I/O now rejects reported seek-position mismatches before reading or

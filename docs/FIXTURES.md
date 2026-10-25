@@ -8265,3 +8265,14 @@ controls are classified separately. The oversized first attempt and its exact
 tools/report/log remain preserved privately; reducing batch size changed no
 expected mapping. These are independent codec/round-trip checks, not Microsoft
 Access execution or Windows NLS qualification.
+
+## Original native progressive extrema replay (25 October 2026)
+
+The [progressive extrema replay](testing/PROGRESSIVE_EXTREMA.md) reuses the
+unchanged original four-profile DecimalIndexFixture databases and reviewed public
+Jackcess getter. New repository-owned Python checks use exact Fraction/integer
+and ordinal models; only TableCraft executes SQL. The 364-control report passes
+with 396 rows and 1,584 cells, including sixteen intended refusals. No new
+third-party fixture, binary or reference SQL is redistributed. Eleven immutable
+inputs and sixteen scoped revision-source hashes were independently rechecked.
+This is engineering read/query evidence, not Microsoft Access qualification.
