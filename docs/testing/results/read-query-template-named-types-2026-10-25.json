@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Closed local named XSD simple restrictions for inert ACCDT stored table schemas and rows",
+  "unique_tests": 52,
+  "new_tests": 8,
+  "combined_unique_tests": 92,
+  "scoped_targets": {
+    "template_library": 52
+  },
+  "companion_targets": {
+    "other_access_library": 7,
+    "calculation_preview": 21,
+    "recomputed_calculations": 5,
+    "recomputed_view_conformance": 7
+  },
+  "checks": [
+    {
+      "command": "cargo check --locked -p tablecraft-access --lib",
+      "exit_code": 0,
+      "private_log": ".cache/template-named-types-check-20261025.log",
+      "sha256": "e59f82158e113fbab7ba6ccaa6f60c7cbe5a635a5a80092288293c026339fc8f"
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-access --lib --test recomputed_calculations --test calculation_preview --test recomputed_view_conformance",
+      "exit_code": 0,
+      "private_log": ".cache/template-named-types-recomputed-tests-final-20261025.log",
+      "sha256": "f74e48ed0474ae1a124cd05761cd593ab98ba7eb533b1f0eb04a6564ff127c2d"
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-access --lib --tests -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/template-named-types-recomputed-clippy-20261025.log",
+      "sha256": "93d74e1e974f2eb81a9704f554fa2c1e7bfd472d846fa919cb2b208813e419f3"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "private_log": ".cache/recomputed-named-fmt-20261025.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "source_sha256": {
+    "crates/backends/tablecraft-access/src/template/data/schema.rs": "5f3dcaadfc91cda751dccac7738c2c40fb5649ab42c1ef6cd961dd8a8d7b5116",
+    "crates/backends/tablecraft-access/src/template/data/schema/local_types.rs": "38ce3b3bcd3b74d8be1a8c8e90e45b41c154a0360902f4038da5a97cdf048437",
+    "crates/backends/tablecraft-access/src/template/data/tests.rs": "209cb0bd0b633c9e6ecac2934cf3385e790f64f7aad4939ecb541869dc6fa9db",
+    "crates/backends/tablecraft-access/src/template/data/tests/named_types.rs": "af37222c69561fcef2677748068561012d5b7c5ff4c40fa28a7ef418c0fedb5f",
+    "crates/backends/tablecraft-access/src/template/data/tests/encoding.rs": "af8d8af72b4a4fe0655c040d2743b23e339b90141649372af2855aa0fcf5b030",
+    "crates/backends/tablecraft-access/src/template/data/list/tests.rs": "b1cc18fa95ef845b1ae9bd9713c3641d9aa3c4a14c40b5a1cd7e08c542a3c1f3"
+  },
+  "acceptance": [
+    "All 15 existing primitive domains preserve exact cells through named restrictions across UTF-8, UTF-8 BOM and UTF-16 LE/BE package variants.",
+    "Forward/shared references, exact XML type names, inline derived restrictions and inherited/narrowed String/Binary/Decimal facets.",
+    "Every named declaration preflighted, including unused types; cycles, duplicates, unknown bases/namespaces, widening and unsupported constructs refuse before record decoding.",
+    "256/257 named-type count and 64/65 reference depth, with both declaration orders so memoized bases cannot bypass the limit.",
+    "Nullable stored rows, metadata-only binding before malformed rows, buffered no-callback failure, shared limits and cancellation/retry.",
+    "List Definition agreement remains based on resolved carrier/facets; even valid row values cannot hide mismatching declared bounds."
+  ],
+  "excluded_initial_checks": [
+    {
+      "private_log": ".cache/template-named-types-recomputed-tests-20261025.log",
+      "sha256": "0833ab6ae1e9a9685feb1a0e339c8a663e34e4288ea60498170a51783dff848d",
+      "exit_code": 101,
+      "reason": "All 59 library and 21 preview tests passed; companion recomputed target had four failures from a checked Projection::Field versus Expression composition defect, corrected by its owner before final rerun. No named-type production or test correction."
+    },
+    {
+      "private_log": ".cache/template-named-types-recomputed-carrier-probe-20261025.log",
+      "sha256": "35d8b4d9fb80a96b5337557110878d028a45d502e5dfaed402608d3cff4abb3e",
+      "exit_code": 101,
+      "reason": "All 59 library, 21 preview and 5 implementation tests passed; one companion conformance golden expected Int64 instead of existing materialized overflow Double. Test owner corrected the golden after baseline verification, no runtime change."
+    }
+  ],
+  "counting_notes": [
+    "The combined final command runs 59 library tests, including 52 template tests and 7 other library tests, plus 21+5+7 integration tests. Scoped template totals are 52 including 8 new; the combined 92 are not an additional disjoint test set.",
+    "No named-type runtime corrections were required after its initial source check and all eight new controls passed on the initial and final combined runs."
+  ],
+  "limitations": [
+    "Engineering stored XML/XSD read support; native Access-created template instantiation and execution qualification remain unrun.",
+    "No imports/includes, external namespaces, named complex types, XSD lists/unions, extra facets, default filling, code generation or provider/network execution.",
+    "Existing primitive value/carrier and package/XML/table ceilings remain unchanged; this is not a general XSD implementation."
+  ],
+  "primary_references": [
+    "https://officeprotocoldoc.z19.web.core.windows.net/files/MS-ACCDT/%5BMS-ACCDT%5D-181001.pdf#page=25",
+    "https://www.w3.org/TR/xmlschema-1/#Simple_Type_Definitions",
+    "https://www.w3.org/TR/xmlschema-2/#rf-maxLength",
+    "https://www.w3.org/TR/xmlschema-2/#rf-totalDigits",
+    "https://www.w3.org/TR/xmlschema-2/#rf-fractionDigits"
+  ]
+}

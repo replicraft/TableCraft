@@ -1,5 +1,16 @@
 # Implementation status
 
+## Local named template schema types
+
+ACCDT table schemas now resolve bounded local named XSD simple restrictions,
+including forward references and inherited/narrowed String/Binary/Decimal facets.
+All declarations preflight before records, including unused invalid types; exact
+XML names, cycle checks and independent type/depth limits remain explicit.
+Existing value codecs and List Definition agreement retain authority. Eight new
+controls and 44 template regressions pass with strict Access Clippy and formatting.
+See [schema scope](ACCESS_TEMPLATE_DATA.md) and
+[verification](testing/results/read-query-template-named-types-2026-10-25.json).
+
 ## Explicit linked-table streaming
 
 `query run --stream --link ALIAS PATH` now routes eligible scalar queries through

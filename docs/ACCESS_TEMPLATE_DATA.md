@@ -64,11 +64,44 @@ predicate pushdown, writable session or implicit active-content execution is add
 The data part has one root containing inline XSD followed by the data instance.
 The supported schema has a no-target-namespace data-root declaration and one row
 element, with an unbounded optional row reference and an ordered scalar sequence.
-There are at most 256 columns. Explicit field types and inline simple restrictions
-are supported; imports/includes, named types, choices, repeated cells, arbitrary
-attributes, defaults/fixed values, identity constraints and unsupported facets fail.
+There are at most 256 columns. Explicit primitive field types, inline simple
+restrictions and bounded local named simple restrictions are supported.
+Imports/includes, external types, complex named types, lists/unions, choices,
+repeated cells, arbitrary attributes, defaults/fixed values, identity constraints
+and unsupported facets fail.
 Office-data schema annotations are ignored; other unknown schema constructs fail.
 Namespace prefixes resolve by URI, including type/base/ref QName values.
+
+Local `xsd:simpleType` declarations use exact case-sensitive XML names in the
+schema's existing empty target namespace. Field `type` and restriction `base`
+QNames can resolve a local definition or an explicitly XSD-qualified primitive;
+SQL name folding does not apply to this lookup. Forward references and shared
+references work. A local name such as `int` does not shadow `xsd:int`.
+
+Every declaration, including unused types, is qualified before any data-instance
+event. Duplicate type names, unknown bases, cycles and unsupported constructs
+fail even for empty or malformed record suffixes. Resolution is iterative, bounded
+at 256 named types and 64 named reference levels, and charged under the same
+native byte/work/cancellation allowance. Depth includes already resolved bases,
+so reordering declarations cannot bypass it. No external schema is opened or
+fetched, and no code generation or schema expression execution occurs.
+
+Restrictions retain the existing primitive carriers and three existing facets.
+`maxLength` applies to String and decoded Binary; `totalDigits` and
+`fractionDigits` apply to Decimal. Omitted facets inherit, and specified facets
+must narrow or equal the base bound. Widening, duplicate facets, inappropriate
+facet families, zero `totalDigits` and effective `fractionDigits` greater than
+`totalDigits` fail. An inline anonymous restriction can further narrow a named
+base. List Definition type/facet agreement still uses the fully resolved schema;
+naming a type cannot bypass that independent contract.
+
+The normative [MS-ACCDT section 2.5.2 schema contract](https://officeprotocoldoc.z19.web.core.windows.net/files/MS-ACCDT/%5BMS-ACCDT%5D-181001.pdf#page=25)
+delegates the inline schema to XSD. This finite local restriction profile follows
+[XSD simple type definitions](https://www.w3.org/TR/xmlschema-1/#Simple_Type_Definitions)
+and the existing [maxLength](https://www.w3.org/TR/xmlschema-2/#rf-maxLength),
+[totalDigits](https://www.w3.org/TR/xmlschema-2/#rf-totalDigits) and
+[fractionDigits](https://www.w3.org/TR/xmlschema-2/#rf-fractionDigits) restriction
+rules. It does not establish native Access template-instantiation equivalence.
 
 | XSD type | Shared materialized carrier |
 | --- | --- |
@@ -157,3 +190,21 @@ columns or rows are returned for that part type. Request metadata stays within t
 Access backend; the shared evaluator and CLI do not acquire a SOAP client or an
 application runtime. Earlier blanket List Definition refusals remain historical
 package-stage evidence, not the current qualified profile.
+
+## Local named restriction checks
+
+Eight new original controls pass with 44 existing template controls (52 scoped
+template tests). They cover all 15 existing primitive carriers across the four
+mandatory encoding variants, exact QName lookup, forward/shared references,
+inherited/narrowed facets, inline restrictions and preserved scalar/NULL cells.
+Boundary controls exercise 256/257 types and 64/65 reference levels in both
+declaration orders, unused invalid declarations, cycles, widening, unsupported
+features, work/allocation limits, cancellation/retry, buffered row failures and
+independent List Definition agreement.
+
+The coordinated Access batch passes 92 tests in total, including unrelated
+calculation-view companion checks; these are not additional template tests.
+Strict Access library/test Clippy and the initial library check pass. The
+[scoped verification record](testing/results/read-query-template-named-types-2026-10-25.json)
+contains exact commands, source/log hashes, count attribution and excluded
+companion failures. No native Access execution or template instantiation was run.

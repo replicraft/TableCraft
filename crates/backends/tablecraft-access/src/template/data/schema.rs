@@ -1,6 +1,9 @@
 //! Qualified inline XSD shapes and exact scalar domains, separate from values.
+mod local_types;
+
 use super::super::tree::{Node, OD, XSD};
 use super::{MAX_COLUMNS, TemplateError, check, names};
+use local_types::LocalTypes;
 use std::collections::BTreeSet;
 use tablecraft_ace::InspectError;
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -107,12 +110,21 @@ pub(super) fn read(
         return Err(TemplateError::Unsupported);
     }
     let declarations = children(node)?;
-    if declarations.len() != 2 || declarations.iter().any(|node| !node.is(XSD, "element")) {
+    let types = LocalTypes::new(&declarations, budget, cancelled)?;
+    if declarations
+        .iter()
+        .filter(|node| node.is(XSD, "element"))
+        .count()
+        != 2
+    {
         return Err(TemplateError::Unsupported);
     }
     let mut row = None;
     let mut root = None;
-    for node in declarations {
+    for node in declarations
+        .into_iter()
+        .filter(|node| node.is(XSD, "element"))
+    {
         node.only_attributes(&["name"])?;
         let xml_name = xml_name(node.attribute("name").ok_or(TemplateError::Malformed)?)?;
         if names::decode(xml_name)? == table {
@@ -208,58 +220,21 @@ pub(super) fn read(
             fraction_digits: None,
         };
         let children = children(node)?;
-        let base = if let Some(kind) = node.qualified("type") {
+        let domain = if let Some(kind) = node.qualified("type") {
             if !children.is_empty() {
                 return Err(TemplateError::Unsupported);
             }
-            kind
+            types.resolve(kind, budget, cancelled)?
         } else {
             if children.len() != 1 || !children[0].is(XSD, "simpleType") {
                 return Err(TemplateError::Unsupported);
             }
-            children[0].only_attributes(&[])?;
-            let restriction = single(children[0], "restriction")?;
-            restriction.only_attributes(&["base"])?;
-            for facet in self::children(restriction)? {
-                facet.only_attributes(&["value"])?;
-                if facet.name.namespace != XSD || !self::children(facet)?.is_empty() {
-                    return Err(TemplateError::Unsupported);
-                }
-                let value = facet.attribute("value").ok_or(TemplateError::Malformed)?;
-                if value.is_empty() || !value.bytes().all(|byte| byte.is_ascii_digit()) {
-                    return Err(TemplateError::Malformed);
-                }
-                let value = value.parse().map_err(|_| TemplateError::Unsupported)?;
-                let slot = match facet.name.local.as_str() {
-                    "maxLength" => &mut field.max_length,
-                    "totalDigits" => &mut field.total_digits,
-                    "fractionDigits" => &mut field.fraction_digits,
-                    _ => return Err(TemplateError::Unsupported),
-                };
-                if slot.replace(value).is_some() {
-                    return Err(TemplateError::Malformed);
-                }
-            }
-            restriction
-                .qualified("base")
-                .ok_or(TemplateError::Malformed)?
+            types.inline(children[0], budget, cancelled)?
         };
-        if base.namespace != XSD {
-            return Err(TemplateError::Unsupported);
-        }
-        field.kind = Kind::from_name(&base.local)?;
-        if field.max_length.is_some()
-            && !matches!(field.kind, Kind::String | Kind::Base64 | Kind::Hex)
-            || (field.total_digits.is_some() || field.fraction_digits.is_some())
-                && !matches!(field.kind, Kind::Decimal)
-            || field.total_digits == Some(0)
-            || field
-                .fraction_digits
-                .zip(field.total_digits)
-                .is_some_and(|(fraction, total)| fraction > total)
-        {
-            return Err(TemplateError::Malformed);
-        }
+        field.kind = domain.kind;
+        field.max_length = domain.max_length;
+        field.total_digits = domain.total_digits;
+        field.fraction_digits = domain.fraction_digits;
         let declared = if matches!(field.kind, Kind::String) {
             field
                 .max_length

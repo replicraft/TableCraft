@@ -237,3 +237,30 @@ proptest::proptest! {
         proptest::prop_assert_eq!(package.read_table("Records", &mut budget(), &|| false).is_ok(), maximum >= "Alpha".chars().count());
     }
 }
+
+#[test]
+fn named_restrictions_still_require_exact_list_definition_type_and_facet_agreement() {
+    let inline = r#"<x:element name="Label" minOccurs="0"><x:simpleType><x:restriction base="x:string"><x:maxLength value="8"/></x:restriction></x:simpleType></x:element>"#;
+    let field = r#"<x:element name="Label" minOccurs="0" type="StoredLabel"/>"#;
+    for length in [7, 8] {
+        let declaration = format!(
+            r#"<x:simpleType name="StoredLabel"><x:restriction base="x:string"><x:maxLength value="{length}"/></x:restriction></x:simpleType>"#
+        );
+        let data = DATA
+            .replace("<x:schema>", &format!("<x:schema>{declaration}"))
+            .replace(inline, field);
+        let package = fixture(DEFINITION, &data, LINKS);
+        assert_eq!(
+            package
+                .table_columns("Records", &mut budget(), &|| false)
+                .is_ok(),
+            length == 8
+        );
+        assert_eq!(
+            package
+                .read_table("Records", &mut budget(), &|| false)
+                .is_ok(),
+            length == 8
+        );
+    }
+}

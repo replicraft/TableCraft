@@ -2,7 +2,7 @@ use super::*;
 use std::io::{Cursor, Write};
 use zip::{ZipWriter, write::SimpleFileOptions};
 
-fn encoded(text: &str, mode: u8) -> Vec<u8> {
+pub(super) fn encoded(text: &str, mode: u8) -> Vec<u8> {
     let label = if mode < 2 { "UTF-8" } else { "UTF-16" };
     let text = format!("<?xml version=\"1.0\" encoding=\"{label}\"?>{text}");
     match mode {
@@ -27,7 +27,7 @@ fn encoded(text: &str, mode: u8) -> Vec<u8> {
     }
 }
 
-fn package_bytes(mode: u8, data: &[u8], method: CompressionMethod) -> Vec<u8> {
+pub(super) fn package_bytes(mode: u8, data: &[u8], method: CompressionMethod) -> Vec<u8> {
     let mut writer = ZipWriter::new(Cursor::new(Vec::new()));
     for (name, text) in [
         ("[Content_Types].xml", TYPES),
