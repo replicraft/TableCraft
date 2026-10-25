@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-24",
+  "production_base_commit": "b6c6a9fccc4e8169d73c515caac9b60cece54742",
+  "scope": "Completed runtime provenance for concatenation with converted non-String peers; not native collation precedence or full P0 qualification",
+  "rust_source_inventory": {
+    "roots": [
+      "apps",
+      "crates"
+    ],
+    "files": 1861,
+    "algorithm": "Relative UTF-8 paths sorted lexically; path + NUL + lowercase hex SHA256(file bytes) + newline; SHA256 of complete UTF-8 manifest",
+    "sha256": "cf5c9a255d44634b31a91fb74192590b56053749b504914d992e047e07f72ba2",
+    "private_manifest": ".cache/concat-policy-rust-source-20261024.manifest",
+    "verification": "All entries pinned before/after replay; parent independently verified committed source archive. Inventory does not establish full test coverage."
+  },
+  "rust_tests": {
+    "passed_unique_tests": 199,
+    "new_tests": 9,
+    "targets": {
+      "query_unit": 19,
+      "collation_routing": 95,
+      "declared_addition": 5,
+      "declared_string_comparisons": 7,
+      "domain": 9,
+      "external_named_sources": 10,
+      "named_crosstabs": 34,
+      "retained_string_cells": 5,
+      "union_text_types": 8,
+      "union_types": 7
+    },
+    "overlap_note": "Earlier probes and retries excluded; each final test target counted once."
+  },
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-query --test collation_routing --test declared_addition --test declared_string_comparisons -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/concat-policy-focused-final.log",
+      "sha256": "aebec26929dd25963ee69cc9522d4e7d2624acfbdeef416f7ab47e4373e5b305"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --test collation_routing --test declared_addition --test declared_string_comparisons -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/concat-policy-clippy.log",
+      "sha256": "05671cbfcd5b70779304f47517dab131f039ccd494353f97f3bc885febe26b5f"
+    },
+    {
+      "command": "cargo test -p tablecraft-query --lib --test named_crosstabs --test domain --test union_types --test union_text_types --test retained_string_cells --test external_named_sources -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/concat-policy-parent-regressions.log",
+      "sha256": "9a93762ba998ba77857904632c2f5d61f59709e5fc2ae71b9b967fcdc3fbd8ac"
+    },
+    {
+      "command": "cargo check -p tablecraft-query --no-default-features -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/concat-policy-minimal.log",
+      "sha256": "4c43fc52bf221a45b358a805fb12820f18253228565fd72053fe83b32389a76c"
+    },
+    {
+      "command": "cargo build -p tablecraft-cli --bin tablecraft -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/concat-policy-cli-build.log",
+      "sha256": "d2e6bbdace94b8cde721b425825855218742f51ee4154aa699fdb4fba9923c97"
+    }
+  ],
+  "additional_passed_checks": [
+    "cargo fmt --all -- --check",
+    "python3 scripts/check_dependency_boundaries.py (12 packages)",
+    "python3 -m unittest discover -s scripts -p test_*.py (41 tests)",
+    "git diff --check"
+  ],
+  "excluded_attempts": [
+    {
+      "log": ".cache/concat-policy-focused-initial.log",
+      "reason": "Module doc comment placed after inserted import; compilation failed before tests."
+    },
+    {
+      "log": ".cache/concat-policy-focused-second.log",
+      "reason": "New singleton ORDER BY assertion incorrectly required a comparison; changed input to two rows, preserving existing semantics."
+    },
+    {
+      "log": ".cache/concat-policy-focused-third.log",
+      "reason": "New date golden incorrectly spelled normalized epoch as date; established CStr ISO contract emits time-only 00:00:00. Production date formatting unchanged."
+    }
+  ],
+  "independent_replay": {
+    "report": "docs/testing/results/concatenation-policies-2026-10-24.json",
+    "sha256": "602e2a84f8517884535e2e28f7808147f197b6d94df5bc73d68f2a28ccdf4ca4",
+    "controls": 300,
+    "candidate_controls": 164,
+    "baseline_controls": 136,
+    "candidate_successes": 112,
+    "candidate_refusals": 52,
+    "baseline_successes": 28,
+    "baseline_refusals": 108,
+    "candidate_modeled_cells": 116,
+    "baseline_modeled_cells": 28,
+    "corrected_paired_conflicts": 76,
+    "retained_pairs": 60,
+    "unchanged_hashes": 1882
+  },
+  "unrun": [
+    "Complete workspace suite",
+    "Windows Access collation/namespace/save-reopen qualification",
+    "Release/performance qualification"
+  ]
+}

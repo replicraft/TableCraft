@@ -1,5 +1,19 @@
 # Implementation status
 
+## Independent concatenation policy replay
+
+The [getter-backed replay](testing/CONCATENATION_POLICIES.md) passes 300 commands
+on four unchanged priority-format policy originals. It corrects 76 paired false
+collation-conflict refusals while retaining 60 other baseline outcomes. Candidate
+controls cover 112 successes and 52 classified refusals; all 1,882 pinned hashes
+remain unchanged. Expected ASCII identities come from ordinary getter values,
+not reference SQL or copied weight algorithms.
+
+The [verification record](testing/results/read-query-concatenation-policies-2026-10-24.json)
+pins production base `b6c6a9fc`, all 1,861 committed Rust files and 199 passing
+focused Rust tests. NULL-origin distinctions, native mixed-String precedence and
+full P0/read-query acceptance remain open.
+
 ## Constructed String policy provenance
 
 Concatenation now excludes latent field policies carried by converted non-String
