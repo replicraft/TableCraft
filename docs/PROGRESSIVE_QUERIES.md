@@ -4,18 +4,18 @@
 It visits one strictly published scalar output row at a time, returning checked
 scanned/emitted counts only after successful source EOF. Ordinary execution
 remains buffered. Working consumers are `MemorySource` and the explicit cursor-backed
-[`NativeSource`](NATIVE_PROGRESSIVE_QUERIES.md). The [explicit CLI host](STREAMING_QUERIES.md) supplies TSV batching and
-publication; the API itself never writes stdout.
+[`NativeSource`](NATIVE_PROGRESSIVE_QUERIES.md). The
+[explicit CLI host](STREAMING_QUERIES.md) supplies TSV batching and publication; the API itself never writes stdout.
 
 ## Admitted query shape
 
 The service accepts one direct root scalar table, optional alias, declared
-parameters, row-local WHERE and scalar projections. Wildcards use the ordinary
-qualified scalar metadata. Original source order and eager predicate/projection
+parameters, row-local WHERE, scalar projections and positive unordered TOP
+counts. Wildcards use the ordinary qualified scalar metadata. Original source order and eager predicate/projection
 kernels are retained. Scalar conversion, arithmetic, text and inspection services
 use the same explicit execution policies as buffered queries.
 
-Admission rejects ordering, TOP, DISTINCT/active DISTINCTROW, grouping/HAVING,
+Admission rejects ordering, TOP PERCENT, DISTINCT/active DISTINCTROW, grouping/HAVING,
 UNION/crosstabs, joins/products, named/derived sources, subqueries, domains,
 collections, external namespaces, Eval and volatile clock/random calls. Rejection
 occurs before scanning or visiting output, including false filters and empty
@@ -24,6 +24,28 @@ ordinary query availability. Single-table DISTINCTROW remains inactive and
 preserves duplicate rows, as in buffered execution. Metadata-only `output_names()` supplies ordinary
 read-plan names; top-level crosstabs return None. Output type/policy metadata
 retains its existing conservative contracts.
+
+## Unordered TOP counts
+
+Positive `TOP n` limits emitted rows to the first n qualifying source-order rows.
+The service continues reading, validating and evaluating WHERE/projection through
+checked EOF after reaching that count. It can still fail on a later row, native
+count check, cancellation or quota; TOP is not a read limit or permission to hide
+eager errors. Empty or shorter inputs emit their complete qualifying results.
+Unordered duplicate values do not extend the count. TOP 0 retains the binder's
+existing refusal, while PERCENT and ordered TOP remain outside this service.
+
+Every qualifying row computes its selected expression cells before the output
+count is checked. Cells discarded by TOP do not undergo final strict scalar
+publication, matching buffered execution: an omitted retained raw String is not
+newly forced into Unicode. Its construction and all eager expression failures
+still run under the shared controls. Only rows actually sent to the visitor
+consume final scalar-publication allocations.
+
+Microsoft's [TOP predicate reference](https://learn.microsoft.com/en-us/office/vba/access/concepts/structured-query-language/all-distinct-distinctrow-top-predicates-microsoft-access-sql)
+permits an arbitrary qualifying set without ORDER BY. Source-order prefix choice
+and complete eager validation are TableCraft's existing engineering contracts;
+this change does not qualify native ACE encounter order or error precedence.
 
 ## Explicit source capability
 
@@ -68,11 +90,14 @@ this library does not write a header or open files/providers.
 
 ## Verification and remaining work
 
-Thirteen independent conformance tests cover buffered parity, exact parameters,
+Nineteen conformance tests cover buffered parity, exact parameters,
 field policy routing, strict publication, eager failures, metadata changes,
 unsupported shapes before scans, sticky sink/query failures and checked EOF.
 Each query quota has a one-row successful control followed by cumulative
-exhaustion; every observed cancellation checkpoint is exercised.
+exhaustion; every observed cancellation checkpoint is exercised. TOP controls
+cover empty/filtered/duplicate prefixes, full input visits, later eager failures,
+raw String publication parity, malformed suffixes, failed EOF, cancellation and
+resource exhaustion after the last emitted row.
 
 Seventy-six existing query unit, domain, named-crosstab, external-named and static
 declaration tests pass after extracting shared Runtime initialization. Scoped

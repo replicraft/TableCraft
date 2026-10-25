@@ -57,7 +57,9 @@ impl<E: std::error::Error + 'static> std::error::Error for StreamError<E> {
 
 impl PreparedQuery {
     /// Progressively evaluate a direct local scalar SELECT/WHERE in source order.
-    /// Sorts, TOP, sets, groups, joins, derived/named sources, collections,
+    /// Unordered positive TOP counts limit publication while all rows are still
+    /// read and evaluated through checked EOF. Sorts, TOP PERCENT, sets, groups,
+    /// joins, derived/named sources, collections,
     /// subqueries, domain calls, Eval and volatile functions are refused before
     /// scanning, even for empty inputs. The source must explicitly implement
     /// progressive projection; this never falls back to buffered retrieval.
@@ -149,6 +151,15 @@ impl PreparedQuery {
                 let mut cells = runtime.allocate_expression_row(select.projection.len())?;
                 for expression in &select.projection {
                     cells.push(runtime.retained_expression_operand(expression, environment)?);
+                }
+                // Buffered TOP discards evaluated cells before final scalar
+                // publication. Keep eager expression failures in omitted rows,
+                // without newly publishing their retained raw String values.
+                if read
+                    .top
+                    .is_some_and(|(count, _)| summary.emitted_rows >= u64::from(count))
+                {
+                    return Ok(());
                 }
                 let mut values = runtime.allocate_row(cells.len())?;
                 for mut cell in cells {

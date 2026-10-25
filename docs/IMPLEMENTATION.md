@@ -1,5 +1,20 @@
 # Implementation status
 
+## Unordered TOP query streaming
+
+Explicit native streaming now admits positive unordered `TOP n`, preserving the
+first n qualifying source-order rows while continuing eager expression work and
+native validation through checked EOF. Discarded expression cells avoid final
+scalar publication, matching buffered raw-String handling. TOP does not truncate
+source work or hide later corruption, cancellation, quota or arithmetic errors.
+Ordered TOP and PERCENT remain outside progressive execution.
+
+Nineteen progressive query tests, 53 retrieval regressions and sixteen CLI
+integration tests pass with scoped strict Clippy and a final normal CLI build.
+See [the service contract](PROGRESSIVE_QUERIES.md#unordered-top-counts) and
+[CLI behavior](STREAMING_QUERIES.md#top-limits-output-not-validation). Independent
+large-input replay and native Access qualification remain separate.
+
 ## Independent native streaming replay
 
 The [original four-profile replay](testing/PROGRESSIVE_QUERIES.md) passes 88

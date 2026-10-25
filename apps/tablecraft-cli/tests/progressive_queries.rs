@@ -9,6 +9,8 @@ mod support;
 mod boundaries;
 #[path = "progressive_queries/execution.rs"]
 mod execution;
+#[path = "progressive_queries/top.rs"]
+mod top;
 #[path = "progressive_queries/transport.rs"]
 mod transport;
 
