@@ -2,6 +2,7 @@
 use super::super::super::check;
 use super::super::super::tree::Node;
 use super::super::{MAX_COLUMNS, TemplateError};
+use super::choices;
 use std::collections::BTreeSet;
 use tablecraft_ace::InspectError;
 use tablecraft_core::limits::ResourceBudget;
@@ -12,6 +13,14 @@ const MAX_NAME_BYTES: usize = 1024;
 const MAX_TYPE_BYTES: usize = 64;
 const IDENTITY_ATTRIBUTES: [&str; 3] = ["ID", "Name", "DisplayName"];
 
+#[derive(Clone, Copy, Default, PartialEq, Eq)]
+pub(super) enum ChoiceStorage {
+    #[default]
+    Unspecified,
+    Text,
+    Other,
+}
+
 #[derive(Default)]
 pub(super) struct Field {
     id: Option<Uuid>,
@@ -21,6 +30,7 @@ pub(super) struct Field {
     pub max_length: Option<usize>,
     pub required: Option<bool>,
     pub calculated: bool,
+    pub choice_storage: ChoiceStorage,
 }
 impl Field {
     pub fn matches_column(&self, display: &str, xml_name: &str) -> bool {
@@ -49,7 +59,12 @@ impl Field {
                 .zip(node.attribute("DisplayName"))
                 .is_some_and(|(old, new)| old.eq_ignore_ascii_case(new)))
     }
-    fn apply(&mut self, node: &Node) -> Result<(), TemplateError> {
+    fn apply(
+        &mut self,
+        node: &Node,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), TemplateError> {
         if node
             .attributes
             .iter()
@@ -110,21 +125,45 @@ impl Field {
         if self.kind.as_deref() == Some("Calculated") {
             self.calculated = true;
         }
+        if let Some(base) = node.attribute("BaseType") {
+            self.choice_storage = if base == "Text" {
+                ChoiceStorage::Text
+            } else {
+                ChoiceStorage::Other
+            };
+        }
+        if self.kind.as_deref() == Some("Choice") {
+            // This controls an editing UI, not stored-cell membership. Validate
+            // an explicit spelling without inventing a default or running it.
+            boolean(node, "FillInChoice")?;
+        }
         // Known presentation/default/validation children remain inert. Unknown
         // construction children are refused instead of being treated as commands.
         node.whitespace()?;
+        let mut choices_seen = false;
         for child in &node.children {
-            if !requests_namespace(child)
-                || !matches!(
-                    child.name.local.as_str(),
-                    "ValidationDisplayNames"
-                        | "Default"
-                        | "DefaultFormula"
-                        | "ValidationFormula"
-                        | "ValidationMessage"
-                )
-            {
+            check(budget, cancelled)?;
+            if !requests_namespace(child) {
                 return Err(TemplateError::Unsupported);
+            }
+            match child.name.local.as_str() {
+                "CHOICES" => {
+                    if self.kind.as_deref() == Some("Choice") {
+                        if choices_seen {
+                            return Err(TemplateError::Malformed);
+                        }
+                        choices_seen = true;
+                        choices::validate(child, budget, cancelled)?;
+                    }
+                    // The field-definition contract ignores CHOICES on other
+                    // field types. It never constructs values or invokes code.
+                }
+                "ValidationDisplayNames"
+                | "Default"
+                | "DefaultFormula"
+                | "ValidationFormula"
+                | "ValidationMessage" => {}
+                _ => return Err(TemplateError::Unsupported),
             }
         }
         Ok(())
@@ -193,7 +232,7 @@ pub(super) fn apply(
             }
             ("deleteFields", None) => return Err(TemplateError::Unsupported),
             ("updateFields", Some(index)) => {
-                fields[index].apply(node)?;
+                fields[index].apply(node, budget, cancelled)?;
                 Some(index)
             }
             ("newFields" | "updateFields", None) => {
@@ -206,7 +245,7 @@ pub(super) fn apply(
                     return Err(TemplateError::Unsupported);
                 }
                 let mut field = Field::default();
-                field.apply(node)?;
+                field.apply(node, budget, cancelled)?;
                 fields
                     .try_reserve(1)
                     .map_err(|_| InspectError::Allocation)?;

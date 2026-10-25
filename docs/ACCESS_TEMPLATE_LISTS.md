@@ -55,12 +55,36 @@ remain refused until their schemas can be represented correctly.
 
 | Declared field type | Required inline XSD type |
 | --- | --- |
-| Text / Note | string |
+| Text / Note / qualified single Choice | string |
 | Boolean | boolean |
 | Counter / Integer | int |
 | Number | double |
 | Currency | decimal |
 | DateTime | dateTime |
+
+Single `Choice` fields now admit their stored Text cells when the effective
+`BaseType` is absent or explicitly `Text` and the resolved inline XSD domain is
+String. Explicit other storage overrides remain unsupported, even if a later
+partial field update omits `BaseType`; only an explicit replacement changes that
+retained state. Named local String restrictions follow the same agreement.
+
+`CHOICES` is optional and may be empty. A Choice field operation can contain at
+most one container, with literal `CHOICE` children and optional inert `Value`
+(display/resource) or `JumpTo` (survey navigation) string attributes. Namespaces,
+case, container attributes, nested option elements and unknown option attributes
+are checked. Existing XML limits bound all option storage; option visits and
+string work share caller quotas and cancellation. Known `CHOICES` metadata on
+other supported scalar types remains ignored as the field-definition contract
+requires. It never introduces a field operation or row value.
+
+Stored String cells remain authoritative, including Unicode, empty strings,
+optional NULL, literal delimiter text and values absent from current options.
+No option membership filter, label substitution, default fill, resource lookup or
+navigation occurs. Explicit `FillInChoice` spellings use the existing strict
+TRUE/FALSE syntax, but that editing-UI property does not trigger persisted-row
+validation. Defaults, formulas and validation/presentation metadata remain inert.
+`MultiChoice`, `GridChoice`, lookup and calculated fields keep their refusals;
+there is no implicit collection/provider interpretation.
 
 An explicit MaxLength must agree with the inline maximum. Required=TRUE cannot
 advertise nullable stored cells; FALSE does not require a snapshot to contain NULL.
@@ -72,8 +96,9 @@ of complete native Access Currency subtype fidelity.
 
 ## Limits and qualification
 
-Definitions reuse bounded UTF-8 XML trees: 8 MiB, 64 levels, 100,000 nodes and
-64 attributes per element. There are at most 128 requests and 256 live declarations;
+Definitions reuse the bounded [mandatory XML encoding profile](ACCESS_TEMPLATES.md):
+UTF-8 with optional BOM or BOM-qualified UTF-16 in either byte order, with 8 MiB
+encoded and decoded ceilings, 64 levels, 100,000 nodes and 64 attributes per element. There are at most 128 requests and 256 live declarations;
 field names are capped at 1,024 UTF-8 bytes and type spellings at 64. Namespace/name
 copies and parser work share existing quotas. Field matching, updates and identity
 checks meter work and cancellation. Failure discards the local declaration state;
@@ -90,7 +115,7 @@ renames/base declarations/UUIDs/deletions, mismatched and ambiguous schemas,
 unknown calls/default-dependent fields, metadata-only binding, shared limits and
 every observed cancellation checkpoint. The original [Python SOAP/XSD runner](testing/compare_template_lists.py)
 passes 36 CLI/query controls over stored/deflated original packages and all eight
-supported declared field types. Existing typed-template and package runners retain
+previously supported declared field types. Existing typed-template and package runners retain
 their 48 and 30 controls. Only TableCraft executes SQL; no SOAP server or application
 runtime is involved.
 
@@ -105,3 +130,26 @@ References: [MS-ACCDT List Schema](https://learn.microsoft.com/en-us/openspecs/s
 and [UpdateListFieldsRequest](https://learn.microsoft.com/en-us/openspecs/sharepoint_protocols/ms-listsws/80ce8816-6d1f-4d7e-bab8-632097c14cd2).
 Implementation and fixtures are original; no specification schema/example or
 third-party binary is copied.
+
+
+## Single-Choice verification
+
+Seven new original controls pass alongside 52 existing template tests (59 total),
+with strict Access library/test Clippy. They cover both admitted storage forms,
+all four mandatory XML encoding variants, exact stored values and unchanged
+package/part bytes, optional/empty options, unlisted text, inert presentation and
+navigation strings, retained storage overrides, metadata-only refusals, named
+String/nullable/length agreement, cumulative work and every observed option
+cancellation checkpoint. The first focused test and lint runs passed without
+corrections. Commands and source/log hashes are in the
+[scoped verification record](testing/results/read-query-template-choice-2026-10-25.json).
+These checks do not establish native Access or SharePoint runtime behavior.
+
+Choice storage and field properties follow the [Microsoft Field reference](https://learn.microsoft.com/en-us/sharepoint/dev/schema/field-element-list)
+and [MS-WSSFO2 storage-override contract](https://learn.microsoft.com/en-us/openspecs/sharepoint_protocols/ms-wssfo2/279e0071-c6e2-444c-9cf4-19a348e99607).
+The [CHOICES](https://learn.microsoft.com/en-us/sharepoint/dev/schema/choices-element-list),
+[CHOICE](https://learn.microsoft.com/en-us/sharepoint/dev/schema/choice-element-list)
+and [CAML schema](https://learn.microsoft.com/en-us/openspecs/sharepoint_protocols/ms-wsscaml/bc8fc7a6-9ba5-42f2-bdec-6261f6a00621)
+references describe option structure and inert display/navigation attributes.
+The [field child-element contract](https://learn.microsoft.com/en-us/openspecs/sharepoint_protocols/ms-wssfo3/cc07cf37-4602-44da-a778-a31ff165bce7)
+also directs readers to ignore CHOICES for other field types.

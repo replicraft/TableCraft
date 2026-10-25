@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Inert ACCDT single-Choice List Definition fields with qualified stored Text/XSD agreement",
+  "unique_tests": 59,
+  "new_tests": 7,
+  "targets": {
+    "template_library": 59
+  },
+  "checks": [
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-access --lib template::",
+      "exit_code": 0,
+      "private_log": ".cache/template-choice-tests-20261025.log",
+      "sha256": "af522f5534d69d2d12e2e3d144d3f56fa5e64111bb9e57c86e3e901c7d7abaad"
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-access --lib --tests -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/template-choice-clippy-20261025.log",
+      "sha256": "8f6accd72f79708df02a510044f7b9d88fe8229b232e9027846afa02dd57bec0"
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "private_log": ".cache/choice-cp932-fmt-final-20261025.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "source_sha256": {
+    "crates/backends/tablecraft-access/src/template/data/list/fields.rs": "6c61dddd38cf5aa15659fcafc0f39bd25be00ad9947fe1f0346021522fa40ff5",
+    "crates/backends/tablecraft-access/src/template/data/list/mod.rs": "325e186a8fccdbeb3e7fe9e32aa4d80e4cad3209aed18def8f4fa3ca7c550656",
+    "crates/backends/tablecraft-access/src/template/data/list/choices.rs": "b636b89341140292e0d841588cc2f4620ea9a46c4a317828ba5f50239229fbb8",
+    "crates/backends/tablecraft-access/src/template/data/list/tests.rs": "43d2678a5deb8c865c859c321ba6d5b20ca38255d50f6d8bb87cff97cdaae1fd",
+    "crates/backends/tablecraft-access/src/template/data/list/tests/choices.rs": "bab64135ef11cccc022af480529b059bab04e41981c0781f7debfee2e6137552"
+  },
+  "acceptance": [
+    "Absent textual storage or explicit BaseType Text plus resolved XSD String; other overrides retained across partial updates and refused until explicitly replaced.",
+    "Exact stored Unicode, combining, escaped, delimiter, empty and NULL cells across all four mandatory XML encoding variants; original package and definition-part bytes unchanged.",
+    "Optional/empty/repeated literal options and known Value/JumpTo attributes remain inert; no membership, default, display/resource or navigation execution.",
+    "Explicit FillInChoice TRUE/FALSE checked without inventing persisted-row validity or substituting options/defaults; unlisted stored strings remain readable.",
+    "Structural option refusals, unsupported MultiChoice/GridChoice/Lookup/calculated fields, contradictory XSD carrier/MaxLength/Required, and unknown storage/namespace/case fail metadata before malformed records.",
+    "Known CHOICES on other supported scalar fields remain ignored under the documented field contract.",
+    "Named String restriction agreement, cumulative option work and every observed option-validation cancellation checkpoint."
+  ],
+  "excluded_initial_checks": [],
+  "counting_notes": [
+    "All seven new tests and 52 existing template tests passed on the first focused run, with no production, test-golden or lint corrections.",
+    "Strict Access lib/tests checks compile and lint test targets but do not constitute an additional broad executed test suite."
+  ],
+  "limitations": [
+    "No native Access-created template instantiation or SharePoint service/runtime qualification.",
+    "No MultiChoice/Lookup/GridChoice or nontext Choice storage interpretation; no option-membership enforcement, resource/MUI evaluation, navigation, defaults, providers or new query APIs.",
+    "Existing package/XML/node/attribute/request/live-field and read/output limits remain authoritative. No independent original-file CLI replay is claimed by this scoped unit/integration record."
+  ],
+  "primary_references": [
+    "https://learn.microsoft.com/en-us/openspecs/sharepoint_protocols/ms-accdt/63e8ce75-d4d4-43f8-91ee-8290ec898a06",
+    "https://learn.microsoft.com/en-us/openspecs/sharepoint_protocols/ms-accdt/606146d3-514f-4555-9d7e-039be4b3f40c",
+    "https://learn.microsoft.com/en-us/openspecs/sharepoint_protocols/ms-listsws/80ce8816-6d1f-4d7e-bab8-632097c14cd2",
+    "https://learn.microsoft.com/en-us/openspecs/sharepoint_protocols/ms-wssfo2/279e0071-c6e2-444c-9cf4-19a348e99607",
+    "https://learn.microsoft.com/en-us/sharepoint/dev/schema/field-element-list",
+    "https://learn.microsoft.com/en-us/sharepoint/dev/schema/choices-element-list",
+    "https://learn.microsoft.com/en-us/sharepoint/dev/schema/choice-element-list",
+    "https://learn.microsoft.com/en-us/openspecs/sharepoint_protocols/ms-wsscaml/bc8fc7a6-9ba5-42f2-bdec-6261f6a00621",
+    "https://learn.microsoft.com/en-us/openspecs/sharepoint_protocols/ms-wssfo3/cc07cf37-4602-44da-a778-a31ff165bce7"
+  ]
+}
