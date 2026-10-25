@@ -154,6 +154,9 @@ impl Binder<'_> {
                 false,
             ),
             Expr::GuidFromString(_) => OutputType::scalar(ScalarType::Binary, false),
+            Expr::ErrorMessage(_) | Expr::ErrorMessageString(_) => {
+                OutputType::scalar(ScalarType::Text, false)
+            }
             Expr::StringFromGuid(_) | Expr::CurrentUser => {
                 OutputType::scalar(ScalarType::Text, true)
             }

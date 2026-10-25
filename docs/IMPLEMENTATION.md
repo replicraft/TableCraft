@@ -1,5 +1,16 @@
 # Implementation status
 
+## Numbered error-message composition metadata
+
+Error(number) and Error$(number) now expose their guaranteed nonnullable Text
+metadata without consulting a provider during binding. This fixes the admitted
+`SELECT Error$(0) UNION SELECT 1` failure: existing common-Text conversion now
+runs before duplicate removal. Named/derived and aggregate descriptors retain
+their existing NULL rules; missing formats/catalogs, provider failures and eager
+later errors remain failures. The [composition controls](ERROR_MESSAGES.md#composition-metadata)
+pass with the output-type and UNION batch: 23 focused tests and scoped strict
+Clippy. This is a current evaluator guarantee, not native type qualification.
+
 ## Consolidated declared-addition regression
 
 The combined all-feature query package passes 1,075 tests across 198 result
