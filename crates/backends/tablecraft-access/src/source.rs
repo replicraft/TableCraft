@@ -1,7 +1,9 @@
+mod budget;
 mod calculation;
 pub use calculation::{CalculationError, PreparedCalculation};
 mod collation;
 mod collections;
+mod inventory;
 mod multivalue;
 mod projection;
 mod saved;
@@ -11,14 +13,12 @@ mod selection;
 mod snapshot;
 
 use std::cell::{OnceCell, RefCell};
-use tablecraft_ace::{
-    AttachmentDecodeLimits, InspectError, TableSnapshot, TableSnapshotLimits, inspect_catalog,
-};
+use tablecraft_ace::{AttachmentDecodeLimits, InspectError, TableSnapshot, TableSnapshotLimits};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
 };
-use tablecraft_model::{CatalogScope, ModelError, ObjectKind};
+use tablecraft_model::{CatalogScope, ModelError};
 use tablecraft_query::{
     QueryError,
     source::{ScanConstraint, Source},
@@ -46,7 +46,7 @@ struct Entry {
 /// I/O in joins/subqueries; budgets accumulate across catalog/query/schema/table reads. This synchronous source is not a concurrent host.
 pub struct NativeSource<'a, R> {
     source: RefCell<R>,
-    budget: RefCell<ResourceBudget>,
+    budget: budget::Budget<'a>,
     scope: CatalogScope,
     snapshot_limits: TableSnapshotLimits,
     cancelled: &'a dyn Fn() -> bool,
@@ -82,54 +82,79 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
     /// unpublished until EOF and validation. Index structural, per-parent collection
     /// and payload ceilings remain independent; controls never refill between batches.
     pub fn new_with_snapshot_limits(
-        mut source: R,
+        source: R,
         scope: CatalogScope,
-        mut budget: ResourceBudget,
+        budget: ResourceBudget,
         cancelled: &'a dyn Fn() -> bool,
         snapshot_limits: TableSnapshotLimits,
     ) -> Result<Self, InspectError> {
-        let catalog = inspect_catalog(&mut source, scope, &mut budget, cancelled)?;
-        let queries = saved::entries(&catalog, &mut budget, cancelled)?;
-        let count = catalog
-            .catalog()
-            .objects()
-            .iter()
-            .filter(|o| o.kind() == ObjectKind::Table)
-            .count();
-        budget.charge_allocation(count as u64, std::mem::size_of::<Entry>() as u64)?;
-        let mut entries = Vec::new();
-        entries
-            .try_reserve_exact(count)
-            .map_err(|_| InspectError::Allocation)?;
-        for o in catalog
-            .catalog()
-            .objects()
-            .iter()
-            .filter(|o| o.kind() == ObjectKind::Table)
-        {
-            if cancelled() {
-                return Err(InspectError::Cancelled);
-            }
-            let name = o.name().as_str();
-            budget.charge_allocation(name.len() as u64, 1)?;
-            let mut owned = String::new();
-            owned
-                .try_reserve_exact(name.len())
-                .map_err(|_| InspectError::Allocation)?;
-            owned.push_str(name);
-            entries.push(Entry {
-                name: owned,
-                columns: OnceCell::new(),
-                table: OnceCell::new(),
-                index: None,
-                projected: RefCell::new(Vec::new()),
-                multivalues: OnceCell::new(),
-                collections: OnceCell::new(),
-            });
+        Self::with_budget(
+            source,
+            scope,
+            budget::Budget::Owned(RefCell::new(budget)),
+            cancelled,
+            snapshot_limits,
+        )
+    }
+
+    /// Inventory an explicitly supplied stable source under a host's cumulative
+    /// native allowance. Other explicitly supplied sources may borrow the same
+    /// pool; no operation refills or refunds it. Query/comparison quotas remain
+    /// separate. A conflicting pool borrow fails instead of panicking.
+    /// This does not resolve links or establish a cross-file snapshot/transaction.
+    pub fn new_with_shared_budget(
+        source: R,
+        scope: CatalogScope,
+        budget: &'a RefCell<ResourceBudget>,
+        cancelled: &'a dyn Fn() -> bool,
+    ) -> Result<Self, InspectError> {
+        Self::new_with_shared_budget_and_snapshot_limits(
+            source,
+            scope,
+            budget,
+            cancelled,
+            TableSnapshotLimits::default(),
+        )
+    }
+
+    /// Use a borrowed cumulative native allowance with explicit snapshot limits.
+    /// Each source retains independent complete caches and row ceilings; both
+    /// sources debit the same allowance from catalog inventory onward.
+    pub fn new_with_shared_budget_and_snapshot_limits(
+        source: R,
+        scope: CatalogScope,
+        budget: &'a RefCell<ResourceBudget>,
+        cancelled: &'a dyn Fn() -> bool,
+        snapshot_limits: TableSnapshotLimits,
+    ) -> Result<Self, InspectError> {
+        Self::with_budget(
+            source,
+            scope,
+            budget::Budget::Shared(budget),
+            cancelled,
+            snapshot_limits,
+        )
+    }
+
+    fn with_budget(
+        mut source: R,
+        scope: CatalogScope,
+        budget: budget::Budget<'a>,
+        cancelled: &'a dyn Fn() -> bool,
+        snapshot_limits: TableSnapshotLimits,
+    ) -> Result<Self, InspectError> {
+        if budget.shared() && cancelled() {
+            return Err(InspectError::Cancelled);
         }
+        let (entries, queries) = {
+            let mut budget = budget
+                .try_borrow_mut()
+                .map_err(|_| InspectError::Unsupported)?;
+            inventory::read(&mut source, scope, &mut budget, cancelled)?
+        };
         Ok(Self {
             source: RefCell::new(source),
-            budget: RefCell::new(budget),
+            budget,
             scope,
             snapshot_limits,
             cancelled,
@@ -160,7 +185,10 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
             if (self.cancelled)() {
                 return Err(InspectError::Cancelled);
             }
-            self.budget.get_mut().charge(Resource::Steps, 1)?;
+            self.budget
+                .try_borrow_mut()
+                .map_err(|_| InspectError::Unsupported)?
+                .charge(Resource::Steps, 1)?;
             if entry.columns.get().is_some() {
                 return Err(InspectError::Unsupported);
             }
@@ -253,7 +281,8 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
             return Err(ModelError::AmbiguousName.into());
         }
         self.budget
-            .get_mut()
+            .try_borrow_mut()
+            .map_err(|_| InspectError::Unsupported)?
             .charge_allocation(index.len() as u64, 1)?;
         let mut owned = String::new();
         owned

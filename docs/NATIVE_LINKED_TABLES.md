@@ -38,9 +38,11 @@ trace span is payload-free. Returning metadata requires complete successful read
 Catalog scans, schema reads, selected record/Text decoding, allocations and work
 consume the caller's existing cumulative native budget. Reusing that budget
 across calls does not refill it. Cancellation remains checked through the existing
-read/decode paths and selected-field processing. Query, output and later target
-source budgets are separate concerns. A future host-supplied target mapping must
-provide aggregate source limits before linked queries can be enabled.
+read/decode paths and selected-field processing. Query, comparison and output
+budgets remain distinct from native work. The Access adapter now provides an explicit
+[shared native allowance](NATIVE_SOURCE_BUDGETS.md) for already supplied sources.
+A future host-supplied target mapping must use aggregate source limits and validate
+target identity/schema before linked queries can be enabled.
 
 ## Contract sources and independent evidence
 

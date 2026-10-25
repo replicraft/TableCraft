@@ -7,7 +7,9 @@ ownership and recomputation/freshness boundaries remain unchanged.
 The working `crates/backends/tablecraft-access` package adapts ACE snapshots to the
 existing `tablecraft-query::Source` interface. `NativeSource` accepts a caller-supplied
 NativeReadSource (raw Read + Seek with explicit page interpretation), catalog namespace, cumulative ResourceBudget and cancellation
-callback. It inventories metadata inertly and discovers scalar schemas without
+callback. Explicit hosts can also lend multiple stable sources one
+[cumulative native pool](NATIVE_SOURCE_BUDGETS.md); this does not open links or
+establish cross-file snapshots. It inventories metadata inertly and discovers scalar schemas without
 loading user records. Complete table snapshots are cached for repeated scans,
 joins and subqueries; bounded selected snapshots are ephemeral.
 Sequential full/projected loads now use checked 256-row cursor batches, then
