@@ -36,7 +36,7 @@ qualification recorded separately.
   decoded bytes and stored history DATE bits. These do not establish arbitrary
   million-row throughput or native Access equivalence.
   Ordinary SQL results remain buffered with separate row, byte, work and output
-  ceilings. Explicit [streaming SELECT/WHERE](STREAMING_QUERIES.md) uses fresh
+  ceilings. Explicit [streaming SELECT/WHERE and flat UNION ALL](STREAMING_QUERIES.md) uses fresh
   native cursors and cumulative budgets without complete-table materialization;
   wider query shapes retain buffered execution.
   Absolute I/O now rejects reported seek-position mismatches before reading or
@@ -973,3 +973,15 @@ now admit exact-arity unqualified `IIf` calls. Metadata preparation visits all
 arguments and calculated dependencies; execution retains eager errors, natural
 result carriers and unchanged stored caches. This expands the bounded preview
 without completing native recalculation, freshness or general function admission.
+
+
+## Progressive UNION ALL
+
+Explicit [progressive execution](PROGRESSIVE_QUERIES.md#progressive-union-all)
+now streams flat UNION ALL arms that individually meet the direct-table profile.
+One runtime and cumulative allowances span every arm; ordinary UNION conversions
+precede scalar publication. Every arm reaches checked EOF, including rows omitted
+by its TOP. Distinct sets, sorting, grouping, joins and named/discovered sources
+retain buffered execution. Native cursor reuse, schema preflight, typed sticky
+sink failures and late-error prefix behavior remain checked; shared-file coherence
+and native Access qualification remain separate work.

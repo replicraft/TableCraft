@@ -45,3 +45,15 @@ does not truncate an independently budgeted progressive scan.
 These are independent synthetic engine/adapter checks. Original-file CLI replay
 and Microsoft Access qualification are separate evidence; the [explicit CLI host](STREAMING_QUERIES.md) now supplies publication, while
 the broader read/query roadmap remains unfinished.
+
+
+## Successive UNION ALL arms
+
+The query runtime can now stream flat UNION ALL chains of admitted SELECT arms.
+Each arm uses a fresh cursor on the same NativeSource; its exclusive borrow is
+released after checked EOF before the next cursor starts. Native byte/row/work
+allowances remain cumulative. Neither a successful arm nor a failed suffix becomes
+a complete snapshot cache. Six new controls cover repeated/different tables,
+EOF/read/evaluation failures, TOP tails, cancellation, sink failures and retry
+under four synthetic priority profiles. All seventeen native progressive tests
+and scoped strict Clippy pass; this does not qualify coherent live-file reads.

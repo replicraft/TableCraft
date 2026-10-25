@@ -108,9 +108,9 @@ are not implemented. Follow [NATIVE_READING.md](docs/NATIVE_READING.md) for supp
 profiles, read budgets and inert inspection.
 Explicit `rows --stream` uses the existing browser cursor for progressive scalar
 TSV publication; see [streaming rows](docs/STREAMING_ROWS.md). Preserve cumulative
-read/output controls and write/flush error propagation. Normal pages and queries remain buffered. Explicit [streaming SELECT queries](docs/STREAMING_QUERIES.md)
+read/output controls and write/flush error propagation. Normal pages and queries remain buffered. Explicit [streaming queries](docs/STREAMING_QUERIES.md)
 use the query progressive capability and native cursor adapter for admitted
-row-local scalar plans; unsupported shapes/modes refuse before scans. These
+row-local scalar SELECT plans and flat UNION ALL arms; unsupported shapes/modes refuse before scans. These
 explicit streaming modes may retain earlier output after later failures. Preserve
 separate cumulative native/query/comparison/output pools, checked EOF and typed
 sink errors; never cache a progressive prefix as a complete relation.

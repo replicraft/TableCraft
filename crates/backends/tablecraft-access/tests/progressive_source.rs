@@ -9,6 +9,9 @@ mod map_fixture;
 #[path = "../../../engines/tablecraft-ace/tests/support/mod.rs"]
 mod support;
 
+#[path = "progressive_source/union.rs"]
+mod union;
+
 use std::{
     cell::{Cell, RefCell},
     io::{Cursor, Read, Seek, SeekFrom},

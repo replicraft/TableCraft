@@ -13,6 +13,8 @@ mod execution;
 mod top;
 #[path = "progressive_queries/transport.rs"]
 mod transport;
+#[path = "progressive_queries/union.rs"]
+mod union;
 
 use std::{
     fs,

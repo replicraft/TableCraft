@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Explicit progressive flat UNION ALL of admitted direct-table SELECT arms; ordinary execution remains buffered",
+  "unique_tests": 68,
+  "new_tests": 22,
+  "targets": {
+    "query_progressive": 23,
+    "query_independent_types": 9,
+    "native_progressive": 17,
+    "cli_progressive": 19
+  },
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-query --test progressive_queries -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-union-query-tests-20261024.log",
+      "sha256": "8fecaf047255dba569ee453e8fe23b2db997803dea732e5f0bde476e2378bfc7"
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test progressive_union_types -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-union-types-parent-final-20261025.log",
+      "sha256": "a4eab143b696d3814815786f1a2e3574f8cbe5ce9b21c5f3610826f2537d8b07"
+    },
+    {
+      "command": "cargo test --locked -p tablecraft-access --test progressive_source",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-union-native-tests-final-20261024.log",
+      "sha256": "4c6f55d17590ffb981878cc22522b8a43401bf96623ee834a59f8de0e1a41762"
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --test progressive_queries -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-union-cli-tests-final-20261024.log",
+      "sha256": "090931be8c5526fb5d4d40a370c1fca24f25c856d35365bb153d59f1e428460c"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --test progressive_queries --test progressive_union_types -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-union-query-clippy-final-20261024.log",
+      "sha256": "94fb61930eb0ed1f2a699d60954a171620b3fce4e731ecaf9347d323fadc9f64"
+    },
+    {
+      "command": "cargo clippy --locked -p tablecraft-access --lib --test progressive_source -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-union-native-clippy-final-20261024.log",
+      "sha256": "e2bbf315512848c0b618dacaa81615c8370c654ea0ab85892ed42f330821c03d"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-cli --bin tablecraft --test progressive_queries -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-union-cli-clippy-20261024.log",
+      "sha256": "4673cbdb266e74e11b78dd2bebccddd51f8ff6266852c87597c305d0069ecf18"
+    },
+    {
+      "command": "cargo build -p tablecraft-cli -j 2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-union-cli-build-20261025.log",
+      "sha256": "54d32f1312e9ec321c58af432997bfe3bae5b14322fc06e68fd35a1f2f0e6519"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --test progressive_union_types -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/progressive-union-types-parent-clippy-20261025.log",
+      "sha256": "b2d9f63c9f0a8fa8dbf1143b3fa2687ffd4a20d8744470153da84be7f0565706"
+    }
+  ],
+  "additional_passed_checks": [
+    "cargo fmt --all -- --check",
+    "git diff --check",
+    "Independent read-only runtime review by value_semantics"
+  ],
+  "development_corrections": [
+    "Independent test authoring: used existing Double constructor, compared Decimal goldens under the documented retained-scale profile and supplied explicit NumberFormat for intended conversion scenarios; runtime unchanged.",
+    "CLI new Text output goldens corrected for existing display quoting and CSV escaping; final19 pass, runtime unchanged.",
+    "Native tests named test-local offsets after initial17 pass; final17 pass.",
+    "Parent review added an explicit result-cardinality assertion before Decimal zip comparisons and expanded the swallowing-provider test callback for readability; final nine tests and scoped Clippy passed. No production change."
+  ],
+  "unrun": [
+    "Full workspace suite",
+    "Native Windows Access streaming encounter/error qualification",
+    "Performance benchmarks"
+  ]
+}

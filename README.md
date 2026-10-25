@@ -34,11 +34,13 @@ The same `--external remote backend.accdb` binding authorizes that exact token.
 Qualified saved definitions retain their own source namespace; no embedded path
 opens automatically.
 
-Explicit [streaming SELECT queries](docs/STREAMING_QUERIES.md) use
+Explicit [streaming queries](docs/STREAMING_QUERIES.md) use
 `query run --database example.accdb --stream --batch-rows 128
 'SELECT ID,Name FROM Customers WHERE ID>0'`. They publish scalar table-order
-results in TSV batches; later errors may leave earlier output. Sorting, joins,
-aggregates and other wider query shapes retain buffered execution.
+results in TSV batches; later errors may leave earlier output. Flat `UNION ALL`
+can stream admitted SELECT arms in written order using the same result conversions
+and cumulative limits. Sorting, joins, aggregates and other wider query shapes
+retain buffered execution.
 
 For larger Memo/OLE/attachment query results, explicit `query run --text-bytes
 1048576 --output-bytes 8388608 --format tsv` raises the separate per-Text and

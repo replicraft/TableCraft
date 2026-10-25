@@ -1,5 +1,22 @@
 # Implementation status
 
+## Progressive UNION ALL
+
+Explicit streaming now accepts flat UNION ALL chains of admitted direct-table
+SELECT arms. One runtime and cumulative budgets span every arm, with ordinary
+profile-specific UNION result conversion before strict scalar publication.
+All arm schemas and structures preflight before output; each cursor reaches EOF
+before the next starts. Per-arm TOP still evaluates omitted rows. Typed sink errors
+and late failures stop later arms; the CLI preserves only completed TSV batches.
+
+The composed slice passes 68 focused tests: 23 progressive query, nine independent
+type/schema controls, seventeen native-adapter and nineteen CLI tests. Query,
+Access and CLI scoped strict Clippy, formatting and the final CLI build pass.
+See [the execution contract](PROGRESSIVE_QUERIES.md#progressive-union-all) and
+[verification record](testing/results/read-query-progressive-union-2026-10-25.json).
+This expands explicit streaming; distinct sets, sorts, groups, joins and named
+sources remain buffered. Native Access and shared-file qualification stay separate.
+
 ## Independent thirty-two-source replay
 
 The [four-profile original corpus](testing/SAVED_MANY_SOURCES.md) passes sixty CLI
