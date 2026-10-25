@@ -1,11 +1,10 @@
 //! Explicit CLI target opening; the adapter owns native link validation/routing.
-use super::{Error, native_options, retrieval::NativeInput};
+use super::{Error, retrieval::NativeInput};
 use crate::native;
 use std::{cell::RefCell, path::Path};
 use tablecraft_access::{NativeLinkMapping, NativeSource, NativeSourceHandle};
 use tablecraft_ace::{
-    LongTextReadLimits, LongValueReadLimits, LongValueReadSource, NativeLinkedTableDefinition,
-    NativeReadSource, TableSnapshotLimits,
+    LongValueReadSource, NativeLinkedTableDefinition, NativeReadSource, TableSnapshotLimits,
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
@@ -93,40 +92,15 @@ pub(super) fn load<'a, R: NativeReadSource>(
             .ok()
             .and_then(|value| value.checked_add(FIRST_LINK_SCOPE))
             .ok_or(Error::Parameter)?;
-        let file = {
-            let mut budget = pool.try_borrow_mut().map_err(|_| Error::Parameter)?;
-            native::open(Path::new(&pair[1]), input.password, &mut budget).map_err(Error::Input)?
-        };
-        let value_limits = input
-            .native_value_bytes
-            .map(LongValueReadLimits::new)
-            .transpose()
-            .map_err(Error::Native)?
-            .unwrap_or_default();
-        let text_limits = input
-            .native_text_bytes
-            .map(LongTextReadLimits::new)
-            .transpose()
-            .map_err(Error::Native)?
-            .unwrap_or_default();
-        let file = LongValueReadSource::new(file, value_limits).with_text_limits(text_limits);
-        let source = NativeSource::new_with_shared_budget_and_snapshot_limits(
-            file,
+        let source = super::native_target::open(
+            Path::new(&pair[1]),
             CatalogScope::new(scope),
+            input,
             pool,
-            &|| false,
+            comparison_pool,
+            database_policy,
             snapshot_limits,
-        )
-        .map_err(Error::Native)?;
-        let source = native_options::configure(source, input, value_limits)?;
-        let source = if database_policy {
-            let (source, _) = source
-                .with_database_collation_resolver(comparison_pool)
-                .map_err(Error::Native)?;
-            source
-        } else {
-            source
-        };
+        )?;
         let source = match input.index {
             [alias, index] if alias.eq_ignore_ascii_case(definition.name()) => {
                 let link = definition.access_target().map_err(Error::Native)?;

@@ -3,7 +3,9 @@ use crate::native;
 use clap::ValueEnum;
 use std::sync::{Arc, atomic::AtomicBool};
 use std::{cell::RefCell, ffi::OsString, path::Path};
-use tablecraft_access::{LinkedNativeSource, NativeSource, template::TemplateSource};
+use tablecraft_access::{
+    ExternalNativeSource, LinkedNativeSource, NativeSource, template::TemplateSource,
+};
 use tablecraft_ace::{
     LongTextReadLimits, LongValueReadLimits, LongValueReadSource, TableSnapshotLimits,
 };
@@ -55,6 +57,8 @@ pub(super) struct NativeInput<'a> {
     pub password: Option<&'a str>,
     pub path: &'a Path,
     pub links: &'a [OsString],
+    pub external: &'a [OsString],
+    pub external_index: &'a [String],
     pub bytes: u64,
     pub rows: u64,
     pub steps: u64,
@@ -138,6 +142,7 @@ pub(super) fn run(
             native::open_template(input_config.path, &mut budget).map_err(Error::Template)?
         {
             if !input_config.links.is_empty()
+                || !input_config.external.is_empty()
                 || database_policy
                 || !input_config.index.is_empty()
                 || input_config.auto_index
@@ -225,7 +230,29 @@ pub(super) fn run(
             } else {
                 Some(LinkedNativeSource::new(source.handle(), &mappings).map_err(Error::Links)?)
             };
-            let query_source: &dyn Source = linked.as_ref().map_or(&source as &dyn Source, |s| s);
+            let external_targets = super::external::load(
+                &input_config,
+                &native_pool,
+                &comparison_pool,
+                database_policy,
+                snapshot_limits,
+            )?;
+            let external_mappings = external_targets.mappings(&native_pool)?;
+            let external = if input_config.external.is_empty() {
+                None
+            } else {
+                Some(
+                    match &linked {
+                        Some(linked) => {
+                            ExternalNativeSource::with_links(linked, &external_mappings)
+                        }
+                        None => ExternalNativeSource::new(source.handle(), &external_mappings),
+                    }
+                    .map_err(Error::External)?,
+                )
+            };
+            let root_source: &dyn Source = linked.as_ref().map_or(&source as &dyn Source, |s| s);
+            let query_source: &dyn Source = external.as_ref().map_or(root_source, |s| s);
             execute(
                 query,
                 query_source,

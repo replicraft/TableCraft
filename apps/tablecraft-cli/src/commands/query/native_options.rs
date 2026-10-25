@@ -1,4 +1,4 @@
-//! Apply the same explicit scalar/collection policy to root and linked sources.
+//! Apply the same explicit scalar/collection policy to root, linked and external sources.
 use super::{Error, retrieval::NativeInput};
 use tablecraft_access::NativeSource;
 use tablecraft_ace::{AttachmentDecodeLimits, LongValueReadLimits, NativeReadSource};

@@ -21,6 +21,12 @@ can select a stable target with `query run --database frontend.accdb --link
 'People link' backend.accdb 'SELECT * FROM [People link]'`. Stored paths never
 open automatically; selected files share cumulative native read limits.
 
+Explicit [external database queries](docs/NATIVE_EXTERNAL_QUERIES.md#cli-target-selection)
+use `query run --database frontend.accdb --external remote backend.accdb
+'SELECT * FROM People IN "remote"'`. The token selects only the explicitly supplied
+file; SQL never opens an embedded path. Linked and external targets share the
+same native allowance, and results remain buffered before stdout.
+
 For larger Memo/OLE/attachment query results, explicit `query run --text-bytes
 1048576 --output-bytes 8388608 --format tsv` raises the separate per-Text and
 output allowances. Native and query budgets still apply; see [larger payloads](docs/LARGE_PAYLOADS.md).
