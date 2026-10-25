@@ -13,7 +13,8 @@ the API itself never writes stdout.
 The service accepts a direct root scalar table or a flat UNION ALL of those
 SELECT arms, with optional aliases, declared parameters, row-local WHERE, scalar
 projections and positive unordered TOP counts. Wildcards use the ordinary qualified
-scalar metadata. Original source order and eager predicate/projection
+scalar metadata. Global COUNT(*) projections over the same direct table are
+also supported as described below. Original source order and eager predicate/projection
 kernels are retained. Scalar conversion, arithmetic, text and inspection services
 use the same explicit execution policies as buffered queries. Prior explicitly
 named row-local projections can feed later projections through the ordinary
@@ -32,6 +33,47 @@ ordinary query availability. Single-table DISTINCTROW remains inactive and
 preserves duplicate rows, as in buffered execution. Metadata-only `output_names()`
 supplies ordinary read-plan names; top-level crosstabs return None. Output type/policy metadata
 retains its existing conservative contracts.
+
+## Global COUNT(*)
+
+A global aggregate SELECT whose only aggregate nodes are `Count(*)` can scan a
+direct root table progressively. Optional scalar WHERE predicates use the normal
+eager evaluator. The query retains one checked Int64 counter for qualifying rows,
+not a complete input snapshot. COUNT without a filter requests no scalar columns;
+a filtered count requests only its predicate's required fields. Each native row
+still passes the source's selected-read and EOF validation.
+
+```sql
+SELECT Count(*) AS Population, Population + CLngLng(1) AS NextValue
+FROM Items
+WHERE Active = True;
+```
+
+Only after successful EOF does the existing evaluator compute the final projection
+and its aliases. Repeated `Count(*)` nodes read the same completed counter through
+a scoped runtime overlay; it is restored on every Result exit. This preserves the
+existing Int64 carrier without introducing a second arithmetic/conversion kernel.
+Empty or wholly filtered inputs produce one count row containing zero, and an
+expression such as `1/Count(*)` still fails when that zero is its divisor. Positive
+TOP counts retain that one aggregate row. SQL TOP 0 remains refused by preparation.
+
+Count arms and ordinary row arms can share a flat UNION ALL. Written arm order,
+whole-UNION active-profile promotion, all-arm admission/schema preflight and
+per-arm schema rechecking remain unchanged. A count arm publishes nothing before
+its own EOF; a later count/source/projection failure can still follow output from
+an earlier arm in explicit progressive mode. The first failure remains sticky,
+including when a broken source swallows a rejected input callback. Final count
+sink callbacks occur after the source cursor has returned, and a failed sink
+prevents later arms from starting.
+
+Byte/row/work allowances remain cumulative, including per-row predicate copies,
+so bounded live memory does not grant an unlimited scan. No complete cache is
+published. Count(expr), other aggregates, GROUP BY/HAVING and wider sources remain
+outside this progressive slice; ordinary buffered aggregate availability is
+unchanged. Microsoft's [Access SQL Count contract](https://learn.microsoft.com/en-us/office/vba/access/concepts/criteria-expressions/count-function-microsoft-access-sql)
+establishes that the asterisk counts records regardless of NULL fields. Our
+Int64 carrier, EOF/publication/error timing and resource ceilings remain explicit
+engineering contracts, not native Access execution qualification.
 
 ## Progressive UNION ALL
 
@@ -126,8 +168,8 @@ this library does not write a header or open files/providers.
 
 ## Verification and remaining work
 
-Twenty-three progressive service tests and nine independent UNION promotion/
-boundary tests pass. They cover buffered parity, exact parameters, field policy
+Twenty-seven progressive service tests, nine independent UNION promotion/
+boundary tests and thirteen generated COUNT execution tests pass. They cover buffered parity, exact parameters, field policy
 routing, strict publication, eager failures, unsupported shapes before scans,
 sticky sink/query failures and checked EOF. UNION controls retain written arm
 order, per-arm TOP/EOF, default/declared result descriptors, conversion failures,
@@ -135,7 +177,12 @@ late schema mutation, unused comparison policies and shared cumulative limits.
 Each existing query quota has a one-row successful control followed by cumulative
 exhaustion; every observed cancellation checkpoint is exercised. TOP controls
 also cover omitted raw String publication parity and failures after the last
-emitted row. Scoped strict query Clippy passes.
+emitted row. Count controls include 100,001 generated rows under an 8 KiB query
+allocation allowance, empty/filter counts, EOF before publication, repeated and
+aliased expressions, mixed count/row arm promotion, final raw/conversion errors,
+sticky failures, every cancellation checkpoint and cumulative quotas. Twenty-eight
+existing alias/grouped-expression controls also pass. Scoped strict query Clippy
+passes.
 
 At the initial shared-runtime extraction, seventy-six query unit, domain,
 named-crosstab, external-named and static declaration tests passed, along with

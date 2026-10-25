@@ -7,6 +7,8 @@ use tablecraft_sql::parse_query;
 
 #[path = "progressive_queries/boundaries.rs"]
 mod boundaries;
+#[path = "progressive_queries/counts.rs"]
+mod counts;
 #[path = "progressive_queries/execution.rs"]
 mod execution;
 #[path = "progressive_queries/top.rs"]

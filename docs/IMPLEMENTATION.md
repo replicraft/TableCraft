@@ -1,5 +1,18 @@
 # Implementation status
 
+## Progressive exact global counts
+
+Explicit progressive execution now handles direct-table global Count(*) queries
+without retaining a complete input snapshot. Checked counters use actual qualifying
+rows, and final expressions/aliases publish only after successful EOF. Flat UNION
+ALL can mix count and row arms under existing promotion and cumulative controls.
+The focused batch passes 138 query/native/CLI tests and strict Clippy. A generated
+100,001-row input completes within an 8 KiB query allocation allowance; native
+four-profile tests exceed snapshot retention caps without filling a complete cache.
+See [count scope](PROGRESSIVE_QUERIES.md#global-count) and
+[verification record](testing/results/read-query-progressive-count-2026-10-25.json).
+Count(expr), other aggregates and native execution qualification remain separate.
+
 ## Grouped and progressive projection aliases
 
 Earlier explicit aliases now also compose through grouped results and explicit
