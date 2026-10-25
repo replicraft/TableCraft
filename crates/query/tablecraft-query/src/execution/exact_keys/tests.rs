@@ -207,3 +207,5 @@ fn empty_directory_is_lazy_and_failed_growth_never_refunds_budget() {
         None
     );
 }
+
+mod fixed_profiles;

@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Bounded uniform Currency/Decimal relational-key directories for buffered grouping/sets and active paired progressive grouping/HAVING, preserving authoritative SQL comparisons and retained representation",
+  "unique_tests": 451,
+  "new_tests": 24,
+  "existing_regression_tests": 427,
+  "new_test_breakdown": {
+    "implementation_fixed_scale_order_union_and_finite_work": 3,
+    "independent_exact_rational_values_properties": 7,
+    "independent_runtime_policy_failure_quotas": 6,
+    "private_normalization_work_collision_and_fallback": 5,
+    "native_fixed_key_groups_having_and_eof": 2,
+    "cli_currency_decimal_grouping": 1
+  },
+  "primary_targets": {
+    "exact_fixed_indexing": 3,
+    "exact_fixed_key_policies": 6,
+    "exact_fixed_key_values": 7,
+    "exact_key_conformance": 10,
+    "exact_key_indexing": 3
+  },
+  "runtime_unit_tests": 33,
+  "new_runtime_unit_tests": 5,
+  "regression_targets": {
+    "collation_routing": 106,
+    "crosstab": 16,
+    "crosstab_scalar_headings": 8,
+    "external_named_sources": 10,
+    "grouped_expressions": 5,
+    "grouped_subqueries": 8,
+    "named": 6,
+    "named_crosstabs": 40,
+    "numeric_keys": 8,
+    "progressive_derived_policies": 10,
+    "progressive_derived_values": 12,
+    "progressive_grouped_policies": 7,
+    "progressive_grouped_values": 11,
+    "progressive_having_policies": 1,
+    "progressive_having_values": 12,
+    "progressive_queries": 51,
+    "union_numeric_types": 6,
+    "union_text_types": 8,
+    "union_types": 7
+  },
+  "checks": [
+    {
+      "command": "cargo check -p tablecraft-query --lib -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/exact-fixed-keys-check-20261025.log",
+      "sha256": "1aeae02bacf741aa0b8f81fa5e27c01dac72a3a978634973e963b282c1b4c4d3",
+      "terminal_session": 40798
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test exact_fixed_indexing --test exact_fixed_key_values --test exact_fixed_key_policies --test exact_key_indexing --test exact_key_conformance -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/exact-fixed-keys-primary-20261025.log",
+      "sha256": "acc4e7388fb727a7f7d022ceaa1b6de0b7e8215c7f8496a004506fb75d7f2818",
+      "terminal_session": 82160,
+      "tests": 29
+    },
+    {
+      "command": "cargo test -p tablecraft-query --lib execution:: -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/exact-fixed-keys-private-units-20261025.log",
+      "sha256": "0a1e0b03ae36c681eb19e9748692a85889c23e191d0adf1555ab5cc1c87ee7c4",
+      "terminal_session": 31381,
+      "tests": 33
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test progressive_queries --test progressive_grouped_values --test progressive_grouped_policies --test progressive_having_values --test progressive_having_policies --test progressive_derived_values --test progressive_derived_policies --test collation_routing --test numeric_keys --test union_numeric_types --test union_types --test union_text_types --test grouped_expressions --test grouped_subqueries --test named --test external_named_sources --test crosstab --test crosstab_scalar_headings --test named_crosstabs -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/exact-fixed-keys-related-regressions-final-20261025.log",
+      "sha256": "7b885cac240261e43150c7490545a860e1a88b8f21633653aa7c27260249bfa4",
+      "terminal_session": 81240,
+      "tests": 332
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --tests -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/exact-fixed-keys-clippy-20261025.log",
+      "sha256": "4c50cf37e8cc266b2f076c3f776ad6a53ffaa1828fdfaeb4447203e0bef3a34c",
+      "terminal_session": 15515
+    },
+    {
+      "command": "cargo check -p tablecraft-query --lib --no-default-features -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/exact-fixed-keys-minimal-20261025.log",
+      "sha256": "dd621e9ff7c9eac161c730aa8a79332dd68698435a7a84d044d9ad39dfa1f5d2"
+    },
+    {
+      "command": "cargo test -p tablecraft-access --test progressive_numeric_aggregates -p tablecraft-cli --test progressive_queries -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/exact-fixed-keys-native-cli-final-20261025.log",
+      "sha256": "1a37be07f535245a6168fe56ae7db068a3a120a54763d00dce25d8a3ed7aec01",
+      "terminal_session": 67533,
+      "tests": 57
+    },
+    {
+      "command": "cargo clippy -p tablecraft-access --lib --test progressive_numeric_aggregates -p tablecraft-cli --bin tablecraft --test progressive_queries -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/exact-fixed-keys-native-cli-clippy-final-20261025.log",
+      "sha256": "b50910774dfbe146fe03b1c179583f4e04a16779397d21454a7c9358818a88fd",
+      "terminal_session": 81199
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "private_log": ".cache/exact-fixed-keys-fmt-final-20261025.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "terminal_session": 37490
+    }
+  ],
+  "contracts": [
+    "Currency fingerprints use the exact signed scaled Int64 without abs, float conversion or rounding. Decimal fingerprints use a temporary signed coefficient/scale view that strips fractional trailing zeros, mapping all zero scales to (0,0). Retained values, scales, declarations and policies are never normalized or replaced.",
+    "Only known uniform Currency/Decimal columns with ordinary NULL qualify. Active paired metadata, depth-zero available-field proof and all-tuple admission stay unchanged; no first-row inference or mixed fixed-family profile is introduced.",
+    "Existing retained vectors and SQL key comparisons stay authoritative. Hash collisions use the original comparator; unexpected actual buffered cells disable the entire directory and expose every retained representative to fallback for this and later rows without budget refund.",
+    "Current progressive required-profile validation, first encounter group keys, complete global numeric/NULL policy cohorts, syntactic aggregate states, HAVING deferred-projection suppression and checked EOF remain intact.",
+    "Every Decimal normalization iteration consumes shared work and checks cancellation. Existing paid lazy directory allocation, probe/rehash/copy accounting and independent native/query/output limits stay in force. Canonicalization allocates no per-value buffer.",
+    "UNION promotion and each distinct prefix retain their written policy/operator stages. Later UNION ALL duplicates stay present; there is no retroactive final-cohort replay or altered scalar comparison/coercion."
+  ],
+  "independent_controls": [
+    "Existing BigInt cross-product models check exact fractions independently of production normalization, including all scales0..28, signs, zero, 96-bit boundaries, Currency signed minimum and adjacent values beyond binary64 integral precision.",
+    "Buffered GROUP/DISTINCT/UNION and progressive grouped/HAVING controls preserve first retained Decimal coefficient/scale, nullable tuples, alias consumers and crossed prepare/execute profiles. Forced collisions and mixed actual fixed carriers exercise authoritative comparison and whole-operation fallback.",
+    "Conservative NULL-key lineage, late String extrema policy completion, actual String conflicts, eager operands, EOF failures, swallowed callback rejection, original sink identity, cumulative quotas, every observed cancellation checkpoint and prepared reuse are pinned independently.",
+    "12,000 descending unique Currency and Decimal populations complete GROUP and DISTINCT under an explicit five-million-step allowance in both arithmetic profiles; this is a bounded-work admission check, not a timing/optimizer claim.",
+    "Existing integral/Boolean directory, raw/Error fallback, numeric relational keys, progressive pipeline/HAVING, crosstab/named/alias/grouped and UNION policy regressions pass alongside the new profile."
+  ],
+  "excluded_attempts": [
+    {
+      "command": "cargo test -p tablecraft-query --test progressive_queries --test progressive_grouped_values --test progressive_grouped_policies --test progressive_having_values --test progressive_having_policies --test progressive_derived_values --test progressive_derived_policies --test collation_routing --test numeric_keys --test union_numeric_types --test union_types --test union_text_types --test grouped_expressions --test grouped_subqueries --test named --test external_named_sources --test crosstab --test crosstab_scalar_headings --test named_crosstabs -j2 --locked --offline",
+      "private_log": ".cache/exact-fixed-keys-related-regressions-20261025.log",
+      "sha256": "0978bc990ad17055822b413fb5f85a06e0262722be7385266aa399a381b8db9f",
+      "exit_code": 101,
+      "terminal_session": 21272,
+      "reason": "Historical progressive_grouped_values negative control expected GROUP BY CDec(Id) to refuse. The newly admitted Decimal profile correctly succeeded. Replaced only that negative SQL with still-unsupported CSng(Id), retaining separate Double/Text controls. No production fix or positive answer golden change; final full related332 passes.",
+      "counted_as_acceptance": false
+    },
+    {
+      "private_log": ".cache/exact-fixed-keys-native-cli-clippy-initial-20261025.log",
+      "sha256": "78b2dea415e8ab9896273ba1754fe02756b897dbacd4d0b2c5ff249a90a64dcf",
+      "reason": "Strict lint flagged a useless outer Vec in new native expected-row fixture. Replaced only with an array of identical rows; no production or golden change.",
+      "counted_as_acceptance": false
+    },
+    {
+      "private_log": ".cache/exact-fixed-keys-native-cli-20261025.log",
+      "sha256": "9903be69eb8472e46e0905301a66950305c90d52531176ca1a3eb80525cdba23",
+      "reason": "All57 passed before expected-row Vec became an array for lint. Superseded by final57 retry; counted once.",
+      "counted_as_acceptance": false
+    }
+  ],
+  "source_timing": "Production check and all new public/private tests passed first attempt; strict Clippy and minimal-feature checking required no edits. Final related rerun followed only the obsolete negative-control update. Partial/superseded passes are not added to394.",
+  "validation_limits": [
+    "Scoped451 query/native/CLI tests with strict linting, minimal query features and formatting; original frozen-binary replay remains pending separate evidence.",
+    "No Date/Text/float/GUID/Binary or mixed-profile expansion, new native index encoding, pushdown constraint, expression arithmetic, metadata inference or dependency change.",
+    "No full workspace suite, Microsoft Access numeric/optimizer qualification, timing or constant-memory claim."
+  ],
+  "native_cli_targets": {
+    "tablecraft-access/progressive_numeric_aggregates": 10,
+    "tablecraft-cli/progressive_queries": 47
+  },
+  "parent_verification": {
+    "query_logs": "Parent independently rehashed every accepted query check before host integration.",
+    "native_cli": "57 additional controls, including three new tests across four priority profiles and both execution arithmetic profiles, pass with exact stored carriers/scale, no complete cursor cache, EOF-first publication and original-byte guards.",
+    "source_timing": "Host checks initially passed; one expected fixture allocation changed from Vec to array for strict lint. Final57 and strict lint cover the final source, with unchanged values and production."
+  }
+}

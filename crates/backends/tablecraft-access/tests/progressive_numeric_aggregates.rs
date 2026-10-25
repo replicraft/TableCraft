@@ -344,3 +344,6 @@ fn numeric_aggregates_honor_cancellation_and_ignore_previous_complete_snapshots(
     failed_page.set(None);
     assert_eq!(streamed(&query, &source).unwrap().0, expected);
 }
+
+#[path = "progressive_numeric_aggregates/fixed_keys.rs"]
+mod fixed_keys;

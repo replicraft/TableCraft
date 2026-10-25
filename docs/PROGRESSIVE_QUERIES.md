@@ -16,7 +16,7 @@ UNION ALL combines such SELECT arms, with optional aliases, declared parameters,
 projections and positive unordered TOP counts. Wildcards use the ordinary qualified
 scalar metadata. Global COUNT(*), COUNT(expr), SUM(expr), AVG(expr), MIN(expr)
 and MAX(expr) projections
-over the same admitted input are also supported. Proven Boolean/integral/NULL
+over the same admitted input are also supported. Proven Boolean/integral/Currency/Decimal/NULL
 GROUP BY tuples use the same aggregates and retained final key values. Terminal
 aggregate/grouped HAVING filters use the deferred projection service described
 below. Original source order and eager
@@ -224,7 +224,7 @@ starts after failure. These explicit phases do not qualify native error priority
 
 ## Progressive grouped aggregates
 
-A grouped SELECT over an admitted input can use Boolean, Byte, Int16, Int32, Int64 and NULL
+A grouped SELECT over an admitted input can use Boolean, Byte, Int16, Int32, Int64, Currency, Decimal and NULL
 key columns, including tuples and pure row-local computed expressions. Every
 active result descriptor must prove one of those carriers. Binding captures both
 existing arithmetic profiles using the ordinary metadata inference; execution
@@ -245,9 +245,14 @@ GROUP BY Id Mod 17;
 The first encountered key tuple represents each group. NULL keys group under
 the existing SQL key equality contract. A bounded exact-key directory narrows
 candidates; the existing relational comparator remains authoritative. Selected
-source rows and key temporaries are evaluated and discarded. Each group retains
+source rows and key temporaries are evaluated and discarded without HAVING. Each group retains
 its key cells and one existing accumulator for every written aggregate occurrence,
 without a representative source row, complete input relation or result cache.
+Currency fingerprints use their exact scaled integer. Decimal fingerprints
+remove fractional trailing zeros from a local coefficient/scale view, including
+zero normalization; retained keys keep their original coefficient/scale and
+declarations. Full relational equality remains authoritative after fingerprint
+matches. See [typed key proof and fallback](EXACT_QUERY_KEYS.md).
 Group-only projections without aggregates use the same key service. Empty or
 completely filtered input yields zero grouped rows.
 
@@ -266,7 +271,7 @@ completion within each group. With a field-policy resolver, a compact cohort als
 accumulates across the entire qualified key column, including numeric and NULL
 cells. Checked EOF precedes applying that final cohort to all retained keys,
 matching the conservative buffered grouping contract. No Text grouping or native
-mixed-policy precedence is inferred from the integral membership proof.
+mixed-policy precedence is inferred from the exact numeric membership proof.
 
 Final projections explicitly borrow completed key cells. Metered structural
 identity and charged cell copies preserve their value, declaration, policy and

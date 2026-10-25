@@ -9,7 +9,7 @@ fn unsupported_shapes_and_later_key_families_refuse_before_every_cursor() {
         "SELECT TOP 50 PERCENT Id,Count(*) FROM T GROUP BY Id",
         "SELECT CStr(Id),Count(*) FROM T GROUP BY CStr(Id)",
         "SELECT CDbl(Id),Count(*) FROM T GROUP BY CDbl(Id)",
-        "SELECT CDec(Id),Count(*) FROM T GROUP BY CDec(Id)",
+        "SELECT CSng(Id),Count(*) FROM T GROUP BY CSng(Id)",
         "SELECT ChrW(Id),Count(*) FROM T GROUP BY ChrW(Id)",
         "SELECT Id,Count(*) FROM T GROUP BY Id UNION ALL SELECT CStr(Id),Count(*) FROM Later GROUP BY CStr(Id)",
     ] {
