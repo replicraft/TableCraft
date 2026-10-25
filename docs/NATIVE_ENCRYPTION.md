@@ -275,10 +275,14 @@ that byte after removing encryption. It must not be downgraded to appease a
 reader gate. Jet 1/2/3 and external/unqualified providers remain unsupported.
 
 `rewrite_encryption` produces an explicit unpublished `EncryptionCopy`, separate
-from normal edit plans and journals. Complete-image rewrites currently use the
-existing **64 MiB image cap**, even though streaming reads accept larger files.
-Buffers, metadata scans, crypto work, output writes and cancellation use a
-cumulative allowance; final cancellation prevents returning a candidate. Owned
+from normal edit plans and journals. This image API retains its **64 MiB image
+cap**. `rewrite_encryption_to` instead transforms pages into an empty, unpublished
+host-owned destination within the **2 GiB native read-source ceiling** and the
+caller's cumulative allowance. It retains zeroizing page buffers and budgeted,
+sorted SID patches rather than a complete image. The CLI uses this page path;
+its existing 512 MiB cumulative byte allowance can refuse a copy before the native
+file ceiling. The allowance includes page reads/writes, metadata and crypto work;
+final cancellation prevents success. Owned
 image/key/SID buffers use zeroization. No macros, VBA, expressions or external
 providers are executed. Source stability/offline access remains a host contract;
 this is not shared-file locking, cross-client coordination or a recovery journal.
@@ -359,8 +363,11 @@ An unencoded Jet source with a database password requires its current credential
 through `-p` or a hidden prompt before requesting the replacement. Already encoded
 inputs fail explicitly; use change-password to retain their current cipher.
 
-`EncryptionRewrite::Add` and `check_encryption_add` use the existing **64 MiB**
-copy/publication limit. Sources and existing outputs stay untouched. OS randomness
+`EncryptionRewrite::Add` works through either output API. The image API retains
+its **64 MiB** capture limit; page copies use the bounds above. Credential
+preflights validate the source independently of the output representation and do
+not promise that a later image capture fits. Sources and existing outputs stay
+untouched. OS randomness
 supplies the encoding key and, for ACCDB, a 256-bit data key, independent data/
 password salts and verifier. A zero encoding-key sentinel fails explicitly.
 Affected unindexed SIDs use the same checked remasking as removal; unsupported
@@ -475,3 +482,23 @@ The rewrite runner now enforces the already reviewed 5.0.2 JAR and exact core/BC
 hashes before compiling the SID/removal helpers. The separately recorded 5.0.0
 raw-decoder artifact lacks those APIs and fails clearly when supplied there.
 No runtime dependency, copied library source or binary fixture is added.
+
+## Page-copy preservation and failure boundary
+
+The page-copy path uses the same qualified codecs, password envelopes and SID
+layout restrictions as image copies. It verifies every SID before-image on its
+page before applying that page's patches, rejects overlapping/cross-page or
+unconsumed patches, and checks original page-zero bytes and file geometry before
+output and after the final page. These checks do not provide live-file coherence;
+the input must remain stable/offline throughout the operation.
+
+Agile password changes retain every data-page ciphertext byte. Other operations
+decode, remask qualified SIDs and encode one page at a time. Existing ACE 2007
+Agile creation still promotes the header to the ACE 2010 compatibility envelope;
+removal retains that header change. No format downgrade is inferred.
+
+The library destination must be empty, distinct from the source and unpublished.
+Seek/write/cancellation/budget failures can leave an unusable prefix; callers must
+discard it. The CLI discards failed temporary files, synchronizes successful ones
+and publishes with no-clobber persistence. It does not replace existing files or
+supply a transaction journal. Native Access save/reopen remains unqualified.

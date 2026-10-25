@@ -378,3 +378,104 @@ fn failed_rewrites_never_publish_outputs_overwrite_files_or_expose_credentials()
     assert_eq!(fs::read(input).unwrap(), original);
     assert_eq!(fs::read_dir(directory.path()).unwrap().count(), 2);
 }
+
+#[test]
+fn larger_than_image_cap_copies_round_trip_through_fresh_cli_outputs() {
+    use std::io::{Read, Seek, SeekFrom};
+
+    let directory = tempfile::tempdir().unwrap();
+    let input = directory.path().join("larger.accdb");
+    let original = plain();
+    fs::write(&input, &original).unwrap();
+    // Append unallocated pages to an original copy. This exercises file size,
+    // not native application creation or a new schema/allocation writer.
+    fs::OpenOptions::new()
+        .write(true)
+        .open(&input)
+        .unwrap()
+        .set_len(65 * 1024 * 1024)
+        .unwrap();
+
+    let added = directory.path().join("added.accdb");
+    let changed = directory.path().join("changed.accdb");
+    let removed = directory.path().join("removed.accdb");
+    for arguments in [
+        vec![
+            "encryption",
+            "add",
+            input.to_str().unwrap(),
+            "--output",
+            added.to_str().unwrap(),
+            "--new-password",
+            "public password",
+        ],
+        vec![
+            "encryption",
+            "change-password",
+            added.to_str().unwrap(),
+            "--output",
+            changed.to_str().unwrap(),
+            "-p",
+            "public password",
+            "--new-password",
+            "replacement",
+        ],
+        vec![
+            "encryption",
+            "remove",
+            changed.to_str().unwrap(),
+            "--output",
+            removed.to_str().unwrap(),
+            "-p",
+            "replacement",
+        ],
+    ] {
+        let result = run(&arguments);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+    }
+
+    let mut source = fs::File::open(&input).unwrap();
+    let mut result = fs::File::open(&removed).unwrap();
+    let mut left = [0; 4096];
+    let mut right = [0; 4096];
+    for page in 0..65 * 1024 * 1024 / 4096 {
+        source.read_exact(&mut left).unwrap();
+        result.read_exact(&mut right).unwrap();
+        if page == 0 && original[20] == 2 {
+            left[20..22].copy_from_slice(&[3, 1]);
+        }
+        assert!(left == right, "decoded page {page} changed");
+    }
+    assert_eq!(source.read(&mut left).unwrap(), 0);
+    assert_eq!(result.read(&mut right).unwrap(), 0);
+
+    let mut encrypted = fs::File::open(&added).unwrap();
+    let mut replacement = fs::File::open(&changed).unwrap();
+    encrypted.seek(SeekFrom::Start(4096)).unwrap();
+    replacement.seek(SeekFrom::Start(4096)).unwrap();
+    for _ in 1..65 * 1024 * 1024 / 4096 {
+        encrypted.read_exact(&mut left).unwrap();
+        replacement.read_exact(&mut right).unwrap();
+        assert_eq!(left, right, "Agile password change must retain ciphertext");
+    }
+
+    let query = run(&[
+        "query",
+        "run",
+        "SELECT Count(*) AS Total FROM ROULETTE_TB",
+        "--database",
+        changed.to_str().unwrap(),
+        "-p",
+        "replacement",
+    ]);
+    assert!(
+        query.status.success(),
+        "{}",
+        String::from_utf8_lossy(&query.stderr)
+    );
+    assert_eq!(query.stdout, b"Total\n38\n");
+}

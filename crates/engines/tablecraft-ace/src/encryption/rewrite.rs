@@ -48,7 +48,7 @@ impl EncryptionCopy {
     }
 }
 
-/// Check source geometry, rewrite size, scheme and current credentials before a
+/// Check source geometry, scheme and current credentials before a
 /// host requests a new password. This does not inspect all SID rows or authorize
 /// an edit; actual rewriting rechecks the stable/offline source and credentials.
 pub fn check_encryption_rewrite<R: Read + Seek>(
@@ -60,11 +60,6 @@ pub fn check_encryption_rewrite<R: Read + Seek>(
     let _span = tracing::debug_span!("native.encryption.credentials").entered();
     let header = crate::inspect_header(source, budget, cancelled)?;
     header.decoded().read_profile()?;
-    if u64::from(header.page_count()) * u64::from(header.page_size())
-        > crate::limits::MAX_IMAGE_BYTES
-    {
-        return Err(InspectError::StructureLimit);
-    }
     budget.charge(Resource::Bytes, PAGE_BYTES as u64)?;
     let mut page = Zeroizing::new([0; PAGE_BYTES]);
     tablecraft_io::read_exact_at(source, 0, &mut *page, budget, cancelled)?;

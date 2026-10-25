@@ -1,5 +1,25 @@
 # Implementation status
 
+## Page-buffered encryption management
+
+`rewrite_encryption_to` now creates unpublished encryption add/remove/password
+copies with zeroizing page buffers and sorted, checked SID patches. It shares
+the existing native codecs and layout restrictions, checks original header bytes
+and geometry before output and at completion, and retains Agile data-page
+ciphertext during password changes. The existing image API keeps its 64 MiB cap.
+The CLI uses the page path with its existing cumulative byte/work/row allowances,
+then syncs and persists a fresh temporary output without overwriting a destination.
+
+Twenty-one focused tests pass, including nine new tests: five page-copy API tests,
+three SID page tests and one 65 MiB CLI round trip. Existing legacy-vector tests
+also compare page and image removals and reopen page-generated password changes.
+The first new round-trip expectation required correction for the already
+implemented ACE 2007 compatibility-header promotion; product behavior was retained.
+Strict scoped Clippy, formatting and dependency-boundary checks pass. Native
+Access save/reopen remains unrun; this does not authorize normal encrypted edits
+or establish live-file coherence. See the [encryption contract](NATIVE_ENCRYPTION.md)
+and [scoped verification](testing/results/encryption-page-copies-2026-10-25.json).
+
 ## Japanese proper-case word boundaries
 
 Explicit Japanese casing now recognizes U+3000 IDEOGRAPHIC SPACE as an additional

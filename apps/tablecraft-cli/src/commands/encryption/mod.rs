@@ -6,7 +6,7 @@ mod copying;
 
 #[derive(clap::Subcommand)]
 #[command(
-    after_help = "Add, remove and change-password require a stable/offline source and a fresh explicit output path. They preserve the source and currently accept images up to 64 MiB. Jet 4 password fields are separate from its page encoding. Unsupported schemes or SID layouts fail without publishing an output."
+    after_help = "Add, remove and change-password require a stable/offline source and a fresh explicit output path. They preserve the source and copy pages under a cumulative 512 MiB byte allowance; metadata and crypto work also consume that allowance. Jet 4 password fields are separate from its page encoding. Unsupported schemes or SID layouts fail without publishing an output."
 )]
 pub(crate) enum Command {
     /// Report inert encoding/encryption envelope metadata; does not verify passwords.

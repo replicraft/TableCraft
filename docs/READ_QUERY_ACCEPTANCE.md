@@ -18,8 +18,9 @@ qualification recorded separately.
   Contextual named schemas use explicit execution-stage discovery; binding does
   not scan rows or invoke formatting providers.
 - Qualified encryption opens and fresh add/remove/change-password copies work.
-  The 2 GiB read-source envelope is separate from the 64 MiB complete-image and
-  encryption-management limits. Encryption is not an unstarted read milestone.
+  Page-buffered encryption management shares the 2 GiB read-source envelope under
+  cumulative budgets; complete-image APIs retain their separate 64 MiB cap.
+  Encryption is not an unstarted read milestone.
 - Independent comparisons include 20,000-row indexed inputs and 99,110-row
   sequential scalar histories with added columns, Memo growth and deleted roots.
   A separate [mixed scalar history corpus](testing/MIXED_SCALAR_HISTORIES.md)

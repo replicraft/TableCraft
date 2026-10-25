@@ -58,6 +58,17 @@ pub(crate) fn read<R: Read + Seek>(
     Ok(result)
 }
 
+// Parse an explicitly constructed page-zero descriptor with its actual file
+// geometry; callers need not fabricate a seekable whole-file representation.
+pub(super) fn from_page(page: &[u8], length: u64) -> Result<Encryption, InspectError> {
+    let header = Header::parse(page, length)?;
+    header.decoded().read_profile()?;
+    if !header.encoded_pages() {
+        return Err(InspectError::UnsupportedEncryption);
+    }
+    descriptor::parse(page, header)
+}
+
 impl Encryption {
     pub(crate) fn unlock(
         self,

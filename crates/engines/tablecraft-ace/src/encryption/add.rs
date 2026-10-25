@@ -9,7 +9,7 @@ use std::io::{Cursor, Read, Seek};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use zeroize::Zeroizing;
 
-/// Validate an unencoded source, rewrite cap and any existing Jet password before
+/// Validate an unencoded source and any existing Jet password before
 /// requesting a new credential. Actual creation rechecks the stable/offline source.
 pub fn check_encryption_add<R: Read + Seek>(
     source: &mut R,
@@ -32,11 +32,6 @@ fn plain_header<R: Read + Seek>(
         return Err(InspectError::AlreadyEncrypted);
     }
     header.read_profile()?;
-    if u64::from(header.page_count()) * u64::from(header.page_size())
-        > crate::limits::MAX_IMAGE_BYTES
-    {
-        return Err(InspectError::StructureLimit);
-    }
     budget.charge(Resource::Bytes, PAGE_BYTES as u64)?;
     let mut page = Zeroizing::new([0; PAGE_BYTES]);
     tablecraft_io::read_exact_at(source, 0, &mut *page, budget, cancelled)?;

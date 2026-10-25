@@ -8454,3 +8454,20 @@ The [report](testing/results/jdbc-aggregate-metadata-final-2026-10-25.json) reta
 232 independent reference queries (including eight reference errors) and 232
 successful TableCraft queries. This is JDBC metadata/value evidence, without
 native Access qualification or a changed TableCraft numeric profile.
+
+## Page-buffered encryption copy controls
+
+The page-copy tests reuse the previously recorded `Access_Example_VBA.accdb`,
+original deterministic Agile support and reviewed legacy vectors. Header-retagged
+Jet/ACE derivatives exercise existing codec routing and do not establish native
+file creation or compiled-application compatibility. Originals remain unchanged.
+
+The CLI scale test writes a temporary copy of that example and extends it with
+unallocated zero pages to exactly 65 MiB. It adds encryption, changes the password,
+removes encryption, compares every decoded page (allowing the documented ACE 2007
+header promotion), compares all data-page ciphertext across the Agile password
+change, and queries the existing 38-row table. The derived files are removed with
+the test's temporary directory. No additional database bytes or external fixture
+license are introduced. This proves the larger page-copy path, not a 65 MiB native
+application or the complete 2 GiB envelope. See the
+[verification record](testing/results/encryption-page-copies-2026-10-25.json).

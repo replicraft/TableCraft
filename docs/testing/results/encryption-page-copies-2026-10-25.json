@@ -1,0 +1,102 @@
+{
+  "date": "2026-10-25",
+  "scope": "Bounded page-buffered native encryption management, CLI publication and failure controls; engineering evidence only.",
+  "unique_tests": 21,
+  "new_tests": 9,
+  "existing_tests": 12,
+  "counting_note": "Five new page API tests, three new SID page tests and one new CLI scale test. Existing legacy test expanded across nine non-Jet cipher vectors and four ACE routing codes; repeated runs counted once.",
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-ace --test encryption_pages --locked",
+      "exit_code": 0,
+      "tests": 5
+    },
+    {
+      "command": "cargo test -p tablecraft-ace --test encryption_rewrite --locked",
+      "exit_code": 0,
+      "tests": 3
+    },
+    {
+      "command": "cargo test -p tablecraft-ace --lib --locked security_identifiers::tests",
+      "exit_code": 0,
+      "tests": 3
+    },
+    {
+      "command": "cargo test -p tablecraft-ace --lib --locked encryption::legacy::tests",
+      "exit_code": 0,
+      "tests": 4
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --test encryption --locked",
+      "exit_code": 0,
+      "tests": 6
+    },
+    {
+      "command": "cargo clippy -p tablecraft-ace -p tablecraft-cli --lib --bins --locked -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo clippy -p tablecraft-ace --lib --test encryption_pages --test encryption_rewrite --locked -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo clippy -p tablecraft-cli --test encryption --locked -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_dependency_boundaries.py",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "combined_test_invocation": "The three image API regressions were run with --test encryption_pages --test encryption_rewrite; the final five page API tests were subsequently rerun separately.",
+  "source_sha256": {
+    "apps/tablecraft-cli/src/commands/encryption/copying.rs": "43fa3916022299480db5945fea181452bdc79f4c0ecc8b8667f9e56f35786e43",
+    "apps/tablecraft-cli/src/commands/encryption/mod.rs": "1968bada89d2dfd5007de7a429bc32e43330be35841f3932049974e2621d90bc",
+    "apps/tablecraft-cli/tests/encryption.rs": "f9e38e52c340de78ce6400beed6e59222f144b6f1fd9f616401c8979722bdce8",
+    "crates/engines/tablecraft-ace/src/encryption/add.rs": "31e78fa26d5e12777b28e61e500d17b429345eeb4ad1e3656eb30111f966c258",
+    "crates/engines/tablecraft-ace/src/encryption/rewrite.rs": "04124d8b952bbaf9a657610ede85da7e7acabb435cb667726f70a4f6f96cf662",
+    "crates/engines/tablecraft-ace/src/encryption/streaming.rs": "45fcb78041a9e5e8d927d3f3d9162abdced4231153bef113658629999b87acc2",
+    "crates/engines/tablecraft-ace/src/encryption/legacy/mod.rs": "f6f939215fe0b6a112d3592bda9e44dc9f7a19ffd793cb0b3b636df9331d4cbd",
+    "crates/engines/tablecraft-ace/src/encryption/legacy/tests.rs": "96e8504a55b22860d754f95b24a4376d230519435c2e77618dac287f500be249",
+    "crates/engines/tablecraft-ace/src/table/security_identifiers.rs": "664985c50a6ba0a37537146d05820d047250e36e5fef59cb44aabcfe333bc82a",
+    "crates/engines/tablecraft-ace/tests/encryption_pages.rs": "3d30bddc5d8f9f45fbb5c7549deb9d11f49424bf0e85f7e8c3656dff8c6599a4"
+  },
+  "large_control": {
+    "bytes": 68157440,
+    "recipe": "Temporary Access_Example_VBA.accdb copy extended with unallocated zero pages, never mutate the original.",
+    "checks": [
+      "add/change/remove succeed",
+      "every recovered page matches, allowing existing ACE 2007 header promotion",
+      "every Agile data-page ciphertext matches after password change",
+      "query reopens changed copy and counts 38 existing rows"
+    ]
+  },
+  "failures_checked": [
+    "nonempty target",
+    "incorrect password before output",
+    "short writes then StorageFull at 0/1/4096/8199 bytes",
+    "initial/intermediate/final cancellation",
+    "full header revision after complete output",
+    "zero budget before output",
+    "SID before-image mismatch",
+    "SID page boundary/offset mismatch",
+    "unconsumed SID patches"
+  ],
+  "authoring_corrections": [
+    "Initial page round-trip assertion omitted the existing ACE 2007-to-ACE 2010 compatibility header promotion. Expected header corrected without changing product semantics."
+  ],
+  "limits": [
+    "Image API remains capped at 64 MiB.",
+    "Page API retains 2 GiB native source geometry and caller cumulative budgets; CLI retains 512 MiB bytes, 100000 rows and 100000000 steps.",
+    "Stable/offline source and distinct empty unpublished destination required; errors may leave a discarded prefix.",
+    "No native Access save/reopen, live-file coherence, encrypted table edits or complete 2 GiB scale qualification."
+  ]
+}
