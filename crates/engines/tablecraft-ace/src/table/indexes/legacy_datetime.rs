@@ -1,6 +1,8 @@
 //! Validate every DATE key, including internal bounds with no directly read row.
+mod selection;
 use super::floating;
 use crate::InspectError;
+pub use selection::DateTimeIndexSelection;
 use tablecraft_core::values::LegacyDateTime;
 
 pub(super) fn decode(ordered: u64) -> Result<i64, InspectError> {

@@ -70,9 +70,9 @@ pub use table::{
     read_table_binary_index_range, read_table_guid_index, read_table_text_index_range,
 };
 pub use table::{
-    BooleanIndexSelection, ByteIndexSelection, CurrencyIndexSelection, DecimalIndexSelection,
-    Int16IndexSelection, Int32IndexSelection, Int64IndexSelection, read_table_index,
-    read_table_index_range, read_table_int64_index_range,
+    BooleanIndexSelection, ByteIndexSelection, CurrencyIndexSelection, DateTimeIndexSelection,
+    DecimalIndexSelection, Int16IndexSelection, Int32IndexSelection, Int64IndexSelection,
+    read_table_index, read_table_index_range, read_table_int64_index_range,
 };
 pub use table::{
     CalculationDeclaration, StoredCalculation, StoredInt32Calculation,

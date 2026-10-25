@@ -1,0 +1,145 @@
+{
+  "date": "2026-10-25",
+  "scope": "Engine-only conservative calendar candidate selection on qualified single legacy DATE indexes; no SQL hint integration",
+  "unique_tests": 19,
+  "new_tests": 10,
+  "existing_regression_tests": 9,
+  "unique_test_targets": {
+    "legacy_datetime_selection_units": 5,
+    "date_index_candidates": 5,
+    "date_indexes": 6,
+    "index_projection": 3
+  },
+  "counting_note": "The five final candidate tests include the four earlier candidate tests; repeated runs are counted once. Unit property covers 512 generated cases in addition to fixed endpoint matrices.",
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-ace --all-features --lib table::indexes::legacy_datetime --locked --offline -j 2",
+      "exit_code": 0,
+      "private_log": ".cache/date-candidates-units-final-20261025.log",
+      "sha256": "09c7f3a4de6f6cdc09818f505bc08e81abbfaa92ba3727d4719c713ac9cb3acf",
+      "terminal_session": 84051
+    },
+    {
+      "command": "cargo test -p tablecraft-ace --test date_index_candidates --test date_indexes --test index_projection --locked --offline -j 2",
+      "exit_code": 0,
+      "private_log": ".cache/date-candidates-native-final-20261025.log",
+      "sha256": "570ba33861542e38f52290c7f9454f39c55c57418602b4d6db57587b78abd273",
+      "terminal_session": 76268
+    },
+    {
+      "command": "cargo test -p tablecraft-ace --test date_index_candidates --locked --offline -j 2",
+      "exit_code": 0,
+      "private_log": ".cache/date-candidates-native-guards-20261025.log",
+      "sha256": "dec676374f7d6d3abb1fd7f0d04f74e6692c280fb2a1a56c94b61ec98e230d9a",
+      "terminal_session": 12815
+    },
+    {
+      "command": "cargo clippy -p tablecraft-ace --lib --test date_index_candidates --test date_indexes --test index_projection --all-features --locked --offline -j 2 -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/date-candidates-clippy-20261025.log",
+      "sha256": "6b50b8a2aab64e22a0a4022ba28ecb20aeed14a5cb8e191bdcf50e20c4f9d6c1",
+      "terminal_session": 19320
+    },
+    {
+      "command": "cargo clippy -p tablecraft-ace --lib --test date_index_candidates --all-features --locked --offline -j 2 -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/date-candidates-clippy-guards-20261025.log",
+      "sha256": "f6fa61a1aa43480dc70e696d3cdf914da22b11a853e5b1cda1d803e5bfed7fd2",
+      "terminal_session": 56682
+    },
+    {
+      "command": "cargo check -p tablecraft-access --lib --no-default-features --locked --offline -j 2",
+      "exit_code": 0,
+      "private_log": ".cache/date-candidates-adapter-minimal-20261025.log",
+      "sha256": "9873e7849e28da68b8dac2898e202f48070b7daf2856cefb86f449f66e67acfb",
+      "terminal_session": 73027
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "private_log": ".cache/date-candidates-fmt-final-20261025.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "terminal_session": 72209
+    },
+    {
+      "command": "python3 scripts/check_dependency_boundaries.py",
+      "exit_code": 0,
+      "workspace_packages": 12,
+      "output": "Dependency boundaries passed for 12 workspace packages."
+    }
+  ],
+  "excluded_attempts": [
+    {
+      "command": "cargo test -p tablecraft-ace --test date_index_candidates --test date_indexes --test index_projection --locked --offline -j 2",
+      "exit_code": 101,
+      "private_log": ".cache/date-candidates-native-initial-20261025.log",
+      "sha256": "391bec0fe6e24f51ec5550eebc65f6df807f23a1f8e365955c1439976e440a2b",
+      "terminal_session": 14990,
+      "reason": "New test used nonexistent InspectError::Budget variant. Corrected only assertion to actual InspectError::Limit with Resource::Bytes; no production algorithm or expected rows changed."
+    }
+  ],
+  "contracts": [
+    "LegacyDateTime day/fraction temporal order maps to a conservative interval in native serial order without civil conversion or payload canonicalization.",
+    "Inclusive equal points preserve epoch aliases and signed zero; other ranges retain complete boundary days and may include extra rows. Caller residual filtering remains mandatory.",
+    "All/Null remain distinct from unbounded non-NULL candidates, and every typed request still requires a qualified single legacy DATE key.",
+    "Native authored controls cover Jet 4 and ACE 2007/2016/2019 header profiles and both directions, selected residual answers, projected one-row ceilings and sequential table-order reads.",
+    "Wrong carriers/compound keys, corrupt selected roots and malformed hidden DATE payloads refuse; cancellation and independent byte limits retain typed failures.",
+    "Existing native entry/key validation, resource controls and write gates are reused without new dependencies or source caches."
+  ],
+  "source_snapshots": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/lib.rs",
+      "sha256": "7adfbea649ebc8d88dde867644272372dcdab4c948543e027bff3bd526fdd8a9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mod.rs",
+      "sha256": "5656a4bd71717e3f012d414c9ab02ec7f9ee2d295a9e45ceb823c0b9fcb121a3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mod.rs",
+      "sha256": "adc8c036fa0e7867d02d15a096f43a9746420fae02ba188037163b061a88da3c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/legacy_datetime.rs",
+      "sha256": "f5809616e97c56cfe96cabccbab7851a853391fdbfa2c4c644d5c2602d7cdedc"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/legacy_datetime/selection.rs",
+      "sha256": "5d354af75c2cbe03697271cac0da5a9d2dec5d5ad07abab7945fa793141582fd"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/legacy_datetime/selection/tests.rs",
+      "sha256": "9a0ce0ef75dc077fad55bfb08dbc3ef9788bdf57d9fe23f292dd7a54d4607a34"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/projection.rs",
+      "sha256": "2726ef1d19726d4c44a4cdff3579d32802d95d768cd8975828cfb30e3b590ce4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/read.rs",
+      "sha256": "4bf641a305ad3c91ff2826bfe1e43105b26889462e6a37a122dfd9ddf46fcea6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/date_index_candidates.rs",
+      "sha256": "5f7362b0b8b49bae5f66705882f098ec2561f01ebfd85797707d6b32a716303f"
+    },
+    {
+      "path": "docs/DATE_INDEX_CANDIDATES.md",
+      "sha256": "1db57edf6486d26267d8e322524fa21ea34c731d8c8b655073061ade7add3540"
+    },
+    {
+      "path": "docs/NATIVE_INDEXES.md",
+      "sha256": "f3b6c52c15a4a527a38ce2c7b19c4322eaa6db00752151b68a2ef32634327ce5"
+    },
+    {
+      "path": "docs/IMPLEMENTATION.md",
+      "sha256": "5230851bec9bb5e48e576ad4151dcae23f1c7a921d9e9515ea0f23aeed378ac8"
+    }
+  ],
+  "source_snapshot_scope": "Reviewed final working-tree files before logical commit; not a complete executable compilation manifest.",
+  "limits": [
+    "No query extraction or automatic Access source integration yet.",
+    "Native reader evidence uses independently authored fixture bytes; original-file candidate replay is separate.",
+    "No native Microsoft Access SQL, new foreign-key/write eligibility, live-file coherence or timing qualification."
+  ]
+}

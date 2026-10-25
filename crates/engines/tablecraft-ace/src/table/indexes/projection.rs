@@ -1,7 +1,7 @@
 //! Explicit indexed output columns and internal key-validation projection.
 use super::{
-    BooleanIndexSelection, DecimalIndexSelection, Int32IndexSelection, Int64IndexSelection,
-    NativeIndex, key::KeyRow,
+    BooleanIndexSelection, DateTimeIndexSelection, DecimalIndexSelection, Int32IndexSelection,
+    Int64IndexSelection, NativeIndex, key::KeyRow,
 };
 use crate::{InspectError, TableSchema, header::check, table::snapshot};
 use tablecraft_core::{
@@ -29,6 +29,8 @@ pub enum IndexProjectionSelection<'a> {
     Currency(super::CurrencyIndexSelection),
     /// Only a qualified single Decimal index, using exact declared equality or NULL.
     Decimal(DecimalIndexSelection),
+    /// Only a qualified single legacy DATE index, with conservative calendar candidates.
+    DateTime(DateTimeIndexSelection),
     /// Only a qualified single GUID index, using exact canonical equality or NULL.
     Guid(super::guid::GuidIndexSelection),
     /// Only a qualified single Short Binary index, with borrowed byte bounds.
