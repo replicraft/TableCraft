@@ -220,7 +220,9 @@ raising defaults or cumulative limits; rendered output retains its own ceiling.
 The explicit [arithmetic declaration profile](DECLARED_ARITHMETIC.md) now carries
 Scalar/Variant provenance through integral/Single-selected query execution with
 `--declared-arithmetic` (`--declared-integral` remains an alias).
-Default arithmetic remains unchanged. Static inference for unknown outputs,
+Known Scalar String/Variant predicates now select metered String coercion under
+the same explicit profile; unresolved categories fail when they change dispatch.
+Default arithmetic/comparisons remain unchanged. Static inference for unknown outputs,
 wider carrier rules and native SQL qualification remain P0 acceptance work.
 
 Read/query status reviewed 23 October 2026 against current profile selectors,

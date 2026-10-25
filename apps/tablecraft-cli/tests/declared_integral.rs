@@ -364,7 +364,19 @@ fn text_return_categories_and_chr_dollar_are_preserved_at_the_cli() {
         ]);
         assert_eq!(dollar.status.code(), Some(2));
         assert!(dollar.stdout.is_empty());
-        assert!(String::from_utf8_lossy(&dollar.stderr).contains("type mismatch"));
+        assert!(String::from_utf8_lossy(&dollar.stderr).contains("requires a collation"));
+        let compared = run(&[
+            "query",
+            "run",
+            "SELECT 1,CVar(65)<Chr$(65)",
+            "--number-format",
+            "en-us",
+            "--collation",
+            "ordinal",
+            flag,
+        ]);
+        assert!(compared.status.success(), "{:?}", compared);
+        assert_eq!(compared.stdout, b"Expr1\tExpr2\n1\tTRUE\n");
     }
 }
 

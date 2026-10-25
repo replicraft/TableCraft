@@ -1,5 +1,28 @@
 # Implementation status
 
+## Declared Scalar String/Variant predicates
+
+The explicit declared profile now compares a known Scalar String with a known
+Variant through the existing metered CStr service. For example, `'02'=CVar(2)`
+is False and `'10'<CVar(2)` is True under invariant formatting and ordinal
+collation. Conversion runs once before provider resolution; actual String cells
+retain their policies and raw representation. Converted numbers do not acquire
+unrelated Text field authority. Unknown categories fail only when they can
+change the comparison branch. Default predicates, both-Variant ordering,
+Scalar numeric/Variant String conversion and strict relational keys remain
+separate. See [the declared contract](DECLARED_ARITHMETIC.md#scalar-string-compared-with-variant).
+
+The focused batch passes 143 unique Rust tests: five expression tests, 118 query
+regressions and 20 CLI declaration tests. It covers all operators, range/list/
+subquery membership, grouped/derived/correlated predicates, category ambiguity,
+policy conflicts, one-time conversion, raw UTF-16, eager failures, resource limits
+and cancellation. Strict scoped expression/query/CLI test Clippy, standalone
+expression checking, normal CLI building, formatting and dependency checks pass.
+Old Chr$ expectations now exercise required collation and successful textual
+comparison. A parent-authored reserved alias was bracketed before the final
+passing CLI run. Native getter replay is recorded separately; no native ACE
+inference, NLS or complete P0/read-query compatibility is established here.
+
 ## Independent Power operand/error replay
 
 The [Power replay](testing/POWER.md) passes 627 CLI commands, seven exact-model

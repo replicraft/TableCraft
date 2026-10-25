@@ -1,4 +1,5 @@
 //! Explicit per-operation routing; no source-specific identity decoding.
+mod declared_strings;
 mod provenance;
 
 use super::Runtime;
@@ -45,6 +46,10 @@ impl<'a> Runtime<'a, '_> {
         b: &CellValue,
         policy: TextPolicy,
     ) -> Result<Truth, QueryError> {
+        if let Some(result) = self.compare_declared_string_variant(op, a, b, policy)? {
+            return Ok(result);
+        }
+
         let declared_variants = self.options.declared_integral
             && a.declaration == Some(OperandDeclaration::Variant)
             && b.declaration == Some(OperandDeclaration::Variant);

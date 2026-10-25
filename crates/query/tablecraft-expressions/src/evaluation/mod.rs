@@ -77,6 +77,7 @@ pub use arithmetic::operands::{
 };
 pub use arithmetic::raw::PreparedNumericArithmetic;
 pub use bindings::{Bindings, NoBindings};
+pub use comparison_values::PreparedScalarStringVariantComparison;
 pub use context::{EvalLimits, Evaluator};
 
 #[cfg(test)]
