@@ -1,5 +1,20 @@
 # Implementation status
 
+## Same-row calculation predicate previews
+
+The explicit calculation preview now admits six comparisons and unary/binary
+logical operators over ordinary same-row inputs. It reuses existing nullable
+Boolean and integer-mask semantics, preserves eager errors and metadata-only
+preparation, and keeps function/calculated/nonlocal dependencies refused. Stored
+caches remain unused; natural preview results are not coerced to their declared
+stored carrier. Text comparison still requires an explicit host comparer.
+
+The [predicate batch](CALCULATION_PREVIEWS.md#same-row-predicate-previews)
+passes 26 focused syntax/adapter/CLI tests with scoped strict Clippy. Its original
+ACE 2016/2019 replay passes 248 controls and 312 independently modeled cells, all
+different from stale caches; all twelve hashes match. Native formula behavior
+and freshness remain unqualified.
+
 ## Declared mixed String and numeric addition
 
 The explicit declared-arithmetic profile now chooses mixed `+` from the original

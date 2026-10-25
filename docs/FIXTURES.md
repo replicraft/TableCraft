@@ -7406,3 +7406,37 @@ query replay and ignored `calculated-carriers-policy-initial-report.json` are no
 accepted passing evidence. The latter preliminary report included six redundant
 quota attempts on already unsupported non-finite query sources; the final runner
 instead verifies actual quota error categories on admitted finite sources.
+
+
+## Original predicate-preview inputs
+
+The original [producer](testing/PredicatePreviewFixture.java),
+[read-only getter oracle](testing/PredicatePreviewOracle.java) and
+[independent Python runner](testing/compare_predicate_previews.py) are repository
+MIT code. No third-party source or fixture bytes were copied. The external
+Jackcess 5.0.4 JAR retains its existing reviewed Apache-2.0 provenance and SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+
+Fresh originals generated on 24 October 2026 remain ignored under
+`.cache/tablecraft-fixtures/predicate-previews-final-20261024/`:
+
+| File | Bytes | SHA-256 |
+| --- | ---: | --- |
+| V2016.accdb | 401,408 | `72d99e718ae6b9f2bf54dcfb7c09743995aa454c5079515555bb44c8554dba1b` |
+| V2019.accdb | 475,136 | `e0073ed7ab96a13c1eeca51fd85d6053a08535f04c15f802724e4315910ba6e2` |
+
+Each file has populated and empty tables with 29 calculated Boolean declarations
+and ordinary nullable Int32 inputs. Expression evaluation is disabled during
+creation and read-only getter inspection. Twenty-six admitted formulas cover
+comparisons, logical operators and NULL boundaries; two statically refused
+formulas and one late eager-error formula remain distinct controls. The producer
+supplies deliberately stale cache values as data. The Python model independently
+uses persisted ordinary getters, not those caches, to compute expected results.
+
+The [feature record](testing/PREDICATE_PREVIEW_REPLAY.md) and
+[accepted report](testing/results/predicate-previews-2026-10-24.json) retain
+248 controls, 312 recomputed cells all different from stored caches and twelve
+unchanged input/source/helper/reference/executable hashes. No original is modified;
+generated databases, compiled classes, reference JAR and frozen CLI remain ignored.
+Native Access formula execution, cache freshness, result coercion and writes are
+unqualified.

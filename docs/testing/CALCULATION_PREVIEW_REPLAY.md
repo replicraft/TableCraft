@@ -1,5 +1,11 @@
 # Independent row-local calculation previews
 
+This accepted record captures the implementation before predicate-preview
+admission. Comparison refusals below belong to that historical replay; current
+comparison/logical support and its separate evidence are described in
+[predicate previews](PREDICATE_PREVIEW_REPLAY.md). The pinned original report is
+unchanged.
+
 This replay checks the explicit [calculation preview](../CALCULATION_PREVIEWS.md)
 against independent models over ordinary stored getters. It does not ask Jackcess
 to evaluate formulas, qualify native Access arithmetic or certify cached freshness.

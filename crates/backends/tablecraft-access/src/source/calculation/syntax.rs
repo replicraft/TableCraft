@@ -144,7 +144,7 @@ fn validate(
                 .map_err(QueryError::from)?;
         }
         Expression::Unary {
-            operator: UnaryOperator::Plus | UnaryOperator::Minus,
+            operator: UnaryOperator::Plus | UnaryOperator::Minus | UnaryOperator::Not,
             expression,
         }
         | Expression::IsNull { expression, .. } => {
@@ -161,7 +161,18 @@ fn validate(
                 | BinaryOperator::IntegerDivide
                 | BinaryOperator::Modulo
                 | BinaryOperator::Power
-                | BinaryOperator::Concatenate,
+                | BinaryOperator::Concatenate
+                | BinaryOperator::Equal
+                | BinaryOperator::NotEqual
+                | BinaryOperator::Less
+                | BinaryOperator::LessOrEqual
+                | BinaryOperator::Greater
+                | BinaryOperator::GreaterOrEqual
+                | BinaryOperator::And
+                | BinaryOperator::Or
+                | BinaryOperator::Xor
+                | BinaryOperator::Equivalence
+                | BinaryOperator::Implication,
         } => {
             validate(left, columns, dependencies, budget, cancelled)?;
             validate(right, columns, dependencies, budget, cancelled)?;

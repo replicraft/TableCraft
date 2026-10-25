@@ -287,3 +287,31 @@ fn transport_expansion_respects_the_same_output_ceiling() {
     assert_success(&output);
     assert_eq!(output.stdout, b"Recomputed\n\"\"\"abc\"\"\"\n");
 }
+
+#[test]
+fn predicate_previews_keep_natural_values_and_buffer_late_eager_failures() {
+    for (expression, expected) in [
+        ("[Id]=2", "Recomputed\nFALSE\nTRUE\nFALSE\n"),
+        ("([Id]>=2) Or False", "Recomputed\nFALSE\nTRUE\nTRUE\n"),
+        ("Not [Id]", "Recomputed\n-2\n-3\n-4\n"),
+    ] {
+        let database = Database::new(calculated_fixture::database_with_expression(
+            &[Some(999), Some(999), Some(999)],
+            expression,
+        ));
+        let output = database.preview(&[]);
+
+        assert_success(&output);
+        assert_eq!(output.stdout, expected.as_bytes());
+    }
+
+    let database = Database::new(calculated_fixture::database_with_expression(
+        &[Some(999), Some(999), Some(999)],
+        "False And (1/([Id]-2)=0)",
+    ));
+    let output = database.preview(&[]);
+
+    assert!(!output.status.success());
+    assert!(output.stdout.is_empty());
+    assert!(String::from_utf8_lossy(&output.stderr).contains("division by zero"));
+}

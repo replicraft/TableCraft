@@ -374,3 +374,6 @@ fn memo_declarations_do_not_read_or_reinterpret_corrupt_cached_storage() {
         .is_err()
     );
 }
+
+#[path = "calculation_preview/predicates.rs"]
+mod predicates;

@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-24",
+  "scope": "Independently model explicit predicate previews from inert ordinary getters.\n\nNative caches remain stale data. No Microsoft Access formula execution,\nfreshness, cache replacement, write or broader formula profile is qualified.\n",
+  "controls": 248,
+  "recomputed_cells": 312,
+  "distinct_stale_cache_cells": 312,
+  "hashes_unchanged": true,
+  "hashes": {
+    "apps/tablecraft-cli/src/commands/query/preview_calculation.rs": "4449b6b099bf301399d31c8076646020ca2794cbf8e7af6fa9a11a19d5e559fe",
+    "crates/backends/tablecraft-access/src/source/calculation/syntax.rs": "6aabff2809b75b382323cb1058ca28d9872ec99ebaf5d7113e4903ab160e70d5",
+    "crates/backends/tablecraft-access/src/source/calculation.rs": "db01524ecc2669c702a1333178c45ebcbf6227cfbd963627f44ed0c7494e70ad",
+    "docs/testing/PredicatePreviewFixture.java": "6a69199d152e02917f351be55e54773316350e2ff8453214aa648dc64b0133b2",
+    "docs/testing/PredicatePreviewOracle.java": "793e64d0febc13c1f028c79e0f22c8237cc84f158d0a47f5a5b81d16806a1dc1",
+    "docs/testing/cli_tsv.py": "3b849270cc2cde83ecd62089d949ec0388e2ce8755c67801e1c2b16cbb209f6f",
+    "docs/testing/compare_calculated_decimals.py": "57d849a3a3251e0b1827c95bb74a7387fa353ab935affdfd812ed84e1224c7fd",
+    "docs/testing/compare_predicate_previews.py": "93c4a35cb7630bd7c583167a329d0ea3e1c70e6e79fc90cd4891ed0bf111161b",
+    ".cache/tablecraft-bin/predicate-preview-20261024": "4a6cb30c06f086d3b3416b0c5bbcb98d47c4056934bb3deff2a7dee7ac2589d8",
+    ".cache/tablecraft-fixtures/jackcess-5.0.4.jar": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    ".cache/tablecraft-fixtures/predicate-previews-final-20261024/V2016.accdb": "72d99e718ae6b9f2bf54dcfb7c09743995aa454c5079515555bb44c8554dba1b",
+    ".cache/tablecraft-fixtures/predicate-previews-final-20261024/V2019.accdb": "e0073ed7ab96a13c1eeca51fd85d6053a08535f04c15f802724e4315910ba6e2"
+  },
+  "observations": [
+    {
+      "profile": "V2016",
+      "table": "Predicates",
+      "declarations": 29,
+      "rows": 6,
+      "oracle_sha256": "303fa7f5a6d2abad0b33943a6e202b7a6b43ad0131022b312cffa65f4d7aaea8"
+    },
+    {
+      "profile": "V2016",
+      "table": "EmptyPredicates",
+      "declarations": 29,
+      "rows": 0,
+      "oracle_sha256": "303fa7f5a6d2abad0b33943a6e202b7a6b43ad0131022b312cffa65f4d7aaea8"
+    },
+    {
+      "profile": "V2019",
+      "table": "Predicates",
+      "declarations": 29,
+      "rows": 6,
+      "oracle_sha256": "303fa7f5a6d2abad0b33943a6e202b7a6b43ad0131022b312cffa65f4d7aaea8"
+    },
+    {
+      "profile": "V2019",
+      "table": "EmptyPredicates",
+      "declarations": 29,
+      "rows": 0,
+      "oracle_sha256": "303fa7f5a6d2abad0b33943a6e202b7a6b43ad0131022b312cffa65f4d7aaea8"
+    }
+  ]
+}
