@@ -374,3 +374,28 @@ fn explicit_history_pages_keep_visible_memo_and_stored_version_bindings() {
     assert_eq!(history.links().parents().len(), 3);
     assert_eq!(bytes, database_with(&records));
 }
+
+#[test]
+fn signed_stored_history_ids_are_data_and_never_helper_sentinels() {
+    let identities = [i32::MIN, -7, -2, -1, 0, 7, i32::MAX];
+    let records = identities.map(|identity| (10, identity, Some("history"), Some(0)));
+    for code in [2, 5, 6] {
+        let mut bytes = database_with(&records);
+        bytes[20] = code;
+        let history = read(&bytes, "Notes").unwrap();
+        let values = history
+            .stored_versions(0)
+            .unwrap()
+            .collect::<Result<Vec<_>, _>>()
+            .unwrap();
+        assert_eq!(
+            values
+                .iter()
+                .map(|value| value.identity())
+                .collect::<Vec<_>>(),
+            identities
+        );
+        assert!(values.iter().all(|value| value.value() == Some("history")));
+        assert_eq!(history.stored_versions(1).unwrap().len(), 0);
+    }
+}

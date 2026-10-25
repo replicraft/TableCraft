@@ -7440,3 +7440,38 @@ unchanged input/source/helper/reference/executable hashes. No original is modifi
 generated databases, compiled classes, reference JAR and frozen CLI remain ignored.
 Native Access formula execution, cache freshness, result coercion and writes are
 unqualified.
+
+
+## Original signed complex child identity inputs
+
+The original [producer](testing/SignedComplexIdentityFixture.java),
+[read-only oracle](testing/SignedComplexIdentityOracle.java) and
+[independent replay](testing/compare_signed_complex_identities.py) are repository
+MIT code. No third-party source or fixture bytes were copied. The reviewed
+Jackcess 5.0.4 artifact retains its existing Apache-2.0 provenance and SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+
+Fresh originals generated on 24 October 2026 remain ignored under
+`.cache/tablecraft-fixtures/signed-complex-identities-final-20261024/`:
+
+| File | Bytes | SHA-256 |
+| --- | ---: | --- |
+| V2016.accdb | 466,944 | `428db39c2aebbec6ecc52b205d15a8343f9e989d908ff4fc00c085531fd2d75a` |
+| V2019.accdb | 536,576 | `4941d658a11284ef1c1781254eb448ea88cdc7f317a777bd3a15bffa0bd117d0` |
+
+Each file has two ordinary parent records, with eight stored multivalue,
+attachment and history children each. Actual positive foreign keys associate
+signed child identities including Int32 boundaries, -1 and zero. Public typed
+getters reopen every value and retain physical RowId information. The -1 helper
+identity with no row location is explicitly distinguished from persisted -1.
+The author uses public flat-table AutoNumber insertion controls and pinned
+implementation metadata getters, without declaration/byte patches; this is
+independent stored-read evidence, not proof of native Access write acceptance.
+
+The [feature record](testing/SIGNED_COMPLEX_IDENTITIES.md) and
+[accepted report](testing/results/signed-complex-identities-2026-10-24.json) retain
+88 passing controls and fourteen unchanged hashes. Inputs, preliminary probes,
+compiled classes, the reference JAR and frozen CLI remain ignored. Preliminary
+probes and failed harness iterations are excluded from accepted counts. No active
+content executes; native Access SQL, application behavior and writes remain
+unqualified.

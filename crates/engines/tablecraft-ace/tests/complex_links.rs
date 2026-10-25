@@ -4,6 +4,8 @@ mod base;
 mod complex_fixture;
 #[path = "complex_links/fixture.rs"]
 mod links_fixture;
+#[path = "complex_links/signed.rs"]
+mod signed;
 mod support;
 use links_fixture::populated;
 

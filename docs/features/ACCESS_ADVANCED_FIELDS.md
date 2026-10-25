@@ -262,12 +262,19 @@ stays encoded; no extraction or decompression occurs.
 
 The profile admits code-5/code-6 fixed four-byte complex parent keys with exact
 fixed/updatable/AutoNumber flags and either zero extended flags or the observed
-0x20 history-parent variant. Assigned parent keys and flat FK/identity values
-must be positive. Parent keys and child identities must be unique in their own
+0x20 history-parent variant. Assigned parent keys and flat foreign keys must
+be positive. Child identities retain the complete signed Int32 domain, including
+zero and negative values. Parent keys and child identities must be unique in their own
 scopes; every child FK must bind a parent in the selected column. Typed
 `ComplexReferenceViolation` errors distinguish ambiguous parents, missing parents,
 duplicate child identities and NULL child references. Other layouts/values remain
 unsupported. No partial storage view is published on failure.
+
+The [signed-identity replay](../testing/SIGNED_COMPLEX_IDENTITIES.md) compares
+reopened typed multivalue, attachment and history getters against complete native
+views. Stored -1/zero identities remain present data; reference insertion helper
+sentinels do not become NULL or missing children. Parent/reference positivity is
+unchanged.
 
 CLI `inspect COPY.accdb --table NAME --complex-links COLUMN` buffers zero-based
 parent ordinals, stored keys and raw child counts. It reads only explicit local
@@ -399,7 +406,7 @@ python3 docs/testing/compare_multivalues.py --jar path/to/jackcess-5.0.4.jar \
 
 `read_attachment_column` now returns a complete `AttachmentColumn` over checked
 complex links. `attachments(parent)` borrows typed `StoredAttachment` records in
-flat snapshot order, retaining positive scoped child identities and nullable
+flat snapshot order, retaining signed scoped child identities and nullable
 FileURL, FileName, FileType, wrapped FileData, exact legacy FileTimeStamp and raw
 Int32 FileFlags. Empty parent membership remains distinct from an absent ordinal.
 Accessors use typed errors without unchecked casts; strings/bytes borrow the
@@ -467,7 +474,7 @@ an absent visible column is UnknownColumn.
 
 The returned `VersionHistoryColumn` exposes the associated visible `memo_column()`,
 raw hidden-column `links()` and borrowing `stored_versions(parent)` records.
-Each `StoredVersion` retains its positive child identity, nullable text and exact
+Each `StoredVersion` retains its signed child identity, nullable text and exact
 nullable DATE serial. Stored flat-row order, duplicate text, Unicode/NUL content,
 NULL/empty text, empty membership and absent ordinals remain distinct. No current
 Memo value, timestamp, newest-first order or latest-value selection is synthesized.

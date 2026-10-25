@@ -1,5 +1,21 @@
 # Implementation status
 
+## Signed complex-child identity reads
+
+Multivalue, attachment and Memo-history readers now preserve signed Int32 child
+identities, including zero and -1, separately from strictly positive parent and
+foreign keys. The former shared positive-key guard rejected actual persisted
+values that independent reopened getters returned successfully. Identity
+uniqueness, NULL/orphan rejection, physical order and complete-cache checks remain.
+
+The [signed-ID replay](testing/SIGNED_COMPLEX_IDENTITIES.md) passes 88 controls
+across two original ACE 16-family files, including encoded/decoded attachments,
+nullable members, discovered history names and resource refusals. Fourteen hashes
+remain unchanged. Focused engine/adapter targets pass 56 tests with strict scoped
+Clippy and formatting. Persisted -1 identities retain a physical row and are
+distinct from reference insertion-helper sentinels. These are independent stored
+reads, not native Access validity, mutation or save/reopen qualification.
+
 ## Explicit Japanese StrConv kana conversion
 
 Standalone StrConv flags 16/32 now convert basic fullwidth Japanese letters and

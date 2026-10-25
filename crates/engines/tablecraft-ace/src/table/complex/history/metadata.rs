@@ -67,7 +67,7 @@ pub struct StoredVersion<'a> {
     pub(super) modified: Option<LegacyDateTime>,
 }
 impl<'a> StoredVersion<'a> {
-    /// Positive child identity scoped to the hidden flat table snapshot.
+    /// Signed child identity scoped to the hidden flat table snapshot.
     pub const fn identity(&self) -> i32 {
         self.identity
     }

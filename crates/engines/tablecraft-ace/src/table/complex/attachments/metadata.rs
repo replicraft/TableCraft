@@ -89,7 +89,7 @@ pub struct StoredAttachment<'a> {
     pub(super) flags: Option<i32>,
 }
 impl<'a> StoredAttachment<'a> {
-    /// Positive stored child identity, scoped to this flat snapshot.
+    /// Signed stored child identity, scoped to this flat snapshot.
     pub const fn identity(&self) -> i32 {
         self.identity
     }

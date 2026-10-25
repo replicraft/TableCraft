@@ -84,7 +84,7 @@ impl Parents {
         for (ordinal, row) in rows.iter().enumerate() {
             check(budget, cancelled)?;
             let key = child_key(row.get(foreign_key))?;
-            identities.push(child_key(row.get(identity))?);
+            identities.push(child_identity(row.get(identity))?);
             budget.charge(Resource::Steps, search_steps)?;
             let parent = self
                 .keys
@@ -128,6 +128,14 @@ fn child_key(value: Option<&Value>) -> Result<i32, InspectError> {
     match value {
         Some(Value::Int32(key)) if *key > 0 => Ok(*key),
         Some(Value::Int32(_)) => Err(InspectError::Unsupported),
+        Some(Value::Null) => Err(ComplexReferenceViolation::NullChild.into()),
+        _ => Err(InspectError::Malformed),
+    }
+}
+
+fn child_identity(value: Option<&Value>) -> Result<i32, InspectError> {
+    match value {
+        Some(Value::Int32(identity)) => Ok(*identity),
         Some(Value::Null) => Err(ComplexReferenceViolation::NullChild.into()),
         _ => Err(InspectError::Malformed),
     }

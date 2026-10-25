@@ -14,7 +14,7 @@ pub(super) fn read<'a>(
             .ok_or(InspectError::Malformed)
     };
     let identity = match row.get(columns.identity) {
-        Some(Value::Int32(identity)) if *identity > 0 => *identity,
+        Some(Value::Int32(identity)) => *identity,
         _ => return Err(InspectError::Malformed),
     };
     let encoded = match field(schema::DATA)? {
