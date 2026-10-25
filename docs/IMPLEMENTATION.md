@@ -1,5 +1,16 @@
 # Implementation status
 
+## Storage-history replay after query metadata corrections
+
+The rebuilt CLI and native row example pass 45 mixed-scalar and 37 modern-scalar
+history controls over the five unchanged registered inputs. Each file retains
+19,902 independently checked rows, spanning Jet 4, ACE 2007 and the ACE 16-family
+layouts, including Large Number and Extended dates. The [replay record](testing/results/read-query-storage-replay-2026-10-24.json)
+pins both commands, terminal logs, executables and all five source hashes.
+Dependency boundaries and all 41 policy-script tests also pass. These are
+independent storage/query regressions; native Access execution and save/reopen
+remain unrun.
+
 ## Consolidated query metadata and edit-ownership regression
 
 The all-feature query package passes 1,083 tests across 198 result targets,

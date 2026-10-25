@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-24",
+  "git_head": "ab0f2a9232b8aaf5cc3b81961c92ce53b9a4c499",
+  "mixed_scalar_controls": 45,
+  "modern_scalar_controls": 37,
+  "retained_rows_per_file": 19902,
+  "fixture_count": 5,
+  "exit_codes": [
+    0,
+    0
+  ],
+  "inputs": {
+    ".cache/tablecraft-bin/metadata-ownership-20261024": "7a55cf9c97d91f4f50c182425db2595d53bb28b55208a21fb5f69e70d53f7fa8",
+    "target/debug/examples/table_data": "b908c0871177581e5f074916a61381bc5f9d9b51f8aa53e92075845a6ca9b00f",
+    ".cache/tablecraft-fixtures/jackcess-5.0.4.jar": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    ".cache/mixed-scalar-metadata-regression-20261024-complete.log": "ac52c71b08ac6b2debbd22bc627dbf73c6827f48c0666b2670838dff427e3fb7",
+    ".cache/modern-scalar-metadata-regression-20261024-complete.log": "a690b4461365029f029c2ac27ad36b5e1662a11aaf9f16a5dad2e108667e3c73",
+    ".cache/tablecraft-fixtures/mixed-scalar-histories/mixed-V2000.mdb": "4fe3db9bdc32b8c552b20d72dcb4438372654adca37e9208850f2811677dc25d",
+    ".cache/tablecraft-fixtures/mixed-scalar-histories/mixed-V2007.accdb": "697796edb15b81784e479cb64d0bb144d5182dc0d49b1d10af0856cdb1db32c8",
+    ".cache/tablecraft-fixtures/mixed-scalar-histories/mixed-V2016.accdb": "22ae1aa4a504a2540f45946997fdbe9e64703263df3e08068c2855fa7b69d937",
+    ".cache/tablecraft-fixtures/modern-scalar-histories/modern-V2016.accdb": "d17fa71f3283bb50b6f3571926c18c842024aa8a37c1d28640f980dd23ded1e2",
+    ".cache/tablecraft-fixtures/modern-scalar-histories/modern-V2019.accdb": "03bc1d98ac89b903dc3d40caa7c65edd6b31f29d93f386a40a26719f36e98acb"
+  },
+  "native_access": "unrun; user-deferred",
+  "limitations": [
+    "Independent exact getter/model comparisons, not native SQL or save/reopen qualification.",
+    "Replayed existing registered inputs; no source fixture mutation or new format admission."
+  ],
+  "commands": [
+    "python3 docs/testing/compare_mixed_scalar_histories.py --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar --cli .cache/tablecraft-bin/metadata-ownership-20261024 --rows target/debug/examples/table_data --directory .cache/tablecraft-fixtures/mixed-scalar-histories",
+    "python3 docs/testing/compare_modern_scalar_histories.py --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar --cli .cache/tablecraft-bin/metadata-ownership-20261024 --rows target/debug/examples/table_data --directory .cache/tablecraft-fixtures/modern-scalar-histories"
+  ],
+  "excluded_attempts": [
+    {
+      "logs": [
+        ".cache/mixed-scalar-metadata-regression-20261024.log",
+        ".cache/modern-scalar-metadata-regression-20261024.log"
+      ],
+      "exit_code": 2,
+      "reason": "Invocation omitted the required --rows example path; no comparisons ran."
+    }
+  ]
+}
