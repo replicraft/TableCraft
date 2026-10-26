@@ -1274,3 +1274,19 @@ partitions, order, TOP membership, extrema and crosstab row groups. The default
 binding depth stays 16; those limits and broader native query/result semantics
 are not completed by this evidence. Inputs, selected sources and frozen tools
 retain separately audited hashes.
+
+## Retained named and derived multivalue members
+
+The collection-aware result service now exposes `.Value` on whole-list outputs
+of static named and derived SELECTs. Captured element policies and binding origins
+preserve alias alignment without conflating independent relation instances.
+Empty lists, NULL children and absent parents remain distinct; unused virtual
+members do not expand rows or reduce the logical column allowance. Ordinary
+scalar/progressive APIs retain their explicit pre-scan refusal for these plans.
+
+The query batch passes 429 tests, including 17 new controls, and native/CLI
+integration passes 58, including nine new controls. The frozen CLI matches all
+150 [original-getter replay controls](results/derived-multivalue-originals-2026-10-26.json),
+covering 1,158 rows and 3,486 cells across three unchanged originals. This closes
+one collection-composition gap; native Access SQL lineage/edge-result equivalence,
+remaining P0 semantics and broader typed query shapes remain separate work.

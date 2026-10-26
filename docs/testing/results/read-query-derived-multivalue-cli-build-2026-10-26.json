@@ -1,0 +1,40 @@
+{
+  "scope": "Frozen CLI for original-getter derived multivalue composition replay",
+  "compiled_revision": "25c163bec5be64a55390a0258669c066595f92dd",
+  "git_tree": "2a2e97fb5b54f6a2a8a45be86d5df76ca6069397",
+  "command": "cargo build --locked --offline -j2 -p tablecraft-cli",
+  "exit_code": 0,
+  "rustc": [
+    "rustc 1.99.0 (b940084d7 2026-09-28)",
+    "binary: rustc",
+    "commit-hash: b940084d7eb6a299eb4bfeb8e34901bc051e7ac4",
+    "commit-date: 2026-09-28",
+    "host: aarch64-apple-darwin",
+    "release: 1.99.0",
+    "LLVM version: 23.1.1"
+  ],
+  "frozen_cli": {
+    "path": ".cache/tablecraft-bin/derived-multivalue-members-20261026",
+    "bytes": 43369736,
+    "sha256": "36a5d8d76057bcca302f57d2d21b86d0a1dae6c11074daec532a5f54be164a7a"
+  },
+  "supplemental_committed_source_objects": {
+    "crates/query/tablecraft-query/src/binding/relation/derived.rs": {
+      "bytes": 4335,
+      "sha256": "f0990951d10774dc228e08a208dc219d7a653e1aea6e2eeb67955bcb555138db"
+    },
+    "crates/query/tablecraft-query/src/plan/collection_origin.rs": {
+      "bytes": 824,
+      "sha256": "0da8ba15834f7d0fecbb6d851c0fd6cb0836b6cc79f63c665bb74025188d1f9d"
+    },
+    "crates/query/tablecraft-query/src/execution/collections/joined/derived.rs": {
+      "bytes": 7936,
+      "sha256": "58f55bb022d26090284d276fcd989e474aff0901c24b09c518e7d04e2e8b3fa8"
+    }
+  },
+  "limitations": [
+    "Development build; not a release performance measurement.",
+    "Committed source pins supplement the replay selection and are not a complete compiler-input manifest.",
+    "Native/CLI test-only files remain outside this production commit; they do not alter the CLI build inputs."
+  ]
+}

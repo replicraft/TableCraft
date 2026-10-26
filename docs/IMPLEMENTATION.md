@@ -1,5 +1,28 @@
 # Implementation status
 
+## Retained multivalue members through named and derived queries
+
+Explicit collection-aware queries can now expand `.Value` from a whole list
+projected by a static named or derived SELECT. Element text policies and binding
+origins survive aliases: copies of one collection align by child position, while
+independent relation instances form independent expansions. Whole lists remain
+complete beside displayed members; absent parents, empty lists and NULL children
+remain distinct. Inner results finish before outer expansion, including eager
+errors and checked EOF. Private virtual slots retain a separate bounded allowance
+without reducing the existing logical column limit.
+
+The selected query batch passes 429 tests, including 17 new tests; native/CLI
+integration passes another 58, including nine new tests. Strict lint, minimal
+query compilation and scoped formatting pass. A frozen committed CLI matches all
+150 original-getter controls across ACE 2007 and both ACE 16-family fixtures:
+1,158 rows and 3,486 cells, with unchanged inputs. See the
+[contract and query checks](query/collections/MULTIVALUE_QUERIES.md#retained-members-of-named-and-derived-lists),
+[host checks](testing/results/derived-multivalue-host-2026-10-26.json) and
+[original replay](testing/results/derived-multivalue-originals-2026-10-26.json).
+Ordinary scalar/progressive APIs retain their pre-scan refusal for retained-list
+plans. These engineering checks do not qualify native Access alias lineage or
+complete P0 value/text semantics.
+
 ## Complete indexed snapshots over large ownership maps
 
 Explicit row-capped indexed requests now use validated bitmap ownership for
