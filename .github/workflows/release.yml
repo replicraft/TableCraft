@@ -1,0 +1,199 @@
+name: Release CLI
+
+on:
+  push:
+    tags: ['v*']
+  pull_request:
+    paths:
+      - '.github/workflows/release.yml'
+      - '.gitattributes'
+      - 'scripts/packaging/**'
+      - 'scripts/tests/test_package_*.py'
+      - 'packaging/ThirdPartyLicenses.txt'
+      - 'LICENSE'
+      - 'Cargo.toml'
+      - 'Cargo.lock'
+      - 'rust-toolchain.toml'
+      - 'docs/RELEASING.md'
+      - 'docs/releases/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-cli-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  version:
+    name: Validate release contract
+    runs-on: ubuntu-22.04
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+      - id: version
+        env:
+          RELEASE_TAG: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
+        shell: bash
+        run: |
+          if [ -n "$RELEASE_TAG" ]; then
+            python scripts/packaging/package_cli.py validate --tag "$RELEASE_TAG"
+          else
+            python scripts/packaging/package_cli.py validate
+          fi
+      - run: python -m unittest discover -s scripts/tests -p 'test_package_*.py'
+
+  build:
+    name: Build and smoke-test ${{ matrix.target }}
+    needs: version
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-2022
+            target: x86_64-pc-windows-msvc
+            executable: tablecraft.exe
+          - os: windows-11-arm
+            target: aarch64-pc-windows-msvc
+            executable: tablecraft.exe
+          - os: macos-15-intel
+            target: x86_64-apple-darwin
+            executable: tablecraft
+          - os: macos-15
+            target: aarch64-apple-darwin
+            executable: tablecraft
+          - os: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+            executable: tablecraft
+          - os: ubuntu-22.04-arm
+            target: aarch64-unknown-linux-gnu
+            executable: tablecraft
+    env:
+      MACOSX_DEPLOYMENT_TARGET: '13.0'
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+      - name: Install repository-pinned Rust and native target
+        run: rustup target add ${{ matrix.target }}
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: release-cli-${{ matrix.target }}
+      - name: Link the Windows CRT statically
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: '"RUSTFLAGS=-C target-feature=+crt-static" >> $env:GITHUB_ENV'
+      - name: Build the headless CLI
+        run: cargo build --locked --release -p tablecraft-cli --target ${{ matrix.target }}
+      - name: Test packaging on the native platform
+        run: python -m unittest discover -s scripts/tests -p 'test_package_*.py'
+      - name: Package and verify extracted version/help
+        shell: bash
+        env:
+          RELEASE_VERSION: ${{ needs.version.outputs.version }}
+          RELEASE_TARGET: ${{ matrix.target }}
+          RELEASE_BINARY: target/${{ matrix.target }}/release/${{ matrix.executable }}
+        run: |
+          set -euo pipefail
+          python scripts/packaging/package_cli.py package --version "$RELEASE_VERSION" --target "$RELEASE_TARGET" --binary "$RELEASE_BINARY" --output dist
+          archive=$(find dist -maxdepth 1 -type f ! -name '*.sha256' -print)
+          python scripts/packaging/package_cli.py verify-archive --version "$RELEASE_VERSION" --target "$RELEASE_TARGET" --archive "$archive" --smoke
+      - uses: actions/upload-artifact@v7
+        with:
+          name: tablecraft-cli-${{ needs.version.outputs.version }}-${{ matrix.target }}
+          path: dist/*
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14
+
+  assemble:
+    name: Verify every platform and complete checksums
+    needs: [version, build]
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: tablecraft-cli-${{ needs.version.outputs.version }}-*
+          path: dist
+          merge-multiple: true
+      - name: Require the exact six-platform release set
+        env:
+          RELEASE_VERSION: ${{ needs.version.outputs.version }}
+        run: |
+          python scripts/packaging/package_cli.py finalize --version "$RELEASE_VERSION" --output dist
+          python scripts/packaging/package_cli.py verify --version "$RELEASE_VERSION" --output dist
+      - name: Independently verify archives and sidecar checksums
+        working-directory: dist
+        run: sha256sum --check SHA256SUMS.txt
+      - uses: actions/upload-artifact@v7
+        with:
+          name: tablecraft-cli-release-${{ needs.version.outputs.version }}
+          path: dist/*
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14
+
+  publish:
+    name: Publish the complete GitHub release
+    needs: [version, assemble]
+    if: github.event_name == 'push' && github.ref_type == 'tag'
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+      - uses: actions/download-artifact@v8
+        with:
+          name: tablecraft-cli-release-${{ needs.version.outputs.version }}
+          path: dist
+      - name: Publish only the verified complete asset set
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+          RELEASE_VERSION: ${{ needs.version.outputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/packaging/package_cli.py validate --tag "$RELEASE_TAG"
+          python scripts/packaging/package_cli.py verify --version "$RELEASE_VERSION" --output dist
+          (cd dist && sha256sum --check SHA256SUMS.txt)
+          notes="docs/releases/v${RELEASE_VERSION}.md"
+          if gh release view "$RELEASE_TAG" --json isDraft > release.json; then
+            if ! jq -e '.isDraft == true' release.json >/dev/null; then
+              echo '::error::Release is already published; use a new version tag.'
+              exit 1
+            fi
+          else
+            gh release create "$RELEASE_TAG" --verify-tag --draft --title "TableCraft $RELEASE_TAG" --notes-file "$notes"
+          fi
+          gh release upload "$RELEASE_TAG" dist/* --clobber
+          gh release view "$RELEASE_TAG" --json assets --jq '.assets[].name' | sort > uploaded.txt
+          find dist -maxdepth 1 -type f -printf '%f\n' | sort > expected.txt
+          diff -u expected.txt uploaded.txt
+          prerelease=false
+          if [[ "$RELEASE_VERSION" == *-* ]]; then prerelease=true; fi
+          gh release edit "$RELEASE_TAG" --draft=false --prerelease="$prerelease" --notes-file "$notes"
