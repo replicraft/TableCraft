@@ -140,8 +140,20 @@ extension. The bit structure comes from
 [MS-LCID](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-lcid/63d3d639-7fd2-4afb-abbe-0d5b5551eef8).
 This is a working explicit host dispatch contract, not a built-in implementation
 of each Windows locale. Existing ordinal/General CLI providers intentionally do
-not implement `find_locale`; nonempty comparisons that require it return
-CollationRequired. NULL/empty/out-of-range cases retain their existing rules.
+not implement `find_locale`. The separate [ICU host text provider](ICU_TEXT_PROFILE.md)
+implements Unicode text search across nineteen explicit locale profiles and
+`find_locale` for one exactly registered LCID per execution. For example:
+
+```sh
+tablecraft query run "SELECT InStr(1,'xI','ı',1055)" \
+  --text-locale tr-TR --text-lcid 1055
+```
+
+The host selects both the ICU profile and its exact numeric registration; no
+language-only, alternate-sort or automatic LCID mapping is inferred. A required
+unregistered identity still returns CollationRequired. NULL/empty/out-of-range
+cases retain their existing rules. ICU profile behavior does not establish
+Windows NLS, persisted database-sort or native Access equivalence.
 
 `Collation::find` is a separate search callback. Merely supplying equality/order
 comparison does not implement locale substring matching. Its `StringSearch`
@@ -178,9 +190,10 @@ InStr and explicitly selected database InStrRev. The
 [General model](NATIVE_TEXT.md#general-substring-spans) handles unequal-length
 expansions/composed accents, selecting the earliest/latest valid start and its
 shortest nonempty matching span under the complete weights. UTF-16 positions,
-shared cumulative budgets and module/default contracts remain explicit. Concrete text-mode
-and LCID providers remain unsupported by the CLI; the chosen model is not native SQL
-qualification. The independently maintained key encoder agrees on 268 short
+shared cumulative budgets and module/default contracts remain explicit. CLI
+`--text-locale` supplies the separate ICU text-mode provider; `--text-lcid`
+registers that profile for one exact InStr LCID. Neither this host profile nor
+the General model establishes native SQL qualification. The independently maintained key encoder agrees on 268 short
 forward/reverse/replacement controls across both General families.
 
 ```sh
@@ -207,9 +220,19 @@ The [original reference recipe](testing/compare_string_search.py) passes 284 con
 against Python UTF-16 window models and independently decoded native table rows,
 including sequential/indexed queries. Original database bytes remain unchanged.
 
-Native Access execution, code-page/locale search, full Variant/string coercion,
-concrete LCID providers and lossless unpaired-surrogate inputs remain open. This is `Partial`
-in the [built-in tracker](ACCESS_BUILTINS.md), not full native Access qualification.
+The [expanded ICU evidence](ICU_TEXT_PROFILE.md#comparison-and-search-contracts)
+records ten provider tests, eight CLI tests and 14,498 independent ICU4C controls
+across all nineteen explicit host profiles, including exact LCID registration.
+Those are recorded checks, not new runs performed by this documentation audit.
+Raw binary and explicit General database searches retain their separate lossless
+unit paths; the ICU provider requires strict Unicode input.
+
+Native Access execution, Windows NLS/code-page matching, automatic LCID mapping,
+additional locale profiles and full Variant/string coercion remain open. Neither
+ICU comparison-span enumeration nor General-key agreement proves native NLS
+substring boundaries, unpaired-unit handling or database-policy precedence.
+This remains `Partial` in the [built-in tracker](ACCESS_BUILTINS.md), not full
+native Access qualification.
 
 [Replace](TEXT_REPLACEMENT.md) also consumes the search provider, advancing through
 non-overlapping suffix spans and requiring nonempty consumed matches for progress.
