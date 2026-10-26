@@ -418,6 +418,10 @@ the existing payload limits and complete-read refusals. This closes unnecessary
 metadata payload reads, not native FileData query representation or full collection
 semantics. See [metadata contracts](../access/storage/NATIVE_TABLES.md#attachment-metadata-projection-snapshots).
 
+The [finite P0 gap inventory](READ_QUERY_P0_GAPS.md) separates working behavior,
+conservative refusals, missing stored-order implementations and native evidence
+gates; it does not treat every remaining qualification as a demonstrated bug.
+
 | Priority | Area | Completion evidence still needed |
 | --- | --- | --- |
 | P0 | Value semantics | Declared-expression/Variant result promotion, complete coercion and Error operator/aggregate behavior; independently modeled boundaries and later native comparisons |
