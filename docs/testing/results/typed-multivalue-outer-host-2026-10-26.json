@@ -1,0 +1,149 @@
+{
+  "date": "2026-10-26",
+  "scope": "Native/CLI conformance for typed LEFT/RIGHT outer multivalue results, explicit AbsentMultivalue marker and independent parent/element nullability; existing native source callbacks reused",
+  "unique_tests": 29,
+  "new_tests": 10,
+  "new_native_tests": 7,
+  "new_cli_tests": 3,
+  "checks": [
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-access --test multivalue_outer_results --test multivalue_results --test multivalue_join_results -p tablecraft-cli --test multivalue_outer_queries --test multivalue_join_queries",
+      "session": 95202,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/typed-multivalue-outer-host-tests-20261026.log",
+        "bytes": 4211,
+        "sha256": "e4974f0a4c1910315815612cb40548d9a1cbad64febb833940b875cc2a1a5953"
+      },
+      "breakdown": {
+        "multivalue_outer_results": 7,
+        "multivalue_results": 8,
+        "multivalue_join_results": 8,
+        "multivalue_outer_queries": 3,
+        "multivalue_join_queries": 3
+      }
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-access --lib --test multivalue_outer_results --test multivalue_results --test multivalue_join_results -- -D warnings",
+      "session": 69459,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/typed-multivalue-outer-access-clippy-20261026.log",
+        "bytes": 303,
+        "sha256": "82f28d132160b95ad6abead0989a50ad5a5050322d46a921c2953e32ee7de640"
+      }
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-cli --test multivalue_outer_queries --test multivalue_join_queries -- -D warnings",
+      "session": 25359,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/typed-multivalue-outer-cli-clippy-20261026.log",
+        "bytes": 522,
+        "sha256": "4f38a42e5e6f97268fc921d195ad866f322cead5ff8612e0f1321e28db2a08b6"
+      }
+    },
+    {
+      "command": "rustfmt --edition 2024 --check crates/backends/tablecraft-access/tests/multivalue_outer_results.rs crates/backends/tablecraft-access/tests/multivalue_outer_results/boundaries.rs crates/backends/tablecraft-access/tests/multivalue_outer_results/forwarding.rs crates/backends/tablecraft-access/tests/multivalue_outer_results/values.rs crates/backends/tablecraft-access/tests/multivalue_results/boundaries.rs crates/backends/tablecraft-access/tests/multivalue_join_results/values.rs crates/backends/tablecraft-access/tests/multivalue_join_results/boundaries.rs apps/tablecraft-cli/src/commands/query/results.rs apps/tablecraft-cli/tests/multivalue_outer_queries.rs apps/tablecraft-cli/tests/multivalue_join_queries.rs",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/typed-multivalue-outer-host-format-20261026.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "scope_files": [
+    {
+      "path": "crates/backends/tablecraft-access/tests/multivalue_outer_results.rs",
+      "bytes": 4511,
+      "sha256": "2491b3adb7f9cf26d2470fc3139a02213f731757f3d33780b022d1b3dc3b2e1c"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/multivalue_outer_results/boundaries.rs",
+      "bytes": 2802,
+      "sha256": "6712273cf5bba67ffe2429f3d0e54a9029640ced3761a4078416c7308a324f09"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/multivalue_outer_results/forwarding.rs",
+      "bytes": 4279,
+      "sha256": "2a420774897551850066c142ffa735e212b68bff381b6dd7fc9ebf4546bcbfbd"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/multivalue_outer_results/values.rs",
+      "bytes": 3915,
+      "sha256": "0fe5c31a6110545ea22351a783c005f0d4865b2510b9ea2b09d3246009768a9b"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/multivalue_results/boundaries.rs",
+      "bytes": 5692,
+      "sha256": "a866032a55da144d756ccf3eec16b0a4515d978bc361925b2b8607e061bd7ddf"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/multivalue_join_results/values.rs",
+      "bytes": 3674,
+      "sha256": "b95ea92dae0e21f8fac2eda7e0f8e978eb196787824005282fde684cbe32e596"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/multivalue_join_results/boundaries.rs",
+      "bytes": 2942,
+      "sha256": "df155e3b4dd1419511c960efe9ae53555dd712f9562b8ab6a927decbfbbbac67"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/results.rs",
+      "bytes": 2270,
+      "sha256": "087a1d3e165378263fa1118f06f57d6029b828a773e561f6e2bd2f0de05beb55"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/multivalue_outer_queries.rs",
+      "bytes": 4891,
+      "sha256": "fe5c774ddb42195fd0392b9c77b2a2c3477bec2cf27dd214840b971ae4bdd17a"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/multivalue_join_queries.rs",
+      "bytes": 6477,
+      "sha256": "e35db35effca8c43d56e2a62b60f56a74a11e4bc30f0fbcb1aac6000bd3187ee"
+    }
+  ],
+  "ownership": {
+    "new_native_test_files": [
+      "crates/backends/tablecraft-access/tests/multivalue_outer_results.rs",
+      "crates/backends/tablecraft-access/tests/multivalue_outer_results/boundaries.rs",
+      "crates/backends/tablecraft-access/tests/multivalue_outer_results/forwarding.rs",
+      "crates/backends/tablecraft-access/tests/multivalue_outer_results/values.rs"
+    ],
+    "existing_native_consumers": [
+      "crates/backends/tablecraft-access/tests/multivalue_results/boundaries.rs",
+      "crates/backends/tablecraft-access/tests/multivalue_join_results/values.rs",
+      "crates/backends/tablecraft-access/tests/multivalue_join_results/boundaries.rs"
+    ],
+    "cli_files_readonly_pins": [
+      "apps/tablecraft-cli/src/commands/query/results.rs",
+      "apps/tablecraft-cli/tests/multivalue_outer_queries.rs",
+      "apps/tablecraft-cli/tests/multivalue_join_queries.rs"
+    ]
+  },
+  "excluded_runs": [],
+  "test_migrations": [
+    "Two existing direct/INNER metadata patterns now explicitly require parent_nullable:false; element nullability/type expectations unchanged.",
+    "Existing native bare-list LEFT refusal became a DISTINCT LEFT refusal because outer joins are now admitted; DISTINCT remains unsupported before native records.",
+    "Existing CLI INNER/CROSS target negative now uses list ON comparison in LEFT JOIN, preserving unsupported pre-scan coverage; CLI owner made that migration."
+  ],
+  "acceptance": [
+    "Synthetic ACE2007/ACE2016/ACE2019 LEFT and RIGHT results distinguish present[], present[NULL], ordered duplicate/NULL lists and AbsentMultivalue. Scalar partner cells use NULL when missing.",
+    "Missing-side OutputType parent_nullable is independent of element_nullable, retaining the same Int32 element descriptors/local collection index0 on both sides.",
+    "Nested LEFT then RIGHT propagates absence for two missing inputs while retaining present lists, including empty/NULL-member lists on the preserved side.",
+    "Hidden nullable-side .Value criteria select matched parents and retain the full duplicate/NULL list.",
+    "Host-authorized linked/external targets retain exact scoped list values and missing-parent markers under one native budget.",
+    "A scalar-only nullable leaf performs no child-record I/O for an unselected corrupt page; selecting its list reads and fails.",
+    "Scalar API rejects collection outputs before records. Native/query limits, cancellation and eager later expression errors return no typed result.",
+    "CLI prints absent parent as NULL outside brackets, stored NULL member as[NULL] and stored empty list as[]. Error/output limits leave stdout empty; temporary inputs remain byte-identical."
+  ],
+  "limitations": [
+    "No Access adapter production code changed; the separate query/API and CLI renderer slices own runtime behavior.",
+    "Only the five listed focused targets were executed; unique tests are counted once.",
+    "Synthetic byte fixtures establish TableCraft conformance, not native Microsoft Access SQL qualification.",
+    "Original public-writer/getter replay is separate parent-owned evidence and is not counted here.",
+    "The scalar-only watcher proves no child-record I/O; it does not count backend-neutral callback-method invocations."
+  ]
+}
