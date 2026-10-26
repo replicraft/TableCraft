@@ -77,10 +77,11 @@ open.
 ## Boundaries and evidence
 
 The shared 257-unit mask/quote rules and eager operand evaluation still apply.
-Non-NULL date masks currently require one section. Signed date sections, mixed
-numeric/date sections, numeric formatting of Extended dates, broader Variant/raw-string
-coercion, other calendars/locales and native precision/default/error behavior
-remain unfinished. NULL handling retains Format's existing empty/fourth-literal
+Date-typed and Text sources still require a single date section. Numeric serial
+sources additionally support the narrow positive-date/literal-alternatives profile
+below. Negative calendar rendering, mixed numeric/date sections, numeric formatting
+of Extended dates, broader Variant/raw-string coercion, other calendars/locales
+and native precision/default/error behavior remain unfinished. NULL handling retains Format's existing empty/fourth-literal
 path. Unknown fields/repetition counts fail without a fallback format.
 
 The date scanner, patterns and renderer are feature slices under text/format/date.
@@ -116,3 +117,33 @@ General Format's week options now also accept raw DATE and explicit-policy SQL
 numeric Text through [the shared week conversion](WEEK_SETTINGS.md#contextual-week-option-conversion).
 NULL preflight, progressive option validation, regional/date policies, borrowed
 source/mask and existing calendar rendering are preserved.
+
+## Numeric serial sections with literal alternatives
+
+A numeric serial can use a positive date mask followed by literal-only negative,
+zero and NULL sections. For example, `Format(N,'yyyy;"negative";"epoch";"missing"')`
+renders numeric 2 as `1900`, -2 as `negative`, zero as `epoch`, and NULL as `missing`.
+Boolean true follows its existing numeric -1 interpretation; false and signed
+floating zero select the zero section. Positive serials use the existing checked
+CDate/calendar renderer and explicit policies. Literal alternatives need no date
+or numeric display profile.
+
+The [Microsoft Format reference](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/format-function-visual-basic-for-applications)
+permits numeric date/time serials to use date masks and defines numeric section
+selection by sign, zero and NULL. [Access expression documentation](https://support.microsoft.com/en-us/access/introduction-to-expressions)
+establishes query expression use of Format with a date mask. This implementation
+combines those rules only where no negative calendar interpretation is required.
+It does not establish native Access multisection qualification.
+
+Date rendering in this profile requires a strictly positive actual numeric
+carrier. A nonpositive selected section containing date or numeric placeholders
+remains refused, including empty-section fallback to a date mask. Existing
+DateTime, Extended DateTime and Text multisection sources remain refused. NULL
+retains the preexisting fourth-literal path. Quoted and escaped literals,
+semicolon parsing, eager week controls, shared work/output limits and cancellation
+use the existing checked services; unselected alternatives do not activate a
+calendar or display provider.
+
+Six new expression/query tests and twenty-nine selected regressions pass, along
+with focused strict lint and standalone minimal expression checks. See the
+[verification record](testing/results/format-serial-sections-2026-10-25.json).

@@ -1,5 +1,17 @@
 # Implementation status
 
+## Numeric serial Format sections
+
+Actual positive numeric serials can now select a date mask with literal negative,
+zero and NULL alternatives. Existing date/calendar rendering and numeric sign
+selection supply the behavior; nonpositive date placeholders and date-typed
+multisections retain explicit refusals. Eager controls, cancellation and cumulative
+work/output limits remain active. See [the bounded profile](DATE_FORMAT_MASKS.md#numeric-serial-sections-with-literal-alternatives).
+
+Six new tests and twenty-nine selected regressions pass, with strict lint and
+minimal expression checks. [Verification](testing/results/format-serial-sections-2026-10-25.json)
+does not establish native Access multisection behavior.
+
 ## Ignore-NULL Int32 index reads and checks
 
 Known single Int32 ignore-NULL indexes now serve non-NULL equality/range reads
