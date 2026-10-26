@@ -1,5 +1,22 @@
 # Implementation status
 
+## Ignore-NULL Currency and ACE 16 Int64 indexes
+
+The qualified non-NULL index profile now also admits Currency and ACE 16-family
+Int64 keys through the existing exact codecs. Currency retains scaled integers;
+Int64 requires both its actual native type and a 2016/2019 header. Complete
+eligible-population checks, typed ranges, automatic residual filters and table
+order retain their existing contracts. Full-table/NULL index reads and mutation
+eligibility remain refused.
+
+Nine new tests and fifty-eight selected regressions pass, including adjacent
+integers above 2^53, scaled Currency extrema, nodes, aliases, constraints,
+cancellation and unchanged mutation blockers. Strict engine/adapter lint and
+minimal adapter compilation also pass. See [the index profile](NATIVE_INDEXES.md#single-integer-and-currency-ignore-null-selections)
+and [verification](testing/results/read-query-ignored-null-wide-2026-10-25.json).
+Independent original-file CLI replay is a separate pending check; native Access
+qualification is not implied.
+
 ## Deeper named queries and shared interpreter scopes
 
 The named dependency path now admits fifty definitions under independent
@@ -53,10 +70,10 @@ gate explicitly preserves its earlier refusal, including no-op previews.
 
 Eleven new tests and fifty-four selected regressions pass across engine and
 adapter checks, with strict lint and minimal adapter verification. See
-[index scope](NATIVE_INDEXES.md#single-int32-ignore-null-selections) and the
+[index scope](NATIVE_INDEXES.md#single-integer-and-currency-ignore-null-selections) and the
 [verification record](testing/results/read-query-ignored-null-int32-2026-10-25.json).
-Other ignore-NULL carriers, native Access qualification and broader write support
-remain unfinished.
+That initial Int32 slice did not qualify other ignore-NULL carriers, native
+Access behavior or broader write support.
 
 ## DateAdd legacy lower-bound errors
 

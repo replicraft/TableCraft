@@ -334,19 +334,19 @@ struct ReadView<'a> {
     omitted_nulls: bool,
 }
 
-pub(super) struct IgnoredInt32Check<'a> {
+pub(super) struct IgnoredFixedCheck<'a> {
     pub columns: &'a [&'a str],
     pub eligible_rows: usize,
 }
 
 /// Complete physical membership for check_table, never a complete table scan.
 /// The expected population comes from a separately validated sequential read.
-pub(super) fn read_ignored_int32_check<R: NativeReadSource>(
+pub(super) fn read_ignored_fixed_check<R: NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     table: &str,
     index: &str,
-    request: IgnoredInt32Check<'_>,
+    request: IgnoredFixedCheck<'_>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<TableSnapshot, InspectError> {
@@ -413,17 +413,17 @@ fn read_selected<R: crate::NativeReadSource>(
         .constraints()
         .is_some_and(|constraints| constraints.ignore_nulls());
     let profile = if omitted_nulls {
-        let non_null_int32 = matches!(
+        let non_null_fixed = matches!(
             options.selection,
             Some(ReadSelection::Integer(
-                KeyType::Int32,
+                KeyType::Int32 | KeyType::Int64 | KeyType::Currency,
                 Int64IndexSelection::Range { .. }
             ))
         );
-        if options.eligible_rows.is_none() && !non_null_int32 {
+        if options.eligible_rows.is_none() && !non_null_fixed {
             return Err(InspectError::Unsupported);
         }
-        IndexProfile::ignored_int32(selected, schema)?
+        IndexProfile::ignored_fixed(selected, schema)?
     } else {
         if options.eligible_rows.is_some() {
             return Err(InspectError::Malformed);

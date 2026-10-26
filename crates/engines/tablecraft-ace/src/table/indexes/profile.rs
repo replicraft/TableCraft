@@ -7,8 +7,7 @@ use super::{
     guid::GuidProfile,
     key::SingleKey,
 };
-use crate::InspectError;
-use crate::NativeColumn;
+use crate::{FileFormat, InspectError, NativeColumn, format::data_type};
 use tablecraft_core::values::Value;
 use tablecraft_schema::ScalarType;
 
@@ -109,7 +108,7 @@ pub(super) enum IndexProfile<'a> {
 impl<'a> IndexProfile<'a> {
     /// A separate physical-coverage profile. Ordinary All/NULL table reads still
     /// use new(), which refuses indexes that omit entirely NULL keys.
-    pub fn ignored_int32(
+    pub fn ignored_fixed(
         index: &NativeIndex,
         schema: &'a TableSchema,
     ) -> Result<Self, InspectError> {
@@ -120,14 +119,25 @@ impl<'a> IndexProfile<'a> {
             return Err(InspectError::Unsupported);
         }
         let column = column_position(index, schema)?;
-        if schema.columns[column].native_type() != crate::format::data_type::INT32
-            || schema.columns[column].scalar_type() != Some(ScalarType::Int32)
-        {
-            return Err(InspectError::Unsupported);
-        }
+        let key_type = match (
+            schema.columns[column].native_type(),
+            schema.columns[column].scalar_type(),
+        ) {
+            (data_type::INT32, Some(ScalarType::Int32)) => KeyType::Int32,
+            (data_type::INT64, Some(ScalarType::Int64))
+                if matches!(
+                    schema.header.format(),
+                    FileFormat::Ace2016 | FileFormat::Ace2019
+                ) =>
+            {
+                KeyType::Int64
+            }
+            (data_type::CURRENCY, Some(ScalarType::Currency)) => KeyType::Currency,
+            _ => return Err(InspectError::Unsupported),
+        };
         Ok(Self::Single(SingleKey {
             column,
-            key_type: KeyType::Int32,
+            key_type,
             descending: index.columns[0].descending(),
             selection: Int64IndexSelection::All,
         }))

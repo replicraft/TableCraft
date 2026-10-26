@@ -69,7 +69,7 @@ pub(super) fn before(
     if structural.indexes().iter().any(|index| {
         index.status() != IndexCheckStatus::Checked
             // Read checks can now qualify the non-NULL physical membership of
-            // an ignored-NULL Int32 index. Mutation eligibility is unchanged.
+            // an ignored-NULL index. Mutation eligibility is unchanged.
             || index.index().constraints().is_some_and(|constraints| constraints.ignore_nulls())
             || (!foreign_preview && index.index().native_type() == FOREIGN_INDEX)
     }) {

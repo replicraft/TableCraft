@@ -13,14 +13,16 @@ qualification recorded separately.
 
 - Table/catalog discovery, system-table filtering, declared row counts, scalar
   pages, explicit progressive TSV rows and bounded native index reads work.
-  Qualified single Int32 ignore-NULL indexes additionally support non-NULL seeks
+  Qualified single Int32/Currency and ACE 16-family Int64 ignore-NULL indexes
+  support non-NULL seeks
   and complete physical membership checks against independently counted eligible
   rows. Automatic hints retain table order and residual predicates. Full-table
-  and NULL retrieval through omitting indexes, other carriers and native writes
-  retain their separate boundaries; see [index scope](NATIVE_INDEXES.md#single-int32-ignore-null-selections).
+  and NULL retrieval through omitting indexes, remaining carriers/composites and
+  native writes
+  retain their separate boundaries; see [index scope](NATIVE_INDEXES.md#single-integer-and-currency-ignore-null-selections).
   A [64-command original replay](testing/IGNORED_NULL_INDEXES.md) independently
-  checks node/unique/shared indexes, exact membership and automatic table order
-  across all four priority families; other ignored-key carriers remain separate.
+  checks Int32 node/unique/shared indexes, exact membership and automatic table
+  order across all four priority families; wider original replay remains separate.
 - SELECT, joins, grouping/HAVING, subqueries, UNION, top-level crosstabs and
   qualified saved/named queries execute under shared resource/cancellation limits.
   Contextual named schemas use explicit execution-stage discovery; binding does

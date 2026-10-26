@@ -50,11 +50,11 @@ its actual resolver and source must agree before index selection. Native field i
 validated names; mixed native schemas retain their scalar-view boundary.
 
 Declarations must have known local ordinary/primary constraints. They normally
-include NULL keys; known single Int32 ignore-NULL declarations can additionally
-serve non-NULL Int32 Range hints. NULL-only constraints decline those indexes,
-retaining an ordinary sequential scan. Other ignore-NULL profiles, unknown flags,
-foreign references, compound keys,
-unrelated fields and unsupported constraint/carrier pairs are skipped before
+include NULL keys; known single Int32, qualified ACE16 Int64 and Currency
+ignore-NULL declarations can additionally serve their exact typed non-NULL
+Range hints. NULL-only constraints decline those indexes, retaining an ordinary
+sequential scan. Other ignore-NULL profiles, unknown flags, foreign references,
+compound keys, unrelated fields and unsupported constraint/carrier pairs are skipped before
 traversal. This does not implement costing or selectivity estimates. No compatible
 candidate means an ordinary sequential read. Malformed/ineligible metadata that
 prevents complete inspection remains an error.
@@ -171,11 +171,14 @@ indexes and corrupt chosen roots. Inputs remain immutable; corrupt experiments
 use disposable copies. This evidence qualifies the explicit engineering read
 profile; Windows Access SQL/optimizer behavior remains unrun.
 
-## Ignore-NULL Int32 candidates
+## Ignore-NULL integer and Currency candidates
 
-Single Int32 ignore-NULL candidates use the existing wholly safe integer filter
-extractor. Equality and range predicates cannot match stored NULL, so omitting
-those roots preserves the residual predicate. `IS NULL` and unrestricted scans
+Single Int32/ACE16 Int64 ignore-NULL candidates use the existing wholly safe
+integer filter extractor; Currency uses its existing exact typed-parameter or
+closed numeric CCur contract. Equality and range predicates cannot match stored
+NULL, so omitting those roots preserves the residual predicate. No new literal
+conversion, parameter coercion or query evaluation is introduced. `IS NULL` and
+unrestricted scans
 never select this candidate, and other carriers/composites remain excluded.
 Automatic results keep sequential row order even when the physical index is
 descending; an explicitly required index keeps native key order.

@@ -127,8 +127,8 @@ python3 docs/testing/compare_constraints.py --cli path/to/tablecraft \
 ## What remains unchecked
 
 Text compound keys, Memo unique constraints, full-width Short Text unique
-constraints, other unqualified
-key types, ignore-NULL profiles other than qualified single Int32, unqualified flags/types and
+constraints, other unqualified key types, ignore-NULL profiles other than qualified
+single Int32/ACE16 Int64/Currency, unqualified flags/types and
 foreign-reference profiles have no tree/row validation. Their definitions remain
 visible, including coverage gaps. Entire tables with unsupported scalar fields
 fail; the checker does not pretend to validate selected columns only.
@@ -207,12 +207,16 @@ default allowances. Sources must still remain stable/offline throughout the
 operation. Fewer rereads do not establish concurrent-file isolation, and this
 evidence does not qualify native Microsoft Access integrity results or writes.
 
-## Single Int32 ignore-NULL membership
+## Integer and Currency ignore-NULL membership
 
-A completed check can validate known single-column Int32 indexes that omit NULL
-keys. The checker first validates the complete sequential table, including its
-declared live count, and counts actual non-NULL Int32 roots for each qualified
-index. It then drops that snapshot and traverses the complete physical index
+A completed check can validate known single-column Int32, ACE2016/ACE2019 Int64
+and Currency indexes that omit NULL keys. Int64 requires both the qualified
+header family and scalar metadata. The checker first validates the complete
+sequential table, including its declared live count, and counts actual non-NULL
+roots with each qualified index's exact carrier checks. Currency units and
+Int64 values remain signed integers; no floating conversion or cross-carrier
+coercion enters membership. It then drops that snapshot and traverses the
+complete physical index
 under the same cumulative allowance. Every entry must reference a distinct live
 row with the exact non-NULL key, and the entry population must match the eligible
 sequential count. Thus an omitted NULL cannot replace a missing non-NULL entry.
