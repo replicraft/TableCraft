@@ -134,7 +134,10 @@ fn missing_policies_bad_patterns_and_eager_errors_are_not_silently_ignored() {
             "SELECT Label LIKE '[' FROM Words",
             EvalError::InvalidPattern,
         ),
-        ("SELECT ID LIKE '*' FROM Words", EvalError::TypeMismatch),
+        (
+            "SELECT ID LIKE '*' FROM Words",
+            EvalError::NumberFormatRequired,
+        ),
         (
             "SELECT FALSE AND ('a' LIKE '[') FROM Words",
             EvalError::InvalidPattern,

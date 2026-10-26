@@ -1,15 +1,11 @@
-//! LIKE result categories around the existing explicit pattern/policy service.
+//! LIKE result categories and actual String provenance after operand coercion.
 use super::super::combined;
 use crate::{
     QueryError,
-    execution::{
-        Environment, Runtime,
-        cell::{CellValue, into_scalar},
-    },
+    execution::{Environment, Runtime, cell::CellValue},
     plan::Expr,
     source::TextPolicy,
 };
-use tablecraft_core::values::{ExpressionValue, Value};
 
 impl Runtime<'_, '_> {
     pub(in crate::execution) fn declared_like(
@@ -22,63 +18,48 @@ impl Runtime<'_, '_> {
         let left_cell = self.retained_expression_operand(left, env)?;
         let right_cell = self.retained_expression_operand(right, env)?;
         let declaration = combined(left_cell.declaration, right_cell.declaration);
-        if matches!(
-            (&left_cell.value, &right_cell.value),
-            (
-                ExpressionValue::StringBytes(_),
-                ExpressionValue::Value(Value::Null)
-            ) | (
-                ExpressionValue::Value(Value::Null),
-                ExpressionValue::StringBytes(_)
-            )
-        ) {
-            let value = self
-                .evaluator()
-                .apply_expression_like(&left_cell, &right_cell, negated)?;
-            return Ok(CellValue::scalar(value).with_declaration(declaration));
-        }
-
-        let policy = if self.options.like_mode.is_some() {
-            self.expression_pair_policy(left, right, &left_cell, &right_cell)?
-                .merge(left_cell.policy)
-                .merge(right_cell.policy)
-        } else {
-            TextPolicy::Default
-        };
-
-        let strings = matches!(
-            left_cell.value,
-            ExpressionValue::StringBytes(_) | ExpressionValue::Value(Value::Text(_))
-        ) && matches!(
-            right_cell.value,
-            ExpressionValue::StringBytes(_) | ExpressionValue::Value(Value::Text(_))
-        );
-        if strings {
-            let collation = self.string_comparator(policy)?;
-            let evaluator = self.evaluator();
-            let mut evaluator = if let Some(collation) = collation {
-                evaluator.with_collation(collation)
-            } else {
-                evaluator
-            };
-            let value = evaluator.apply_expression_like(&left_cell, &right_cell, negated)?;
-            return Ok(CellValue::scalar(value).with_declaration(declaration));
-        }
-
-        let left = self.evaluator().publish_expression_value(left_cell.value)?;
-        let right = self
+        let prepared = self
             .evaluator()
-            .publish_expression_value(right_cell.value)?;
-        let left = into_scalar(CellValue::from(left))?;
-        let right = into_scalar(CellValue::from(right))?;
-        let collation = self.comparator(policy, &left, &right)?;
+            .prepare_expression_like(&left_cell.value, &right_cell.value)?;
+
+        // NULL needs neither conversion nor a comparison provider. Both SQL
+        // operand expressions have already run eagerly above.
+        if prepared.is_null() {
+            let value = self.evaluator().apply_prepared_like(&prepared, negated)?;
+            return Ok(CellValue::scalar(value).with_declaration(declaration));
+        }
+
+        // Implicit String conversion constructs fresh default lineage. Only
+        // operands that were already Strings contribute field policies.
+        let left_policy = self.like_operand_policy(left, &left_cell, prepared.value_converted())?;
+        let right_policy =
+            self.like_operand_policy(right, &right_cell, prepared.pattern_converted())?;
+        let collation = self.string_comparator(left_policy.merge(right_policy))?;
         let evaluator = self.evaluator();
         let mut evaluator = if let Some(collation) = collation {
             evaluator.with_collation(collation)
         } else {
             evaluator
         };
-        let value = evaluator.apply_like(&left, &right, negated)?;
+        let value = evaluator.apply_prepared_like(&prepared, negated)?;
         Ok(CellValue::scalar(value).with_declaration(declaration))
+    }
+
+    fn like_operand_policy(
+        &mut self,
+        expression: &Expr,
+        cell: &CellValue,
+        converted: bool,
+    ) -> Result<TextPolicy, QueryError> {
+        if converted {
+            return Ok(TextPolicy::Default);
+        }
+
+        let fallback = if cell.policy_complete {
+            TextPolicy::Default
+        } else {
+            self.text_policy(expression)?
+        };
+        Ok(fallback.merge(cell.policy))
     }
 }

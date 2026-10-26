@@ -85,3 +85,71 @@ fn missing_policies_and_late_bad_patterns_publish_no_partial_output() {
         }
     }
 }
+
+#[test]
+fn implicit_like_string_conversion_matches_explicit_conversion_in_both_profiles() {
+    for declared in [false, true] {
+        let mut args = vec![
+            "query",
+            "run",
+            "SELECT 12 LIKE '1*' AS NumericMatch, True LIKE 'T*' AS BooleanMatch, 12 LIKE 12 AS BothNumeric, #2000-01-01# LIKE '2000*' AS DateMatch, 12 NOT LIKE '2*' AS NegatedMatch",
+            "--like-mode",
+            "ansi89",
+            "--collation",
+            "ordinal",
+            "--number-format",
+            "invariant",
+            "--date-format",
+            "iso",
+        ];
+        if declared {
+            args.push("--declared-arithmetic");
+        }
+        let result = run(&args);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(
+            result.stdout,
+            b"NumericMatch\tBooleanMatch\tBothNumeric\tDateMatch\tNegatedMatch\nTRUE\tTRUE\tTRUE\tTRUE\tTRUE\n"
+        );
+    }
+}
+
+#[test]
+fn implicit_like_conversion_preserves_null_and_buffered_conversion_failures() {
+    let result = run(&[
+        "query",
+        "run",
+        "SELECT NULL LIKE 12 AS UnknownMatch",
+        "--like-mode",
+        "ansi89",
+    ]);
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    assert_eq!(result.stdout, b"UnknownMatch\nNULL\n");
+
+    for sql in [
+        "SELECT 12 LIKE '1*'",
+        "SELECT #2000-01-01# LIKE '*'",
+        "SELECT NULL LIKE (1/0)",
+        "SELECT CVErr(7) LIKE '*'",
+    ] {
+        let result = run(&[
+            "query",
+            "run",
+            sql,
+            "--like-mode",
+            "ansi89",
+            "--collation",
+            "ordinal",
+        ]);
+        assert_eq!(result.status.code(), Some(2), "{sql}");
+        assert!(result.stdout.is_empty(), "{sql}");
+    }
+}

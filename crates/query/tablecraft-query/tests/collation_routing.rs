@@ -12,6 +12,7 @@ mod collation_routing {
     mod domain_group_policy;
     mod domain_keys;
     mod dynamic_heading_policy;
+    mod like_coercion;
     mod predicates;
     mod raw_database;
     mod raw_extrema;

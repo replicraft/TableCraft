@@ -200,7 +200,8 @@ and [progressive contract](PROGRESSIVE_QUERIES.md).
 | Outer flat UNION ALL | Implemented | Implemented admitted arms and shared conversions |
 | Static named/derived global or eligible grouped/HAVING stage | Implemented bounded profiles | Implemented, retained values and successful per-stage logical EOF; no complete intermediate relation cache |
 | Inner UNION | Implemented bounded profiles | Refused; root flat UNION ALL remains supported |
-| Joins, sorting, DISTINCT/active DISTINCTROW | Implemented bounded profiles | Refused; no silent buffered fallback |
+| Terminal DISTINCT over proven Boolean/integral/Currency/Decimal/NULL tuples | Implemented | Implemented; retained first values, checked EOF and TOP after deduplication |
+| Other DISTINCT families, active DISTINCTROW, joins and sorting | Implemented bounded profiles | Refused; no silent buffered fallback |
 | Crosstabs and runtime schema discovery | Implemented qualified profiles | Refused; preparation remains metadata-only |
 | Subqueries, domain calls and closed Eval | Implemented qualified profiles | Refused source-dependent/stateful expressions |
 
@@ -209,6 +210,14 @@ storage qualification remain separate from this shape matrix. Independent
 cross-layer checks do not close those acceptance areas.
 
 ## Remaining acceptance work
+
+The scalar LIKE coercion branch now accepts numeric/Boolean/legacy DATE and Empty
+operands under the existing explicit String policies, in either operand position
+and both arithmetic modes. NULL, raw Strings, actual field policies, eager errors
+and cumulative budgets retain their contracts. The
+[209-test verification](testing/results/read-query-like-coercion-2026-10-25.json)
+closes this concrete operand-admission gap; native comparison and broader Variant
+semantics remain tracked independently.
 
 Explicit [decoded attachment allowances](LARGER_DECODED_ATTACHMENTS.md) now admit
 larger file bytes under validated policies and an unchanged header cap. Separate

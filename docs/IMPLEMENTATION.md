@@ -1,5 +1,20 @@
 # Implementation status
 
+## LIKE scalar operand coercion
+
+LIKE now prepares numeric, Boolean, legacy DATE and Empty operands through the
+existing String conversion services in both query modes. Both expressions remain
+eager; NULL precedes conversion and comparison-provider selection. Actual String
+operands retain field policies and raw UTF-16 handling, while converted values
+start with fresh default lineage. Existing explicit number/date, wildcard and
+comparison profiles govern the operation.
+
+Thirteen new tests and 196 selected regressions pass across expression, matcher,
+query and CLI layers, with strict lint and minimal feature checks. See
+[the operator contract](PATTERN_MATCHING.md) and
+[verification](testing/results/read-query-like-coercion-2026-10-25.json).
+Native locale/pattern qualification remains separate from this coercion branch.
+
 ## Independent original-file DISTINCT replay
 
 The [184-control replay](testing/PROGRESSIVE_DISTINCT.md) passes against four

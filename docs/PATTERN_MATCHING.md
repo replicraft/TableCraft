@@ -7,6 +7,28 @@ aggregate expressions and nested queries. Syntax remains TableCraft-owned and
 the upstream parser AST stays private. No pattern matching belongs in the CLI or
 native storage engine.
 
+The evaluator applies String Let-coercion to both operands in ordinary and
+explicit declared query modes. Numeric/Boolean and legacy Date operands use the
+existing metered String conversion with explicit number/date policies; Empty
+becomes empty Text. NULL propagates before conversion or comparison-provider
+activation, although the wildcard mode remains explicit. Both source expressions
+still evaluate eagerly. Error data is not implicitly rendered using CStr's
+special Error spelling. Missing, stored GUID/Binary and Extended DateTime remain
+outside this coercion profile.
+
+Hosts can call `prepare_expression_like` before selecting a provider, then
+`apply_prepared_like` without repeating conversion. `PreparedLikeOperands`
+borrows original Text/raw Strings and owns only freshly converted Text. Its
+conversion markers distinguish original String policies from fresh Default
+provenance; a numeric operand's latent field policy does not become a String
+policy. The low-level Text matcher remains strict and performs no coercion.
+
+This follows [MS-VBAL §5.6.9.6](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/792d4f80-72c1-49da-98a7-37d5783a8615)
+and the existing explicit [String conversion](CSTR.md) profile. Direct query
+availability is documented by Microsoft's [Access LIKE operator](https://support.microsoft.com/en-us/access/like-operator).
+These language and query contracts do not establish native Windows formatting,
+collation or error-order qualification.
+
 `predicates::like_utf16` also accepts borrowed `LikeString::Text` and
 `LikeString::Utf16Le` inputs under an explicitly selected UTF-16 weight provider.
 Complete raw units, including isolated surrogates and ranges starting at odd byte
