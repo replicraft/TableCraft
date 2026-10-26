@@ -1,0 +1,135 @@
+{
+  "date": "2026-10-26",
+  "compiled_revision": "1e776246313e114c7ea0d8f4b18fe3fc4162ef7f",
+  "command": "cargo build --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --example preview_ace16_delete",
+  "exit_code": 0,
+  "build_log": {
+    "path": ".cache/ace16-delete-restrict-example-build-20261026.log",
+    "bytes": 183,
+    "sha256": "f93fdffd4b28f03e6bb39b10caef4e9db9df2e190f4e89a81a5730e0d6e8ccd8"
+  },
+  "frozen_example": {
+    "path": ".cache/tablecraft-bin/ace16-delete-restrict-20261026",
+    "bytes": 18275944,
+    "sha256": "aeb9a06d16d7d6356fe7ab0f2c53afd9f96f851da587ec0b407b5aff3c088f08"
+  },
+  "source_pins": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/delete.rs",
+      "bytes": 5966,
+      "sha256": "4d98ee80d87b57cb589aa7361ab2d634428793233a21d4a08d6451c8863f76f0"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/delete/requests.rs",
+      "bytes": 2277,
+      "sha256": "3554f775ac849c1a651c345f4bcc90c901eff22af4d7e191ce157278ac896281"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/composite.rs",
+      "bytes": 8532,
+      "sha256": "c10a2d2e49ce78ee7ad7f0d8fdb3f82821eb96377a3b47b15a174fa265f2b84f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/plan.rs",
+      "bytes": 16587,
+      "sha256": "f77cfb72fff6b36e278fa525139c9b4143fc95f9763ac03354530ba767aa5be0"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/gates.rs",
+      "bytes": 7910,
+      "sha256": "e561f7bd0bb59e5fd216d97a4e50ee98505e2617bb7e9cd76aaf6cf5c612fb45"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/profile.rs",
+      "bytes": 10143,
+      "sha256": "40c2903067f6a2997130c7c7cb635c43e31720d389c3afe98e0cafd66d3e09f5"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/retirement/audit.rs",
+      "bytes": 7703,
+      "sha256": "c763e8ba0308c5686dd14c0d453d3dabb69941ca82906fdb0a64e88f6d8fa5a5"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_delete_ignored.rs",
+      "bytes": 5932,
+      "sha256": "7465db3392f90a7be058b4a6fb6114bfcd78ab9c2b62adc52c8d9bdd81caaba8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_ignored_delete_contract.rs",
+      "bytes": 486,
+      "sha256": "03bcbd602696ddd95c90be85a8897a23cb386bc933f40ec45d67a2d4e8495bce"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_ignored_delete_contract/model.rs",
+      "bytes": 14282,
+      "sha256": "6b4388f7ecdfbb6d77996af93bb3508cb0c8aa2ad476e5ffb381210f2096b1ba"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_ignored_delete_contract/values.rs",
+      "bytes": 4223,
+      "sha256": "520d7288ae54d36b4429a40de08cc822078e36deb57233470ea4206aa6714c8d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_ignored_delete_contract/boundaries.rs",
+      "bytes": 5042,
+      "sha256": "ac69b314ce74d6b0fb30843f764f8183c71289b73899458de8d06693d22c5d44"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_delete_contract/boundaries.rs",
+      "bytes": 8391,
+      "sha256": "210a9e4c715d9ffd6d358adf2d8cd4606564030a5bb4a432ba7f72107ca0959d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_encoded_delete_contract/boundaries.rs",
+      "bytes": 5807,
+      "sha256": "c86e243ea7f30a5cdb9760a96454ada0b9f27b38978aa7aa5a5fe56794e77413"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/examples/preview_ace16_delete.rs",
+      "bytes": 1721,
+      "sha256": "6765f411289c4b596c416b71db9c9dbc72257bcb9d32e79d26ba60c13c4989cf"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/examples/preview_ace16_delete/requests.rs",
+      "bytes": 6790,
+      "sha256": "feaee53c9c14e44e9db8f500c38d9b57828d8216bea8dca0f2e20a49b4deed8e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/examples/preview_ace16_delete/requests/tests.rs",
+      "bytes": 2464,
+      "sha256": "089c83fd48ec4eb633cda76e4a8e8a13396d381c7adff7ef48ea6b47fe2b9e08"
+    },
+    {
+      "path": "Cargo.toml",
+      "bytes": 6943,
+      "sha256": "714849d1ee46102f9e708ff6346c988688bfc6ea2cd5d40ca12e3a0a5c558b03"
+    },
+    {
+      "path": "Cargo.lock",
+      "bytes": 54179,
+      "sha256": "e9b5e8378cfd444ceac716d9e8598e24d0b336c44ce6d97e71706b75e4937725"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/Cargo.toml",
+      "bytes": 1964,
+      "sha256": "b6164287d6fd8a88647d0421bdc8021baf0bc2e5dd749127f086c6c677bbe8ce"
+    },
+    {
+      "path": "rust-toolchain.toml",
+      "bytes": 86,
+      "sha256": "b2c19d86958ed6810741488db5cd352856f303c53bcf0ea774e72f94ee4d201e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete.rs",
+      "bytes": 6047,
+      "sha256": "db35c94b7f355e14af85b641375627ead0a4185664d93a24599dc15d5b39dfc4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/relationships.rs",
+      "bytes": 1817,
+      "sha256": "2de3bb7918a159214f47d0ec9aab64c812ae2747a8f2f8fbac36d90cd9c3b49a"
+    }
+  ],
+  "compiler_inputs_clean_before_and_after_build": true,
+  "qualification": "Committed engineering tool only; original-file and native Access comparisons remain separate."
+}
