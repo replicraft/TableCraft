@@ -27,6 +27,7 @@ pub(super) fn with_context<T, E: From<Error>>(
     let random = RndState::new(controls.random_seed).map_err(|_| Error::Parameter)?;
 
     operation(ExecutionOptions {
+        binding_depth: controls.binding_depth,
         declared_integral: controls.declared_integral,
         max_text_bytes: controls.max_text_bytes,
         limits: controls.execution_limits,

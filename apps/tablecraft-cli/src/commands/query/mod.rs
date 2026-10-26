@@ -1,3 +1,4 @@
+mod binding_depth;
 mod calendar;
 mod character;
 mod clock;

@@ -6,7 +6,6 @@ use crate::{
         Expr,
         identity::{Comparer, Identity},
     },
-    profile::MAX_BIND_DEPTH,
 };
 
 #[cfg(test)]
@@ -26,7 +25,7 @@ impl Runtime<'_, '_> {
         }
         for (key, value) in keys.expressions.iter().zip(keys.values) {
             let mut tick = |depth| {
-                if depth > MAX_BIND_DEPTH {
+                if depth > self.options.binding_depth.get() {
                     return Err(QueryError::StructureLimit);
                 }
                 self.tick()

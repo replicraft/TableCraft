@@ -1141,6 +1141,16 @@ Extrema, statistics, grouping and wider progressive sources remain separate work
 this does not establish complete read/query or native execution qualification.
 
 
+## Explicit deeper query binding
+
+[Binding depth](QUERY_BINDING_LIMITS.md) now has a validated opt-in maximum of
+32 while retaining default 16. Compound, named/derived, runtime-domain and staged
+schema-discovery preparation share the selected limit; prepared execution retains
+its captured policy. Text-policy and projection visitors retain cancellation and
+shared work accounting. Node, byte, named-cycle/path and parser guards remain.
+This closes a bounded composition ceiling without completing native definitions,
+Variant promotion or the rest of read/query acceptance.
+
 ## Exact fixed/binary relational key admission
 
 Mixed Boolean/integral/Currency/Decimal with Single/Double now uses exact numeric

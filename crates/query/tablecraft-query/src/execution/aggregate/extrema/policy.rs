@@ -3,7 +3,6 @@ use crate::{
     QueryError,
     execution::{Runtime, cell::CellValue},
     plan::Expr,
-    profile::MAX_BIND_DEPTH,
 };
 
 impl Runtime<'_, '_> {
@@ -14,7 +13,7 @@ impl Runtime<'_, '_> {
         depth: usize,
     ) -> Result<bool, QueryError> {
         self.tick()?;
-        if depth > MAX_BIND_DEPTH {
+        if depth > self.options.binding_depth.get() {
             return Err(QueryError::StructureLimit);
         }
 

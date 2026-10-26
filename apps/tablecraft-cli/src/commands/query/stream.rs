@@ -184,6 +184,7 @@ impl RunArgs {
             query,
             query_source,
             PreparationOptions {
+                binding_depth: controls.binding_depth,
                 declared_arithmetic: controls.declared_integral,
                 reference_year: controls.reference_year,
             },

@@ -1,5 +1,5 @@
 //! Bounded inert expression parsing under the caller's cumulative query budget.
-use crate::{QueryError, profile::MAX_BIND_DEPTH};
+use crate::{BindingDepth, QueryError};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_sql::{
     ParseError, ParseErrorKind, ParseLimits, parse_expression_strict, parse_select,
@@ -9,6 +9,7 @@ use tablecraft_sql::{
 const AST_TEXT_COPIES: u64 = 2;
 
 pub(super) struct Text<'a> {
+    pub binding_depth: BindingDepth,
     pub budget: &'a mut ResourceBudget,
     pub cancelled: Option<&'a dyn Fn() -> bool>,
 }
@@ -35,7 +36,7 @@ impl Text<'_> {
         Ok(ParseLimits {
             max_bytes: bytes,
             max_tokens: tokens,
-            max_depth: MAX_BIND_DEPTH,
+            max_depth: self.binding_depth.get(),
         })
     }
     fn join(&mut self, parts: &[&str]) -> Result<String, QueryError> {

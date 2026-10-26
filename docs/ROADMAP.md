@@ -693,6 +693,14 @@ write transactions/recovery, schema editing, data-macro write safety, UI, forms/
 reports and SQLite expansion are outside this read/query checklist. They remain
 in the broader backend roadmap; this list does not mark them completed or waived.
 
+## Explicit deeper compound queries
+
+[Query binding depth](QUERY_BINDING_LIMITS.md) can now be selected explicitly up
+to 32, retaining default 16 and independent node, allocation, parser and named-path
+ceilings. Prepared plans capture the limit through runtime domains, policy walks
+and progressive admission; staged discovery shares the selection and work budget.
+Broader native definitions and complete P0 value/text semantics remain open.
+
 ## Next implementation and measurement
 
 [ACE 16 bounded reads](NATIVE_ACE16.md) now have original V2016/V2019 Jackcess

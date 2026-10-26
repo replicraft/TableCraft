@@ -3,7 +3,7 @@ use super::Binder;
 use crate::{
     QueryError,
     plan::{ReadNode, ReadPlan},
-    profile::{MAX_BIND_DEPTH, MAX_BIND_NODES},
+    profile::MAX_BIND_NODES,
 };
 
 mod collect;
@@ -12,24 +12,30 @@ mod relation;
 mod rewrite;
 
 type FieldMap = Vec<Option<usize>>;
+
 // Collection and rewrite visits are bounded once per enclosing query scope.
-const MAX_PROJECTION_VISITS: usize = MAX_BIND_NODES * (MAX_BIND_DEPTH + 1) * 2;
+const PROJECTION_PASSES: usize = 2;
 
 pub(super) fn prune(plan: &mut ReadPlan, binder: &mut Binder<'_>) -> Result<(), QueryError> {
     Pruner { binder, visits: 0 }.read(plan, &[])
 }
+
 struct Pruner<'a, 's> {
     binder: &'a mut Binder<'s>,
     visits: usize,
 }
+
 impl Pruner<'_, '_> {
     fn tick(&mut self) -> Result<(), QueryError> {
+        self.binder.work()?;
         self.visits += 1;
-        if self.visits > MAX_PROJECTION_VISITS {
+        if self.visits > MAX_BIND_NODES * (self.binder.binding_depth.get() + 1) * PROJECTION_PASSES
+        {
             return Err(QueryError::StructureLimit);
         }
         Ok(())
     }
+
     fn vector<T>(&mut self, width: usize) -> Result<Vec<T>, QueryError> {
         self.binder.charge(
             width
@@ -42,6 +48,7 @@ impl Pruner<'_, '_> {
             .map_err(|_| QueryError::Allocation)?;
         Ok(result)
     }
+
     fn mapping(&mut self, needed: &[bool]) -> Result<FieldMap, QueryError> {
         let mut map = self.vector(needed.len())?;
         let mut next = 0;
@@ -56,6 +63,7 @@ impl Pruner<'_, '_> {
         }
         Ok(map)
     }
+
     fn read(&mut self, plan: &mut ReadPlan, outer: &[&[Option<usize>]]) -> Result<(), QueryError> {
         self.tick()?;
         match &mut plan.node {

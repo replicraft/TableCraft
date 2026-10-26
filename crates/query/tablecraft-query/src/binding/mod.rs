@@ -1,6 +1,4 @@
-use crate::profile::{
-    MAX_BIND_BYTES, MAX_BIND_DEPTH, MAX_BIND_NODES, MAX_PARAMETERS, SOURCE_SCHEMA_POLICY,
-};
+use crate::profile::{MAX_BIND_BYTES, MAX_BIND_NODES, MAX_PARAMETERS, SOURCE_SCHEMA_POLICY};
 use crate::{
     OutputType, QueryError, Source,
     plan::{PreparedBody, Slot},
@@ -14,6 +12,8 @@ mod calls;
 mod cashflows;
 mod crosstab;
 mod declarations;
+mod depth;
+pub use depth::BindingDepth;
 mod distinctrow;
 mod domain;
 pub(crate) use domain::{DomainContext, bind_domain};
@@ -35,10 +35,12 @@ mod retrieval;
 mod source_schema;
 mod text_policy;
 
-/// Caller-issued lexical settings for metadata-only retrieval preparation.
+/// Caller-issued lexical and structural settings for metadata-only retrieval preparation.
 /// No clock, locale discovery or row scan supplies these settings.
 #[derive(Clone, Copy, Default)]
 pub struct PreparationOptions {
+    /// Capture a validated structural depth for this plan and runtime domain preparation.
+    pub binding_depth: BindingDepth,
     /// Capture the explicit engineering decimal integer-literal typing policy.
     /// Staged execution pairs this with declaration-sensitive arithmetic;
     /// already prepared literal carriers cannot be changed during execution.
@@ -52,12 +54,14 @@ pub struct PreparationOptions {
 /// Binding invokes no row-scan callback. Plans omit Debug/Serde to avoid leaking
 /// query and identifier payloads.
 pub struct PreparedQuery {
+    pub(crate) binding_depth: BindingDepth,
     pub(crate) body: PreparedBody,
     pub(crate) parameters: Vec<Parameter>,
     pub(crate) external_sources: Vec<crate::external_sources::ExternalBinding>,
 }
 
 pub(super) struct Binder<'a> {
+    binding_depth: BindingDepth,
     aliases: aliases::ProjectionAliases,
     budget: Option<&'a mut tablecraft_core::limits::ResourceBudget>,
     cancelled: Option<&'a dyn Fn() -> bool>,
@@ -82,19 +86,25 @@ pub(super) struct Binder<'a> {
 }
 
 impl Binder<'_> {
-    fn tick(&mut self, depth: usize) -> Result<(), QueryError> {
+    fn work(&mut self) -> Result<(), QueryError> {
         if self.cancelled.is_some_and(|cancel| cancel()) {
             return Err(QueryError::Cancelled);
         }
         if let Some(budget) = &mut self.budget {
             budget.charge(tablecraft_core::limits::Resource::Steps, 1)?;
         }
+        Ok(())
+    }
+
+    fn tick(&mut self, depth: usize) -> Result<(), QueryError> {
+        self.work()?;
         self.nodes += 1;
-        if depth > MAX_BIND_DEPTH || self.nodes > MAX_BIND_NODES {
+        if depth > self.binding_depth.get() || self.nodes > MAX_BIND_NODES {
             return Err(QueryError::StructureLimit);
         }
         self.charge(std::mem::size_of::<crate::plan::Expr>())
     }
+
     fn charge(&mut self, bytes: usize) -> Result<(), QueryError> {
         if let Some(budget) = &mut self.budget {
             budget.charge(tablecraft_core::limits::Resource::Bytes, bytes as u64)?;
@@ -160,6 +170,7 @@ pub(crate) fn prepare_stage<'a>(
         return Err(QueryError::StructureLimit);
     }
     let mut binder = Binder {
+        binding_depth: options.preparation.binding_depth,
         aliases: Default::default(),
         budget,
         cancelled,
@@ -201,6 +212,7 @@ pub(crate) fn prepare_stage<'a>(
     }
     match result {
         Ok(body) => Ok(Ok(PreparedQuery {
+            binding_depth: options.preparation.binding_depth,
             body,
             parameters: binder.parameters,
             external_sources: binder.external_sources,
@@ -249,6 +261,11 @@ fn resolve(
 }
 
 impl PreparedQuery {
+    /// Captured structural depth; execution cannot reinterpret this plan's limit.
+    pub const fn binding_depth(&self) -> BindingDepth {
+        self.binding_depth
+    }
+
     /// Captured output names for an ordinary read plan, without executing it.
     /// Top-level crosstabs return None because headings can require execution.
     /// Names preserve aliases and possible duplicates, as ordinary results do.

@@ -17,7 +17,8 @@ impl<'a> Runtime<'a, '_> {
         if self.options.collation_resolver.is_none() {
             return Ok(TextPolicy::Default);
         }
-        crate::plan::text_policy::expression(expr, &mut || self.tick(), 1)
+        let binding_depth = self.options.binding_depth;
+        crate::plan::text_policy::expression(expr, &mut || self.tick(), 1, binding_depth)
     }
     pub(super) fn expression_pair_policy(
         &mut self,

@@ -18,10 +18,14 @@ use tablecraft_expressions::functions::math::random::RndState;
 use tablecraft_expressions::functions::text::casing::CaseLocale;
 use tablecraft_expressions::functions::text::code_page::CharacterCodePage;
 use tablecraft_expressions::functions::text::cstr::DateTextFormat;
+use tablecraft_query::BindingDepth;
 
 #[derive(ClapArgs)]
 #[command(group(clap::ArgGroup::new("comparison_context").args(["collation", "text_locale"]).multiple(true)))]
 pub(crate) struct RunArgs {
+    /// Structural binding depth; default 16, maximum 32. Does not raise work or named-query limits.
+    #[arg(long, value_name = "DEPTH", default_value_t = BindingDepth::default(), value_parser = super::binding_depth::parse)]
+    pub(crate) binding_depth: BindingDepth,
     /// Stream eligible SELECT/WHERE, aggregates with HAVING, and UNION ALL as TSV;
     /// later errors may leave earlier batches.
     #[arg(long, requires = "database", conflicts_with_all = ["sqlite", "index", "auto_index", "external_index", "multivalues", "collections", "decoded_attachments"])]
