@@ -1,4 +1,6 @@
-use crate::profile::{MAX_BIND_BYTES, MAX_BIND_NODES, MAX_PARAMETERS, SOURCE_SCHEMA_POLICY};
+use crate::profile::{
+    MAX_BIND_BYTES, MAX_BIND_NODES, MAX_PARAMETERS, MAX_RUNTIME_READ_DEPTH, SOURCE_SCHEMA_POLICY,
+};
 use crate::{
     OutputType, QueryError, Source,
     plan::{PreparedBody, Slot},
@@ -61,6 +63,8 @@ pub struct PreparedQuery {
 }
 
 pub(super) struct Binder<'a> {
+    inherited_read_depth: usize,
+    pending_named_depth: usize,
     binding_depth: BindingDepth,
     aliases: aliases::ProjectionAliases,
     budget: Option<&'a mut tablecraft_core::limits::ResourceBudget>,
@@ -99,7 +103,15 @@ impl Binder<'_> {
     fn tick(&mut self, depth: usize) -> Result<(), QueryError> {
         self.work()?;
         self.nodes += 1;
-        if depth > self.binding_depth.get() || self.nodes > MAX_BIND_NODES {
+        let active_depth = self
+            .inherited_read_depth
+            .checked_add(self.pending_named_depth)
+            .and_then(|pending| pending.checked_add(depth))
+            .ok_or(QueryError::StructureLimit)?;
+        if depth > self.binding_depth.get()
+            || self.nodes > MAX_BIND_NODES
+            || active_depth > MAX_RUNTIME_READ_DEPTH
+        {
             return Err(QueryError::StructureLimit);
         }
         self.charge(std::mem::size_of::<crate::plan::Expr>())
@@ -147,6 +159,7 @@ pub(crate) type Preparation = Result<PreparedQuery, crate::named_identity::Schem
 
 #[derive(Clone, Copy, Default)]
 pub(crate) struct StageOptions<'a> {
+    pub inherited_read_depth: usize,
     pub owner: crate::external_sources::SourceNamespace,
     pub external_sources: &'a [crate::external_sources::ExternalBinding],
     pub preparation: PreparationOptions,
@@ -170,6 +183,8 @@ pub(crate) fn prepare_stage<'a>(
         return Err(QueryError::StructureLimit);
     }
     let mut binder = Binder {
+        inherited_read_depth: options.inherited_read_depth,
+        pending_named_depth: 0,
         binding_depth: options.preparation.binding_depth,
         aliases: Default::default(),
         budget,

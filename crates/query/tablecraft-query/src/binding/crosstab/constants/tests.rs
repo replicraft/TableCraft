@@ -24,6 +24,8 @@ fn binder<'a>(
     cancelled: Option<&'a dyn Fn() -> bool>,
 ) -> Binder<'a> {
     Binder {
+        inherited_read_depth: 0,
+        pending_named_depth: 0,
         binding_depth: Default::default(),
         aliases: Default::default(),
         budget,

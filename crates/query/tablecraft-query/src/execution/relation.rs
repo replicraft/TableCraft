@@ -28,6 +28,18 @@ impl Runtime<'_, '_> {
     ) -> Result<Vec<Vec<CellValue>>, QueryError> {
         self.tick()?;
         self.check_table_schema(&relation.node)?;
+        if let RelationNode::Derived(read) = &relation.node {
+            return self.read(read, &[]);
+        }
+        self.materialized_relation(relation, outer, constraint)
+    }
+
+    fn materialized_relation(
+        &mut self,
+        relation: &Relation,
+        outer: &[OuterScope<'_>],
+        constraint: Option<ScanConstraint>,
+    ) -> Result<Vec<Vec<CellValue>>, QueryError> {
         match &relation.node {
             RelationNode::Unit => {
                 let row = self.allocate_expression_row(0)?;
@@ -35,7 +47,7 @@ impl Runtime<'_, '_> {
                 self.push(&mut rows, row)?;
                 Ok(rows)
             }
-            RelationNode::Derived(read) => self.read(read, &[]),
+            RelationNode::Derived(_) => unreachable!("derived reads use the lean entry"),
             RelationNode::Table {
                 namespace,
                 name,

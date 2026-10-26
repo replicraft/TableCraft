@@ -1,0 +1,367 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Named dependency path50 with lean recursive binding/execution, shared operation read/interpreter128 and domain16 scopes, and checked compound nesting refusals",
+  "base_revision": "2def4839967c039500e811847828e5e675006719",
+  "unique_tests": 164,
+  "new_tests": 19,
+  "existing_regression_tests": 145,
+  "new_test_breakdown": {
+    "named_depth_public_tests": 15,
+    "private_read_domain_crosstab_scope_restoration": 4
+  },
+  "accepted_integration_targets": {
+    "binding_depth": 11,
+    "domain": 9,
+    "domain_declarations": 3,
+    "external_named_sources": 10,
+    "external_table_sources": 8,
+    "named": 6,
+    "named_crosstabs": 40,
+    "named_depth": 15
+  },
+  "runtime_unit_tests": 47,
+  "binding_unit_tests": 15,
+  "other_feature_tests_not_counted": {
+    "progressive_distinct": 12
+  },
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-query --test named_depth --test named --test domain --test domain_declarations --test named_crosstabs --test binding_depth --test external_named_sources --test external_table_sources --test progressive_distinct -j2 --locked --offline -- --nocapture",
+      "exit_code": 0,
+      "private_log": ".cache/named-depth-final-primary-20261025.log",
+      "sha256": "f1e77da6028620180f428e5ff710212037c635920984c409589d7589235fbc16",
+      "terminal_session": 75188,
+      "tests": 114,
+      "scope_tests": 102,
+      "other_feature_tests": {
+        "progressive_distinct": 12
+      }
+    },
+    {
+      "command": "cargo test -p tablecraft-query --lib execution:: -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/named-depth-final-private-20261025.log",
+      "sha256": "9b49e9a21e3262b014a081cbf7ccb210c5a1a946074295e9b671e9d285ea03f5",
+      "terminal_session": 84517,
+      "tests": 47
+    },
+    {
+      "command": "cargo test -p tablecraft-query --lib binding:: -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/named-depth-final-binding-units-20261025.log",
+      "sha256": "4b6fd4346cfc8217306f7b6483b98cb21f2395c7d4b9e558dbfa8794ef352988",
+      "terminal_session": null,
+      "tests": 15
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --tests -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/named-depth-shared-scopes-clippy-final-20261025.log",
+      "sha256": "eebf30791527108bfb4dda4cb4220cd1034b3b9f3f329a74aeec2c4147fe44b3",
+      "terminal_session": 5238
+    },
+    {
+      "command": "cargo check -p tablecraft-query --lib --no-default-features -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/named-depth-shared-scopes-minimal-final-20261025.log",
+      "sha256": "9f4f96d30609d5abd786dcfb9a0a5c41999256e29cc63f9da30d5a36411f3192",
+      "terminal_session": 33496
+    }
+  ],
+  "worker_profile": {
+    "platform": "Darwin arm64 local debug test binary",
+    "requested_worker_stack_bytes": 1048576,
+    "per_child_timeout_seconds": 30,
+    "success_cleanup": "Temporary stderr files removed on success; failures/timeouts preserve diagnostics. Timeout kill never performs a blocking wait.",
+    "not_a_portability_guarantee": true
+  },
+  "depth_fifty_completed_shapes": [
+    "plain SELECT",
+    "TABLE",
+    "named references as UNION operands",
+    "first-arm UNION dependencies",
+    "later-arm UNION dependencies",
+    "fixed crosstab dependencies"
+  ],
+  "checked_refusals": {
+    "fifty_first_named_definition": "StructureLimit before scans",
+    "deep_dependency_cycle": "DependencyCycle before scans",
+    "dynamic_crosstab_chain": "StructureLimit, not general depth-fifty success",
+    "mixed_inline_named_chain": "StructureLimit from cumulative suspended syntax",
+    "repeated_deep_named_domain": "checked StructureLimit under one-MiB worker",
+    "domain_triggered_staged_runtime": "checked StructureLimit retaining inherited active read/bind allowance",
+    "staged_dynamic_domain_calls": "sixteen active calls succeeds, including sequential repeat; seventeenth refuses with exactly sixteen source scans and its own target unscanned"
+  },
+  "implementation_contract": [
+    "BindingDepth remains default16/max32 per definition, named dependency path50, runtime domain nesting16, existing node/work/byte limits remain independent.",
+    "Active read and domain counters belong to operation-shared DiscoveryState, including fresh execution-stage runtimes. Direct crosstabs count once; already-counted named read path does not count twice.",
+    "The128 engineering active-interpreter budget combines active reads, normalized suspended named-definition syntax and current definition syntax. It is not a native Access or raw Rust-stack-frame count.",
+    "Every entered read/domain/named scope restores counters, lexical owner and parameter scope on Result errors. Identical sequential/different-criteria/volatile invocations are not treated as dependency cycles.",
+    "Recursive frames retain source-expansion state; nonrecursive helpers own physical-schema, projection, UNION completion and domain parse/finish scratch. Existing eager ordering, scalar carriers, prefix DISTINCT/UNION semantics, metadata-only binding and source namespaces remain unchanged."
+  ],
+  "excluded_persisted_attempts": [
+    {
+      "private_log": ".cache/named-depth-shared-probes-20261025.log",
+      "sha256": "2ead9a001cb205eb3af78cc40bb1b4d2453454dbeb7c943ea85497eb596dfe47",
+      "classification": "Initial shared-read/inherited-bind14 tests:12pass; UNION-later and staged-domain children printed actual stack overflows and reached parent30second timeouts. Not accepted."
+    },
+    {
+      "private_log": ".cache/named-depth-union-later-phase-20261025.log",
+      "sha256": "b73f91bafec4c82dbb3b7e10d5ea79d94efc2077d41baeb32dc9162e0b44531c",
+      "classification": "One-test phase diagnostic: actual stack overflow during UNION-later metadata preparation, before execution. Not accepted."
+    },
+    {
+      "private_log": ".cache/named-depth-lean-shape-probes-20261025.log",
+      "sha256": "613a1074f9e6e7695bc6ec1623e6c493c7d1291f55d390e177dc815fe4064005",
+      "classification": "Eight of nine shapes passed; UNION-later now completed but staged-domain still overflowed. Not accepted."
+    },
+    {
+      "private_log": ".cache/named-depth-related-primary-20261025.log",
+      "sha256": "ace80228939441f7b28ad77ae39c7b32b1a8b12cc245675f48183fdd3b2ed255",
+      "classification": "Configuration probe referenced nonexistent domain_reexecution target; no tests ran."
+    },
+    {
+      "private_log": ".cache/named-depth-related-primary-retry-20261025.log",
+      "sha256": "fd19aa9b46fd0dc422b7e088598702eca20fbe627f072b8526c113a5ca9fcf7a",
+      "classification": "Named101 and initial execution45 passed; sibling DISTINCT11/12 had an authored helper wrongly requiring EOF during an ordinary later UNION arm. Helper-only correction, no runtime answer change. Superseded after operation-shared domain/crosstab scope fix."
+    },
+    {
+      "private_log": ".cache/named-depth-query-clippy-20261025.log",
+      "sha256": "585286acd578b8645581a7da2c54aaefcf234a02a0af5efaf3e95c25dfa49725",
+      "classification": "Initial strict lint found only diagnostic modulo expression; changed to is_multiple_of without semantic change."
+    },
+    {
+      "private_log": ".cache/named-depth-query-clippy-final-20261025.log",
+      "sha256": "9a7c9bbb93bad7d43167350f97d74f4f81d399d973ca8cab889f6ee828c25e22",
+      "classification": "Strict passed before the later shared-domain and direct-crosstab guard fixes; superseded by final strict."
+    },
+    {
+      "private_log": ".cache/named-depth-query-minimal-20261025.log",
+      "sha256": "f40bdff19bc05277dda52d75491662bc16af5097b89deb294323b29a9831665e",
+      "classification": "Minimal check passed before later shared-domain/direct-crosstab guard fixes; superseded by final minimal."
+    },
+    {
+      "private_log": ".cache/named-depth-private-units-20261025.log",
+      "sha256": "0cffe003e4871ed6e68039420bb944473ed6194a720d622d162a9862040825cd",
+      "classification": "Initial45 execution units green; superseded by final47 after two additional scope regressions."
+    }
+  ],
+  "excluded_child_diagnostics": [
+    {
+      "private_log": ".cache/named-depth-excluded-child-1-20261025.log",
+      "sha256": "4ea9f985800a0b7f622281be86e002567d6ea196b63b0696e6b9bb7765c6cd2f",
+      "classification": "Preserved child stderr from an excluded overflow run; not accepted evidence."
+    },
+    {
+      "private_log": ".cache/named-depth-excluded-child-2-20261025.log",
+      "sha256": "7063ac3cea59d1d7b25a21f70abe2ea4a9aebd0735afb60f31c24eaa2d7552d6",
+      "classification": "Preserved child stderr from an excluded overflow run; not accepted evidence."
+    },
+    {
+      "private_log": ".cache/named-depth-excluded-child-3-20261025.log",
+      "sha256": "d763565076101ae14b205fdafdd5242880cbe0d0918f463d1fa6c78ee570c494",
+      "classification": "Preserved child stderr from an excluded overflow run; not accepted evidence."
+    },
+    {
+      "private_log": ".cache/named-depth-excluded-child-4-20261025.log",
+      "sha256": "b02cb1ee275b4eb799f32853d8f81adff73a4fb6f5e356ea725e11c5e4e16dc1",
+      "classification": "Preserved child stderr from an excluded overflow run; not accepted evidence."
+    }
+  ],
+  "excluded_tool_only_observations": [
+    {
+      "terminal_session": 11190,
+      "exit_code": 137,
+      "observation": "Root constant-only50 experiment printed stack abort; parent Cargo explicitly canceled after nonterminal child exit hang. No persisted raw log available."
+    },
+    {
+      "terminal_session": 19221,
+      "exit_code": 137,
+      "observation": "Root initial one-MiB child aborted; parent Cargo explicitly canceled after nonterminal exit hang. No persisted raw log available."
+    },
+    {
+      "terminal_session": 41863,
+      "exit_code": 101,
+      "observation": "First expanded probe compilation expected Value instead of ExpressionValue in dynamic result rows; test construction fixed. No persisted raw log available."
+    },
+    {
+      "terminal_session": 14281,
+      "exit_code": 101,
+      "observation": "Root expanded12 probe run7pass5timeouts; exploratory, no persisted raw log available."
+    },
+    {
+      "terminal_session": 91011,
+      "exit_code": 101,
+      "observation": "Root expanded12 probe run10pass2timeouts; exploratory, no persisted raw log available."
+    },
+    {
+      "terminal_session": 84026,
+      "exit_code": 101,
+      "observation": "Root domain-only probe timed out with read128 but before shared read/binding and lean-frame refinements; no persisted raw log available."
+    }
+  ],
+  "private_frame_diagnostic": {
+    "path": ".cache/named-depth-stack-diagnostic-20261025.json",
+    "sha256": "1b69eca347fd21698a35a07d4d8eb4a2e17130d369322c84567bfd6b76f0bdeb",
+    "scope": "Selected local failed-build frame prologues, not a complete stack usage proof or accepted compatibility result."
+  },
+  "working_tree_source_snapshots": {
+    "description": "Narrow working-tree feature source/test/owning-doc snapshots after accepted checks; not a compilation manifest. Sibling progressive feature omitted.",
+    "files": [
+      {
+        "path": "crates/query/tablecraft-query/src/binding/crosstab.rs",
+        "sha256": "a78097cc8a58a4859895cc53d12bada40f6d4d28719a5c65fa87d8693bea9076"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/binding/crosstab/constants/tests.rs",
+        "sha256": "c9501bb5c89424b9628708fec6ce31da8a860045ece7b451d6ca990b4f6f88f0"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/binding/crosstab/schema.rs",
+        "sha256": "1545f4125d036cf15ae4201ebbd088bd81906ee36183e67fc052575539de8b10"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/binding/domain/finish.rs",
+        "sha256": "83a1797d74773d083b729c651388bd1a75671a28081ead08b8d0f3314a1f3f44"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/binding/domain/input.rs",
+        "sha256": "a2af53f0ad237c5ea3c0ddc87c20e81cb88957e36bef8b1eb75136acd97c6497"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/binding/domain/mod.rs",
+        "sha256": "b72d89cfed35e714e28aa71f561d0cfb838d7b36d936502f7585c658e08652be"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/binding/editing.rs",
+        "sha256": "536f0a553a63a745c337a2c45a16dc62e133f5f3ea932f1851b72e38127ee7da"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/binding/mod.rs",
+        "sha256": "93c2ddfef49207cb3ded97bf342a62d3d79699e57ed6f7ff9a98cedc041d55cc"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/binding/named.rs",
+        "sha256": "e3ba528d800b8a3c178864a5e72f44afe5ae76a7dded70f9f430799b89086452"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/binding/relation.rs",
+        "sha256": "66cc3397f372bc614498a6218381b9e7f7b60e05ee6ba7cc95e54898cf6eed37"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/binding/relation/table.rs",
+        "sha256": "53dce69a407f0bdae125ffcf2f6f3cf35216b9bac7d0d5b6a3c9b07169a90449"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/binding/retrieval.rs",
+        "sha256": "30632f3b504025d7e64038b23e0e4958e7a9c99505eabd0a44c5d4695ab9111f"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/binding/retrieval/body.rs",
+        "sha256": "d051a236db86ab44b40ead994c11c1872b4ebf5ae9fb63fcaeb39e757ba5bed1"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/binding/retrieval/source.rs",
+        "sha256": "f4476afd5132e02afc6b9888f2632b816a49c82b13ab214b6eda661507424929"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/discovery/mod.rs",
+        "sha256": "e626e1c70a7c2c5f7e2a8814dc7a413760fde4db75a49aac6193eae7be1f4852"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/execution/context.rs",
+        "sha256": "99aacfb6a854bc408d7e2f1e4b80fb1b429bbb63ced5465b20db60dbc67e2464"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/execution/crosstab/mod.rs",
+        "sha256": "921e5a279b3d0c86da080386745a8dafb00f28b8b5f470ad9bcb742726fcee29"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/execution/domain/mod.rs",
+        "sha256": "19160ca9f6ad64d58e6fb90a9994e86e857e957eba6b6b6c187762a79ef47141"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/execution/editing/plan.rs",
+        "sha256": "208c34ad9f05852fa1c0a5e50dba5dbee9b62e19f372524942438d802d592435"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/execution/execute.rs",
+        "sha256": "66835683587c72e1d0d0d3a57e097104c8a5470f5c543c665b5e42e7ee6c63a1"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/execution/expression.rs",
+        "sha256": "31b660328034391bca71790f9f388dd16500f2eb6bc0b1a14bb75c5dc116b2d8"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/execution/relation.rs",
+        "sha256": "9b9c0876f5ae2db1b65abe1bbe1d8516e56119763afa7b524d6cc6b7ee5591aa"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/execution/retrieval.rs",
+        "sha256": "2da2e1b9cc38c335bb0e014df8e6abf508378855ea2fa6b257c753e7b22b53cb"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/execution/retrieval/crosstab.rs",
+        "sha256": "af26294bc925b0b123b023f11a57e2182b8a841652791e97607066561ea1da9c"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/execution/retrieval/finish.rs",
+        "sha256": "c90a6cb3e68de96637b3b3f8fc263699dec6e79fca49adec90dc31d9520df971"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/execution/retrieval/select.rs",
+        "sha256": "38d3a4e1cc0828028a45d4f35cc30bb7b10cb5ed4e400393631701f55aae484c"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/execution/retrieval/tests.rs",
+        "sha256": "36d96b991d0f7e0708c86f45030f0e8f156fe04dc1145158c8f84113c4edf467"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/execution/retrieval/union.rs",
+        "sha256": "5b96193282f349664a4b56e75fb8b769bf311531083170d14495e489d47d0df2"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/execution/variants.rs",
+        "sha256": "fc2c3b759cbe1ffbc554524ba25af5951701be568bc1856cb4fd9b1dcd4cfd14"
+      },
+      {
+        "path": "crates/query/tablecraft-query/src/profile.rs",
+        "sha256": "a6b78f329ba6c19c512963e1cc652699e8c0ab7b3e8c69e52a69758ae885029c"
+      },
+      {
+        "path": "crates/query/tablecraft-query/tests/named.rs",
+        "sha256": "ccf11a02e00b00da0102b1a0c934bc41229b5034563190d8a14970f15e0230d5"
+      },
+      {
+        "path": "crates/query/tablecraft-query/tests/named_depth.rs",
+        "sha256": "68a32f7b79ab9775edddba42048dc941d7ffa09bbcfd38a4c6fbba0bea34b126"
+      },
+      {
+        "path": "crates/query/tablecraft-query/tests/named_depth/shapes.rs",
+        "sha256": "75b98804c912e1909f8196b8dba6cef328d82ec716e60e74d2a0ec69c6057f17"
+      },
+      {
+        "path": "docs/QUERY_EXECUTION.md",
+        "sha256": "be7eef9b2400997b0b8c13710527a180cccd99a0e8a1f0b0055631c0475b8164"
+      },
+      {
+        "path": "docs/QUERY_BINDING_LIMITS.md",
+        "sha256": "834440028632a195a4bb1990a87e043725ef375d2d330229d9c334e6163d8025"
+      },
+      {
+        "path": "docs/NAMED_SCHEMA_DISCOVERY.md",
+        "sha256": "15ec44750aee1c99f7933f063d038edb2c9b324c316ebb60bbbfb67bb0c58736"
+      }
+    ]
+  },
+  "primary_reference": {
+    "url": "https://support.microsoft.com/en-us/access/access-specifications",
+    "observed": "Microsoft publishes fifty nested query levels; lookup fields can lower maxima. This motivates target ceiling, not native qualification of implementation."
+  },
+  "limitations": [
+    "No Microsoft Access execution comparison for these deep query shapes.",
+    "One-MiB debug probes qualify only recorded source shapes and local target; complex plans may correctly hit other independent bounds.",
+    "Native/CLI integration and repository-wide formatting remain parent-owned separate checks."
+  ]
+}

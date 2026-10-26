@@ -46,6 +46,53 @@ impl Runtime<'_, '_> {
         {
             return Ok(result.with_declaration(None));
         }
+        if let Expr::DomainCall(kind, arguments) = expression {
+            self.tick()?;
+            let declaration = super::declarations::functions::result(expression);
+            return self
+                .domain_expression(*kind, arguments, env)
+                .map(|value| value.with_declaration(declaration));
+        }
+        if let Expr::Aggregate(kind, argument) = expression {
+            return self.aggregate_expression_cell(expression, *kind, argument.as_deref(), env);
+        }
+        self.non_domain_expression_cell(expression, env)
+    }
+
+    #[inline(never)]
+    fn aggregate_expression_cell(
+        &mut self,
+        expression: &Expr,
+        kind: Aggregate,
+        argument: Option<&Expr>,
+        env: Environment<'_>,
+    ) -> Result<CellValue, QueryError> {
+        match (kind, argument) {
+            (Aggregate::First | Aggregate::Last, Some(argument)) => {
+                self.tick()?;
+                self.encounter_aggregate(argument, env, matches!(kind, Aggregate::Last))
+                    .map(|value| value.with_declaration(None))
+            }
+            (Aggregate::Minimum | Aggregate::Maximum, Some(argument)) => {
+                self.tick()?;
+                self.extreme_aggregate(argument, env, matches!(kind, Aggregate::Maximum))
+                    .map(|value| value.with_declaration(None))
+            }
+            _ => {
+                let declaration = super::declarations::functions::result(expression);
+                self.eval(expression, env)
+                    .map(|value| CellValue::scalar(value).with_declaration(declaration))
+            }
+        }
+    }
+
+    // Domain arguments and recursive reads use only the retained-cell entry frame.
+    #[inline(never)]
+    fn non_domain_expression_cell(
+        &mut self,
+        expression: &Expr,
+        env: Environment<'_>,
+    ) -> Result<CellValue, QueryError> {
         match expression {
             Expr::TextCall(function, arguments) if function.produces_bytes() => {
                 self.tick()?;
@@ -63,22 +110,8 @@ impl Runtime<'_, '_> {
                 let value = self.eval(value, env)?;
                 Ok(self.evaluator().apply_eval_expression(&value)?.into())
             }
-            Expr::Aggregate(kind @ (Aggregate::First | Aggregate::Last), Some(argument)) => {
-                self.tick()?;
-                self.encounter_aggregate(argument, env, matches!(kind, Aggregate::Last))
-                    .map(|value| value.with_declaration(None))
-            }
-            Expr::Aggregate(kind @ (Aggregate::Minimum | Aggregate::Maximum), Some(argument)) => {
-                self.tick()?;
-                self.extreme_aggregate(argument, env, matches!(kind, Aggregate::Maximum))
-                    .map(|value| value.with_declaration(None))
-            }
-            Expr::DomainCall(kind, arguments) => {
-                self.tick()?;
-                let declaration = super::declarations::functions::result(expression);
-                self.domain_expression(*kind, arguments, env)
-                    .map(|value| value.with_declaration(declaration))
-            }
+            Expr::Aggregate(..) => unreachable!("aggregates use the lean entry"),
+            Expr::DomainCall(..) => unreachable!("domain calls use the lean entry"),
             Expr::Like(left, right, negated) => {
                 self.tick()?;
                 self.declared_like(left, right, *negated, env)

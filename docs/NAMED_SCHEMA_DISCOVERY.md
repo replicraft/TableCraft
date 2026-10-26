@@ -53,8 +53,15 @@ a contextual fixed IN list retains its declared headings even with no data.
 
 One clamped QueryLimits budget covers binding attempts, discovery, retained data,
 repeated result copies and final execution. Binding has its existing independent
-node/depth/byte ceilings as well. Named dependency nesting is capped at sixteen;
-per-run discovered results are capped at 256. These are current resource policies,
+node/depth/byte ceilings as well. Named dependency nesting is capped at fifty;
+per-run discovered results are capped at 256. Composed runtime reads and suspended
+named syntax also share the [active interpreter allowance](QUERY_BINDING_LIMITS.md#composed-interpreter-nesting).
+A domain-triggered discovery runtime inherits the caller's active read count;
+retries and completed materialization do not reset that allowance or the separate
+sixteen-call domain nesting counter. Direct crosstab execution enters the read
+scope once, including when the staged runtime has no outer SELECT wrapper. The dynamic
+fifty-definition probe reaches a checked structural refusal, so the larger named
+path ceiling does not qualify every discovery chain. These are resource policies,
 not native Access format limits. Increasing an I/O allowance does not reset these
 query quotas. Every stage retains cancellation and fallible charged allocations.
 

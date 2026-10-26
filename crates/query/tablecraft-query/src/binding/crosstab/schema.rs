@@ -17,7 +17,16 @@ impl Binder<'_> {
         syntax: &Crosstab,
         definition: &Query,
     ) -> Result<ReadPlan, QueryError> {
-        let mut cross = self.crosstab(syntax)?;
+        let cross = self.crosstab(syntax)?;
+        self.finish_fixed_crosstab(cross, definition)
+    }
+
+    #[inline(never)]
+    fn finish_fixed_crosstab(
+        &mut self,
+        mut cross: CrosstabPlan,
+        definition: &Query,
+    ) -> Result<ReadPlan, QueryError> {
         if let Some(index) = self.materialized_index(definition)? {
             let materialized = self.materialized;
             let cached = &materialized[index];

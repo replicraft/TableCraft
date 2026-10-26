@@ -30,6 +30,18 @@ impl Runtime<'_, '_> {
             value.value = self.evaluator().publish_expression_value(value.value)?;
             return Ok(into_scalar(value)?);
         }
+        if let Expr::DomainCall(function, arguments) = expr {
+            return self.domain(*function, arguments, env);
+        }
+        if let Expr::Aggregate(kind, argument) = expr {
+            return self.aggregate(expr, *kind, argument.as_deref(), env);
+        }
+        self.eval_non_domain(expr, env)
+    }
+
+    // Direct domain recursion must not retain unrelated scalar branch scratch.
+    #[inline(never)]
+    fn eval_non_domain(&mut self, expr: &Expr, env: Environment<'_>) -> Result<Value, QueryError> {
         match expr {
             Expr::Array(_) => Err(QueryError::Unsupported),
             Expr::ValueInspect(function, input) => self.value_inspection(*function, input, env),
@@ -187,7 +199,7 @@ impl Runtime<'_, '_> {
                     .evaluator()
                     .apply_expression_date_function(*function, &value)?)
             }
-            Expr::DomainCall(function, arguments) => self.domain(*function, arguments, env),
+            Expr::DomainCall(..) => unreachable!("domain calls use the lean entry"),
             Expr::ConditionalCall(_, _) => Ok(into_scalar(self.expression_operand(expr, env)?)?),
             Expr::CashFlowCall(function, operands, array) => {
                 self.cashflows(*function, operands, array, env)
@@ -386,9 +398,7 @@ impl Runtime<'_, '_> {
                 into_scalar(self.declared_membership(expression, list, *negated, env)?)
                     .map_err(Into::into)
             }
-            Expr::Aggregate(kind, argument) => {
-                self.aggregate(expr, *kind, argument.as_deref(), env)
-            }
+            Expr::Aggregate(..) => unreachable!("aggregates use the lean entry"),
             Expr::Subquery(plan) => {
                 let rows = self.nested(plan, env)?;
                 match rows.len() {

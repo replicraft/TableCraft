@@ -1,9 +1,18 @@
+mod crosstab;
+mod finish;
+mod select;
+mod union;
+
+#[cfg(test)]
+mod tests;
+
 use super::{Environment, Runtime};
 use crate::execution::cell::CellValue;
 use crate::execution::context::OuterScope;
 use crate::{
     QueryError,
-    plan::{ReadNode, ReadPlan, RelationNode, SelectPlan},
+    plan::{ReadNode, ReadPlan, SelectPlan},
+    profile::MAX_RUNTIME_READ_DEPTH,
 };
 use std::cmp::Ordering;
 
@@ -18,8 +27,16 @@ impl Runtime<'_, '_> {
         plan: &ReadPlan,
         outer: &[OuterScope<'_>],
     ) -> Result<Vec<Vec<CellValue>>, QueryError> {
+        self.tick()?;
+        let read_depth = self.discovery.active_read_depth.get();
+        if read_depth >= MAX_RUNTIME_READ_DEPTH {
+            return Err(QueryError::StructureLimit);
+        }
+
         let previous = std::mem::replace(&mut self.owner, plan.owner);
+        self.discovery.active_read_depth.set(read_depth + 1);
         let result = self.read_owned(plan, outer);
+        self.discovery.active_read_depth.set(read_depth);
         self.owner = previous;
         result
     }
@@ -29,290 +46,14 @@ impl Runtime<'_, '_> {
         plan: &ReadPlan,
         outer: &[OuterScope<'_>],
     ) -> Result<Vec<Vec<CellValue>>, QueryError> {
-        self.tick()?;
-        let mut rows = match &plan.node {
-            ReadNode::Crosstab(cross) => {
-                let result = self.crosstab(cross)?;
-                if result.columns.len() != plan.names.len() {
-                    return Err(QueryError::SchemaChanged);
-                }
-                for (actual, expected) in result.columns.iter().zip(&plan.names) {
-                    self.tick()?;
-                    self.budget.charge(
-                        tablecraft_core::limits::Resource::Steps,
-                        (actual.len() + expected.len()) as u64,
-                    )?;
-                    if actual != expected {
-                        return Err(QueryError::SchemaChanged);
-                    }
-                }
-                // Inner crosstab already evaluated every cell, sorted and
-                // applied its TOP. Outer consumers retain all resulting cells.
-                return Ok(result.rows);
-            }
+        let rows = match &plan.node {
+            ReadNode::Crosstab(cross) => return self.read_crosstab(cross, plan),
             ReadNode::Select(select) => self.select(select, plan, outer)?,
-            ReadNode::Union { first, rest } => {
-                let mut policies = Vec::new();
-                let mut complete = Vec::new();
-                if self.options.collation_resolver.is_some() {
-                    self.budget.charge_allocation(
-                        first.text_policies.len() as u64,
-                        size_of::<crate::source::TextPolicy>() as u64,
-                    )?;
-                    policies
-                        .try_reserve_exact(first.text_policies.len())
-                        .map_err(|_| QueryError::Allocation)?;
-                    policies.resize(
-                        first.text_policies.len(),
-                        crate::source::TextPolicy::Default,
-                    );
-                    self.budget.charge_allocation(
-                        first.text_policies.len() as u64,
-                        size_of::<bool>() as u64,
-                    )?;
-                    complete
-                        .try_reserve_exact(first.text_policies.len())
-                        .map_err(|_| QueryError::Allocation)?;
-                    complete.resize(first.text_policies.len(), false);
-                }
-                let mut rows = self.read(first, outer)?;
-                self.promote_union_rows(
-                    &mut rows,
-                    plan.active_types(self.options.declared_integral),
-                )?;
-                if !policies.is_empty() {
-                    self.merge_union_policies(
-                        &rows,
-                        &first.text_policies,
-                        &mut policies,
-                        &mut complete,
-                    )?;
-                    self.apply_union_policies(&mut rows, &policies, &complete)?;
-                }
-                for (all, arm) in rest {
-                    let mut incoming = self.read(arm, outer)?;
-                    self.promote_union_rows(
-                        &mut incoming,
-                        plan.active_types(self.options.declared_integral),
-                    )?;
-                    if !policies.is_empty() {
-                        self.merge_union_policies(
-                            &incoming,
-                            &arm.text_policies,
-                            &mut policies,
-                            &mut complete,
-                        )?;
-                    }
-                    for row in incoming {
-                        self.push(&mut rows, row)?;
-                    }
-                    if !policies.is_empty() {
-                        self.apply_union_policies(&mut rows, &policies, &complete)?;
-                    }
-                    if !*all {
-                        rows = self.unique(
-                            rows,
-                            &policies,
-                            plan.active_types(self.options.declared_integral),
-                        )?;
-                    }
-                }
-                let mut output = Vec::new();
-                for row in rows {
-                    let env = Environment {
-                        aggregate_results: None,
-                        collections: None,
-                        row: &row,
-                        outer,
-                        output: &row,
-                        group: None,
-                        group_keys: None,
-                    };
-                    let mut keys = self.allocate_expression_row(plan.sort.len())?;
-                    for (expr, _) in &plan.sort {
-                        keys.push(self.comparison_key(expr, env)?);
-                    }
-                    self.push(
-                        &mut output,
-                        OutputRow {
-                            values: row,
-                            keys,
-                            records: Vec::new(),
-                        },
-                    )?;
-                }
-                output
-            }
+            ReadNode::Union { first, rest } => self.read_union(plan, first, rest, outer)?,
         };
-        let records =
-            matches!(&plan.node, ReadNode::Select(select) if !select.record_keys.is_empty());
-        if plan.distinct || records {
-            // ORDER BY expressions have already been evaluated for every input
-            // row. Preserve their contributing runtime policies before a
-            // duplicate can discard the only field-policy-bearing key.
-            if !plan.sort.is_empty() {
-                self.unify_cell_policies(&mut rows, |row| &mut row.keys)?;
-            }
-            if records {
-                self.unify_cell_policies(&mut rows, |row| &mut row.records)?;
-            } else {
-                self.unify_cell_policies(&mut rows, |row| &mut row.values)?;
-            }
-            let record_policies = if let ReadNode::Select(select) = &plan.node {
-                if records {
-                    self.expression_policies(&select.record_keys)?
-                } else {
-                    Vec::new()
-                }
-            } else {
-                Vec::new()
-            };
-            let policies = if records {
-                record_policies.as_slice()
-            } else {
-                &plan.text_policies
-            };
-            let mut lookup = if rows.is_empty() {
-                None
-            } else if records {
-                let ReadNode::Select(select) = &plan.node else {
-                    return Err(QueryError::Source);
-                };
-                self.exact_field_keys(&select.record_keys, &select.source)?
-            } else {
-                self.exact_output_keys(plan.active_types(self.options.declared_integral))?
-            };
-            let mut unique: Vec<OutputRow> = Vec::new();
-            for row in rows {
-                self.validate_key_row(if records { &row.records } else { &row.values })?;
-                let keys = if records { &row.records } else { &row.values };
-                let (representative, fingerprint) = self.exact_key_match(
-                    &mut lookup,
-                    keys,
-                    &unique,
-                    |row| if records { &row.records } else { &row.values },
-                    policies,
-                )?;
-                if representative.is_none() {
-                    let position = unique.len();
-                    self.push(&mut unique, row)?;
-                    if let (Some(lookup), Some(fingerprint)) = (&mut lookup, fingerprint) {
-                        lookup.insert(
-                            fingerprint,
-                            position,
-                            self.budget,
-                            self.options.cancelled,
-                        )?;
-                    }
-                }
-            }
-            rows = unique;
-        }
-        rows = self.sort_rows(rows, plan)?;
-        self.apply_top(&mut rows, plan)?;
-        let mut result = Vec::new();
-        for row in rows {
-            self.push(&mut result, row.values)?;
-        }
-        Ok(result)
+        self.finish_read(rows, plan)
     }
-    fn select(
-        &mut self,
-        select: &SelectPlan,
-        plan: &ReadPlan,
-        outer: &[OuterScope<'_>],
-    ) -> Result<Vec<OutputRow>, QueryError> {
-        let mut filtered = Vec::new();
-        let constraint = match (&select.source.node, &select.filter) {
-            (
-                RelationNode::Table {
-                    namespace,
-                    name,
-                    columns,
-                    projection,
-                    expansion,
-                    ..
-                },
-                Some(filter),
-            ) if expansion.is_empty() && select.parent.is_none() => {
-                let text_hints = self
-                    .namespace_source(*namespace)?
-                    .text_equality_hints(name)?;
-                if text_hints {
-                    self.check_table_schema(&select.source.node)?;
-                }
-                self.scan_constraint(filter, columns, projection, text_hints)?
-            }
-            _ => None,
-        };
-        let input = if let Some(parent) = &select.parent {
-            self.parent_rows(&select.source, parent, outer)?
-        } else {
-            self.relation_constrained(&select.source, outer, constraint)?
-        };
-        for row in input {
-            self.tick()?;
-            if let Some(filter) = &select.filter {
-                let value = self.eval(
-                    filter,
-                    Environment {
-                        aggregate_results: None,
-                        collections: None,
-                        row: &row,
-                        outer,
-                        output: &[],
-                        group: None,
-                        group_keys: None,
-                    },
-                )?;
-                if !self.evaluator().predicate_truth(&value)?.is_true() {
-                    continue;
-                }
-            }
-            self.push(&mut filtered, row)?;
-        }
-        let mut result = Vec::new();
-        if select.aggregate {
-            let groups = self.groups(filtered, select, outer)?;
-            for group in groups {
-                let env = Environment {
-                    aggregate_results: None,
-                    collections: None,
-                    row: group.rows.first().map_or(&[], Vec::as_slice),
-                    outer,
-                    output: &[],
-                    group: Some(&group.rows),
-                    group_keys: Some(super::context::GroupKeys {
-                        retained_values: false,
-                        expressions: &select.group,
-                        values: &group.keys,
-                    }),
-                };
-                if let Some(row) = self.project(select, plan, env)? {
-                    self.push(&mut result, row)?;
-                }
-            }
-        } else {
-            for row in filtered {
-                if let Some(row) = self.project(
-                    select,
-                    plan,
-                    Environment {
-                        aggregate_results: None,
-                        collections: None,
-                        row: &row,
-                        outer,
-                        output: &[],
-                        group: None,
-                        group_keys: None,
-                    },
-                )? {
-                    self.push(&mut result, row)?;
-                }
-            }
-        }
-        Ok(result)
-    }
+
     fn project(
         &mut self,
         select: &SelectPlan,

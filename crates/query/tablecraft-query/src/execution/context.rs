@@ -18,7 +18,6 @@ pub(super) struct ParameterValue<'a> {
 pub(crate) struct Runtime<'a, 'source> {
     pub(super) numeric_scratch: Vec<NumericScratch>,
     pub(super) repeatable_dynamic: bool,
-    pub(super) domain_depth: usize,
     pub(super) owner: crate::external_sources::SourceNamespace,
     pub(super) source: &'source dyn Source,
     pub(super) external_sources: Vec<super::external::RuntimeSource<'source>>,
