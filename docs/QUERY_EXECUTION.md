@@ -332,8 +332,10 @@ silently discarded because an input table is empty.
 
 ## Limits and cancellation
 
-Preparation bounds recursive syntax planning depth within each definition to 16,
-combined plan visits to 2,048,
+Preparation defaults recursive syntax planning depth within each definition to 16.
+Explicit [binding depth](QUERY_BINDING_LIMITS.md) can select 1 through 32; plans
+capture the selection, including subsequent runtime domain preparation.
+Preparation still bounds combined plan visits to 2,048,
 retained-plan estimates to 1 MiB, input/output width to 256, top-level FROM items
 per SELECT to 32, grouping/sort keys to 10 and IN/UNION arm counts to 256. These
 include work on publicly constructed syntax models, independently of parser limits.
@@ -562,7 +564,7 @@ This explicit bounded policy still needs native Access comparison evidence.
 
 Active-path cycles return DependencyCycle before scans; repeated acyclic sources
 are allowed. A separate 16-definition dependency-path ceiling bounds named nesting.
-Each definition retains the 16-helper syntax depth ceiling; all expanded work and
+Each definition uses the captured helper-depth ceiling (default 16, maximum 32); all expanded work and
 allocations share the 2,048-node and 1 MiB planning limits. Expanded plans therefore
 remain bounded even across names. Parameter/name/map reservations are fallible and
 charged before allocation. UPDATE binding never resolves named query targets.

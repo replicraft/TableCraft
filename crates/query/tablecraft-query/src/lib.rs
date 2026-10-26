@@ -30,7 +30,7 @@ mod plan;
 pub use output_types::OutputType;
 mod profile;
 pub mod source;
-pub use binding::{PreparationOptions, PreparedQuery, prepare, prepare_with_options};
+pub use binding::{BindingDepth, PreparationOptions, PreparedQuery, prepare, prepare_with_options};
 pub use error::QueryError;
 pub use execution::{
     ExecutionOptions, ExpressionQueryResult, QueryLimits, QueryResult, StreamError, StreamSummary,

@@ -18,7 +18,7 @@ use tablecraft_expressions::functions::{
     dates::TwoDigitYearWindow, text::code_page::CharacterCodePage,
 };
 use tablecraft_query::{
-    ExpressionQueryResult, QueryLimits, Source, execute_with_schema_discovery,
+    BindingDepth, ExpressionQueryResult, QueryLimits, Source, execute_with_schema_discovery,
     source::{CollationResolver, MemorySource},
 };
 use tablecraft_sql::query::Query;
@@ -74,6 +74,7 @@ pub(super) struct NativeInput<'a> {
 }
 
 pub(super) struct Controls {
+    pub binding_depth: BindingDepth,
     pub declared_integral: bool,
     pub max_text_bytes: Option<usize>,
     pub output_bytes: usize,

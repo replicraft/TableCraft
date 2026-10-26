@@ -1,5 +1,22 @@
 # Implementation status
 
+## Explicit deeper query preparation
+
+`query run --binding-depth 1..32` and the validated library `BindingDepth` now
+select structural planning depth while retaining default 16. Prepared plans
+capture the selection for runtime domains, text-policy/provenance walks and
+progressive admission; execution options cannot reinterpret an existing plan.
+Execution-stage discovery propagates the caller selection. Node, byte, parser,
+named-path and consumable query limits remain independent. Metadata policy and
+projection-pruning visitors observe shared work and cancellation controls.
+
+The focused query/CLI tests exercise compound grouping/UNION, named and derived
+sources, dynamic crosstabs, runtime domains, required text policies, progressive
+execution and refusals before scans. Selected existing regression suites pass.
+See [the binding contract](QUERY_BINDING_LIMITS.md) and
+[verification record](testing/results/query-binding-depth-2026-10-25.json).
+This does not complete read/query acceptance or qualify native Access behavior.
+
 ## Exact fixed/binary relational keys
 
 The strict relational key service now orders Boolean/integral/Currency/Decimal

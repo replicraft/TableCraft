@@ -155,6 +155,7 @@ impl<'source> Operation<'_, 'source> {
                     owner,
                     external_sources: &self.discovery.external_sources.borrow(),
                     preparation: PreparationOptions {
+                        binding_depth: self.options.binding_depth,
                         reference_year: self.options.reference_year,
                         declared_arithmetic: self.options.declared_integral,
                     },

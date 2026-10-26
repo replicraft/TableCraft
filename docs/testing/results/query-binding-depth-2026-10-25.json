@@ -1,0 +1,55 @@
+{
+  "date": "2026-10-25",
+  "scope": "Explicit validated query binding depth 1 through 32; default 16 unchanged. Engineering coverage, not native Access qualification.",
+  "new_tests": 14,
+  "counting_note": "Eleven query integration tests and three CLI tests. Repeated runs are not additional tests. Selected existing suites are recorded separately without an aggregate count.",
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-query --lib --test binding_depth --locked",
+      "exit_code": 0,
+      "tests": 69
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test binding_depth --test named_crosstabs --test domain --test collation_routing --test progressive_derived_values --test progressive_grouped_values --test progressive_text_group_values --test editing --locked",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --test binding_depth --locked",
+      "exit_code": 0,
+      "tests": 3
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --test binding_depth --locked -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo clippy -p tablecraft-cli --test binding_depth --locked -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo check -p tablecraft-query --no-default-features --locked",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_dependency_boundaries.py",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "authoring_corrections": [
+    "The wide-node guard initially constructed one SQL string that exceeded the parser token ceiling. It now constructs an owned query from individually parsed projections to exercise the binder independently."
+  ],
+  "limitations": [
+    "No Windows Access comparison.",
+    "No larger default, parser, named-path, work, allocation or source allowances.",
+    "No new SQL grammar or streaming shape support.",
+    "Restricted editing preparation retains its default depth."
+  ]
+}

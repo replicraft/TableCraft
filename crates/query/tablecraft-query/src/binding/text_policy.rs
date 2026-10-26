@@ -2,26 +2,28 @@ use super::Binder;
 use crate::{
     QueryError,
     plan::{Expr, Slot},
-    profile::{MAX_BIND_DEPTH, MAX_BIND_NODES},
+    profile::MAX_BIND_NODES,
     source::{TextCollationId, TextPolicy},
 };
 
-const MAX_POLICY_VISITS: usize = MAX_BIND_NODES * (MAX_BIND_DEPTH + 1);
-
 impl Binder<'_> {
     pub(super) fn text_policy(&mut self, expr: &Expr) -> Result<TextPolicy, QueryError> {
+        let binding_depth = self.binding_depth;
         crate::plan::text_policy::expression(
             expr,
             &mut || {
+                self.work()?;
                 self.policy_visits += 1;
-                if self.policy_visits > MAX_POLICY_VISITS {
+                if self.policy_visits > MAX_BIND_NODES * (binding_depth.get() + 1) {
                     return Err(QueryError::StructureLimit);
                 }
                 Ok(())
             },
             1,
+            binding_depth,
         )
     }
+
     pub(super) fn copy_text_collations(
         &mut self,
         policies: &[Option<TextCollationId>],
@@ -34,6 +36,7 @@ impl Binder<'_> {
         copied.extend_from_slice(policies);
         Ok(copied)
     }
+
     pub(super) fn policy_vector(&mut self, width: usize) -> Result<Vec<TextPolicy>, QueryError> {
         self.charge(
             width
@@ -46,6 +49,7 @@ impl Binder<'_> {
             .map_err(|_| QueryError::Allocation)?;
         Ok(policies)
     }
+
     pub(super) fn field(
         &self,
         depth: usize,

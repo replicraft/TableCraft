@@ -24,6 +24,7 @@ pub(crate) fn bind_update(query: &Query, source: &dyn Source) -> Result<BoundUpd
         return Err(QueryError::Unsupported);
     };
     let mut binder = Binder {
+        binding_depth: Default::default(),
         aliases: Default::default(),
         budget: None,
         cancelled: None,

@@ -28,6 +28,7 @@ impl RunArgs {
 
     pub(in crate::commands::query) fn controls(&self) -> retrieval::Controls {
         retrieval::Controls {
+            binding_depth: self.binding_depth,
             declared_integral: self.declared_integral,
             max_text_bytes: self.large_values.text_bytes.map(|bytes| bytes as usize),
             output_bytes: self

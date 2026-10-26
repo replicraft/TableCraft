@@ -28,7 +28,9 @@ collation or native compatibility from it.
 explicit policies in [SCHEMA.md](docs/SCHEMA.md). Consumer limits and SQL syntax
 lowering remain at their boundaries. `tablecraft-query` now binds
 and executes the read-only profile in [QUERY_EXECUTION.md](docs/QUERY_EXECUTION.md)
-over explicit host sources. Keep native I/O and application hosts out of that layer.
+over explicit host sources. Keep native I/O and application hosts out of that layer. Explicit [binding depth](docs/QUERY_BINDING_LIMITS.md)
+defaults to 16 and can select up to 32; prepared plans retain their captured limit
+through runtime domains and progressive admission. Keep node/work/path ceilings independent.
 `tablecraft-sqlite` supplies read-only SQLite snapshots through `query run --sqlite`;
 follow [SQLITE.md](docs/SQLITE.md). Keep Access query evaluation in TableCraft,
 validate runtime carriers without coercion and retain the no-create/read-only

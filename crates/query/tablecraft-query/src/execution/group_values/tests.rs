@@ -1,5 +1,6 @@
 use super::*;
 use crate::{
+    BindingDepth,
     discovery::DiscoveryState,
     execution::{
         ExecutionOptions,
@@ -98,7 +99,7 @@ fn inactive_bridge_keeps_buffered_evaluation_and_active_bridge_copies_full_cell(
 fn retained_key_identity_observes_the_existing_depth_limit() {
     with_runtime(|runtime| {
         let mut expression = Expr::NumericLiteral(Value::Int32(7));
-        for _ in 0..=MAX_BIND_DEPTH {
+        for _ in 0..=BindingDepth::default().get() {
             expression = Expr::CVar(Box::new(expression));
         }
         let cells = [CellValue::scalar(Value::Int32(7))];

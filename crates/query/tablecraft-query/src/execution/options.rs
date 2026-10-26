@@ -1,3 +1,4 @@
+use crate::BindingDepth;
 use tablecraft_expressions::{
     comparison::Collation,
     evaluation::EvalLimits,
@@ -44,6 +45,9 @@ impl Default for QueryLimits {
 /// their documented stateful behavior. No default text order or random state.
 #[derive(Clone, Copy, Default)]
 pub struct ExecutionOptions<'a> {
+    /// Structural depth for staged preparation. An already prepared plan retains
+    /// its captured limit, including runtime-created domain and discovery reads.
+    pub binding_depth: BindingDepth,
     /// Immutable localized messages selected by the caller, without locale discovery.
     pub error_messages: Option<&'a dyn ErrorMessages>,
     /// Explicit immutable Access expression-session metadata, not authorization.

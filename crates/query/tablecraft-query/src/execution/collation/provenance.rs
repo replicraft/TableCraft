@@ -6,7 +6,6 @@ use crate::{
         Expr,
         identity::{Comparer, Identity},
     },
-    profile::MAX_BIND_DEPTH,
     source::TextPolicy,
 };
 
@@ -35,7 +34,7 @@ impl Runtime<'_, '_> {
             };
             for (key, cell) in keys.expressions.iter().zip(keys.values) {
                 let mut tick = |depth| {
-                    if depth > MAX_BIND_DEPTH {
+                    if depth > self.options.binding_depth.get() {
                         return Err(QueryError::StructureLimit);
                     }
                     self.tick()

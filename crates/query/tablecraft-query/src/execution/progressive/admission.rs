@@ -3,7 +3,7 @@ use super::super::Runtime;
 use crate::{
     QueryError,
     plan::{Aggregate, Expr, ReadNode, ReadPlan, SelectPlan},
-    profile::{MAX_BIND_DEPTH, MAX_BIND_NODES},
+    profile::MAX_BIND_NODES,
 };
 use tablecraft_expressions::functions::math::MathFunction;
 
@@ -89,7 +89,7 @@ impl Runtime<'_, '_> {
         aggregates: &mut Vec<&'p Expr>,
     ) -> Result<(), QueryError> {
         self.tick()?;
-        if depth > MAX_BIND_DEPTH {
+        if depth > self.options.binding_depth.get() {
             return Err(QueryError::StructureLimit);
         }
         match expression {

@@ -175,6 +175,8 @@ impl PreparedQuery {
             discovery,
             context,
         } = frame;
+        let mut options = options;
+        options.binding_depth = self.binding_depth;
         let mut runtime = Runtime {
             owner: crate::external_sources::SourceNamespace::Root,
             numeric_scratch: Vec::new(),

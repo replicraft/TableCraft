@@ -3,7 +3,7 @@ mod scalar;
 mod text;
 use super::{Binder, projection};
 use crate::{
-    QueryError, Source,
+    BindingDepth, QueryError, Source,
     discovery::Materialized,
     plan::{DomainFunction, Expr, ReadNode, ReadPlan, SelectPlan, Slot},
 };
@@ -11,6 +11,7 @@ use tablecraft_core::limits::ResourceBudget;
 use tablecraft_expressions::functions::dates::parsing::ReferenceYear;
 
 pub(crate) struct DomainContext<'a> {
+    pub binding_depth: BindingDepth,
     pub owner: crate::external_sources::SourceNamespace,
     pub external_sources: &'a [crate::external_sources::ExternalBinding],
     pub source: &'a dyn Source,
@@ -39,6 +40,7 @@ pub(crate) fn bind_domain(
     criteria: Option<&str>,
 ) -> Result<DomainPreparation, QueryError> {
     let DomainContext {
+        binding_depth,
         owner,
         external_sources,
         source,
@@ -50,7 +52,11 @@ pub(crate) fn bind_domain(
         declared_arithmetic,
     } = context;
     let (syntax, value, filter) = {
-        let mut text = text::Text { budget, cancelled };
+        let mut text = text::Text {
+            budget,
+            cancelled,
+            binding_depth,
+        };
         let syntax = text.source(domain)?;
         let value = if expression == "*" && kind == DomainFunction::Count {
             None
@@ -64,6 +70,7 @@ pub(crate) fn bind_domain(
         (syntax, value, filter)
     };
     let mut binder = Binder {
+        binding_depth,
         aliases: Default::default(),
         source,
         external_sources: Vec::new(),

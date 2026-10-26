@@ -51,6 +51,7 @@ impl Runtime<'_, '_> {
             let plan = loop {
                 let stage = bind_domain(
                     DomainContext {
+                        binding_depth: self.options.binding_depth,
                         owner: self.owner,
                         external_sources: &self.discovery.external_sources.borrow(),
                         source: self.source,
