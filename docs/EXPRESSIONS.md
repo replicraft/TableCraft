@@ -85,7 +85,7 @@ bits while retaining Boolean/NULL tables. Final read predicates additionally acc
 numeric/legacy DATE zero/nonzero. [Rounded logical coercion](INTEGER_LOGIC.md#rounded-numeric-and-text-operands)
 now uses checked Long/LongLong targets, and SQL Text operators/predicates require
 an explicit number policy. Full Variant/native result-type inference remains open. Numeric text parsing, mixed
-text/numeric `+`, numeric/date string rendering, GUID ordering/binary comparisons,
+text/numeric `+`, numeric/date string rendering, GUID ordering and general Binary comparisons,
 locale-dependent conversions, built-ins beyond the explicit NULL/conditional/text/date/conversion
 profile below and complete VBA expression states are not implemented. Unsupported combinations fail explicitly.
 
@@ -927,8 +927,11 @@ native qualification limits remain explicit in the owning contract.
 
 `StringFromGUID` now supplies the [inverse GUID conversion](GUID_CONVERSIONS.md#stringfromguid-inverse-conversion)
 for exactly sixteen Binary bytes and stored Guid values. The provisional output
-is bounded uppercase literal Text, with no implicit GUID/Binary comparison or
-identifier generation. Native spelling/coercion and query qualification remain open.
+is bounded uppercase literal Text without identifier generation.
+[GUID-structure predicate equality](GUID_CONVERSIONS.md#guid-structure-predicate-equality)
+now admits a Guid beside sixteen Binary bytes through a separate contextual
+comparison boundary. Strict relational keys remain unchanged. Native
+spelling/coercion and query qualification remain open.
 
 [Closed Eval expressions](DYNAMIC_EVALUATION.md) now parse one expression through
 the existing owned SQL model, preflight dynamic names/effects, and reuse evaluator

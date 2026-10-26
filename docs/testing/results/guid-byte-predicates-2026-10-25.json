@@ -1,0 +1,74 @@
+{
+  "date": "2026-10-25",
+  "scope": "Contextual equality of stored Guid and sixteen GUID-structure Binary bytes. Strict keys and storage stay separate; native Access remains unqualified.",
+  "new_tests": 10,
+  "new_test_breakdown": {
+    "expression": 4,
+    "query": 5,
+    "cli": 1
+  },
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-query --test guid_byte_predicates --test guid_conversion --test effective_comparisons --test numeric_keys --test union_types --locked",
+      "exit_code": 0,
+      "tests": 33,
+      "new_tests": 5
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --test guid_conversion --locked",
+      "exit_code": 0,
+      "tests": 3,
+      "new_tests": 1
+    },
+    {
+      "command": "cargo test -p tablecraft-expressions --features sql --lib --locked evaluation::comparison_values",
+      "exit_code": 0,
+      "tests": 39,
+      "new_tests": 4
+    },
+    {
+      "command": "cargo clippy -p tablecraft-expressions --lib --tests --features sql --locked -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --test guid_byte_predicates --locked -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo clippy -p tablecraft-cli --test guid_conversion --locked -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo check -p tablecraft-expressions --no-default-features --features sql --locked",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo check -p tablecraft-query --no-default-features --locked",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_dependency_boundaries.py",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "references": [
+    "https://support.microsoft.com/en-us/access/functions/guidfromstring-function"
+  ],
+  "limitations": [
+    "No native Access comparison/byte-order or error-precedence qualification.",
+    "General Binary/Binary, GUID ordering and implicit Text parsing remain refused.",
+    "Strict keys, stored values, source/parameter types and index hints are unchanged.",
+    "This does not complete P0 value semantics."
+  ],
+  "unique_tests": 75,
+  "existing_regression_tests": 65,
+  "counting_note": "Four new expression tests, five new query tests and one new CLI test. Three nonoverlapping selected test targets/groups total 75 tests; repeated runs are not additional tests."
+}

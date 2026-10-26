@@ -90,3 +90,30 @@ fn stringfromguid_uses_shared_literal_text_format_and_buffers_refused_calls() {
         }
     }
 }
+
+#[test]
+fn guid_structure_equality_runs_in_both_cli_modes_and_buffers_refused_ordering() {
+    let literal = "{guid {00112233-4455-6677-8899-aabbccddeeff}}";
+    let bytes = "GUIDFromString('00112233-4455-6677-8899-aabbccddeeff')";
+    let sql = format!("SELECT {literal}={bytes} AS E,{bytes}<>{literal} AS N");
+    for mode in ["eval", "run"] {
+        let result = run(&["query", mode, &sql]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(result.stdout, b"E\tN\nTRUE\tFALSE\n");
+
+        for expression in [
+            format!("{literal}<{bytes}"),
+            format!("{literal}=GUIDFromString('bad')"),
+            format!("IIf(False,{literal}=GUIDFromString('bad'),True)"),
+        ] {
+            let sql = format!("SELECT {expression}");
+            let refused = run(&["query", mode, &sql]);
+            assert_eq!(refused.status.code(), Some(2));
+            assert!(refused.stdout.is_empty());
+        }
+    }
+}

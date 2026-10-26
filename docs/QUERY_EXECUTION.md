@@ -1047,8 +1047,10 @@ It does not admit expression-only arrays or create a VBA Variant variable.
 `StringFromGUID` now traverses the same bound field/group/aggregate/correlated
 dependency paths as GUIDFromString. Its [provisional inverse profile](GUID_CONVERSIONS.md#stringfromguid-inverse-conversion)
 converts stored Guid fields or sixteen GUID-structure Binary bytes to fresh Text.
-Source schemas and scalar parameters retain their existing carriers; there is no
-implicit stored Guid/Binary comparison or native-query qualification claim.
+Source schemas and scalar parameters retain their existing carriers.
+[GUID-structure equality predicates](GUID_CONVERSIONS.md#guid-structure-predicate-equality)
+now admit a Guid beside exactly sixteen Binary bytes, separately from strict
+relational keys. Native-query qualification remains pending.
 
 [Closed dynamic Eval](DYNAMIC_EVALUATION.md) binds an explicit argument child,
 retaining parameter/field/group/aggregate/correlated and collection dependency

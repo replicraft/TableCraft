@@ -14,6 +14,7 @@ pub use declared_strings::PreparedScalarStringVariantComparison;
 mod effective;
 mod empty;
 mod floating;
+mod guid;
 mod strings;
 
 #[cfg(test)]
@@ -97,6 +98,9 @@ impl Evaluator<'_> {
         self.check(0)?;
         if matches!(left, Value::Null) || matches!(right, Value::Null) {
             return Ok(Truth::Unknown);
+        }
+        if let Some(result) = guid::compare(operator, left, right)? {
+            return Ok(result);
         }
         if let Some(result) = self.compare_effective_date_values(operator, left, right)? {
             return Ok(result);

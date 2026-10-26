@@ -40,11 +40,11 @@ Only Text is accepted as input; invalid spellings and wrong carriers return
 TypeMismatch. Explicit NULL returns InvalidNullConversion in this profile.
 Native NULL, accepted-spelling and error-precedence behavior remain unqualified.
 
-Binary results do not gain implicit comparison/coercion with a stored Guid value.
-Consequently this implementation alone does not enable filtering a native GUID
-field against GUIDFromString output. The existing SQL GUID literal remains a
-separate typed expression. The function stays **Partial** in the
-[built-in tracker](ACCESS_BUILTINS.md).
+Predicate equality now admits a stored Guid beside exactly sixteen Binary
+GUID-structure bytes, including GUIDFromString output; see the predicate contract
+below. The existing SQL GUID literal remains a separate typed expression and
+strict relational keys retain their carrier distinctions. The function stays
+**Partial** in the [built-in tracker](ACCESS_BUILTINS.md).
 
 ## StringFromGUID inverse conversion
 
@@ -80,8 +80,9 @@ tablecraft query eval "SELECT StringFromGUID(GUIDFromString('00112233-4455-6677-
 tablecraft query run "SELECT ID,StringFromGUID(G) FROM ScalarSamples WHERE G IS NOT NULL" --database example.accdb
 ```
 
-This enables explicit GUID-field-to-Text conversion, not implicit GUID/Binary
-comparison, identifier generation, COM activation or VBA execution. NULL/error
+This enables explicit GUID-field-to-Text conversion. GUID/Binary predicate
+admission has its separate contract below; no identifier generation, COM
+activation or VBA execution is introduced. NULL/error
 precedence, wider argument coercion, saved-query/application behavior and exact
 native output remain unqualified. StringFromGUID stays **Partial**.
 
@@ -111,3 +112,48 @@ independent formatting and bytes_le model; reviewed getters supply GUID fields
 from four unchanged original ScalarFixture files with expression evaluation
 disabled. This is independent data/model evidence, not native StringFromGUID
 execution. No third-party code or fixture was copied.
+
+## GUID-structure predicate equality
+
+A contextual scalar predicate can now compare a canonical stored Guid with a
+sixteen-byte Binary GUID structure, in either order, using `=` or `<>`. This
+allows ordinary native-table filters such as:
+
+```sql
+SELECT ID FROM ScalarSamples
+WHERE G=GUIDFromString('00112233-4455-6677-8899-aabbccddeeff');
+```
+
+Microsoft's [query-callable conversion contract](https://support.microsoft.com/en-us/access/functions/guidfromstring-function)
+defines GUIDFromString output as a Byte array and describes stored GUIDs as Byte
+arrays as well. TableCraft uses its existing GUID-structure representation to
+bridge those expression/storage carriers at the predicate boundary. The first
+three canonical groups map to little-endian Data1/Data2/Data3; the final eight
+bytes retain order. The existing `uuid` library performs the fixed conversion,
+without allocation, Text parsing, providers or a new dependency. Exact bytes and
+native Access comparison/error precedence still require Windows qualification.
+
+The ordinary and explicit declared profiles share this predicate service.
+Membership, equality quantifiers, joins, HAVING, domains and eligible progressive
+filters reuse it. Both operands evaluate before admission; NULL keeps Unknown
+before width validation, matching the existing scalar NULL boundary. Wrong byte
+widths fail TypeMismatch. GUID ordering remains unsupported. Binary/Binary,
+GUID/Text, raw String-byte ranges and arbitrary Variant arrays keep their existing
+refusals; a sixteen-byte width alone does not grant a stored Guid type.
+
+Pure `comparison::compare`, strict set/group/sort/extrema keys, result metadata,
+source schemas, parameter carriers and stored values do not change. A predicate
+match does not rewrite Binary into Guid or enable mixed-key equality. No new
+native index hint is extracted from the conversion call. Original filters remain
+eager, so false predicates cannot hide a failed GUIDFromString operand.
+Cancellation/work checks run before the fixed-size comparison, which allocates
+no payload storage. The conversion call retains its own allocation/length budget.
+
+Four expression tests, including a generated independent group-reversal/bit-flip
+model, cover bytes, widths, NULL, strict-key separation, work and cancellation.
+Five query tests cover composed consumers, parameter reuse, strict group refusal,
+eager errors, progressive parity and every observed filter cancellation point.
+CLI checks cover eval/run equality and buffered refusals. See the
+[verification record](testing/results/guid-byte-predicates-2026-10-25.json).
+This closes a concrete predicate-coercion gap; broader Byte-array semantics,
+native qualification and full P0 acceptance remain open.

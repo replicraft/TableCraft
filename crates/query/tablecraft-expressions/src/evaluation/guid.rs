@@ -36,7 +36,7 @@ impl Evaluator<'_> {
     }
 
     /// Convert evaluated Text to bounded Binary GUID-structure bytes. No implicit
-    /// Text coercion or semantic GUID/Binary comparison is introduced.
+    /// Text coercion is introduced; predicate-only GUID byte admission is separate.
     pub fn apply_guid_from_string(&mut self, value: &Value) -> Result<Value, EvalError> {
         if self.cancelled.is_some_and(|cancelled| cancelled()) {
             return Err(EvalError::Cancelled);
