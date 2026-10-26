@@ -8579,3 +8579,28 @@ raw root/owner observations, producer commands and provenance boundaries. The
 compares 3,468 returned IDs, seventeen unchanged artifacts and six selected native
 source objects. Original bytes remain unchanged. Native Access qualification and
 other ignore-NULL carrier profiles are not inferred.
+
+## Original Int64/Currency ignore-NULL index inputs
+
+Original Apache-2.0
+[IgnoreNullWideIndexFixture.java](testing/IgnoreNullWideIndexFixture.java) uses the
+reviewed Jackcess 5.0.4 JAR, SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`,
+to author fresh inert Currency tables in V2000/V2007/V2016/V2019 and additional
+Int64 tables only in V2016/V2019. Expressions stay disabled and all linked opens
+are refused. No upstream code, fixture or reference SQL is copied or executed.
+Public row/index-cursor getters retain exact Long and scaled BigDecimal values;
+explicitly identified pinned implementation metadata getters supplement geometry
+and physical-index observations.
+
+Originals remain ignored under
+`.cache/tablecraft-fixtures/ignore-null-wide-indexes-20261025/`. Six actual tables
+each have 701 rows, 637 ordinary ignored-key entries, 647 unique ignored-key
+entries, ascending/descending node trees and a shared logical alias. Each physical
+index owns five pages. The [evidence record](testing/IGNORED_NULL_WIDE_INDEXES.md)
+lists all four exact original hashes, producer commands and raw owner/root facts.
+The [96-command comparison](testing/results/ignored-null-wide-index-replay-2026-10-25.json)
+compares 3,924 returned IDs, twenty unchanged artifacts and six selected native
+source objects. Original bytes remain unchanged. Other ignored-key families,
+Int64 outside ACE16, native Access qualification and write eligibility are not
+inferred.

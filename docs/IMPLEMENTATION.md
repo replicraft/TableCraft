@@ -31,8 +31,10 @@ integers above 2^53, scaled Currency extrema, nodes, aliases, constraints,
 cancellation and unchanged mutation blockers. Strict engine/adapter lint and
 minimal adapter compilation also pass. See [the index profile](NATIVE_INDEXES.md#single-integer-and-currency-ignore-null-selections)
 and [verification](testing/results/read-query-ignored-null-wide-2026-10-25.json).
-Independent original-file CLI replay is a separate pending check; native Access
-qualification is not implied.
+An independent [96-control original-file replay](testing/IGNORED_NULL_WIDE_INDEXES.md)
+also passes: 78 successes compare 3,924 returned IDs and eighteen expected
+refusals retain empty stdout. Six tables, twenty artifacts and six native source
+snapshots remain unchanged. Native Access qualification is not implied.
 
 ## Deeper named queries and shared interpreter scopes
 
