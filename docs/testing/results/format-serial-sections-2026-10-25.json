@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-25",
+  "scope": "Positive actual numeric serials use existing date masks; nonpositive selected alternatives must be literals. Existing NULL handling and date-typed multisection refusals are preserved.",
+  "unique_tests": 35,
+  "new_tests": 6,
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-expressions --features sql --lib --locked functions::text::format::",
+      "exit_code": 0,
+      "tests": 27
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test format_serial_sections --test format_dates --test date_format --locked",
+      "exit_code": 0,
+      "tests": 8
+    },
+    {
+      "command": "cargo clippy -p tablecraft-expressions --lib --tests --features sql --locked -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --test format_serial_sections --test format_dates --test date_format --locked -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo check -p tablecraft-expressions --no-default-features --locked",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_dependency_boundaries.py",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "limitations": [
+    "Native Access multisection comparisons remain unrun.",
+    "Negative calendar rendering and date-typed multisections remain unqualified and refused.",
+    "Selected focused checks, not a complete workspace regression run."
+  ]
+}

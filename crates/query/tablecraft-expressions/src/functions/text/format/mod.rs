@@ -1,5 +1,6 @@
 //! Access Format masks, with borrowed section selection and bounded rendering.
 mod date;
+mod date_sections;
 mod lexer;
 mod numeric;
 mod sections;
@@ -183,8 +184,13 @@ impl<'a> Format<'a> {
         if !boolean_style
             && let Some(pattern) = date::Pattern::parse(sections.first(), &mut || scratch.step())?
         {
-            if !sections.is_single() {
-                return Err(EvalError::UnsupportedExpression);
+            if !sections.is_single()
+                && let Some(section) =
+                    date_sections::literal_selection(self.value, &sections, scratch)?
+            {
+                return Ok(Display {
+                    content: Content::Literal(section),
+                });
             }
             let display = pattern.resolve(
                 self.value,
