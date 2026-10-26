@@ -1,0 +1,168 @@
+{
+  "date": "2026-10-26",
+  "scope": "Independent native adapter and CLI conformance for complete multivalue lists alongside displayed scalar child values. Existing native read fixtures and public collection APIs reused; no storage or CLI production changes.",
+  "unique_tests": 41,
+  "new_tests": 8,
+  "new_native_tests": 5,
+  "new_cli_tests": 3,
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-access --test mixed_multivalue_results --test multivalue_join_results --test multivalue_outer_results -j2 --locked --offline",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/mixed-multivalue-results-native-final-20261026.log",
+        "bytes": 2695,
+        "sha256": "e8631ba77b00a4c48d1da942e00d6b5a11c969506e30421c7c440ddc808de3aa"
+      },
+      "session": 85647,
+      "breakdown": {
+        "mixed_multivalue_results": 5,
+        "multivalue_join_results": 8,
+        "multivalue_outer_results": 7
+      }
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --test mixed_multivalue_queries --test multivalue_queries --test multivalue_join_queries --test multivalue_outer_queries -j2 --locked --offline",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/mixed-multivalue-results-cli-initial-20261026.log",
+        "bytes": 3206,
+        "sha256": "73305655146cebfb2376085dfff3280acf72b415d8f2b8fc403cd6e526fd5dd9"
+      },
+      "session": 13889,
+      "breakdown": {
+        "mixed_multivalue_queries": 3,
+        "multivalue_queries": 12,
+        "multivalue_join_queries": 3,
+        "multivalue_outer_queries": 3
+      }
+    },
+    {
+      "command": "cargo clippy -p tablecraft-access --lib --test mixed_multivalue_results --test multivalue_join_results --test multivalue_outer_results -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/mixed-multivalue-results-native-clippy-20261026.log",
+        "bytes": 303,
+        "sha256": "29e4cd611c32f518db1ee6c0e10dada3aab0ed3803f39eb400e17eba59ce9b02"
+      },
+      "session": 19087
+    },
+    {
+      "command": "cargo clippy -p tablecraft-cli --test mixed_multivalue_queries --test multivalue_queries --test multivalue_join_queries --test multivalue_outer_queries -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/mixed-multivalue-results-cli-clippy-20261026.log",
+        "bytes": 522,
+        "sha256": "b9fc8f583f5f4e494dd6d3c68b8d2ce1b2fdf67d458723d0c593f3ff4670ecba"
+      },
+      "session": 56397
+    },
+    {
+      "command": "rustfmt --edition 2024 --check crates/backends/tablecraft-access/tests/mixed_multivalue_results.rs crates/backends/tablecraft-access/tests/mixed_multivalue_results/values.rs crates/backends/tablecraft-access/tests/mixed_multivalue_results/boundaries.rs crates/backends/tablecraft-access/tests/multivalue_join_results/boundaries.rs apps/tablecraft-cli/tests/mixed_multivalue_queries.rs apps/tablecraft-cli/tests/multivalue_queries.rs",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/mixed-multivalue-results-host-format-20261026.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "scope_files": [
+    {
+      "path": "crates/backends/tablecraft-access/tests/mixed_multivalue_results.rs",
+      "bytes": 2653,
+      "sha256": "7a7f9dc3d7f28b5fd94e347bdc9672c1723b244fa786a288a489aed1ac27205c"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/mixed_multivalue_results/values.rs",
+      "bytes": 4965,
+      "sha256": "b95d236395a4ea6e2495fe4ec1ec5332230df7d5c35f6a5712211ed89171aea9"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/mixed_multivalue_results/boundaries.rs",
+      "bytes": 1692,
+      "sha256": "8f6b6b8bf4cfb494b449429e9dc29314229a17cc624abe6d4e9f0917faed7721"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/multivalue_join_results/boundaries.rs",
+      "bytes": 2951,
+      "sha256": "103c030e471f6575ae0872de1dda1cdb8abe459e7b944e382b17b047f0439861"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/mixed_multivalue_queries.rs",
+      "bytes": 6043,
+      "sha256": "f3b4a686a2ac2f5d5170cd6633a9205f13e239a6f7d9ebc5c6e8598b853e0fd4"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/multivalue_queries.rs",
+      "bytes": 25281,
+      "sha256": "60585890b9869ac1837018ac64cb8cbc08d7c1cb290a90c0f6a2b640bfb6f510"
+    }
+  ],
+  "unchanged_fixture_recipe": {
+    "path": "crates/backends/tablecraft-access/tests/multivalue_join_results/fixture.rs",
+    "bytes": 1591,
+    "sha256": "50d5e02952ad684fbec337ef3d32b24794ee550dbdcbd8fde4446db4ffa14b3e"
+  },
+  "models": [
+    "Independent authored parent IDs and ordered stored child values, including duplicated101, storedNULL, empty list and nullable outer parent.",
+    "Each displayed child repeats the full original list. Same displayed-member criteria select child rows; an independent joined hidden-member criterion selects its parent without multiplying the displayed side.",
+    "Static derived results retain absent list versus present[NULL] versus present[] and their visible scalarNULL observations.",
+    "Explicit external leaf has independently offset stored values under a shared native pool; stored tokens do not authorize opens.",
+    "CLI exact TSV compares list brackets, NULL spelling, duplicates, hidden criteria, outer absence, and sortedTOP ties. Original file bytes are checked unchanged on fixture teardown."
+  ],
+  "excluded_attempts": [
+    {
+      "command": "cargo test -p tablecraft-access --test mixed_multivalue_results --test multivalue_join_results --test multivalue_outer_results -j2 --locked --offline",
+      "session": 21017,
+      "exit_code": 101,
+      "log": {
+        "path": ".cache/mixed-multivalue-results-native-initial-20261026.log",
+        "bytes": 2565,
+        "sha256": "2bf1d96bcd6fefb985b5e610b7a2e64ba02191f247a7605299b6625dbb20e5c5"
+      },
+      "observed": {
+        "mixed_multivalue_results": {
+          "passed": 5,
+          "failed": 0
+        },
+        "multivalue_join_results": {
+          "passed": 7,
+          "failed": 1
+        },
+        "multivalue_outer_results": "not run"
+      },
+      "reason": "Old unsupported-before-records matrix included a newly admitted mixed bare-list/displayed-member query. It correctly began native reads and hit the test guard. Only that obsolete negative became DISTINCT mixed output; no production or positive-answer correction. Final full command rerun is counted once.",
+      "preserved_snapshot": {
+        "path": ".cache/mixed-multivalue-results-exploration-20261026/native-join-boundaries-before-mixed-negative-migration.rs",
+        "bytes": 2942,
+        "sha256": "df155e3b4dd1419511c960efe9ae53555dd712f9562b8ab6a927decbfbbbac67"
+      }
+    }
+  ],
+  "pre_execution_cli_authoring_correction": {
+    "reason": "Before the first CLI run, TOP2 expected output was corrected to include both tied101 rows after200, following existing complete-sort-key TOP tie semantics. SQL, stored model values and production remained unchanged.",
+    "snapshot": {
+      "path": ".cache/mixed-multivalue-results-exploration-20261026/2-mixed_multivalue_queries.rs",
+      "bytes": 6003,
+      "sha256": "4ac26d61850e43b2a1b82b0ba4445cfb632541f31c980e37423cc8e7a67cc64f"
+    }
+  },
+  "qualification": {
+    "native_header_codes": [
+      2,
+      5,
+      6
+    ],
+    "evidence": "Original repository-authored fixture bytes exercised through native engine, adapter, query and CLI; independent expected values.",
+    "microsoft_access_sql_execution": "not run",
+    "not_claimed": [
+      "Full ACE16 compatibility",
+      "Native query optimizer or generated designerSQL equivalence",
+      "Native empty/NULL/duplicate collection display qualification",
+      "Performance improvements or constant-memory execution"
+    ]
+  },
+  "counting": "Accepted native20 and CLI21 are41 distinct test functions, including8new. Initial failed attempt and repeated checks are not counted again. Query verification is separate.",
+  "query_verification": "docs/testing/results/read-query-mixed-multivalue-results-2026-10-26.json"
+}
