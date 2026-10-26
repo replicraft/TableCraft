@@ -1,0 +1,2053 @@
+{
+  "scope": "Typed INNER/CROSS complete-list transport using exact original getter values; no native Access SQL execution",
+  "controls": 72,
+  "disagreements": 0,
+  "rows_compared": 198,
+  "cells_compared": 780,
+  "compiled_revision": "0f0fe5acaf0fb447ae2c47b353b0276fce322886",
+  "selected_compiled_source_objects": {
+    "apps/tablecraft-cli/src/commands/query/results.rs": {
+      "bytes": 2174,
+      "sha256": "b312a39474dce3447c492c0bedbcd18fc5a15c60b1f301446c81f2bdb817bd9f"
+    },
+    "apps/tablecraft-cli/src/commands/query/retrieval.rs": {
+      "bytes": 12967,
+      "sha256": "61e687c9018689054b6a796b0f8b1489352be8482df4768810d6d5e5a072abf5"
+    },
+    "apps/tablecraft-cli/src/commands/query/run_args.rs": {
+      "bytes": 10910,
+      "sha256": "5dfe98cd972b7ff00e18e28f0c5caf29c56562053e4ce363a28ae1d526bce511"
+    },
+    "crates/backends/tablecraft-access/src/source/collections.rs": {
+      "bytes": 12713,
+      "sha256": "503dc56a0fd2b4d5529603c5d046ce372744b4864621eeb7403bc5fe1a599aec"
+    },
+    "crates/backends/tablecraft-access/src/source/collections/load.rs": {
+      "bytes": 10098,
+      "sha256": "e64d090fd3673600ef652241eed6d1563c5a92a3938fa99d827c1978e3a78a60"
+    },
+    "crates/backends/tablecraft-access/src/source/collections/payload.rs": {
+      "bytes": 3378,
+      "sha256": "4fadae7d3db98224daa10ea95e1f79e3f356b46ff9d759d0f77b3c8f92cb4266"
+    },
+    "crates/backends/tablecraft-access/src/source/multivalue.rs": {
+      "bytes": 7477,
+      "sha256": "53c3165662260e1eb07c3b7ae07c7881f1bbc413768a3e36a2f6ad5e66522226"
+    },
+    "crates/query/tablecraft-query/src/binding/multivalue.rs": {
+      "bytes": 1030,
+      "sha256": "af725a10296ff0c661740bf2642f05e040f0dd139659fcb797f338832212ce9c"
+    },
+    "crates/query/tablecraft-query/src/binding/multivalue/criteria.rs": {
+      "bytes": 9261,
+      "sha256": "495e656c4f6086c736b8db7e671232d24ff1151915236b94cceead8b2095c601"
+    },
+    "crates/query/tablecraft-query/src/binding/multivalue/criteria/truth.rs": {
+      "bytes": 3194,
+      "sha256": "97fe704d93653699b24583b5f49518517a8a97269af09a50cd641c3e1243f28c"
+    },
+    "crates/query/tablecraft-query/src/binding/multivalue/displayed.rs": {
+      "bytes": 2246,
+      "sha256": "2cfd06cd2facf608f4a4cf5a89ed5864b32c7648646cb328055d8a7d71c4d901"
+    },
+    "crates/query/tablecraft-query/src/binding/multivalue/item.rs": {
+      "bytes": 8690,
+      "sha256": "d32f16c87ae71be9619b51df9a4b8b96b472cb738f8ce3d7776df3573576d82f"
+    },
+    "crates/query/tablecraft-query/src/binding/multivalue/joined.rs": {
+      "bytes": 3981,
+      "sha256": "8bc26b6d31be84b03a2d7e017e6d5ecbed1f98f83ab343c244d40819352c25aa"
+    },
+    "crates/query/tablecraft-query/src/binding/multivalue/presence.rs": {
+      "bytes": 4658,
+      "sha256": "810a2263d19ad641de563807baca4fbb3b8220dbf34f35150b98fac34ced8e35"
+    },
+    "crates/query/tablecraft-query/src/binding/multivalue/presence/children.rs": {
+      "bytes": 6244,
+      "sha256": "a7394167c0f77b4e94cd4439782eaf413f57db68e3f7afe3c1dc411458b0ffe1"
+    },
+    "crates/query/tablecraft-query/src/binding/multivalue/product.rs": {
+      "bytes": 2537,
+      "sha256": "419dc185f8d31b3ee1e56bd569148941265e9a79620232a7531e9b31f054bdf2"
+    },
+    "crates/query/tablecraft-query/src/binding/multivalue/projection.rs": {
+      "bytes": 1890,
+      "sha256": "cef136e738693bd969824091a2225770451c5a066b7c9ff9b102dd4bdf97fe61"
+    },
+    "crates/query/tablecraft-query/src/binding/relation.rs": {
+      "bytes": 8114,
+      "sha256": "748c0fc7946f98ec4a7c9f6a75644cf74301aa0399c2acb6b42fc1458905143f"
+    },
+    "crates/query/tablecraft-query/src/binding/relation/table.rs": {
+      "bytes": 9968,
+      "sha256": "903ec01be4695d58133d8e742db585bc16e1ff88349c11fa7193407eb3030d59"
+    },
+    "crates/query/tablecraft-query/src/binding/result_types.rs": {
+      "bytes": 14932,
+      "sha256": "743c3772ba034e7a6d9a89370078632110d499db361e938c9e8bb099ce8db0bc"
+    },
+    "crates/query/tablecraft-query/src/collection_results.rs": {
+      "bytes": 1536,
+      "sha256": "cc53202f66508447554afa57cd3cf8610f1bae0e982097d811ccd4662956a375"
+    },
+    "crates/query/tablecraft-query/src/execution/collections/admission.rs": {
+      "bytes": 4500,
+      "sha256": "6c44f522af1917c62bdf3c6fdd841ea8c0f4d24c049ca0a191a82be9f3905bd6"
+    },
+    "crates/query/tablecraft-query/src/execution/collections/execute.rs": {
+      "bytes": 6169,
+      "sha256": "d1009ab4e47578cadde555b621833d3b27b76fb3f68e5f7568a7d1aded7fc466"
+    },
+    "crates/query/tablecraft-query/src/execution/collections/joined/mod.rs": {
+      "bytes": 2964,
+      "sha256": "86caccd5d2f7c4927c1b9705c1e44fac276fe928561e924d207e76c46de39b55"
+    },
+    "crates/query/tablecraft-query/src/execution/collections/joined/relation.rs": {
+      "bytes": 6163,
+      "sha256": "3620d0bbd5bf772fd31464a225c316ccbcd2cbf9f85529ac5b24d502262af3a5"
+    },
+    "crates/query/tablecraft-query/src/execution/collections/joined/table.rs": {
+      "bytes": 8267,
+      "sha256": "1c80d25314ea07cb5aec4a95e7b0db3a69a7154e3169e34ee7039b61b9835de4"
+    },
+    "crates/query/tablecraft-query/src/execution/collections/mod.rs": {
+      "bytes": 1986,
+      "sha256": "baa87b34847fd91f5ec6554088145d169739364076e4e0fcad2446e8cde67102"
+    },
+    "crates/query/tablecraft-query/src/execution/collections/projection.rs": {
+      "bytes": 3723,
+      "sha256": "b7509eb2357d2bcb1f07091a81c4d508168bc5f1a156c63c7ec45a8586c7e9a5"
+    },
+    "crates/query/tablecraft-query/src/execution/collections/source.rs": {
+      "bytes": 7269,
+      "sha256": "5a2d7b7d0b6b8762dfbaada78b082925d0458e0999d4f6b900c1d68242076c15"
+    },
+    "crates/query/tablecraft-query/src/execution/multivalue/expansion.rs": {
+      "bytes": 5147,
+      "sha256": "6a924f1cdbfd57f51718781662da9b9564a823cf5db15094bab6dc2ccf8b121b"
+    },
+    "crates/query/tablecraft-query/src/execution/multivalue/mod.rs": {
+      "bytes": 2387,
+      "sha256": "5c21b78507ac65585b46390cae57a23cfcb4cad57ec66836dd707aa5cb46433b"
+    },
+    "crates/query/tablecraft-query/src/execution/multivalue/parent.rs": {
+      "bytes": 10143,
+      "sha256": "8bbc54de4c5ebd6b9467548ec8e16b1bc9fc4c19850b849429a1f1bc7d4138c7"
+    },
+    "crates/query/tablecraft-query/src/execution/multivalue/parent/joined.rs": {
+      "bytes": 9199,
+      "sha256": "c6635f7d7c167599e0b87e2b61eeffea2a3883c845842bf79ae863c97385f80f"
+    },
+    "crates/query/tablecraft-query/src/execution/multivalue/parent/joined/table.rs": {
+      "bytes": 6888,
+      "sha256": "d0abf982f41d06a9dcef1b14ec2c4ad94e9f6ecaa2dec8bc6147131f3b150b89"
+    },
+    "crates/query/tablecraft-query/src/execution/multivalue/parent/presence.rs": {
+      "bytes": 1266,
+      "sha256": "881f33a660d054f9028e75c6471147a839b61740a63b34f0274825669884f2f5"
+    },
+    "crates/query/tablecraft-query/src/execution/multivalue/parent/product.rs": {
+      "bytes": 4777,
+      "sha256": "5585a2663afcfdbe7c63e34c29ede9fdfd31e67ab4bff0954745d6ad84b2faf6"
+    },
+    "crates/query/tablecraft-query/src/execution/result.rs": {
+      "bytes": 3898,
+      "sha256": "bde468e422c89a421eba0791136e40a738d914b39d78b0fb42854befec50f00b"
+    },
+    "crates/query/tablecraft-query/src/execution/retrieval.rs": {
+      "bytes": 4734,
+      "sha256": "665771988c309c6d62c1cc62fa47f59c5fa8e6b02e63503333adcc28f6b1039d"
+    },
+    "crates/query/tablecraft-query/src/lib.rs": {
+      "bytes": 1731,
+      "sha256": "ba084831bb148bc08f60fd1b5c7dacc6a724d72dc52ef5ff51368ba0a46e2081"
+    },
+    "crates/query/tablecraft-query/src/output_types.rs": {
+      "bytes": 3393,
+      "sha256": "406b6d4e1d7c7c438821ff4d04a9dfa3a46c21b3ffa24051bd9508a74eabd765"
+    },
+    "crates/query/tablecraft-query/src/plan.rs": {
+      "bytes": 8215,
+      "sha256": "fed86c208a21b146af0c38e7a87ea77e060f088f6146b39f3f05c10072733a7f"
+    },
+    "crates/query/tablecraft-query/src/plan/collections.rs": {
+      "bytes": 1160,
+      "sha256": "48b5c90d798109ca0e701ea6fe5f90116fc8e917e77a7dd0bd6538164b7d2065"
+    },
+    "crates/query/tablecraft-query/src/source/multivalue.rs": {
+      "bytes": 1251,
+      "sha256": "3318f7cd6be7cea03e52fc52090e3947dceee138a7a895cab19f13af918d56d9"
+    }
+  },
+  "immutable_artifacts_before_after": [
+    {
+      "path": ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+      "bytes": 43196264,
+      "sha256": "8620126db94410204de7ea669d8c8f754fde4b60cede2b1b450fd6a586eadc29"
+    },
+    {
+      "path": "docs/testing/compare_typed_multivalue_joins.py",
+      "bytes": 9326,
+      "sha256": "13001280600b0f621f3ce4a4d3366d54358810d9efea0f5b29259033a1c50b66"
+    },
+    {
+      "path": "docs/testing/compare_bare_multivalue_results.py",
+      "bytes": 12476,
+      "sha256": "79da66bdfbf7ef2ae892ae959c6f2177822cd4d4e7916112282588cff5b495d2"
+    },
+    {
+      "path": "docs/testing/compare_browsing.py",
+      "bytes": 26578,
+      "sha256": "4f1ced3ad3970150683ec720a31ec85f8400fa73b4a7b5e2343a33abbf58d67e"
+    },
+    {
+      "path": "docs/testing/compare_ignored_null_indexes.py",
+      "bytes": 13444,
+      "sha256": "bbde6058aefb10806f0356cd8bde69af3019e9721c5ae13f76747d8d533ca539"
+    },
+    {
+      "path": "docs/testing/results/bare-multivalue-results-2026-10-25.json",
+      "bytes": 54165,
+      "sha256": "4ac6742989b1d3943bb3d9ae00e0c88df1f1d92be437a5574a0c135d51e1a3ea"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007.accdb",
+      "bytes": 589824,
+      "sha256": "583d4b99abf504cd8b1bae72423cffc02390bdbd2e46fb8ba1667abf7aaab0da"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007-Bytes-getter.stdout",
+      "bytes": 101,
+      "sha256": "b2b92f14b5e63c1dfb58b4247191a7ae3e2c852f7b35df2b48216c9de52735d3"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007-Shorts-getter.stdout",
+      "bytes": 117,
+      "sha256": "b0ce80f056b12ac7c6c74586756e97b6f955c777ac9df110e5597f31c42a25d4"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007-Ints-getter.stdout",
+      "bytes": 817,
+      "sha256": "8d14e243d8035f4a5e0b44f8997658f7ea0a53b5e66a54b1325cdcc60672327c"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007-Singles-getter.stdout",
+      "bytes": 130,
+      "sha256": "31e664a171fc4be87a023dec7f613c58bccc1a0e7841f824f98d2f3bf4021c65"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007-Doubles-getter.stdout",
+      "bytes": 162,
+      "sha256": "bdead7f968580cc069cd4eec94f3a6c83b5c6b7f663d2c2531fa970ed2e74e3a"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007-Guids-getter.stdout",
+      "bytes": 192,
+      "sha256": "ff0a30f6e343683bd3d31c9a08aa5a15c282f5bbdd213d90560c79389683ff30"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007-Decimals-getter.stdout",
+      "bytes": 158,
+      "sha256": "6cfee93cf05575568a5adb71c28e2ae66f8a44875f88252d0c54d6018e81c8cb"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007-Texts-getter.stdout",
+      "bytes": 134,
+      "sha256": "ac1efe5bdbe8d25ae3bc24b5fbcb36e03f5437ea42bcb68144b046efddcebc3d"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016.accdb",
+      "bytes": 622592,
+      "sha256": "ef784999fcb08b6e50a875e05ba702259d900a2ff9d1c79f28a64dec64457c58"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016-Bytes-getter.stdout",
+      "bytes": 101,
+      "sha256": "b2b92f14b5e63c1dfb58b4247191a7ae3e2c852f7b35df2b48216c9de52735d3"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016-Shorts-getter.stdout",
+      "bytes": 117,
+      "sha256": "b0ce80f056b12ac7c6c74586756e97b6f955c777ac9df110e5597f31c42a25d4"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016-Ints-getter.stdout",
+      "bytes": 817,
+      "sha256": "8d14e243d8035f4a5e0b44f8997658f7ea0a53b5e66a54b1325cdcc60672327c"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016-Singles-getter.stdout",
+      "bytes": 130,
+      "sha256": "31e664a171fc4be87a023dec7f613c58bccc1a0e7841f824f98d2f3bf4021c65"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016-Doubles-getter.stdout",
+      "bytes": 162,
+      "sha256": "bdead7f968580cc069cd4eec94f3a6c83b5c6b7f663d2c2531fa970ed2e74e3a"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016-Guids-getter.stdout",
+      "bytes": 192,
+      "sha256": "ff0a30f6e343683bd3d31c9a08aa5a15c282f5bbdd213d90560c79389683ff30"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016-Decimals-getter.stdout",
+      "bytes": 158,
+      "sha256": "6cfee93cf05575568a5adb71c28e2ae66f8a44875f88252d0c54d6018e81c8cb"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016-Texts-getter.stdout",
+      "bytes": 134,
+      "sha256": "ac1efe5bdbe8d25ae3bc24b5fbcb36e03f5437ea42bcb68144b046efddcebc3d"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019.accdb",
+      "bytes": 696320,
+      "sha256": "3b53417c687f0e4096f5a584bc134b74ece7ae2569fcd847b520231f2e45e295"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019-Bytes-getter.stdout",
+      "bytes": 101,
+      "sha256": "b2b92f14b5e63c1dfb58b4247191a7ae3e2c852f7b35df2b48216c9de52735d3"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019-Shorts-getter.stdout",
+      "bytes": 117,
+      "sha256": "b0ce80f056b12ac7c6c74586756e97b6f955c777ac9df110e5597f31c42a25d4"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019-Ints-getter.stdout",
+      "bytes": 817,
+      "sha256": "8d14e243d8035f4a5e0b44f8997658f7ea0a53b5e66a54b1325cdcc60672327c"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019-Singles-getter.stdout",
+      "bytes": 130,
+      "sha256": "31e664a171fc4be87a023dec7f613c58bccc1a0e7841f824f98d2f3bf4021c65"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019-Doubles-getter.stdout",
+      "bytes": 162,
+      "sha256": "bdead7f968580cc069cd4eec94f3a6c83b5c6b7f663d2c2531fa970ed2e74e3a"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019-Guids-getter.stdout",
+      "bytes": 192,
+      "sha256": "ff0a30f6e343683bd3d31c9a08aa5a15c282f5bbdd213d90560c79389683ff30"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019-Decimals-getter.stdout",
+      "bytes": 158,
+      "sha256": "6cfee93cf05575568a5adb71c28e2ae66f8a44875f88252d0c54d6018e81c8cb"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019-Texts-getter.stdout",
+      "bytes": 134,
+      "sha256": "ac1efe5bdbe8d25ae3bc24b5fbcb36e03f5437ea42bcb68144b046efddcebc3d"
+    }
+  ],
+  "raw_log": {
+    "path": ".cache/typed-multivalue-joins-originals-20261026.jsonl",
+    "bytes": 67044,
+    "sha256": "b849a1106bb0400df4bc9a9b9a7d959f8ed68a91d350926678d46676a5c98c11"
+  },
+  "observations": [
+    {
+      "profile": "V2007",
+      "declared": false,
+      "case": "inner-equal",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,a.Ints AS A,b.Texts AS B FROM Multivalues a INNER JOIN Multivalues b ON a.ID=b.ID ORDER BY a.ID,b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t1\t[-2147483648, 0, 2147483647]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n2\t2\t[NULL]\t[NULL]\n3\t3\t[]\t[]\n4\t4\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\t[]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2007",
+      "declared": false,
+      "case": "inner-inequality",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,a.Ints AS A,b.Texts AS B FROM Multivalues a INNER JOIN Multivalues b ON a.ID<=b.ID ORDER BY a.ID,b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t1\t[-2147483648, 0, 2147483647]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n1\t2\t[-2147483648, 0, 2147483647]\t[NULL]\n1\t3\t[-2147483648, 0, 2147483647]\t[]\n1\t4\t[-2147483648, 0, 2147483647]\t[]\n2\t2\t[NULL]\t[NULL]\n2\t3\t[NULL]\t[]\n2\t4\t[NULL]\t[]\n3\t3\t[]\t[]\n3\t4\t[]\t[]\n4\t4\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\t[]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2007",
+      "declared": false,
+      "case": "cross-filter",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,a.Ints AS A,b.Texts AS B FROM Multivalues a,Multivalues b WHERE a.ID<=2 AND b.ID<=2 ORDER BY a.ID,b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t1\t[-2147483648, 0, 2147483647]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n1\t2\t[-2147483648, 0, 2147483647]\t[NULL]\n2\t1\t[NULL]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n2\t2\t[NULL]\t[NULL]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2007",
+      "declared": false,
+      "case": "swapped-lists",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,b.Texts AS A,a.Ints AS B FROM Multivalues a INNER JOIN Multivalues b ON a.ID=b.ID ORDER BY a.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t1\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\t[-2147483648, 0, 2147483647]\n2\t2\t[NULL]\t[NULL]\n3\t3\t[]\t[]\n4\t4\t[]\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2007",
+      "declared": false,
+      "case": "nested-right",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS ID,a.Bytes AS A,b.Ints AS B,c.Texts AS C FROM Multivalues a INNER JOIN (Multivalues b INNER JOIN Multivalues c ON b.ID=c.ID) ON a.ID=b.ID ORDER BY a.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 0,
+      "stdout": "ID\tA\tB\tC\n1\t[0, 1, 255]\t[-2147483648, 0, 2147483647]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n2\t[NULL]\t[NULL]\t[NULL]\n3\t[]\t[]\t[]\n4\t[]\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\t[]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2007",
+      "declared": false,
+      "case": "scalar-derived-leaf",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS ID,a.Singles AS A FROM Multivalues a INNER JOIN (SELECT 1 AS K) b ON a.ID=b.K",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 0,
+      "stdout": "ID\tA\n1\t[-0, 0.000000000000000000000000000000000000000000001, inf, NaN]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2007",
+      "declared": false,
+      "case": "hidden-both-complete-lists",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,a.Ints AS A,b.Ints AS B FROM Multivalues a INNER JOIN Multivalues b ON a.ID<=b.ID WHERE a.Ints.Value=0 AND b.Ints.Value=1 ORDER BY a.ID,b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t4\t[-2147483648, 0, 2147483647]\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\n4\t4\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2007",
+      "declared": false,
+      "case": "typed-derived-leaf",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT q.ID AS L,b.ID AS R,q.ValuesList AS A,b.Texts AS B FROM (SELECT ID,Ints AS ValuesList FROM Multivalues) q INNER JOIN Multivalues b ON q.ID=b.ID ORDER BY q.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t1\t[-2147483648, 0, 2147483647]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n2\t2\t[NULL]\t[NULL]\n3\t3\t[]\t[]\n4\t4\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\t[]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2007",
+      "declared": false,
+      "case": "outer-refusal",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,a.Ints AS A,b.Texts AS B FROM Multivalues a LEFT JOIN Multivalues b ON a.ID=b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: query feature is not implemented\n",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2007",
+      "declared": false,
+      "case": "mixed-member-refusal",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.Ints,b.Texts.Value FROM Multivalues a INNER JOIN Multivalues b ON a.ID=b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: query feature is not implemented\n",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2007",
+      "declared": false,
+      "case": "list-comparison-refusal",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.Ints FROM Multivalues a INNER JOIN Multivalues b ON a.Ints=b.Ints",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: query feature is not implemented\n",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2007",
+      "declared": false,
+      "case": "eager-on-before-false-where",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.Ints FROM Multivalues a INNER JOIN Multivalues b ON 1/(a.ID-b.ID)=0 WHERE 1=0",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: division by zero\n",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2007",
+      "declared": true,
+      "case": "inner-equal",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,a.Ints AS A,b.Texts AS B FROM Multivalues a INNER JOIN Multivalues b ON a.ID=b.ID ORDER BY a.ID,b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t1\t[-2147483648, 0, 2147483647]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n2\t2\t[NULL]\t[NULL]\n3\t3\t[]\t[]\n4\t4\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\t[]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2007",
+      "declared": true,
+      "case": "inner-inequality",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,a.Ints AS A,b.Texts AS B FROM Multivalues a INNER JOIN Multivalues b ON a.ID<=b.ID ORDER BY a.ID,b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t1\t[-2147483648, 0, 2147483647]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n1\t2\t[-2147483648, 0, 2147483647]\t[NULL]\n1\t3\t[-2147483648, 0, 2147483647]\t[]\n1\t4\t[-2147483648, 0, 2147483647]\t[]\n2\t2\t[NULL]\t[NULL]\n2\t3\t[NULL]\t[]\n2\t4\t[NULL]\t[]\n3\t3\t[]\t[]\n3\t4\t[]\t[]\n4\t4\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\t[]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2007",
+      "declared": true,
+      "case": "cross-filter",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,a.Ints AS A,b.Texts AS B FROM Multivalues a,Multivalues b WHERE a.ID<=2 AND b.ID<=2 ORDER BY a.ID,b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t1\t[-2147483648, 0, 2147483647]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n1\t2\t[-2147483648, 0, 2147483647]\t[NULL]\n2\t1\t[NULL]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n2\t2\t[NULL]\t[NULL]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2007",
+      "declared": true,
+      "case": "swapped-lists",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,b.Texts AS A,a.Ints AS B FROM Multivalues a INNER JOIN Multivalues b ON a.ID=b.ID ORDER BY a.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t1\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\t[-2147483648, 0, 2147483647]\n2\t2\t[NULL]\t[NULL]\n3\t3\t[]\t[]\n4\t4\t[]\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2007",
+      "declared": true,
+      "case": "nested-right",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS ID,a.Bytes AS A,b.Ints AS B,c.Texts AS C FROM Multivalues a INNER JOIN (Multivalues b INNER JOIN Multivalues c ON b.ID=c.ID) ON a.ID=b.ID ORDER BY a.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout": "ID\tA\tB\tC\n1\t[0, 1, 255]\t[-2147483648, 0, 2147483647]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n2\t[NULL]\t[NULL]\t[NULL]\n3\t[]\t[]\t[]\n4\t[]\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\t[]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2007",
+      "declared": true,
+      "case": "scalar-derived-leaf",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS ID,a.Singles AS A FROM Multivalues a INNER JOIN (SELECT 1 AS K) b ON a.ID=b.K",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout": "ID\tA\n1\t[-0, 0.000000000000000000000000000000000000000000001, inf, NaN]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2007",
+      "declared": true,
+      "case": "hidden-both-complete-lists",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,a.Ints AS A,b.Ints AS B FROM Multivalues a INNER JOIN Multivalues b ON a.ID<=b.ID WHERE a.Ints.Value=0 AND b.Ints.Value=1 ORDER BY a.ID,b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t4\t[-2147483648, 0, 2147483647]\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\n4\t4\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2007",
+      "declared": true,
+      "case": "typed-derived-leaf",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT q.ID AS L,b.ID AS R,q.ValuesList AS A,b.Texts AS B FROM (SELECT ID,Ints AS ValuesList FROM Multivalues) q INNER JOIN Multivalues b ON q.ID=b.ID ORDER BY q.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t1\t[-2147483648, 0, 2147483647]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n2\t2\t[NULL]\t[NULL]\n3\t3\t[]\t[]\n4\t4\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\t[]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2007",
+      "declared": true,
+      "case": "outer-refusal",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,a.Ints AS A,b.Texts AS B FROM Multivalues a LEFT JOIN Multivalues b ON a.ID=b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: query feature is not implemented\n",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2007",
+      "declared": true,
+      "case": "mixed-member-refusal",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.Ints,b.Texts.Value FROM Multivalues a INNER JOIN Multivalues b ON a.ID=b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: query feature is not implemented\n",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2007",
+      "declared": true,
+      "case": "list-comparison-refusal",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.Ints FROM Multivalues a INNER JOIN Multivalues b ON a.Ints=b.Ints",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: query feature is not implemented\n",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2007",
+      "declared": true,
+      "case": "eager-on-before-false-where",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.Ints FROM Multivalues a INNER JOIN Multivalues b ON 1/(a.ID-b.ID)=0 WHERE 1=0",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: division by zero\n",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2016",
+      "declared": false,
+      "case": "inner-equal",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,a.Ints AS A,b.Texts AS B FROM Multivalues a INNER JOIN Multivalues b ON a.ID=b.ID ORDER BY a.ID,b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t1\t[-2147483648, 0, 2147483647]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n2\t2\t[NULL]\t[NULL]\n3\t3\t[]\t[]\n4\t4\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\t[]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2016",
+      "declared": false,
+      "case": "inner-inequality",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,a.Ints AS A,b.Texts AS B FROM Multivalues a INNER JOIN Multivalues b ON a.ID<=b.ID ORDER BY a.ID,b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t1\t[-2147483648, 0, 2147483647]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n1\t2\t[-2147483648, 0, 2147483647]\t[NULL]\n1\t3\t[-2147483648, 0, 2147483647]\t[]\n1\t4\t[-2147483648, 0, 2147483647]\t[]\n2\t2\t[NULL]\t[NULL]\n2\t3\t[NULL]\t[]\n2\t4\t[NULL]\t[]\n3\t3\t[]\t[]\n3\t4\t[]\t[]\n4\t4\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\t[]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2016",
+      "declared": false,
+      "case": "cross-filter",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,a.Ints AS A,b.Texts AS B FROM Multivalues a,Multivalues b WHERE a.ID<=2 AND b.ID<=2 ORDER BY a.ID,b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t1\t[-2147483648, 0, 2147483647]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n1\t2\t[-2147483648, 0, 2147483647]\t[NULL]\n2\t1\t[NULL]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n2\t2\t[NULL]\t[NULL]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2016",
+      "declared": false,
+      "case": "swapped-lists",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,b.Texts AS A,a.Ints AS B FROM Multivalues a INNER JOIN Multivalues b ON a.ID=b.ID ORDER BY a.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t1\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\t[-2147483648, 0, 2147483647]\n2\t2\t[NULL]\t[NULL]\n3\t3\t[]\t[]\n4\t4\t[]\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2016",
+      "declared": false,
+      "case": "nested-right",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS ID,a.Bytes AS A,b.Ints AS B,c.Texts AS C FROM Multivalues a INNER JOIN (Multivalues b INNER JOIN Multivalues c ON b.ID=c.ID) ON a.ID=b.ID ORDER BY a.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 0,
+      "stdout": "ID\tA\tB\tC\n1\t[0, 1, 255]\t[-2147483648, 0, 2147483647]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n2\t[NULL]\t[NULL]\t[NULL]\n3\t[]\t[]\t[]\n4\t[]\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\t[]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2016",
+      "declared": false,
+      "case": "scalar-derived-leaf",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS ID,a.Singles AS A FROM Multivalues a INNER JOIN (SELECT 1 AS K) b ON a.ID=b.K",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 0,
+      "stdout": "ID\tA\n1\t[-0, 0.000000000000000000000000000000000000000000001, inf, NaN]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2016",
+      "declared": false,
+      "case": "hidden-both-complete-lists",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,a.Ints AS A,b.Ints AS B FROM Multivalues a INNER JOIN Multivalues b ON a.ID<=b.ID WHERE a.Ints.Value=0 AND b.Ints.Value=1 ORDER BY a.ID,b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t4\t[-2147483648, 0, 2147483647]\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\n4\t4\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2016",
+      "declared": false,
+      "case": "typed-derived-leaf",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT q.ID AS L,b.ID AS R,q.ValuesList AS A,b.Texts AS B FROM (SELECT ID,Ints AS ValuesList FROM Multivalues) q INNER JOIN Multivalues b ON q.ID=b.ID ORDER BY q.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t1\t[-2147483648, 0, 2147483647]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n2\t2\t[NULL]\t[NULL]\n3\t3\t[]\t[]\n4\t4\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\t[]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2016",
+      "declared": false,
+      "case": "outer-refusal",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,a.Ints AS A,b.Texts AS B FROM Multivalues a LEFT JOIN Multivalues b ON a.ID=b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: query feature is not implemented\n",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2016",
+      "declared": false,
+      "case": "mixed-member-refusal",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.Ints,b.Texts.Value FROM Multivalues a INNER JOIN Multivalues b ON a.ID=b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: query feature is not implemented\n",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2016",
+      "declared": false,
+      "case": "list-comparison-refusal",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.Ints FROM Multivalues a INNER JOIN Multivalues b ON a.Ints=b.Ints",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: query feature is not implemented\n",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2016",
+      "declared": false,
+      "case": "eager-on-before-false-where",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.Ints FROM Multivalues a INNER JOIN Multivalues b ON 1/(a.ID-b.ID)=0 WHERE 1=0",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: division by zero\n",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2016",
+      "declared": true,
+      "case": "inner-equal",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,a.Ints AS A,b.Texts AS B FROM Multivalues a INNER JOIN Multivalues b ON a.ID=b.ID ORDER BY a.ID,b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t1\t[-2147483648, 0, 2147483647]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n2\t2\t[NULL]\t[NULL]\n3\t3\t[]\t[]\n4\t4\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\t[]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2016",
+      "declared": true,
+      "case": "inner-inequality",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,a.Ints AS A,b.Texts AS B FROM Multivalues a INNER JOIN Multivalues b ON a.ID<=b.ID ORDER BY a.ID,b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t1\t[-2147483648, 0, 2147483647]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n1\t2\t[-2147483648, 0, 2147483647]\t[NULL]\n1\t3\t[-2147483648, 0, 2147483647]\t[]\n1\t4\t[-2147483648, 0, 2147483647]\t[]\n2\t2\t[NULL]\t[NULL]\n2\t3\t[NULL]\t[]\n2\t4\t[NULL]\t[]\n3\t3\t[]\t[]\n3\t4\t[]\t[]\n4\t4\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\t[]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2016",
+      "declared": true,
+      "case": "cross-filter",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,a.Ints AS A,b.Texts AS B FROM Multivalues a,Multivalues b WHERE a.ID<=2 AND b.ID<=2 ORDER BY a.ID,b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t1\t[-2147483648, 0, 2147483647]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n1\t2\t[-2147483648, 0, 2147483647]\t[NULL]\n2\t1\t[NULL]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n2\t2\t[NULL]\t[NULL]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2016",
+      "declared": true,
+      "case": "swapped-lists",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,b.Texts AS A,a.Ints AS B FROM Multivalues a INNER JOIN Multivalues b ON a.ID=b.ID ORDER BY a.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t1\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\t[-2147483648, 0, 2147483647]\n2\t2\t[NULL]\t[NULL]\n3\t3\t[]\t[]\n4\t4\t[]\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2016",
+      "declared": true,
+      "case": "nested-right",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS ID,a.Bytes AS A,b.Ints AS B,c.Texts AS C FROM Multivalues a INNER JOIN (Multivalues b INNER JOIN Multivalues c ON b.ID=c.ID) ON a.ID=b.ID ORDER BY a.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout": "ID\tA\tB\tC\n1\t[0, 1, 255]\t[-2147483648, 0, 2147483647]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n2\t[NULL]\t[NULL]\t[NULL]\n3\t[]\t[]\t[]\n4\t[]\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\t[]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2016",
+      "declared": true,
+      "case": "scalar-derived-leaf",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS ID,a.Singles AS A FROM Multivalues a INNER JOIN (SELECT 1 AS K) b ON a.ID=b.K",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout": "ID\tA\n1\t[-0, 0.000000000000000000000000000000000000000000001, inf, NaN]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2016",
+      "declared": true,
+      "case": "hidden-both-complete-lists",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,a.Ints AS A,b.Ints AS B FROM Multivalues a INNER JOIN Multivalues b ON a.ID<=b.ID WHERE a.Ints.Value=0 AND b.Ints.Value=1 ORDER BY a.ID,b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t4\t[-2147483648, 0, 2147483647]\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\n4\t4\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2016",
+      "declared": true,
+      "case": "typed-derived-leaf",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT q.ID AS L,b.ID AS R,q.ValuesList AS A,b.Texts AS B FROM (SELECT ID,Ints AS ValuesList FROM Multivalues) q INNER JOIN Multivalues b ON q.ID=b.ID ORDER BY q.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t1\t[-2147483648, 0, 2147483647]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n2\t2\t[NULL]\t[NULL]\n3\t3\t[]\t[]\n4\t4\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\t[]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2016",
+      "declared": true,
+      "case": "outer-refusal",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,a.Ints AS A,b.Texts AS B FROM Multivalues a LEFT JOIN Multivalues b ON a.ID=b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: query feature is not implemented\n",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2016",
+      "declared": true,
+      "case": "mixed-member-refusal",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.Ints,b.Texts.Value FROM Multivalues a INNER JOIN Multivalues b ON a.ID=b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: query feature is not implemented\n",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2016",
+      "declared": true,
+      "case": "list-comparison-refusal",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.Ints FROM Multivalues a INNER JOIN Multivalues b ON a.Ints=b.Ints",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: query feature is not implemented\n",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2016",
+      "declared": true,
+      "case": "eager-on-before-false-where",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.Ints FROM Multivalues a INNER JOIN Multivalues b ON 1/(a.ID-b.ID)=0 WHERE 1=0",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: division by zero\n",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2019",
+      "declared": false,
+      "case": "inner-equal",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,a.Ints AS A,b.Texts AS B FROM Multivalues a INNER JOIN Multivalues b ON a.ID=b.ID ORDER BY a.ID,b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t1\t[-2147483648, 0, 2147483647]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n2\t2\t[NULL]\t[NULL]\n3\t3\t[]\t[]\n4\t4\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\t[]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2019",
+      "declared": false,
+      "case": "inner-inequality",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,a.Ints AS A,b.Texts AS B FROM Multivalues a INNER JOIN Multivalues b ON a.ID<=b.ID ORDER BY a.ID,b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t1\t[-2147483648, 0, 2147483647]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n1\t2\t[-2147483648, 0, 2147483647]\t[NULL]\n1\t3\t[-2147483648, 0, 2147483647]\t[]\n1\t4\t[-2147483648, 0, 2147483647]\t[]\n2\t2\t[NULL]\t[NULL]\n2\t3\t[NULL]\t[]\n2\t4\t[NULL]\t[]\n3\t3\t[]\t[]\n3\t4\t[]\t[]\n4\t4\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\t[]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2019",
+      "declared": false,
+      "case": "cross-filter",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,a.Ints AS A,b.Texts AS B FROM Multivalues a,Multivalues b WHERE a.ID<=2 AND b.ID<=2 ORDER BY a.ID,b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t1\t[-2147483648, 0, 2147483647]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n1\t2\t[-2147483648, 0, 2147483647]\t[NULL]\n2\t1\t[NULL]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n2\t2\t[NULL]\t[NULL]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2019",
+      "declared": false,
+      "case": "swapped-lists",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,b.Texts AS A,a.Ints AS B FROM Multivalues a INNER JOIN Multivalues b ON a.ID=b.ID ORDER BY a.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t1\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\t[-2147483648, 0, 2147483647]\n2\t2\t[NULL]\t[NULL]\n3\t3\t[]\t[]\n4\t4\t[]\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2019",
+      "declared": false,
+      "case": "nested-right",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS ID,a.Bytes AS A,b.Ints AS B,c.Texts AS C FROM Multivalues a INNER JOIN (Multivalues b INNER JOIN Multivalues c ON b.ID=c.ID) ON a.ID=b.ID ORDER BY a.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 0,
+      "stdout": "ID\tA\tB\tC\n1\t[0, 1, 255]\t[-2147483648, 0, 2147483647]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n2\t[NULL]\t[NULL]\t[NULL]\n3\t[]\t[]\t[]\n4\t[]\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\t[]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2019",
+      "declared": false,
+      "case": "scalar-derived-leaf",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS ID,a.Singles AS A FROM Multivalues a INNER JOIN (SELECT 1 AS K) b ON a.ID=b.K",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 0,
+      "stdout": "ID\tA\n1\t[-0, 0.000000000000000000000000000000000000000000001, inf, NaN]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2019",
+      "declared": false,
+      "case": "hidden-both-complete-lists",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,a.Ints AS A,b.Ints AS B FROM Multivalues a INNER JOIN Multivalues b ON a.ID<=b.ID WHERE a.Ints.Value=0 AND b.Ints.Value=1 ORDER BY a.ID,b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t4\t[-2147483648, 0, 2147483647]\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\n4\t4\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2019",
+      "declared": false,
+      "case": "typed-derived-leaf",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT q.ID AS L,b.ID AS R,q.ValuesList AS A,b.Texts AS B FROM (SELECT ID,Ints AS ValuesList FROM Multivalues) q INNER JOIN Multivalues b ON q.ID=b.ID ORDER BY q.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t1\t[-2147483648, 0, 2147483647]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n2\t2\t[NULL]\t[NULL]\n3\t3\t[]\t[]\n4\t4\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\t[]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2019",
+      "declared": false,
+      "case": "outer-refusal",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,a.Ints AS A,b.Texts AS B FROM Multivalues a LEFT JOIN Multivalues b ON a.ID=b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: query feature is not implemented\n",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2019",
+      "declared": false,
+      "case": "mixed-member-refusal",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.Ints,b.Texts.Value FROM Multivalues a INNER JOIN Multivalues b ON a.ID=b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: query feature is not implemented\n",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2019",
+      "declared": false,
+      "case": "list-comparison-refusal",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.Ints FROM Multivalues a INNER JOIN Multivalues b ON a.Ints=b.Ints",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: query feature is not implemented\n",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2019",
+      "declared": false,
+      "case": "eager-on-before-false-where",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.Ints FROM Multivalues a INNER JOIN Multivalues b ON 1/(a.ID-b.ID)=0 WHERE 1=0",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: division by zero\n",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2019",
+      "declared": true,
+      "case": "inner-equal",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,a.Ints AS A,b.Texts AS B FROM Multivalues a INNER JOIN Multivalues b ON a.ID=b.ID ORDER BY a.ID,b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t1\t[-2147483648, 0, 2147483647]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n2\t2\t[NULL]\t[NULL]\n3\t3\t[]\t[]\n4\t4\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\t[]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2019",
+      "declared": true,
+      "case": "inner-inequality",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,a.Ints AS A,b.Texts AS B FROM Multivalues a INNER JOIN Multivalues b ON a.ID<=b.ID ORDER BY a.ID,b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t1\t[-2147483648, 0, 2147483647]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n1\t2\t[-2147483648, 0, 2147483647]\t[NULL]\n1\t3\t[-2147483648, 0, 2147483647]\t[]\n1\t4\t[-2147483648, 0, 2147483647]\t[]\n2\t2\t[NULL]\t[NULL]\n2\t3\t[NULL]\t[]\n2\t4\t[NULL]\t[]\n3\t3\t[]\t[]\n3\t4\t[]\t[]\n4\t4\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\t[]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2019",
+      "declared": true,
+      "case": "cross-filter",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,a.Ints AS A,b.Texts AS B FROM Multivalues a,Multivalues b WHERE a.ID<=2 AND b.ID<=2 ORDER BY a.ID,b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t1\t[-2147483648, 0, 2147483647]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n1\t2\t[-2147483648, 0, 2147483647]\t[NULL]\n2\t1\t[NULL]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n2\t2\t[NULL]\t[NULL]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2019",
+      "declared": true,
+      "case": "swapped-lists",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,b.Texts AS A,a.Ints AS B FROM Multivalues a INNER JOIN Multivalues b ON a.ID=b.ID ORDER BY a.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t1\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\t[-2147483648, 0, 2147483647]\n2\t2\t[NULL]\t[NULL]\n3\t3\t[]\t[]\n4\t4\t[]\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2019",
+      "declared": true,
+      "case": "nested-right",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS ID,a.Bytes AS A,b.Ints AS B,c.Texts AS C FROM Multivalues a INNER JOIN (Multivalues b INNER JOIN Multivalues c ON b.ID=c.ID) ON a.ID=b.ID ORDER BY a.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout": "ID\tA\tB\tC\n1\t[0, 1, 255]\t[-2147483648, 0, 2147483647]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n2\t[NULL]\t[NULL]\t[NULL]\n3\t[]\t[]\t[]\n4\t[]\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\t[]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2019",
+      "declared": true,
+      "case": "scalar-derived-leaf",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS ID,a.Singles AS A FROM Multivalues a INNER JOIN (SELECT 1 AS K) b ON a.ID=b.K",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout": "ID\tA\n1\t[-0, 0.000000000000000000000000000000000000000000001, inf, NaN]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2019",
+      "declared": true,
+      "case": "hidden-both-complete-lists",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,a.Ints AS A,b.Ints AS B FROM Multivalues a INNER JOIN Multivalues b ON a.ID<=b.ID WHERE a.Ints.Value=0 AND b.Ints.Value=1 ORDER BY a.ID,b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t4\t[-2147483648, 0, 2147483647]\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\n4\t4\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2019",
+      "declared": true,
+      "case": "typed-derived-leaf",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT q.ID AS L,b.ID AS R,q.ValuesList AS A,b.Texts AS B FROM (SELECT ID,Ints AS ValuesList FROM Multivalues) q INNER JOIN Multivalues b ON q.ID=b.ID ORDER BY q.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "stdout": "L\tR\tA\tB\n1\t1\t[-2147483648, 0, 2147483647]\t\"[\"\"\"\", \"\"Red\"\", \"\"\u00e9\ud83e\udd80\"\", \"\"a\\tb\\nc\"\", \"\"Red\"\"]\"\n2\t2\t[NULL]\t[NULL]\n3\t3\t[]\t[]\n4\t4\t[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]\t[]\n",
+      "stderr": "",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2019",
+      "declared": true,
+      "case": "outer-refusal",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.ID AS L,b.ID AS R,a.Ints AS A,b.Texts AS B FROM Multivalues a LEFT JOIN Multivalues b ON a.ID=b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: query feature is not implemented\n",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2019",
+      "declared": true,
+      "case": "mixed-member-refusal",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.Ints,b.Texts.Value FROM Multivalues a INNER JOIN Multivalues b ON a.ID=b.ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: query feature is not implemented\n",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2019",
+      "declared": true,
+      "case": "list-comparison-refusal",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.Ints FROM Multivalues a INNER JOIN Multivalues b ON a.Ints=b.Ints",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: query feature is not implemented\n",
+      "agrees": true,
+      "disagreement": null
+    },
+    {
+      "profile": "V2019",
+      "declared": true,
+      "case": "eager-on-before-false-where",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-joins-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT a.Ints FROM Multivalues a INNER JOIN Multivalues b ON 1/(a.ID-b.ID)=0 WHERE 1=0",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: division by zero\n",
+      "agrees": true,
+      "disagreement": null
+    }
+  ],
+  "limitations": [
+    "Selected committed source objects are not a complete compiler input manifest.",
+    "Existing typed-list display and NaN payload/sign display limits remain.",
+    "Outer joins, list comparisons and visible member/list combinations remain refused."
+  ]
+}
