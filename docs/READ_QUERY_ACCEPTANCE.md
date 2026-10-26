@@ -63,6 +63,9 @@ qualification recorded separately.
   pipelines also stream;
   terminal fixed-key DISTINCT retains unique tuples through checked EOF and then
   applies TOP, using the same strict numeric keys and encounter order.
+  An [184-control original replay](testing/PROGRESSIVE_DISTINCT.md) independently
+  checks 10,432 rows and 18,208 cells across both arithmetic profiles and buffered/
+  progressive publication, including zero-prefix failure controls.
   Wider query shapes retain buffered execution.
   Absolute I/O now rejects reported seek-position mismatches before reading or
   writing; failpoints cover scalar, Memo and indexed snapshot publication.

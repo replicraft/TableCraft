@@ -8604,3 +8604,21 @@ compares 3,924 returned IDs, twenty unchanged artifacts and six selected native
 source objects. Original bytes remain unchanged. Other ignored-key families,
 Int64 outside ACE16, native Access qualification and write eligibility are not
 inferred.
+
+## Original-file progressive DISTINCT replay
+
+The [184-control comparison](testing/PROGRESSIVE_DISTINCT.md) reuses the four
+registered 701-row Int32 ignore-NULL originals and ordinary getter transcripts.
+It creates no new database or derivative. Their original
+[producer and getter recipe](testing/IgnoreNullIndexFixture.java), reviewed
+Jackcess JAR, earlier provenance report and tools remain pinned; no Java or
+reference SQL is executed during this replay.
+
+Original Python models use captured integer/NULL cells and actual encounter
+order for distinct tuples, grouping, exact Currency/Decimal and TOP. Buffered and
+progressive commands compare directly with those models. The accepted first run
+has 160 successes (10,432 rows / 18,208 cells) and 24 expected empty-stdout refusals.
+All eighteen artifacts and 47 selected query-source objects remain unchanged.
+The [report](testing/results/progressive-distinct-2026-10-25.json) preserves exact
+commands and results. This does not establish native Access SQL compatibility or
+expand the progressive output-type profile.
