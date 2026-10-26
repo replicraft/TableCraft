@@ -66,7 +66,7 @@ fn counts_reuse_exact_half_even_coercion_and_errors_remain_explicit() {
     );
     assert_eq!(
         add("d", Value::Int32(-1), &legacy("0100-01-01T00:00:00")),
-        Err(EvalError::Overflow)
+        Err(EvalError::Domain)
     );
     assert_eq!(
         add("s", Value::Int32(1), &legacy("9999-12-31T23:59:59")),

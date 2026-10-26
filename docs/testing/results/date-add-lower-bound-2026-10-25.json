@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-25",
+  "scope": "Legacy DateAdd results below year 100 use Domain/error 5; count admission, upper bounds, Extended dates and eager evaluation retain their existing boundaries.",
+  "new_tests": 6,
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-expressions --features sql --lib --locked functions::dates::add",
+      "exit_code": 0,
+      "tests": 8
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test date_add_lower_bound --test date_interval_sources --test date_interval_states --test date_add_output_types --locked",
+      "exit_code": 0,
+      "tests": 13
+    },
+    {
+      "command": "cargo clippy -p tablecraft-expressions --lib --all-features --locked -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --test date_add_lower_bound --locked -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo check -p tablecraft-expressions --no-default-features --locked",
+      "exit_code": 0
+    }
+  ],
+  "limitations": [
+    "No native Access SQL error-precedence comparison.",
+    "No expansion of the admitted Long count range or Extended date semantics.",
+    "Selected focused checks, not a complete workspace regression run."
+  ]
+}

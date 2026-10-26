@@ -16,6 +16,21 @@ checks. A division error in a later argument therefore is not hidden by an inval
 interval or NULL source. Validation order is an explicit current policy; native
 Access error precedence remains unqualified.
 
+## DateAdd legacy lower-bound errors
+
+For legacy DATE sources, a calculated DateAdd result before year 100 fails with
+`Domain` (error 5), including negative admitted Long counts whose calendar spans
+exceed the arithmetic library's range. This follows the explicit lower-bound rule
+in [MS-VBAL DateAdd, section 6.1.2.4.1.1](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/4fd0361f-289b-4395-9623-beae29e39ffc).
+It corrects the previous `Overflow` classification for that result boundary.
+
+Count admission remains checked Long conversion. Count conversion failures,
+nonfinite values, invalid intervals, source conversion and eager argument errors
+retain their existing order. Upper-bound legacy failures still return `Overflow`.
+Extended sources retain their separate years 1–9999 envelope and existing error
+classification. This rule does not establish native Access SQL error precedence
+or expand the supported count width.
+
 ## Source and control policies
 
 Metadata-only binding now reports DateAdd's successful carrier for each supported

@@ -5,6 +5,7 @@ use jiff::Span;
 use tablecraft_core::values::{LegacyDateTime, Value};
 
 const MONTHS_PER_QUARTER: i64 = 3;
+const MINIMUM_LEGACY_YEAR: i16 = 100;
 
 /// Add one of the ten Access interval spellings to an already evaluated date.
 /// Counts use the shared signed Long conversion (nearest integer, ties even).
@@ -59,6 +60,14 @@ impl DateAdd {
             Value::DateTimeExtended(value) => conversion::extended_calendar(*value)?,
             _ => return Err(EvalError::TypeMismatch),
         };
+        let legacy = matches!(date, Value::DateTime(_));
+        let calendar_error = || {
+            if legacy && number < 0 {
+                EvalError::Domain
+            } else {
+                EvalError::Overflow
+            }
+        };
         let span = match interval {
             Interval::Year => Span::new().try_years(number),
             Interval::Quarter => Span::new().try_months(i64::from(number) * MONTHS_PER_QUARTER),
@@ -69,8 +78,14 @@ impl DateAdd {
             Interval::Minute => Span::new().try_minutes(number),
             Interval::Second => Span::new().try_seconds(number),
         }
-        .map_err(|_| EvalError::Overflow)?;
-        let result = civil.checked_add(span).map_err(|_| EvalError::Overflow)?;
+        .map_err(|_| calendar_error())?;
+        let result = civil.checked_add(span).map_err(|_| calendar_error())?;
+        // MS-VBAL DateAdd requires error 5 for a calculated legacy date before
+        // year 100. Extended dates retain their independent year envelope.
+        if legacy && result.year() < MINIMUM_LEGACY_YEAR {
+            return Err(EvalError::Domain);
+        }
+
         match date {
             Value::DateTime(_) => LegacyDateTime::from_calendar(result)
                 .map(Value::DateTime)
@@ -85,3 +100,7 @@ impl DateAdd {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+#[path = "add/boundary_tests.rs"]
+mod boundary_tests;
