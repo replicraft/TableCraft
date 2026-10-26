@@ -8834,3 +8834,68 @@ ambiguity remains explicit in the report. See
 [the owning observations](DELETE_TREE_STORAGE_OBSERVATIONS.md) for boundaries,
 actual reproduction commands and preserved initial captures. Fresh file hashes
 are recorded, not claimed reproducible.
+
+## Fresh deep and indirect DELETE contraction references
+
+The original repository recipes [DeepDeleteFixture.java](DeepDeleteFixture.java)
+and [IndirectDeleteFixture.java](IndirectDeleteFixture.java) create separate
+500-row V2016/V2019 originals with ten deterministic GUID key components, an ID
+primary key, a true composite index alias and a preserved Memo/OLE table. The
+Indirect variant adds ten nonindexed 240-byte Binary fields per row. Public
+`Table.deleteRow` creates separate whole-child-subtree, retain-one-leaf and
+delete-all references. No prior original/reference is changed.
+
+The reviewed Jackcess 5.0.4 JAR remains
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+All four Java sources, including [DeepUsageMapProbe.java](DeepUsageMapProbe.java)
+and [IndirectUsageMapProbe.java](IndirectUsageMapProbe.java), are promoted
+byte-identically from the actual original producers/read-only probes. Their
+code is repository-owned under the root license; no third-party source or
+fixture bytes are copied. Expression evaluation is disabled and linked targets
+throw. Getter/probe opens are read-only; protected reflection is pinned to this
+JAR version. No stored/reference SQL, active imported content or native Access
+operation runs.
+
+All sixteen files remain ignored under
+`.cache/delete-deep-contraction-next-20261026/`:
+
+| Family | Profile | State | Bytes | SHA-256 |
+| --- | --- | --- | ---: | --- |
+| Deep | V2016 | before | 704,512 | `9af54b89ff94175e4932756b4dfb52be424b14d93f3f01770ed0b911deb92254` |
+| Deep | V2016 | whole-child-subtree | 704,512 | `0633e93940b4f095ef9d69e6c8cbdcf4464e7b4981d900549c73cd587a68b235` |
+| Deep | V2016 | retain-one-leaf | 704,512 | `782ad13e73256742fa2444c60bd285f2dac84d5e504dc8ea01d11aa952b7ada7` |
+| Deep | V2016 | delete-all | 704,512 | `d8eab27e350051c4980753546decf8a5f882efa108462947b06fbf6c0f96ca5e` |
+| Deep | V2019 | before | 774,144 | `446299933a7fad2ecd0f2a53a74a8a7d86864df602e8fc9ffb654f88fb401fd1` |
+| Deep | V2019 | whole-child-subtree | 774,144 | `c3d16da6e0f9b12f06939d079a8d5a9a9e220858ac94edd28f2e4a29fb263ecd` |
+| Deep | V2019 | retain-one-leaf | 774,144 | `971ba189a44511db962fef3cfb88471efad4949a7cd57d28847511373df2f066` |
+| Deep | V2019 | delete-all | 774,144 | `2d63a2809221177225a30d086691a29eafd17f87562e105ec12239ffe7a505e1` |
+| Indirect | V2016 | before | 2,674,688 | `4ec6039e97d23f3f77fd3c6339df0fb40e48665077c5757cf459500971dcad66` |
+| Indirect | V2016 | whole-child-subtree | 2,674,688 | `23452e4b5b568bb288e239e7555344b92c5a6d312bb10fee5fd1f0df6760ebe3` |
+| Indirect | V2016 | retain-one-leaf | 2,674,688 | `17fed0035a3dc1e3769fb8ff849a169274ce95faaf9840f6c51d521676d211a8` |
+| Indirect | V2016 | delete-all | 2,674,688 | `a59844a16d6af085adf5760f24fd6677b6325be7152651838a398ea8481cc6aa` |
+| Indirect | V2019 | before | 2,744,320 | `3d76f3d29afaa21cd96999dffc4030dfdf4423b2ba97a4ac962fb1211b40aad4` |
+| Indirect | V2019 | whole-child-subtree | 2,744,320 | `7b8bdb14f25237a1bbc4f0e9cecb1a37eda9d505302fc27a8ea0fa1b65f418fa` |
+| Indirect | V2019 | retain-one-leaf | 2,744,320 | `fbcc39aa8521e99aad50fae039118a70b1e46d0c5ed1ebcc49c38701cdfe9a27` |
+| Indirect | V2019 | delete-all | 2,744,320 | `76faee8357cd14a0677207825f2beb714786566cf72c197e85ad155de4cceeb2` |
+
+The [compact reference summary](results/delete-contraction-reference-2026-10-26.json)
+pins 24 input/tool files before and after 32 final read-only Java commands.
+Historical private generation/reference captures remain separately hash-pinned,
+including their original private helper paths; publication recaptures use only
+public source paths. Full getter/key/map arrays remain ignored. The summary
+retains transcript receipts, exact roots/heights/page counts, key/order digests,
+selection proofs, retired pages and complete membership-bit checks.
+
+Actual Wide height is 2 with forty leaves and five nodes. Removing one complete
+child subtree retires eleven pages. Retaining one nine-row leaf keeps height 2
+through single bounded-child nodes; no nonempty root promotion is inferred.
+Delete-all resets the same root to an empty leaf. Padded originals have 653/670
+pages and existing indirect global AND index-owned maps. Eighty-four complete
+map-payload/bitmap-page checks show only the exact retirement bits changing;
+representations/pointers remain unchanged. Original record bodies, Binary
+padding, Memo/OLE and historical counters remain preserved.
+
+The [owning observations](DELETE_CONTRACTION_STORAGE_OBSERVATIONS.md) distinguish
+these reviewed-Jackcess facts from native Access/allocation qualification, give
+public-source reproduction commands, and record the real host E2BIG/request-file
+discriminator. No candidate execution is part of this reference registration.
