@@ -47,6 +47,13 @@ refused even for empty requests. See the
 [closed relationship profile](../../testing/ACE16_DELETE_PREVIEWS.md#cross-table-enforced-restrict-relationships).
 This does not enable normal saves or establish native Access action timing.
 
+Explicit `TableRowDeletes` groups now stage several tables against one original
+image and validate one complete final image. Shared global-free bitmap bytes are
+composed from typed retirement intents, with an exact union audit plus per-table
+ownership and sibling proofs. Child/parent removals may therefore be explicitly
+batched without an intermediate broken image. This does not dispatch cascades or
+claim SQL RESTRICT action timing; the same engineering-only save boundary applies.
+
 Existing LONG AutoNumber deletion now has an
 [original-file preservation comparison](../../testing/AUTONUMBER_DELETE_OBSERVATIONS.md):
 sixteen candidates retain counter 260, including highest/all-row deletion, and

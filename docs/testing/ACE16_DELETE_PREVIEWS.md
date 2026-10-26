@@ -72,6 +72,63 @@ Cumulative bytes, row and work budgets and cancellation apply to preflight,
 traversal, page encoding, candidate copying and the unchanged-byte proof. Failures
 publish no candidate and never write to the source.
 
+## Explicit multi-table deletion batches
+
+`TableRowDeletes::new(table, requests)` borrows one table name and its original
+`RowDelete` requests. `NativeImage::preview_ace16_batch_deletes` accepts these groups
+and returns the same disposable `Ace16DeletePreview`; `deleted_rows()` is the total
+number of removed roots across all groups. The single-table entry point uses this
+same planner. Neither entry point writes a source or grants journal/normal-save
+permission.
+
+All table and relationship gates run against the original image. Every requested
+ordinal and raw payload is checked before index planning. Duplicate table groups,
+including case-insensitive spellings, refuse rather than merge; repeated or stale
+row requests still fail. Empty named groups retain their complete table, index,
+relationship and raw-traversal checks. An empty group list is an exact candidate
+copy under the ordinary format and resource gates. The public ceilings are
+`MAX_DELETE_BATCH_TABLES` (256 groups) and `MAX_DELETE_BATCH_ROWS` (16,384 cumulative
+requests), with existing per-table and shared resource ceilings also applying.
+
+All requested records and indexes are staged from that one original image before
+one complete candidate is constructed. Every selected table then passes the
+existing structural and relationship checks against the final image. Explicitly
+removing children and their parent can therefore succeed together when no final
+reference is broken; a surviving child still causes `MissingParent`. This is a
+physical final-image batch contract, not a claim about SQL RESTRICT action order
+or the behavior of successive public-reader delete calls. The same closed
+cross-table enforced RESTRICT profile applies even to empty groups. Self
+relationships, delete cascades, SET NULL, unenforced/unknown rules and unsupported
+mutation-key carriers remain refused. No automatically discovered row is deleted.
+
+Retirement map changes are composed once for the operation. Checked per-table
+retirement intents identify actual original physical pages and their owned maps;
+the composer merges only typed owned-bit clears and global-free-bit sets with
+identical original bytes and disjoint masks. It emits one patch for each shared
+bitmap byte. Generic index or record patches are never combined through a bitwise
+OR. Selected tables' complete original data and distinct physical index-owned
+populations must not overlap one another or a selected table definition.
+
+The final global audit requires exactly the union of retired-page bits in every
+touched global byte and exact preservation of each retired page after its
+four-byte invalidation prefix. Separate per-table audits retain original owned-map
+membership, root identity, empty-root ownership and internal sibling-chain proofs.
+An index can become empty while live NULL-key table rows remain. Tables with no
+retirements emit no allocation edits and retain the existing nonretirement gates;
+this does not qualify unrelated allocator metadata. Budgets and cancellation cover
+the whole operation, and no candidate is published after any failed proof.
+
+The [verification record](results/ace16-batch-delete-native-2026-10-26.json)
+records 239 passing engine functions, including nine new controls, and three
+compile-fail documentation checks. Focused tests cover complete final-image
+child/parent removal, partial-NULL composites, multiple incoming edges, exact
+cross-owner shared-bitmap composition, protected record/page bytes, ownership
+conflicts, stale requests and typed resource/cancellation failures. Private causal
+checks reject missing/extra/already-free retirement bits and changed retired page
+headers or residuals. Lint, minimal compilation and scoped formatting pass.
+Original-file multi-table comparisons and native Access action/save qualification
+remain separate evidence work.
+
 ## Evidence boundaries
 
 The original [delete-storage observations](DELETE_STORAGE_OBSERVATIONS.md)

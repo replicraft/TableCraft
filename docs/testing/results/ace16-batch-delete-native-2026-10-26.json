@@ -1,0 +1,260 @@
+{
+  "date": "2026-10-26",
+  "scope": "Feature-gated explicit multi-table RESTRICT-only ACE16 physical deletion candidates; no automatic actions, source writes, journal/normal save or native SQL timing qualification.",
+  "unique_engine_unit_integration_tests": 239,
+  "new_engine_tests": 9,
+  "new_author_integration_tests": 2,
+  "new_independent_integration_tests": 5,
+  "new_causal_global_audit_unit_tests": 2,
+  "existing_engine_tests": 230,
+  "compile_fail_doc_tests": 3,
+  "total_engine_checks_including_docs": 242,
+  "counting": "130 distinct integration functions in the primary/read batch plus 98 distinct writer integration functions plus 11 private mutation units. The final focused seven and repeated private eleven are not counted again. Documentation checks are counted separately.",
+  "source_snapshot": "Hashes describe the final reviewed working-tree files after the typed argument-packing lint fix; no frozen candidate executable or original-file replay is claimed.",
+  "scope_files": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/lib.rs",
+      "bytes": 5732,
+      "sha256": "e7a36b08ebd484ae317be30c62f4fe089bcedf2381e65a050e4982768298e9fd"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mod.rs",
+      "bytes": 3915,
+      "sha256": "9046a9814fafc7a75460acb6e2a5f87b7a26ea34cc90a1e845ed7b337b3a2a64"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/mod.rs",
+      "bytes": 629,
+      "sha256": "9d0250ddb804cedc3baad81050703af2cb986bb2baaa5fa9c11508e894cbc7c9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete.rs",
+      "bytes": 4783,
+      "sha256": "32cd28b5c7d3ee5bf77ff38d4d483e114f6310da75ca5ea5b70ba7e51d14c182"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/batch.rs",
+      "bytes": 8006,
+      "sha256": "bdb752add75c9ae4142c0dc2f1af4de2fbb715d39d2f9003956a2bfd1a562fed"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mod.rs",
+      "bytes": 2961,
+      "sha256": "4fe98a13b4996347a091753b871ec898ad8d15873559f92010ea98881c20acda"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/mod.rs",
+      "bytes": 1340,
+      "sha256": "0b47db09fb2907f549021975d20f6eef91e542b8fcbb58b366a3efffb74fbfe7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/plan.rs",
+      "bytes": 16285,
+      "sha256": "081c89123be034acaca9a1d93d581041045e0fa07591e32ad81a610fb99429ea"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/retirement.rs",
+      "bytes": 3803,
+      "sha256": "e258acfeccb52be880d2f227e536e938f6095f1d51258a7642e9508ff5b454ec"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/retirement/maps.rs",
+      "bytes": 6601,
+      "sha256": "576b94d287e323e04efc0c687dd207691312f79d77796235eaa5f266f96413b0"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/retirement/audit.rs",
+      "bytes": 6032,
+      "sha256": "90bbae471c9efa213db23cab47832c17ebed597f39a694184faa1fa3981beb78"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/retirement/global_audit.rs",
+      "bytes": 3493,
+      "sha256": "59e35716a18d1e22ea982827fff2cd70ca50705bc697e22eb396ec71dcccbdda"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/retirement/global_audit/tests.rs",
+      "bytes": 3554,
+      "sha256": "bc044068d3c37900b96edc251531f998f9aa9f94d281ee3c57bc38c7465cf660"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/retirement/ownership.rs",
+      "bytes": 2361,
+      "sha256": "3a8707eac8b3c939b5316c3a2793b8102a9f6eac96267e62db33367e5fbf8bc9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_batch_deletes.rs",
+      "bytes": 4137,
+      "sha256": "7a9c0d3a7a9e1e17ef2950a9d8467b9ee6c7c2db49e20425e2ea268e4392a3f3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_batch_delete_contract.rs",
+      "bytes": 4645,
+      "sha256": "9d3ac05b665b276e8e292624867ea3270ad0042abe5979a0a3c91498d125a607"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_batch_delete_contract/trees.rs",
+      "bytes": 9223,
+      "sha256": "a5dc9bcc6a5fc3a0b07b43c20e66bae7ce341cb34a71327ea86e0b78ae44f818"
+    },
+    {
+      "path": "docs/testing/ACE16_DELETE_PREVIEWS.md",
+      "bytes": 33879,
+      "sha256": "8be13cdb9cd2b999f185ac7f6893cd8385c2256e7e8732329697f23284d92077"
+    }
+  ],
+  "read_only_shared_fixture_files": [
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_restrict_delete_contract/model.rs",
+      "bytes": 14711,
+      "sha256": "37f0afacb060df7f571aa0927b32bda617c82a8aa0e74762b37524a02f3853b8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/mutation/fixture.rs",
+      "bytes": 5609,
+      "sha256": "9d66669d6fce171118e39d07afe54f6f3298f8168f5d088befbc8649baf6bae3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/support/mod.rs",
+      "bytes": 3496,
+      "sha256": "395145db02a7fc23388bd6ba065ee62992e823df0306bff205a2ae2304438c99"
+    }
+  ],
+  "checks": [
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test ace16_batch_deletes --test ace16_batch_delete_contract --test ace16_restrict_deletes --test ace16_restrict_delete_contract --test ace16_deletes --test ace16_delete_contract --test ace16_delete_trees --test ace16_delete_tree_contract --test ace16_delete_retirement --test ace16_delete_contraction_contract --test ace16_delete_internal_chains --test ace16_internal_chain_contract --test ace16_encoded_delete_contract --test ace16_delete_ignored --test ace16_ignored_delete_contract --test binary_indexes --test indexes --test ignored_index_checks --test ignored_null_indexes --test ignored_null_wide_indexes",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-batch-delete-primary-regressions-20261026.log",
+        "bytes": 16219,
+        "sha256": "21f9e6e19eb0b716a03b0b7d5e55e87dc0a1d8dadef24be86ce252e66fe6d808"
+      },
+      "session": 36346,
+      "passed_functions": 130
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test ace16_write_preview --test mutation --test ace16_fixed_updates --test scalar_index_updates --test integral_index_updates --test decimal_updates --test guid_updates --test composite_updates --test batch_updates --test mask_updates --test foreign_updates --test cascade_updates",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-batch-delete-writer-regressions-20261026.log",
+        "bytes": 10780,
+        "sha256": "2324168394219ae32a94dc7e830117a91e70c44b07de224a75c3f9534ed57515"
+      },
+      "session": 65766,
+      "passed_functions": 98
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test ace16_batch_deletes --test ace16_batch_delete_contract",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-batch-delete-primary-final-20261026.log",
+        "bytes": 1242,
+        "sha256": "71f92be3065486dbeaee1603120709fe68a424aaadedfa354d2d3d6a858e37bf"
+      },
+      "session": 17685,
+      "passed_functions": 7
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib table::indexes::mutation",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-batch-delete-private-final-20261026.log",
+        "bytes": 1807,
+        "sha256": "f96098b09ee84c6ebc74a2353440ca4782728930969255861a687e6c03b487fa"
+      },
+      "session": 47940,
+      "passed_functions": 11
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib --test ace16_batch_deletes --test ace16_batch_delete_contract --example preview_ace16_delete -- -D warnings",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-batch-delete-clippy-final-20261026.log",
+        "bytes": 183,
+        "sha256": "4dee0971102d25dad9aab5aa6c05ec125395cef87269a1bbeaa91ed3618508f1"
+      },
+      "session": 54344
+    },
+    {
+      "command": "cargo check --locked --offline -j2 -p tablecraft-ace --lib --no-default-features",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-batch-delete-minimal-20261026.log",
+        "bytes": 183,
+        "sha256": "aa963bc1abc03a52113c682ad3fb5002d0b2a4123842f48ecd29cb05287dfbb7"
+      }
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --doc",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-batch-delete-doc-tests-20261026.log",
+        "bytes": 627,
+        "sha256": "f6b7b5939494b3afb99e6d4b5c2b66b1e5fdac31842dbaffe4f897d973aa2b0b"
+      },
+      "passed_functions": 3
+    },
+    {
+      "command": "rustfmt --edition 2024 --check --config skip_children=true crates/engines/tablecraft-ace/src/lib.rs crates/engines/tablecraft-ace/src/table/mod.rs crates/engines/tablecraft-ace/src/table/mutation/mod.rs crates/engines/tablecraft-ace/src/table/mutation/delete.rs crates/engines/tablecraft-ace/src/table/mutation/delete/batch.rs crates/engines/tablecraft-ace/src/table/indexes/mod.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/mod.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/plan.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/retirement.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/retirement/maps.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/retirement/audit.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/retirement/global_audit.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/retirement/global_audit/tests.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/retirement/ownership.rs crates/engines/tablecraft-ace/tests/ace16_batch_deletes.rs crates/engines/tablecraft-ace/tests/ace16_batch_delete_contract.rs crates/engines/tablecraft-ace/tests/ace16_batch_delete_contract/trees.rs",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-batch-delete-format-20261026.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "preserved_failed_attempts": [
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib --test ace16_batch_deletes --test ace16_batch_delete_contract --example preview_ace16_delete -- -D warnings",
+      "session": 13867,
+      "exit_code": 101,
+      "log": {
+        "path": ".cache/ace16-batch-delete-clippy-20261026.log",
+        "bytes": 839,
+        "sha256": "76bde96c7fd99adeec6b1ad1ba4acbee56886d567761a2286dc786073137cd99"
+      },
+      "cause": "Clippy too_many_arguments on the eight-argument map collect helper. Replaced separate schema/indexes/retired parameters with the existing typed RetirementTable. No behavior, resource policy or golden changed."
+    }
+  ],
+  "superseded_green_checks": [
+    {
+      "session": 83560,
+      "log": {
+        "path": ".cache/ace16-batch-delete-independent-initial-20261026.log",
+        "bytes": 851,
+        "sha256": "dbde367fab775f2435d2fece51e6bb52abcf1bede83714763422be06ba336386"
+      },
+      "passed_functions": 5,
+      "reason": "Parent initial independent target before adding the final whole-image preservation assertions; final primary batch includes strengthened assertions."
+    },
+    {
+      "session": 56577,
+      "log": {
+        "path": ".cache/ace16-batch-delete-private-20261026.log",
+        "bytes": 1807,
+        "sha256": "3407121356fee22ae7609731777d19fde33a5b20a7f11b8f49261df551c84ded"
+      },
+      "passed_functions": 11,
+      "reason": "Passed before the map-helper argument packing; final private run covers the final source."
+    }
+  ],
+  "verification_sequence": "The 130 integration and 98 writer checks passed before a purely structural map-helper argument-packing lint fix. Final focused seven, private eleven, strict lint, minimal compilation and documentation checks cover the final implementation snapshot. No runtime failure or expected-answer correction occurred.",
+  "acceptance": [
+    "All explicit table names retain existing before-image gates; named empty groups do not bypass relationship/index/profile qualification.",
+    "Snapshot-local ordinals/raw payloads are checked for every group before index planning; case-insensitive duplicate groups, stale rows and duplicate requests fail.",
+    "All requested child/parent deletions are applied to one final image; exact final relationship membership is required across every selected table. Self/cascade/SET NULL/unenforced/unknown profiles remain refused.",
+    "Operation-wide typed owned-clear/global-set intents merge each original bitmap byte exactly once. Generic index/record patches are never OR-merged.",
+    "Independent two-owner height-one trees retire four pages sharing a single global byte, proving 0xe0 to 0xfe, original root identity, exact per-owner ownership, zero invalidation prefixes, unchanged residual/payload bytes and reverse-group byte identity.",
+    "All selected data and distinct physical index-owned claims are checked for overlap and selected definition-page conflicts before publication.",
+    "Global union audit rejects missing/extra/already-free/duplicate retirement bits, nonzero invalidation prefixes and any changed retired residual byte; per-table ownership/root/sibling proofs remain separate.",
+    "Cumulative bytes/rows/work, explicit table/request ceilings, cancellation and retry remain checked with no partial candidate."
+  ],
+  "boundaries": [
+    "This is an explicit engineering final-image batch, not native Access/SQL RESTRICT action-order qualification or an automatic delete-cascade service.",
+    "Native Access comparisons, data-macro absence/execution, production save/reopen, allocation/new pages, map growth and unsupported key/relationship profiles remain unqualified.",
+    "No original-file multi-table candidate replay was run as part of these checks. Existing scalar/query or single-table original comparisons are not counted as batch evidence.",
+    "No-retirement tables emit no allocation edits and retain existing nonretirement gates; operation-wide selected ownership overlap checks still run for multiple groups. Unrelated allocator metadata is not newly qualified.",
+    "No dependencies, source fixture flags, existing registered originals or UPDATE admission rules were changed."
+  ]
+}

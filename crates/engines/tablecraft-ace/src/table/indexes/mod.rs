@@ -70,7 +70,8 @@ mod page;
 pub(super) use mutation::{IndexDataPatch, IndexKeyUpdate, MutationKey, patches as index_patches};
 #[cfg(feature = "ace16-write-preview")]
 pub(super) use mutation::{
-    audit_retirements, audit_siblings, delete_patches as index_delete_patches,
+    PatchSet as DeleteIndexPlan, RetirementTable, audit_global, audit_retirements, audit_siblings,
+    compose as compose_retirements, delete_patches as index_delete_patches,
 };
 mod read;
 mod selection;

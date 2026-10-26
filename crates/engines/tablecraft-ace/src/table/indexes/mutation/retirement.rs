@@ -1,8 +1,17 @@
 //! Exact existing-page retirement, with an independent after-image map audit.
 mod audit;
+mod global_audit;
 mod maps;
+mod ownership;
 pub(in crate::table) use audit::audit_retirements;
-pub(super) use maps::patches;
+pub(in crate::table) use global_audit::audit_global;
+pub(in crate::table) use maps::compose;
+
+pub(in crate::table) struct RetirementTable<'a> {
+    pub schema: &'a crate::TableSchema,
+    pub indexes: &'a [crate::IndexCheck],
+    pub retired: &'a [RetiredPage],
+}
 
 use super::super::header::IndexHeader;
 use super::IndexDataPatch;

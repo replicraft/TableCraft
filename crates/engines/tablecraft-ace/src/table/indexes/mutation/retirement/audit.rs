@@ -1,6 +1,6 @@
-use super::{GLOBAL_MAP_REFERENCE, INVALID_PREFIX_BYTES, RetiredPage};
+use super::{GLOBAL_MAP_REFERENCE, RetiredPage};
 use crate::format::{
-    allocation::{self, MapCell, MapRole, RepresentedMap},
+    allocation::{self, MapRole, RepresentedMap},
     page::PAGE_BYTES,
     reader::Reader,
 };
@@ -41,7 +41,6 @@ pub(in crate::table) fn audit_retirements(
     }
     let old_header = inspect_header(&mut old_source, budget, cancelled)?;
     let new_header = inspect_header(&mut new_source, budget, cancelled)?;
-    let mut original_cells = Vec::new();
     let mut ownership: Vec<Ownership> = Vec::new();
     {
         let mut reader = Reader {
@@ -51,21 +50,6 @@ pub(in crate::table) fn audit_retirements(
             cancelled,
             reads: 0,
         };
-        let global = RepresentedMap::read(&mut reader, GLOBAL_MAP_REFERENCE, MapRole::GlobalFree)?;
-        reader
-            .budget
-            .charge_allocation(retired.len() as u64, size_of::<MapCell>() as u64)
-            .map_err(InspectError::from)?;
-        original_cells
-            .try_reserve_exact(retired.len())
-            .map_err(|_| InspectError::Allocation)?;
-        for page in retired {
-            let cell = global.cell(&mut reader, page.number)?;
-            if cell.before & cell.mask != 0 {
-                return Err(EditError::Preservation);
-            }
-            original_cells.push(cell);
-        }
         for original in old_indexes.indexes() {
             let current = new_indexes
                 .indexes()
@@ -121,28 +105,6 @@ pub(in crate::table) fn audit_retirements(
         global.require_allocated(&mut reader, number)?;
     }
 
-    for (page, original) in retired.iter().zip(&original_cells) {
-        reader.work(original_cells.len())?;
-        let mask = original_cells
-            .iter()
-            .filter(|cell| cell.offset == original.offset)
-            .fold(0, |mask, cell| mask | cell.mask);
-        let cell = global.cell(&mut reader, page.number)?;
-        let start = page.number as usize * PAGE_BYTES;
-        let old_page = before
-            .get(start..start + PAGE_BYTES)
-            .ok_or(EditError::Preservation)?;
-        let new_page = after
-            .get(start..start + PAGE_BYTES)
-            .ok_or(EditError::Preservation)?;
-        if cell.offset != original.offset
-            || cell.before != (original.before | mask)
-            || new_page[..INVALID_PREFIX_BYTES] != [0; INVALID_PREFIX_BYTES]
-            || new_page[INVALID_PREFIX_BYTES..] != old_page[INVALID_PREFIX_BYTES..]
-        {
-            return Err(EditError::Preservation);
-        }
-    }
     for original in ownership {
         let map = RepresentedMap::read(&mut reader, original.usage, MapRole::Owned)?;
         map.require_allocated_storage(&mut reader, &global)?;

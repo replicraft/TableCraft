@@ -14,7 +14,9 @@ mod retained;
 #[cfg(feature = "ace16-write-preview")]
 mod retirement;
 #[cfg(feature = "ace16-write-preview")]
-pub(in crate::table) use retirement::{RetiredPage, audit_retirements};
+pub(in crate::table) use retirement::{
+    RetiredPage, RetirementTable, audit_global, audit_retirements, compose,
+};
 mod tree;
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) use plan::delete_patches;

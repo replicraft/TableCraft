@@ -1,5 +1,5 @@
 use super::{
-    FIRST_REUSABLE_PAGE, GLOBAL_MAP_REFERENCE, INVALID_PREFIX_BYTES, RetiredPage, append,
+    FIRST_REUSABLE_PAGE, GLOBAL_MAP_REFERENCE, INVALID_PREFIX_BYTES, RetirementTable, append,
     header_patch,
 };
 use crate::format::{
@@ -9,11 +9,10 @@ use crate::format::{
     reader::Reader,
 };
 use crate::table::indexes::{
-    IndexCheck,
     mutation::IndexDataPatch,
     page::{LEAF, NODE},
 };
-use crate::{EditError, InspectError, NativeImage, TableSchema, header::check};
+use crate::{EditError, InspectError, NativeImage, header::check};
 use tablecraft_core::limits::ResourceBudget;
 
 struct ByteEdit {
@@ -59,15 +58,17 @@ fn merge(
     Ok(())
 }
 
-pub(in crate::table::indexes::mutation) fn patches(
+fn collect(
     image: &NativeImage,
-    schema: &TableSchema,
-    indexes: &[IndexCheck],
-    retired: &[RetiredPage],
+    table: &RetirementTable<'_>,
+    edits: &mut Vec<ByteEdit>,
     patches: &mut Vec<IndexDataPatch>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
+    let schema = table.schema;
+    let indexes = table.indexes;
+    let retired = table.retired;
     let mut source = image.reader();
     let mut reader = Reader {
         source: &mut source,
@@ -85,7 +86,6 @@ pub(in crate::table::indexes::mutation) fn patches(
     for number in &data {
         global.require_allocated(&mut reader, *number)?;
     }
-    let mut edits = Vec::new();
     // Root and every retained index page must be allocated. Distinct physical
     // declarations may not share owned children merely because roots differ.
     for (position, check) in indexes.iter().enumerate() {
@@ -142,13 +142,13 @@ pub(in crate::table::indexes::mutation) fn patches(
         let owned = RepresentedMap::read(&mut reader, page.usage, MapRole::Owned)?;
         owned.require_allocated_storage(&mut reader, &global)?;
         merge(
-            &mut edits,
+            edits,
             owned.cell(&mut reader, page.number)?,
             false,
             &mut reader,
         )?;
         merge(
-            &mut edits,
+            edits,
             global.cell(&mut reader, page.number)?,
             true,
             &mut reader,
@@ -163,6 +163,30 @@ pub(in crate::table::indexes::mutation) fn patches(
             reader.cancelled,
         )?;
     }
+    check(reader.budget, reader.cancelled)?;
+    Ok(())
+}
+
+/// Compose typed owned-clear/global-set intents from one captured image.
+pub(in crate::table) fn compose(
+    image: &NativeImage,
+    tables: &[RetirementTable<'_>],
+    patches: &mut Vec<IndexDataPatch>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    check(budget, cancelled)?;
+    if tables.len() > 1 {
+        super::ownership::check(image, tables, budget, cancelled)?;
+    }
+    let mut edits = Vec::new();
+    for table in tables {
+        check(budget, cancelled)?;
+        if table.retired.is_empty() {
+            continue;
+        }
+        collect(image, table, &mut edits, patches, budget, cancelled)?;
+    }
     for edit in edits {
         let after = (edit.before | edit.set) & !edit.clear;
         append(
@@ -170,10 +194,10 @@ pub(in crate::table::indexes::mutation) fn patches(
             edit.offset,
             &[edit.before],
             &[after],
-            reader.budget,
-            reader.cancelled,
+            budget,
+            cancelled,
         )?;
     }
-    check(reader.budget, reader.cancelled)?;
+    check(budget, cancelled)?;
     Ok(())
 }
