@@ -1,5 +1,18 @@
 # Implementation status
 
+## Independent deeper compound-query replay
+
+The explicit depth-32 planner passes 1,692 compound queries over fifteen literal
+cohorts and eight stored-field cohorts in each of four unchanged native originals.
+All 141 identical-SQL default-depth controls refuse structurally with empty stdout.
+Exact Fraction/IEEE models check 3,660 rows and 11,544 cells; four independent
+read-only getter transcripts supply native inputs. The audit verifies the unique
+command grid, paired SQL hashes, eleven immutable artifact pins and 66 selected
+committed/live source snapshots. See [reproduction and limits](testing/DEEPER_QUERIES.md)
+and the [report](testing/results/deeper-query-replay-2026-10-25.json).
+This qualifies bounded engineering composition, not native Access SQL semantics
+or the rest of read/query acceptance.
+
 ## Explicit deeper query preparation
 
 `query run --binding-depth 1..32` and the validated library `BindingDepth` now

@@ -60,3 +60,8 @@ progressive queries over the existing ACE 2007 example.
 Selected collation, domain, named-crosstab, editing and progressive regression
 suites also pass. These are engineering checks, not Microsoft Access comparisons
 or completion of the broader read/query roadmap.
+
+The independent [compound replay](testing/DEEPER_QUERIES.md) adds 1,692 successful
+explicit-depth queries and 141 identical-SQL default-depth refusals over literal
+constructors and four unchanged native scalar originals. It checks exact retained
+values, group memberships, ordering and extrema in both arithmetic profiles.
