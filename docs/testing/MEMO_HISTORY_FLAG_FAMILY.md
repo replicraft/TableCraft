@@ -11,7 +11,7 @@ flags 0 or 1 (optional Unicode compression). It still requires a variable Memo
 and its existing ordinary scalar codec. Unknown, calculated and fixed variants
 remain refused. History templates and flat child fields retain their original
 ordinary/extended flag gates; their codecs and association checks do not change.
-See the [stored-history contract](../STORED_HISTORY_QUERIES.md).
+See the [stored-history contract](../access/collections/STORED_HISTORY_QUERIES.md).
 
 ## Independent original corpus
 
@@ -67,7 +67,7 @@ The complete engine/adapter history targets pass 22 tests, and scoped strict Cli
 passes for both integration targets. The reused query replay explicitly permits
 a 64 MiB cumulative native byte pool; other controls and defaults do not change.
 These are bounded offline engineering results, not native Access qualification.
-[Fixture provenance](../FIXTURES.md#original-ordinary-memo-history-family-inputs)
+[Fixture provenance](FIXTURES.md#original-ordinary-memo-history-family-inputs)
 records all original hashes and excluded capability probes.
 
 ```sh

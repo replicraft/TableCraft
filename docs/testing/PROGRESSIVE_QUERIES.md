@@ -8,7 +8,7 @@ including every entry in the 1,879-file frozen Rust inventory.
 
 There are 52 successful commands and 36 classified failures: 16 division errors,
 16 resource refusals and four output-limit refusals. This verifies the explicit
-[streaming query host](../STREAMING_QUERIES.md) against original getter records.
+[streaming query host](../cli/STREAMING_QUERIES.md) against original getter records.
 It is engineering correctness evidence, not Microsoft Access qualification,
 a benchmark, arbitrary-scale support or shared-file consistency qualification.
 

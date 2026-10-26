@@ -9,7 +9,7 @@ resource limits and output limits. Buffered execution and explicit streaming
 batches of 1 and 128 agree with those expectations.
 
 This is engineering evidence for the current
-[progressive Min/Max contract](../PROGRESSIVE_QUERIES.md#global-min-and-max).
+[progressive Min/Max contract](../query/PROGRESSIVE_QUERIES.md#global-min-and-max).
 It does not establish Microsoft Access evaluation equivalence, complete native
 result typing, large-file performance or Windows collation qualification.
 

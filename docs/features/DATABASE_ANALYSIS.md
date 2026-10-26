@@ -7,7 +7,7 @@ test runner do not. Current metadata/parser support cannot prove a rename is saf
 VBA preservation and inert dependency detection remain required; VBA execution,
 source authoring/refactoring, editor/debugger and runtime tracing are deferred.
 VBA application-test scenarios below are retained future research, outside the
-active roadmap. See [current VBA scope](../VBA_COMPATIBILITY.md).
+active roadmap. See [current VBA scope](../architecture/VBA_COMPATIBILITY.md).
 
 ## Inventory and refactoring
 

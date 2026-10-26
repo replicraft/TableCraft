@@ -12,7 +12,7 @@ standalone models; ten literal goldens independently check their composition.
 This establishes agreement with TableCraft's documented composition. It does not
 establish native Access StrConv evaluation order, Windows NLS equivalence, or
 support for other combined flags. The primary Microsoft references and the
-explicit engineering boundary remain in [STRCONV.md](../STRCONV.md#explicit-wide-then-hiragana-composition).
+explicit engineering boundary remain in [STRCONV.md](../expressions/text/STRCONV.md#explicit-wide-then-hiragana-composition).
 
 ## Accepted replay
 

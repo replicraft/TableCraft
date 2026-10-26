@@ -7,8 +7,8 @@ expectations; six buffered refusals retain empty stdout. There are 2,000 origina
 input rows, exercised through several access paths. This is engineering evidence;
 Microsoft Access execution and optimizer equivalence remain unqualified.
 
-The implementation is documented in [native indexes](../NATIVE_INDEXES.md#boolean-indexes)
-and [automatic selection](../AUTOMATIC_INDEXES.md). Exact Boolean field/literal
+The implementation is documented in [native indexes](../access/indexes/NATIVE_INDEXES.md#boolean-indexes)
+and [automatic selection](../access/indexes/AUTOMATIC_INDEXES.md). Exact Boolean field/literal
 equality can use automatic or explicitly required single-key indexes. The original
 predicate remains mandatory. Numeric/Text coercions, Boolean ranges, NULL tests,
 parameter hints and partial conjunction extraction remain outside this addition.

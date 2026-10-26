@@ -68,7 +68,7 @@ python3 docs/testing/compare_browsing.py --jar path/to/jackcess-5.0.4.jar --cli 
 ```
 
 Original recipes, reviewed artifact/license provenance, source and derivative
-hashes and observed results are recorded in [FIXTURES.md](../FIXTURES.md#larger-read-source-derivatives).
+hashes and observed results are recorded in [FIXTURES.md](FIXTURES.md#larger-read-source-derivatives).
 Neither the independent reader nor these synthetic checks establish native
 Microsoft Access, encrypted-file, shared-file or large-table conformance.
 

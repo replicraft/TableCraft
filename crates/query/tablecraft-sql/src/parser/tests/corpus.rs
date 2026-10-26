@@ -1,5 +1,5 @@
 //! Original TableCraft examples derived from grammar descriptions, not copied
-//! fixtures or observed Access results. Source mapping: docs/SQL_PARSER.md.
+//! fixtures or observed Access results. Source mapping: docs/query/SQL_PARSER.md.
 
 use super::*;
 

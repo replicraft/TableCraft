@@ -76,6 +76,6 @@ digests, compared-cell count and exit status. Every expected failure has no stdo
 The pinned runner and Unicode version reconstruct the exact queries. Native
 getter and input identities are included. No reference JAR, generated database,
 new product dependency or machine-specific path is committed. The
-[fixture registration](../FIXTURES.md#interrupted-seek-scalar-replay) retains the
+[fixture registration](FIXTURES.md#interrupted-seek-scalar-replay) retains the
 existing provenance. Broader mappings, locale providers and native qualification
 remain on the read/query roadmap.

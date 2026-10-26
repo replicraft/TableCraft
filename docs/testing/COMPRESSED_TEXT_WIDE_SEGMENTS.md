@@ -77,7 +77,7 @@ A separate supplementary reproduction with the previous immutable CLI
 refuses both unchanged grammar copies as malformed, without stdout. Those two
 before-fix failures are not included in the accepted control count.
 
-[Fixture provenance](../FIXTURES.md#original-compressed-text-wide-segment-controls)
+[Fixture provenance](FIXTURES.md#original-compressed-text-wide-segment-controls)
 records original seeds and explicitly derived copies. No native Access SQL,
 native writer validity, application execution, freshness or save is qualified.
 

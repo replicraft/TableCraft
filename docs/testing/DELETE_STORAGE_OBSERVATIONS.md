@@ -42,7 +42,7 @@ The reviewed Jackcess 5.0.4 JAR hash is
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
 The producer/helper and Python runner are original repository code under the
 repository license; no third-party source or fixture bytes were copied. The JAR's
-existing provenance/notices remain in [the fixture ledger](../FIXTURES.md).
+existing provenance/notices remain in [the fixture ledger](FIXTURES.md).
 Generated databases and raw captures stay under ignored `.cache`; the report
 records their hashes and exact commands, without machine-specific paths.
 

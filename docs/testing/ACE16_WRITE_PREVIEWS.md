@@ -59,7 +59,7 @@ ceilings and no runtime/network dependencies.
 UpdateFixture now generates original V2016/V2019 files, with expression evaluation
 disabled, three LONG Id/Score rows, Required/range declarations, an Id primary
 index, Unicode Memo and 12,288-byte OLE values. No native Access provenance is
-claimed. [Original and candidate hashes](../FIXTURES.md#ace-16-write-preview-inputs)
+claimed. [Original and candidate hashes](FIXTURES.md#ace-16-write-preview-inputs)
 record the reviewed Jackcess artifact and observed results.
 
 ```sh
@@ -126,7 +126,7 @@ with nine scalar fields, an unrelated Id primary key and long Memo/OLE values.
 [The runner](compare_fixed_updates.py) takes `--jar`, `--cli`, `--rows`, `--example`,
 `--ace2016` and `--ace2019`. It compares all eighteen independent candidates, complete
 rows and long payloads, exact field spans, post-checks, wrong-carrier failure and
-existing-output retention. Originals remain unchanged. [Provenance and hashes](../FIXTURES.md#ace-16-exact-fixed-scalar-preview-inputs)
+existing-output retention. Originals remain unchanged. [Provenance and hashes](FIXTURES.md#ace-16-exact-fixed-scalar-preview-inputs)
 keep this separate from native Access qualification.
 
 Six CI tests cover nine literal byte/carrier goldens on both families, exact no-ops,
@@ -138,7 +138,7 @@ coercion, NaN semantics or actual Access behavior claims.
 ## Boolean and NULL-mask transitions
 
 Ordinary non-unique Int32 key replacements now share the existing-tree pipeline;
-[their contract](../NATIVE_WRITES.md#non-unique-int32-replacements) covers exact
+[their contract](../access/writes/NATIVE_WRITES.md#non-unique-int32-replacements) covers exact
 duplicate row ties, aliases and retained unique/rule guards. Indexed Int32 NULL
 transitions have the separate profile below; checked foreign keys now have their own profile below.
 
@@ -187,7 +187,7 @@ remain intact, and required cascades and normal ACE saves remain unsupported.
 
 Five CI tests cover literal bit/byte goldens, stale NULL payloads, exact no-ops,
 shared-byte neighbors, field-rule rejection, late cancellation and a
-128-case nullable multirow Int64 model. [Fixture hashes](../FIXTURES.md#ace-16-boolean-and-null-mask-preview-inputs)
+128-case nullable multirow Int64 model. [Fixture hashes](FIXTURES.md#ace-16-boolean-and-null-mask-preview-inputs)
 record independent evidence separately from actual Access qualification.
 
 [Microsoft's desktop type overview](https://support.microsoft.com/en-us/access/data-types-for-access-desktop-databases)
@@ -235,7 +235,7 @@ nullable/duplicate/unique/required/rule controls and 1,000-row trees with long v
 `--ace2016` and `--ace2019`. Per family it matches fifteen complete candidates
 (three exact no-ops), preserves original row-reference/page sets and child links,
 checks native geometry and complete rows/long values, retains existing outputs
-and rejects seven invalid requests without files. [Hashes](../FIXTURES.md#indexed-int32-null-preview-inputs)
+and rejects seven invalid requests without files. [Hashes](FIXTURES.md#indexed-int32-null-preview-inputs)
 record independent evidence separately from actual Access/data-macro qualification.
 
 ## Bounded final-child nodes
@@ -265,7 +265,7 @@ native type selects its payload/key width. Byte is unsigned; signed keys retain
 their full native domain, and Currency uses scaled i64 units without conversion
 through floating point. NULL keys keep their explicit presence marker. Other
 numeric carriers are not interchangeable, including Int64 and Currency despite
-their equal widths. [Existing index references](../NATIVE_INDEXES.md) still own
+their equal widths. [Existing index references](../access/indexes/NATIVE_INDEXES.md) still own
 the read/constraint profiles.
 
 Non-NULL replacements retain the original prefix, per-entry lengths, bitmap and
@@ -306,7 +306,7 @@ Observed comparisons match 56 complete candidates (eight exact no-ops) and rejec
 32 invalid requests without output. Both sources remain unchanged. Exact values,
 all three selected index cursors, unchanged tree pages/counts/children/row-reference
 sets, admitted field/mask/page spans and complete Memo/OLE values agree. The
-[fixture record](../FIXTURES.md#integral-and-currency-index-update-inputs) retains
+[fixture record](FIXTURES.md#integral-and-currency-index-update-inputs) retains
 source and ordered candidate-manifest hashes. These generated trees supply
 independent evidence for their observed topologies; bounded-final-child mutation
 still has the authored evidence described above.
@@ -418,7 +418,7 @@ the fixture or hiding a failed check.
 Observed independent comparisons match 36 complete candidates (four exact
 no-ops), reject fourteen requests with their expected constraint/conflict errors,
 and preserve originals and existing output paths. Related parent/child tables,
-complete long values and permitted byte spans agree. [Recorded hashes](../FIXTURES.md#integral-composite-index-update-inputs)
+complete long values and permitted byte spans agree. [Recorded hashes](FIXTURES.md#integral-composite-index-update-inputs)
 retain source/candidate manifests. All 21 previous non-unique single-column
 candidate hashes remain unchanged across both ACE families and Jet 4 after this
 generic writer refactor. These observations do not establish native Access,
@@ -485,7 +485,7 @@ matches 22 complete batches (two exact no-ops), their 22 reverse-order controls,
 and fourteen rejected requests without output. Complete related/untouched tables,
 long values, exact DATE/IEEE/GUID/Currency carriers, index key/row order, page/
 count/child/row-reference sets and admitted field/mask/index spans agree. Existing
-outputs and original bytes are retained. [Batch hashes](../FIXTURES.md#explicit-fixed-field-batch-inputs)
+outputs and original bytes are retained. [Batch hashes](FIXTURES.md#explicit-fixed-field-batch-inputs)
 retain source/candidate manifests; native Access/data-macro, automatic-action and
 production-save qualification remains separate.
 
@@ -550,7 +550,7 @@ The [comparison runner](compare_cascade_updates.py) specifies literal full
 closures and compares every table, long value and index cursor with independent
 readers, plus candidate equality with explicit complete batches and reversed
 request order. Observed counts and immutable manifests are recorded in
-[FIXTURES.md](../FIXTURES.md#declared-update-cascade-inputs).
+[FIXTURES.md](FIXTURES.md#declared-update-cascade-inputs).
 
 
 ## GUID index write previews
@@ -569,7 +569,7 @@ canonical bytes in two eight-byte segments: the continuation tag stays unchanged
 in descending order, while data and the final length tag are complemented. The
 reviewed independent sources are Jackcess
 [IndexData GUID/general-binary encoding](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/IndexData.java)
-and the existing stored-GUID codec references in [NATIVE_INDEXES.md](../NATIVE_INDEXES.md).
+and the existing stored-GUID codec references in [NATIVE_INDEXES.md](../access/indexes/NATIVE_INDEXES.md).
 Private physical ordering is not SQL GUID ordering or coercion.
 
 The shared tree writer keeps compact numeric-only profiles; mixed GUID tuples
@@ -592,7 +592,7 @@ GUID/composite foreign keys, declared cascades, complete key clearing and parent
 permutations. Full rows, long values, independent index cursors, retained topology
 and exact field/mask/index byte-span proofs are checked. A deliberately divergent
 tree key requires a split and is retained as an atomic-rejection case. Observed
-counts and hashes are recorded in [FIXTURES.md](../FIXTURES.md#guid-index-update-inputs).
+counts and hashes are recorded in [FIXTURES.md](FIXTURES.md#guid-index-update-inputs).
 Native Access/data-macro/save qualification remains pending.
 
 
@@ -627,7 +627,7 @@ unsupported relationship semantics still fails its ordinary coverage gates.
 The reviewed source is the pinned Jackcess
 [IndexData Boolean and floating-point descriptors](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/IndexData.java),
 alongside the existing Boolean/IEEE/DATE read/field references in
-[NATIVE_INDEXES.md](../NATIVE_INDEXES.md). No reference source is copied.
+[NATIVE_INDEXES.md](../access/indexes/NATIVE_INDEXES.md). No reference source is copied.
 Six authored integration tests cover both families/directions, mask false/true,
 unique Boolean swaps, all IEEE bit classes, DATE aliases/precision, NULL changes,
 a full mixed ten-component key, shared masks, stale/duplicate inputs, cancellation
@@ -642,7 +642,7 @@ no-ops), forty-six reverse-order controls and eighteen typed rejections match on
 both ACE 16 families. Complete related/untouched tables, exact DATE/IEEE bits,
 independent index cursors, topology/reference sets and authorized field/mask/index
 spans agree. Existing outputs and immutable originals remain unchanged. Recorded
-[source/candidate manifests](../FIXTURES.md#boolean-ieee-and-date-index-update-inputs)
+[source/candidate manifests](FIXTURES.md#boolean-ieee-and-date-index-update-inputs)
 retain the independent/native distinction: these observations do not qualify
 Access execution, data macros, shared-file behavior or production saves.
 
@@ -703,6 +703,6 @@ complete candidates (four exact no-ops), 22 reverse-order controls and fourteen
 atomic rejections across original V2016/V2019 inputs. Full table/long values,
 independent index cursors, topology/reference sets and authorized field/mask/index
 spans agree. Earlier 21 numeric ACE/Jet 4, 24 GUID and 46 Boolean/IEEE/DATE candidates
-retain their frozen manifests. [Observed fixture hashes](../FIXTURES.md#decimal-slot-and-index-update-inputs)
+retain their frozen manifests. [Observed fixture hashes](FIXTURES.md#decimal-slot-and-index-update-inputs)
 record original/candidate identities. Native Access comparisons, data-macro gates
 and production-save qualification remain unfinished.

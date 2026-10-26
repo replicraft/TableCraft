@@ -12,7 +12,7 @@ and nonempty Expression requirements. Other calculated types still require 0x02;
 Memo C1, unknown flags and fixed declarations remain unqualified. The existing bounded
 long-value/wrapper/Text decoder is reused. Ordinary queries do not gain calculated
 column eligibility, formula execution or freshness guarantees. See
-[cached Memo storage](../CACHED_MEMO_CALCULATIONS.md).
+[cached Memo storage](../access/calculations/CACHED_MEMO_CALCULATIONS.md).
 
 ## Authored independent corpus
 
@@ -77,7 +77,7 @@ target passes seven, with scoped strict Clippy passing for both. Originals are
 preserved; wrapper corruption affects sixteen disposable copies only. Native
 Access calculated-Memo admissibility, formula execution, freshness, Memo C1 and
 broader flag families remain unqualified. The
-[fixture ledger](../FIXTURES.md#original-calculated-text-flag-family-inputs) records
+[fixture ledger](FIXTURES.md#original-calculated-text-flag-family-inputs) records
 source ownership, original hashes and excluded capability probes.
 
 ```sh

@@ -62,7 +62,7 @@ python3 docs/testing/compare_date_candidates.py \
 
 `--generate` requires all four destinations to be fresh and never overwrites
 existing originals. Reports must also be fresh. The JAR and generated databases
-stay ignored; public recipes and [fixture provenance](../FIXTURES.md#original-date-candidate-inputs)
+stay ignored; public recipes and [fixture provenance](FIXTURES.md#original-date-candidate-inputs)
 are sufficient to recreate independent inputs. Runtime/compiler resources are
 temporary and are not product dependencies. This replay does not establish native
 Access optimizer behavior, complete collation/Variant semantics, writes or live

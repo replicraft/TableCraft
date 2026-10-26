@@ -8,7 +8,7 @@ structural-limit controls, 12 eager division errors, four native resource failur
 and four output failures. These are engineering comparisons; Microsoft Access
 execution, optimizer behavior and native saves remain unqualified.
 
-The implemented [Decimal selections](../NATIVE_INDEXES.md#exact-decimal-equality-and-null-selections)
+The implemented [Decimal selections](../access/indexes/NATIVE_INDEXES.md#exact-decimal-equality-and-null-selections)
 retain the existing physical codec and qualify exact single-key equality/NULL
 reads. Typed Decimal parameters can use automatic or required indexes after
 lossless checked field-scale normalization. The original filter remains active.

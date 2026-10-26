@@ -76,7 +76,7 @@ The immutable CLI SHA-256 is
 `945882fb9dfc1c67b953458923e4a9a39c09f9bd21cbec954f342b9f051ad245`.
 These checks broaden read-audit coverage only. They do not authorize native
 Boolean-key edits or qualify cascades, shared-file behavior or Access execution.
-[Fixture provenance](../FIXTURES.md#original-boolean-relationship-inputs) records
+[Fixture provenance](FIXTURES.md#original-boolean-relationship-inputs) records
 all original file hashes, ownership and excluded capability probes.
 
 ```sh

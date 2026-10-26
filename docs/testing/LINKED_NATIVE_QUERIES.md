@@ -4,7 +4,7 @@ Reviewed 24 October 2026. Independent original getter records now exercise the
 Access adapter's explicit already-open source facade and the actual CLI
 `query run --link ALIAS PATH` consumer. This is bounded engineering read/query
 evidence, not native Access linked SQL, live cross-file snapshot or save evidence.
-The [inert metadata contract](../NATIVE_LINKED_TABLES.md) remains separate from
+The [inert metadata contract](../access/schema/NATIVE_LINKED_TABLES.md) remains separate from
 authorization to open targets.
 
 ## Original corpus and oracle
@@ -141,7 +141,7 @@ python3 docs/testing/compare_linked_cli.py \
 
 Fresh engineering generation uses `--generate` with new per-profile directories.
 Fresh CLI case additions use `--generate-case-copies`; ordinary replay writes no
-database. [Fixture provenance](../FIXTURES.md#original-explicit-linked-query-inputs)
+database. [Fixture provenance](FIXTURES.md#original-explicit-linked-query-inputs)
 records original pairs and controlled-copy boundaries. Native Access query
 comparisons, live cross-file coherence, authentication qualification, linked
 writes, automatic provider traversal and application save/reopen remain separate.

@@ -172,7 +172,7 @@ Copy its compiler-reported `native` executable before rebuilding current with
 the same flags, lockfile and toolchain. Record the baseline JSON keys
 `source_commit`, `binary_sha256`, `cargo_lock_sha256`, `rustc` and `build`.
 Generate `Index-V2016.accdb` with [the original recipe](IndexFixture.java) and the
-reviewed Jackcess artifact in [FIXTURES.md](../FIXTURES.md). Finish all compilation
+reviewed Jackcess artifact in [FIXTURES.md](FIXTURES.md). Finish all compilation
 and independent checks before invoking [the runner](benchmark_scans.py):
 
 ```sh
@@ -264,7 +264,7 @@ to a weaker read as a speedup claim.
 
 The generated ACE case has large scheduling outliers; all samples, memory
 summaries and input/binary hashes remain in the [report](results/checks-2026-10-18.json).
-These are bounded structural/row checks with [explicit gaps](../NATIVE_CHECKS.md),
+These are bounded structural/row checks with [explicit gaps](../access/NATIVE_CHECKS.md),
 not whole-database integrity or Microsoft Access qualification.
 
 ```sh
@@ -356,7 +356,7 @@ not the new native/date implementations. Keep its executable separate from the
 current build. Resolve the local development edge once, then retain its lockfile.
 
 Run the original Java index recipe for optional fresh V2000/V2007 inputs as
-documented in [NATIVE_INDEXES.md](../NATIVE_INDEXES.md). Never overwrite a registered
+documented in [NATIVE_INDEXES.md](../access/indexes/NATIVE_INDEXES.md). Never overwrite a registered
 fixture or run application content. Then invoke the comparison runner:
 
 ```sh
@@ -419,7 +419,7 @@ selected-row counts before timing. Inputs are the original generated 1,000-row
 Jet 4/ACE index fixtures. PrimaryKey selects ID 0 through 9 (ten rows); CategoryDesc
 selects Category = 0 (101 rows). This measures the native reader, not query planning
 or CLI startup. It omits validation of skipped pages on the seek path, as described
-in [native index limits](../NATIVE_INDEXES.md#native-int32-range-selections).
+in [native index limits](../access/indexes/NATIVE_INDEXES.md#native-int32-range-selections).
 
 | Input / index | Full snapshot + filter | Seek | Ratio of means |
 | --- | --- | --- | --- |
@@ -549,7 +549,7 @@ outliers and inconsistent wall deltas preclude a general speed/parity claim.
 All samples, memory and instruction/cycle counters remain in the report.
 
 The existing runner accepts `--boolean-ace` and `--floating-ace` for the original
-inert recipes in [FIXTURES.md](../FIXTURES.md). New full-read cases compare the
+inert recipes in [FIXTURES.md](FIXTURES.md). New full-read cases compare the
 same current executable's sequential/indexed APIs; existing controls compare
 before/current executables. Source test debug-symbol reductions do not change
 this release benchmark profile.
@@ -582,7 +582,7 @@ current, and 1,000-row Int32 indexed reads 0.534/0.537 ms. These medians are
 observations, not a speed/parity guarantee. All instruction/cycle and memory
 counters remain in the report. The runner's `--date-ace` option uses the original
 DATE recipe; exact serial ordering and residual civil semantics have separate
-correctness comparisons in [FIXTURES.md](../FIXTURES.md).
+correctness comparisons in [FIXTURES.md](FIXTURES.md).
 
 ## Single-Decimal index measurements
 
@@ -610,7 +610,7 @@ they validate the entire tree and fetch referenced rows. Existing Int32 controls
 are 0.0833/0.0841 ms before/current for 38 rows and 0.542/0.539 ms for 1,000 rows.
 These close observations do not establish a speed/parity guarantee. Samples,
 memory and instruction/cycle counters stay in the report. The runner accepts
-`--decimal-ace` for the original recipe in [FIXTURES.md](../FIXTURES.md); precision,
+`--decimal-ace` for the original recipe in [FIXTURES.md](FIXTURES.md); precision,
 scale and exact native key/reference correctness have separate comparisons.
 
 ## Indexed root-page reuse
@@ -695,7 +695,7 @@ instruction counters remain in the report; no general speed/parity claim follows
 
 The runner accepts `--decimal-composite-ace` for the original recipe. Exact scales,
 typed ordering, complete constraints and immutable inputs have separate
-[fixture comparisons](../FIXTURES.md#original-ace-16-decimal-tuple-index-inputs).
+[fixture comparisons](FIXTURES.md#original-ace-16-decimal-tuple-index-inputs).
 
 ### Separate column-set follow-up
 

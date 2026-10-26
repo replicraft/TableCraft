@@ -49,7 +49,7 @@ opens read-only with expression evaluation disabled and now formats byte arrays
 as exact hexadecimal values. [The runner](compare_binary_indexes.py) checks tagged
 indexed rows, complete/projected CLI queries and table-check coverage, plus explicit
 refusals: eighteen controls per profile, seventy-two total. Hashes remain unchanged;
-[fixture records](../FIXTURES.md#native-binary-index-inputs) retain their identities.
+[fixture records](FIXTURES.md#native-binary-index-inputs) retain their identities.
 
 Synthetic tests cover all four profiles, typed seek refusal, padding damage,
 key/row disagreement and the write gate. Codec goldens and fixed-seed generated

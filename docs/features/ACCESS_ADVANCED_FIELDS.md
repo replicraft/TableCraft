@@ -4,10 +4,10 @@ Status: inert field-feature metadata, raw child scalar storage and explicit stor
 scalar calculation inspection are implemented. Scoped raw parent/child links and
 bounded original attachment decoding are also available. Explicit mixed
 scalar/multivalue pages and optionally cached results are available through the
-[browsing API](../CLI_BROWSING.md#explicit-multivalue-cells). Full collection/query
+[browsing API](../cli/CLI_BROWSING.md#explicit-multivalue-cells). Full collection/query
 semantics, calculated evaluation and editing
 remain future requirements. Current core values represent
-scalars. [Backend-neutral scalar multivalue query expansion](../MULTIVALUE_QUERIES.md)
+scalars. [Backend-neutral scalar multivalue query expansion](../query/collections/MULTIVALUE_QUERIES.md)
 now binds and executes explicit `.Value` projections/grouping over host collection
 views. Qualified native stored values now connect through explicit
 `query run --database PATH --multivalues`; a field editor remains unimplemented;
@@ -175,13 +175,13 @@ and all ACE writes remain separate work.
 
 ## Explicit stored scalar calculations
 
-An explicit [row-local calculation preview](../CALCULATION_PREVIEWS.md) can now
+An explicit [row-local calculation preview](../access/calculations/CALCULATION_PREVIEWS.md) can now
 prepare/evaluate admitted stored formulas against ordinary same-table fields.
 It returns separately named recomputed results without replacing cached values,
 coercing to their declared carrier or establishing freshness/native compatibility.
 Ordinary query eligibility and the inert cached browsing path below remain unchanged.
 
-The explicit [cached browsing profile](../CLI_BROWSING.md#explicit-stored-calculations)
+The explicit [cached browsing profile](../cli/CLI_BROWSING.md#explicit-stored-calculations)
 now composes these qualified stored results with ordinary scalar fields in one
 physical page. `StoredTablePage` retains the inert declarations and per-column
 cached markers; `rows --stored-calculations` labels headers `[cached]`.
@@ -222,9 +222,9 @@ synthetic CI retains the valid escaped form and arbitrary Unicode after an
 ordinary uncompressed prefix.
 Unknown types, flags, capacities, wrappers, encodings and lengths fail without a
 partial result. Extended-date calculations and error caches remain unqualified.
-[Cached Long Text calculations](../CACHED_MEMO_CALCULATIONS.md) now resolve observed
+[Cached Long Text calculations](../access/calculations/CACHED_MEMO_CALCULATIONS.md) now resolve observed
 MEMO long-value storage before unwrapping and decoding the cached Text.
-[Cached Decimal calculations](../CACHED_DECIMAL_CALCULATIONS.md) now admit the
+[Cached Decimal calculations](../access/calculations/CACHED_DECIMAL_CALCULATIONS.md) now admit the
 observed Numeric wrapper separately, with self-described effective scale and
 strict geometry independent of ordinary Decimal declarations.
 
@@ -332,7 +332,7 @@ fixed-seed generated files. No native Access oracle has run.
 References: the reviewed Jackcess 5.0.4 AttachmentColumnInfoImpl artifact,
 [its source reference](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/complex/AttachmentColumnInfoImpl.java),
 and the [flate2 streaming API](https://docs.rs/flate2/1.1.10/flate2/struct.Decompress.html).
-No upstream implementation was copied. [Dependency records](../DEPENDENCIES.md#native-attachment-compression)
+No upstream implementation was copied. [Dependency records](../development/DEPENDENCIES.md#native-attachment-compression)
 and [native benchmarks](../testing/NATIVE_BENCHMARKS.md) own adoption/measurement.
 
 ## Bounded stored multivalue collections
@@ -364,9 +364,9 @@ hint with matching qualified child metadata. It does not introduce a nine-byte
 record decoder or relax the ordinary Decimal scalar profile. Unknown hints,
 nonempty conceptual templates and incompatible children fail explicitly.
 
-ACE 2007 now has independent [raw-link and exact-collection evidence](../FIXTURES.md#ace-2007-complex-key-and-multivalue-inputs),
+ACE 2007 now has independent [raw-link and exact-collection evidence](../testing/FIXTURES.md#ace-2007-complex-key-and-multivalue-inputs),
 including the same conceptual hint and fixed Int32 child foreign-key layout.
-Typed attachments/history now have separate [ACE 2007 qualification evidence](../FIXTURES.md#ace-2007-stored-attachment-and-history-inputs); cached
+Typed attachments/history now have separate [ACE 2007 qualification evidence](../testing/FIXTURES.md#ace-2007-stored-attachment-and-history-inputs); cached
 calculations retain their ACE 16 gates. The raw primitive by itself does not
 qualify additional semantics.
 Ordinary nine-byte Decimal storage, Large Number fields and `.Value` SQL semantics
@@ -382,7 +382,7 @@ retrieval and exported implementation metadata with expression evaluation disabl
 [Comparison](../testing/compare_multivalues.py) matches 32 parent collections and
 137 stored values per V2016/V2019 family, rejects 12 corrupt disposable copies
 without output, and rechecks the earlier Text/attachment/history inputs. Original
-hashes remain unchanged and recorded in [provenance](../FIXTURES.md#original-ace-16-multivalue-collection-inputs).
+hashes remain unchanged and recorded in [provenance](../testing/FIXTURES.md#original-ace-16-multivalue-collection-inputs).
 
 Seven CI tests add exact Large Number collections, typed template/profile guards,
 strict Decimal hints, 100/101 boundaries, immutable source bytes, resource/
@@ -438,7 +438,7 @@ mutations cover all-NULL metadata, late missing payload/checksum failure, unknow
 template flags/names and orphan references. Valid NULL/corrupt-wrapper metadata
 still matches the independent getter; explicit decoding fails without stdout,
 including after earlier files were decoded. Other collection types are rejected.
-Original hashes remain unchanged in [provenance](../FIXTURES.md#original-ace-16-attachment-payload-fixtures).
+Original hashes remain unchanged in [provenance](../testing/FIXTURES.md#original-ace-16-attachment-payload-fixtures).
 Both typed collection comparisons discover the generated hidden version-history
 column through resolved declarations and reject that actual collection as well
 as the visible ordinary Notes Memo field; the two are not interchangeable.
@@ -450,7 +450,7 @@ checks. The engineering `attachment_data` example now uses the typed reader;
 its `--metadata` mode emits encoded data, while its default decoded output still
 matches all 65,810 original bytes/profile. Native Access, collection mutation,
 large streaming payloads, full native query expansion and host extraction remain unqualified.
-Explicit TableCraft [decoded query views](../NATIVE_QUERIES.md#explicit-decoded-attachment-values)
+Explicit TableCraft [decoded query views](../access/queries/NATIVE_QUERIES.md#explicit-decoded-attachment-values)
 now compose those original bytes with aligned metadata under a separate opt-in;
 they do not qualify native SQL FileData representation.
 All ACE writes stay blocked.
@@ -505,7 +505,7 @@ equal-time control observes its reversed identity order without assigning that
 policy to TableCraft. Six corrupt disposable copies fail without stdout for
 reference, template, hidden-marker and Memo-name binding violations. An additional
 NULL timestamp mutation still matches raw reference storage. Original populated
-history controls and hashes remain unchanged in [provenance](../FIXTURES.md#original-ace-16-stored-version-history-inputs).
+history controls and hashes remain unchanged in [provenance](../testing/FIXTURES.md#original-ace-16-stored-version-history-inputs).
 
 Five CI tests add strict source/profile/template guards, template reordering,
 NULL parent references, orphan rejection, exact representation/storage order,
@@ -514,7 +514,7 @@ The synthetic UTF-16 generator keeps its first bytes outside the reserved native
 compressed-text header, while retaining arbitrary Unicode suffixes; its seed is
 kept as a fixture-encoding guard. The engineering `table_data --version-history MEMO`
 mode accepts the visible name and conflicts with index/calculation/multivalue
-modes. Explicit [stored-history query members](../STORED_HISTORY_QUERIES.md) now
+modes. Explicit [stored-history query members](../access/collections/STORED_HISTORY_QUERIES.md) now
 reuse these checked records and their actual hidden/value/modified field names.
 Current-value reconciliation, default chronological history
 ordering, append/update/delete semantics, actual Access and application save/reopen
@@ -539,7 +539,7 @@ metadata and encoded lengths; `--version-history MEMO` reports exact stored
 versions. Both retain complete checked snapshots and show scoped membership plus
 raw legacy DATE bits. Neither activates content, decodes attachments implicitly,
 selects latest history, or changes ordinary scalar query/row profiles.
-See the [CLI contract](../CLI_BROWSING.md#stored-attachments-and-memo-history).
+See the [CLI contract](../cli/CLI_BROWSING.md#stored-attachments-and-memo-history).
 The existing independent attachment/history runners check these CLI views too.
 
 
@@ -554,7 +554,7 @@ API now wraps the same page engine under its existing restricted policy.
 History still binds a qualified visible Memo and hidden key, and attachment
 wrappers remain encoded. No SQL scalar coercion, implicit decoding or latest-value
 selection is introduced. Shared browsing and `rows --collections` consume this
-[typed page contract](../CLI_BROWSING.md#mixed-scalar-and-stored-collection-pages).
+[typed page contract](../cli/CLI_BROWSING.md#mixed-scalar-and-stored-collection-pages).
 
 ## Attachment metadata SQL
 
@@ -564,11 +564,11 @@ views. One attachment contributes its matching fields together; no cross-product
 is taken within that child record. Metadata binding reads no user records;
 execution uses complete bounded attachment snapshots and retains encoded payloads.
 `FileData` also exposes exact stored Binary under this opt-in, preserving the
-encoded envelope. [Stored attachment data](../STORED_ATTACHMENT_DATA.md) documents
+encoded envelope. [Stored attachment data](../access/collections/STORED_ATTACHMENT_DATA.md) documents
 the physical declaration/getter evidence and explicit decoded alternative. Native
 SQL/DAO byte equivalence, implicit extraction/decoding and native Access semantic
 qualification remain pending. See the
-[query contract](../NATIVE_QUERIES.md#attachment-metadata-member-queries).
+[query contract](../access/queries/NATIVE_QUERIES.md#attachment-metadata-member-queries).
 
 ## Explicit stored-history SQL views
 
@@ -577,6 +577,6 @@ their actual resolved hidden field names. Text and modified-time references stay
 aligned to one complete checked snapshot; the visible current Memo remains an
 independent scalar. Binding reads metadata only, Text policies come from the flat
 member, and unsupported/malformed shapes retain the strict history guards.
-See [stored-history query contracts](../STORED_HISTORY_QUERIES.md) for discovery,
+See [stored-history query contracts](../access/collections/STORED_HISTORY_QUERIES.md) for discovery,
 examples, resource/cancellation and cache boundaries. This engineering view does
 not establish native Access SQL equivalence or latest-value semantics.

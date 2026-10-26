@@ -13,7 +13,7 @@ keeps this replay separate from its 47 scoped Rust tests.
 This is codec and strict round-trip engineering evidence. It does not establish
 Microsoft Access execution, Windows NLS behavior, native default code pages,
 best-fit conversion or performance. The implementation contract remains in
-[JAPANESE_STRING_ENCODING.md](../JAPANESE_STRING_ENCODING.md).
+[JAPANESE_STRING_ENCODING.md](../expressions/text/JAPANESE_STRING_ENCODING.md).
 
 ## Original tools and private reference data
 

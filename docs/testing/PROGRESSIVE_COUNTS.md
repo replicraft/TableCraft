@@ -12,7 +12,7 @@ No benchmark or full-backend compatibility claim follows from these results.
 
 This replay reuses the four unchanged originals registered in
 [Decimal index evidence](DECIMAL_INDEX_SELECTIONS.md#original-inputs-and-independent-model)
-and [fixture provenance](../FIXTURES.md#original-exact-decimal-equality-selection-replay-inputs).
+and [fixture provenance](FIXTURES.md#original-exact-decimal-equality-selection-replay-inputs).
 No new database files or third-party fixtures were introduced. The original MIT
 [DecimalIndexFixture.java](DecimalIndexFixture.java) uses public Jackcess builders;
 [IndexRowsOracle.java](IndexRowsOracle.java) reopens files read-only and returns

@@ -6,7 +6,7 @@ ACE16-family V2016/V2019 files. All 1,899 pinned hashes remain unchanged before
 and after execution, including the complete 1,885-file frozen Rust inventory.
 There are 34 successful commands and 16 classified refusals.
 
-This verifies the explicit [same-table dependency preview](../CALCULATION_PREVIEWS.md#same-table-calculated-dependencies)
+This verifies the explicit [same-table dependency preview](../access/calculations/CALCULATION_PREVIEWS.md#same-table-calculated-dependencies)
 against ordinary stored getters and an independent model. It does not qualify
 Microsoft Access intermediate conversion rules, certify freshness, replace caches
 or make calculated columns ordinary query inputs.

@@ -6,7 +6,7 @@ or general engine throughput qualification.
 
 ## Correctness and allocation behavior
 
-The ACE 16/ACE 2007 [larger stored-object corpus](../FIXTURES.md#larger-attachment-and-stored-history-inputs)
+The ACE 16/ACE 2007 [larger stored-object corpus](FIXTURES.md#larger-attachment-and-stored-history-inputs)
 now checks every encoded metadata field, decoded byte and stored history DATE
 bit for 20,000 attachments and 20,000 versions per input. Thirty-three independent
 controls pass. Four new native tests check shared workspace accounting, corruption/

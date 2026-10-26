@@ -1,7 +1,7 @@
 //! Shared vocabulary independent of database codecs, GUI and network runtimes.
 //!
 //! These are in-memory contracts, not Rust layouts to write into database files.
-//! See the repository's `docs/CORE_TYPES.md` for sources and supported boundaries.
+//! See the repository's `docs/foundation/CORE_TYPES.md` for sources and supported boundaries.
 //!
 //! The optional `serde` feature supports scalar value exchange with validation
 //! on decode. It does not serialize runtime state or define an external protocol.

@@ -53,16 +53,17 @@ from listings by default; add `--show-system` to `tables` or `inspect --catalog`
 to include them. Commands that read encrypted
 files prompt for a password when needed; `-p` / `--password` is also available.
 
-See the [CLI guide](docs/CLI.md) for saved queries, multivalue fields, encryption,
+See the [CLI guide](docs/cli/CLI.md) for saved queries, multivalue fields, encryption,
 streaming and resource controls.
 
 ## Documentation
 
+- [Documentation index](docs/README.md)
 - [Compatibility and support tiers](docs/COMPATIBILITY.md)
 - [Backend roadmap](docs/ROADMAP.md)
 - [Implementation status](docs/IMPLEMENTATION.md)
-- [Development](docs/DEVELOPMENT.md)
-- [Releasing the CLI](docs/RELEASING.md)
+- [Development](docs/development/DEVELOPMENT.md)
+- [Releasing the CLI](docs/development/RELEASING.md)
 
 ## License
 

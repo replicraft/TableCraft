@@ -39,7 +39,7 @@ hyperfine --warmup 2 --runs 7 --export-json /tmp/tablecraft-currency-hyperfine.j
 
 Independent exact binary-rational property tests, Decimal bounds/ties and Currency
 identity tests accompany the kernel. Native scalar input regressions are recorded
-in [FIXTURES.md](../FIXTURES.md#explicit-currency-conversion-read-regression).
+in [FIXTURES.md](FIXTURES.md#explicit-currency-conversion-read-regression).
 Neither this benchmark nor those independent models qualify Microsoft Access/OleAut
 rounding, locale conversions or native query behavior. See the
-[expression contract](../EXPRESSIONS.md#explicit-currency-conversion).
+[expression contract](../expressions/EXPRESSIONS.md#explicit-currency-conversion).

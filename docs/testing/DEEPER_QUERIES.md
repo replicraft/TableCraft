@@ -1,6 +1,6 @@
 # Deeper compound-query replay
 
-The [explicit binding-depth implementation](../QUERY_BINDING_LIMITS.md) is exercised
+The [explicit binding-depth implementation](../query/QUERY_BINDING_LIMITS.md) is exercised
 by the original [replay runner](compare_deeper_queries.py) over literal constructors
 and unchanged native stored fields. Only TableCraft executes SQL; exact Python
 Fraction/IEEE relations and independent Jackcess getters supply expected values.

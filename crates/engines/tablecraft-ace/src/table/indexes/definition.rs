@@ -13,7 +13,7 @@ use crate::{
 use arrayvec::ArrayVec;
 use tablecraft_schema::SchemaName;
 
-// Jet 4 / initial ACE definition facts: pinned references in NATIVE_INDEXES.md.
+// Jet 4 / initial ACE definition facts: pinned references in docs/access/indexes/NATIVE_INDEXES.md.
 const PHYSICAL_BYTES: usize = 52;
 const LOGICAL_BYTES: usize = 28;
 const KEY_START: usize = 4;

@@ -41,15 +41,15 @@ ACE engine releases do not map one-to-one to file-layout codes. In particular,
 Access 2013 can use the ACE 2010-family layout; that does not establish a distinct
 implemented ACE 15 header profile. Actual subversions, field types, indexes,
 encryption and application features still require their own evidence. The
-[native target matrix](NATIVE_READING.md#compatibility-targets) and
-[ACE 16 profile](NATIVE_ACE16.md) provide the detailed boundaries.
+[native target matrix](access/NATIVE_READING.md#compatibility-targets) and
+[ACE 16 profile](access/profiles/NATIVE_ACE16.md) provide the detailed boundaries.
 
 Qualified encrypted reads and fresh encryption rewrite copies are separate from
 general table mutation. Explicit cached calculation reads do not execute formulas;
 recomputed views use a separate opt-in query service. Stored collections are not
 VBA arrays, and lookup labels do not authorize stored RowSource execution.
-See [encryption](NATIVE_ENCRYPTION.md), [advanced fields](features/ACCESS_ADVANCED_FIELDS.md),
-[multivalue queries](MULTIVALUE_QUERIES.md) and [native writes](NATIVE_WRITES.md).
+See [encryption](access/storage/NATIVE_ENCRYPTION.md), [advanced fields](features/ACCESS_ADVANCED_FIELDS.md),
+[multivalue queries](query/collections/MULTIVALUE_QUERIES.md) and [native writes](access/writes/NATIVE_WRITES.md).
 
 ## Runtime, compiled and packaged files
 
@@ -66,7 +66,7 @@ filesystem writes, target opens or active-content execution. Larger qualified
 packages can use explicitly bounded temporary spooling; defaults and native,
 query and output limits still apply. See the
 [distribution contract](features/ACCESS_DISTRIBUTION.md),
-[templates](ACCESS_TEMPLATES.md) and [stored template data](ACCESS_TEMPLATE_DATA.md).
+[templates](access/containers/ACCESS_TEMPLATES.md) and [stored template data](access/containers/ACCESS_TEMPLATE_DATA.md).
 
 ## SQLite is a separate backend
 
@@ -74,7 +74,7 @@ Existing SQLite files can supply bounded ordinary scalar tables through
 `query run --sqlite PATH`. Access SQL is evaluated by TableCraft, not delegated
 to SQLite. The adapter is read-only and does not create files, edit schemas,
 load extensions or implement complete Access-to-SQLite conversion. Its type,
-object and snapshot limits are documented in [SQLITE.md](SQLITE.md).
+object and snapshot limits are documented in [SQLITE.md](backends/SQLITE.md).
 
 ## What the evidence establishes
 
@@ -86,7 +86,7 @@ compatibility gaps rather than completed features. Current CLI commands do not
 implement Access forms/reports, a VBA runtime or a GUI.
 
 Reads and queries remain the immediate native backend priority before wider
-writes. The [read/query acceptance gates](READ_QUERY_ACCEPTANCE.md),
-[native checks](NATIVE_CHECKS.md), [fixture provenance](FIXTURES.md) and
+writes. The [read/query acceptance gates](testing/READ_QUERY_ACCEPTANCE.md),
+[native checks](access/NATIVE_CHECKS.md), [fixture provenance](testing/FIXTURES.md) and
 [roadmap](ROADMAP.md) distinguish working services from remaining implementation
-and qualification. Use the [CLI guide](CLI.md) for current command examples.
+and qualification. Use the [CLI guide](cli/CLI.md) for current command examples.

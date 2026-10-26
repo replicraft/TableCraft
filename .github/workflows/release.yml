@@ -14,7 +14,7 @@ on:
       - 'Cargo.toml'
       - 'Cargo.lock'
       - 'rust-toolchain.toml'
-      - 'docs/RELEASING.md'
+      - 'docs/development/RELEASING.md'
       - 'docs/releases/**'
   workflow_dispatch:
 

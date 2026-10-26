@@ -29,12 +29,12 @@ revision, not from concurrently changing live files.
 The report and runner retain commands, hashes, cardinalities and refusal details.
 The runner requires a fresh report path and the four registered original hashes;
 replay it using the recorded CLI, reviewed reader and input arguments. Original
-bytes and provenance remain in [FIXTURES.md](../FIXTURES.md). No new binary
+bytes and provenance remain in [FIXTURES.md](FIXTURES.md). No new binary
 fixtures or dependencies were adopted.
 
 This corpus covers ordinary non-null Int32 IDs. NULLs, duplicate IDs, other
 admitted integral carriers, paired descriptors, eager source failures,
 cancellation and resource failures have separate focused
-[implementation checks](../QUERY_EQUIJOINS.md). Text joins, compound predicates,
+[implementation checks](../query/QUERY_EQUIJOINS.md). Text joins, compound predicates,
 other carriers, general hash joins and native Access comparison remain outside
 this evidence.

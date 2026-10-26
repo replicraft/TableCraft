@@ -70,7 +70,7 @@ implementation, producer/oracle/runner, helper, original input, reference JAR an
 immutable executable hashes remain unchanged. The CLI SHA-256 is
 `36613d7cac56199e04337385e0fbdcebdfe425dc6fed592e463363f2710d3eca`.
 No native Access execution, Windows comparison or broader function admission is
-inferred. [Fixture provenance](../FIXTURES.md#original-text-call-validation-inputs)
+inferred. [Fixture provenance](FIXTURES.md#original-text-call-validation-inputs)
 records original hashes and excluded probes.
 
 ```sh

@@ -57,7 +57,7 @@ The report pins the original producer, reference JAR, immutable existing CLI,
 four databases and four complete tagged TSV logs. Text values in logs use UTF-8
 hex with a distinct NULL tag, retaining the empty/NUL distinction. No library
 implementation or external fixture is copied. The
-[fixture ledger](../FIXTURES.md#original-text-relationship-research-inputs)
+[fixture ledger](FIXTURES.md#original-text-relationship-research-inputs)
 records hashes and excluded capability probes. Native Access comparisons remain
 unrun; required write validation is not relaxed.
 

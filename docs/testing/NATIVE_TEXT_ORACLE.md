@@ -74,7 +74,7 @@ files before it becomes native evidence. Then implement/compare the appropriate
 TableCraft full-string policy across each operation. DISTINCT representative
 values and grouping equivalence need semantic comparison rather than assuming
 one arbitrarily chosen case spelling. No native query collation is enabled by
-this recipe. See [the full-string boundary](../NATIVE_TEXT.md#full-string-sql-qualification-boundary).
+this recipe. See [the full-string boundary](../access/indexes/NATIVE_TEXT.md#full-string-sql-qualification-boundary).
 
 ## Replay against TableCraft
 
@@ -93,7 +93,7 @@ from the database or reinterpret the captured literal SQL. No new runtime policy
 is introduced. Native capture/replay remains unrun locally.
 The CLI now also accepts explicit `general-legacy`/`general-2010` provisional
 policies; replay can select those without altering native evidence. See the
-[General policy boundary](../NATIVE_TEXT.md#general-query-policy).
+[General policy boundary](../access/indexes/NATIVE_TEXT.md#general-query-policy).
 
 Replay first validates the complete capture, then executes all 38 original SQL
 cases against both database phases, including the typed Text parameter. It

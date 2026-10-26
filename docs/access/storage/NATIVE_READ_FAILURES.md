@@ -1,0 +1,122 @@
+# Native read failure and continuation reliability
+
+Native page readers now check cancellation immediately after the host page decoder
+returns successfully, before interpreting or retaining its decoded buffer. This
+uses the existing cumulative controls without adding a page-work charge. Decoder
+errors still propagate directly. A decoder may mutate only the supplied local
+buffer; neither decoding nor failure handling changes the original source bytes.
+This is separate from raw exact-read completion checks in [I/O](../../foundation/IO.md).
+
+A successful callback can trigger cancellation before returning. Previously a
+subsequent page-signature check could report Malformed first. The new completion
+check reports Cancelled at that boundary, before traversal consumes decoded data.
+This does not interrupt a blocking callback or replace host timeout ownership.
+
+## Cursor guarantees
+
+A source-bound scalar cursor can have delivered earlier successful batches when
+its next fetch fails. It publishes none of the failed batch, retains its last
+successfully delivered position, and becomes terminal. Subsequent next_page and
+into_snapshot requests return CursorFailed without I/O or refunded work. Even if
+physical traversal consumed part of the failing suffix, that suffix cannot become
+a complete table snapshot. Invalid request ranges retain their distinct existing
+nonterminal validation behavior.
+
+Explicit [streaming CLI output](../../cli/STREAMING_ROWS.md) can retain earlier published
+batches. Buffered snapshots and ordinary queries remain unpublished until complete
+EOF/count validation. A fresh explicit query source retry must start from the
+beginning; it cannot reuse incomplete caches. Existing adapter tests retain that
+contract. None of these guarantees establishes coherence against a live,
+noncooperating Access writer; stable/offline inputs remain required.
+
+## Verification
+
+The original table_pages/faults tests use generated 403-row, three-data-page
+inputs under the Jet 4, ACE 2007 and ACE 2016/2019 read profiles. After a successful
+one-row prefix, each remaining read/seek/page-hook callback is failed in turn.
+Injected cases cover sanitized I/O errors, premature EOF, impossible read counts,
+wrong reported absolute seek positions, decoder errors and decoder-triggered
+cancellation after altering its local buffer. Each failure discards the pending
+suffix, preserves the delivered position, closes continuation and retains charges.
+All callback counts and original bytes are checked; no native fixture is modified.
+
+Separate controls deliver complete 403-row results under 1-, 17- and 4,095-byte
+short reads with recurring Interrupted callbacks, using one cumulative allowance
+through all 127-row batches. Persistent Interrupted callbacks exhaust explicit
+work and close continuation without automatic retry using a fresh budget.
+
+These are adversarial host-I/O and synthetic native-framing checks. They do not
+qualify a new encrypted codec, concurrent-file snapshot, allocation repair,
+native Access save/reopen or Windows behavior. Broader storage/scale acceptance
+remains in [the read/query checklist](../../testing/READ_QUERY_ACCEPTANCE.md).
+
+
+## Maximum-width malformed suffixes
+
+The wide_rows integration slice independently builds chained 255-column
+metadata and three wide binary rows under all four priority layouts. It checks
+complete, ID-only and empty projected cursors. After delivering one good row, a
+fetch containing another good row followed by malformed framing fails without
+publishing either pending row. The delivered position remains one; subsequent
+fetch/materialization returns CursorFailed without I/O or budget changes.
+
+Faults cover high-slot descending offsets, offsets outside the variable payload,
+a first offset before fixed storage, variable counts above the schema ceiling
+and future logical row counts. Positive controls retain high null-mask bits and
+all 254 variable values through one-row batches. These tests validate required
+framing; they do not promote unselected payloads to checked values. An initial
+negative expectation used a shortened variable tail, which is not universally
+invalid framing for a projection; the test was corrected to exceed the schema's
+variable ceiling rather than broaden production admission.
+
+[Original independent location reporting](../../testing/WideRowLocationOracle.java)
+identifies the last appended row in the registered maximum-width inputs. The
+[corrupted-copy runner](../../testing/compare_wide_row_failures.py) changes only fresh
+temporary copies. Across two tables/four profiles/five faults it passes 280 CLI
+controls: buffered rows, wildcard/ID/COUNT(*)/indexed queries fail with empty
+stdout; full and ID-only streaming retain exactly the preceding valid rows.
+Original and derivative hashes remain unchanged during all reads. Independent
+getters locate targets only; they do not qualify SQL or native Access behavior.
+
+
+## Interrupted seeks and length observations
+
+Native length observations and absolute read/write positioning now use the
+[bounded seek helpers](../../foundation/IO.md#interrupted-absolute-seeks). Only Interrupted errors
+retry the same target; permanent errors and invalid reported absolute positions
+retain direct refusal. Completion cancellation is checked before data I/O or
+header-prefix charging. No allowance is reset and original bytes stay unchanged.
+
+The native fault matrix now cancels each successful remaining seek after a
+one-row prefix. Mixed short reads/recurring seek interruptions complete all 403
+rows across Jet 4 and ACE 2007/2016/2019 layouts, even when a failed seek moves the
+cursor. Persistent interrupted seeks exhaust the explicit suffix budget, publish
+none of that suffix, preserve the delivered position and leave continuation
+terminal. Header and complete-image controls separately cover End(0) replay,
+completion cancellation, bounded persistent interruption and unchanged images.
+These controls add storage-failure evidence, not coherent live-file snapshots or
+new native write permissions.
+
+
+## Cursor reads at the 2 GiB source boundary
+
+The original `table_pages/large_sources` controls expose a virtual 2 GiB source
+with a small catalog/schema prefix and two actual data pages at the final physical
+page positions. Reads of the unused hole fail instead of silently supplying zero
+bytes. This checks absolute seeks and native direct-map base arithmetic through
+complete, Score-only and empty projected cursors without allocating a 2 GiB image
+or performing a whole-file scan. Exact independently authored Int32 rows survive
+one-row batches under a 256 KiB cumulative allowance; each tail page is read once.
+
+Across Jet 4 and ACE 2007/2016/2019 profiles, a failed final-page read preserves the
+one-row delivered position, makes the cursor terminal and leaves later requests
+without extra work. Complete buffered materialization also refuses both I/O failure
+and a mismatched physical page owner after reading a good prefix. A usage-map bit
+past the final source page is rejected before any tail reads; a source one page
+above the 2 GiB ceiling is rejected after only its header prefix.
+
+Five tests cover 32 profile/projection/failure scenarios. This is synthetic
+high-offset traversal and publication evidence, not million-row throughput, a
+multi-GiB native-authored database, concurrent-file coherence or native Access
+qualification. The ordinary snapshot, image-capture and encryption-management
+ceilings are unchanged.

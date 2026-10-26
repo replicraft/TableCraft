@@ -1,9 +1,9 @@
 # Transaction ownership
 
 Accepted boundaries; general begin/commit/rollback contracts are not implemented.
-Current [DB snapshots/edit planning](../DB.md),
-[offline native reads](../NATIVE_TRANSACTIONS.md) and optional
-[image journals](../IMAGE_JOURNAL.md) retain their documented limits. The image
+Current [DB snapshots/edit planning](../foundation/DB.md),
+[offline native reads](../access/writes/NATIVE_TRANSACTIONS.md) and optional
+[image journals](../foundation/IMAGE_JOURNAL.md) retain their documented limits. The image
 journal is not evidence of native Access recovery or mixed-client safety.
 
 | Owner | Responsibility |

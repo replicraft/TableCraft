@@ -5,8 +5,8 @@ supported database headers independently of the filename extension. CLI regressi
 exercise discovery/counts, rows, SELECT and inspection under `.accdr`, `.accde`
 and `.mde` names without modifying their bytes. These use renamed ordinary
 fixtures, not Access-produced compiled projects. No signature verifier,
-compiled-project author is implemented. Bounded [ACCDT package inspection](../ACCESS_TEMPLATES.md)
-and [generic Object table reading](../ACCESS_TEMPLATE_DATA.md) are available. A bounded CAB deployment
+compiled-project author is implemented. Bounded [ACCDT package inspection](../access/containers/ACCESS_TEMPLATES.md)
+and [generic Object table reading](../access/containers/ACCESS_TEMPLATE_DATA.md) are available. A bounded CAB deployment
 reader now feeds native reads; its qualification is described below. Extensions identify
 candidates, not proven file content.
 

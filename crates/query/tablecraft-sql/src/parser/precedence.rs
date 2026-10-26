@@ -1,4 +1,4 @@
-//! Access binding powers; only relative order matters (see SQL_PARSER.md).
+//! Access binding powers; only relative order matters (see docs/query/SQL_PARSER.md).
 pub(super) const IMPLICATION: u8 = 11;
 pub(super) const EQUIVALENCE: u8 = 12;
 pub(super) const XOR: u8 = 13;

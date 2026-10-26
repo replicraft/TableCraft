@@ -20,24 +20,24 @@ features.
 TableCraft currently has a CLI package, `tablecraft-cli`, at
 `apps/tablecraft-cli`, and the shared library `tablecraft-core`
 at `crates/foundation/tablecraft-core`. `crates/query/tablecraft-sql` provides a bounded, syntax-only Access
-query parser; its supported syntax is in [SQL_PARSER.md](docs/SQL_PARSER.md).
+query parser; its supported syntax is in [SQL_PARSER.md](docs/query/SQL_PARSER.md).
 `crates/query/tablecraft-expressions` implements the explicit scalar profile in
-[EXPRESSIONS.md](docs/EXPRESSIONS.md); do not infer complete Variant promotion,
+[EXPRESSIONS.md](docs/expressions/EXPRESSIONS.md); do not infer complete Variant promotion,
 collation or native compatibility from it.
 `tablecraft-schema` owns the shared names, declared scalar type constraints and
-explicit policies in [SCHEMA.md](docs/SCHEMA.md). Consumer limits and SQL syntax
+explicit policies in [SCHEMA.md](docs/foundation/SCHEMA.md). Consumer limits and SQL syntax
 lowering remain at their boundaries. `tablecraft-query` now binds
-and executes the read-only profile in [QUERY_EXECUTION.md](docs/QUERY_EXECUTION.md)
-over explicit host sources. Keep native I/O and application hosts out of that layer. Explicit [binding depth](docs/QUERY_BINDING_LIMITS.md)
+and executes the read-only profile in [QUERY_EXECUTION.md](docs/query/QUERY_EXECUTION.md)
+over explicit host sources. Keep native I/O and application hosts out of that layer. Explicit [binding depth](docs/query/QUERY_BINDING_LIMITS.md)
 defaults to 16 and can select up to 32; prepared plans retain their captured limit
 through runtime domains and progressive admission. Keep node/work/path ceilings independent.
 `tablecraft-sqlite` supplies read-only SQLite snapshots through `query run --sqlite`;
-follow [SQLITE.md](docs/SQLITE.md). Keep Access query evaluation in TableCraft,
+follow [SQLITE.md](docs/backends/SQLITE.md). Keep Access query evaluation in TableCraft,
 validate runtime carriers without coercion and retain the no-create/read-only
 boundary. Backend-neutral query code must not import either concrete adapter.
-`tablecraft-db` owns working [snapshot/edit contracts](docs/DB.md), consumed by
+`tablecraft-db` owns working [snapshot/edit contracts](docs/foundation/DB.md), consumed by
 the Access adapter. Keep row handles snapshot-local and concrete storage out of
-that crate. [Native edit plans](docs/NATIVE_WRITES.md) preserve all bytes outside
+that crate. [Native edit plans](docs/access/writes/NATIVE_WRITES.md) preserve all bytes outside
 qualified fixed Int32 patches; unsupported constraints/payloads block writes.
 The optional ACE 16 [engineering preview](docs/testing/ACE16_WRITE_PREVIEWS.md)
 returns a separate non-journalable candidate type. Keep it out of normal CLI/backend
@@ -49,7 +49,7 @@ clap's `Parser` derive. The CLI provides help, version, `query parse` output and
 `query eval` for source-free scalar SELECT expressions. Eval rejects clauses
 requiring query execution and buffers results before stdout.
 `query preview-calculation --database PATH TABLE COLUMN` explicitly invokes the
-[restricted row-local preview](docs/CALCULATION_PREVIEWS.md). Keep its natural
+[restricted row-local preview](docs/access/calculations/CALCULATION_PREVIEWS.md). Keep its natural
 `Recomputed` results separate from stored caches and declared result conversion;
 query-callable functions do not automatically belong in calculated-field formulas.
 Qualified same-table calculated dependencies expand only during explicit preview
@@ -57,13 +57,13 @@ preparation under cycle/structural/resource guards. Never substitute cached
 operands or coerce intermediate values to their stored ResultType implicitly.
 `query saved --database PATH NAME` reconstructs the
 qualified native SELECT/UNION/crosstab profiles without binding, source expansion or execution;
-follow [saved-query boundaries](docs/NATIVE_SAVED_QUERIES.md).
+follow [saved-query boundaries](docs/access/queries/NATIVE_SAVED_QUERIES.md).
 `query run --saved NAME --database PATH` explicitly executes qualified native
 saved SELECT/UNION/crosstab queries using the same source budget and evaluator; never activate them
 while inspecting files. Explicit retrieval can resolve named local SELECT/UNION sources
 under shared budgets, isolated parameter scopes and dependency-cycle checks.
-[Named crosstabs](docs/NAMED_CROSSTABS.md) with literal or qualified policy-independent
-constant IN headings now bind without scanning. Explicit `query run` now uses [execution-phase schema discovery](docs/NAMED_SCHEMA_DISCOVERY.md)
+[Named crosstabs](docs/query/NAMED_CROSSTABS.md) with literal or qualified policy-independent
+constant IN headings now bind without scanning. Explicit `query run` now uses [execution-phase schema discovery](docs/query/NAMED_SCHEMA_DISCOVERY.md)
 for qualified relational named dependencies whose schemas need parameters, policies
 or data. It retains complete per-run results under one query budget; standalone
 prepare remains metadata-only. Parameterless runtime domain targets can initiate
@@ -71,11 +71,11 @@ or reuse the same discovery; transitive parameter declarations remain refused.
 Inline TRANSFORM sources remain unsupported. Binding must not scan rows to invent their schema. `query run` uses the
 retrieval layer for inline rows, typed parameters and explicitly chosen collation.
 Explicit SQL external `IN` and per-table database sources use the metadata-only host contract in
-[EXTERNAL_QUERY_SOURCES.md](docs/EXTERNAL_QUERY_SOURCES.md). Capture exact selectors
+[EXTERNAL_QUERY_SOURCES.md](docs/query/EXTERNAL_QUERY_SOURCES.md). Capture exact selectors
 and immutable binding/revision keys, revalidate before scans, and retain actual
 target metadata and callbacks through discovery. Nested SELECTs choose their own
 namespace; root named/domain ownership remains explicit. Qualified
-[external named queries](docs/EXTERNAL_NAMED_QUERIES.md) now inherit their selected
+[external named queries](docs/query/EXTERNAL_NAMED_QUERIES.md) now inherit their selected
 definition namespace for local/nested/domain references. Keep cache and cycle
 identities scoped, retain owner bindings before discovery scans, and restore
 caller ownership on errors. Explicit IN always uses the operation root's authorized
@@ -83,34 +83,34 @@ registry; closed Eval strings still have no name bindings. Explicit per-table
 selectors override SELECT-level IN defaults without changing lexical ownership.
 Keep the external edit refusal even though read/action syntax shares table nodes.
 Qualified native saved SELECT/crosstab global remote-source
-fragments now reconstruct through [the saved-source contract](docs/NATIVE_SAVED_EXTERNAL_QUERIES.md);
-[per-table qualifiers](docs/PER_TABLE_EXTERNAL_QUERIES.md) now compose onto exact
+fragments now reconstruct through [the saved-source contract](docs/access/queries/NATIVE_SAVED_EXTERNAL_QUERIES.md);
+[per-table qualifiers](docs/query/PER_TABLE_EXTERNAL_QUERIES.md) now compose onto exact
 verified relation leaves. Reconstruct opaque tokens directly into owned fields
 rather than interpolating stored path/provider text into SQL.
 The native CLI host uses explicit `--external DATABASE_TOKEN PATH` mappings and
 `--external-index DATABASE_TOKEN TABLE INDEX`; follow
-[NATIVE_EXTERNAL_QUERIES.md](docs/NATIVE_EXTERNAL_QUERIES.md). Stored tokens never
+[NATIVE_EXTERNAL_QUERIES.md](docs/access/queries/NATIVE_EXTERNAL_QUERIES.md). Stored tokens never
 open files. Preserve shared native allowances and root/link/external index scope.
 With `--database`, the `tablecraft-access` adapter supplies bounded native scalar
-snapshots; follow [NATIVE_QUERIES.md](docs/NATIVE_QUERIES.md) for its supported
-profile. [Named collection presence](docs/COLLECTION_PRESENCE.md) tests complete
+snapshots; follow [NATIVE_QUERIES.md](docs/access/queries/NATIVE_QUERIES.md) for its supported
+profile. [Named collection presence](docs/query/collections/COLLECTION_PRESENCE.md) tests complete
 membership independently of nullable metadata; keep displayed child criteria
 separate from parent presence and retain the metadata-only attachment cache.
 Scalar-composed presence tests use the current borrowed parent frame at their
 written evaluation position; retain clause/subquery isolation and eager operands.
 Results are buffered before stdout. Explicit `query run --link ALIAS PATH` uses the
-[linked-source facade](docs/NATIVE_LINKED_QUERIES.md) with host-selected native targets,
+[linked-source facade](docs/access/queries/NATIVE_LINKED_QUERIES.md) with host-selected native targets,
 one shared native allowance and distinct source scopes. Never infer target opens
 from stored Database/Connect fields. Keep linked routing in the adapter, all Source
 capabilities forwarded, root named-query ownership and target field policies intact.
 Database
 header/catalog inspection is available through `inspect`/`inspect --catalog`; the bounded `query update` command creates fresh offline Jet 4 copies under
-[explicit editing limits](docs/QUERY_EDITING.md). In-place CLI editing and GUI hosts
-are not implemented. Follow [NATIVE_READING.md](docs/NATIVE_READING.md) for supported native
+[explicit editing limits](docs/access/writes/QUERY_EDITING.md). In-place CLI editing and GUI hosts
+are not implemented. Follow [NATIVE_READING.md](docs/access/NATIVE_READING.md) for supported native
 profiles, read budgets and inert inspection.
 Explicit `rows --stream` uses the existing browser cursor for progressive scalar
-TSV publication; see [streaming rows](docs/STREAMING_ROWS.md). Preserve cumulative
-read/output controls and write/flush error propagation. Normal pages and queries remain buffered. Explicit [streaming queries](docs/STREAMING_QUERIES.md)
+TSV publication; see [streaming rows](docs/cli/STREAMING_ROWS.md). Preserve cumulative
+read/output controls and write/flush error propagation. Normal pages and queries remain buffered. Explicit [streaming queries](docs/cli/STREAMING_QUERIES.md)
 use the query progressive capability and native cursor adapter for admitted
 row-local SELECTs, eligible global/grouped/HAVING stages and flat UNION ALL arms;
 unsupported shapes/modes refuse before scans. Static named/derived stages retain
@@ -120,35 +120,35 @@ cells must not undergo scalar publication or terminal UNION conversion. These
 explicit streaming modes may retain earlier output after later failures. Preserve
 separate cumulative native/query/comparison/output pools, checked EOF and typed
 sink errors; never cache a progressive prefix as a complete relation.
-Explicit [larger scalar query snapshots](docs/LARGER_NATIVE_QUERIES.md) use checked
+Explicit [larger scalar query snapshots](docs/access/queries/LARGER_NATIVE_QUERIES.md) use checked
 consumer limits without changing defaults. Never materialize an advanced/failed
 cursor suffix as a complete table. Keep native and query work budgets separate,
 complete caches unpublished until EOF, and index/collection/write ceilings explicit.
 
-`tablecraft-model` owns the shared object metadata in [MODEL.md](docs/MODEL.md).
+`tablecraft-model` owns the shared object metadata in [MODEL.md](docs/foundation/MODEL.md).
 Keep source-specific codes/flags and physical references in the native adapter;
 object bodies and domain behavior belong to their owning subsystem. Catalog scopes
 are caller-issued, and unresolved parents/unknown kinds must remain visible.
 
 Core values, identity scopes, budgets and their reference documents are described
-in [CORE_TYPES.md](docs/CORE_TYPES.md). Value equality is representational; do not
+in [CORE_TYPES.md](docs/foundation/CORE_TYPES.md). Value equality is representational; do not
 use it as SQL equality or silently coerce expression-only states into stored NULL.
-Use the [strict relational key service](docs/NUMERIC_KEYS.md) for sets, groups,
+Use the [strict relational key service](docs/query/keys/NUMERIC_KEYS.md) for sets, groups,
 sorting, extrema and pivot matching; scalar predicate coercion is separate.
 Core errors use `thiserror`; generated tests use `proptest`; `serde` support is
 optional and must preserve constructor validation. Keep format-specific output
 policies at the application/protocol boundary. The requested libraries and their
-intended future uses are recorded in [LIBRARY_POLICY.md](docs/LIBRARY_POLICY.md).
+intended future uses are recorded in [LIBRARY_POLICY.md](docs/development/LIBRARY_POLICY.md).
 Use those libraries when the corresponding functionality is introduced, with
 target-appropriate features and verification; do not add unused dependencies.
 The SQL parser selection and adapter boundaries are in
-[TECH_STACK.md](docs/TECH_STACK.md). Keep upstream parser AST types inside the adapter;
+[TECH_STACK.md](docs/architecture/TECH_STACK.md). Keep upstream parser AST types inside the adapter;
 Access semantics and the query model belong to TableCraft.
 
 Read [README.md](README.md) and [implementation status](docs/IMPLEMENTATION.md)
-before making changes. Follow [development policy](docs/DEVELOPMENT.md) for
+before making changes. Follow [development policy](docs/development/DEVELOPMENT.md) for
 toolchain, package boundaries and verification commands, and update
-[dependency records](docs/DEPENDENCIES.md) when adopting dependencies.
+[dependency records](docs/development/DEPENDENCIES.md) when adopting dependencies.
 
 ## Working practices
 
@@ -182,13 +182,13 @@ in `backends/`, and external provider integrations in `adapters/`. Follow
 and links, while hosts compose concrete providers. Add no empty connector packages.
 
 Group library packages by domain under `crates/`, following
-[ARCHITECTURE.md](docs/ARCHITECTURE.md). The implemented parser is `tablecraft-sql`;
+[ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md). The implemented parser is `tablecraft-sql`;
 `tablecraft-query` owns working binding/planning/read-only execution functionality.
 The target package map is guidance for progressive extraction, not authorization
 to generate empty packages. Keep feature slices inside their owning crate until
 a useful independent boundary exists.
 
-Follow [NATIVE_ENGINE.md](docs/NATIVE_ENGINE.md) for the standalone engine boundary:
+Follow [NATIVE_ENGINE.md](docs/architecture/NATIVE_ENGINE.md) for the standalone engine boundary:
 `tablecraft-ace` owns native Jet/ACE behavior; `tablecraft-access` is its
 TableCraft adapter. Engine and reusable query code must not depend on application
 hosts, UI, runtime or that adapter. Pure headless macro/automation contracts may
@@ -196,14 +196,14 @@ live in the application domain without importing those hosts. Backend-neutral co
 concrete engines/adapters. Introduce engine/FFI/driver crates only with working
 functionality and keep compatibility claims tied to observed evidence.
 
-Follow [NATIVE_INDEXES.md](docs/NATIVE_INDEXES.md) for qualified native index
+Follow [NATIVE_INDEXES.md](docs/access/indexes/NATIVE_INDEXES.md) for qualified native index
 inspection/reads. Keep physical key interpretation in ACE and reject unsupported
 or corrupt selected indexes without silent sequential fallback.
 Opt-in automatic index selection belongs in the Access adapter, using engine
 metadata and existing safe constraints; retain the original filter and selected-read failures.
 Automatic constrained scans must preserve the source's sequential row order;
 explicit required indexes keep their configured key order.
-Use [native check coverage](docs/NATIVE_CHECKS.md) when adding consistency checks;
+Use [native check coverage](docs/access/NATIVE_CHECKS.md) when adding consistency checks;
 unchecked profiles and native constraint limitations must remain explicit.
 Keep relationship read coverage separate from mutation key-profile coverage;
 checking stored membership must not implicitly expand write eligibility.
@@ -216,7 +216,7 @@ explicit byte order/alignment and independent goldens. Keep bytemuck casts on
 proven raw POD buffers; preserve semantic constructors. Benchmark SIMD and scalar
 contenders against real engine workloads before claiming improvements.
 
-Follow [VBA_COMPATIBILITY.md](docs/VBA_COMPATIBILITY.md): preserve existing VBA and
+Follow [VBA_COMPATIBILITY.md](docs/architecture/VBA_COMPATIBILITY.md): preserve existing VBA and
 detect dependent features, but defer VBA execution/authoring, editor/debugger,
 VBA-specific DAO/ADO, Windows API emulation, COM/Wine and RustVBA integration.
 Current expression implementation work is limited to functions accessible directly
@@ -238,23 +238,23 @@ permits calling it from a query. Stored OLE data is not a live object reference.
 Reserve `tablecraft-vba-host` in docs only; do not scaffold VBA/provider packages.
 Keep Access macros and non-VBA automation in scope. Required validation/data macros
 cannot be skipped on writes. SQL UDFs need supplied callable contracts rather than
-query-to-runtime dependencies. [WINDOWS_COMPATIBILITY.md](docs/WINDOWS_COMPATIBILITY.md)
+query-to-runtime dependencies. [WINDOWS_COMPATIBILITY.md](docs/architecture/WINDOWS_COMPATIBILITY.md)
 is deferred research; normal platform file APIs and engineering Access comparisons
 remain in scope. Replication must not replay external effects or bypass validation.
 
 `tablecraft-io` owns generic bounded synchronous reads and retry/cancellation
-mechanics; follow [IO.md](docs/IO.md). Native page geometry, format interpretation
+mechanics; follow [IO.md](docs/foundation/IO.md). Native page geometry, format interpretation
 and Jet/ACE locking rules stay in `tablecraft-ace`. I/O must not import engines,
 adapters, query execution or application hosts.
 
 Declare registry versions, local dependency paths and shared feature defaults in
 root `[workspace.dependencies]`; members inherit with `dependency.workspace = true`.
 Keep optional dependencies and consumer-specific features in their owning member.
-Group root declarations by purpose. [DEPENDENCY_REVIEW.md](docs/DEPENDENCY_REVIEW.md)
+Group root declarations by purpose. [DEPENDENCY_REVIEW.md](docs/development/DEPENDENCY_REVIEW.md)
 records reviewed candidates/references; add only dependencies with working consumers.
 
 Use explicit payload-free tracing spans/events at operation boundaries; follow
-[TRACING.md](docs/TRACING.md). Hosts own subscribers. Do not record SQL, parameter
+[TRACING.md](docs/development/TRACING.md). Hosts own subscribers. Do not record SQL, parameter
 values, names, paths, row contents or automatic Debug arguments.
 
 Keep the CLI free of GUI and network runtime dependencies. Libraries belong
@@ -301,6 +301,12 @@ docs; ordinary CLI/engine builds retain their existing dependency boundaries.
 
 ## Documentation and private planning
 
+Keep the docs root for overview, status and navigation pages. Put subsystem
+documents in their owning area under `docs/`, following the
+[documentation index](docs/README.md), and update its area index when adding a
+document. Update current links and operational references when moving files.
+Preserve historical verification records and their captured paths/hashes.
+
 The architecture pack under ignored `docs/temp/` is private planning material.
 Consult it locally when relevant, but do not track it, copy it wholesale into
 public docs, or make CI depend on it. Extract only guidance that applies to
@@ -322,7 +328,7 @@ execution, editing and native save/reopen evidence. A candidate inventory or
 requirements document is not a qualified fixture or passing application test.
 
 Do not copy third-party code or fixtures without provenance and license review.
-Record fixture sources, hashes and notices in [FIXTURES.md](docs/FIXTURES.md).
+Record fixture sources, hashes and notices in [FIXTURES.md](docs/testing/FIXTURES.md).
 Preserve original fixture bytes and perform mutation experiments on copies.
 Do not execute active database content implicitly. Keep private data,
 credentials and machine-specific paths out of commits.

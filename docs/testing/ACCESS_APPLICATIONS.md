@@ -9,7 +9,7 @@ Access application compatibility.
 VBA-heavy cases remain useful for preservation and dependency-detection tests.
 VBA execution/authoring and COM/Wine comparisons are deferred; record those outcomes
 as unsupported or unrun, never as passing because code was preserved. Required
-table data-macro validation remains in scope. See [VBA decision](../VBA_COMPATIBILITY.md).
+table data-macro validation remains in scope. See [VBA decision](../architecture/VBA_COMPATIBILITY.md).
 The [ACE 16 macro fixture requirements](DATA_MACROS.md) separate ordinary macro
 inventory, positive table-event evidence, preservation and native write/reopen tests.
 
@@ -17,10 +17,10 @@ inventory, positive table-event evidence, preservation and native write/reopen t
 
 | Candidate | Provenance | Open | Preserve | Execute | Edit | Safe save/reopen |
 | --- | --- | --- | --- | --- | --- | --- |
-| `docs/examples/Access_Example_VBA.accdb` | Reviewed MIT example; source, notice, size and SHA-256 in [FIXTURES.md](../FIXTURES.md) | Unrun | Unrun | Unrun | Unrun | Unrun |
+| `docs/examples/Access_Example_VBA.accdb` | Reviewed MIT example; source, notice, size and SHA-256 in [FIXTURES.md](FIXTURES.md) | Unrun | Unrun | Unrun | Unrun | Unrun |
 
 Read-only header/catalog inspection on a disposable copy is recorded in
-[NATIVE_READING.md](../NATIVE_READING.md); the application-level outcomes above
+[NATIVE_READING.md](../access/NATIVE_READING.md); the application-level outcomes above
 remain unrun.
 
 This inventory records one candidate, not a representative qualified corpus. Its
@@ -106,6 +106,6 @@ harness with the first operations it can actually compare, followed by small
 open/preserve/edit/reopen scenarios. No placeholder crate or always-skipped test
 suite is needed to make this policy appear implemented.
 
-Use [NATIVE_ENGINE.md](../NATIVE_ENGINE.md), [VBA_COMPATIBILITY.md](../VBA_COMPATIBILITY.md)
-and [WINDOWS_COMPATIBILITY.md](../WINDOWS_COMPATIBILITY.md) for the owning contracts.
+Use [NATIVE_ENGINE.md](../architecture/NATIVE_ENGINE.md), [VBA_COMPATIBILITY.md](../architecture/VBA_COMPATIBILITY.md)
+and [WINDOWS_COMPATIBILITY.md](../architecture/WINDOWS_COMPATIBILITY.md) for the owning contracts.
 Corpus failures should determine subsequent implementation priorities.

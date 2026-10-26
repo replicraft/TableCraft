@@ -33,7 +33,7 @@ expected numeric result; if no candidate fits, the expected result is Overflow.
 Mean candidates use the exact total divided by non-NULL count, never the already
 rounded Sum result. Empty and all-NULL populations instead produce NULL totals
 and means. This models the documented current
-[Decimal sum](../DECIMAL_SUMS.md) and [mean](../AVERAGES.md) result envelope,
+[Decimal sum](../query/aggregates/DECIMAL_SUMS.md) and [mean](../query/aggregates/AVERAGES.md) result envelope,
 without using its Rust implementation or CLI output as the oracle.
 
 Numeric cells are compared as exact Fractions after TSV decoding. `VarType`

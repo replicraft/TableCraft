@@ -71,7 +71,7 @@ The immutable CLI SHA-256 is
 `021a072d23e21e8d65fcf7e7331cc3100db24d4fda15337e31ded8cc01e34e11`.
 The engine calculated-scalar target passes seven tests, the adapter cached-query
 target passes eight, and scoped strict Clippy passes for both. The
-[fixture ledger](../FIXTURES.md#original-additional-cached-calculated-carrier-inputs)
+[fixture ledger](FIXTURES.md#original-additional-cached-calculated-carrier-inputs)
 retains original hashes and provenance; generated databases and binaries remain
 ignored.
 

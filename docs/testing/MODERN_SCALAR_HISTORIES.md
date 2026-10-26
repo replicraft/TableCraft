@@ -79,4 +79,4 @@ python3 docs/testing/compare_modern_scalar_histories.py \
 Fresh generation uses the Java recipe with a new output path and V2016/V2019.
 Existing paths are refused. Generation timestamps can change hashes; review and
 register new identities before comparison reuse rather than weakening hash checks.
-[Provenance](../FIXTURES.md#modern-ace-16-scalar-history-inputs) records this generation.
+[Provenance](FIXTURES.md#modern-ace-16-scalar-history-inputs) records this generation.

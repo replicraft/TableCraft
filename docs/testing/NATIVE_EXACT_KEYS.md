@@ -33,12 +33,12 @@ The runner reuses the separately pinned native-join helper for registered hashes
 getter access and process invocation. Its own integer grouping/set models are
 independent of TableCraft query output. The report retains exact commands and
 pins; replay requires the reviewed reader, four registered originals, frozen CLI
-and a fresh report path. Provenance remains in [FIXTURES.md](../FIXTURES.md);
+and a fresh report path. Provenance remains in [FIXTURES.md](FIXTURES.md);
 no new binary fixtures or dependencies were adopted.
 
 These originals each contain 1,000 IDs. Generated 12,000-row scale controls,
 Boolean/other integral carriers, collisions, unexpected carrier fallback,
 paired descriptors, eager errors, cancellation and quota/growth behavior have
-separate [focused tests](../EXACT_QUERY_KEYS.md). Text, mixed/unproved keys,
+separate [focused tests](../query/keys/EXACT_QUERY_KEYS.md). Text, mixed/unproved keys,
 other SQL families and general optimizer/native comparisons retain their own
 contracts. This replay does not establish complete read/query acceptance.

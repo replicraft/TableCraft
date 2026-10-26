@@ -42,7 +42,7 @@ not observed Microsoft Access SQL, live-file or complete large-table qualificati
 python3 docs/testing/compare_large_tables.py --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft --directory /tmp/new-large-table-inputs --generate
 ```
 
-[Fixture records](../FIXTURES.md#large-owned-map-paging-inputs) retain recipe/license
+[Fixture records](FIXTURES.md#large-owned-map-paging-inputs) retain recipe/license
 provenance, sizes and hashes. Synthetic tests additionally exercise dense maps,
 all four profiles, corruption in later bitmap metadata before first data reads,
 revalidated rereads, empty/extreme bases, malformed map roots, bit-model properties,
