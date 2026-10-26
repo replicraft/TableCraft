@@ -1141,6 +1141,15 @@ Extrema, statistics, grouping and wider progressive sources remain separate work
 this does not establish complete read/query or native execution qualification.
 
 
+## Independent native GUID predicate evidence
+
+The [native predicate replay](GUID_CONVERSIONS.md#native-predicate-replay--25-october-2026)
+passes 192 controls with 64,140 compared ID observations over eight unchanged
+original files. It includes sequential/ascending/descending GUID-index reads,
+both arithmetic profiles, parameters, domains, progressive filters and preserved
+refusals. Only TableCraft executes SQL. This supplies engineering evidence for
+the implemented rule without qualifying native Access Byte-array comparison.
+
 ## GUID byte-structure equality predicates
 
 [Contextual GUID equality](GUID_CONVERSIONS.md#guid-structure-predicate-equality)

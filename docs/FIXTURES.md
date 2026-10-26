@@ -8533,3 +8533,16 @@ current/pre-fix executables. Twelve immutable artifacts and five selected source
 are rehashed; all originals remain unchanged. Getter hashes agree with the earlier
 [mixed-key replay](testing/FIXED_BINARY_KEYS.md). This is not native Access SQL
 execution or subtype qualification.
+
+## Native GUID predicate replay — 25 October 2026
+
+The [original GUID predicate runner](testing/compare_guid_predicates.py) reuses
+four immutable ScalarFixture originals and four registered 20,000-row indexed
+originals with the existing reviewed Jackcess 5.0.4 read-only getters. No new
+third-party fixture or binary is committed. Python UUID supplies identity
+expectations; only TableCraft executes SQL. The
+[report](testing/results/guid-predicate-replay-2026-10-25.json) records 192 CLI
+observations, 64,140 compared IDs, eighteen unchanged artifacts and four selected
+source snapshots. Eight getters supply stored rows, including 80,000 larger
+indexed rows; scalar transcripts match the earlier mixed-key replay. Native
+Access execution and Byte-array subtype/ordering qualification remain pending.
