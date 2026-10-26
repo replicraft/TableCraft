@@ -1,5 +1,28 @@
 # Implementation status
 
+## Deletion through existing multi-level index trees
+
+ACE16 deletion candidates now retain each original leaf partition while removing
+exact row references, then rebuild every ancestor boundary from the retained
+child's complete key and row reference. Tail and bounded-final-child nodes keep
+their original topology, pointers, heights, ownership maps and historical counters.
+An emptied nonroot leaf or a parent page that cannot fit after prefix changes
+refuses the entire candidate. This does not perform contraction or allocation.
+
+The focused batch passes 126 unit/integration tests and three compile-fail checks,
+strict lint, minimal compilation and formatting. The public API test includes a
+302-child parent whose encoded separator growth requires refusal despite all
+leaves remaining nonempty. A frozen committed example passes all 24 independent
+original-file controls: fourteen reopened candidates and ten typed refusals over
+two 1,000-row ACE16-family originals and their safe public-writer histories.
+Original leaf partitions, full encoded keys/references, separator maxima and
+unrelated bytes agree; all registered inputs remain unchanged. See
+[the candidate contract](testing/ACE16_DELETE_PREVIEWS.md#nonempty-leaf-tree-extension),
+[reference topology](testing/DELETE_TREE_STORAGE_OBSERVATIONS.md) and
+[candidate replay](testing/results/ace16-delete-trees-originals-2026-10-26.json).
+Normal ACE saves, data-macro qualification, true tree contraction and native
+Access save/reopen remain outside this engineering profile.
+
 ## ACE16 physical row-deletion candidates
 
 The opt-in engine can now tombstone ordinary live roots, decrement checked table

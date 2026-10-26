@@ -1,0 +1,26 @@
+{
+  "scope": "Frozen feature-gated multi-level deletion comparison example; no ordinary ACE save",
+  "compiled_revision": "3b1cb8c7696312fccd95e635c5b21ed6993abf49",
+  "git_tree": "41b960ab053979293e3b827eec8dfd85da233840",
+  "command": "cargo build --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --example preview_ace16_delete",
+  "exit_code": 0,
+  "rustc": [
+    "rustc 1.99.0 (b940084d7 2026-09-28)",
+    "binary: rustc",
+    "commit-hash: b940084d7eb6a299eb4bfeb8e34901bc051e7ac4",
+    "commit-date: 2026-09-28",
+    "host: aarch64-apple-darwin",
+    "release: 1.99.0",
+    "LLVM version: 23.1.1"
+  ],
+  "frozen_example": {
+    "path": ".cache/tablecraft-bin/ace16-delete-trees-20261026",
+    "bytes": 17157592,
+    "sha256": "63969ef1d7a04411b351913063b30ea94d5ee57e983402a9d86b480ecceca75e"
+  },
+  "limitations": [
+    "Development build, not a release performance measurement.",
+    "Committed revision and selected replay source pins are not a complete compiler-input manifest.",
+    "Nonroot leaf exhaustion, allocation, contraction, data-macro eligibility and native Access saves remain outside this candidate profile."
+  ]
+}

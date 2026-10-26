@@ -111,3 +111,22 @@ python3 docs/testing/capture_delete_trees.py \
 
 Each Java command has a 120-second timeout. Generated files and raw captures remain
 ignored; no third-party fixture or binary is bundled in this reference chunk.
+
+## TableCraft candidate comparison
+
+The [frozen comparison example](results/ace16-delete-trees-example-build-2026-10-26.json)
+from committed revision `3b1cb8c7696312fccd95e635c5b21ed6993abf49` passes all
+24 [candidate replay controls](results/ace16-delete-trees-originals-2026-10-26.json):
+fourteen successful independent reopens and ten typed refusals with empty stdout.
+The positives include both safe batches, individual non-tail/tail and equal-key
+boundaries, and new boundary deletions from each existing safe reference history.
+Leaf-exhaustion, delete-all, stale/duplicate and existing-output requests refuse.
+
+The [runner](compare_delete_trees.py) verifies exact original leaf partitions,
+surviving physical keys/references and every node's full separator maximum. All
+root/child/tail/sibling pointers, heights, maps, historical counters, record bodies
+and Memo/OLE data remain preserved under narrow patch spans. All registered input,
+tool and reference hashes remain unchanged. Public records retain outcome and
+command receipts; full getter transcripts and raw topology stay ignored and
+hash-pinned. These checks qualify the explicit engineering profile, not native
+Access semantics, tree contraction, ordinary write eligibility or durable apply.
