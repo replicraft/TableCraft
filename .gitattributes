@@ -1,0 +1,3 @@
+# Keep release attribution byte-identical across platforms.
+/LICENSE text eol=lf
+/packaging/ThirdPartyLicenses.txt text eol=lf
