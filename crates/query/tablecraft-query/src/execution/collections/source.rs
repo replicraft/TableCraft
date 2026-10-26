@@ -14,6 +14,12 @@ impl Runtime<'_, '_> {
         &mut self,
         select: &SelectPlan,
     ) -> Result<Vec<CollectionFrame>, QueryError> {
+        if matches!(
+            select.source.node,
+            RelationNode::Cross(..) | RelationNode::Join { .. }
+        ) {
+            return self.joined_collection_input(select);
+        }
         if let RelationNode::Derived(read) = &select.source.node {
             return self.collection_read(read);
         }
@@ -159,7 +165,7 @@ impl Runtime<'_, '_> {
         failure.map_or(result.map(|()| rows), Err)
     }
 
-    fn copy_borrowed_collection(
+    pub(super) fn copy_borrowed_collection(
         &mut self,
         list: &dyn MultivalueList,
     ) -> Result<MultivalueValue, QueryError> {

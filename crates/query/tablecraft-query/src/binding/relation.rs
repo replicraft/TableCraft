@@ -7,7 +7,7 @@ use crate::{
     external_sources::SourceNamespace,
     plan::{ProfiledType, Relation, RelationNode, Slot},
 };
-use tablecraft_sql::select::{JoinKind, TableSource};
+use tablecraft_sql::select::{Expression, JoinKind, TableSource};
 
 impl Binder<'_> {
     pub(super) fn relation(
@@ -20,6 +20,9 @@ impl Binder<'_> {
         self.tick(depth)?;
         if let TableSource::Table(table) = source {
             return self.table_relation(table, depth, namespace);
+        }
+        if matches!(source, TableSource::Join { .. }) {
+            return self.join_relation(source, outer, depth, namespace);
         }
         self.non_table_relation(source, outer, depth, namespace)
     }
@@ -87,39 +90,66 @@ impl Binder<'_> {
                 }
                 rel
             }
-            TableSource::Join {
-                left,
-                right,
-                kind,
-                condition,
-            } => {
-                let left = self.relation(left, outer, depth + 1, namespace)?;
-                let right = self.relation(right, outer, depth + 1, namespace)?;
-                let mut slots = combine_slots(&left.slots, &right.slots)?;
-                let nullable = match kind {
-                    JoinKind::Left => left.slots.len()..slots.len(),
-                    JoinKind::Right => 0..left.slots.len(),
-                    JoinKind::Inner => 0..0,
-                };
-                for slot in &mut slots[nullable] {
-                    slot.output_type = slot.output_type.with_null();
-                }
-                let scopes = std::iter::once(slots.as_slice())
-                    .chain(outer.iter().copied())
-                    .collect::<Vec<_>>();
-                let condition = self.expression(condition, &scopes, false, depth + 1)?;
-                Relation {
-                    slots,
-                    node: RelationNode::Join {
-                        left: Box::new(left),
-                        right: Box::new(right),
-                        kind: *kind,
-                        condition,
-                    },
-                }
-            }
+            TableSource::Join { .. } => unreachable!("joins use their dedicated entry"),
         };
         self.finish_relation(relation)
+    }
+
+    // Keep condition binding and owned slot construction off the recursive
+    // source traversal stack, just as the ordinary named-table entry does.
+    #[inline(never)]
+    fn join_relation(
+        &mut self,
+        source: &TableSource,
+        outer: &[&[Slot]],
+        depth: usize,
+        namespace: SourceNamespace,
+    ) -> Result<Relation, QueryError> {
+        let TableSource::Join {
+            left,
+            right,
+            kind,
+            condition,
+        } = source
+        else {
+            unreachable!("the join entry requires a join source");
+        };
+        let left = self.relation(left, outer, depth + 1, namespace)?;
+        let right = self.relation(right, outer, depth + 1, namespace)?;
+        self.finish_join_relation(left, right, *kind, condition, outer, depth)
+    }
+
+    fn finish_join_relation(
+        &mut self,
+        left: Relation,
+        right: Relation,
+        kind: JoinKind,
+        condition: &Expression,
+        outer: &[&[Slot]],
+        depth: usize,
+    ) -> Result<Relation, QueryError> {
+        let mut slots = combine_slots(&left.slots, &right.slots)?;
+        let nullable = match kind {
+            JoinKind::Left => left.slots.len()..slots.len(),
+            JoinKind::Right => 0..left.slots.len(),
+            JoinKind::Inner => 0..0,
+        };
+        for slot in &mut slots[nullable] {
+            slot.output_type = slot.output_type.with_null();
+        }
+        let scopes = std::iter::once(slots.as_slice())
+            .chain(outer.iter().copied())
+            .collect::<Vec<_>>();
+        let condition = self.expression(condition, &scopes, false, depth + 1)?;
+        self.finish_relation(Relation {
+            slots,
+            node: RelationNode::Join {
+                left: Box::new(left),
+                right: Box::new(right),
+                kind,
+                condition,
+            },
+        })
     }
 
     fn finish_relation(&mut self, relation: Relation) -> Result<Relation, QueryError> {
@@ -155,18 +185,34 @@ pub(super) fn combine_slots(left: &[Slot], right: &[Slot]) -> Result<Vec<Slot>, 
     }) {
         return Err(QueryError::AmbiguousName);
     }
-    Ok(left
+    // Collection slots are independent of dense scalar rows and unavailable-name
+    // order. Keep every left slot in the offset, including unprojected lists.
+    let collection_offset = left
         .iter()
+        .filter(|slot| slot.collection_index.is_some())
+        .count();
+    left.iter()
         .chain(right)
-        .map(|s| Slot {
-            output_type: s.output_type,
-            declaration: s.declaration,
-            text_policy: s.text_policy,
-            available: s.available,
-            collection_index: s.collection_index,
-            member: s.member.clone(),
-            name: s.name.clone(),
-            qualifier: s.qualifier.clone(),
+        .enumerate()
+        .map(|(position, slot)| {
+            let collection_index = match slot.collection_index {
+                Some(index) if position >= left.len() => Some(
+                    index
+                        .checked_add(collection_offset)
+                        .ok_or(QueryError::StructureLimit)?,
+                ),
+                index => index,
+            };
+            Ok(Slot {
+                output_type: slot.output_type,
+                declaration: slot.declaration,
+                text_policy: slot.text_policy,
+                available: slot.available,
+                collection_index,
+                member: slot.member.clone(),
+                name: slot.name.clone(),
+                qualifier: slot.qualifier.clone(),
+            })
         })
-        .collect())
+        .collect()
 }

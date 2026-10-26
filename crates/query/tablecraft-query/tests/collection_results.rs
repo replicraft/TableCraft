@@ -388,7 +388,7 @@ fn authorized_scalar_discovery_can_precede_typed_admission_but_never_collection_
     }
     let data = Data::new();
     let parsed = parse_query(
-        "SELECT T.Tags FROM T INNER JOIN DynamicPivot AS P ON T.Id=P.Id",
+        "SELECT T.Tags FROM T LEFT JOIN DynamicPivot AS P ON T.Id=P.Id",
         Default::default(),
     )
     .unwrap();
@@ -445,4 +445,37 @@ fn complete_stored_float_lists_preserve_ieee_bits_without_scalar_admission() {
             Some(QueryError::Evaluation(EvalError::NonFinite))
         );
     }
+}
+
+#[test]
+fn authorized_scalar_crosstab_dependency_can_join_complete_lists_after_discovery() {
+    struct Ordinal;
+    impl Collation for Ordinal {
+        fn compare(&self, a: &str, b: &str) -> Result<Ordering, EvalError> {
+            Ok(a.cmp(b))
+        }
+    }
+    let data = Data::new();
+    let parsed = parse_query(
+        "SELECT T.Id,T.Tags FROM T INNER JOIN DynamicPivot AS P ON T.Id=P.Id ORDER BY T.Id",
+        Default::default(),
+    )
+    .unwrap();
+    let result = execute_collections_with_schema_discovery(
+        parsed.query(),
+        &data,
+        &[],
+        ExecutionOptions {
+            collation: Some(&Ordinal),
+            ..Default::default()
+        },
+    )
+    .unwrap();
+    assert_eq!(result.rows().len(), 3);
+    for (index, row) in result.rows().iter().enumerate() {
+        assert_eq!(row[0], scalar(index as i32 + 1));
+        assert_eq!(list(&row[1]), data.lists[index]);
+    }
+    assert!(data.scans.get() > 0);
+    assert_eq!(data.collection_scans.get(), 1);
 }

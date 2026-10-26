@@ -158,6 +158,45 @@ fn named_limit() {
     source.no_scans();
 }
 
+fn joined_named_limits() {
+    for count in [8, 50] {
+        let mut source = Data::chain(count);
+        for (index, (_, query)) in source.definitions.iter_mut().enumerate() {
+            let target = if index + 1 == count {
+                "Data".to_owned()
+            } else {
+                format!("Q{}", index + 1)
+            };
+            *query = syntax(&format!(
+                "SELECT D.Id,D.Tags FROM {target} AS D \
+                 INNER JOIN (SELECT 1 AS MatchKey) AS C ON 1=1"
+            ));
+        }
+
+        let prepared = prepare(&syntax("SELECT Id,Tags FROM Q0"), &source);
+        source.no_scans();
+        if count == 8 {
+            let result = prepared
+                .unwrap()
+                .execute_collections(&source, &[], Default::default())
+                .unwrap();
+            assert_complete(result, &source);
+        } else {
+            // Named definitions and relation nodes share the engineering bound.
+            // This compound shape does not claim fifty-level support merely
+            // because fifty plain named SELECTs fit the independent name limit.
+            let error = match prepared {
+                Ok(plan) => plan
+                    .execute_collections(&source, &[], Default::default())
+                    .err(),
+                Err(error) => Some(error),
+            };
+            assert_eq!(error, Some(QueryError::StructureLimit));
+            source.no_scans();
+        }
+    }
+}
+
 fn derived_limits() {
     let source = Data::chain(0);
     let mut sql = "SELECT Id,Tags FROM Data".to_owned();
@@ -299,5 +338,13 @@ fn typed_derived_lists_keep_the_absolute_structural_guard() {
     isolated_worker(
         "typed_derived_lists_keep_the_absolute_structural_guard",
         absolute_limit,
+    );
+}
+
+#[test]
+fn typed_joined_named_sources_share_a_checked_combined_depth() {
+    isolated_worker(
+        "typed_joined_named_sources_share_a_checked_combined_depth",
+        joined_named_limits,
     );
 }
