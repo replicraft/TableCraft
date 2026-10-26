@@ -43,10 +43,10 @@ impl NativeImage {
                 .map_err(InspectError::from)?;
             after.extend_from_slice(chunk);
         }
-        let mut mask_changed = false;
+        let mut structural_change = false;
         for patch in fields {
             check(budget, cancelled)?;
-            mask_changed |= patch.is_mask();
+            structural_change |= patch.requires_structural_check();
             apply(&mut after, patch.offset(), patch.before(), patch.after())?;
         }
         for patch in indexes {
@@ -70,7 +70,7 @@ impl NativeImage {
         preservation::prove(&self.bytes, &after, spans, budget, cancelled)?;
         let scope = self.catalog().catalog().scope();
         for table in tables {
-            if (!indexes.is_empty() || mask_changed)
+            if (!indexes.is_empty() || structural_change)
                 && check_table(&mut Cursor::new(&after), scope, table, budget, cancelled)?
                     .indexes()
                     .iter()

@@ -8,7 +8,7 @@ use crate::InspectError;
 use crate::limits::{MAX_COLUMNS, MAX_INDEXES};
 
 // Jet 4 / initial ACE table/column definition offsets; see docs/access/storage/NATIVE_TABLES.md.
-const RECORD_COUNT_OFFSET: usize = 16;
+pub(crate) const RECORD_COUNT_OFFSET: usize = 16;
 const MAX_COLUMN_COUNT_OFFSET: usize = 41;
 const VARIABLE_SLOT_COUNT_OFFSET: usize = 43;
 const COLUMN_COUNT_OFFSET: usize = 45;

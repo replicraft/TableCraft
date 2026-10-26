@@ -1,4 +1,6 @@
 mod apply;
+#[cfg(feature = "ace16-write-preview")]
+mod delete;
 mod error;
 mod field;
 #[cfg(feature = "ace16-write-preview")]
@@ -12,6 +14,8 @@ mod preservation;
 mod preview;
 mod rows;
 
+#[cfg(feature = "ace16-write-preview")]
+pub use delete::{Ace16DeletePreview, RowDelete};
 pub use error::{EditError, WriteBlocker};
 #[cfg(feature = "ace16-write-preview")]
 pub use fixed::{FixedColumnUpdates, FixedScalarUpdate};

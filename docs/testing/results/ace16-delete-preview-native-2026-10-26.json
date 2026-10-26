@@ -1,0 +1,327 @@
+{
+  "date": "2026-10-26",
+  "scope": "Feature-gated non-journalable ordinary-root ACE16 DELETE candidates with root-leaf index cardinality changes; normal ACE writes remain blocked.",
+  "unique_unit_integration_tests": 117,
+  "new_unit_integration_tests": 13,
+  "existing_unit_integration_tests": 104,
+  "compile_fail_doc_tests": 3,
+  "new_compile_fail_doc_tests": 1,
+  "total_unique_tests_including_docs": 120,
+  "author_property_cases": 32,
+  "author_numeric_matrix_combinations": 72,
+  "checks": [
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test ace16_deletes --test ace16_delete_contract",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-deletes-primary-accepted-20261026.log",
+        "bytes": 1805,
+        "sha256": "fb964bb056a1370075bc4c772bc2bef0b6c4b016148f718fa87e667502444a7a"
+      },
+      "session": 14451,
+      "unique_tests": 13
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test ace16_write_preview --test mutation --test ace16_fixed_updates --test scalar_index_updates --test integral_index_updates --test decimal_updates --test guid_updates --test composite_updates --test batch_updates --test mask_updates --test foreign_updates --test cascade_updates",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-deletes-regressions-final-20261026.log",
+        "bytes": 10779,
+        "sha256": "d8d12f4615089bc3000fd7ff7356d7ef01487f30b3c2c0c4525e53920ef790f1"
+      },
+      "session": 41863,
+      "unique_tests": 98
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib table::indexes::mutation",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-deletes-private-tests-20261026.log",
+        "bytes": 1116,
+        "sha256": "15f887b379764c0b43001ae1a3a85beffa8f213760555476e455402c76883a29"
+      },
+      "session": 31999,
+      "unique_tests": 6
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib --test ace16_deletes --test ace16_delete_contract --test ace16_write_preview --example preview_ace16_delete -- -D warnings",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-deletes-clippy-accepted-20261026.log",
+        "bytes": 183,
+        "sha256": "727228878cca5d8e09503c21ecc20641196fa8fe148659aafcd4664cb94d7b85"
+      },
+      "session": 77409
+    },
+    {
+      "command": "cargo check --locked --offline -j2 -p tablecraft-ace --lib --no-default-features",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-deletes-minimal-20261026.log",
+        "bytes": 183,
+        "sha256": "4e749eab5d0aaa674c513f78d7da9fa34375e65d8d9dc2ff51451ca62a83a344"
+      },
+      "session": 84832
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --doc",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-deletes-doc-tests-20261026.log",
+        "bytes": 627,
+        "sha256": "164b475accdb1e7c61ebf8975e8711114af01d4c05b1bdb792bebbadbf70b740"
+      },
+      "unique_tests": 3
+    },
+    {
+      "command": "rustfmt --edition 2024 --check crates/engines/tablecraft-ace/src/lib.rs crates/engines/tablecraft-ace/src/format/layout.rs crates/engines/tablecraft-ace/src/table/mod.rs crates/engines/tablecraft-ace/src/table/indexes/mod.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/mod.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/plan.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/delete.rs crates/engines/tablecraft-ace/src/table/mutation/mod.rs crates/engines/tablecraft-ace/src/table/mutation/patch.rs crates/engines/tablecraft-ace/src/table/mutation/apply.rs crates/engines/tablecraft-ace/src/table/mutation/rows.rs crates/engines/tablecraft-ace/src/table/mutation/preview.rs crates/engines/tablecraft-ace/src/table/mutation/delete.rs crates/engines/tablecraft-ace/src/table/mutation/delete/patches.rs crates/engines/tablecraft-ace/tests/ace16_deletes.rs crates/engines/tablecraft-ace/tests/ace16_delete_contract.rs crates/engines/tablecraft-ace/tests/ace16_delete_contract/model.rs crates/engines/tablecraft-ace/tests/ace16_delete_contract/values.rs crates/engines/tablecraft-ace/tests/ace16_delete_contract/boundaries.rs crates/engines/tablecraft-ace/examples/preview_ace16_delete.rs",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-deletes-format-20261026.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "scope_files": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/lib.rs",
+      "bytes": 5715,
+      "sha256": "edf8430d28018396fb6bee92f6a55f88a1e395ef01141db88b996ad0f61112b8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/layout.rs",
+      "bytes": 7632,
+      "sha256": "2709bed5a2a85548402122697314b4fbe6903db68b9a341c9177ccad68a51e81"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mod.rs",
+      "bytes": 3898,
+      "sha256": "8df1ec4dc6ec7aae5d16cb79a0d89fd3c069629159d6837ee800519a0bf4b70f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mod.rs",
+      "bytes": 2821,
+      "sha256": "82a2db78131885b988c02ad8d0c64bbbc39ffa3d9f56e1eeb0a9f80bafc11c7e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/mod.rs",
+      "bytes": 720,
+      "sha256": "875c3018c347eeccef9aa9be63aedcd47fb7c276425f7291eda5eea14c3e8ab6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/plan.rs",
+      "bytes": 12793,
+      "sha256": "1e7fd9816c05c944e8a5adcca150a9a813f4be371b082bfe582b664e7142d7ee"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/delete.rs",
+      "bytes": 2296,
+      "sha256": "42a28d655ec29211409410589b2664724df33c10718795d8cc6a5a1e24bd7cd1"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/mod.rs",
+      "bytes": 612,
+      "sha256": "15929b126bf1046f95eebc20cf64c272fb21d11cac61c05eec8467221e84af76"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/patch.rs",
+      "bytes": 254,
+      "sha256": "ccd1ab1cc63545b8d237eb82fc0bc56a95962496ee82feb3ddaab6593af57e25"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/apply.rs",
+      "bytes": 4057,
+      "sha256": "ca2bb8af6e26dc2161aadf67be5687b2a8f7702f873eb5a21ed0687eaa01cd32"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/rows.rs",
+      "bytes": 3850,
+      "sha256": "77367e7f09ab88bed82203f92b0e94c287ed69cda7d639e064ca42ffb3b6f04a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/preview.rs",
+      "bytes": 3280,
+      "sha256": "d47843d50db3f9023490b78f420b80f5380f4cbdab9570c9afa8b47b73e3d31d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete.rs",
+      "bytes": 5533,
+      "sha256": "e2cbee52045a570017f2e717087b5916c73b0a4c40c960d1e3fa68acdc19e7e0"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/patches.rs",
+      "bytes": 3533,
+      "sha256": "bcdcfa7295e52047eb6c9b3e043ed24c9209df440e4c8c40d9603fc731d8a534"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_deletes.rs",
+      "bytes": 6716,
+      "sha256": "f3e00331e6bb40763363eb0da8c0254d0f5ad26f6a0b707266d9997b54dc4157"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_delete_contract.rs",
+      "bytes": 496,
+      "sha256": "fef90a1cdc063e7dd060654294040b536167af7944c18cdbad9f771e34a2a353"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_delete_contract/model.rs",
+      "bytes": 4120,
+      "sha256": "565c3953f4a78254591458cfc4f59531b11d319d6a9c0937e6a6864e703b6156"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_delete_contract/values.rs",
+      "bytes": 7458,
+      "sha256": "654e530f4fc63ac58ea5a9eeebd3f346fd8c2a5f1d5a752cee692aa1fc1e86e5"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_delete_contract/boundaries.rs",
+      "bytes": 7242,
+      "sha256": "dacfe1941fd1e64e3afb7a65e818fa69ab18b018761827199fd12ab0e2485d6a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/examples/preview_ace16_delete.rs",
+      "bytes": 3530,
+      "sha256": "1c329ad348f79bb5920b468390280c69292e698dc409b15caf3a094b23e9c7b2"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/Cargo.toml",
+      "bytes": 1943,
+      "sha256": "a56035c34352e47169b9fb152bf897270dab14f72b409acf5e0b9ca355f8fdbf"
+    },
+    {
+      "path": "docs/testing/ACE16_WRITE_PREVIEWS.md",
+      "bytes": 46673,
+      "sha256": "bd74e225f8d46c65c6381a26d200ed9e266c2a4edfff5fb634c4efa802bffb30"
+    },
+    {
+      "path": "docs/testing/ACE16_DELETE_PREVIEWS.md",
+      "bytes": 6231,
+      "sha256": "7237b1605c871e32a5f0ee6b0fc8ef82e5fde4066eca0d9f72558538ee2af3e0"
+    },
+    {
+      "path": "docs/access/writes/NATIVE_WRITES.md",
+      "bytes": 19363,
+      "sha256": "6a4c5ba28484b86cc3422394b0d1c9abb2b07a06c5317c5e1a8dde54bfa5b6c3"
+    }
+  ],
+  "regression_breakdown": {
+    "ace16_write_preview": 4,
+    "mutation": 25,
+    "ace16_fixed_updates": 6,
+    "scalar_index_updates": 6,
+    "integral_index_updates": 5,
+    "decimal_updates": 8,
+    "guid_updates": 6,
+    "composite_updates": 7,
+    "batch_updates": 13,
+    "mask_updates": 5,
+    "foreign_updates": 7,
+    "cascade_updates": 6
+  },
+  "preserved_failures": [
+    {
+      "session": 45407,
+      "exit_code": 101,
+      "log": {
+        "path": ".cache/ace16-deletes-regressions-20261026.log",
+        "bytes": 407,
+        "sha256": "c7dd76be78dd98780844b26038da548fd63f265000b358d1863f19cbd1e30df1"
+      },
+      "reason": "Compiler could not write scalar_index_updates object because disk was full. No tests in this batch ran; retried complete relevant batch after parent cleanup."
+    },
+    {
+      "session": 7444,
+      "exit_code": 101,
+      "log": {
+        "path": ".cache/ace16-deletes-clippy-20261026.log",
+        "bytes": 925,
+        "sha256": "948c0f5f4792f516dd9838045e0636badb89e08e4f21d15b3ee181d9326cf500"
+      },
+      "reason": "Working example used chunks_exact with constant width; replaced with as_chunks under the existing even-length input guard. No lint suppression or runtime golden change."
+    },
+    {
+      "exit_code": 101,
+      "log": {
+        "path": ".cache/ace16-deletes-clippy-final-20261026.log",
+        "bytes": 625,
+        "sha256": "99da5d06b2bf41a8884bc0e361e46f4d76416a17070d6571bc8d1a72c6171af2"
+      },
+      "reason": "Independent target reused a fixture with unused index_flags helper; added standard dead-code permission to the shared test fixture module, without production or runtime golden changes."
+    }
+  ],
+  "synthetic_header_diagnostic": {
+    "session": 59619,
+    "exit_code": 0,
+    "log": {
+      "path": ".cache/ace16-deletes-subversion-probe-20261026.log",
+      "bytes": 804,
+      "sha256": "e0de1d66513fc2ab10cd2217363d58260bba40b207de480f1bfa5eeb9b02bb43"
+    },
+    "source": {
+      "path": ".cache/ace16-deletes-with-subversion-probe-20261026.rs",
+      "bytes": 6729,
+      "sha256": "ce9f9ca7ef5f6c6fafc3cf74d52ea8bcfe3b54b127217f081110162ff1a4de43"
+    },
+    "before_probe_source": {
+      "path": ".cache/ace16-deletes-before-subversion-probe-20261026.rs",
+      "bytes": 6237,
+      "sha256": "b5eea99a94b84f118ba661045f3edc1b762305881b04abc80f84c30774c8e36c"
+    },
+    "observed": "Codes5/6 plain subversion1 read capture and empty delete preview both succeeded before shared qualification correction. Probe removed; permanent independent tests now require successful read capture but Format refusal from both delete and existing Int32 previews. This is synthetic evidence, not native file qualification."
+  },
+  "superseded_green_checks": [
+    {
+      "session": 17194,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-deletes-check-20261026.log",
+        "bytes": 183,
+        "sha256": "cae69444d369495399657e210d29fd85129aff2b39408f665a9bb22e94e7eb88"
+      },
+      "note": "Initial feature library check before shared subversion guard correction."
+    },
+    {
+      "session": 14079,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-deletes-primary-20261026.log",
+        "bytes": 2153,
+        "sha256": "e95c1fc7daeaf176ca8197a45994497fb9fbb9a909bc391f8cc04da11b9ca9f3"
+      },
+      "note": "Initial12 before adding shared-header boundary; not added to final test count."
+    },
+    {
+      "session": 7445,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-deletes-primary-final-20261026.log",
+        "bytes": 2175,
+        "sha256": "ae7bbd50f84b515b7b8155c4569ee04fbf9333fd365e0a6f7820b64040206af4"
+      },
+      "note": "13 passed after shared guard; superseded by final source run."
+    },
+    {
+      "session": 96607,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-deletes-primary-formatted-20261026.log",
+        "bytes": 2175,
+        "sha256": "5d4ead18c1c92ebf28d1af64365d4ddb7ee6c4d1815d648667d8d11c64e4dcc7"
+      },
+      "note": "13 passed after macro readability changes; superseded by final source run."
+    }
+  ],
+  "boundaries": [
+    "API RowDelete carries snapshot-local live ordinal and exact ordinary record payload (column count through final mask), excluding page/slot metadata. Duplicate/missing/stale requests refuse.",
+    "Feature ace16-write-preview only; Ace16DeletePreview has original/candidate bytes and deleted_rows, no journal/apply/qualified-plan conversion. Source bytes never written.",
+    "Existing structural/property/active-content/history/constraint and ignored-NULL gates remain. Any relationship touching the table refuses even for empty requests; no cascades or delete actions skipped.",
+    "Actual checked slot words receive existing DELETED|RELOCATED bits, with payload offsets unchanged. Full logical definition validation resolves first-page live-count bytes through owning layout constant.",
+    "Genuine Change::Delete reuses existing WriteProfile dispatcher/codecs and physical-alias deduplication. All physical indexes must qualify, even empty requests. Root-only leaf/link/stamp/height guard; no nodes/allocation/splits/merges or Text/Binary mutation.",
+    "Historical index counters and all outside-allowlist bytes stay unchanged. Index entries removed by exact row reference, retained order/ties preserved; empty roots repacked with zero prefix and boundaries.",
+    "New structural patch trigger forces full postchecks for unindexed tombstones; default hook preserves all prior mask-update behavior.",
+    "Shared preview::qualify now enforces documented plain subversion0 admission for all engineering preview APIs. Reads retain plain1 recognition; normal ACE write eligibility unchanged.",
+    "Unit/property and Jackcess/reference observations are not native Microsoft Access save/reopen, data-macro absence/execution, durable commit or shared-file qualification.",
+    "Original candidate/getter replay is separate and not counted here; originals remain immutable."
+  ]
+}
