@@ -1141,6 +1141,15 @@ Extrema, statistics, grouping and wider progressive sources remain separate work
 this does not establish complete read/query or native execution qualification.
 
 
+## Successful unknown-category arithmetic metadata
+
+[Agreement-based result metadata](QUERY_RESULT_TYPES.md#successful-arithmetic-with-unknown-declaration-provenance)
+now describes selected successful carriers under the declared profile, enabling
+outer UNION conversion after aggregate/UNION arithmetic. Unknown provenance still
+refuses widening and ambiguous predicates; known Variant widening and materialized
+execution are unchanged. This closes one composition/inference gap without
+establishing native aggregate categories or completing P0 promotion.
+
 ## Independent deeper composition evidence
 
 The [compound replay](testing/DEEPER_QUERIES.md) now checks 1,692 explicit-depth

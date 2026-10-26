@@ -123,7 +123,7 @@ fn scalar_arithmetic_identity_casts_no_longer_change_declared_union_conversion()
 }
 
 #[test]
-fn variant_and_unknown_widening_stay_dynamic_and_scalar_overflow_still_fails() {
+fn variant_widening_stays_dynamic_and_scalar_overflow_still_fails() {
     let source = MemorySource::default();
     for expression in [
         "CVar(CInt(1))+CInt(2)",
@@ -131,8 +131,6 @@ fn variant_and_unknown_widening_stay_dynamic_and_scalar_overflow_still_fails() {
         "-CVar(CInt(1))",
         "CSng(1)*CVar(CInt(2))",
         "CDate(1)+CVar(CInt(2))",
-        "First(CInt(1))+CInt(2)",
-        "-First(CInt(1))",
     ] {
         let syntax = parse_query(&format!("SELECT {expression}"), Default::default()).unwrap();
         let plan = prepare_with_options(syntax.query(), &source, Default::default()).unwrap();

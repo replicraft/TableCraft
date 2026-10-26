@@ -74,6 +74,39 @@ A mismatched runtime mode can therefore fail rather than silently rename columns
 Eager constant zero/overflow failures remain visible before source scans. These are
 engineering composition checks, not native ACE result-type qualification.
 
+## Successful arithmetic with unknown declaration provenance
+
+The explicit declared profile now describes selected carriers for successful
+arithmetic even when an aggregate or UNION operand has unknown declaration
+provenance. Runtime already evaluates these cases through agreement: a widened
+result is refused because Scalar and Variant branches would differ. Successful
+results therefore retain the selected Byte/Integer/Long/Single or legacy DATE
+carrier where the existing operator rules require it. Unary Integer/Long/DATE
+negation has the same guarantee. This is a successful-result descriptor, not a
+new declaration category, range proof or permission to widen.
+
+For example, `First(CInt(1))+CInt(2)` has nullable Integer metadata in declared
+execution, while its declaration stays unknown. A UNION with Currency can now
+establish its common Currency carrier and convert both arms. Previously Dynamic
+metadata left the Integer arm unconverted. Ordinary materialized execution keeps
+its existing Dynamic metadata and conversion behavior. Public prepared metadata
+remains Dynamic when the two execution profiles differ. Empty results use the
+same static guarantee; no row is evaluated to choose metadata.
+
+A known Variant participant still allows widening and retains Dynamic descriptors
+where values can choose a wider result. Unknown `First(CInt(32767))+CInt(1)` still
+fails with ArithmeticDeclaration before a surrounding UNION can convert it.
+Later declaration-sensitive expressions still see unknown provenance, including
+comparisons whose String/numeric branch depends on it. NULL, operational errors,
+cancellation, work limits and buffered/progressive publication remain unchanged.
+
+Seven focused query tests cover selected operators/carriers, both UNION arm
+orders, empty/nullable sources, preserved ambiguity and Variant controls,
+progressive aggregate consumers and independent edge-value inputs. Two CLI tests
+exercise source-free/native queries and buffered overflow refusal. This extends
+the existing engineering arithmetic profile; native Access aggregate/UNION
+categories and full Variant promotion remain unqualified.
+
 ## Implemented propagation
 
 | Expression or composition | Metadata |

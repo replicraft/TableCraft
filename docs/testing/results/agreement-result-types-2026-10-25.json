@@ -1,0 +1,74 @@
+{
+  "date": "2026-10-25",
+  "scope": "Successful arithmetic-carrier metadata from existing unknown-category agreement; no aggregate/UNION declaration inference or native Access qualification.",
+  "new_tests": 9,
+  "existing_regression_tests": 64,
+  "unique_tests": 73,
+  "counting_note": "Seven new query tests and two new CLI tests. Existing suites are counted once, not per repeated invocation.",
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-query --test agreement_result_types --test arithmetic_agreement --test declared_result_widths --test declared_integral --test declared_dates --test declared_addition_types --locked",
+      "exit_code": 0,
+      "existing_tests": 26,
+      "note": "The initial five new query tests passed; the final seven-test target was rerun separately."
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test agreement_result_types --test progressive_derived_values --test arithmetic_output_types --test aggregate_selector_types --test union_numeric_types --test decimal_division_profiles --locked",
+      "exit_code": 0,
+      "existing_tests": 38,
+      "note": "Six new query tests passed at this stage; the final seven-test target was rerun separately."
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test agreement_result_types --locked",
+      "exit_code": 0,
+      "tests": 7
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --test agreement_result_types --locked",
+      "exit_code": 0,
+      "tests": 2
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --test agreement_result_types --test declared_result_widths --locked -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo clippy -p tablecraft-cli --test agreement_result_types --locked -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo check -p tablecraft-query --no-default-features --locked",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_dependency_boundaries.py",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "before_change": {
+    "focused_tests_passed": 2,
+    "focused_tests_failed": 3,
+    "note": "After correcting use of a private test constructor, failures reproduced Dynamic metadata, missed UNION conversion and empty-result descriptors before the implementation changed."
+  },
+  "authoring_corrections": [
+    "The integration test initially called the private OutputType::scalar helper; it now constructs the public enum with TypeDescriptor.",
+    "One regression command named a nonexistent result_types target; it was replaced by the actual arithmetic_output_types target.",
+    "The CLI golden initially omitted the existing four fractional digits in Currency TSV output; only the golden was corrected.",
+    "After correcting Currency output, the unequal byte-array golden branches needed an explicit byte-slice type annotation."
+  ],
+  "limitations": [
+    "No new native Access declaration category is assigned.",
+    "Unknown widening and ambiguous String/numeric predicates still refuse.",
+    "Materialized execution remains unchanged.",
+    "Known Variant participants can still widen.",
+    "No Windows Access comparison or full P0 acceptance claim."
+  ]
+}

@@ -1,5 +1,21 @@
 # Implementation status
 
+## Agreement-based arithmetic result metadata
+
+Declared execution now exposes selected successful arithmetic carriers even when
+aggregate/UNION operand declarations are unknown. Existing runtime agreement
+already refuses widening; metadata now reflects that guarantee, allowing correct
+common-carrier UNION conversion through outer queries. Provenance remains unknown,
+known Variant widening remains Dynamic and ordinary materialized behavior is
+unchanged. See [the result contract](QUERY_RESULT_TYPES.md#successful-arithmetic-with-unknown-declaration-provenance)
+and [verification](testing/results/agreement-result-types-2026-10-25.json).
+
+Seven query and two CLI tests cover arithmetic/negation widths, NULL/empty outputs,
+UNION arm order, ambiguity, known Variant controls, progressive consumers and edge
+values. Selected existing metadata, arithmetic and streaming regressions pass.
+This is engineering composition coverage, not native Access declaration inference
+or completion of P0 value semantics.
+
 ## Independent deeper compound-query replay
 
 The explicit depth-32 planner passes 1,692 compound queries over fifteen literal
