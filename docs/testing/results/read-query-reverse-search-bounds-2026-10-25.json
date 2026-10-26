@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Reject reverse substring callback positions beyond the requested start, preserving existing interior/forward empty spans.",
+  "review_base_revision": "874836fa2d9afd049927eb99f9552fedbd5f8994",
+  "unique_tests": 40,
+  "new_tests": 5,
+  "existing_regression_tests": 35,
+  "new_test_breakdown": {
+    "unicode_callback_and_finite_bound_tests": 3,
+    "retained_utf16_callback_tests": 2
+  },
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-expressions --features sql --lib search -j2 --locked --offline",
+      "exit_code": 0,
+      "log": ".cache/reverse-search-bounds-final-20261025.log",
+      "log_sha256": "e383d4fad27193512357bc9a94c73a3ac294c1be7115869eb612a54feae578c1",
+      "session": 34043,
+      "passed_tests": 40
+    },
+    {
+      "command": "cargo clippy -p tablecraft-expressions --features sql --lib --tests -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "log": ".cache/reverse-search-bounds-clippy-20261025.log",
+      "log_sha256": "ce76586c94afe45ff98aa0e77eb28a31e5a6f2f9cde4012aa1526632ef10770b",
+      "session": 2058
+    },
+    {
+      "command": "cargo check -p tablecraft-expressions --no-default-features --locked --offline -j2",
+      "exit_code": 0,
+      "log": ".cache/reverse-search-bounds-minimal-20261025.log",
+      "log_sha256": "47c31f017aa46810aa2874758c15138d3f4629c9626584b28864c482c369d395"
+    },
+    {
+      "command": "rustfmt --edition 2024 --check crates/query/tablecraft-expressions/src/functions/text/search.rs crates/query/tablecraft-expressions/src/functions/text/search/reverse_bounds_tests.rs crates/query/tablecraft-expressions/src/evaluation/search.rs crates/query/tablecraft-expressions/src/evaluation/search/reverse_bounds_tests.rs",
+      "exit_code": 0,
+      "log": ".cache/reverse-search-bounds-format-20261025.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "before_fix_proof": {
+    "command": "cargo test -p tablecraft-expressions --features sql --lib reverse_bounds_tests -j2 --locked --offline",
+    "session": 89348,
+    "exit_code": 101,
+    "log": ".cache/reverse-search-bounds-before-runtime-20261025.log",
+    "log_sha256": "38489b7d8db67b321cd7e00bc66a53d40324e28f7bc64d0d78ad6b401bd29a13",
+    "passed_tests": 2,
+    "failed_tests": 3,
+    "counterexample": "InStrRev(\"abcd\", \"b\", 2, Text) accepts callback range 2..2 and publishes one-based position 3; raw UTF-16 and the finite bound model expose the same defect.",
+    "expected": "InvalidTextMatch for a reverse span starting at or beyond its exclusive bound."
+  },
+  "excluded_authoring_attempts": [
+    {
+      "command": "cargo test -p tablecraft-expressions --features sql --lib reverse_bounds_tests -j2 --locked --offline",
+      "session": 54979,
+      "exit_code": 101,
+      "log": ".cache/reverse-search-bounds-before-20261025.log",
+      "log_sha256": "105141933504d8cec89b4763d45ce46848c87d93dfeae3597ce0c55800b861c2",
+      "reason": "New Unicode test helper attempted to return a potentially borrowed TextResult from temporary arguments (E0515).",
+      "correction": "The helper extracts the numeric Position into an owned i32. Expected positions and failure oracles are unchanged."
+    }
+  ],
+  "superseded_success_not_counted_twice": {
+    "command": "cargo test -p tablecraft-expressions --features sql --lib search -j2 --locked --offline",
+    "exit_code": 0,
+    "log": ".cache/reverse-search-bounds-accepted-20261025.log",
+    "log_sha256": "6835875ad8c5aa0a3d497a696be893810a056926e49d1d733bcc5c9accf7dd14",
+    "session": 44590,
+    "passed_tests": 40
+  },
+  "primary_contracts": [
+    {
+      "url": "https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/instrrev-function",
+      "scope": "Reverse search starts at the supplied position and admits matched end characters at or before that position."
+    },
+    {
+      "url": "https://support.microsoft.com/en-gb/access/functions/instrrev-function",
+      "scope": "Direct Access SQL query examples with an explicit reverse start."
+    }
+  ],
+  "preserved_contracts": [
+    "Decoded and retained raw UTF-16 providers share the same bound validation.",
+    "Explicit Text, Database and host-default callback modes are covered; binary mode remains callback-free.",
+    "Interior zero-length callback spans remain admitted; forward zero-length spans remain admitted under their existing bounds.",
+    "The actual empty-needle shortcut, NULL/start controls, operand coercion and locale identities are unchanged.",
+    "Typed callback failures and the post-callback cancellation/work checkpoint precede span validation.",
+    "No added scan, allocation, provider call, fallback, flag or resource ceiling change."
+  ],
+  "implementation_inventory": [
+    "crates/query/tablecraft-expressions/src/functions/text/search.rs",
+    "crates/query/tablecraft-expressions/src/functions/text/search/reverse_bounds_tests.rs",
+    "crates/query/tablecraft-expressions/src/evaluation/search.rs",
+    "crates/query/tablecraft-expressions/src/evaluation/search/reverse_bounds_tests.rs",
+    "docs/STRING_SEARCH.md"
+  ],
+  "working_tree_file_sha256": {
+    "crates/query/tablecraft-expressions/src/functions/text/search.rs": "5b7d41b95d288673d247d82a7ccc2b71bc711a8074dde0bdebe8e44233dabf62",
+    "crates/query/tablecraft-expressions/src/functions/text/search/reverse_bounds_tests.rs": "af8aeabfa196ebecd2b3be403cdc39fea10429e915deb967af51a65442fcdf6a",
+    "crates/query/tablecraft-expressions/src/evaluation/search.rs": "2165d2a900217aba6c4a365cd3f76bde3eb6dde4ce1ebd8b5363cd8c7a07bc28",
+    "crates/query/tablecraft-expressions/src/evaluation/search/reverse_bounds_tests.rs": "1260152a0451c3d5bbf85e692d0ab78b90e5744d1371b2b26e534de1eaf663da",
+    "docs/STRING_SEARCH.md": "ff8b3180797c4c89254c807b05270714770b5bded5ccd46b1132db28b50ff277"
+  },
+  "record_file": "docs/testing/results/read-query-reverse-search-bounds-2026-10-25.json",
+  "limits": [
+    "No query/CLI integration execution in this focused batch.",
+    "No ICU locale, native NLS, mixed field-policy precedence or zero-weight linguistic match qualification.",
+    "This record does not forbid all nonempty-needle zero-length matches or establish their native semantics."
+  ]
+}

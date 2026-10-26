@@ -1,5 +1,18 @@
 # Implementation status
 
+## Reverse-search callback bounds
+
+Reverse substring searches now reject provider spans that would publish a
+position beyond the requested start, including an empty span at the exclusive
+boundary. Decoded and retained UTF-16 callbacks share this validation. Existing
+interior and forward empty spans retain their explicit provider contract.
+
+Five new tests and 35 selected search regressions pass, with strict lint,
+formatting and a standalone minimal build. A before-fix probe records three real
+failures. See [the search contract](STRING_SEARCH.md) and
+[verification](testing/results/read-query-reverse-search-bounds-2026-10-25.json).
+This fixes callback validation without qualifying native locale behavior.
+
 ## LIKE pattern error timing
 
 LIKE now defers malformed-pattern errors until matching reaches the affected

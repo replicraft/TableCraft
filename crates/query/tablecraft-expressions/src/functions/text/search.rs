@@ -324,7 +324,7 @@ fn validate_match(
             && found.end <= length
             && match search {
                 StringSearch::ForwardFrom(start) => found.start >= start,
-                StringSearch::ReverseThrough(end) => found.end <= end,
+                StringSearch::ReverseThrough(end) => found.start < end && found.end <= end,
             };
         if !valid {
             return Err(EvalError::InvalidTextMatch);
@@ -390,3 +390,6 @@ mod tests;
 
 #[cfg(test)]
 mod locale_tests;
+
+#[cfg(test)]
+mod reverse_bounds_tests;
