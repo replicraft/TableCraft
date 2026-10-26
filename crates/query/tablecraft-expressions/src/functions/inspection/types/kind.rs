@@ -53,7 +53,7 @@ pub(super) fn metadata(input: InspectionInput<'_>) -> Result<(&'static str, i16)
         InspectionInput::Array(ArrayView::Variants(_)) => {
             return Ok(("Variant()", ARRAY_FLAG + VariantKind::Variant as i16));
         }
-        InspectionInput::Array(ArrayView::Bytes(_)) => {
+        InspectionInput::Array(ArrayView::Bytes(_) | ArrayView::Guid(_)) => {
             return Ok(("Byte()", ARRAY_FLAG + VariantKind::Byte as i16));
         }
         InspectionInput::Expression(ExpressionValue::Empty) => VariantKind::Empty,
@@ -77,10 +77,10 @@ pub(super) fn metadata(input: InspectionInput<'_>) -> Result<(&'static str, i16)
             Value::Decimal(_) => VariantKind::Decimal,
             Value::Byte(_) => VariantKind::Byte,
             Value::Int64(_) => VariantKind::LongLong,
-            Value::Binary(_) => {
+            Value::Binary(_) | Value::Guid(_) => {
                 return Ok(("Byte()", ARRAY_FLAG + VariantKind::Byte as i16));
             }
-            Value::Guid(_) | Value::DateTimeExtended(_) => return Err(EvalError::TypeMismatch),
+            Value::DateTimeExtended(_) => return Err(EvalError::TypeMismatch),
         },
     };
 

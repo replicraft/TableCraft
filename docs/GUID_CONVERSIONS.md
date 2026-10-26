@@ -206,3 +206,8 @@ python3 -B docs/testing/compare_guid_predicates.py \
   --revision 819980ce \
   --report FRESH_REPORT.json
 ```
+
+Stored Guid fields now also use the [fixed Byte-array inspection view](VALUE_INSPECTION.md#stored-guid-inspection-and-fixed-bounds)
+for TypeName/VarType/IsArray and LBound/UBound. This does not materialize bytes or
+change the canonical stored/result carrier; native subtype/bound qualification
+remains separate from the predicate and conversion evidence above.

@@ -161,3 +161,33 @@ fn recognition_handles_error_data_but_preserves_buffered_operational_failure() {
         assert!(String::from_utf8_lossy(&result.stderr).contains("division by zero"));
     }
 }
+
+#[test]
+fn guid_inspection_has_byte_array_shape_and_bounds_in_both_cli_hosts() {
+    let guid = "{guid {00112233-4455-6677-8899-aabbccddeeff}}";
+    let sql = format!(
+        "SELECT TypeName({guid}) AS N,VarType({guid}) AS T,IsArray({guid}) AS A,\
+         LBound({guid}) AS L,UBound({guid}) AS U"
+    );
+    for mode in ["eval", "run"] {
+        let result = run(&["query", mode, &sql]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(
+            table(&result.stdout),
+            [
+                vec!["N", "T", "A", "L", "U"],
+                vec!["\"Byte()\"", "8209", "TRUE", "0", "15"],
+            ]
+        );
+        for expression in [format!("UBound({guid},2)"), format!("UBound({guid},1/0)")] {
+            let sql = format!("SELECT {expression}");
+            let refused = run(&["query", mode, &sql]);
+            assert_eq!(refused.status.code(), Some(2));
+            assert!(refused.stdout.is_empty());
+        }
+    }
+}

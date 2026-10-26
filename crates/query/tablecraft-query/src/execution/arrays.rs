@@ -33,19 +33,12 @@ impl Operand {
     fn array(&self) -> Result<ArrayView<'_>, EvalError> {
         match self {
             Self::Array(array) => Ok(ArrayView::Variants(array)),
-            Self::Scalar(Value::Binary(bytes)) => Ok(ArrayView::Bytes(bytes)),
-            Self::Expression(CellValue {
-                value: ExpressionValue::Value(Value::Binary(bytes)),
+            Self::Scalar(value)
+            | Self::Expression(CellValue {
+                value: ExpressionValue::Value(value),
                 ..
-            }) => Ok(ArrayView::Bytes(bytes)),
-            Self::Expression(CellValue {
-                value: ExpressionValue::Value(Value::Null),
-                ..
-            }) => Err(EvalError::InvalidNullConversion),
-            Self::Scalar(Value::Null) => Err(EvalError::InvalidNullConversion),
-            Self::Scalar(_) | Self::ByteString(_) | Self::Expression(_) => {
-                Err(EvalError::TypeMismatch)
-            }
+            }) => ArrayView::from_scalar(value),
+            Self::ByteString(_) | Self::Expression(_) => Err(EvalError::TypeMismatch),
         }
     }
 }

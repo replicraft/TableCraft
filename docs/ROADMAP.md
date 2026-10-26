@@ -693,6 +693,13 @@ write transactions/recovery, schema editing, data-macro write safety, UI, forms/
 reports and SQLite expansion are outside this read/query checklist. They remain
 in the broader backend roadmap; this list does not mark them completed or waived.
 
+## Stored GUID inspection
+
+[Fixed GUID Byte-array views](VALUE_INSPECTION.md#stored-guid-inspection-and-fixed-bounds)
+now supply type/subtype/array inspection and bounds across scalar and bound
+queries without rewriting stored values or materializing bytes. Native subtype,
+bound and error-precedence qualification remains separate; full P0 remains open.
+
 ## GUID-structure predicate coercion
 
 [GUID/byte-structure equality](GUID_CONVERSIONS.md#guid-structure-predicate-equality)

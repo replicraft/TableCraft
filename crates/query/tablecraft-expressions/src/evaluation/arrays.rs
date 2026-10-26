@@ -34,18 +34,11 @@ impl InspectionOperand<'_> {
     pub(super) fn array(&self) -> Result<ArrayView<'_>, EvalError> {
         match self {
             Self::Array(value) => Ok(ArrayView::Variants(value)),
-            Self::Scalar(Value::Binary(bytes)) => Ok(ArrayView::Bytes(bytes)),
-            Self::Expression(ExpressionValue::Value(Value::Binary(bytes))) => {
-                Ok(ArrayView::Bytes(bytes))
-            }
-            Self::Expression(ExpressionValue::Value(Value::Null)) => {
-                Err(EvalError::InvalidNullConversion)
+            Self::Scalar(value) | Self::Expression(ExpressionValue::Value(value)) => {
+                ArrayView::from_scalar(value)
             }
             Self::Binary(bytes) => Ok(ArrayView::Bytes(bytes)),
-            Self::Scalar(Value::Null) => Err(EvalError::InvalidNullConversion),
-            Self::Scalar(_) | Self::ByteString(_) | Self::Expression(_) => {
-                Err(EvalError::TypeMismatch)
-            }
+            Self::ByteString(_) | Self::Expression(_) => Err(EvalError::TypeMismatch),
         }
     }
 }

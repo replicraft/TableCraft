@@ -1,6 +1,6 @@
 use super::ArrayValue;
 use crate::{EvalError, functions::conversions::Conversion};
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{Guid, Value};
 
 /// Borrowed array input, keeping opaque binary data distinct from Variant elements.
 #[derive(Clone, Copy)]
@@ -9,6 +9,21 @@ pub enum ArrayView<'a> {
     Variants(&'a ArrayValue),
     /// Materialized binary interpreted as a zero-based Byte array for inspection.
     Bytes(&'a [u8]),
+    /// Stored GUID inspected as a fixed zero-based Byte array, without copying bytes.
+    Guid(&'a Guid),
+}
+
+impl<'a> ArrayView<'a> {
+    /// Borrow the supported scalar array carriers for inspection/bounds only.
+    /// This does not turn the stored value into a language array or expose elements.
+    pub fn from_scalar(value: &'a Value) -> Result<Self, EvalError> {
+        match value {
+            Value::Binary(bytes) => Ok(Self::Bytes(bytes)),
+            Value::Guid(guid) => Ok(Self::Guid(guid)),
+            Value::Null => Err(EvalError::InvalidNullConversion),
+            _ => Err(EvalError::TypeMismatch),
+        }
+    }
 }
 
 /// Closed dimension-bound calls over explicit array inputs.
@@ -50,6 +65,7 @@ impl BoundFunction {
 
         let (lower, upper) = match array {
             ArrayView::Variants(array) => (array.lower_bound(), array.upper_bound()),
+            ArrayView::Guid(_) => (0, Guid::BYTE_LEN as i32 - 1),
             ArrayView::Bytes(bytes) => {
                 let upper = if bytes.is_empty() {
                     -1

@@ -39,6 +39,7 @@ profile rather than claiming native Access literal/promotion behavior.
 | Int64 | LongLong | 20 |
 | Explicit Variant-element array | Variant() | 8204 |
 | Materialized Binary/borrowed Byte array | Byte() | 8209 |
+| Stored Guid through the explicit fixed Byte-array view | Byte() | 8209 |
 
 The array flag is added to its declared element subtype; a homogeneous Array(1,2)
 remains a Variant-element array. Binary is inspected as a zero-based Byte array
@@ -49,8 +50,9 @@ field once, without a payload copy or element scan. Ordinary scalar Binary
 expression operations retain their existing restrictions. Public kernels and
 bound queries also accept Binary; native row materialization remains budgeted.
 
-GUID and extended DateTime have no guessed VBA subtype: TypeName/VarType reject
-them with TypeMismatch. Array/Empty/Error predicates can still report their known
+Stored GUIDs now have the explicit fixed Byte-array view described below.
+Extended DateTime still has no qualified VBA subtype: TypeName/VarType reject
+it with TypeMismatch. Its Array/Empty/Error predicates retain their known
 non-array/non-language-state status. LongLong remains available independently of
 host pointer width, like the existing CLngLng profile; 32-bit VBA compatibility is
 not established. Inspection metadata does not coerce numeric payloads, parse Text
@@ -170,3 +172,40 @@ references. Existing direct-query admission remains the scope recorded above;
 the signature references alone do not establish query availability. Array input,
 dimension, eager error, empty-result and resource/cancellation rules are unchanged.
 Native Access declaration and overflow behavior remain unqualified.
+
+## Stored GUID inspection and fixed bounds
+
+The current profile exposes stored Guid values to TypeName, VarType, IsArray,
+LBound and UBound as fixed zero-based Byte arrays. Results are `Byte()`, 8209,
+True, 0 and 15 respectively. IsEmpty and IsError remain False. NULL fields keep
+their separate Null/1/non-array inspection results, and requesting NULL bounds
+still fails InvalidNullConversion. Unsupported dimensions keep ArrayBounds;
+written dimension expressions evaluate eagerly before bound admission.
+
+Microsoft's [GUID conversion contract](https://support.microsoft.com/en-us/access/functions/guidfromstring-function)
+defines stored GUIDs and GUIDFromString results as Byte arrays. This mapping
+extends TableCraft's existing Byte-array inspection profile to its canonical
+stored Guid carrier. Exact native subtype names, lower bounds, Variant promotion
+and error precedence remain Windows qualification work. It does not change the
+stored Guid type, canonical bytes, query result descriptor or strict equality.
+
+`ArrayView::Guid(&Guid)` borrows the existing value for inspection/bounds only.
+`ArrayView::from_scalar` centralizes Binary/Guid/NULL admission for scalar and
+query evaluators. No Byte vector, element scan, GUID parsing or byte-order
+conversion is needed to inspect fixed width. The view exposes no element-reading
+or mutation API and cannot outlive its input. General arrays retain their current
+separate limits. TypeName's Text output remains fallibly allocated and metered;
+other inspection/bound results reuse their existing work/cancellation checks.
+
+Native fields, scalar subqueries, typed GUID parameters, CVar/selectors, grouped
+aggregates, domains and progressive queries use the same view. Source payloads
+and returned Guid cells retain their original carrier. Unsupported Extended-date
+inspection and Error/Missing/non-array bound admission remain unchanged. No VBA
+runtime, object activation, host provider or new dependency is added.
+
+Two focused expression tests, four query tests and a CLI test cover fixed extents,
+wrapper normalization, source carrier preservation, parameter reuse, compound
+consumers, streaming parity, eager failures and every observed query cancellation
+point. Existing Binary/Variant array tests remain passing. See the
+[verification record](testing/results/guid-inspection-2026-10-25.json).
+This closes an implementation gap without completing native qualification or P0.
