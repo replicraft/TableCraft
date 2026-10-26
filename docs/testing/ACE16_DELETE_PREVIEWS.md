@@ -22,9 +22,9 @@ is introduced.
 
 The preview admits only plain subversion-zero ACE2016/2019 images and keeps the
 existing structural, property, active-content, schema-history, constraint and
-preservation gates. Every declared relationship touching the selected table is refused,
-including an empty request; this slice does not implement RESTRICT/cascades or
-skip required relationship actions. Ignored-NULL indexes remain UPDATE blockers;
+preservation gates. Touching relationships require the closed cross-table enforced
+RESTRICT profile below; unsupported actions are never silently skipped, even for
+empty requests. Ignored-NULL indexes remain UPDATE blockers;
 DELETE uses the separately qualified physical-membership subset described below.
 
 Every physical index must have a checked supported existing topology. Requests
@@ -416,3 +416,52 @@ the original file length, nonempty heights and map representations, reaching the
 same final values and keys. Reference-retired residuals can reflect intermediate
 deletions; candidates preserve original retired-page residual bytes. No selector,
 request or budget was relaxed, and native Access qualification remains separate.
+
+## Cross-table enforced RESTRICT relationships
+
+Deletion now admits known, enforced cross-table relationships whose declared
+delete action is RESTRICT. Known update actions may be RESTRICT or Cascade;
+deletion does not rewrite surviving key values or dispatch update actions. Delete
+Cascade, SetNull, unknown/inherited semantics, unenforced declarations and
+self-relationships remain refused, including empty requests. This profile makes
+no SQL statement-timing or self-co-deletion claim.
+
+Before rule admission, the existing selected-table checks still validate complete
+index structure, reciprocal native FK/catalog metadata, stored membership and the
+separate mutation-carrier profile. Supported relationship keys remain exact paired
+Byte, Int16/32/64, Currency, GUID or Decimal fields, with matching Decimal precision
+and scale. One-to-one and one-to-many checks are retained. Read qualification
+alone does not expand that mutation-carrier allowlist.
+
+Child deletion and unreferenced parent deletion use the existing raw-root,
+table-count and index machinery. The final image must pass complete membership
+for every touching relationship again. A removed parent with any surviving
+dependent therefore returns the typed `ConstraintViolation::MissingParent` error
+and exposes no candidate.
+All-NULL child tuples remain exempt; partially NULL tuples require their exact
+parent. Every touching edge is checked, so a second incoming edge can block an
+otherwise unreferenced parent removal.
+
+There is no new foreign-key encoder, key-matching recipe or cascade dispatcher.
+Unmodified related tables and relationship/index declarations remain covered by
+the unchanged-byte proof. Properties, history, active content, existing UPDATE
+and ignored-index contracts, cumulative budgets/cancellation and non-journalable
+candidate isolation remain. Normal ACE/backend SQL DELETE, macro eligibility and
+native Access save/reopen are not enabled by this extension.
+
+The [RESTRICT implementation record](results/ace16-delete-restrict-native-2026-10-26.json)
+records 230 passing engine functions: nine new assertion functions and 221
+existing DELETE/read/writer/private regressions. Two author tests reuse the
+peer-authored synthetic cross-table fixture with their own expected rows and
+preservation assertions; seven peer tests cover multiple edges, partial NULLs,
+metadata/action refusals and failure atomicity. This is shared synthetic fixture
+coverage, separate from future original public-writer storage evidence.
+
+Three compile-fail docs, strict selected library/test/example lint, minimal
+standalone compilation and seven-file formatting pass. A causal healthy
+unenforced fixture first passes ordinary structure and NotEnforced read checks,
+then verifies exact DELETE refusal for empty and nonempty requests. Runtime
+expectations required no corrections. Initial unused-import/shared-helper warnings
+were resolved without production lint suppression; the final helper spacing
+change is cosmetic. Self-reference timing and repaired original-file candidate
+replay remain outside this implementation record.

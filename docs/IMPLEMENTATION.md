@@ -1,5 +1,30 @@
 # Implementation status
 
+## Cross-table RESTRICT deletion candidates
+
+The optional ACE16 deletion preview now admits qualified enforced cross-table
+RESTRICT relationships after the complete existing before-image checks. Child
+rows and unreferenced parents can be deleted; any surviving child referencing a
+removed parent produces `ConstraintViolation::MissingParent` before publication.
+All incoming edges remain checked. Entirely NULL child tuples are exempt, while
+partial-NULL tuples require their exact parent.
+
+The closed profile retains exact paired Byte, Int16/32/64, Currency, GUID and
+matching Decimal mutation keys. Self relationships, unenforced declarations and
+other delete actions refuse even empty requests. Known update-Cascade metadata
+is inert during deletion; no cascade dispatcher or new key matcher is introduced.
+Related table bytes, relationship declarations, UPDATE restrictions, existing
+index/map audits and cumulative budgets remain protected. Normal ACE saves,
+backend SQL DELETE and native Access action timing remain unqualified.
+
+The [verification record](testing/results/ace16-delete-restrict-native-2026-10-26.json)
+records 230 passing engine functions, including nine new controls, plus three
+compile-fail checks. Strict lint, minimal compilation and formatting pass.
+Independent authored controls include a healthy unenforced relationship whose
+ordinary indexes pass read checks but whose empty and nonempty deletion requests
+still refuse. Original-file comparisons remain a separate acceptance step; see
+the [relationship contract](testing/ACE16_DELETE_PREVIEWS.md#cross-table-enforced-restrict-relationships).
+
 ## Deletion through qualified ignore-NULL indexes
 
 The opt-in ACE16 deletion preview now derives a separate effective request set for
