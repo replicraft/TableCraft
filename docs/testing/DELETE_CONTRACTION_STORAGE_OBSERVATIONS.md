@@ -138,3 +138,58 @@ the promoted public sources and independently rehash all existing files. The com
 summary distinguishes these source/capture versions and pins the retained raw
 reports rather than rewriting them. No candidate replay is included in this
 reference chunk.
+
+## Current candidate baseline: sixteen positive controls remain unmet
+
+The separate [candidate baseline](results/ace16-delete-contraction-baseline-2026-10-26.json)
+runs the committed frozen engineering example from revision
+`a19cda688f6ea7660bfc8ca53852f5846fa3fd24`, SHA-256
+`c807a655bce1ea49a6b4c5308bc287293e01d6039279589110f7cf8db85deda4`.
+It is **partial evidence, not full contraction acceptance**. Of twenty required
+positive controls, four succeed: deleting the remaining nine live rows from each
+existing one-leaf reference history. Twelve expected stale/duplicate/existing-output
+refusals also succeed. Sixteen larger positive cases return the typed
+`Unsupported(IndexedColumn)` refusal. All source/input/request pins stay unchanged.
+
+All 32 controls run; the actual 64 commands include only successful candidate
+reopens. A fully successful run would have 96 commands because each additional
+candidate requires two independent getter/probe reopens. Native/query allowances
+and expected populations were not changed. Full padded batches use request files;
+there is no argv workaround that omits selected rows.
+
+The concrete frozen-source gate refuses any internal node with nonzero previous
+or next links during contraction. The original Wide trees have complete reciprocal
+internal chains, not just linked leaves:
+
+| Family/profile | Wide root | Original height-1 node chain |
+| --- | ---: | --- |
+| Deep V2016 | 92 | `152 → 126 → 158 → 125` |
+| Deep V2019 | 109 | `169 → 143 → 175 → 142` |
+| Indirect V2016 | 92 | `584 → 370 → 622 → 369` |
+| Indirect V2019 | 109 | `601 → 387 → 639 → 386` |
+
+The reference subtree deletion removes the first node and repairs the next node's
+previous pointer to zero; the remaining per-height chain stays reciprocal. Roots
+have zero siblings. The nine-row reference has one node at each internal height,
+so both sibling links are zero. These complete chains were independently checked
+for all sixteen original/reference graph states.
+
+Original Wide roots use bounded-final-child entries; their height-1 internals
+store bounded entries plus a final tail child. The selected nine-row history
+retains a non-tail original leaf, yielding a bounded singleton at each node with
+tail zero. An initial verifier incorrectly assumed bounded source nodes everywhere.
+That source and its raw run remain archived. The corrected verifier derives the
+surviving original child sequence and full key/row maxima independently, accepts
+either all bounded children or all-but-last bounded with the **exact last child**
+as tail, and derives sibling chains separately per physical root and height.
+All sixteen reference graph cases pass those model checks. It does not accept
+arbitrary tail pointers or infer byte-identical node re-encoding.
+
+A fresh same-binary rerun reproduces the sixteen typed production refusals and
+verifies the four candidates and twelve negative controls again. Initial and
+corrected raw reports, command logs, output files and exact driver snapshots stay
+ignored with immutable hashes and source-path/archive mappings in the baseline.
+The published driver subsequently only names header offsets/widths; its sixteen
+model checks pass without claiming another native execution. Any future repaired
+implementation requires a new frozen artifact and a separate acceptance record.
+This baseline will not be rewritten into a passing result.
