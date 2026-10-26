@@ -501,3 +501,51 @@ unknown declarations retain value-dependent widening. Default and public
 conservative descriptors are unchanged. These guarantees also feed UNION
 conversion before downstream consumers observe the values. See
 [successful Scalar widths](DECLARED_ARITHMETIC.md#successful-scalar-arithmetic-result-widths).
+
+## Stored-field agreement replay — 25 October 2026
+
+The original [native replay](testing/compare_agreement_result_types.py) passes
+312 CLI observations over four unchanged ScalarFixture originals (Jet 4,
+ACE 2007, ACE 2016 and ACE 2019). Public Jackcess getters supply exact Byte,
+Integer and Single inputs; Python integer/Fraction calculations supply expected
+arithmetic values. Only TableCraft executes SQL. Both UNION arm orders and both
+arithmetic profiles are crossed with the current executable and its pre-fix
+baseline. Selected operations include addition, negation, integer division,
+Single multiplication/division, NULL/empty aggregates and arithmetic over an
+inner UNION's unknown-category output.
+
+The 288 successful controls compare 576 rows and 1,152 cells, including observable
+VarType codes. The 24 widening controls retain declaration refusals with empty
+stdout in both executables. Current declared execution converts both selected
+integral/Currency arms to Currency and both Single/Currency arms to Double;
+ordinary materialized outputs retain their earlier mixed carriers. Independent
+expected values do not establish native Access result categories or conversion
+precedence.
+
+The [report](testing/results/agreement-native-replay-2026-10-25.json) records a
+complete unique command-grid audit, twelve rehashed immutable artifacts, five
+selected committed/live source snapshots and four getter transcript hashes.
+Getter transcripts match the preceding independent numeric replay. Original
+files, tools and frozen executables remain unchanged. A private diagnostic report
+records a correction to the independent expected peer tag: common Double
+conversion applies to both UNION arms, including the Currency arm. Engine code
+and expected numeric values did not change during the replay.
+
+The candidate was built at `8c1b3004`, SHA-256
+`5a73870b888d58a22314096e761ec3ddec8cfc4ea6bbf7a7e5acda868b46d10c`.
+The baseline was built at `b9e26076`, SHA-256
+`f9e51ed3b8bfd0500ed8f650cec6e2bdbf27ee4d93fccfab2e176454f6277433`.
+The runner builds/downloads nothing, checks the reviewed reference/original
+fingerprints, caps CLI observations at 400 and requires a fresh report path.
+Getters have a 256 MiB Java heap ceiling; commands have individual timeouts.
+This is not a benchmark or Windows Access comparison.
+
+```sh
+python3 -B docs/testing/compare_agreement_result_types.py \
+  --cli .cache/tablecraft-bin/agreement-result-types-cli-20261025 \
+  --baseline .cache/tablecraft-bin/binding-depth-cli-20261025 \
+  --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
+  --directory .cache/tablecraft-fixtures/scalar-seek-20261023 \
+  --revision 8c1b3004 \
+  --report FRESH_REPORT.json
+```

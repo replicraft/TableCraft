@@ -1,5 +1,17 @@
 # Implementation status
 
+## Independent stored arithmetic/UNION replay
+
+The [stored-field replay](QUERY_RESULT_TYPES.md#stored-field-agreement-replay--25-october-2026)
+passes 312 CLI controls across unchanged Jet 4/ACE 2007/ACE 2016/ACE 2019 originals.
+Current and pre-fix executables run both arithmetic modes and both UNION arm orders.
+Independent native getters plus Python integer/Fraction expectations check 576
+rows and 1,152 cells, including VarType. Twenty-four unknown-widening refusals
+retain empty stdout. Current declared conversions change as intended; materialized
+behavior remains unchanged. The [audited report](testing/results/agreement-native-replay-2026-10-25.json)
+rehashes twelve artifacts and five selected source snapshots; native Access SQL
+categories, conversion precedence and complete P0 remain unqualified.
+
 ## Agreement-based arithmetic result metadata
 
 Declared execution now exposes selected successful arithmetic carriers even when

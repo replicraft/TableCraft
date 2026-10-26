@@ -8519,3 +8519,17 @@ The [report](testing/results/deeper-query-replay-2026-10-25.json) records 1,692
 successful queries, 141 default-depth refusals, four getter transcript hashes,
 eleven immutable artifacts and 66 selected committed/live source snapshots.
 Original bytes are unchanged; this is not native Access execution evidence.
+
+## Stored arithmetic/UNION replay — 25 October 2026
+
+The original [agreement-result runner](testing/compare_agreement_result_types.py)
+reuses the registered immutable Scalar-V2000/V2007/V2016/V2019 originals and
+reviewed Jackcess 5.0.4 getter tooling. No new third-party fixture or binary is
+committed. Four read-only getter transcripts supply stored Byte/Integer/Single
+values for independent Python integer/Fraction expectations. The
+[report](testing/results/agreement-native-replay-2026-10-25.json) records 312 CLI
+observations, 576 compared rows, 1,152 cells and 24 declaration refusals in
+current/pre-fix executables. Twelve immutable artifacts and five selected sources
+are rehashed; all originals remain unchanged. Getter hashes agree with the earlier
+[mixed-key replay](testing/FIXED_BINARY_KEYS.md). This is not native Access SQL
+execution or subtype qualification.
