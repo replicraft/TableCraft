@@ -4,7 +4,7 @@ use super::super::{TableSchema, read_table};
 use super::key::KeyWork;
 use super::{
     IndexConstraints, IndexProjection, IndexProjectionSelection, NativeIndex,
-    inspect_table_indexes, key::KeyProfile, profile::IndexProfile, read::IgnoredInt32Check,
+    inspect_table_indexes, key::KeyProfile, profile::IndexProfile, read::IgnoredFixedCheck,
     read_table_index_projection,
 };
 use crate::InspectError;
@@ -62,7 +62,8 @@ impl TableCheck {
 }
 /// Check one explicit stable/offline scalar table sequentially and through every
 /// qualified Boolean/numeric/legacy DateTime/GUID index. Unsupported profiles are
-/// reported, not marked checked. Single Int32 ignore-NULL indexes compare their
+/// reported, not marked checked. Single Int32/ACE16 Int64/Currency ignore-NULL
+/// indexes compare their
 /// complete physical membership against the sequential non-NULL population;
 /// omitted NULL roots still participate in required-key validation.
 /// Failures in metadata/selected traversal return no partial report.
@@ -107,7 +108,7 @@ pub fn check_table<R: crate::NativeReadSource>(
             .as_ref()
             .and_then(|populations| populations[position]);
         let profile = if eligible_rows.is_some() {
-            IndexProfile::ignored_int32(&index, &inspection.schema)
+            IndexProfile::ignored_fixed(&index, &inspection.schema)
         } else {
             IndexProfile::new(&index, &inspection.schema)
         };
@@ -116,12 +117,12 @@ pub fn check_table<R: crate::NativeReadSource>(
                 let projection =
                     CheckProjection::new(&inspection.schema, &index, budget, cancelled)?;
                 let indexed = if let Some(eligible_rows) = eligible_rows {
-                    super::read::read_ignored_int32_check(
+                    super::read::read_ignored_fixed_check(
                         source,
                         scope,
                         table,
                         index.name(),
-                        IgnoredInt32Check {
+                        IgnoredFixedCheck {
                             columns: projection.names(),
                             eligible_rows,
                         },

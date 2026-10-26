@@ -1,7 +1,7 @@
 //! Count the eligible population before dropping the checked sequential snapshot.
 use super::{IndexProfile, TableSnapshot, tick};
 use crate::{IndexConstraintViolation, IndexInspection, InspectError};
-use tablecraft_core::{limits::ResourceBudget, values::Value};
+use tablecraft_core::limits::ResourceBudget;
 
 pub(super) fn populations(
     inspection: &IndexInspection,
@@ -28,7 +28,7 @@ pub(super) fn populations(
         .map_err(|_| InspectError::Allocation)?;
     for index in indexes {
         tick(budget, cancelled)?;
-        let profile = match IndexProfile::ignored_int32(index, inspection.schema()) {
+        let profile = match IndexProfile::ignored_fixed(index, inspection.schema()) {
             Ok(IndexProfile::Single(profile)) => profile,
             Err(InspectError::Unsupported) => {
                 counts.push(None);
@@ -41,17 +41,17 @@ pub(super) fn populations(
         let mut count = 0_usize;
         for row in table.rows() {
             tick(budget, cancelled)?;
-            match row.get(profile.column).ok_or(InspectError::Malformed)? {
-                Value::Null => {
+            let value = row.get(profile.column).ok_or(InspectError::Malformed)?;
+            match profile.key_type.key(value)? {
+                None => {
                     // An omitted NULL must not hide a required-key violation.
                     if constraints.required() {
                         return Err(IndexConstraintViolation::NullKey.into());
                     }
                 }
-                Value::Int32(_) => {
+                Some(_) => {
                     count = count.checked_add(1).ok_or(InspectError::StructureLimit)?;
                 }
-                _ => return Err(InspectError::Malformed),
             }
         }
         counts.push(Some(count));

@@ -1,0 +1,178 @@
+{
+  "scope": "Extend qualified ignore-NULL non-NULL selections/checks to exact ACE16 Int64 and Currency; no new codecs, coercions, All/NULL table reads or mutation eligibility",
+  "date": "2026-10-25",
+  "unique_tests": 67,
+  "new_tests": 9,
+  "engine_unique_tests": 51,
+  "adapter_unique_tests": 16,
+  "checks": [
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test ignored_null_wide_indexes --test ignored_null_indexes --test currency_indexes --test indexed_nulls --test ace16_fixed_updates --test index_nodes",
+      "session": 87461,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ignored-null-wide-engine-tests-final-20261025.log",
+        "bytes": 5014,
+        "sha256": "a56d7ae19c1d22ecdc693d943b95a6c74ded8d5d8868975e06c87061f10de8b3"
+      },
+      "unique_tests": 42,
+      "breakdown": {
+        "ace16_fixed_updates": 6,
+        "currency_indexes": 7,
+        "ignored_null_indexes": 7,
+        "ignored_null_wide_indexes": 5,
+        "index_nodes": 10,
+        "indexed_nulls": 7
+      }
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test ace16_scalars",
+      "session": 7806,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ignored-null-wide-int64-regressions-20261025.log",
+        "bytes": 1184,
+        "sha256": "06158b91346a0f40bfc4d3702eb574de0378518e36c8a98c6b353bd3ef1576e9"
+      },
+      "unique_tests": 9
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-access --test ignored_null_wide_indexes --test ignored_null_indexes --test currency_selection --test automatic_indexes",
+      "session": 71848,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ignored-null-wide-access-tests-20261025.log",
+        "bytes": 2583,
+        "sha256": "32f9fe87d67d439218fc2dd999ad95dccfb24721fb5d7e214e70c789ba0a7047"
+      },
+      "unique_tests": 16,
+      "breakdown": {
+        "automatic_indexes": 6,
+        "currency_selection": 2,
+        "ignored_null_indexes": 4,
+        "ignored_null_wide_indexes": 4
+      }
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib --test ignored_null_wide_indexes --test ignored_null_indexes --test currency_indexes --test indexed_nulls --test ace16_fixed_updates --test index_nodes -- -D warnings",
+      "session": 5466,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ignored-null-wide-engine-clippy-20261025.log",
+        "bytes": 183,
+        "sha256": "6179dd87fca45cdb30a2e3478dd6ff32b83e3b34bb49401a788479ace5526662"
+      }
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-access --lib --test ignored_null_wide_indexes --test ignored_null_indexes --test currency_selection --test automatic_indexes -- -D warnings",
+      "session": 71674,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ignored-null-wide-access-clippy-20261025.log",
+        "bytes": 414,
+        "sha256": "ece4290bfa3d7aa46848578a71753a025e0847f8307579a783281de8edb5af20"
+      }
+    },
+    {
+      "command": "cargo check --locked --offline -j2 -p tablecraft-access --lib --no-default-features",
+      "session": 41435,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ignored-null-wide-access-minimal-20261025.log",
+        "bytes": 301,
+        "sha256": "ff7846217f2158a0a6854c233ad5320173469e116a6e590edc1c5d27c8475e8e"
+      }
+    }
+  ],
+  "formatting": {
+    "exit_code": 0,
+    "command": "rustfmt --edition 2024 --check crates/engines/tablecraft-ace/src/table/indexes/profile.rs crates/engines/tablecraft-ace/src/table/indexes/read.rs crates/engines/tablecraft-ace/src/table/indexes/check.rs crates/engines/tablecraft-ace/src/table/indexes/check/ignored_nulls.rs crates/engines/tablecraft-ace/src/table/mutation/gates.rs crates/backends/tablecraft-access/src/source/selection/automatic.rs crates/engines/tablecraft-ace/tests/ignored_null_wide_indexes.rs crates/engines/tablecraft-ace/tests/ignored_null_wide_indexes/fixture.rs crates/backends/tablecraft-access/tests/ignored_null_wide_indexes.rs",
+    "log": {
+      "path": ".cache/ignored-null-wide-format-20261025.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "git_diff_check": "passed"
+  },
+  "excluded_runs": [
+    {
+      "session": 61691,
+      "exit_code": 101,
+      "log": {
+        "path": ".cache/ignored-null-wide-engine-tests-20261025.log",
+        "bytes": 2264,
+        "sha256": "0126c3d53d8ee488d42f8ada1fca3dddb9ba1fb7dfdeaea16e88cb24f3515e5c"
+      },
+      "reason": "New test reused consuming NativeImage across requests/branches; fresh capture per request and exclusive match arms corrected authored ownership. No production or expected-value correction."
+    }
+  ],
+  "final_scope_files": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/profile.rs",
+      "bytes": 8462,
+      "sha256": "14c7370de2c761aa36101efd6af913e28bcef492ee42addabc2ffccbf2407740"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/read.rs",
+      "bytes": 25556,
+      "sha256": "84474f8d983fc998b80218d0a7eebb24818a5328f5e988c9fc6df6ca75a449e1"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/check.rs",
+      "bytes": 11401,
+      "sha256": "dfbcd654f584a4483bd9f15189e206dce9e6fef6db24dccd34cdf97f79225b87"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/check/ignored_nulls.rs",
+      "bytes": 2237,
+      "sha256": "455aabb83585203594b8e2b8f71fbc367ae9c4952b8151b02ec4527fa69568a8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/gates.rs",
+      "bytes": 7125,
+      "sha256": "a829aae5a6a87c97fc1c5d08be431b08c50945c3b0b9779afa8ebffbbaf54d73"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/source/selection/automatic.rs",
+      "bytes": 1910,
+      "sha256": "5d3032b39a310e0721dd53253ac602dca2a23bae94d344e3dab6af210f9a3cf0"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ignored_null_wide_indexes.rs",
+      "bytes": 14488,
+      "sha256": "6dc27ace5608b9d87d79250f15233922dd6f078344c8380f66c3483e28eb854f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ignored_null_wide_indexes/fixture.rs",
+      "bytes": 2998,
+      "sha256": "51f2f79c9a0d25ea01e3175259edaf7b193dade85c70d98ccf4ef9ee73aed6e1"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/ignored_null_wide_indexes.rs",
+      "bytes": 9334,
+      "sha256": "bb8aaccb292c7563916fd5466ed22bfd5a24d7a257893b34f579c80e2a4f5734"
+    },
+    {
+      "path": "docs/NATIVE_INDEXES.md",
+      "bytes": 75716,
+      "sha256": "8cce52ad25cfa995c51d970bcead22a4683551227a5cabdc2b4a8fa72e34cfdd"
+    },
+    {
+      "path": "docs/NATIVE_CHECKS.md",
+      "bytes": 14981,
+      "sha256": "59e843b412cd4f76e79bda327bdf01879d0dccf09213293710e6fe3a8a643bd5"
+    },
+    {
+      "path": "docs/AUTOMATIC_INDEXES.md",
+      "bytes": 12133,
+      "sha256": "29b94e500319aeee8428e71d90b78f43614db7212f09698c8117d5d0c7680847"
+    }
+  ],
+  "boundaries": [
+    "Native Int64 kind and scalar carrier plus explicit Ace2016/Ace2019 header required. Currency and Int64 remain distinct despite equal widths.",
+    "Full eligible population, unique/required/null/key-row/corruption checks retain cumulative budgets/cancellation.",
+    "Central ignore-NULL mutation blocker retained; normal Jet4 and ACE16 preview empty/nonindexed updates still refuse.",
+    "Public All/NULL reads remain Unsupported. Automatic hints retain whole safe residuals, exact typed bounds, encounter order and no-fallback/no-complete-cache behavior."
+  ],
+  "independent_original_replay": "Six public-writer/getter-qualified tables across four fresh originals; current-engine CLI replay pending separate frozen executable. No native Access qualification claimed."
+}

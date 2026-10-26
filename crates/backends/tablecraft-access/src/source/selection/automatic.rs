@@ -1,6 +1,9 @@
 //! Choose a matching declaration before traversal; never retry failed reads.
 use super::{super::schema::ScalarSchema, candidate_selection};
-use tablecraft_ace::{IndexInspection, IndexProjectionSelection, Int32IndexSelection};
+use tablecraft_ace::{
+    CurrencyIndexSelection, IndexInspection, IndexProjectionSelection, Int32IndexSelection,
+    Int64IndexSelection,
+};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_query::{QueryError, source::ScanConstraint};
 
@@ -33,6 +36,8 @@ pub(super) fn choose<'a>(
             && !matches!(
                 selection,
                 IndexProjectionSelection::Int32(Int32IndexSelection::Range { .. })
+                    | IndexProjectionSelection::Int64(Int64IndexSelection::Range { .. })
+                    | IndexProjectionSelection::Currency(CurrencyIndexSelection::Range { .. })
             )
         {
             continue;
