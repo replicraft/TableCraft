@@ -8648,3 +8648,34 @@ logical profiles and 24 retained unique Memo/digest refusals. Seventeen artifact
 and eight compiled native source snapshots remain unchanged. No fixture binaries
 are tracked. This adds neither public seek/write eligibility nor native Access
 integrity qualification.
+
+## Fresh original bare-multivalue query results
+
+The unchanged repository-owned [MultivalueFixture.java](testing/MultivalueFixture.java)
+and [MultivalueOracle.java](testing/MultivalueOracle.java) were reused with the
+reviewed Jackcess 5.0.4 JAR, SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+Fresh V2007/V2016/V2019 inputs remain ignored under
+`.cache/tablecraft-fixtures/bare-multivalue-results-20261025/`; existing historical
+registrations remain unchanged. Expression evaluation is disabled; no reference
+SQL, imported active content or lookup-label evaluation runs. Public collection
+getters use an explicitly identified pinned implementation metadata getter for
+the element type. No upstream code or fixture is copied.
+
+| Profile | Original SHA-256 |
+| --- | --- |
+| V2007 | `583d4b99abf504cd8b1bae72423cffc02390bdbd2e46fb8ba1667abf7aaab0da` |
+| V2016 | `ef784999fcb08b6e50a875e05ba702259d900a2ff9d1c79f28a64dec64457c58` |
+| V2019 | `3b53417c687f0e4096f5a584bc134b74ece7ae2569fcd847b520231f2e45e295` |
+
+Each profile has eight element types, four parents, 32 lists and 137 stored
+members, including duplicates, NULL members, empty lists and exact carrier
+boundaries. Producer commands, all 24 read-only getter commands and their raw
+stdout/stderr remain beside the originals. Original bytes stay unchanged.
+
+The [48-control comparison](testing/BARE_MULTIVALUE_RESULTS.md) compares 87 rows
+and 258 cells across 27 successes, with 21 classified empty-stdout refusals. It
+pins 36 artifacts and forty selected compiled source objects. Bracketed-list TSV
+is an explicit TableCraft presentation; NaN display does not identify payload or
+sign, while separate typed API tests preserve exact Single bits. No native Access
+SQL/lookup or collection result-representation qualification is inferred.
