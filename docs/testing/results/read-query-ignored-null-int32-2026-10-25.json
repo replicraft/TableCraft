@@ -1,0 +1,170 @@
+{
+  "scope": "Qualified single-Int32 ignore-NULL non-NULL selections and eligible-index checks; no write expansion or native Access qualification",
+  "date": "2026-10-25",
+  "unique_tests": 65,
+  "new_tests": 11,
+  "engine_unique_tests": 55,
+  "adapter_unique_tests": 10,
+  "checks": [
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test ignored_null_indexes --test indexed_nulls --test ace16_fixed_updates --test indexes --test index_nodes",
+      "session": 47615,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ignored-null-engine-tests-final-20261025.log",
+        "bytes": 5733,
+        "sha256": "984f50c24fbb52e0eda22264e7018730a6940b008a13e86a3459e00c8c59ab44"
+      },
+      "unique_tests": 55,
+      "breakdown": {
+        "ignored_null_indexes": 7,
+        "indexed_nulls": 7,
+        "ace16_fixed_updates": 6,
+        "indexes": 25,
+        "index_nodes": 10
+      }
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-access --test ignored_null_indexes --test automatic_indexes",
+      "session": 16101,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ignored-null-access-tests-final-20261025.log",
+        "bytes": 1509,
+        "sha256": "fd472231fd27b8df21290f54c929aea02e3af0fe9760176cde22bbe54c9052dd"
+      },
+      "unique_tests": 10,
+      "breakdown": {
+        "ignored_null_indexes": 4,
+        "automatic_indexes": 6
+      }
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib --test ignored_null_indexes --test indexed_nulls --test ace16_fixed_updates --test indexes --test index_nodes -- -D warnings",
+      "session": 40273,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ignored-null-engine-clippy-final-20261025.log",
+        "bytes": 183,
+        "sha256": "8bc8bc4eec32d29cbad6e5c122422775e138a6bd8bcf25c813ed00f844135075"
+      }
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-access --lib --test ignored_null_indexes --test automatic_indexes -- -D warnings",
+      "session": 65182,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ignored-null-access-clippy-final-20261025.log",
+        "bytes": 526,
+        "sha256": "6d4ea867dafd7d2d9319a93ecb1e877d64b92ae6ac814aa2eeb2e11c5da5c43f"
+      }
+    },
+    {
+      "command": "cargo check --locked --offline -j2 -p tablecraft-access --lib --no-default-features",
+      "session": 22070,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ignored-null-access-minimal-20261025.log",
+        "bytes": 539,
+        "sha256": "240f0a6a83b1175cd2d7efe56e9b2e09aca8a8b9ee99772e14b57a36f9509675"
+      }
+    }
+  ],
+  "excluded_superseded_runs": [
+    {
+      "session": 17773,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ignored-null-engine-tests-20261025.log",
+        "bytes": 5859,
+        "sha256": "c85ceffdc9cf2dac72f2e3752b4b636050d6c8e353d1cad2531b2c55d44118ce"
+      },
+      "reason": "First55 passed; superseded by same55 final rerun after private request bundling."
+    },
+    {
+      "session": 64994,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ignored-null-access-tests-20261025.log",
+        "bytes": 1623,
+        "sha256": "a9972b9db10a10482bc90fd8a53efd0cd9cf74fe674c661302cda853e1c493bf"
+      },
+      "reason": "First10 passed; superseded by final rerun against final private helper."
+    },
+    {
+      "session": 45543,
+      "exit_code": 101,
+      "log": {
+        "path": ".cache/ignored-null-engine-clippy-20261025.log",
+        "bytes": 1026,
+        "sha256": "914837d6d3cbcf24b693969dc4fde82de3187d908b2c01d702e379d244a63a32"
+      },
+      "reason": "New private check helper exceeded seven-argument lint; columns and eligible population bundled into IgnoredInt32Check. No runtime logic or golden change."
+    }
+  ],
+  "final_scope_files": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/profile.rs",
+      "bytes": 8049,
+      "sha256": "8ffe1f167dbc10e5dbef7472a0115851f9808792ddafda4d8d924bc0d49e430d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/read.rs",
+      "bytes": 25519,
+      "sha256": "1b71c13c1734f04a37c2667520115713371e9074a7167a24854d0b7ec556585e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/check.rs",
+      "bytes": 11376,
+      "sha256": "7e9a487db3425caae5f94cf1dc5281464b16816a57f08b38ab8d5420ef1e9b98"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/check/ignored_nulls.rs",
+      "bytes": 2273,
+      "sha256": "f01a1c1b3639ebcba0235abe7c257ad6b6319a73cba6bc80970a102248f9dba5"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/gates.rs",
+      "bytes": 7131,
+      "sha256": "e047946248ae7592d1ebe8ade25c402b7dc7b2a2d042992049942c6e43f8e173"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/source/selection/automatic.rs",
+      "bytes": 1670,
+      "sha256": "70dea50f9f9d2d692f02b180bfd41f61eb75530203f9b023038c6743d6bd21f2"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ignored_null_indexes.rs",
+      "bytes": 12011,
+      "sha256": "0052e663c4529ad63dc129253ed8072c83c92d073130d22c413fd8dcec530e6b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ignored_null_indexes/fixture.rs",
+      "bytes": 4387,
+      "sha256": "beee6ff18dcf21f9d29e15c09390221fe57490b21bfdc75502450cc9100be98a"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/ignored_null_indexes.rs",
+      "bytes": 7034,
+      "sha256": "9b30866ae887145a68c3ff820274c4b29a536570403c861ecaf883adac2024d5"
+    },
+    {
+      "path": "docs/NATIVE_INDEXES.md",
+      "bytes": 75422,
+      "sha256": "dea85cf9c58351f27a4243ceb5650f757550d57cc37274626d404e5c4e4d1ef1"
+    },
+    {
+      "path": "docs/NATIVE_CHECKS.md",
+      "bytes": 14705,
+      "sha256": "497b461c8337be25e451cc9ad3d3f8807620aa5a66ccd655b1c03ac27de113ed"
+    },
+    {
+      "path": "docs/AUTOMATIC_INDEXES.md",
+      "bytes": 11895,
+      "sha256": "7382e7cdda19e05462a82dd8eb6f9d7a4d85f2d15146ea72fe4d17eb91259a2a"
+    }
+  ],
+  "formatting": "Owned Rust files rustfmt --edition2024; git diff --check passed. No full workspace suite run.",
+  "boundary": "Public All/Null fulltable requests remain Unsupported; normal Jet4 and ACE16 engineering-preview mutation blockers explicitly retained, including empty/no-op and unrelated-field updates.",
+  "independent_original_replay": "Pending separate immutable-CLI comparison; public-producer node/unique getter observations alone do not count as new native traversal evidence."
+}

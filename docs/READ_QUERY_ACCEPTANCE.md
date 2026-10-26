@@ -13,6 +13,11 @@ qualification recorded separately.
 
 - Table/catalog discovery, system-table filtering, declared row counts, scalar
   pages, explicit progressive TSV rows and bounded native index reads work.
+  Qualified single Int32 ignore-NULL indexes additionally support non-NULL seeks
+  and complete physical membership checks against independently counted eligible
+  rows. Automatic hints retain table order and residual predicates. Full-table
+  and NULL retrieval through omitting indexes, other carriers and native writes
+  retain their separate boundaries; see [index scope](NATIVE_INDEXES.md#single-int32-ignore-null-selections).
 - SELECT, joins, grouping/HAVING, subqueries, UNION, top-level crosstabs and
   qualified saved/named queries execute under shared resource/cancellation limits.
   Contextual named schemas use explicit execution-stage discovery; binding does
