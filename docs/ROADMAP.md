@@ -11,30 +11,30 @@ Each item retains the limits in its linked contract.
 Delivered read/query and engineering foundations:
 
 - [x] Local catalog/table browsing, system-table filtering, stored counts and
-  scalar row pages through the [CLI](CLI_BROWSING.md).
-- [x] Bounded [buffered SQL retrieval](QUERY_EXECUTION.md), including joins,
+  scalar row pages through the [CLI](cli/CLI_BROWSING.md).
+- [x] Bounded [buffered SQL retrieval](query/QUERY_EXECUTION.md), including joins,
   grouping/HAVING, UNION, qualified crosstabs and saved/named dependencies.
-- [x] Explicitly authorized [linked](NATIVE_LINKED_QUERIES.md) and
-  [external native query sources](NATIVE_EXTERNAL_QUERIES.md).
-- [x] Qualified [encryption opens and fresh-copy password management](NATIVE_ENCRYPTION.md).
-- [x] [Progressive rows and queries](STREAMING_QUERIES.md): eligible SELECT,
+- [x] Explicitly authorized [linked](access/queries/NATIVE_LINKED_QUERIES.md) and
+  [external native query sources](access/queries/NATIVE_EXTERNAL_QUERIES.md).
+- [x] Qualified [encryption opens and fresh-copy password management](access/storage/NATIVE_ENCRYPTION.md).
+- [x] [Progressive rows and queries](cli/STREAMING_QUERIES.md): eligible SELECT,
   five global aggregates, Text/exact-key grouping, terminal HAVING, flat UNION ALL
   and static named/derived chains with eligible row-local or aggregate/HAVING
   stages. Text membership uses complete policies.
-- [x] [Cursor/read failure controls](NATIVE_READ_FAILURES.md), cumulative limits,
-  cancellation and [high-offset Memo/OLE checks](NATIVE_HIGH_OFFSET_PAYLOADS.md).
+- [x] [Cursor/read failure controls](access/storage/NATIVE_READ_FAILURES.md), cumulative limits,
+  cancellation and [high-offset Memo/OLE checks](access/storage/NATIVE_HIGH_OFFSET_PAYLOADS.md).
 - [x] Offline Jet 4 fixed Int32 UPDATE copies and separate
   [ACE 16 engineering write previews](testing/ACE16_WRITE_PREVIEWS.md).
   General ACE 16 saves are still unavailable.
 
-- [x] [Stateful streaming composition](PROGRESSIVE_QUERIES.md#stateful-retained-stages)
+- [x] [Stateful streaming composition](query/PROGRESSIVE_QUERIES.md#stateful-retained-stages)
   for static saved/named/derived SELECT chains, with retained intermediate values,
   independent TOP/HAVING phases and successful logical EOF before outer totals.
   Inner UNION, sorting, joins and runtime schema discovery remain outside streaming.
 
 Major gates still open before the full backend is complete:
 
-- [ ] Remaining [read/query acceptance](READ_QUERY_ACCEPTANCE.md), including full
+- [ ] Remaining [read/query acceptance](testing/READ_QUERY_ACCEPTANCE.md), including full
   Variant/result promotion, native text semantics and wider native definitions.
 - [ ] Broader ACE 16 validation/preservation and required data-macro safety.
 - [ ] General physical mutation: record growth/allocation, index splits/merges,
@@ -54,67 +54,67 @@ interoperability, visual application builder and SQLite lead implementation.
 This orders work without imposing a strict sequence; UI and compatibility testing
 can progress alongside storage. [IMPLEMENTATION.md](IMPLEMENTATION.md) records
 working behavior: bounded native metadata/scalar/indexed reads, owned Access SQL,
-read-only retrieval, exact values, generic I/O and a headless CLI. Read-only [SQLite snapshots](SQLITE.md) feed the same query evaluator. Bounded
+read-only retrieval, exact values, generic I/O and a headless CLI. Read-only [SQLite snapshots](backends/SQLITE.md) feed the same query evaluator. Bounded
 offline Jet 4 edits now work; native shared-file coordination, forms/reports and UI
 hosts remain unimplemented.
 
-LCase/UCase now have [explicit Unicode casing](TEXT_CASING.md) in local read/query
+LCase/UCase now have [explicit Unicode casing](expressions/text/TEXT_CASING.md) in local read/query
 execution. Windows locale/NLS comparison remains an acceptance gap.
-[Format numeric masks and sections](FORMAT.md) now share explicit numeric policies
-and the existing Decimal/IEEE display magnitude. [Gregorian date/time masks](DATE_FORMAT_MASKS.md)
-now share calendar conversion, names and week settings. [Text layouts](TEXT_FORMAT_MASKS.md)
+[Format numeric masks and sections](expressions/formatting/FORMAT.md) now share explicit numeric policies
+and the existing Decimal/IEEE display magnitude. [Gregorian date/time masks](expressions/formatting/DATE_FORMAT_MASKS.md)
+now share calendar conversion, names and week settings. [Text layouts](expressions/formatting/TEXT_FORMAT_MASKS.md)
 now provide placeholders, sections and explicit contextual casing.
-[Scientific/scaling masks](SCIENTIFIC_FORMATTING.md) now retain exact coefficients
-and finite IEEE exponents. [Interleaved literals](FORMAT.md#interleaved-numeric-literals)
+[Scientific/scaling masks](expressions/formatting/SCIENTIFIC_FORMATTING.md) now retain exact coefficients
+and finite IEEE exponents. [Interleaved literals](expressions/formatting/FORMAT.md#interleaved-numeric-literals)
 now work across whole/fractional/exponent slots. Broader date sections
 and native semantics remain unfinished; a Partial function entry does not complete the read/query acceptance scope.
 Numeric masks and General Number now also display legacy DATE serials directly,
 without calendar rounding or stored-value changes; Extended numeric conversion
 remains separate open work.
-[Explicit DATE numeric conversions](DATE_NUMERIC.md) now also reuse destination
+[Explicit DATE numeric conversions](expressions/dates/DATE_NUMERIC.md) now also reuse destination
 rounding/range kernels; broader Variant and native coercion remain acceptance gaps.
-[Conditional selectors](CONDITIONAL_FUNCTIONS.md) now share DATE and explicit-policy
+[Conditional selectors](expressions/CONDITIONAL_FUNCTIONS.md) now share DATE and explicit-policy
 Text coercion while retaining eager semantic failures and immediate operational
-failure. [Exact integer logical operators](INTEGER_LOGIC.md) now feed numeric read predicates
-and preserve per-item versus parent collection scope. [Rounded float/fixed/date/Text operator coercion](INTEGER_LOGIC.md#rounded-numeric-and-text-operands)
+failure. [Exact integer logical operators](expressions/numeric/INTEGER_LOGIC.md) now feed numeric read predicates
+and preserve per-item versus parent collection scope. [Rounded float/fixed/date/Text operator coercion](expressions/numeric/INTEGER_LOGIC.md#rounded-numeric-and-text-operands)
 now reuses checked Long/LongLong conversion and explicit numeric policies.
-[Left/Right/Mid count coercion](SLICE_COUNTS.md) now adds rounded Long and explicit
-SQL Text count arguments. [Repetition counts and search starts](TEXT_CONSTRUCTION.md#contextual-repetition-counts)
+[Left/Right/Mid count coercion](expressions/text/SLICE_COUNTS.md) now adds rounded Long and explicit
+SQL Text count arguments. [Repetition counts and search starts](expressions/text/TEXT_CONSTRUCTION.md#contextual-repetition-counts)
 now share DATE/explicit numeric Text conversion while retaining function-specific
-NULL/default rules. [Replace start/count coercion](TEXT_REPLACEMENT.md#contextual-start-and-count-conversion)
-now also shares those kernels without source copies. [Comparison modes, character codes and raw-byte numeric slots](STRING_COMPARISON.md#contextual-comparison-mode-conversion)
+NULL/default rules. [Replace start/count coercion](expressions/text/TEXT_REPLACEMENT.md#contextual-start-and-count-conversion)
+now also shares those kernels without source copies. [Comparison modes, character codes and raw-byte numeric slots](expressions/text/STRING_COMPARISON.md#contextual-comparison-mode-conversion)
 now also share checked DATE and explicit-policy SQL Text conversion.
-[StrConv flag/LCID options](STRCONV.md#contextual-flag-and-lcid-conversion) now
-reuse their Integer/Long targets. [Standalone Japanese kana](STRCONV.md#explicit-japanese-kana-conversion)
+[StrConv flag/LCID options](expressions/text/STRCONV.md#contextual-flag-and-lcid-conversion) now
+reuse their Integer/Long targets. [Standalone Japanese kana](expressions/text/STRCONV.md#explicit-japanese-kana-conversion)
 now adds basic fullwidth script conversion with exact LCID 1041.
-[Japanese width](STRCONV.md#explicit-japanese-width-conversion) adds standalone 4/8
+[Japanese width](expressions/text/STRCONV.md#explicit-japanese-width-conversion) adds standalone 4/8
 with bounded ASCII/kana mappings and voiced composition. Combined settings,
 broader width/kana and native NLS qualification remain open.
-[Named numeric/date formatting options](STYLED_NUMBER_FORMATTING.md#contextual-numeric-options)
+[Named numeric/date formatting options](expressions/formatting/STYLED_NUMBER_FORMATTING.md#contextual-numeric-options)
 now also accept explicit-policy SQL numeric Text with progressive validation.
-[General Format/DatePart/DateDiff/Weekday week options](WEEK_SETTINGS.md#contextual-week-option-conversion)
+[General Format/DatePart/DateDiff/Weekday week options](expressions/dates/WEEK_SETTINGS.md#contextual-week-option-conversion)
 now share DATE and explicit-policy SQL Text conversion.
-[Named numeric formatters](STYLED_NUMBER_FORMATTING.md#legacy-date-source-values)
+[Named numeric formatters](expressions/formatting/STYLED_NUMBER_FORMATTING.md#legacy-date-source-values)
 now also format raw legacy DATE source serials.
-[Date components](EXPRESSIONS.md#date-component-source-coercion) now reuse bounded
-CDate numeric/Text source conversion. [Date interval functions](DATE_INTERVALS.md)
-now do likewise after their owning control validation. [Date/time constructors](DATE_CONSTRUCTORS.md#argument-coercion)
+[Date components](expressions/EXPRESSIONS.md#date-component-source-coercion) now reuse bounded
+CDate numeric/Text source conversion. [Date interval functions](expressions/dates/DATE_INTERVALS.md)
+now do likewise after their owning control validation. [Date/time constructors](expressions/dates/DATE_CONSTRUCTORS.md#argument-coercion)
 now share Integer conversion for raw DATE and SQL numeric Text components.
 Other source coercions,
 complete Variant/subtype inference and native qualification remain unfinished.
 
-Native saved [UNION reconstruction](NATIVE_SAVED_UNIONS.md) now feeds the shared
+Native saved [UNION reconstruction](access/queries/NATIVE_SAVED_UNIONS.md) now feeds the shared
 read executor through explicit saved/direct/named retrieval. Native saved
-[crosstabs](NATIVE_SAVED_CROSSTABS.md) now reconstruct and explicitly execute; their
+[crosstabs](access/queries/NATIVE_SAVED_CROSSTABS.md) now reconstruct and explicitly execute; their
 positive stored TOP/PERCENT now use the shared final row limiter.
-[Named fixed schemas](NAMED_CROSSTABS.md) now compose without binding scans,
-including qualified policy-independent computed headings. [Execution-stage discovery](NAMED_SCHEMA_DISCOVERY.md)
+[Named fixed schemas](query/NAMED_CROSSTABS.md) now compose without binding scans,
+including qualified policy-independent computed headings. [Execution-stage discovery](query/NAMED_SCHEMA_DISCOVERY.md)
 now resolves qualified parameter/context/data-dependent relational sources without
 binding scans. Parameterless runtime domain targets use the same operation-local
 staging. Wider native comparison remains open. Proposed inline TRANSFORM sources
-require [native syntax evidence](NAMED_CROSSTABS.md#inline-transform-is-not-an-established-access-requirement) before implementation. Zero TOP counts remain rejected rather than scheduled for execution.
+require [native syntax evidence](query/NAMED_CROSSTABS.md#inline-transform-is-not-an-established-access-requirement) before implementation. Zero TOP counts remain rejected rather than scheduled for execution.
 
-[Numbered Error message lookup](ERROR_MESSAGES.md) now has explicit provider and
+[Numbered Error message lookup](expressions/ERROR_MESSAGES.md) now has explicit provider and
 optional Fluent catalog support. Omitted runtime state remains deferred; reference
 message data does not qualify native Access error-code/localization behavior.
 
@@ -219,7 +219,7 @@ promotion, overflow, scale and rounding coverage through explicit contracts and
 evidence rather than developing a general decimal arithmetic engine.
 Access collation and expression equivalence still need actual Access evidence.
 
-[Jet 4 qualification](NATIVE_JET4.md) adds exact legacy Decimal indexes/tuples,
+[Jet 4 qualification](access/profiles/NATIVE_JET4.md) adds exact legacy Decimal indexes/tuples,
 relationship checks and preservation around unrelated offline Int32 edits, plus
 saved-SELECT comparisons. ACE-only advanced fields are not Jet 4 parity targets.
 The user clarified on 23 October 2026 that the entire remaining local-file
@@ -259,15 +259,15 @@ data-macro evidence/absence detection and broader
 physical mutation, allocation and recovery; these are prerequisites to a writable
 frontend, not features supplied by the preview.
 
-Native [larger payload reads](LARGE_PAYLOADS.md) now have separate encoded,
+Native [larger payload reads](access/storage/LARGE_PAYLOADS.md) now have separate encoded,
 decoded Memo, attachment-file, query and output policies. Independent inputs
 include 20 MiB OLE, 3 MiB Memo and 3 MiB incompressible attachments.
-[Explicit decoded Memo/query Text ceilings](LARGER_MEMOS.md) reach 16 MiB without
+[Explicit decoded Memo/query Text ceilings](access/storage/LARGER_MEMOS.md) reach 16 MiB without
 raising defaults or cumulative limits; rendered output retains its own ceiling.
 
 ## Remaining local-file read/query work
 
-The explicit [arithmetic declaration profile](DECLARED_ARITHMETIC.md) now carries
+The explicit [arithmetic declaration profile](expressions/numeric/DECLARED_ARITHMETIC.md) now carries
 Scalar/Variant provenance through integral/Single-selected query execution with
 `--declared-arithmetic` (`--declared-integral` remains an alias).
 Known Scalar String/Variant predicates now select metered String coercion under
@@ -284,11 +284,11 @@ dependencies already work; they are not remaining scaffolding tasks.
 
 ### Current acceptance status
 
-The [current acceptance checklist](READ_QUERY_ACCEPTANCE.md) separates the working
+The [current acceptance checklist](testing/READ_QUERY_ACCEPTANCE.md) separates the working
 baseline, remaining priorities and prerequisites for broader writes.
 
 Encrypted local-file reads are implemented for the qualified schemes in
-[NATIVE_ENCRYPTION.md](NATIVE_ENCRYPTION.md): Jet 4 page encoding and bounded
+[NATIVE_ENCRYPTION.md](access/storage/NATIVE_ENCRYPTION.md): Jet 4 page encoding and bounded
 Agile, Binary RC4, CryptoAPI RC4 and standard/compatibility AES Office profiles.
 Global -p/hidden terminal prompting and fresh add/remove/change-password copies
 are working. Page-buffered management now avoids the whole-image ceiling under
@@ -310,25 +310,25 @@ Do not treat encryption discovery/opening as an unstarted implementation task.
 Explicit linked streams retain the same target authorization, independent text
 policies and cumulative budgets as buffered linked reads. Microsoft directs links
 to original local tables rather than already linked tables; the current one-hop
-refusal is a documented [workflow boundary](NATIVE_LINKED_QUERIES.md), not an
+refusal is a documented [workflow boundary](access/queries/NATIVE_LINKED_QUERIES.md), not an
 unestablished chain-parity milestone. Broader providers remain separate work.
-[Exact integral query keys](EXACT_QUERY_KEYS.md) now avoid representative scans for
-proven GROUP/DISTINCT/UNION tuples, and [borrowed equijoins](QUERY_EQUIJOINS.md)
+[Exact integral query keys](query/keys/EXACT_QUERY_KEYS.md) now avoid representative scans for
+proven GROUP/DISTINCT/UNION tuples, and [borrowed equijoins](query/QUERY_EQUIJOINS.md)
 reject admitted nonmatching pairs before copying candidates. Both remain bounded
 strategies with explicit general fallbacks, not complete optimizer qualification.
 
-[Continuation failure checks](NATIVE_READ_FAILURES.md) now cover read/seek/page
+[Continuation failure checks](access/storage/NATIVE_READ_FAILURES.md) now cover read/seek/page
 hooks after a delivered prefix, terminal cursors and bounded interrupted short
 reads across the priority layouts. The shared page reader observes cancellation
 before interpreting decoded buffers. These checks do not establish coherent
 live-file reads or native Access qualification.
 
-[Retained String keys](RAW_STRING_KEYS.md) now cover grouping, DISTINCT/active
+[Retained String keys](query/keys/RAW_STRING_KEYS.md) now cover grouping, DISTINCT/active
 DISTINCTROW, UNION duplicate removal, sorting and TOP ties under explicit
 comparison policies. Fixed-heading named crosstabs also retain raw cells for
 outer observers; actual pivot/heading names keep their separate publication
 contract. Min/Max and domain extrema now also retain
-[lossless Strings](EXPRESSION_AGGREGATES.md#retained-string-extrema) under strict
+[lossless Strings](query/aggregates/EXPRESSION_AGGREGATES.md#retained-string-extrema) under strict
 key comparison and scalar publication rules. Other raw consumers, broader Variant coercion,
 additional locales and native qualification remain in the read/query workstream.
 
@@ -349,46 +349,46 @@ files, native save/reopen and mixed-client write qualification as separate gates
 Jet encoding/password fields are not workgroup authentication. The owning encryption
 contract retains the primary references, algorithms, provenance and exact limits.
 
-1. Complete Access scalar/query semantics. The [built-in tracker](ACCESS_BUILTINS.md)
+1. Complete Access scalar/query semantics. The [built-in tracker](expressions/ACCESS_BUILTINS.md)
    records individual implementation status and remaining gaps; explicit
-   [StrComp modes](STRING_COMPARISON.md) and [InStr/InStrRev search](STRING_SEARCH.md#scalar-search-operands)
-   and [Replace](TEXT_REPLACEMENT.md#scalar-string-operands) now have bounded implementations.
+   [StrComp modes](expressions/text/STRING_COMPARISON.md) and [InStr/InStrRev search](expressions/text/STRING_SEARCH.md#scalar-search-operands)
+   and [Replace](expressions/text/TEXT_REPLACEMENT.md#scalar-string-operands) now have bounded implementations.
    StrComp, substring search, replacement, slicing, trimming, casing, Asc/AscW,
    reversal and Val reuse explicit CStr policies for ordinary scalar string operands;
    wider coercion/native qualification remain open. These work alongside
-   [Space/String/StrReverse](TEXT_CONSTRUCTION.md) with explicit current Unicode limits
-   and [selected single-byte character pages](CHARACTER_CODE_PAGES.md).
-   [CDate/DateValue/TimeValue](DATE_CONVERSIONS.md) now use explicit Gregorian
+   [Space/String/StrReverse](expressions/text/TEXT_CONSTRUCTION.md) with explicit current Unicode limits
+   and [selected single-byte character pages](expressions/text/CHARACTER_CODE_PAGES.md).
+   [CDate/DateValue/TimeValue](expressions/dates/DATE_CONVERSIONS.md) now use explicit Gregorian
    text/year controls and checked component extraction; native/full regional gaps remain.
-   [Date/Time/Now](CLOCK_FUNCTIONS.md) now have explicit clock providers and CLI
+   [Date/Time/Now](expressions/dates/CLOCK_FUNCTIONS.md) now have explicit clock providers and CLI
    local/fixed hosts; native precision/platform/volatility qualification remains open.
-   [FormatNumber/Percent/Currency](STYLED_NUMBER_FORMATTING.md) now provide bounded
+   [FormatNumber/Percent/Currency](expressions/formatting/STYLED_NUMBER_FORMATTING.md) now provide bounded
    explicit-profile output; full NLS/Variant/native formatting remains open.
-   [Standalone Weekday](WEEKDAY.md) now shares date conversion and week policy,
+   [Standalone Weekday](expressions/dates/WEEKDAY.md) now shares date conversion and week policy,
    with native/full coercion qualification still open.
-   [Host week settings](WEEK_SETTINGS.md) now resolve DatePart/DateDiff system
+   [Host week settings](expressions/dates/WEEK_SETTINGS.md) now resolve DatePart/DateDiff system
    options while preserving defaults; native NLS and w anchors remain open.
-   [MonthName/WeekdayName](CALENDAR_NAMES.md) now support explicit names and
+   [MonthName/WeekdayName](expressions/dates/CALENDAR_NAMES.md) now support explicit names and
    host-issued first-day context; broader calendars/native NLS remain open.
-   [FormatDateTime](DATE_FORMATTING.md) now provides five named modes under
+   [FormatDateTime](expressions/formatting/DATE_FORMATTING.md) now provides five named modes under
    explicit profiles; broader regional/native formatting remains open.
-   [CStr](CSTR.md) now covers Text/Boolean, explicit standard Error/Empty and
+   [CStr](expressions/text/CSTR.md) now covers Text/Boolean, explicit standard Error/Empty and
    numeric/date output profiles;
    full regional, Variant and native precision/rounding behavior remain open.
-   [IsDate](ISDATE.md) now shares explicit Gregorian recognition and year context;
+   [IsDate](expressions/dates/ISDATE.md) now shares explicit Gregorian recognition and year context;
    broader regional/Variant behavior and native qualification remain open.
-   [IsNumeric](ISNUMERIC.md) now recognizes current scalar types and whole numeric
+   [IsNumeric](expressions/numeric/ISNUMERIC.md) now recognizes current scalar types and whole numeric
    Text under explicit profiles; native/complete locale behavior remains open.
-   [Explicit numeric Text formats](NUMBER_FORMAT.md) now extend the nine numeric
+   [Explicit numeric Text formats](expressions/formatting/NUMBER_FORMAT.md) now extend the nine numeric
    conversion calls; complete regional behavior and native qualification remain open.
-   [Numeric Text arithmetic](ARITHMETIC_TEXT.md) now routes mixed addition, other
+   [Numeric Text arithmetic](expressions/numeric/ARITHMETIC_TEXT.md) now routes mixed addition, other
    numeric operators and unary signs through that service. Exact Decimal and direct
    lexical integer conversion retain their boundaries; full Variant/declared-type
    result promotion and native operator/error semantics remain required. Contextual
-   [`&` concatenation](CONCATENATION.md) now reuses explicit numeric/date CStr
+   [`&` concatenation](expressions/text/CONCATENATION.md) now reuses explicit numeric/date CStr
    policies across scalar, bound and native queries; wider Variant/byte-array
    concatenation and native qualification remain open.
-   [Conservative result metadata](QUERY_RESULT_TYPES.md) now retains declared
+   [Conservative result metadata](query/QUERY_RESULT_TYPES.md) now retains declared
    field/parameter descriptors, constraints and nullability through qualified
    projections, joins, named/derived reads, unions and crosstabs without source
    scans. Stable successful arithmetic carriers now flow through derived outputs,
@@ -396,16 +396,16 @@ contract retains the primary references, algorithms, provenance and exact limits
    inference remain Dynamic.
    [Exact floating means](testing/FLOATING_MEANS.md) now avoid intermediate
    Double overflow and preserve cancellation residuals under bounded scratch;
-   [wider exact Decimal totals](AVERAGES.md) also retain mixed-scale residuals;
+   [wider exact Decimal totals](query/aggregates/AVERAGES.md) also retain mixed-scale residuals;
    mixed conversion order and native precision qualification remain.
-   [Materialized +, - and * promotion](ARITHMETIC_PROMOTION.md) now retains qualified
+   [Materialized +, - and * promotion](expressions/numeric/ARITHMETIC_PROMOTION.md) now retains qualified
    Byte/Integer/Long/Single results and widening, checked Currency multiplication
    and Decimal/DATE selection. Unary minus, division, power and rounded integer
    division/Mod now use their qualified materialized carrier rules. Declared-expression
    typing, full Variant behavior and native qualification remain open. Explicit
    preparation now captures decimal literal carriers; native literal typing remains
    unqualified.
-   The [declared query profile](DECLARED_ARITHMETIC.md) now propagates known
+   The [declared query profile](expressions/numeric/DECLARED_ARITHMETIC.md) now propagates known
    Scalar/Variant provenance through fields, parameters, conversions, retained
    cells, named/derived/correlated reads and predicates. Qualified integral,
    Single and Date overflow, mixed String/numeric addition and comparisons, and
@@ -413,37 +413,37 @@ contract retains the primary references, algorithms, provenance and exact limits
    default versus declared execution. Category-dependent unknown aggregate/UNION
    outputs remain refused rather than inferred; full native typing/promotion
    and qualification remain open.
-   [Radix literals](RADIX_LITERALS.md) now evaluate existing &H/&O syntax with
+   [Radix literals](expressions/numeric/RADIX_LITERALS.md) now evaluate existing &H/&O syntax with
    explicit signed Integer/Long carriers; native SQL typing remains unqualified.
-   [Numeric predicates](NUMERIC_PREDICATES.md) now supply explicit-policy numeric/Text
+   [Numeric predicates](expressions/numeric/NUMERIC_PREDICATES.md) now supply explicit-policy numeric/Text
    and checked fixed/floating comparisons. Strict set/group keys and declared/Variant
    inference remain separate. Legacy DATE/Text now uses explicit CDate policies;
    extended temporal/Text coercion and native qualification remain gaps.
-   [Hex/Oct/Str](NUMERIC_TEXT.md) now provide checked numeric spelling;
+   [Hex/Oct/Str](expressions/numeric/NUMERIC_TEXT.md) now provide checked numeric spelling;
    native widths, floating notation and broader coercions remain open.
-   [Val](VAL.md) now supports bounded numeric prefixes with checked suffixes;
+   [Val](expressions/numeric/VAL.md) now supports bounded numeric prefixes with checked suffixes;
    native subtypes and coercion/error qualification remain open.
-   [Chr/Asc/ChrW/AscW](CHARACTER_FUNCTIONS.md) now use checked byte/UTF-16 profiles;
+   [Chr/Asc/ChrW/AscW](expressions/text/CHARACTER_FUNCTIONS.md) now use checked byte/UTF-16 profiles;
    native coercion, DBCS and lossless surrogate results remain gaps.
-   [Pmt/PV/FV](FINANCIAL_FUNCTIONS.md) now share bounded Double annuity kernels
+   [Pmt/PV/FV](expressions/financial/FINANCIAL_FUNCTIONS.md) now share bounded Double annuity kernels
    across scalar, bound, domain and native saved/named queries. The remaining
-   admitted scalar financial calls and [NPV/IRR/MIRR](CASHFLOW_FUNCTIONS.md) also
+   admitted scalar financial calls and [NPV/IRR/MIRR](expressions/financial/CASHFLOW_FUNCTIONS.md) also
    execute under their explicit numeric/cashflow profiles. Full arrays and native
    coercion/precision behavior remain open.
-   [NPer/IPmt/PPmt](PERIOD_PAYMENTS.md) now provide bounded period inversion and
+   [NPer/IPmt/PPmt](expressions/financial/PERIOD_PAYMENTS.md) now provide bounded period inversion and
    payment components with independent scalar and saved-query ledger controls.
-   [SLN/SYD/DDB](DEPRECIATION.md) now provide scalar depreciation and independent
+   [SLN/SYD/DDB](expressions/financial/DEPRECIATION.md) now provide scalar depreciation and independent
    schedule controls, with native edge/rounding qualification still open.
-   [StringFromGUID](GUID_CONVERSIONS.md#stringfromguid-inverse-conversion) now
+   [StringFromGUID](expressions/GUID_CONVERSIONS.md#stringfromguid-inverse-conversion) now
    converts stored Guid fields and sixteen GUID-structure bytes to provisional
    literal Text; native output/coercion/query qualification remain open.
-   [Eval](DYNAMIC_EVALUATION.md) now evaluates closed dynamic expressions under
+   [Eval](expressions/DYNAMIC_EVALUATION.md) now evaluates closed dynamic expressions under
    shared context, depth and budgets; dynamic host/UDF/form names and broader
    regional/Variant/native behavior remain open.
-   [CurrentUser](SESSION_FUNCTIONS.md) now consumes explicit immutable Access
+   [CurrentUser](expressions/SESSION_FUNCTIONS.md) now consumes explicit immutable Access
    session data; the CLI declares unsecured Admin. Workgroup authentication/ACLs
    and native session/host qualification remain separate open work.
-   [CVErr](VARIANT_ERRORS.md) now constructs Error data for inspection, eager
+   [CVErr](expressions/VARIANT_ERRORS.md) now constructs Error data for inspection, eager
    selection and explicit numeric consumers. Expression-valued query results and
    derived rows now preserve these cells. First/Last and DFirst/DLast/DLookup
    endpoint selection retain Error data. Count/DCount now consume Error nullness
@@ -454,14 +454,14 @@ contract retains the primary references, algorithms, provenance and exact limits
    conversion. Broader Variant/operator/aggregate behavior remains
    required read/query work. Error is not stored
    NULL or an operational exception.
-   [Rnd](RANDOM_FUNCTIONS.md) now uses caller-owned sequential state and explicit
+   [Rnd](expressions/numeric/RANDOM_FUNCTIONS.md) now uses caller-owned sequential state and explicit
    CLI seeds; native sequence/optimizer and volatile-key qualification remain open.
-   [EuroConvert](EURO_CONVERSION.md) now adds fixed-rate Double conversion, target
+   [EuroConvert](expressions/financial/EURO_CONVERSION.md) now adds fixed-rate Double conversion, target
    rounding and explicit significant-digit triangulation; later participant codes
    and native precision/coercion/default qualification remain open.
-   [Rate](RATE.md) now adds bounded guess-directed solving, residual qualification
+   [Rate](expressions/financial/RATE.md) now adds bounded guess-directed solving, residual qualification
    and per-iteration metering; native basins/root selection remain open.
-   The [built-in tracker](ACCESS_BUILTINS.md) is authoritative for admitted
+   The [built-in tracker](expressions/ACCESS_BUILTINS.md) is authoritative for admitted
    function coverage; its Partial rows retain function-specific omissions rather
    than implying that implemented text/date/financial calls are absent. Remaining
    scalar work includes complete Variant/result promotion, wider Unicode/regional
@@ -469,7 +469,7 @@ contract retains the primary references, algorithms, provenance and exact limits
    admission now follows reviewed function-specific control/NULL/source stages;
    this does not complete the Variant matrix. Computed pure grouping expressions and
    First/Last encounter aggregates now work with bounded structural membership
-   checks. [Statistical aggregates](STATISTICAL_AGGREGATES.md) now provide bounded
+   checks. [Statistical aggregates](query/aggregates/STATISTICAL_AGGREGATES.md) now provide bounded
    Var/VarP/StDev/StDevP with finite numeric conversion, centered/scaled moments
    and documented per-function minimum counts; native precision remains open. Top-level fixed/dynamic crosstab execution now works under explicit
    heading/resource policies; native saved crosstabs now reconstruct into this top-level
@@ -484,26 +484,26 @@ contract retains the primary references, algorithms, provenance and exact limits
    retain per-joined-row evaluation. Field-free projections/counts/group outputs
    now follow the ignored DISTINCTROW path with all joined inputs. Active grouping
    in the enclosing query and
-   native recordset/owner/optimizer comparisons remain unqualified. [Grouped subqueries](GROUPED_SUBQUERIES.md) now validate key-safe captures across
+   native recordset/owner/optimizer comparisons remain unqualified. [Grouped subqueries](query/GROUPED_SUBQUERIES.md) now validate key-safe captures across
    nested SELECT/HAVING/predicate reads, UNIONs, join conditions and lowered parent
    membership. Wider aggregate ownership/native semantics remain unqualified.
-   [Projected DISTINCT ordering](QUERY_ORDERING.md) now reuses qualified matching
+   [Projected DISTINCT ordering](query/QUERY_ORDERING.md) now reuses qualified matching
    scalar/aggregate outputs with their text policies. Broader sort/alias expressions,
    read-plan identity and wider native saved-query reconstruction remain incomplete. Native saved SELECT/crosstab
    sources now support bounded sixteen-source join forests, disconnected comma
-   products and inner predicate placement; [join scope](NATIVE_SAVED_JOINS.md)
+   products and inner predicate placement; [join scope](access/queries/NATIVE_SAVED_JOINS.md)
    separates independent row-model evidence from pending native Access qualification.
-   [Stored derived SELECT/UNION sources](NATIVE_SAVED_DERIVED.md) now reconstruct
+   [Stored derived SELECT/UNION sources](access/queries/NATIVE_SAVED_DERIVED.md) now reconstruct
    and execute through the existing non-lateral binder, including outer parameters
    and local named dependencies; remote qualifiers and native qualification remain.
-   [Already-bracketed stored identifiers](NATIVE_SAVED_NAMES.md) now work across
+   [Already-bracketed stored identifiers](access/queries/NATIVE_SAVED_NAMES.md) now work across
    sources, aliases and literal parameters with raw endpoint matching and normalized
-   duplicate checks. [Literal punctuated prompts](PARAMETER_PROMPTS.md) now parse,
+   duplicate checks. [Literal punctuated prompts](cli/PARAMETER_PROMPTS.md) now parse,
    bind and reconstruct in native declarations, including Unicode prompts, nested reads,
    UNION/crosstabs and bracketed CLI assignments. Names use ASCII-insensitive,
    otherwise exact matching; qualified control bindings and native Unicode/NLS
    identity and regional rules remain gaps.
-   [Native fragment ordering](NATIVE_SAVED_ORDERING.md) now supplies a stable keyed
+   [Native fragment ordering](access/queries/NATIVE_SAVED_ORDERING.md) now supplies a stable keyed
    view to SELECT/UNION/crosstab reconstruction while preserving physical metadata
    and the reference whole-definition NULL policy; native Access evidence remains.
    Mixed numeric UNION outputs now select shared carriers from metadata across
@@ -512,16 +512,16 @@ contract retains the primary references, algorithms, provenance and exact limits
    outputs now use execution-local CStr formatting, preserving original Text/NULL
    and field comparison identities. Native precedence/formatting and broader
    non-numeric/Variant behavior remain open.
-   [UNION result widening](UNION_TYPES.md) now establishes exact integer-width and
+   [UNION result widening](query/UNION_TYPES.md) now establishes exact integer-width and
    Single/Double carriers before set/order operations, plus shared Text/Decimal
    descriptors without row scans. Broader mixed-family/native coercion and result
    precedence remain unfinished; this does not implement a full Variant matrix.
-   [Unicode saved source labels](NATIVE_SAVED_JOINS.md#unicode-source-labels) now
+   [Unicode saved source labels](access/queries/NATIVE_SAVED_JOINS.md#unicode-source-labels) now
    compose in named/derived/join forests using the existing ASCII-insensitive,
    otherwise exact policy. Native Unicode/NLS equivalence remains an open identity
    qualification task rather than being inferred from these independent controls.
-   See [expression scope](EXPRESSIONS.md) and [query scope](QUERY_EXECUTION.md).
-   The twelve read-only [domain functions](DOMAIN_FUNCTIONS.md) now use selected
+   See [expression scope](expressions/EXPRESSIONS.md) and [query scope](query/QUERY_EXECUTION.md).
+   The twelve read-only [domain functions](query/DOMAIN_FUNCTIONS.md) now use selected
    sources and shared budgets. Stored-query direct/saved/named controls now cover
    optional criteria, explicit parameters, grouping, UNION and crosstabs across
    the four priority header families. Broader criteria/collection/host semantics and
@@ -532,7 +532,7 @@ contract retains the primary references, algorithms, provenance and exact limits
    now prepares original Short/Long Text comparison probes with a portable
    provenance/completeness checker and an explicit-policy CLI replay report;
    Windows execution/replay remains unrun and no native
-   SQL policy is enabled by it. [Exact native sort descriptors](NATIVE_TEXT.md) now
+   SQL policy is enabled by it. [Exact native sort descriptors](access/indexes/NATIVE_TEXT.md) now
    expose database and text-column LCID/variant/version, including unknown values;
    General legacy/General 2010 key payload encoding now has exhaustive independent
    UTF-16-unit and multi-character checks. Single Short/Long Text index reads now
@@ -571,7 +571,7 @@ contract retains the primary references, algorithms, provenance and exact limits
    snapshots and the CLI. Other locales, native precedence and safe text pushdown
    remain unfinished. Explicit InStr LCIDs now route to a distinct supplied
    host search callback with exact alternate-sort identity and checked spans;
-   the opt-in [ICU host text provider](ICU_TEXT_PROFILE.md) already implements
+   the opt-in [ICU host text provider](expressions/text/ICU_TEXT_PROFILE.md) already implements
    Unicode substring search across nineteen explicit locale profiles, with one
    exact execution-local LCID registration through `--text-locale`/`--text-lcid`.
    Its expanded independent ICU4C replay records 14,498 controls; this is ICU
@@ -581,10 +581,10 @@ contract retains the primary references, algorithms, provenance and exact limits
    Windows comparisons are deferred at the user's direction; continue
    implementation using reviewed references and independent checks, retaining
    native qualification as a separate pending gate.
-   Explicit engine [Short Text equality candidates](NATIVE_TEXT.md#conservative-short-text-equality-candidates)
+   Explicit engine [Short Text equality candidates](access/indexes/NATIVE_TEXT.md#conservative-short-text-equality-candidates)
    now provide conservative primary-prefix pruning under the General model.
    They retain possible false positives and require complete residual equality;
-   [direct query equality](TEXT_EQUALITY_SEEKS.md) now uses comparer/source agreement,
+   [direct query equality](access/indexes/TEXT_EQUALITY_SEEKS.md) now uses comparer/source agreement,
    complete residual evaluation and independent query/benchmark evidence.
    Wider predicate and locale qualification remain unfinished.
    Single Short Binary index reads/checks now work;
@@ -593,11 +593,11 @@ contract retains the primary references, algorithms, provenance and exact limits
    non-NULL binary predicate pushdown, compound seeks and SQL text inequality bounds remain
    unsupported. NULL-only General Text/Short Binary predicates now use qualified
    explicit or automatic indexes without invoking a string comparator; see
-   [NULL selection scope](AUTOMATIC_INDEXES.md#null-only-text-and-binary-selection).
+   [NULL selection scope](access/indexes/AUTOMATIC_INDEXES.md#null-only-text-and-binary-selection).
    Text-bearing compound indexes now support mixed two-to-ten-column reads and
    projections, including per-column General descriptors and whole-entry digests;
-   Memo/full-width uniqueness and native text writes remain unqualified. Exact Currency and [Byte/Int16 intervals](NARROW_RANGES.md) now join Int32/Int64 ranges under typed bounds and
-   original-filter retention. Opt-in [automatic selection](AUTOMATIC_INDEXES.md)
+   Memo/full-width uniqueness and native text writes remain unqualified. Exact Currency and [Byte/Int16 intervals](access/indexes/NARROW_RANGES.md) now join Int32/Int64 ranges under typed bounds and
+   original-filter retention. Opt-in [automatic selection](access/indexes/AUTOMATIC_INDEXES.md)
    now chooses matching qualified single-key indexes. Additional typed/composite
    seeks and cost-based selection remain performance work.
 3. Complete applicable ACE advanced-field reads/query access. Stored multivalues,
@@ -636,15 +636,15 @@ contract retains the primary references, algorithms, provenance and exact limits
    deeply correlated large products still hit the existing work ceilings.
    Unprojected HAVING/sort member inputs now drive bounded aligned child expansion;
    independent stored-row models cover grouping, ordering and same-child WHERE rules.
-   [Attachment presence criteria](COLLECTION_PRESENCE.md) now distinguish empty
+   [Attachment presence criteria](query/collections/COLLECTION_PRESENCE.md) now distinguish empty
    containers from nullable metadata without reading FileData. Native FileData
    SQL representation and complete native semantics/qualification remain.
-   Explicit [stored-history query members](STORED_HISTORY_QUERIES.md) now use
+   Explicit [stored-history query members](access/collections/STORED_HISTORY_QUERIES.md) now use
    actual hidden-field declarations and aligned stored records under --collections,
    with complete caches and independent three-profile evidence. Native history SQL
    and latest-version behavior remain separately unqualified. ACE 16 calculated
    fields have explicit
-   cached reads and [selected recomputed query views](RECOMPUTED_CALCULATION_VIEWS.md)
+   cached reads and [selected recomputed query views](access/calculations/RECOMPUTED_CALCULATION_VIEWS.md)
    using the existing same-row syntax/dependency service. Natural carriers remain
    separate from stored ResultType conversion and native freshness qualification. Jet 4/ACE 12
    are not required to implement field types absent from those formats. See
@@ -654,7 +654,7 @@ contract retains the primary references, algorithms, provenance and exact limits
    Known fixed prefixes of ambiguous deleted tails now read without inventing their
    storage classes; required visible variable tails retain checks. Unobserved
    deleted payloads, broader row/type histories, other unqualified schema variants, codecs beyond
-   the [qualified encryption/password profiles](NATIVE_ENCRYPTION.md), and
+   the [qualified encryption/password profiles](access/storage/NATIVE_ENCRYPTION.md), and
    Jet workgroup/replication-related variants need implementation/evidence.
    Native read sources now have a 2 GiB envelope, separately from 64 MiB complete
    images. Map/page, snapshot, payload and buffered output ceilings still restrict
@@ -664,11 +664,11 @@ contract retains the primary references, algorithms, provenance and exact limits
    materialize through these batches with cumulative controls and complete caches.
    Native CLI queries now offer an explicit cumulative byte allowance while
    preserving separate row/work/execution/output limits and the default budget.
-   [CLI scalar row continuation](STREAMING_ROWS.md) now uses one source-bound cursor,
+   [CLI scalar row continuation](cli/STREAMING_ROWS.md) now uses one source-bound cursor,
    explicit scalar projections and cumulative read/output controls.
    Ordinary SQL execution remains buffered; explicit
-   [progressive scalar SELECT/WHERE and flat UNION ALL](STREAMING_QUERIES.md) now uses fresh native
-   cursors without complete-table retention. [Explicit larger scalar snapshots](LARGER_NATIVE_QUERIES.md)
+   [progressive scalar SELECT/WHERE and flat UNION ALL](cli/STREAMING_QUERIES.md) now uses fresh native
+   cursors without complete-table retention. [Explicit larger scalar snapshots](access/queries/LARGER_NATIVE_QUERIES.md)
    now preserve complete caches and independent native/query controls with 20,000-row
    comparisons. Explicit indexed loads now have independent 20,000-row comparisons across
    qualified key families, projections, typed seeks and full-cache isolation.
@@ -695,10 +695,10 @@ contract retains the primary references, algorithms, provenance and exact limits
    working contract. Native CLI inputs now hold shared OS locks against cooperating
    exclusive writers; captured package inputs can release locks after capture.
    This does not implement native Access shared-file coordination. Coherent reads while native Access is modifying a shared
-   file require compatible snapshot/coordination behavior. [Linked-table definitions](NATIVE_LINKED_TABLES.md)
+   file require compatible snapshot/coordination behavior. [Linked-table definitions](access/schema/NATIVE_LINKED_TABLES.md)
    now expose inert target/provider fields without opening them. The Access
-   adapter's [shared native quotas](NATIVE_SOURCE_BUDGETS.md) can bound explicitly
-   supplied sources together. [Explicit one-hop routing](NATIVE_LINKED_QUERIES.md)
+   adapter's [shared native quotas](access/queries/NATIVE_SOURCE_BUDGETS.md) can bound explicitly
+   supplied sources together. [Explicit one-hop routing](access/queries/NATIVE_LINKED_QUERIES.md)
    now validates authorized handles and target metadata, forwarding root linked
    aliases to local target tables. CLI `--link ALIAS PATH` selects explicit targets;
    providers, chains and live cross-file coherence remain separate work.
@@ -719,14 +719,14 @@ in the broader backend roadmap; this list does not mark them completed or waived
 
 ## Stored GUID inspection
 
-[Fixed GUID Byte-array views](VALUE_INSPECTION.md#stored-guid-inspection-and-fixed-bounds)
+[Fixed GUID Byte-array views](expressions/VALUE_INSPECTION.md#stored-guid-inspection-and-fixed-bounds)
 now supply type/subtype/array inspection and bounds across scalar and bound
 queries without rewriting stored values or materializing bytes. Native subtype,
 bound and error-precedence qualification remains separate; full P0 remains open.
 
 ## GUID-structure predicate coercion
 
-[GUID/byte-structure equality](GUID_CONVERSIONS.md#guid-structure-predicate-equality)
+[GUID/byte-structure equality](expressions/GUID_CONVERSIONS.md#guid-structure-predicate-equality)
 now lets filters compare stored GUIDs against the existing GUIDFromString byte
 result. Ordinary and declared predicate consumers share the fixed-size rule;
 strict keys, storage and native index hints retain their existing contracts.
@@ -735,7 +735,7 @@ Broader array semantics, native comparison qualification and full P0 remain open
 ## Successful unknown-category arithmetic composition
 
 Declared-profile arithmetic with unknown provenance now has
-[successful selected-carrier descriptors](QUERY_RESULT_TYPES.md#successful-arithmetic-with-unknown-declaration-provenance),
+[successful selected-carrier descriptors](query/QUERY_RESULT_TYPES.md#successful-arithmetic-with-unknown-declaration-provenance),
 using its existing runtime agreement/refusal rule. Outer UNION consumers can
 apply common-carrier conversions without inventing aggregate/UNION declarations.
 Full Variant promotion, native declaration qualification and remaining P0 work
@@ -743,7 +743,7 @@ remain open.
 
 ## Explicit deeper compound queries
 
-[Query binding depth](QUERY_BINDING_LIMITS.md) can now be selected explicitly up
+[Query binding depth](query/QUERY_BINDING_LIMITS.md) can now be selected explicitly up
 to 32, retaining default 16 and independent node, allocation, parser and named-path
 ceilings. Prepared plans capture the limit through runtime domains, policy walks
 and progressive admission; staged discovery shares the selection and work budget.
@@ -751,7 +751,7 @@ Broader native definitions and complete P0 value/text semantics remain open.
 
 ## Next implementation and measurement
 
-[ACE 16 bounded reads](NATIVE_ACE16.md) now have original V2016/V2019 Jackcess
+[ACE 16 bounded reads](access/profiles/NATIVE_ACE16.md) now have original V2016/V2019 Jackcess
 fixtures and independent comparisons, including exact Large Number and Date/Time
 Extended reads. Inert advanced-field declarations now work through
 [feature inspection](features/ACCESS_ADVANCED_FIELDS.md#working-inert-metadata-slice).
@@ -764,10 +764,10 @@ fixtures/native comparisons; current catalog/XML observations cannot permit writ
 acquiring actual Microsoft Access fixtures with recorded builds and provenance;
 independent-reader evidence does not qualify native Access conformance.
 
-Native [field properties](NATIVE_PROPERTIES.md) and [relationship declarations](NATIVE_RELATIONSHIPS.md)
+Native [field properties](access/schema/NATIVE_PROPERTIES.md) and [relationship declarations](access/schema/NATIVE_RELATIONSHIPS.md)
 now have bounded readers and independent fixtures. Bounded field/rule and Int32
-relationship audits are implemented. Complete-image retention, [database contracts](DB.md),
-[journaled fixed Int32 edits](NATIVE_WRITES.md) and [query UPDATE copies](QUERY_EDITING.md)
+relationship audits are implemented. Complete-image retention, [database contracts](foundation/DB.md),
+[journaled fixed Int32 edits](access/writes/NATIVE_WRITES.md) and [query UPDATE copies](access/writes/QUERY_EDITING.md)
 now form a working bounded editing path. Unsupported constraint/content profiles
 remain write blockers. Further SQLite expansion is paused at the requested boundary;
 remaining native qualification and broader write coverage stay explicit below. Qualified Int32/Int64 index checks already have
@@ -778,16 +778,16 @@ sequential rows and eligible indexes with explicit coverage gaps. Usage-map orde
 and chained definitions have bounded corruption/budget and Jet 4/ACE evidence.
 Writes still require preservation, required macro semantics, transactions and
 recovery qualification; successful reads do not supply those guarantees.
-Native [Byte/Int16](NARROW_RANGES.md), Int32/Int64 and [Currency seeks](CURRENCY_RANGES.md), plus [safe predicate pushdown](QUERY_EXECUTION.md#safe-source-constraints)
-now work through explicitly selected indexes. Qualified [legacy DATE constraints](DATE_INDEX_CANDIDATES.md)
+Native [Byte/Int16](access/indexes/NARROW_RANGES.md), Int32/Int64 and [Currency seeks](access/indexes/CURRENCY_RANGES.md), plus [safe predicate pushdown](query/QUERY_EXECUTION.md#safe-source-constraints)
+now work through explicitly selected indexes. Qualified [legacy DATE constraints](access/indexes/DATE_INDEX_CANDIDATES.md)
 now retain calendar-safe candidates through explicit or opt-in automatic indexes;
 the original four-format 20,000-row replay passes 192 controls without changing
 snapshot defaults or residual filtering. The engine also has
-[exact GUID/NULL point selection](NATIVE_INDEXES.md#exact-guid-point-selections);
+[exact GUID/NULL point selection](access/indexes/NATIVE_INDEXES.md#exact-guid-point-selections);
 backend-neutral GUID equality/NULL predicate integration now uses it for explicit
 matching single-GUID indexes, including mixed-schema scalar projections. Broader typed
 predicate pushdown and cost-based index choice remain open. Opt-in
-[automatic selection](AUTOMATIC_INDEXES.md) now uses matching qualified single-key
+[automatic selection](access/indexes/AUTOMATIC_INDEXES.md) now uses matching qualified single-key
 definitions. Schema discovery is separate from
 row loading. Physical traversal stays in ACE, source adaptation in Access and
 backend-neutral planning in query. Cost-based choices and TOP pushdown remain
@@ -818,7 +818,7 @@ or change the next native task. Further SQLite expansion follows this sequence.
 | 7 | Query completion for editing | Bounded single-table/column UPDATE planning and CLI copies implemented; broader expressions, collations, actions and result-set updateability remain explicit gaps |
 | 8 | Additional backend/collaboration work | SQLite type/write policies beyond its current read-only source; native Access shared-file coordination and mixed-client recovery testing |
 | 9 | Application runtime | Sessions, cursors, object lifecycle, bounded background work, cancellation and change notifications |
-| 10 | Desktop UI | Accessible shell/navigation/ribbon using the selected [Selawik UI font](TECH_STACK.md#desktop-typography-decision), read-only datasheets and SQL editor, then qualified editing and visual builders |
+| 10 | Desktop UI | Accessible shell/navigation/ribbon using the selected [Selawik UI font](architecture/TECH_STACK.md#desktop-typography-decision), read-only datasheets and SQL editor, then qualified editing and visual builders |
 
 Compatibility experiments and UI prototypes can progress alongside this work.
 Jet 1/2 research and complete historical-format coverage do not gate the UI.
@@ -852,7 +852,7 @@ format generations are older.
 Acquire original minimal fixtures with recorded provenance and compare catalog,
 scalar, text and index behavior before enabling each profile. Access engine
 releases do not map one-to-one to file layouts; the
-[format target matrix](NATIVE_READING.md#compatibility-targets) records this
+[format target matrix](access/NATIVE_READING.md#compatibility-targets) records this
 distinction and current limitations.
 
 Jet 1.0/1.1 and Jet 2 are deferred optional read-only feasibility studies; they
@@ -877,8 +877,8 @@ neither newer headers nor successful scalar reads imply support for every featur
 | Detecting VBA-dependent buttons, events, startup, ribbon and query features | Required; report unavailable actions and unresolved dependencies |
 | Access table data macros | Retained database compatibility scope; implement required semantics or block affected writes |
 
-[VBA_COMPATIBILITY.md](VBA_COMPATIBILITY.md) owns preservation/detection and deferred
-integration. [WINDOWS_COMPATIBILITY.md](WINDOWS_COMPATIBILITY.md) retains provider
+[VBA_COMPATIBILITY.md](architecture/VBA_COMPATIBILITY.md) owns preservation/detection and deferred
+integration. [WINDOWS_COMPATIBILITY.md](architecture/WINDOWS_COMPATIBILITY.md) retains provider
 research only. Remove `tablecraft-vba`, `tablecraft-wincompat` and `tablecraft-wine`
 from active implementation; reserve `tablecraft-vba-host` in docs only. Keep
 `tablecraft-macros` and `tablecraft-automation` for Access-native macros, event dispatch
@@ -937,7 +937,7 @@ CCur now has a library-backed explicit numeric conversion through the shared
 expression/query layer, independently checked across Jet 4 and ACE 2007/2016/2019
 read inputs. This advances read/query expression coverage; broader Decimal
 arithmetic, Variant promotion, locale conversions and native Access qualification
-remain required. See [conversion contracts](EXPRESSIONS.md#explicit-currency-conversion).
+remain required. See [conversion contracts](expressions/EXPRESSIONS.md#explicit-currency-conversion).
 
 ### Decimal expression envelope and CDec progress
 
@@ -964,10 +964,10 @@ SQLite expression work follow those priorities. Private reference packs remain
 research inputs; their planned scenarios are not implemented acceptance evidence.
 
 
-The required ACCDT reader now has [bounded package inspection](ACCESS_TEMPLATES.md):
+The required ACCDT reader now has [bounded package inspection](access/containers/ACCESS_TEMPLATES.md):
 stored/deflated OPC snapshots, checked content types/internal relationships and
 basic CLI reporting. Bounded generic-Object inline XSD data now supplies table browsing and query
-integration. Qualified [List Definition agreement](ACCESS_TEMPLATE_LISTS.md) now checks stored
+integration. Qualified [List Definition agreement](access/containers/ACCESS_TEMPLATE_LISTS.md) now checks stored
 SOAP declarations before table reads. Broader defaults/types, wider XSD/native field
 fidelity and Access-created qualification remain required; this does not complete
-template read/query acceptance. See [stored-data scope](ACCESS_TEMPLATE_DATA.md).
+template read/query acceptance. See [stored-data scope](access/containers/ACCESS_TEMPLATE_DATA.md).

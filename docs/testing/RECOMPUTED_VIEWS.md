@@ -36,9 +36,9 @@ or frozen executable changed. The accepted fresh replay uses the same originals.
 Commands, outputs, expected rows and hashes remain in the report. Its runner pins
 existing getter/model/display helpers separately and refuses to overwrite an
 existing report. No new fixture binaries or dependencies were adopted; original
-recipe and getter provenance remain in [FIXTURES.md](../FIXTURES.md).
+recipe and getter provenance remain in [FIXTURES.md](FIXTURES.md).
 
-[Focused tests](../RECOMPUTED_CALCULATION_VIEWS.md) separately cover invalid
+[Focused tests](../access/calculations/RECOMPUTED_CALCULATION_VIEWS.md) separately cover invalid
 caches, paired result types, retained Strings, provider reuse, metadata-only
 preparation, exact cumulative limits and cancellation. These views remain explicit
 buffered computations over selected formulas; they do not replace native table

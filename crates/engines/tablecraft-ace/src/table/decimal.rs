@@ -7,7 +7,7 @@ const WORD_BYTES: usize = size_of::<u32>();
 const NEGATIVE_SIGN: u8 = 0x80;
 
 // Native NUMERIC stores most-significant words first, each word little-endian.
-// See the pinned format references and independent evidence in NATIVE_TABLES.md.
+// See the pinned format references and independent evidence in docs/access/storage/NATIVE_TABLES.md.
 pub(super) fn decode(bytes: &[u8], precision: u8, scale: u8) -> Result<Decimal, InspectError> {
     if bytes.len() != NUMERIC_BYTES
         || !(1..=DecimalConstraints::MAX_PRECISION).contains(&precision)

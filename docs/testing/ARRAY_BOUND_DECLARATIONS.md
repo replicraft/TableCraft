@@ -20,7 +20,7 @@ as returning Long. The existing TableCraft runtime already returns Int32, whose
 VarType is 3; the query declaration classifier now records that known Scalar
 category instead of leaving it unknown. These signature references do not by
 themselves prove direct query availability or native Access behavior. The
-[existing inspection profile](../VALUE_INSPECTION.md) retains those scope limits.
+[existing inspection profile](../expressions/VALUE_INSPECTION.md) retains those scope limits.
 
 [compare_array_bound_declarations.py](compare_array_bound_declarations.py) uses
 Python integer arithmetic with signed 32-bit limits. It independently models the

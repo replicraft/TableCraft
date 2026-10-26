@@ -74,7 +74,7 @@ Generate into a new output directory with --generate. Existing directories and
 output files are refused. Random encryption material changes fresh hashes;
 review/register the resulting identities before reuse. Files and compiled
 engineering helpers remain under ignored persistent repository storage.
-[Provenance](../FIXTURES.md#encrypted-modern-history-inputs) records the observed
+[Provenance](FIXTURES.md#encrypted-modern-history-inputs) records the observed
 files. An initial runner failure used a duplicate byte-limit flag; its partial
 local generation/log remains excluded from this registered corpus.
 

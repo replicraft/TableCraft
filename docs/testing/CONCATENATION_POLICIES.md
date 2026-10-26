@@ -86,7 +86,7 @@ The existing binary fixtures remain under ignored
 patched or regenerated for this slice. The new getter captures and actual getter
 commands are under `.cache/concat-policy-getters-20261024/`, with generation.json
 recording each unchanged original hash. Existing fixture provenance remains in
-[the ledger](../FIXTURES.md).
+[the ledger](FIXTURES.md).
 
 The reviewed Jackcess 5.0.4 JAR is Apache-2.0, SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
@@ -140,4 +140,4 @@ provenance was also confirmed rather than changed. The exclusion record is
 `.cache/concat-policy-exclusions-20261024.md`; no original inputs were modified.
 
 Native Access collation/precedence evidence and broader field-origin semantics
-remain separate; see [native Text policies](../NATIVE_TEXT.md).
+remain separate; see [native Text policies](../access/indexes/NATIVE_TEXT.md).

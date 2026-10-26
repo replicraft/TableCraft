@@ -24,7 +24,7 @@ groups return NULL. Successful Single/Double sums retain Double result metadata.
 Preparation reads no rows to choose a result or accumulator.
 
 Integral, Boolean and Currency sums retain their checked scalar fold.
-[Decimal sums](../DECIMAL_SUMS.md) now retain wider exact totals when needed and
+[Decimal sums](../query/aggregates/DECIMAL_SUMS.md) now retain wider exact totals when needed and
 round/check their final result once.
 An integral prefix is checked as Int64, then converts to Double with the existing
 nearest-even converter when floating mode begins. Later integral values use the

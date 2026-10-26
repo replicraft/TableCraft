@@ -1,6 +1,6 @@
 # Large native encryption copy evidence
 
-The [page-copy implementation](../NATIVE_ENCRYPTION.md#page-copy-preservation-and-failure-boundary)
+The [page-copy implementation](../access/storage/NATIVE_ENCRYPTION.md#page-copy-preservation-and-failure-boundary)
 passes a 92-command independent replay over both unchanged original
 [large ACE 16-family inputs](LARGE_DEPLOYMENT.md). The V2016 file is 77,041,664
 bytes; V2019 is 77,111,296 bytes. Both exceed the image API's retained 64 MiB cap.

@@ -148,4 +148,4 @@ accepted counts. No failed model cases or patched original inputs were hidden.
 
 Provider activation, implicit filesystem traversal, live Access coordination,
 target linked chains and native Windows saved-query qualification remain outside
-this evidence. See the [working feature contract](../EXTERNAL_NAMED_QUERIES.md).
+this evidence. See the [working feature contract](../query/EXTERNAL_NAMED_QUERIES.md).

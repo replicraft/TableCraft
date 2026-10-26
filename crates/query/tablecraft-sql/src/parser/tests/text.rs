@@ -1,5 +1,5 @@
 //! Access string delimiters are syntax, not identifier quotes or a VBA wrapper.
-//! References and the scope of normalization are recorded in docs/SQL_PARSER.md.
+//! References and the scope of normalization are recorded in docs/query/SQL_PARSER.md.
 
 use super::*;
 

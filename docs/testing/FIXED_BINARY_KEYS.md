@@ -1,6 +1,6 @@
 # Mixed fixed/binary key replay
 
-The [exact numeric key implementation](../NUMERIC_KEYS.md#exact-fixedbinary-numeric-cohorts)
+The [exact numeric key implementation](../query/keys/NUMERIC_KEYS.md#exact-fixedbinary-numeric-cohorts)
 passes 3,956 current CLI queries against independent Fraction/IEEE models and
 unchanged native scalar getters. A further 333 earlier-executable controls retain
 275 former mixed-key refusals and 58 already-correct results. The

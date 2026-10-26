@@ -51,7 +51,7 @@ deletion/save fixture. Existing opaque property declarations are not rewritten.
 
 FixedGap and VariableGap remove one field each. MixedGap removes both without a
 row at the ambiguous intermediate count. AmbiguousGap includes that row and now also exposes its known fixed-prefix values,
-without interpreting the deleted tail. [Fixture records](../FIXTURES.md#deleted-column-history-derivatives) retain all
+without interpreting the deleted tail. [Fixture records](FIXTURES.md#deleted-column-history-derivatives) retain all
 base/derivative identities. Neither original files nor derived inputs are tracked.
 
 Each profile now passes sixteen positive controls (four tables through full
@@ -91,7 +91,7 @@ counts, insufficient fixed-prefix/mask space and damaged required variable tails
 Buffered rows, projected queries and COUNT(*) all fail atomically on those damaged copies.
 Across four families, 56 positive and 72 negative controls pass (128 total).
 The unchanged earlier corpus adds 64 controls. All original/derivative hashes
-remain unchanged; [fixture identities](../FIXTURES.md#known-fixed-prefix-history-inputs)
+remain unchanged; [fixture identities](FIXTURES.md#known-fixed-prefix-history-inputs)
 record the newly generated files.
 
 CI tests cover both deleted layouts, all four read profiles, absent fields/high

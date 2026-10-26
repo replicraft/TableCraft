@@ -6,7 +6,7 @@ comparison/logical support and its separate evidence are described in
 [predicate previews](PREDICATE_PREVIEW_REPLAY.md). The pinned original report is
 unchanged.
 
-This replay checks the explicit [calculation preview](../CALCULATION_PREVIEWS.md)
+This replay checks the explicit [calculation preview](../access/calculations/CALCULATION_PREVIEWS.md)
 against independent models over ordinary stored getters. It does not ask Jackcess
 to evaluate formulas, qualify native Access arithmetic or certify cached freshness.
 
@@ -88,5 +88,5 @@ python3 docs/testing/compare_calculation_previews.py \
   --report /tmp/calculation-preview.json
 ```
 
-[Fixture provenance](../FIXTURES.md#independent-calculation-preview-inputs) records
+[Fixture provenance](FIXTURES.md#independent-calculation-preview-inputs) records
 the newly regenerated simple input hashes. The runner refuses report overwrites.

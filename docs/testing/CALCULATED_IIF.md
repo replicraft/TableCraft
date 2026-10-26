@@ -9,7 +9,7 @@ remain unchanged. The 1,892-file Rust inventory exactly matches commit `11ccd44d
 
 Microsoft's [table-calculation example](https://support.microsoft.com/en-us/office/add-functions-to-access-expressions-72a471a0-4f0e-4d49-923b-be97b0fa4bb0)
 supports narrow `IIf` admission. This verifies the explicit
-[preview profile](../CALCULATION_PREVIEWS.md#deterministic-iif-calls), not native
+[preview profile](../access/calculations/CALCULATION_PREVIEWS.md#deterministic-iif-calls), not native
 ACE conversion, freshness or a general calculated-function whitelist.
 
 Original MIT [CalculatedIIfFixture.java](CalculatedIIfFixture.java) authors two

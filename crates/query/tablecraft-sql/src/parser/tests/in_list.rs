@@ -1,4 +1,4 @@
-//! Original list-predicate cases; primary source mapping is in docs/SQL_PARSER.md.
+//! Original list-predicate cases; primary source mapping is in docs/query/SQL_PARSER.md.
 
 use super::*;
 

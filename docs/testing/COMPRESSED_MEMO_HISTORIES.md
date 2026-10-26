@@ -11,7 +11,7 @@ The engine now admits exactly the ordinary Unicode-compression bit on the
 ordinary flags and scalar-codec checks. Calculated/unknown flags stay refused.
 History templates and flat stored members still require their prior zero extended
 flags. Their encodings, mapping checks and decoders do not change. See the
-[stored-history contract](../STORED_HISTORY_QUERIES.md).
+[stored-history contract](../access/collections/STORED_HISTORY_QUERIES.md).
 
 ## Original evidence
 
@@ -68,7 +68,7 @@ retain metadata-only binding, complete-cache reuse and late-orphan failure under
 TOP. The combined engine/adapter targets pass 19 tests with scoped strict Clippy.
 These results qualify the current offline engineering read path, not native
 Access SQL, compressed child variants, history writes, freshness or live-file
-coherence. [Fixture provenance](../FIXTURES.md#original-compressed-memo-history-inputs)
+coherence. [Fixture provenance](FIXTURES.md#original-compressed-memo-history-inputs)
 records ownership and original hashes.
 
 ```sh

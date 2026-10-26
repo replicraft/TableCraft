@@ -31,7 +31,7 @@ limit. No TOP pushdown, streaming execution, native transaction snapshot or
 concurrent/shared-file guarantee is implied. All reads require stable/offline input.
 Native `query run --database` now accepts an explicit `--native-bytes BYTES`
 override within 1..=268435456. Only cumulative native bytes change; all other
-ceilings above remain. [The CLI contract](../NATIVE_QUERIES.md) covers scope.
+ceilings above remain. [The CLI contract](../access/queries/NATIVE_QUERIES.md) covers scope.
 
 ## Evidence
 
@@ -76,7 +76,7 @@ Windows/live-file behavior and broader backend acceptance remain unqualified.
 ## Explicit larger consumer limits
 
 Default batched APIs retain the limits above. A new checked
-[scalar materialization profile](../LARGER_NATIVE_QUERIES.md) lets a fresh cursor
+[scalar materialization profile](../access/queries/LARGER_NATIVE_QUERIES.md) lets a fresh cursor
 produce a larger complete snapshot under caller controls. The Access adapter uses
 it only with explicit configuration; it never caches a returned suffix from an
 advanced cursor or a failed load as a complete table. Native index/collection

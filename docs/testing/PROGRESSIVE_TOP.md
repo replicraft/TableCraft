@@ -15,7 +15,7 @@ recipe's getter/TSV display helpers, not TableCraft execution code. No reference
 SQL runs, no database is mutated and no additional upstream material is copied.
 The Java producer, getters, generation metadata, baseline/candidate executables,
 runner sources and frozen Rust inventory are pinned. Existing MIT recipe and
-reviewed Jackcess provenance remain in [FIXTURES.md](../FIXTURES.md).
+reviewed Jackcess provenance remain in [FIXTURES.md](FIXTURES.md).
 
 Expected TOP output is computed by filtering getter records and taking their
 first n qualifying rows. Counts 1, 129 and 20,001 cover a singleton, a batch
@@ -75,5 +75,5 @@ pins against the immutable committed archive after later work resumed.
 
 [The verification record](results/read-query-progressive-top-2026-10-24.json)
 retains 88 unique passing Rust tests, strict Clippy and final CLI build logs.
-The [TOP contract](../PROGRESSIVE_QUERIES.md#unordered-top-counts) cites the primary
+The [TOP contract](../query/PROGRESSIVE_QUERIES.md#unordered-top-counts) cites the primary
 Microsoft syntax reference and distinguishes the native qualification boundary.

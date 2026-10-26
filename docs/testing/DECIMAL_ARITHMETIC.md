@@ -41,8 +41,8 @@ hyperfine --warmup 2 --runs 7 --export-json /tmp/tablecraft-decimal-arithmetic-h
 The example adds no dependency: it reuses existing development-only clap and
 normal expression/core APIs. Independent i128/rational properties, midpoint/range
 and error goldens, query/CLI integration and original native-file regressions
-provide separate correctness evidence. See [contracts](../EXPRESSIONS.md#checked-decimal-arithmetic)
-and [fixture evidence](../FIXTURES.md#checked-decimal-arithmetic-read-regression).
+provide separate correctness evidence. See [contracts](../expressions/EXPRESSIONS.md#checked-decimal-arithmetic)
+and [fixture evidence](FIXTURES.md#checked-decimal-arithmetic-read-regression).
 
 
 ## Full-width rational boundary checks

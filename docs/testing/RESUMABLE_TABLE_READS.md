@@ -43,7 +43,7 @@ The ordinary buffered CLI `rows` command retains independent offset requests and
 bounded snapshots through the batched loading below. Output remains buffered and
 the ordinary CLI budget does not refill between internal batches.
 
-An explicit [CLI streaming mode](../STREAMING_ROWS.md) now uses the same browser
+An explicit [CLI streaming mode](../cli/STREAMING_ROWS.md) now uses the same browser
 cursor with cumulative controls and progressive TSV publication. It can return
 more than a complete-snapshot cap without changing ordinary query materialization.
 
@@ -123,6 +123,6 @@ hyperfine --warmup 2 --runs 7 \
 
 
 A fresh cursor can now be consumed into a complete scalar snapshot through checked
-`TableSnapshotLimits`; [larger query materialization](../LARGER_NATIVE_QUERIES.md)
+`TableSnapshotLimits`; [larger query materialization](../access/queries/LARGER_NATIVE_QUERIES.md)
 retains cumulative controls and refuses advanced/failed cursors. The default
 materialization helpers still use 16,384 rows and 256-row batches.

@@ -3,7 +3,7 @@
 The original [recipe](MixedScalarHistoryFixture.java) creates offline ACE 16,
 ACE 2007 and Jet 4 databases using the reviewed Jackcess 5.0.4 artifact. It does
 not execute Access SQL, formulas, macros or VBA. This extends the larger
-[scalar query evidence](../LARGER_NATIVE_QUERIES.md); it does not change supported
+[scalar query evidence](../access/queries/LARGER_NATIVE_QUERIES.md); it does not change supported
 types, limits, concurrency guarantees or write permissions.
 
 Each table starts with fourteen fields: Int32 identity, Boolean, Byte, Int16,
@@ -50,7 +50,7 @@ python3 docs/testing/compare_mixed_scalar_histories.py \
   --directory .cache/tablecraft-fixtures/mixed-scalar-histories
 ```
 
-Reuse verifies the [registered identities](../FIXTURES.md#mixed-scalar-storage-history-inputs)
+Reuse verifies the [registered identities](FIXTURES.md#mixed-scalar-storage-history-inputs)
 before reference/database reads. For fresh engineering generation, supply a new
 directory and `--generate`; that directory must not exist. Metadata timestamps
 can change generated hashes, so fresh generation reports new identities rather

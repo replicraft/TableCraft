@@ -83,6 +83,6 @@ python3 docs/testing/compare_advanced_evolution.py \
   --report /tmp/advanced-evolution.json
 ```
 
-[Fixture provenance](../FIXTURES.md#advanced-field-storage-evolution-inputs) records
+[Fixture provenance](FIXTURES.md#advanced-field-storage-evolution-inputs) records
 accepted original hashes and excluded investigation inputs. Generated databases,
 compiled fixture classes and the executable remain ignored local artifacts.

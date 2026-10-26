@@ -76,6 +76,6 @@ retain NULL, orphan, quota, cancellation and payload-pruning checks. Scoped stri
 Clippy passes for all five targets; scoped rustfmt, Python compilation and
 whitespace checks pass.
 
-See [fixture provenance](../FIXTURES.md#original-signed-complex-child-identity-inputs).
+See [fixture provenance](FIXTURES.md#original-signed-complex-child-identity-inputs).
 These are bounded independent-reader results, not native Access SQL, native
 application qualification, concurrency, mutation or save/reopen evidence.

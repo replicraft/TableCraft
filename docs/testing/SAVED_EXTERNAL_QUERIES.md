@@ -144,4 +144,4 @@ establish the representations above, independently of upstream master changes.
 This corpus does not qualify imported provider activation, target named-query
 expansion, link chains, Access security/locking, native Windows execution or
 broader saved-query metadata. It preserves the limits in the
-[saved external-source contract](../NATIVE_SAVED_EXTERNAL_QUERIES.md).
+[saved external-source contract](../access/queries/NATIVE_SAVED_EXTERNAL_QUERIES.md).

@@ -1,4 +1,4 @@
-//! Jet 4 / initial ACE page geometry; references are in NATIVE_READING.md.
+//! Jet 4 / initial ACE page geometry; references are in docs/access/NATIVE_READING.md.
 pub(crate) const PAGE_BYTES: usize = 4096;
 pub(crate) const JET3_PAGE_BYTES: usize = 2048;
 pub(crate) const DATA_SIGNATURE: [u8; 2] = [1, 1];

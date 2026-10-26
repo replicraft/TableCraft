@@ -12,7 +12,7 @@ AutoKeys, Ribbon and zzzAutoExec. Its MSysAccessXML schema has six scalar fields
 and zero declared rows; MSysAccessStorage has seven scalar fields and 328 declared
 rows. These are inert metadata observations, not proof that any table lacks event
 data macros. No application content or macro was executed. Original provenance,
-license and SHA-256 remain in [FIXTURES.md](../FIXTURES.md).
+license and SHA-256 remain in [FIXTURES.md](FIXTURES.md).
 Its creating Access build is unassessed; these observations do not turn it into
 an ACE 16 data-macro fixture.
 
@@ -31,7 +31,7 @@ reads must not become an ACE write permit.
 [Microsoft's desktop documentation](https://support.microsoft.com/en-us/access/add-data-macros-in-a-desktop-database)
 distinguishes table-triggered macros from explicitly invoked named macros.
 Table event behavior is not established by enumerating ordinary catalog macros.
-The existing [write gate](../NATIVE_WRITES.md) and [preservation limits](../NATIVE_PRESERVATION.md)
+The existing [write gate](../access/writes/NATIVE_WRITES.md) and [preservation limits](../access/writes/NATIVE_PRESERVATION.md)
 therefore remain unchanged while positive native evidence is missing.
 
 ## Reference boundaries

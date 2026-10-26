@@ -6,7 +6,7 @@ toolbar and an imported application's custom ribbon are separate responsibilitie
 
 VBA callbacks are deferred with VBA execution. Preserve and identify their bindings;
 report dependent actions/dynamic properties as unavailable. Non-VBA commands and
-Access macros remain separate future work. See [VBA scope](../VBA_COMPATIBILITY.md).
+Access macros remain separate future work. See [VBA scope](../architecture/VBA_COMPATIBILITY.md).
 
 ## Preservation and execution
 
@@ -46,5 +46,5 @@ use the [application corpus](../testing/ACCESS_APPLICATIONS.md).
 
 Microsoft's [custom ribbon guide](https://support.microsoft.com/en-us/access/create-a-custom-ribbon-in-access)
 documents USysRibbons and database/form/report association. Execution follows
-[VBA compatibility](../VBA_COMPATIBILITY.md) and
+[VBA compatibility](../architecture/VBA_COMPATIBILITY.md) and
 [startup/session contracts](ACCESS_APP_STARTUP.md).

@@ -4,7 +4,7 @@ The [128-command report](results/declared-numeric-text-replay-2026-10-25.json)
 passes 96 successful queries comparing 2,592 Boolean/NULL cells and 32 expected
 buffered overflow failures. Four registered original native inputs and four
 artifact/source pins remain unchanged. These controls exercise the explicit
-[declared predicate rule](../DECLARED_NUMERIC_TEXT.md); only TableCraft executes
+[declared predicate rule](../expressions/numeric/DECLARED_NUMERIC_TEXT.md); only TableCraft executes
 SQL, and native Microsoft Access qualification remains unrun.
 
 The original [Python runner](compare_declared_numeric_text.py) uses independent
@@ -18,7 +18,7 @@ Single precision loss. Both en-us and de-de numeric input profiles run without
 an inferred machine locale. Large integers enter through exact Text constructors,
 separately from the declared literal-preparation profile.
 
-Native controls reuse the registered [Scalar inputs](../FIXTURES.md#interrupted-seek-scalar-replay)
+Native controls reuse the registered [Scalar inputs](FIXTURES.md#interrupted-seek-scalar-replay)
 for Jet 4, ACE 2007 and ACE 2016/2019. The existing read-only Jackcess getter
 returns stored ID, Byte and Integer values, including NULL and boundary carriers;
 it evaluates no expressions. The same independent rounding/range model generates

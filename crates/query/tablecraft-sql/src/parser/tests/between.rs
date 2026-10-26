@@ -1,4 +1,4 @@
-//! Original syntax cases based on Microsoft references in docs/SQL_PARSER.md.
+//! Original syntax cases based on Microsoft references in docs/query/SQL_PARSER.md.
 //! These checks do not establish Access comparison, NULL or collation behavior.
 
 use super::*;

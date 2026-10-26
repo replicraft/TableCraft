@@ -29,7 +29,7 @@ and an atomic tiny-budget refusal. TableCraft alone executes SQL.
 
 The generation and original 104-control reuse run pass. Adding direct index
 order checks yields 112 controls in the final registered reuse run. Original
-file hashes remain unchanged. [Fixture records](../FIXTURES.md#maximum-width-table-history-inputs)
+file hashes remain unchanged. [Fixture records](FIXTURES.md#maximum-width-table-history-inputs)
 retain the generation identity; downloaded JARs, generated databases, manifests
 and logs remain in ignored .cache/tablecraft-fixtures/ and are not CI inputs.
 
@@ -64,7 +64,7 @@ CLI controls. Normal buffered commands publish nothing; explicit streaming
 preserves exactly the valid prefix. The portable wide_rows integration tests
 also verify poisoned continuation, unchanged delivered position and no later I/O
 or budget changes, including empty projections. See
-[cursor failure boundaries](../NATIVE_READ_FAILURES.md#maximum-width-malformed-suffixes).
+[cursor failure boundaries](../access/storage/NATIVE_READ_FAILURES.md#maximum-width-malformed-suffixes).
 
 ```sh
 python3 docs/testing/compare_wide_row_failures.py   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar   --cli target/debug/tablecraft   --directory .cache/tablecraft-fixtures/wide-table-histories

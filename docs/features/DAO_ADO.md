@@ -3,20 +3,20 @@
 Status: deferred for VBA integration as of 18 October 2026. No DAO/ADO object host
 or compatible recordset exists. A bounded native scalar Source adapter does exist;
 it does not implement DAO/ADO. The
-[bounded retrieval executor](../QUERY_EXECUTION.md) works over explicit host sources. Core bookmark/locator types
+[bounded retrieval executor](../query/QUERY_EXECUTION.md) works over explicit host sources. Core bookmark/locator types
 are carriers, not an implementation of either object model.
 
 The contracts below are retained research. VBA-specific interfaces resume only
 with a usable independent RustVBA integration; backend-neutral schema, cursor and
-transaction work can advance independently. See [current VBA scope](../VBA_COMPATIBILITY.md).
+transaction work can advance independently. See [current VBA scope](../architecture/VBA_COMPATIBILITY.md).
 
 ## Separate observable models
 
 DAO and ADO can share lower-level Automation dispatch contracts, identity,
 argument marshalling and supplied database interfaces. Keep their exposed
 interfaces, errors, cursor semantics and lifetime rules separate. VBA sees object
-contracts, not a concrete Windows provider; see [VBA](../VBA_COMPATIBILITY.md) and
-[Windows providers](../WINDOWS_COMPATIBILITY.md). SQL translation alone cannot
+contracts, not a concrete Windows provider; see [VBA](../architecture/VBA_COMPATIBILITY.md) and
+[Windows providers](../architecture/WINDOWS_COMPATIBILITY.md). SQL translation alone cannot
 reproduce a stateful recordset.
 
 | Surface | Required behavior to qualify |

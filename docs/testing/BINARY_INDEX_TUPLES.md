@@ -61,5 +61,5 @@ python3 docs/testing/compare_binary_tuples.py \
 ```
 
 The recipe refuses an existing output directory. The reviewed JAR and generated
-databases remain local/untracked; [fixture records](../FIXTURES.md#compound-binary-index-inputs)
+databases remain local/untracked; [fixture records](FIXTURES.md#compound-binary-index-inputs)
 retain artifact provenance, identities and regeneration limits.
