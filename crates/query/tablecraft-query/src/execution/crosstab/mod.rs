@@ -6,12 +6,27 @@ use super::{CellQueryResult, Environment, Runtime, context::GroupKeys, retrieval
 use crate::{
     QueryError,
     plan::{CrosstabPlan, ReadNode},
-    profile::SOURCE_SCHEMA_POLICY,
+    profile::{MAX_RUNTIME_READ_DEPTH, SOURCE_SCHEMA_POLICY},
 };
 use tablecraft_core::values::Value;
 
 impl Runtime<'_, '_> {
     pub(super) fn crosstab(&mut self, plan: &CrosstabPlan) -> Result<CellQueryResult, QueryError> {
+        let read_depth = self.discovery.active_read_depth.get();
+        if read_depth >= MAX_RUNTIME_READ_DEPTH {
+            return Err(QueryError::StructureLimit);
+        }
+        self.discovery.active_read_depth.set(read_depth + 1);
+        let result = self.crosstab_in_read(plan);
+        self.discovery.active_read_depth.set(read_depth);
+        result
+    }
+
+    // Named/read-plan callers already hold the operation's read scope.
+    pub(super) fn crosstab_in_read(
+        &mut self,
+        plan: &CrosstabPlan,
+    ) -> Result<CellQueryResult, QueryError> {
         let previous = std::mem::replace(&mut self.owner, plan.read.owner);
         let result = self.crosstab_owned(plan);
         self.owner = previous;

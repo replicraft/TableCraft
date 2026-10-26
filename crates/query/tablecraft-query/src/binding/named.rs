@@ -9,6 +9,10 @@ use crate::{
 };
 use tablecraft_sql::query::{Query, Statement};
 
+// The lean path enters named_read after read/body/select/relation wrappers.
+// Count a definition once; additional nested syntax consumes additional units.
+const NAMED_DEFINITION_WRAPPER_DEPTH: usize = 4;
+
 impl Binder<'_> {
     pub(super) fn named_relation(
         &mut self,
@@ -82,6 +86,11 @@ impl Binder<'_> {
         if self.active_queries.len() == MAX_NAMED_DEPTH {
             return Err(QueryError::StructureLimit);
         }
+        let suspended_depth = depth.saturating_sub(NAMED_DEFINITION_WRAPPER_DEPTH).max(1);
+        let pending_named_depth = self
+            .pending_named_depth
+            .checked_add(suspended_depth)
+            .ok_or(QueryError::StructureLimit)?;
         if !matches!(query.statement, Statement::Read(_) | Statement::Crosstab(_)) {
             return Err(QueryError::Unsupported);
         }
@@ -139,11 +148,14 @@ impl Binder<'_> {
         // Named sources are independent definitions, never lateral relations.
         // Each stored definition has its own bounded syntax depth. The separate
         // dependency path ceiling and global node/byte budgets bound their nesting.
+        let previous_pending_depth =
+            std::mem::replace(&mut self.pending_named_depth, pending_named_depth);
         let result = self.with_owner(namespace, |binder| match &query.statement {
             Statement::Read(read) => binder.read(read, &[], 1),
             Statement::Crosstab(cross) => binder.fixed_crosstab(cross, query),
             _ => Err(QueryError::Unsupported),
         });
+        self.pending_named_depth = previous_pending_depth;
         self.parameter_scope = previous_scope;
         self.active_queries.pop();
         result

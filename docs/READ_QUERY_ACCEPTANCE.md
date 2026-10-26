@@ -25,6 +25,11 @@ qualification recorded separately.
   qualified saved/named queries execute under shared resource/cancellation limits.
   Contextual named schemas use explicit execution-stage discovery; binding does
   not scan rows or invoke formatting providers.
+  Supported named SELECT/TABLE/UNION/fixed-crosstab chains now reach fifty
+  definitions under independent structural and work limits. Shared interpreter
+  and domain scopes survive discovery runtimes and refuse excessive composition
+  safely; [recorded depth coverage](QUERY_BINDING_LIMITS.md#composed-interpreter-nesting)
+  separates completed shapes from checked complex-plan refusals.
 - Qualified encryption opens and fresh add/remove/change-password copies work.
   Page-buffered encryption management shares the 2 GiB read-source envelope under
   cumulative budgets; complete-image APIs retain their separate 64 MiB cap.

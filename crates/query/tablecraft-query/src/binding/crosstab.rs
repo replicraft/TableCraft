@@ -19,7 +19,17 @@ impl Binder<'_> {
         {
             return Err(QueryError::Unsupported);
         }
-        let mut read = self.select(&cross.select, &[], &[], 2, Some(&cross.transform))?;
+        let read = self.select(&cross.select, &[], &[], 2, Some(&cross.transform))?;
+        self.finish_crosstab(cross, read)
+    }
+
+    // Source expansion has completed before this larger pivot/schema frame starts.
+    #[inline(never)]
+    fn finish_crosstab(
+        &mut self,
+        cross: &Crosstab,
+        mut read: ReadPlan,
+    ) -> Result<CrosstabPlan, QueryError> {
         let ReadNode::Select(bound) = &mut read.node else {
             return Err(QueryError::Unsupported);
         };

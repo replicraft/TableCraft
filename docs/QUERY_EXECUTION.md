@@ -563,10 +563,14 @@ ordinary execution errors; no parameter prompting or coercion is introduced.
 This explicit bounded policy still needs native Access comparison evidence.
 
 Active-path cycles return DependencyCycle before scans; repeated acyclic sources
-are allowed. A separate 16-definition dependency-path ceiling bounds named nesting.
-Each definition uses the captured helper-depth ceiling (default 16, maximum 32); all expanded work and
-allocations share the 2,048-node and 1 MiB planning limits. Expanded plans therefore
-remain bounded even across names. Parameter/name/map reservations are fallible and
+are allowed. The named dependency-path ceiling is fifty definitions, matching
+Microsoft's published [nested-query target](https://support.microsoft.com/en-us/access/access-specifications).
+This does not promise that every compound fifty-definition plan fits the separate
+structural and consumable allowances. Each definition retains the captured
+helper-depth ceiling (default 16, maximum 32); expanded work and allocations share
+the 2,048-node and 1 MiB planning limits. An additional operation-wide active
+interpreter allowance bounds composed runtime reads and suspended named syntax;
+see [binding limits](QUERY_BINDING_LIMITS.md#composed-interpreter-nesting). Parameter/name/map reservations are fallible and
 charged before allocation. UPDATE binding never resolves named query targets.
 
 Preparation captures definitions in the owned executable plan; execution does not

@@ -206,7 +206,7 @@ fn cycles_actions_and_unbounded_chains_fail_before_any_scan() {
         Err(QueryError::Unsupported)
     );
     assert_eq!(action.scans.get(), 0);
-    let chain = (0..32)
+    let chain = (0..51)
         .map(|i| (format!("V{i}"), format!("SELECT * FROM V{}", i + 1)))
         .collect::<Vec<_>>();
     let references = chain

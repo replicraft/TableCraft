@@ -181,7 +181,6 @@ impl PreparedQuery {
             owner: crate::external_sources::SourceNamespace::Root,
             numeric_scratch: Vec::new(),
             repeatable_dynamic: context.repeatable_dynamic,
-            domain_depth: 0,
             source,
             external_sources: Vec::new(),
             discovery,

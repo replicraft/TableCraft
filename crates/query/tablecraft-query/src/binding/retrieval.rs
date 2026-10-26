@@ -1,12 +1,14 @@
-use super::{Binder, relation::combine_slots};
+mod body;
+mod source;
+
+use self::source::SelectInput;
+use super::Binder;
+use crate::profile::MAX_SORT_KEYS;
 use crate::profile::SOURCE_SCHEMA_POLICY;
-use crate::profile::{
-    MAX_FROM_ITEMS, MAX_GROUP_KEYS, MAX_SORT_KEYS, MAX_UNION_BRANCHES, PERCENT_TOTAL,
-};
 use crate::{QueryError, plan::*};
 use tablecraft_sql::{
     query::{ReadBody, ReadQuery},
-    select::{Expression as E, Projection, Select, SelectPredicate, SortKey, Table, TableSource},
+    select::{Expression as E, Projection, Select, SelectPredicate, SortKey},
 };
 
 impl Binder<'_> {
@@ -38,128 +40,12 @@ impl Binder<'_> {
         self.tick(depth)?;
         match body {
             ReadBody::Select(select) => self.select(select, sort, outer, depth + 1, None),
-            ReadBody::Reference(name) | ReadBody::Table(name) => {
-                if matches!(body, ReadBody::Reference(_))
-                    && (!self.retrieval
-                        || self
-                            .namespace_source(self.owner, depth)?
-                            .query(name.as_str())?
-                            .is_none())
-                {
-                    return Err(QueryError::Unsupported);
-                }
-                self.select(
-                    &Select {
-                        predicate: SelectPredicate::All,
-                        projection: vec![Projection::Wildcard(None)],
-                        from: vec![TableSource::Table(Table {
-                            name: name.clone(),
-                            alias: None,
-                            database: None,
-                        })],
-                        group_by: vec![],
-                        having: None,
-                        into: None,
-                        into_external: None,
-                        external: None,
-                        owner_access: false,
-                        selection: None,
-                        order_by: vec![],
-                    },
-                    sort,
-                    outer,
-                    depth + 1,
-                    None,
-                )
-            }
-            ReadBody::Union { first, rest } => {
-                if rest.len() > MAX_UNION_BRANCHES {
-                    return Err(QueryError::StructureLimit);
-                }
-                let first = self.body(first, &[], outer, depth + 1)?;
-                let mut output_types = self.type_vector(first.output_types.len())?;
-                let mut materialized_types = self.type_vector(first.output_types.len())?;
-                materialized_types.extend_from_slice(&first.materialized_types);
-                let mut declared_types = self.type_vector(first.output_types.len())?;
-                declared_types.extend_from_slice(&first.declared_types);
-                let mut arms = Vec::new();
-                for arm in rest {
-                    let plan = self.body(&arm.body, &[], outer, depth + 1)?;
-                    if plan.names.len() != first.names.len() {
-                        return Err(QueryError::Width);
-                    }
-                    for (result, other) in
-                        materialized_types.iter_mut().zip(&plan.materialized_types)
-                    {
-                        *result = result.union_result(*other);
-                    }
-                    for (result, other) in declared_types.iter_mut().zip(&plan.declared_types) {
-                        *result = result.union_result(*other);
-                    }
-                    arms.push((arm.all, plan));
-                }
-                for (&materialized, &declared) in materialized_types.iter().zip(&declared_types) {
-                    output_types.push(
-                        ProfiledType {
-                            materialized,
-                            declared,
-                        }
-                        .conservative(),
-                    );
-                }
-                let mut text_policies = self.policy_vector(first.text_policies.len())?;
-                text_policies.extend_from_slice(&first.text_policies);
-                for (_, arm) in &arms {
-                    for (policy, other) in text_policies.iter_mut().zip(&arm.text_policies) {
-                        *policy = policy.merge(*other);
-                    }
-                }
-                self.charge(
-                    first
-                        .names
-                        .len()
-                        .checked_mul(size_of::<Slot>())
-                        .ok_or(QueryError::StructureLimit)?,
-                )?;
-                let mut slots = Vec::new();
-                slots
-                    .try_reserve_exact(first.names.len())
-                    .map_err(|_| QueryError::Allocation)?;
-                for (index, (name, policy)) in first.names.iter().zip(&text_policies).enumerate() {
-                    slots.push(Slot {
-                        output_type: ProfiledType {
-                            materialized: materialized_types[index],
-                            declared: declared_types[index],
-                        },
-                        declaration: None,
-                        text_policy: *policy,
-                        available: true,
-                        member: None,
-                        name: self.copy_name(name)?,
-                        qualifier: None,
-                    });
-                }
-                let order = self.sort(sort, &[], &slots, outer, false, depth + 1)?;
-                let declarations = self.unknown_declarations(output_types.len())?;
-                Ok(ReadPlan {
-                    owner: self.owner,
-                    declarations,
-                    output_types,
-                    materialized_types,
-                    declared_types,
-                    text_policies,
-                    names: first.names.clone(),
-                    node: ReadNode::Union {
-                        first: Box::new(first),
-                        rest: arms,
-                    },
-                    sort: order,
-                    distinct: false,
-                    top: None,
-                })
-            }
+            ReadBody::Reference(name) => self.reference_body(name, true, sort, outer, depth),
+            ReadBody::Table(name) => self.reference_body(name, false, sort, outer, depth),
+            ReadBody::Union { first, rest } => self.union_body(first, rest, sort, outer, depth),
         }
     }
+
     pub(super) fn select(
         &mut self,
         select: &Select,
@@ -169,11 +55,15 @@ impl Binder<'_> {
         transform: Option<&E>,
     ) -> Result<ReadPlan, QueryError> {
         let previous = std::mem::take(&mut self.aliases);
-        let result = self.select_with_aliases(select, final_sort, outer, depth, transform);
+        let result = self.select_input(select, outer, depth).and_then(|input| {
+            self.select_with_aliases(select, final_sort, outer, depth, transform, input)
+        });
         self.aliases = previous;
         result
     }
 
+    // Source expansion finishes before entering the larger expression-planning frame.
+    #[inline(never)]
     fn select_with_aliases(
         &mut self,
         select: &Select,
@@ -181,49 +71,13 @@ impl Binder<'_> {
         outer: &[&[Slot]],
         depth: usize,
         transform: Option<&E>,
+        input: SelectInput,
     ) -> Result<ReadPlan, QueryError> {
-        self.tick(depth)?;
-        if select.into.is_some()
-            || select.into_external.is_some()
-            || select.owner_access
-            || (select.external.is_some() && select.from.is_empty())
-        {
-            return Err(QueryError::Unsupported);
-        }
-        let (distinct, top) = match select.predicate {
-            SelectPredicate::All | SelectPredicate::DistinctRow => (false, None),
-            SelectPredicate::Distinct => (true, None),
-            SelectPredicate::Top { count, percent }
-            | SelectPredicate::DistinctRowTop { count, percent } => (false, Some((count, percent))),
-            SelectPredicate::DistinctTop { count, percent } => (true, Some((count, percent))),
-        };
-        if top.is_some_and(|(n, p)| n == 0 || (p && n > PERCENT_TOTAL)) {
-            return Err(QueryError::Unsupported);
-        }
-        if select.from.len() > MAX_FROM_ITEMS
-            || select.projection.is_empty()
-            || select.projection.len() > SOURCE_SCHEMA_POLICY.max_columns
-            || select.group_by.len() > MAX_GROUP_KEYS
-        {
-            return Err(QueryError::StructureLimit);
-        }
-        let namespace = self.external_namespace(select.external.as_ref(), depth + 1)?;
-        let mut source = Relation {
-            slots: vec![],
-            node: RelationNode::Unit,
-        };
-        for item in &select.from {
-            let right = self.relation(item, outer, depth + 1, namespace)?;
-            if matches!(source.node, RelationNode::Unit) {
-                source = right;
-                continue;
-            }
-            let slots = combine_slots(&source.slots, &right.slots)?;
-            source = Relation {
-                slots,
-                node: RelationNode::Cross(Box::new(source), Box::new(right)),
-            };
-        }
+        let SelectInput {
+            source,
+            distinct,
+            top,
+        } = input;
         let scopes = std::iter::once(source.slots.as_slice())
             .chain(outer.iter().copied())
             .collect::<Vec<_>>();

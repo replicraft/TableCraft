@@ -6,7 +6,7 @@ use crate::{
     QueryError,
     binding::{DomainContext, bind_domain},
     plan::{DomainFunction, Expr},
-    profile::MAX_NAMED_DEPTH,
+    profile::MAX_DOMAIN_DEPTH,
 };
 use tablecraft_core::values::Value;
 use tablecraft_expressions::EvalError;
@@ -42,15 +42,17 @@ impl Runtime<'_, '_> {
         } else {
             None
         };
-        if self.domain_depth == MAX_NAMED_DEPTH {
+        let domain_depth = self.discovery.active_domain_depth.get();
+        if domain_depth >= MAX_DOMAIN_DEPTH {
             return Err(QueryError::StructureLimit);
         }
-        self.domain_depth += 1;
+        self.discovery.active_domain_depth.set(domain_depth + 1);
         let result = (|| {
             let _span = tracing::debug_span!("query.domain.read").entered();
             let plan = loop {
                 let stage = bind_domain(
                     DomainContext {
+                        inherited_read_depth: self.discovery.active_read_depth.get(),
                         binding_depth: self.options.binding_depth,
                         owner: self.owner,
                         external_sources: &self.discovery.external_sources.borrow(),
@@ -96,7 +98,7 @@ impl Runtime<'_, '_> {
                 .and_then(|mut row| row.pop())
                 .ok_or(QueryError::Width)
         })();
-        self.domain_depth -= 1;
+        self.discovery.active_domain_depth.set(domain_depth);
         result
     }
 }

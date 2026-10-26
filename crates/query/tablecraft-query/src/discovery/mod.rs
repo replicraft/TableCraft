@@ -9,7 +9,7 @@ use crate::{
     source::TextPolicy,
 };
 use crate::{external_sources::SourceNamespace, named_identity::NamedIdentity};
-use std::cell::RefCell;
+use std::cell::{Cell, RefCell};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -79,6 +79,8 @@ pub(crate) fn budget(limits: QueryLimits) -> ResourceBudget {
 /// Shared only within one synchronous execution. Borrows are confined to metadata
 /// binding or copying completed cells, never held across expression evaluation.
 pub(crate) struct DiscoveryState<'source> {
+    pub(crate) active_read_depth: Cell<usize>,
+    pub(crate) active_domain_depth: Cell<usize>,
     pub materialized: RefCell<Vec<Materialized<'source>>>,
     pub(crate) external_sources: RefCell<Vec<crate::external_sources::ExternalBinding>>,
     active: RefCell<Vec<NamedIdentity>>,
@@ -88,6 +90,8 @@ pub(crate) struct DiscoveryState<'source> {
 impl<'source> DiscoveryState<'source> {
     pub(crate) fn new(enabled: bool) -> Self {
         Self {
+            active_read_depth: Cell::new(0),
+            active_domain_depth: Cell::new(0),
             materialized: RefCell::new(Vec::new()),
             external_sources: RefCell::new(Vec::new()),
             active: RefCell::new(Vec::new()),
@@ -152,6 +156,7 @@ impl<'source> Operation<'_, 'source> {
                 Some(self.budget),
                 self.options.cancelled,
                 StageOptions {
+                    inherited_read_depth: self.discovery.active_read_depth.get(),
                     owner,
                     external_sources: &self.discovery.external_sources.borrow(),
                     preparation: PreparationOptions {

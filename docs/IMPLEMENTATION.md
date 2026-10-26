@@ -1,5 +1,23 @@
 # Implementation status
 
+## Deeper named queries and shared interpreter scopes
+
+The named dependency path now admits fifty definitions under independent
+per-definition syntax, node, byte and work limits. Lean source-expansion and
+finishing phases keep supported SELECT, TABLE, UNION and fixed-crosstab chains
+within the recorded one-MiB debug worker envelope. Dynamic/mixed shapes retain
+checked structural refusals. Shared read and domain counters survive fresh
+discovery runtimes; domain nesting remains sixteen across the whole operation.
+Every entered scope restores counters, lexical ownership and parameters on errors.
+
+Nineteen new tests and 145 selected regressions pass, including depth-fifty
+execution, staged domain limits, metadata-only preparation and failure recovery.
+Strict lint, minimal query compilation and repository formatting pass. See
+[the contract](QUERY_BINDING_LIMITS.md#composed-interpreter-nesting) and
+[verification](testing/results/read-query-named-depth-2026-10-25.json).
+These are recorded engineering limits and local stack probes, not complete
+native Access or cross-platform qualification.
+
 ## Independent ignore-NULL index replay
 
 The [original database replay](testing/IGNORED_NULL_INDEXES.md) passes 64 CLI
