@@ -1,0 +1,254 @@
+"""Fresh public-writer references from registered originals; never generates inputs."""
+
+from pathlib import Path
+import hashlib
+import json
+import os
+import subprocess
+import sys
+
+sys.path.insert(0, str(Path('docs/testing/encoded_delete_originals').resolve()))
+import wire
+
+WORK = Path('.cache/ignored-delete-originals-next-20261026')
+JAR = Path('.cache/tablecraft-fixtures/jackcess-5.0.4.jar')
+CLASS = 'com.healthmarketscience.jackcess.impl.IgnoredDeleteReference'
+PROFILES = ['V2016', 'V2019']
+COVERAGE_TABLES = ['UniquePartial', 'TupleGuid', 'TupleDecimal',
+                   'ScalarTEXT0', 'ScalarTEXT1', 'ScalarBINARY']
+FAMILIES = {
+    'DeleteStorage': ('delete-storage-20261025-accepted', 'Delete-{profile}-before.accdb',
+                      ['Indexed', 'Unindexed', 'Sentinel']),
+    'Ignore701': ('ignore-null-indexes-20261025', 'Ignore-{profile}.accdb', ['Ignored']),
+    'Coverage': ('ignored-index-coverage-20261025', 'IgnoredProfiles-{profile}.accdb', COVERAGE_TABLES),
+}
+ALLOWED_PROPERTIES = {'Required', 'AllowZeroLength', 'ValidationRule', 'ValidationText',
+                      'DefaultValue', 'Caption', 'Description'}
+EXPECTED_SOURCES = {
+    ('DeleteStorage', 'V2016'): '43989b6479d6f0303d06c1edca562f33fc94ee3081330acadc8f2867d7269efe',
+    ('DeleteStorage', 'V2019'): '8c3d88e45874bc4ce7f93c1f1a90880a9d6e2474127d9ef359f02e4b18b371ce',
+    ('Ignore701', 'V2016'): '1b7afd89440039b877ae55e700dd07c0bb0e0ed7fab6a5909aaf9073f3489a16',
+    ('Ignore701', 'V2019'): '6246f75593d6ca7a7b9f71f7009cbf1627d8b50eef9504f6df14fba8b9122898',
+    ('Coverage', 'V2016'): '90c5fc95e47be4996924ac6b0fe232a5209a12689527c5c05be593ec0b7f08df',
+    ('Coverage', 'V2019'): '2db1bd079e3f9df28dc82c2d3eb9dc82753a8a75273b67213eefa5e2ce872b05',
+}
+
+
+def pin(path):
+    data = path.read_bytes()
+    return {'path': str(path), 'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()}
+
+
+def run(argv, label):
+    stdout, stderr = WORK / (label + '.tsv'), WORK / (label + '.stderr')
+    with stdout.open('xb') as out, stderr.open('xb') as err:
+        result = subprocess.run(argv, stdout=out, stderr=err, timeout=90)
+    command = {'argv': argv, 'exit_code': result.returncode,
+               'stdout': pin(stdout), 'stderr': pin(stderr)}
+    assert result.returncode == 0, command
+    return command
+
+
+def java(*args):
+    return ['java', '-cp', os.pathsep.join([str(JAR), str(WORK)]), CLASS, *map(str, args)]
+
+
+def parse(path, raw):
+    tables = {}
+    for line in path.read_text().splitlines():
+        fields = line.split('\t')
+        kind = fields[0]
+        if kind == 'TABLE':
+            tables[fields[1]] = {'count': int(fields[2]), 'definition': int(fields[3]),
+                                 'columns': {}, 'rows': {}, 'indexes': {},
+                                 'column_count': int(fields[4]), 'max_columns': int(fields[5]),
+                                 'properties': [], 'children': []}
+        elif kind in ['COLUMN', 'ROW', 'INDEX', 'KEYCOLUMN', 'ORDER', 'KEY',
+                      'CATALOG', 'ACTIVE', 'RELATIONSHIPS', 'PROPERTY', 'CHILD']:
+            table = tables[fields[1]]
+            if kind == 'COLUMN':
+                table['columns'][fields[2]] = fields[3:]
+            elif kind == 'ROW':
+                identifier, page, slot = map(int, fields[2:5])
+                values = dict(zip(table['columns'], fields[5:]))
+                assert len(fields[5:]) == table['column_count']
+                payload = wire.row(raw, (page << wire.REFERENCE_SLOT_BITS) | slot)
+                assert wire.u16(payload, 0) == table['max_columns']
+                table['rows'][identifier] = {'page': page, 'slot': slot, 'values': values,
+                                            'payload_sha256': hashlib.sha256(payload).hexdigest()}
+            elif kind == 'INDEX':
+                table['indexes'][fields[2]] = {
+                    'physical': int(fields[3]), 'root': int(fields[4]), 'kind': int(fields[5]),
+                    'height': int(fields[6]), 'owned_count': int(fields[7]),
+                    'historical': int(fields[8]), 'counter_offset': int(fields[9]),
+                    'entries': int(fields[10]), 'unique': fields[11] == 'true',
+                    'ignore_nulls': fields[12] == 'true', 'required': fields[13] == 'true',
+                    'columns': [], 'order': [], 'keys': [],
+                }
+            elif kind == 'KEYCOLUMN':
+                table['indexes'][fields[2]]['columns'].append((fields[3], fields[4] == 'true'))
+            elif kind == 'ORDER':
+                table['indexes'][fields[2]]['order'].append(int(fields[3]))
+            elif kind == 'KEY':
+                table['indexes'][fields[2]]['keys'].append((fields[5], int(fields[3]), int(fields[4])))
+            elif kind == 'CATALOG':
+                table['catalog'] = {'id': int(fields[2]), 'type': int(fields[3]), 'flags': int(fields[4])}
+            elif kind == 'ACTIVE':
+                table.setdefault('active', []).append(fields[2:])
+            elif kind == 'RELATIONSHIPS':
+                table['relationships'] = int(fields[2])
+            elif kind == 'PROPERTY':
+                table['properties'].append(fields[2:])
+            elif kind == 'CHILD':
+                table['children'].append(fields[2:])
+
+    for name, table in tables.items():
+        assert table['count'] == len(table['rows'])
+        assert table['column_count'] == table['max_columns'] == len(table['columns'])
+        assert table['catalog']['flags'] == 0 and table['catalog']['type'] == 1
+        assert table['relationships'] == 0 and not table['children']
+        assert all(active[1:] == ['true', 'NULL'] for active in table['active'])
+        assert all(prop[1] in ALLOWED_PROPERTIES for prop in table['properties'])
+        identities = {(row['page'], row['slot']): identifier for identifier, row in table['rows'].items()}
+        for index in table['indexes'].values():
+            columns = [column for column, ascending in index['columns']]
+            eligible = {identifier for identifier, row in table['rows'].items()
+                        if not index['ignore_nulls'] or
+                        not all(row['values'][column] == 'NULL' for column in columns)}
+            assert set(index['order']) == eligible
+            assert len(index['order']) == len(eligible) == index['entries']
+            assert [identities[(page, slot)] for key, page, slot in index['keys']] == index['order']
+            usage, root = wire.physical(raw, table['definition'], index['physical'])
+            assert root == index['root']
+            keys, leaves, nodes = wire.decode_tree(raw, root, table['definition'])
+            assert keys == index['keys']
+            owned = wire.members(raw, usage)
+            assert len(owned) == index['owned_count']
+            index.update({'usage': usage, 'owned': owned, 'leaves': leaves, 'nodes': nodes,
+                          'eligible_ids': sorted(eligible)})
+    return tables
+
+
+def selections(family, tables):
+    if family == 'DeleteStorage':
+        return [('Indexed', 'null-only', [3, 4]), ('Indexed', 'eligible-only', [2]),
+                ('Indexed', 'mixed', [2, 3]), ('Indexed', 'all-group-eligible', [1, 2, 5, 6])]
+    if family == 'Ignore701':
+        eligible = tables['Ignored']['indexes']['IgnoredAsc']['eligible_ids']
+        assert len(eligible) == 637
+        return [('Ignored', 'both-null', [0]), ('Ignored', 'key-null', [11]),
+                ('Ignored', 'unique-null', [13]), ('Ignored', 'mixed', [0, 1, 11, 13]),
+                ('Ignored', 'all-key-eligible', eligible)]
+    result = [('UniquePartial', 'null-only', [0, 1]),
+              ('UniquePartial', 'partial-null', [2, 3]),
+              ('UniquePartial', 'mixed', [0, 2, 4]),
+              ('UniquePartial', 'all-eligible', [2, 3, 4, 5])]
+    for name in ['TupleGuid', 'TupleDecimal']:
+        table = tables[name]
+        eligible = table['indexes']['Ignored']['eligible_ids']
+        omitted = sorted(set(table['rows']) - set(eligible))
+        columns = [column for column, ascending in table['indexes']['Ignored']['columns']]
+        partial = [identifier for identifier in eligible
+                   if any(table['rows'][identifier]['values'][column] == 'NULL' for column in columns)]
+        assert len(omitted) == 16 and len(eligible) == 185
+        result.extend([(name, 'null-only', omitted), (name, 'partial-null', partial[:2]),
+                       (name, 'all-eligible', eligible)])
+    for name in ['ScalarTEXT0', 'ScalarTEXT1', 'ScalarBINARY']:
+        table = tables[name]
+        eligible = table['indexes']['Ignored']['eligible_ids']
+        omitted = sorted(set(table['rows']) - set(eligible))
+        assert len(omitted) == 19 and len(eligible) == 182
+        result.extend([(name, 'null-only', omitted), (name, 'all-eligible', eligible)])
+    return result
+
+
+def main():
+    assert pin(JAR)['sha256'] == '19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc'
+    assert not (WORK / 'reference-observations.json').exists()
+    references = WORK / 'references'
+    references.mkdir(exist_ok=False)
+    commands, originals, results = [], [], []
+    for family, (directory, filename, selected_tables) in FAMILIES.items():
+        for profile in PROFILES:
+            source = Path('.cache/tablecraft-fixtures') / directory / filename.format(profile=profile)
+            source_pin = pin(source)
+            assert source_pin['sha256'] == EXPECTED_SOURCES[(family, profile)]
+            before = source.read_bytes()
+            assert before[:4] == bytes([0, 1, 0, 0])
+            assert before[20] == (5 if profile == 'V2016' else 6)
+            assert before[21:24] == bytes(3) and before[62:66] == bytes.fromhex('fb8abc4e')
+            before_label = family + '-' + profile + '-registered-before'
+            command = run(java('oracle', source, ','.join(selected_tables)), before_label)
+            commands.append(command)
+            original = parse(Path(command['stdout']['path']), before)
+            originals.append({'family': family, 'profile': profile, 'input': source_pin,
+                              'plain_subversion_zero': True, 'tables': original,
+                              'getter_command': len(commands) - 1})
+            cases = selections(family, original)
+            for table_name, selection, identifiers in cases:
+                label = f'{len(results):02}-{profile}-{table_name}-{selection}'
+                request = references / (label + '.ids.tsv')
+                request.write_text(''.join(f'{identifier}\n' for identifier in identifiers))
+                target = references / (label + '.accdb')
+                reference = run(java('reference', source, target, table_name, request), label + '-copy')
+                commands.append(reference)
+                reference_index = len(commands) - 1
+                getter = run(java('oracle', target, ','.join(selected_tables)), label + '-getters')
+                commands.append(getter)
+                after = target.read_bytes()
+                actual = parse(Path(getter['stdout']['path']), after)
+                selected = set(identifiers)
+                old, new = original[table_name], actual[table_name]
+                assert new['rows'] == {identifier: row for identifier, row in old['rows'].items()
+                                       if identifier not in selected}
+                assert new['count'] == old['count'] - len(selected)
+                transitions = []
+                handled = set()
+                for name, previous in old['indexes'].items():
+                    current = new['indexes'][name]
+                    effective = selected.intersection(previous['eligible_ids'])
+                    assert current['order'] == [i for i in previous['order'] if i not in selected]
+                    live_refs = {(row['page'], row['slot']) for row in new['rows'].values()}
+                    assert current['keys'] == [entry for entry in previous['keys']
+                                               if (entry[1], entry[2]) in live_refs]
+                    for field in ['physical', 'root', 'usage', 'historical']:
+                        assert current[field] == previous[field]
+                    unchanged = all(wire.page(before, page) == wire.page(after, page)
+                                    for page in previous['owned'])
+                    if not effective:
+                        assert unchanged
+                    transitions.append({
+                        'index': name, 'physical': previous['physical'], 'root': previous['root'],
+                        'ignore_nulls': previous['ignore_nulls'], 'columns': previous['columns'],
+                        'original_entries': previous['entries'], 'effective_deleted': len(effective),
+                        'remaining_entries': current['entries'], 'owned_before': previous['owned'],
+                        'owned_after': current['owned'], 'height_before': previous['height'],
+                        'height_after': current['height'], 'pages_byte_identical': unchanged,
+                        'effective_empty': not effective,
+                        'index_empty_with_live_table_rows': not current['entries'] and bool(new['rows']),
+                    })
+                    if previous['physical'] not in handled:
+                        handled.add(previous['physical'])
+                for other in original:
+                    if other != table_name:
+                        assert actual[other] == original[other]
+                assert pin(source) == source_pin
+                results.append({'family': family, 'profile': profile, 'table': table_name,
+                                'selection': selection, 'selected_ids': identifiers,
+                                'source': source_pin, 'reference': pin(target), 'request': pin(request),
+                                'reference_command': reference_index, 'getter_command': len(commands) - 1,
+                                'getter': getter['stdout'], 'deleted': len(selected),
+                                'remaining': new['count'], 'transitions': transitions})
+                print(label, 'deleted', len(selected), 'remaining', new['count'], flush=True)
+    assert len(results) == 50
+    report = {'scope': 'Existing registered originals/public copy-delete references; no candidate or native Access execution',
+              'helper': pin(WORK / 'IgnoredDeleteReference.java'), 'runner': pin(Path(__file__)),
+              'jar': pin(JAR), 'commands': commands, 'originals': originals, 'results': results,
+              'references': len(results), 'original_hashes_unchanged': True}
+    with (WORK / 'reference-observations.json').open('x') as output:
+        output.write(json.dumps(report, indent=2) + '\n')
+    print('references', len(results), 'all registered input hashes unchanged', flush=True)
+
+
+if __name__ == '__main__':
+    main()
