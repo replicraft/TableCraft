@@ -14,6 +14,7 @@ pub(crate) fn expression(
         return Err(QueryError::StructureLimit);
     }
     Ok(match expr {
+        Expr::Multivalue { .. } => TextPolicy::Default,
         Expr::Field { text_policy, .. }
         | Expr::CollectionItem { text_policy, .. }
         | Expr::Output(_, text_policy) => *text_policy,

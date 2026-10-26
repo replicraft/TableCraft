@@ -168,6 +168,9 @@ fn prepared_arithmetic_types_hold_at_carrier_boundaries_and_nulls() {
                             }
                             OutputType::Null => assert_eq!(*value, Value::Null),
                             OutputType::Dynamic => {}
+                            OutputType::Multivalue { .. } => {
+                                panic!("arithmetic cannot produce a collection")
+                            }
                         }
                     }
                 }
@@ -238,6 +241,9 @@ fn prepared_unary_types_hold_at_carrier_boundaries_and_nulls() {
                     }
                     OutputType::Null => assert_eq!(*value, Value::Null),
                     OutputType::Dynamic => {}
+                    OutputType::Multivalue { .. } => {
+                        panic!("arithmetic cannot produce a collection")
+                    }
                 }
             }
         }

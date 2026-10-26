@@ -1,3 +1,4 @@
+mod collections;
 pub(crate) mod declarations;
 mod profiled_type;
 pub(crate) use profiled_type::{ProfiledType, ResultProfile};
@@ -49,6 +50,8 @@ pub(crate) struct Slot {
     pub text_policy: TextPolicy,
     // Unavailable slots retain names for binding but occupy no runtime row cell.
     pub available: bool,
+    // Source metadata position, or dense collection-output position in a derived read.
+    pub collection_index: Option<usize>,
     // Virtual .Value slot: excluded from ordinary name/wildcard resolution.
     pub member: Option<MemberSlot>,
     pub qualifier: Option<String>,
@@ -148,6 +151,11 @@ pub(crate) struct ProjectionReference {
 }
 
 pub(crate) enum Expr {
+    // Projection-only list slot. It never enters the scalar evaluator.
+    Multivalue {
+        index: usize,
+        output_type: OutputType,
+    },
     DomainCall(DomainFunction, Vec<Expr>),
     Literal(Expression),
     // Captured numeric carrier; one source literal remains one plan leaf.

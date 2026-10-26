@@ -68,6 +68,42 @@ pub fn execute_with_schema_discovery<'a>(
     publish_cells(result, operation.budget, options)
 }
 
+/// Execute with explicit structured multivalue results and the same bounded
+/// execution-phase schema discovery used by scalar retrieval. Static named and
+/// derived list projections retain complete lists; unsupported typed shapes
+/// never substitute a scalar or cache a partial relation.
+pub fn execute_collections_with_schema_discovery<'a>(
+    query: &Query,
+    source: &'a dyn Source,
+    parameters: &'a [(&str, Value)],
+    options: ExecutionOptions<'a>,
+) -> Result<crate::CollectionQueryResult, QueryError> {
+    let _span = tracing::debug_span!("query.discover.execute").entered();
+    let mut budget = budget(options.limits);
+    let discovery = DiscoveryState::new(true);
+    let mut operation = Operation {
+        source,
+        parameters,
+        options,
+        budget: &mut budget,
+        discovery: &discovery,
+        parameterless: false,
+        repeatable_dynamic: false,
+    };
+    let plan = operation.prepare(query, SourceNamespace::Root)?;
+    plan.execute_collections_discovered(
+        source,
+        parameters,
+        options,
+        operation.budget,
+        &discovery,
+        ExecutionContext {
+            strict_parameters: true,
+            repeatable_dynamic: false,
+        },
+    )
+}
+
 pub(crate) fn budget(limits: QueryLimits) -> ResourceBudget {
     ResourceBudget::new(
         limits.bytes.min(QueryLimits::MAX_BYTES),

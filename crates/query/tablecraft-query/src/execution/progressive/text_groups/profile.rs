@@ -33,7 +33,7 @@ impl Runtime<'_, '_> {
                     | ScalarType::Decimal => {}
                     _ => return Ok(false),
                 },
-                OutputType::Dynamic => return Ok(false),
+                OutputType::Multivalue { .. } | OutputType::Dynamic => return Ok(false),
             }
         }
         Ok(text)
@@ -86,7 +86,7 @@ impl Runtime<'_, '_> {
                             ExpressionValue::Value(Value::Decimal(_))
                         )
                 ),
-                OutputType::Null | OutputType::Dynamic => false,
+                OutputType::Null | OutputType::Multivalue { .. } | OutputType::Dynamic => false,
             };
             if !valid {
                 return Err(QueryError::Source);

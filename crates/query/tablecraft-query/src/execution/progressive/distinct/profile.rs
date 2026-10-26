@@ -71,7 +71,7 @@ impl Runtime<'_, '_> {
                             ExpressionValue::Value(Value::Decimal(_))
                         )
                 ),
-                OutputType::Null | OutputType::Dynamic => false,
+                OutputType::Null | OutputType::Multivalue { .. } | OutputType::Dynamic => false,
             };
             if !valid {
                 return Err(QueryError::Source);

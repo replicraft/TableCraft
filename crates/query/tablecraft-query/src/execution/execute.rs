@@ -113,6 +113,12 @@ impl PreparedQuery {
             CellQueryResult,
         ) -> Result<QueryResult<T>, QueryError>,
     ) -> Result<QueryResult<T>, QueryError> {
+        if match &self.body {
+            PreparedBody::Read(read) => read.has_collections(),
+            PreparedBody::Crosstab(cross) => cross.read.has_collections(),
+        } {
+            return Err(QueryError::Unsupported);
+        }
         let _span =
             tracing::debug_span!("query.execute", parameters = frame.parameters.len()).entered();
         let mut runtime = self.initialize_runtime(frame, budget)?;

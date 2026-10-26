@@ -57,7 +57,13 @@ impl Binder<'_> {
                             },
                             declaration: *declaration,
                             text_policy: *policy,
-                            available: true,
+                            available: !read.output_types[index].is_multivalue(),
+                            collection_index: read.output_types[index].is_multivalue().then(|| {
+                                read.output_types[..index]
+                                    .iter()
+                                    .filter(|output| output.is_multivalue())
+                                    .count()
+                            }),
                             member: None,
                             name: n.clone(),
                             qualifier: alias.as_ref().map(|a| a.as_str().into()),
@@ -157,6 +163,7 @@ pub(super) fn combine_slots(left: &[Slot], right: &[Slot]) -> Result<Vec<Slot>, 
             declaration: s.declaration,
             text_policy: s.text_policy,
             available: s.available,
+            collection_index: s.collection_index,
             member: s.member.clone(),
             name: s.name.clone(),
             qualifier: s.qualifier.clone(),

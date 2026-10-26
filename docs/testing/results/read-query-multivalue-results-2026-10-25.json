@@ -1,0 +1,516 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Backend-neutral structured bare multivalue parent query results, static named/derived composition and existing scalar API guards",
+  "review_base_revision": "d0bd9bec0bec23cbfabfc1d0721ca6ddb42b65a9",
+  "unique_query_tests": 388,
+  "new_query_tests": 12,
+  "existing_query_regression_tests": 376,
+  "new_test_breakdown": {
+    "collection_results": 9,
+    "collection_result_depth": 3
+  },
+  "target_counts": {
+    "arithmetic_output_types": 8,
+    "collection_members": 37,
+    "collection_results": 9,
+    "external_named_sources": 10,
+    "external_table_sources": 8,
+    "multivalue": 69,
+    "named": 6,
+    "output_types": 7,
+    "progressive_queries": 56,
+    "retrieval": 64,
+    "unavailable_columns": 6,
+    "collection_result_depth": 3,
+    "library_private_units": 63,
+    "logical_output_types": 6,
+    "decimal_division_profiles": 8,
+    "declared_addition_types": 5,
+    "declared_result_widths": 4,
+    "projection_alias_values": 12,
+    "selector_output_constraints": 7
+  },
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-query --test collection_results --test multivalue --test collection_members --test named --test external_named_sources --test external_table_sources --test unavailable_columns --test output_types --test arithmetic_output_types --test retrieval --test progressive_queries -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/collection-results-query-regressions-retry-20261025.log",
+      "bytes": 28298,
+      "sha256": "c4b414947b7218e2e46441bf16f08c3626e708f0acfb410d19836b24f4a36c8b",
+      "terminal_session": 70624,
+      "tests": 280
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test collection_result_depth -j2 --locked --offline -- --nocapture",
+      "exit_code": 0,
+      "private_log": ".cache/collection-results-depth-initial-20261025.log",
+      "bytes": 626,
+      "sha256": "41e10bf751fd550968e896c42851b6577c757b3be934d30643f177e4470ef0fb",
+      "terminal_session": 79510,
+      "tests": 3
+    },
+    {
+      "command": "cargo test -p tablecraft-query --lib -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/collection-results-query-units-initial-20261025.log",
+      "bytes": 7727,
+      "sha256": "a5864c96467ed55b0b7ce6090118f488eeebd91737268167c278a96eb2477b24",
+      "terminal_session": 34099,
+      "tests": 63
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test logical_output_types -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/collection-results-logical-types-20261025.log",
+      "bytes": 930,
+      "sha256": "3eff808f479d51bcb76017499f6f313cb8b6fc348158d9292443aa875cc4840a",
+      "terminal_session": 84121,
+      "tests": 6
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test declared_addition_types --test declared_result_widths --test decimal_division_profiles --test projection_alias_values --test selector_output_constraints -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/collection-results-scalar-metadata-20261025.log",
+      "bytes": 4443,
+      "sha256": "6e500acc919505092e11e090d0168cdc4188f6aa5d0f3bcad74a3ba1cc08ec95",
+      "terminal_session": 55465,
+      "tests": 36
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --tests -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/collection-results-query-clippy-final-imports-20261025.log",
+      "bytes": 186,
+      "sha256": "f690f952ebea65e2d36d5927f9ad2a67ce3f9d626aadc3a92c688b18d6891203",
+      "terminal_session": 90772
+    },
+    {
+      "command": "cargo check -p tablecraft-query --lib --no-default-features -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/collection-results-query-minimal-20261025.log",
+      "bytes": 185,
+      "sha256": "356994dbb9398b42a849d2b71e94655e0abd47397fd8cf7c6d2deb3bd3a51758",
+      "terminal_session": 24703
+    },
+    {
+      "command": "rustfmt --edition 2024 --check crates/query/tablecraft-query/src/binding/aliases/stability.rs crates/query/tablecraft-query/src/binding/declarations.rs crates/query/tablecraft-query/src/binding/expression.rs crates/query/tablecraft-query/src/binding/grouping.rs crates/query/tablecraft-query/src/binding/grouping/validation.rs crates/query/tablecraft-query/src/binding/multivalue.rs crates/query/tablecraft-query/src/binding/multivalue/item.rs crates/query/tablecraft-query/src/binding/multivalue/presence/children.rs crates/query/tablecraft-query/src/binding/multivalue/projection.rs crates/query/tablecraft-query/src/binding/named.rs crates/query/tablecraft-query/src/binding/projection/collect.rs crates/query/tablecraft-query/src/binding/projection/rewrite.rs crates/query/tablecraft-query/src/binding/relation.rs crates/query/tablecraft-query/src/binding/relation/table.rs crates/query/tablecraft-query/src/binding/result_types.rs crates/query/tablecraft-query/src/binding/result_types/dates.rs crates/query/tablecraft-query/src/binding/result_types/logical.rs crates/query/tablecraft-query/src/binding/result_types/null_replacement.rs crates/query/tablecraft-query/src/binding/retrieval.rs crates/query/tablecraft-query/src/binding/retrieval/body.rs crates/query/tablecraft-query/src/collection_results.rs crates/query/tablecraft-query/src/discovery/mod.rs crates/query/tablecraft-query/src/execution/collections/admission.rs crates/query/tablecraft-query/src/execution/collections/execute.rs crates/query/tablecraft-query/src/execution/collections/mod.rs crates/query/tablecraft-query/src/execution/collections/projection.rs crates/query/tablecraft-query/src/execution/collections/source.rs crates/query/tablecraft-query/src/execution/exact_keys/profile.rs crates/query/tablecraft-query/src/execution/execute.rs crates/query/tablecraft-query/src/execution/expression.rs crates/query/tablecraft-query/src/execution/mod.rs crates/query/tablecraft-query/src/execution/multivalue/parent.rs crates/query/tablecraft-query/src/execution/progressive/admission.rs crates/query/tablecraft-query/src/execution/progressive/distinct/profile.rs crates/query/tablecraft-query/src/execution/progressive/text_groups/profile.rs crates/query/tablecraft-query/src/execution/result.rs crates/query/tablecraft-query/src/execution/retrieval.rs crates/query/tablecraft-query/src/execution/sort.rs crates/query/tablecraft-query/src/execution/top.rs crates/query/tablecraft-query/src/lib.rs crates/query/tablecraft-query/src/output_types.rs crates/query/tablecraft-query/src/plan.rs crates/query/tablecraft-query/src/plan/collections.rs crates/query/tablecraft-query/src/plan/text_policy.rs crates/query/tablecraft-query/tests/arithmetic_output_types.rs crates/query/tablecraft-query/tests/arithmetic_output_types/boundaries.rs crates/query/tablecraft-query/tests/collection_result_depth.rs crates/query/tablecraft-query/tests/collection_results.rs crates/query/tablecraft-query/tests/decimal_division_profiles.rs crates/query/tablecraft-query/tests/declared_addition_types.rs crates/query/tablecraft-query/tests/declared_result_widths.rs crates/query/tablecraft-query/tests/logical_output_types.rs crates/query/tablecraft-query/tests/projection_alias_values.rs crates/query/tablecraft-query/tests/selector_output_constraints/literals.rs",
+      "exit_code": 0,
+      "evidence": "Observed final terminal tool output over the selected owned Rust paths; no persisted formatter log. This is scoped formatting, not the parent full-workspace formatter check."
+    },
+    {
+      "command": "git diff --check -- crates/query/tablecraft-query docs/MULTIVALUE_QUERIES.md docs/testing/results/read-query-multivalue-results-2026-10-25.json",
+      "exit_code": 0,
+      "evidence": "Observed final terminal tool output; no persisted whitespace-check log."
+    }
+  ],
+  "excluded_attempts": [
+    {
+      "command": "cargo check -p tablecraft-query --lib -j2 --locked --offline",
+      "exit_code": 101,
+      "private_log": ".cache/collection-results-libcheck-initial-20261025.log",
+      "bytes": 11295,
+      "sha256": "f0f49af798d09e0cce56126a67ee9c7f7fe1bd464a083762646e19b7e4145739",
+      "terminal_session": 61696,
+      "classification": "First new-feature draft compile: new Expr/OutputType variants required explicit leaf, scalar-refusal and no-index cases; visitor failure needed Option<QueryError> annotation. Thirteen compiler errors, no tests ran.",
+      "counted_in_accepted_tests": false
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test multivalue --test collection_members --test named --test external_named_sources --test external_table_sources --test unavailable_columns --test output_types --test arithmetic_output_types --test retrieval --test progressive_queries -j2 --locked --offline",
+      "exit_code": 101,
+      "private_log": ".cache/collection-results-query-regressions-initial-20261025.log",
+      "bytes": 3221,
+      "sha256": "56be09225c61a2fce5695dc3d217e8787167505d192f9517bcb34d73f3808f43",
+      "terminal_session": 1983,
+      "classification": "Compile-only: three preexisting exhaustive arithmetic metadata assertions needed explicit impossible-collection panic arms for the new public OutputType variant. No existing arithmetic assertion/golden was weakened and no tests ran.",
+      "counted_in_accepted_tests": false
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --tests -j2 --locked --offline -- -D warnings",
+      "exit_code": 101,
+      "private_log": ".cache/collection-results-query-clippy-initial-20261025.log",
+      "bytes": 1314,
+      "sha256": "7ce2bcc59b5b365c30aa5adcd31d13167f2c753664ed972173c3a67c69b56243",
+      "terminal_session": 73132,
+      "classification": "Compile-only: existing logical metadata helper needed the same explicit impossible-collection panic arm. The focused six-test target subsequently passed.",
+      "counted_in_accepted_tests": false
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --tests -j2 --locked --offline -- -D warnings",
+      "exit_code": 101,
+      "private_log": ".cache/collection-results-query-clippy-retry-20261025.log",
+      "bytes": 1217,
+      "sha256": "c82f5f4f58be12347982b2bf3d7169bf346aff4bef1ad4c0e4fcabbcdd1496bd",
+      "classification": "Immediate compile-only result: existing declared addition metadata helper lacked the new variant. Audited the remaining scalar helper matches and added explicit impossible-collection panic arms to five test helpers; all five focused targets subsequently passed, 36 tests.",
+      "counted_in_accepted_tests": false
+    }
+  ],
+  "supplemental_passes_not_added_to_total": [
+    {
+      "command": "cargo check -p tablecraft-query --lib -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/collection-results-libcheck-retry-20261025.log",
+      "bytes": 185,
+      "sha256": "caa4d61c3017b599b34c0fd29cc835bde562c1e69b7d4234bda80e01f8b3b7a5",
+      "terminal_session": 2490,
+      "scope": "Early draft library check; final strict/minimal supersede it for current source verification."
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test collection_results -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/collection-results-query-initial-20261025.log",
+      "bytes": 936,
+      "sha256": "75f9b52e9e91c1b554eca0b8d2c1f4ed991b80e3b973b90b785f95ae8120dee6",
+      "terminal_session": 49050,
+      "tests": 5,
+      "scope": "Original five new tests; repeated in the final nine-test target."
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test collection_results -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/collection-results-query-mapping-20261025.log",
+      "bytes": 1078,
+      "sha256": "87f8f378506e34147e3d3f4bb5c765c1de8cc03440c3a74c40035ae85ff8f834",
+      "terminal_session": 37379,
+      "tests": 8,
+      "scope": "Review-added metadata-order, alias ambiguity and discovery-phase controls; repeated in final target."
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test collection_results -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/collection-results-query-float-20261025.log",
+      "bytes": 1162,
+      "sha256": "fb2956c98647d83cdfddc8f1305f97d91346fced7b0cb51697e38d7d34e190a1",
+      "terminal_session": 72884,
+      "tests": 9,
+      "scope": "IEEE stored-list and scalar-refusal controls; all nine repeated in accepted 280-test batch."
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --tests -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/collection-results-query-clippy-final-20261025.log",
+      "bytes": 186,
+      "sha256": "23f76c3c0ca3604157be695271929aa3fe86175509936b2f5a350dff46eda32e",
+      "terminal_session": 22112,
+      "scope": "Passed before import-only QueryLimits/ExpressionQueryResult cleanup; final accepted strict recompiles the cleaned files."
+    }
+  ],
+  "review_corrections_before_acceptance": [
+    "New typed draft initially derived list request indices from unavailable-name ordering. Independent review identified the mismatch with Source multivalue metadata order. Private Slot.collection_index now captures the actual Source index, or dense derived output position. Different-type and same-type providers, explicit/wildcard/derived reorder, and metadata drift all pass without changing answer goldens.",
+    "List aliases remain registered as unreferenceable/unstable entries rather than disappearing from alias lookup. Duplicate list/scalar aliases remain AmbiguousName; no list placeholder enters the scalar frame. Scalar aliases and scalar/positional ORDER BY after interleaved lists use dense scalar indices.",
+    "Stored list copying has its own metered IEEE-preserving branch. Ordinary Runtime.copy and scalar .Value nonfinite refusals remain unchanged. Typed Single/Double lists retain signed zero, subnormal, infinity and signed NaN payload bits through derived copies.",
+    "The schema-discovery wrapper retains its existing phase contract: authorized scalar dependency discovery may occur before full typed admission. The dynamic pivot/join test proves Unsupported with no result and zero collection scans after scalar discovery; no blanket pre-scan claim is made for this wrapper."
+  ],
+  "contracts": [
+    "QueryValue is a query-result enum, separate from core Value/ExpressionValue and scalar evaluator operands. Complete MultivalueValue lists retain order, duplicates, NULL children and empty lists without display conversion.",
+    "Explicit Multivalue output metadata carries an element TypeDescriptor and child nullability. Missing-parent/NULL-list association and SQL collection equality are not invented.",
+    "Row-local SELECT, wildcards, AS names, static named/derived chains, scalar WHERE/ORDER BY and TOP work. A direct hidden .Value criterion selects parents while the selected bare field retains its full list.",
+    "Whole typed plan admission and leaf metadata checks precede collection scans. Scalar/expression/progressive APIs cannot publish list outputs; unsupported typed list joins/UNION/DISTINCT/keys/aggregates/crosstabs/mixed visible .Value plans do not enter collection cursors.",
+    "Every requested stored child is validated, including suffixes after matching criteria. Source visitor failures are sticky and no failed prefix becomes a query result or complete source cache.",
+    "Separate scalar frames and indexed list sidecars preserve scalar alias positions, owner/depth restoration and immutable bindings. No list IDs or NULL sentinels are fed to scalar kernels.",
+    "All new buffers/payload copies use fallible paid allocation, shared query byte/row/work limits and cancellation. Repeated/derived child copies consume additional cumulative resources. Scalar-only collection API results use the ordinary evaluator and paid typed publication.",
+    "Three isolated requested one-MiB stack probes prove 50 static named typed sources succeed and 51 refuses before scans; five inline layers use existing selected depth32, while default16 and the absolute32 guard retain checked refusals. These are engineering proofs, not native Access depth qualification."
+  ],
+  "primary_contracts": [
+    {
+      "url": "https://support.microsoft.com/en-us/access/using-lookup-and-multivalued-fields-in-queries",
+      "scope": "Complete bare-field parent projection versus repeated .Value rows. The designer people-per-issue Count operation remains future acceptance; its exact generated SQL has not been qualified."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/office/vba/access/concepts/data-access-objects/manipulate-multivalued-fields-with-dao",
+      "scope": "Stored multivalue child recordsets do not establish VBA array/runtime semantics."
+    }
+  ],
+  "implementation_inventory": {
+    "query_production": [
+      "crates/query/tablecraft-query/src/binding/aliases/stability.rs",
+      "crates/query/tablecraft-query/src/binding/declarations.rs",
+      "crates/query/tablecraft-query/src/binding/expression.rs",
+      "crates/query/tablecraft-query/src/binding/grouping.rs",
+      "crates/query/tablecraft-query/src/binding/grouping/validation.rs",
+      "crates/query/tablecraft-query/src/binding/multivalue.rs",
+      "crates/query/tablecraft-query/src/binding/multivalue/item.rs",
+      "crates/query/tablecraft-query/src/binding/multivalue/presence/children.rs",
+      "crates/query/tablecraft-query/src/binding/multivalue/projection.rs",
+      "crates/query/tablecraft-query/src/binding/named.rs",
+      "crates/query/tablecraft-query/src/binding/projection/collect.rs",
+      "crates/query/tablecraft-query/src/binding/projection/rewrite.rs",
+      "crates/query/tablecraft-query/src/binding/relation.rs",
+      "crates/query/tablecraft-query/src/binding/relation/table.rs",
+      "crates/query/tablecraft-query/src/binding/result_types.rs",
+      "crates/query/tablecraft-query/src/binding/result_types/dates.rs",
+      "crates/query/tablecraft-query/src/binding/result_types/logical.rs",
+      "crates/query/tablecraft-query/src/binding/result_types/null_replacement.rs",
+      "crates/query/tablecraft-query/src/binding/retrieval.rs",
+      "crates/query/tablecraft-query/src/binding/retrieval/body.rs",
+      "crates/query/tablecraft-query/src/collection_results.rs",
+      "crates/query/tablecraft-query/src/discovery/mod.rs",
+      "crates/query/tablecraft-query/src/execution/collections/admission.rs",
+      "crates/query/tablecraft-query/src/execution/collections/execute.rs",
+      "crates/query/tablecraft-query/src/execution/collections/mod.rs",
+      "crates/query/tablecraft-query/src/execution/collections/projection.rs",
+      "crates/query/tablecraft-query/src/execution/collections/source.rs",
+      "crates/query/tablecraft-query/src/execution/exact_keys/profile.rs",
+      "crates/query/tablecraft-query/src/execution/execute.rs",
+      "crates/query/tablecraft-query/src/execution/expression.rs",
+      "crates/query/tablecraft-query/src/execution/mod.rs",
+      "crates/query/tablecraft-query/src/execution/multivalue/parent.rs",
+      "crates/query/tablecraft-query/src/execution/progressive/admission.rs",
+      "crates/query/tablecraft-query/src/execution/progressive/distinct/profile.rs",
+      "crates/query/tablecraft-query/src/execution/progressive/text_groups/profile.rs",
+      "crates/query/tablecraft-query/src/execution/result.rs",
+      "crates/query/tablecraft-query/src/execution/retrieval.rs",
+      "crates/query/tablecraft-query/src/execution/sort.rs",
+      "crates/query/tablecraft-query/src/execution/top.rs",
+      "crates/query/tablecraft-query/src/lib.rs",
+      "crates/query/tablecraft-query/src/output_types.rs",
+      "crates/query/tablecraft-query/src/plan.rs",
+      "crates/query/tablecraft-query/src/plan/collections.rs",
+      "crates/query/tablecraft-query/src/plan/text_policy.rs"
+    ],
+    "query_tests": [
+      "crates/query/tablecraft-query/tests/arithmetic_output_types.rs",
+      "crates/query/tablecraft-query/tests/arithmetic_output_types/boundaries.rs",
+      "crates/query/tablecraft-query/tests/collection_result_depth.rs",
+      "crates/query/tablecraft-query/tests/collection_results.rs",
+      "crates/query/tablecraft-query/tests/decimal_division_profiles.rs",
+      "crates/query/tablecraft-query/tests/declared_addition_types.rs",
+      "crates/query/tablecraft-query/tests/declared_result_widths.rs",
+      "crates/query/tablecraft-query/tests/logical_output_types.rs",
+      "crates/query/tablecraft-query/tests/projection_alias_values.rs",
+      "crates/query/tablecraft-query/tests/selector_output_constraints/literals.rs"
+    ],
+    "feature_docs": [
+      "docs/MULTIVALUE_QUERIES.md"
+    ]
+  },
+  "selected_file_sha256": {
+    "crates/query/tablecraft-query/src/binding/aliases/stability.rs": {
+      "bytes": 6401,
+      "sha256": "bad07cd330accfa8618bbaec76fa633c788382e60ae9f8bdc193b07631040b4d"
+    },
+    "crates/query/tablecraft-query/src/binding/declarations.rs": {
+      "bytes": 4106,
+      "sha256": "3eb521c01d5c4ee55efc0cd6d9e9b507ceb5c34f888de4f428df306c7885e7fd"
+    },
+    "crates/query/tablecraft-query/src/binding/expression.rs": {
+      "bytes": 9552,
+      "sha256": "e7d7d88443600c21d40bd9e33016958d7c66f3b38fbeb81fc78d0d6da35630ca"
+    },
+    "crates/query/tablecraft-query/src/binding/grouping.rs": {
+      "bytes": 4091,
+      "sha256": "627d07b12b3be84e956fa1fed4a95b51e216c337145f4296330032b1b0fb0f9d"
+    },
+    "crates/query/tablecraft-query/src/binding/grouping/validation.rs": {
+      "bytes": 8134,
+      "sha256": "e0a20d7685aad21c8193ed20f8e567cec8a4e53219e2b5358a17a39a0dd2c4b7"
+    },
+    "crates/query/tablecraft-query/src/binding/multivalue.rs": {
+      "bytes": 1030,
+      "sha256": "af725a10296ff0c661740bf2642f05e040f0dd139659fcb797f338832212ce9c"
+    },
+    "crates/query/tablecraft-query/src/binding/multivalue/item.rs": {
+      "bytes": 8690,
+      "sha256": "d32f16c87ae71be9619b51df9a4b8b96b472cb738f8ce3d7776df3573576d82f"
+    },
+    "crates/query/tablecraft-query/src/binding/multivalue/presence/children.rs": {
+      "bytes": 6244,
+      "sha256": "a7394167c0f77b4e94cd4439782eaf413f57db68e3f7afe3c1dc411458b0ffe1"
+    },
+    "crates/query/tablecraft-query/src/binding/multivalue/projection.rs": {
+      "bytes": 1890,
+      "sha256": "cef136e738693bd969824091a2225770451c5a066b7c9ff9b102dd4bdf97fe61"
+    },
+    "crates/query/tablecraft-query/src/binding/named.rs": {
+      "bytes": 6687,
+      "sha256": "76a54c00fd54aa41c787e649209d94c2adeada2225c50fa84967941feae1c08b"
+    },
+    "crates/query/tablecraft-query/src/binding/projection/collect.rs": {
+      "bytes": 7975,
+      "sha256": "611a8452417f5f1c0e253b111edff8f944e8347c9c0d240298b3a2104ceb4ea1"
+    },
+    "crates/query/tablecraft-query/src/binding/projection/rewrite.rs": {
+      "bytes": 3790,
+      "sha256": "4072efc9fdaa351c1e9c34cd319c997b178bdadfbe8c658e643823a336570b2b"
+    },
+    "crates/query/tablecraft-query/src/binding/relation.rs": {
+      "bytes": 6576,
+      "sha256": "30ae39cd4dbf8cfc65df3ac4788afd6caa8e674ed1357a48866b2bfd9e7762e4"
+    },
+    "crates/query/tablecraft-query/src/binding/relation/table.rs": {
+      "bytes": 9968,
+      "sha256": "903ec01be4695d58133d8e742db585bc16e1ff88349c11fa7193407eb3030d59"
+    },
+    "crates/query/tablecraft-query/src/binding/result_types.rs": {
+      "bytes": 14932,
+      "sha256": "743c3772ba034e7a6d9a89370078632110d499db361e938c9e8bb099ce8db0bc"
+    },
+    "crates/query/tablecraft-query/src/binding/result_types/dates.rs": {
+      "bytes": 2376,
+      "sha256": "c26dd6dd23add177115d3a0655fd8603b8404f99fe92d71dda184d6899b334ea"
+    },
+    "crates/query/tablecraft-query/src/binding/result_types/logical.rs": {
+      "bytes": 3858,
+      "sha256": "16381eef7b069d49cf8e71a6fea1db7d381f46403564cfe7cc63f527f3a66534"
+    },
+    "crates/query/tablecraft-query/src/binding/result_types/null_replacement.rs": {
+      "bytes": 1217,
+      "sha256": "e1a0d26f703ad773ed7225d98daa7a1a4f47ea1f911a6a4d837cada17ac20d6a"
+    },
+    "crates/query/tablecraft-query/src/binding/retrieval.rs": {
+      "bytes": 17184,
+      "sha256": "deb1a5f9a4cac1e39a3044a4903d9e7fd2d945fb2441739643c1a23c9b58ff90"
+    },
+    "crates/query/tablecraft-query/src/binding/retrieval/body.rs": {
+      "bytes": 7482,
+      "sha256": "35327c8ec552e68151b1621cfe94caf17d8d0cc4e5e6fdcf23bad0c15ecec4ef"
+    },
+    "crates/query/tablecraft-query/src/collection_results.rs": {
+      "bytes": 1536,
+      "sha256": "cc53202f66508447554afa57cd3cf8610f1bae0e982097d811ccd4662956a375"
+    },
+    "crates/query/tablecraft-query/src/discovery/mod.rs": {
+      "bytes": 12652,
+      "sha256": "22303346e22f1ec9fa1ed042b2df456c15b6207a8bbf07ea7e641936e3708309"
+    },
+    "crates/query/tablecraft-query/src/execution/collections/admission.rs": {
+      "bytes": 1606,
+      "sha256": "cab2efff0a1e92ce23a2d440ff538689344e90e06de9c6b177b313325da15131"
+    },
+    "crates/query/tablecraft-query/src/execution/collections/execute.rs": {
+      "bytes": 6169,
+      "sha256": "d1009ab4e47578cadde555b621833d3b27b76fb3f68e5f7568a7d1aded7fc466"
+    },
+    "crates/query/tablecraft-query/src/execution/collections/mod.rs": {
+      "bytes": 1974,
+      "sha256": "bc3138acb0b63d09a206e04b93f0ed2735a7de57bd60e07ce17ea3df5a71de54"
+    },
+    "crates/query/tablecraft-query/src/execution/collections/projection.rs": {
+      "bytes": 3723,
+      "sha256": "b7509eb2357d2bcb1f07091a81c4d508168bc5f1a156c63c7ec45a8586c7e9a5"
+    },
+    "crates/query/tablecraft-query/src/execution/collections/source.rs": {
+      "bytes": 7062,
+      "sha256": "dec12be65fdaae74917e68361852bf73a7976e04f9ef43ace7db11216c720df7"
+    },
+    "crates/query/tablecraft-query/src/execution/exact_keys/profile.rs": {
+      "bytes": 7575,
+      "sha256": "497812e0cf91354caded6e5a5e80deff9d090e4c30ca3d9b68357a0028d9429e"
+    },
+    "crates/query/tablecraft-query/src/execution/execute.rs": {
+      "bytes": 8872,
+      "sha256": "0a7e4a3b169ba362c662c030d8e2d86d1256d120b58fe67a06604641e54ef3b4"
+    },
+    "crates/query/tablecraft-query/src/execution/expression.rs": {
+      "bytes": 21562,
+      "sha256": "47ae52b7820d723e04aaf15c2600fe9b3b9dc813479c5eaea368dd1aae560d47"
+    },
+    "crates/query/tablecraft-query/src/execution/mod.rs": {
+      "bytes": 908,
+      "sha256": "432fd4573b095188ef0c7959a3f6f509fa328c9ad941730e0d3e6eb12525efdc"
+    },
+    "crates/query/tablecraft-query/src/execution/multivalue/parent.rs": {
+      "bytes": 10143,
+      "sha256": "8bbc54de4c5ebd6b9467548ec8e16b1bc9fc4c19850b849429a1f1bc7d4138c7"
+    },
+    "crates/query/tablecraft-query/src/execution/progressive/admission.rs": {
+      "bytes": 9162,
+      "sha256": "e30624869435f52e309e573b802202033d8f4c934d3d88ac721667745ac95414"
+    },
+    "crates/query/tablecraft-query/src/execution/progressive/distinct/profile.rs": {
+      "bytes": 3183,
+      "sha256": "a5270930665d6b972c26ddd343a0c441ff8c0256b7434fdb61d93976a50c4439"
+    },
+    "crates/query/tablecraft-query/src/execution/progressive/text_groups/profile.rs": {
+      "bytes": 4166,
+      "sha256": "961c187625e06861bdde6e768e023f2c6ca8afc95ad2747b1c1d8b1bea570072"
+    },
+    "crates/query/tablecraft-query/src/execution/result.rs": {
+      "bytes": 3898,
+      "sha256": "bde468e422c89a421eba0791136e40a738d914b39d78b0fb42854befec50f00b"
+    },
+    "crates/query/tablecraft-query/src/execution/retrieval.rs": {
+      "bytes": 4734,
+      "sha256": "665771988c309c6d62c1cc62fa47f59c5fa8e6b02e63503333adcc28f6b1039d"
+    },
+    "crates/query/tablecraft-query/src/execution/sort.rs": {
+      "bytes": 3025,
+      "sha256": "04df296a218b0fb5796cdab50a1d8b42b775107e8f245fe19ae4f9b9fbcf1aea"
+    },
+    "crates/query/tablecraft-query/src/execution/top.rs": {
+      "bytes": 1506,
+      "sha256": "e9e21dce54297e5e3b0e59fd03d5a10e4f2dd6f1a605882774b27b6923dc1b34"
+    },
+    "crates/query/tablecraft-query/src/lib.rs": {
+      "bytes": 1731,
+      "sha256": "ba084831bb148bc08f60fd1b5c7dacc6a724d72dc52ef5ff51368ba0a46e2081"
+    },
+    "crates/query/tablecraft-query/src/output_types.rs": {
+      "bytes": 3393,
+      "sha256": "406b6d4e1d7c7c438821ff4d04a9dfa3a46c21b3ffa24051bd9508a74eabd765"
+    },
+    "crates/query/tablecraft-query/src/plan.rs": {
+      "bytes": 8215,
+      "sha256": "fed86c208a21b146af0c38e7a87ea77e060f088f6146b39f3f05c10072733a7f"
+    },
+    "crates/query/tablecraft-query/src/plan/collections.rs": {
+      "bytes": 1160,
+      "sha256": "48b5c90d798109ca0e701ea6fe5f90116fc8e917e77a7dd0bd6538164b7d2065"
+    },
+    "crates/query/tablecraft-query/src/plan/text_policy.rs": {
+      "bytes": 2624,
+      "sha256": "e0dfe073fc6305029e1a535b569f2c880064dea364be7f62079c425a218e7a34"
+    },
+    "crates/query/tablecraft-query/tests/arithmetic_output_types.rs": {
+      "bytes": 10998,
+      "sha256": "7240f0dafe3f659b0138916dd26a0152fe4f68f8badf51a68b3572877c9e9163"
+    },
+    "crates/query/tablecraft-query/tests/arithmetic_output_types/boundaries.rs": {
+      "bytes": 9522,
+      "sha256": "ef38d72234a1a5120a7d2886a744d761643a036eb9d1126ab36c6570703964c2"
+    },
+    "crates/query/tablecraft-query/tests/collection_result_depth.rs": {
+      "bytes": 9518,
+      "sha256": "63a7ea114ff52f3bd187cfa281427c5c6b245efe8cfb77db87b877bc46eedcb0"
+    },
+    "crates/query/tablecraft-query/tests/collection_results.rs": {
+      "bytes": 14574,
+      "sha256": "c8dbac3a4bd0208b500dc28fe7313f3913fd502d09ef6a42a2543117aca4b9fb"
+    },
+    "crates/query/tablecraft-query/tests/decimal_division_profiles.rs": {
+      "bytes": 15481,
+      "sha256": "c0b22819b8e02223bbd77c86707800da0535dd3c719bca76308f2d49101fa11f"
+    },
+    "crates/query/tablecraft-query/tests/declared_addition_types.rs": {
+      "bytes": 9727,
+      "sha256": "2760e35c428972f2a722294d12eefc02831f7b6d1ccb8cc76837fb113f2b77eb"
+    },
+    "crates/query/tablecraft-query/tests/declared_result_widths.rs": {
+      "bytes": 8166,
+      "sha256": "0aa38b44ad86ff5797862bf2fb90db4db53a9421cf07a55671dd13097453613b"
+    },
+    "crates/query/tablecraft-query/tests/logical_output_types.rs": {
+      "bytes": 11229,
+      "sha256": "b914dcea153bc9b168cbe401066af8fa2a2e16c323eb57d87c7f5c57d8539bb8"
+    },
+    "crates/query/tablecraft-query/tests/projection_alias_values.rs": {
+      "bytes": 3361,
+      "sha256": "54857a8800ade04662eeb5d636798bdf1b801837907351a9082b04f6401faa32"
+    },
+    "crates/query/tablecraft-query/tests/selector_output_constraints/literals.rs": {
+      "bytes": 9754,
+      "sha256": "6b0f9ab798553425167d4929d2d7e3133d1c84c22450e56c33f290746e98a8fc"
+    },
+    "docs/MULTIVALUE_QUERIES.md": {
+      "bytes": 39271,
+      "sha256": "73b5d9e2bed481da993ff0157cbed5c61e432ae0141bf7dd4db90939df6b3b9c"
+    }
+  },
+  "record_file": "docs/testing/results/read-query-multivalue-results-2026-10-25.json",
+  "limits": [
+    "This record counts query-crate tests only. Native Access adapter tests, CLI consumer checks and original-file replay are verified and counted separately by their owners.",
+    "No full workspace test suite or native Microsoft Access SQL execution is claimed. List order/duplicate/NULL/empty display behavior is an explicit TableCraft stored-data contract.",
+    "Named/derived outer .Value flattening, list joins/UNION/DISTINCT/keys/aggregates/crosstabs and lookup labels remain explicit follow-up work. No RowSource execution, VBA arrays or collection writes are supplied.",
+    "Working-tree feature source/test/doc pins are narrow reviewed snapshots, not a complete compilation manifest. The additional existing Access exhaustive OutputType consumer guard is owned/staged by the parent in the API commit."
+  ]
+}

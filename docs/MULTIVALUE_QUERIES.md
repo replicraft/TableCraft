@@ -1,16 +1,92 @@
-# Scalar multivalue query expansion
+# Multivalue query results and scalar expansion
 
 Status: working backend-neutral query-source and execution support, now connected
 to qualified native stored collections through `query run --database PATH
 --multivalues`. Existing native stored collection browsing remains separate. This does not add collection variants to
 core `Value`, run lookup queries or implement collection writes.
 
+## Structured parent-list results
+
+`QueryValue::Scalar(ExpressionValue)` and
+`QueryValue::Multivalue(MultivalueValue)` are query result cells, separate from
+stored core `Value` and scalar evaluator operands. `MultivalueValue::values()`
+borrows the complete ordered stored children. Duplicates, NULL children and empty
+lists remain distinct. Equality is representational, not SQL collection equality.
+No missing-parent/NULL-list state is invented: current typed list plans refuse
+joins rather than guess absent-parent associations from native integer keys.
+
+`PreparedQuery::execute_collections` returns `CollectionQueryResult`; ordinary
+`execute`, `execute_expression` and progressive execution continue to reject
+list-producing plans before source scans. Preparation remains metadata-only.
+`OutputType::Multivalue` retains the element descriptor and element nullability
+without pretending that a whole list has a scalar type. Native metadata positions
+are captured independently of unavailable-name ordering; metadata changes after
+preparation still refuse before collection scans.
+
+The working list profile admits row-local SELECT projections, wildcard outputs,
+AS names, static named/derived layers, scalar filtering/ORDER BY and TOP. Every
+selected inner projection remains eager. Scalar projection aliases after list
+outputs retain dense scalar positions without placeholder cells; a list alias
+cannot itself enter a sibling scalar expression. Duplicate explicit aliases keep
+the existing ambiguity rule. Sorting and TOP reuse ordinary scalar-key services,
+including checked complete input and TOP ties. Bare-list sorting, grouping,
+DISTINCT, UNION, joins, crosstabs, aggregates and mixed bare-list/visible `.Value`
+projection remain explicitly unsupported in this result profile. Existing
+scalar-only queries, including `.Value`, retain their normal execution through
+the same collection-aware API rather than gaining these restrictions.
+
+Hidden `.Value` WHERE criteria on a direct parent source select parents while
+retaining every value in each selected bare list. A match to one child never
+trims the projected list. Selected stored children are validated completely,
+including suffixes after a matching child, before admitting the parent. Native
+source failures and ignored visitor rejection remain sticky; no query result or
+complete source cache is published from a failed prefix. List element access in
+an outer derived layer is a separate future extension.
+
+`execute_collections_with_schema_discovery` retains the existing explicit
+execution-phase scalar dependency discovery contract. A dynamic named dependency
+can therefore complete authorized scalar discovery before the final plan reveals
+an unsupported typed join or other shape. The operation then returns Unsupported
+with no result and no collection scan. This wrapper is not metadata-only;
+prepared-plan admission and progressive preflight retain their stricter guards.
+Discovery shares the same operation budget, owner bindings and complete-result
+cache rules; stored tokens never authorize new file opens.
+
+All owned list buffers and their payload copies use the query byte, row and work
+allowances with fallible reservations and cancellation checks. Each materialized
+child copy consumes row allowance; copying a list through a derived layer consumes
+additional cumulative resources. Scalars and lists remain separate private
+frames until final publication. List copies preserve all stored Single/Double
+IEEE bits, including signed zeros, infinities and NaN payloads, as data. Scalar
+`.Value` arithmetic/publication keeps its existing nonfinite refusals. No scalar
+promotion, lookup label selection, RowSource execution or collection mutation is
+implied. Lookup display labels require an explicitly related source.
+
+Microsoft's [multivalue query guide](https://support.microsoft.com/en-us/access/using-lookup-and-multivalued-fields-in-queries)
+shows complete bare-field parent projections separately from repeated `.Value`
+rows. Its designer example also counts assigned people per issue; this remains a
+future acceptance case, not a reason to treat bare Count as parent count or to
+claim its exact generated SQL has been qualified. The initial typed service
+refuses it explicitly. The guide does not establish TableCraft's raw list order,
+duplicate, NULL/empty or display spelling contracts. The
+[DAO child-recordset description](https://learn.microsoft.com/en-us/office/vba/access/concepts/data-access-objects/manipulate-multivalued-fields-with-dao)
+is not a claim that stored multivalue lists are VBA arrays. Native Microsoft
+Access query comparison remains unrun.
+
+The [scoped query verification record](testing/results/read-query-multivalue-results-2026-10-25.json)
+records 388 distinct passing query tests, including twelve new structured-result
+and isolated depth controls, strict query lint and the minimal feature build.
+Adapter and CLI evidence is counted separately; these checks do not establish
+native Microsoft Access SQL results.
+
 ## Source contract
 
 `Source::multivalue_columns` provides stable scalar element columns whose names
 also occur in `unavailable_columns`. The declared type/nullability describes
-stored elements, not a scalar parent field. Ordinary names and wildcards still
-reject those parent fields; they never become delimited Text or Int32 keys.
+stored elements, not a scalar parent field. Bare names and wildcards can now
+bind structured result metadata; ordinary scalar execution still refuses plans
+containing list outputs before scanning. Lists never become delimited Text,
+scalar NULL placeholders or Int32 keys.
 
 For requested `.Value` fields, `scan_multivalues` visits each parent exactly once,
 including empty memberships. Its sorted unique scalar/collection indices refer
@@ -60,8 +136,10 @@ a projected/grouped or ON-referenced sibling collection. [ON member fields](#col
 drive child expansion even without output members. [Subqueries inside WHERE membership](#subqueries-inside-membership-criteria)
 now retain explicit item scopes and the existing fold rules.
 [Crosstabs](CROSSTABS.md#collection-membership-criteria) now retain membership
-while preserving dynamic pre-WHERE heading discovery. Plain collection
-projection/parent display values, history member SQL, native lookup conversion and collection mutation remain unimplemented.
+while preserving dynamic pre-WHERE heading discovery. Complete bare-field
+projection now uses the [structured result service](#structured-parent-list-results).
+History member SQL, native lookup conversion and collection mutation remain
+unimplemented.
 Active DISTINCTROW cannot compare unavailable complete parent records.
 
 Every visited element and copied output retains shared work, row, allocation and

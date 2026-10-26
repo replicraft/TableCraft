@@ -20,6 +20,7 @@ pub(super) fn propagating(input: OutputType, carrier: ScalarType) -> OutputType 
         OutputType::Null => OutputType::Null,
         OutputType::Scalar { nullable, .. } => OutputType::scalar(carrier, nullable),
         OutputType::Dynamic => OutputType::scalar(carrier, true),
+        OutputType::Multivalue { .. } => OutputType::Dynamic,
     }
 }
 

@@ -29,6 +29,7 @@ impl Binder<'_> {
             }
         }
         match expr {
+            Expr::Multivalue { .. } => return Err(QueryError::Unsupported),
             // References only point backward in this SELECT's projection list.
             // The ordered validation loop has already checked their definitions;
             // nested reads cannot capture this SELECT's projection aliases.

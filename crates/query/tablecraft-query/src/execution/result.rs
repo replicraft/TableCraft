@@ -20,7 +20,7 @@ impl<T> QueryResult<T> {
     pub fn columns(&self) -> &[String] {
         &self.columns
     }
-    /// Conservative scalar metadata aligned with output names. Dynamic entries
+    /// Conservative scalar/collection metadata aligned with output names. Dynamic entries
     /// retain unknown/varying carriers; no type is inferred from returned rows.
     /// Metadata uses this execution's selected arithmetic profile, which can be
     /// more specific than a prepared query's combined profile description.

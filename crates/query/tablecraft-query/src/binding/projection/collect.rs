@@ -91,7 +91,8 @@ impl Pruner<'_, '_> {
                 self.collect_expr(expr, target, offset, needed)?;
                 self.outer_read(read, target + 1, offset, needed)?;
             }
-            Expr::Field { .. }
+            Expr::Multivalue { .. }
+            | Expr::Field { .. }
             | Expr::Clock(_)
             | Expr::CurrentUser
             | Expr::Literal(_)

@@ -1,4 +1,5 @@
 //! Shared TOP selection over complete, already ordered result rows.
+use super::cell::CellValue;
 use super::{Runtime, retrieval::OutputRow};
 use crate::{QueryError, plan::ReadPlan, profile::PERCENT_TOTAL};
 use std::cmp::Ordering;
@@ -12,6 +13,15 @@ impl Runtime<'_, '_> {
         rows: &mut Vec<OutputRow>,
         plan: &ReadPlan,
     ) -> Result<(), QueryError> {
+        self.apply_top_by(rows, plan, |row| &row.keys)
+    }
+
+    pub(super) fn apply_top_by<T>(
+        &mut self,
+        rows: &mut Vec<T>,
+        plan: &ReadPlan,
+        keys: fn(&T) -> &[CellValue],
+    ) -> Result<(), QueryError> {
         let Some((count, percent)) = plan.top else {
             return Ok(());
         };
@@ -23,7 +33,7 @@ impl Runtime<'_, '_> {
         };
         if take > 0 && !plan.sort.is_empty() {
             while take < rows.len()
-                && self.compare_keys(&rows[take - 1].keys, &rows[take].keys, plan)?
+                && self.compare_keys(keys(&rows[take - 1]), keys(&rows[take]), plan)?
                     == Ordering::Equal
             {
                 take += 1;

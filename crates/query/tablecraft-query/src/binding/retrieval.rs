@@ -118,11 +118,19 @@ impl Binder<'_> {
                                 })
                             })
                         {
-                            if !slot.available {
-                                return Err(QueryError::Unsupported);
-                            }
                             matched = true;
-                            projection.push(self.field(0, index, &source.slots)?);
+                            if !slot.available {
+                                let output_type = slot.output_type.conservative();
+                                if !output_type.is_multivalue() {
+                                    return Err(QueryError::Unsupported);
+                                }
+                                projection.push(Expr::Multivalue {
+                                    index: slot.collection_index.ok_or(QueryError::Source)?,
+                                    output_type,
+                                });
+                            } else {
+                                projection.push(self.field(0, index, &source.slots)?);
+                            }
                             names.push(slot.name.clone());
                         }
                         index += usize::from(slot.available);
@@ -132,7 +140,12 @@ impl Binder<'_> {
                     }
                 }
                 Projection::Expression { expression, alias } => {
-                    projection.push(self.expression(expression, &scopes, true, depth + 1)?);
+                    let value =
+                        match self.collection_projection(expression, &source.slots, depth + 1)? {
+                            Some(value) => value,
+                            None => self.expression(expression, &scopes, true, depth + 1)?,
+                        };
+                    projection.push(value);
                     names.push(
                         alias.as_ref().map_or_else(
                             || format!("Expr{}", names.len() + 1),
@@ -141,12 +154,13 @@ impl Binder<'_> {
                     );
                 }
                 Projection::Field { field, alias } => {
-                    projection.push(self.expression(
-                        &E::Field(field.clone()),
-                        &scopes,
-                        true,
-                        depth + 1,
-                    )?);
+                    let value = match self.collection_field(field, &source.slots, depth + 1)? {
+                        Some(value) => value,
+                        None => {
+                            self.expression(&E::Field(field.clone()), &scopes, true, depth + 1)?
+                        }
+                    };
+                    projection.push(value);
                     names.push(alias.as_ref().unwrap_or(&field.name).as_str().into());
                 }
             }
@@ -159,9 +173,13 @@ impl Binder<'_> {
             };
             if let Some(alias) = alias {
                 let index = projection.len() - 1;
+                let scalar_index = projection[..index]
+                    .iter()
+                    .filter(|expression| !matches!(expression, Expr::Multivalue { .. }))
+                    .count();
                 self.register_projection_alias(
                     alias.as_str(),
-                    index,
+                    scalar_index,
                     &projection[index],
                     &scopes,
                     depth + 1,
@@ -235,7 +253,13 @@ impl Binder<'_> {
                 },
                 declaration: *declaration,
                 text_policy: *policy,
-                available: true,
+                available: !output_types[index].is_multivalue(),
+                collection_index: output_types[index].is_multivalue().then(|| {
+                    output_types[..index]
+                        .iter()
+                        .filter(|output| output.is_multivalue())
+                        .count()
+                }),
                 member: None,
                 name: n.clone(),
                 qualifier: None,
@@ -334,11 +358,24 @@ impl Binder<'_> {
                     if *n < 1 || *n as usize > output.len() {
                         return Err(QueryError::UnknownName);
                     }
-                    Expr::Output(*n as usize - 1, output[*n as usize - 1].text_policy)
+                    let selected = *n as usize - 1;
+                    if !output[selected].available {
+                        return Err(QueryError::Unsupported);
+                    }
+                    let index = output[..selected]
+                        .iter()
+                        .filter(|slot| slot.available)
+                        .count();
+                    Expr::Output(index, output[selected].text_policy)
                 }
                 E::Field(f) if f.qualifier.is_none() && !output.is_empty() => {
                     if let Some(i) = super::resolve(f, output)? {
-                        Expr::Output(i, output[i].text_policy)
+                        let slot = output
+                            .iter()
+                            .filter(|slot| slot.available)
+                            .nth(i)
+                            .ok_or(QueryError::Source)?;
+                        Expr::Output(i, slot.text_policy)
                     } else {
                         let scopes = std::iter::once(input)
                             .chain(outer.iter().copied())

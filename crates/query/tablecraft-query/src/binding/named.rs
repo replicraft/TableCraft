@@ -39,7 +39,13 @@ impl Binder<'_> {
                 },
                 declaration: *declaration,
                 text_policy: *policy,
-                available: true,
+                available: !read.output_types[index].is_multivalue(),
+                collection_index: read.output_types[index].is_multivalue().then(|| {
+                    read.output_types[..index]
+                        .iter()
+                        .filter(|output| output.is_multivalue())
+                        .count()
+                }),
                 member: None,
                 name: self.copy_name(name)?,
                 qualifier: Some(self.copy_name(qualifier)?),
