@@ -25,6 +25,8 @@ Delivered read/query and engineering foundations:
   cancellation and [high-offset Memo/OLE checks](access/storage/NATIVE_HIGH_OFFSET_PAYLOADS.md).
 - [x] Offline Jet 4 fixed Int32 UPDATE copies and separate
   [ACE 16 engineering write previews](testing/ACE16_WRITE_PREVIEWS.md).
+  These now include [checked root-leaf deletion candidates](testing/ACE16_DELETE_PREVIEWS.md),
+  with 70 passing original-file controls and unchanged source bytes.
   General ACE 16 saves are still unavailable.
 
 - [x] [Stateful streaming composition](query/PROGRESSIVE_QUERIES.md#stateful-retained-stages)
@@ -38,7 +40,8 @@ Major gates still open before the full backend is complete:
   Variant/result promotion, native text semantics and wider native definitions.
 - [ ] Broader ACE 16 validation/preservation and required data-macro safety.
 - [ ] General physical mutation: record growth/allocation, index splits/merges,
-  INSERT/DELETE and wider relationship/write-query actions.
+  general INSERT/DELETE and wider relationship/write-query actions. Root-leaf
+  deletion candidates do not yet supply multi-level contraction or production saves.
 - [ ] Production transaction/recovery qualification, native shared-file
   coordination and mixed-client behavior.
 - [ ] Remaining backend contracts, application session/cursor lifecycle, object lifecycle, background

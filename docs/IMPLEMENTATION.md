@@ -1,5 +1,29 @@
 # Implementation status
 
+## ACE16 physical row-deletion candidates
+
+The opt-in engine can now tombstone ordinary live roots, decrement checked table
+counts and remove their exact entries from every qualified single-root-leaf
+index. Existing key codecs, composite directions and physical aliases are
+preserved, including delete-all to an empty root. Record bodies, Memo/OLE bytes,
+historical index counters, allocation and unrelated bytes remain unchanged.
+`RowDelete` uses a snapshot-local live ordinal and exact expected record payload;
+`Ace16DeletePreview` remains separate from journalable edit plans. Relationships,
+required unknown behavior, ignored-NULL indexes and broader topology changes
+remain gated. The shared preview admission now also enforces its documented
+subversion-zero boundary without reducing plain subversion-one read support.
+
+The engineering batch passes 117 unit/integration tests plus three compile-fail
+checks, strict lint, minimal compilation and formatting. A frozen committed
+example passes all 70 independent original-file controls: 64 reopened candidates
+and six expected refusals. Sixteen candidates start from public-writer inputs
+already containing tombstones. Getter populations/order, exact surviving physical
+keys/references and narrow byte preservation agree; all registered inputs remain
+unchanged. See the [candidate contract](testing/ACE16_DELETE_PREVIEWS.md) and
+[original-file replay](testing/results/ace16-delete-originals-2026-10-26.json).
+This adds physical deletion machinery, not ordinary ACE saves, SQL DELETE,
+allocation, data-macro qualification or native Access save/reopen evidence.
+
 ## Retained multivalue members through named and derived queries
 
 Explicit collection-aware queries can now expand `.Value` from a whole list
