@@ -1,5 +1,21 @@
 # Implementation status
 
+## Selected index reads over large native allocation maps
+
+Qualified partial native index reads now validate table ownership with bounded
+bitmap membership rather than materializing every owned data-page address.
+Whole-map validation, selected row ownership/live-slot/key checks, cumulative
+limits and cancellation remain enforced. Complete indexed reads, full checks,
+index-owned page maps and mutation paths retain their existing ceilings.
+
+The engine batch passes 170 distinct tests, including ten new tests, with strict
+scoped lint, minimal compilation and formatting. A frozen committed CLI matches
+22 controls over two unchanged 5,000-row/5,000-owned-page originals, including
+required/automatic selections and Binary payload digests. Sequential controls
+still succeed; complete indexed reads remain explicitly limited. See the
+[scope and replay](testing/LARGE_INDEX_SELECTIONS.md). These independent checks
+do not establish native Access or shared-file compatibility.
+
 ## Complete lists beside displayed children
 
 Collection-aware SELECTs now retain complete stored lists alongside displayed

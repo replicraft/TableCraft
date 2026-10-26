@@ -78,5 +78,26 @@ java -Dstdout.encoding=UTF-8 -cp path/to/jackcess-5.0.4.jar \
 ```
 
 Use V2019 for the other profile. Exact hashes identify the accepted originals;
-fresh generation is not promised byte-identical. A post-change original-file CLI
-replay is separate from these baseline observations and focused engine tests.
+fresh generation is not promised byte-identical.
+
+## Committed-build original replay
+
+The [read-only runner](compare_large_index_selections.py) and
+[record](results/large-index-selections-originals-2026-10-26.json) compare 22 CLI
+controls from the frozen debug executable built at `66041fd7`. All match, with
+zero disagreements and 10,028 result rows compared. Required point/range and
+automatic selections now succeed over both 5,000-owned-page tables, including
+empty matches. Two selected payload cases per profile hash all twelve decoded
+Binary fields against the getter digest. Sequential controls still return all
+5,000 IDs; complete indexed reads retain their expected structural refusals.
+
+Original/getter, writer recipe, executable and reference hashes stay unchanged.
+This is independent public-writer/getter conformance, not native Microsoft
+Access execution, save/reopen or shared-file qualification.
+
+```sh
+python3 docs/testing/compare_large_index_selections.py \
+  --cli FROZEN_EXECUTABLE --cli-sha256 SHA256 \
+  --compiled-revision REVISION --inputs ORIGINAL_DIRECTORY \
+  --report FRESH_REPORT.json --log FRESH_LOG.jsonl
+```
