@@ -1,0 +1,234 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "LIKE String Let-coercion before comparison-provider selection in the existing expression/query/CLI profile",
+  "review_base_revision": "74c37b6addfff0d53d34cc6dcd2a5847ba1ed26b",
+  "unique_tests": 209,
+  "new_tests": 13,
+  "existing_regression_tests": 196,
+  "accepted_expression_tests": 18,
+  "accepted_query_tests": 187,
+  "accepted_cli_tests": 4,
+  "new_test_breakdown": {
+    "expression_coercion": 5,
+    "query_coercion_and_policy": 6,
+    "cli_coercion": 2
+  },
+  "query_target_counts": {
+    "collation_routing": 112,
+    "retrieval": 64,
+    "predicate_declarations": 4,
+    "raw_string_predicates": 4,
+    "date_text_predicates": 3
+  },
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-expressions --features sql --lib evaluation::like -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/like-coercion-expression-accepted-20261025.log",
+      "bytes": 1148,
+      "sha256": "3cbe9a52d9e060e66dcc6a85cc08db3dc96e8eaf1c52b4792ba324e7e7fb28bb",
+      "terminal_session": 54978,
+      "tests": 7
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test collation_routing --test retrieval --test predicate_declarations --test raw_string_predicates --test date_text_predicates -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/like-coercion-query-accepted-20261025.log",
+      "bytes": 21413,
+      "sha256": "03e869bb08c0bc1c2cb4de51628bd77edd863b53b236b0b092f858ed49528da1",
+      "terminal_session": 20377,
+      "tests": 187
+    },
+    {
+      "command": "cargo test -p tablecraft-expressions --features sql --lib predicates::like -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/like-coercion-matcher-20261025.log",
+      "bytes": 1466,
+      "sha256": "b05988f1b509ca02416d37b66f32b0703463916130777d6268dd762526872d8b",
+      "tests": 11
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --test like -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/like-coercion-cli-initial-20261025.log",
+      "bytes": 5117,
+      "sha256": "6cfa3ef3322b53f7403e5934c8e3acaceef8154e640c9b7b9e7b0a65ab34884d",
+      "terminal_session": 91841,
+      "tests": 4
+    },
+    {
+      "command": "cargo clippy -p tablecraft-expressions -p tablecraft-query --features tablecraft-expressions/sql --lib --tests -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/like-coercion-query-expression-clippy-20261025.log",
+      "bytes": 1784,
+      "sha256": "4a543deb8f7c271836daf51f5c9e606ad0a2a968ceeff271d2601e7451b32b02",
+      "terminal_session": 78914
+    },
+    {
+      "command": "cargo clippy -p tablecraft-cli --bin tablecraft --test like -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "private_log": ".cache/like-coercion-cli-clippy-20261025.log",
+      "bytes": 3666,
+      "sha256": "7c710999f1bcc4e862a13839c5bbf8c9c4522328b4ad029946a6d507c361dae6",
+      "terminal_session": 30652
+    },
+    {
+      "command": "cargo check -p tablecraft-query --lib --no-default-features -j2 --locked --offline",
+      "exit_code": 0,
+      "private_log": ".cache/like-coercion-query-minimal-20261025.log",
+      "bytes": 422,
+      "sha256": "6bb1acf17f461a8c0f101c83a10ea6f54cb798ab3fbef40fe7936892ae21a0cf",
+      "terminal_session": 71821
+    },
+    {
+      "command": "rustfmt --edition 2024 --check crates/query/tablecraft-query/src/execution/declarations/predicates/like.rs crates/query/tablecraft-query/tests/collation_routing.rs crates/query/tablecraft-query/tests/collation_routing/like_coercion.rs crates/query/tablecraft-query/tests/retrieval/like.rs apps/tablecraft-cli/tests/like.rs",
+      "exit_code": 0,
+      "evidence": "Observed terminal tool output; no persisted formatter log. This covers the five query/CLI-owned paths, not the entire workspace."
+    },
+    {
+      "command": "cargo check -p tablecraft-expressions --no-default-features --locked",
+      "exit_code": 0,
+      "terminal_session": 10706,
+      "private_log": ".cache/like-coercion-expression-minimal-20261025.log",
+      "bytes": 197,
+      "sha256": "d8a6a9614dffdaa6a1da67ebd3b10046836ae80797d908d8f828814eeae5c07c"
+    }
+  ],
+  "excluded_attempts": [
+    {
+      "command": "cargo test -p tablecraft-expressions --features sql --lib evaluation::like -j2 --locked --offline",
+      "exit_code": 101,
+      "private_log": ".cache/like-coercion-expression-initial-20261025.log",
+      "bytes": 3271,
+      "sha256": "00653dc5db7730b265709546ed560d5a827d0241a35c62f9f0181a7d555aca00",
+      "terminal_session": 96548,
+      "classification": "Compile-only E0308 in the new borrowed/owned operand matcher. Split Scalar and Converted match arms. No tests ran; no answer golden changed.",
+      "counted_in_accepted_tests": false
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test collation_routing --test retrieval --test predicate_declarations --test raw_string_predicates --test date_text_predicates -j2 --locked --offline",
+      "exit_code": 101,
+      "private_log": ".cache/like-coercion-query-initial-20261025.log",
+      "bytes": 3230,
+      "sha256": "83af2581a768af9d68d7c38f60889d731e2d7a05a3d9c9b9a9656fb2d7e48d0d",
+      "terminal_session": 10294,
+      "classification": "New test omitted the EvalError import (E0433). Added the import only; no tests ran and production compiled.",
+      "counted_in_accepted_tests": false
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test collation_routing --test retrieval --test predicate_declarations --test raw_string_predicates --test date_text_predicates -j2 --locked --offline",
+      "exit_code": 101,
+      "private_log": ".cache/like-coercion-query-retry-20261025.log",
+      "bytes": 22094,
+      "sha256": "5e947452a15437e7c9db88b71d0c8d07ad4806c79634a3d32432d650faa22ae1",
+      "terminal_session": 38638,
+      "classification": "All six new query tests passed. Existing retrieval control SELECT ID LIKE wildcard expected the old numeric TypeMismatch. Updated only that error expectation to NumberFormatRequired because implicit numeric String conversion now requires an explicit number-format policy. No production answer correction.",
+      "observed_passes": 186,
+      "observed_failures": 1,
+      "counted_in_accepted_tests": false
+    }
+  ],
+  "before_change_reproduction": {
+    "private_report": ".cache/like-query-coercion-before-20261025.json",
+    "bytes": 3503,
+    "sha256": "fcfbeb9404218c492f56b029a95db1774c1b8048c19836abdef623492169b83f",
+    "controls": 8,
+    "description": "Frozen prior CLI: numeric/String, Boolean/String and numeric/numeric LIKE fail TypeMismatch in ordinary and declared modes; explicit CStr control succeeds in each. Exact commands, stdout/stderr and executable hash are retained in the private report. Not added to passing-test count."
+  },
+  "primary_contracts": [
+    {
+      "url": "https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/792d4f80-72c1-49da-98a7-37d5783a8615",
+      "scope": "MS-VBAL 5.6.9.6 LIKE: non-Null operands are String Let-coerced; retained query expression evaluation remains eager."
+    },
+    {
+      "url": "https://support.microsoft.com/en-us/access/like-operator",
+      "scope": "Direct Access query LIKE operator availability."
+    }
+  ],
+  "contracts": [
+    "Both SQL operand expressions execute eagerly before preparation. An explicit wildcard mode remains required; actual NULL then bypasses conversion, raw decoding and provider lookup.",
+    "Existing Text and retained raw Strings are borrowed. Only successful supported numeric, Boolean, Date or Empty String conversions own fresh metered values. Error/Missing and unsupported stored families are not silently stringified.",
+    "Formatting and conversion failure precede comparison-provider selection. Freshly converted operands contribute Default String provenance; only actual String operands retain their own static/runtime field lineage.",
+    "The existing strict Unicode and explicitly selected UTF-16 weighted raw paths remain authoritative, including active raw bytes. Core stored Value and the low-level pattern matcher are unchanged.",
+    "Ordinary and declared arithmetic modes share this coercion path without a new CLI option; existing result declaration combination, cancellation and cumulative query/expression/provider budgets remain in force."
+  ],
+  "implementation_inventory": {
+    "expression_production": [
+      "crates/query/tablecraft-expressions/src/evaluation/context.rs",
+      "crates/query/tablecraft-expressions/src/evaluation/like.rs",
+      "crates/query/tablecraft-expressions/src/evaluation/like/preparation.rs",
+      "crates/query/tablecraft-expressions/src/evaluation/mod.rs"
+    ],
+    "query_production": [
+      "crates/query/tablecraft-query/src/execution/declarations/predicates/like.rs"
+    ],
+    "expression_tests": [
+      "crates/query/tablecraft-expressions/src/evaluation/like/coercion_tests.rs"
+    ],
+    "query_tests": [
+      "crates/query/tablecraft-query/tests/collation_routing.rs",
+      "crates/query/tablecraft-query/tests/collation_routing/like_coercion.rs",
+      "crates/query/tablecraft-query/tests/retrieval/like.rs"
+    ],
+    "cli_tests": [
+      "apps/tablecraft-cli/tests/like.rs"
+    ],
+    "feature_docs": [
+      "docs/PATTERN_MATCHING.md"
+    ]
+  },
+  "selected_file_sha256": {
+    "crates/query/tablecraft-expressions/src/evaluation/context.rs": {
+      "bytes": 10309,
+      "sha256": "e39f1d11a5f60f6d028fbb38300a0a1c76e0d17931f968c8839534dd35857f68"
+    },
+    "crates/query/tablecraft-expressions/src/evaluation/like.rs": {
+      "bytes": 4173,
+      "sha256": "64866c3e40dca35180c744f525acdcf7b30ca395a4b3afcd33960fa24677baad"
+    },
+    "crates/query/tablecraft-expressions/src/evaluation/like/preparation.rs": {
+      "bytes": 3337,
+      "sha256": "32582f9fc56022c16157955f73df68cfcfce852a93d596c056f8e58bcede0cc3"
+    },
+    "crates/query/tablecraft-expressions/src/evaluation/mod.rs": {
+      "bytes": 2355,
+      "sha256": "efd44b0e185bfa2ad417cce39f2a00f31a78840eac59b21fad4b8c7449d1071d"
+    },
+    "crates/query/tablecraft-query/src/execution/declarations/predicates/like.rs": {
+      "bytes": 2405,
+      "sha256": "1e596442e7d323e725001c7f8ee92b4a6b799dbe64441fa35a6946580f69253f"
+    },
+    "crates/query/tablecraft-expressions/src/evaluation/like/coercion_tests.rs": {
+      "bytes": 7554,
+      "sha256": "6172003cdb1aa16d967c2df82e0045cf7ffd84f886ec8ab78e671cb3f804a0a2"
+    },
+    "crates/query/tablecraft-query/tests/collation_routing.rs": {
+      "bytes": 680,
+      "sha256": "f32fc75837ad08417648c292f84b720d0ad5203c9112673a0461c6eb9cf40449"
+    },
+    "crates/query/tablecraft-query/tests/collation_routing/like_coercion.rs": {
+      "bytes": 7329,
+      "sha256": "1135c8e588b523a8f1de4a67948328b24ac3ba39534a24ad35db0a808cd0e2a3"
+    },
+    "crates/query/tablecraft-query/tests/retrieval/like.rs": {
+      "bytes": 4818,
+      "sha256": "5efdfd10d20cf5d61a5e069de4308967afc09b07a6773f340034547e667e4daa"
+    },
+    "apps/tablecraft-cli/tests/like.rs": {
+      "bytes": 4308,
+      "sha256": "0cd1e5e1ed896f5f628d9b671f9dbb3e2fec1e4186c970d92a45f2c48f891c59"
+    },
+    "docs/PATTERN_MATCHING.md": {
+      "bytes": 11224,
+      "sha256": "fe93a56e6553e7c79adaa7144895cc69b3cedde76bf876284773fdcbac7d872a"
+    }
+  },
+  "record_file": "docs/testing/results/read-query-like-coercion-2026-10-25.json",
+  "limits": [
+    "This is formal-contract-backed local implementation evidence, not a native Access SQL comparison or complete Variant coercion qualification.",
+    "No full workspace suite or new function/matcher/locale behavior is claimed. Expression standalone minimal-profile verification may be appended separately by the parent.",
+    "Selected working-tree source/test/doc snapshots describe the reviewed LIKE feature only; they are not a complete compilation manifest or frozen executable source inventory.",
+    "Concurrent native index work, shared status documents and the separate NULL-literal declaration follow-up are outside this record."
+  ]
+}

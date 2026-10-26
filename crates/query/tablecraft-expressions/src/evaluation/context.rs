@@ -201,6 +201,16 @@ impl<'a> Evaluator<'a> {
         pattern: &Value,
         negated: bool,
     ) -> Result<Value, EvalError> {
+        let prepared = self.prepare_scalar_like(value, pattern)?;
+        self.apply_prepared_like(&prepared, negated)
+    }
+
+    pub(super) fn match_like_strings(
+        &mut self,
+        value: &Value,
+        pattern: &Value,
+        negated: bool,
+    ) -> Result<Value, EvalError> {
         for operand in [value, pattern] {
             if matches!(operand, Value::Text(text) if text.len() > self.limits.max_text_bytes) {
                 return Err(EvalError::TextLimit);
