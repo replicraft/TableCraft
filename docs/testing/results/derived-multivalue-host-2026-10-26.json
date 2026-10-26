@@ -1,0 +1,131 @@
+{
+  "date": "2026-10-26",
+  "scope": "Native and buffered CLI retained-list member projection through derived/named read boundaries",
+  "unique_tests": 58,
+  "new_tests": 9,
+  "existing_tests": 49,
+  "native_unique_tests": 34,
+  "cli_unique_tests": 24,
+  "new_test_breakdown": {
+    "native": 6,
+    "cli": 3
+  },
+  "scope_files": [
+    {
+      "path": "crates/backends/tablecraft-access/tests/derived_multivalue_members.rs",
+      "bytes": 4417,
+      "sha256": "e015b74bf6606bf4ac6819194ae6daaadb2aee50d63d98f6dc14c025c2d01545"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/derived_multivalue_members/values.rs",
+      "bytes": 3787,
+      "sha256": "ff01b20481e3b2b710cdd2ff69f6393e27b527247339910b6ca1449ccefb5d17"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/derived_multivalue_members/boundaries.rs",
+      "bytes": 4700,
+      "sha256": "65c13966218fafd132bb73608afcc1a9272bbc9da96185495a4be26bfa080971"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/derived_multivalue_queries.rs",
+      "bytes": 5902,
+      "sha256": "9f56d24c2372e00630a0eb15a80e5380271b58af0c87cda4e95efdd635a91e58"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/multivalue_results/boundaries.rs",
+      "bytes": 5701,
+      "sha256": "1327fdf6add5bd18408ec40e97a4dc3fb0c53ba10a576486f58e62b7e1ea0b63"
+    }
+  ],
+  "checks": [
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-access --test derived_multivalue_members --test mixed_multivalue_results --test multivalue_join_results --test multivalue_outer_results --test multivalue_results",
+      "exit_code": 101,
+      "log": {
+        "path": ".cache/derived-multivalue-native-tests-20261026.log",
+        "bytes": 5439,
+        "sha256": "87f8ad4a4fe07050b0bc38574ec78ff6b18d6c2c03656b7a8ad999e07a4ce7fe"
+      },
+      "session": 42588,
+      "accepted_complete_targets": {
+        "derived_multivalue_members": 6,
+        "mixed_multivalue_results": 5,
+        "multivalue_join_results": 8,
+        "multivalue_outer_results": 7
+      }
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-cli --test derived_multivalue_queries --test mixed_multivalue_queries --test multivalue_join_queries --test multivalue_outer_queries --test multivalue_queries",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/derived-multivalue-cli-tests-20261026.log",
+        "bytes": 3691,
+        "sha256": "2786b723cd5ddaa44cf4feaadc5eb0c86ed2f668fe3b6249132cd0f39b02acbf"
+      },
+      "session": 20892,
+      "accepted_complete_targets": {
+        "derived_multivalue_queries": 3,
+        "mixed_multivalue_queries": 3,
+        "multivalue_join_queries": 3,
+        "multivalue_outer_queries": 3,
+        "multivalue_queries": 12
+      }
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-access --test multivalue_results",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/derived-multivalue-native-guard-final-20261026.log",
+        "bytes": 1164,
+        "sha256": "6fb5049d97d8c81776be31bcc41857aeb6475db63ace71b7e8c72e4da2c32cb3"
+      },
+      "session": 48281,
+      "accepted_complete_targets": {
+        "multivalue_results": 8
+      }
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-access --lib --test derived_multivalue_members --test multivalue_results -- -D warnings",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/derived-multivalue-native-clippy-20261026.log",
+        "bytes": 526,
+        "sha256": "64d121b2a8370ddbf1c41c789cf2428c623d9889c2946d25c3de9260864daf33"
+      },
+      "session": 94579
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-cli --bin tablecraft --test derived_multivalue_queries -- -D warnings",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/derived-multivalue-cli-clippy-20261026.log",
+        "bytes": 1334,
+        "sha256": "1b93ea112b460d04f9532bc099d88a5624b1ae48ae98a586abbf647de0044924"
+      },
+      "session": 75290
+    },
+    {
+      "command": "rustfmt --edition 2024 --check crates/backends/tablecraft-access/tests/derived_multivalue_members.rs crates/backends/tablecraft-access/tests/derived_multivalue_members/values.rs crates/backends/tablecraft-access/tests/derived_multivalue_members/boundaries.rs crates/backends/tablecraft-access/tests/multivalue_results/boundaries.rs apps/tablecraft-cli/tests/derived_multivalue_queries.rs",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/derived-multivalue-host-format-20261026.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "excluded_failure": {
+    "session": 42588,
+    "target": "multivalue_results",
+    "test": "boundaries::scalar_publication_and_unsupported_list_operations_refuse_before_any_records",
+    "reason": "Stale negative SELECT Score,Score.Value FROM Items had become supported in the previous mixed-output feature and intentionally reached guarded row I/O. Migrated only that negative to SELECT DISTINCT Score,Score.Value FROM Items. The same metadata-only assertion and all expected positive data remain unchanged.",
+    "corrected_target_session": 48281,
+    "note": "Seven partial successes in the failed target are not added to the final eight-target count. New native six and three other complete targets passed in the initial batch."
+  },
+  "limitations": [
+    "Original synthetic native fixture bytes are generated in memory; there are no new third-party inputs or original database mutations.",
+    "ACE12-family code2 and ACE16 codes5/6 stored Int32 collections qualify actual list plumbing; these host tests do not establish native Access SQL or Text collation equivalence.",
+    "Named host query definition forwards native metadata/list callbacks; no saved-query writer or provider is implicitly activated.",
+    "No production source changes, public API changes, standalone CLI cargo build or original-getter CLI replay are counted here."
+  ]
+}
