@@ -1,0 +1,129 @@
+{
+  "date": "2026-10-25",
+  "scope": "Native Access adapter conformance for explicitly typed bare multivalue results; existing metadata/list/cache/forwarding implementation reused without adapter production edits",
+  "unique_tests": 50,
+  "new_tests": 8,
+  "checks": [
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-access --test multivalue_results --test multivalue_source --test collection_collation --test linked_sources --test external_sources",
+      "session": 79640,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/bare-multivalue-access-tests-final-20261025.log",
+        "bytes": 5041,
+        "sha256": "7d7fcd6ba6df97d64aa69d8cf0598d4c99f59ead521cce9e28163939a805c091"
+      },
+      "breakdown": {
+        "multivalue_results": 8,
+        "multivalue_source": 7,
+        "collection_collation": 4,
+        "linked_sources": 10,
+        "external_sources": 14
+      }
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-access --lib --test multivalue_results --test multivalue_source --test collection_collation --test linked_sources --test external_sources -- -D warnings",
+      "session": 65674,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/bare-multivalue-access-clippy-20261025.log",
+        "bytes": 675,
+        "sha256": "8e5947d45c41d07ac2dd19f0ca569fede4ff2d151cbdaf40418348f9b4d5079e"
+      }
+    },
+    {
+      "command": "rustfmt --edition 2024 --check crates/backends/tablecraft-access/tests/multivalue_results.rs crates/backends/tablecraft-access/tests/multivalue_results/boundaries.rs crates/backends/tablecraft-access/tests/multivalue_results/forwarding.rs crates/backends/tablecraft-access/tests/multivalue_results/values.rs",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/bare-multivalue-access-format-20261025.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-access --test recomputed_view_conformance",
+      "session": 92105,
+      "exit_code": 0,
+      "unique_tests": 7,
+      "log": {
+        "path": ".cache/bare-multivalue-access-consumer-20261025.log",
+        "bytes": 1181,
+        "sha256": "dc99779031f445bc8852af591c8d311900f49f439dcad00aa5cc089308bb4256"
+      }
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-access --lib --test multivalue_results --test recomputed_view_conformance -- -D warnings",
+      "session": 90318,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/bare-multivalue-access-consumer-clippy-20261025.log",
+        "bytes": 303,
+        "sha256": "00e1714236a5b5888aa157682a8a8a2165e8fefcb772a7d1b1e152b0b7151918"
+      }
+    },
+    {
+      "command": "rustfmt --edition 2024 --check crates/backends/tablecraft-access/tests/multivalue_results.rs crates/backends/tablecraft-access/tests/multivalue_results/boundaries.rs crates/backends/tablecraft-access/tests/multivalue_results/forwarding.rs crates/backends/tablecraft-access/tests/multivalue_results/values.rs crates/backends/tablecraft-access/tests/recomputed_view_conformance.rs",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/bare-multivalue-access-format-final-20261025.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "scope_files": [
+    {
+      "path": "crates/backends/tablecraft-access/tests/multivalue_results.rs",
+      "bytes": 4327,
+      "sha256": "a60473a4528f316baa73833d3fdec1e24eb5c7e9aa71bc22ca2b47078b96dc1c"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/multivalue_results/boundaries.rs",
+      "bytes": 5660,
+      "sha256": "e4e4fb7f14e3c679fbc070c68cb06c550c4ca61fcf736b29f079f124180b7bfd"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/multivalue_results/forwarding.rs",
+      "bytes": 1591,
+      "sha256": "efdf686446ac3c7f1b2b5c03e9f1d2af353c71f5fdedf8c3255b21798e47c14b"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/multivalue_results/values.rs",
+      "bytes": 3869,
+      "sha256": "e9871637b06a1aaeb75c379cab8b0a3c2bd70c745297c263d86d11823bd96801"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/recomputed_view_conformance.rs",
+      "bytes": 2396,
+      "sha256": "a4772a9b1c6109756b125cb3b8d7decd44d64050fd3cdaf3f21bb6eb1b83f347"
+    }
+  ],
+  "excluded_runs": [
+    {
+      "session": 46146,
+      "exit_code": 101,
+      "log": {
+        "path": ".cache/bare-multivalue-access-tests-20261025.log",
+        "bytes": 5944,
+        "sha256": "0b14bbd5f56196ad28a83c5abde5c746dc3a4ad60410462b455ee41c02b97852"
+      },
+      "reason": "Six of eight new tests passed. Two new authored assumptions were corrected, without production changes: native Rows=1 was exhausted during catalog inventory before execution; quota test now drains a shared allowance after prepare. Bare scalar-multivalue IS NULL is outside the existing named attachment/history presence contract and remains Unsupported; empty-parent selection now uses scalar Id=3, with bare IS NULL retained as a prescan refusal control. Final full target/regression retry passed."
+    }
+  ],
+  "acceptance": [
+    "ACE2/5/6 stored lists retain parent cardinality, child order, duplicates, NULL members and empty lists.",
+    "Int32 multivalue output metadata remains element-typed and nullable without row reads.",
+    "Hidden .Value criteria retain the complete selected parent list; existing .Value output still expands rows.",
+    "Exact Single bit representations survive typed output, including signed zero, subnormal, infinity and signed NaN payloads; CLI spelling does not expose NaN payload/sign.",
+    "Scalar APIs and unsupported operations refuse before source record reads.",
+    "Native opt-in, required-index blocker, independent native/query quotas, cancellation and complete-cache retry behavior remain intact.",
+    "Explicit authorized linked/external native facades forward exact typed lists under the same cumulative native pool."
+  ],
+  "limitations": [
+    "Synthetic CI fixture copies establish focused behavior, not Microsoft Access SQL compatibility.",
+    "No new adapter capability or provider open was introduced; original-data CLI replay is separate and uncounted here.",
+    "Only listed focused targets were executed; no full workspace suite or Access minimal build claimed."
+  ],
+  "existing_regression_tests": 42,
+  "consumer_guard": "Existing recomputed_view_conformance scalar-metadata helper explicitly rejects unexpected Multivalue output metadata; root owns this one-arm change in the API commit. Its seven existing tests pass separately."
+}
