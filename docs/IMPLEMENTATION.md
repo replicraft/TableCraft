@@ -1,5 +1,18 @@
 # Implementation status
 
+## DateAdd legacy lower-bound errors
+
+Legacy DateAdd results before year 100 now return `Domain` (error 5), following
+the explicit Microsoft language contract. Negative admitted counts that exceed
+the calendar library's range receive the same classification. Count admission,
+upper-bound overflow, Extended dates and eager argument evaluation retain their
+existing boundaries. See [the date contract](DATE_INTERVALS.md#dateadd-legacy-lower-bound-errors).
+
+Six new expression/query tests and fifteen selected regressions pass; focused
+lint and standalone minimal expression checks also pass. The
+[verification record](testing/results/date-add-lower-bound-2026-10-25.json)
+distinguishes these checks from native Access error-precedence qualification.
+
 ## Independent native GUID inspection replay
 
 The [original inspection replay](VALUE_INSPECTION.md#native-guid-inspection-replay--25-october-2026)
