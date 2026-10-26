@@ -80,6 +80,37 @@ References reviewed as format research:
 No upstream implementation was copied or linked. Native metadata stays in ACE;
 backend-neutral query contracts and shared schema do not import physical indexes.
 
+
+## Selected reads on tables with large data-page maps
+
+Qualified partial index selections now validate table data-page membership
+without materializing one address per owned page. The existing allocation cursor
+first validates the complete usage row and every referenced bitmap, including
+metadata unrelated to the selected keys. Membership then retains the paid map
+and one bitmap in a fallible heap allocation. A newly loaded bitmap receives the
+same complete signature/address checks before its bits can authorize a record.
+Even an empty selection completes usage-metadata preflight.
+
+Returned rows still require owned data pages, live root slots, correct page
+owners, bounded relocation, schema validation and exact index-key agreement.
+Read/work/allocation/row budgets and cancellation remain cumulative. Required
+indexes and opted-in automatic selections retain their existing failure and
+ordering behavior; no sequential fallback is added.
+
+This removes the 4,096-address table-map ceiling only for partial selections.
+`All`/complete indexed reads and full checks retain the old materialized table-map
+ceiling. Index-owned page maps also retain their 4,096-address ceiling. Mutation
+constructors, checks and engineering-preview gates continue through those complete
+paths; no write eligibility or new key codec is introduced. Existing snapshot,
+source, per-operation physical-read and output limits still apply.
+
+The [focused implementation evidence](testing/LARGE_INDEX_SELECTIONS.md) records
+170 passing engine tests, including ten new checks. Fresh public-writer ACE16
+inputs independently establish 5,000-row/5,000-page tables whose tiny indexed reads
+previously refused despite successful sequential reads. This is a bounded
+read-profile extension; full indexed scale and native Access qualification remain
+separate work.
+
 ## Independent metadata evidence
 
 The original [IndexOracle](testing/IndexOracle.java) uses the already reviewed

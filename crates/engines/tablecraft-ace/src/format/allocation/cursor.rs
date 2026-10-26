@@ -1,4 +1,5 @@
 //! Validate complete usage metadata, then enumerate page addresses without a list.
+mod membership;
 use super::{
     INDIRECT_BITMAP_OFFSET, INDIRECT_MAP, INLINE_BITMAP_OFFSET, INLINE_MAP, PAGE_POINTER_BYTES,
     PAGES_PER_BITMAP, checked_page, walk_bitmap,
@@ -13,6 +14,7 @@ use crate::{
         row::{reference_page, reference_slot},
     },
 };
+pub(crate) use membership::PageMembership;
 
 #[derive(Clone, Copy)]
 enum Kind {

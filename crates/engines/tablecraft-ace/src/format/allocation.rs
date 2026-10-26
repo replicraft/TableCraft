@@ -7,7 +7,7 @@ use crate::InspectError;
 use crate::limits::MAX_MAPPED_PAGES;
 
 mod cursor;
-pub(crate) use cursor::PageCursor;
+pub(crate) use cursor::{PageCursor, PageMembership};
 
 const INLINE_MAP: u8 = 0;
 const INDIRECT_MAP: u8 = 1;
