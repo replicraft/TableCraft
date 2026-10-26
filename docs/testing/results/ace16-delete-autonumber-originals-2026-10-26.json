@@ -1,0 +1,689 @@
+{
+  "date": "2026-10-26",
+  "scope": "Ordinary LONG AutoNumber in isolated ACE16 engineering DELETE candidates; not native Access save qualification or ordinary write enablement",
+  "compiled_revision": "1e776246313e114c7ea0d8f4b18fe3fc4162ef7f",
+  "frozen_example": {
+    "path": ".cache/tablecraft-bin/ace16-delete-restrict-20261026",
+    "bytes": 18275944,
+    "sha256": "aeb9a06d16d7d6356fe7ab0f2c53afd9f96f851da587ec0b407b5aff3c088f08"
+  },
+  "build_receipt": {
+    "path": "docs/testing/results/ace16-delete-restrict-example-build-2026-10-26.json",
+    "bytes": 5324,
+    "sha256": "2c668d71c4597018e8b0a78b87b3f39266670deae4c820a27bb25e96e822d47c"
+  },
+  "counts": {
+    "profiles": 2,
+    "originals": 2,
+    "tables_per_original": 2,
+    "public_delete_references": 16,
+    "public_append_descendants": 20,
+    "candidate_deletes": 16,
+    "candidate_append_descendants": 16,
+    "disagreements": 0
+  },
+  "construction": {
+    "generated_rows_per_table": 260,
+    "kept_ids": [
+      1,
+      3,
+      7,
+      64,
+      128,
+      259,
+      260
+    ],
+    "deletes_are_part_of_original_construction": true
+  },
+  "observed_contract": {
+    "kept_ids": [
+      1,
+      3,
+      7,
+      64,
+      128,
+      259,
+      260
+    ],
+    "original_long_counter": 260,
+    "counter_after_every_delete": 260,
+    "actual_next_id_after_every_append": 261,
+    "complex_counter_unchanged": 0,
+    "id_native_flags": 7,
+    "ordinary_long_flags": 3,
+    "extended_flags": 0,
+    "column_properties": [],
+    "indexed_table": "Numbered",
+    "physical_aliases": [
+      "Primary",
+      "PrimaryAlias"
+    ],
+    "unindexed_table": "Loose"
+  },
+  "checks": [
+    "All table row values, encounter order, locations and raw live counts match references",
+    "Native last-counter getters equal actual JetFormat raw table-definition offsets; no inspection invokes next/adjust/restore APIs",
+    "Actual shared physical primary/alias index and exact logical definitions remain present, even when empty",
+    "Complete survivor encoded key+row references match originals; empty original root remains explicit",
+    "Source length and every byte outside target count, requested tombstone slots and used index repack spans are unchanged; record bodies, counters and flags remain unchanged",
+    "Disposable Java appends use actual Column.AUTO_NUMBER and match public-reference values, counters and index membership",
+    "Originals, candidate sources and every declared reference input remain unchanged",
+    "All build receipt source objects match immutable compiled revision via git show, independent of current working tree"
+  ],
+  "originals": [
+    {
+      "path": ".cache/tablecraft-fixtures/autonumber-delete-20261026/AutoNumber-V2016-before.accdb",
+      "bytes": 409600,
+      "sha256": "68002961ab71eff6938ccf91726ca50ec6b70094cfca2313921a2e6fa56a1895"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/autonumber-delete-20261026/AutoNumber-V2019-before.accdb",
+      "bytes": 479232,
+      "sha256": "49bc0f0a097424be5e345081d154de49c4700b5fc9563d796d22a20997a39d96"
+    }
+  ],
+  "public_reference_files": [
+    {
+      "profile": "V2016",
+      "table": "Numbered",
+      "selection": "first",
+      "artifact": {
+        "path": ".cache/tablecraft-fixtures/autonumber-delete-20261026/AutoNumber-V2016-Numbered-first.accdb",
+        "bytes": 409600,
+        "sha256": "0ff9563d84e35572c602eac188f3a479c410ebdd7702a72a7047df5fc7ec0fab"
+      }
+    },
+    {
+      "profile": "V2016",
+      "table": "Numbered",
+      "selection": "highest",
+      "artifact": {
+        "path": ".cache/tablecraft-fixtures/autonumber-delete-20261026/AutoNumber-V2016-Numbered-highest.accdb",
+        "bytes": 409600,
+        "sha256": "65d0f7c18650d1d5430057a2527c81e48c8ca0f34f36d721eb205b3bcd575eb1"
+      }
+    },
+    {
+      "profile": "V2016",
+      "table": "Numbered",
+      "selection": "subset",
+      "artifact": {
+        "path": ".cache/tablecraft-fixtures/autonumber-delete-20261026/AutoNumber-V2016-Numbered-subset.accdb",
+        "bytes": 409600,
+        "sha256": "d5f2498dbc698851711950d4518fc1cda07db4ea6166dd5e861a5574b2f437ab"
+      }
+    },
+    {
+      "profile": "V2016",
+      "table": "Numbered",
+      "selection": "all",
+      "artifact": {
+        "path": ".cache/tablecraft-fixtures/autonumber-delete-20261026/AutoNumber-V2016-Numbered-all.accdb",
+        "bytes": 409600,
+        "sha256": "6527d9fac2536a4e52690df6be9d7e84fef250bd2ae91a3aac00884b992bba61"
+      }
+    },
+    {
+      "profile": "V2016",
+      "table": "Loose",
+      "selection": "first",
+      "artifact": {
+        "path": ".cache/tablecraft-fixtures/autonumber-delete-20261026/AutoNumber-V2016-Loose-first.accdb",
+        "bytes": 409600,
+        "sha256": "6277d9292f0fa286c6957470647058400538581130f7efe9b22c0ad1461771f7"
+      }
+    },
+    {
+      "profile": "V2016",
+      "table": "Loose",
+      "selection": "highest",
+      "artifact": {
+        "path": ".cache/tablecraft-fixtures/autonumber-delete-20261026/AutoNumber-V2016-Loose-highest.accdb",
+        "bytes": 409600,
+        "sha256": "24fcb597a7d8748e3d771bb5da7d1412d76aa8cdb22a2a4117fda877d1a1c798"
+      }
+    },
+    {
+      "profile": "V2016",
+      "table": "Loose",
+      "selection": "subset",
+      "artifact": {
+        "path": ".cache/tablecraft-fixtures/autonumber-delete-20261026/AutoNumber-V2016-Loose-subset.accdb",
+        "bytes": 409600,
+        "sha256": "7761b7195345b12429100fc39163e5afeac3efd92bcba50bcd9c0e5319c79999"
+      }
+    },
+    {
+      "profile": "V2016",
+      "table": "Loose",
+      "selection": "all",
+      "artifact": {
+        "path": ".cache/tablecraft-fixtures/autonumber-delete-20261026/AutoNumber-V2016-Loose-all.accdb",
+        "bytes": 409600,
+        "sha256": "8b9200558f93add79ec8997ab8ffabe729a8189aac6c9391bd260d6fdf9b7b9a"
+      }
+    },
+    {
+      "profile": "V2019",
+      "table": "Numbered",
+      "selection": "first",
+      "artifact": {
+        "path": ".cache/tablecraft-fixtures/autonumber-delete-20261026/AutoNumber-V2019-Numbered-first.accdb",
+        "bytes": 479232,
+        "sha256": "77bf5b3453d15dc6a2d52e1a25d9ce8af010b3fee7193915c749134994666821"
+      }
+    },
+    {
+      "profile": "V2019",
+      "table": "Numbered",
+      "selection": "highest",
+      "artifact": {
+        "path": ".cache/tablecraft-fixtures/autonumber-delete-20261026/AutoNumber-V2019-Numbered-highest.accdb",
+        "bytes": 479232,
+        "sha256": "333747e33a5f3add7da51f64966d27ed16ec729b29b9a009c6075a1555a6a5ad"
+      }
+    },
+    {
+      "profile": "V2019",
+      "table": "Numbered",
+      "selection": "subset",
+      "artifact": {
+        "path": ".cache/tablecraft-fixtures/autonumber-delete-20261026/AutoNumber-V2019-Numbered-subset.accdb",
+        "bytes": 479232,
+        "sha256": "0d7cba03e2b896a098bbd512f1df923de10efd659bee64735f666cd61c736a06"
+      }
+    },
+    {
+      "profile": "V2019",
+      "table": "Numbered",
+      "selection": "all",
+      "artifact": {
+        "path": ".cache/tablecraft-fixtures/autonumber-delete-20261026/AutoNumber-V2019-Numbered-all.accdb",
+        "bytes": 479232,
+        "sha256": "e40be4e506943c00ceef0f04e999b6d7370dc15e5f89b8a4bcae36ec71ba3b21"
+      }
+    },
+    {
+      "profile": "V2019",
+      "table": "Loose",
+      "selection": "first",
+      "artifact": {
+        "path": ".cache/tablecraft-fixtures/autonumber-delete-20261026/AutoNumber-V2019-Loose-first.accdb",
+        "bytes": 479232,
+        "sha256": "d13a629bfe8defc9964de5be16f637ddb2eda8232d5d93c389e73263a84b3e71"
+      }
+    },
+    {
+      "profile": "V2019",
+      "table": "Loose",
+      "selection": "highest",
+      "artifact": {
+        "path": ".cache/tablecraft-fixtures/autonumber-delete-20261026/AutoNumber-V2019-Loose-highest.accdb",
+        "bytes": 479232,
+        "sha256": "147e0e06f519b2134436616f679d1d82abf34ce9db2097fe51fd25b574534119"
+      }
+    },
+    {
+      "profile": "V2019",
+      "table": "Loose",
+      "selection": "subset",
+      "artifact": {
+        "path": ".cache/tablecraft-fixtures/autonumber-delete-20261026/AutoNumber-V2019-Loose-subset.accdb",
+        "bytes": 479232,
+        "sha256": "c4268e6726c8ecaaff186757075f2ddb82cd92752b840d485de8434a033b5b5a"
+      }
+    },
+    {
+      "profile": "V2019",
+      "table": "Loose",
+      "selection": "all",
+      "artifact": {
+        "path": ".cache/tablecraft-fixtures/autonumber-delete-20261026/AutoNumber-V2019-Loose-all.accdb",
+        "bytes": 479232,
+        "sha256": "5dce654841cddca33ddedfc4ef4c998e6daf28dfea5972b53bfdcb6956293b94"
+      }
+    }
+  ],
+  "candidate_controls": [
+    {
+      "profile": "V2016",
+      "table": "Numbered",
+      "selection": "first",
+      "deleted_rows": 1,
+      "changed_bytes": 18,
+      "counter_after_delete": 260,
+      "observed_appended_id": 261,
+      "candidate": {
+        "path": ".cache/autonumber-delete-candidates-final-20261026/V2016-Numbered-first.accdb",
+        "bytes": 409600,
+        "sha256": "0ff9563d84e35572c602eac188f3a479c410ebdd7702a72a7047df5fc7ec0fab"
+      },
+      "append": {
+        "path": ".cache/autonumber-delete-candidates-final-20261026/V2016-Numbered-first-append.accdb",
+        "bytes": 409600,
+        "sha256": "8b1110d04089c7914f83acc08d2d1b4db4c5c9ed345a967b59cc8a2424124ce6"
+      }
+    },
+    {
+      "profile": "V2016",
+      "table": "Numbered",
+      "selection": "highest",
+      "deleted_rows": 1,
+      "changed_bytes": 4,
+      "counter_after_delete": 260,
+      "observed_appended_id": 261,
+      "candidate": {
+        "path": ".cache/autonumber-delete-candidates-final-20261026/V2016-Numbered-highest.accdb",
+        "bytes": 409600,
+        "sha256": "65d0f7c18650d1d5430057a2527c81e48c8ca0f34f36d721eb205b3bcd575eb1"
+      },
+      "append": {
+        "path": ".cache/autonumber-delete-candidates-final-20261026/V2016-Numbered-highest-append.accdb",
+        "bytes": 409600,
+        "sha256": "59326f05c61c8277f29a66494b90c8a14f7ff6adaa88a9aa030653e67552f144"
+      }
+    },
+    {
+      "profile": "V2016",
+      "table": "Numbered",
+      "selection": "subset",
+      "deleted_rows": 3,
+      "changed_bytes": 16,
+      "counter_after_delete": 260,
+      "observed_appended_id": 261,
+      "candidate": {
+        "path": ".cache/autonumber-delete-candidates-final-20261026/V2016-Numbered-subset.accdb",
+        "bytes": 409600,
+        "sha256": "145d23df109ad78b4e9f83dbb3e7cdfc68b82c1fca37337fc000860e761464ef"
+      },
+      "append": {
+        "path": ".cache/autonumber-delete-candidates-final-20261026/V2016-Numbered-subset-append.accdb",
+        "bytes": 409600,
+        "sha256": "d511a4cd865944de35abe227a03034f9c224a4f40e6989e3a9e2a51e3a7ad938"
+      }
+    },
+    {
+      "profile": "V2016",
+      "table": "Numbered",
+      "selection": "all",
+      "deleted_rows": 7,
+      "changed_bytes": 17,
+      "counter_after_delete": 260,
+      "observed_appended_id": 261,
+      "candidate": {
+        "path": ".cache/autonumber-delete-candidates-final-20261026/V2016-Numbered-all.accdb",
+        "bytes": 409600,
+        "sha256": "c110f33014a78093712a72519c93518ac5c03758f95d5110ea9b7a9767cd3151"
+      },
+      "append": {
+        "path": ".cache/autonumber-delete-candidates-final-20261026/V2016-Numbered-all-append.accdb",
+        "bytes": 409600,
+        "sha256": "a212e63edca99be439ff3199b6e8d4206376dd6533ffb32f83b7103fb771e0dc"
+      }
+    },
+    {
+      "profile": "V2016",
+      "table": "Loose",
+      "selection": "first",
+      "deleted_rows": 1,
+      "changed_bytes": 2,
+      "counter_after_delete": 260,
+      "observed_appended_id": 261,
+      "candidate": {
+        "path": ".cache/autonumber-delete-candidates-final-20261026/V2016-Loose-first.accdb",
+        "bytes": 409600,
+        "sha256": "6277d9292f0fa286c6957470647058400538581130f7efe9b22c0ad1461771f7"
+      },
+      "append": {
+        "path": ".cache/autonumber-delete-candidates-final-20261026/V2016-Loose-first-append.accdb",
+        "bytes": 409600,
+        "sha256": "bba79179029dfc1b54216c7ae761efaf66fddd7805a470efeb2bf00d6ef2ea6e"
+      }
+    },
+    {
+      "profile": "V2016",
+      "table": "Loose",
+      "selection": "highest",
+      "deleted_rows": 1,
+      "changed_bytes": 2,
+      "counter_after_delete": 260,
+      "observed_appended_id": 261,
+      "candidate": {
+        "path": ".cache/autonumber-delete-candidates-final-20261026/V2016-Loose-highest.accdb",
+        "bytes": 409600,
+        "sha256": "24fcb597a7d8748e3d771bb5da7d1412d76aa8cdb22a2a4117fda877d1a1c798"
+      },
+      "append": {
+        "path": ".cache/autonumber-delete-candidates-final-20261026/V2016-Loose-highest-append.accdb",
+        "bytes": 409600,
+        "sha256": "521df1c245ddca8f8aae591886f64a9650a3963af1eb5f82e13fe825c4dbc651"
+      }
+    },
+    {
+      "profile": "V2016",
+      "table": "Loose",
+      "selection": "subset",
+      "deleted_rows": 3,
+      "changed_bytes": 4,
+      "counter_after_delete": 260,
+      "observed_appended_id": 261,
+      "candidate": {
+        "path": ".cache/autonumber-delete-candidates-final-20261026/V2016-Loose-subset.accdb",
+        "bytes": 409600,
+        "sha256": "7761b7195345b12429100fc39163e5afeac3efd92bcba50bcd9c0e5319c79999"
+      },
+      "append": {
+        "path": ".cache/autonumber-delete-candidates-final-20261026/V2016-Loose-subset-append.accdb",
+        "bytes": 409600,
+        "sha256": "20ef19ece6b6a57fd473d0afcd69ce65ca1a829fb5a8bb99f5a8f7b988f748d0"
+      }
+    },
+    {
+      "profile": "V2016",
+      "table": "Loose",
+      "selection": "all",
+      "deleted_rows": 7,
+      "changed_bytes": 8,
+      "counter_after_delete": 260,
+      "observed_appended_id": 261,
+      "candidate": {
+        "path": ".cache/autonumber-delete-candidates-final-20261026/V2016-Loose-all.accdb",
+        "bytes": 409600,
+        "sha256": "8b9200558f93add79ec8997ab8ffabe729a8189aac6c9391bd260d6fdf9b7b9a"
+      },
+      "append": {
+        "path": ".cache/autonumber-delete-candidates-final-20261026/V2016-Loose-all-append.accdb",
+        "bytes": 409600,
+        "sha256": "aa240a1f9eccdbde965e5bc5ff8f2c46809f044ed84cf8cd9d55deed0a5e1d55"
+      }
+    },
+    {
+      "profile": "V2019",
+      "table": "Numbered",
+      "selection": "first",
+      "deleted_rows": 1,
+      "changed_bytes": 18,
+      "counter_after_delete": 260,
+      "observed_appended_id": 261,
+      "candidate": {
+        "path": ".cache/autonumber-delete-candidates-final-20261026/V2019-Numbered-first.accdb",
+        "bytes": 479232,
+        "sha256": "77bf5b3453d15dc6a2d52e1a25d9ce8af010b3fee7193915c749134994666821"
+      },
+      "append": {
+        "path": ".cache/autonumber-delete-candidates-final-20261026/V2019-Numbered-first-append.accdb",
+        "bytes": 479232,
+        "sha256": "2fd6dcbb69b18bf8ee1addc5b53248f9f4f9f094b565739ebf93ef4b14e1d94e"
+      }
+    },
+    {
+      "profile": "V2019",
+      "table": "Numbered",
+      "selection": "highest",
+      "deleted_rows": 1,
+      "changed_bytes": 4,
+      "counter_after_delete": 260,
+      "observed_appended_id": 261,
+      "candidate": {
+        "path": ".cache/autonumber-delete-candidates-final-20261026/V2019-Numbered-highest.accdb",
+        "bytes": 479232,
+        "sha256": "333747e33a5f3add7da51f64966d27ed16ec729b29b9a009c6075a1555a6a5ad"
+      },
+      "append": {
+        "path": ".cache/autonumber-delete-candidates-final-20261026/V2019-Numbered-highest-append.accdb",
+        "bytes": 479232,
+        "sha256": "f0797f342bea2cd9613bd2d0a8cae16b29237b6a97480f47b1dc007d72e868a9"
+      }
+    },
+    {
+      "profile": "V2019",
+      "table": "Numbered",
+      "selection": "subset",
+      "deleted_rows": 3,
+      "changed_bytes": 16,
+      "counter_after_delete": 260,
+      "observed_appended_id": 261,
+      "candidate": {
+        "path": ".cache/autonumber-delete-candidates-final-20261026/V2019-Numbered-subset.accdb",
+        "bytes": 479232,
+        "sha256": "0825e2f88ba585efe6070ce89345063bc5f7c024302befcbf76b1a8a3494eb9a"
+      },
+      "append": {
+        "path": ".cache/autonumber-delete-candidates-final-20261026/V2019-Numbered-subset-append.accdb",
+        "bytes": 479232,
+        "sha256": "6ff14be6b8261fd3c8246d4cddb1cc4f6f66ba389ed88382dc55b0eb2b3ce621"
+      }
+    },
+    {
+      "profile": "V2019",
+      "table": "Numbered",
+      "selection": "all",
+      "deleted_rows": 7,
+      "changed_bytes": 17,
+      "counter_after_delete": 260,
+      "observed_appended_id": 261,
+      "candidate": {
+        "path": ".cache/autonumber-delete-candidates-final-20261026/V2019-Numbered-all.accdb",
+        "bytes": 479232,
+        "sha256": "105a0e86ca4286bc6f52d09762ccd5509445d58641e855ac3b2ff031ba5a874d"
+      },
+      "append": {
+        "path": ".cache/autonumber-delete-candidates-final-20261026/V2019-Numbered-all-append.accdb",
+        "bytes": 479232,
+        "sha256": "7642b0a6e6e4b61f45df2370e04ffca7d02df6341d647213d4a51662cdc21777"
+      }
+    },
+    {
+      "profile": "V2019",
+      "table": "Loose",
+      "selection": "first",
+      "deleted_rows": 1,
+      "changed_bytes": 2,
+      "counter_after_delete": 260,
+      "observed_appended_id": 261,
+      "candidate": {
+        "path": ".cache/autonumber-delete-candidates-final-20261026/V2019-Loose-first.accdb",
+        "bytes": 479232,
+        "sha256": "d13a629bfe8defc9964de5be16f637ddb2eda8232d5d93c389e73263a84b3e71"
+      },
+      "append": {
+        "path": ".cache/autonumber-delete-candidates-final-20261026/V2019-Loose-first-append.accdb",
+        "bytes": 479232,
+        "sha256": "abd81eeca448353a45dce5ccb6b9e39944a94bea103cbf135771b1717ac32510"
+      }
+    },
+    {
+      "profile": "V2019",
+      "table": "Loose",
+      "selection": "highest",
+      "deleted_rows": 1,
+      "changed_bytes": 2,
+      "counter_after_delete": 260,
+      "observed_appended_id": 261,
+      "candidate": {
+        "path": ".cache/autonumber-delete-candidates-final-20261026/V2019-Loose-highest.accdb",
+        "bytes": 479232,
+        "sha256": "147e0e06f519b2134436616f679d1d82abf34ce9db2097fe51fd25b574534119"
+      },
+      "append": {
+        "path": ".cache/autonumber-delete-candidates-final-20261026/V2019-Loose-highest-append.accdb",
+        "bytes": 479232,
+        "sha256": "38d14cb322d112b0ef63f809f8ddfc6eb153681af32eacac2f1edebd0500b932"
+      }
+    },
+    {
+      "profile": "V2019",
+      "table": "Loose",
+      "selection": "subset",
+      "deleted_rows": 3,
+      "changed_bytes": 4,
+      "counter_after_delete": 260,
+      "observed_appended_id": 261,
+      "candidate": {
+        "path": ".cache/autonumber-delete-candidates-final-20261026/V2019-Loose-subset.accdb",
+        "bytes": 479232,
+        "sha256": "c4268e6726c8ecaaff186757075f2ddb82cd92752b840d485de8434a033b5b5a"
+      },
+      "append": {
+        "path": ".cache/autonumber-delete-candidates-final-20261026/V2019-Loose-subset-append.accdb",
+        "bytes": 479232,
+        "sha256": "33a9d6444777dd519c0189c8a02283988bb21ea5c6620bad81e4e1fdfc937913"
+      }
+    },
+    {
+      "profile": "V2019",
+      "table": "Loose",
+      "selection": "all",
+      "deleted_rows": 7,
+      "changed_bytes": 8,
+      "counter_after_delete": 260,
+      "observed_appended_id": 261,
+      "candidate": {
+        "path": ".cache/autonumber-delete-candidates-final-20261026/V2019-Loose-all.accdb",
+        "bytes": 479232,
+        "sha256": "5dce654841cddca33ddedfc4ef4c998e6daf28dfea5972b53bfdcb6956293b94"
+      },
+      "append": {
+        "path": ".cache/autonumber-delete-candidates-final-20261026/V2019-Loose-all-append.accdb",
+        "bytes": 479232,
+        "sha256": "95ed1b5d2df914a615630c9daba4cbdb4865a5e4d116fc9e4fbcbb915359412e"
+      }
+    }
+  ],
+  "raw_captures": [
+    {
+      "path": ".cache/autonumber-delete-candidates-final-20261026.json",
+      "bytes": 31556,
+      "sha256": "5803d21cf63e8d4a101c12a22f3ea174e71d97018cc36986a3a2fc28f53d2291"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/autonumber-delete-20261026/reference-initial.json",
+      "bytes": 163029,
+      "sha256": "0cecdf604d0ec2db4ae532c6b5bcb1d6713bf438c2948d53fdb1319fa9b192f7"
+    }
+  ],
+  "authoring_correction": {
+    "session": 89652,
+    "outcome": "Driver KeyError for absent ORDER records of a valid empty index; index definitions and zero populations were separately checked. Changed only dictionary lookup to default empty order; expected values unchanged.",
+    "preserved_source": {
+      "path": ".cache/autonumber-delete-driver-before-empty-order-20261026.py",
+      "bytes": 10673,
+      "sha256": "abf6f34c65bdc55803eece560be555ba13606d76daa2100ef6c261bb1e85ea05"
+    },
+    "preserved_note": {
+      "path": ".cache/autonumber-delete-initial-failure-20261026.txt",
+      "bytes": 313,
+      "sha256": "6b6694656d79941a5d76eed3c671246e34c4604c4b08792d32c96ea976f83dbe"
+    },
+    "initial_capture_inventory": [
+      {
+        "path": ".cache/autonumber-delete-candidates-initial-20261026/V2016-Numbered-all-candidate.json",
+        "bytes": 817,
+        "sha256": "8c405c001531fcd391e9710ca46113f56c8b97ca2b082c4c8e401f63c7f33205"
+      },
+      {
+        "path": ".cache/autonumber-delete-candidates-initial-20261026/V2016-Numbered-all-getter.json",
+        "bytes": 1084,
+        "sha256": "2f595423d6a6c04c84e773b04a942e23bf3b4bd98aab2b495af4277312540d54"
+      },
+      {
+        "path": ".cache/autonumber-delete-candidates-initial-20261026/V2016-Numbered-first-append-action.json",
+        "bytes": 526,
+        "sha256": "a3663b27d416fc47a4f6472bf2f08d982363849e8ad82b61626a56513bf10c9f"
+      },
+      {
+        "path": ".cache/autonumber-delete-candidates-initial-20261026/V2016-Numbered-first-append-getter.json",
+        "bytes": 1789,
+        "sha256": "ed8a8aa1298fd4cd098491f253423d3a072e02f725ac95a74e8ca0ec472e0057"
+      },
+      {
+        "path": ".cache/autonumber-delete-candidates-initial-20261026/V2016-Numbered-first-candidate.json",
+        "bytes": 531,
+        "sha256": "ab9af741b3374e246268de7c2b340ad3eb1da83260c7eae1b3e5358034568b12"
+      },
+      {
+        "path": ".cache/autonumber-delete-candidates-initial-20261026/V2016-Numbered-first-getter.json",
+        "bytes": 1671,
+        "sha256": "a85146784b584471dad3aa2b7ba2124408f2ea81345198cbec5d99f512cf28e4"
+      },
+      {
+        "path": ".cache/autonumber-delete-candidates-initial-20261026/V2016-Numbered-highest-append-action.json",
+        "bytes": 530,
+        "sha256": "c3ad4f0e077c74baba6a69772b6cdd3105fb266709586ffb0d1fab7939c22581"
+      },
+      {
+        "path": ".cache/autonumber-delete-candidates-initial-20261026/V2016-Numbered-highest-append-getter.json",
+        "bytes": 1785,
+        "sha256": "abbdbb15284c238242fa1e6e9668aa61659860527ae2c2d8596fb982f6654ab6"
+      },
+      {
+        "path": ".cache/autonumber-delete-candidates-initial-20261026/V2016-Numbered-highest-candidate.json",
+        "bytes": 533,
+        "sha256": "0f65f629267458183fe93b147441cf435ca9eabc03554d1e73dfd342d31b90f2"
+      },
+      {
+        "path": ".cache/autonumber-delete-candidates-initial-20261026/V2016-Numbered-highest-getter.json",
+        "bytes": 1667,
+        "sha256": "e1dbabec02bc22a69674a8045226f2f0f03c40ae03c9337e807249ca3ccde5ed"
+      },
+      {
+        "path": ".cache/autonumber-delete-candidates-initial-20261026/V2016-Numbered-subset-append-action.json",
+        "bytes": 528,
+        "sha256": "410c3ef568e55013128776ab48de5443518e4656956c47859d39418a60e740a3"
+      },
+      {
+        "path": ".cache/autonumber-delete-candidates-initial-20261026/V2016-Numbered-subset-append-getter.json",
+        "bytes": 1589,
+        "sha256": "be4d66fa8f8512090dc5b26855c1cd3a35f50b17974ed526a2b82900d6edff93"
+      },
+      {
+        "path": ".cache/autonumber-delete-candidates-initial-20261026/V2016-Numbered-subset-candidate.json",
+        "bytes": 628,
+        "sha256": "017160059aeb09906f8b4da712aab71518e7e436f700468311fcd43bfd896f95"
+      },
+      {
+        "path": ".cache/autonumber-delete-candidates-initial-20261026/V2016-Numbered-subset-getter.json",
+        "bytes": 1471,
+        "sha256": "6e4134dbc450049b85903abe8fb842382bb6b52ebecce6cc3a9acfff61a7a90b"
+      }
+    ]
+  },
+  "accepted_run": {
+    "session": 9136,
+    "exit_code": 0
+  },
+  "provenance": [
+    {
+      "path": "docs/testing/AutoNumberDeleteFixture.java",
+      "bytes": 10723,
+      "sha256": "f84ea58ca2c832a55c5b33cf1907d7a0e28fc7f62b0d80f7907e694dd841b34a"
+    },
+    {
+      "path": "docs/testing/capture_autonumber_deletes.py",
+      "bytes": 8401,
+      "sha256": "be3c2a8b4fb0069ac7e109cdd56344537b59b6efd0da8913764d4e8c24e86001"
+    },
+    {
+      "path": "docs/testing/compare_autonumber_deletes.py",
+      "bytes": 10681,
+      "sha256": "336fbcee0d429a63aab39c40c5e4fba8d97e55c19f3bc2331c43fc9721df4231"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+      "bytes": 1407244,
+      "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/autonumber-delete-20261026/classes/com/healthmarketscience/jackcess/impl/AutoNumberDeleteFixture.class",
+      "bytes": 13708,
+      "sha256": "6ddf20e824fe2f849d6ce1a2a3c2e98aaa8e1025b2589f1dac984a76c8f1282d"
+    }
+  ],
+  "limitations": [
+    "No native Access execution/save/reopen or data-macro qualification",
+    "No normal CLI/backend write API enabled",
+    "GUID/random and complex AutoNumber allocation are not covered",
+    "No explicit seed/reset/insert mode or unknown generated properties were removed; these fresh tables have no column properties",
+    "Candidate append is performed only on new disposable descendants by Jackcess; candidate deletion itself does not insert"
+  ]
+}

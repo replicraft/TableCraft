@@ -8982,3 +8982,33 @@ reference output or native Access save qualification. Raw 4.9 MB captures, key
 arrays, databases and failed audit assumptions remain ignored and hash-pinned.
 The public Java promotion is byte-identical to its actual private source; changed
 public wrapper verification is distinguished from historical execution.
+
+## Ordinary LONG AutoNumber DELETE originals
+
+Repository-owned [AutoNumberDeleteFixture.java](AutoNumberDeleteFixture.java)
+uses the already reviewed Jackcess 5.0.4 JAR, SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+It generates two ACE16 tables with 260 ordinary LONG AutoNumber inserts each;
+explicit construction deletes leave IDs 1/3/7/64/128/259/260 before originals are
+frozen. Numbered has an actual shared primary/alias physical index; Loose has
+none. No third-party code or database bytes were copied. Expressions are disabled
+and linked targets throw. The original construction gaps are part of provenance,
+not post-freeze edits or seed resets.
+
+| Original | Bytes | SHA-256 |
+| --- | ---: | --- |
+| AutoNumber-V2016-before.accdb | 409,600 | `68002961ab71eff6938ccf91726ca50ec6b70094cfca2313921a2e6fa56a1895` |
+| AutoNumber-V2019-before.accdb | 479,232 | `49bc0f0a097424be5e345081d154de49c4700b5fc9563d796d22a20997a39d96` |
+
+[Owning observations](AUTONUMBER_DELETE_OBSERVATIONS.md) and the compact
+[receipt](results/ace16-delete-autonumber-originals-2026-10-26.json) pin the
+producer/getter, compiled helper, original/reference/candidate hashes and raw
+captures. Sixteen public delete references and sixteen frozen engineering
+candidates preserve LONG counter260, including highest/all deletions. Twenty
+public-reference and sixteen candidate append descendants actually allocate261.
+These append operations use separate disposable copies; inspection never calls
+next/adjust/restore counter methods. Exact native flags, properties, historical
+index counters, encoded survivor keys and outside-span preservation are checked.
+All originals remain unchanged. Raw captures and database bytes stay ignored;
+no GUID/random or complex allocation, native Access saves, data macros or ordinary
+write enablement is claimed.

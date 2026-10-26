@@ -1,5 +1,26 @@
 # Implementation status
 
+## Original-file LONG AutoNumber deletion preservation
+
+The frozen committed ACE16 deletion tool now passes sixteen selections over two
+fresh V2016/V2019 originals with indexed and unindexed LONG AutoNumber tables.
+First, highest, mixed and all-row deletion retain the historical counter 260,
+column flags/properties and unaffected bytes. Sixteen disposable candidate
+append descendants independently allocate 261, matching the public-writer
+references even when deletion leaves no live rows.
+
+The [comparison record](testing/results/ace16-delete-autonumber-originals-2026-10-26.json)
+retains 38 public reference observations, sixteen candidates, sixteen candidate
+append observations and zero disagreements. A runner's initial missing empty-index
+order lookup is preserved separately; definition inventory and raw empty-root
+checks prevent that correction from masking a missing index.
+
+This qualifies existing engineering behavior without adding a production branch
+or enabling AutoNumber assignment, general INSERT, GUID/complex identity handling
+or normal ACE saves. Append operations run only through the independent public
+writer on disposable descendants. Original files remain unchanged; native Access
+save/reopen remains separate. See [the observations and reproduction commands](testing/AUTONUMBER_DELETE_OBSERVATIONS.md).
+
 ## Cross-table RESTRICT deletion candidates
 
 The optional ACE16 deletion preview now admits qualified enforced cross-table
