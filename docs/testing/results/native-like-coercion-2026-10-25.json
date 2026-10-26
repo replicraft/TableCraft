@@ -1,0 +1,5825 @@
+{
+  "scope": "Replay coerced LIKE using original scalar files and pinned ordinary getters.\n\nOnly TableCraft executes SQL. Expected spellings use exact integer/Fraction and\nGregorian calendar facts under the explicitly selected invariant/ISO profile.\nNo CStr expression is executed as an answer oracle. This is not an Access SQL\ncomparison, a locale qualification, or a performance benchmark.\n",
+  "compiled_revision": "612bd74aabeaa1673c3791aa694aff747f6a45e6",
+  "build_manifest": ".cache/read-query-p0-cli-20261025.json",
+  "dirty_native_production_sources": {
+    "crates/engines/tablecraft-ace/src/table/indexes/check.rs": {
+      "sha256": "35bb8dc3dec75e37e4549268fe80c61c34fce32a07763d8c023c07cf98837969",
+      "bytes": 11476
+    },
+    "crates/engines/tablecraft-ace/src/table/indexes/check/ignored_nulls.rs": {
+      "sha256": "63ab30cce8e393c4b6f1c74aafbd88467515b25628197165b661d84bda4f81f7",
+      "bytes": 2589
+    },
+    "crates/engines/tablecraft-ace/src/table/indexes/check/projection.rs": {
+      "sha256": "77cd0de48cca7fca91e87c742ae56b2bdae9aeea417e54e59c948a5629365bf8",
+      "bytes": 2788
+    },
+    "crates/engines/tablecraft-ace/src/table/indexes/composite/columns.rs": {
+      "sha256": "6dd39e8d760f81a79edc6b10eb9bb1be13dcd36ec1e72ae2af7cf85e839fef4f",
+      "bytes": 4725
+    },
+    "crates/engines/tablecraft-ace/src/table/indexes/composite/decimal_columns.rs": {
+      "sha256": "b7f682ed79f01f46b8a73af76d57115f0c005fd96026b604b6fa3f63e25afd0c",
+      "bytes": 4758
+    },
+    "crates/engines/tablecraft-ace/src/table/indexes/encoded_tuple/mod.rs": {
+      "sha256": "4677262950dd86de189345fd6c80301fa896575b80f48725b6fe5392db2b0b62",
+      "bytes": 6139
+    },
+    "crates/engines/tablecraft-ace/src/table/indexes/profile.rs": {
+      "sha256": "655ea7a1d6ca776179a15aaf2b9aef2a0d2939d2d35824350ac59570702e1b40",
+      "bytes": 9985
+    },
+    "crates/engines/tablecraft-ace/src/table/indexes/read.rs": {
+      "sha256": "25fe19b5d3ad554145d859afff2fbf0dc3693c99df161fef3ae55f56f33fc2ad",
+      "bytes": 25679
+    }
+  },
+  "build_scope": "The frozen CLI includes the committed LIKE/query sources and eight pending native check-only production changes pinned in its build manifest. No clean-full-tree executable claim is made.",
+  "scoped_source_snapshots": {
+    "crates/query/tablecraft-expressions/src/evaluation/context.rs": {
+      "bytes": 10309,
+      "sha256": "e39f1d11a5f60f6d028fbb38300a0a1c76e0d17931f968c8839534dd35857f68"
+    },
+    "crates/query/tablecraft-expressions/src/evaluation/like.rs": {
+      "bytes": 4173,
+      "sha256": "64866c3e40dca35180c744f525acdcf7b30ca395a4b3afcd33960fa24677baad"
+    },
+    "crates/query/tablecraft-expressions/src/evaluation/like/preparation.rs": {
+      "bytes": 3337,
+      "sha256": "32582f9fc56022c16157955f73df68cfcfce852a93d596c056f8e58bcede0cc3"
+    },
+    "crates/query/tablecraft-expressions/src/evaluation/mod.rs": {
+      "bytes": 2355,
+      "sha256": "efd44b0e185bfa2ad417cce39f2a00f31a78840eac59b21fad4b8c7449d1071d"
+    },
+    "crates/query/tablecraft-query/src/execution/declarations/predicates/like.rs": {
+      "bytes": 2405,
+      "sha256": "1e596442e7d323e725001c7f8ee92b4a6b799dbe64441fa35a6946580f69253f"
+    },
+    "crates/backends/tablecraft-access/src/source/snapshot.rs": {
+      "bytes": 4141,
+      "sha256": "87e83f5a0e1b077aeea6c5bb51c465c72cff4e1e2c742bcf436fc851857a7567"
+    },
+    "crates/backends/tablecraft-access/src/source/projection.rs": {
+      "bytes": 9657,
+      "sha256": "c1540655ea01d052e0e0a5d6d540b4e09e1aacfe0ac6b4547d2cae30f727e757"
+    },
+    "apps/tablecraft-cli/src/commands/query/execution_context.rs": {
+      "bytes": 2118,
+      "sha256": "5d324a62134fc7e68793816e8b264d18036d5fe17aa0a0508d01019166de6e5b"
+    }
+  },
+  "snapshot_scope": "Selected raw git-show bytes; not a complete compilation manifest.",
+  "pins": {
+    ".cache/tablecraft-bin/read-query-p0-cli-20261025": "9ef8530041ddefff1b888b6b58757a35221297044497fa9a32360570c1ed259f",
+    ".cache/tablecraft-fixtures/jackcess-5.0.4.jar": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    ".cache/read-query-p0-cli-20261025.json": "75b34e0a4f3fb03ad451447cc0392dda041d1125612c954135140fa77ba98496",
+    "docs/testing/compare_native_like_coercion.py": "992b93ff28fb13cd570c798534249df15b8ca8f02cafd201e30de69057da2f95",
+    "docs/testing/results/declared-numeric-text-replay-2026-10-25.json": "109d367935afbe8684819b3ea8c81e776d928864b5c6b94fe46ad0379adef327",
+    "docs/testing/TableDataOracle.java": "4dc311debcdb624d24d503e589644dfa64364f4cd03e828df771cb0252c996a2",
+    "docs/testing/ScalarFixture.java": "a349c59d4980092638fb9ac0a879186e7ea739be3ff1f06bb01f60625713083a"
+  },
+  "inputs": [
+    {
+      "path": ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+      "sha256": "de2e67a9f0194988d031cc9c981176ae9a76d3bf80599040729b408fc2b7be82",
+      "getter": ".cache/native-like-coercion-replay-accepted-20261025/Scalar-V2000-getter.tsv",
+      "getter_sha256": "588a43a018a37316bfb2df9c8dff1feaa6b53f0c18d55543125f526a9d439d0a",
+      "unchanged": true
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+      "sha256": "4ed9555c239e56f0649040fb9357913e4e38dcbaac5c2cb668614857882922bc",
+      "getter": ".cache/native-like-coercion-replay-accepted-20261025/Scalar-V2007-getter.tsv",
+      "getter_sha256": "588a43a018a37316bfb2df9c8dff1feaa6b53f0c18d55543125f526a9d439d0a",
+      "unchanged": true
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+      "sha256": "95c52665d28869a92764f0958b62ad53e465847e3a0c637829d4ff29c8f5ef37",
+      "getter": ".cache/native-like-coercion-replay-accepted-20261025/Scalar-V2016-getter.tsv",
+      "getter_sha256": "588a43a018a37316bfb2df9c8dff1feaa6b53f0c18d55543125f526a9d439d0a",
+      "unchanged": true
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+      "sha256": "eef6a7d1f23c482333ad5b70b312125bd89799ea168b10a522491eb4b7625190",
+      "getter": ".cache/native-like-coercion-replay-accepted-20261025/Scalar-V2019-getter.tsv",
+      "getter_sha256": "588a43a018a37316bfb2df9c8dff1feaa6b53f0c18d55543125f526a9d439d0a",
+      "unchanged": true
+    }
+  ],
+  "controls": [
+    {
+      "name": "Scalar-V2000:ordinary:ID-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[ID] LIKE IIf(ID=1,'1',IIf(ID=2,'2','3')) AS ForwardMatch,IIf(ID=1,'1',IIf(ID=2,'2','3')) LIKE [ID] AS ReverseMatch,[ID] NOT LIKE IIf(ID=1,'1',IIf(ID=2,'2','3')) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "0fbf15282833e6f7da0228d0be4fc554d41503918bd4035750e482b887de9c42",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2000:ordinary:Flag-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Flag] LIKE IIf(ID=1,'True',IIf(ID=2,'False','False')) AS ForwardMatch,IIf(ID=1,'True',IIf(ID=2,'False','False')) LIKE [Flag] AS ReverseMatch,[Flag] NOT LIKE IIf(ID=1,'True',IIf(ID=2,'False','False')) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "0fbf15282833e6f7da0228d0be4fc554d41503918bd4035750e482b887de9c42",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2000:ordinary:Octet-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Octet] LIKE IIf(ID=1,'255',IIf(ID=2,'0',NULL)) AS ForwardMatch,IIf(ID=1,'255',IIf(ID=2,'0',NULL)) LIKE [Octet] AS ReverseMatch,[Octet] NOT LIKE IIf(ID=1,'255',IIf(ID=2,'0',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2000:ordinary:Small-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Small] LIKE IIf(ID=1,'-32768',IIf(ID=2,'32767',NULL)) AS ForwardMatch,IIf(ID=1,'-32768',IIf(ID=2,'32767',NULL)) LIKE [Small] AS ReverseMatch,[Small] NOT LIKE IIf(ID=1,'-32768',IIf(ID=2,'32767',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2000:ordinary:Money-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Money] LIKE IIf(ID=1,'-922337203685477.5808',IIf(ID=2,'0',NULL)) AS ForwardMatch,IIf(ID=1,'-922337203685477.5808',IIf(ID=2,'0',NULL)) LIKE [Money] AS ReverseMatch,[Money] NOT LIKE IIf(ID=1,'-922337203685477.5808',IIf(ID=2,'0',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2000:ordinary:Real-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Real] LIKE IIf(ID=1,'0',IIf(ID=2,'1.5',NULL)) AS ForwardMatch,IIf(ID=1,'0',IIf(ID=2,'1.5',NULL)) LIKE [Real] AS ReverseMatch,[Real] NOT LIKE IIf(ID=1,'0',IIf(ID=2,'1.5',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2000:ordinary:WideReal-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[WideReal] LIKE IIf(ID=1,'1.25',IIf(ID=2,'0',NULL)) AS ForwardMatch,IIf(ID=1,'1.25',IIf(ID=2,'0',NULL)) LIKE [WideReal] AS ReverseMatch,[WideReal] NOT LIKE IIf(ID=1,'1.25',IIf(ID=2,'0',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2000:ordinary:Amount-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Amount] LIKE IIf(ID=1,'999999999999999999999999.9999',IIf(ID=2,'-9007199254740993.12',NULL)) AS ForwardMatch,IIf(ID=1,'999999999999999999999999.9999',IIf(ID=2,'-9007199254740993.12',NULL)) LIKE [Amount] AS ReverseMatch,[Amount] NOT LIKE IIf(ID=1,'999999999999999999999999.9999',IIf(ID=2,'-9007199254740993.12',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2000:ordinary:Stamp-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Stamp] LIKE IIf(ID=1,'2025-01-01 12:00:00',IIf(ID=2,'1899-12-29 06:00:00',NULL)) AS ForwardMatch,IIf(ID=1,'2025-01-01 12:00:00',IIf(ID=2,'1899-12-29 06:00:00',NULL)) LIKE [Stamp] AS ReverseMatch,[Stamp] NOT LIKE IIf(ID=1,'2025-01-01 12:00:00',IIf(ID=2,'1899-12-29 06:00:00',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2000:ordinary:numeric-like-parent-filter",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID FROM ScalarSamples WHERE ID LIKE '2*' ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "654b90b6e71af85175caeea945cf7b8a0be93ec114b4e8bb440569aba7a2f4cf",
+      "stderr": "",
+      "expected": [
+        [
+          "ID"
+        ],
+        [
+          "2"
+        ]
+      ],
+      "expected_cells": 1
+    },
+    {
+      "name": "Scalar-V2000:ordinary:null-before-conversion-and-provider",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,NULL LIKE [Money] AS A,Stamp NOT LIKE NULL AS B FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "41a17570e0767a3ae9724e08f9d0d3b353d07d653e9a219a1b57aa821b28f463",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "A",
+          "B"
+        ],
+        [
+          "1",
+          "NULL",
+          "NULL"
+        ],
+        [
+          "2",
+          "NULL",
+          "NULL"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 9
+    },
+    {
+      "name": "Scalar-V2000:ordinary:number-policy-required",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT [Money] LIKE '*' AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: numeric text conversion requires an explicit number-format policy\n",
+      "expected_diagnostic": "number-format",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2000:ordinary:date-policy-required",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT Stamp LIKE '*' AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: date text conversion requires an explicit date-format policy\n",
+      "expected_diagnostic": "date-format",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2000:ordinary:comparison-provider-required",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID LIKE '1*' AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: text comparison requires a collation\n",
+      "expected_diagnostic": "collation",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2000:ordinary:error-state-not-stringified",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID LIKE CVErr(7) AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: expression type mismatch\n",
+      "expected_diagnostic": "type mismatch",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2000:ordinary:eager-null-peer-expression",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT NULL LIKE (1/(ID-ID)) AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: division by zero\n",
+      "expected_diagnostic": "division by zero",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2000:ordinary:malformed-pattern-after-conversion",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID LIKE '[' AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: invalid LIKE pattern\n",
+      "expected_diagnostic": "pattern",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2000:declared:ID-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[ID] LIKE IIf(ID=1,'1',IIf(ID=2,'2','3')) AS ForwardMatch,IIf(ID=1,'1',IIf(ID=2,'2','3')) LIKE [ID] AS ReverseMatch,[ID] NOT LIKE IIf(ID=1,'1',IIf(ID=2,'2','3')) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "0fbf15282833e6f7da0228d0be4fc554d41503918bd4035750e482b887de9c42",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2000:declared:Flag-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Flag] LIKE IIf(ID=1,'True',IIf(ID=2,'False','False')) AS ForwardMatch,IIf(ID=1,'True',IIf(ID=2,'False','False')) LIKE [Flag] AS ReverseMatch,[Flag] NOT LIKE IIf(ID=1,'True',IIf(ID=2,'False','False')) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "0fbf15282833e6f7da0228d0be4fc554d41503918bd4035750e482b887de9c42",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2000:declared:Octet-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Octet] LIKE IIf(ID=1,'255',IIf(ID=2,'0',NULL)) AS ForwardMatch,IIf(ID=1,'255',IIf(ID=2,'0',NULL)) LIKE [Octet] AS ReverseMatch,[Octet] NOT LIKE IIf(ID=1,'255',IIf(ID=2,'0',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2000:declared:Small-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Small] LIKE IIf(ID=1,'-32768',IIf(ID=2,'32767',NULL)) AS ForwardMatch,IIf(ID=1,'-32768',IIf(ID=2,'32767',NULL)) LIKE [Small] AS ReverseMatch,[Small] NOT LIKE IIf(ID=1,'-32768',IIf(ID=2,'32767',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2000:declared:Money-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Money] LIKE IIf(ID=1,'-922337203685477.5808',IIf(ID=2,'0',NULL)) AS ForwardMatch,IIf(ID=1,'-922337203685477.5808',IIf(ID=2,'0',NULL)) LIKE [Money] AS ReverseMatch,[Money] NOT LIKE IIf(ID=1,'-922337203685477.5808',IIf(ID=2,'0',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2000:declared:Real-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Real] LIKE IIf(ID=1,'0',IIf(ID=2,'1.5',NULL)) AS ForwardMatch,IIf(ID=1,'0',IIf(ID=2,'1.5',NULL)) LIKE [Real] AS ReverseMatch,[Real] NOT LIKE IIf(ID=1,'0',IIf(ID=2,'1.5',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2000:declared:WideReal-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[WideReal] LIKE IIf(ID=1,'1.25',IIf(ID=2,'0',NULL)) AS ForwardMatch,IIf(ID=1,'1.25',IIf(ID=2,'0',NULL)) LIKE [WideReal] AS ReverseMatch,[WideReal] NOT LIKE IIf(ID=1,'1.25',IIf(ID=2,'0',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2000:declared:Amount-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Amount] LIKE IIf(ID=1,'999999999999999999999999.9999',IIf(ID=2,'-9007199254740993.12',NULL)) AS ForwardMatch,IIf(ID=1,'999999999999999999999999.9999',IIf(ID=2,'-9007199254740993.12',NULL)) LIKE [Amount] AS ReverseMatch,[Amount] NOT LIKE IIf(ID=1,'999999999999999999999999.9999',IIf(ID=2,'-9007199254740993.12',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2000:declared:Stamp-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Stamp] LIKE IIf(ID=1,'2025-01-01 12:00:00',IIf(ID=2,'1899-12-29 06:00:00',NULL)) AS ForwardMatch,IIf(ID=1,'2025-01-01 12:00:00',IIf(ID=2,'1899-12-29 06:00:00',NULL)) LIKE [Stamp] AS ReverseMatch,[Stamp] NOT LIKE IIf(ID=1,'2025-01-01 12:00:00',IIf(ID=2,'1899-12-29 06:00:00',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2000:declared:numeric-like-parent-filter",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID FROM ScalarSamples WHERE ID LIKE '2*' ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "654b90b6e71af85175caeea945cf7b8a0be93ec114b4e8bb440569aba7a2f4cf",
+      "stderr": "",
+      "expected": [
+        [
+          "ID"
+        ],
+        [
+          "2"
+        ]
+      ],
+      "expected_cells": 1
+    },
+    {
+      "name": "Scalar-V2000:declared:null-before-conversion-and-provider",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,NULL LIKE [Money] AS A,Stamp NOT LIKE NULL AS B FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "41a17570e0767a3ae9724e08f9d0d3b353d07d653e9a219a1b57aa821b28f463",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "A",
+          "B"
+        ],
+        [
+          "1",
+          "NULL",
+          "NULL"
+        ],
+        [
+          "2",
+          "NULL",
+          "NULL"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 9
+    },
+    {
+      "name": "Scalar-V2000:declared:number-policy-required",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT [Money] LIKE '*' AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: numeric text conversion requires an explicit number-format policy\n",
+      "expected_diagnostic": "number-format",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2000:declared:date-policy-required",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT Stamp LIKE '*' AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: date text conversion requires an explicit date-format policy\n",
+      "expected_diagnostic": "date-format",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2000:declared:comparison-provider-required",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID LIKE '1*' AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: text comparison requires a collation\n",
+      "expected_diagnostic": "collation",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2000:declared:error-state-not-stringified",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID LIKE CVErr(7) AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: expression type mismatch\n",
+      "expected_diagnostic": "type mismatch",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2000:declared:eager-null-peer-expression",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT NULL LIKE (1/(ID-ID)) AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: division by zero\n",
+      "expected_diagnostic": "division by zero",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2000:declared:malformed-pattern-after-conversion",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID LIKE '[' AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: invalid LIKE pattern\n",
+      "expected_diagnostic": "pattern",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2007:ordinary:ID-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[ID] LIKE IIf(ID=1,'1',IIf(ID=2,'2','3')) AS ForwardMatch,IIf(ID=1,'1',IIf(ID=2,'2','3')) LIKE [ID] AS ReverseMatch,[ID] NOT LIKE IIf(ID=1,'1',IIf(ID=2,'2','3')) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "0fbf15282833e6f7da0228d0be4fc554d41503918bd4035750e482b887de9c42",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2007:ordinary:Flag-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Flag] LIKE IIf(ID=1,'True',IIf(ID=2,'False','False')) AS ForwardMatch,IIf(ID=1,'True',IIf(ID=2,'False','False')) LIKE [Flag] AS ReverseMatch,[Flag] NOT LIKE IIf(ID=1,'True',IIf(ID=2,'False','False')) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "0fbf15282833e6f7da0228d0be4fc554d41503918bd4035750e482b887de9c42",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2007:ordinary:Octet-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Octet] LIKE IIf(ID=1,'255',IIf(ID=2,'0',NULL)) AS ForwardMatch,IIf(ID=1,'255',IIf(ID=2,'0',NULL)) LIKE [Octet] AS ReverseMatch,[Octet] NOT LIKE IIf(ID=1,'255',IIf(ID=2,'0',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2007:ordinary:Small-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Small] LIKE IIf(ID=1,'-32768',IIf(ID=2,'32767',NULL)) AS ForwardMatch,IIf(ID=1,'-32768',IIf(ID=2,'32767',NULL)) LIKE [Small] AS ReverseMatch,[Small] NOT LIKE IIf(ID=1,'-32768',IIf(ID=2,'32767',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2007:ordinary:Money-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Money] LIKE IIf(ID=1,'-922337203685477.5808',IIf(ID=2,'0',NULL)) AS ForwardMatch,IIf(ID=1,'-922337203685477.5808',IIf(ID=2,'0',NULL)) LIKE [Money] AS ReverseMatch,[Money] NOT LIKE IIf(ID=1,'-922337203685477.5808',IIf(ID=2,'0',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2007:ordinary:Real-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Real] LIKE IIf(ID=1,'0',IIf(ID=2,'1.5',NULL)) AS ForwardMatch,IIf(ID=1,'0',IIf(ID=2,'1.5',NULL)) LIKE [Real] AS ReverseMatch,[Real] NOT LIKE IIf(ID=1,'0',IIf(ID=2,'1.5',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2007:ordinary:WideReal-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[WideReal] LIKE IIf(ID=1,'1.25',IIf(ID=2,'0',NULL)) AS ForwardMatch,IIf(ID=1,'1.25',IIf(ID=2,'0',NULL)) LIKE [WideReal] AS ReverseMatch,[WideReal] NOT LIKE IIf(ID=1,'1.25',IIf(ID=2,'0',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2007:ordinary:Amount-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Amount] LIKE IIf(ID=1,'999999999999999999999999.9999',IIf(ID=2,'-9007199254740993.12',NULL)) AS ForwardMatch,IIf(ID=1,'999999999999999999999999.9999',IIf(ID=2,'-9007199254740993.12',NULL)) LIKE [Amount] AS ReverseMatch,[Amount] NOT LIKE IIf(ID=1,'999999999999999999999999.9999',IIf(ID=2,'-9007199254740993.12',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2007:ordinary:Stamp-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Stamp] LIKE IIf(ID=1,'2025-01-01 12:00:00',IIf(ID=2,'1899-12-29 06:00:00',NULL)) AS ForwardMatch,IIf(ID=1,'2025-01-01 12:00:00',IIf(ID=2,'1899-12-29 06:00:00',NULL)) LIKE [Stamp] AS ReverseMatch,[Stamp] NOT LIKE IIf(ID=1,'2025-01-01 12:00:00',IIf(ID=2,'1899-12-29 06:00:00',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2007:ordinary:numeric-like-parent-filter",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID FROM ScalarSamples WHERE ID LIKE '2*' ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "654b90b6e71af85175caeea945cf7b8a0be93ec114b4e8bb440569aba7a2f4cf",
+      "stderr": "",
+      "expected": [
+        [
+          "ID"
+        ],
+        [
+          "2"
+        ]
+      ],
+      "expected_cells": 1
+    },
+    {
+      "name": "Scalar-V2007:ordinary:null-before-conversion-and-provider",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,NULL LIKE [Money] AS A,Stamp NOT LIKE NULL AS B FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "41a17570e0767a3ae9724e08f9d0d3b353d07d653e9a219a1b57aa821b28f463",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "A",
+          "B"
+        ],
+        [
+          "1",
+          "NULL",
+          "NULL"
+        ],
+        [
+          "2",
+          "NULL",
+          "NULL"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 9
+    },
+    {
+      "name": "Scalar-V2007:ordinary:number-policy-required",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT [Money] LIKE '*' AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: numeric text conversion requires an explicit number-format policy\n",
+      "expected_diagnostic": "number-format",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2007:ordinary:date-policy-required",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT Stamp LIKE '*' AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: date text conversion requires an explicit date-format policy\n",
+      "expected_diagnostic": "date-format",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2007:ordinary:comparison-provider-required",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID LIKE '1*' AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: text comparison requires a collation\n",
+      "expected_diagnostic": "collation",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2007:ordinary:error-state-not-stringified",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID LIKE CVErr(7) AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: expression type mismatch\n",
+      "expected_diagnostic": "type mismatch",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2007:ordinary:eager-null-peer-expression",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT NULL LIKE (1/(ID-ID)) AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: division by zero\n",
+      "expected_diagnostic": "division by zero",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2007:ordinary:malformed-pattern-after-conversion",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID LIKE '[' AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: invalid LIKE pattern\n",
+      "expected_diagnostic": "pattern",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2007:declared:ID-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[ID] LIKE IIf(ID=1,'1',IIf(ID=2,'2','3')) AS ForwardMatch,IIf(ID=1,'1',IIf(ID=2,'2','3')) LIKE [ID] AS ReverseMatch,[ID] NOT LIKE IIf(ID=1,'1',IIf(ID=2,'2','3')) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "0fbf15282833e6f7da0228d0be4fc554d41503918bd4035750e482b887de9c42",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2007:declared:Flag-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Flag] LIKE IIf(ID=1,'True',IIf(ID=2,'False','False')) AS ForwardMatch,IIf(ID=1,'True',IIf(ID=2,'False','False')) LIKE [Flag] AS ReverseMatch,[Flag] NOT LIKE IIf(ID=1,'True',IIf(ID=2,'False','False')) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "0fbf15282833e6f7da0228d0be4fc554d41503918bd4035750e482b887de9c42",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2007:declared:Octet-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Octet] LIKE IIf(ID=1,'255',IIf(ID=2,'0',NULL)) AS ForwardMatch,IIf(ID=1,'255',IIf(ID=2,'0',NULL)) LIKE [Octet] AS ReverseMatch,[Octet] NOT LIKE IIf(ID=1,'255',IIf(ID=2,'0',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2007:declared:Small-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Small] LIKE IIf(ID=1,'-32768',IIf(ID=2,'32767',NULL)) AS ForwardMatch,IIf(ID=1,'-32768',IIf(ID=2,'32767',NULL)) LIKE [Small] AS ReverseMatch,[Small] NOT LIKE IIf(ID=1,'-32768',IIf(ID=2,'32767',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2007:declared:Money-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Money] LIKE IIf(ID=1,'-922337203685477.5808',IIf(ID=2,'0',NULL)) AS ForwardMatch,IIf(ID=1,'-922337203685477.5808',IIf(ID=2,'0',NULL)) LIKE [Money] AS ReverseMatch,[Money] NOT LIKE IIf(ID=1,'-922337203685477.5808',IIf(ID=2,'0',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2007:declared:Real-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Real] LIKE IIf(ID=1,'0',IIf(ID=2,'1.5',NULL)) AS ForwardMatch,IIf(ID=1,'0',IIf(ID=2,'1.5',NULL)) LIKE [Real] AS ReverseMatch,[Real] NOT LIKE IIf(ID=1,'0',IIf(ID=2,'1.5',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2007:declared:WideReal-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[WideReal] LIKE IIf(ID=1,'1.25',IIf(ID=2,'0',NULL)) AS ForwardMatch,IIf(ID=1,'1.25',IIf(ID=2,'0',NULL)) LIKE [WideReal] AS ReverseMatch,[WideReal] NOT LIKE IIf(ID=1,'1.25',IIf(ID=2,'0',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2007:declared:Amount-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Amount] LIKE IIf(ID=1,'999999999999999999999999.9999',IIf(ID=2,'-9007199254740993.12',NULL)) AS ForwardMatch,IIf(ID=1,'999999999999999999999999.9999',IIf(ID=2,'-9007199254740993.12',NULL)) LIKE [Amount] AS ReverseMatch,[Amount] NOT LIKE IIf(ID=1,'999999999999999999999999.9999',IIf(ID=2,'-9007199254740993.12',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2007:declared:Stamp-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Stamp] LIKE IIf(ID=1,'2025-01-01 12:00:00',IIf(ID=2,'1899-12-29 06:00:00',NULL)) AS ForwardMatch,IIf(ID=1,'2025-01-01 12:00:00',IIf(ID=2,'1899-12-29 06:00:00',NULL)) LIKE [Stamp] AS ReverseMatch,[Stamp] NOT LIKE IIf(ID=1,'2025-01-01 12:00:00',IIf(ID=2,'1899-12-29 06:00:00',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2007:declared:numeric-like-parent-filter",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID FROM ScalarSamples WHERE ID LIKE '2*' ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "654b90b6e71af85175caeea945cf7b8a0be93ec114b4e8bb440569aba7a2f4cf",
+      "stderr": "",
+      "expected": [
+        [
+          "ID"
+        ],
+        [
+          "2"
+        ]
+      ],
+      "expected_cells": 1
+    },
+    {
+      "name": "Scalar-V2007:declared:null-before-conversion-and-provider",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,NULL LIKE [Money] AS A,Stamp NOT LIKE NULL AS B FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "41a17570e0767a3ae9724e08f9d0d3b353d07d653e9a219a1b57aa821b28f463",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "A",
+          "B"
+        ],
+        [
+          "1",
+          "NULL",
+          "NULL"
+        ],
+        [
+          "2",
+          "NULL",
+          "NULL"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 9
+    },
+    {
+      "name": "Scalar-V2007:declared:number-policy-required",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT [Money] LIKE '*' AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: numeric text conversion requires an explicit number-format policy\n",
+      "expected_diagnostic": "number-format",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2007:declared:date-policy-required",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT Stamp LIKE '*' AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: date text conversion requires an explicit date-format policy\n",
+      "expected_diagnostic": "date-format",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2007:declared:comparison-provider-required",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID LIKE '1*' AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: text comparison requires a collation\n",
+      "expected_diagnostic": "collation",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2007:declared:error-state-not-stringified",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID LIKE CVErr(7) AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: expression type mismatch\n",
+      "expected_diagnostic": "type mismatch",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2007:declared:eager-null-peer-expression",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT NULL LIKE (1/(ID-ID)) AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: division by zero\n",
+      "expected_diagnostic": "division by zero",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2007:declared:malformed-pattern-after-conversion",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID LIKE '[' AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2007.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: invalid LIKE pattern\n",
+      "expected_diagnostic": "pattern",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2016:ordinary:ID-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[ID] LIKE IIf(ID=1,'1',IIf(ID=2,'2','3')) AS ForwardMatch,IIf(ID=1,'1',IIf(ID=2,'2','3')) LIKE [ID] AS ReverseMatch,[ID] NOT LIKE IIf(ID=1,'1',IIf(ID=2,'2','3')) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "0fbf15282833e6f7da0228d0be4fc554d41503918bd4035750e482b887de9c42",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2016:ordinary:Flag-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Flag] LIKE IIf(ID=1,'True',IIf(ID=2,'False','False')) AS ForwardMatch,IIf(ID=1,'True',IIf(ID=2,'False','False')) LIKE [Flag] AS ReverseMatch,[Flag] NOT LIKE IIf(ID=1,'True',IIf(ID=2,'False','False')) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "0fbf15282833e6f7da0228d0be4fc554d41503918bd4035750e482b887de9c42",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2016:ordinary:Octet-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Octet] LIKE IIf(ID=1,'255',IIf(ID=2,'0',NULL)) AS ForwardMatch,IIf(ID=1,'255',IIf(ID=2,'0',NULL)) LIKE [Octet] AS ReverseMatch,[Octet] NOT LIKE IIf(ID=1,'255',IIf(ID=2,'0',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2016:ordinary:Small-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Small] LIKE IIf(ID=1,'-32768',IIf(ID=2,'32767',NULL)) AS ForwardMatch,IIf(ID=1,'-32768',IIf(ID=2,'32767',NULL)) LIKE [Small] AS ReverseMatch,[Small] NOT LIKE IIf(ID=1,'-32768',IIf(ID=2,'32767',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2016:ordinary:Money-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Money] LIKE IIf(ID=1,'-922337203685477.5808',IIf(ID=2,'0',NULL)) AS ForwardMatch,IIf(ID=1,'-922337203685477.5808',IIf(ID=2,'0',NULL)) LIKE [Money] AS ReverseMatch,[Money] NOT LIKE IIf(ID=1,'-922337203685477.5808',IIf(ID=2,'0',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2016:ordinary:Real-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Real] LIKE IIf(ID=1,'0',IIf(ID=2,'1.5',NULL)) AS ForwardMatch,IIf(ID=1,'0',IIf(ID=2,'1.5',NULL)) LIKE [Real] AS ReverseMatch,[Real] NOT LIKE IIf(ID=1,'0',IIf(ID=2,'1.5',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2016:ordinary:WideReal-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[WideReal] LIKE IIf(ID=1,'1.25',IIf(ID=2,'0',NULL)) AS ForwardMatch,IIf(ID=1,'1.25',IIf(ID=2,'0',NULL)) LIKE [WideReal] AS ReverseMatch,[WideReal] NOT LIKE IIf(ID=1,'1.25',IIf(ID=2,'0',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2016:ordinary:Amount-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Amount] LIKE IIf(ID=1,'999999999999999999999999.9999',IIf(ID=2,'-9007199254740993.12',NULL)) AS ForwardMatch,IIf(ID=1,'999999999999999999999999.9999',IIf(ID=2,'-9007199254740993.12',NULL)) LIKE [Amount] AS ReverseMatch,[Amount] NOT LIKE IIf(ID=1,'999999999999999999999999.9999',IIf(ID=2,'-9007199254740993.12',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2016:ordinary:Stamp-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Stamp] LIKE IIf(ID=1,'2025-01-01 12:00:00',IIf(ID=2,'1899-12-29 06:00:00',NULL)) AS ForwardMatch,IIf(ID=1,'2025-01-01 12:00:00',IIf(ID=2,'1899-12-29 06:00:00',NULL)) LIKE [Stamp] AS ReverseMatch,[Stamp] NOT LIKE IIf(ID=1,'2025-01-01 12:00:00',IIf(ID=2,'1899-12-29 06:00:00',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2016:ordinary:numeric-like-parent-filter",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID FROM ScalarSamples WHERE ID LIKE '2*' ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "654b90b6e71af85175caeea945cf7b8a0be93ec114b4e8bb440569aba7a2f4cf",
+      "stderr": "",
+      "expected": [
+        [
+          "ID"
+        ],
+        [
+          "2"
+        ]
+      ],
+      "expected_cells": 1
+    },
+    {
+      "name": "Scalar-V2016:ordinary:null-before-conversion-and-provider",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,NULL LIKE [Money] AS A,Stamp NOT LIKE NULL AS B FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "41a17570e0767a3ae9724e08f9d0d3b353d07d653e9a219a1b57aa821b28f463",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "A",
+          "B"
+        ],
+        [
+          "1",
+          "NULL",
+          "NULL"
+        ],
+        [
+          "2",
+          "NULL",
+          "NULL"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 9
+    },
+    {
+      "name": "Scalar-V2016:ordinary:number-policy-required",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT [Money] LIKE '*' AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: numeric text conversion requires an explicit number-format policy\n",
+      "expected_diagnostic": "number-format",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2016:ordinary:date-policy-required",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT Stamp LIKE '*' AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: date text conversion requires an explicit date-format policy\n",
+      "expected_diagnostic": "date-format",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2016:ordinary:comparison-provider-required",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID LIKE '1*' AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: text comparison requires a collation\n",
+      "expected_diagnostic": "collation",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2016:ordinary:error-state-not-stringified",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID LIKE CVErr(7) AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: expression type mismatch\n",
+      "expected_diagnostic": "type mismatch",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2016:ordinary:eager-null-peer-expression",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT NULL LIKE (1/(ID-ID)) AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: division by zero\n",
+      "expected_diagnostic": "division by zero",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2016:ordinary:malformed-pattern-after-conversion",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID LIKE '[' AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: invalid LIKE pattern\n",
+      "expected_diagnostic": "pattern",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2016:declared:ID-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[ID] LIKE IIf(ID=1,'1',IIf(ID=2,'2','3')) AS ForwardMatch,IIf(ID=1,'1',IIf(ID=2,'2','3')) LIKE [ID] AS ReverseMatch,[ID] NOT LIKE IIf(ID=1,'1',IIf(ID=2,'2','3')) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "0fbf15282833e6f7da0228d0be4fc554d41503918bd4035750e482b887de9c42",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2016:declared:Flag-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Flag] LIKE IIf(ID=1,'True',IIf(ID=2,'False','False')) AS ForwardMatch,IIf(ID=1,'True',IIf(ID=2,'False','False')) LIKE [Flag] AS ReverseMatch,[Flag] NOT LIKE IIf(ID=1,'True',IIf(ID=2,'False','False')) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "0fbf15282833e6f7da0228d0be4fc554d41503918bd4035750e482b887de9c42",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2016:declared:Octet-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Octet] LIKE IIf(ID=1,'255',IIf(ID=2,'0',NULL)) AS ForwardMatch,IIf(ID=1,'255',IIf(ID=2,'0',NULL)) LIKE [Octet] AS ReverseMatch,[Octet] NOT LIKE IIf(ID=1,'255',IIf(ID=2,'0',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2016:declared:Small-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Small] LIKE IIf(ID=1,'-32768',IIf(ID=2,'32767',NULL)) AS ForwardMatch,IIf(ID=1,'-32768',IIf(ID=2,'32767',NULL)) LIKE [Small] AS ReverseMatch,[Small] NOT LIKE IIf(ID=1,'-32768',IIf(ID=2,'32767',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2016:declared:Money-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Money] LIKE IIf(ID=1,'-922337203685477.5808',IIf(ID=2,'0',NULL)) AS ForwardMatch,IIf(ID=1,'-922337203685477.5808',IIf(ID=2,'0',NULL)) LIKE [Money] AS ReverseMatch,[Money] NOT LIKE IIf(ID=1,'-922337203685477.5808',IIf(ID=2,'0',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2016:declared:Real-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Real] LIKE IIf(ID=1,'0',IIf(ID=2,'1.5',NULL)) AS ForwardMatch,IIf(ID=1,'0',IIf(ID=2,'1.5',NULL)) LIKE [Real] AS ReverseMatch,[Real] NOT LIKE IIf(ID=1,'0',IIf(ID=2,'1.5',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2016:declared:WideReal-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[WideReal] LIKE IIf(ID=1,'1.25',IIf(ID=2,'0',NULL)) AS ForwardMatch,IIf(ID=1,'1.25',IIf(ID=2,'0',NULL)) LIKE [WideReal] AS ReverseMatch,[WideReal] NOT LIKE IIf(ID=1,'1.25',IIf(ID=2,'0',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2016:declared:Amount-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Amount] LIKE IIf(ID=1,'999999999999999999999999.9999',IIf(ID=2,'-9007199254740993.12',NULL)) AS ForwardMatch,IIf(ID=1,'999999999999999999999999.9999',IIf(ID=2,'-9007199254740993.12',NULL)) LIKE [Amount] AS ReverseMatch,[Amount] NOT LIKE IIf(ID=1,'999999999999999999999999.9999',IIf(ID=2,'-9007199254740993.12',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2016:declared:Stamp-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Stamp] LIKE IIf(ID=1,'2025-01-01 12:00:00',IIf(ID=2,'1899-12-29 06:00:00',NULL)) AS ForwardMatch,IIf(ID=1,'2025-01-01 12:00:00',IIf(ID=2,'1899-12-29 06:00:00',NULL)) LIKE [Stamp] AS ReverseMatch,[Stamp] NOT LIKE IIf(ID=1,'2025-01-01 12:00:00',IIf(ID=2,'1899-12-29 06:00:00',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2016:declared:numeric-like-parent-filter",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID FROM ScalarSamples WHERE ID LIKE '2*' ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "654b90b6e71af85175caeea945cf7b8a0be93ec114b4e8bb440569aba7a2f4cf",
+      "stderr": "",
+      "expected": [
+        [
+          "ID"
+        ],
+        [
+          "2"
+        ]
+      ],
+      "expected_cells": 1
+    },
+    {
+      "name": "Scalar-V2016:declared:null-before-conversion-and-provider",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,NULL LIKE [Money] AS A,Stamp NOT LIKE NULL AS B FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "41a17570e0767a3ae9724e08f9d0d3b353d07d653e9a219a1b57aa821b28f463",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "A",
+          "B"
+        ],
+        [
+          "1",
+          "NULL",
+          "NULL"
+        ],
+        [
+          "2",
+          "NULL",
+          "NULL"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 9
+    },
+    {
+      "name": "Scalar-V2016:declared:number-policy-required",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT [Money] LIKE '*' AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: numeric text conversion requires an explicit number-format policy\n",
+      "expected_diagnostic": "number-format",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2016:declared:date-policy-required",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT Stamp LIKE '*' AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: date text conversion requires an explicit date-format policy\n",
+      "expected_diagnostic": "date-format",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2016:declared:comparison-provider-required",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID LIKE '1*' AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: text comparison requires a collation\n",
+      "expected_diagnostic": "collation",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2016:declared:error-state-not-stringified",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID LIKE CVErr(7) AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: expression type mismatch\n",
+      "expected_diagnostic": "type mismatch",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2016:declared:eager-null-peer-expression",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT NULL LIKE (1/(ID-ID)) AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: division by zero\n",
+      "expected_diagnostic": "division by zero",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2016:declared:malformed-pattern-after-conversion",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID LIKE '[' AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2016.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: invalid LIKE pattern\n",
+      "expected_diagnostic": "pattern",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2019:ordinary:ID-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[ID] LIKE IIf(ID=1,'1',IIf(ID=2,'2','3')) AS ForwardMatch,IIf(ID=1,'1',IIf(ID=2,'2','3')) LIKE [ID] AS ReverseMatch,[ID] NOT LIKE IIf(ID=1,'1',IIf(ID=2,'2','3')) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "0fbf15282833e6f7da0228d0be4fc554d41503918bd4035750e482b887de9c42",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2019:ordinary:Flag-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Flag] LIKE IIf(ID=1,'True',IIf(ID=2,'False','False')) AS ForwardMatch,IIf(ID=1,'True',IIf(ID=2,'False','False')) LIKE [Flag] AS ReverseMatch,[Flag] NOT LIKE IIf(ID=1,'True',IIf(ID=2,'False','False')) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "0fbf15282833e6f7da0228d0be4fc554d41503918bd4035750e482b887de9c42",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2019:ordinary:Octet-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Octet] LIKE IIf(ID=1,'255',IIf(ID=2,'0',NULL)) AS ForwardMatch,IIf(ID=1,'255',IIf(ID=2,'0',NULL)) LIKE [Octet] AS ReverseMatch,[Octet] NOT LIKE IIf(ID=1,'255',IIf(ID=2,'0',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2019:ordinary:Small-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Small] LIKE IIf(ID=1,'-32768',IIf(ID=2,'32767',NULL)) AS ForwardMatch,IIf(ID=1,'-32768',IIf(ID=2,'32767',NULL)) LIKE [Small] AS ReverseMatch,[Small] NOT LIKE IIf(ID=1,'-32768',IIf(ID=2,'32767',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2019:ordinary:Money-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Money] LIKE IIf(ID=1,'-922337203685477.5808',IIf(ID=2,'0',NULL)) AS ForwardMatch,IIf(ID=1,'-922337203685477.5808',IIf(ID=2,'0',NULL)) LIKE [Money] AS ReverseMatch,[Money] NOT LIKE IIf(ID=1,'-922337203685477.5808',IIf(ID=2,'0',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2019:ordinary:Real-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Real] LIKE IIf(ID=1,'0',IIf(ID=2,'1.5',NULL)) AS ForwardMatch,IIf(ID=1,'0',IIf(ID=2,'1.5',NULL)) LIKE [Real] AS ReverseMatch,[Real] NOT LIKE IIf(ID=1,'0',IIf(ID=2,'1.5',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2019:ordinary:WideReal-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[WideReal] LIKE IIf(ID=1,'1.25',IIf(ID=2,'0',NULL)) AS ForwardMatch,IIf(ID=1,'1.25',IIf(ID=2,'0',NULL)) LIKE [WideReal] AS ReverseMatch,[WideReal] NOT LIKE IIf(ID=1,'1.25',IIf(ID=2,'0',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2019:ordinary:Amount-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Amount] LIKE IIf(ID=1,'999999999999999999999999.9999',IIf(ID=2,'-9007199254740993.12',NULL)) AS ForwardMatch,IIf(ID=1,'999999999999999999999999.9999',IIf(ID=2,'-9007199254740993.12',NULL)) LIKE [Amount] AS ReverseMatch,[Amount] NOT LIKE IIf(ID=1,'999999999999999999999999.9999',IIf(ID=2,'-9007199254740993.12',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2019:ordinary:Stamp-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Stamp] LIKE IIf(ID=1,'2025-01-01 12:00:00',IIf(ID=2,'1899-12-29 06:00:00',NULL)) AS ForwardMatch,IIf(ID=1,'2025-01-01 12:00:00',IIf(ID=2,'1899-12-29 06:00:00',NULL)) LIKE [Stamp] AS ReverseMatch,[Stamp] NOT LIKE IIf(ID=1,'2025-01-01 12:00:00',IIf(ID=2,'1899-12-29 06:00:00',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2019:ordinary:numeric-like-parent-filter",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID FROM ScalarSamples WHERE ID LIKE '2*' ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "654b90b6e71af85175caeea945cf7b8a0be93ec114b4e8bb440569aba7a2f4cf",
+      "stderr": "",
+      "expected": [
+        [
+          "ID"
+        ],
+        [
+          "2"
+        ]
+      ],
+      "expected_cells": 1
+    },
+    {
+      "name": "Scalar-V2019:ordinary:null-before-conversion-and-provider",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,NULL LIKE [Money] AS A,Stamp NOT LIKE NULL AS B FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "41a17570e0767a3ae9724e08f9d0d3b353d07d653e9a219a1b57aa821b28f463",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "A",
+          "B"
+        ],
+        [
+          "1",
+          "NULL",
+          "NULL"
+        ],
+        [
+          "2",
+          "NULL",
+          "NULL"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 9
+    },
+    {
+      "name": "Scalar-V2019:ordinary:number-policy-required",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT [Money] LIKE '*' AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: numeric text conversion requires an explicit number-format policy\n",
+      "expected_diagnostic": "number-format",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2019:ordinary:date-policy-required",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT Stamp LIKE '*' AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: date text conversion requires an explicit date-format policy\n",
+      "expected_diagnostic": "date-format",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2019:ordinary:comparison-provider-required",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID LIKE '1*' AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: text comparison requires a collation\n",
+      "expected_diagnostic": "collation",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2019:ordinary:error-state-not-stringified",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID LIKE CVErr(7) AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: expression type mismatch\n",
+      "expected_diagnostic": "type mismatch",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2019:ordinary:eager-null-peer-expression",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT NULL LIKE (1/(ID-ID)) AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: division by zero\n",
+      "expected_diagnostic": "division by zero",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2019:ordinary:malformed-pattern-after-conversion",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID LIKE '[' AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: invalid LIKE pattern\n",
+      "expected_diagnostic": "pattern",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2019:declared:ID-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[ID] LIKE IIf(ID=1,'1',IIf(ID=2,'2','3')) AS ForwardMatch,IIf(ID=1,'1',IIf(ID=2,'2','3')) LIKE [ID] AS ReverseMatch,[ID] NOT LIKE IIf(ID=1,'1',IIf(ID=2,'2','3')) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "0fbf15282833e6f7da0228d0be4fc554d41503918bd4035750e482b887de9c42",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2019:declared:Flag-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Flag] LIKE IIf(ID=1,'True',IIf(ID=2,'False','False')) AS ForwardMatch,IIf(ID=1,'True',IIf(ID=2,'False','False')) LIKE [Flag] AS ReverseMatch,[Flag] NOT LIKE IIf(ID=1,'True',IIf(ID=2,'False','False')) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "0fbf15282833e6f7da0228d0be4fc554d41503918bd4035750e482b887de9c42",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2019:declared:Octet-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Octet] LIKE IIf(ID=1,'255',IIf(ID=2,'0',NULL)) AS ForwardMatch,IIf(ID=1,'255',IIf(ID=2,'0',NULL)) LIKE [Octet] AS ReverseMatch,[Octet] NOT LIKE IIf(ID=1,'255',IIf(ID=2,'0',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2019:declared:Small-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Small] LIKE IIf(ID=1,'-32768',IIf(ID=2,'32767',NULL)) AS ForwardMatch,IIf(ID=1,'-32768',IIf(ID=2,'32767',NULL)) LIKE [Small] AS ReverseMatch,[Small] NOT LIKE IIf(ID=1,'-32768',IIf(ID=2,'32767',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2019:declared:Money-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Money] LIKE IIf(ID=1,'-922337203685477.5808',IIf(ID=2,'0',NULL)) AS ForwardMatch,IIf(ID=1,'-922337203685477.5808',IIf(ID=2,'0',NULL)) LIKE [Money] AS ReverseMatch,[Money] NOT LIKE IIf(ID=1,'-922337203685477.5808',IIf(ID=2,'0',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2019:declared:Real-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Real] LIKE IIf(ID=1,'0',IIf(ID=2,'1.5',NULL)) AS ForwardMatch,IIf(ID=1,'0',IIf(ID=2,'1.5',NULL)) LIKE [Real] AS ReverseMatch,[Real] NOT LIKE IIf(ID=1,'0',IIf(ID=2,'1.5',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2019:declared:WideReal-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[WideReal] LIKE IIf(ID=1,'1.25',IIf(ID=2,'0',NULL)) AS ForwardMatch,IIf(ID=1,'1.25',IIf(ID=2,'0',NULL)) LIKE [WideReal] AS ReverseMatch,[WideReal] NOT LIKE IIf(ID=1,'1.25',IIf(ID=2,'0',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2019:declared:Amount-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Amount] LIKE IIf(ID=1,'999999999999999999999999.9999',IIf(ID=2,'-9007199254740993.12',NULL)) AS ForwardMatch,IIf(ID=1,'999999999999999999999999.9999',IIf(ID=2,'-9007199254740993.12',NULL)) LIKE [Amount] AS ReverseMatch,[Amount] NOT LIKE IIf(ID=1,'999999999999999999999999.9999',IIf(ID=2,'-9007199254740993.12',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2019:declared:Stamp-both-positions",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,[Stamp] LIKE IIf(ID=1,'2025-01-01 12:00:00',IIf(ID=2,'1899-12-29 06:00:00',NULL)) AS ForwardMatch,IIf(ID=1,'2025-01-01 12:00:00',IIf(ID=2,'1899-12-29 06:00:00',NULL)) LIKE [Stamp] AS ReverseMatch,[Stamp] NOT LIKE IIf(ID=1,'2025-01-01 12:00:00',IIf(ID=2,'1899-12-29 06:00:00',NULL)) AS NegatedMatch FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "cbccab6c2aab70175243369cb506fe1fa5618121f1b163e838d08a3ce0ab7370",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "ForwardMatch",
+          "ReverseMatch",
+          "NegatedMatch"
+        ],
+        [
+          "1",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "2",
+          "TRUE",
+          "TRUE",
+          "FALSE"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 12
+    },
+    {
+      "name": "Scalar-V2019:declared:numeric-like-parent-filter",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID FROM ScalarSamples WHERE ID LIKE '2*' ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "654b90b6e71af85175caeea945cf7b8a0be93ec114b4e8bb440569aba7a2f4cf",
+      "stderr": "",
+      "expected": [
+        [
+          "ID"
+        ],
+        [
+          "2"
+        ]
+      ],
+      "expected_cells": 1
+    },
+    {
+      "name": "Scalar-V2019:declared:null-before-conversion-and-provider",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID,NULL LIKE [Money] AS A,Stamp NOT LIKE NULL AS B FROM ScalarSamples ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "stdout_sha256": "41a17570e0767a3ae9724e08f9d0d3b353d07d653e9a219a1b57aa821b28f463",
+      "stderr": "",
+      "expected": [
+        [
+          "ID",
+          "A",
+          "B"
+        ],
+        [
+          "1",
+          "NULL",
+          "NULL"
+        ],
+        [
+          "2",
+          "NULL",
+          "NULL"
+        ],
+        [
+          "3",
+          "NULL",
+          "NULL"
+        ]
+      ],
+      "expected_cells": 9
+    },
+    {
+      "name": "Scalar-V2019:declared:number-policy-required",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT [Money] LIKE '*' AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: numeric text conversion requires an explicit number-format policy\n",
+      "expected_diagnostic": "number-format",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2019:declared:date-policy-required",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT Stamp LIKE '*' AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: date text conversion requires an explicit date-format policy\n",
+      "expected_diagnostic": "date-format",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2019:declared:comparison-provider-required",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID LIKE '1*' AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: text comparison requires a collation\n",
+      "expected_diagnostic": "collation",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2019:declared:error-state-not-stringified",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID LIKE CVErr(7) AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: expression type mismatch\n",
+      "expected_diagnostic": "type mismatch",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2019:declared:eager-null-peer-expression",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT NULL LIKE (1/(ID-ID)) AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: division by zero\n",
+      "expected_diagnostic": "division by zero",
+      "expected_cells": 0
+    },
+    {
+      "name": "Scalar-V2019:declared:malformed-pattern-after-conversion",
+      "command": [
+        ".cache/tablecraft-bin/read-query-p0-cli-20261025",
+        "query",
+        "run",
+        "SELECT ID LIKE '[' AS V FROM ScalarSamples WHERE ID=1",
+        "--database",
+        ".cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2019.accdb",
+        "--like-mode",
+        "ansi89",
+        "--format",
+        "tsv",
+        "--declared-arithmetic",
+        "--number-format",
+        "invariant",
+        "--date-format",
+        "iso",
+        "--collation",
+        "ordinal"
+      ],
+      "exit_code": 2,
+      "passed": true,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "error: invalid LIKE pattern\n",
+      "expected_diagnostic": "pattern",
+      "expected_cells": 0
+    }
+  ],
+  "native_access_execution": "Unavailable; no native Access LIKE execution or localization qualification.",
+  "control_count": 136,
+  "modeled_cells": 944,
+  "all_originals_and_pins_unchanged": true,
+  "date": "2026-10-25",
+  "accepted_private_report": {
+    "path": ".cache/native-like-coercion-replay-accepted-20261025.json",
+    "bytes": 161824,
+    "sha256": "81451a4d1af6f71ea429e96fd19f267f0a2ca2a4b560e7cd6a1f8baaa2b5e96a"
+  },
+  "accepted_log": {
+    "path": ".cache/native-like-coercion-replay-accepted-20261025.log",
+    "bytes": 202,
+    "sha256": "7d5357b1573ff4f539e7558af1f1a8ad544b4b5d144452b4b50f27c695e704fc"
+  },
+  "terminal_session": 55688,
+  "exit_code": 0,
+  "command": "python3 docs/testing/compare_native_like_coercion.py --cli .cache/tablecraft-bin/read-query-p0-cli-20261025 --cli-sha256 9ef8530041ddefff1b888b6b58757a35221297044497fa9a32360570c1ed259f --revision 612bd74aabeaa1673c3791aa694aff747f6a45e6 --build-manifest .cache/read-query-p0-cli-20261025.json --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar --directory .cache/tablecraft-fixtures/scalar-seek-20261023 --report .cache/native-like-coercion-replay-accepted-20261025.json",
+  "excluded_attempts": [
+    {
+      "terminal_session": 4845,
+      "exit_code": 1,
+      "report": {
+        "path": ".cache/native-like-coercion-replay-20261025.json",
+        "bytes": 10085,
+        "sha256": "0ae05f8c034ce47e10763cc7b8a39d9429214b812358171c28ef5026743d76a1"
+      },
+      "log": {
+        "path": ".cache/native-like-coercion-replay-20261025.log",
+        "bytes": 522,
+        "sha256": "8c7feadea007a257b5ce5b9ef804dfeaaf7df7496bcbf6fd240f79994025885b"
+      },
+      "runner_snapshot": {
+        "path": ".cache/native-like-coercion-runner-before-bracket-fix-20261025.py",
+        "bytes": 13779,
+        "sha256": "f1c2c1ce7094c38ad7addd63a9cc944fb4fa1eb4bc315348cfaa1e971e2d7e2b"
+      },
+      "classification": "Runner SQL authoring error: emitted reserved Money as an unbracketed native field name. Four controls passed before the fifth query failed parsing. Bracketed all native field names, including Money, and reran the unchanged expected answer model on the same frozen executable. Also added the explicit build-manifest input and dirty native scope to the final runner/report. No runtime or answer-golden change.",
+      "counted_in_accepted_controls": false
+    }
+  ]
+}

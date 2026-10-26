@@ -168,6 +168,31 @@ ACE 16-family files. These test TableCraft's ordinal pattern profile over native
 text; they are not native Microsoft Access SQL/locale comparisons.
 [Fixture provenance](FIXTURES.md#native-like-query-inputs) records inputs and scope.
 
+## Original native-source coercion replay
+
+The [136-control replay](testing/results/native-like-coercion-2026-10-25.json)
+checks the registered original Scalar V2000, V2007, V2016 and V2019 files in
+ordinary and declared arithmetic modes. All 944 modeled result cells agree.
+Nine native numeric/Boolean/date carriers appear in both LIKE operand positions;
+NOT LIKE, parent filtering, NULL suppression, missing formatting/comparison
+policies, Error states, eager expression failures and invalid patterns are covered.
+
+Expected spellings come from previously pinned inert ordinary getter transcripts,
+exact integers/fractions and Gregorian calendar facts under invariant numeric and
+ISO date policies. Neither CStr nor another SQL evaluator supplies the answers.
+The [runner](testing/compare_native_like_coercion.py) rechecks the getter hashes
+and preserves all four original hashes before and after execution. The initial
+unbracketed Money field-name authoring failure is retained separately; its parser
+failure and repeated controls are excluded from the accepted count.
+
+The frozen executable uses revision `612bd74a` for the relevant query/expression
+sources and includes eight pending native check-only production changes. Their
+exact snapshots and the frozen executable/build-manifest hashes are recorded;
+this is not a clean-full-tree build claim. Scoped committed source snapshots are
+not a complete compilation manifest. Native Microsoft Access execution and
+locale qualification remain unrun; this replay establishes the explicit
+TableCraft profile over original native stored values.
+
 ## Primary references
 
 Reviewed 19 October 2026:
