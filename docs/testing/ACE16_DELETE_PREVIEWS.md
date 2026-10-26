@@ -303,3 +303,19 @@ import. Two initial strict attempts found unused shared-helper re-exports in the
 new author and independent tests; each test now uses the original helper through
 its shared wrapper. Logs remain retained. Runtime tests and their independent
 expected values required no correction.
+
+## Original-file internal-chain acceptance
+
+The [repaired frozen-tool replay](results/ace16-delete-internal-chains-originals-2026-10-26.json)
+passes all 32 controls: twenty candidates and twelve typed refusals over 96
+commands. All source/request pins remain unchanged, and request bytes match the
+initial refusal baseline. The sixteen previously unmet positives now pass with
+their original selections and budgets. This is separate from the implementation
+record above and does not count repeated historical runs as new controls.
+
+Independent getters and raw graph/map checks verify retained rows, exact
+key/reference boundaries, per-height sibling chains and unchanged unrelated
+bytes. The [owning observations](DELETE_CONTRACTION_STORAGE_OBSERVATIONS.md#accepted-original-replay-with-internal-sibling-chains)
+record valid candidate tail-only singleton internals versus bounded reference
+internals; the comparison establishes semantic/preservation agreement rather
+than identical reference bytes or native Access save/reopen qualification.
