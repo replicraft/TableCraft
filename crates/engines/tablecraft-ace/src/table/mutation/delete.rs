@@ -82,9 +82,12 @@ impl Ace16DeletePreview {
 impl NativeImage {
     /// Prepare ordinary-root deletion inside existing ACE16 pages.
     ///
-    /// All physical indexes must qualify for existing write codecs and have a
-    /// single root leaf. Exact entries are removed once per physical index;
-    /// historical counters, allocation, file length and payload bytes stay fixed.
+    /// All physical indexes must qualify for existing write codecs. Root leaves
+    /// may become empty; multi-level trees retain every original leaf partition
+    /// and require each leaf to stay nonempty. Exact entries are removed once per
+    /// physical index; ancestor bounds use complete retained key/row maxima.
+    /// Historical counters, topology, allocation, file length and payloads stay fixed.
+    /// A required split or empty non-root leaf refuses the complete candidate.
     /// Declared relationships touching this table are refused, including empty
     /// requests; no delete action or cascade is silently omitted. Existing active
     /// content, property, constraint, ignored-NULL and historical-layout gates

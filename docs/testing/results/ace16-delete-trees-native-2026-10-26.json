@@ -1,0 +1,229 @@
+{
+  "date": "2026-10-26",
+  "scope": "ACE16 engineering DELETE within original nonempty leaf partitions, retaining complete tree topology and exact full key/row ancestor maxima.",
+  "unique_unit_integration_tests": 126,
+  "new_unit_integration_tests": 9,
+  "existing_unit_integration_tests": 117,
+  "compile_fail_doc_tests": 3,
+  "total_unique_including_docs": 129,
+  "new_author_tests": 3,
+  "new_independent_tests": 6,
+  "author_numeric_matrix_combinations": 72,
+  "author_capacity_discriminator": {
+    "children": 302,
+    "entries_per_leaf": 2,
+    "old_separator_prefix_bytes": 3,
+    "retained_separator_prefix_bytes": 1,
+    "required_new_entry_bytes": 3625,
+    "available_entry_bytes": 3616,
+    "expected": "Unsupported(IndexedColumn) without a candidate; every original leaf would still have a retained entry."
+  },
+  "scope_files": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/tree.rs",
+      "bytes": 8445,
+      "sha256": "624b794a7136b9ae83813831ce75b50bfd482bfdac2352eabf117538374d59f0"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/tree/deletion.rs",
+      "bytes": 3459,
+      "sha256": "4f2666d496e31e9d66ed966b03a871849874b99c3105d47391b8a6b6719cd577"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/delete.rs",
+      "bytes": 3774,
+      "sha256": "345c7c4660456cc8118e5f603d0de523c43f57c098f1902bc779d6fd375bbfea"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete.rs",
+      "bytes": 5785,
+      "sha256": "c346b3a1231f5a42defe2d6835da1caa44ab4a59d4dda68dc2cc33e8ffc74e62"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_delete_trees.rs",
+      "bytes": 6808,
+      "sha256": "a51d0186b2cc9b90d18369d8654eb95e5422ae4e15a7e2098faddb1c3786db49"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_delete_trees/fixture.rs",
+      "bytes": 8455,
+      "sha256": "527c0a3df9d98b28ac9fc2d7a8edb43424ca4dc4cb261efc6438970557939c4f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_delete_tree_contract.rs",
+      "bytes": 539,
+      "sha256": "ec597583a81d72fe8b63809fe91cda4551638ac0fc2148429c17a35a697929c3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_delete_tree_contract/model.rs",
+      "bytes": 11003,
+      "sha256": "c56e4c20f172ab575ce34275806697bbbff96ebed1a36f1a400c7f8d7f0dcbf1"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_delete_tree_contract/values.rs",
+      "bytes": 2665,
+      "sha256": "ccde5984daa255dc98338d1ac0bcde4de2e32e7f400ccc77939566649630760b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_delete_tree_contract/boundaries.rs",
+      "bytes": 4816,
+      "sha256": "fdba360870f5de95ab842fe91d5bc566f05ff36546f0d53768e2f64a20a12d07"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_delete_tree_contract/composite.rs",
+      "bytes": 5915,
+      "sha256": "5d928e0b3841fd0226f904aa73a26d4cac844de339092ec5a8da1aa3fd7bb15c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_delete_contract/boundaries.rs",
+      "bytes": 7683,
+      "sha256": "f2a2b9b6d0dd78b1267d8533e04db9202473e6daa570df9dea9731965dbc70a8"
+    },
+    {
+      "path": "docs/access/writes/NATIVE_WRITES.md",
+      "bytes": 19509,
+      "sha256": "6e5c6b3980df192f679344afab4057853ee05e6e27b8f256734a61133f6c5f70"
+    },
+    {
+      "path": "docs/testing/ACE16_WRITE_PREVIEWS.md",
+      "bytes": 46677,
+      "sha256": "7f2296f750c67b3857807eb99d8b7cf4d1973edb4bf921a7175c0237f9166830"
+    },
+    {
+      "path": "docs/testing/ACE16_DELETE_PREVIEWS.md",
+      "bytes": 9108,
+      "sha256": "9a95b79f2e508b9a1639d252faa24e4f4f7087cba0276cda9160e067b2eec90b"
+    }
+  ],
+  "checks": [
+    {
+      "command": "cargo check --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-delete-trees-check-20261026.log",
+        "bytes": 183,
+        "sha256": "f2ef0f411d44a18d3633196b9f619ddf2c1e3da2b147ed44bdebd3cd64abbd6b"
+      },
+      "session": 20029
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test ace16_delete_trees --test ace16_delete_tree_contract --test ace16_deletes --test ace16_delete_contract",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-delete-trees-primary-final-20261026.log",
+        "bytes": 3086,
+        "sha256": "e48a922bae7d681550f8e640caff591157fcf107db31e740e5a62e771946aa78"
+      },
+      "session": 26174,
+      "unique_tests": 22
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test ace16_write_preview --test mutation --test ace16_fixed_updates --test scalar_index_updates --test integral_index_updates --test decimal_updates --test guid_updates --test composite_updates --test batch_updates --test mask_updates --test foreign_updates --test cascade_updates",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-delete-trees-regressions-20261026.log",
+        "bytes": 10779,
+        "sha256": "f266663c65b49f10599e80e3158caad0fcf214174486bec59dcdee2bda23791e"
+      },
+      "session": 78056,
+      "unique_tests": 98
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib table::indexes::mutation",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-delete-trees-private-tests-20261026.log",
+        "bytes": 1116,
+        "sha256": "91dc13281be2ac300714888351c5a698153c717f33ca149db288bf6a4ab981d9"
+      },
+      "session": 42673,
+      "unique_tests": 6
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib --test ace16_delete_trees --test ace16_delete_tree_contract --test ace16_delete_contract --example preview_ace16_delete -- -D warnings",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-delete-trees-clippy-accepted-20261026.log",
+        "bytes": 183,
+        "sha256": "a3363a386a069087c1a2c260449d0ed63706ecdf255a8697e8200d160ec5e3cb"
+      },
+      "session": 55040
+    },
+    {
+      "command": "cargo check --locked --offline -j2 -p tablecraft-ace --lib --no-default-features",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-delete-trees-minimal-20261026.log",
+        "bytes": 183,
+        "sha256": "e7b3a7e38e91fb992ac187bc98a64950eb5798fa37a52ed1327ab1b06a7cd77a"
+      },
+      "session": 76272
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --doc",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-delete-trees-doc-tests-20261026.log",
+        "bytes": 627,
+        "sha256": "cda5936ef27e42c80f22e492f932b6e8fc1f04a8d4f5549c1f8ca75b6faa3d8c"
+      },
+      "session": 45068,
+      "unique_tests": 3
+    },
+    {
+      "command": "rustfmt --edition 2024 --check crates/engines/tablecraft-ace/src/table/indexes/mutation/tree.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/tree/deletion.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/delete.rs crates/engines/tablecraft-ace/src/table/mutation/delete.rs crates/engines/tablecraft-ace/tests/ace16_delete_trees.rs crates/engines/tablecraft-ace/tests/ace16_delete_trees/fixture.rs crates/engines/tablecraft-ace/tests/ace16_delete_tree_contract.rs crates/engines/tablecraft-ace/tests/ace16_delete_tree_contract/model.rs crates/engines/tablecraft-ace/tests/ace16_delete_tree_contract/values.rs crates/engines/tablecraft-ace/tests/ace16_delete_tree_contract/boundaries.rs crates/engines/tablecraft-ace/tests/ace16_delete_tree_contract/composite.rs crates/engines/tablecraft-ace/tests/ace16_delete_contract/boundaries.rs",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-delete-trees-format-20261026.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "preserved_lint_failures": [
+    {
+      "session": 59297,
+      "exit_code": 101,
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib --test ace16_delete_trees --test ace16_delete_tree_contract --test ace16_delete_contract --example preview_ace16_delete -- -D warnings",
+      "log": {
+        "path": ".cache/ace16-delete-trees-clippy-20261026.log",
+        "bytes": 2206,
+        "sha256": "5ec9334508a1f3c1b5129af000994be7738202d21a8577ef20b05be3a869638a"
+      },
+      "reason": "Unused shared index fixture helper and double-ended iterator last in independent expected model; added shared module dead-code permission and adjusted iteration only."
+    },
+    {
+      "session": 28614,
+      "exit_code": 101,
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib --test ace16_delete_trees --test ace16_delete_tree_contract --test ace16_delete_contract --example preview_ace16_delete -- -D warnings",
+      "log": {
+        "path": ".cache/ace16-delete-trees-clippy-final-20261026.log",
+        "bytes": 1872,
+        "sha256": "1e38688b0d3c7f37d934b101ccedf1500c877290f44779e485cba826dbc42544"
+      },
+      "reason": "Clippy additionally required rfind instead of filter(...).next_back(); expected final matching element unchanged."
+    }
+  ],
+  "superseded_green_primary": {
+    "session": 7708,
+    "exit_code": 0,
+    "log": {
+      "path": ".cache/ace16-delete-trees-primary-20261026.log",
+      "bytes": 3448,
+      "sha256": "7428ba6d804204660533b806502587fd896d67e66c99ad0e95f13efd8a5b211e"
+    },
+    "tests": 22,
+    "note": "First runtime batch passed all cases; final batch repeats same expected results after test-only lint corrections."
+  },
+  "old_negative_migration": "Only old node no-op/safe nonempty-leaf refusal was migrated to positive assertions. Deleting the sole member of an original singleton leaf remains Unsupported. Ignored-NULL, relationship and normal-write refusals are unchanged.",
+  "boundaries": [
+    "Root-leaf path retains prior implementation/allocation behavior, including zero-entry roots. Equal-cardinality Tree::rewrite is unchanged.",
+    "Node traversal consumes each original leaf population before filtering; no globally filtered-stream redistribution, sorting or borrowing keys from another leaf.",
+    "Every retained leaf stays nonempty; exact key AND row maxima propagate recursively through bounded-final-child and tail-child nodes. Tail pointers, child/sibling numbers, heights, physical roots/maps and historical counters remain immutable.",
+    "Every physical index must remove exactly the requested reference population; aliases still deduplicate. Empty nonroot leaf or re-encoding overflow in any index refuses the whole candidate.",
+    "No-op node requests fully qualify Tree::read then emit no patches, avoiding canonicalization of otherwise valid original bytes.",
+    "Existing snapshot-local raw request identity, tombstones/live counts, full constraints/relationship refusal, macro/history/property/ignored-NULL gates, unchanged-byte proof and cumulative resource/cancel checks remain.",
+    "Shared mutation admission remains plain subversion-zero ACE16 and feature-only separate non-journalable candidate. No normal CLI/backend write capability expands.",
+    "Original public-writer node replay is separate/unrun here. No native Access SQL/save/reopen, data-macro absence/execution, allocation, empty-branch/root contraction, INSERT or durable commits are qualified."
+  ]
+}

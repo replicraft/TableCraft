@@ -59,12 +59,11 @@ fn empty_requests_do_not_bypass_format_properties_or_ordinary_write_gates() {
 }
 
 #[test]
-fn ignored_null_node_trees_and_relationship_actions_remain_outside_delete_scope() {
+fn ignored_null_relationship_actions_and_leaf_exhaustion_remain_outside_delete_scope() {
     let mut ignored = ace(index_fixture::database(false, false, false), 6);
     ignored[10 * 4096 + 189] |= 2;
     for bytes in [
         ignored,
-        ace(index_fixture::node_database(), 6),
         foreign_fixture::database(6, false, false),
         foreign_fixture::database(6, false, true),
     ] {
@@ -75,6 +74,16 @@ fn ignored_null_node_trees_and_relationship_actions_remain_outside_delete_scope(
             ));
         }
     }
+
+    let node = ace(index_fixture::node_database(), 6);
+    assert_eq!(preview(&node, &[]).unwrap().candidate_bytes(), node);
+    assert!(preview(&node, &[request(0, false)]).is_ok());
+    // The right leaf in the original independent geometry has just one entry.
+    // Deleting it still requires the separately unsupported contraction path.
+    assert!(matches!(
+        preview(&node, &[request(2, false)]),
+        Err(EditError::Unsupported(WriteBlocker::IndexedColumn))
+    ));
 }
 
 #[test]
