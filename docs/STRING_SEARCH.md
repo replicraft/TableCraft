@@ -152,8 +152,22 @@ a position; invalid ranges return InvalidTextMatch. Providers own callback work,
 cancellation, match correctness and earliest/latest selection. The same bounds
 validation applies to `find_locale`. Input work is charged before dispatch and a
 step/cancellation checkpoint follows either callback before accepting its range.
-No automatic
-fixed-width equality loop stands in for locale search.
+A reverse callback result must also start strictly before its exclusive bound:
+a result beginning at that bound would publish a one-based position beyond the
+caller's requested start. This applies to decoded and opted-in raw UTF-16
+callbacks under Text, Database and host-default modes. Interior zero-length
+provider spans remain admitted, as do the existing forward-span rules; this
+check does not decide native matching of nonempty ignorable text. A genuinely
+empty needle keeps its earlier shortcut and does not invoke the callback.
+Callback errors and the post-callback cancellation/work checkpoint remain ahead
+of result acceptance, without alternate-provider retries.
+
+Microsoft's [InStrRev reference](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/instrrev-function)
+describes searches bounded by the supplied start, and its
+[Access query examples](https://support.microsoft.com/en-gb/access/functions/instrrev-function)
+establish direct query use. The boundary validation is an explicit provider
+contract correction, not native locale/zero-weight equivalence evidence.
+No automatic fixed-width equality loop stands in for locale search.
 
 CLI `--collation ordinal` supplies exact, case-sensitive substring matching for
 database/default modes, with UTF-16 input/output boundaries. It handles boundaries
@@ -311,3 +325,14 @@ it with --text-locale; --text-lcid registers a numeric identity separately. Inpu
 ceilings and cumulative work/cancellation remain explicit. The standalone-span
 algorithm is not a native NLS StringSearch implementation or a completed wider
 LCID/Access compatibility profile.
+
+## Reverse callback-bound verification
+
+The [scoped verification record](testing/results/read-query-reverse-search-bounds-2026-10-25.json)
+records 40 expression tests, including five new Unicode/raw callback and finite
+range-model controls. The before-fix probe retained three failures: decoded and
+raw reverse searches published a position beyond their requested start, and the
+finite range model found the same boundary hole. Typed callback-failure tests
+already passed and remain passing. Final expression lint and the standalone
+minimal build pass. No query, CLI, ICU locale or native Access execution is
+claimed by this focused record.
