@@ -157,3 +157,52 @@ CLI checks cover eval/run equality and buffered refusals. See the
 [verification record](testing/results/guid-byte-predicates-2026-10-25.json).
 This closes a concrete predicate-coercion gap; broader Byte-array semantics,
 native qualification and full P0 acceptance remain open.
+
+## Native predicate replay — 25 October 2026
+
+The original [GUID predicate runner](testing/compare_guid_predicates.py) passes
+192 CLI controls: 156 successful queries and 36 buffered refusals. Eight
+independent read-only getter invocations supply the original stored GUIDs. Four
+small scalar originals cover Jet 4, ACE 2007, ACE 2016 and ACE 2019; four registered
+20,000-row indexed originals cover the same families. Python UUID supplies
+identity expectations and Python integers supply final ID ordering. Only
+TableCraft executes SQL.
+
+Small-file queries exercise equality in both directions, inequality, list and
+subquery membership, equality quantifiers, parameters, runtime domains and
+progressive filters in both arithmetic profiles. Malformed bytes, unsupported
+ordering, eager conversion errors and NULL constructor calls retain explicit
+empty-stdout refusals. The earlier executable retains twenty expected type
+mismatches across small and indexed queries. Large cases compare sequential,
+required ascending and required descending GUID-index reads under explicit
+native/query allowances; they retain the complete original predicate.
+
+The [audited report](testing/results/guid-predicate-replay-2026-10-25.json) records
+64,140 returned ID observations, a complete unique command grid, eighteen
+unchanged artifact pins and four selected committed/live source snapshots. The
+large getters read 80,000 original rows across four files; repeated returned rows
+are query observations, not additional authored records. Scalar getter hashes
+match the preceding independent numeric replay. Native Access comparison and
+Byte-array/type inference remain unqualified. No new fixture, dependency or
+performance claim is introduced.
+
+The candidate was built at `819980ce` with SHA-256
+`2be6ed81c1839ce7235bf29ce0b6d6e8f5d6aea70da5ac4e20109ff62bf5b9ed`.
+The baseline was built at `8c1b3004` with SHA-256
+`5a73870b888d58a22314096e761ec3ddec8cfc4ea6bbf7a7e5acda868b46d10c`.
+The runner downloads/builds nothing, verifies registered original/tool hashes,
+requires a fresh report path and caps CLI observations at 400. Getter heaps are
+capped at 256 MiB and individual commands have timeouts. A private diagnostic
+report preserves the initial missing TABLE argument to `--index`; the runner
+correction did not change runtime code or expected values.
+
+```sh
+python3 -B docs/testing/compare_guid_predicates.py \
+  --cli .cache/tablecraft-bin/guid-predicates-cli-20261025 \
+  --baseline .cache/tablecraft-bin/agreement-result-types-cli-20261025 \
+  --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
+  --directory .cache/tablecraft-fixtures/scalar-seek-20261023 \
+  --indexes .cache/tablecraft-fixtures/large-indexes \
+  --revision 819980ce \
+  --report FRESH_REPORT.json
+```

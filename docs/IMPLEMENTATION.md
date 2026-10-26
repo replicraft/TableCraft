@@ -1,5 +1,17 @@
 # Implementation status
 
+## Independent native GUID predicate replay
+
+The [original predicate replay](GUID_CONVERSIONS.md#native-predicate-replay--25-october-2026)
+passes 192 CLI controls over four unchanged scalar and four unchanged 20,000-row
+indexed originals. Eight independent getters supply GUIDs; Python UUID/integer
+models check 64,140 ID observations. Small cases cover composed, parameterized,
+domain and progressive predicates in both arithmetic modes; large cases cover
+sequential and both required GUID-index directions. Twenty earlier-executable
+refusals and sixteen current malformed/order/eager/NULL refusals retain empty
+stdout. Eighteen artifact pins and four selected committed/live sources remain
+unchanged. Native Access comparisons and full P0 qualification remain pending.
+
 ## GUID-structure equality predicates
 
 Contextual `=`/`<>` predicates now compare a stored Guid with exactly sixteen
