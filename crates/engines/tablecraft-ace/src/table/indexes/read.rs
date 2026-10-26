@@ -334,19 +334,19 @@ struct ReadView<'a> {
     omitted_nulls: bool,
 }
 
-pub(super) struct IgnoredFixedCheck<'a> {
+pub(super) struct IgnoredMembershipCheck<'a> {
     pub columns: &'a [&'a str],
     pub eligible_rows: usize,
 }
 
 /// Complete physical membership for check_table, never a complete table scan.
 /// The expected population comes from a separately validated sequential read.
-pub(super) fn read_ignored_fixed_check<R: NativeReadSource>(
+pub(super) fn read_ignored_membership_check<R: NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     table: &str,
     index: &str,
-    request: IgnoredFixedCheck<'_>,
+    request: IgnoredMembershipCheck<'_>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<TableSnapshot, InspectError> {
@@ -420,10 +420,14 @@ fn read_selected<R: crate::NativeReadSource>(
                 Int64IndexSelection::Range { .. }
             ))
         );
-        if options.eligible_rows.is_none() && !non_null_fixed {
-            return Err(InspectError::Unsupported);
+        if options.eligible_rows.is_some() {
+            IndexProfile::for_check(selected, schema)?
+        } else {
+            if !non_null_fixed {
+                return Err(InspectError::Unsupported);
+            }
+            IndexProfile::ignored_fixed(selected, schema)?
         }
-        IndexProfile::ignored_fixed(selected, schema)?
     } else {
         if options.eligible_rows.is_some() {
             return Err(InspectError::Malformed);

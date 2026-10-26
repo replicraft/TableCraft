@@ -45,6 +45,28 @@ impl<'a> CheckProjection<'a> {
         &self.names
     }
 
+    /// The sequential snapshot has already validated every actual carrier.
+    /// Only these key columns determine omission; unrelated values never do.
+    pub fn null_facts(
+        &self,
+        values: &[Value],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(bool, bool), InspectError> {
+        let mut all_null = true;
+        let mut any_null = false;
+        for &position in &self.positions {
+            super::tick(budget, cancelled)?;
+            let null = matches!(
+                values.get(position).ok_or(InspectError::Malformed)?,
+                Value::Null
+            );
+            all_null &= null;
+            any_null |= null;
+        }
+        Ok((all_null, any_null))
+    }
+
     pub fn row<'b>(&'b self, values: &'b [Value]) -> ProjectedKeyRow<'b> {
         ProjectedKeyRow {
             positions: &self.positions,

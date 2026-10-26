@@ -1,3 +1,4 @@
+use super::super::profile::Coverage;
 use super::super::{
     NativeIndex, guid,
     key::{MARKER_BYTES, decode_component},
@@ -91,7 +92,15 @@ impl Columns {
         index: &NativeIndex,
         schema: &TableSchema,
     ) -> Result<Self, InspectError> {
-        super::super::profile::qualify(index)?;
+        Self::with_coverage(index, schema, Coverage::CompleteTable)
+    }
+
+    pub(in crate::table::indexes) fn with_coverage(
+        index: &NativeIndex,
+        schema: &TableSchema,
+        coverage: Coverage,
+    ) -> Result<Self, InspectError> {
+        coverage.qualify(index)?;
         if !(2..=INDEX_KEY_COLUMNS).contains(&index.columns.len()) {
             return Err(InspectError::Unsupported);
         }

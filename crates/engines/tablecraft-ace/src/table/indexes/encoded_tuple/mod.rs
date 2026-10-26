@@ -4,7 +4,7 @@ use super::{
     NativeIndex,
     key::{KeyProfile, KeyRow, KeyWork},
     page::{CHILD_BYTES, ROW_BYTES},
-    profile::qualify,
+    profile::Coverage,
 };
 use crate::{
     InspectError, TableSchema,
@@ -58,8 +58,12 @@ pub(in crate::table::indexes) fn has_variable(
     Ok(found)
 }
 impl<'a> EncodedTupleProfile<'a> {
-    pub fn new(index: &NativeIndex, schema: &'a TableSchema) -> Result<Self, InspectError> {
-        qualify(index)?;
+    pub fn new(
+        index: &NativeIndex,
+        schema: &'a TableSchema,
+        coverage: Coverage,
+    ) -> Result<Self, InspectError> {
+        coverage.qualify(index)?;
         if !(2..=INDEX_KEY_COLUMNS).contains(&index.columns.len()) {
             return Err(InspectError::Unsupported);
         }

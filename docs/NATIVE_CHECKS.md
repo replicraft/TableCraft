@@ -126,12 +126,14 @@ python3 docs/testing/compare_constraints.py --cli path/to/tablecraft \
 
 ## What remains unchecked
 
-Text compound keys, Memo unique constraints, full-width Short Text unique
-constraints, other unqualified key types, ignore-NULL profiles other than qualified
-single Int32/ACE16 Int64/Currency, unqualified flags/types and
-foreign-reference profiles have no tree/row validation. Their definitions remain
-visible, including coverage gaps. Entire tables with unsupported scalar fields
-fail; the checker does not pretend to validate selected columns only.
+Unqualified field/codec/sort descriptors, unknown flags/types and unqualified
+foreign-reference profiles retain explicit coverage gaps. Memo-containing,
+full-width or digested unique keys remain unqualified wherever the existing
+physical key-exactness contract cannot establish uniqueness. Ignore-NULL alone
+no longer prevents checking an otherwise qualified physical key profile,
+including supported Text/Binary-bearing tuples. Entire tables with unsupported
+scalar fields still fail; this checker does not claim whole-table validation
+from a selected-column read.
 
 Field Required/default/validation properties and foreign-key membership use the
 separate explicit constraint audit. This structural check does not qualify Text/other unqualified
@@ -172,7 +174,8 @@ Text-bearing compound indexes now participate in full traversal and row-key
 checks, including mixed numeric/GUID/Decimal/Short Binary components. Constraint
 NULL facts come from complete rows, not possibly truncated separator bytes.
 Unique checks stay unqualified for any Memo component or a full-width/digested
-key. Unknown collation and other ignore-NULL profiles remain explicit gaps. See
+key. Unknown collation, unsupported key profiles and inexact unique constraints remain
+explicit gaps. See
 [compound text contracts and evidence](NATIVE_TEXT.md#compound-text-index-reads).
 
 
@@ -207,31 +210,42 @@ default allowances. Sources must still remain stable/offline throughout the
 operation. Fewer rereads do not establish concurrent-file isolation, and this
 evidence does not qualify native Microsoft Access integrity results or writes.
 
-## Integer and Currency ignore-NULL membership
+## Complete ignore-NULL membership
 
-A completed check can validate known single-column Int32, ACE2016/ACE2019 Int64
-and Currency indexes that omit NULL keys. Int64 requires both the qualified
-header family and scalar metadata. The checker first validates the complete
-sequential table, including its declared live count, and counts actual non-NULL
-roots with each qualified index's exact carrier checks. Currency units and
-Int64 values remain signed integers; no floating conversion or cross-carrier
-coercion enters membership. It then drops that snapshot and traverses the
-complete physical index
-under the same cumulative allowance. Every entry must reference a distinct live
-row with the exact non-NULL key, and the entry population must match the eligible
-sequential count. Thus an omitted NULL cannot replace a missing non-NULL entry.
-Empty and entirely NULL tables have an empty physical population.
+Complete checks support the existing qualified single and compound physical key
+profiles with Ignore NULLs: Boolean, Byte/Int16/Int32, qualified ACE16 Int64,
+Currency, IEEE Single/Double, bounded legacy DATE, GUID, Decimal, qualified General
+Text/Memo and Short Binary, including their supported mixed tuples. The same
+storage/geometry/sort descriptors and ten-key ceiling apply. This reuses physical
+codecs; it does not add query comparison rules, locales or field types.
 
-Existing unique-key checks apply to the retained non-NULL entries; required-key
-checks also examine omitted sequential NULL roots. Logical aliases retain
-individual coverage entries. `TableCheck::rows()` and its schema still describe
-the full table population. `Checked` means complete qualified physical coverage,
-which does not make this index a complete-table retrieval path. Public indexed
-`All`/`Null` requests remain refused.
+The checker first validates the complete sequential table and declared live
+count. It resolves only each index's key columns and independently counts roots
+whose key components are **not all NULL**. Unrelated columns never determine
+omission. Partially NULL tuples remain eligible, stored Boolean false remains a
+value, and empty Text/Binary differs from NULL. Required-key checks also inspect
+all sequential roots, including any omitted all-NULL key. Actual carriers have
+already passed the full scalar reader; no numeric or Text coercion is introduced.
 
-All work, eligible-count allocation, row decoding, traversal and constraints
-share the caller's budget/cancellation contract. A failure yields no partial
-report. Unknown declarations and other ignore-NULL carrier profiles remain
-visible as unsupported. Existing native mutation gates explicitly retain the
-ignore-NULL refusal despite the new read-check coverage; this is no new write
-support or native Microsoft Access integrity qualification.
+The sequential snapshot is then dropped before complete index traversal. Every
+entry must reference a distinct live root with the exact reconstructed key. The
+physical population must match the independent eligible count, and a returned
+all-NULL key is malformed. Missing roots, duplicate references, injected NULLs,
+wrong keys and corrupt owned pages yield no partial report. Empty or entirely
+NULL keys have zero physical entries while `TableCheck::rows()` and its schema
+retain the full table count. Logical aliases retain individual coverage entries.
+
+Known flags and reciprocal foreign-reference validation remain mandatory. Existing
+unique-key exactness rules still apply: physical traversal does not waive Memo or
+digest limitations. Unknown/unqualified profiles remain visible as unsupported,
+including on empty tables. Metadata resolution, eligible counts, traversal,
+decoding and constraints use one cumulative budget and cancellation contract.
+
+Private `PhysicalMembership` qualification is separate from `CompleteTable`.
+Default profile constructors retain complete-table qualification, including the
+direct numeric/Decimal tuple constructors used by mutations. The central mutation
+gate also retains its ignore-NULL blocker, including no-op and unrelated-column
+requests. A checked physical index therefore grants neither writes nor a complete
+retrieval snapshot. Public `All`/`Null` reads remain refused; automatic and explicit
+non-NULL retrieval keep their separately qualified Int32/ACE16 Int64/Currency
+scope. Native Access integrity qualification remains separate.

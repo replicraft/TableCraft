@@ -1146,9 +1146,12 @@ validate traversed pages and returned records rather than skipped subtrees.
 `All`, `Null` and ordinary full-index table reads still refuse an omitting index.
 An unbounded Range means every non-NULL key, rather than a complete table: its
 schema retains the full table's declared row count. Other ignore-NULL carrier
-and composite profiles remain unsupported. Full consistency checks separately
-validate the eligible physical population against a complete sequential read;
-see [check coverage](NATIVE_CHECKS.md#integer-and-currency-ignore-null-membership).
+and composite profiles remain unsupported for these public retrieval requests.
+Full consistency checks separately cover all already-qualified physical key
+profiles, including compound keys: only all-NULL keys are omitted, while partially
+NULL keys remain eligible. They validate the physical population against a
+complete sequential read;
+see [check coverage](NATIVE_CHECKS.md#complete-ignore-null-membership).
 
 This read qualification does not expand native edit or engineering-preview
 eligibility. Ignore-NULL declarations retain their existing mutation blocker,

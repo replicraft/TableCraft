@@ -1,0 +1,205 @@
+{
+  "date": "2026-10-25",
+  "scope": "Complete physical consistency checks for all already-qualified ignore-NULL native index profiles; explicit PhysicalMembership versus CompleteTable qualification, unchanged public seek/automatic scope and mutation gates",
+  "unique_tests": 213,
+  "new_tests": 15,
+  "existing_regression_tests": 198,
+  "checks": [
+    {
+      "command": "cargo check --locked --offline -j2 -p tablecraft-ace --lib --features ace16-write-preview",
+      "session": 81521,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ignored-index-coverage-check-20261025.log",
+        "bytes": 3422,
+        "sha256": "d00c5597120e4be97bfa12e03805a136d809ad15984087d95ac3372503803525"
+      }
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test ignored_index_checks",
+      "session": 83956,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ignored-index-coverage-tests-20261025.log",
+        "bytes": 2309,
+        "sha256": "25f03fa25a5d3291ceafa8f7aa826eab9ed34a70f983839ac0a8fcb77030981c"
+      },
+      "unique_tests": 13
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib table::indexes::profile::tests",
+      "session": 79548,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ignored-index-coverage-private-tests-20261025.log",
+        "bytes": 626,
+        "sha256": "e88593f5651ebec09383f0742cbffe8b74dd2708d210336640a46966f6237328"
+      },
+      "unique_tests": 2
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test indexes --test index_nodes --test boolean_indexes --test narrow_indexes --test floating_indexes --test date_indexes --test currency_indexes --test guid_indexes --test guid_composite_indexes --test decimal_indexes --test decimal_composite_indexes --test composite_indexes --test binary_indexes --test constraints --test composite_constraints --test foreign_indexes --test ignored_null_indexes --test ignored_null_wide_indexes --test ace16_fixed_updates --test indexed_nulls --test ace16_scalars",
+      "session": 93209,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ignored-index-coverage-regressions-20261025.log",
+        "bytes": 21209,
+        "sha256": "7e9607189f3241925b8ea5f63cda660afcae4078690ff54b966a8b9503814f33"
+      },
+      "unique_tests": 198,
+      "breakdown": {
+        "ace16_fixed_updates": 6,
+        "ace16_scalars": 9,
+        "binary_indexes": 5,
+        "boolean_indexes": 10,
+        "composite_constraints": 29,
+        "composite_indexes": 7,
+        "constraints": 2,
+        "currency_indexes": 7,
+        "date_indexes": 6,
+        "decimal_composite_indexes": 7,
+        "decimal_indexes": 14,
+        "floating_indexes": 6,
+        "foreign_indexes": 14,
+        "guid_composite_indexes": 6,
+        "guid_indexes": 13,
+        "ignored_null_indexes": 7,
+        "ignored_null_wide_indexes": 5,
+        "index_nodes": 10,
+        "indexed_nulls": 7,
+        "indexes": 25,
+        "narrow_indexes": 3
+      }
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib --test ignored_index_checks --test ignored_null_indexes --test ignored_null_wide_indexes --test composite_indexes --test decimal_composite_indexes --test indexes --test foreign_indexes -- -D warnings",
+      "session": 95690,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ignored-index-coverage-clippy-20261025.log",
+        "bytes": 566,
+        "sha256": "2ed26ee77ec04b7c32759e10b1c07d38136e6ce668f9c0fafbf58f5d530decf0"
+      }
+    },
+    {
+      "command": "cargo check --locked --offline -j2 -p tablecraft-ace --lib --no-default-features",
+      "session": 36681,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ignored-index-coverage-minimal-20261025.log",
+        "bytes": 183,
+        "sha256": "7a21a9bcd738ee0a784fd0a4a090445ceeccb686e63e8ede1ec59b3899656d68"
+      }
+    }
+  ],
+  "formatting": {
+    "command": "rustfmt --edition 2024 --check crates/engines/tablecraft-ace/src/table/indexes/profile.rs crates/engines/tablecraft-ace/src/table/indexes/read.rs crates/engines/tablecraft-ace/src/table/indexes/check.rs crates/engines/tablecraft-ace/src/table/indexes/check/ignored_nulls.rs crates/engines/tablecraft-ace/src/table/indexes/check/projection.rs crates/engines/tablecraft-ace/src/table/indexes/composite/columns.rs crates/engines/tablecraft-ace/src/table/indexes/composite/decimal_columns.rs crates/engines/tablecraft-ace/src/table/indexes/encoded_tuple/mod.rs crates/engines/tablecraft-ace/src/table/indexes/profile/tests.rs crates/engines/tablecraft-ace/tests/ignored_index_checks.rs crates/engines/tablecraft-ace/tests/ignored_index_checks/boundaries.rs crates/engines/tablecraft-ace/tests/ignored_index_checks/fixed.rs crates/engines/tablecraft-ace/tests/ignored_index_checks/fixture.rs crates/engines/tablecraft-ace/tests/ignored_index_checks/payloads.rs crates/engines/tablecraft-ace/tests/ignored_index_checks/tuples.rs",
+    "exit_code": 0,
+    "log": {
+      "path": ".cache/ignored-index-coverage-format-20261025.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "git_diff_check": "passed"
+  },
+  "excluded_runs": [],
+  "excluded_counts": {
+    "private_filtered_tests": 172
+  },
+  "scope_files": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/profile.rs",
+      "bytes": 9985,
+      "sha256": "655ea7a1d6ca776179a15aaf2b9aef2a0d2939d2d35824350ac59570702e1b40"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/read.rs",
+      "bytes": 25679,
+      "sha256": "25fe19b5d3ad554145d859afff2fbf0dc3693c99df161fef3ae55f56f33fc2ad"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/check.rs",
+      "bytes": 11476,
+      "sha256": "35bb8dc3dec75e37e4549268fe80c61c34fce32a07763d8c023c07cf98837969"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/check/ignored_nulls.rs",
+      "bytes": 2589,
+      "sha256": "63ab30cce8e393c4b6f1c74aafbd88467515b25628197165b661d84bda4f81f7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/check/projection.rs",
+      "bytes": 2788,
+      "sha256": "77cd0de48cca7fca91e87c742ae56b2bdae9aeea417e54e59c948a5629365bf8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/composite/columns.rs",
+      "bytes": 4725,
+      "sha256": "6dd39e8d760f81a79edc6b10eb9bb1be13dcd36ec1e72ae2af7cf85e839fef4f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/composite/decimal_columns.rs",
+      "bytes": 4758,
+      "sha256": "b7f682ed79f01f46b8a73af76d57115f0c005fd96026b604b6fa3f63e25afd0c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/encoded_tuple/mod.rs",
+      "bytes": 6139,
+      "sha256": "4677262950dd86de189345fd6c80301fa896575b80f48725b6fe5392db2b0b62"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/profile/tests.rs",
+      "bytes": 3508,
+      "sha256": "8510a065f7c271e886a233ca6d79558f73e3acbe316300805e59586020e5ad66"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ignored_index_checks.rs",
+      "bytes": 1536,
+      "sha256": "f501b2fa051b7f090011dfc45b2dadc4c711085aa92ec67da2bcba84ccd416c4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ignored_index_checks/boundaries.rs",
+      "bytes": 6131,
+      "sha256": "895564728eeb775fd96ba07433ad788dac32182fa63c8cd36e150a3fa66417d6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ignored_index_checks/fixed.rs",
+      "bytes": 2482,
+      "sha256": "0c42de2d529e4dcd5fa70b88413a7c5d861849b67e808592ad6fe4b68205e3b8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ignored_index_checks/fixture.rs",
+      "bytes": 3284,
+      "sha256": "b945bf39b60ab85cd46485bf592b8d435f5916fa6d293a2392678633ccad3d7c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ignored_index_checks/payloads.rs",
+      "bytes": 6797,
+      "sha256": "e82210386bb123a634f33837649a881a222ad6fd1505f9420d592669b3c74cf7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ignored_index_checks/tuples.rs",
+      "bytes": 3573,
+      "sha256": "0f0b2d6b8db6e2dbe9e506cd39225aa1cbf698ce481b77e50b6cca4b80df2a7f"
+    },
+    {
+      "path": "docs/NATIVE_CHECKS.md",
+      "bytes": 15975,
+      "sha256": "1ee6ca36d600914819ca33a05dbb2f2f62393161f3a46a159472dab506c9ea9c"
+    },
+    {
+      "path": "docs/NATIVE_INDEXES.md",
+      "bytes": 76228,
+      "sha256": "47e1d5e69d137b6efc88057fe2e651a9be8c3499dd79e1599fb0d1e288be4587"
+    }
+  ],
+  "boundaries": [
+    "Only all-key-components NULL are omitted; partially NULL keys and stored Boolean false remain eligible.",
+    "Required checks retain any-NULL refusal, including omitted sequential roots.",
+    "Existing unknown flags/types/sorts, foreign validation and unique Memo/digest limitations remain.",
+    "Public All/NULL reads and all additional automatic selection families remain refused.",
+    "Default and direct mutation constructors retain CompleteTable qualification; central ignore-NULL write gate unchanged.",
+    "No Access adapter/query test execution or Microsoft Access integrity qualification claimed.",
+    "Original public-writer/getter corpus and forthcoming CLI replay are separate evidence and are not counted here."
+  ]
+}
