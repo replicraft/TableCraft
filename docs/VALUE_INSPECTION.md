@@ -209,3 +209,44 @@ consumers, streaming parity, eager failures and every observed query cancellatio
 point. Existing Binary/Variant array tests remain passing. See the
 [verification record](testing/results/guid-inspection-2026-10-25.json).
 This closes an implementation gap without completing native qualification or P0.
+
+## Native GUID inspection replay — 25 October 2026
+
+The original [inspection runner](testing/compare_guid_inspection.py) passes 84 CLI
+controls over four unchanged Jet 4/ACE 2007/ACE 2016/ACE 2019 scalar originals.
+Four independent read-only getters supply GUID presence and identities. Only
+TableCraft executes SQL; expected observer values follow the explicit fixed
+Byte-array profile, not an Access runtime oracle.
+
+The 68 successful controls compare 96 rows and 432 cells across both arithmetic
+profiles, buffered/progressive observers, NULL inspection, groups, domains,
+subqueries and typed GUID parameters. Sixteen refusals preserve empty stdout:
+the earlier executable's four type-name refusals and twelve current NULL-bound,
+dimension and eager-division failures. Four earlier IsArray controls retain their
+previous False results, documenting the changed observer behavior separately.
+
+The [audited report](testing/results/guid-inspection-replay-2026-10-25.json) verifies
+the complete unique command grid, fourteen immutable artifacts, five selected
+committed/live source snapshots, matching getter transcripts and identical primary
+observer output hashes across buffered/streaming and arithmetic profiles. Row/cell
+counts are recomputed from original presence. Originals, tools and frozen binaries
+are unchanged. Exact native subtype names, lower bounds and error precedence
+remain unqualified; no fixture or dependency is added.
+
+The candidate was built at `56c5617a`, SHA-256
+`eb8ea6717440d41b9e4a4e159425c71d2d15b5cd2e48ad5c417d5d85654049f4`.
+The baseline was built at `819980ce`, SHA-256
+`2be6ed81c1839ce7235bf29ce0b6d6e8f5d6aea70da5ac4e20109ff62bf5b9ed`.
+The runner downloads/builds nothing, verifies reviewed fingerprints, caps CLI
+observations at 128 and requires a fresh report path. Commands have individual
+timeouts and getters have a 256 MiB Java heap ceiling.
+
+```sh
+python3 -B docs/testing/compare_guid_inspection.py \
+  --cli .cache/tablecraft-bin/guid-inspection-cli-20261025 \
+  --baseline .cache/tablecraft-bin/guid-predicates-cli-20261025 \
+  --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
+  --directory .cache/tablecraft-fixtures/scalar-seek-20261023 \
+  --revision 56c5617a \
+  --report FRESH_REPORT.json
+```

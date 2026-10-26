@@ -1,5 +1,16 @@
 # Implementation status
 
+## Independent native GUID inspection replay
+
+The [original inspection replay](VALUE_INSPECTION.md#native-guid-inspection-replay--25-october-2026)
+passes 84 CLI controls over four unchanged priority-family scalar originals.
+Four read-only getters supply GUID presence/identity; 68 successes compare 96
+rows and 432 cells, while sixteen refusals retain empty stdout. Buffered,
+progressive, parameterized, grouped, domain and subquery observers share the
+explicit profile. The audit rehashes fourteen artifacts and five selected source
+snapshots; primary observer hashes agree across both arithmetic modes and
+publication paths. Native Access type/bound/error qualification remains pending.
+
 ## Stored GUID inspection and bounds
 
 Stored Guid values now use a borrowed fixed Byte-array view for TypeName, VarType,

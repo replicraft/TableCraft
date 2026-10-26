@@ -8546,3 +8546,15 @@ observations, 64,140 compared IDs, eighteen unchanged artifacts and four selecte
 source snapshots. Eight getters supply stored rows, including 80,000 larger
 indexed rows; scalar transcripts match the earlier mixed-key replay. Native
 Access execution and Byte-array subtype/ordering qualification remain pending.
+
+## Native GUID inspection replay — 25 October 2026
+
+The [original inspection runner](testing/compare_guid_inspection.py) reuses the
+four registered immutable ScalarFixture originals and reviewed Jackcess 5.0.4
+read-only getter tooling. No new third-party fixture or binary is committed.
+The [report](testing/results/guid-inspection-replay-2026-10-25.json) records 84 CLI
+controls, 96 compared rows, 432 cells, fourteen immutable artifacts and five
+selected source snapshots. Four getter hashes match the preceding GUID predicate
+replay. Observer expectations follow the explicit fixed Byte-array profile;
+only TableCraft executes SQL. All originals remain unchanged; this does not
+qualify native Access subtype names, bounds or errors.
