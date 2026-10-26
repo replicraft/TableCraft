@@ -614,9 +614,13 @@ contract retains the primary references, algorithms, provenance and exact limits
    excludes direct complex-list Count, and its multivalue guide prohibits bare
    list grouping. Mixed whole-list/displayed-member SELECTs now reuse aligned
    scalar expansion while retaining complete list sidecars, including through
-   joins and static named/derived sources. Whole-list UNION admission and native
-   collection semantics still need qualification; do not invent unsupported native list operations
-   merely to clear a generic aggregate/key checklist.
+   joins and static named/derived sources. The typed service now also expands
+   retained named/derived list members, preserving actual element policies and
+   binding origins. Repeated aliases align; independent relation instances remain
+   independent. All 150 original-getter replay controls pass; ordinary scalar and
+   progressive APIs keep their retained-list refusal. Whole-list UNION admission
+   and native collection semantics still need qualification; do not invent
+   unsupported native list operations merely to clear a generic aggregate/key checklist.
    Explicit `--collections` now
    exposes aligned stored attachment metadata members; an additional explicit
    `--decoded-attachments` option supplies bounded original-file Binary views.
