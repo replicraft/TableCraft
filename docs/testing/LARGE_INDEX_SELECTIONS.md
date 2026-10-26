@@ -1,13 +1,15 @@
-# Selected index reads above 4,096 table data pages
+# Indexed reads above 4,096 table data pages
 
-Qualified partial indexed reads now use fully validated bitmap membership instead
-of a complete materialized list of table data-page addresses. The engine retains
-its existing owner, live-slot, relocation, schema and row/key checks. Complete
-indexed reads, full checks and index-owned maps keep their old 4,096-address
-ceiling, preserving the existing mutation gates. There is no new index codec,
+Qualified partial indexed reads and explicit complete `IndexReadRequest` snapshots
+use fully validated bitmap membership instead of a complete materialized list of
+table data-page addresses. The engine retains its existing owner, live-slot,
+relocation, schema and row/key checks. Explicit complete reads retain full index
+count validation and a caller-selected positive row ceiling. Legacy complete
+entry points, full checks, mutation consumers and index-owned maps keep their old
+4,096-address ceiling. There is no new index codec,
 coercion, implicit fallback or shared-file coherence claim.
 
-The [native verification record](results/large-index-selections-native-2026-10-26.json)
+The initial partial-read [native verification record](results/large-index-selections-native-2026-10-26.json)
 records 170 unique passing engine tests, ten new: six public API tests and four
 private membership checks. Ten existing allocation tests and 150 existing
 index/constraint/write-preview/page regressions also pass. Selected strict Clippy,
@@ -23,6 +25,34 @@ The sparse source refuses unrelated data reads, so a sequential fallback cannot
 satisfy selected-read expectations. Private tests also check arbitrary membership
 order, cache reload validation and bounded retained memory. Synthetic fixtures
 are not native Access qualification.
+
+## Explicit complete-request extension
+
+Explicit `read_table_index_with_request` and table-order requests now use the
+same fully preflighted bitmap membership even for `All`. Selection completeness
+still controls full entry-count validation; an independent private ownership
+strategy controls map storage. Complete snapshots validate the declared count
+against the caller's cap, validate all index entries and fetch/check all returned
+roots before exposing a snapshot. The whole index reference list and completed
+result remain retained under cumulative budgets.
+
+The [complete-request record](results/large-complete-index-native-2026-10-26.json)
+records 165 unique passing tests, nine new: two implementation controls and seven
+independent public-API contract tests. Six existing selection tests and 150
+index, constraint, preview and page regressions pass. These checks cover explicit
+key/table order and hidden key projection; declared-count disagreement; invalid
+and insufficient caps; missing ownership, owner/key corruption and a late invalid
+bitmap; cancellation after actual bitmap I/O; all three cumulative budget pools;
+and the unchanged separate index-owned map ceiling. The sparse fixture contains
+three actual rows and 5,000 owned addresses; it does not itself establish a
+5,000-live-row complete snapshot. The original-file complete replay is separate.
+
+Legacy complete reads/projections, full checks and mutation consumers keep their
+materialized table-map gates. Index-owned maps retain their separate ceiling.
+The first strict lint found only unused shared-test helpers in the original
+selection target; the shared fixture module now explicitly permits unused helpers.
+Its original log is retained; final strict lint, minimal compilation and formatting
+pass. No runtime code or expected result changed in response to a failing test.
 
 ## Original public-writer baseline
 
@@ -89,7 +119,7 @@ zero disagreements and 10,028 result rows compared. Required point/range and
 automatic selections now succeed over both 5,000-owned-page tables, including
 empty matches. Two selected payload cases per profile hash all twelve decoded
 Binary fields against the getter digest. Sequential controls still return all
-5,000 IDs; complete indexed reads retain their expected structural refusals.
+5,000 IDs; at that historical revision, complete indexed reads retain their expected structural refusals.
 
 Original/getter, writer recipe, executable and reference hashes stay unchanged.
 This is independent public-writer/getter conformance, not native Microsoft

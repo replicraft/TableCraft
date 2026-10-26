@@ -24,7 +24,7 @@ use crate::{
     },
     limits::MAX_LIVE_ROWS,
 };
-use membership::DataPages;
+use membership::{DataPages, OwnershipStrategy};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -158,8 +158,10 @@ pub fn read_table_index_projection<R: crate::NativeReadSource>(
 /// Read a complete or selected indexed scalar snapshot under an explicit row cap.
 /// Partial selections cap returned keys/rows rather than the table declaration;
 /// only traversed pages and returned rows are audited. Complete reads additionally
-/// require the declared count to fit and agree. No limit changes native key
-/// eligibility, depth/map quotas, write qualification or fallback. Explicit
+/// require the declared count to fit and agree. Table data-page ownership uses
+/// fully preflighted bitmap membership for both complete and partial requests.
+/// Native key eligibility, index-owned map/depth quotas, legacy complete/check
+/// gates and write qualification remain unchanged. No fallback occurs. Explicit
 /// requests fetch referenced rows in bounded internal batches, retaining one
 /// cumulative budget; legacy entry points retain their operation-wide read quota.
 pub fn read_table_index_with_request<R: crate::NativeReadSource>(
@@ -331,6 +333,7 @@ struct ReadView<'a> {
     projection: &'a RowProjection,
     maximum_rows: usize,
     row_batch_size: Option<usize>,
+    ownership: OwnershipStrategy,
     table_order: bool,
     expected_rows: usize,
     omitted_nulls: bool,
@@ -475,6 +478,7 @@ fn read_selected<R: crate::NativeReadSource>(
         maximum_rows: options.maximum_rows as usize,
         row_batch_size: (!options.legacy_table_limit)
             .then(|| TableSnapshotLimits::default().batch_rows() as usize),
+        ownership: OwnershipStrategy::for_read(complete, options.legacy_table_limit),
         table_order: options.table_order,
         expected_rows,
         omitted_nulls,
@@ -594,7 +598,7 @@ fn read_rows<R: crate::NativeReadSource, P: KeyProfile, const N: usize>(
         entries.sort_unstable_by_key(|entry| entry.row);
         reader.tick()?;
     }
-    let mut data_pages = DataPages::new(&mut reader, schema.layout.usage, complete)?;
+    let mut data_pages = DataPages::new(&mut reader, schema.layout.usage, view.ownership)?;
     let mut rows = Vec::new();
     let mut current_page = None;
     for (position, entry) in entries.into_iter().enumerate() {

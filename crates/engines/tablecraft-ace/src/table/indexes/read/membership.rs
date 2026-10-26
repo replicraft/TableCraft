@@ -1,4 +1,4 @@
-//! Complete consumers retain their old materialized-map gate; selections use bits.
+//! Explicit requests use bits; legacy complete consumers retain materialized gates.
 use crate::{
     InspectError, NativeReadSource,
     format::{
@@ -7,21 +7,38 @@ use crate::{
     },
 };
 
+#[derive(Clone, Copy)]
+pub(super) enum OwnershipStrategy {
+    Materialized,
+    Bitmap,
+}
+
+impl OwnershipStrategy {
+    pub(super) fn for_read(complete: bool, legacy_table_limit: bool) -> Self {
+        if complete && legacy_table_limit {
+            Self::Materialized
+        } else {
+            Self::Bitmap
+        }
+    }
+}
+
 pub(super) enum DataPages {
-    Complete(Vec<u32>),
-    Selected(PageMembership),
+    Materialized(Vec<u32>),
+    Bitmap(PageMembership),
 }
 
 impl DataPages {
     pub(super) fn new<R: NativeReadSource>(
         reader: &mut Reader<'_, R>,
         reference: u32,
-        complete: bool,
+        strategy: OwnershipStrategy,
     ) -> Result<Self, InspectError> {
-        if complete {
-            allocation::pages(reader, reference).map(Self::Complete)
-        } else {
-            PageMembership::new(reader, reference).map(Self::Selected)
+        match strategy {
+            OwnershipStrategy::Materialized => {
+                allocation::pages(reader, reference).map(Self::Materialized)
+            }
+            OwnershipStrategy::Bitmap => PageMembership::new(reader, reference).map(Self::Bitmap),
         }
     }
 
@@ -31,8 +48,8 @@ impl DataPages {
         number: u32,
     ) -> Result<bool, InspectError> {
         match self {
-            Self::Complete(pages) => Ok(pages.binary_search(&number).is_ok()),
-            Self::Selected(pages) => pages.contains(reader, number),
+            Self::Materialized(pages) => Ok(pages.binary_search(&number).is_ok()),
+            Self::Bitmap(pages) => pages.contains(reader, number),
         }
     }
 }

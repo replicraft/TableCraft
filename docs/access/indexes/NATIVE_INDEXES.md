@@ -81,9 +81,10 @@ No upstream implementation was copied or linked. Native metadata stays in ACE;
 backend-neutral query contracts and shared schema do not import physical indexes.
 
 
-## Selected reads on tables with large data-page maps
+## Indexed reads on tables with large data-page maps
 
-Qualified partial index selections now validate table data-page membership
+Qualified partial index selections and explicit complete `IndexReadRequest`
+snapshots now validate table data-page membership
 without materializing one address per owned page. The existing allocation cursor
 first validates the complete usage row and every referenced bitmap, including
 metadata unrelated to the selected keys. Membership then retains the paid map
@@ -97,19 +98,29 @@ Read/work/allocation/row budgets and cancellation remain cumulative. Required
 indexes and opted-in automatic selections retain their existing failure and
 ordering behavior; no sequential fallback is added.
 
-This removes the 4,096-address table-map ceiling only for partial selections.
-`All`/complete indexed reads and full checks retain the old materialized table-map
-ceiling. Index-owned page maps also retain their 4,096-address ceiling. Mutation
-constructors, checks and engineering-preview gates continue through those complete
-paths; no write eligibility or new key codec is introduced. Existing snapshot,
-source, per-operation physical-read and output limits still apply.
+Explicit complete requests retain the caller's positive snapshot row cap,
+validate that the declared count fits, traverse the entire index and require its
+entry count to equal the declared population. Every returned row retains the same
+key and ownership checks. Bitmap membership changes allocation strategy, not the
+meaning of a complete read. Complete results remain buffered and paid; there is
+no constant-memory or streaming claim.
+
+Legacy complete entry points (`read_table_index` and
+`read_table_index_projection`), full checks and mutation consumers retain their
+materialized table-map ceiling. Index-owned page maps independently retain their
+4,096-address ceiling even for explicit requests. No write eligibility or new key
+codec is introduced. Existing snapshot, source, per-operation physical-read and
+output limits still apply.
 
 The [focused implementation evidence](../../testing/LARGE_INDEX_SELECTIONS.md) records
 170 passing engine tests, including ten new checks. Fresh public-writer ACE16
 inputs independently establish 5,000-row/5,000-page tables whose tiny indexed reads
 previously refused despite successful sequential reads. This is a bounded
-read-profile extension; full indexed scale and native Access qualification remain
-separate work.
+read-profile extension; larger index-owned maps and native Access qualification
+remain separate work. The explicit complete-request extension additionally passes
+165 engine tests, including nine new controls for complete counts, caller caps,
+key/table order, corruption, cancellation and quotas; its separate record is linked
+from that evidence document.
 
 ## Independent metadata evidence
 

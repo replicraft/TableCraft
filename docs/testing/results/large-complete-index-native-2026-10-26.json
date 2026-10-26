@@ -1,0 +1,155 @@
+{
+  "date": "2026-10-26",
+  "scope": "Explicit complete IndexReadRequest snapshots use fully preflighted bitmap table-page membership; completeness validation and legacy/check/write gates remain independent.",
+  "unique_tests": 165,
+  "new_tests": 9,
+  "existing_tests": 156,
+  "new_test_breakdown": {
+    "implementation": 2,
+    "independent_contract": 7
+  },
+  "checks": [
+    {
+      "command": "cargo check --locked --offline -j2 -p tablecraft-ace --lib",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/large-complete-index-check-20261026.log",
+        "bytes": 881,
+        "sha256": "448ff0357f1161e5b28eebffb1ee7aa38b3a22a0751007ee18c464ded8ec3f43"
+      },
+      "session": 9040
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --test large_index_selections",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/large-complete-index-primary-20261026.log",
+        "bytes": 2644,
+        "sha256": "01fc750a109304c5281c6b73d040bd877d2843ff903c15dc2042b57c787ad6c8"
+      },
+      "session": 35782,
+      "unique_tests": 8
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test indexes --test index_nodes --test index_projection --test boolean_indexes --test narrow_ranges --test currency_indexes --test guid_indexes --test decimal_indexes --test date_indexes --test indexed_nulls --test ace16_fixed_updates --test ignored_index_checks --test table_pages",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/large-complete-index-regressions-20261026.log",
+        "bytes": 15800,
+        "sha256": "2107cd356ad3324d54c2326ef52bb42e3b50cb9da2777cec01c73b3183dd52e4"
+      },
+      "session": 24911,
+      "unique_tests": 150
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --test large_complete_index_contract",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/large-complete-index-contract-20261026.log",
+        "bytes": 1067,
+        "sha256": "38b701440ae572d1f29d96c848d18fccab639974ab639cef2ab7c6079359d8cd"
+      },
+      "session": 34063,
+      "unique_tests": 7
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib --test large_index_selections --test large_complete_index_contract --test indexes --test index_nodes --test index_projection --test table_pages --test indexed_nulls --test ace16_fixed_updates -- -D warnings",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/large-complete-index-clippy-final-20261026.log",
+        "bytes": 183,
+        "sha256": "8f8bd3386665283d121fb1628d0c186a99c603877c430c138a875b6c049399fe"
+      },
+      "session": 53893
+    },
+    {
+      "command": "cargo check --locked --offline -j2 -p tablecraft-ace --lib --no-default-features",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/large-complete-index-minimal-20261026.log",
+        "bytes": 183,
+        "sha256": "b9ad95a029a80a4ccd8f93dbadc0e1fceab84c426951432ea8badbd4af81aecd"
+      },
+      "session": 80513
+    },
+    {
+      "command": "rustfmt --edition 2024 --check crates/engines/tablecraft-ace/src/table/indexes/read.rs crates/engines/tablecraft-ace/src/table/indexes/read/membership.rs crates/engines/tablecraft-ace/tests/large_index_selections.rs crates/engines/tablecraft-ace/tests/large_index_selections/fixture.rs crates/engines/tablecraft-ace/tests/large_complete_index_contract.rs crates/engines/tablecraft-ace/tests/large_complete_index_contract/complete.rs crates/engines/tablecraft-ace/tests/large_complete_index_contract/guards.rs",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/large-complete-index-format-20261026.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "scope_files": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/read.rs",
+      "bytes": 26047,
+      "sha256": "0a90bf3991161dbe73d936ebcaa776ff73f1c652f8c490afc5323f6e58fb0253"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/read/membership.rs",
+      "bytes": 1475,
+      "sha256": "8228faf002b1d7be097d67dbf7203dbd043eebcecc062fe4206314aee0ec6b33"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/large_index_selections.rs",
+      "bytes": 8191,
+      "sha256": "576e10e32e625705e39c35b2c30271cea433de652173308a7173b4825c00ae49"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/large_index_selections/fixture.rs",
+      "bytes": 5063,
+      "sha256": "de2bc71aa430ccbcd3403b260182e9e44d5f8d5d1d6746670124318c98beed13"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/large_complete_index_contract.rs",
+      "bytes": 1276,
+      "sha256": "9df353cecc01b60d61e6fab80101ed0077ab415ca4367b53edd67a74866d4ebb"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/large_complete_index_contract/complete.rs",
+      "bytes": 2974,
+      "sha256": "6a1547e4cbb95e0e5aa3925ad4c374df136862976dc70bb7c8c4705b14088d8b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/large_complete_index_contract/guards.rs",
+      "bytes": 5228,
+      "sha256": "b2f1092e056d69a44d18233ef974d887ce719fb9ef25ad3fede95247aa3884bb"
+    },
+    {
+      "path": "docs/access/indexes/NATIVE_INDEXES.md",
+      "bytes": 79364,
+      "sha256": "f48e69d68d74e982bb73ab6cb29e1f7ec4db30dcf5db1aba1ac853eb4f9c675f"
+    },
+    {
+      "path": "docs/testing/LARGE_INDEX_SELECTIONS.md",
+      "bytes": 7782,
+      "sha256": "5dfb677be508d461d0fba0bd761d6644570ef483cef84f243feeebd244f8ab58"
+    }
+  ],
+  "excluded_runs": [
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib --test large_index_selections --test large_complete_index_contract --test indexes --test index_nodes --test index_projection --test table_pages --test indexed_nulls --test ace16_fixed_updates -- -D warnings",
+      "session": 93353,
+      "exit_code": 101,
+      "log": {
+        "path": ".cache/large-complete-index-clippy-20261026.log",
+        "bytes": 1818,
+        "sha256": "1c8078582703715fad2ef6953eee5e26080bfd7708f44d70c1871b241497a092"
+      },
+      "reason": "New shared fixture declared_rows helper and its constants were unused in the original target. Added the standard allow(dead_code) to that shared fixture module; no runtime or expected-value change."
+    }
+  ],
+  "boundaries": [
+    "Complete requests still validate declared_rows against maximum_rows and require full index entry count to match expected_rows before returning any snapshot.",
+    "OwnershipStrategy is selected from completeness and explicit request authority; profile.complete retains its semantic count checks.",
+    "Legacy complete reads/projections, full checks, mutation constructors/gates and engineering preview remain materialized; index-owned page lists independently retain 4096-address ceiling.",
+    "Selected roots retain owned membership, live slot/owner, relocation, schema, key and NULL constraint checks. No fallback or new codecs.",
+    "Results and index entries remain buffered, allocated and charged. This is not streaming or constant-memory output.",
+    "Sparse fixtures have three actual rows and 5000 owned pages. Original 5000-live-row complete CLI replay is not counted here.",
+    "No Access/query/CLI compilation or native Microsoft Access execution is claimed."
+  ],
+  "original_evidence": "Existing immutable V2016/V2019 inputs and public getter transcripts registered in LARGE_INDEX_SELECTIONS.md are reused unchanged; no originals generated or modified in this slice."
+}
