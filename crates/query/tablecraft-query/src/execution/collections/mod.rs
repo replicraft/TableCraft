@@ -15,7 +15,7 @@ use crate::{
 pub(super) struct CollectionFrame {
     scalars: Vec<CellValue>,
     // Indices are local collection slots, never evaluator values or native IDs.
-    lists: Vec<(usize, MultivalueValue)>,
+    lists: Vec<(usize, Option<MultivalueValue>)>,
     keys: Vec<CellValue>,
 }
 

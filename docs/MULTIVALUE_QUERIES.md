@@ -12,15 +12,18 @@ core `Value`, run lookup queries or implement collection writes.
 stored core `Value` and scalar evaluator operands. `MultivalueValue::values()`
 borrows the complete ordered stored children. Duplicates, NULL children and empty
 lists remain distinct. Equality is representational, not SQL collection equality.
-No missing-parent/NULL-list state is invented: typed list plans refuse
-outer joins rather than guess absent-parent associations from native integer keys.
+`QueryValue::AbsentMultivalue` represents the missing parent on an outer-joined
+side. It is distinct from scalar NULL, present `[]` and present `[NULL]`; native
+integer association keys never become absence sentinels.
 
 `PreparedQuery::execute_collections` returns `CollectionQueryResult`; ordinary
 `execute`, `execute_expression` and progressive execution continue to reject
 list-producing plans before source scans. Preparation remains metadata-only.
-`OutputType::Multivalue` retains the element descriptor and element nullability
-without pretending that a whole list has a scalar type. Native metadata positions
-are captured independently of unavailable-name ordering; metadata changes after
+`OutputType::Multivalue` retains the element descriptor, `element_nullable` and
+`parent_nullable` independently, without pretending that a whole list has a scalar
+type. An outer join marks the missing side's parent nullable and preserves the
+stored element descriptor, including through named and derived projections.
+Native metadata positions are captured independently of unavailable-name ordering; metadata changes after
 preparation still refuse before collection scans.
 
 The working list profile admits row-local SELECT projections, wildcard outputs,
@@ -30,7 +33,7 @@ outputs retain dense scalar positions without placeholder cells; a list alias
 cannot itself enter a sibling scalar expression. Duplicate explicit aliases keep
 the existing ambiguity rule. Sorting and TOP reuse ordinary scalar-key services,
 including checked complete input and TOP ties. Bare-list sorting, grouping,
-DISTINCT, UNION, outer joins, crosstabs, aggregates and mixed bare-list/visible `.Value`
+DISTINCT, UNION, crosstabs, aggregates and mixed bare-list/visible `.Value`
 projection remain explicitly unsupported in this result profile. Existing
 scalar-only queries, including `.Value`, retain their normal execution through
 the same collection-aware API rather than gaining these restrictions.
@@ -46,7 +49,7 @@ an outer derived layer is a separate future extension.
 `execute_collections_with_schema_discovery` retains the existing explicit
 execution-phase scalar dependency discovery contract. A dynamic named dependency
 can therefore complete authorized scalar discovery before the final plan reveals
-an unsupported typed outer join or other shape. The operation then returns Unsupported
+an unsupported typed DISTINCT or other shape. The operation then returns Unsupported
 with no result and no collection scan. This wrapper is not metadata-only;
 prepared-plan admission and progressive preflight retain their stricter guards.
 Discovery shares the same operation budget, owner bindings and complete-result
@@ -79,21 +82,28 @@ and isolated depth controls, strict query lint and the minimal feature build.
 Adapter and CLI evidence is counted separately; these checks do not establish
 native Microsoft Access SQL results.
 
-### Typed INNER joins and products
+### Typed joins and products
 
-List-producing SELECTs now admit INNER JOIN and comma-separated CROSS products,
+List-producing SELECTs admit INNER/LEFT/RIGHT JOIN and comma-separated CROSS products,
 including nested trees, static named/derived list sources and scalar-only leaves.
 Scalar ON, WHERE, ORDER BY and TOP retain their ordinary evaluation services.
 Both sides may project lists; collection positions are independent of scalar row
 width and retain every preceding collection slot, including unselected fields.
 Duplicate matching parents produce duplicate parent pairs, each carrying its full
 ordered lists. INNER JOIN uses left encounter order then right encounter order;
-no child flattening or list equality participates in matching.
+no child flattening or list equality participates in matching. LEFT unmatched
+rows follow that left parent's candidates immediately. RIGHT unmatched parents
+form a final tail in right encounter order. Missing scalar fields use ordinary
+SQL NULL extension; selected missing lists use `AbsentMultivalue`. Nested outer
+joins preserve existing absence rather than turning it into an empty list.
 
 Both inputs are fully validated before matching, including a right input when
 the left is empty. Scalar ON evaluates for every candidate pair before hidden
 parent membership criteria filter the completed join. A matching child on either
-side selects the parent pair without trimming either displayed list. Hidden
+side selects the parent pair without trimming either displayed list. Hidden Any on
+an absent parent is UNKNOWN; a present empty list has no matching children. Named-collection
+presence tests retain their existing absent/empty behavior. Bare scalar-multivalue
+`IS NULL` remains outside that named-collection contract. Hidden
 criterion cells retain existing scalar admission; selected list payloads alone
 preserve all stored IEEE bits. Failure returns no buffered result, including
 swallowed visitor rejection or an error after an otherwise matching prefix.
@@ -105,8 +115,10 @@ projection. Nested relations share the operation's read-depth guard with named
 reads. Isolated 1 MiB controls retain fifty plain named SELECTs and successful
 eight-level named/join composition; the fifty-level compound join shape reaches
 a checked structural refusal. These are engineering bounds, not native Access
-nesting qualification. LEFT/RIGHT list projections remain unsupported until an
-explicit absent-parent result model is established.
+nesting qualification. Whole-list LEFT/RIGHT results retain this explicit
+TableCraft absence model.
+Microsoft Access qualification of native bare-list outer-join results remains
+open; the model does not claim native display or empty/absence equivalence.
 
 The [typed-join query verification record](testing/results/read-query-typed-multivalue-joins-2026-10-26.json)
 records 242 distinct passing query tests, including sixteen new join, scalar
@@ -115,6 +127,19 @@ feature build. The first mixed-depth probe exposed a preparation stack overflow;
 lean join traversal/finishing separation fixed it without reducing the fifty-name
 limit or changing matching semantics. Native adapter/CLI checks and original
 fixture getter models are recorded separately.
+
+The [outer-join query verification record](testing/results/read-query-typed-multivalue-outer-joins-2026-10-26.json)
+records 254 distinct passing query tests, including twelve new absent-parent,
+metadata, eager-error and cancellation controls, plus strict query lint and the
+minimal build. Existing isolated stack checks now include a LEFT-joined scalar
+leaf in the mixed named/join chain. The new independent presence test initially
+assumed bare scalar multivalue `IS NULL` support; its corrected guard preserves
+the existing named-collection boundary without changing membership results.
+A focused typed outer-join Source test also exercises hidden named-container
+`IS NULL`/`IS NOT NULL` while projecting independent scalar-valued lists: absent
+and present empty containers satisfy the former, while a present one-NULL
+container satisfies the latter. Adapter/CLI evidence and any native original
+replay remain separately scoped.
 
 ## Source contract
 

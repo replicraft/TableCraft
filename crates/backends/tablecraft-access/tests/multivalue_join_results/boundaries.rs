@@ -19,7 +19,7 @@ fn unsupported_outer_and_list_predicates_refuse_before_native_records() {
     .unwrap()
     .with_multivalues();
     for sql in [
-        "SELECT a.Score,b.Score FROM Items a LEFT JOIN Items b ON a.Id=b.Id",
+        "SELECT DISTINCT a.Score,b.Score FROM Items a LEFT JOIN Items b ON a.Id=b.Id",
         "SELECT a.Score,b.Score.Value FROM Items a INNER JOIN Items b ON a.Id=b.Id",
         "SELECT a.Score FROM Items a INNER JOIN Items b ON a.Score=b.Score",
     ] {

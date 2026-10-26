@@ -144,7 +144,7 @@ impl Runtime<'_, '_> {
                     self.tick()?;
                     if selected[*index] {
                         let owned = self.copy_borrowed_collection(*list)?;
-                        self.push(&mut owned_lists, (*index, owned))?;
+                        self.push(&mut owned_lists, (*index, Some(owned)))?;
                     }
                 }
                 self.push(

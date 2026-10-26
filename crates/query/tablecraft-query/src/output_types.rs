@@ -22,6 +22,9 @@ pub enum OutputType {
         element_type: TypeDescriptor,
         /// Whether a stored child may be NULL; an empty list remains distinct.
         element_nullable: bool,
+        /// The associated parent may be absent after an outer join. This does
+        /// not alter whether children in a present list may be NULL.
+        parent_nullable: bool,
     },
     /// No single checked scalar descriptor is established. This can include
     /// varying carriers, expression-only states or unimplemented inference.
@@ -33,6 +36,7 @@ impl OutputType {
         Self::Multivalue {
             element_type: column.type_descriptor(),
             element_nullable: column.nullable(),
+            parent_nullable: false,
         }
     }
 
@@ -59,7 +63,16 @@ impl OutputType {
                 nullable: true,
             },
             Self::Null => Self::Null,
-            Self::Multivalue { .. } | Self::Dynamic => Self::Dynamic,
+            Self::Multivalue {
+                element_type,
+                element_nullable,
+                ..
+            } => Self::Multivalue {
+                element_type,
+                element_nullable,
+                parent_nullable: true,
+            },
+            Self::Dynamic => Self::Dynamic,
         }
     }
     pub(crate) fn union_result(self, other: Self) -> Self {

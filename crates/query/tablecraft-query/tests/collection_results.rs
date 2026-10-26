@@ -144,7 +144,9 @@ fn scalar(value: i32) -> QueryValue {
 fn list(value: &QueryValue) -> &[Value] {
     match value {
         QueryValue::Multivalue(value) => value.values(),
-        QueryValue::Scalar(_) => panic!("expected a structured list"),
+        QueryValue::Scalar(_) | QueryValue::AbsentMultivalue => {
+            panic!("expected a structured list")
+        }
     }
 }
 
@@ -388,7 +390,7 @@ fn authorized_scalar_discovery_can_precede_typed_admission_but_never_collection_
     }
     let data = Data::new();
     let parsed = parse_query(
-        "SELECT T.Tags FROM T LEFT JOIN DynamicPivot AS P ON T.Id=P.Id",
+        "SELECT DISTINCT T.Tags FROM T LEFT JOIN DynamicPivot AS P ON T.Id=P.Id",
         Default::default(),
     )
     .unwrap();

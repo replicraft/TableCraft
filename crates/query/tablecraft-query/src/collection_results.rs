@@ -11,11 +11,15 @@ pub enum QueryValue {
     Scalar(ExpressionValue),
     /// A complete parent-associated list of exact stored scalar values.
     Multivalue(MultivalueValue),
+    /// No parent exists on this outer-joined side. This is neither a stored
+    /// child NULL nor a present empty list, and has no scalar SQL coercion.
+    AbsentMultivalue,
 }
 
 /// One complete stored list, preserving encounter order, duplicates and NULLs.
 /// An empty list is distinct from a list containing one stored NULL. This type
-/// does not invent an absent-parent marker or expose native child identities.
+/// always represents a present parent; `QueryValue::AbsentMultivalue` carries
+/// outer-join absence separately. Native child identities are not exposed.
 #[derive(Clone, Debug, PartialEq)]
 pub struct MultivalueValue {
     pub(crate) values: Vec<Value>,

@@ -14,9 +14,13 @@ use tablecraft_core::{
 
 impl PreparedQuery {
     /// Execute with complete stored multivalue lists as structured result cells.
+    /// Missing outer-joined parents have explicit `QueryValue::AbsentMultivalue`
+    /// results, separate from present empty lists and stored NULL children.
     /// Scalar-only plans retain their ordinary evaluation semantics and limits.
-    /// Collection plans admit row-local direct/static named/derived SELECTs;
-    /// unsupported collection operations refuse before any source scan.
+    /// Collection plans admit row-local direct/static named/derived SELECTs
+    /// and qualified INNER/LEFT/RIGHT joins or comma products, retaining explicit
+    /// absent-parent results. Unsupported collection operations refuse before
+    /// any source scan.
     pub fn execute_collections<'a>(
         &self,
         source: &'a dyn Source,
@@ -118,7 +122,10 @@ impl Runtime<'_, '_> {
             self.tick()?;
             let value = if output.is_multivalue() {
                 let (_, value) = lists.next().ok_or(QueryError::Width)?;
-                QueryValue::Multivalue(value)
+                match value {
+                    Some(value) => QueryValue::Multivalue(value),
+                    None => QueryValue::AbsentMultivalue,
+                }
             } else {
                 let cell = scalars.next().ok_or(QueryError::Width)?;
                 QueryValue::Scalar(self.evaluator().publish_expression_value(cell.value)?)

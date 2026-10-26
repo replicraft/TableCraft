@@ -603,7 +603,8 @@ contract retains the primary references, algorithms, provenance and exact limits
    lists through row-local/static named/derived projections, scalar ordering/TOP
    and direct hidden-member criteria. INNER/CROSS parent joins now transport whole
    lists through nested/static named/derived sources and hidden criteria. Typed
-   outer joins, UNION, aggregates and list keys remain unfinished.
+   LEFT/RIGHT results now retain explicit parent absence separately from empty
+   lists and NULL children. UNION, aggregates and list keys remain unfinished.
    Explicit `--collections` now
    exposes aligned stored attachment metadata members; an additional explicit
    `--decoded-attachments` option supplies bounded original-file Binary views.

@@ -49,7 +49,7 @@ impl Runtime<'_, '_> {
                         }
                     }
                     let list = found.ok_or(QueryError::Source)?;
-                    let copied = self.copy_collection_values(list.values())?;
+                    let copied = self.copy_collection_presence(list.as_ref())?;
                     let output_slot = lists.len();
                     self.push(&mut lists, (output_slot, copied))?;
                 }
@@ -77,6 +77,19 @@ impl Runtime<'_, '_> {
             lists,
             keys,
         }))
+    }
+
+    pub(super) fn copy_collection_presence(
+        &mut self,
+        value: Option<&MultivalueValue>,
+    ) -> Result<Option<MultivalueValue>, QueryError> {
+        match value {
+            Some(value) => self.copy_collection_values(value.values()).map(Some),
+            None => {
+                self.tick()?;
+                Ok(None)
+            }
+        }
     }
 
     // A stored list is data, not a scalar arithmetic operand. Preserve every
