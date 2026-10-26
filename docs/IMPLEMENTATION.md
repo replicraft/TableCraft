@@ -1,5 +1,22 @@
 # Implementation status
 
+## Original-file contraction baseline and internal-link gap
+
+A frozen committed deletion tool completed 32 original-file controls across four
+deep/indirect-map datasets. Four nine-row history deletion candidates passed
+independent getters, exact graph/map checks and complete byte-preservation audits;
+twelve stale, duplicate and existing-output controls passed. Sixteen required
+positive cases remain unmet: the tool refuses their linked internal nodes with
+`Unsupported(IndexedColumn)` before creating an output. This is partial evidence,
+not completion of contraction acceptance.
+
+The [baseline record](testing/results/ace16-delete-contraction-baseline-2026-10-26.json)
+retains both attempts, exact archived verifier sources and unchanged input/request
+hashes. The corrected verifier models actual tail/bounded node forms and reciprocal
+sibling chains per height; sixteen original/reference graph checks pass. No
+selection, quota or expected population was reduced. Checked internal-chain
+repair is the next implementation gap; native Access qualification stays separate.
+
 ## Deletion with preserved Short Text and Short Binary keys
 
 The feature-gated ACE16 deletion preview now retains checked original encoded keys
