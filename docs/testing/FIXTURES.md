@@ -8944,3 +8944,41 @@ profile refusals, zero disagreements, including both Modern Text height-2
 delete-all cases. This supersedes that specific historical capability refusal;
 it does not remove Memo/composite/ignore-NULL/unique-overflow gates or qualify
 native Access saves. Originals and selector counts are unchanged.
+
+## Reused originals for ignore-NULL DELETE
+
+Original Apache-2.0 [IgnoredDeleteReference.java](IgnoredDeleteReference.java)
+adds only explicit fresh-copy/public-delete and inert read-only getters. It has
+no generation mode and copies no upstream implementation or fixture. It uses the
+reviewed Jackcess 5.0.4 JAR, SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+Evaluation is disabled, time zone is UTC and linked opens throw. Existing producer
+sources and original bytes were reused without regeneration or flag edits:
+
+| Registered original | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Delete-V2016-before.accdb | 585,728 | `43989b6479d6f0303d06c1edca562f33fc94ee3081330acadc8f2867d7269efe` |
+| Delete-V2019-before.accdb | 659,456 | `8c3d88e45874bc4ce7f93c1f1a90880a9d6e2474127d9ef359f02e4b18b371ce` |
+| Ignore-V2016.accdb | 425,984 | `1b7afd89440039b877ae55e700dd07c0bb0e0ed7fab6a5909aaf9073f3489a16` |
+| Ignore-V2019.accdb | 495,616 | `6246f75593d6ca7a7b9f71f7009cbf1627d8b50eef9504f6df14fba8b9122898` |
+| IgnoredProfiles-V2016.accdb | 4,157,440 | `90c5fc95e47be4996924ac6b0fe232a5209a12689527c5c05be593ec0b7f08df` |
+| IgnoredProfiles-V2019.accdb | 4,227,072 | `2db1bd079e3f9df28dc82c2d3eb9dc82753a8a75273b67213eefa5e2ce872b05` |
+
+The [owning observations](IGNORED_DELETE_OBSERVATIONS.md), compact
+[reference receipt](results/ace16-delete-ignored-original-reference-2026-10-26.json)
+and [candidate receipt](results/ace16-delete-ignored-original-replay-2026-10-26.json)
+retain 50 fresh reference-copy hashes and 50 positive candidate outcomes, with
+zero disagreements. Six originals and 50 references remain unchanged. Exact
+membership is derived from actual key-column NULL facts; partial NULLs remain
+indexed, physical aliases are deduplicated, 32 effective-empty index checks remain
+byte-identical and 24 empty-index results retain live NULL table rows.
+
+Two sequential ScalarTEXT1 references grow six pages and allocate bitmap storage;
+all reference-retired residual bodies reflect prior individual edits. Atomic
+candidates instead preserve original length, nonempty heights, inline maps and
+original retired residuals, while matching final values and full encoded keys.
+The observations preserve those differences rather than claiming byte-identical
+reference output or native Access save qualification. Raw 4.9 MB captures, key
+arrays, databases and failed audit assumptions remain ignored and hash-pinned.
+The public Java promotion is byte-identical to its actual private source; changed
+public wrapper verification is distinguished from historical execution.

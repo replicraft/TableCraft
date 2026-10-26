@@ -32,6 +32,9 @@ index. Partial-NULL tuples remain indexed. A physically empty index retains
 root-only ownership even when NULL table rows remain, and zero-effective requests
 leave its bytes unchanged. Every UPDATE blocker and complete validation step
 remains in force; see the [delete-only contract](../../testing/ACE16_DELETE_PREVIEWS.md).
+The [original-file comparison](../../testing/IGNORED_DELETE_OBSERVATIONS.md) passes
+fifty positive candidates while keeping reference sequencing/allocation changes
+separate from atomic candidate preservation.
 
 `NativeImage::plan_int32_updates` produces complete before/after images without
 writing to its source. The current engineering profile is unencoded Jet 4 only:

@@ -398,3 +398,21 @@ and unchanged empty/nonempty UPDATE refusal; their original failing outcomes and
 source snapshots are retained. A missing test import during this migration was
 corrected after preserving both compile logs. No production behavior was weakened
 to address these fixture or test-authoring failures.
+
+## Original-file ignore-NULL acceptance
+
+The [frozen-tool replay](results/ace16-delete-ignored-original-replay-2026-10-26.json)
+passes all fifty positive selections on six unchanged registered originals.
+Independent checks cover per-index eligible subsets, exact retained encoded
+keys/references, original leaf partitions and separator maxima, maps, roots and
+all bytes outside authorized changes. Thirty-two zero-effective index cases keep
+their complete index pages unchanged; twenty-four physical indexes become empty
+while NULL table rows remain.
+
+The [reference and candidate observations](IGNORED_DELETE_OBSERVATIONS.md) distinguish
+sequential reference allocation/repacking from the atomic batch contract. Two
+reference files grow six pages and add bitmap/index pages. Their candidates keep
+the original file length, nonempty heights and map representations, reaching the
+same final values and keys. Reference-retired residuals can reflect intermediate
+deletions; candidates preserve original retired-page residual bytes. No selector,
+request or budget was relaxed, and native Access qualification remains separate.

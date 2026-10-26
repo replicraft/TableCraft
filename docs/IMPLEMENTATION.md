@@ -20,6 +20,16 @@ compilation and formatting pass. An inherited test property owner mismatch and
 the two deliberately superseded DELETE refusal assertions are preserved in the
 record. Original-file candidate replay remains a separate acceptance step.
 
+The [committed-tool original replay](testing/results/ace16-delete-ignored-original-replay-2026-10-26.json)
+now passes all fifty positive selections on six unchanged registered originals.
+It checks 3,346 deleted roots, 8,584 surviving target rows, 136 retired pages,
+32 byte-identical zero-effective index cases and 24 empty indexes with live NULL
+table rows. Candidate files retain original lengths, nonempty heights, map
+representations and retired residual bytes. Two sequential reference cases grow
+six pages and restructure indexes; the candidates reach the same final values
+and keys within their original pages. See [the observations and reproduction tools](testing/IGNORED_DELETE_OBSERVATIONS.md).
+This remains independent engineering evidence, not native Access save/reopen.
+
 ## Checked internal-node sibling repair during contraction
 
 ACE16 deletion candidates now qualify internal nodes by physical tree and height.
