@@ -1,7 +1,7 @@
 use super::model::*;
 use std::{cell::Cell, io::Cursor};
 use tablecraft_ace::{
-    EditError, IndexCheckStatus, InspectError, RowDelete, WriteBlocker, check_table,
+    EditError, IndexCheckStatus, InspectError, Int32Update, RowDelete, WriteBlocker, check_table,
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
@@ -22,7 +22,7 @@ fn statuses(model: &Model) -> Vec<IndexCheckStatus> {
 }
 
 #[test]
-fn read_eligible_memo_composite_and_ignored_null_do_not_gain_delete_authority() {
+fn read_profiles_keep_delete_codec_and_update_gates_separate() {
     let mut ignored = text(1, false, false);
     ignored.bytes[10 * 4096 + 189] = 0x82;
     let entries = ignored
@@ -33,16 +33,36 @@ fn read_eligible_memo_composite_and_ignored_null_do_not_gain_delete_authority() 
         .map(|row| wire(&ignored, row))
         .collect::<Vec<_>>();
     ignored.bytes[13 * 4096..14 * 4096].copy_from_slice(&page(0, &entries, 0, 0, 0));
+    assert!(
+        statuses(&ignored)
+            .iter()
+            .all(|status| *status == IndexCheckStatus::Checked)
+    );
+    assert_eq!(
+        candidate(&ignored, &[]).unwrap().candidate_bytes(),
+        ignored.bytes
+    );
+    let omitted = candidate(&ignored, &[0]).unwrap();
+    assert_eq!(omitted.deleted_rows(), 1);
+    assert_eq!(
+        &omitted.candidate_bytes()[13 * 4096..14 * 4096],
+        &ignored.bytes[13 * 4096..14 * 4096]
+    );
+    assert_eq!(omitted.candidate_bytes()[10 * 4096 + 189], 0x82);
+    for updates in [vec![], vec![Int32Update::new(1, 2, 3)]] {
+        assert_eq!(
+            capture(&ignored.bytes)
+                .preview_ace16_int32_updates("Items", "Id", &updates, &mut budget(), &|| false)
+                .err(),
+            Some(EditError::Unsupported(WriteBlocker::ConstraintCoverage))
+        );
+    }
     for (model, expected) in [
         (
             null_memo(),
             EditError::Unsupported(WriteBlocker::IndexedColumn),
         ),
         (composite(), EditError::Inspect(InspectError::Unsupported)),
-        (
-            ignored,
-            EditError::Unsupported(WriteBlocker::ConstraintCoverage),
-        ),
     ] {
         assert!(
             statuses(&model)

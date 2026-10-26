@@ -1,4 +1,5 @@
 //! Cardinality changes preserve retained original keys and qualified page ownership.
+mod requests;
 use super::super::{NativeIndex, header::IndexHeader, page};
 use super::{
     PatchSet, repack,
@@ -44,8 +45,17 @@ pub(super) fn edit<P: RetainedProfile, const N: usize>(
     {
         return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
     }
-    // Every ordinary root has one physical entry in this admitted non-omitting
-    // index. Complete before checks already established row/key agreement.
+    let effective = requests::capture(
+        index,
+        profile,
+        root.entries.iter().map(|entry| &entry.value),
+        references,
+        reader.budget,
+        reader.cancelled,
+    )?;
+    let references = effective.references();
+    // Every effective root has one physical entry. Complete before checks
+    // independently establish eligible membership and row/key agreement.
     let mut removed = 0;
     let mut retained = 0;
     for position in 0..root.entries.len() {
@@ -101,6 +111,15 @@ fn edit_tree<P: RetainedProfile, const N: usize>(
         0,
         &mut keys,
     )?;
+    let effective = requests::capture(
+        index,
+        profile,
+        keys.iter(),
+        references,
+        reader.budget,
+        reader.cancelled,
+    )?;
+    let references = effective.references();
     if references.is_empty() {
         // A no-op still qualifies every original tree page, but must not
         // canonicalize otherwise unchanged valid page encodings.

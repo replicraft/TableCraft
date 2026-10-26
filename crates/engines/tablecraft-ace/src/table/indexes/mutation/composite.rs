@@ -7,6 +7,7 @@ use super::super::{
         MixedValue,
     },
     key::KeyProfile,
+    profile::Coverage,
 };
 use super::{MutationKey, profile::WriteProfile};
 use crate::table::indexes::key::KeyRow;
@@ -30,6 +31,32 @@ impl<A: WriteValue> TupleProfile<A> {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
+        Self::with_coverage(index, schema, Coverage::CompleteTable, budget, cancelled)
+    }
+
+    #[cfg(feature = "ace16-write-preview")]
+    pub fn new_for_delete(
+        index: &NativeIndex,
+        schema: &TableSchema,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::with_coverage(
+            index,
+            schema,
+            Coverage::PhysicalMembership,
+            budget,
+            cancelled,
+        )
+    }
+
+    fn with_coverage(
+        index: &NativeIndex,
+        schema: &TableSchema,
+        coverage: Coverage,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
         check(budget, cancelled)?;
         // Charge the read profile's column-resolution pass as well as the
         // mutation codec's explicit per-column lookups below.
@@ -39,7 +66,11 @@ impl<A: WriteValue> TupleProfile<A> {
                 (index.columns().len() * schema.columns.len()) as u64,
             )
             .map_err(InspectError::from)?;
-        let read = CompositeProfile::new(Columns::new(index, schema)?)?;
+        let columns = match coverage {
+            Coverage::CompleteTable => Columns::new(index, schema)?,
+            Coverage::PhysicalMembership => Columns::with_coverage(index, schema, coverage)?,
+        };
+        let read = CompositeProfile::new(columns)?;
         Self::with_read(read, index, schema, budget, cancelled)
     }
 }
@@ -50,6 +81,32 @@ impl TupleProfile<DecimalValue, DecimalColumns> {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
+        Self::with_decimal_coverage(index, schema, Coverage::CompleteTable, budget, cancelled)
+    }
+
+    #[cfg(feature = "ace16-write-preview")]
+    pub fn new_decimal_for_delete(
+        index: &NativeIndex,
+        schema: &TableSchema,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::with_decimal_coverage(
+            index,
+            schema,
+            Coverage::PhysicalMembership,
+            budget,
+            cancelled,
+        )
+    }
+
+    fn with_decimal_coverage(
+        index: &NativeIndex,
+        schema: &TableSchema,
+        coverage: Coverage,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
         check(budget, cancelled)?;
         budget
             .charge(
@@ -57,7 +114,11 @@ impl TupleProfile<DecimalValue, DecimalColumns> {
                 (index.columns().len() * schema.columns.len()) as u64,
             )
             .map_err(InspectError::from)?;
-        let read = CompositeProfile::new(DecimalColumns::new(index, schema)?)?;
+        let columns = match coverage {
+            Coverage::CompleteTable => DecimalColumns::new(index, schema)?,
+            Coverage::PhysicalMembership => DecimalColumns::with_coverage(index, schema, coverage)?,
+        };
+        let read = CompositeProfile::new(columns)?;
         Self::with_read(read, index, schema, budget, cancelled)
     }
 }

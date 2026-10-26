@@ -1,5 +1,25 @@
 # Implementation status
 
+## Deletion through qualified ignore-NULL indexes
+
+The opt-in ACE16 deletion preview now derives a separate effective request set for
+each qualified physical ignore-NULL index. Table tombstones and the live count
+still cover every requested row; an index removes exactly its checked indexed
+subset. Entirely NULL keys are omitted, while partial-NULL tuples stay indexed.
+An empty effective set leaves index bytes unchanged after profile qualification.
+
+Empty-index ownership now follows the checked physical root rather than table
+row count, so an index can retire to its root while NULL table rows remain.
+Ordinary-index removal counts, complete before/after checks, unsupported codecs,
+UPDATE gates and normal ACE write restrictions remain intact.
+
+The [implementation record](testing/results/ace16-delete-ignored-native-2026-10-26.json)
+records 221 passing engine functions, including nine new controls and 25 existing
+ignored-index read guards, plus three compile-fail checks. Strict lint, minimal
+compilation and formatting pass. An inherited test property owner mismatch and
+the two deliberately superseded DELETE refusal assertions are preserved in the
+record. Original-file candidate replay remains a separate acceptance step.
+
 ## Checked internal-node sibling repair during contraction
 
 ACE16 deletion candidates now qualify internal nodes by physical tree and height.
@@ -55,8 +75,9 @@ profiles are unchanged.
 
 Both directions, NULL/empty values, nonunique ties, physical aliases and supported
 nonunique Text overflow digests are covered. Unknown sort families, unique digest
-ambiguity, Memo/Long Text, Text/Binary composites and ignored-NULL indexes remain
-refused. This initial implementation retained the internal-node sibling-link
+ambiguity, Memo/Long Text and Text/Binary composites remain refused. Ignored-NULL
+indexes now follow the separate deletion extension above. This initial
+implementation retained the internal-node sibling-link
 contraction limit; the subsequent chain extension above removes that separate
 limit. Neither feature enables normal ACE saves.
 
