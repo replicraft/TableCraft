@@ -607,8 +607,10 @@ contract retains the primary references, algorithms, provenance and exact limits
    lists and NULL children. Scalar `.Value` aggregation and per-parent Count
    already work; [Microsoft's counting reference](https://support.microsoft.com/en-us/access/count-data-by-using-a-query)
    excludes direct complex-list Count, and its multivalue guide prohibits bare
-   list grouping. Whole-list UNION/mixed-output admission and native semantics
-   still need qualification; do not invent unsupported native list operations
+   list grouping. Mixed whole-list/displayed-member SELECTs now reuse aligned
+   scalar expansion while retaining complete list sidecars, including through
+   joins and static named/derived sources. Whole-list UNION admission and native
+   collection semantics still need qualification; do not invent unsupported native list operations
    merely to clear a generic aggregate/key checklist.
    Explicit `--collections` now
    exposes aligned stored attachment metadata members; an additional explicit

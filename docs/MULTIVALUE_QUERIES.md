@@ -33,18 +33,21 @@ outputs retain dense scalar positions without placeholder cells; a list alias
 cannot itself enter a sibling scalar expression. Duplicate explicit aliases keep
 the existing ambiguity rule. Sorting and TOP reuse ordinary scalar-key services,
 including checked complete input and TOP ties. Bare-list sorting, grouping,
-DISTINCT, UNION, crosstabs, aggregates and mixed bare-list/visible `.Value`
-projection remain explicitly unsupported in this result profile. Existing
+DISTINCT, UNION, crosstabs and aggregates remain explicitly unsupported in this
+result profile. Whole lists may accompany visible `.Value` and named-member
+scalar outputs as described below. Existing
 scalar-only queries, including `.Value`, retain their normal execution through
 the same collection-aware API rather than gaining these restrictions.
 
-Hidden `.Value` WHERE criteria on direct or joined parent sources select parents while
-retaining every value in each selected bare list. A match to one child never
+Hidden, undisplayed `.Value` WHERE criteria on direct or joined parent sources
+select parents while retaining every value in each selected bare list. A match to one child never
 trims the projected list. Selected stored children are validated completely,
 including suffixes after a matching child, before admitting the parent. Native
 source failures and ignored visitor rejection remain sticky; no query result or
-complete source cache is published from a failed prefix. List element access in
-an outer derived layer is a separate future extension.
+complete source cache is published from a failed prefix. A visible member instead
+uses the existing expanded-row predicate rules. New element access on a whole
+list already materialized by a derived layer remains a separate capability;
+select its scalar member inside that layer and expose the scalar output name.
 
 `execute_collections_with_schema_discovery` retains the existing explicit
 execution-phase scalar dependency discovery contract. A dynamic named dependency
@@ -99,9 +102,9 @@ contracts, independently checked rather than native Access edge qualification.
 query controls in `tests/multivalue.rs`, CLI controls in
 `apps/tablecraft-cli/tests/multivalue_queries.rs`, and the
 [original-child getter model](testing/compare_multivalue_queries.py) exercise this
-capability. Bare-list UNION and mixed complete-list/member output still require
-separate admission and implementation work; unsupported bare operations must not
-be presented as automatically required native features.
+capability. Mixed complete-list/member output now has the separate typed
+admission described below. Bare-list UNION remains refused; unsupported bare
+operations must not be presented as automatically required native features.
 
 The [counting evidence gate](testing/results/multivalue-count-evidence-gate-2026-10-26.json)
 rechecks nine existing-capability controls using the frozen committed CLI and
@@ -174,6 +177,88 @@ A focused typed outer-join Source test also exercises hidden named-container
 and present empty containers satisfy the former, while a present one-NULL
 container satisfies the latter. Adapter/CLI evidence and any native original
 replay remain separately scoped.
+
+### Whole lists beside displayed members
+
+The collection-aware result service now permits complete whole lists beside
+visible `.Value` or named-member scalar expressions in otherwise admitted
+row-local SELECTs. Direct inputs, static named/derived layers, comma products and
+nested INNER/LEFT/RIGHT joins use the same retained scalar/list frames. No stored
+core value, Source capability or SQL syntax is added.
+
+```sql
+SELECT Id,Tags,Tags.Value AS Child FROM Items;
+SELECT Tags,Tags.Value FROM Items WHERE Tags.Value=100;
+SELECT Tags,Other.Value FROM Items WHERE Tags.Value=100;
+```
+
+Each displayed child row carries its parent's complete selected list, including
+duplicates and NULL children. A predicate on that displayed member filters the
+current child row. An independent undisplayed member remains a parent membership
+criterion and never trims the list. Members of one named collection align by
+child position; independently displayed collections form the existing product.
+Scalar ON, WHERE, aliases, ORDER BY and TOP operate on expanded scalar rows.
+TOP retains existing complete sort-key ties, so a count of two can return three
+rows. Selected inner projections remain eager even if an outer filter omits them.
+
+A present empty collection retains the existing scalar NULL placeholder beside
+a present empty whole list. An actual NULL child remains a stored item beside
+its complete list. An absent outer-joined parent instead carries
+`AbsentMultivalue` beside scalar NULL extension. Named/derived reads may select
+and reorder both list and scalar outputs; they do not introduce `.Value`
+dereferencing of an already materialized list in an enclosing scope.
+
+Source requests combine whole-list, hidden-criterion and displayed-member
+positions without duplicate native requests. Complete child validation and
+alignment precede expansion. The existing child-expansion kernel supplies scalar
+carriers, declarations, empty placeholders and products; selected whole lists
+retain their separate IEEE-preserving data-copy boundary. Displaying nonfinite
+numeric members still fails ordinary scalar admission even when their stored
+whole-list data could otherwise be returned.
+
+Direct mixed reads evaluate hidden predicates against the current expanded
+scalar frame after their complete input has been collected; they do not reuse
+the earlier whole-list-only filter on an unexpanded row. Joined inputs fully
+validate both sides and evaluate all candidate ON conditions before hidden
+parent filtering. Source, expansion, visitor and later projection failures
+publish no buffered prefix. Existing unexpanded whole-list and ordinary scalar
+paths retain their own behavior.
+
+Every repeated list and scalar frame consumes cumulative query allowances.
+A long list repeated for many displayed children or matched pairs can exhaust
+byte/row/work limits; no constant-memory or allocation-reduction claim is made.
+All new vectors/copies are paid and fallible, with cancellation and sticky source
+errors. Namespace bindings, owner restoration and the shared read-depth guard
+remain unchanged. Typed grouping/aggregates, DISTINCT and UNION remain outside
+this result service; ordinary scalar `.Value` queries retain their existing
+wider profile.
+
+Microsoft's [query-criteria example](https://support.microsoft.com/en-us/access/examples-of-query-criteria)
+explicitly places the whole field and its single-value field in separate design
+grid columns, with hiding the latter optional. This establishes the mixed-output
+capability; it does not print the resulting SQL or qualify the exact native
+cardinality, empty-parent, duplicate-order or optimizer behavior. The contracts
+above preserve TableCraft's existing expansion model; Microsoft Access SQL
+comparison remains separate.
+
+The [mixed-result query verification record](testing/results/read-query-mixed-multivalue-results-2026-10-26.json)
+records 248 distinct passing query functions, including fourteen new composition,
+alignment, eager-failure and resource controls, strict query lint and the minimal
+build. Its first combined Cargo process exited 101 after six completed target
+suites passed: the independent target had two authored expectations corrected to
+the existing TOP-tie and missing-name contracts. Those failed outcomes are
+excluded; the complete independent nine-test retry passed. The record preserves
+the actual process statuses and deduplicates successful scopes. A separate
+isolated 1 MiB test expands the leaf once and propagates complete lists and
+scalar child outputs through fifty named definitions; the fifty-first definition
+refuses before scans. All five depth controls and scoped strict lint pass. The final independent target
+also checks explicit stored Single bit patterns, including signed zero,
+subnormal, infinity and distinct NaN payloads, while an independent finite member
+is displayed and through a derived layer; displaying the nonfinite member still
+returns the existing NonFinite error.
+The [host verification record](testing/results/mixed-multivalue-results-host-2026-10-26.json)
+records 41 native-adapter/CLI functions, eight new; original-fixture evidence
+remains separate.
 
 ## Source contract
 

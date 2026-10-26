@@ -1,4 +1,4 @@
-//! Joined-only sidecars preserve whole lists without scalar carrier substitutions.
+//! Typed relation sidecars retain whole lists beside joined or expanded scalar rows.
 mod missing;
 mod relation;
 mod table;

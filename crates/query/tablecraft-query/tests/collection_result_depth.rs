@@ -7,8 +7,8 @@ use std::{
 };
 use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_query::{
-    BindingDepth, CollectionQueryResult, PreparationOptions, QueryError, QueryValue, Source,
-    prepare, prepare_with_options,
+    BindingDepth, CollectionQueryResult, OutputType, PreparationOptions, QueryError, QueryValue,
+    Source, prepare, prepare_with_options,
     source::{MultivalueList, MultivalueVisitor, ProjectedRow},
 };
 use tablecraft_schema::{Column, ScalarType, SchemaName};
@@ -156,6 +156,62 @@ fn named_limit() {
         Some(QueryError::StructureLimit)
     );
     source.no_scans();
+}
+
+fn mixed_named_limit() {
+    for count in [50, 51] {
+        let mut source = Data::chain(count);
+        for (index, (_, query)) in source.definitions.iter_mut().enumerate() {
+            *query = if index + 1 == count {
+                syntax("SELECT Id,Tags,Tags.Value AS Child FROM Data")
+            } else {
+                syntax(&format!("SELECT Id,Tags,Child FROM Q{}", index + 1))
+            };
+        }
+        let prepared = prepare(&syntax("SELECT Id,Tags,Child FROM Q0"), &source);
+        source.no_scans();
+        if count == 51 {
+            assert_eq!(prepared.err(), Some(QueryError::StructureLimit));
+            source.no_scans();
+            continue;
+        }
+        let result = prepared
+            .unwrap()
+            .execute_collections(&source, &[], Default::default())
+            .unwrap();
+        assert_eq!(result.columns(), ["Id", "Tags", "Child"]);
+        assert!(matches!(
+            result.output_types()[1],
+            OutputType::Multivalue {
+                parent_nullable: false,
+                element_nullable: true,
+                ..
+            }
+        ));
+        assert!(matches!(result.output_types()[2], OutputType::Scalar {
+            data_type, nullable: true,
+        } if data_type.scalar_type() == ScalarType::Int32));
+        let expected = [
+            (0, Value::Null),
+            (0, Value::Int32(100)),
+            (0, Value::Int32(100)),
+            (1, Value::Null),
+        ];
+        assert_eq!(result.rows().len(), expected.len());
+        for (row, (parent, child)) in result.rows().iter().zip(expected) {
+            assert_eq!(
+                row[0],
+                QueryValue::Scalar(ExpressionValue::Value(source.rows[parent][0].clone()))
+            );
+            let QueryValue::Multivalue(list) = &row[1] else {
+                panic!("the complete present list must survive every named layer");
+            };
+            assert_eq!(list.values(), source.lists[parent]);
+            assert_eq!(row[2], QueryValue::Scalar(ExpressionValue::Value(child)));
+        }
+        assert_eq!(source.collection_scans.get(), 1);
+        assert_eq!(source.scalar_scans.get(), 0);
+    }
 }
 
 fn joined_named_limits() {
@@ -346,5 +402,13 @@ fn typed_joined_named_sources_share_a_checked_combined_depth() {
     isolated_worker(
         "typed_joined_named_sources_share_a_checked_combined_depth",
         joined_named_limits,
+    );
+}
+
+#[test]
+fn mixed_lists_and_displayed_children_cross_fifty_named_sources_without_reexpansion() {
+    isolated_worker(
+        "mixed_lists_and_displayed_children_cross_fifty_named_sources_without_reexpansion",
+        mixed_named_limit,
     );
 }

@@ -56,12 +56,7 @@ impl Runtime<'_, '_> {
     ) -> Result<(), QueryError> {
         self.check_collection_depth(depth)?;
         match &relation.node {
-            RelationNode::Table { expansion, .. } => {
-                if !expansion.is_empty() {
-                    return Err(QueryError::Unsupported);
-                }
-                self.check_table_schema(&relation.node)
-            }
+            RelationNode::Table { .. } => self.check_table_schema(&relation.node),
             RelationNode::Derived(read) if read.has_collections() => {
                 self.check_collection_read(read, depth + 1)
             }

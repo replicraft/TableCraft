@@ -20,6 +20,13 @@ impl Runtime<'_, '_> {
         ) {
             return self.joined_collection_input(select);
         }
+        if let RelationNode::Table { expansion, .. } = &select.source.node
+            && !expansion.is_empty()
+        {
+            // Displayed members need the current expanded scalar frame before
+            // hidden predicates can run. The unexpanded path stays unchanged.
+            return self.joined_collection_input(select);
+        }
         if let RelationNode::Derived(read) = &select.source.node {
             return self.collection_read(read);
         }
