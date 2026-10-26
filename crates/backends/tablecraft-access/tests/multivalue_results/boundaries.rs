@@ -41,7 +41,7 @@ fn scalar_publication_and_unsupported_list_operations_refuse_before_any_records(
         "SELECT DISTINCT Score FROM Items",
         "SELECT Score FROM Items ORDER BY Score",
         "SELECT Score FROM Items WHERE Score IS NULL",
-        "SELECT Score,Score.Value FROM Items",
+        "SELECT DISTINCT Score,Score.Value FROM Items",
         "SELECT Score FROM Items UNION ALL SELECT Score FROM Items",
     ] {
         assert_eq!(
