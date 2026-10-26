@@ -4,6 +4,10 @@ use crate::format::{
     page::PAGE_BYTES,
     reader::Reader,
 };
+use crate::table::indexes::{
+    header::IndexHeader,
+    page::{ENTRY_START, LEAF},
+};
 use crate::{EditError, InspectError, inspect_header, inspect_table_indexes};
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
@@ -164,7 +168,27 @@ pub(in crate::table) fn audit_retirements(
                 }
             }
         }
-        if (new_indexes.schema().declared_rows() == 0 && current.as_slice() != [original.root])
+        // Full after-membership checks have already completed. Derive emptiness
+        // from the actual physical root, not the table's remaining NULL rows.
+        let root = reader.page(original.root)?;
+        reader.work(PAGE_BYTES)?;
+        let header = IndexHeader::read(&root)?;
+        let empty_leaf = header.kind == LEAF
+            && root[size_of::<IndexHeader>()..ENTRY_START]
+                .iter()
+                .all(|byte| *byte == 0);
+        if empty_leaf
+            && (!header.qualified_for_update(0)
+                || header.owner.get() != new_indexes.schema().definition
+                || header.previous.get() != 0
+                || header.next.get() != 0
+                || header.tail.get() != 0
+                || header.prefix.get() != 0
+                || usize::from(header.free.get()) != PAGE_BYTES - ENTRY_START)
+        {
+            return Err(EditError::Preservation);
+        }
+        if (empty_leaf && current.as_slice() != [original.root])
             || current.len() != expected_count
             || current.binary_search(&original.root).is_err()
         {

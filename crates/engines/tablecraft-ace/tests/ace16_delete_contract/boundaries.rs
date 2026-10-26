@@ -59,11 +59,26 @@ fn empty_requests_do_not_bypass_format_properties_or_ordinary_write_gates() {
 }
 
 #[test]
-fn ignored_null_relationships_and_unqualified_retirement_remain_refused() {
+fn ignored_null_deletes_keep_update_relationship_and_retirement_gates() {
     let mut ignored = ace(index_fixture::database(false, false, false), 6);
     ignored[10 * 4096 + 189] |= 2;
+    assert_eq!(preview(&ignored, &[]).unwrap().candidate_bytes(), ignored);
+    let deleted = preview(&ignored, &[request(1, false)]).unwrap();
+    assert_eq!(deleted.deleted_rows(), 1);
+    assert_eq!(deleted.before_bytes(), ignored);
+    assert_eq!(
+        deleted.candidate_bytes()[10 * 4096 + 189],
+        ignored[10 * 4096 + 189]
+    );
+    for updates in [vec![], vec![Int32Update::new(1, 20, 21)]] {
+        assert_eq!(
+            capture(&ignored)
+                .preview_ace16_int32_updates("Items", "Score", &updates, &mut budget(), &|| false)
+                .err(),
+            Some(EditError::Unsupported(WriteBlocker::ConstraintCoverage))
+        );
+    }
     for bytes in [
-        ignored,
         foreign_fixture::database(6, false, false),
         foreign_fixture::database(6, false, true),
     ] {

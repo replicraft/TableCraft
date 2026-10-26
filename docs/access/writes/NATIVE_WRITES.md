@@ -26,6 +26,13 @@ profile; partial or malformed chains refuse. The
 now has a separate passing 32-control candidate replay; its initial refusal
 baseline remains unchanged. These comparisons do not qualify native Access saves.
 
+Qualified ignore-NULL indexes use separate checked per-index deletion subsets:
+all requested rows are tombstoned, but only present entries are removed from each
+index. Partial-NULL tuples remain indexed. A physically empty index retains
+root-only ownership even when NULL table rows remain, and zero-effective requests
+leave its bytes unchanged. Every UPDATE blocker and complete validation step
+remains in force; see the [delete-only contract](../../testing/ACE16_DELETE_PREVIEWS.md).
+
 `NativeImage::plan_int32_updates` produces complete before/after images without
 writing to its source. The current engineering profile is unencoded Jet 4 only:
 existing non-NULL fixed Int32 fields in unflagged local tables, with the native

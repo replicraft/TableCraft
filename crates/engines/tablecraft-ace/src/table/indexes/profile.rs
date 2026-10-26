@@ -91,7 +91,9 @@ fn column_position(index: &NativeIndex, schema: &TableSchema) -> Result<usize, I
     Ok(column)
 }
 
-/// Physical membership qualification never promises a complete table or permits edits.
+/// Physical membership never promises a complete table or grants mutation authority.
+/// A separately gated DELETE may use it to qualify its explicit indexed subset;
+/// ordinary read/default mutation constructors retain CompleteTable coverage.
 #[derive(Clone, Copy)]
 pub(super) enum Coverage {
     CompleteTable,

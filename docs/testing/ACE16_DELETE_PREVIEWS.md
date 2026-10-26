@@ -24,8 +24,8 @@ The preview admits only plain subversion-zero ACE2016/2019 images and keeps the
 existing structural, property, active-content, schema-history, constraint and
 preservation gates. Every declared relationship touching the selected table is refused,
 including an empty request; this slice does not implement RESTRICT/cascades or
-skip required relationship actions. Ignored-NULL indexes remain write blockers,
-even when their physical membership is completely readable/checkable.
+skip required relationship actions. Ignored-NULL indexes remain UPDATE blockers;
+DELETE uses the separately qualified physical-membership subset described below.
 
 Every physical index must have a checked supported existing topology. Requests
 remove entries within their original leaf partitions without redistributing
@@ -77,10 +77,11 @@ publish no candidate and never write to the source.
 The original [delete-storage observations](DELETE_STORAGE_OBSERVATIONS.md)
 establish the slot/count/empty-leaf/counter behavior through public Jackcess
 operations, reopened getters and independent raw-byte checks. The indexed table
-in that historical corpus includes an ignored-NULL index and remains a write
-refusal; read qualification is not mutation authorization. Fresh positive writer
-fixtures must use public builders for admitted profiles rather than clearing
-stored flags in those originals.
+in that historical corpus includes an ignored-NULL index. Earlier deletion
+milestones refused it; the explicit deletion extension below retains that stored
+flag and requires complete eligible-root checks. Read qualification alone is not
+mutation authorization. Fresh positive writer fixtures must use public builders
+for admitted profiles rather than clearing stored flags in those originals.
 
 Focused engine tests cover the numeric codec matrix, arbitrary Int32 delete sets,
 slot/count/payload and unrelated-byte preservation, nonunique ties, NULLs,
@@ -227,8 +228,9 @@ operation.
 
 Nonunique Short Text overflow/digest entries can qualify through the existing
 complete check; unique overflow/digest ambiguity remains refused. Memo/Long Text,
-Text/Binary composite mutation, unsupported sort families and ignored-NULL indexes
-remain outside this profile. The normal mutation gate still refuses indexed
+Text/Binary composite mutation and unsupported sort families remain outside this
+profile. Ignored-NULL deletion follows the additional contract below. The normal
+mutation gate still refuses indexed
 Binary UPDATE, including empty update requests. Deletion's explicit admission
 changes only that early blocker; property, history, relationship, active-content,
 constraint, preservation and macro qualification boundaries remain unchanged.
@@ -248,7 +250,7 @@ The first independent Binary fixture declared fixed storage while constructing
 variable records. An ordinary reader/check diagnostic established that failure
 before deletion; correcting only its native variable flag made both directions
 readable and checkable. Successful wire/value goldens stayed unchanged. Exact
-Memo/composite/ignored-NULL refusal variants and the existing special descending
+Memo/composite/then-existing ignored-NULL refusal variants and the special descending
 Binary empty-value order were also corrected in newly authored expectations.
 Initial attempts and diagnostic sources remain preserved separately. No production
 correction followed these test-authoring failures.
@@ -334,3 +336,65 @@ exact retained encoded keys/references and whole-file preservation checks cover
 4,374 removed rows, 8,676 surviving target rows and 158 retired pages. Earlier
 refusals and source versions remain recorded separately. These engineering
 comparisons do not enable normal ACE writes or qualify native Access saves.
+
+## DELETE with ignored-NULL physical membership
+
+An ignored-NULL index omits a root only when all its key components are NULL;
+partially NULL composites remain indexed. Deletion now admits that behavior for
+the existing qualified DELETE codec families. It requires a complete checked
+before-image: sequential roots establish the eligible population independently,
+and complete physical traversal proves distinct live roots, key/record agreement
+and exact eligible membership. Read support alone or a selected range is
+insufficient. Every UPDATE entry point still refuses ignored indexes, including
+empty updates.
+
+For each physical index, the preview captures an effective request subset by
+intersecting requested physical row references with the complete original decoded
+leaf-key stream. Logical aliases share that physical operation. Each deletion
+algorithm still requires exactly `removed == effective_requests.len()`; ordinary
+indexes retain the original complete request slice. Record identity, tombstones
+and the table count use every original request, including omitted roots. No
+missing index entry is invented and no second decoder interprets request payloads
+to guess NULL membership.
+
+An empty effective subset qualifies the original supported profile/topology and
+emits no index rewriting, repacking or retirement. NULL-only deletion therefore
+preserves affected index pages byte-for-byte. Empty Text/Binary values are indexed
+values and differ from NULL. Unsupported Memo, variable composite, sort, digest,
+relationship or active-content profiles still refuse even an empty-effective
+request. Stored index flags and historical counters are preserved.
+
+Deleting every eligible entry can empty an index while NULL table rows remain
+alive. After complete post-edit membership checks, the ownership audit reads the
+actual physical root under the shared allowance. An empty root must be a
+height-zero leaf with zero sibling/tail/prefix/entry bitmap and full free-entry
+capacity, and its owned set must contain only that root. Table row count alone
+does not establish physical-index emptiness. Other indexes independently remove
+their own effective subsets, with existing chain/map/preservation checks before
+any candidate is exposed.
+
+Fixed-tuple deletion explicitly uses physical-membership constructor policy with
+original metadata, followed by the existing mutation-codec checks. Default
+complete-table constructors and all UPDATE gates are unchanged; no stored flag
+is cleared to borrow a different profile. Captured request vectors and membership
+scans use fallible allocation, cancellation and cumulative budgets. This remains
+a separate non-journalable engineering candidate, not ordinary ACE DELETE or
+native Access save qualification.
+
+The [ignored-index DELETE implementation record](results/ace16-delete-ignored-native-2026-10-26.json)
+records 221 passing engine functions, including nine new integration controls:
+two author profile matrices and seven independent multi-index/constraint controls.
+The remaining functions include prior writer/DELETE coverage and twenty-five
+direct ignored-index read/check regressions. Three compile-fail docs, strict
+selected library/test/example lint, minimal standalone compilation and
+fourteen-file formatting pass. Original public-writer replay against a frozen
+artifact is separate and is not counted here.
+
+The independent fixture initially inherited a passive Column Score property while
+naming that column A. The unchanged property gate correctly refused it. Only its
+authored column name and matching no-op update name changed; index/value goldens
+stayed intact. Two older ignored-index DELETE negatives now check valid deletion
+and unchanged empty/nonempty UPDATE refusal; their original failing outcomes and
+source snapshots are retained. A missing test import during this migration was
+corrected after preserving both compile logs. No production behavior was weakened
+to address these fixture or test-authoring failures.

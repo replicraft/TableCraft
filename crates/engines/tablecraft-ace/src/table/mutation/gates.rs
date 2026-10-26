@@ -96,9 +96,10 @@ fn before_with(
     );
     if structural.indexes().iter().any(|index| {
         index.status() != IndexCheckStatus::Checked
-            // Read checks can now qualify the non-NULL physical membership of
-            // an ignored-NULL index. Mutation eligibility is unchanged.
-            || index.index().constraints().is_some_and(|constraints| constraints.ignore_nulls())
+            // Complete physical membership permits the separate DELETE request
+            // subset. Every UPDATE, including an empty one, retains its blocker.
+            || (matches!(admission, Admission::Update)
+                && index.index().constraints().is_some_and(|constraints| constraints.ignore_nulls()))
             || (!foreign_preview && index.index().native_type() == FOREIGN_INDEX)
     }) {
         return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));

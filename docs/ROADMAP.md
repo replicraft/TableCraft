@@ -35,6 +35,9 @@ Delivered read/query and engineering foundations:
   A separate [48-control Text/Binary corpus](testing/ENCODED_DELETE_OBSERVATIONS.md)
   checks 36 candidates and twelve unsupported-profile refusals on the same
   committed tool, including the previously refused height-two delete-all cases.
+  Qualified ignore-NULL deletion now derives checked per-index request subsets
+  and physical empty-root ownership under 224 scoped engine checks; its fresh
+  original-file candidate comparisons remain separate.
   General ACE 16 saves are still unavailable.
 
 - [x] [Stateful streaming composition](query/PROGRESSIVE_QUERIES.md#stateful-retained-stages)

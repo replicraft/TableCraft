@@ -79,6 +79,14 @@ impl Change<'_> {
         }
     }
 
+    fn permits_omissions(self) -> bool {
+        match self {
+            Self::Update(_) => false,
+            #[cfg(feature = "ace16-write-preview")]
+            Self::Delete(_) => true,
+        }
+    }
+
     fn affects(self, index: &NativeIndex, schema: &TableSchema) -> bool {
         match self {
             Self::Update(updates) => updates.iter().any(|update| {
@@ -147,9 +155,9 @@ fn patches_with(
             continue;
         }
         if check.status() != IndexCheckStatus::Checked
-            || !index
-                .constraints()
-                .is_some_and(|constraints| !constraints.ignore_nulls())
+            || !index.constraints().is_some_and(|constraints| {
+                !constraints.ignore_nulls() || change.permits_omissions()
+            })
         {
             return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
         }
@@ -288,12 +296,23 @@ fn patches_with(
                 })
             });
             if composite::has_decimal(index, schema)? {
-                let profile = TupleProfile::<DecimalValue, DecimalColumns>::new_decimal(
-                    index,
-                    schema,
-                    reader.budget,
-                    reader.cancelled,
-                )?;
+                let profile = match change {
+                    Change::Update(_) => TupleProfile::<DecimalValue, DecimalColumns>::new_decimal(
+                        index,
+                        schema,
+                        reader.budget,
+                        reader.cancelled,
+                    ),
+                    #[cfg(feature = "ace16-write-preview")]
+                    Change::Delete(_) => {
+                        TupleProfile::<DecimalValue, DecimalColumns>::new_decimal_for_delete(
+                            index,
+                            schema,
+                            reader.budget,
+                            reader.cancelled,
+                        )
+                    }
+                }?;
                 edit::<_, { composite::MAX_GUID_ENTRY_BYTES }>(
                     image,
                     &mut reader,
@@ -304,12 +323,21 @@ fn patches_with(
                     &mut patches,
                 )?;
             } else if has_guid {
-                let profile = TupleProfile::<MixedValue>::new(
-                    index,
-                    schema,
-                    reader.budget,
-                    reader.cancelled,
-                )?;
+                let profile = match change {
+                    Change::Update(_) => TupleProfile::<MixedValue>::new(
+                        index,
+                        schema,
+                        reader.budget,
+                        reader.cancelled,
+                    ),
+                    #[cfg(feature = "ace16-write-preview")]
+                    Change::Delete(_) => TupleProfile::<MixedValue>::new_for_delete(
+                        index,
+                        schema,
+                        reader.budget,
+                        reader.cancelled,
+                    ),
+                }?;
                 edit::<_, { composite::MAX_GUID_ENTRY_BYTES }>(
                     image,
                     &mut reader,
@@ -320,8 +348,18 @@ fn patches_with(
                     &mut patches,
                 )?;
             } else {
-                let profile =
-                    TupleProfile::<i64>::new(index, schema, reader.budget, reader.cancelled)?;
+                let profile = match change {
+                    Change::Update(_) => {
+                        TupleProfile::<i64>::new(index, schema, reader.budget, reader.cancelled)
+                    }
+                    #[cfg(feature = "ace16-write-preview")]
+                    Change::Delete(_) => TupleProfile::<i64>::new_for_delete(
+                        index,
+                        schema,
+                        reader.budget,
+                        reader.cancelled,
+                    ),
+                }?;
                 edit::<_, { composite::MAX_ENTRY_BYTES }>(
                     image,
                     &mut reader,
