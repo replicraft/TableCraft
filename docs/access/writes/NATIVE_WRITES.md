@@ -47,6 +47,13 @@ refused even for empty requests. See the
 [closed relationship profile](../../testing/ACE16_DELETE_PREVIEWS.md#cross-table-enforced-restrict-relationships).
 This does not enable normal saves or establish native Access action timing.
 
+Existing LONG AutoNumber deletion now has an
+[original-file preservation comparison](../../testing/AUTONUMBER_DELETE_OBSERVATIONS.md):
+sixteen candidates retain counter 260, including highest/all-row deletion, and
+sixteen disposable public-writer append descendants allocate 261. This is
+engineering preservation evidence, not native INSERT support or AutoNumber UPDATE
+permission; GUID/complex identity and native Access saves remain separate.
+
 `NativeImage::plan_int32_updates` produces complete before/after images without
 writing to its source. The current engineering profile is unencoded Jet 4 only:
 existing non-NULL fixed Int32 fields in unflagged local tables, with the native
