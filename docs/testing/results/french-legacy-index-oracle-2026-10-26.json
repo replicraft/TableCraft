@@ -1,0 +1,317 @@
+{
+  "scope": "Exact French legacy stored-key oracle preparation only; no engine implementation, ICU, NLS or native ACE qualification",
+  "profiles": [
+    {
+      "profile": "V2016",
+      "original": {
+        "path": ".cache/tablecraft-fixtures/french-legacy-index-20261026/French-V2016.accdb",
+        "bytes": 413696,
+        "sha256": "8dd327f872cb50e20c3bfee09731300cdb22bc392f25ad5217b372cad3a6b6d2"
+      },
+      "tables": {
+        "French": {
+          "sort": {
+            "lcid": 1036,
+            "variant": 0,
+            "version": 0,
+            "offset": 364667,
+            "raw": "0c040000"
+          },
+          "rows": 38,
+          "asc_quartet_ids": [
+            3,
+            5,
+            4,
+            6
+          ],
+          "desc_quartet_ids": [
+            6,
+            4,
+            5,
+            3
+          ],
+          "quartet_keys": {
+            "3": "7f4d646d510100",
+            "4": "7f4d646d51010e00",
+            "5": "7f4d646d510102021200",
+            "6": "7f4d646d51010e021200"
+          },
+          "physical_indexes": {
+            "Asc": {
+              "physical": 0,
+              "root": 91,
+              "count": 38,
+              "owned_pages": 1
+            },
+            "Twin": {
+              "physical": 0,
+              "root": 91,
+              "count": 38,
+              "owned_pages": 1
+            },
+            "Desc": {
+              "physical": 1,
+              "root": 92,
+              "count": 38,
+              "owned_pages": 1
+            }
+          },
+          "maximum_key_bytes": 510
+        },
+        "GeneralLegacy": {
+          "sort": {
+            "lcid": 1033,
+            "variant": 0,
+            "version": 0,
+            "offset": 389243,
+            "raw": "09040000"
+          },
+          "rows": 38,
+          "asc_quartet_ids": [
+            3,
+            4,
+            5,
+            6
+          ],
+          "desc_quartet_ids": [
+            6,
+            5,
+            4,
+            3
+          ],
+          "quartet_keys": {
+            "3": "7f4d646d510100",
+            "4": "7f4d646d51010202020e00",
+            "5": "7f4d646d5101021200",
+            "6": "7f4d646d51010212020e00"
+          },
+          "physical_indexes": {
+            "Asc": {
+              "physical": 0,
+              "root": 97,
+              "count": 38,
+              "owned_pages": 1
+            },
+            "Twin": {
+              "physical": 0,
+              "root": 97,
+              "count": 38,
+              "owned_pages": 1
+            },
+            "Desc": {
+              "physical": 1,
+              "root": 98,
+              "count": 38,
+              "owned_pages": 1
+            }
+          },
+          "maximum_key_bytes": 510
+        }
+      }
+    },
+    {
+      "profile": "V2019",
+      "original": {
+        "path": ".cache/tablecraft-fixtures/french-legacy-index-20261026/French-V2019.accdb",
+        "bytes": 483328,
+        "sha256": "62dc9a90aa3d5aa11bc962c07ba2ab4cc9f996f8c26ad9f71eeb38652c897bba"
+      },
+      "tables": {
+        "French": {
+          "sort": {
+            "lcid": 1036,
+            "variant": 0,
+            "version": 0,
+            "offset": 434299,
+            "raw": "0c040000"
+          },
+          "rows": 38,
+          "asc_quartet_ids": [
+            3,
+            5,
+            4,
+            6
+          ],
+          "desc_quartet_ids": [
+            6,
+            4,
+            5,
+            3
+          ],
+          "quartet_keys": {
+            "3": "7f4d646d510100",
+            "4": "7f4d646d51010e00",
+            "5": "7f4d646d510102021200",
+            "6": "7f4d646d51010e021200"
+          },
+          "physical_indexes": {
+            "Asc": {
+              "physical": 0,
+              "root": 108,
+              "count": 38,
+              "owned_pages": 1
+            },
+            "Twin": {
+              "physical": 0,
+              "root": 108,
+              "count": 38,
+              "owned_pages": 1
+            },
+            "Desc": {
+              "physical": 1,
+              "root": 109,
+              "count": 38,
+              "owned_pages": 1
+            }
+          },
+          "maximum_key_bytes": 510
+        },
+        "GeneralLegacy": {
+          "sort": {
+            "lcid": 1033,
+            "variant": 0,
+            "version": 0,
+            "offset": 458875,
+            "raw": "09040000"
+          },
+          "rows": 38,
+          "asc_quartet_ids": [
+            3,
+            4,
+            5,
+            6
+          ],
+          "desc_quartet_ids": [
+            6,
+            5,
+            4,
+            3
+          ],
+          "quartet_keys": {
+            "3": "7f4d646d510100",
+            "4": "7f4d646d51010202020e00",
+            "5": "7f4d646d5101021200",
+            "6": "7f4d646d51010212020e00"
+          },
+          "physical_indexes": {
+            "Asc": {
+              "physical": 0,
+              "root": 114,
+              "count": 38,
+              "owned_pages": 1
+            },
+            "Twin": {
+              "physical": 0,
+              "root": 114,
+              "count": 38,
+              "owned_pages": 1
+            },
+            "Desc": {
+              "physical": 1,
+              "root": 115,
+              "count": 38,
+              "owned_pages": 1
+            }
+          },
+          "maximum_key_bytes": 510
+        }
+      }
+    }
+  ],
+  "raw_capture": {
+    "path": ".cache/tablecraft-fixtures/french-legacy-index-20261026/oracle-initial.json",
+    "bytes": 134366,
+    "sha256": "58160ad21430082967b528f613919546eee7437237cca6db511d34f0619d7014"
+  },
+  "source_and_tool_pins": [
+    {
+      "path": "docs/testing/capture_french_legacy_indexes.py",
+      "bytes": 7284,
+      "sha256": "0a11b99b4ebe1e3b012bedc8fb1da2a005885e189c0016c1dc0b46e4255dc935"
+    },
+    {
+      "path": "docs/testing/FrenchLegacyIndexFixture.java",
+      "bytes": 8203,
+      "sha256": "477739567c97ef81a3afe14763b32a03675a90f0ae478750964d9b079967854d"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+      "bytes": 1407244,
+      "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/french-legacy-index-20261026/classes/com/healthmarketscience/jackcess/impl/FrenchLegacyIndexFixture.class",
+      "bytes": 12407,
+      "sha256": "1e8c7634f00b21782618ebe9e2015265581da186984b9f8a20c4dbbfdc4123f7"
+    },
+    {
+      "path": "docs/testing/encoded_delete_originals/wire.py",
+      "bytes": 6423,
+      "sha256": "c75e98152710d6957c212d66da0c8c7f62fc5c6d0b159fdbb823d72bb22662a5"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/french-legacy-index-20261026/V2016-getter.json",
+      "bytes": 42135,
+      "sha256": "4a756b1e9e684e66362390514c41ed3cd72e9c3b330b36b26c16deb8b9222348"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/french-legacy-index-20261026/V2019-generate.json",
+      "bytes": 393,
+      "sha256": "0c1d919a5314a7eb0ba321618f6486fd74b3c067ca0cf497ab669e4a4a79231b"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/french-legacy-index-20261026/V2019-getter.json",
+      "bytes": 42447,
+      "sha256": "81453801fdc79e26cf7ec0df23ae509e9c5741ed17e20a2f6beedae60dd4d01a"
+    }
+  ],
+  "primary_reference": {
+    "url": "https://learn.microsoft.com/en-us/globalization/locale/sorting-and-string-comparison",
+    "section": "Characters with diacritics",
+    "observed_date": "2026-10-26",
+    "contract": "Microsoft describes some French dictionary traditions as backward secondary sorting by the last accented letter. This is generic sorting guidance, not an ACE descriptor or persisted-key specification."
+  },
+  "first_authored_compile_failure": {
+    "note": {
+      "path": ".cache/french-legacy-initial-compile-20261026.txt",
+      "bytes": 174,
+      "sha256": "a0a371a087909e5e374f04a258d70696a0654640c95c13a0ef1c33dfd71bf072"
+    },
+    "source": {
+      "path": ".cache/french-legacy-initial-void-setter-20261026.java",
+      "bytes": 8162,
+      "sha256": "a635fa95facb3630e49452247755816f65eb8c233875cc2e3766c55a623548f2"
+    },
+    "correction": "Call void setTextSortOrder separately; no original regenerated or input values changed",
+    "note_kind": "Contemporaneous summary of compiler diagnostic; original tool output remains in session history, not a raw stderr file"
+  },
+  "source_inspection": {
+    "path": ".cache/index-codes-tailoring-inspection-20261026.txt",
+    "bytes": 40509,
+    "sha256": "5e032ba28111fb9927ed3a9cacdb37a887e238a8b4f8f5410279b8ac4d15f9a5"
+  },
+  "limitations": [
+    "Single ShortText, nonunique ascending/descending aliases, variant0/version0 only",
+    "Long nonunique keys reaching510bytes observed; unique overflow remains an explicit separate negative and is not qualified",
+    "This38row rootleaf corpus alone does not qualify index nodes, Memo, composite/ignoredNULL/relationship/write profiles",
+    "Index bytes/order and comparison-provider admission must be reviewed separately; no implicit ICU substitution"
+  ],
+  "disagreements": 0,
+  "date": "2026-10-26",
+  "counts": {
+    "profiles": 2,
+    "originals": 2,
+    "tables_per_original": 2,
+    "rows_per_table": 38,
+    "logical_indexes_per_table": 3,
+    "physical_indexes_per_table": 2,
+    "logical_memberships": 456,
+    "physical_entries": 304
+  },
+  "execution": {
+    "capture_session": 40351,
+    "exit_code": 0,
+    "javac_exit_code": 0,
+    "python_py_compile_exit_code": 0
+  }
+}
