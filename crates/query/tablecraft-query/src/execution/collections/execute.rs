@@ -19,7 +19,10 @@ impl PreparedQuery {
     /// Scalar-only plans retain their ordinary evaluation semantics and limits.
     /// Collection plans admit row-local direct/static named/derived SELECTs
     /// and qualified INNER/LEFT/RIGHT joins or comma products, retaining explicit
-    /// absent-parent results. Unsupported collection operations refuse before
+    /// absent-parent results. Retained list outputs expose `.Value` through
+    /// static named/derived layers with their element policy and collection
+    /// lineage intact. Such plans require this API even for scalar final outputs.
+    /// Unsupported collection operations refuse before
     /// any source scan.
     pub fn execute_collections<'a>(
         &self,

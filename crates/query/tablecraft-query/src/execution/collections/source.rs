@@ -27,7 +27,10 @@ impl Runtime<'_, '_> {
             // hidden predicates can run. The unexpanded path stays unchanged.
             return self.joined_collection_input(select);
         }
-        if let RelationNode::Derived(read) = &select.source.node {
+        if let RelationNode::Derived { read, expansion } = &select.source.node {
+            if !expansion.is_empty() || select.parent.is_some() {
+                return self.joined_collection_input(select);
+            }
             return self.collection_read(read);
         }
         self.collection_table(select)

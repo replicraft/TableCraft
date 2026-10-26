@@ -26,8 +26,9 @@ impl Runtime<'_, '_> {
         }
         if let Some(parent) = &select.parent {
             match &select.source.node {
-                RelationNode::Derived(_) => return Err(QueryError::Unsupported),
-                RelationNode::Cross(..) | RelationNode::Join { .. }
+                RelationNode::Derived { .. }
+                | RelationNode::Cross(..)
+                | RelationNode::Join { .. }
                     if parent
                         .locations
                         .as_ref()
@@ -57,10 +58,12 @@ impl Runtime<'_, '_> {
         self.check_collection_depth(depth)?;
         match &relation.node {
             RelationNode::Table { .. } => self.check_table_schema(&relation.node),
-            RelationNode::Derived(read) if read.has_collections() => {
+            RelationNode::Derived { read, .. } if read.has_collections() => {
                 self.check_collection_read(read, depth + 1)
             }
-            RelationNode::Derived(read) => self.check_collection_scalar_read(read, depth + 1),
+            RelationNode::Derived { read, .. } => {
+                self.check_collection_scalar_read(read, depth + 1)
+            }
             RelationNode::Cross(left, right) | RelationNode::Join { left, right, .. } => {
                 self.check_collection_relation(left, depth + 1)?;
                 self.check_collection_relation(right, depth + 1)
@@ -100,7 +103,9 @@ impl Runtime<'_, '_> {
         self.check_collection_depth(depth)?;
         match &relation.node {
             RelationNode::Table { .. } => self.check_table_schema(&relation.node),
-            RelationNode::Derived(read) => self.check_collection_scalar_read(read, depth + 1),
+            RelationNode::Derived { read, .. } => {
+                self.check_collection_scalar_read(read, depth + 1)
+            }
             RelationNode::Cross(left, right) | RelationNode::Join { left, right, .. } => {
                 self.check_collection_scalar_relation(left, depth + 1)?;
                 self.check_collection_scalar_relation(right, depth + 1)

@@ -170,7 +170,7 @@ impl Pruner<'_, '_> {
                 self.collect_expr(condition, target, offset, needed)?;
             }
             // Derived inputs are non-lateral and have independent outer scopes.
-            RelationNode::Unit | RelationNode::Table { .. } | RelationNode::Derived(_) => {}
+            RelationNode::Unit | RelationNode::Table { .. } | RelationNode::Derived { .. } => {}
         }
         Ok(())
     }
@@ -182,10 +182,16 @@ impl Pruner<'_, '_> {
     ) -> Result<(), QueryError> {
         self.tick()?;
         match &relation.node {
-            RelationNode::Derived(_) => {
-                // Preserve all already-bound derived output expressions/errors.
+            RelationNode::Derived { read, .. } => {
+                // Original inner expressions remain eager. Virtual members are
+                // activated only by actual outer uses, never by their existence.
+                let base = read
+                    .output_types
+                    .iter()
+                    .filter(|kind| !kind.is_multivalue())
+                    .count();
                 needed
-                    .get_mut(offset..offset + relation.row_width())
+                    .get_mut(offset..offset + base)
                     .ok_or(QueryError::Source)?
                     .fill(true);
             }

@@ -74,24 +74,16 @@ impl Runtime<'_, '_> {
                 *leaf = leaf.checked_add(1).ok_or(QueryError::StructureLimit)?;
                 self.joined_collection_table(relation, requests, base, current)
             }
-            RelationNode::Derived(read) => {
+            RelationNode::Derived { read, expansion } => {
+                let current = *leaf;
                 *leaf = leaf.checked_add(1).ok_or(QueryError::StructureLimit)?;
-                let mut result = Vec::new();
                 if read.has_collections() {
-                    for mut frame in self.collection_read(read)? {
-                        for (index, _) in &mut frame.lists {
-                            self.tick()?;
-                            *index = index.checked_add(base).ok_or(QueryError::StructureLimit)?;
-                        }
-                        self.push(
-                            &mut result,
-                            JoinedFrame {
-                                frame,
-                                criteria: Vec::new(),
-                            },
-                        )?;
-                    }
+                    self.retained_collection_relation(read, expansion, requests, base, current)
                 } else {
+                    if !expansion.is_empty() {
+                        return Err(QueryError::Unsupported);
+                    }
+                    let mut result = Vec::new();
                     for scalars in self.read(read, &[])? {
                         self.push(
                             &mut result,
@@ -105,8 +97,8 @@ impl Runtime<'_, '_> {
                             },
                         )?;
                     }
+                    Ok(result)
                 }
-                Ok(result)
             }
             RelationNode::Unit => Err(QueryError::Unsupported),
         }

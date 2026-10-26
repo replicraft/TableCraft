@@ -28,7 +28,7 @@ impl Runtime<'_, '_> {
     ) -> Result<Vec<Vec<CellValue>>, QueryError> {
         self.tick()?;
         self.check_table_schema(&relation.node)?;
-        if let RelationNode::Derived(read) = &relation.node {
+        if let RelationNode::Derived { read, .. } = &relation.node {
             return self.read(read, &[]);
         }
         self.materialized_relation(relation, outer, constraint)
@@ -47,7 +47,7 @@ impl Runtime<'_, '_> {
                 self.push(&mut rows, row)?;
                 Ok(rows)
             }
-            RelationNode::Derived(_) => unreachable!("derived reads use the lean entry"),
+            RelationNode::Derived { .. } => unreachable!("derived reads use the lean entry"),
             RelationNode::Table {
                 namespace,
                 name,

@@ -1,7 +1,7 @@
 //! Retain metadata positions independently of pruned scalar join row positions.
 use super::super::Binder;
 use crate::{
-    QueryError,
+    OutputType, QueryError,
     plan::{Expr, ParentFilter, ParentLocation, Relation, RelationNode},
 };
 use tablecraft_schema::Column;
@@ -110,7 +110,46 @@ impl Binder<'_> {
                 }
                 *leaf += 1;
             }
-            RelationNode::Unit | RelationNode::Derived(_) => *leaf += 1,
+            RelationNode::Derived { read, .. } => {
+                let base = read
+                    .output_types
+                    .iter()
+                    .filter(|kind| !kind.is_multivalue())
+                    .count();
+                let mut member = 0;
+                for (output, kind) in read.output_types.iter().enumerate() {
+                    self.tick(depth)?;
+                    if let OutputType::Multivalue {
+                        element_type,
+                        element_nullable,
+                        ..
+                    } = kind
+                    {
+                        let field = offset + base + member;
+                        if used[field] {
+                            self.charge(size_of::<LocatedColumn>() + read.names[output].len())?;
+                            selected
+                                .try_reserve_exact(1)
+                                .map_err(|_| QueryError::Allocation)?;
+                            selected.push(LocatedColumn {
+                                field,
+                                location: ParentLocation {
+                                    leaf: *leaf,
+                                    member,
+                                },
+                                column: Column::with_type(
+                                    self.copy_name(&read.names[output])?,
+                                    *element_type,
+                                    *element_nullable,
+                                )?,
+                            });
+                        }
+                        member += 1;
+                    }
+                }
+                *leaf += 1;
+            }
+            RelationNode::Unit => *leaf += 1,
         }
         Ok(())
     }

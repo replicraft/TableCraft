@@ -65,6 +65,7 @@ pub struct PreparedQuery {
 pub(super) struct Binder<'a> {
     inherited_read_depth: usize,
     pending_named_depth: usize,
+    next_relation_occurrence: usize,
     binding_depth: BindingDepth,
     aliases: aliases::ProjectionAliases,
     budget: Option<&'a mut tablecraft_core::limits::ResourceBudget>,
@@ -115,6 +116,15 @@ impl Binder<'_> {
             return Err(QueryError::StructureLimit);
         }
         self.charge(std::mem::size_of::<crate::plan::Expr>())
+    }
+
+    fn collection_occurrence(&mut self) -> Result<usize, QueryError> {
+        self.work()?;
+        let occurrence = self.next_relation_occurrence;
+        self.next_relation_occurrence = occurrence
+            .checked_add(1)
+            .ok_or(QueryError::StructureLimit)?;
+        Ok(occurrence)
     }
 
     fn charge(&mut self, bytes: usize) -> Result<(), QueryError> {
@@ -185,6 +195,7 @@ pub(crate) fn prepare_stage<'a>(
     let mut binder = Binder {
         inherited_read_depth: options.inherited_read_depth,
         pending_named_depth: 0,
+        next_relation_occurrence: 0,
         binding_depth: options.preparation.binding_depth,
         aliases: Default::default(),
         budget,

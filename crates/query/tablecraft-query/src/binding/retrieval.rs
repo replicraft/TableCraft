@@ -127,6 +127,10 @@ impl Binder<'_> {
                                 projection.push(Expr::Multivalue {
                                     index: slot.collection_index.ok_or(QueryError::Source)?,
                                     output_type,
+                                    text_policy: slot.text_policy,
+                                    origin: slot
+                                        .collection_origin
+                                        .ok_or(QueryError::Unsupported)?,
                                 });
                             } else {
                                 projection.push(self.field(0, index, &source.slots)?);
@@ -260,6 +264,11 @@ impl Binder<'_> {
                         .filter(|output| output.is_multivalue())
                         .count()
                 }),
+                collection_origin: match &projection[index] {
+                    Expr::Multivalue { origin, .. } => Some(*origin),
+                    _ => None,
+                },
+                retained_member: false,
                 member: None,
                 name: n.clone(),
                 qualifier: None,

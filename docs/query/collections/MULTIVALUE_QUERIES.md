@@ -45,9 +45,9 @@ trims the projected list. Selected stored children are validated completely,
 including suffixes after a matching child, before admitting the parent. Native
 source failures and ignored visitor rejection remain sticky; no query result or
 complete source cache is published from a failed prefix. A visible member instead
-uses the existing expanded-row predicate rules. New element access on a whole
-list already materialized by a derived layer remains a separate capability;
-select its scalar member inside that layer and expose the scalar output name.
+uses the existing expanded-row predicate rules. Static named and derived whole-list
+outputs also expose retained `.Value` members through the typed result service,
+as described below.
 
 `execute_collections_with_schema_discovery` retains the existing explicit
 execution-phase scalar dependency discovery contract. A dynamic named dependency
@@ -118,6 +118,58 @@ records 388 distinct passing query tests, including twelve new structured-result
 and isolated depth controls, strict query lint and the minimal feature build.
 Adapter and CLI evidence is counted separately; these checks do not establish
 native Microsoft Access SQL results.
+
+### Retained members of named and derived lists
+
+A whole-list output keeps its element descriptor, actual element text policy and
+private collection origin through static named and derived SELECT layers. For
+example:
+
+```sql
+SELECT Q.Whole, Q.Whole.Value AS Child
+FROM (SELECT Tags AS Whole FROM Items) Q;
+```
+
+The typed result service repeats the complete list beside each expanded child.
+Repeated aliases of the same bound collection align by child position; they do
+not create a product. Independently bound relation instances remain independent,
+including self-joins whose stored payloads happen to be equal. Identity is issued
+from binding scope and relation occurrence, rather than derived from values,
+column spelling or scalar frame width. Each explicit outer expansion is a new
+barrier; a previously selected scalar child is ordinary scalar data.
+
+Visible members filter expanded rows. Hidden members keep the existing parent
+membership contract: separate Boolean atoms may match different children, while
+members within one comparison align by proved origin. Complete inner projections,
+filters, sorting, TOP and checked EOF finish before an outer layer expands its
+retained lists. Unused virtual members do not expand rows. Virtual member slots
+have a separately bounded private namespace and do not reduce the existing
+logical output-column allowance.
+
+Bare list projection does not activate its text provider. A retained Text member
+uses the captured element policy when a scalar consumer needs it; an explicit
+global policy retains its existing precedence. Present empty lists and present
+NULL children retain the existing scalar expansion placeholders while their
+whole-list outputs remain `[]` and `[NULL]`. An absent outer-joined parent remains
+`AbsentMultivalue`, with ordinary nullable scalar member extension. Stored IEEE
+list bits remain data; displaying a nonfinite child through `.Value` retains the
+scalar nonfinite refusal.
+
+These plans require `execute_collections` or its schema-discovery counterpart,
+even if the final selected outputs are scalar members only. Ordinary scalar and
+progressive APIs refuse them before scans. Preparation remains metadata-only;
+source metadata, owners and binding keys retain their existing revalidation.
+Binding, retained copies and expansion share the existing depth, byte, row, work
+and cancellation controls. No Core Value variant, Source capability or lookup
+execution is added. These are explicit TableCraft composition contracts; native
+Access alias-lineage and edge-result qualification remains unrun.
+
+The [retained-member query record](../../testing/results/read-query-derived-multivalue-members-2026-10-26.json)
+records 429 distinct passing query tests, including seventeen new implementation,
+independent policy/origin/width and isolated depth controls. Query strict lint,
+minimal-feature compilation and scoped formatting pass. Host and original-reader
+replay checks are counted separately; these results do not establish native
+Microsoft Access SQL execution.
 
 ### Typed joins and products
 
@@ -205,8 +257,9 @@ A present empty collection retains the existing scalar NULL placeholder beside
 a present empty whole list. An actual NULL child remains a stored item beside
 its complete list. An absent outer-joined parent instead carries
 `AbsentMultivalue` beside scalar NULL extension. Named/derived reads may select
-and reorder both list and scalar outputs; they do not introduce `.Value`
-dereferencing of an already materialized list in an enclosing scope.
+and reorder both list and scalar outputs. An enclosing scope may explicitly
+expand a retained whole list through the origin-preserving `.Value` contract
+described above.
 
 Source requests combine whole-list, hidden-criterion and displayed-member
 positions without duplicate native requests. Complete child validation and

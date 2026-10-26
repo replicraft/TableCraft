@@ -26,10 +26,16 @@ impl Pruner<'_, '_> {
                 projection.retain(|index| needed[*index]);
                 expansion.retain(|index| needed[columns.len() + index]);
             }
-            RelationNode::Derived(read) => {
-                if needed.iter().any(|needed| !needed) {
+            RelationNode::Derived { read, expansion } => {
+                let base = read
+                    .output_types
+                    .iter()
+                    .filter(|kind| !kind.is_multivalue())
+                    .count();
+                if needed[..base].iter().any(|needed| !needed) {
                     return Err(QueryError::Source);
                 }
+                expansion.retain(|index| needed[base + index]);
                 self.read(read, &[])?;
             }
             RelationNode::Cross(left, right) => {

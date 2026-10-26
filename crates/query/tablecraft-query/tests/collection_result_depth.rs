@@ -214,6 +214,50 @@ fn mixed_named_limit() {
     }
 }
 
+fn retained_members_named_limit() {
+    for count in [50, 51] {
+        let mut source = Data::chain(count);
+        for (index, (_, query)) in source.definitions.iter_mut().enumerate() {
+            *query = if index + 1 == count {
+                syntax("SELECT Id,Tags AS X,Tags AS Y FROM Data")
+            } else {
+                syntax(&format!("SELECT Id,X,Y FROM Q{}", index + 1))
+            };
+        }
+        let plan = prepare(&syntax("SELECT Q.X,Q.X.Value,Q.Y.Value FROM Q0 Q"), &source);
+        source.no_scans();
+        if count == 51 {
+            assert_eq!(plan.err(), Some(QueryError::StructureLimit));
+            source.no_scans();
+            continue;
+        }
+        let result = plan
+            .unwrap()
+            .execute_collections(&source, &[], Default::default())
+            .unwrap();
+        let expected = [
+            (0, Value::Null),
+            (0, Value::Int32(100)),
+            (0, Value::Int32(100)),
+            (1, Value::Null),
+        ];
+        assert_eq!(result.rows().len(), expected.len());
+        for (row, (parent, child)) in result.rows().iter().zip(expected) {
+            let QueryValue::Multivalue(list) = &row[0] else {
+                panic!("retained alias lost its complete list");
+            };
+            assert_eq!(list.values(), source.lists[parent]);
+            assert_eq!(
+                row[1],
+                QueryValue::Scalar(ExpressionValue::Value(child.clone()))
+            );
+            assert_eq!(row[2], QueryValue::Scalar(ExpressionValue::Value(child)));
+        }
+        assert_eq!(source.collection_scans.get(), 1);
+        assert_eq!(source.scalar_scans.get(), 0);
+    }
+}
+
 fn joined_named_limits() {
     for count in [8, 50] {
         let mut source = Data::chain(count);
@@ -326,7 +370,7 @@ fn isolated_worker(test_name: &str, run: fn()) {
             .unwrap()
             .as_nanos();
         let path = std::env::temp_dir().join(format!(
-            "tablecraft-collection-depth-{}-{nonce}.log",
+            "tablecraft-collection-depth-{test_name}-{}-{nonce}.log",
             std::process::id()
         ));
         let diagnostics = File::options()
@@ -410,5 +454,13 @@ fn mixed_lists_and_displayed_children_cross_fifty_named_sources_without_reexpans
     isolated_worker(
         "mixed_lists_and_displayed_children_cross_fifty_named_sources_without_reexpansion",
         mixed_named_limit,
+    );
+}
+
+#[test]
+fn retained_list_members_keep_origin_across_fifty_named_sources_on_a_bounded_stack() {
+    isolated_worker(
+        "retained_list_members_keep_origin_across_fifty_named_sources_on_a_bounded_stack",
+        retained_members_named_limit,
     );
 }

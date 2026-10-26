@@ -176,7 +176,7 @@ impl Binder<'_> {
                 self.validate_group_at(condition, keys, depth + 1, scope)?;
             }
             // Derived and named relations bind/run in isolated, non-lateral scopes.
-            RelationNode::Derived(_) | RelationNode::Table { .. } | RelationNode::Unit => {}
+            RelationNode::Derived { .. } | RelationNode::Table { .. } | RelationNode::Unit => {}
         }
         Ok(())
     }

@@ -63,7 +63,7 @@ impl Binder<'_> {
         self.tick(depth)?;
         match &relation.node {
             RelationNode::Unit => {}
-            RelationNode::Table { .. } | RelationNode::Derived(_) => {
+            RelationNode::Table { .. } | RelationNode::Derived { .. } => {
                 self.charge(size_of::<(&Relation, usize, usize)>())?;
                 leaves.try_reserve(1).map_err(|_| QueryError::Allocation)?;
                 leaves.push((relation, offset, relation.row_width()));

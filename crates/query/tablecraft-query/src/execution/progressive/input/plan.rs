@@ -20,7 +20,7 @@ impl Runtime<'_, '_> {
                 RelationNode::Table { expansion, .. } if expansion.is_empty() => {
                     return Ok(Input { leaf, frames });
                 }
-                RelationNode::Derived(read) => {
+                RelationNode::Derived { read, .. } => {
                     let select = self.progressive_inner_select(read)?;
                     if frames.len() == MAX_BIND_NODES {
                         return Err(QueryError::StructureLimit);

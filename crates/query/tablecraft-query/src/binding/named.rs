@@ -4,7 +4,7 @@ use crate::{
     QueryError,
     external_sources::SourceNamespace,
     named_identity::NamedIdentity,
-    plan::{ProfiledType, ReadPlan, Relation, RelationNode, Slot},
+    plan::{ReadPlan, Relation},
     profile::{MAX_NAMED_DEPTH, MAX_PARAMETERS, SOURCE_SCHEMA_POLICY},
 };
 use tablecraft_sql::query::{Query, Statement};
@@ -19,43 +19,9 @@ impl Binder<'_> {
         read: ReadPlan,
         qualifier: &str,
     ) -> Result<Relation, QueryError> {
-        self.charge(size_of::<ReadPlan>() + read.names.len() * size_of::<Slot>())?;
-        let mut slots = Vec::new();
-        slots
-            .try_reserve_exact(read.names.len())
-            .map_err(|_| QueryError::Allocation)?;
-        for (index, (((name, policy), _), declaration)) in read
-            .names
-            .iter()
-            .zip(&read.text_policies)
-            .zip(&read.output_types)
-            .zip(&read.declarations)
-            .enumerate()
-        {
-            slots.push(Slot {
-                output_type: ProfiledType {
-                    materialized: read.materialized_types[index],
-                    declared: read.declared_types[index],
-                },
-                declaration: *declaration,
-                text_policy: *policy,
-                available: !read.output_types[index].is_multivalue(),
-                collection_index: read.output_types[index].is_multivalue().then(|| {
-                    read.output_types[..index]
-                        .iter()
-                        .filter(|output| output.is_multivalue())
-                        .count()
-                }),
-                member: None,
-                name: self.copy_name(name)?,
-                qualifier: Some(self.copy_name(qualifier)?),
-            });
-        }
-        Ok(Relation {
-            slots,
-            node: RelationNode::Derived(Box::new(read)),
-        })
+        self.derived_relation(read, Some(qualifier))
     }
+
     pub(super) fn copy_name(&mut self, name: &str) -> Result<String, QueryError> {
         self.charge(name.len())?;
         let mut owned = String::new();

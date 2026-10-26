@@ -26,6 +26,7 @@ pub(crate) fn bind_update(query: &Query, source: &dyn Source) -> Result<BoundUpd
     let mut binder = Binder {
         inherited_read_depth: 0,
         pending_named_depth: 0,
+        next_relation_occurrence: 0,
         binding_depth: Default::default(),
         aliases: Default::default(),
         budget: None,
