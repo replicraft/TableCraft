@@ -672,6 +672,11 @@ contract retains the primary references, algorithms, provenance and exact limits
    now preserve complete caches and independent native/query controls with 20,000-row
    comparisons. Explicit indexed loads now have independent 20,000-row comparisons across
    qualified key families, projections, typed seeks and full-cache isolation.
+   Qualified partial index reads now also support table data ownership maps above
+   4,096 pages without materializing all addresses; independent ACE 16-family
+   originals contain 5,000 rows on 5,000 owned pages. Complete indexed reads/full
+   checks and index-owned/mutation map ceilings remain explicit unfinished scale
+   work. See [large-map selected reads](testing/LARGE_INDEX_SELECTIONS.md).
    A separate 100,000-insert history recipe now qualifies 99,110 retained
    sequential rows, added-column NULLs, Memo growth and deleted roots across
    ACE 16/ACE 2007/Jet 4. Explicit query byte/row allowances preserve defaults
