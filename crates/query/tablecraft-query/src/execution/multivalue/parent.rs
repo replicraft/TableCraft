@@ -36,6 +36,19 @@ impl<'a> ParentCollections<'a> {
             absent: None,
         }
     }
+    pub(in crate::execution) fn borrowed_with_absence(
+        requested: &'a [usize],
+        columns: &'a [Column],
+        lists: &'a [&'a dyn MultivalueList],
+        absent: &'a [bool],
+    ) -> Self {
+        Self {
+            requested,
+            columns,
+            lists,
+            absent: Some(absent),
+        }
+    }
 }
 
 impl Runtime<'_, '_> {

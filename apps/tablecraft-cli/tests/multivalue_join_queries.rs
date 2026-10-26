@@ -174,7 +174,7 @@ fn selected_corruption_eager_errors_and_limits_publish_no_join_prefix() {
             "resource",
         ),
         (
-            "SELECT a.Score,b.Score FROM Items a LEFT JOIN Items b ON a.Id=b.Id",
+            "SELECT a.Score,b.Score FROM Items a LEFT JOIN Items b ON a.Score=b.Score",
             vec![],
             "not implemented",
         ),

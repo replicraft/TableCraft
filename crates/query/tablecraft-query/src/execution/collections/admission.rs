@@ -5,7 +5,6 @@ use crate::{
     plan::{ReadNode, ReadPlan, Relation, RelationNode},
     profile::MAX_RUNTIME_READ_DEPTH,
 };
-use tablecraft_sql::select::JoinKind;
 
 impl Runtime<'_, '_> {
     pub(in crate::execution) fn check_collection_read(
@@ -67,17 +66,11 @@ impl Runtime<'_, '_> {
                 self.check_collection_read(read, depth + 1)
             }
             RelationNode::Derived(read) => self.check_collection_scalar_read(read, depth + 1),
-            RelationNode::Cross(left, right)
-            | RelationNode::Join {
-                left,
-                right,
-                kind: JoinKind::Inner,
-                ..
-            } => {
+            RelationNode::Cross(left, right) | RelationNode::Join { left, right, .. } => {
                 self.check_collection_relation(left, depth + 1)?;
                 self.check_collection_relation(right, depth + 1)
             }
-            RelationNode::Unit | RelationNode::Join { .. } => Err(QueryError::Unsupported),
+            RelationNode::Unit => Err(QueryError::Unsupported),
         }
     }
 

@@ -125,11 +125,11 @@ impl Runtime<'_, '_> {
                     self.tick()?;
                     if let Some(position) = request.criterion {
                         let copied = self.copy_joined_criterion(*values)?;
-                        self.push(&mut criteria, (position, copied))?;
+                        self.push(&mut criteria, (position, Some(copied)))?;
                     }
                     if let Some(index) = request.output {
                         let copied = self.copy_borrowed_collection(*values)?;
-                        self.push(&mut owned, (index, copied))?;
+                        self.push(&mut owned, (index, Some(copied)))?;
                     }
                 }
                 self.push(

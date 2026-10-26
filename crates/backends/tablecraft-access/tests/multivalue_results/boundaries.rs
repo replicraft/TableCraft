@@ -23,6 +23,7 @@ fn scalar_publication_and_unsupported_list_operations_refuse_before_any_records(
     let tablecraft_query::OutputType::Multivalue {
         element_type,
         element_nullable,
+        parent_nullable: false,
     } = prepared.output_types().unwrap()[1]
     else {
         panic!("Bare collection output lost its element descriptor");

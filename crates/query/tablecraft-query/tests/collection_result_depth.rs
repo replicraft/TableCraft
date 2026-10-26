@@ -169,7 +169,7 @@ fn joined_named_limits() {
             };
             *query = syntax(&format!(
                 "SELECT D.Id,D.Tags FROM {target} AS D \
-                 INNER JOIN (SELECT 1 AS MatchKey) AS C ON 1=1"
+                 LEFT JOIN (SELECT 1 AS MatchKey) AS C ON 1=1"
             ));
         }
 

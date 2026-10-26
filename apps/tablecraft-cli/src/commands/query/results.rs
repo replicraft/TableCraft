@@ -15,6 +15,7 @@ impl Results {
             }),
             Self::Collections(result) => render(result, limit, |output, value| match value {
                 QueryValue::Scalar(value) => output.expression_value(value).map_err(Error::Output),
+                QueryValue::AbsentMultivalue => output.display(&"NULL").map_err(Error::Output),
                 QueryValue::Multivalue(values) => {
                     output.display(&"[").map_err(Error::Output)?;
                     for (index, value) in values.values().iter().enumerate() {

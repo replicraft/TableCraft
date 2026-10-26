@@ -1,4 +1,5 @@
 //! Joined-only sidecars preserve whole lists without scalar carrier substitutions.
+mod missing;
 mod relation;
 mod table;
 
@@ -9,12 +10,29 @@ use crate::{
     plan::{Expr, ParentFilter, Relation, SelectPlan},
     source::MultivalueList,
 };
+use tablecraft_core::values::Value;
 
 struct JoinedFrame {
     frame: CollectionFrame,
     // Positions in ParentFilter.collections, not scalar fields or output slots.
-    criteria: Vec<(usize, MultivalueValue)>,
+    criteria: Vec<(usize, Option<MultivalueValue>)>,
 }
+
+// A zero-length borrowed view accompanies an explicit absence bit; it never
+// enters result payloads and never manufactures a stored NULL child.
+struct MissingList;
+
+impl MultivalueList for MissingList {
+    fn len(&self) -> usize {
+        0
+    }
+
+    fn get(&self, _: usize) -> Option<&Value> {
+        None
+    }
+}
+
+const MISSING_LIST: MissingList = MissingList;
 
 struct Requests<'a> {
     selected: &'a [usize],
@@ -46,6 +64,12 @@ impl Runtime<'_, '_> {
                     parent.collections.len() as u64,
                     size_of::<&dyn MultivalueList>() as u64,
                 )?;
+                self.budget
+                    .charge_allocation(parent.collections.len() as u64, size_of::<bool>() as u64)?;
+                let mut absent = Vec::new();
+                absent
+                    .try_reserve_exact(parent.collections.len())
+                    .map_err(|_| QueryError::Allocation)?;
                 let mut views = Vec::new();
                 views
                     .try_reserve_exact(parent.collections.len())
@@ -55,14 +79,23 @@ impl Runtime<'_, '_> {
                     for (position, value) in &row.criteria {
                         self.tick()?;
                         if *position == index {
-                            found = Some(&value.values as &dyn MultivalueList);
+                            found = Some(value.as_ref());
                             break;
                         }
                     }
-                    views.push(found.ok_or(QueryError::Source)?);
+                    let value = found.ok_or(QueryError::Source)?;
+                    absent.push(value.is_none());
+                    views.push(match value {
+                        Some(value) => &value.values as &dyn MultivalueList,
+                        None => &MISSING_LIST,
+                    });
                 }
-                let collections =
-                    ParentCollections::borrowed(&parent.collections, &parent.columns, &views);
+                let collections = ParentCollections::borrowed_with_absence(
+                    &parent.collections,
+                    &parent.columns,
+                    &views,
+                    &absent,
+                );
                 if !self
                     .parent_truth(&parent.predicate, &collections, &row.frame.scalars, &[])?
                     .is_true()

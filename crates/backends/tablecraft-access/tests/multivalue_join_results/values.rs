@@ -21,6 +21,7 @@ fn self_join_remaps_same_typed_collection_zero_on_both_sides() {
             let OutputType::Multivalue {
                 element_type,
                 element_nullable,
+                parent_nullable: false,
             } = output
             else {
                 panic!("Joined list metadata became scalar/dynamic");
