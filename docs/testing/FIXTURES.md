@@ -9012,3 +9012,29 @@ index counters, encoded survivor keys and outside-span preservation are checked.
 All originals remain unchanged. Raw captures and database bytes stay ignored;
 no GUID/random or complex allocation, native Access saves, data macros or ordinary
 write enablement is claimed.
+
+## Exact French Legacy stored-index originals
+
+Repository-owned [FrenchLegacyIndexFixture.java](FrenchLegacyIndexFixture.java)
+uses the reviewed Jackcess 5.0.4 JAR, SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+Public builders create exact French `1036/0/0` and matched General Legacy
+`1033/0/0` Short Text fields without descriptor/header patching. Expressions are
+disabled, UTC is explicit and linked opens throw. No upstream code, weights or
+third-party database bytes were copied.
+
+| Original | Bytes | SHA-256 |
+| --- | ---: | --- |
+| French-V2016.accdb | 413,696 | `8dd327f872cb50e20c3bfee09731300cdb22bc392f25ad5217b372cad3a6b6d2` |
+| French-V2019.accdb | 483,328 | `62dc9a90aa3d5aa11bc962c07ba2ab4cc9f996f8c26ad9f71eeb38652c897bba` |
+
+The [owning observations](FRENCH_LEGACY_INDEX_OBSERVATIONS.md) and compact
+[oracle receipt](results/french-legacy-index-oracle-2026-10-26.json) retain actual
+descriptors, distinct backwards-accent orders, exact full key/reference framing,
+source/JAR/class hashes and the first authored compile correction. Both originals
+remain unchanged. Two tables per profile each contain 38 rows, three logical
+indexes and two physical indexes: 456 logical memberships / 304 physical entries.
+The nonunique keys include NULL/empty/case/ties/punctuation/expansions and
+510-byte overflow; unique overflow is not qualified. Raw captures/database bytes
+stay ignored. This is independent stored-index evidence, not implemented French
+engine support, native Access/NLS/SQL comparison, LIKE/search or write qualification.
