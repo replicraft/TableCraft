@@ -1,5 +1,23 @@
 # Implementation status
 
+## Typed multivalue parent joins
+
+Explicit collection-aware retrieval now transports whole stored lists through
+INNER joins and comma-separated CROSS sources, including nested joins and static
+named/derived leaves. Scalar ON conditions select parent pairs before hidden
+member WHERE criteria; selected lists retain their complete contents. Scalar-only
+leaves keep their ordinary read service. Typed outer joins, UNION, list keys,
+aggregates and mixed list/displayed-member output remain unfinished.
+
+The selected query batch passes 242 tests, including sixteen new controls, with
+strict query lint and a standalone minimal build. Four isolated depth tests pass
+on a 1 MiB stack. A newly exposed preparation overflow was fixed by separating
+recursive join traversal from post-child construction; plain fifty-level named
+queries retain their existing support. See the [query contract](MULTIVALUE_QUERIES.md)
+and [scoped verification](testing/results/read-query-typed-multivalue-joins-2026-10-26.json).
+These checks do not establish native Microsoft Access query equivalence or finish
+the read/query roadmap.
+
 ## Typed multivalue query results
 
 The explicit collection-aware query API returns complete stored lists alongside
@@ -11,6 +29,7 @@ their existing finite-value and publication rules.
 CLI `query run --database PATH --multivalues` and `--collections` now display bare
 list fields, including aliases, static named/derived projections, scalar
 filtering/order/TOP and direct hidden `.Value` membership criteria. Typed list
+INNER/CROSS joins now use the separate service described above; typed outer
 joins, UNION, list keys and aggregates remain unsupported. Buffered schema
 discovery retains its existing authorized scalar dependency reads before final
 typed admission; collection scans require successful admission.

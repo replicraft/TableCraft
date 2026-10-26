@@ -12,8 +12,8 @@ core `Value`, run lookup queries or implement collection writes.
 stored core `Value` and scalar evaluator operands. `MultivalueValue::values()`
 borrows the complete ordered stored children. Duplicates, NULL children and empty
 lists remain distinct. Equality is representational, not SQL collection equality.
-No missing-parent/NULL-list state is invented: current typed list plans refuse
-joins rather than guess absent-parent associations from native integer keys.
+No missing-parent/NULL-list state is invented: typed list plans refuse
+outer joins rather than guess absent-parent associations from native integer keys.
 
 `PreparedQuery::execute_collections` returns `CollectionQueryResult`; ordinary
 `execute`, `execute_expression` and progressive execution continue to reject
@@ -30,12 +30,12 @@ outputs retain dense scalar positions without placeholder cells; a list alias
 cannot itself enter a sibling scalar expression. Duplicate explicit aliases keep
 the existing ambiguity rule. Sorting and TOP reuse ordinary scalar-key services,
 including checked complete input and TOP ties. Bare-list sorting, grouping,
-DISTINCT, UNION, joins, crosstabs, aggregates and mixed bare-list/visible `.Value`
+DISTINCT, UNION, outer joins, crosstabs, aggregates and mixed bare-list/visible `.Value`
 projection remain explicitly unsupported in this result profile. Existing
 scalar-only queries, including `.Value`, retain their normal execution through
 the same collection-aware API rather than gaining these restrictions.
 
-Hidden `.Value` WHERE criteria on a direct parent source select parents while
+Hidden `.Value` WHERE criteria on direct or joined parent sources select parents while
 retaining every value in each selected bare list. A match to one child never
 trims the projected list. Selected stored children are validated completely,
 including suffixes after a matching child, before admitting the parent. Native
@@ -46,7 +46,7 @@ an outer derived layer is a separate future extension.
 `execute_collections_with_schema_discovery` retains the existing explicit
 execution-phase scalar dependency discovery contract. A dynamic named dependency
 can therefore complete authorized scalar discovery before the final plan reveals
-an unsupported typed join or other shape. The operation then returns Unsupported
+an unsupported typed outer join or other shape. The operation then returns Unsupported
 with no result and no collection scan. This wrapper is not metadata-only;
 prepared-plan admission and progressive preflight retain their stricter guards.
 Discovery shares the same operation budget, owner bindings and complete-result
@@ -78,6 +78,43 @@ records 388 distinct passing query tests, including twelve new structured-result
 and isolated depth controls, strict query lint and the minimal feature build.
 Adapter and CLI evidence is counted separately; these checks do not establish
 native Microsoft Access SQL results.
+
+### Typed INNER joins and products
+
+List-producing SELECTs now admit INNER JOIN and comma-separated CROSS products,
+including nested trees, static named/derived list sources and scalar-only leaves.
+Scalar ON, WHERE, ORDER BY and TOP retain their ordinary evaluation services.
+Both sides may project lists; collection positions are independent of scalar row
+width and retain every preceding collection slot, including unselected fields.
+Duplicate matching parents produce duplicate parent pairs, each carrying its full
+ordered lists. INNER JOIN uses left encounter order then right encounter order;
+no child flattening or list equality participates in matching.
+
+Both inputs are fully validated before matching, including a right input when
+the left is empty. Scalar ON evaluates for every candidate pair before hidden
+parent membership criteria filter the completed join. A matching child on either
+side selects the parent pair without trimming either displayed list. Hidden
+criterion cells retain existing scalar admission; selected list payloads alone
+preserve all stored IEEE bits. Failure returns no buffered result, including
+swallowed visitor rejection or an error after an otherwise matching prefix.
+
+The typed matcher uses bounded nested pair traversal and paid list copies; the
+ordinary scalar join directory is unchanged. Byte, child-row and work charges
+are cumulative across input materialization, accepted pair copies and later
+projection. Nested relations share the operation's read-depth guard with named
+reads. Isolated 1 MiB controls retain fifty plain named SELECTs and successful
+eight-level named/join composition; the fifty-level compound join shape reaches
+a checked structural refusal. These are engineering bounds, not native Access
+nesting qualification. LEFT/RIGHT list projections remain unsupported until an
+explicit absent-parent result model is established.
+
+The [typed-join query verification record](testing/results/read-query-typed-multivalue-joins-2026-10-26.json)
+records 242 distinct passing query tests, including sixteen new join, scalar
+crosstab-composition and isolated depth controls, strict lint and the minimal
+feature build. The first mixed-depth probe exposed a preparation stack overflow;
+lean join traversal/finishing separation fixed it without reducing the fifty-name
+limit or changing matching semantics. Native adapter/CLI checks and original
+fixture getter models are recorded separately.
 
 ## Source contract
 

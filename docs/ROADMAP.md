@@ -601,8 +601,9 @@ contract retains the primary references, algorithms, provenance and exact limits
    views and explicit native `--multivalues` input. Direct scalar-parent membership
    criteria now work. Explicit typed results now also preserve complete bare-field
    lists through row-local/static named/derived projections, scalar ordering/TOP
-   and direct hidden-member criteria. List joins, UNION, aggregates and list keys
-   remain unfinished.
+   and direct hidden-member criteria. INNER/CROSS parent joins now transport whole
+   lists through nested/static named/derived sources and hidden criteria. Typed
+   outer joins, UNION, aggregates and list keys remain unfinished.
    Explicit `--collections` now
    exposes aligned stored attachment metadata members; an additional explicit
    `--decoded-attachments` option supplies bounded original-file Binary views.

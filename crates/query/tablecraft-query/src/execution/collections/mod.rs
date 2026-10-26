@@ -1,6 +1,7 @@
 //! Explicit list results use sidecars, never scalar placeholders or child IDs.
 mod admission;
 mod execute;
+mod joined;
 mod projection;
 mod source;
 
