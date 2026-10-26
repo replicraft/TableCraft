@@ -18,17 +18,45 @@ pub(super) fn before(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<TableCheck, EditError> {
+    before_with(image, table, Admission::Update, budget, cancelled)
+}
+
+#[cfg(feature = "ace16-write-preview")]
+pub(super) fn before_delete(
+    image: &NativeImage,
+    table: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<TableCheck, EditError> {
+    before_with(image, table, Admission::Delete, budget, cancelled)
+}
+
+enum Admission {
+    Update,
+    #[cfg(feature = "ace16-write-preview")]
+    Delete,
+}
+
+fn before_with(
+    image: &NativeImage,
+    table: &str,
+    admission: Admission,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<TableCheck, EditError> {
     let scope = image.catalog().catalog().scope();
     let structural = check_table(&mut image.reader(), scope, table, budget, cancelled)?;
     let schema = structural.schema();
-    if structural.indexes().iter().any(|index| {
-        index.index().columns().iter().any(|key| {
-            schema.columns().iter().any(|column| {
-                column.number() == key.number()
-                    && column.native_type() == crate::format::data_type::SHORT_BINARY
+    if matches!(admission, Admission::Update)
+        && structural.indexes().iter().any(|index| {
+            index.index().columns().iter().any(|key| {
+                schema.columns().iter().any(|column| {
+                    column.number() == key.number()
+                        && column.native_type() == crate::format::data_type::SHORT_BINARY
+                })
             })
         })
-    }) {
+    {
         return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
     }
     // Deleted-column read qualification does not qualify edits of historical storage.

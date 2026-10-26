@@ -1,0 +1,310 @@
+{
+  "date": "2026-10-26",
+  "scope": "Delete-only original encoded-key preservation for qualified single native Short Text General-family and Short Binary indexes, using checked existing-page deletion/contraction. No WriteProfile or UPDATE widening.",
+  "unique_engine_unit_integration_tests": 178,
+  "new_engine_tests": 10,
+  "new_private_author_tests": 2,
+  "new_independent_contract_tests": 8,
+  "existing_engine_tests": 168,
+  "prior_delete_and_read_regressions": 64,
+  "existing_writer_regressions": 98,
+  "private_tests_including_existing": 8,
+  "compile_fail_doc_tests": 3,
+  "total_engine_checks_including_docs": 181,
+  "scope_files": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/mod.rs",
+      "bytes": 1119,
+      "sha256": "f6259cf08fb36bcb12917130d73bcca2996bfe30aa052aa0429506d003963a6e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/retained.rs",
+      "bytes": 3911,
+      "sha256": "dd61f27b79eaaad3c592eb00abfcf080d45e55e72c53e11315ad0d25f716b294"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/retained/tests.rs",
+      "bytes": 3280,
+      "sha256": "485c14c8b80b92f600efd272a9371f0e8aaae35c1f337b6c0960b939988e2a6e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/encoding.rs",
+      "bytes": 3794,
+      "sha256": "e3c31b4d930761d0a95d3dd3a6dfe9ef2181aea3d206d370464adbad0c273198"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/repack.rs",
+      "bytes": 11663,
+      "sha256": "01fcb0c3e0212b7e25654fbd82f456054440ecb168c73bda29fd807d770051cd"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/tree.rs",
+      "bytes": 8602,
+      "sha256": "64da9f890ec32b919bd05047928bdc9c63e6a7d164e1ea30c657a9499d80e497"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/tree/deletion.rs",
+      "bytes": 4142,
+      "sha256": "f461f3a5460b0ce38e45bf122c303b43458ac0b5620139c9a3d56e3bee75f201"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/tree/contraction.rs",
+      "bytes": 7692,
+      "sha256": "d4cab6404c0c62764526732227c72386a754c5b6baa67eef8a5ff4c79d93c44e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/delete.rs",
+      "bytes": 4873,
+      "sha256": "ede7b714d414a1c8864b86f79e53a7af3ca5457917fd5a570fe18c9119c51029"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/plan.rs",
+      "bytes": 15039,
+      "sha256": "b9f3543aad840f7ff5003364c299b14a06f1176d8e46bec4d1a7ffd3032c5bb6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/gates.rs",
+      "bytes": 7840,
+      "sha256": "77beb0fce0f34a39760c4b13def1966cdee45c1edb061765191a28442365a85a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete.rs",
+      "bytes": 6281,
+      "sha256": "ab67a0bd7c8db27550d4b8f90ccdf780b8e889054c39ac62eee0771246ed8bf3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_encoded_delete_contract.rs",
+      "bytes": 396,
+      "sha256": "566bef94728e5c0855ce85651f7725785f8bd057187535378ec6c9201eb986c8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_encoded_delete_contract/model.rs",
+      "bytes": 14227,
+      "sha256": "a5b4f2cdf7d3617703d055800e8ec247681b8b01d740bfaee5447e823b2f1177"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_encoded_delete_contract/values.rs",
+      "bytes": 6575,
+      "sha256": "499654b3296841d1ba583e88ec9197a03b3a16831b3a05f37ad1272385526f57"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_encoded_delete_contract/boundaries.rs",
+      "bytes": 5066,
+      "sha256": "8a0612421ad42f67b6e897426522141790a32dc59214006fbf7277b8c80d983e"
+    },
+    {
+      "path": "docs/testing/ACE16_DELETE_PREVIEWS.md",
+      "bytes": 16210,
+      "sha256": "55653d135d99e97cf0a74c3b83b9a51216db04c898baa484bffd2f2ad46ffa63"
+    }
+  ],
+  "checks": [
+    {
+      "command": "cargo check --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-delete-encoded-check-20261026.log",
+        "bytes": 183,
+        "sha256": "17d7b77a35a8f848524ca5265443df793af5785fd1357a50d1d1d01534689099"
+      },
+      "session": 89950
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test ace16_deletes --test ace16_delete_contract --test ace16_delete_trees --test ace16_delete_tree_contract --test ace16_delete_retirement --test ace16_delete_contraction_contract --test binary_indexes --test indexes",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-delete-encoded-primary-regressions-20261026.log",
+        "bytes": 7426,
+        "sha256": "28990b1e311197ae848eeea503a549ae403fb5708ea82ff191d1ebf02b208315"
+      },
+      "session": 81755,
+      "unique_tests": 64
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test ace16_write_preview --test mutation --test ace16_fixed_updates --test scalar_index_updates --test integral_index_updates --test decimal_updates --test guid_updates --test composite_updates --test batch_updates --test mask_updates --test foreign_updates --test cascade_updates",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-delete-encoded-writer-regressions-20261026.log",
+        "bytes": 10779,
+        "sha256": "a2257f5929806581874a8d463ea440db6150f8177e42fd7525c27f7cf88ea322"
+      },
+      "session": 72112,
+      "unique_tests": 98
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib table::indexes::mutation",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-delete-encoded-private-final-20261026.log",
+        "bytes": 1357,
+        "sha256": "196679a72148841b19a403faede8624062b695340f4128b7b02911d76476236d"
+      },
+      "session": 87097,
+      "unique_tests": 8
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test ace16_encoded_delete_contract",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-delete-encoded-contract-both-headers-20261026.log",
+        "bytes": 1182,
+        "sha256": "574f52a79a21ac5b758ff5c3e8c4496a464d3285e32be544b2c7accaf6b95879"
+      },
+      "session": 61787,
+      "unique_tests": 8
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib --test ace16_encoded_delete_contract --test ace16_deletes --test ace16_delete_contract --test ace16_delete_trees --test ace16_delete_tree_contract --test ace16_delete_retirement --test ace16_delete_contraction_contract --test binary_indexes --test indexes --example preview_ace16_delete -- -D warnings",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-delete-encoded-clippy-accepted-20261026.log",
+        "bytes": 183,
+        "sha256": "fd73824f48df108d6719435e2c7849e37f4b9d15311da41c91dc20108b4e0c90"
+      }
+    },
+    {
+      "command": "cargo check --locked --offline -j2 -p tablecraft-ace --lib --no-default-features",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-delete-encoded-minimal-final-20261026.log",
+        "bytes": 72,
+        "sha256": "4f27ac380b22e1d975eee20ce727fa8cbc09061177f6253af0777fd4de7b7506"
+      }
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --doc",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-delete-encoded-doc-tests-20261026.log",
+        "bytes": 627,
+        "sha256": "133954de9df6eb2b7a9ad23791ae06ec4f472162a139e9dca45d3a8a829f9268"
+      },
+      "session": 74193,
+      "unique_tests": 3
+    },
+    {
+      "command": "rustfmt --edition 2024 --check crates/engines/tablecraft-ace/src/table/indexes/mutation/mod.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/retained.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/retained/tests.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/encoding.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/repack.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/tree.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/tree/deletion.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/tree/contraction.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/delete.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/plan.rs crates/engines/tablecraft-ace/src/table/mutation/gates.rs crates/engines/tablecraft-ace/src/table/mutation/delete.rs crates/engines/tablecraft-ace/tests/ace16_encoded_delete_contract.rs crates/engines/tablecraft-ace/tests/ace16_encoded_delete_contract/model.rs crates/engines/tablecraft-ace/tests/ace16_encoded_delete_contract/values.rs crates/engines/tablecraft-ace/tests/ace16_encoded_delete_contract/boundaries.rs",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-delete-encoded-format-20261026.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "rust_files": 16
+    }
+  ],
+  "preserved_excluded_attempts": [
+    {
+      "session": 56978,
+      "exit_code": 101,
+      "log": {
+        "path": ".cache/ace16-delete-encoded-private-20261026.log",
+        "bytes": 2060,
+        "sha256": "204612d28a2b1b4557cd48a9bd8793ce613b0ddecdb70b9e9e8f53e120475482"
+      },
+      "classification": "New private author model incorrectly reversed empty-vs-nonempty Binary ordering for descending keys. Existing binary::compare_bytes keeps empty before nonempty; corrected only expected order, not production."
+    },
+    {
+      "session": 36909,
+      "exit_code": 101,
+      "log": {
+        "path": ".cache/ace16-delete-encoded-contract-20261026.log",
+        "bytes": 4146,
+        "sha256": "23db14fa6074fc4afd692265ae0f7656d6438958355cf37de079f20c21f0ab76"
+      },
+      "classification": "New Binary fixture combined fixed flags3/length255 with variable records. Before-image ordinary reader/check failed Malformed; corrected only native variable flag115=0 after causal probe. Also corrected exact existing refusal variants: Memo Unsupported(IndexedColumn), composite Inspect(Unsupported), ignored-NULL Unsupported(ConstraintCoverage). Successful wire/value goldens unchanged."
+    },
+    {
+      "session": 90566,
+      "exit_code": 0,
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test encoded_delete_layout_probe -- --nocapture",
+      "log": {
+        "path": ".cache/ace16-delete-encoded-layout-probe-20261026.log",
+        "bytes": 950,
+        "sha256": "caed9a06d6f88945a46880b33c2b94970806dda50d01e4c2690036ee397cfca8"
+      },
+      "classification": "Diagnostic-only phase proof: both Binary directions fixedflag3 fail ordinary reader/check; only flag0 yields nine readable rows, Checked index and deletion candidate. Labeled Memo/composite refuse. Temporary target removed after capture; excluded from acceptance counts."
+    }
+  ],
+  "superseded_green_checks": [
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test ace16_encoded_delete_contract",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-delete-encoded-contract-final-20261026.log",
+        "bytes": 1182,
+        "sha256": "2da302857ab7ad589253e81b42efaa051261e110a2ff549c4d5792ae92efb801"
+      },
+      "session": 23889,
+      "unique_tests": 8
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib --test ace16_encoded_delete_contract --test ace16_deletes --test ace16_delete_contract --test ace16_delete_trees --test ace16_delete_tree_contract --test ace16_delete_retirement --test ace16_delete_contraction_contract --test binary_indexes --test indexes --example preview_ace16_delete -- -D warnings",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-delete-encoded-clippy-final-20261026.log",
+        "bytes": 183,
+        "sha256": "af5ac4f33f109422a4ca82f69979ef81d16687d63c71837b211c02404253961d"
+      },
+      "session": 7017
+    },
+    {
+      "command": "cargo check --locked --offline -j2 -p tablecraft-ace --lib --no-default-features",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-delete-encoded-minimal-20261026.log",
+        "bytes": 183,
+        "sha256": "6bc7410d219c035e831258aaf61c05910ae694ecf9efdef633d8159586ca5faf"
+      },
+      "session": 11212
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib --test ace16_deletes --test ace16_delete_contract --test ace16_delete_trees --test ace16_delete_tree_contract --test ace16_delete_retirement --test ace16_delete_contraction_contract --test binary_indexes --test indexes --example preview_ace16_delete -- -D warnings",
+      "exit_code": 0,
+      "session": 46159,
+      "log": {
+        "path": ".cache/ace16-delete-encoded-clippy-20261026.log",
+        "bytes": 183,
+        "sha256": "77a2901571f58f86d6c9eca93092fdd8f91224bc95fc208bca60ae5d902b4844"
+      }
+    }
+  ],
+  "independent_fixture_and_oracle_pins": [
+    {
+      "path": ".cache/encoded-delete-independent-20261026/model-before-binary-layout-fix.rs",
+      "bytes": 14007,
+      "sha256": "0dc6b27875d5ba4aa154c7e6814a85896f49a88d847a124f44790c902fdcdf3e"
+    },
+    {
+      "path": ".cache/encoded-delete-independent-20261026/layout-probe.rs",
+      "bytes": 2258,
+      "sha256": "d148ed3423402407b52cf28de907d50e42aca162c9e10e6c0f5fbc1ecdbdee68"
+    },
+    {
+      "path": ".cache/encoded-delete-independent-20261026/OverflowGolden.java",
+      "bytes": 1084,
+      "sha256": "94ebaea850a2b2fd31a545a73ca29e0b24398f0ee5709ceef84aaf3f64ff7f79"
+    },
+    {
+      "path": ".cache/encoded-delete-independent-20261026/overflow-goldens.tsv",
+      "bytes": 2061,
+      "sha256": "29811a49276c592eecd3990c5c3c0fe6ca6844f493a8057e824f9e2e03b6aee2"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+      "bytes": 1407244,
+      "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+    }
+  ],
+  "oracle_contract": "Repository-authored Java diagnostic invokes the reviewed Jackcess static truncateEntryBytes method on literal independently generated General1 raw weights for 255 lowercase a characters. It confirms full 510-byte encoded tails ascending27a5/descendingf75b. No third-party implementation copied; no native Microsoft Access execution. Full keys remain private; public tests contain explicit goldens.",
+  "boundaries": [
+    "Single native Short Text with existing qualified General sort metadata and single native Short Binary with checked declared length, both directions. Root-leaf Text General families0/1 and Binary controls run both ACE16 headers5/6; node/contraction controls cover actual bounded/tail child forms.",
+    "Existing page::read_profile grammar unchanged. Preserving wrapper delegates semantic decode, requires complete consumption and owns exact reconstructed key slice; checked page parser independently extracts row/child trailers. Semantic comparison is never replaced by arbitrary encoded Binary byte ordering.",
+    "Delete-only RetainedProfile owns metered fallible key copies; original WriteProfile remains Copy/update/includes contract. Existing numeric deletion delegates unchanged. Shared repacker borrows a narrow encoder; UPDATE keeps its old semantic serializer and gates.",
+    "Preserved wire serialization generates neither new Text weights nor semantic Binary encoding. Complete before/post checks still encode row values and retain existing unique/digest/collation restrictions, so no encoder-free operation is claimed.",
+    "Nonunique Short Text overflow/digest can qualify through complete check. Unique overflow, Memo/Long Text, variable/Text/Binary composites, unsupported sort metadata and ignored-NULL mutation remain refused, including no-op requests.",
+    "Only explicit delete admission bypasses default early ShortBinary blocker. Indexed Binary UPDATE/no-op stays refused; no normal ACE writer/backend/CLI capability or macro eligibility expands.",
+    "Existing root/leaf/ancestor maxima and retirement safeguards remain; current internal-node sibling-link retirement limitation is retained and separately investigated. No new page/map allocation or nonempty root promotion.",
+    "Original public-writer Text/Binary candidate replay is separate and unrun here. No native Microsoft Access SQL/save/reopen qualification, journalable plan, INSERT, active-content execution or constraint waiver."
+  ]
+}

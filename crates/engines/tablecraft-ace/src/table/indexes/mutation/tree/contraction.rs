@@ -3,10 +3,10 @@ use super::{Tree, raw_page};
 use crate::table::indexes::{
     NativeIndex,
     header::{IndexHeader, LEVEL_OFFSET},
+    key::KeyWork,
     mutation::{
-        IndexDataPatch,
-        profile::WriteProfile,
-        repack,
+        IndexDataPatch, repack,
+        retained::{self, RetainedProfile},
         retirement::{RetiredPage, header_patch},
     },
     page::{Entry, KeyRef, LEAF},
@@ -55,7 +55,7 @@ impl Tree {
         Ok(needed)
     }
 
-    pub(in crate::table::indexes::mutation) fn contract<P: WriteProfile, const N: usize>(
+    pub(in crate::table::indexes::mutation) fn contract<P: RetainedProfile, const N: usize>(
         &self,
         image: &NativeImage,
         keys: &mut &[KeyRef<P::Key>],
@@ -95,12 +95,25 @@ impl Tree {
                         .ok_or(InspectError::StructureLimit)?;
                 } else {
                     entries.push(Entry {
-                        value: *key,
+                        value: retained::reference(
+                            state.profile,
+                            key,
+                            &mut KeyWork { budget, cancelled },
+                        )?,
                         child: 0,
                     });
                 }
             }
-            entries.last().map(|entry| entry.value)
+            entries
+                .last()
+                .map(|entry| {
+                    retained::reference(
+                        state.profile,
+                        &entry.value,
+                        &mut KeyWork { budget, cancelled },
+                    )
+                })
+                .transpose()?
         } else {
             let tail_form = header.tail.get() != 0;
             let mut pending = None;
@@ -118,7 +131,11 @@ impl Tree {
                         pending = Some((value, child.number));
                     } else {
                         entries.push(Entry {
-                            value,
+                            value: retained::reference(
+                                state.profile,
+                                &value,
+                                &mut KeyWork { budget, cancelled },
+                            )?,
                             child: child.number,
                         });
                         pending = Some((value, child.number));
@@ -126,7 +143,7 @@ impl Tree {
                 }
             }
             if tail_form {
-                tail = pending.map_or(0, |(_, number)| number);
+                tail = pending.as_ref().map_or(0, |(_, number)| *number);
             }
             pending.map(|(value, _)| value)
         };
@@ -147,7 +164,7 @@ impl Tree {
             });
             return Ok(None);
         }
-        let after = repack::page::<P, N>(raw, &entries, state.profile, budget, cancelled)?;
+        let after = repack::retained_page::<P, N>(raw, &entries, state.profile, budget, cancelled)?;
         repack::patches(raw, &after, self.number, patches, budget, cancelled)?;
         if self.children.is_empty() || last.is_none() {
             budget

@@ -38,8 +38,10 @@ one edit; unrelated physical declarations sharing a root refuse.
 
 Existing write codecs are reused: Boolean, integral/Currency, finite
 Single/Double/legacy DATE, GUID and Decimal, plus the supported mixed composite
-profiles. Text/Binary index mutation, page allocation, map growth/window shifts,
-nonempty root promotion and long-value reclamation remain unsupported. These
+profiles. DELETE additionally preserves original keys for qualified single Short
+Text and Short Binary indexes, as described below; UPDATE retains its earlier
+codec boundaries. Page allocation, map growth/window shifts, nonempty root
+promotion and long-value reclamation remain unsupported. These
 limits do not prevent qualified existing-page contraction, including a retained
 single-child chain at its original heights.
 
@@ -201,3 +203,51 @@ positive controls remain intact. A diagnostic records the exact changed error.
 One expanded lint run found the resulting unused test import; it was removed
 without changing an expected result. Superseded green checks, failed causal probes
 and diagnostic capture setup failures remain identified in the record.
+
+## Preserved Short Text and Short Binary keys
+
+Deletion admits single native Short Text keys with the existing qualified General
+sort metadata, and single native Short Binary keys with their checked storage
+length. Both directions use the original semantic read profile for comparisons.
+Every index must pass complete before/after checks. The physical mutation captures
+the exact reconstructed key bytes supplied to the checked decoder, after shared
+prefix reconstruction and before the separately checked row/child trailers. It
+copies retained bytes rather than generating new Text weights or re-encoding a
+semantic Binary value. Parent bounds use the retained child's complete original
+key and row reference.
+
+Captured semantic keys and wire bytes are owned, fallibly allocated and charged.
+Retained ancestor copies re-decode the original bytes under cumulative work and
+allocation controls. The existing page grammar is unchanged. A separate deletion
+transport shares checked page repacking and contraction; it implements no UPDATE
+operation, column inclusion or dummy mutation profile. Full before/after checks
+still encode row values for semantic agreement, so this is not an encoder-free
+operation.
+
+Nonunique Short Text overflow/digest entries can qualify through the existing
+complete check; unique overflow/digest ambiguity remains refused. Memo/Long Text,
+Text/Binary composite mutation, unsupported sort families and ignored-NULL indexes
+remain outside this profile. The normal mutation gate still refuses indexed
+Binary UPDATE, including empty update requests. Deletion's explicit admission
+changes only that early blocker; property, history, relationship, active-content,
+constraint, preservation and macro qualification boundaries remain unchanged.
+Existing topology limits, including refusal of unqualified internal sibling-link
+retirement, also remain in force.
+
+The [encoded-key implementation record](results/ace16-delete-encoded-native-2026-10-26.json)
+records 178 passing engine functions, including ten new controls: two private
+preserved-wire/resource controls and eight independent public-contract tests.
+Root-leaf Short Text General families and Binary cases run in both ACE16 headers;
+node/contraction cases cover both existing child forms. Three compile-fail docs,
+strict selected library/test/example lint, minimal standalone compilation and
+sixteen-file formatting pass. No original public-writer candidate replay is
+counted by this record.
+
+The first independent Binary fixture declared fixed storage while constructing
+variable records. An ordinary reader/check diagnostic established that failure
+before deletion; correcting only its native variable flag made both directions
+readable and checkable. Successful wire/value goldens stayed unchanged. Exact
+Memo/composite/ignored-NULL refusal variants and the existing special descending
+Binary empty-value order were also corrected in newly authored expectations.
+Initial attempts and diagnostic sources remain preserved separately. No production
+correction followed these test-authoring failures.

@@ -10,6 +10,8 @@ mod plan;
 mod profile;
 mod repack;
 #[cfg(feature = "ace16-write-preview")]
+mod retained;
+#[cfg(feature = "ace16-write-preview")]
 mod retirement;
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) use retirement::{RetiredPage, audit_retirements};

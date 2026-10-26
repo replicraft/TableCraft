@@ -1,7 +1,11 @@
 //! Retain original leaf partitions and topology while removing exact references.
 use super::{Tree, raw_page};
 use crate::table::indexes::{
-    mutation::{IndexDataPatch, profile::WriteProfile, repack},
+    key::KeyWork,
+    mutation::{
+        IndexDataPatch, repack,
+        retained::{self, RetainedProfile},
+    },
     page::{Entry, KeyRef},
 };
 use crate::{EditError, InspectError, NativeImage, WriteBlocker, header::check};
@@ -14,7 +18,7 @@ pub(in crate::table::indexes::mutation) struct Deletion<'a, P> {
 }
 
 impl Tree {
-    pub(in crate::table::indexes::mutation) fn delete<P: WriteProfile, const N: usize>(
+    pub(in crate::table::indexes::mutation) fn delete<P: RetainedProfile, const N: usize>(
         &self,
         image: &NativeImage,
         keys: &mut &[KeyRef<P::Key>],
@@ -50,14 +54,25 @@ impl Tree {
                         .ok_or(InspectError::StructureLimit)?;
                 } else {
                     entries.push(Entry {
-                        value: *key,
+                        value: retained::reference(
+                            state.profile,
+                            key,
+                            &mut KeyWork { budget, cancelled },
+                        )?,
                         child: 0,
                     });
                 }
             }
             entries
                 .last()
-                .map(|entry| entry.value)
+                .map(|entry| {
+                    retained::reference(
+                        state.profile,
+                        &entry.value,
+                        &mut KeyWork { budget, cancelled },
+                    )
+                })
+                .transpose()?
                 .ok_or(EditError::Unsupported(WriteBlocker::IndexedColumn))?
         } else {
             let mut last = None;
@@ -69,7 +84,11 @@ impl Tree {
                     // Full key AND row reference identify boundaries for ties,
                     // including repeated NULL keys in adjacent child subtrees.
                     entries.push(Entry {
-                        value: maximum,
+                        value: retained::reference(
+                            state.profile,
+                            &maximum,
+                            &mut KeyWork { budget, cancelled },
+                        )?,
                         child: child.number,
                     });
                 }
@@ -78,7 +97,8 @@ impl Tree {
             last.ok_or(EditError::Preservation)?
         };
         let original = raw_page(image, self.number)?;
-        let after = repack::page::<P, N>(original, &entries, state.profile, budget, cancelled)?;
+        let after =
+            repack::retained_page::<P, N>(original, &entries, state.profile, budget, cancelled)?;
         repack::patches(original, &after, self.number, patches, budget, cancelled)?;
         Ok(last)
     }

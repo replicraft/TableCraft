@@ -12,6 +12,7 @@ pub(super) use deletion::Deletion;
 
 use super::super::{
     header::IndexHeader,
+    key::KeyProfile,
     page::{self, ENTRY_START, Entry, KeyRef},
 };
 use super::{IndexDataPatch, encoding, profile::WriteProfile, repack};
@@ -38,7 +39,7 @@ pub(super) struct Tree {
 }
 
 impl Tree {
-    pub(super) fn read<P: WriteProfile, const N: usize>(
+    pub(super) fn read<P: KeyProfile, const N: usize>(
         image: &NativeImage,
         reader: &mut Reader<'_, std::io::Cursor<&[u8]>>,
         owner: u32,
