@@ -598,7 +598,12 @@ contract retains the primary references, algorithms, provenance and exact limits
 3. Complete applicable ACE advanced-field reads/query access. Stored multivalues,
    attachments and Memo history have qualified browsing APIs. Backend-neutral
    scalar multivalue `.Value` expansion now works over explicit host collection
-   views and explicit native `--multivalues` input. Direct scalar-parent membership criteria now work. Explicit `--collections` now
+   views and explicit native `--multivalues` input. Direct scalar-parent membership
+   criteria now work. Explicit typed results now also preserve complete bare-field
+   lists through row-local/static named/derived projections, scalar ordering/TOP
+   and direct hidden-member criteria. List joins, UNION, aggregates and list keys
+   remain unfinished.
+   Explicit `--collections` now
    exposes aligned stored attachment metadata members; an additional explicit
    `--decoded-attachments` option supplies bounded original-file Binary views.
    Unprojected siblings of displayed/grouped collection members now retain

@@ -1,5 +1,28 @@
 # Implementation status
 
+## Typed multivalue query results
+
+The explicit collection-aware query API returns complete stored lists alongside
+scalar expression values. Lists preserve order, duplicates, NULL members, empty
+membership and stored IEEE representations without becoming core scalar values
+or implicitly entering arithmetic. Ordinary scalar and `.Value` paths retain
+their existing finite-value and publication rules.
+
+CLI `query run --database PATH --multivalues` and `--collections` now display bare
+list fields, including aliases, static named/derived projections, scalar
+filtering/order/TOP and direct hidden `.Value` membership criteria. Typed list
+joins, UNION, list keys and aggregates remain unsupported. Buffered schema
+discovery retains its existing authorized scalar dependency reads before final
+typed admission; collection scans require successful admission.
+
+See [the query contract](MULTIVALUE_QUERIES.md),
+[CLI presentation](NATIVE_QUERIES.md#explicit-multivalue-queries),
+[query verification](testing/results/read-query-multivalue-results-2026-10-25.json),
+[native adapter verification](testing/results/bare-multivalue-native-conformance-2026-10-25.json)
+and [CLI verification](testing/results/read-query-multivalue-cli-2026-10-25.json).
+These bounded services do not complete the read/query roadmap or establish
+native Microsoft Access display, ordering or query equivalence.
+
 ## Reverse-search callback bounds
 
 Reverse substring searches now reject provider spans that would publish a

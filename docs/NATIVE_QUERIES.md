@@ -393,7 +393,7 @@ overflow digests. Typed Binary ranges remain single-column; no compound seek or
 Binary predicate pushdown is inferred. [Scope and evidence](testing/BINARY_INDEX_TUPLES.md)
 retain SQL, mutation and native Access qualification gaps.
 
-## Explicit multivalue .Value queries
+## Explicit multivalue queries
 
 `NativeSource::with_multivalues()` and CLI `query run --database PATH --multivalues`
 connect qualified ACE 2007/2016/2019-family stored scalar collections to the
@@ -401,6 +401,32 @@ connect qualified ACE 2007/2016/2019-family stored scalar collections to the
 retain the previous metadata path unless opted in. Schema inspection resolves
 complex mappings and qualifies element carriers without reading parent/child data
 records. It never evaluates lookup queries, formulas or active content.
+
+Bare fields now return typed lists through the collection-result service. The
+CLI uses that service with `--multivalues` or `--collections`, including
+`--collections --decoded-attachments`. Queries selecting only scalar values retain
+their existing semantics. For example:
+
+```sh
+tablecraft query run --database example.accdb --multivalues \
+  'SELECT ID,AssignedTo FROM Tasks ORDER BY ID'
+tablecraft query run --database example.accdb --multivalues \
+  'SELECT ID,AssignedTo FROM Tasks WHERE AssignedTo.Value=7 ORDER BY ID'
+```
+
+A bare list stays on its parent row, and a hidden `.Value` criterion retains the
+complete selected parent's list. Aliases and supported scalar ordering/TOP also
+work through static derived/named projections. Projecting `.Value` continues to
+produce scalar child rows. Combining a bare list and displayed child values in
+one query remains unsupported; see the [typed result contract](MULTIVALUE_QUERIES.md).
+
+List cells use the same buffered CLI spellings as stored collection browsing:
+`[100, 101]`, `[NULL, 100, 100]` and `[]` distinguish duplicate/NULL members from
+empty membership. Each member uses the ordinary scalar display rules, including
+quoted/escaped Text. This is a CLI presentation format, not JSON, a scalar Text
+value in the query engine or native Access display output. Float display does
+not expose NaN payload bits. TSV still uses the existing CSV transport. Output
+limits cover every bracket, separator and member; failure publishes no stdout.
 
 Selected collections load complete validated native parent links/child snapshots,
 including ownership, reference and 100-value limits. Caches remain separate from

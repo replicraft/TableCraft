@@ -114,10 +114,10 @@ pub(crate) struct RunArgs {
     /// Query qualified stored calculation caches; results may be stale and are never recalculated.
     #[arg(long, requires = "database", conflicts_with = "sqlite")]
     pub(crate) stored_calculations: bool,
-    /// Enable qualified .Value expansion and scalar-parent membership criteria.
+    /// Enable stored multivalue fields, .Value expansion and parent membership criteria.
     #[arg(long, requires = "database")]
     pub(crate) multivalues: bool,
-    /// Enable stored .Value lists and attachment/history members, including encoded FileData.
+    /// Enable multivalue fields and attachment/history members, including encoded FileData.
     #[arg(long, requires = "database", conflicts_with = "multivalues")]
     pub(crate) collections: bool,
     /// Decode selected attachment FileData into original file bytes.
