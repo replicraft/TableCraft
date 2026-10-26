@@ -61,6 +61,31 @@ new operator-availability qualification. The existing
 and [reviewed mixed-plus dispatch](CONCATENATION.md#declared-mixed-string-and-numeric-addition)
 remain the semantic references.
 
+## NULL literal provenance
+
+The syntax literal `NULL` has a Variant declaration under the explicit profile,
+following [MS-VBAL reserved literal identifiers](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/7df907cb-ab6c-40d3-aa81-272742ce00c3).
+A shared pure classifier supplies binding and retained runtime cells. Named,
+derived, correlated, grouped and fixed-crosstab consumers therefore retain the
+same category, including metadata-only heading folding and empty subqueries.
+
+This is observable after an operation produces a non-NULL value. For example,
+`(NULL Or CInt(32767))+CInt(1)` widens to Long 32768; previously the incorrectly
+Scalar literal caused Overflow. `(NULL &'2')+CInt(3)` follows Variant String
+numeric addition under an explicit number profile. A later `CInt` cast still
+restores a Scalar Integer declaration and its overflow boundary.
+
+Actual NULL values from typed fields and parameters retain their source
+declarations. SQL aggregate and UNION categories remain unknown where their
+contracts are unresolved. Default materialized values and the stored core Value
+contract retain their existing behavior. These are engineering declaration rules;
+native ACE SQL category qualification remains separate.
+
+Eight new tests and 115 selected regressions cover the classifier, downstream
+overflow, mixed addition, empty metadata, named/crosstab/progressive execution,
+explicit casts, unknown categories, cancellation and reuse. See
+[verification](testing/results/read-query-null-literal-2026-10-25.json).
+
 ## Captured decimal integer literals
 
 The same explicit `query run --declared-arithmetic` profile now captures

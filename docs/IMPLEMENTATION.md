@@ -1,5 +1,20 @@
 # Implementation status
 
+## NULL literal Variant provenance
+
+Binding, retained cells and constant-heading folding now agree that the syntax
+literal NULL has a Variant declaration. Non-NULL logical results and concatenated
+Strings retain that category through later operations, restoring widening and
+mixed-addition behavior in the explicit declaration profile. Typed nullable fields,
+parameters, scalar casts and unreviewed aggregate/UNION categories retain their
+existing contracts.
+
+Eight new tests and 115 selected regressions pass, including empty metadata,
+named/crosstab/progressive execution, checked limits, cancellation and plan reuse.
+Strict query lint and standalone minimal checks pass. See
+[the category contract](DECLARED_ARITHMETIC.md#null-literal-provenance) and
+[verification](testing/results/read-query-null-literal-2026-10-25.json).
+
 ## LIKE scalar operand coercion
 
 LIKE now prepares numeric, Boolean, legacy DATE and Empty operands through the

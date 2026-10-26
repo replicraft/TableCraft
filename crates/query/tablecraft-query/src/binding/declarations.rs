@@ -4,7 +4,7 @@ use crate::{
     QueryError,
     plan::{
         Expr, Slot,
-        declarations::{combined, functions},
+        declarations::{combined, functions, literal_declaration},
     },
 };
 use tablecraft_expressions::{functions::conversions::Conversion, numeric::OperandDeclaration};
@@ -50,8 +50,8 @@ impl Binder<'_> {
                     .ok_or(QueryError::Source)?
                     .declaration
             }
-            Expr::Literal(_)
-            | Expr::NumericLiteral(_)
+            Expr::Literal(value) => Some(literal_declaration(value)),
+            Expr::NumericLiteral(_)
             | Expr::DateLiteral(..)
             | Expr::CollectionItem { .. }
             | Expr::ParentPresence { .. } => Some(OperandDeclaration::Scalar),
