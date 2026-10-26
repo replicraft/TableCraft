@@ -9,8 +9,8 @@ use crate::{
 };
 use std::cmp::Ordering;
 
-const NODE: u8 = 3;
-const LEAF: u8 = 4;
+pub(super) const NODE: u8 = 3;
+pub(super) const LEAF: u8 = 4;
 const PAGE_VERSION: u8 = 1;
 const MASK_OFFSET: usize = size_of::<IndexHeader>();
 const MASK_BYTES: usize = 453;

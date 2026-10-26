@@ -5,7 +5,7 @@ use super::super::{
     guid::{self, GuidProfile},
 };
 use super::{
-    IndexDataPatch, IndexKeyUpdate, NumericKey,
+    IndexDataPatch, IndexKeyUpdate, NumericKey, PatchSet,
     composite::TupleProfile,
     encoding::{self, Mode},
     profile::{SingleProfile, WriteProfile},
@@ -34,6 +34,7 @@ pub(in crate::table) fn patches(
         budget,
         cancelled,
     )
+    .map(|patches| patches.indexes)
 }
 
 #[cfg(feature = "ace16-write-preview")]
@@ -44,7 +45,7 @@ pub(in crate::table) fn delete_patches(
     references: &[u32],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<Vec<IndexDataPatch>, EditError> {
+) -> Result<PatchSet, EditError> {
     patches_with(
         image,
         schema,
@@ -92,11 +93,11 @@ fn patches_with(
     change: Change<'_>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<Vec<IndexDataPatch>, EditError> {
+) -> Result<PatchSet, EditError> {
     check(budget, cancelled)?;
     // Format admission belongs to the public edit/preview entry points. This
     // private helper receives only already checked schemas/index coverage.
-    let mut patches = Vec::new();
+    let mut patches = PatchSet::default();
     // Every physical declaration must have a logical owner. Do not change a
     // live page also referenced by an uninspected/obsolete physical definition.
     // Even empty key updates must prove this: an unowned definition can hide an
@@ -120,6 +121,7 @@ fn patches_with(
         .charge_allocation(indexes.len() as u64, size_of::<IndexDataPatch>() as u64)
         .map_err(InspectError::from)?;
     patches
+        .indexes
         .try_reserve_exact(indexes.len())
         .map_err(|_| InspectError::Allocation)?;
     let mut source = image.reader();
@@ -286,6 +288,18 @@ fn patches_with(
             }
         }
     }
+    #[cfg(feature = "ace16-write-preview")]
+    if !patches.retired.is_empty() {
+        super::retirement::patches(
+            image,
+            schema,
+            indexes,
+            &patches.retired,
+            &mut patches.indexes,
+            budget,
+            cancelled,
+        )?;
+    }
     check(budget, cancelled)?;
     Ok(patches)
 }
@@ -297,7 +311,7 @@ fn edit<P: WriteProfile, const N: usize>(
     owner: u32,
     change: Change<'_>,
     profile: &P,
-    patches: &mut Vec<IndexDataPatch>,
+    patches: &mut PatchSet,
 ) -> Result<(), EditError> {
     let updates = match change {
         Change::Update(updates) => updates,
@@ -370,7 +384,7 @@ fn edit<P: WriteProfile, const N: usize>(
         image,
         &mut remaining,
         &Rewrite { profile, mode },
-        patches,
+        &mut patches.indexes,
         reader.budget,
         reader.cancelled,
     )?;

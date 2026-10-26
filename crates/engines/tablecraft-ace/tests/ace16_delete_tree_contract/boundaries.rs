@@ -1,10 +1,10 @@
 use super::{model::*, support};
 use std::cell::Cell;
-use tablecraft_ace::{EditError, InspectError, RowDelete, WriteBlocker};
+use tablecraft_ace::{EditError, InspectError, RowDelete};
 use tablecraft_core::limits::ResourceBudget;
 
 #[test]
-fn batch_leaf_exhaustion_refuses_without_redistribution_or_partial_candidate() {
+fn batch_retirement_without_global_allocation_metadata_refuses_atomically() {
     for bounded in [false, true] {
         for deep in [false, true] {
             let model = database(6, false, bounded, deep, false);
@@ -18,12 +18,12 @@ fn batch_leaf_exhaustion_refuses_without_redistribution_or_partial_candidate() {
                 .collect::<Vec<_>>();
             assert!(matches!(
                 preview(&model.bytes, &requests),
-                Err(EditError::Unsupported(WriteBlocker::IndexedColumn))
+                Err(EditError::Inspect(InspectError::Malformed))
             ));
             let all = (0..8).map(|row| request(&model, row)).collect::<Vec<_>>();
             assert!(matches!(
                 preview(&model.bytes, &all),
-                Err(EditError::Unsupported(WriteBlocker::IndexedColumn))
+                Err(EditError::Inspect(InspectError::Malformed))
             ));
             let retry = preview(&model.bytes, &[request(&model, rows[0])]).unwrap();
             verify(&model, &retry, &[rows[0]]);

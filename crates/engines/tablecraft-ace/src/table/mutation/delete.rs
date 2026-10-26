@@ -7,7 +7,7 @@ use crate::{
     format::{page::PAGE_BYTES, reader::Reader},
     header::check,
     inspect_relationships,
-    table::indexes::index_delete_patches,
+    table::indexes::{audit_retirements, index_delete_patches},
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
@@ -82,12 +82,13 @@ impl Ace16DeletePreview {
 impl NativeImage {
     /// Prepare ordinary-root deletion inside existing ACE16 pages.
     ///
-    /// All physical indexes must qualify for existing write codecs. Root leaves
-    /// may become empty; multi-level trees retain every original leaf partition
-    /// and require each leaf to stay nonempty. Exact entries are removed once per
-    /// physical index; ancestor bounds use complete retained key/row maxima.
-    /// Historical counters, topology, allocation, file length and payloads stay fixed.
-    /// A required split or empty non-root leaf refuses the complete candidate.
+    /// All physical indexes must qualify for existing write codecs. Entries are
+    /// removed within their original leaf partitions; ancestor bounds use full
+    /// retained key/row maxima. Empty nonroot pages may retire through qualified
+    /// existing owned/global bitmap cells. Nonempty nodes retain their heights;
+    /// an empty tree reuses its root as a height-zero leaf. Historical counters,
+    /// file length and record payloads stay fixed. Missing map representation,
+    /// unsafe allocation metadata or a required split refuses the whole candidate.
     /// Declared relationships touching this table are refused, including empty
     /// requests; no delete action or cascade is silently omitted. Existing active
     /// content, property, constraint, ignored-NULL and historical-layout gates
@@ -147,7 +148,23 @@ impl NativeImage {
             reader.budget,
             reader.cancelled,
         )?;
-        self.finish_updates(table, &records, &indexes, deletes.len(), budget, cancelled)
-            .map(|plan| Ace16DeletePreview { plan })
+        let plan = self.finish_updates(
+            table,
+            &records,
+            &indexes.indexes,
+            deletes.len(),
+            budget,
+            cancelled,
+        )?;
+        audit_retirements(
+            plan.before_bytes(),
+            plan.after_bytes(),
+            scope,
+            table,
+            &indexes.retired,
+            budget,
+            cancelled,
+        )?;
+        Ok(Ace16DeletePreview { plan })
     }
 }

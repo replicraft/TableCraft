@@ -2,7 +2,11 @@
 //! layout; nullable and composite changes repack only admitted existing regions.
 //! The completed source check establishes ownership, ordering and row coverage.
 #[cfg(feature = "ace16-write-preview")]
+mod contraction;
+#[cfg(feature = "ace16-write-preview")]
 mod deletion;
+#[cfg(feature = "ace16-write-preview")]
+pub(super) use contraction::Contraction;
 #[cfg(feature = "ace16-write-preview")]
 pub(super) use deletion::Deletion;
 

@@ -59,7 +59,7 @@ fn empty_requests_do_not_bypass_format_properties_or_ordinary_write_gates() {
 }
 
 #[test]
-fn ignored_null_relationship_actions_and_leaf_exhaustion_remain_outside_delete_scope() {
+fn ignored_null_relationships_and_unqualified_retirement_remain_refused() {
     let mut ignored = ace(index_fixture::database(false, false, false), 6);
     ignored[10 * 4096 + 189] |= 2;
     for bytes in [
@@ -79,11 +79,13 @@ fn ignored_null_relationship_actions_and_leaf_exhaustion_remain_outside_delete_s
     assert_eq!(preview(&node, &[]).unwrap().candidate_bytes(), node);
     assert!(preview(&node, &[request(0, false)]).is_ok());
     // The right leaf in the original independent geometry has just one entry.
-    // Deleting it still requires the separately unsupported contraction path.
-    assert!(matches!(
-        preview(&node, &[request(2, false)]),
-        Err(EditError::Unsupported(WriteBlocker::IndexedColumn))
-    ));
+    // This old fixture has no qualified global allocation-map container.
+    let result = preview(&node, &[request(2, false)]).err();
+    assert_eq!(
+        result,
+        Some(EditError::Inspect(InspectError::Malformed)),
+        "unqualified retirement refusal: {result:?}"
+    );
 }
 
 #[test]
