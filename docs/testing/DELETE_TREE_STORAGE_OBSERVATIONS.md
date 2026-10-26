@@ -32,16 +32,17 @@ Part/GroupKey composite. GroupAsc and GroupTwin actually share physical index 1.
 Three rows contain long Unicode Memo and 12 KiB OLE data; remaining rows have small
 payloads. Unindexed and Sentinel tables remain separate preservation controls.
 
-Both profiles have the same observed index topology. Each physical index has one
-node root of height 1, with these original leaf populations:
+Both profiles have the same observed index topology and leaf populations, at
+different physical page addresses. Each physical index has one node root of
+height 1:
 
-| Logical indexes | Physical root page | Leaf populations |
-| --- | ---: | --- |
-| PrimaryKey | 91 | 504, 496 |
-| GroupAsc, GroupTwin | 92 | 244, 255, 501 |
-| GroupDesc | 93 | 450, 273, 277 |
-| Compound | 94 | 249, 250, 256, 245 |
-| UniqueScore | 95 | 501, 499 |
+| Logical indexes | V2016 root page | V2019 root page | Leaf populations |
+| --- | ---: | ---: | --- |
+| PrimaryKey | 91 | 108 | 504, 496 |
+| GroupAsc, GroupTwin | 92 | 109 | 244, 255, 501 |
+| GroupDesc | 93 | 110 | 450, 273, 277 |
+| Compound | 94 | 111 | 249, 250, 256, 245 |
+| UniqueScore | 95 | 112 | 501, 499 |
 
 Public index cursors establish the full row-reference encounter orders. The
 independent decoder scans table-owned node/leaf headers, reconstructs each entry
@@ -71,8 +72,9 @@ reference behavior; it does not itself execute or qualify a TableCraft candidate
 Deleting the 244 IDs in the smallest original GroupAsc leaf reduces that physical
 index's owned-page count from 4 to 3; its logical alias reports the same reduction.
 Other physical indexes retain their observed page counts. Delete-all reduces each
-physical index to one owned empty leaf at the original root page numbers 91–95;
-the raw scan finds no remaining table-owned child/node headers.
+physical index to one owned empty leaf at its original root page: 91–95 for
+V2016 and 108–112 for V2019. The raw scan finds no remaining table-owned
+child/node headers.
 
 All empty cursor orders coincide after delete-all, so the ordinary root-to-index
 assignment by unique encounter order becomes ambiguous. The report preserves this
