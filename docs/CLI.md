@@ -117,6 +117,8 @@ tablecraft query run --database example.accdb --multivalues \
 tablecraft query run --database example.accdb --multivalues \
   'SELECT Title,AssignedTo.Value FROM Issues'
 tablecraft query run --database example.accdb --multivalues \
+  'SELECT ID,AssignedTo,AssignedTo.Value FROM Issues WHERE AssignedTo.Value=7'
+tablecraft query run --database example.accdb --multivalues \
   'SELECT ID,Count(AssignedTo.Value) AS AssignedCount FROM Issues GROUP BY ID ORDER BY ID'
 tablecraft query preview-calculation --database example.accdb Items Score
 ```
@@ -124,6 +126,8 @@ tablecraft query preview-calculation --database example.accdb Items Score
 Bare multivalue fields display complete stored lists on parent rows; `.Value`
 selects flattened scalar rows. List order, duplicates, NULL members and empty
 lists remain distinct under the [typed result contract](MULTIVALUE_QUERIES.md).
+Selecting both retains the full list beside each displayed child. A predicate on
+that displayed member filters children while keeping the whole list intact.
 Member counts use the scalar `.Value` expression and ignore NULL children; a
 parent with no children has count zero. Bare-list Count is unsupported. Native
 edge behavior remains a separate qualification gate.

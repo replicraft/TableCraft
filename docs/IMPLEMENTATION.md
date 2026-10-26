@@ -1,5 +1,29 @@
 # Implementation status
 
+## Complete lists beside displayed children
+
+Collection-aware SELECTs now retain complete stored lists alongside displayed
+`.Value` and named-member scalar outputs. The existing child-expansion kernel
+supplies alignment, independent products and empty-parent placeholders; list
+sidecars remain complete on every output row. Visible member predicates filter
+the current child, while independent hidden criteria retain parent membership.
+Static named/derived layers, nested joins, outer absence, scalar ordering and TOP
+use the same buffered query service. Ordinary scalar join execution is unchanged.
+
+See the [query contract](MULTIVALUE_QUERIES.md),
+[query verification](testing/results/read-query-mixed-multivalue-results-2026-10-26.json)
+and [host verification](testing/results/mixed-multivalue-results-host-2026-10-26.json).
+Native Microsoft Access SQL equivalence remains unqualified. Whole-list UNION,
+DISTINCT, sorting/grouping and aggregate operands retain their explicit refusal.
+
+The focused checks pass 248 query functions and 41 native/CLI functions, including
+22 new functions in total. Strict scoped lint, the minimal query build and
+formatting pass. Separate tests retain exact IEEE bits through mixed results and
+propagate child/list outputs through fifty named definitions on a 1 MiB stack.
+The [original-file replay](testing/MIXED_MULTIVALUE_RESULTS.md) matches 108 controls,
+including 1,008 successful rows, 3,204 cells and 30 errors/refusals. These are
+independent stored-data checks, not native Access SQL qualification.
+
 ## Typed outer-join list results
 
 The collection-aware query API now preserves complete lists through LEFT/RIGHT
@@ -14,8 +38,9 @@ one-NULL lists as `[NULL]`. These are explicit TableCraft result/display contrac
 native Microsoft Access output equivalence remains unqualified. See the
 [query contract](MULTIVALUE_QUERIES.md) and
 [query verification](testing/results/read-query-typed-multivalue-outer-joins-2026-10-26.json).
-Whole-list UNION and mixed whole-list/displayed-member results remain refused
-pending their separate acceptance work. Scalar `.Value` grouping, ordering and
+Whole-list UNION remains refused pending its separate admission qualification.
+Mixed whole-list/displayed-member results now use the service described above.
+Scalar `.Value` grouping, ordering and
 aggregates already work, including per-parent Count; bare complex-list Count and
 bare-list grouping are excluded by the linked Microsoft references in the
 [collection contract](MULTIVALUE_QUERIES.md). Bare scalar-multivalue `IS NULL` remains unsupported; the
@@ -38,8 +63,9 @@ INNER joins and comma-separated CROSS sources, including nested joins and static
 named/derived leaves. Scalar ON conditions select parent pairs before hidden
 member WHERE criteria; selected lists retain their complete contents. Scalar-only
 leaves keep their ordinary read service. Typed outer joins now use the explicit
-absence model described above; whole-list UNION and mixed list/displayed-member
-output retain their explicit refusal. Scalar member aggregates use the existing
+absence model described above; whole-list UNION retains its explicit refusal,
+while mixed list/displayed-member output now uses the expansion service above.
+Scalar member aggregates use the existing
 `.Value` query path.
 
 The selected query batch passes 242 tests, including sixteen new controls, with
