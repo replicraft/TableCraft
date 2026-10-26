@@ -1141,6 +1141,14 @@ Extrema, statistics, grouping and wider progressive sources remain separate work
 this does not establish complete read/query or native execution qualification.
 
 
+## Independent deeper composition evidence
+
+The [compound replay](testing/DEEPER_QUERIES.md) now checks 1,692 explicit-depth
+queries against exact numeric models and native getters. Every one of 141 paired
+default-depth controls refuses; stored-field cases cover Jet 4, ACE 2007 and
+ACE 16-family originals. Inputs remain unchanged. This verifies the explicit
+engineering depth policy without establishing native SQL/Variant qualification.
+
 ## Explicit deeper query binding
 
 [Binding depth](QUERY_BINDING_LIMITS.md) now has a validated opt-in maximum of

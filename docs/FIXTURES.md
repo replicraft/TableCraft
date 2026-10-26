@@ -8506,3 +8506,16 @@ and seventeen committed/live source snapshots are separately rehashed. Earlier
 structural/identifier authoring attempts retain private report hashes; native
 Access SQL, dynamic column headings and larger compound queries remain outside
 this evidence.
+
+## Deeper compound-query replay — 25 October 2026
+
+The [deeper query runner](testing/compare_deeper_queries.py) reuses the four
+registered immutable Scalar-V2000/V2007/V2016/V2019 originals and reviewed
+Jackcess 5.0.4 getter tooling from the [mixed-key replay](testing/FIXED_BINARY_KEYS.md).
+No new third-party fixture, code or binary is committed. Fifteen literal and
+eight stored-field cohorts per original exercise explicit structural depth 32;
+independent Fraction/IEEE models supply expected groups, order and extrema.
+The [report](testing/results/deeper-query-replay-2026-10-25.json) records 1,692
+successful queries, 141 default-depth refusals, four getter transcript hashes,
+eleven immutable artifacts and 66 selected committed/live source snapshots.
+Original bytes are unchanged; this is not native Access execution evidence.
