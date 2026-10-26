@@ -8711,3 +8711,72 @@ partial-index structural refusal. Focused engine tests qualify the new bounded
 bitmap-membership path separately; complete indexed reads, full checks and
 mutation map ceilings remain explicit. This evidence does not establish native
 Access compatibility or enable writes.
+
+## Fresh ACE16 physical DELETE reference inputs
+
+[DeleteCandidateFixture.java](DeleteCandidateFixture.java) and
+[capture_delete_candidates.py](capture_delete_candidates.py) are original
+repository-owned recipes under the root license. They use reviewed Jackcess
+5.0.4, JAR SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+Fresh V2016/V2019 originals and public `Table.deleteRow` reference copies remain
+ignored under `.cache/tablecraft-fixtures/delete-candidates-qualified-20261026/`.
+No earlier original was changed. Expression evaluation is disabled, linked opens
+throw, dates explicitly use UTC, and getter opens are read-only. No stored SQL,
+reference SQL, lookup expression or native Microsoft Access operation runs.
+No third-party source or fixture bytes are copied.
+
+| Profile | State | Bytes | SHA-256 |
+| --- | --- | ---: | --- |
+| V2016 | before | 712,704 | `43559a8c572735450e62d3e4b376e2101216dae8303e1b61828a68c98fe6fb98` |
+| V2016 | delete-one | 712,704 | `3c548a374d119f3a93092b8b2232d0395d1ad55e95263df711dd562d6eae178b` |
+| V2016 | delete-null | 712,704 | `992b81a6d8579f21b59b66e7d7631ce8e80581d42fad144afd77f3a5a8760996` |
+| V2016 | delete-all | 712,704 | `bed4a35ca11ca34724c22db675386a4dbf4de82202a31408672b7c86e8d980b0` |
+| V2019 | before | 786,432 | `2addb73062e747280e939bea93861c7ce569753bff1435a58655539de55f66c2` |
+| V2019 | delete-one | 786,432 | `7286eadbb8058b7d7adbeae65056ec55962a00322332573a36fa438a490ddb65` |
+| V2019 | delete-null | 786,432 | `a7b61c1923e1ebacfed56ce5b821fe6d3195ef279dd654f9c0b4d507ca99b522` |
+| V2019 | delete-all | 786,432 | `a723de24d8a22b7e15d3c34dfacae54cfa9ad1c8b8488091a323c621ccd7d186` |
+
+Each original has Indexed, CodecKeys, FloatingKeys, Unindexed and Sentinel
+tables. Indexed combines primary, unique/nonunique ascending/descending indexes,
+a reversed composite and the actual GroupAsc/GroupTwin physical alias. Its rows
+include Unicode Memo and 8 KiB OLE payloads. CodecKeys covers Boolean, Byte,
+Int16, Int32, Int64, Currency, GUID and Decimal indexes plus a mixed tuple.
+FloatingKeys covers finite Single/Double signed zero and ties, NULL, and legacy
+DATE indexes. No index ignores NULLs; there are no relationships. Every physical
+index owns one page in the getter observations. Reference operations delete ID2,
+nullable-key ID3, or all rows from the four nonsentinel tables; Sentinel remains
+untouched.
+
+The [reference capture](results/delete-candidate-reference-2026-10-26.json)
+contains eight read-only getter commands and raw output. Eleven file pins
+(producer, capture script, JAR and eight databases) stay unchanged across capture.
+Exact table/logical-index inventories remain present after delete-all; complete
+surviving row/index populations and surviving scalar/Memo/OLE getter values are
+checked. Locations, physical index identities, historical `uniqueEntryCount`,
+encounter order and exact IEEE/date getter bits are recorded. Pinned implementation
+metadata getters supplement public row/index cursors; they are observations of
+this reviewed dependency version, not format authority.
+
+This chunk does not run a TableCraft DELETE candidate or qualify ordinary writes,
+data macros, node contraction, durable apply or native Access save/reopen. Fresh
+generation is not claimed byte-reproducible. The first smaller corpus and
+superseded getter captures remain ignored and unchanged. Getter-only output
+additions after generation did not regenerate originals. The final capture uses
+relative provenance paths; its superseded predecessor and exact runner snapshot
+retain the original machine-path labels privately.
+
+From the repository root, create a fresh existing directory, then run:
+
+```sh
+for profile in V2016 V2019; do
+  java -Dstdout.encoding=UTF-8 -cp .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
+    docs/testing/DeleteCandidateFixture.java generate FRESH_DIRECTORY "$profile"
+done
+python3 docs/testing/capture_delete_candidates.py \
+  --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
+  --inputs FRESH_DIRECTORY --report FRESH_REPORT.json
+```
+
+Selected output filenames and the report must not already exist. The capture
+uses a 120-second timeout per Java getter command.

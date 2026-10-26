@@ -107,3 +107,20 @@ python3 docs/testing/compare_delete_storage.py \
 Omit `--inputs` to generate the four profile sets in the fresh work directory.
 The accepted evidence reused its registered original inputs, preserving the
 initial producer/diagnostic captures rather than generating replacement data.
+
+## Fresh reference inputs for physical DELETE candidates
+
+The separate [ACE16 candidate reference registration](FIXTURES.md#fresh-ace16-physical-delete-reference-inputs)
+adds newly generated V2016/V2019 originals without ignored-NULL indexes and their
+public Jackcess delete-ID2/delete-ID3/delete-all copies. The
+[final eight-file reference capture](results/delete-candidate-reference-2026-10-26.json)
+checks complete logical index inventories, surviving populations/order and
+payload preservation, with eleven unchanged pins. It includes numeric, Boolean,
+GUID and Decimal index families, finite floating/DATE controls, a real physical
+alias, Memo/OLE and an untouched sentinel.
+
+The producer is [DeleteCandidateFixture.java](DeleteCandidateFixture.java); the
+read-only capture is [capture_delete_candidates.py](capture_delete_candidates.py).
+This reference chunk does not execute a TableCraft candidate or establish native
+Access DELETE compatibility. Historical observations and reports above remain
+unchanged.
