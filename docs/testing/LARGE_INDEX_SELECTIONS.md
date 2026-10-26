@@ -54,6 +54,39 @@ selection target; the shared fixture module now explicitly permits unused helper
 Its original log is retained; final strict lint, minimal compilation and formatting
 pass. No runtime code or expected result changed in response to a failing test.
 
+## Complete original-file replay
+
+The [complete-snapshot runner](compare_large_complete_indexes.py) and
+[record](results/large-complete-index-originals-2026-10-26.json) use a frozen debug
+CLI built at `5b0ca3eb`. All eighteen controls match, with zero disagreements:
+50,004 result rows and 130,000 Binary-field comparisons across both unchanged
+originals. These counts include repeated operations and the extra hidden-key
+projection; they are not counts of distinct database rows.
+
+Complete IDs, reverse query ordering, Count, and a projection omitting the key
+all agree. Two payload projections cover every one of the twelve 240-byte Binary
+fields on all 5,000 rows per profile. Before output comparison, the producer's
+per-field formula is checked against each independent getter's full-row digest.
+Payload output is split to fit the existing 16 MiB per-command output ceiling.
+The runner explicitly chooses cumulative native/query pools; defaults are unchanged.
+
+A 4,999-row allowance refuses a complete read while a point selection under that
+same allowance succeeds. A one-byte output allowance returns its expected error
+with empty stdout. Legacy/check/write and index-owned ceilings are independently
+covered by the engine tests; the CLI uses the explicit request APIs.
+
+Full payload transcripts remain private. The compact public record contains
+per-command output hashes and counts, with the raw transcript pinned by SHA-256.
+Original/getter, executable and reference hashes stay unchanged. No native
+Microsoft Access execution, save/reopen or shared-file evidence is claimed.
+
+```sh
+python3 docs/testing/compare_large_complete_indexes.py \
+  --cli FROZEN_EXECUTABLE --cli-sha256 SHA256 \
+  --compiled-revision REVISION --inputs ORIGINAL_DIRECTORY \
+  --report FRESH_REPORT.json --log FRESH_LOG.jsonl
+```
+
 ## Original public-writer baseline
 
 [LargeUsageMapProbe.java](LargeUsageMapProbe.java) is repository-owned code under

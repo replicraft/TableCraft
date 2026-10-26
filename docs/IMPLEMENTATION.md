@@ -1,18 +1,37 @@
 # Implementation status
 
+## Complete indexed snapshots over large ownership maps
+
+Explicit row-capped indexed requests now use validated bitmap ownership for
+complete snapshots as well as selections. Complete reads still validate the
+declared count against the cap, require all index entries to agree with that
+count, and check each returned row's owner, live slot and key. Buffered key lists
+and snapshots retain cumulative resource limits. Legacy complete entry points,
+full checks, mutation paths and index-owned map ceilings remain unchanged.
+
+The focused engine checks pass 165 tests, including nine new tests, with strict
+lint, minimal compilation and formatting. The frozen committed CLI matches all
+18 original-file controls: 50,004 result rows and 130,000 Binary-field comparisons,
+including complete counts, ordering, hidden keys, all twelve Binary payloads,
+row-cap refusals and empty stdout on output failure. See
+[scope and evidence](testing/LARGE_INDEX_SELECTIONS.md). These independent
+getter/model checks do not establish native Access save or shared-file behavior.
+
 ## Selected index reads over large native allocation maps
 
 Qualified partial native index reads now validate table ownership with bounded
 bitmap membership rather than materializing every owned data-page address.
 Whole-map validation, selected row ownership/live-slot/key checks, cumulative
-limits and cancellation remain enforced. Complete indexed reads, full checks,
-index-owned page maps and mutation paths retain their existing ceilings.
+limits and cancellation remain enforced. Explicit complete requests now use the
+extension above; legacy complete reads, full checks, index-owned page maps and
+mutation paths retain their existing ceilings.
 
 The engine batch passes 170 distinct tests, including ten new tests, with strict
 scoped lint, minimal compilation and formatting. A frozen committed CLI matches
 22 controls over two unchanged 5,000-row/5,000-owned-page originals, including
 required/automatic selections and Binary payload digests. Sequential controls
-still succeed; complete indexed reads remain explicitly limited. See the
+still succeed; that earlier replay records the complete-read ceiling before
+the explicit-request extension. See the
 [scope and replay](testing/LARGE_INDEX_SELECTIONS.md). These independent checks
 do not establish native Access or shared-file compatibility.
 
