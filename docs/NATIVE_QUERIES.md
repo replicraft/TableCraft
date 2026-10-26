@@ -424,8 +424,11 @@ INNER joins and comma-separated CROSS sources can project complete lists from
 either parent, including nested joins and qualified static named/derived leaves.
 Scalar ON conditions determine parent pairs; hidden member WHERE criteria retain
 the complete lists on each surviving pair. Scalar-only leaves keep their ordinary
-read path. Typed outer-join lists, list comparisons, list keys and list aggregates
-remain unsupported. For example:
+read path. LEFT/RIGHT joins additionally preserve an absent parent's list as an
+explicit query absence state. The CLI spells this `NULL`, distinct from present
+`[]` and `[NULL]`; parent and child nullability have separate metadata. Nested
+and static named/derived projections retain absence. List comparisons, list keys
+and list aggregates remain unsupported. For example:
 
 ```sh
 tablecraft query run --database example.accdb --multivalues \
@@ -437,6 +440,9 @@ and whole lists with registered original stored values. Separate
 [native/CLI integration checks](testing/results/typed-multivalue-join-host-2026-10-26.json)
 cover authorized routing, corrupt unselected children, NULL versus empty lists,
 quotas and buffered errors. Native Access query equivalence remains unqualified.
+The separate [outer-join replay](testing/TYPED_MULTIVALUE_OUTER_JOINS.md) and
+[outer host checks](testing/results/typed-multivalue-outer-host-2026-10-26.json)
+now cover missing parents, nested absence and independent nullability.
 
 List cells use the same buffered CLI spellings as stored collection browsing:
 `[100, 101]`, `[NULL, 100, 100]` and `[]` distinguish duplicate/NULL members from

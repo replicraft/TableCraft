@@ -1,12 +1,41 @@
 # Implementation status
 
+## Typed outer-join list results
+
+The collection-aware query API now preserves complete lists through LEFT/RIGHT
+joins. `QueryValue::AbsentMultivalue` identifies an absent joined parent separately
+from a present empty list and a present list containing NULL. Output metadata
+tracks parent nullability independently of child nullability. Nested joins,
+static named/derived projections and hidden membership criteria preserve this
+distinction; ordinary scalar join execution remains unchanged.
+
+The CLI displays absent parents as `NULL`, present empty lists as `[]` and present
+one-NULL lists as `[NULL]`. These are explicit TableCraft result/display contracts;
+native Microsoft Access output equivalence remains unqualified. See the
+[query contract](MULTIVALUE_QUERIES.md) and
+[query verification](testing/results/read-query-typed-multivalue-outer-joins-2026-10-26.json).
+UNION, list keys, list aggregates and mixed whole-list/displayed-member results
+remain unfinished. Bare scalar-multivalue `IS NULL` remains unsupported; the
+existing named-collection presence contract is separate.
+
+The focused query checks pass 254 distinct tests, including twelve new tests;
+29 native/CLI tests pass, including ten new tests. Strict query/selected-host
+lint, the minimal query build and formatting pass. The final named-presence
+control checks LEFT/RIGHT absence, empty and nonempty containers while retaining
+complete projected lists. See [host verification](testing/results/typed-multivalue-outer-host-2026-10-26.json).
+The [original-file outer replay](testing/TYPED_MULTIVALUE_OUTER_JOINS.md) matches
+84 controls from the frozen committed CLI: 264 successful rows and 1,056 cells,
+plus 24 errors/refusals. This independent stored-value evidence does not qualify
+native Microsoft Access SQL behavior.
+
 ## Typed multivalue parent joins
 
 Explicit collection-aware retrieval now transports whole stored lists through
 INNER joins and comma-separated CROSS sources, including nested joins and static
 named/derived leaves. Scalar ON conditions select parent pairs before hidden
 member WHERE criteria; selected lists retain their complete contents. Scalar-only
-leaves keep their ordinary read service. Typed outer joins, UNION, list keys,
+leaves keep their ordinary read service. Typed outer joins now use the explicit
+absence model described above; UNION, list keys,
 aggregates and mixed list/displayed-member output remain unfinished.
 
 The selected query batch passes 242 tests, including sixteen new controls, with
@@ -35,8 +64,8 @@ their existing finite-value and publication rules.
 CLI `query run --database PATH --multivalues` and `--collections` now display bare
 list fields, including aliases, static named/derived projections, scalar
 filtering/order/TOP and direct hidden `.Value` membership criteria. Typed list
-INNER/CROSS joins now use the separate service described above; typed outer
-joins, UNION, list keys and aggregates remain unsupported. Buffered schema
+INNER/CROSS and LEFT/RIGHT joins now use the separate service described above;
+UNION, list keys and aggregates remain unsupported. Buffered schema
 discovery retains its existing authorized scalar dependency reads before final
 typed admission; collection scans require successful admission.
 
