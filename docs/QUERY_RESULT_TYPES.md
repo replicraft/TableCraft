@@ -273,6 +273,12 @@ without widening/coercing the scalar descriptor. Two NULL-only arms remain
 NULL-only; mixing with Dynamic stays Dynamic. No sample records or chosen branch
 values are used to derive these rules.
 
+The syntax literal NULL separately has a Variant declaration in the
+[explicit arithmetic profile](DECLARED_ARITHMETIC.md#null-literal-provenance),
+while its successful value descriptor remains `OutputType::Null`. Those facts
+serve different consumers. A nullable typed field still has its own declaration;
+neither a NULL row nor an empty aggregate supplies new declaration proof.
+
 Selectors retain eager evaluation. An unselected expression can still fail;
 metadata never suppresses that evaluation. Compatible carriers merge their
 supported constraints; different carriers still produce Dynamic.

@@ -4,7 +4,7 @@ use super::{Environment, Runtime};
 use crate::execution::cell::CellValue;
 use crate::{
     QueryError,
-    plan::{Aggregate, Expr},
+    plan::{Aggregate, Expr, declarations::literal_declaration},
 };
 use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_expressions::functions::text::byte_string::ByteOperand;
@@ -247,7 +247,12 @@ impl Runtime<'_, '_> {
                 self.eval(expression, env)
                     .map(|value| CellValue::scalar(value).with_declaration(Some(declaration)))
             }
-            Expr::Literal(_) | Expr::NumericLiteral(_) | Expr::DateLiteral(..) => {
+            Expr::Literal(value) => {
+                let declaration = literal_declaration(value);
+                self.eval(expression, env)
+                    .map(|value| CellValue::scalar(value).with_declaration(Some(declaration)))
+            }
+            Expr::NumericLiteral(_) | Expr::DateLiteral(..) => {
                 self.eval(expression, env).map(|value| {
                     CellValue::scalar(value).with_declaration(Some(OperandDeclaration::Scalar))
                 })

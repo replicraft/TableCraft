@@ -2,7 +2,8 @@ use std::cell::Cell;
 use tablecraft_core::values::Value;
 use tablecraft_expressions::EvalError;
 use tablecraft_query::{
-    ExecutionOptions, QueryError, Source, prepare,
+    BindingDepth, ExecutionOptions, PreparationOptions, QueryError, Source, prepare,
+    prepare_with_options,
     source::{MemorySource, MemoryTable},
 };
 use tablecraft_schema::{Column, ScalarType};
@@ -10,17 +11,26 @@ use tablecraft_sql::{parse_query, query::Query};
 
 fn run(sql: &str, source: &dyn Source) -> Result<Vec<Vec<Value>>, QueryError> {
     let parsed = parse_query(sql, Default::default()).unwrap();
-    Ok(prepare(parsed.query(), source)?
-        .execute(
-            source,
-            &[],
-            ExecutionOptions {
-                declared_integral: true,
-                ..Default::default()
-            },
-        )?
-        .rows()
-        .to_vec())
+    // These nested semantic controls deliberately use the supported larger
+    // structural envelope; the default-depth boundary has its own tests.
+    Ok(prepare_with_options(
+        parsed.query(),
+        source,
+        PreparationOptions {
+            binding_depth: BindingDepth::new(32).unwrap(),
+            ..Default::default()
+        },
+    )?
+    .execute(
+        source,
+        &[],
+        ExecutionOptions {
+            declared_integral: true,
+            ..Default::default()
+        },
+    )?
+    .rows()
+    .to_vec())
 }
 
 #[test]
@@ -49,8 +59,8 @@ fn subquery_categories_follow_bound_expressions_not_result_populations() {
                 let sql = format!("SELECT CInt(-32768)\\({predicate})");
                 if variant {
                     assert_eq!(
-                        run(&sql, &source).unwrap(),
-                        vec![vec![Value::Int32(32768)]],
+                        run(&sql, &source),
+                        Ok(vec![vec![Value::Int32(32768)]]),
                         "{sql}"
                     );
                 } else {

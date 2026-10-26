@@ -1,0 +1,142 @@
+{
+  "date": "2026-10-25",
+  "scope": "NULL syntax has Variant declaration shared by binding, retained execution and constant folding; nullable runtime values retain their declared source categories.",
+  "unique_tests": 123,
+  "new_tests": 8,
+  "new_test_breakdown": {
+    "integration": 7,
+    "shared_classifier_unit": 1
+  },
+  "existing_regression_tests": 115,
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-query --test null_literal_declarations --test logical_declarations --test static_declarations --test predicate_declarations --test membership_declarations --test declared_integral --test declared_addition --test variant_aggregates --test negation_declarations --test binding_depth --test declared_string_comparisons --test named_crosstabs --locked",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/null-literal-integration-accepted-20261025.log",
+        "bytes": 12396,
+        "sha256": "8494943c2c11007189e177e7f9c7142e1b19ed7136060f50032542de838e5224"
+      },
+      "terminal_session": 32125,
+      "tests": 107
+    },
+    {
+      "command": "cargo test -p tablecraft-query --lib plan::declarations::tests --locked",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/null-literal-unit-accepted-20261025.log",
+        "bytes": 492,
+        "sha256": "f215e11f24409d466459f5745d336859ed4c1b73cb33e3fb7986b6d149e5acce"
+      },
+      "terminal_session": 49743,
+      "tests": 1
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test named_depth --locked",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/null-literal-named-depth-regressions-20261025.log",
+        "bytes": 1710,
+        "sha256": "811ae850867eb707b5fc6484863b0c3b6c5f4fa6a1cb7fd5461ae60530294025"
+      },
+      "terminal_session": 57827,
+      "tests": 15
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --test null_literal_declarations --test static_declarations --locked -- -D warnings",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/null-literal-clippy-accepted-20261025.log",
+        "bytes": 767,
+        "sha256": "5b9b9b7b635eed9783202d540564372dfc3e5ce890301041a7263cd7d5b0aaa8"
+      },
+      "terminal_session": 49237
+    },
+    {
+      "command": "cargo check -p tablecraft-query --no-default-features --locked",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/null-literal-query-minimal-20261025.log",
+        "bytes": 185,
+        "sha256": "090496f9baaadfa5faac0a920addead8323b8e936f4e5b42a08b26f02ecb74ab"
+      }
+    }
+  ],
+  "excluded_attempts": [
+    {
+      "log": {
+        "path": ".cache/null-literal-before-fix-20261025.log",
+        "bytes": 3159,
+        "sha256": "118c4f3d8626028b9ad0d6d4e85e3acfc1e0655922392c9b5418b444fb0f6fc1"
+      },
+      "reason": "Before the fix, four semantic cases failed from wrong literal category, one progressive fixture used unsupported source-free streaming, and one nullable-source category control passed. The progressive fixture was changed to a supported one-row table; expected values were retained. This exploratory six-test version predates the additional concatenation test."
+    },
+    {
+      "log": {
+        "path": ".cache/null-literal-final-integration-20261025.log",
+        "bytes": 6014,
+        "sha256": "b98053d9bada5c530ffedeeb1a3f7049f8d4555cfa3808e137d31e6dd81647a3"
+      },
+      "reason": "Seven new integration tests passed, but an older non-NULL static-declaration control exceeded default depth16. The accepted retry explicitly requests existing depth32 for that semantic fixture; production depth limits were unchanged."
+    },
+    {
+      "log": {
+        "path": ".cache/null-literal-depth-diagnostic-20261025.log",
+        "bytes": 1183,
+        "sha256": "667060b98fbeb13dc49b78228deadffaec2ecfa5f3caeba26efb0575ef8ba95e"
+      },
+      "reason": "One-test diagnostic identifies the older nested scalar/Variant source expression that reaches StructureLimit at default depth."
+    }
+  ],
+  "tool_only_authoring_failure": "An initial test compile referenced nonexistent QueryError::UnknownTable; corrected to UnknownName before obtaining runtime baseline. No persisted log exists.",
+  "old_binary_depth_controls": {
+    "path": ".cache/null-literal-depth-binary-controls-20261025.json",
+    "bytes": 1124,
+    "sha256": "1ecdf32512b1afd7d34bfbcecf7b50d73c1663f549ef33494d1b884234bf6667"
+  },
+  "depth_control_note": "Both pre-feature frozen CLIs refuse the same non-NULL nested expression with default/explicit16 and succeed with explicit32. The semantic fixture uses the supported option; expected result and runtime limits are unchanged.",
+  "source_snapshots": [
+    {
+      "path": "crates/query/tablecraft-query/src/plan/declarations.rs",
+      "bytes": 1638,
+      "sha256": "44a1c2757cc6e489f2dac829abb599c9a2ab752ff1e1cf2bb340be38d78ff3a3"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/declarations.rs",
+      "bytes": 4061,
+      "sha256": "a64568a5011dce394afe9a861113a0e8b666c37ddfa1a8568d5b38ff5627f73d"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/variants.rs",
+      "bytes": 13003,
+      "sha256": "40572a8557a6bcc1bec741718d1a8de35269ac9b5373e7678b1892c7cd54f7c6"
+    },
+    {
+      "path": "crates/query/tablecraft-query/tests/null_literal_declarations.rs",
+      "bytes": 10857,
+      "sha256": "99e0f5e92b2e5da55d61033c108b76f704192935985da12f0299ea3620dc2827"
+    },
+    {
+      "path": "crates/query/tablecraft-query/tests/static_declarations.rs",
+      "bytes": 6357,
+      "sha256": "690e94f775b0137d77dd7c7c6d0798a4e10f0d8c8d49facbd07d0016058ea0a3"
+    },
+    {
+      "path": "docs/DECLARED_ARITHMETIC.md",
+      "bytes": 86597,
+      "sha256": "78e2c89bece71ea5a379057b54896efeaf12a32386b733bdaadc33690d143e98"
+    },
+    {
+      "path": "docs/QUERY_RESULT_TYPES.md",
+      "bytes": 38243,
+      "sha256": "345108d4bf2ed3bf16344b81d28aa255830f6c69a5474cb8949b3e6cf93e65cc"
+    }
+  ],
+  "primary_contract": "https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/7df907cb-ab6c-40d3-aa81-272742ce00c3",
+  "boundaries": [
+    "Only literal syntax is reclassified; field/parameter NULL values do not establish Variant provenance.",
+    "Unknown aggregate and UNION categories, explicit scalar casts and LongLong overflow remain bounded.",
+    "Default materialized behavior remains unchanged; native Access SQL category qualification is separate.",
+    "Selected scoped regressions, not a workspace-wide execution run."
+  ]
+}
