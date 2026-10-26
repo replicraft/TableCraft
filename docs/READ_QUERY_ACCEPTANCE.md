@@ -1141,6 +1141,15 @@ Extrema, statistics, grouping and wider progressive sources remain separate work
 this does not establish complete read/query or native execution qualification.
 
 
+## Native GUID observer evidence
+
+The [GUID inspection replay](VALUE_INSPECTION.md#native-guid-inspection-replay--25-october-2026)
+passes 84 controls over four unchanged native originals, with 96 rows/432 cells
+checked against the explicit Byte-array observer profile. Earlier observer
+behavior, current failures, parameters, groups/domains/subqueries and progressive
+parity remain separately recorded. Independent getters supply data only; native
+Access observer equivalence and full P0 remain open.
+
 ## Stored GUID type/bound inspection
 
 [Fixed GUID views](VALUE_INSPECTION.md#stored-guid-inspection-and-fixed-bounds)
