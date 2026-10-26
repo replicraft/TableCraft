@@ -7,6 +7,12 @@ semantics and actual native Access qualification remain pending. The optional [d
 expands bounded integral/Currency/GUID actions inside that engineering boundary. The qualified
 Jet 4 planner follows the bounded native contract below.
 
+The separate feature-gated [root-leaf delete preview](../../testing/ACE16_DELETE_PREVIEWS.md)
+now prepares ordinary ACE16 tombstones, live-count changes and exact existing-leaf
+entry removal, including empty roots. It returns `Ace16DeletePreview`, never a
+journalable plan, and preserves all normal ACE write/data-macro gates. Node-tree
+contraction, allocation and ordinary SQL/backend DELETE remain unimplemented.
+
 `NativeImage::plan_int32_updates` produces complete before/after images without
 writing to its source. The current engineering profile is unencoded Jet 4 only:
 existing non-NULL fixed Int32 fields in unflagged local tables, with the native

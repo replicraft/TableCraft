@@ -1,4 +1,6 @@
 mod composite;
+#[cfg(feature = "ace16-write-preview")]
+mod delete;
 mod encoding;
 mod kind;
 use super::composite::DecimalValue;
@@ -8,6 +10,8 @@ mod plan;
 mod profile;
 mod repack;
 mod tree;
+#[cfg(feature = "ace16-write-preview")]
+pub(in crate::table) use plan::delete_patches;
 pub(in crate::table) use plan::patches;
 
 pub(in crate::table) struct IndexKeyUpdate {

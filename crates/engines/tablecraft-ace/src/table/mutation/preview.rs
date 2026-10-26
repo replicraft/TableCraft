@@ -3,6 +3,8 @@ use super::{EditError, Int32Update, NativeEditPlan, WriteBlocker};
 use crate::{FileFormat, NativeImage, header::check};
 use tablecraft_core::limits::ResourceBudget;
 
+const SUPPORTED_PREVIEW_SUBVERSION: u8 = 0;
+
 /// An unqualified ACE 16 physical candidate for independent/native comparisons.
 ///
 /// This is not a database save or executable SQL update: unavailable data macros
@@ -70,7 +72,9 @@ pub(super) fn qualify(image: &NativeImage) -> Result<(), EditError> {
     if !matches!(
         image.catalog().header().format(),
         FileFormat::Ace2016 | FileFormat::Ace2019
-    ) {
+    ) || image.catalog().header().subversion() != SUPPORTED_PREVIEW_SUBVERSION
+        || image.catalog().header().encoded_pages()
+    {
         return Err(EditError::Unsupported(WriteBlocker::Format));
     }
     Ok(())

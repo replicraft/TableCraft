@@ -26,6 +26,73 @@ pub(in crate::table) fn patches(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<IndexDataPatch>, EditError> {
+    patches_with(
+        image,
+        schema,
+        indexes,
+        Change::Update(updates),
+        budget,
+        cancelled,
+    )
+}
+
+#[cfg(feature = "ace16-write-preview")]
+pub(in crate::table) fn delete_patches(
+    image: &NativeImage,
+    schema: &TableSchema,
+    indexes: &[IndexCheck],
+    references: &[u32],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<IndexDataPatch>, EditError> {
+    patches_with(
+        image,
+        schema,
+        indexes,
+        Change::Delete(references),
+        budget,
+        cancelled,
+    )
+}
+
+#[derive(Clone, Copy)]
+enum Change<'a> {
+    Update(&'a [IndexKeyUpdate]),
+    #[cfg(feature = "ace16-write-preview")]
+    Delete(&'a [u32]),
+}
+
+impl Change<'_> {
+    fn len(self) -> usize {
+        match self {
+            Self::Update(updates) => updates.len(),
+            #[cfg(feature = "ace16-write-preview")]
+            Self::Delete(references) => references.len(),
+        }
+    }
+
+    fn affects(self, index: &NativeIndex, schema: &TableSchema) -> bool {
+        match self {
+            Self::Update(updates) => updates.iter().any(|update| {
+                index
+                    .columns()
+                    .iter()
+                    .any(|key| key.number() == schema.columns[update.column].number())
+            }),
+            #[cfg(feature = "ace16-write-preview")]
+            Self::Delete(_) => true,
+        }
+    }
+}
+
+fn patches_with(
+    image: &NativeImage,
+    schema: &TableSchema,
+    indexes: &[IndexCheck],
+    change: Change<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<IndexDataPatch>, EditError> {
     check(budget, cancelled)?;
     // Format admission belongs to the public edit/preview entry points. This
     // private helper receives only already checked schemas/index coverage.
@@ -46,7 +113,7 @@ pub(in crate::table) fn patches(
             return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
         }
     }
-    if updates.is_empty() {
+    if matches!(change, Change::Update(updates) if updates.is_empty()) {
         return Ok(patches);
     }
     budget
@@ -66,13 +133,8 @@ pub(in crate::table) fn patches(
     for (position, check) in indexes.iter().enumerate() {
         reader.tick()?;
         let index = check.index();
-        reader.work(updates.len() * index.columns().len())?;
-        if !updates.iter().any(|update| {
-            index
-                .columns()
-                .iter()
-                .any(|key| key.number() == schema.columns[update.column].number())
-        }) {
+        reader.work(change.len() * index.columns().len())?;
+        if !change.affects(index, schema) {
             continue;
         }
         if check.status() != IndexCheckStatus::Checked
@@ -122,7 +184,7 @@ pub(in crate::table) fn patches(
                     &mut reader,
                     index,
                     schema.definition,
-                    updates,
+                    change,
                     &profile,
                     &mut patches,
                 )?;
@@ -143,7 +205,7 @@ pub(in crate::table) fn patches(
                     &mut reader,
                     index,
                     schema.definition,
-                    updates,
+                    change,
                     &profile,
                     &mut patches,
                 )?;
@@ -158,7 +220,7 @@ pub(in crate::table) fn patches(
                     &mut reader,
                     index,
                     schema.definition,
-                    updates,
+                    change,
                     &profile,
                     &mut patches,
                 )?;
@@ -189,7 +251,7 @@ pub(in crate::table) fn patches(
                     &mut reader,
                     index,
                     schema.definition,
-                    updates,
+                    change,
                     &profile,
                     &mut patches,
                 )?;
@@ -205,7 +267,7 @@ pub(in crate::table) fn patches(
                     &mut reader,
                     index,
                     schema.definition,
-                    updates,
+                    change,
                     &profile,
                     &mut patches,
                 )?;
@@ -217,7 +279,7 @@ pub(in crate::table) fn patches(
                     &mut reader,
                     index,
                     schema.definition,
-                    updates,
+                    change,
                     &profile,
                     &mut patches,
                 )?;
@@ -233,10 +295,19 @@ fn edit<P: WriteProfile, const N: usize>(
     reader: &mut Reader<'_, std::io::Cursor<&[u8]>>,
     index: &NativeIndex,
     owner: u32,
-    updates: &[IndexKeyUpdate],
+    change: Change<'_>,
     profile: &P,
     patches: &mut Vec<IndexDataPatch>,
 ) -> Result<(), EditError> {
+    let updates = match change {
+        Change::Update(updates) => updates,
+        #[cfg(feature = "ace16-write-preview")]
+        Change::Delete(references) => {
+            return super::delete::edit::<P, N>(
+                image, reader, index, owner, references, profile, patches,
+            );
+        }
+    };
     let mut entries = Vec::new();
     let tree = Tree::read::<_, N>(
         image,

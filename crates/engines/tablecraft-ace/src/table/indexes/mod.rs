@@ -67,6 +67,8 @@ pub use read::read_table_text_index_range;
 pub use text::{GeneralEqualityPrefix, TextIndexSelection};
 mod mutation;
 mod page;
+#[cfg(feature = "ace16-write-preview")]
+pub(super) use mutation::delete_patches as index_delete_patches;
 pub(super) use mutation::{IndexDataPatch, IndexKeyUpdate, MutationKey, patches as index_patches};
 mod read;
 mod selection;

@@ -15,6 +15,9 @@ is disabled by default and is not enabled or consumed by the CLI/Access backend.
 The normal planner still rejects every ACE file, including when preview is enabled.
 
 The preview admits only the existing unencoded subversion-zero 2016/2019 profiles.
+The shared admission helper enforces this mutation boundary even when the read
+profile recognizes plain subversion-one files; read support does not qualify
+preview mutation.
 It reuses checked fixed-payload and row-mask paths: expected original values,
 snapshot-local ordinals, duplicate/stale assignment rejection, qualified native
 constraints/properties, opaque/direct-child blockers, bounded ordinary/unique integral index
@@ -23,8 +26,10 @@ allocated page sets and file length do not change. Eligible mask changes are exp
 limited to the selected bit. Eligible indexed Byte, Int16/32/64 and Currency NULL
 transitions use the page repacking profiles below. Qualified GUID, Boolean/IEEE/DATE
 indexes and existing-width Decimal slots have their own profiles below. Other
-variable carriers, insert/delete,
-schema changes, AutoNumber and broader index topology changes remain unsupported.
+variable carriers, INSERT, schema changes, AutoNumber and broader index topology
+changes remain unsupported. Ordinary-root deletion has a separate
+[root-leaf candidate API](ACE16_DELETE_PREVIEWS.md), with its own request and return
+types; it does not turn these fixed-field APIs into a general writer.
 
 The physical patch machinery is private and shared. Format admission now resides
 at the distinct public entry points, with qualified edits and unqualified previews

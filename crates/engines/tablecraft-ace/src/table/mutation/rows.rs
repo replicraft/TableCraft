@@ -45,6 +45,10 @@ pub(super) struct Row<'a> {
     pub reference: u32,
     pub offset: usize,
     pub mask: usize,
+    #[cfg(feature = "ace16-write-preview")]
+    pub slot_offset: usize,
+    #[cfg(feature = "ace16-write-preview")]
+    pub slot_word: u16,
 }
 
 pub(super) fn visit<R: crate::NativeReadSource, U: RowAssignment>(
@@ -91,6 +95,11 @@ pub(super) fn visit<R: crate::NativeReadSource, U: RowAssignment>(
                         reference: reference(number, slot as u8),
                         offset: number as usize * PAGE_BYTES + start,
                         mask,
+                        #[cfg(feature = "ace16-write-preview")]
+                        slot_offset: number as usize * PAGE_BYTES
+                            + crate::format::row::slot_offset(slot),
+                        #[cfg(feature = "ace16-write-preview")]
+                        slot_word: flags,
                     },
                     update,
                 )?;
