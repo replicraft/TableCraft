@@ -48,6 +48,7 @@ jiff.workspace = true
 
 [dev-dependencies]
 clap.workspace = true
+csv.workspace = true
 proptest.workspace = true
 smallvec.workspace = true
 

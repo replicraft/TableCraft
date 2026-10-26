@@ -1517,6 +1517,7 @@ dependencies = [
  "bytemuck",
  "cbc",
  "clap",
+ "csv",
  "flate2",
  "fst",
  "getrandom 0.4.3",

@@ -445,7 +445,7 @@ They calculate grapheme boundaries/display widths for presentation, without
 changing SQL Unicode/collation semantics. No library/network runtime gains an edge.
 
 CLI TSV encoding adopted 19 October 2026: [csv 1.4.0](https://docs.rs/csv/1.4.0/)
-(Unlicense OR MIT, Rust 1.73 minimum), workspace-owned and CLI-only. It has no
+(Unlicense OR MIT, Rust 1.73 minimum), workspace-owned for executable boundaries. It has no
 optional feature selection. `WriterBuilder` supplies tab delimiters, LF endings,
 standard necessary quoting and flexible inspection record widths; the CLI uses
 record APIs without adopting Serde serialization. New locked transitive packages
@@ -455,6 +455,14 @@ Local upstream manifests/licenses were reviewed. Its buffered writer feeds a
 fallibly reserved sink under the existing 1 MiB output limit, including quote
 expansion; dependency-internal allocations remain infallible APIs. TSV carries
 escaped display cells as described in [CLI browsing](../cli/CLI_BROWSING.md).
+
+The ACE16 deletion comparison example also uses csv as a development dependency
+for headerless two-column `ROW`/`HEX` TSV request files. This avoids OS argument
+limits for large exact-record batches. Capture is bounded at 32 MiB, with a
+4096-request ceiling, exact hex validation and conservative CSV scratch charges
+under the shared operation budget. Normal ACE library builds gain no csv
+dependency or request-file authority. The example still creates only explicit
+fresh engineering candidates; the ordinary CLI/backend write gates are unchanged.
 
 Recorded on 17 October 2026, when the repository source license was MIT.
 The upstream license changed to Apache-2.0 on 25 October 2026; current package
