@@ -233,7 +233,6 @@ fn scalar_apis_and_unsupported_collection_operations_refuse_before_scans() {
         "SELECT Tags FROM T ORDER BY Tags",
         "SELECT Tags FROM T GROUP BY Tags",
         "SELECT DISTINCT Tags FROM T",
-        "SELECT Tags,Tags.Value FROM T",
         "SELECT Tags FROM T UNION ALL SELECT Tags FROM T",
     ] {
         assert_eq!(

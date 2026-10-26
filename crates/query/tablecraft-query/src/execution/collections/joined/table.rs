@@ -2,6 +2,7 @@
 use super::{CollectionFrame, JoinedFrame, Requests, Runtime};
 use crate::{
     MultivalueValue, QueryError,
+    execution::cell::CellValue,
     plan::{Relation, RelationNode},
     profile::SOURCE_SCHEMA_POLICY,
     source::{MultivalueList, ProjectedRow},
@@ -31,6 +32,7 @@ impl Runtime<'_, '_> {
             projection,
             multivalues,
             members,
+            expansion,
             ..
         } = &relation.node
         else {
@@ -61,18 +63,33 @@ impl Runtime<'_, '_> {
             };
             let mut criterion = None;
             if let Some(parent) = requests.parent {
-                let locations = parent.locations.as_ref().ok_or(QueryError::Source)?;
-                for (position, location) in locations.iter().enumerate() {
-                    self.tick()?;
-                    if location.leaf == leaf
-                        && location.member == native
-                        && criterion.replace(position).is_some()
-                    {
-                        return Err(QueryError::Source);
+                if let Some(locations) = &parent.locations {
+                    for (position, location) in locations.iter().enumerate() {
+                        self.tick()?;
+                        if location.leaf == leaf
+                            && location.member == native
+                            && criterion.replace(position).is_some()
+                        {
+                            return Err(QueryError::Source);
+                        }
+                    }
+                } else {
+                    // A direct mixed table has local native-member criteria;
+                    // joined criteria instead carry explicit leaf identities.
+                    for (position, member) in parent.collections.iter().enumerate() {
+                        self.tick()?;
+                        if *member == native && criterion.replace(position).is_some() {
+                            return Err(QueryError::Source);
+                        }
                     }
                 }
             }
-            if output.is_some() || criterion.is_some() {
+            let mut displayed = false;
+            for member in expansion {
+                self.tick()?;
+                displayed |= *member == native;
+            }
+            if output.is_some() || criterion.is_some() || displayed {
                 needed.push(Request {
                     native,
                     output,
@@ -105,6 +122,11 @@ impl Runtime<'_, '_> {
             .map_err(|_| QueryError::Allocation)?;
         indices.extend(needed.iter().map(|request| request.native));
         let (values, named) = self.collection_requests(&indices, multivalues.len())?;
+        let layout = if expansion.is_empty() {
+            None
+        } else {
+            Some(self.collection_expansion(multivalues, members, expansion)?)
+        };
         let source = self.namespace_source(*namespace)?;
         let mut rows = Vec::new();
         let mut failure: Option<QueryError> = None;
@@ -119,30 +141,19 @@ impl Runtime<'_, '_> {
                 }
                 self.check_joined_list_views(&needed, multivalues, members, lists)?;
                 let scalars = self.copy_projected_row(columns, projection, scalars)?;
-                let mut owned = Vec::new();
-                let mut criteria = Vec::new();
-                for (request, values) in needed.iter().zip(lists) {
-                    self.tick()?;
-                    if let Some(position) = request.criterion {
-                        let copied = self.copy_joined_criterion(*values)?;
-                        self.push(&mut criteria, (position, Some(copied)))?;
+                if let Some(layout) = &layout {
+                    let views = self.displayed_collection_views(&needed, expansion, lists)?;
+                    let mut expanded = Vec::new();
+                    self.expand_collection_row(&scalars, layout, &views, &mut expanded)?;
+                    for scalars in expanded {
+                        let row = self.copy_joined_parent_frame(&needed, lists, scalars)?;
+                        self.push(&mut rows, row)?;
                     }
-                    if let Some(index) = request.output {
-                        let copied = self.copy_borrowed_collection(*values)?;
-                        self.push(&mut owned, (index, Some(copied)))?;
-                    }
+                    Ok(())
+                } else {
+                    let row = self.copy_joined_parent_frame(&needed, lists, scalars)?;
+                    self.push(&mut rows, row)
                 }
-                self.push(
-                    &mut rows,
-                    JoinedFrame {
-                        frame: CollectionFrame {
-                            scalars,
-                            lists: owned,
-                            keys: Vec::new(),
-                        },
-                        criteria,
-                    },
-                )
             })();
             if let Err(error) = &result {
                 failure = Some(error.clone());
@@ -151,6 +162,63 @@ impl Runtime<'_, '_> {
         };
         let scan = source.scan_collection_members(name, projection, values, &named, &mut visitor);
         failure.map_or(scan.map(|()| rows), Err)
+    }
+
+    fn displayed_collection_views<'a>(
+        &mut self,
+        requested: &[Request],
+        expansion: &[usize],
+        lists: &[&'a dyn MultivalueList],
+    ) -> Result<Vec<&'a dyn MultivalueList>, QueryError> {
+        self.budget.charge_allocation(
+            expansion.len() as u64,
+            size_of::<&dyn MultivalueList>() as u64,
+        )?;
+        let mut views = Vec::new();
+        views
+            .try_reserve_exact(expansion.len())
+            .map_err(|_| QueryError::Allocation)?;
+        for member in expansion {
+            let mut found = None;
+            for (position, request) in requested.iter().enumerate() {
+                self.tick()?;
+                if request.native == *member {
+                    found = Some(*lists.get(position).ok_or(QueryError::Source)?);
+                    break;
+                }
+            }
+            views.push(found.ok_or(QueryError::Source)?);
+        }
+        Ok(views)
+    }
+
+    fn copy_joined_parent_frame(
+        &mut self,
+        requested: &[Request],
+        lists: &[&dyn MultivalueList],
+        scalars: Vec<CellValue>,
+    ) -> Result<JoinedFrame, QueryError> {
+        let mut owned = Vec::new();
+        let mut criteria = Vec::new();
+        for (request, values) in requested.iter().zip(lists) {
+            self.tick()?;
+            if let Some(position) = request.criterion {
+                let copied = self.copy_joined_criterion(*values)?;
+                self.push(&mut criteria, (position, Some(copied)))?;
+            }
+            if let Some(index) = request.output {
+                let copied = self.copy_borrowed_collection(*values)?;
+                self.push(&mut owned, (index, Some(copied)))?;
+            }
+        }
+        Ok(JoinedFrame {
+            frame: CollectionFrame {
+                scalars,
+                lists: owned,
+                keys: Vec::new(),
+            },
+            criteria,
+        })
     }
 
     fn check_joined_list_views(

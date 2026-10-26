@@ -6,13 +6,13 @@ use tablecraft_core::values::Value;
 use tablecraft_expressions::numeric::OperandDeclaration;
 use tablecraft_schema::{CollectionMember, Column, validate_row};
 
-pub(super) struct Expansion<'a> {
+pub(in crate::execution) struct Expansion<'a> {
     columns: Vec<&'a Column>,
     group_for: Vec<usize>,
     groups: usize,
 }
 impl Runtime<'_, '_> {
-    pub(super) fn collection_expansion<'a>(
+    pub(in crate::execution) fn collection_expansion<'a>(
         &mut self,
         multivalues: &'a [Column],
         members: &'a [CollectionMember],
@@ -70,7 +70,7 @@ impl Runtime<'_, '_> {
             groups: groups.len(),
         })
     }
-    pub(super) fn expand_collection_row(
+    pub(in crate::execution) fn expand_collection_row(
         &mut self,
         scalar: &[CellValue],
         layout: &Expansion<'_>,

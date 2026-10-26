@@ -77,7 +77,7 @@ fn complete_source_validation_and_eager_on_errors_precede_filters_or_top() {
 #[test]
 fn unsupported_collection_shapes_refuse_before_collection_cursors_even_with_false_filters() {
     for sql in [
-        "SELECT L.A,R.A.Value FROM L,R WHERE False",
+        "SELECT DISTINCT L.A,R.A.Value FROM L,R WHERE False",
         "SELECT DISTINCT L.A FROM L LEFT JOIN R ON L.Id=R.Id WHERE False",
         "SELECT L.A FROM L LEFT JOIN R ON L.A=R.A WHERE False",
     ] {

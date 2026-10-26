@@ -1,0 +1,293 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-26",
+  "scope": "Backend-neutral typed complete multivalue lists beside visible Value/named-member scalar fields across admitted row-local direct, static named/derived and joined reads",
+  "review_base_revision": "908d8417e9ad91d1c1077b306523925265a985c7",
+  "unique_query_tests": 248,
+  "new_query_tests": 14,
+  "existing_query_regression_tests": 234,
+  "new_test_breakdown": {
+    "mixed_multivalue_results": 3,
+    "mixed_multivalue_results_contract": 10,
+    "collection_result_depth": 1
+  },
+  "deduplication": "72 successful functions in six completed targets of process 43598 + 165 functions in clean related batch 23572 + 9 functions in accepted independent retry 35267 = 246. Initial failed independent outcomes and the earlier basic 13-test rerun add zero unique functions. The final five-function isolated depth target adds one new mixed named-propagation function; its four earlier functions are not counted twice, bringing the total to 247. The final independent ten-function target adds one whole-list IEEE bit-preservation function; the preceding nine functions are not counted twice, bringing the final total to 248.",
+  "target_counts": {
+    "collection_members": 37,
+    "collection_result_depth": 5,
+    "collection_results": 10,
+    "external_named_sources": 10,
+    "external_table_sources": 8,
+    "mixed_multivalue_results": 3,
+    "mixed_multivalue_results_contract": 10,
+    "multivalue": 69,
+    "named": 6,
+    "retrieval": 64,
+    "typed_multivalue_join_contract": 10,
+    "typed_multivalue_joins": 4,
+    "typed_multivalue_outer_contract": 8,
+    "typed_multivalue_outer_joins": 4
+  },
+  "checks": [
+    {
+      "command": "cargo check -p tablecraft-query --lib -j2 --locked --offline",
+      "exit_code": 0,
+      "terminal_session": 11347,
+      "private_log": {
+        "path": ".cache/mixed-multivalue-results-query-check-20261026.log",
+        "bytes": 185,
+        "sha256": "79f02a4c42b677eaa5451ff5108bb081b3cc4745925a6aa71bf638009a07142c"
+      }
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test multivalue --test named --test retrieval --test typed_multivalue_join_contract --test typed_multivalue_joins --test typed_multivalue_outer_contract --test typed_multivalue_outer_joins -j2 --locked --offline",
+      "exit_code": 0,
+      "terminal_session": 23572,
+      "private_log": {
+        "path": ".cache/mixed-multivalue-results-query-related-20261026.log",
+        "bytes": 17035,
+        "sha256": "cab8a1908294b21b9a8e2c25d98cb8c011ac2de2f8754463a2a4d04659c160d3"
+      },
+      "tests": 165
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test mixed_multivalue_results_contract -j2 --locked --offline",
+      "exit_code": 0,
+      "terminal_session": 35267,
+      "private_log": {
+        "path": ".cache/mixed-multivalue-results-query-contract-accepted-20261026.log",
+        "bytes": 1282,
+        "sha256": "746f831f23e414c402882ac6e3f39c0d2f2e050f8f0e4603a797f0f84c6908de"
+      },
+      "tests": 9
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --tests -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "terminal_session": 90300,
+      "private_log": {
+        "path": ".cache/mixed-multivalue-results-query-clippy-initial-20261026.log",
+        "bytes": 186,
+        "sha256": "71a2ad5fb792701fc05436d05969f54862f7eeaa037b3035cbac040d18541bb0"
+      }
+    },
+    {
+      "command": "cargo check -p tablecraft-query --lib --no-default-features -j2 --locked --offline",
+      "exit_code": 0,
+      "terminal_session": 50773,
+      "private_log": {
+        "path": ".cache/mixed-multivalue-results-query-minimal-20261026.log",
+        "bytes": 185,
+        "sha256": "8a1365a890051f76c539f1505616335615071790e56801bc914977a7cde91482"
+      }
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test collection_result_depth -j2 --locked --offline",
+      "exit_code": 0,
+      "terminal_session": 54197,
+      "tests": 5,
+      "new_unique_tests": 1,
+      "private_log": {
+        "path": ".cache/mixed-multivalue-results-query-depth-20261026.log",
+        "bytes": 789,
+        "sha256": "4ecd4ae743f71185524be3909049817970d1631230078db4efd8040019a75d61"
+      }
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --test collection_result_depth -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "terminal_session": 61030,
+      "private_log": {
+        "path": ".cache/mixed-multivalue-results-query-depth-clippy-20261026.log",
+        "bytes": 185,
+        "sha256": "99704284bd729d3796f93e63123bba7dc0f9eac9a527b20860ac1dd5f484fffc"
+      }
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test mixed_multivalue_results_contract -j2 --locked --offline",
+      "exit_code": 0,
+      "terminal_session": 20452,
+      "tests": 10,
+      "new_unique_tests": 1,
+      "private_log": {
+        "path": ".cache/mixed-multivalue-results-query-ieee-20261026.log",
+        "bytes": 1383,
+        "sha256": "1f36c6b0574c6cec0adb993c042b49878199ca99025315049995ef68d7040eee"
+      }
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --test mixed_multivalue_results_contract -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "terminal_session": 94496,
+      "private_log": {
+        "path": ".cache/mixed-multivalue-results-query-ieee-clippy-20261026.log",
+        "bytes": 185,
+        "sha256": "8bfc99d7c4e322d588702be6c8dfc66930f130baf38f8a1dee003c198dc3a6f5"
+      }
+    }
+  ],
+  "partial_process_evidence": {
+    "command": "cargo test -p tablecraft-query --test mixed_multivalue_results_contract --test mixed_multivalue_results --test typed_multivalue_outer_joins --test typed_multivalue_outer_contract --test typed_multivalue_joins --test typed_multivalue_join_contract --test collection_results --test collection_result_depth --test multivalue --test collection_members --test retrieval --test named --test external_named_sources --test external_table_sources -j2 --locked --offline",
+    "exit_code": 101,
+    "terminal_session": 43598,
+    "private_log": {
+      "path": ".cache/mixed-multivalue-results-query-primary-initial-20261026.log",
+      "bytes": 10584,
+      "sha256": "097ee5b2df6fd201fdcd90cc46c9260604a76b51a0eb3c6d35d017f71eee425a"
+    },
+    "accepted_completed_target_counts": {
+      "collection_members": 37,
+      "collection_result_depth": 4,
+      "collection_results": 10,
+      "external_named_sources": 10,
+      "external_table_sources": 8,
+      "mixed_multivalue_results": 3
+    },
+    "accepted_successful_functions": 72,
+    "failed_target": "mixed_multivalue_results_contract",
+    "failed_outcomes_included_in_unique_total": false,
+    "explanation": "The whole Cargo process did not pass. Six completed target suites passed before Cargo reached the new independent target with two authored expectation errors. Only those six successful target scopes contribute 72; the later clean nine-test retry supplies the independent evidence."
+  },
+  "excluded_diagnostics": [
+    {
+      "private_log": {
+        "path": ".cache/mixed-multivalue-results-query-primary-initial-20261026.log",
+        "bytes": 10584,
+        "sha256": "097ee5b2df6fd201fdcd90cc46c9260604a76b51a0eb3c6d35d017f71eee425a"
+      },
+      "reason": "Two newly authored expectations: TOP2 sorted9,7,7 retains both tied7 rows; a new .Value dereference of a materialized list resolves UnknownName. Owner corrected only these goldens, with no production change. The failed target outcomes are excluded; the six separately completed successful targets are scoped above.",
+      "private_authoring_snapshots": [
+        {
+          "path": ".cache/mixed-multivalue-results-exploration-20261026/0-values.rs",
+          "bytes": 6138,
+          "sha256": "b657da61b5c9e0b4231293ba8283e1747158a4e63ebecade12bcd89c5e867f70"
+        },
+        {
+          "path": ".cache/mixed-multivalue-results-exploration-20261026/1-boundaries.rs",
+          "bytes": 4495,
+          "sha256": "e27325c41f6f4e86c67a3d182135d7d27ead2b1fda0171e27435bcee75c925ab"
+        },
+        {
+          "path": ".cache/mixed-multivalue-results-exploration-20261026/2-mixed_multivalue_queries.rs",
+          "bytes": 6003,
+          "sha256": "4ac26d61850e43b2a1b82b0ba4445cfb632541f31c980e37423cc8e7a67cc64f"
+        },
+        {
+          "path": ".cache/mixed-multivalue-results-exploration-20261026/3-mixed-multivalue-results-query-primary-initial-20261026.log",
+          "bytes": 10584,
+          "sha256": "097ee5b2df6fd201fdcd90cc46c9260604a76b51a0eb3c6d35d017f71eee425a"
+        },
+        {
+          "path": ".cache/mixed-multivalue-results-exploration-20261026/authoring-corrections.json",
+          "bytes": 904,
+          "sha256": "a5576566d3fcfa65dcd037c030c72a57b696cc39278fafdcd0ef24aab70d8dc5"
+        }
+      ]
+    }
+  ],
+  "supporting_checks": [
+    {
+      "command": "cargo test -p tablecraft-query --test mixed_multivalue_results --test collection_results -j2 --locked --offline",
+      "exit_code": 0,
+      "terminal_session": 8446,
+      "tests": 13,
+      "unique_functions_added": 0,
+      "private_log": {
+        "path": ".cache/mixed-multivalue-results-query-basic-initial-20261026.log",
+        "bytes": 1739,
+        "sha256": "a9d19e8324798a97a92cbf92614c518940fc62d57411ab013786694e265fb090"
+      }
+    }
+  ],
+  "source_snapshot_scope": "Exact owning working-tree query files and feature document. These snapshots are not a complete compilation manifest or a committed executable claim. Full lib/tests lint predates only a module Rustdoc label update and the added depth/IEEE tests and their private fixture support; final scoped lib/depth-target and lib/independent-target lint cover those changes. Minimal check compiled final production. Native/CLI checks and original getter models are separate evidence.",
+  "source_snapshots": [
+    {
+      "path": "crates/query/tablecraft-query/src/execution/collections/admission.rs",
+      "bytes": 4163,
+      "sha256": "9cbc262d81f1b19fca82cbeba21714f7c2800d0fa58ab4b5bc28c8d8cae86992"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/collections/joined/mod.rs",
+      "bytes": 4035,
+      "sha256": "89a8a51800af5a296b53868627b11e494f8af9f8499060f7d71eb8de272a0fd2"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/collections/joined/table.rs",
+      "bytes": 10806,
+      "sha256": "871eaaa09deb4b8a674633a3cee887662f9b89a3d8c382733379e5c9643c9d05"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/collections/source.rs",
+      "bytes": 7622,
+      "sha256": "f1ff67af73a85a3c1f8d2e5bde5cac7793d9def6ca1caf40a86888a9ccf17648"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/multivalue/expansion.rs",
+      "bytes": 5189,
+      "sha256": "01d37d8cb62084e994ab5bd10edd9cdba995a791dd7a0a06e8d41ced895a5af8"
+    },
+    {
+      "path": "crates/query/tablecraft-query/tests/collection_results.rs",
+      "bytes": 15601,
+      "sha256": "e78d53235a1a024ea9f9f6046b1bc927b2ebea95cfd50a700f123c6651522332"
+    },
+    {
+      "path": "crates/query/tablecraft-query/tests/mixed_multivalue_results.rs",
+      "bytes": 8170,
+      "sha256": "53bb68c808b5778df5168b11cb5704ffd374729102d56cd39a209dc5acbb0c4a"
+    },
+    {
+      "path": "crates/query/tablecraft-query/tests/mixed_multivalue_results_contract.rs",
+      "bytes": 362,
+      "sha256": "2306131bda0cfab0ae281c4152a41aa91799a367e9af081ba41106c2a79035c6"
+    },
+    {
+      "path": "crates/query/tablecraft-query/tests/mixed_multivalue_results_contract/alignment.rs",
+      "bytes": 3967,
+      "sha256": "5aa0f8e36c4eab2512c30762bcf230b906e2a5c17c7079d3f4028a1efe859223"
+    },
+    {
+      "path": "crates/query/tablecraft-query/tests/mixed_multivalue_results_contract/boundaries.rs",
+      "bytes": 4765,
+      "sha256": "69f30e8a537c3573c469e551f7c4ee9f0a8c9e7741aeead0212e5011333acd57"
+    },
+    {
+      "path": "crates/query/tablecraft-query/tests/mixed_multivalue_results_contract/support.rs",
+      "bytes": 10964,
+      "sha256": "0a8b3cfe6a1373b90f2d37f55924172ad699a0f00daadbe3e3e06beaa89f9da9"
+    },
+    {
+      "path": "crates/query/tablecraft-query/tests/mixed_multivalue_results_contract/values.rs",
+      "bytes": 7975,
+      "sha256": "b9af2f073fa225cf1d233b1bb40b6ecc2a3af92e21d4093eb64499d9dde6845f"
+    },
+    {
+      "path": "crates/query/tablecraft-query/tests/typed_multivalue_join_contract/boundaries.rs",
+      "bytes": 6466,
+      "sha256": "9cfc4bda058b9ed56e127350aee595296a5e4e3fca9de8a83f6ba4221eff5eef"
+    },
+    {
+      "path": "crates/query/tablecraft-query/tests/typed_multivalue_outer_contract/boundaries.rs",
+      "bytes": 6459,
+      "sha256": "b32f61ab6222c263c5b6da2e248b81fc42fb35bff7470186cd3d2936875006d5"
+    },
+    {
+      "path": "docs/MULTIVALUE_QUERIES.md",
+      "bytes": 50777,
+      "sha256": "a4e341638bb0762c4ae74b3f84047dea1fd865df35b4b9f7d7e6fbc31d754a05"
+    },
+    {
+      "path": "crates/query/tablecraft-query/tests/collection_result_depth.rs",
+      "bytes": 13611,
+      "sha256": "c89e24be8ce71329a54cf8bfcb831b9e3d0ae292879ccc8ceca8ffb3926fc3ca"
+    }
+  ],
+  "limitations": [
+    "No new core Value, Source API, stored lookup execution or list coercion.",
+    "No new dereference on a list already materialized by a derived read; expose its scalar member within that read.",
+    "Typed whole-list grouping, aggregates, DISTINCT, UNION and scalar comparisons remain refused.",
+    "Complete selected lists are copied for expanded/matched rows under cumulative budgets; this is not a constant-memory profile.",
+    "Microsoft documents mixed whole/single-value query capability; exact native SQL/cardinality/absence/ordering qualification remains separate."
+  ],
+  "host_verification": "docs/testing/results/mixed-multivalue-results-host-2026-10-26.json"
+}

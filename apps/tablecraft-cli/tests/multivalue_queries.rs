@@ -739,7 +739,7 @@ fn unsupported_list_operations_and_output_exhaustion_publish_no_prefix() {
         "SELECT Id,Score FROM Items",
         "SELECT Count(Score) FROM Items",
         "SELECT DISTINCT Score FROM Items",
-        "SELECT Score,Score.Value FROM Items",
+        "SELECT DISTINCT Score,Score.Value FROM Items",
     ] {
         let mut args = vec!["query", "run", sql, "--database", database.path()];
         if sql != "SELECT Id,Score FROM Items" {
