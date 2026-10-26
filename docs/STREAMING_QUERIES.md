@@ -105,8 +105,10 @@ post-deduplication TOP, active-profile admission, all-arm preflight, logical EOF
 failures and sink/cancellation/quota controls. Scoped strict query linting passes. Three new native CLI controls pass within
 its 58-test progressive target; see the [implementation verification record](testing/results/read-query-progressive-distinct-2026-10-25.json).
 One obsolete grouped-query refusal was updated to an unsupported Double result;
-its failed batch is retained separately and not counted twice. Original-file CLI
-replay and native Access SQL qualification remain separate evidence.
+its failed batch is retained separately and not counted twice. The independent
+[184-control original-file replay](testing/PROGRESSIVE_DISTINCT.md) further checks
+10,432 rows and 18,208 cells against getter-derived models. Native Access SQL
+qualification remains separate.
 
 ## HAVING filters
 

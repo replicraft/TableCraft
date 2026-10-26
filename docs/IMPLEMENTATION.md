@@ -1,5 +1,17 @@
 # Implementation status
 
+## Independent original-file DISTINCT replay
+
+The [184-control replay](testing/PROGRESSIVE_DISTINCT.md) passes against four
+unchanged priority-family originals. Independent getter-derived models check
+10,432 rows and 18,208 cells across buffered/progressive execution, both arithmetic
+profiles and three stream batch sizes. Controls cover first-encounter tuples,
+Currency/Decimal, TOP, derived/grouped sources and empty UNION arms. Twenty-four
+expected refusals retain empty stdout. Eighteen artifacts and 47 selected query
+source snapshots remain unchanged; no SQL model or allowance correction was needed.
+This adds original-file evidence, without native Access qualification or wider
+progressive key admission.
+
 ## Progressive fixed-key DISTINCT
 
 Explicit streaming now admits terminal DISTINCT over proven Boolean, integral,
