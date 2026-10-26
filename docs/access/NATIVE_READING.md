@@ -359,5 +359,5 @@ controls for complete parent-key and child-table validation. Visible page ranges
 remain independent: even an empty page validates required whole collections.
 The browser retains cumulative controls, output remains buffered under its own
 ceiling, and attachment data stays encoded. See [request, scope and independent
-evidence](LARGER_NATIVE_COLLECTIONS.md#buffered-larger-cli-pages). Inspection and
+evidence](collections/LARGER_NATIVE_COLLECTIONS.md#buffered-larger-cli-pages). Inspection and
 ordinary scalar browsing defaults remain unchanged.

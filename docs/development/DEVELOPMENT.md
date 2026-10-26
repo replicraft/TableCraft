@@ -17,6 +17,7 @@ Run from the repository root:
 
 ```sh
 cargo fmt --all -- --check
+python3 scripts/check_documentation_links.py
 python3 scripts/check_dependency_boundaries.py
 python3 -m unittest discover -s scripts -p 'test_*.py'
 cargo check -p tablecraft-schema --no-default-features --locked

@@ -54,7 +54,7 @@ qualification recorded separately.
   [Modern ACE 16 histories](MODERN_SCALAR_HISTORIES.md) additionally check
   Large Number and 2019 Extended dates, historical fixed-prefix changes and
   scattered indexed row loading under cumulative controls. [Encrypted modern
-  histories](testing/ENCRYPTED_MODERN_HISTORIES.md) now compare both reference-
+  histories](ENCRYPTED_MODERN_HISTORIES.md) now compare both reference-
   and TableCraft-created ciphertexts, exact rows/queries, every decoded data
   page, SID digests and complete independent plaintext recovery.
   Larger explicit multivalue loads include 20,000/400 parents with 48,000/40,000
@@ -100,7 +100,7 @@ qualification recorded separately.
 - [Proven integral query keys](../query/keys/EXACT_QUERY_KEYS.md) use metered directories for
   GROUP/DISTINCT/UNION while retaining SQL comparison and first encounter order.
   Twelve-thousand-row controls fit finite work allowances. [Borrowed integral
-  equijoins](QUERY_EQUIJOINS.md) retain full input validation and original SQL
+  equijoins](../query/QUERY_EQUIJOINS.md) retain full input validation and original SQL
   comparison. Eligible equal-carrier joins now use bounded right-row directories;
   the [original replay](DIRECTORY_JOINS.md) checks 51,848 rows separately
   from Access SQL qualification.
@@ -972,7 +972,7 @@ large-file, policy and native qualification work remains explicit above.
 The explicit declared-arithmetic profile now applies the reviewed operator-specific
 Double selection to Decimal paired with Double, Currency, legacy Date or numeric
 Text. Default materialized arithmetic remains Decimal-first. [Paired result
-metadata](QUERY_RESULT_TYPES.md#runtime-profile-sensitive-division) preserves
+metadata](../query/QUERY_RESULT_TYPES.md#runtime-profile-sensitive-division) preserves
 static default UNION conversions while permitting the different declared carrier
 through nested, named, aggregate and crosstab composition. Metadata inference
 remains bounded and reads no source records.

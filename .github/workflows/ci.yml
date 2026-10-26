@@ -29,7 +29,9 @@ jobs:
           python-version: '3.12'
       - name: Check dependency boundaries
         run: python scripts/check_dependency_boundaries.py
-      - name: Test dependency policy guard
+      - name: Check local documentation links
+        run: python scripts/check_documentation_links.py
+      - name: Test repository guards
         run: python -m unittest discover -s scripts -p "test_*.py"
       - name: Check standalone core
         run: cargo check -p tablecraft-core --no-default-features --locked

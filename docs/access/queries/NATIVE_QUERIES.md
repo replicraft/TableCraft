@@ -670,7 +670,7 @@ explicit snapshot ceiling to complete parent-key and child-table loads. Native
 budgets stay cumulative and collection schemas/references still validate before
 cache publication. Defaults and the 100-value-per-parent multivalue policy remain
 unchanged. Metadata-only binding and selected-index refusal remain. See [larger
-collection limits and evidence](LARGER_NATIVE_COLLECTIONS.md).
+collection limits and evidence](../collections/LARGER_NATIVE_COLLECTIONS.md).
 
 Explicit decoded attachment columns now reuse one budget-bound inflater session.
 The workspace is charged once per decoded column; per-file body/type/copy work and
