@@ -239,6 +239,11 @@ pushdown. Native behavior is described in [native reads](../access/queries/NATIV
 Explicit host sources can additionally expose [scalar multivalue `.Value`
 expansion](collections/MULTIVALUE_QUERIES.md). Native hosts opt in through
 `NativeSource::with_multivalues()` or CLI `query run --database PATH --multivalues`.
+The collection-aware result API also exposes [retained named/derived list
+members](collections/MULTIVALUE_QUERIES.md#retained-members-of-named-and-derived-lists),
+preserving element text policies and proved collection lineage. Repeated aliases
+align; independent relation instances remain independent. Plans requiring this
+retained expansion use the typed API even when their final outputs are scalar.
 Direct single-table scalar-parent WHERE membership additionally retains parent
 cardinality, with explicit nullable set semantics and scope limits.
 Scalar-only parent WHERE membership also composes across qualified joins under

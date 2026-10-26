@@ -1,0 +1,404 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-26",
+  "scope": "Backend-neutral retained multivalue member access through static named and derived row-local typed query results, with scope-issued collection origin and actual element text policy",
+  "review_base_revision": "25a0dcd84203e0502ec7c70bfb851879eb1c7b90",
+  "source_state": "Working-tree snapshots at final verification, not a clean committed compilation manifest. Native/CLI tests and original replay are separate evidence.",
+  "unique_query_tests": 429,
+  "new_query_tests": 17,
+  "existing_query_regression_tests": 412,
+  "new_test_breakdown": {
+    "derived_multivalue_members": 4,
+    "derived_multivalue_members_contract": 12,
+    "collection_result_depth": 1
+  },
+  "target_counts": {
+    "collection_members": 37,
+    "collection_result_depth": 6,
+    "collection_results": 10,
+    "crosstab": 16,
+    "derived_multivalue_members": 4,
+    "derived_multivalue_members_contract": 12,
+    "external_named_sources": 10,
+    "external_table_sources": 8,
+    "lib": 63,
+    "mixed_multivalue_results": 3,
+    "mixed_multivalue_results_contract": 10,
+    "multivalue": 69,
+    "named": 6,
+    "named_crosstabs": 40,
+    "named_depth": 15,
+    "output_types": 7,
+    "progressive_count_execution": 13,
+    "progressive_derived_values": 12,
+    "retrieval": 64,
+    "typed_multivalue_join_contract": 10,
+    "typed_multivalue_outer_contract": 8,
+    "unavailable_columns": 6
+  },
+  "deduplication": "Final primary22 and disjoint related407 =429 unique passing functions. Earlier successful13/20 runs and failed/exploratory attempts add zero. Lib63 included once; all new wide controls are in final independent12.",
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-query --test collection_result_depth --test derived_multivalue_members --test derived_multivalue_members_contract -j2 --locked --offline",
+      "terminal_session": 82811,
+      "exit_code": 0,
+      "tests": 22,
+      "private_log": {
+        "path": ".cache/derived-multivalue-members-query-primary-final-20261026.log",
+        "bytes": 2899,
+        "sha256": "34eaccfbe2e4370c5835793c15652804d964a8b77f3c6982217574df675b64b6"
+      }
+    },
+    {
+      "command": "cargo test -p tablecraft-query --lib --test collection_results --test multivalue --test collection_members --test mixed_multivalue_results --test mixed_multivalue_results_contract --test typed_multivalue_join_contract --test typed_multivalue_outer_contract --test retrieval --test named --test named_crosstabs --test crosstab --test external_named_sources --test external_table_sources --test output_types --test unavailable_columns --test progressive_count_execution --test progressive_derived_values --test named_depth -j2 --locked --offline",
+      "terminal_session": 28104,
+      "exit_code": 0,
+      "tests": 407,
+      "private_log": {
+        "path": ".cache/derived-multivalue-members-query-regressions-20261026.log",
+        "bytes": 43829,
+        "sha256": "552033e01e3ebfaf56fe465d06e7cf97a1b97ade2a77fb2943ba7e81610a6e5a"
+      }
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --tests -j2 --locked --offline -- -D warnings",
+      "terminal_session": 23825,
+      "exit_code": 0,
+      "private_log": {
+        "path": ".cache/derived-multivalue-members-query-clippy-20261026.log",
+        "bytes": 768,
+        "sha256": "155420ad66fd0722e85079247c0f492454273f0db913cc52e309a09cb9bb7537"
+      }
+    },
+    {
+      "command": "cargo check -p tablecraft-query --lib --no-default-features -j2 --locked --offline",
+      "terminal_session": null,
+      "terminal_delivery": "exec_command completed directly without a live session",
+      "exit_code": 0,
+      "private_log": {
+        "path": ".cache/derived-multivalue-members-query-minimal-20261026.log",
+        "bytes": 185,
+        "sha256": "642a2cba9cea36577a954c06b5a19971e357263286d03cfec69b08fce2793562"
+      }
+    },
+    {
+      "command": "rustfmt --edition 2024 --check crates/query/tablecraft-query/src/binding/aliases/stability.rs crates/query/tablecraft-query/src/binding/crosstab/constants/tests.rs crates/query/tablecraft-query/src/binding/distinctrow.rs crates/query/tablecraft-query/src/binding/domain/input.rs crates/query/tablecraft-query/src/binding/editing.rs crates/query/tablecraft-query/src/binding/grouping/validation.rs crates/query/tablecraft-query/src/binding/mod.rs crates/query/tablecraft-query/src/binding/multivalue/displayed.rs crates/query/tablecraft-query/src/binding/multivalue/item.rs crates/query/tablecraft-query/src/binding/multivalue/joined.rs crates/query/tablecraft-query/src/binding/multivalue/projection.rs crates/query/tablecraft-query/src/binding/named.rs crates/query/tablecraft-query/src/binding/projection/collect.rs crates/query/tablecraft-query/src/binding/projection/relation.rs crates/query/tablecraft-query/src/binding/relation.rs crates/query/tablecraft-query/src/binding/relation/derived.rs crates/query/tablecraft-query/src/binding/relation/table.rs crates/query/tablecraft-query/src/binding/retrieval.rs crates/query/tablecraft-query/src/binding/retrieval/body.rs crates/query/tablecraft-query/src/execution/collections/admission.rs crates/query/tablecraft-query/src/execution/collections/execute.rs crates/query/tablecraft-query/src/execution/collections/joined/derived.rs crates/query/tablecraft-query/src/execution/collections/joined/mod.rs crates/query/tablecraft-query/src/execution/collections/joined/relation.rs crates/query/tablecraft-query/src/execution/collections/joined/table.rs crates/query/tablecraft-query/src/execution/collections/source.rs crates/query/tablecraft-query/src/execution/crosstab/policy.rs crates/query/tablecraft-query/src/execution/multivalue/expansion.rs crates/query/tablecraft-query/src/execution/progressive/input/plan.rs crates/query/tablecraft-query/src/execution/relation.rs crates/query/tablecraft-query/src/plan.rs crates/query/tablecraft-query/src/plan/collection_origin.rs crates/query/tablecraft-query/src/plan/collections.rs crates/query/tablecraft-query/src/plan/text_policy.rs crates/query/tablecraft-query/tests/collection_result_depth.rs crates/query/tablecraft-query/tests/derived_multivalue_members.rs crates/query/tablecraft-query/tests/derived_multivalue_members_contract.rs crates/query/tablecraft-query/tests/derived_multivalue_members_contract/boundaries.rs crates/query/tablecraft-query/tests/derived_multivalue_members_contract/origins.rs crates/query/tablecraft-query/tests/derived_multivalue_members_contract/policies.rs crates/query/tablecraft-query/tests/derived_multivalue_members_contract/support.rs crates/query/tablecraft-query/tests/derived_multivalue_members_contract/wide.rs crates/query/tablecraft-query/tests/mixed_multivalue_results_contract/boundaries.rs",
+      "exit_code": 0,
+      "files": 43,
+      "private_log": {
+        "path": ".cache/derived-multivalue-members-query-fmt-20261026.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "excluded_failed_attempts": [
+    {
+      "terminal_session": 35055,
+      "exit_code": 101,
+      "private_log": {
+        "path": ".cache/derived-multivalue-members-query-primary-initial-20261026.log",
+        "bytes": 1868,
+        "sha256": "1bcc880abe934b5299f0392fbe9aeb4135193bf8a98f2e9959a6495e6b57836d"
+      },
+      "reason": "Own new hidden <> golden incorrectly expected false for an empty present collection. Existing lowering is NOT Any(Equal), true for empty. Corrected only the authored golden and added positive > alignment control; no production answer correction. Two functions passed, one failed; independent target was not reached."
+    },
+    {
+      "terminal_session": 11007,
+      "exit_code": 101,
+      "private_log": {
+        "path": ".cache/derived-multivalue-members-query-depth-20261026.log",
+        "bytes": 1473,
+        "sha256": "27197f51df8edca1e541f5fdceb10fd44757e603079661466c40f48ddccee136"
+      },
+      "reason": "Five depth functions passed, including new retained-member named50 on one MiB. An existing sibling function failed because two parallel diagnostic filenames collided at create_new. Filename now includes static test name as well as PID and timestamp; no timeout wait/reap or production limit change.",
+      "preserved_test_source": {
+        "path": ".cache/derived-multivalue-members-depth-before-unique-diagnostic-20261026.rs",
+        "bytes": 15540,
+        "sha256": "dd4c8bef4bbabb8c8c9845b2d5899c3374ba30b1e4f5bf6a369eacd346cdf167"
+      }
+    }
+  ],
+  "superseded_successful_checkpoints": [
+    {
+      "terminal_session": 14779,
+      "exit_code": 0,
+      "command": "cargo check -p tablecraft-query --lib -j2 --locked --offline",
+      "private_log": {
+        "path": ".cache/derived-multivalue-members-query-check-initial-20261026.log",
+        "bytes": 297,
+        "sha256": "3d7fb0bd68a14f58ea186e02dc4c777be3678967ddfe9c8fb73f275a9b8ee731"
+      }
+    },
+    {
+      "terminal_session": 49669,
+      "exit_code": 0,
+      "tests": 13,
+      "private_log": {
+        "path": ".cache/derived-multivalue-members-query-primary-retry-20261026.log",
+        "bytes": 1918,
+        "sha256": "0a7d6a6dbb77745ee43cb2901ce956b2837d8c35d057ee88cb61f3216eb6623d"
+      }
+    },
+    {
+      "terminal_session": 23215,
+      "exit_code": 0,
+      "tests": 20,
+      "private_log": {
+        "path": ".cache/derived-multivalue-members-query-primary-accepted-20261026.log",
+        "bytes": 2707,
+        "sha256": "01d219e269089b53d3303b2f3c7e3da71f345b7375695d2ed5f965ecdc2d5560"
+      }
+    }
+  ],
+  "review_correction": "Read-only review found appended virtual members were incorrectly counted against the existing logical256 source width. Separate private retained-member slots are now bounded at256 independently, with real allocation charges; native virtual-slot accounting and public logical policy remain unchanged. Independent wide129 aliases plus finalX128.Value and logical256/257 controls pass. Frozen old CLI default wide baseline was checked-refused, so no prior end-to-end wide CLI success is claimed.",
+  "exploratory_wide_baseline": {
+    "path": ".cache/derived-multivalue-members-wide-baseline-20261026.json",
+    "bytes": 2333,
+    "sha256": "7732c9d0ef9e2096299ffa59b631b98cde74b29865e6a150b771a17c2a2ccd91"
+  },
+  "post_test_changes": "Only spaces around == in one matches! test guard after final strict; semantic tokens unchanged, then scoped rustfmt check passed. No production edit after final primary/related tests.",
+  "acceptance": [
+    "Same-origin aliases align by child position; independent bound named/selfjoin relation occurrences remain independent without payload equality.",
+    "Element descriptors and Required text-policy identities survive reordering and aliases; bare projection is inert and provider activation remains consumer-owned.",
+    "None, present empty and present NULL-child lists remain distinct; stored IEEE bits survive independent member expansion while scalar nonfinite use refuses.",
+    "Inner eager selected projections and EOF precede outer expansion/filter/TOP; separate hidden atoms keep established membership semantics.",
+    "Ordinary scalar/progressive APIs refuse retained-list plans before scans, including scalar-only final member output; typed API runs them without Source changes.",
+    "One-MiB subprocess proof executes50 static named retained-list definitions and refuses51 before scans; existing mixed/named/joined absolute depth controls also pass.",
+    "Every observed cancellation point, typed quotas, sticky visitor/source failure, retry, namespace ownership, external root registry and Count8KiB compatibility are covered."
+  ],
+  "limitations": [
+    "No new list equality, grouping, aggregates, DISTINCT, UNION, streaming collection service, Core Value or Source API.",
+    "Native Microsoft Access SQL alias-lineage, edge-result and provider equivalence qualification remains unrun; these are explicit TableCraft composition contracts.",
+    "Typed execution remains cumulatively budgeted materialization; repeated whole-list copies and retained backing allocations are charged, not a constant-memory claim."
+  ],
+  "source_and_test_snapshots": [
+    {
+      "path": "crates/query/tablecraft-query/src/binding/aliases/stability.rs",
+      "bytes": 6408,
+      "sha256": "8f06ec386fa75eff6e2536d7d652f750490ace89e33a2078eb138f72b43f46b6"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/crosstab/constants/tests.rs",
+      "bytes": 6544,
+      "sha256": "bba62a8991e93ecae58b741699f32d86c869f310b1a2018f8a4aed6c02b9d887"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/distinctrow.rs",
+      "bytes": 3170,
+      "sha256": "d0a6dd172a15250f52f39b3d735b904c266a3c90f4e0f1b13795cf5b3d5de672"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/domain/input.rs",
+      "bytes": 2365,
+      "sha256": "48dbe3480f0e4bc49bd20a6b7f6a6ad1ab3f1faf3dbd10786cd9187356b01b08"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/editing.rs",
+      "bytes": 2921,
+      "sha256": "dc2085c333fb8baeae9d02d35b22ea6d21b93cdf9d9a7851f1829c7936f6d772"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/grouping/validation.rs",
+      "bytes": 8138,
+      "sha256": "6451b7fe7ef8627220dedf1cd04f95ed5b55f4991c8e7c270ae7562c3efd5880"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/mod.rs",
+      "bytes": 12133,
+      "sha256": "a708abe64d78b39c9f991745711476d0e93d2ed82c631c425143bdb8c9132611"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/multivalue/displayed.rs",
+      "bytes": 2509,
+      "sha256": "44cee202b682a834f76f664e4152c9e9314476c5bfeac4ddd328b2518e6fdf13"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/multivalue/item.rs",
+      "bytes": 8694,
+      "sha256": "b6232c578df294acc0616c06eadfb1efb54dc7f8baea1b294c07ad91dada2387"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/multivalue/joined.rs",
+      "bytes": 5658,
+      "sha256": "a1bae0f0cae034066566458a8eb1f65e22e852019d91bb4b4de738ad5de1fffc"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/multivalue/projection.rs",
+      "bytes": 2033,
+      "sha256": "60258c61f533667bb1f5b76f2e598b511269fdbc287d6badc74e0a684cf96e05"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/named.rs",
+      "bytes": 5302,
+      "sha256": "0ae34864e4b30e6052b68ec19eeb223da0db007d04a4b3338f6ae96ede55e63e"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/projection/collect.rs",
+      "bytes": 8236,
+      "sha256": "b4a38fa5d5abcbf93a00c783fa8d0b75e8368609af9aca5dcc7ba60735b97be9"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/projection/relation.rs",
+      "bytes": 2404,
+      "sha256": "fca1bdd3b9d61638b7c257f7bf36e707e9bd0d094054652f030f1e3ac697142c"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/relation.rs",
+      "bytes": 7391,
+      "sha256": "0e603dfd8daf32dd3f1dc8ef0577813045b05f7d7a67d4c65eb70f0806b5d1ff"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/relation/derived.rs",
+      "bytes": 4335,
+      "sha256": "f0990951d10774dc228e08a208dc219d7a653e1aea6e2eeb67955bcb555138db"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/relation/table.rs",
+      "bytes": 10982,
+      "sha256": "081d1c128a852f804db212a2ba8d71d845542f6c0a042be9f7c2a3fd050c4f4a"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/retrieval.rs",
+      "bytes": 17655,
+      "sha256": "fcdd029204c858468020db975224de9ce27b292cac44f1a9bcabff0a680a33c4"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/retrieval/body.rs",
+      "bytes": 7563,
+      "sha256": "c6c9de427f708b6d96656c45cae599007d07cbd29637a9e5df1a2899e1f8af6d"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/collections/admission.rs",
+      "bytes": 4228,
+      "sha256": "597f99244675a8d53a1b867f466b32bf7ba9a9820f2e81b840ebf68f4de9897a"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/collections/execute.rs",
+      "bytes": 6781,
+      "sha256": "5c4332bebc06085b1f5c7cef3af290197b2da045b940948011faeb97ade419b5"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/collections/joined/derived.rs",
+      "bytes": 7936,
+      "sha256": "58f55bb022d26090284d276fcd989e474aff0901c24b09c518e7d04e2e8b3fa8"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/collections/joined/mod.rs",
+      "bytes": 4048,
+      "sha256": "ad501c510a3ccb7a19b6a2baf03cfcb811b75d37a6d6d5b2bdb1b7046e323bc5"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/collections/joined/relation.rs",
+      "bytes": 8434,
+      "sha256": "acc507c53f5694f5e9748b0c096f0bca85257589dc6a800ec863d1fb6ed3b0da"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/collections/joined/table.rs",
+      "bytes": 10817,
+      "sha256": "db10b4bc47b041b0d17fdf9ced220ddb37f2cb2329c854d287473e5930c217b7"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/collections/source.rs",
+      "bytes": 7777,
+      "sha256": "6196905605026f813c6ef451a2bea1cff67622d543a3f384e6b14e18bc8fc2f8"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/crosstab/policy.rs",
+      "bytes": 2320,
+      "sha256": "7b78b75784151d66ae2c98d42cf4221fd74b8e2a52f1f22939cf57aab14cdae1"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/multivalue/expansion.rs",
+      "bytes": 7010,
+      "sha256": "a34e6592bc27ad2e11c1f75622f2aa9402246f4335debf67c629bad231cc775f"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/progressive/input/plan.rs",
+      "bytes": 1757,
+      "sha256": "5c2a7baedbb60043f058e503a8a9f0884245b1ef657c2a5e330d78746ef8324b"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/relation.rs",
+      "bytes": 8924,
+      "sha256": "feffaa573eac3328995915b76bc76f2e8e548245ef4e7fa3db36a7b39be514bf"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/plan.rs",
+      "bytes": 8730,
+      "sha256": "38862a2136f1c44e345a9466c3dd3eefbb78fead2431ce119b9f568370d4f827"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/plan/collection_origin.rs",
+      "bytes": 824,
+      "sha256": "0da8ba15834f7d0fecbb6d851c0fd6cb0836b6cc79f63c665bb74025188d1f9d"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/plan/collections.rs",
+      "bytes": 1504,
+      "sha256": "7176cbd391facf71fce30c562558d1f8fc046ad7ae06fdb33f70058ca6056c1e"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/plan/text_policy.rs",
+      "bytes": 2630,
+      "sha256": "94967a3447507321aba60717484840a8b73e75ec8d5668626429aca28425fac8"
+    },
+    {
+      "path": "crates/query/tablecraft-query/tests/collection_result_depth.rs",
+      "bytes": 15552,
+      "sha256": "a35fda96d005b04c06e3d311981d632b47cecfd5898d3149fa9871d98afbb2bc"
+    },
+    {
+      "path": "crates/query/tablecraft-query/tests/derived_multivalue_members.rs",
+      "bytes": 10150,
+      "sha256": "e20d40d63a1b4dc1012bf8e085434dbe3ed158a7cbb5ce0eef2fa5a97dcb1074"
+    },
+    {
+      "path": "crates/query/tablecraft-query/tests/derived_multivalue_members_contract.rs",
+      "bytes": 446,
+      "sha256": "259483444bb1c4c2fe173635afa37dc9ed991acada38ac10d3ea022bcf0a1209"
+    },
+    {
+      "path": "crates/query/tablecraft-query/tests/derived_multivalue_members_contract/boundaries.rs",
+      "bytes": 5354,
+      "sha256": "81506f9970272b71da5e2cbb460384737d480cddad827090f725b7e54d473a0d"
+    },
+    {
+      "path": "crates/query/tablecraft-query/tests/derived_multivalue_members_contract/origins.rs",
+      "bytes": 5053,
+      "sha256": "c32a4a34fa31faa72968791592b555b1adfe940f62b248ca1fcb7ab66b0c652d"
+    },
+    {
+      "path": "crates/query/tablecraft-query/tests/derived_multivalue_members_contract/policies.rs",
+      "bytes": 5064,
+      "sha256": "152bd582b35f8ac65a8bea0efbe96e807fed9b75ae4d70a223429568c5db7cba"
+    },
+    {
+      "path": "crates/query/tablecraft-query/tests/derived_multivalue_members_contract/support.rs",
+      "bytes": 12875,
+      "sha256": "661e534b4761370d4f8f968d1122ba2f37ae638590f95c54cab3569433aa8e75"
+    },
+    {
+      "path": "crates/query/tablecraft-query/tests/derived_multivalue_members_contract/wide.rs",
+      "bytes": 3165,
+      "sha256": "71c05f14d0fec63073f5a0b38ad69482b527d99b682af0fc492d583f678c978e"
+    },
+    {
+      "path": "crates/query/tablecraft-query/tests/mixed_multivalue_results_contract/boundaries.rs",
+      "bytes": 4776,
+      "sha256": "9db575998eba3895b2b14cf57272ba03affe3854b257241144bdbd1ea2147c68"
+    }
+  ],
+  "owning_docs": [
+    {
+      "path": "docs/query/collections/MULTIVALUE_QUERIES.md",
+      "bytes": 53985,
+      "sha256": "bb7f4d6430e4408db36224a4e49c276c380d0d4cab199854d14e4f076071deb9"
+    },
+    {
+      "path": "docs/query/QUERY_EXECUTION.md",
+      "bytes": 97782,
+      "sha256": "bb7e7961e66cd25836d81cecc0658a793a2b1957f25b3a8d00a935d92d04f871"
+    }
+  ]
+}

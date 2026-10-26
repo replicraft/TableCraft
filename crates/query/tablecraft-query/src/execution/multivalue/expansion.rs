@@ -1,7 +1,9 @@
 //! Shared child alignment and empty-parent expansion for collection scans.
 use super::Runtime;
 use crate::execution::cell::CellValue;
-use crate::{QueryError, profile::SOURCE_SCHEMA_POLICY, source::MultivalueList};
+use crate::{
+    QueryError, plan::CollectionOrigin, profile::SOURCE_SCHEMA_POLICY, source::MultivalueList,
+};
 use tablecraft_core::values::Value;
 use tablecraft_expressions::numeric::OperandDeclaration;
 use tablecraft_schema::{CollectionMember, Column, validate_row};
@@ -70,6 +72,59 @@ impl Runtime<'_, '_> {
             groups: groups.len(),
         })
     }
+
+    pub(in crate::execution) fn retained_collection_expansion<'a>(
+        &mut self,
+        schema: &'a [Column],
+        origins: &[CollectionOrigin],
+        expansion: &[usize],
+    ) -> Result<Expansion<'a>, QueryError> {
+        if schema.len() != origins.len() {
+            return Err(QueryError::Width);
+        }
+        self.budget.charge_allocation(
+            expansion.len() as u64,
+            (size_of::<CollectionOrigin>() + size_of::<usize>() + size_of::<&Column>()) as u64,
+        )?;
+        let mut groups = Vec::new();
+        let mut columns = Vec::new();
+        let mut group_for = Vec::new();
+        groups
+            .try_reserve_exact(expansion.len())
+            .map_err(|_| QueryError::Allocation)?;
+        columns
+            .try_reserve_exact(expansion.len())
+            .map_err(|_| QueryError::Allocation)?;
+        group_for
+            .try_reserve_exact(expansion.len())
+            .map_err(|_| QueryError::Allocation)?;
+        for index in expansion {
+            self.tick()?;
+            let origin = *origins.get(*index).ok_or(QueryError::Source)?;
+            let mut found = None;
+            for (position, other) in groups.iter().enumerate() {
+                self.tick()?;
+                if *other == origin {
+                    found = Some(position);
+                    break;
+                }
+            }
+            let group = if let Some(group) = found {
+                group
+            } else {
+                groups.push(origin);
+                groups.len() - 1
+            };
+            columns.push(schema.get(*index).ok_or(QueryError::Source)?);
+            group_for.push(group);
+        }
+        Ok(Expansion {
+            columns,
+            group_for,
+            groups: groups.len(),
+        })
+    }
+
     pub(in crate::execution) fn expand_collection_row(
         &mut self,
         scalar: &[CellValue],

@@ -54,6 +54,7 @@ pub(super) fn prepare_input<'a>(
     let mut binder = Binder {
         inherited_read_depth,
         pending_named_depth: 0,
+        next_relation_occurrence: 0,
         binding_depth,
         aliases: Default::default(),
         source,

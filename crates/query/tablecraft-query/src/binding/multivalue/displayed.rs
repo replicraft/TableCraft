@@ -12,6 +12,12 @@ fn ascii(left: &str, right: &str) -> Ordering {
         .cmp(right.bytes().map(|byte| byte.to_ascii_lowercase()))
 }
 pub(super) fn collection(left: &Slot, right: &Slot) -> Ordering {
+    match (left.collection_origin, right.collection_origin) {
+        (Some(left), Some(right)) => return left.compare(right),
+        (Some(_), None) => return Ordering::Greater,
+        (None, Some(_)) => return Ordering::Less,
+        (None, None) => {}
+    }
     let qualifier = match (left.qualifier.as_deref(), right.qualifier.as_deref()) {
         (Some(left), Some(right)) => ascii(left, right),
         (None, None) => Ordering::Equal,

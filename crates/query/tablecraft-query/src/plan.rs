@@ -23,6 +23,8 @@ use tablecraft_expressions::numeric::OperandDeclaration;
 use tablecraft_schema::Column;
 use tablecraft_sql::select::{BinaryOperator, Expression, JoinKind, Quantifier, UnaryOperator};
 
+mod collection_origin;
+pub(crate) use collection_origin::CollectionOrigin;
 pub(crate) mod identity;
 mod parent;
 pub(crate) mod text_policy;
@@ -52,6 +54,10 @@ pub(crate) struct Slot {
     pub available: bool,
     // Source metadata position, or dense collection-output position in a derived read.
     pub collection_index: Option<usize>,
+    // Proved lineage: aliases share it, independently bound leaves do not.
+    pub collection_origin: Option<CollectionOrigin>,
+    // Appended derived-member namespace, separate from the logical schema width.
+    pub retained_member: bool,
     // Virtual .Value slot: excluded from ordinary name/wildcard resolution.
     pub member: Option<MemberSlot>,
     pub qualifier: Option<String>,
@@ -105,7 +111,11 @@ pub(crate) enum RelationNode {
         kind: JoinKind,
         condition: Expr,
     },
-    Derived(Box<ReadPlan>),
+    Derived {
+        read: Box<ReadPlan>,
+        // Dense retained list positions, in the pruned virtual scalar order.
+        expansion: Vec<usize>,
+    },
 }
 pub(crate) struct ReadPlan {
     pub owner: crate::external_sources::SourceNamespace,
@@ -155,6 +165,8 @@ pub(crate) enum Expr {
     Multivalue {
         index: usize,
         output_type: OutputType,
+        text_policy: TextPolicy,
+        origin: CollectionOrigin,
     },
     DomainCall(DomainFunction, Vec<Expr>),
     Literal(Expression),

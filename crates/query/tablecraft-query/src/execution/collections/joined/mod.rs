@@ -1,4 +1,5 @@
 //! Typed relation sidecars retain whole lists beside joined or expanded scalar rows.
+mod derived;
 mod missing;
 mod relation;
 mod table;

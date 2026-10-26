@@ -1,3 +1,4 @@
+mod derived;
 mod table;
 
 use super::Binder;
@@ -5,7 +6,7 @@ use crate::profile::SOURCE_SCHEMA_POLICY;
 use crate::{
     QueryError,
     external_sources::SourceNamespace,
-    plan::{ProfiledType, Relation, RelationNode, Slot},
+    plan::{Relation, RelationNode, Slot},
 };
 use tablecraft_sql::select::{Expression, JoinKind, TableSource};
 
@@ -45,35 +46,7 @@ impl Binder<'_> {
                 }
                 // Derived sources are not lateral; outer references are deliberately rejected.
                 let read = self.read(query, &[], depth + 1)?;
-                Relation {
-                    slots: read
-                        .names
-                        .iter()
-                        .zip(&read.text_policies)
-                        .zip(&read.output_types)
-                        .zip(&read.declarations)
-                        .enumerate()
-                        .map(|(index, (((n, policy), _), declaration))| Slot {
-                            output_type: ProfiledType {
-                                materialized: read.materialized_types[index],
-                                declared: read.declared_types[index],
-                            },
-                            declaration: *declaration,
-                            text_policy: *policy,
-                            available: !read.output_types[index].is_multivalue(),
-                            collection_index: read.output_types[index].is_multivalue().then(|| {
-                                read.output_types[..index]
-                                    .iter()
-                                    .filter(|output| output.is_multivalue())
-                                    .count()
-                            }),
-                            member: None,
-                            name: n.clone(),
-                            qualifier: alias.as_ref().map(|a| a.as_str().into()),
-                        })
-                        .collect(),
-                    node: RelationNode::Derived(Box::new(read)),
-                }
+                return self.derived_relation(read, alias.as_ref().map(|name| name.as_str()));
             }
             TableSource::Group { source, alias } => {
                 if alias
@@ -153,7 +126,7 @@ impl Binder<'_> {
     }
 
     fn finish_relation(&mut self, relation: Relation) -> Result<Relation, QueryError> {
-        if relation.slots.len() > SOURCE_SCHEMA_POLICY.max_columns {
+        if !valid_slot_width(relation.slots.iter()) {
             return Err(QueryError::StructureLimit);
         }
         self.charge(
@@ -171,7 +144,7 @@ impl Binder<'_> {
     }
 }
 pub(super) fn combine_slots(left: &[Slot], right: &[Slot]) -> Result<Vec<Slot>, QueryError> {
-    if left.len() + right.len() > SOURCE_SCHEMA_POLICY.max_columns {
+    if !valid_slot_width(left.iter().chain(right)) {
         return Err(QueryError::StructureLimit);
     }
     // Repeated relation qualifiers would make qualified lookup unstable.
@@ -209,10 +182,28 @@ pub(super) fn combine_slots(left: &[Slot], right: &[Slot]) -> Result<Vec<Slot>, 
                 text_policy: slot.text_policy,
                 available: slot.available,
                 collection_index,
+                collection_origin: slot.collection_origin,
+                retained_member: slot.retained_member,
                 member: slot.member.clone(),
                 name: slot.name.clone(),
                 qualifier: slot.qualifier.clone(),
             })
         })
         .collect()
+}
+
+// Every logical output may add at most one retained virtual Value slot. The
+// public source/output ceiling remains unchanged; only the private namespace
+// receives this separate, checked allowance.
+fn valid_slot_width<'a>(slots: impl Iterator<Item = &'a Slot>) -> bool {
+    let mut logical = 0usize;
+    let mut retained = 0usize;
+    for slot in slots {
+        if slot.retained_member {
+            retained += 1;
+        } else {
+            logical += 1;
+        }
+    }
+    logical <= SOURCE_SCHEMA_POLICY.max_columns && retained <= SOURCE_SCHEMA_POLICY.max_columns
 }

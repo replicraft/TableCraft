@@ -261,7 +261,7 @@ impl Runtime<'_, '_> {
         Ok(())
     }
 
-    fn copy_joined_criterion(
+    pub(super) fn copy_joined_criterion(
         &mut self,
         list: &dyn MultivalueList,
     ) -> Result<MultivalueValue, QueryError> {

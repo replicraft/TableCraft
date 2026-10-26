@@ -205,6 +205,8 @@ impl Binder<'_> {
                 text_policy: *policy,
                 available: true,
                 collection_index: None,
+                collection_origin: None,
+                retained_member: false,
                 member: None,
                 name: self.copy_name(name)?,
                 qualifier: None,

@@ -47,6 +47,8 @@ impl Binder<'_> {
                     Some(Expr::Multivalue {
                         index: slot.collection_index.ok_or(QueryError::Source)?,
                         output_type,
+                        text_policy: slot.text_policy,
+                        origin: slot.collection_origin.ok_or(QueryError::Unsupported)?,
                     })
                 } else {
                     None

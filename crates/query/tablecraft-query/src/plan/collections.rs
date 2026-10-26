@@ -2,6 +2,16 @@
 use super::{Expr, ReadNode, ReadPlan, Relation, RelationNode};
 
 impl ReadPlan {
+    pub(crate) fn collection_origin(&self, output: usize) -> Option<super::CollectionOrigin> {
+        let ReadNode::Select(select) = &self.node else {
+            return None;
+        };
+        match select.projection.get(output)? {
+            Expr::Multivalue { origin, .. } => Some(*origin),
+            _ => None,
+        }
+    }
+
     pub(crate) fn has_collections(&self) -> bool {
         match &self.node {
             ReadNode::Select(select) => {
@@ -21,7 +31,7 @@ impl ReadPlan {
 
 fn relation_has_collections(relation: &Relation) -> bool {
     match &relation.node {
-        RelationNode::Derived(read) => read.has_collections(),
+        RelationNode::Derived { read, .. } => read.has_collections(),
         RelationNode::Cross(left, right) | RelationNode::Join { left, right, .. } => {
             relation_has_collections(left) || relation_has_collections(right)
         }

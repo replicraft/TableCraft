@@ -133,10 +133,10 @@ fn scalar_services_and_remaining_typed_shapes_keep_their_explicit_boundaries() {
             "SELECT A,A.Value FROM L UNION ALL SELECT A,A.Value FROM R",
             QueryError::Unsupported,
         ),
-        // A materialized list exports no outer scalar member named A.Value.
+        // Member access is supported, but typed DISTINCT remains unsupported.
         (
-            "SELECT Q.A.Value,Q.A FROM (SELECT A FROM L) Q",
-            QueryError::UnknownName,
+            "SELECT DISTINCT Q.A.Value,Q.A FROM (SELECT A FROM L) Q",
+            QueryError::Unsupported,
         ),
     ] {
         let data = Data::fixture();

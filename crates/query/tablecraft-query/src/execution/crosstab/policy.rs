@@ -66,7 +66,7 @@ impl Runtime<'_, '_> {
                 let right = self.base_policy_source(right)?;
                 Ok(left && right)
             }
-            RelationNode::Derived(_) => Ok(false),
+            RelationNode::Derived { .. } => Ok(false),
             RelationNode::Unit => Ok(true),
         }
     }

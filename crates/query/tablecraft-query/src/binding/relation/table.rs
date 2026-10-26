@@ -4,7 +4,7 @@ use crate::{
     OutputType, QueryError, Source,
     binding::source_schema,
     external_sources::SourceNamespace,
-    plan::{MemberSlot, ProfiledType, Relation, RelationNode, Slot},
+    plan::{CollectionOrigin, MemberSlot, ProfiledType, Relation, RelationNode, Slot},
     profile::SOURCE_SCHEMA_POLICY,
     source::TextPolicy,
 };
@@ -129,6 +129,11 @@ impl Binder<'_> {
                 })
                 .sum(),
         )?;
+        let occurrence = if multivalues.is_empty() {
+            None
+        } else {
+            Some(self.collection_occurrence()?)
+        };
         Ok(Relation {
             slots: columns
                 .iter()
@@ -143,30 +148,40 @@ impl Binder<'_> {
                         .map_or(TextPolicy::Default, TextPolicy::Column),
                     available: true,
                     collection_index: None,
+                    collection_origin: None,
+                    retained_member: false,
                     member: None,
                     name: c.name().into(),
                     qualifier: Some(table.alias.as_ref().unwrap_or(&table.name).as_str().into()),
                 })
                 .chain(unavailable.iter().map(|name| {
+                    let index = multivalues.iter().position(|column| {
+                        SOURCE_SCHEMA_POLICY
+                            .names
+                            .equals(column.name(), name.as_str())
+                    });
                     Slot {
                         output_type: ProfiledType::uniform(
-                            multivalues
-                                .iter()
-                                .find(|column| {
-                                    SOURCE_SCHEMA_POLICY
-                                        .names
-                                        .equals(column.name(), name.as_str())
-                                })
-                                .map_or(OutputType::Dynamic, OutputType::multivalue),
+                            index.map_or(OutputType::Dynamic, |index| {
+                                OutputType::multivalue(&multivalues[index])
+                            }),
                         ),
                         declaration: None,
-                        text_policy: TextPolicy::Default,
+                        text_policy: index
+                            .and_then(|index| {
+                                multivalue_text_collations.get(index).copied().flatten()
+                            })
+                            .map_or(TextPolicy::Default, TextPolicy::Column),
                         available: false,
-                        collection_index: multivalues.iter().position(|column| {
-                            SOURCE_SCHEMA_POLICY
-                                .names
-                                .equals(column.name(), name.as_str())
+                        collection_index: index,
+                        collection_origin: index.zip(occurrence).map(|(member, occurrence)| {
+                            CollectionOrigin {
+                                namespace,
+                                occurrence,
+                                member,
+                            }
                         }),
+                        retained_member: false,
                         member: None,
                         name: name.as_str().into(),
                         qualifier: Some(
@@ -185,6 +200,12 @@ impl Binder<'_> {
                             .map_or(TextPolicy::Default, TextPolicy::Column),
                         available: true,
                         collection_index: None,
+                        collection_origin: occurrence.map(|occurrence| CollectionOrigin {
+                            namespace,
+                            occurrence,
+                            member: index,
+                        }),
+                        retained_member: false,
                         member: Some(MemberSlot::Value),
                         name: column.name().into(),
                         qualifier: Some(
@@ -205,6 +226,8 @@ impl Binder<'_> {
                             .map_or(TextPolicy::Default, TextPolicy::Column),
                         available: true,
                         collection_index: None,
+                        collection_origin: None,
+                        retained_member: false,
                         member: Some(MemberSlot::Named(member.column().name().into())),
                         name: member.collection().as_str().into(),
                         qualifier: Some(

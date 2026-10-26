@@ -219,7 +219,7 @@ impl Binder<'_> {
                     self.replace_item(condition, binding, target, capture, depth + 1)?;
                 }
             }
-            RelationNode::Unit | RelationNode::Table { .. } | RelationNode::Derived(_) => {}
+            RelationNode::Unit | RelationNode::Table { .. } | RelationNode::Derived { .. } => {}
         }
         Ok(())
     }

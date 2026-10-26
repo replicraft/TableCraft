@@ -160,7 +160,7 @@ impl Binder<'_> {
             } => Ok(self.stable_alias_relation(left, depth + 1)?
                 && self.stable_alias_relation(right, depth + 1)?
                 && self.stable_alias_expression(condition, depth + 1)?),
-            RelationNode::Derived(read) => self.stable_alias_read(read, depth + 1),
+            RelationNode::Derived { read, .. } => self.stable_alias_read(read, depth + 1),
         }
     }
 }
