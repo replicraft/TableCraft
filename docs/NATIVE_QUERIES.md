@@ -420,6 +420,24 @@ work through static derived/named projections. Projecting `.Value` continues to
 produce scalar child rows. Combining a bare list and displayed child values in
 one query remains unsupported; see the [typed result contract](MULTIVALUE_QUERIES.md).
 
+INNER joins and comma-separated CROSS sources can project complete lists from
+either parent, including nested joins and qualified static named/derived leaves.
+Scalar ON conditions determine parent pairs; hidden member WHERE criteria retain
+the complete lists on each surviving pair. Scalar-only leaves keep their ordinary
+read path. Typed outer-join lists, list comparisons, list keys and list aggregates
+remain unsupported. For example:
+
+```sh
+tablecraft query run --database example.accdb --multivalues \
+  'SELECT A.ID,A.AssignedTo,B.AssignedTo FROM Tasks A INNER JOIN Tasks B ON A.ID=B.ID'
+```
+
+The [typed-join replay](testing/TYPED_MULTIVALUE_JOINS.md) compares parent pairs
+and whole lists with registered original stored values. Separate
+[native/CLI integration checks](testing/results/typed-multivalue-join-host-2026-10-26.json)
+cover authorized routing, corrupt unselected children, NULL versus empty lists,
+quotas and buffered errors. Native Access query equivalence remains unqualified.
+
 List cells use the same buffered CLI spellings as stored collection browsing:
 `[100, 101]`, `[NULL, 100, 100]` and `[]` distinguish duplicate/NULL members from
 empty membership. Each member uses the ordinary scalar display rules, including

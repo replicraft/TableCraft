@@ -18,6 +18,12 @@ and [scoped verification](testing/results/read-query-typed-multivalue-joins-2026
 These checks do not establish native Microsoft Access query equivalence or finish
 the read/query roadmap.
 
+Eight native-adapter and three CLI integration tests pass, with selected strict
+lint. The frozen committed CLI also matches 72 controls over three unchanged
+native databases and their registered getter transcripts: 198 successful rows,
+780 cells and 24 expected errors/refusals. See [host verification](testing/results/typed-multivalue-join-host-2026-10-26.json)
+and the [independent parent-pair replay](testing/TYPED_MULTIVALUE_JOINS.md).
+
 ## Typed multivalue query results
 
 The explicit collection-aware query API returns complete stored lists alongside
