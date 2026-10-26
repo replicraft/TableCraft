@@ -14,8 +14,11 @@ one-NULL lists as `[NULL]`. These are explicit TableCraft result/display contrac
 native Microsoft Access output equivalence remains unqualified. See the
 [query contract](MULTIVALUE_QUERIES.md) and
 [query verification](testing/results/read-query-typed-multivalue-outer-joins-2026-10-26.json).
-UNION, list keys, list aggregates and mixed whole-list/displayed-member results
-remain unfinished. Bare scalar-multivalue `IS NULL` remains unsupported; the
+Whole-list UNION and mixed whole-list/displayed-member results remain refused
+pending their separate acceptance work. Scalar `.Value` grouping, ordering and
+aggregates already work, including per-parent Count; bare complex-list Count and
+bare-list grouping are excluded by the linked Microsoft references in the
+[collection contract](MULTIVALUE_QUERIES.md). Bare scalar-multivalue `IS NULL` remains unsupported; the
 existing named-collection presence contract is separate.
 
 The focused query checks pass 254 distinct tests, including twelve new tests;
@@ -35,8 +38,9 @@ INNER joins and comma-separated CROSS sources, including nested joins and static
 named/derived leaves. Scalar ON conditions select parent pairs before hidden
 member WHERE criteria; selected lists retain their complete contents. Scalar-only
 leaves keep their ordinary read service. Typed outer joins now use the explicit
-absence model described above; UNION, list keys,
-aggregates and mixed list/displayed-member output remain unfinished.
+absence model described above; whole-list UNION and mixed list/displayed-member
+output retain their explicit refusal. Scalar member aggregates use the existing
+`.Value` query path.
 
 The selected query batch passes 242 tests, including sixteen new controls, with
 strict query lint and a standalone minimal build. Four isolated depth tests pass

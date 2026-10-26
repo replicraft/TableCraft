@@ -604,7 +604,12 @@ contract retains the primary references, algorithms, provenance and exact limits
    and direct hidden-member criteria. INNER/CROSS parent joins now transport whole
    lists through nested/static named/derived sources and hidden criteria. Typed
    LEFT/RIGHT results now retain explicit parent absence separately from empty
-   lists and NULL children. UNION, aggregates and list keys remain unfinished.
+   lists and NULL children. Scalar `.Value` aggregation and per-parent Count
+   already work; [Microsoft's counting reference](https://support.microsoft.com/en-us/access/count-data-by-using-a-query)
+   excludes direct complex-list Count, and its multivalue guide prohibits bare
+   list grouping. Whole-list UNION/mixed-output admission and native semantics
+   still need qualification; do not invent unsupported native list operations
+   merely to clear a generic aggregate/key checklist.
    Explicit `--collections` now
    exposes aligned stored attachment metadata members; an additional explicit
    `--decoded-attachments` option supplies bounded original-file Binary views.

@@ -67,14 +67,48 @@ implied. Lookup display labels require an explicitly related source.
 
 Microsoft's [multivalue query guide](https://support.microsoft.com/en-us/access/using-lookup-and-multivalued-fields-in-queries)
 shows complete bare-field parent projections separately from repeated `.Value`
-rows. Its designer example also counts assigned people per issue; this remains a
-future acceptance case, not a reason to treat bare Count as parent count or to
-claim its exact generated SQL has been qualified. The initial typed service
-refuses it explicitly. The guide does not establish TableCraft's raw list order,
+rows. Its designer example also counts assigned people per issue. Scalar
+`Count(Field.Value)` is already implemented, including grouping by parent and
+HAVING/aggregate sorting; it does not require the complete-list result service.
+The guide does not print that designer example's generated SQL. Microsoft's
+[counting reference](https://support.microsoft.com/en-us/access/count-data-by-using-a-query)
+excludes complex multivalued-list fields from direct Count, and the multivalue
+guide expressly prohibits grouping the bare field. Do not infer a bare-field
+Count shortcut or whole-list grouping requirement from the designer workflow.
+The exact generated SQL remains a native qualification question. The guide does
+not establish TableCraft's raw list order,
 duplicate, NULL/empty or display spelling contracts. The
 [DAO child-recordset description](https://learn.microsoft.com/en-us/office/vba/access/concepts/data-access-objects/manipulate-multivalued-fields-with-dao)
 is not a claim that stored multivalue lists are VBA arrays. Native Microsoft
 Access query comparison remains unrun.
+
+For example, count non-NULL stored children per parent with the existing scalar
+query path:
+
+```sql
+SELECT ID, Count(AssignedTo.Value) AS AssignedCount
+FROM Issues
+GROUP BY ID
+ORDER BY ID;
+```
+
+Present empty lists and stored NULL children do not contribute to this count;
+stored duplicate non-NULL children do. These are the current expansion/Count
+contracts, independently checked rather than native Access edge qualification.
+`Count(*)` without a member dependency retains parent cardinality. Existing
+query controls in `tests/multivalue.rs`, CLI controls in
+`apps/tablecraft-cli/tests/multivalue_queries.rs`, and the
+[original-child getter model](testing/compare_multivalue_queries.py) exercise this
+capability. Bare-list UNION and mixed complete-list/member output still require
+separate admission and implementation work; unsupported bare operations must not
+be presented as automatically required native features.
+
+The [counting evidence gate](testing/results/multivalue-count-evidence-gate-2026-10-26.json)
+rechecks nine existing-capability controls using the frozen committed CLI and
+unchanged originals/getters. Parent Count remains four; member counts for the
+four original Int32 lists are 3, 0, 0 and 100. All three profiles retain the
+bare-list Count refusal. No new Count implementation or native SQL equivalence
+is claimed.
 
 The [scoped query verification record](testing/results/read-query-multivalue-results-2026-10-25.json)
 records 388 distinct passing query tests, including twelve new structured-result
