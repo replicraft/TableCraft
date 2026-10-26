@@ -571,8 +571,13 @@ contract retains the primary references, algorithms, provenance and exact limits
    snapshots and the CLI. Other locales, native precedence and safe text pushdown
    remain unfinished. Explicit InStr LCIDs now route to a distinct supplied
    host search callback with exact alternate-sort identity and checked spans;
-   concrete locale providers remain unfinished and are not supplied by global
-   General/ordinal comparers.
+   the opt-in [ICU host text provider](ICU_TEXT_PROFILE.md) already implements
+   Unicode substring search across nineteen explicit locale profiles, with one
+   exact execution-local LCID registration through `--text-locale`/`--text-lcid`.
+   Its expanded independent ICU4C replay records 14,498 controls; this is ICU
+   profile evidence, not Windows NLS or native ACE equivalence. General/ordinal
+   comparers do not infer LCID search, and automatic LCID mapping, additional
+   profiles, native mixed-policy precedence and NLS/ACE qualification remain open.
    Windows comparisons are deferred at the user's direction; continue
    implementation using reviewed references and independent checks, retaining
    native qualification as a separate pending gate.
