@@ -18,9 +18,11 @@
 //! ```
 #![deny(missing_docs)]
 mod binding;
+mod collection_results;
+pub use collection_results::{CollectionQueryResult, MultivalueValue, QueryValue};
 mod discovery;
 mod error;
-pub use discovery::execute_with_schema_discovery;
+pub use discovery::{execute_collections_with_schema_discovery, execute_with_schema_discovery};
 mod execution;
 mod external_sources;
 mod heading_names;

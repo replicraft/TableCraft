@@ -16,12 +16,30 @@ pub enum OutputType {
         /// NULL may occur, including through an outer join or an empty aggregate.
         nullable: bool,
     },
+    /// A complete stored multivalue list, separate from scalar expression types.
+    Multivalue {
+        /// Exact descriptor of each non-NULL stored child value.
+        element_type: TypeDescriptor,
+        /// Whether a stored child may be NULL; an empty list remains distinct.
+        element_nullable: bool,
+    },
     /// No single checked scalar descriptor is established. This can include
     /// varying carriers, expression-only states or unimplemented inference.
     Dynamic,
 }
 
 impl OutputType {
+    pub(crate) fn multivalue(column: &Column) -> Self {
+        Self::Multivalue {
+            element_type: column.type_descriptor(),
+            element_nullable: column.nullable(),
+        }
+    }
+
+    pub(crate) fn is_multivalue(self) -> bool {
+        matches!(self, Self::Multivalue { .. })
+    }
+
     pub(crate) fn column(column: &Column) -> Self {
         Self::Scalar {
             data_type: column.type_descriptor(),
@@ -41,7 +59,7 @@ impl OutputType {
                 nullable: true,
             },
             Self::Null => Self::Null,
-            Self::Dynamic => Self::Dynamic,
+            Self::Multivalue { .. } | Self::Dynamic => Self::Dynamic,
         }
     }
     pub(crate) fn union_result(self, other: Self) -> Self {

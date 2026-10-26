@@ -142,18 +142,37 @@ impl Binder<'_> {
                         .flatten()
                         .map_or(TextPolicy::Default, TextPolicy::Column),
                     available: true,
+                    collection_index: None,
                     member: None,
                     name: c.name().into(),
                     qualifier: Some(table.alias.as_ref().unwrap_or(&table.name).as_str().into()),
                 })
-                .chain(unavailable.iter().map(|name| Slot {
-                    output_type: ProfiledType::uniform(OutputType::Dynamic),
-                    declaration: None,
-                    text_policy: TextPolicy::Default,
-                    available: false,
-                    member: None,
-                    name: name.as_str().into(),
-                    qualifier: Some(table.alias.as_ref().unwrap_or(&table.name).as_str().into()),
+                .chain(unavailable.iter().map(|name| {
+                    Slot {
+                        output_type: ProfiledType::uniform(
+                            multivalues
+                                .iter()
+                                .find(|column| {
+                                    SOURCE_SCHEMA_POLICY
+                                        .names
+                                        .equals(column.name(), name.as_str())
+                                })
+                                .map_or(OutputType::Dynamic, OutputType::multivalue),
+                        ),
+                        declaration: None,
+                        text_policy: TextPolicy::Default,
+                        available: false,
+                        collection_index: multivalues.iter().position(|column| {
+                            SOURCE_SCHEMA_POLICY
+                                .names
+                                .equals(column.name(), name.as_str())
+                        }),
+                        member: None,
+                        name: name.as_str().into(),
+                        qualifier: Some(
+                            table.alias.as_ref().unwrap_or(&table.name).as_str().into(),
+                        ),
+                    }
                 }))
                 .chain(multivalues.iter().enumerate().map(|(index, column)| {
                     Slot {
@@ -165,6 +184,7 @@ impl Binder<'_> {
                             .flatten()
                             .map_or(TextPolicy::Default, TextPolicy::Column),
                         available: true,
+                        collection_index: None,
                         member: Some(MemberSlot::Value),
                         name: column.name().into(),
                         qualifier: Some(
@@ -184,6 +204,7 @@ impl Binder<'_> {
                             .flatten()
                             .map_or(TextPolicy::Default, TextPolicy::Column),
                         available: true,
+                        collection_index: None,
                         member: Some(MemberSlot::Named(member.column().name().into())),
                         name: member.collection().as_str().into(),
                         qualifier: Some(

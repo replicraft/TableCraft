@@ -39,7 +39,7 @@ impl Kind {
                 ScalarType::Decimal => Some(Self::Decimal),
                 _ => None,
             },
-            OutputType::Dynamic => None,
+            OutputType::Multivalue { .. } | OutputType::Dynamic => None,
         }
     }
 }

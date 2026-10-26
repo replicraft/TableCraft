@@ -81,7 +81,8 @@ impl Pruner<'_, '_> {
                 self.expression(expr, scopes)?;
                 self.read(read, scopes)?;
             }
-            Expr::Clock(_)
+            Expr::Multivalue { .. }
+            | Expr::Clock(_)
             | Expr::CurrentUser
             | Expr::Literal(_)
             | Expr::NumericLiteral(_)

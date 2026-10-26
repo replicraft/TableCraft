@@ -19,7 +19,7 @@ pub(super) fn complement(input: OutputType) -> OutputType {
             };
             OutputType::scalar(result, nullable)
         }
-        OutputType::Dynamic => OutputType::Dynamic,
+        OutputType::Multivalue { .. } | OutputType::Dynamic => OutputType::Dynamic,
     }
 }
 
@@ -99,7 +99,7 @@ impl Operand {
                     },
                 )
             }
-            OutputType::Dynamic => None,
+            OutputType::Multivalue { .. } | OutputType::Dynamic => None,
         }
     }
 

@@ -190,18 +190,30 @@ impl Binder<'_> {
             } => self.call(qualifier, name, arguments, scopes, aggregates, depth)?,
             E::Subquery(q) => {
                 let plan = self.read(q, scopes, depth + 1)?;
+                if plan.has_collections() {
+                    return Err(QueryError::Unsupported);
+                }
                 if plan.names.len() != 1 {
                     return Err(QueryError::Width);
                 }
                 Expr::Subquery(Box::new(plan))
             }
-            E::Exists(q) => Expr::Exists(Box::new(self.read(q, scopes, depth + 1)?)),
+            E::Exists(q) => {
+                let plan = self.read(q, scopes, depth + 1)?;
+                if plan.has_collections() {
+                    return Err(QueryError::Unsupported);
+                }
+                Expr::Exists(Box::new(plan))
+            }
             E::InQuery {
                 expression,
                 query,
                 negated,
             } => {
                 let plan = self.read(query, scopes, depth + 1)?;
+                if plan.has_collections() {
+                    return Err(QueryError::Unsupported);
+                }
                 if plan.names.len() != 1 {
                     return Err(QueryError::Width);
                 }
@@ -218,6 +230,9 @@ impl Binder<'_> {
                 query,
             } => {
                 let plan = self.read(query, scopes, depth + 1)?;
+                if plan.has_collections() {
+                    return Err(QueryError::Unsupported);
+                }
                 if plan.names.len() != 1 {
                     return Err(QueryError::Width);
                 }

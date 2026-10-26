@@ -196,7 +196,8 @@ impl Runtime<'_, '_> {
             | Expr::Array(arguments) => {
                 self.progressive_arguments(arguments, count, depth + 1, aggregates)
             }
-            Expr::DomainCall(..)
+            Expr::Multivalue { .. }
+            | Expr::DomainCall(..)
             | Expr::Field { .. }
             | Expr::Output(..)
             | Expr::CollectionItem { .. }

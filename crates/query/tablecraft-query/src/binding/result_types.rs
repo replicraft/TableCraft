@@ -64,6 +64,7 @@ impl Binder<'_> {
     ) -> Result<OutputType, QueryError> {
         self.tick(depth)?;
         Ok(match expression {
+            Expr::Multivalue { output_type, .. } => *output_type,
             Expr::Field { depth, index, .. } => scopes
                 .get(*depth)
                 .and_then(|scope| scope.iter().filter(|slot| slot.available).nth(*index))

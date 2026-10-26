@@ -23,6 +23,21 @@ pub(in crate::execution) struct ParentCollections<'a> {
     absent: Option<&'a [bool]>,
 }
 
+impl<'a> ParentCollections<'a> {
+    pub(in crate::execution) fn borrowed(
+        requested: &'a [usize],
+        columns: &'a [Column],
+        lists: &'a [&'a dyn MultivalueList],
+    ) -> Self {
+        Self {
+            requested,
+            columns,
+            lists,
+            absent: None,
+        }
+    }
+}
+
 impl Runtime<'_, '_> {
     pub(in crate::execution) fn parent_rows(
         &mut self,
@@ -142,7 +157,7 @@ impl Runtime<'_, '_> {
         let result = source.scan_collection_members(name, projection, values, &named, visitor);
         failure.map_or(result.map(|()| rows), Err)
     }
-    fn parent_truth(
+    pub(in crate::execution) fn parent_truth(
         &mut self,
         predicate: &ParentPredicate,
         collections: &ParentCollections<'_>,

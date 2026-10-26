@@ -27,6 +27,6 @@ pub(super) fn result(input: OutputType, replacement: Option<OutputType>) -> Outp
                 None => OutputType::Dynamic,
             }
         }
-        OutputType::Dynamic => OutputType::Dynamic,
+        OutputType::Multivalue { .. } | OutputType::Dynamic => OutputType::Dynamic,
     }
 }

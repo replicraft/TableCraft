@@ -95,6 +95,7 @@ impl Binder<'_> {
                     self.replace_item(e, binding, target, capture, depth + 1)?;
                 }
             }
+            Expr::Multivalue { .. } => return Err(QueryError::Unsupported),
             Expr::Clock(_)
             | Expr::CurrentUser
             | Expr::Literal(_)

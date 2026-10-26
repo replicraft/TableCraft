@@ -28,6 +28,9 @@ impl Runtime<'_, '_> {
         outer: &[OuterScope<'_>],
     ) -> Result<Vec<Vec<CellValue>>, QueryError> {
         self.tick()?;
+        if plan.has_collections() {
+            return Err(QueryError::Unsupported);
+        }
         let read_depth = self.discovery.active_read_depth.get();
         if read_depth >= MAX_RUNTIME_READ_DEPTH {
             return Err(QueryError::StructureLimit);

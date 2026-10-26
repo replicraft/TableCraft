@@ -43,6 +43,7 @@ impl Runtime<'_, '_> {
     #[inline(never)]
     fn eval_non_domain(&mut self, expr: &Expr, env: Environment<'_>) -> Result<Value, QueryError> {
         match expr {
+            Expr::Multivalue { .. } => Err(QueryError::Unsupported),
             Expr::Array(_) => Err(QueryError::Unsupported),
             Expr::ValueInspect(function, input) => self.value_inspection(*function, input, env),
             Expr::ArrayBound(function, input, dimension) => {

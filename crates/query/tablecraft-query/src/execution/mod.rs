@@ -5,6 +5,7 @@ mod arrays;
 mod byte_strings;
 mod cashflows;
 mod collation;
+mod collections;
 mod concatenation;
 mod constraint;
 mod context;

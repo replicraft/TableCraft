@@ -126,6 +126,9 @@ fn every_claimed_binary_descriptor_accepts_successful_runtime_carriers() {
                         }
                         OutputType::Null => assert_eq!(row[0], Value::Null),
                         OutputType::Dynamic => {}
+                        OutputType::Multivalue { .. } => {
+                            panic!("arithmetic cannot produce a collection")
+                        }
                     }
                 }
             }
