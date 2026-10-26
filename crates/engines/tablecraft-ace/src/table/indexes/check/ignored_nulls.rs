@@ -1,7 +1,7 @@
 //! Count the eligible population before dropping the checked sequential snapshot.
-use super::{IndexProfile, TableSnapshot, tick};
+use super::{IndexProfile, TableSnapshot, projection::CheckProjection, tick};
 use crate::{IndexConstraintViolation, IndexInspection, InspectError};
-use tablecraft_core::limits::ResourceBudget;
+use tablecraft_core::limits::{Resource, ResourceBudget};
 
 pub(super) fn populations(
     inspection: &IndexInspection,
@@ -28,30 +28,40 @@ pub(super) fn populations(
         .map_err(|_| InspectError::Allocation)?;
     for index in indexes {
         tick(budget, cancelled)?;
-        let profile = match IndexProfile::ignored_fixed(index, inspection.schema()) {
-            Ok(IndexProfile::Single(profile)) => profile,
+        let Some(constraints) = index
+            .constraints()
+            .filter(|constraints| constraints.ignore_nulls())
+        else {
+            counts.push(None);
+            continue;
+        };
+        // This extra profile-building pass resolves bounded key metadata. Pay
+        // before construction, separately from the later physical traversal.
+        let work = inspection
+            .schema()
+            .columns()
+            .len()
+            .checked_mul(index.columns().len())
+            .ok_or(InspectError::StructureLimit)?;
+        budget.charge(Resource::Steps, work as u64)?;
+        match IndexProfile::for_check(index, inspection.schema()) {
+            Ok(_) => {}
             Err(InspectError::Unsupported) => {
                 counts.push(None);
                 continue;
             }
-            Ok(_) => return Err(InspectError::Malformed),
             Err(error) => return Err(error),
-        };
-        let constraints = index.constraints().ok_or(InspectError::Unsupported)?;
+        }
+        let projection = CheckProjection::new(inspection.schema(), index, budget, cancelled)?;
         let mut count = 0_usize;
         for row in table.rows() {
             tick(budget, cancelled)?;
-            let value = row.get(profile.column).ok_or(InspectError::Malformed)?;
-            match profile.key_type.key(value)? {
-                None => {
-                    // An omitted NULL must not hide a required-key violation.
-                    if constraints.required() {
-                        return Err(IndexConstraintViolation::NullKey.into());
-                    }
-                }
-                Some(_) => {
-                    count = count.checked_add(1).ok_or(InspectError::StructureLimit)?;
-                }
+            let (all_null, any_null) = projection.null_facts(row, budget, cancelled)?;
+            if any_null && constraints.required() {
+                return Err(IndexConstraintViolation::NullKey.into());
+            }
+            if !all_null {
+                count = count.checked_add(1).ok_or(InspectError::StructureLimit)?;
             }
         }
         counts.push(Some(count));

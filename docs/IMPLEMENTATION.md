@@ -1,5 +1,19 @@
 # Implementation status
 
+## Complete physical membership checks for ignore-NULL indexes
+
+Native consistency checks now cover all already-qualified ignore-NULL key
+profiles, including composite keys. Independent sequential counts omit only
+roots whose entire key is NULL; partially NULL keys remain eligible, and required
+keys still reject any NULL component. Physical membership does not establish a
+complete-table index scan or write eligibility.
+
+Fifteen new tests and 198 selected regressions pass, along with strict lint and
+minimal-feature checks. Complete-table constructors, public seek limits and
+mutation gates retain their existing boundaries. See
+[the check contract](NATIVE_CHECKS.md) and
+[verification](testing/results/read-query-ignored-index-coverage-2026-10-25.json).
+
 ## NULL literal Variant provenance
 
 Binding, retained cells and constant-heading folding now agree that the syntax

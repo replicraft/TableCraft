@@ -70,8 +70,12 @@ impl KeyType {
     }
 }
 
-fn single_column(index: &NativeIndex, schema: &TableSchema) -> Result<usize, InspectError> {
-    qualify(index)?;
+fn single_column(
+    index: &NativeIndex,
+    schema: &TableSchema,
+    coverage: Coverage,
+) -> Result<usize, InspectError> {
+    coverage.qualify(index)?;
     column_position(index, schema)
 }
 
@@ -87,11 +91,21 @@ fn column_position(index: &NativeIndex, schema: &TableSchema) -> Result<usize, I
     Ok(column)
 }
 
-pub(super) fn qualify(index: &NativeIndex) -> Result<(), InspectError> {
-    if index.flags & IGNORE_NULLS != 0 || index.constraints().is_none() {
-        return Err(InspectError::Unsupported);
+/// Physical membership qualification never promises a complete table or permits edits.
+#[derive(Clone, Copy)]
+pub(super) enum Coverage {
+    CompleteTable,
+    PhysicalMembership,
+}
+impl Coverage {
+    pub(super) fn qualify(self, index: &NativeIndex) -> Result<(), InspectError> {
+        if index.constraints().is_none()
+            || (matches!(self, Self::CompleteTable) && index.flags & IGNORE_NULLS != 0)
+        {
+            return Err(InspectError::Unsupported);
+        }
+        Ok(())
     }
-    Ok(())
 }
 
 pub(super) enum IndexProfile<'a> {
@@ -144,24 +158,54 @@ impl<'a> IndexProfile<'a> {
     }
 
     pub fn new(index: &NativeIndex, schema: &'a TableSchema) -> Result<Self, InspectError> {
+        Self::build(index, schema, Coverage::CompleteTable)
+    }
+
+    /// Reuse qualified physical codecs for complete read-only consistency checks.
+    /// Callers must independently establish the eligible sequential population.
+    pub fn for_check(index: &NativeIndex, schema: &'a TableSchema) -> Result<Self, InspectError> {
+        if !matches!(
+            schema.header.format(),
+            FileFormat::Ace2016 | FileFormat::Ace2019
+        ) {
+            for key in &index.columns {
+                let field = schema
+                    .columns
+                    .iter()
+                    .find(|field| field.number() == key.number())
+                    .ok_or(InspectError::Malformed)?;
+                if field.native_type() == data_type::INT64 {
+                    return Err(InspectError::Unsupported);
+                }
+            }
+        }
+        Self::build(index, schema, Coverage::PhysicalMembership)
+    }
+
+    fn build(
+        index: &NativeIndex,
+        schema: &'a TableSchema,
+        coverage: Coverage,
+    ) -> Result<Self, InspectError> {
         if index.columns.len() > 1 {
             if super::encoded_tuple::has_variable(index, schema)? {
-                return super::encoded_tuple::EncodedTupleProfile::new(index, schema)
+                return super::encoded_tuple::EncodedTupleProfile::new(index, schema, coverage)
                     .map(Self::EncodedTuple);
             }
             if super::composite::has_decimal(index, schema)? {
-                let columns = super::composite::DecimalColumns::new(index, schema)?;
+                let columns =
+                    super::composite::DecimalColumns::with_coverage(index, schema, coverage)?;
                 return super::composite::DecimalCompositeProfile::new(columns)
                     .map(Self::DecimalComposite);
             }
-            let columns = super::composite::Columns::new(index, schema)?;
+            let columns = super::composite::Columns::with_coverage(index, schema, coverage)?;
             return if columns.has_guid() {
                 super::composite::GuidCompositeProfile::new(columns).map(Self::GuidComposite)
             } else {
                 CompositeProfile::new(columns).map(Self::Composite)
             };
         }
-        let column = single_column(index, schema)?;
+        let column = single_column(index, schema, coverage)?;
         if schema.columns[column].native_type() == crate::format::data_type::SHORT_BINARY
             && schema.columns[column].scalar_type() == Some(ScalarType::Binary)
         {
@@ -208,3 +252,6 @@ impl<'a> IndexProfile<'a> {
         }))
     }
 }
+
+#[cfg(test)]
+mod tests;
