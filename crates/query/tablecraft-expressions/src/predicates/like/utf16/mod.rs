@@ -1,7 +1,7 @@
 //! Explicit UTF-16 wildcard counts and weighted literal/element transitions.
 mod classes;
 mod pattern;
-use super::{LikeMode, LikeString, Work};
+use super::{LikeMode, LikeString, Work, reachable};
 use crate::{
     EvalError,
     comparison::{Collation, LikeSpanState},
@@ -26,7 +26,8 @@ pub(super) fn matches(
     col: &dyn Collation,
     work: &mut Work<'_>,
 ) -> Result<Truth, EvalError> {
-    let pattern = pattern::compile(pattern, mode, col, work)?;
+    let pattern = pattern::compile(pattern, mode, work)?;
+    let malformed = matches!(pattern.tokens.last(), Some(Token::Invalid));
     let units = text.units(work.budget, work.cancelled)?;
     let width = units.len().checked_add(1).ok_or(EvalError::Allocation)?;
     let mut states = States {
@@ -40,13 +41,25 @@ pub(super) fn matches(
     states.previous[0] = 1;
     for (number, token) in pattern.tokens.iter().enumerate() {
         work.tick()?;
+        if !reachable(&states.previous, work)? {
+            return Ok(Truth::False);
+        }
         for flag in &mut states.current {
             work.tick()?;
             *flag = 0;
         }
         let last = number + 1 == pattern.tokens.len();
         match token {
+            Token::Invalid => {
+                if reachable(&states.previous[..units.len()], work)? {
+                    return Err(EvalError::InvalidPattern);
+                }
+                return Ok(Truth::False);
+            }
             Token::Many => {
+                if malformed {
+                    return Err(EvalError::InvalidPattern);
+                }
                 for at in 0..width {
                     work.tick()?;
                     states.current[at] = u8::from(
@@ -66,14 +79,19 @@ pub(super) fn matches(
             Token::Literal(range) => {
                 states.literal(&units, &pattern.literals[range.clone()], last, col, work)?
             }
-            Token::Class(range, negated) => states.class(
-                &units,
-                &pattern.units[range.clone()],
-                *negated,
-                last,
-                col,
-                work,
-            )?,
+            Token::Class(range, negated) => {
+                if !reachable(&states.previous[..units.len()], work)? {
+                    return Ok(Truth::False);
+                }
+                let list = &pattern.units[range.clone()];
+                for range in pattern::ranges(list) {
+                    let (low, high) = range?;
+                    if compare(&[low], &[high], col, work)? == Ordering::Greater {
+                        return Err(EvalError::InvalidPattern);
+                    }
+                }
+                states.class(&units, list, *negated, last, col, work)?;
+            }
         }
         std::mem::swap(&mut states.previous, &mut states.current);
     }

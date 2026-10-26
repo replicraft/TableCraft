@@ -70,6 +70,42 @@ The optional SQLite worker forwards its owned `AsyncOptions::like_mode`, keeping
 pattern semantics in TableCraft. `query eval` has no text-policy controls, and the
 restricted UPDATE planner continues to reject LIKE before backend planning.
 
+## Pattern error timing
+
+The matcher follows the element-by-element error rule in
+[MS-VBAL §5.6.9.6](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/792d4f80-72c1-49da-98a7-37d5783a8615).
+An earlier mismatch returns FALSE before an unreached malformed class or reversed
+range. For example, `'x' LIKE 'a['` is FALSE, while `'ab' LIKE 'a['` raises
+InvalidPattern. NOT LIKE negates successful truth values; it does not catch errors.
+A reached `*` immediately validates the remaining pattern grammar, so
+`'x' LIKE '*a['` raises InvalidPattern even though no `a` matches. The ANSI-92
+`%` wildcard uses the same explicit timing profile.
+
+Grammar validation is separate from provider-dependent range ordering. Thus
+`'x' LIKE '*a[z-a]'` is FALSE without activating the reversed range's provider;
+`'ab' LIKE '*a[z-a]'` reaches that class and raises InvalidPattern. Typed provider
+failures propagate at the first reached class and are never relabeled as syntax
+errors. The existing whole-class range validation remains, rather than adding a
+new rule for stopping inside a list after one member matches.
+
+The exhaustion rule precedes an additional consuming class: `'' LIKE '['` and
+`'a' LIKE 'a['` are FALSE. Zero-width `[]` and reached stars still operate:
+`'' LIKE '[]*'` is TRUE, `'' LIKE '*['` raises InvalidPattern, and
+`'' LIKE '*[z-a]'` is FALSE without a range comparison. This is an explicit
+interpretation of the formal rule, not an observed native Access error-order
+result. Microsoft's [Access SQL LIKE page](https://support.microsoft.com/en-us/access/like-operator)
+establishes query use and wildcard matching, but does not specify these error
+frontiers. Windows/ACE qualification remains open.
+
+Both matchers retain bounded iterative position frontiers. The scalar matcher
+now reserves two byte-indexed input frontiers, each of UTF-8 input length plus
+one, instead of two pattern-token frontiers. The UTF-16 path keeps its existing
+three unit-indexed frontiers. Pattern storage, input conversion, frontier buffers,
+scanning and transitions remain charged to the original cumulative pools. An
+unreached pattern error does not suppress cancellation, byte/work limits, eager
+operand failures or required String conversion. No budget or performance claim
+is implied by the timing correction.
+
 ## Pattern profile
 
 | Feature | ANSI-89 | ANSI-92 |
@@ -116,8 +152,9 @@ reused for LIKE. See [General matching](NATIVE_TEXT.md#general-utf-16-like-match
 
 The UTF-16 path compiles literal arenas and list ranges, then iterates tokens
 over budgeted position vectors. It uses no recursive/exponential backtracking.
-All pattern ranges validate before matching; only reachable transitions invoke
-providers. A final literal needs only complete-tail comparisons, so long literal
+Pattern syntax is scanned under the shared work/allocation budget, but malformed
+class errors remain deferred markers until matching reaches them. Range-order
+providers run only for classes with a reachable, non-exhausted input position. A final literal needs only complete-tail comparisons, so long literal
 matches do not encode every shorter prefix. Weighted providers may return a
 conservative span state: complete match, possible extension, or proof that no
 extension at that start can match. Only the last state prunes candidate ends;
@@ -136,7 +173,7 @@ odd byte ranges and unpaired UTF-16 units. They still require an explicit mode;
 non-NULL raw matching requires complete units and a UTF-16 provider, or strict
 Unicode publication for scalar providers. See
 [retained predicate boundaries](RAW_PREDICATES.md).
-Other non-NULL operand kinds fail with `TypeMismatch`. Both operand expressions
+Remaining unsupported non-NULL operand kinds fail with `TypeMismatch`. Both operand expressions
 are evaluated eagerly before matching, including errors in a pattern expression
 when the tested expression is NULL. Missing policy, bad-pattern, collation,
 resource and cancellation failures never publish partial query results. As with
@@ -201,3 +238,19 @@ describes the two mode families and database setting distinction.
 [Microsoft LIKE rules](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/like-operator)
 describes NULL, lists/ranges, zero-length brackets and locale expansions. These
 references guide the explicit profile above; they do not establish conformance.
+
+## Pattern timing verification
+
+The [timing verification record](testing/results/read-query-like-timing-2026-10-25.json)
+records 219 unique tests, including ten new focused tests. The scalar and
+weighted matchers share explicit element-frontier goldens; independent generated
+valid-pattern models remain passing. Query and CLI checks cover both ANSI modes,
+NOT LIKE, raw intermediate Strings, NULL, eager operand failures and buffered
+publication. Provider failures, byte/work limits and cancellation remain typed.
+
+The first matcher batch retained one obsolete raw-empty upfront-error assertion;
+it was changed to the documented exhaustion result, without changing positive
+matching goldens. A separate initial lint attempt found only unnecessary clones
+of Copy expected values. Both attempts remain recorded. The earlier coercion
+implementation record and frozen original-file replay above remain historical
+artifacts; neither is relabeled as native evidence for the new timing rules.

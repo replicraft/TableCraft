@@ -68,10 +68,7 @@ fn raw_like_retains_surrogates_classes_nuls_and_unaligned_unit_ranges() {
         ),
         Ok(Truth::True)
     );
-    assert_eq!(
-        run(&[], &[91], LikeMode::Ansi89),
-        Err(EvalError::InvalidPattern)
-    );
+    assert_eq!(run(&[], &[91], LikeMode::Ansi89), Ok(Truth::False));
 }
 
 #[test]

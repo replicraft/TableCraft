@@ -1,7 +1,7 @@
 use super::super::{LikeMode, LikeString};
-use super::{Work, compare};
-use crate::{EvalError, comparison::Collation};
-use std::{cmp::Ordering, ops::Range};
+use super::Work;
+use crate::EvalError;
+use std::ops::Range;
 
 const OPEN: u16 = b'[' as u16;
 const CLOSE: u16 = b']' as u16;
@@ -9,6 +9,7 @@ const DASH: u16 = b'-' as u16;
 const DIGIT: u16 = b'#' as u16;
 
 pub(super) enum Token {
+    Invalid,
     Many,
     One,
     Digit,
@@ -24,7 +25,6 @@ pub(super) struct Pattern {
 pub(super) fn compile(
     text: LikeString<'_>,
     mode: LikeMode,
-    col: &dyn Collation,
     work: &mut Work<'_>,
 ) -> Result<Pattern, EvalError> {
     let units = text.units(work.budget, work.cancelled)?;
@@ -53,7 +53,11 @@ pub(super) fn compile(
                 at += 1;
             }
             if at == units.len() {
-                return Err(EvalError::InvalidPattern);
+                if let Some(start) = run.take() {
+                    tokens.push(Token::Literal(start..literals.len()));
+                }
+                tokens.push(Token::Invalid);
+                break;
             }
             let end = at;
             at += 1;
@@ -65,16 +69,19 @@ pub(super) fn compile(
             if negated {
                 start += 1;
             }
-            if start == end {
-                return Err(EvalError::InvalidPattern);
-            }
+            let mut valid = start != end;
             for range in ranges(&units[start..end]) {
-                let (low, high) = range?;
-                if compare(&[low], &[high], col, work)? == Ordering::Greater {
-                    return Err(EvalError::InvalidPattern);
+                work.tick()?;
+                if range.is_err() {
+                    valid = false;
+                    break;
                 }
             }
-            Token::Class(start..end, negated)
+            if valid {
+                Token::Class(start..end, negated)
+            } else {
+                Token::Invalid
+            }
         } else {
             if run.is_none() {
                 run = Some(literals.len());
@@ -85,7 +92,11 @@ pub(super) fn compile(
         if let Some(start) = run.take() {
             tokens.push(Token::Literal(start..literals.len()));
         }
+        let invalid = matches!(token, Token::Invalid);
         tokens.push(token);
+        if invalid {
+            break;
+        }
     }
     if let Some(start) = run {
         tokens.push(Token::Literal(start..literals.len()));

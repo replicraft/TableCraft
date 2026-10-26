@@ -1,5 +1,19 @@
 # Implementation status
 
+## LIKE pattern error timing
+
+LIKE now defers malformed-pattern errors until matching reaches the affected
+element. Earlier mismatches return FALSE; a reached star validates suffix grammar,
+while range ordering invokes the comparison provider only at a reachable class.
+Both ANSI modes, scalar and retained UTF-16 paths share this explicit formal
+profile. Empty-input behavior is documented separately from native ACE evidence.
+
+Ten new tests and 209 selected regressions pass across matcher, evaluator, query
+and CLI layers, with strict lint, formatting and standalone minimal checks. Eager
+operand errors, NULL handling and cumulative resource limits remain explicit. See
+[pattern error timing](PATTERN_MATCHING.md#pattern-error-timing) and
+[verification](testing/results/read-query-like-timing-2026-10-25.json).
+
 ## Complete physical membership checks for ignore-NULL indexes
 
 Native consistency checks now cover all already-qualified ignore-NULL key

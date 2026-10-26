@@ -78,31 +78,66 @@ pub fn like(
             &mut work,
         );
     }
-    let tokens = pattern::compile(pattern, mode, collation, &mut work)?;
-    let width = tokens.len().checked_add(1).ok_or(EvalError::Allocation)?;
+    let tokens = pattern::compile(pattern, mode, &mut work)?;
+    let malformed = matches!(tokens.last(), Some(Token::Invalid));
+    let width = text.len().checked_add(1).ok_or(EvalError::Allocation)?;
     let mut previous = work.buffer::<u8>(width)?;
     let mut current = work.buffer::<u8>(width)?;
     previous.resize(width, 0);
     current.resize(width, 0);
     previous[0] = 1;
-    for (i, token) in tokens.iter().enumerate() {
+
+    for token in &tokens {
         work.tick()?;
-        previous[i + 1] = u8::from(matches!(token, Token::Many) && previous[i] != 0);
-    }
-    for character in text.chars() {
-        work.tick()?;
-        current[0] = 0;
-        for (i, token) in tokens.iter().enumerate() {
+        if !reachable(&previous, &mut work)? {
+            return Ok(Truth::False);
+        }
+        for flag in &mut current {
             work.tick()?;
-            current[i + 1] = u8::from(match token {
-                Token::Many => previous[i + 1] != 0 || current[i] != 0,
-                _ => previous[i] != 0 && token.matches(character, collation, &mut work)?,
-            });
+            *flag = 0;
+        }
+        match token {
+            Token::Many => {
+                // A reached star validates the remaining grammar, without
+                // invoking providers for unreached range-order semantics.
+                if malformed {
+                    return Err(EvalError::InvalidPattern);
+                }
+                current[0] = previous[0];
+                for (at, character) in text.char_indices() {
+                    work.tick()?;
+                    let next = at + character.len_utf8();
+                    current[next] = u8::from(previous[next] != 0 || current[at] != 0);
+                }
+            }
+            Token::Invalid | Token::Class(..) => {
+                if !reachable(&previous[..text.len()], &mut work)? {
+                    return Ok(Truth::False);
+                }
+                if matches!(token, Token::Invalid) {
+                    return Err(EvalError::InvalidPattern);
+                }
+                pattern::validate_class(token, collation, &mut work)?;
+                for (at, character) in text.char_indices() {
+                    work.tick()?;
+                    if previous[at] != 0 && token.matches(character, collation, &mut work)? {
+                        current[at + character.len_utf8()] = 1;
+                    }
+                }
+            }
+            _ => {
+                for (at, character) in text.char_indices() {
+                    work.tick()?;
+                    if previous[at] != 0 && token.matches(character, collation, &mut work)? {
+                        current[at + character.len_utf8()] = 1;
+                    }
+                }
+            }
         }
         std::mem::swap(&mut previous, &mut current);
     }
     work.tick()?;
-    Ok(if previous[width - 1] != 0 {
+    Ok(if previous[text.len()] != 0 {
         Truth::True
     } else {
         Truth::False
@@ -132,6 +167,19 @@ pub fn like_utf16(
 
 #[cfg(test)]
 mod tests;
+#[cfg(test)]
+mod timing_tests;
 
 #[cfg(test)]
 mod raw_tests;
+
+/// A zero frontier proves an earlier mismatch before later pattern errors.
+fn reachable(states: &[u8], work: &mut Work<'_>) -> Result<bool, EvalError> {
+    for flag in states {
+        work.tick()?;
+        if *flag != 0 {
+            return Ok(true);
+        }
+    }
+    Ok(false)
+}
