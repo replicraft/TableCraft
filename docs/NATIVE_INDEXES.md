@@ -1127,3 +1127,25 @@ operation-wide quota. [Modern scalar histories](testing/MODERN_SCALAR_HISTORIES.
 record the independent input that exhausted the former single quota and the
 successful exact indexed/query comparisons. This adds no cache, streaming index,
 fallback, live-file or write qualification.
+
+## Single Int32 ignore-NULL selections
+
+A known single-column Int32 index declaring Ignore NULLs now supports explicit
+non-NULL `Int32IndexSelection::Range` requests, including equality and an
+unbounded non-NULL interval. Ascending/descending keys, logical aliases and
+qualified interior-node layouts use the existing Int32 codec and traversal.
+Returned live rows must agree with their physical keys; selected corruption,
+limits and cancellation propagate without a sequential retry. Partial selections
+validate traversed pages and returned records rather than skipped subtrees.
+
+`All`, `Null` and ordinary full-index table reads still refuse an omitting index.
+An unbounded Range means every non-NULL key, rather than a complete table: its
+schema retains the full table's declared row count. Other ignore-NULL carrier
+and composite profiles remain unsupported. Full consistency checks separately
+validate the eligible physical population against a complete sequential read;
+see [check coverage](NATIVE_CHECKS.md#single-int32-ignore-null-membership).
+
+This read qualification does not expand native edit or engineering-preview
+eligibility. Ignore-NULL declarations retain their existing mutation blocker,
+including no-op plans and updates to unrelated columns. It does not establish
+Microsoft Access qualification.

@@ -1,5 +1,21 @@
 # Implementation status
 
+## Ignore-NULL Int32 index reads and checks
+
+Known single Int32 ignore-NULL indexes now serve non-NULL equality/range reads
+and automatic safe integer hints. Complete checks independently count eligible
+sequential roots before validating physical membership and constraints. Public
+full-table/NULL reads through these indexes still refuse; automatic reads retain
+table order, residual filters and selected-error propagation. The native mutation
+gate explicitly preserves its earlier refusal, including no-op previews.
+
+Eleven new tests and fifty-four selected regressions pass across engine and
+adapter checks, with strict lint and minimal adapter verification. See
+[index scope](NATIVE_INDEXES.md#single-int32-ignore-null-selections) and the
+[verification record](testing/results/read-query-ignored-null-int32-2026-10-25.json).
+Other ignore-NULL carriers, native Access qualification and broader write support
+remain unfinished.
+
 ## DateAdd legacy lower-bound errors
 
 Legacy DateAdd results before year 100 now return `Domain` (error 5), following

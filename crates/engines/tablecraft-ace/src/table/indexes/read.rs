@@ -15,7 +15,7 @@ use super::{
 };
 use super::{Int32IndexSelection, Int64IndexSelection, inspect_table_indexes, walk::Walker};
 use crate::{
-    InspectError, TableSnapshotLimits,
+    InspectError, NativeReadSource, TableSnapshotLimits,
     format::{
         allocation,
         reader::Reader,
@@ -68,6 +68,8 @@ pub fn read_table_index<R: crate::NativeReadSource>(
 /// Prunes disjoint child spans and fetches only matching live rows. Validation
 /// covers traversed pages/returned rows, not skipped subtrees or full row counts.
 /// Other carriers and composite indexes are rejected, including All/Null.
+/// Qualified single Int32 ignore-NULL indexes admit only non-NULL Range selections;
+/// All/Null never present an omitting index as a complete table.
 /// Other index restrictions match read_table_index; no fallback occurs.
 pub fn read_table_index_range<R: crate::NativeReadSource>(
     source: &mut R,
@@ -182,6 +184,7 @@ pub fn read_table_index_with_request<R: crate::NativeReadSource>(
             maximum_rows: request.maximum_rows,
             legacy_table_limit: false,
             table_order: false,
+            eligible_rows: None,
         },
         budget,
         cancelled,
@@ -216,6 +219,7 @@ pub fn read_table_index_in_table_order<R: crate::NativeReadSource>(
             maximum_rows: request.maximum_rows,
             legacy_table_limit: false,
             table_order: true,
+            eligible_rows: None,
         },
         budget,
         cancelled,
@@ -306,6 +310,8 @@ struct ReadOptions<'a> {
     maximum_rows: u32,
     legacy_table_limit: bool,
     table_order: bool,
+    // Set only by the private complete physical-index consistency check.
+    eligible_rows: Option<usize>,
 }
 impl Default for ReadOptions<'_> {
     fn default() -> Self {
@@ -315,6 +321,7 @@ impl Default for ReadOptions<'_> {
             maximum_rows: MAX_LIVE_ROWS as u32,
             legacy_table_limit: true,
             table_order: false,
+            eligible_rows: None,
         }
     }
 }
@@ -323,6 +330,39 @@ struct ReadView<'a> {
     maximum_rows: usize,
     row_batch_size: Option<usize>,
     table_order: bool,
+    expected_rows: usize,
+    omitted_nulls: bool,
+}
+
+pub(super) struct IgnoredInt32Check<'a> {
+    pub columns: &'a [&'a str],
+    pub eligible_rows: usize,
+}
+
+/// Complete physical membership for check_table, never a complete table scan.
+/// The expected population comes from a separately validated sequential read.
+pub(super) fn read_ignored_int32_check<R: NativeReadSource>(
+    source: &mut R,
+    scope: CatalogScope,
+    table: &str,
+    index: &str,
+    request: IgnoredInt32Check<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<TableSnapshot, InspectError> {
+    read_selected(
+        source,
+        scope,
+        table,
+        index,
+        ReadOptions {
+            columns: Some(request.columns),
+            eligible_rows: Some(request.eligible_rows),
+            ..ReadOptions::default()
+        },
+        budget,
+        cancelled,
+    )
 }
 
 fn read_selected<R: crate::NativeReadSource>(
@@ -369,7 +409,33 @@ fn read_selected<R: crate::NativeReadSource>(
     }
     let selected = &inspection.indexes[position];
     let schema = &inspection.schema;
-    let profile = IndexProfile::new(selected, schema)?;
+    let omitted_nulls = selected
+        .constraints()
+        .is_some_and(|constraints| constraints.ignore_nulls());
+    let profile = if omitted_nulls {
+        let non_null_int32 = matches!(
+            options.selection,
+            Some(ReadSelection::Integer(
+                KeyType::Int32,
+                Int64IndexSelection::Range { .. }
+            ))
+        );
+        if options.eligible_rows.is_none() && !non_null_int32 {
+            return Err(InspectError::Unsupported);
+        }
+        IndexProfile::ignored_int32(selected, schema)?
+    } else {
+        if options.eligible_rows.is_some() {
+            return Err(InspectError::Malformed);
+        }
+        IndexProfile::new(selected, schema)?
+    };
+    let expected_rows = options
+        .eligible_rows
+        .unwrap_or(schema.declared_rows() as usize);
+    if expected_rows > schema.declared_rows() as usize {
+        return Err(InspectError::Malformed);
+    }
     if text_selection.is_some() && !matches!(&profile, IndexProfile::Text(_)) {
         return Err(InspectError::Unsupported);
     }
@@ -404,6 +470,8 @@ fn read_selected<R: crate::NativeReadSource>(
         row_batch_size: (!options.legacy_table_limit)
             .then(|| TableSnapshotLimits::default().batch_rows() as usize),
         table_order: options.table_order,
+        expected_rows,
+        omitted_nulls,
     };
     let rows = match profile {
         IndexProfile::EncodedTuple(profile) => {
@@ -506,7 +574,7 @@ fn read_rows<R: crate::NativeReadSource, P: KeyProfile, const N: usize>(
     walker.visit(selected.root, 0, None, None)?;
     if (walker.previous_leaf != 0 && ((walker.next_leaf != 0) != walker.gap))
         || walker.entries.len() > schema.declared_rows() as usize
-        || (complete && walker.entries.len() != schema.declared_rows() as usize)
+        || (complete && walker.entries.len() != view.expected_rows)
     {
         return Err(InspectError::Malformed);
     }
@@ -550,14 +618,14 @@ fn read_rows<R: crate::NativeReadSource, P: KeyProfile, const N: usize>(
             None => record::decode(&raw, schema, &mut reader)?,
         };
         validate_row(projection.columns(), &values)?;
-        if profile.row_key(
+        let key = profile.row_key(
             &projection.key_view(&values),
             &mut KeyWork {
                 budget: reader.budget,
                 cancelled: reader.cancelled,
             },
-        )? != entry.key
-        {
+        )?;
+        if key != entry.key || (view.omitted_nulls && profile.constraint_nulls(&key)?.0) {
             return Err(InspectError::Malformed);
         }
         if projection.positions().is_some() {

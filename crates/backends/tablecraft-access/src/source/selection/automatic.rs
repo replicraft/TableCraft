@@ -1,6 +1,6 @@
 //! Choose a matching declaration before traversal; never retry failed reads.
 use super::{super::schema::ScalarSchema, candidate_selection};
-use tablecraft_ace::{IndexInspection, IndexProjectionSelection};
+use tablecraft_ace::{IndexInspection, IndexProjectionSelection, Int32IndexSelection};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_query::{QueryError, source::ScanConstraint};
 
@@ -24,11 +24,19 @@ pub(super) fn choose<'a>(
         let Some(constraints) = index.constraints() else {
             continue;
         };
-        if constraints.ignore_nulls() || index.columns().len() != 1 {
+        if index.columns().len() != 1 {
             continue;
         }
 
         let selection = candidate_selection(inspection, index, declared, constraint);
+        if constraints.ignore_nulls()
+            && !matches!(
+                selection,
+                IndexProjectionSelection::Int32(Int32IndexSelection::Range { .. })
+            )
+        {
+            continue;
+        }
         if selection != IndexProjectionSelection::All {
             return Ok(Some((index.name(), selection)));
         }

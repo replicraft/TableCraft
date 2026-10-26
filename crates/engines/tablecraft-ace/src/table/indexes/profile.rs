@@ -73,6 +73,10 @@ impl KeyType {
 
 fn single_column(index: &NativeIndex, schema: &TableSchema) -> Result<usize, InspectError> {
     qualify(index)?;
+    column_position(index, schema)
+}
+
+fn column_position(index: &NativeIndex, schema: &TableSchema) -> Result<usize, InspectError> {
     if index.columns.len() != 1 {
         return Err(InspectError::Unsupported);
     }
@@ -103,6 +107,32 @@ pub(super) enum IndexProfile<'a> {
     DecimalComposite(super::composite::DecimalCompositeProfile),
 }
 impl<'a> IndexProfile<'a> {
+    /// A separate physical-coverage profile. Ordinary All/NULL table reads still
+    /// use new(), which refuses indexes that omit entirely NULL keys.
+    pub fn ignored_int32(
+        index: &NativeIndex,
+        schema: &'a TableSchema,
+    ) -> Result<Self, InspectError> {
+        if !index
+            .constraints()
+            .is_some_and(|constraints| constraints.ignore_nulls())
+        {
+            return Err(InspectError::Unsupported);
+        }
+        let column = column_position(index, schema)?;
+        if schema.columns[column].native_type() != crate::format::data_type::INT32
+            || schema.columns[column].scalar_type() != Some(ScalarType::Int32)
+        {
+            return Err(InspectError::Unsupported);
+        }
+        Ok(Self::Single(SingleKey {
+            column,
+            key_type: KeyType::Int32,
+            descending: index.columns[0].descending(),
+            selection: Int64IndexSelection::All,
+        }))
+    }
+
     pub fn new(index: &NativeIndex, schema: &'a TableSchema) -> Result<Self, InspectError> {
         if index.columns.len() > 1 {
             if super::encoded_tuple::has_variable(index, schema)? {

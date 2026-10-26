@@ -4,13 +4,15 @@ use super::super::{TableSchema, read_table};
 use super::key::KeyWork;
 use super::{
     IndexConstraints, IndexProjection, IndexProjectionSelection, NativeIndex,
-    inspect_table_indexes, key::KeyProfile, profile::IndexProfile, read_table_index_projection,
+    inspect_table_indexes, key::KeyProfile, profile::IndexProfile, read::IgnoredInt32Check,
+    read_table_index_projection,
 };
 use crate::InspectError;
 use projection::CheckProjection;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
 
+mod ignored_nulls;
 mod projection;
 
 /// Coverage of one native index in a completed table check.
@@ -31,7 +33,7 @@ impl IndexCheck {
     pub fn index(&self) -> &NativeIndex {
         &self.index
     }
-    /// Whether the qualified full reader checked this index.
+    /// Whether the qualified complete physical-index reader checked this index.
     pub const fn status(&self) -> IndexCheckStatus {
         self.status
     }
@@ -60,8 +62,10 @@ impl TableCheck {
 }
 /// Check one explicit stable/offline scalar table sequentially and through every
 /// qualified Boolean/numeric/legacy DateTime/GUID index. Unsupported profiles are
-/// reported, not marked
-/// checked; failures in metadata/selected traversal return no partial report.
+/// reported, not marked checked. Single Int32 ignore-NULL indexes compare their
+/// complete physical membership against the sequential non-NULL population;
+/// omitted NULL roots still participate in required-key validation.
+/// Failures in metadata/selected traversal return no partial report.
 /// Caller budgets accumulate across every read, without refunds or retries.
 pub fn check_table<R: crate::NativeReadSource>(
     source: &mut R,
@@ -86,6 +90,8 @@ pub fn check_table<R: crate::NativeReadSource>(
     {
         return Err(InspectError::Malformed);
     }
+    let ignored_populations =
+        ignored_nulls::populations(&inspection, &sequential, budget, cancelled)?;
     drop(sequential);
     budget.charge_allocation(
         inspection.indexes.len() as u64,
@@ -95,25 +101,48 @@ pub fn check_table<R: crate::NativeReadSource>(
     indexes
         .try_reserve_exact(inspection.indexes.len())
         .map_err(|_| InspectError::Allocation)?;
-    for index in inspection.indexes {
+    for (position, index) in inspection.indexes.into_iter().enumerate() {
         tick(budget, cancelled)?;
-        let status = match IndexProfile::new(&index, &inspection.schema) {
+        let eligible_rows = ignored_populations
+            .as_ref()
+            .and_then(|populations| populations[position]);
+        let profile = if eligible_rows.is_some() {
+            IndexProfile::ignored_int32(&index, &inspection.schema)
+        } else {
+            IndexProfile::new(&index, &inspection.schema)
+        };
+        let status = match profile {
             Ok(profile) => {
                 let projection =
                     CheckProjection::new(&inspection.schema, &index, budget, cancelled)?;
-                let indexed = read_table_index_projection(
-                    source,
-                    scope,
-                    table,
-                    index.name(),
-                    IndexProjection {
-                        columns: projection.names(),
-                        selection: IndexProjectionSelection::All,
-                    },
-                    budget,
-                    cancelled,
-                )?;
-                if indexed.rows().len() != rows
+                let indexed = if let Some(eligible_rows) = eligible_rows {
+                    super::read::read_ignored_int32_check(
+                        source,
+                        scope,
+                        table,
+                        index.name(),
+                        IgnoredInt32Check {
+                            columns: projection.names(),
+                            eligible_rows,
+                        },
+                        budget,
+                        cancelled,
+                    )?
+                } else {
+                    read_table_index_projection(
+                        source,
+                        scope,
+                        table,
+                        index.name(),
+                        IndexProjection {
+                            columns: projection.names(),
+                            selection: IndexProjectionSelection::All,
+                        },
+                        budget,
+                        cancelled,
+                    )?
+                };
+                if indexed.rows().len() != eligible_rows.unwrap_or(rows)
                     || indexed.schema().scalar_columns_with_budget(budget)? != columns
                     || indexed.schema().object_id() != inspection.schema.object_id()
                     || indexed.schema().definition_page() != inspection.schema.definition_page()
@@ -197,7 +226,9 @@ pub fn check_table<R: crate::NativeReadSource>(
                 };
                 // Full indexed reads prove distinct live roots by key/row order
                 // and decoded key agreement. The complete sequential count then
-                // establishes root coverage on the caller's stable source.
+                // establishes root coverage on the caller's stable source. An
+                // ignored-NULL Int32 index instead proves the independently
+                // counted non-NULL population, never complete table coverage.
                 match checked {
                     Ok(()) => IndexCheckStatus::Checked,
                     Err(InspectError::Unsupported) => IndexCheckStatus::Unsupported,

@@ -128,7 +128,7 @@ python3 docs/testing/compare_constraints.py --cli path/to/tablecraft \
 
 Text compound keys, Memo unique constraints, full-width Short Text unique
 constraints, other unqualified
-key types, ignore-NULL indexes, unqualified flags/types and
+key types, ignore-NULL profiles other than qualified single Int32, unqualified flags/types and
 foreign-reference profiles have no tree/row validation. Their definitions remain
 visible, including coverage gaps. Entire tables with unsupported scalar fields
 fail; the checker does not pretend to validate selected columns only.
@@ -172,7 +172,7 @@ Text-bearing compound indexes now participate in full traversal and row-key
 checks, including mixed numeric/GUID/Decimal/Short Binary components. Constraint
 NULL facts come from complete rows, not possibly truncated separator bytes.
 Unique checks stay unqualified for any Memo component or a full-width/digested
-key. Unknown collation and ignore-NULL profiles remain explicit gaps. See
+key. Unknown collation and other ignore-NULL profiles remain explicit gaps. See
 [compound text contracts and evidence](NATIVE_TEXT.md#compound-text-index-reads).
 
 
@@ -206,3 +206,28 @@ This changes repeated decoding work, not check coverage, index eligibility or
 default allowances. Sources must still remain stable/offline throughout the
 operation. Fewer rereads do not establish concurrent-file isolation, and this
 evidence does not qualify native Microsoft Access integrity results or writes.
+
+## Single Int32 ignore-NULL membership
+
+A completed check can validate known single-column Int32 indexes that omit NULL
+keys. The checker first validates the complete sequential table, including its
+declared live count, and counts actual non-NULL Int32 roots for each qualified
+index. It then drops that snapshot and traverses the complete physical index
+under the same cumulative allowance. Every entry must reference a distinct live
+row with the exact non-NULL key, and the entry population must match the eligible
+sequential count. Thus an omitted NULL cannot replace a missing non-NULL entry.
+Empty and entirely NULL tables have an empty physical population.
+
+Existing unique-key checks apply to the retained non-NULL entries; required-key
+checks also examine omitted sequential NULL roots. Logical aliases retain
+individual coverage entries. `TableCheck::rows()` and its schema still describe
+the full table population. `Checked` means complete qualified physical coverage,
+which does not make this index a complete-table retrieval path. Public indexed
+`All`/`Null` requests remain refused.
+
+All work, eligible-count allocation, row decoding, traversal and constraints
+share the caller's budget/cancellation contract. A failure yields no partial
+report. Unknown declarations and other ignore-NULL carrier profiles remain
+visible as unsupported. Existing native mutation gates explicitly retain the
+ignore-NULL refusal despite the new read-check coverage; this is no new write
+support or native Microsoft Access integrity qualification.

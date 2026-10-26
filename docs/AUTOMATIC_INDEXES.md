@@ -49,8 +49,11 @@ Single direct Short Text equality can additionally use
 its actual resolver and source must agree before index selection. Native field identities map to exposed scalar columns by
 validated names; mixed native schemas retain their scalar-view boundary.
 
-Declarations must have known local ordinary/primary constraints and include NULL
-keys. Unknown flags, foreign references, ignore-NULL declarations, compound keys,
+Declarations must have known local ordinary/primary constraints. They normally
+include NULL keys; known single Int32 ignore-NULL declarations can additionally
+serve non-NULL Int32 Range hints. NULL-only constraints decline those indexes,
+retaining an ordinary sequential scan. Other ignore-NULL profiles, unknown flags,
+foreign references, compound keys,
 unrelated fields and unsupported constraint/carrier pairs are skipped before
 traversal. This does not implement costing or selectivity estimates. No compatible
 candidate means an ordinary sequential read. Malformed/ineligible metadata that
@@ -167,3 +170,18 @@ Last, empty versus NULL, empty tables, complete-cache boundaries, ignored/unrela
 indexes and corrupt chosen roots. Inputs remain immutable; corrupt experiments
 use disposable copies. This evidence qualifies the explicit engineering read
 profile; Windows Access SQL/optimizer behavior remains unrun.
+
+## Ignore-NULL Int32 candidates
+
+Single Int32 ignore-NULL candidates use the existing wholly safe integer filter
+extractor. Equality and range predicates cannot match stored NULL, so omitting
+those roots preserves the residual predicate. `IS NULL` and unrestricted scans
+never select this candidate, and other carriers/composites remain excluded.
+Automatic results keep sequential row order even when the physical index is
+descending; an explicitly required index keeps native key order.
+
+The original WHERE remains active. Partial AND extraction still declines hints
+when it could suppress eager errors. Selected index failures propagate without
+fallback, and neither successful nor failed constrained snapshots become complete
+table caches. Binding remains metadata-only. This read behavior preserves the
+existing native mutation refusal and makes no native Access comparison claim.
