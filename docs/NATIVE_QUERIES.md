@@ -417,8 +417,15 @@ tablecraft query run --database example.accdb --multivalues \
 A bare list stays on its parent row, and a hidden `.Value` criterion retains the
 complete selected parent's list. Aliases and supported scalar ordering/TOP also
 work through static derived/named projections. Projecting `.Value` continues to
-produce scalar child rows. Combining a bare list and displayed child values in
-one query remains unsupported; see the [typed result contract](MULTIVALUE_QUERIES.md).
+produce scalar child rows. Selecting a bare list beside displayed child values
+now repeats the complete list on each expanded row. Same-member predicates filter
+that child; independent hidden membership criteria retain their parent semantics.
+Present empty lists, stored NULL children and absent outer parents remain distinct
+in the list sidecar. See the [typed result contract](MULTIVALUE_QUERIES.md).
+The [mixed-output replay](testing/MIXED_MULTIVALUE_RESULTS.md) checks complete
+lists beside displayed members against registered original getter values;
+separate [native/CLI controls](testing/results/mixed-multivalue-results-host-2026-10-26.json)
+cover repeated payloads, child filtering, outer absence and buffered failures.
 
 INNER joins and comma-separated CROSS sources can project complete lists from
 either parent, including nested joins and qualified static named/derived leaves.
