@@ -164,7 +164,10 @@ pub(in crate::table) fn audit_retirements(
                 }
             }
         }
-        if current.len() != expected_count || current.binary_search(&original.root).is_err() {
+        if (new_indexes.schema().declared_rows() == 0 && current.as_slice() != [original.root])
+            || current.len() != expected_count
+            || current.binary_search(&original.root).is_err()
+        {
             return Err(EditError::Preservation);
         }
     }

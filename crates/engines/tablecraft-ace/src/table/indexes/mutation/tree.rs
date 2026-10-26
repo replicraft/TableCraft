@@ -4,6 +4,10 @@
 #[cfg(feature = "ace16-write-preview")]
 mod contraction;
 #[cfg(feature = "ace16-write-preview")]
+mod siblings;
+#[cfg(feature = "ace16-write-preview")]
+pub(in crate::table) use siblings::{SiblingAudit, audit_siblings};
+#[cfg(feature = "ace16-write-preview")]
 mod deletion;
 #[cfg(feature = "ace16-write-preview")]
 pub(super) use contraction::Contraction;

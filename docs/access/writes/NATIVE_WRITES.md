@@ -19,9 +19,11 @@ deletion; this does not enable their UPDATE codecs. Allocation, Text/Binary
 composite deletion and ordinary SQL/backend DELETE remain unimplemented. Engine checks
 and original-file candidate replay have separate evidence records in the preview
 contract; neither establishes native Access save/reopen.
-The current contraction profile refuses nonzero internal-node sibling links.
-The [deep reference corpus](../../testing/DELETE_CONTRACTION_STORAGE_OBSERVATIONS.md)
-contains those links; supporting their checked repair remains a concrete gap.
+Contraction now qualifies complete internal-node sibling chains by height and
+repairs retained neighbors. Entirely unlinked levels retain their existing
+profile; partial or malformed chains refuse. The
+[deep reference corpus](../../testing/DELETE_CONTRACTION_STORAGE_OBSERVATIONS.md)
+and its initial refusal baseline remain separate from repaired candidate replay.
 
 `NativeImage::plan_int32_updates` produces complete before/after images without
 writing to its source. The current engineering profile is unencoded Jet 4 only:

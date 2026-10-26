@@ -1,0 +1,280 @@
+{
+  "date": "2026-10-26",
+  "scope": "Feature-only ACE16 existing-page DELETE contraction: complete original internal sibling-chain qualification by height, retained-neighbor repair and independent final sibling/root audit.",
+  "unique_engine_unit_integration_tests": 187,
+  "new_engine_tests": 9,
+  "new_author_integration_tests": 2,
+  "new_independent_integration_tests": 6,
+  "new_private_causal_audit_tests": 1,
+  "existing_engine_tests": 178,
+  "compile_fail_doc_tests": 3,
+  "total_engine_checks_including_docs": 190,
+  "scope_files": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/tree.rs",
+      "bytes": 8763,
+      "sha256": "edc0bf3975a468220e030f69a2f14436ef2b321ee0a5db674ed5d8d371341ff6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/tree/contraction.rs",
+      "bytes": 7494,
+      "sha256": "012fb5850714f7d3ae0111f6479d10367855a23f13c4ff0782287a021110c5ba"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/tree/siblings.rs",
+      "bytes": 6764,
+      "sha256": "03d5656ee995d1aceb1dda120bec074ee017a83cefd6c017599b62b6004440b2"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/tree/siblings/audit.rs",
+      "bytes": 4441,
+      "sha256": "729ae7840f1e26761adbd1776157e0f34ab02e4244e4cca73e0e8578405c52ae"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/tree/siblings/audit/tests.rs",
+      "bytes": 4688,
+      "sha256": "8aa95dd9756874dd55f421ec8fd4917609481379a1c73f62fcdbf7821bc68005"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/mod.rs",
+      "bytes": 1293,
+      "sha256": "bb837adb7355d8b88b7f6b113e6ac5f96b975115f16c33ce2ce003cfd7f8fd5a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mod.rs",
+      "bytes": 2865,
+      "sha256": "fec38ad1c1ad3f368b8a2f0f6281654e9dc9dc76154322ce5b268fa405f5f6b8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/delete.rs",
+      "bytes": 5497,
+      "sha256": "f1c1e41860299991afc6afd3ed797f17fdee1105ddd8de70be7009876356c1eb"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/retirement/audit.rs",
+      "bytes": 6722,
+      "sha256": "b448e48d880588f522fea38b9f2a5d128fa911ecfcd109509b44f0dd0d898c5f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete.rs",
+      "bytes": 6502,
+      "sha256": "a43ade0a763d613e1d41baceda063cc7fbbc1b99dfd8396844af954dfeda4b88"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_delete_internal_chains.rs",
+      "bytes": 4793,
+      "sha256": "c9fb31fba7b873dc5460de6de47b00c7fb60e4e98ba71f7111871b1a63449e19"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_internal_chain_contract.rs",
+      "bytes": 558,
+      "sha256": "7f4c00928c94a64e1173892de6a390745891605683973262d6f4bb9ca0af6fc9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_internal_chain_contract/model.rs",
+      "bytes": 10458,
+      "sha256": "277d11f6564f6d50be83ebd5952f803760213c9a14676d6eff0702fc9cb8616b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_internal_chain_contract/values.rs",
+      "bytes": 3250,
+      "sha256": "6204a651fff0044acfdda1e46325aa2fb1b4edb1ad82f50b3d3db90d67b58804"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_internal_chain_contract/boundaries.rs",
+      "bytes": 3655,
+      "sha256": "3afe058d14926efab4b72f40cce1335f56f44ab45d4e5ca8422fd701377b6449"
+    },
+    {
+      "path": "docs/testing/ACE16_DELETE_PREVIEWS.md",
+      "bytes": 19672,
+      "sha256": "351e6d42b1503ff8428e0f516d168037263c692b1dcff6c67905b984893e0db8"
+    }
+  ],
+  "read_only_shared_fixture_files": [
+    {
+      "path": "crates/engines/tablecraft-ace/tests/mutation/fixture.rs",
+      "bytes": 5609,
+      "sha256": "9d66669d6fce171118e39d07afe54f6f3298f8168f5d088befbc8649baf6bae3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/mutation/index_fixture.rs",
+      "bytes": 5589,
+      "sha256": "7a30a999ed52000012dfc0f8fe8f49be8994e74d60e80608cede7453ad1e74cf"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/support/mod.rs",
+      "bytes": 3496,
+      "sha256": "395145db02a7fc23388bd6ba065ee62992e823df0306bff205a2ae2304438c99"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_delete_tree_contract/model.rs",
+      "bytes": 11003,
+      "sha256": "c56e4c20f172ab575ce34275806697bbbff96ebed1a36f1a400c7f8d7f0dcbf1"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_delete_contraction_contract/model.rs",
+      "bytes": 8565,
+      "sha256": "f9259e804701fe69b82ef18a36b29c80b9588b7ba2abc709dedb276ead833392"
+    }
+  ],
+  "checks": [
+    {
+      "command": "cargo check --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-delete-internal-chains-check-final-20261026.log",
+        "bytes": 183,
+        "sha256": "e3a4323f03a327130a3c964001f438dfc828b2dbb2ca4ed278684dba67b10e67"
+      },
+      "session": 43890
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test ace16_delete_internal_chains --test ace16_internal_chain_contract --test ace16_delete_contraction_contract",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-delete-internal-chains-primary-final-20261026.log",
+        "bytes": 2775,
+        "sha256": "0a4fd832d9daf0d8a528e3a4e2b3c4c4629481e2fc21c5429601eba5e7f2be30"
+      },
+      "unique_tests": 16
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test ace16_delete_internal_chains --test ace16_internal_chain_contract --test ace16_delete_contraction_contract --lib table::indexes::mutation",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-delete-internal-chains-private-and-filtered-20261026.log",
+        "bytes": 2713,
+        "sha256": "51ae7effe975ce0379f443de6a3a99ccbf440c893b1a11360d26a4e42c390224"
+      },
+      "session": 6137,
+      "unique_tests": 9,
+      "note": "Nine actual library units; integration runtime filtered to zero here and counted only in unfiltered primary."
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test ace16_deletes --test ace16_delete_contract --test ace16_delete_trees --test ace16_delete_tree_contract --test ace16_delete_retirement --test ace16_encoded_delete_contract --test binary_indexes --test indexes",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-delete-internal-chains-delete-read-regressions-20261026.log",
+        "bytes": 7403,
+        "sha256": "0932d491b10637f3b6646440f82a5700ace415fea636c96d0a57a5cdc08037ac"
+      },
+      "session": 8158,
+      "unique_tests": 64
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test ace16_write_preview --test mutation --test ace16_fixed_updates --test scalar_index_updates --test integral_index_updates --test decimal_updates --test guid_updates --test composite_updates --test batch_updates --test mask_updates --test foreign_updates --test cascade_updates",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-delete-internal-chains-writer-regressions-20261026.log",
+        "bytes": 10779,
+        "sha256": "31b21b5c72563a6dbd9e56f650e100d444d98c35b0f48790a6b0a613c5e958d0"
+      },
+      "session": 58446,
+      "unique_tests": 98
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib --test ace16_delete_internal_chains --test ace16_internal_chain_contract --test ace16_delete_contraction_contract --example preview_ace16_delete -- -D warnings",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-delete-internal-chains-clippy-accepted-20261026.log",
+        "bytes": 183,
+        "sha256": "b109b57032a539a605c375f9174c3e430b697dc8da7a81cad9e2a10be2fdbd8b"
+      },
+      "session": 71789
+    },
+    {
+      "command": "cargo check --locked --offline -j2 -p tablecraft-ace --lib --no-default-features",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-delete-internal-chains-minimal-20261026.log",
+        "bytes": 183,
+        "sha256": "a6bbcb7d7304ac62986bcf70c072d6b6b186ad844397179a70292060702c06b2"
+      },
+      "session": 96724
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --doc",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-delete-internal-chains-doc-tests-20261026.log",
+        "bytes": 627,
+        "sha256": "32d2780f0efa5e3a03b7056e7f49d0084a452c93fe0f8255a9e84bc396dbe413"
+      },
+      "session": 75205,
+      "unique_tests": 3
+    },
+    {
+      "command": "rustfmt --edition 2024 --check crates/engines/tablecraft-ace/src/table/indexes/mutation/tree.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/tree/contraction.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/tree/siblings.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/tree/siblings/audit.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/tree/siblings/audit/tests.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/mod.rs crates/engines/tablecraft-ace/src/table/indexes/mod.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/delete.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/retirement/audit.rs crates/engines/tablecraft-ace/src/table/mutation/delete.rs crates/engines/tablecraft-ace/tests/ace16_delete_internal_chains.rs crates/engines/tablecraft-ace/tests/ace16_internal_chain_contract.rs crates/engines/tablecraft-ace/tests/ace16_internal_chain_contract/model.rs crates/engines/tablecraft-ace/tests/ace16_internal_chain_contract/values.rs crates/engines/tablecraft-ace/tests/ace16_internal_chain_contract/boundaries.rs",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-delete-internal-chains-format-20261026.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "rust_files": 15
+    }
+  ],
+  "preserved_excluded_attempts": [
+    {
+      "command": "cargo check --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib",
+      "exit_code": 101,
+      "log": {
+        "path": ".cache/ace16-delete-internal-chains-check-20261026.log",
+        "bytes": 1460,
+        "sha256": "bcd1b83b152abcf9d29272689e03fe4a3b513a64f93344366b6ee037b205b649"
+      },
+      "session": 47201,
+      "reason": "Private method visibility was too narrow for mutation sibling caller; adjusted to mutation scope and removed old unused WriteBlocker import. No runtime/golden correction."
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib --test ace16_delete_internal_chains --test ace16_delete_contraction_contract --example preview_ace16_delete -- -D warnings",
+      "exit_code": 101,
+      "log": {
+        "path": ".cache/ace16-delete-internal-chains-clippy-20261026.log",
+        "bytes": 627,
+        "sha256": "9dd8352eb61600a50acecbe20404b18d6d438b727ae0d63b91d8d5b71f59ef64"
+      },
+      "session": 54715,
+      "reason": "New author target shared capture re-export unused: intended textual replacement had not matched formatted expression. Final no-op test explicitly calls original public capture helper."
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib --test ace16_delete_internal_chains --test ace16_internal_chain_contract --test ace16_delete_contraction_contract --example preview_ace16_delete -- -D warnings",
+      "exit_code": 101,
+      "log": {
+        "path": ".cache/ace16-delete-internal-chains-clippy-final-20261026.log",
+        "bytes": 569,
+        "sha256": "61898b32b2a773bd5fd08a27a495b9cdc71080dd2f5cb32888cf461d0dc14809"
+      },
+      "session": 57558,
+      "reason": "New independent target helper imports left shared wrapper capture unused; changed only re-export path to identical functions, no behavior or expected-value change."
+    }
+  ],
+  "superseded_green_primary": {
+    "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test ace16_delete_internal_chains --test ace16_delete_contraction_contract",
+    "exit_code": 0,
+    "log": {
+      "path": ".cache/ace16-delete-internal-chains-primary-20261026.log",
+      "bytes": 2103,
+      "sha256": "dc248610db81e681233db874dd4c9ffee60cf044a10c5edb0d8a2f6244b9ef55"
+    },
+    "session": 69630,
+    "unique_tests": 10
+  },
+  "reference_baseline": {
+    "path": "docs/testing/results/ace16-delete-contraction-baseline-2026-10-26.json",
+    "bytes": 109777,
+    "sha256": "9e6b75b5e0825106c4eb3d60f2323b6792799beefacf628f6cd98ff72a0cee8a"
+  },
+  "reference_boundary": "Baseline describes older frozen a19cda68 artifact, including sixteen linked-node positive refusals, and remains unchanged. Repaired original public-writer replay is separate and unrun here.",
+  "private_causal_audit_contract": "An isolated header-only fixture prepays retained expected-state descriptors and calls audit_siblings directly. Valid survivor/root-empty audit states pass; forged dangling neighbors, wrong kind/height/owner, nonzero empty-root metadata and omitted original retirement fail Preservation. It is not a complete native database/candidate or native Access qualification.",
+  "boundaries": [
+    "Contraction alone captures every original internal node in per-height depth-first child order. Each level is all-zero unlinked or exact complete reciprocal sequence. Partial/cyclic/asymmetric/cross-level/root links fail before patches.",
+    "Filtering each original linked sequence removes only nodes retired in the same physical/root scope. Surviving pointers repair per height, unlinked levels remain zero, retired residual bodies stay identical. No blanket clearing or nonempty height promotion.",
+    "Empty-root proof is contraction returning None. Final audit requires all original nonroots retired and same root LEAF/height0/zero links-tail-prefix-bitmap/full free capacity. Final owned-map audit also requires root-only ownership when tablecount0.",
+    "Final sibling audit derives expected neighbors by walking original nodes, separately from repair survivor-vector construction, after ordinary structure/constraint/map/preservation checks; verifies actual kinds/heights/owners/endpoints.",
+    "Levels/pages, survivor vectors, patch/audit ownership and scans use fallible allocations/cumulative budgets/cancellation. Every audited header lookup pays work and checks cancellation.",
+    "No-op/non-retirement requirements remain. Numeric/preserved Text/Binary transport, actual bounded/tail forms, allocation-map roles, equal-cardinality UPDATE, property/history/relationship/ignored-NULL/macro gates and normal ACE writer refusal are unchanged.",
+    "No new allocation/map growth, nonempty root promotion, journalable plan, ordinary SQL/backend DELETE or native Microsoft Access save/reopen qualification."
+  ]
+}

@@ -7,7 +7,7 @@ use crate::{
     format::{page::PAGE_BYTES, reader::Reader},
     header::check,
     inspect_relationships,
-    table::indexes::{audit_retirements, index_delete_patches},
+    table::indexes::{audit_retirements, audit_siblings, index_delete_patches},
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
@@ -162,6 +162,14 @@ impl NativeImage {
             plan.after_bytes(),
             scope,
             table,
+            &indexes.retired,
+            budget,
+            cancelled,
+        )?;
+        audit_siblings(
+            plan.before_bytes(),
+            plan.after_bytes(),
+            &indexes.siblings,
             &indexes.retired,
             budget,
             cancelled,

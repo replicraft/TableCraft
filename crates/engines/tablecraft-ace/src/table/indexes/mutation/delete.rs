@@ -114,6 +114,7 @@ fn edit_tree<P: RetainedProfile, const N: usize>(
         return Err(EditError::Preservation);
     }
     if contraction {
+        let mut siblings = tree.sibling_chains(image, index, reader.budget, reader.cancelled)?;
         let mut remaining = keys.as_slice();
         let mut state = Contraction {
             profile,
@@ -123,7 +124,7 @@ fn edit_tree<P: RetainedProfile, const N: usize>(
             leaves: Vec::new(),
             removed: 0,
         };
-        tree.contract::<P, N>(
+        let maximum = tree.contract::<P, N>(
             image,
             &mut remaining,
             &mut state,
@@ -134,6 +135,23 @@ fn edit_tree<P: RetainedProfile, const N: usize>(
         if !remaining.is_empty() || state.removed != references.len() {
             return Err(EditError::Preservation);
         }
+        siblings.repair(
+            image,
+            maximum.is_none(),
+            state.retired,
+            &mut patches.indexes,
+            reader.budget,
+            reader.cancelled,
+        )?;
+        reader
+            .budget
+            .charge_allocation(1, size_of_val(&siblings) as u64)
+            .map_err(InspectError::from)?;
+        patches
+            .siblings
+            .try_reserve_exact(1)
+            .map_err(|_| InspectError::Allocation)?;
+        patches.siblings.push(siblings);
         super::retirement::leaf_links(
             image,
             &state.leaves,

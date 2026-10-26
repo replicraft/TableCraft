@@ -32,7 +32,8 @@ remove entries within their original leaf partitions without redistributing
 retained entries. Empty nonroot leaves and branches can be retired when their
 existing owned and global-free bitmap cells qualify. Every nonempty node retains
 its original height and bounded-final-child or tail-child form; surviving leaf
-links are repaired in encounter order. An entirely empty tree retains its root
+links are repaired in encounter order. Qualified internal chains are repaired
+separately at each original height. An entirely empty tree retains its root
 page as a height-zero leaf. Logical aliases sharing a physical declaration receive
 one edit; unrelated physical declarations sharing a root refuse.
 
@@ -231,8 +232,8 @@ remain outside this profile. The normal mutation gate still refuses indexed
 Binary UPDATE, including empty update requests. Deletion's explicit admission
 changes only that early blocker; property, history, relationship, active-content,
 constraint, preservation and macro qualification boundaries remain unchanged.
-Existing topology limits, including refusal of unqualified internal sibling-link
-retirement, also remain in force.
+Existing topology and mutation safeguards remain in force; internal sibling
+chains must qualify as described below.
 
 The [encoded-key implementation record](results/ace16-delete-encoded-native-2026-10-26.json)
 records 178 passing engine functions, including ten new controls: two private
@@ -251,3 +252,54 @@ Memo/composite/ignored-NULL refusal variants and the existing special descending
 Binary empty-value order were also corrected in newly authored expectations.
 Initial attempts and diagnostic sources remain preserved separately. No production
 correction followed these test-authoring failures.
+
+## Internal sibling chains during contraction
+
+Before emitting contraction patches, the preview captures every original internal
+node in depth-first child order, separately for each original height. Each level
+must have either all previous/next pointers zero, preserving the earlier unlinked
+profile, or the complete reciprocal chain for that exact sequence. Partial,
+asymmetric, cyclic, cross-level and root sibling links refuse. The root is the
+sole node at its height and must have zero siblings. This additional preflight
+applies to contraction; existing no-op and no-retirement behavior is unchanged.
+
+For a linked level, removing branches filters that original sequence and repairs
+only surviving nodes' previous/next links to their retained neighbors. Unlinked
+levels stay zero; retired pages retain their original residual bytes. Nonempty
+nodes keep their original heights and actual bounded/tail child form. A wholly
+empty index keeps its original root as an empty height-zero leaf and retires every
+original nonroot page. Its final owned set must contain only that root.
+
+A separate final audit checks the actual candidate after ordinary structure,
+constraint, map and preservation checks. It independently walks the original node
+sequence to verify retained reciprocal neighbors, node kinds/heights/owners and
+zero endpoints. For a proven-empty root it checks leaf kind, zero height,
+links/tail/prefix/entry bitmap and full free-entry capacity, together with complete
+original nonroot retirement. A private causal test calls this audit directly:
+valid survivor/empty-root states pass, while forged dangling links, header changes
+and omitted retirement fail even without invoking the repair producer.
+
+Captured levels/page IDs, survivor vectors, patches and final scans use the same
+cumulative budget and cancellation contract. This does not change UPDATE,
+original encoded-key transport, allocation-map roles, macro eligibility or normal
+ACE write capability. The preserved public-writer baseline describes an older
+frozen binary's internal-chain refusals; a repaired original-file candidate replay
+requires a new frozen artifact and separate acceptance record.
+
+The [internal-chain implementation record](results/ace16-delete-internal-chains-native-2026-10-26.json)
+records 187 passing engine functions, including nine new controls: two author
+integration tests, six independent integration tests and one direct after-audit
+causal test. The remaining 178 functions retain prior DELETE, encoded-key,
+read/check and writer coverage. Three compile-fail docs, strict selected
+library/test/example lint, minimal standalone compilation and fifteen-file
+formatting pass. Both ACE16 headers, linked and all-zero levels, first/middle/last
+branch retirement, mixed child forms, singleton/root-empty states, exact residual
+bytes, malformed links, cumulative quotas/cancellation and retry are covered.
+Original-file replay against a repaired frozen executable is separate and is not
+counted by this engine implementation record.
+
+The first library compilation exposed only method visibility and an unused
+import. Two initial strict attempts found unused shared-helper re-exports in the
+new author and independent tests; each test now uses the original helper through
+its shared wrapper. Logs remain retained. Runtime tests and their independent
+expected values required no correction.

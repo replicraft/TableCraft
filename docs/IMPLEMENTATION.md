@@ -1,5 +1,25 @@
 # Implementation status
 
+## Checked internal-node sibling repair during contraction
+
+ACE16 deletion candidates now qualify internal nodes by physical tree and height.
+Each original level must be entirely unlinked or have complete reciprocal links
+matching DFS child order. Contraction repairs retained linked neighbors while
+preserving unlinked levels, nonempty heights, child forms and retired residual
+bytes. Malformed, partial and cross-level links refuse before candidate publication.
+
+A separate final audit checks exact retained neighbors, node kinds/heights and
+the proven empty-root conversion. Empty trees keep their original root as a
+height-zero leaf, retire every original nonroot and retain root-only ownership.
+No-op and non-retirement paths retain their existing requirements.
+
+The [implementation record](testing/results/ace16-delete-internal-chains-native-2026-10-26.json)
+records 187 passing engine functions, including nine new controls, and three
+compile-fail checks. Strict lint, minimal compilation and formatting pass.
+Private causal tests reject forged after-images independently of the repair path.
+The earlier sixteen original-file refusals remain an immutable baseline; repaired
+original-file acceptance requires a fresh committed tool and separate replay.
+
 ## Original-file contraction baseline and internal-link gap
 
 A frozen committed deletion tool completed 32 original-file controls across four
@@ -14,8 +34,8 @@ The [baseline record](testing/results/ace16-delete-contraction-baseline-2026-10-
 retains both attempts, exact archived verifier sources and unchanged input/request
 hashes. The corrected verifier models actual tail/bounded node forms and reciprocal
 sibling chains per height; sixteen original/reference graph checks pass. No
-selection, quota or expected population was reduced. Checked internal-chain
-repair is the next implementation gap; native Access qualification stays separate.
+selection, quota or expected population was reduced. This baseline established the
+internal-chain repair requirement; native Access qualification stays separate.
 
 ## Deletion with preserved Short Text and Short Binary keys
 
