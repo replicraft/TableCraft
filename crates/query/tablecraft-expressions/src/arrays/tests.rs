@@ -1,7 +1,7 @@
 use super::*;
 use crate::EvalError;
 use proptest::prelude::*;
-use tablecraft_core::values::{Double, Value};
+use tablecraft_core::values::{Double, Guid, Value};
 
 #[test]
 fn bounds_retain_explicit_bases_empty_extents_and_checked_long_arithmetic() {
@@ -112,4 +112,36 @@ proptest! {
             prop_assert_eq!(result.unwrap_err(), EvalError::ArrayBounds);
         }
     }
+}
+
+#[test]
+fn stored_guid_views_have_fixed_bounds_without_materializing_byte_payloads() {
+    let guid = Guid::from_bytes([0xa5; 16]);
+    let value = Value::Guid(guid);
+    for view in [
+        ArrayView::Guid(&guid),
+        ArrayView::from_scalar(&value).unwrap(),
+    ] {
+        assert_eq!(BoundFunction::LBound.apply(view, None), Ok(Value::Int32(0)));
+        assert_eq!(
+            BoundFunction::UBound.apply(view, None),
+            Ok(Value::Int32(15))
+        );
+        assert_eq!(
+            BoundFunction::UBound.apply(view, Some(&Value::Int16(1))),
+            Ok(Value::Int32(15))
+        );
+        assert_eq!(
+            BoundFunction::UBound.apply(view, Some(&Value::Int16(2))),
+            Err(EvalError::ArrayBounds)
+        );
+    }
+    assert!(matches!(
+        ArrayView::from_scalar(&Value::Null),
+        Err(EvalError::InvalidNullConversion)
+    ));
+    assert!(matches!(
+        ArrayView::from_scalar(&Value::Int16(1)),
+        Err(EvalError::TypeMismatch)
+    ));
 }

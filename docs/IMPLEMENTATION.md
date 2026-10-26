@@ -1,5 +1,21 @@
 # Implementation status
 
+## Stored GUID inspection and bounds
+
+Stored Guid values now use a borrowed fixed Byte-array view for TypeName, VarType,
+IsArray and LBound/UBound, returning Byte()/8209/True/0/15 under the current profile.
+The shared `ArrayView::from_scalar` admission serves both evaluators without
+materializing bytes. Source/result Guid carriers, canonical bytes and strict keys
+remain unchanged. NULL, dimensions, Error/Missing and Extended-date boundaries
+retain their existing explicit behavior.
+
+Two expression, four query and one CLI focused tests cover wrappers, typed
+parameters, domains/groups, streaming, retained carriers, eager errors and
+cancellation. See [the contract](VALUE_INSPECTION.md#stored-guid-inspection-and-fixed-bounds)
+and [verification](testing/results/guid-inspection-2026-10-25.json).
+Microsoft's Byte-array contract grounds the engineering mapping; exact native
+subtypes/bounds/error behavior and full P0 remain unqualified.
+
 ## Independent native GUID predicate replay
 
 The [original predicate replay](GUID_CONVERSIONS.md#native-predicate-replay--25-october-2026)

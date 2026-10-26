@@ -1141,6 +1141,14 @@ Extrema, statistics, grouping and wider progressive sources remain separate work
 this does not establish complete read/query or native execution qualification.
 
 
+## Stored GUID type/bound inspection
+
+[Fixed GUID views](VALUE_INSPECTION.md#stored-guid-inspection-and-fixed-bounds)
+now support Byte()/8209/IsArray and 0..15 bounds across scalar and query consumers.
+The borrowed view leaves stored/result carriers unchanged and preserves existing
+NULL/dimension/eager-failure rules. It closes an observer/admission gap while
+native subtype/bound qualification and full P0 remain open.
+
 ## Independent native GUID predicate evidence
 
 The [native predicate replay](GUID_CONVERSIONS.md#native-predicate-replay--25-october-2026)

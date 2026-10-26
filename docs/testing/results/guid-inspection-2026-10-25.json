@@ -1,0 +1,81 @@
+{
+  "date": "2026-10-25",
+  "scope": "Borrowed fixed GUID Byte-array inspection and bounds. Stored carriers unchanged; native Access subtype/bounds/precedence remain unqualified.",
+  "new_tests": 7,
+  "new_test_breakdown": {
+    "expression": 2,
+    "query": 4,
+    "cli": 1
+  },
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-query --test guid_inspection --test value_inspection --test guid_byte_predicates --locked",
+      "exit_code": 0,
+      "tests": 23,
+      "new_tests": 4
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --test inspection --locked",
+      "exit_code": 0,
+      "tests": 5,
+      "new_tests": 1
+    },
+    {
+      "command": "cargo test -p tablecraft-expressions --lib --no-default-features --locked arrays::",
+      "exit_code": 0,
+      "tests": 4,
+      "new_tests": 1
+    },
+    {
+      "command": "cargo test -p tablecraft-expressions --lib --features sql --locked functions::inspection::types",
+      "exit_code": 0,
+      "tests": 5,
+      "new_tests": 1
+    },
+    {
+      "command": "cargo clippy -p tablecraft-expressions --lib --tests --features sql --locked -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --test guid_inspection --test value_inspection --locked -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo clippy -p tablecraft-cli --test inspection --locked -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo check -p tablecraft-expressions --no-default-features --locked",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo check -p tablecraft-query --no-default-features --locked",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_dependency_boundaries.py",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "references": [
+    "https://support.microsoft.com/en-us/access/functions/guidfromstring-function"
+  ],
+  "changed_expectation": "The old combined GUID/Extended-date type-refusal test now retains only the Extended-date refusal. New GUID tests assert the explicit Byte-array mapping.",
+  "limitations": [
+    "No native Access subtype/lower-bound/error-precedence qualification.",
+    "No stored/result carrier change, Byte payload materialization, array indexing or general array expansion.",
+    "No new dependency or VBA execution.",
+    "P0 value semantics remain unfinished."
+  ],
+  "unique_tests": 37,
+  "existing_regression_tests": 30,
+  "counting_note": "Two new expression tests, four new query tests and one new CLI test. Nonoverlapping selected test groups total 37; repeated invocations are not additional tests."
+}

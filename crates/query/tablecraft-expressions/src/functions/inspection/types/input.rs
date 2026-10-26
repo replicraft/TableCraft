@@ -19,6 +19,7 @@ impl InspectionInput<'_> {
         match self {
             Self::Expression(ExpressionValue::Value(value)) => Self::Scalar(value).normalized(),
             Self::Scalar(Value::Binary(bytes)) => Self::Array(ArrayView::Bytes(bytes)),
+            Self::Scalar(Value::Guid(guid)) => Self::Array(ArrayView::Guid(guid)),
             _ => self,
         }
     }

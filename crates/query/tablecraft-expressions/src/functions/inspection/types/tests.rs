@@ -123,23 +123,47 @@ fn variant_array_metadata_is_declared_and_never_inferred_from_elements() {
 }
 
 #[test]
-fn native_only_carriers_have_no_guessed_variant_type_or_default_property() {
-    // These constructors carry native data without inventing a VBA subtype.
-    let guid = Value::Guid(Guid::from_bytes([0; 16]));
-    let date = Value::DateTimeExtended(ExtendedDateTime::new(2026, 10, 21, 0, 0, 0, 0).unwrap());
-    for value in [guid, date] {
-        for function in [
-            ValueInspectionFunction::TypeName,
-            ValueInspectionFunction::VarType,
+fn extended_dates_keep_their_unqualified_language_type_boundary() {
+    let value = Value::DateTimeExtended(ExtendedDateTime::new(2026, 10, 21, 0, 0, 0, 0).unwrap());
+    for function in [
+        ValueInspectionFunction::TypeName,
+        ValueInspectionFunction::VarType,
+    ] {
+        assert_eq!(
+            function.apply(InspectionInput::Scalar(&value)),
+            Err(EvalError::TypeMismatch)
+        );
+    }
+    assert_eq!(
+        scalar(ValueInspectionFunction::IsArray, &value),
+        InspectionResult::Scalar(Value::Boolean(false))
+    );
+}
+
+#[test]
+fn stored_guids_share_byte_array_inspection_without_converting_the_payload() {
+    for canonical in [[0; 16], [0xff; 16], [0x12; 16]] {
+        let value = Value::Guid(Guid::from_bytes(canonical));
+        let expression = ExpressionValue::Value(value.clone());
+        for input in [
+            InspectionInput::Scalar(&value),
+            InspectionInput::Expression(&expression),
         ] {
             assert_eq!(
-                function.apply(InspectionInput::Scalar(&value)),
-                Err(EvalError::TypeMismatch)
+                ValueInspectionFunction::TypeName.apply(input),
+                Ok(InspectionResult::TypeName("Byte()"))
             );
+            for (function, expected) in [
+                (ValueInspectionFunction::VarType, Value::Int16(8209)),
+                (ValueInspectionFunction::IsArray, Value::Boolean(true)),
+                (ValueInspectionFunction::IsEmpty, Value::Boolean(false)),
+                (ValueInspectionFunction::IsError, Value::Boolean(false)),
+            ] {
+                assert_eq!(
+                    function.apply(input),
+                    Ok(InspectionResult::Scalar(expected))
+                );
+            }
         }
-        assert_eq!(
-            scalar(ValueInspectionFunction::IsArray, &value),
-            InspectionResult::Scalar(Value::Boolean(false))
-        );
     }
 }
