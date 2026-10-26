@@ -12,6 +12,8 @@ const FIRST_EMPTY: usize = 100;
 const EMPTY_PAGES: usize = 4999;
 const SOURCE_PAGES: usize = 70_000;
 const OWNER_OFFSET: usize = 4;
+const DEFINITION_PAGE: usize = 10;
+const DECLARED_ROWS_OFFSET: usize = 16;
 
 pub struct Sparse {
     prefix: Vec<u8>,
@@ -86,6 +88,14 @@ impl Sparse {
 
     pub fn remove_selected_membership(&mut self) {
         self.prefix[BITMAP_PAGE * PAGE_BYTES + 4 + DATA_PAGE / 8] &= !(1 << (DATA_PAGE % 8));
+    }
+
+    pub fn declared_rows(&mut self, count: u32) {
+        support::put32(
+            &mut self.prefix,
+            DEFINITION_PAGE * PAGE_BYTES + DECLARED_ROWS_OFFSET,
+            count,
+        );
     }
 
     pub fn wrong_owner(&mut self) {

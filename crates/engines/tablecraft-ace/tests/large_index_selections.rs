@@ -4,14 +4,17 @@ mod base;
 #[allow(dead_code)]
 #[path = "composite_indexes/fixture.rs"]
 mod composite_fixture;
+// Shared with the independent complete-request contract target.
+#[allow(dead_code)]
 #[path = "large_index_selections/fixture.rs"]
 mod fixture;
 mod support;
 
 use std::ops::Bound::{Included, Unbounded};
 use tablecraft_ace::{
-    IndexProjectionSelection, IndexReadRequest, InspectError, Int32IndexSelection,
-    read_table_index, read_table_index_in_table_order, read_table_index_range,
+    IndexProjection, IndexProjectionSelection, IndexReadRequest, InspectError, Int32IndexSelection,
+    read_table_index, read_table_index_in_table_order, read_table_index_projection,
+    read_table_index_range, read_table_index_with_request,
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
@@ -182,5 +185,86 @@ fn cancellation_and_exhausted_allowances_publish_no_selected_rows() {
             ),
             Err(InspectError::Limit(_))
         ));
+    }
+}
+
+#[test]
+fn explicit_complete_snapshots_preserve_counts_keys_and_native_index_order() {
+    for code in [5, 6] {
+        for indirect in [false, true] {
+            let mut source = fixture::Sparse::new(code, indirect);
+            let result = read_table_index_with_request(
+                &mut source,
+                CatalogScope::new(1),
+                "Items",
+                "Compound",
+                IndexReadRequest {
+                    columns: None,
+                    selection: IndexProjectionSelection::All,
+                    maximum_rows: 3,
+                },
+                &mut budget(),
+                &|| false,
+            )
+            .unwrap();
+            assert_eq!(
+                result.rows(),
+                [
+                    vec![Value::Int32(1), Value::Int32(10)],
+                    vec![Value::Int32(2), Value::Int32(20)],
+                    vec![Value::Int32(3), Value::Int32(30)],
+                ]
+            );
+            assert_eq!(source.data_reads, 1);
+        }
+    }
+}
+
+#[test]
+fn explicit_complete_projection_uses_table_order_without_widening_legacy_projection() {
+    for code in [5, 6] {
+        let mut source = fixture::Sparse::new(code, true);
+        let result = read_table_index_in_table_order(
+            &mut source,
+            CatalogScope::new(1),
+            "Items",
+            "Compound",
+            IndexReadRequest {
+                columns: Some(&["Score"]),
+                selection: IndexProjectionSelection::All,
+                maximum_rows: 3,
+            },
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        assert_eq!(
+            result.rows(),
+            [
+                vec![Value::Int32(30)],
+                vec![Value::Int32(10)],
+                vec![Value::Int32(20)]
+            ]
+        );
+        assert_eq!(source.data_reads, 1);
+
+        let mut source = fixture::Sparse::new(code, true);
+        assert_eq!(
+            read_table_index_projection(
+                &mut source,
+                CatalogScope::new(1),
+                "Items",
+                "Compound",
+                IndexProjection {
+                    columns: &["Score"],
+                    selection: IndexProjectionSelection::All,
+                },
+                &mut budget(),
+                &|| false,
+            )
+            .err(),
+            Some(InspectError::StructureLimit)
+        );
+        assert_eq!(source.data_reads, 0);
     }
 }
