@@ -6,7 +6,7 @@ use tablecraft_sql::select::UnaryOperator;
 pub(super) fn result(
     operator: UnaryOperator,
     input: OutputType,
-    scalar_declared: bool,
+    widening_refused: bool,
 ) -> OutputType {
     if operator == UnaryOperator::Not {
         return super::logical::complement(input);
@@ -43,7 +43,7 @@ pub(super) fn result(
             OutputType::scalar(ScalarType::Int16, nullable)
         }
         (UnaryOperator::Minus, ScalarType::Int16 | ScalarType::Int32 | ScalarType::DateTime)
-            if scalar_declared =>
+            if widening_refused =>
         {
             OutputType::scalar(scalar, nullable)
         }

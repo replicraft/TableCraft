@@ -96,10 +96,12 @@ impl Binder<'_> {
             }
             Expr::Unary(operator, argument) => {
                 let input = self.result_type(argument, scopes, depth + 1, profile)?;
-                let scalar = matches!(profile, ResultProfile::Declared)
+                // Unknown negation succeeds only when both declaration branches
+                // retain this carrier. A known Variant may still widen.
+                let widening_refused = matches!(profile, ResultProfile::Declared)
                     && self.result_declaration(argument, scopes, depth + 1)?
-                        == Some(OperandDeclaration::Scalar);
-                unary::result(*operator, input, scalar)
+                        != Some(OperandDeclaration::Variant);
+                unary::result(*operator, input, widening_refused)
             }
             Expr::Convert(conversion, _) => OutputType::scalar(
                 match conversion {
@@ -222,9 +224,12 @@ impl Binder<'_> {
                 logical::binary(*operator, left, right)
             }
             Expr::Binary(operator, left, right) => {
-                let scalar = matches!(profile, ResultProfile::Declared)
+                // Scalar overflow and unknown-category disagreement both refuse
+                // widened results. This guarantees a successful carrier without
+                // assigning a declaration to aggregate or UNION operands.
+                let widening_refused = matches!(profile, ResultProfile::Declared)
                     && self.result_declaration(expression, scopes, depth)?
-                        == Some(OperandDeclaration::Scalar);
+                        != Some(OperandDeclaration::Variant);
                 let left_type = self.result_type(left, scopes, depth + 1, profile)?;
                 let right_type = self.result_type(right, scopes, depth + 1, profile)?;
                 let declared_addition = if *operator == BinaryOperator::Add
@@ -240,7 +245,7 @@ impl Binder<'_> {
                 };
 
                 declared_addition.unwrap_or_else(|| {
-                    arithmetic::result(*operator, left_type, right_type, profile, scalar)
+                    arithmetic::result(*operator, left_type, right_type, profile, widening_refused)
                 })
             }
             Expr::IIf(condition, yes, no) => {

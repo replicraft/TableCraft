@@ -693,6 +693,15 @@ write transactions/recovery, schema editing, data-macro write safety, UI, forms/
 reports and SQLite expansion are outside this read/query checklist. They remain
 in the broader backend roadmap; this list does not mark them completed or waived.
 
+## Successful unknown-category arithmetic composition
+
+Declared-profile arithmetic with unknown provenance now has
+[successful selected-carrier descriptors](QUERY_RESULT_TYPES.md#successful-arithmetic-with-unknown-declaration-provenance),
+using its existing runtime agreement/refusal rule. Outer UNION consumers can
+apply common-carrier conversions without inventing aggregate/UNION declarations.
+Full Variant promotion, native declaration qualification and remaining P0 work
+remain open.
+
 ## Explicit deeper compound queries
 
 [Query binding depth](QUERY_BINDING_LIMITS.md) can now be selected explicitly up

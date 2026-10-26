@@ -1232,7 +1232,9 @@ operands or promise that an operation succeeds.
 This follows the effective-type and Scalar overflow rules in the
 [MS-VBAL arithmetic contract](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/e070115f-8d40-40cf-ac6d-ab18b9c6c906)
 and the [unary minus override](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/181ac001-7156-4fed-a518-fb90b828ec59).
-Variant and unknown declarations retain their conservative widening descriptors.
+Known Variant declarations retain their conservative widening descriptors. Unknown
+declarations now use the successful agreement-carrier guarantee described in
+[query result types](QUERY_RESULT_TYPES.md#successful-arithmetic-with-unknown-declaration-provenance).
 Materialized/default execution is unchanged. Public prepared metadata still merges
 both profiles conservatively, while execution selects the matching descriptor.
 
@@ -1252,3 +1254,14 @@ service under declared execution, separately from the default Double route.
 A baseline audit confirms this predates the withdrawn redundant helper. Both-Variant ordering, Scalar String/Variant
 coercion, unknown numeric guards and default execution remain separate. See
 [the contract, examples and verification](DECLARED_NUMERIC_TEXT.md).
+
+## Agreement-based successful result descriptors
+
+Unknown aggregate/UNION declarations remain unknown. Their existing arithmetic
+agreement path now supplies [successful carrier metadata](QUERY_RESULT_TYPES.md#successful-arithmetic-with-unknown-declaration-provenance)
+in the declared profile: widened results are refused, so successful selected-width
+results can compose with outer UNION conversions. This changes metadata and
+result conversion, without changing operator evaluation, ambiguity checks or
+native declaration claims. Materialized execution and known Variant widening
+retain their existing behavior. Verification is recorded in
+[the focused result](testing/results/agreement-result-types-2026-10-25.json).
