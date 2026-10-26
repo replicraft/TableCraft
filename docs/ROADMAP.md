@@ -25,18 +25,13 @@ Delivered read/query and engineering foundations:
   cancellation and [high-offset Memo/OLE checks](access/storage/NATIVE_HIGH_OFFSET_PAYLOADS.md).
 - [x] Offline Jet 4 fixed Int32 UPDATE copies and separate
   [ACE 16 engineering write previews](testing/ACE16_WRITE_PREVIEWS.md).
-  These now include [checked root-leaf deletion candidates](testing/ACE16_DELETE_PREVIEWS.md),
-  with 70 passing original-file controls and unchanged source bytes.
-  Multi-level deletion additionally retains nonempty original leaf partitions and
-  exact ancestor boundaries, with 24 passing original-file controls. Qualified
-  existing-page contraction now retires empty branches through checked owned/free
-  maps; its 141 engine checks are separate from pending original-file replay.
-  Required splits still refuse atomically.
-  Single Short Text/Binary deletion now retains checked original key bytes;
-  their UPDATE codecs remain unavailable.
-  Internal-node sibling chains now qualify and repair by height, with a separate
-  final audit. Repaired original-file acceptance requires fresh candidate replay;
-  the earlier sixteen refusals remain an immutable baseline.
+  [Deletion candidates](testing/ACE16_DELETE_PREVIEWS.md) retain original key/row
+  boundaries, including qualified single Short Text/Binary keys. Existing-page
+  contraction retires empty branches through checked owned/free maps and repairs
+  complete internal chains by height. A frozen committed tool now passes all
+  [32 deep/indirect original-file controls](testing/results/ace16-delete-internal-chains-originals-2026-10-26.json)
+  without changing the earlier selectors, requests or budgets. Required splits
+  still refuse, and Text/Binary UPDATE codecs remain unavailable.
   General ACE 16 saves are still unavailable.
 
 - [x] [Stateful streaming composition](query/PROGRESSIVE_QUERIES.md#stateful-retained-stages)

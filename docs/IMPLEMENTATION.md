@@ -17,16 +17,23 @@ The [implementation record](testing/results/ace16-delete-internal-chains-native-
 records 187 passing engine functions, including nine new controls, and three
 compile-fail checks. Strict lint, minimal compilation and formatting pass.
 Private causal tests reject forged after-images independently of the repair path.
-The earlier sixteen original-file refusals remain an immutable baseline; repaired
-original-file acceptance requires a fresh committed tool and separate replay.
+The [fresh committed-tool replay](testing/results/ace16-delete-internal-chains-originals-2026-10-26.json)
+passes all 32 original-file controls: twenty verified candidates and twelve typed
+refusals across 96 commands. All request bytes match the old baseline, and all
+inputs remain unchanged. The sixteen earlier refusals remain recorded separately.
+Candidate singleton internals can retain a valid tail-only form while reference
+output uses a bounded child; independent getters and full graph checks agree on
+the same rows and boundaries. This is not byte-identical reference output or
+native Access save/reopen qualification.
 
-## Original-file contraction baseline and internal-link gap
+## Initial original-file contraction baseline
 
 A frozen committed deletion tool completed 32 original-file controls across four
 deep/indirect-map datasets. Four nine-row history deletion candidates passed
 independent getters, exact graph/map checks and complete byte-preservation audits;
 twelve stale, duplicate and existing-output controls passed. Sixteen required
-positive cases remain unmet: the tool refuses their linked internal nodes with
+positive cases were unmet in that revision: the tool refused their linked
+internal nodes with
 `Unsupported(IndexedColumn)` before creating an output. This is partial evidence,
 not completion of contraction acceptance.
 
@@ -49,8 +56,9 @@ profiles are unchanged.
 Both directions, NULL/empty values, nonunique ties, physical aliases and supported
 nonunique Text overflow digests are covered. Unknown sort families, unique digest
 ambiguity, Memo/Long Text, Text/Binary composites and ignored-NULL indexes remain
-refused. The existing nonzero internal-node sibling-link contraction limit also
-remains; this feature does not repair that separate gap or enable normal ACE saves.
+refused. This initial implementation retained the internal-node sibling-link
+contraction limit; the subsequent chain extension above removes that separate
+limit. Neither feature enables normal ACE saves.
 
 The scoped batch passes 178 engine functions, including ten new controls, plus
 three compile-fail checks. Root-leaf positives cover both ACE16-family headers.

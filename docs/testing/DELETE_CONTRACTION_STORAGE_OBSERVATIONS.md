@@ -139,7 +139,7 @@ summary distinguishes these source/capture versions and pins the retained raw
 reports rather than rewriting them. No candidate replay is included in this
 reference chunk.
 
-## Current candidate baseline: sixteen positive controls remain unmet
+## Initial candidate baseline: sixteen positive controls remained unmet
 
 The separate [candidate baseline](results/ace16-delete-contraction-baseline-2026-10-26.json)
 runs the committed frozen engineering example from revision
@@ -193,3 +193,66 @@ The published driver subsequently only names header offsets/widths; its sixteen
 model checks pass without claiming another native execution. Any future repaired
 implementation requires a new frozen artifact and a separate acceptance record.
 This baseline will not be rewritten into a passing result.
+
+## Accepted original replay with internal sibling chains
+
+The new [acceptance record](results/ace16-delete-internal-chains-originals-2026-10-26.json)
+keeps the preceding baseline unchanged. Its separate frozen engineering example
+was compiled from `cd52af09c3f9253ed9aa7e3195a2210bf316efdc`, SHA-256
+`27edd9e81947a201725f006ada35bb76cadae3f05e8493ec2898a9be799082de`.
+The [build receipt](results/ace16-delete-internal-chains-example-build-2026-10-26.json)
+and 22 listed Git source objects were independently rehashed, including the new
+sibling qualification/repair and final-audit modules. Those selected source pins
+are not represented as a complete dependency closure or a live source inventory.
+
+All **32 controls pass: twenty candidates and twelve typed refusals**, across
+96 commands. All 31 run pins and 32 request files stay unchanged. Every request
+content hash matches the initial baseline by filename; selectors, expected
+populations, driver bytes and operation budgets were unchanged. The twenty
+actual candidate files were independently rehashed and reopened through both
+public row/index getters and the separate map/root probe. Their command receipts,
+output hashes and complete checks are retained; full stdout remains ignored.
+
+Twelve candidates cover subtree removal, retaining one leaf and deleting all
+rows from each original. Eight more delete all remaining rows from the existing
+373-row and nine-row reference histories. These validate snapshot-local live
+ordinals, existing tombstones, complete row-body preservation and incremental
+retirement without resetting historical counters or previously freed bits. The
+sixteen requirements refused by the initial binary now pass; none was reclassified
+as an expected refusal or given a different allowance. Full padded batches still
+use the request-file interface.
+
+The independent model checks surviving original leaf partitions and complete
+subtree key/row maxima, exact per-root/per-height sibling chains, root identity,
+retired pages, owned/global bit changes and every original record body. Bytes
+outside the exact authorized slot/count/index/map spans remain unchanged, including
+retired-page residual bodies. Nonempty heights stay fixed; an entirely empty tree
+resets the same root to a height-0 leaf.
+
+Agreement is semantic and preservational, **not byte identity with Jackcess**.
+For the four nine-row candidates, the root is a bounded singleton and the retained
+internal node keeps its original tail form: zero bounded entries plus the exact
+surviving leaf as tail. The public-writer reference instead encoded that internal
+node as one bounded entry with tail zero. Both represent the independently derived
+same child order and full key/row maximum, and both reopen successfully through the
+public getters. The acceptance record identifies all four concrete forms. It
+does not infer that either representation is a native Access canonical save.
+
+The full raw run, command JSONL, terminal log and candidate outputs remain ignored
+and hash-pinned. The published baseline driver is byte-identical; the initial
+failed reports and their exact source archives remain intact. For the retained
+frozen artifact and registered local originals, use fresh replay paths:
+
+```sh
+python3 docs/testing/compare_delete_contraction.py \
+  --example .cache/tablecraft-bin/ace16-delete-internal-chains-20261026 \
+  --example-sha256 27edd9e81947a201725f006ada35bb76cadae3f05e8493ec2898a9be799082de \
+  --compiled-revision cd52af09c3f9253ed9aa7e3195a2210bf316efdc \
+  --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
+  --workdir .cache/FRESH_INTERNAL_CHAIN_REPLAY \
+  --report .cache/FRESH_INTERNAL_CHAIN_SUMMARY.json
+```
+
+This qualifies the recorded engineering comparison only. It does not qualify
+native Access SQL/save-reopen, ordinary backend/CLI writes, data macros, allocation,
+page reuse/truncation or creating/extending map windows.
