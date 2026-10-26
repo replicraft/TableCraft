@@ -1,0 +1,98 @@
+{
+  "date": "2026-10-25",
+  "scope": "Explicit native collection-aware query results and buffered CLI list presentation; normal scalar/source branches retain existing semantics.",
+  "unique_tests": 57,
+  "new_tests": 3,
+  "existing_regression_tests": 54,
+  "checks": [
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-cli --test multivalue_queries --test retrieval --test sqlite_queries --test external_queries --test linked_queries --test large_query_output",
+      "session": 55127,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/bare-multivalue-cli-tests-initial-20261025.log",
+        "bytes": 6670,
+        "sha256": "9528080713f566e464adddf9ecc8e0d62b0ceea5a38e2d53ad5c4195c1e6e87d"
+      },
+      "breakdown": {
+        "external_queries": 17,
+        "large_query_output": 3,
+        "linked_queries": 13,
+        "multivalue_queries": 12,
+        "retrieval": 9,
+        "sqlite_queries": 3
+      }
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-cli --bin tablecraft --test multivalue_queries --test retrieval --test sqlite_queries --test external_queries --test linked_queries --test large_query_output -- -D warnings",
+      "session": 18322,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/bare-multivalue-cli-clippy-20261025.log",
+        "bytes": 759,
+        "sha256": "7b0092b105593318a9d8dd27f16b46f2fcb371481551e610fa8ef2dcbc8e3331"
+      }
+    }
+  ],
+  "scope_files": [
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/mod.rs",
+      "bytes": 4629,
+      "sha256": "7606252eb8be68360adeec73549d294de9c8ee18c3bd584a82ba1080cc5a70ad"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/retrieval.rs",
+      "bytes": 12967,
+      "sha256": "61e687c9018689054b6a796b0f8b1489352be8482df4768810d6d5e5a072abf5"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/results.rs",
+      "bytes": 2174,
+      "sha256": "b312a39474dce3447c492c0bedbcd18fc5a15c60b1f301446c81f2bdb817bd9f"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/run_args.rs",
+      "bytes": 10910,
+      "sha256": "5dfe98cd972b7ff00e18e28f0c5caf29c56562053e4ce363a28ae1d526bce511"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/multivalue_queries.rs",
+      "bytes": 25272,
+      "sha256": "e6585f5ad06cdc8918c92622e3fe8858f8b21cad98e451ac82ba4da56afe2901"
+    },
+    {
+      "path": "docs/NATIVE_QUERIES.md",
+      "bytes": 42705,
+      "sha256": "8c49ecbc2d27773bb9ebdfd750feecac6e306c83544c3a42f5b122087d0e6efd"
+    },
+    {
+      "path": "docs/READ_QUERY_ACCEPTANCE.md",
+      "bytes": 84267,
+      "sha256": "17648714c8792ef437927a6612eebcf6e69a6575cec2d7443dce567bcada85be"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "bytes": 71716,
+      "sha256": "f2ac34b7f98ee69b832a7910a755f73176d5db6c0b76225b5805eef4ca7cf47d"
+    }
+  ],
+  "boundaries": [
+    "Bare lists use the explicit collection-aware query service under --multivalues or --collections, including explicitly decoded attachments.",
+    "Lists retain order, duplicate and NULL members; [] differs from [NULL]. Individual members use existing typed CLI spellings, not JSON or native Access display metadata.",
+    "Same-parent hidden .Value criteria retain complete projected lists; existing .Value child expansion and scalar-only query behavior remain.",
+    "New tests cover wildcard/alias/static-derived TOP/scalar ordering, scalar aliases after interleaved lists, NULL members/duplicates/empty lists and buffered output-limit failures.",
+    "The old wildcard-refusal case was replaced by a positive exact-output assertion; unsupported Count(list), DISTINCT(list), mixed list/child projection and ordinary opt-in refusals remain.",
+    "No unrun original-file replay, performance, Windows/ACE behavior or complete read/query compatibility claim."
+  ],
+  "excluded_attempts": [],
+  "formatting": {
+    "command": "rustfmt --edition 2024 --check apps/tablecraft-cli/src/commands/query/mod.rs apps/tablecraft-cli/src/commands/query/results.rs apps/tablecraft-cli/src/commands/query/retrieval.rs apps/tablecraft-cli/src/commands/query/run_args.rs apps/tablecraft-cli/tests/multivalue_queries.rs",
+    "exit_code": 0,
+    "log": {
+      "path": ".cache/bare-multivalue-cli-format-20261025.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "git_diff_check": "passed"
+  }
+}

@@ -1,4 +1,4 @@
-use super::{Error, comparison_limits::Args as ComparisonArgs, output::TableOutput, parameters};
+use super::{Error, comparison_limits::Args as ComparisonArgs, parameters, results::Results};
 use crate::native;
 use clap::ValueEnum;
 use std::sync::{Arc, atomic::AtomicBool};
@@ -18,7 +18,8 @@ use tablecraft_expressions::functions::{
     dates::TwoDigitYearWindow, text::code_page::CharacterCodePage,
 };
 use tablecraft_query::{
-    BindingDepth, ExpressionQueryResult, QueryLimits, Source, execute_with_schema_discovery,
+    BindingDepth, ExpressionQueryResult, QueryLimits, Source,
+    execute_collections_with_schema_discovery, execute_with_schema_discovery,
     source::{CollationResolver, MemorySource},
 };
 use tablecraft_sql::query::Query;
@@ -130,7 +131,7 @@ pub(super) fn run(
         .map_err(Error::Sqlite)?;
         let result = execute(input.sql()?, &source, &bindings, &controls, policy, None)?;
         source.close().map_err(Error::Sqlite)?;
-        result
+        Results::Expressions(result)
     } else if let Some(input_config) = native_input {
         let snapshot_limits = TableSnapshotLimits::new(
             u32::try_from(input_config.rows).map_err(|_| Error::Parameter)?,
@@ -160,7 +161,14 @@ pub(super) fn run(
             }
             let source =
                 TemplateSource::new(&package, budget, &|| false).map_err(Error::Template)?;
-            execute(input.sql()?, &source, &bindings, &controls, policy, None)?
+            Results::Expressions(execute(
+                input.sql()?,
+                &source,
+                &bindings,
+                &controls,
+                policy,
+                None,
+            )?)
         } else {
             let file = native::open(input_config.path, input_config.password, &mut budget)
                 .map_err(Error::Input)?;
@@ -266,48 +274,49 @@ pub(super) fn run(
             let root_source: &dyn Source = linked.as_ref().map_or(&source as &dyn Source, |s| s);
             let root_source: &dyn Source = recomputed.as_ref().map_or(root_source, |s| s);
             let query_source: &dyn Source = external.as_ref().map_or(root_source, |s| s);
-            execute(
-                query,
-                query_source,
-                &bindings,
-                &controls,
-                database_collation
-                    .as_ref()
-                    .map(|c| c.default_collation() as &dyn Collation)
-                    .or(policy),
-                database_collation
-                    .as_ref()
-                    .map(|c| c as &dyn CollationResolver),
-            )?
+            let collation = database_collation
+                .as_ref()
+                .map(|provider| provider.default_collation() as &dyn Collation)
+                .or(policy);
+            let resolver = database_collation
+                .as_ref()
+                .map(|provider| provider as &dyn CollationResolver);
+            if input_config.multivalues
+                || input_config.collections
+                || input_config.decoded_attachments
+            {
+                super::execution_context::with_context(&controls, collation, resolver, |options| {
+                    execute_collections_with_schema_discovery(
+                        query,
+                        query_source,
+                        &bindings,
+                        options,
+                    )
+                    .map(Results::Collections)
+                    .map_err(Error::Retrieval)
+                })?
+            } else {
+                Results::Expressions(execute(
+                    query,
+                    query_source,
+                    &bindings,
+                    &controls,
+                    collation,
+                    resolver,
+                )?)
+            }
         }
     } else {
-        execute(
+        Results::Expressions(execute(
             input.sql()?,
             &MemorySource::default(),
             &bindings,
             &controls,
             policy,
             None,
-        )?
+        )?)
     };
-    let mut output = TableOutput::with_limit(controls.output_bytes);
-    for (i, name) in result.columns().iter().enumerate() {
-        if i > 0 {
-            output.separator().map_err(Error::Output)?;
-        }
-        output.header(Some(name), i + 1).map_err(Error::Output)?;
-    }
-    output.newline().map_err(Error::Output)?;
-    for row in result.rows() {
-        for (i, value) in row.iter().enumerate() {
-            if i > 0 {
-                output.separator().map_err(Error::Output)?;
-            }
-            output.expression_value(value).map_err(Error::Output)?;
-        }
-        output.newline().map_err(Error::Output)?;
-    }
-    Ok(output.finish())
+    result.render(controls.output_bytes)
 }
 
 fn execute(

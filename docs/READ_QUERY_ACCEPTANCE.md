@@ -40,6 +40,12 @@ qualification recorded separately.
   A [92-command replay](testing/LARGE_ENCRYPTION.md) now independently verifies
   page-copy management and read/query results on both unchanged 77 MiB ACE 16-family
   originals; the full source envelope and native saves remain unqualified.
+- Explicit [typed multivalue results](MULTIVALUE_QUERIES.md#structured-parent-list-results)
+  now return complete bare-field lists beside scalar values through the query API
+  and CLI. Row-local/static named/derived projections, scalar ordering/TOP and
+  direct hidden-member criteria retain full lists. NULL children, duplicates and
+  empty membership remain distinct. Typed-list joins, UNION, aggregates and
+  list keys remain unfinished; existing scalar `.Value` operations are separate.
 - Independent comparisons include 20,000-row indexed inputs and 99,110-row
   sequential scalar histories with added columns, Memo growth and deleted roots.
   A separate [mixed scalar history corpus](testing/MIXED_SCALAR_HISTORIES.md)

@@ -18,6 +18,11 @@ use std::{
     sync::atomic::{AtomicU64, Ordering},
 };
 
+const FORMAT_VERSION_OFFSET: usize = 20;
+const PAGE_BYTES: usize = 4096;
+const CHILD_DEFINITION_PAGE: u32 = 20;
+const CHILD_DATA_PAGE: usize = 22;
+
 static NEXT: AtomicU64 = AtomicU64::new(0);
 struct Database {
     path: PathBuf,
@@ -52,7 +57,7 @@ impl Drop for Database {
 fn explicit_multivalue_queries_flatten_all_priority_ace_profiles_without_changing_bytes() {
     for code in [2, 5, 6] {
         let mut bytes = links_fixture::populated();
-        bytes[20] = code;
+        bytes[FORMAT_VERSION_OFFSET] = code;
         let database = Database::new(bytes);
         let result = run(&[
             "query",
@@ -113,7 +118,6 @@ fn invalid_scope_and_selected_index_never_publish_partial_results() {
             "SELECT Id,Score.Value FROM Items",
             vec!["--multivalues", "--index", "Items", "Missing"],
         ),
-        ("SELECT * FROM Items", vec!["--multivalues"]),
     ] {
         let mut args = vec!["query", "run", sql, "--database", database.path()];
         args.extend(options);
@@ -142,7 +146,7 @@ fn invalid_scope_and_selected_index_never_publish_partial_results() {
 fn parent_criteria_preserve_parent_counts_and_match_multiple_stored_members() {
     for code in [2, 5, 6] {
         let mut bytes = links_fixture::populated();
-        bytes[20] = code;
+        bytes[FORMAT_VERSION_OFFSET] = code;
         let database = Database::new(bytes);
         for (sql, expected) in [
             (
@@ -186,7 +190,7 @@ fn decoded_attachment_queries_require_explicit_opt_in_and_buffer_late_errors() {
     ];
     for code in [2, 5, 6] {
         let mut bytes = attachment_fixture::with_payloads(attachment_fixture::PAYLOAD, &empty_file);
-        bytes[20] = code;
+        bytes[FORMAT_VERSION_OFFSET] = code;
         let database = Database::new(bytes.clone());
         let sql = "SELECT Id,Score.FileData AS Data FROM Items";
         let raw = run(&[
@@ -391,7 +395,7 @@ fn decoded_attachment_queries_require_explicit_opt_in_and_buffer_late_errors() {
 fn collections_flag_exposes_aligned_attachment_metadata_and_preserves_value_queries() {
     for code in [2, 5, 6] {
         let mut bytes = attachment_fixture::database();
-        bytes[20] = code;
+        bytes[FORMAT_VERSION_OFFSET] = code;
         let database = Database::new(bytes);
         let result = run(&[
             "query",
@@ -469,7 +473,7 @@ fn database_collation_resolves_collection_members_and_buffers_unknown_policy_fai
             attachment_fixture::PAYLOAD,
             attachment_fixture::PAYLOAD,
         );
-        bytes[20] = code;
+        bytes[FORMAT_VERSION_OFFSET] = code;
         // Independent synthetic header/flat-column metadata. Unknown URL order
         // must remain inert when unused and fail only when comparison needs it.
         for (i, mask) in [1, 27, 152, 253].into_iter().enumerate() {
@@ -532,7 +536,7 @@ fn database_collation_resolves_collection_members_and_buffers_unknown_policy_fai
 fn attachment_presence_criteria_work_across_priority_profiles_without_payload_decoding() {
     for code in [2, 5, 6] {
         let mut bytes = attachment_fixture::database();
-        bytes[20] = code;
+        bytes[FORMAT_VERSION_OFFSET] = code;
         let database = Database::new(bytes);
         for (predicate, expected) in [
             ("Score IS NULL", &b"Id\n3\n"[..]),
@@ -571,7 +575,7 @@ fn attachment_presence_criteria_work_across_priority_profiles_without_payload_de
 fn domain_presence_counts_parents_and_buffers_errors_across_priority_profiles() {
     for code in [2, 5, 6] {
         let mut bytes = attachment_fixture::database();
-        bytes[20] = code;
+        bytes[FORMAT_VERSION_OFFSET] = code;
         let database = Database::new(bytes);
         let sql = "SELECT DCount('*','Items','Score IS NULL') AS Missing,DCount('*','Items','Score IS NOT NULL') AS Present,DSum('Id','Items','Score IS NOT NULL') AS Total";
         let result = run(&[
@@ -651,4 +655,111 @@ fn composed_attachment_presence_keeps_scalar_calls_domain_criteria_and_buffering
     ]);
     assert!(!result.status.success());
     assert!(result.stdout.is_empty());
+}
+
+#[test]
+fn bare_multivalue_queries_publish_parent_lists_and_keep_hidden_criteria_complete() {
+    for code in [2, 5, 6] {
+        let mut bytes = links_fixture::populated();
+        bytes[FORMAT_VERSION_OFFSET] = code;
+        let database = Database::new(bytes);
+        for flag in ["--multivalues", "--collections"] {
+            for (sql, expected) in [
+                (
+                    "SELECT * FROM Items ORDER BY Id",
+                    &b"Id\tScore\n1\t[100, 101]\n2\t[200]\n3\t[]\n"[..],
+                ),
+                (
+                    "SELECT Id,Score AS Members FROM Items WHERE Score.Value=100 ORDER BY Id",
+                    &b"Id\tMembers\n1\t[100, 101]\n"[..],
+                ),
+                (
+                    "SELECT TOP 1 Q.Id,Q.Members FROM (SELECT Id,Score AS Members FROM Items) Q ORDER BY Q.Id DESC",
+                    &b"Id\tMembers\n3\t[]\n"[..],
+                ),
+                (
+                    "SELECT Score,Id AS N,N+1 AS NextId FROM Items ORDER BY N DESC",
+                    &b"Score\tN\tNextId\n[]\t3\t4\n[200]\t2\t3\n[100, 101]\t1\t2\n"[..],
+                ),
+            ] {
+                let output = run(&["query", "run", sql, "--database", database.path(), flag]);
+                assert!(
+                    output.status.success(),
+                    "{}",
+                    String::from_utf8_lossy(&output.stderr)
+                );
+                assert_eq!(output.stdout, expected, "{sql}");
+                assert!(output.stderr.is_empty());
+            }
+        }
+    }
+}
+
+#[test]
+fn bare_list_output_distinguishes_null_members_duplicates_and_empty_lists() {
+    let mut bytes = links_fixture::populated();
+    let rows = [(None, 1_i32), (Some(100_i32), 2), (Some(100), 3)]
+        .into_iter()
+        .map(|(value, identity)| {
+            let mut row = 3_u16.to_le_bytes().to_vec();
+            row.extend(10_i32.to_le_bytes());
+            row.extend(value.unwrap_or_default().to_le_bytes());
+            row.extend(identity.to_le_bytes());
+            row.push(if value.is_some() { 7 } else { 5 });
+            (0, row)
+        })
+        .collect::<Vec<_>>();
+    bytes[CHILD_DATA_PAGE * PAGE_BYTES..(CHILD_DATA_PAGE + 1) * PAGE_BYTES]
+        .copy_from_slice(&support::data_page(CHILD_DEFINITION_PAGE, &rows));
+    let database = Database::new(bytes);
+    let output = run(&[
+        "query",
+        "run",
+        "SELECT Id,Score FROM Items ORDER BY Id",
+        "--database",
+        database.path(),
+        "--multivalues",
+    ]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(
+        output.stdout,
+        b"Id\tScore\n1\t[NULL, 100, 100]\n2\t[]\n3\t[]\n"
+    );
+    assert!(output.stderr.is_empty());
+}
+
+#[test]
+fn unsupported_list_operations_and_output_exhaustion_publish_no_prefix() {
+    let database = Database::new(links_fixture::populated());
+    for sql in [
+        "SELECT Id,Score FROM Items",
+        "SELECT Count(Score) FROM Items",
+        "SELECT DISTINCT Score FROM Items",
+        "SELECT Score,Score.Value FROM Items",
+    ] {
+        let mut args = vec!["query", "run", sql, "--database", database.path()];
+        if sql != "SELECT Id,Score FROM Items" {
+            args.push("--multivalues");
+        }
+        let output = run(&args);
+        assert!(!output.status.success(), "{sql}");
+        assert!(output.stdout.is_empty(), "{sql}");
+    }
+    let output = run(&[
+        "query",
+        "run",
+        "SELECT Id,Score FROM Items ORDER BY Id",
+        "--database",
+        database.path(),
+        "--multivalues",
+        "--output-bytes",
+        "20",
+    ]);
+    assert!(!output.status.success());
+    assert!(output.stdout.is_empty());
+    assert!(String::from_utf8_lossy(&output.stderr).contains("output limit"));
 }
