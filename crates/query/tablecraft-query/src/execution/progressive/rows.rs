@@ -16,6 +16,9 @@ impl Runtime<'_, '_> {
         summary: &mut StreamSummary,
         visitor: &mut dyn FnMut(&[Value]) -> Result<(), E>,
     ) -> Result<(), StreamError<E>> {
+        if arm.read.distinct {
+            return self.progressive_distinct_rows(arm, union_types, bindings, summary, visitor);
+        }
         if self.progressive_stateful_input(&arm.input)? {
             return self.progressive_staged_rows(arm, union_types, bindings, summary, visitor);
         }

@@ -7,7 +7,7 @@ fn unsupported_relational_and_source_using_shapes_publish_nothing() {
         "SELECT Id FROM Items ORDER BY Id",
         "SELECT TOP 1 PERCENT Id FROM Items",
         "SELECT TOP 1 Id FROM Items ORDER BY Id",
-        "SELECT DISTINCT Id FROM Items",
+        "SELECT DISTINCT CDbl(Id) FROM Items",
         "SELECT Last(Id) FROM Items",
         "SELECT Count(*) FROM Items HAVING Last(Id)>0",
         "SELECT CDbl(Id) FROM Items GROUP BY CDbl(Id)",

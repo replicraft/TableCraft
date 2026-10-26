@@ -1,6 +1,7 @@
 //! Explicit progressive row-local execution; ordinary retrieval stays buffered.
 mod admission;
 mod aggregates;
+mod distinct;
 mod groups;
 mod having;
 mod input;

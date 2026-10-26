@@ -6,7 +6,7 @@ use tablecraft_query::QueryLimits;
 fn unsupported_shapes_are_rejected_before_scan_even_when_empty_or_false() {
     for values in [vec![], vec![1]] {
         for sql in [
-            "SELECT DISTINCT N FROM T WHERE False",
+            "SELECT DISTINCT CDbl(N) FROM T WHERE False",
             "SELECT TOP 1 PERCENT N FROM T WHERE False",
             "SELECT TOP 1 N FROM T WHERE False ORDER BY N",
             "SELECT N FROM T WHERE False ORDER BY N",

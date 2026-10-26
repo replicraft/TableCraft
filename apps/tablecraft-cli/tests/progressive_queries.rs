@@ -14,6 +14,8 @@ mod boundaries;
 mod count;
 #[path = "progressive_queries/count_operands.rs"]
 mod count_operands;
+#[path = "progressive_queries/distinct.rs"]
+mod distinct;
 #[path = "progressive_queries/execution.rs"]
 mod execution;
 #[path = "progressive_queries/extrema.rs"]

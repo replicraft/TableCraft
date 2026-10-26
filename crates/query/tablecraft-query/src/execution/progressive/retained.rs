@@ -1,5 +1,5 @@
 //! Bound output references never authorize conversion of intermediate cells.
-use super::StreamError;
+use super::{StreamError, StreamSummary};
 use crate::{
     execution::cell::CellValue,
     plan::{Expr, ReadPlan, SelectPlan},
@@ -18,3 +18,7 @@ pub(super) type RetainedReceiver<'a, R, E> =
 
 #[cfg(test)]
 mod tests;
+
+/// Terminal retained output can update the same operation-wide stream summary.
+pub(super) type StreamReceiver<'a, R, E> =
+    dyn FnMut(&mut R, Vec<CellValue>, &mut StreamSummary) -> Result<(), StreamError<E>> + 'a;

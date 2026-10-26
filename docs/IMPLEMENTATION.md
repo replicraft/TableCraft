@@ -1,5 +1,22 @@
 # Implementation status
 
+## Progressive fixed-key DISTINCT
+
+Explicit streaming now admits terminal DISTINCT over proven Boolean, integral,
+Currency, Decimal and NULL output tuples. It retains first encountered values,
+finishes all input and eager checks before publishing distinct rows, and applies
+TOP afterward. An arm's DISTINCT runs before outer UNION ALL conversion. Existing
+exact key directories and cumulative budgets govern retained results; no complete
+source snapshot or unsupported fallback is introduced.
+
+Twelve new query tests, three new CLI tests and 266 selected regressions pass
+across the complete progressive lifecycle batch and CLI streaming target.
+Focused strict lint and repository formatting pass; independent review found no
+blocker. See [the contract](STREAMING_QUERIES.md) and
+[verification](testing/results/read-query-progressive-distinct-2026-10-25.json).
+Text/float/date/GUID/Binary/Dynamic output profiles, inner DISTINCT and DISTINCTROW
+remain outside this progressive profile. Buffered execution retains its own scope.
+
 ## Ignore-NULL Currency and ACE 16 Int64 indexes
 
 The qualified non-NULL index profile now also admits Currency and ACE 16-family

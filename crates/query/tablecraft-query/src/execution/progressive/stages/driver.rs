@@ -6,8 +6,10 @@ use crate::{
         Runtime,
         cell::CellValue,
         progressive::{
-            StreamError, StreamSummary, input::Input, plan::ProgressiveArm,
-            retained::RetainedReceiver,
+            StreamError, StreamSummary,
+            input::Input,
+            plan::ProgressiveArm,
+            retained::{RetainedReceiver, StreamReceiver},
         },
     },
     external_sources::ExternalBinding,
@@ -97,23 +99,34 @@ impl Runtime<'_, '_> {
         summary: &mut StreamSummary,
         visitor: &mut dyn FnMut(&[Value]) -> Result<(), E>,
     ) -> Result<(), StreamError<E>> {
+        let read = arm.read;
+        let mut publish = |runtime: &mut Self, cells, summary: &mut StreamSummary| {
+            runtime.progressive_publish_read(read, cells, union_types, summary, visitor)
+        };
+        self.progressive_staged_cells(arm, bindings, summary, &mut publish)
+    }
+
+    pub(in crate::execution::progressive) fn progressive_staged_cells<E>(
+        &mut self,
+        arm: &mut ProgressiveArm<'_>,
+        bindings: &[ExternalBinding],
+        summary: &mut StreamSummary,
+        receiver: &mut StreamReceiver<'_, Self, E>,
+    ) -> Result<(), StreamError<E>> {
         let source = self.progressive_source(&arm.input, bindings)?;
         let mut stages = self.progressive_stages(arm)?;
         let root = arm.read;
         let mut consume = |runtime: &mut Self, row: Vec<CellValue>, summary: &mut StreamSummary| {
             let mut emit = |runtime: &mut Self, cells| {
-                runtime.with_progressive_owner(root.owner, |runtime| {
-                    runtime.progressive_publish_read(root, cells, union_types, summary, visitor)
-                })
+                runtime
+                    .with_progressive_owner(root.owner, |runtime| receiver(runtime, cells, summary))
             };
             runtime.push_progressive_stages(&mut stages, row, &mut emit)
         };
         self.scan_progressive_leaf(source, arm.input.leaf, summary, &mut consume)?;
 
         let mut emit = |runtime: &mut Self, cells| {
-            runtime.with_progressive_owner(root.owner, |runtime| {
-                runtime.progressive_publish_read(root, cells, union_types, summary, visitor)
-            })
+            runtime.with_progressive_owner(root.owner, |runtime| receiver(runtime, cells, summary))
         };
         for frontier in 0..stages.len() {
             self.tick()?;
