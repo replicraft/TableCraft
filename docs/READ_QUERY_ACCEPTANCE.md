@@ -18,6 +18,9 @@ qualification recorded separately.
   rows. Automatic hints retain table order and residual predicates. Full-table
   and NULL retrieval through omitting indexes, other carriers and native writes
   retain their separate boundaries; see [index scope](NATIVE_INDEXES.md#single-int32-ignore-null-selections).
+  A [64-command original replay](testing/IGNORED_NULL_INDEXES.md) independently
+  checks node/unique/shared indexes, exact membership and automatic table order
+  across all four priority families; other ignored-key carriers remain separate.
 - SELECT, joins, grouping/HAVING, subqueries, UNION, top-level crosstabs and
   qualified saved/named queries execute under shared resource/cancellation limits.
   Contextual named schemas use explicit execution-stage discovery; binding does

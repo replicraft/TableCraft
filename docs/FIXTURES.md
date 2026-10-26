@@ -8558,3 +8558,24 @@ selected source snapshots. Four getter hashes match the preceding GUID predicate
 replay. Observer expectations follow the explicit fixed Byte-array profile;
 only TableCraft executes SQL. All originals remain unchanged; this does not
 qualify native Access subtype names, bounds or errors.
+
+## Original single Int32 ignore-NULL index inputs
+
+Original Apache-2.0 [IgnoreNullIndexFixture.java](testing/IgnoreNullIndexFixture.java)
+uses the reviewed Jackcess 5.0.4 JAR, SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`,
+to author fresh inert V2000/V2007/V2016/V2019 inputs. No upstream source or fixture
+is copied. Expressions stay disabled; the linked resolver refuses every target.
+The read-only oracle combines public row/index-cursor getters with explicitly
+identified pinned implementation metadata getters. No reference SQL is executed.
+
+Originals remain ignored under
+`.cache/tablecraft-fixtures/ignore-null-indexes-20261025/`. Each has 701 rows,
+637 ordinary ignored-key entries, 647 unique ignored-key entries, ascending and
+descending node trees, and a logical alias sharing physical data. The
+[evidence record](testing/IGNORED_NULL_INDEXES.md) lists all four exact input hashes,
+raw root/owner observations, producer commands and provenance boundaries. The
+[64-command comparison](testing/results/ignored-null-index-replay-2026-10-25.json)
+compares 3,468 returned IDs, seventeen unchanged artifacts and six selected native
+source objects. Original bytes remain unchanged. Native Access qualification and
+other ignore-NULL carrier profiles are not inferred.

@@ -1,5 +1,17 @@
 # Implementation status
 
+## Independent ignore-NULL index replay
+
+The [original database replay](testing/IGNORED_NULL_INDEXES.md) passes 64 CLI
+controls over unchanged Jet 4/ACE 2007/ACE 2016/ACE 2019 inputs. Independent row
+and index-cursor getters check 3,468 returned IDs, including node trees, ascending
+and descending keys, shared aliases, unique indexes and automatic table order.
+Complete checks validate all four logical indexes per input; twelve expected
+selected-index refusals retain empty stdout. Seventeen artifacts and six selected
+native source snapshots remain unchanged. The report identifies its frozen
+executable and the unrelated dirty-query build boundary; it does not establish
+native Access comparison or broader ignore-NULL/write support.
+
 ## Numeric serial Format sections
 
 Actual positive numeric serials can now select a date mask with literal negative,
