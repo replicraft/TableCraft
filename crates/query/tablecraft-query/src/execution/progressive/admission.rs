@@ -39,6 +39,9 @@ impl Runtime<'_, '_> {
         read: &'p ReadPlan,
     ) -> Result<&'p SelectPlan, QueryError> {
         let select = self.progressive_shape(read)?;
+        if read.distinct {
+            return Err(QueryError::Unsupported);
+        }
         if select.aggregate || select.having.is_some() {
             let (select, _) = self.progressive_select(read)?;
             // Stateful inner stages use the same complete metadata profile as
@@ -62,7 +65,6 @@ impl Runtime<'_, '_> {
             return Err(QueryError::Unsupported);
         };
         if !read.sort.is_empty()
-            || read.distinct
             || read.top.is_some_and(|(_, percent)| percent)
             || !select.record_keys.is_empty()
             || select.parent.is_some()

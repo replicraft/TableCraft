@@ -188,9 +188,10 @@ impl<'a, 'source> Runtime<'a, 'source> {
             return Ok(None);
         }
         let cells = self.progressive_select_projection(select, environment)?;
-        if read
-            .top
-            .is_some_and(|(count, _)| *delivered >= u64::from(count))
+        if !read.distinct
+            && read
+                .top
+                .is_some_and(|(count, _)| *delivered >= u64::from(count))
         {
             return Ok(None);
         }

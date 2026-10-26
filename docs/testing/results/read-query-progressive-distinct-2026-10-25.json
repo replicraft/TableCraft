@@ -1,0 +1,249 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "Progressive terminal SELECT DISTINCT over proven Boolean/integral/Currency/Decimal/NULL projection tuples",
+  "unique_tests": 281,
+  "new_tests": 15,
+  "existing_regression_tests": 266,
+  "accepted_query_tests": 223,
+  "accepted_cli_tests": 58,
+  "new_test_breakdown": {
+    "query_progressive_distinct": 12,
+    "cli_progressive_distinct": 3
+  },
+  "query_target_counts": {
+    "progressive_count_execution": 13,
+    "progressive_count_operands": 11,
+    "progressive_derived_policies": 10,
+    "progressive_derived_values": 12,
+    "progressive_distinct": 12,
+    "progressive_extrema_values": 12,
+    "progressive_grouped_policies": 7,
+    "progressive_grouped_values": 11,
+    "progressive_having_policies": 1,
+    "progressive_having_values": 12,
+    "progressive_numeric_aggregate_values": 9,
+    "progressive_queries": 56,
+    "progressive_stateful_stage_policies": 9,
+    "progressive_stateful_stage_values": 11,
+    "progressive_text_group_policies": 8,
+    "progressive_text_group_values": 9,
+    "progressive_union_types": 9,
+    "projection_alias_execution": 11
+  },
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-query --test progressive_count_execution --test progressive_count_operands --test progressive_derived_policies --test progressive_derived_values --test progressive_distinct --test progressive_extrema_values --test progressive_grouped_policies --test progressive_grouped_values --test progressive_having_policies --test progressive_having_values --test progressive_numeric_aggregate_values --test progressive_queries --test progressive_stateful_stage_policies --test progressive_stateful_stage_values --test progressive_text_group_policies --test progressive_text_group_values --test progressive_union_types --test projection_alias_execution -j2 --locked --offline",
+      "exit_code": 0,
+      "terminal_session": 70810,
+      "tests": 223,
+      "private_log": ".cache/progressive-distinct-lifecycle-accepted-20261025.log",
+      "bytes": 24967,
+      "sha256": "d96e02a7ff680e5648cece457c6e70ac003dedab72550197b23faec0b718c7d4"
+    },
+    {
+      "command": "cargo clippy -p tablecraft-query --lib --test progressive_distinct --test progressive_grouped_values -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "terminal_session": 47292,
+      "private_log": ".cache/progressive-distinct-clippy-20261025.log",
+      "bytes": 185,
+      "sha256": "6d00200353b97de02abed8310bb8a2b8aea717c474d1469127a653db90e014b5"
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --test progressive_queries --locked",
+      "exit_code": 0,
+      "terminal_session": 73903,
+      "tests": 58,
+      "evidence": "Root observed terminal tool output; no persisted raw log or log hash is available."
+    },
+    {
+      "command": "cargo clippy -p tablecraft-cli --test progressive_queries --locked -- -D warnings",
+      "exit_code": 0,
+      "terminal_session": 94542,
+      "evidence": "Root observed terminal tool output; no persisted raw log or log hash is available."
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0,
+      "terminal_session": 77910,
+      "evidence": "Separately observed root formatter check; no persisted raw log or log hash is available. The subsequently migrated grouped negative control was scoped-rustfmt formatted."
+    }
+  ],
+  "excluded_attempts": [
+    {
+      "terminal_session": 8374,
+      "exit_code": 101,
+      "private_log": ".cache/named-depth-related-primary-retry-20261025.log",
+      "bytes": 14909,
+      "sha256": "fd19aa9b46fd0dc422b7e088598702eca20fbe627f072b8526c113a5ca9fcf7a",
+      "classification": "Sibling named-depth batch observed 11/12 DISTINCT tests passing. New helper incorrectly required EOF during the ordinary later UNION ALL arm. Restricted the helper EOF guard to the first DISTINCT arm; exact output goldens and production code unchanged.",
+      "command": null,
+      "command_note": "Exact complete invocation was not captured in this feature handoff; do not infer flags from the log.",
+      "counted_in_accepted_tests": false
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test progressive_count_execution --test progressive_count_operands --test progressive_derived_policies --test progressive_derived_values --test progressive_distinct --test progressive_extrema_values --test progressive_grouped_policies --test progressive_grouped_values --test progressive_having_policies --test progressive_having_values --test progressive_numeric_aggregate_values --test progressive_queries --test progressive_stateful_stage_policies --test progressive_stateful_stage_values --test progressive_text_group_policies --test progressive_text_group_values --test progressive_union_types --test projection_alias_execution -j2 --locked --offline",
+      "terminal_session": 77399,
+      "exit_code": 101,
+      "private_log": ".cache/progressive-distinct-lifecycle-final-20261025.log",
+      "bytes": 10928,
+      "sha256": "792e1098e829e62bdd8dd49517debdcc23c6447bbd2f8a32e9317a27df3666cd",
+      "classification": "An existing grouped negative expected Unsupported for a newly admitted terminal fixed DISTINCT. Replaced that SQL with CDbl(Id) output to retain the unsupported floating-profile boundary; no production or positive answer golden changed.",
+      "counted_in_accepted_tests": false
+    }
+  ],
+  "separate_verification_not_added_to_total": [
+    {
+      "feature": "named dependency depth and shared interpreter scopes",
+      "unique_tests": 164,
+      "record": "docs/testing/results/read-query-named-depth-2026-10-25.json"
+    },
+    {
+      "observation": "The same 12 DISTINCT controls also passed in named-depth final primary session75188. They are counted once through the accepted 223-test lifecycle batch."
+    }
+  ],
+  "contracts": [
+    "Metadata preflight admits only active Boolean/Byte/Int16/Int32/Int64/Currency/Decimal/NULL output profiles. Text/floating/Date/Guid/Binary/Dynamic, inner DISTINCT, active DISTINCTROW and sorting remain refused before cursors, including later arms.",
+    "Existing exact fingerprints and authoritative SQL equality retain first-encounter projected payloads, Decimal scale, declarations and complete policy cohorts.",
+    "All selected projections and upstream logical EOF complete before DISTINCT publication. TOP applies after duplicate elimination, without suppressing later eager work.",
+    "Arm DISTINCT precedes existing outer UNION ALL promotion. Above-2^53 Int64 values remain distinct before both may round to the same Double.",
+    "Source and sink failures, every observed cancellation checkpoint, cumulative byte/row/work controls, source reuse and no snapshot fallback retain typed behavior.",
+    "Generated100003-row testing uses a generated source and 17 independently expected representatives, with no parent snapshot allocation."
+  ],
+  "implementation_inventory": {
+    "production": [
+      "crates/query/tablecraft-query/src/execution/progressive.rs",
+      "crates/query/tablecraft-query/src/execution/progressive/admission.rs",
+      "crates/query/tablecraft-query/src/execution/progressive/distinct.rs",
+      "crates/query/tablecraft-query/src/execution/progressive/distinct/profile.rs",
+      "crates/query/tablecraft-query/src/execution/progressive/groups/finish.rs",
+      "crates/query/tablecraft-query/src/execution/progressive/having/finish.rs",
+      "crates/query/tablecraft-query/src/execution/progressive/input.rs",
+      "crates/query/tablecraft-query/src/execution/progressive/plan.rs",
+      "crates/query/tablecraft-query/src/execution/progressive/retained.rs",
+      "crates/query/tablecraft-query/src/execution/progressive/rows.rs",
+      "crates/query/tablecraft-query/src/execution/progressive/stages/driver.rs",
+      "crates/query/tablecraft-query/src/execution/progressive/text_groups/finish.rs"
+    ],
+    "query_tests": [
+      "crates/query/tablecraft-query/tests/progressive_distinct.rs",
+      "crates/query/tablecraft-query/tests/progressive_distinct/boundaries.rs",
+      "crates/query/tablecraft-query/tests/progressive_distinct/values.rs",
+      "crates/query/tablecraft-query/tests/progressive_count_execution/boundaries.rs",
+      "crates/query/tablecraft-query/tests/progressive_grouped_values/boundaries.rs",
+      "crates/query/tablecraft-query/tests/progressive_queries/boundaries.rs",
+      "crates/query/tablecraft-query/tests/progressive_queries/union.rs"
+    ],
+    "cli_tests": [
+      "apps/tablecraft-cli/tests/progressive_queries.rs",
+      "apps/tablecraft-cli/tests/progressive_queries/boundaries.rs",
+      "apps/tablecraft-cli/tests/progressive_queries/distinct.rs"
+    ],
+    "feature_docs": [
+      "docs/STREAMING_QUERIES.md"
+    ]
+  },
+  "selected_file_sha256": {
+    "crates/query/tablecraft-query/src/execution/progressive.rs": {
+      "bytes": 5823,
+      "sha256": "a2715e931deba126b4edbb9db27512e8f358a6435beb9149f4da3d15ccb4991b"
+    },
+    "crates/query/tablecraft-query/src/execution/progressive/admission.rs": {
+      "bytes": 9124,
+      "sha256": "891b046e629e655f43ad9abb7cf2603df49a348f8958f955530ab66c4d7a7bf8"
+    },
+    "crates/query/tablecraft-query/src/execution/progressive/distinct.rs": {
+      "bytes": 2829,
+      "sha256": "e11c2882df2f958075000915ed85d36a7b0fc70f0c66c69b803a88a8258b8a5e"
+    },
+    "crates/query/tablecraft-query/src/execution/progressive/distinct/profile.rs": {
+      "bytes": 3151,
+      "sha256": "5bb55f3cfe0a1cf04cedf309fc157e2172a557ad0cba4b9cb5316b1b18fb7792"
+    },
+    "crates/query/tablecraft-query/src/execution/progressive/groups/finish.rs": {
+      "bytes": 1837,
+      "sha256": "682fb6c43195cd56d86326ba0f9cf312506f16dd28a605c5a4135ff9859663e1"
+    },
+    "crates/query/tablecraft-query/src/execution/progressive/having/finish.rs": {
+      "bytes": 4921,
+      "sha256": "d934b1fda4ff0b1d35f955be0f1d2ac2f9cde6dc7bfd22105f389e0868ba4fdd"
+    },
+    "crates/query/tablecraft-query/src/execution/progressive/input.rs": {
+      "bytes": 6401,
+      "sha256": "d3c451575b58134690290b4bc327fb3abb798d0c05853edad5d01eee0ab5fe17"
+    },
+    "crates/query/tablecraft-query/src/execution/progressive/plan.rs": {
+      "bytes": 3775,
+      "sha256": "1805ec55d7fe424e199b0d97cff4f180a5bb0df96903e262ede88b919a6b3909"
+    },
+    "crates/query/tablecraft-query/src/execution/progressive/retained.rs": {
+      "bytes": 836,
+      "sha256": "a6158ed2732b197f9fa3a68f5f463d75312389683af372ce3ae63046396c3dbd"
+    },
+    "crates/query/tablecraft-query/src/execution/progressive/rows.rs": {
+      "bytes": 3010,
+      "sha256": "51c0af863d8552a4a98e59d1d1b456ffd154f2d81e1730c044af78d65d020149"
+    },
+    "crates/query/tablecraft-query/src/execution/progressive/stages/driver.rs": {
+      "bytes": 7952,
+      "sha256": "8b8efc9845c396ac5ff1691e3b3fb14989cfd067c990a79e807af16791b9b535"
+    },
+    "crates/query/tablecraft-query/src/execution/progressive/text_groups/finish.rs": {
+      "bytes": 1953,
+      "sha256": "bfc065ba3c2e09d961491d4171c3fb2aed1a0d975c2f588e106f062e74c63074"
+    },
+    "crates/query/tablecraft-query/tests/progressive_distinct.rs": {
+      "bytes": 3986,
+      "sha256": "4b76c0e1439900f2ca1931efeb42d994a5631d67dcf780f6ce5597794e99a98e"
+    },
+    "crates/query/tablecraft-query/tests/progressive_distinct/boundaries.rs": {
+      "bytes": 6828,
+      "sha256": "0702273bff082f40e5351979c7e5caca7f616c6ae6a6174a71385e89fd3e7966"
+    },
+    "crates/query/tablecraft-query/tests/progressive_distinct/values.rs": {
+      "bytes": 7371,
+      "sha256": "2167d3f37f512bc82f35360dad1f21b5e89bebdde17c77d4346a31b1f4e88ceb"
+    },
+    "crates/query/tablecraft-query/tests/progressive_count_execution/boundaries.rs": {
+      "bytes": 8911,
+      "sha256": "230fa92a0574b10778b9b6988107c70e6daa88f320db100304a66daabcbd1338"
+    },
+    "crates/query/tablecraft-query/tests/progressive_grouped_values/boundaries.rs": {
+      "bytes": 8318,
+      "sha256": "328b0af5e864db607b04d4b3fb4e3a26c1b2a56c9da9f3619e4a997900f53777"
+    },
+    "crates/query/tablecraft-query/tests/progressive_queries/boundaries.rs": {
+      "bytes": 6874,
+      "sha256": "eb9af61cc6fdedfc986f3b63f1453258c8c28bc316afa3978c3224cc1ab2595f"
+    },
+    "crates/query/tablecraft-query/tests/progressive_queries/union.rs": {
+      "bytes": 3778,
+      "sha256": "2e5f9605e42b86454e2caa9b87aa14e2f9f5a91df1aa653b134d18908991a246"
+    },
+    "apps/tablecraft-cli/tests/progressive_queries.rs": {
+      "bytes": 2887,
+      "sha256": "17bb5bb4f4bb2ecdb06f33a59eaba6473699cd2383ee5311eb47e551a64fc22b"
+    },
+    "apps/tablecraft-cli/tests/progressive_queries/boundaries.rs": {
+      "bytes": 3719,
+      "sha256": "af35db9b465a88e3350c5e0e0e2811f5dc9d874fd510f08f36b94d954699c646"
+    },
+    "apps/tablecraft-cli/tests/progressive_queries/distinct.rs": {
+      "bytes": 3262,
+      "sha256": "06c1d975826850ba346a7670ad8bb9d2b0b01dfa833e9744acffa8061279c77f"
+    },
+    "docs/STREAMING_QUERIES.md": {
+      "bytes": 27603,
+      "sha256": "84deb6354198b8327935995f18932db121b6ba293e70b914ebc7d87fcd122c79"
+    }
+  },
+  "record_file": "docs/testing/results/read-query-progressive-distinct-2026-10-25.json",
+  "excluded_from_implementation_inventory": [
+    "docs/testing/compare_progressive_distinct.py"
+  ],
+  "limits": [
+    "No full workspace suite, native Access SQL qualification, new collation precedence or general Variant typing claim.",
+    "The original-file replay runner is prepared separately and has not run against a new frozen binary at this implementation checkpoint.",
+    "Scoped source/test/doc pins describe the reviewed working feature files; this record is not a complete executable source inventory."
+  ]
+}

@@ -79,10 +79,11 @@ impl Runtime<'_, '_> {
                     ..environment
                 },
             )?;
-            if output
-                .read
-                .top
-                .is_some_and(|(count, _)| published >= u64::from(count))
+            if !output.read.distinct
+                && output
+                    .read
+                    .top
+                    .is_some_and(|(count, _)| published >= u64::from(count))
             {
                 // TOP does not suppress accepted omitted groups' eager work.
                 continue;

@@ -83,6 +83,9 @@ impl Runtime<'_, '_> {
         arms: &mut Vec<ProgressiveArm<'p>>,
     ) -> Result<(), QueryError> {
         let (select, aggregates) = self.progressive_select(read)?;
+        if read.distinct {
+            self.progressive_distinct_profile(read)?;
+        }
         let input = self.progressive_input(&select.source)?;
         let group_lookup = self.progressive_group_lookup(select)?;
         arms.push(ProgressiveArm {

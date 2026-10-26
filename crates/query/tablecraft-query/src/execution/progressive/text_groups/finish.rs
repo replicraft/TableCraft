@@ -42,10 +42,11 @@ impl Runtime<'_, '_> {
                 }),
             };
             let cells = self.progressive_select_projection(output.select, environment)?;
-            if output
-                .read
-                .top
-                .is_some_and(|(count, _)| published >= u64::from(count))
+            if !output.read.distinct
+                && output
+                    .read
+                    .top
+                    .is_some_and(|(count, _)| published >= u64::from(count))
             {
                 continue;
             }

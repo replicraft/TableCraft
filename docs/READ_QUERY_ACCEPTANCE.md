@@ -59,7 +59,9 @@ qualification recorded separately.
   native cursors and cumulative budgets without complete-table materialization.
   Eligible Text/fixed/integral grouping, terminal HAVING and static named/derived
   pipelines also stream;
-  wider query shapes retain buffered execution.
+  terminal fixed-key DISTINCT retains unique tuples through checked EOF and then
+  applies TOP, using the same strict numeric keys and encounter order.
+  Wider query shapes retain buffered execution.
   Absolute I/O now rejects reported seek-position mismatches before reading or
   writing; failpoints cover scalar, Memo and indexed snapshot publication.
   [Continuation fault controls](NATIVE_READ_FAILURES.md) now additionally cover

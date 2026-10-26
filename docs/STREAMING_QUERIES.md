@@ -46,7 +46,7 @@ declared-arithmetic policies use the same
 host context as buffered retrieval. Ordinary scalar views of mixed schemas are
 supported; unavailable fields and matching wildcards fail without NULL placeholders.
 
-Ordering, TOP PERCENT, DISTINCT/active DISTINCTROW, nonaggregate HAVING, joins/products,
+Ordering, TOP PERCENT, unproven/Text DISTINCT, active DISTINCTROW, nonaggregate HAVING, joins/products,
 duplicate-eliminating sets, nested UNIONs, scalar/predicate subqueries, domains,
 collections, Eval and volatile clock/random calls remain outside this progressive
 profile. Static named/derived SELECT chains can contain row-local stages and the
@@ -61,6 +61,52 @@ indexes and collection modes. Explicit `--saved`, `--external` and local
 Explicit table format is rejected before opening the input; auto format is TSV for streaming, including in terminals. Header-based raw native and
 supported package/encryption opening retain their existing qualifications; this
 mode does not add a codec, provider or template reader.
+
+## Terminal DISTINCT over exact fixed carriers
+
+A terminal `SELECT DISTINCT` can eliminate duplicate projected tuples with proven
+Boolean, Byte, Integer, Long, LongLong, Currency, Decimal or NULL output types.
+The active materialized/declared execution profile determines admission; runtime
+values never invent a missing type guarantee. Text, floating, Date, GUID, Binary
+and Dynamic output profiles remain refused before scans. This does not admit
+inner DISTINCT stages, active DISTINCTROW, sorting or duplicate-eliminating UNION.
+
+Every selected projection remains eager. The service retains first-encounter
+representatives and a metered exact-key directory, then waits for complete input
+and upstream logical EOF before any DISTINCT row is published. Decimal values
+compare numerically across scales while retaining the first value's actual scale
+and carrier. Numeric/NULL comparison policy cohorts remain conservative; no Text
+comparison provider is activated merely for numeric duplicate removal.
+
+```sql
+SELECT DISTINCT CustomerId FROM Orders
+SELECT DISTINCT TOP 10 CCur(Amount) FROM Orders
+SELECT DISTINCT Count(*) FROM Orders GROUP BY CustomerId
+```
+
+TOP selects the first distinct rows after duplicate removal. Later input and final
+projections still run even when TOP has already found enough representatives.
+Source EOF failures, later projection failures and failed upstream stage
+completion prevent all output from that DISTINCT arm. A failed final sink stops
+later representatives and UNION ALL arms, preserving its original typed error.
+
+An arm's DISTINCT uses its own actual projected cells and active descriptors
+before the existing outer UNION ALL conversion. It adds no cast: distinct Int64
+values can therefore survive as separate rows even when the outer UNION later
+rounds both to the same Double. Static row-local and admitted stateful inputs,
+global/grouped aggregates and HAVING can supply the terminal DISTINCT projection.
+Memory and work remain bounded by the existing cumulative query limits; retained
+representatives do not form a complete source or named-result cache. Normal
+buffered DISTINCT behavior is unchanged.
+
+Twelve focused DISTINCT tests pass within a 223-test progressive lifecycle batch.
+They include generated 100,003-row input, exact fixed-point representatives,
+post-deduplication TOP, active-profile admission, all-arm preflight, logical EOF
+failures and sink/cancellation/quota controls. Scoped strict query linting passes. Three new native CLI controls pass within
+its 58-test progressive target; see the [implementation verification record](testing/results/read-query-progressive-distinct-2026-10-25.json).
+One obsolete grouped-query refusal was updated to an unsupported Double result;
+its failed batch is retained separately and not counted twice. Original-file CLI
+replay and native Access SQL qualification remain separate evidence.
 
 ## HAVING filters
 
