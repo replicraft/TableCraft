@@ -421,7 +421,7 @@ semantics. See [metadata contracts](../access/storage/NATIVE_TABLES.md#attachmen
 | Priority | Area | Completion evidence still needed |
 | --- | --- | --- |
 | P0 | Value semantics | Declared-expression/Variant result promotion, complete coercion and Error operator/aggregate behavior; independently modeled boundaries and later native comparisons |
-| P0 | Native text | Complete mixed-policy precedence, additional locale providers and explicit LCID search implementations; consistent predicates, sets, groups, sort and LIKE behavior |
+| P0 | Native text | Native mixed-policy precedence, additional stored database sort orders and function-specific NLS/ACE qualification; General and nineteen explicit ICU host profiles already supply comparison/search and registered LCID dispatch |
 | P1 | Query composition | Remaining admitted saved/named definitions, heading names and wider native syntax; qualify whether proposed inline TRANSFORM forms are actually accepted by Access before adding grammar |
 | P1 | Advanced fields | Native FileData SQL/DAO byte qualification, wider history/collection semantics and broader calculated syntax, native ResultType conversion and freshness beyond explicit selected recomputed query views |
 | P1 | Storage and scale | Wider column-type/row histories, broader collection sizes and file locality, predictable limits and unchanged originals |
