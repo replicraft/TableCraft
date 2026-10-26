@@ -22,7 +22,9 @@ qualification recorded separately.
   retain their separate boundaries; see [index scope](NATIVE_INDEXES.md#single-integer-and-currency-ignore-null-selections).
   A [64-command original replay](testing/IGNORED_NULL_INDEXES.md) independently
   checks Int32 node/unique/shared indexes, exact membership and automatic table
-  order across all four priority families; wider original replay remains separate.
+  order across all four priority families. A further
+  [96-control wide-key replay](testing/IGNORED_NULL_WIDE_INDEXES.md) checks exact
+  Currency/Int64 endpoints and node trees without binary floating conversion.
 - SELECT, joins, grouping/HAVING, subqueries, UNION, top-level crosstabs and
   qualified saved/named queries execute under shared resource/cancellation limits.
   Contextual named schemas use explicit execution-stage discovery; binding does

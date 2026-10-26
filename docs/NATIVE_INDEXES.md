@@ -1154,3 +1154,8 @@ This read qualification does not expand native edit or engineering-preview
 eligibility. Ignore-NULL declarations retain their existing mutation blocker,
 including no-op plans and updates to unrelated columns. It does not establish
 Microsoft Access qualification.
+
+Independent original-file comparisons cover [Int32 membership and ordering](testing/IGNORED_NULL_INDEXES.md)
+and [exact Currency/Int64 node trees](testing/IGNORED_NULL_WIDE_INDEXES.md).
+The latter passes 96 CLI controls over six actual tables, including signed
+extrema, adjacent values above 2^53, shared aliases and automatic table order.
