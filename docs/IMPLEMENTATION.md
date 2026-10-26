@@ -5174,7 +5174,7 @@ still bypasses control admission after all written expressions have run. Early
 raw-Text limits, explicit CStr/Long policies, UTF-16 publication and formal return
 categories are unchanged. Value-only calls share the same borrowed-input slice
 kernel, with no source cloning or normalized argument-list allocation. See [state
-contract and reference limits](SLICE_COUNTS.md#ordered-expression-state-operands-23-october-2026).
+contract and reference limits](expressions/text/SLICE_COUNTS.md#ordered-expression-state-operands-23-october-2026).
 No dependency, stored state, SQL Empty constructor or write permission is added.
 
 All-feature expressions pass 605 tests including the doctest; nine selected query
@@ -8264,7 +8264,7 @@ preserve Error data without catching operational failures. Query binding tracks
 the new child node through field/group/aggregate/correlation and collection walks.
 The public scalar expression-result API can return Error data deliberately;
 normal scalar-only query cells/storage still reject it. See [the result-cell
-contract](VARIANT_ERRORS.md). CVErr moves to Partial.
+contract](expressions/VARIANT_ERRORS.md). CVErr moves to Partial.
 
 All 716 expression/query tests including doctests pass. Three new kernel controls
 include a fixed-seed 256-case code/explicit-conversion/storage-refusal model. Two
@@ -10834,7 +10834,7 @@ CLI `query eval` and `query run` now expose `--two-digit-year-max YEAR` for the
 same policy. The shared constructor validates the final year, 199–9999, before
 file I/O. Omission retains 2029 (1930–2029). No machine preference is inferred;
 inert parse/inspection commands remain separate. [Constructor contracts and
-examples](DATE_CONSTRUCTORS.md#explicit-execution-windows) record the public API.
+examples](expressions/dates/DATE_CONSTRUCTORS.md#explicit-execution-windows) record the public API.
 
 Expression/query packages pass 251 tests with all features and 251 without default
 features. Five authored scalar/query/CLI/worker tests cover evaluator-local policies,
@@ -11457,7 +11457,7 @@ Office changes re-encrypt data under fresh password-derived material. Jet
 password changes and encryption removal remask native SIDs using shared checked
 record geometry and physical relocation resolution. Plain ACE subversion one is
 qualified without changing its native version bytes. [Exact boundaries and
-verification](NATIVE_ENCRYPTION.md#remove-encryption-and-change-password) include
+verification](access/storage/NATIVE_ENCRYPTION.md#remove-encryption-and-change-password) include
 43 independently reopened inputs / 86 outputs, complete decoded SID comparisons,
 exact user rows, unchanged sources, old-password/output protection and original
 JCE mixed-parameter vectors. Windows/native Access tests remain unrun.
@@ -11485,7 +11485,7 @@ All 985 workspace all-feature tests and workspace all-target/all-feature Clippy
 pass, with formatting/diff checks, dependency boundaries and ten policy tests.
 JCE/BC known answers cover all key widths and shared header families; derivative
 routing is distinct from native-authored profile qualification. [Coverage and
-remaining encryption management work](NATIVE_ENCRYPTION.md#profile-and-codec-coverage)
+remaining encryption management work](access/storage/NATIVE_ENCRYPTION.md#profile-and-codec-coverage)
 remain explicit; creation now works under the separate add contract above.
 
 ## Encryption commands and hidden password input
@@ -12015,7 +12015,7 @@ This adds no heap-backed formatting or general decimal engine.
 NULL/non-finite/unsupported input remains an explicit error; finite Double values
 outside Single's finite magnitude range fail with Overflow. In-range narrowing
 uses gradual IEEE underflow to signed subnormal/zero. [Contracts and primary
-references](EXPRESSIONS.md#explicit-single-and-double-conversions) distinguish the
+references](expressions/EXPRESSIONS.md#explicit-single-and-double-conversions) distinguish the
 implemented rounding model from pending native Access/OleAut edge-range behavior.
 All existing call/traversal, grouping, eager-error and UPDATE restrictions remain.
 
@@ -12138,7 +12138,7 @@ Legacy results use the shared whole-second date-function profile within years
 100–9999. Extended results preserve their carrier, 100 ns fraction and years
 1–9999. Overflow is explicit. Zero-count legacy adjustments can canonicalize the
 new value; original stored input bytes remain untouched. [Contracts and Microsoft
-references](EXPRESSIONS.md#gregorian-dateadd) distinguish implemented rounding,
+references](expressions/EXPRESSIONS.md#gregorian-dateadd) distinguish implemented rounding,
 NULL precedence and Extended behavior from pending native Access qualification.
 
 All 861 workspace all-feature tests passed, with focused interval/month-end,

@@ -66,7 +66,7 @@ intermediates continue consuming the supplied byte budget.
 ## Explicit limits of this profile
 
 SQL arithmetic and unary minus now follow the [materialized promotion
-profile](ARITHMETIC_PROMOTION.md), with operator-specific division/rounding selection.
+profile](numeric/ARITHMETIC_PROMOTION.md), with operator-specific division/rounding selection.
 Direct checked kernels retain their explicit result contracts; complete declared/
 Variant promotion remains open. The
 nullable `coerce_integer` kernel propagates SQL NULL and checks signed -1 numeric
@@ -499,7 +499,7 @@ legacy whole-second and exact Extended component policies remain in force.
 Week options share DateDiff's validation/coercion: Sunday and Jan-1-week defaults,
 explicit missing optional positions kept separate from NULL, valid first days
 1–7 and first-week rules 1–3. System setting 0 resolves explicit [host week
-context](WEEK_SETTINGS.md) and fails if the corresponding setting is absent. Week numbering uses checked Jiff Gregorian dates with small
+context](dates/WEEK_SETTINGS.md) and fails if the corresponding setting is absent. Week numbering uses checked Jiff Gregorian dates with small
 integer offsets: Jan-1 weeks, first four-day weeks and first full weeks. Dates
 before the first qualifying week use the preceding year's week label. The
 Extended year-one boundary uses Jiff's proleptic year zero internally for this
@@ -977,7 +977,7 @@ NULL/domain precedence and surrogate-splitting refusal remain explicit; this doe
 not broaden all text-function arguments or establish native Variant compatibility.
 
 DatePart/DateDiff/Weekday and general Format now share [checked DATE and SQL numeric
-Text week options](WEEK_SETTINGS.md#contextual-week-option-conversion), preserving
+Text week options](dates/WEEK_SETTINGS.md#contextual-week-option-conversion), preserving
 function-specific NULL/interval/progressive validation and existing week models.
 Public evaluator methods supply the same bounded conversion in scalar and read
 query execution; parser-independent date kernels continue to refuse Text options.
@@ -1061,7 +1061,7 @@ remain unchanged. Operational failures remain eager.
 
 Chr/Chr$/ChrW now use [explicit code-state admission](text/CHARACTER_FUNCTIONS.md#character-construction-expression-states);
 FormatNumber/Percent/Currency retain states through [ordered numeric options and
-source conversion](STYLED_NUMBER_FORMATTING.md#ordered-numeric-formatting-states).
+source conversion](formatting/STYLED_NUMBER_FORMATTING.md#ordered-numeric-formatting-states).
 Host Empty has numeric zero targets, implicit Error conversion stays refused and
 written operational failures remain eager. Other formatting/byte-string state
 paths and native qualification remain separate acceptance work.
@@ -1079,14 +1079,14 @@ conversion remains explicit. Existing owned raw output and strict Unicode
 publication remain; general Format and other byte-function states stay separate.
 
 LenB/AscB/ChrB, byte slices and InStrB now retain [expression states through
-ordered admission](BYTE_STRING_FUNCTIONS.md#ordered-byte-function-expression-states).
+ordered admission](text/BYTE_STRING_FUNCTIONS.md#ordered-byte-function-expression-states).
 Source Empty has a string target, code/control Empty a numeric target and Error
 conversion remains explicit. Existing raw views, strict publication, independent
 provider limits and cumulative controls remain; general Format and broader
 Variant/raw relational carriers are separate acceptance work.
 
 Format now retains [states through NULL-week, week-control, mask and source
-admission](FORMAT.md#ordered-expression-state-admission), borrowing its input
+admission](formatting/FORMAT.md#ordered-expression-state-admission), borrowing its input
 buffers and retaining eager operational failures. Supported host Empty mask/week
 targets are explicit; masked host Empty sources remain unqualified and refused.
 This does not complete Variant promotion, mask/NLS or native error behavior.

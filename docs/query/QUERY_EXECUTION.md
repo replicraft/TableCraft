@@ -237,7 +237,7 @@ pushdown. Native behavior is described in [native reads](../access/queries/NATIV
 ## Implemented retrieval
 
 Explicit host sources can additionally expose [scalar multivalue `.Value`
-expansion](MULTIVALUE_QUERIES.md). Native hosts opt in through
+expansion](collections/MULTIVALUE_QUERIES.md). Native hosts opt in through
 `NativeSource::with_multivalues()` or CLI `query run --database PATH --multivalues`.
 Direct single-table scalar-parent WHERE membership additionally retains parent
 cardinality, with explicit nullable set semantics and scope limits.
@@ -616,7 +616,7 @@ retaining omission separately from NULL. Every provided option participates in
 binding/evaluation, projection pruning, correlation and grouping, including on
 intervals whose boundary count is independent of week labels. Missing required
 arguments and unsupported call shapes fail binding. [DateDiff rules and qualification
-gaps](EXPRESSIONS.md#gregorian-datediff) record week/system policy and overflow.
+gaps](../expressions/EXPRESSIONS.md#gregorian-datediff) record week/system policy and overflow.
 
 DatePart supports two required expressions and two optional week settings with
 shared Int16 component/week-number kernels. Every provided option participates

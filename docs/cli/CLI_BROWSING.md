@@ -500,7 +500,7 @@ No complete address vector is retained for this paging path. Repeated offsets
 still rescan earlier roots. Sequential queries now build bounded complete snapshots
 through cursor batches; indexed reads and writes retain materialized ownership
 checks. Library hosts can use [source-bound scalar
-cursors](testing/RESUMABLE_TABLE_READS.md); CLI offset requests and streaming queries
+cursors](../testing/RESUMABLE_TABLE_READS.md); CLI offset requests and streaming queries
 remain separate. [Evidence and benchmarks](../testing/ALLOCATION_MAP_PAGING.md) describe
 resource ceilings, original fixtures and qualification limits.
 
