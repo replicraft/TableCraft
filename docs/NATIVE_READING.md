@@ -47,8 +47,9 @@ Native detection uses content, not filename extensions. Supported native table
 layouts can be read under `.accdr`, `.accde` and `.mde` names through the same
 inspection, browsing and query paths. Renamed fixture regressions do not qualify
 Access-produced compiled applications. The Access backend now supplies a bounded
-single-database CAB input for `.accdc`; signatures remain unverified. `.accdt`
-template reading remains unimplemented. See the
+single-database CAB input for `.accdc`; signatures remain unverified. Qualified
+ACCDT package/schema/data reads use the separate bounded
+[template adapter](ACCESS_TEMPLATE_DATA.md). See the
 [distribution read contract](features/ACCESS_DISTRIBUTION.md#required-read-scope).
 
 Page/row geometry, packed references, type tags, metadata offsets, signatures and
