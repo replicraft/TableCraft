@@ -27,6 +27,9 @@ Delivered read/query and engineering foundations:
   [ACE 16 engineering write previews](testing/ACE16_WRITE_PREVIEWS.md).
   These now include [checked root-leaf deletion candidates](testing/ACE16_DELETE_PREVIEWS.md),
   with 70 passing original-file controls and unchanged source bytes.
+  Multi-level deletion additionally retains nonempty original leaf partitions and
+  exact ancestor boundaries, with 24 passing original-file controls. Empty-branch
+  contraction and required splits remain atomic refusals.
   General ACE 16 saves are still unavailable.
 
 - [x] [Stateful streaming composition](query/PROGRESSIVE_QUERIES.md#stateful-retained-stages)
@@ -40,8 +43,9 @@ Major gates still open before the full backend is complete:
   Variant/result promotion, native text semantics and wider native definitions.
 - [ ] Broader ACE 16 validation/preservation and required data-macro safety.
 - [ ] General physical mutation: record growth/allocation, index splits/merges,
-  general INSERT/DELETE and wider relationship/write-query actions. Root-leaf
-  deletion candidates do not yet supply multi-level contraction or production saves.
+  general INSERT/DELETE and wider relationship/write-query actions. Deletion
+  candidates retain qualified topology; contraction, allocation and production
+  saves remain unfinished.
 - [ ] Production transaction/recovery qualification, native shared-file
   coordination and mixed-client behavior.
 - [ ] Remaining backend contracts, application session/cursor lifecycle, object lifecycle, background
