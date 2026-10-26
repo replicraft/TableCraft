@@ -1,0 +1,3365 @@
+{
+  "scope": "Fresh original public-Jackcess values/raw keys/reference deletes; TableCraft engine example evaluates candidates, no native Access execution",
+  "driver": {
+    "path": ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+    "bytes": 18073736,
+    "sha256": "b5f30b31199d63a09a1aabcbeca8d841f89888f946a0390dd279cca1566afd66"
+  },
+  "compiled_revision": "d5690381ef6eb394a998b43255f025b163329466",
+  "helper": {
+    "path": ".cache/encoded-delete-originals-next-20261026/EncodedDeleteFixture.java",
+    "bytes": 12772,
+    "sha256": "1bf7fced97992d29fdc90b38fdb3315901f37f199359f4895da0ef3bd966a725"
+  },
+  "jar": {
+    "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+    "bytes": 1407244,
+    "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+  },
+  "runner": {
+    "path": ".cache/encoded-delete-originals-next-20261026/replay.py",
+    "bytes": 14277,
+    "sha256": "143d8e575221bf7f26520e68946d6486ccf5bba4270147bc50f1b6f361841877"
+  },
+  "wire_reader": {
+    "path": ".cache/encoded-delete-originals-next-20261026/wire.py",
+    "bytes": 4060,
+    "sha256": "8256e1254e8fc1da30826be4f4abfa9e4afa067025a5436c1d3d5d773efb1c42"
+  },
+  "qualification": {
+    "path": ".cache/encoded-delete-originals-next-20261026/qualification.json",
+    "bytes": 12121,
+    "sha256": "1e1c0611b8ae5a68b25b3610608677ac24a85891a819228e81985bde2fb83b7a"
+  },
+  "original_observations": {
+    "path": ".cache/encoded-delete-originals-next-20261026/original-observations.json",
+    "bytes": 2881075,
+    "sha256": "810a9de6de608580c5ed0953d9608bcf0f83c27a68210c9c13dd7b30e9247a09"
+  },
+  "sources": [
+    {
+      "path": ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-before.accdb",
+      "bytes": 1163264,
+      "sha256": "e2b5193dc4eb6c024e1e2883e894d64b4ff82c435ca441f0745e677615fc9276"
+    },
+    {
+      "path": ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-delete-all.accdb",
+      "bytes": 1163264,
+      "sha256": "9c7435b1b2f3c08a544e842ccdb0218ded64681a8e544a12076f03ed480c465f"
+    },
+    {
+      "path": ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-delete-null.accdb",
+      "bytes": 1163264,
+      "sha256": "1fef78d2e6b659ec8de041f9d888174c4a8e930da8b0bb469d3aa8f9e3e3f05e"
+    },
+    {
+      "path": ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-delete-tie.accdb",
+      "bytes": 1163264,
+      "sha256": "7a3d147883e2b4a37c5c62ad451b3c3cc614fb6f6344a1bceed023e12074d627"
+    },
+    {
+      "path": ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-before.accdb",
+      "bytes": 1236992,
+      "sha256": "636e137ee3a1d51f6525072de87963cb33a03b01a253be1d2124cf6bb4746279"
+    },
+    {
+      "path": ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-delete-all.accdb",
+      "bytes": 1236992,
+      "sha256": "92b312b055a99da536beeb8887106117fe75538657458450d0dbc136e33d5568"
+    },
+    {
+      "path": ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-delete-null.accdb",
+      "bytes": 1236992,
+      "sha256": "a8feef2d9b9cac28605be952da0214b94116a1061142764c8abfda1e1bcd2dea"
+    },
+    {
+      "path": ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-delete-tie.accdb",
+      "bytes": 1236992,
+      "sha256": "4adabfd289b3404123d5578a4fb54e12736f169aadb2a5b5a218837338718aad"
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/00-V2016-TextLegacyLeaf-delete-tie.accdb",
+        "TextLegacyLeaf",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/00-V2016-TextLegacyLeaf-delete-tie.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/00-V2016-TextLegacyLeaf-delete-tie.stdout",
+        "bytes": 25,
+        "sha256": "9590f38fa0cb0a151eeba2702055599ae3dc0dff5134280eb5525d7865f085d1"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/00-V2016-TextLegacyLeaf-delete-tie.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/00-V2016-TextLegacyLeaf-delete-tie.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/00-V2016-TextLegacyLeaf-delete-tie.getters.tsv",
+        "bytes": 1298145,
+        "sha256": "dee1af1558c9535d7fe79fce55cb17c7ac39e8e0ba31545ba3f4529363abe1e1"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/00-V2016-TextLegacyLeaf-delete-tie.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/01-V2016-TextLegacyLeaf-delete-null.accdb",
+        "TextLegacyLeaf",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/01-V2016-TextLegacyLeaf-delete-null.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/01-V2016-TextLegacyLeaf-delete-null.stdout",
+        "bytes": 25,
+        "sha256": "9590f38fa0cb0a151eeba2702055599ae3dc0dff5134280eb5525d7865f085d1"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/01-V2016-TextLegacyLeaf-delete-null.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/01-V2016-TextLegacyLeaf-delete-null.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/01-V2016-TextLegacyLeaf-delete-null.getters.tsv",
+        "bytes": 1298176,
+        "sha256": "8bfb232fe090fc17694ef94170d3c02f42e5b40208dddb7f0bfab48d692a9e3d"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/01-V2016-TextLegacyLeaf-delete-null.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/02-V2016-TextLegacyLeaf-delete-all.accdb",
+        "TextLegacyLeaf",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/02-V2016-TextLegacyLeaf-delete-all.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/02-V2016-TextLegacyLeaf-delete-all.stdout",
+        "bytes": 26,
+        "sha256": "4c683828e518ececb47d33f4df6fbceef3bd9e8eea3be37f5813e9c05a98dff9"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/02-V2016-TextLegacyLeaf-delete-all.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/02-V2016-TextLegacyLeaf-delete-all.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/02-V2016-TextLegacyLeaf-delete-all.getters.tsv",
+        "bytes": 1285668,
+        "sha256": "b9bb66795a458b9a0738078886b0d248a999ca972b14bf9f3ee7749b9b5dd8fb"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/02-V2016-TextLegacyLeaf-delete-all.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/03-V2016-TextModernLeaf-delete-tie.accdb",
+        "TextModernLeaf",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/03-V2016-TextModernLeaf-delete-tie.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/03-V2016-TextModernLeaf-delete-tie.stdout",
+        "bytes": 25,
+        "sha256": "9590f38fa0cb0a151eeba2702055599ae3dc0dff5134280eb5525d7865f085d1"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/03-V2016-TextModernLeaf-delete-tie.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/03-V2016-TextModernLeaf-delete-tie.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/03-V2016-TextModernLeaf-delete-tie.getters.tsv",
+        "bytes": 1298134,
+        "sha256": "ade9cd100a427b66e13ecf251f640e1c491a38696985c785302cbd1a9b2888d4"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/03-V2016-TextModernLeaf-delete-tie.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/04-V2016-TextModernLeaf-delete-null.accdb",
+        "TextModernLeaf",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/04-V2016-TextModernLeaf-delete-null.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/04-V2016-TextModernLeaf-delete-null.stdout",
+        "bytes": 25,
+        "sha256": "9590f38fa0cb0a151eeba2702055599ae3dc0dff5134280eb5525d7865f085d1"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/04-V2016-TextModernLeaf-delete-null.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/04-V2016-TextModernLeaf-delete-null.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/04-V2016-TextModernLeaf-delete-null.getters.tsv",
+        "bytes": 1298171,
+        "sha256": "2d7a604e5ed1a46ae4371ae2b935ab0e6c068ed7a8489ebf95b961af828f5270"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/04-V2016-TextModernLeaf-delete-null.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/05-V2016-TextModernLeaf-delete-all.accdb",
+        "TextModernLeaf",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/05-V2016-TextModernLeaf-delete-all.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/05-V2016-TextModernLeaf-delete-all.stdout",
+        "bytes": 26,
+        "sha256": "4c683828e518ececb47d33f4df6fbceef3bd9e8eea3be37f5813e9c05a98dff9"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/05-V2016-TextModernLeaf-delete-all.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/05-V2016-TextModernLeaf-delete-all.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/05-V2016-TextModernLeaf-delete-all.getters.tsv",
+        "bytes": 1282270,
+        "sha256": "3af8e1c464df7c4ea88c178110047ae2efe07271575fbdb3bcc56ba80ac6d8b5"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/05-V2016-TextModernLeaf-delete-all.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/06-V2016-BinaryLeaf-delete-tie.accdb",
+        "BinaryLeaf",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/06-V2016-BinaryLeaf-delete-tie.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/06-V2016-BinaryLeaf-delete-tie.stdout",
+        "bytes": 25,
+        "sha256": "9590f38fa0cb0a151eeba2702055599ae3dc0dff5134280eb5525d7865f085d1"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/06-V2016-BinaryLeaf-delete-tie.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/06-V2016-BinaryLeaf-delete-tie.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/06-V2016-BinaryLeaf-delete-tie.getters.tsv",
+        "bytes": 1298136,
+        "sha256": "e04c1d7a547334f4ef82713cddba0bcdd826fef20ab328d6d45e9e2495dcec4b"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/06-V2016-BinaryLeaf-delete-tie.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/07-V2016-BinaryLeaf-delete-null.accdb",
+        "BinaryLeaf",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/07-V2016-BinaryLeaf-delete-null.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/07-V2016-BinaryLeaf-delete-null.stdout",
+        "bytes": 25,
+        "sha256": "9590f38fa0cb0a151eeba2702055599ae3dc0dff5134280eb5525d7865f085d1"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/07-V2016-BinaryLeaf-delete-null.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/07-V2016-BinaryLeaf-delete-null.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/07-V2016-BinaryLeaf-delete-null.getters.tsv",
+        "bytes": 1298203,
+        "sha256": "01790442119024b9f588cb13530bb9c1e6f3d042c19a25727ba4d5f22f44293a"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/07-V2016-BinaryLeaf-delete-null.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/08-V2016-BinaryLeaf-delete-all.accdb",
+        "BinaryLeaf",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/08-V2016-BinaryLeaf-delete-all.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/08-V2016-BinaryLeaf-delete-all.stdout",
+        "bytes": 26,
+        "sha256": "4c683828e518ececb47d33f4df6fbceef3bd9e8eea3be37f5813e9c05a98dff9"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/08-V2016-BinaryLeaf-delete-all.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/08-V2016-BinaryLeaf-delete-all.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/08-V2016-BinaryLeaf-delete-all.getters.tsv",
+        "bytes": 1283882,
+        "sha256": "c29479982a4c588aa42476c8cd35236d302cbfd67057ffefd8fff4eb6d54aaa8"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/08-V2016-BinaryLeaf-delete-all.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/09-V2016-TextLegacyNode-delete-tie.accdb",
+        "TextLegacyNode",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/09-V2016-TextLegacyNode-delete-tie.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/09-V2016-TextLegacyNode-delete-tie.stdout",
+        "bytes": 25,
+        "sha256": "9590f38fa0cb0a151eeba2702055599ae3dc0dff5134280eb5525d7865f085d1"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/09-V2016-TextLegacyNode-delete-tie.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/09-V2016-TextLegacyNode-delete-tie.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/09-V2016-TextLegacyNode-delete-tie.getters.tsv",
+        "bytes": 1298140,
+        "sha256": "1fb9496de3b8199cabfbe58d1ea14cf7fd645b8a74aed142dcf2ed7e314a990d"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/09-V2016-TextLegacyNode-delete-tie.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/10-V2016-TextLegacyNode-delete-null.accdb",
+        "TextLegacyNode",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/10-V2016-TextLegacyNode-delete-null.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/10-V2016-TextLegacyNode-delete-null.stdout",
+        "bytes": 25,
+        "sha256": "9590f38fa0cb0a151eeba2702055599ae3dc0dff5134280eb5525d7865f085d1"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/10-V2016-TextLegacyNode-delete-null.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/10-V2016-TextLegacyNode-delete-null.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/10-V2016-TextLegacyNode-delete-null.getters.tsv",
+        "bytes": 1298171,
+        "sha256": "14ba3b071ddf2b05975c1b48c17f85f1bc1f49fc8f52adc61da3ef521049d4f3"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/10-V2016-TextLegacyNode-delete-null.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/11-V2016-TextLegacyNode-delete-all.accdb",
+        "TextLegacyNode",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/11-V2016-TextLegacyNode-delete-all.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/11-V2016-TextLegacyNode-delete-all.stdout",
+        "bytes": 27,
+        "sha256": "bca824ebd8ea4ab74b178452c48c093d537bcfe3fe1da656d061392baa93dda7"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/11-V2016-TextLegacyNode-delete-all.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/11-V2016-TextLegacyNode-delete-all.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/11-V2016-TextLegacyNode-delete-all.getters.tsv",
+        "bytes": 924023,
+        "sha256": "4e9a156ec48a6eb25ef5446441666bf6104e7b1cc0ab3311963f249a67b8cacd"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/11-V2016-TextLegacyNode-delete-all.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/12-V2016-TextModernNode-delete-tie.accdb",
+        "TextModernNode",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/12-V2016-TextModernNode-delete-tie.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/12-V2016-TextModernNode-delete-tie.stdout",
+        "bytes": 25,
+        "sha256": "9590f38fa0cb0a151eeba2702055599ae3dc0dff5134280eb5525d7865f085d1"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/12-V2016-TextModernNode-delete-tie.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/12-V2016-TextModernNode-delete-tie.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/12-V2016-TextModernNode-delete-tie.getters.tsv",
+        "bytes": 1298134,
+        "sha256": "803a4c1e358b30b5f0dbaf11e4034616072a5e2172eddfb5202046dfbe29a958"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/12-V2016-TextModernNode-delete-tie.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/13-V2016-TextModernNode-delete-null.accdb",
+        "TextModernNode",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/13-V2016-TextModernNode-delete-null.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/13-V2016-TextModernNode-delete-null.stdout",
+        "bytes": 25,
+        "sha256": "9590f38fa0cb0a151eeba2702055599ae3dc0dff5134280eb5525d7865f085d1"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/13-V2016-TextModernNode-delete-null.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/13-V2016-TextModernNode-delete-null.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/13-V2016-TextModernNode-delete-null.getters.tsv",
+        "bytes": 1298171,
+        "sha256": "6834490985cb43ddf76461cd37f81e3f8659235b44dc2b04bd0658478b61bda7"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/13-V2016-TextModernNode-delete-null.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/14-V2016-TextModernNode-delete-all.accdb",
+        "TextModernNode",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/14-V2016-TextModernNode-delete-all.tsv"
+      ],
+      "exit_code": 1,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/14-V2016-TextModernNode-delete-all.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/14-V2016-TextModernNode-delete-all.stderr",
+        "bytes": 34,
+        "sha256": "b80b69309bc87efee1407a8c14ee150ccac38caf6cc701f833a5607af85d0d51"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/15-V2016-BinaryNode-delete-tie.accdb",
+        "BinaryNode",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/15-V2016-BinaryNode-delete-tie.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/15-V2016-BinaryNode-delete-tie.stdout",
+        "bytes": 25,
+        "sha256": "9590f38fa0cb0a151eeba2702055599ae3dc0dff5134280eb5525d7865f085d1"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/15-V2016-BinaryNode-delete-tie.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/15-V2016-BinaryNode-delete-tie.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/15-V2016-BinaryNode-delete-tie.getters.tsv",
+        "bytes": 1298136,
+        "sha256": "78acfec3139b7500832a9256d5efcbd193a5450bd865c7968a957beac6e80a94"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/15-V2016-BinaryNode-delete-tie.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/16-V2016-BinaryNode-delete-null.accdb",
+        "BinaryNode",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/16-V2016-BinaryNode-delete-null.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/16-V2016-BinaryNode-delete-null.stdout",
+        "bytes": 25,
+        "sha256": "9590f38fa0cb0a151eeba2702055599ae3dc0dff5134280eb5525d7865f085d1"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/16-V2016-BinaryNode-delete-null.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/16-V2016-BinaryNode-delete-null.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/16-V2016-BinaryNode-delete-null.getters.tsv",
+        "bytes": 1298203,
+        "sha256": "483050108e5a823f5bfff936fdf5b9e05a9d3c03fd07e93bc7cffe022b9dd6cf"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/16-V2016-BinaryNode-delete-null.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/17-V2016-BinaryNode-delete-all.accdb",
+        "BinaryNode",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/17-V2016-BinaryNode-delete-all.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/17-V2016-BinaryNode-delete-all.stdout",
+        "bytes": 27,
+        "sha256": "bca824ebd8ea4ab74b178452c48c093d537bcfe3fe1da656d061392baa93dda7"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/17-V2016-BinaryNode-delete-all.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/17-V2016-BinaryNode-delete-all.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/17-V2016-BinaryNode-delete-all.getters.tsv",
+        "bytes": 887834,
+        "sha256": "0ec6d3048e55853dacc2e22a4a554707f0ecd967177896619871505d7d2d224d"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/17-V2016-BinaryNode-delete-all.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/18-V2016-TextUniqueOverflow-negative-delete.accdb",
+        "TextUniqueOverflow",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/18-V2016-TextUniqueOverflow-negative-delete.tsv"
+      ],
+      "exit_code": 1,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/18-V2016-TextUniqueOverflow-negative-delete.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/18-V2016-TextUniqueOverflow-negative-delete.stderr",
+        "bytes": 39,
+        "sha256": "788a28734840c1ea3be1aefccaad72dd1b12b76ad8e59786f35c01ea0ae50878"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/19-V2016-MemoNegative-negative-delete.accdb",
+        "MemoNegative",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/19-V2016-MemoNegative-negative-delete.tsv"
+      ],
+      "exit_code": 1,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/19-V2016-MemoNegative-negative-delete.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/19-V2016-MemoNegative-negative-delete.stderr",
+        "bytes": 34,
+        "sha256": "b80b69309bc87efee1407a8c14ee150ccac38caf6cc701f833a5607af85d0d51"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/20-V2016-TextCompositeNegative-negative-delete.accdb",
+        "TextCompositeNegative",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/20-V2016-TextCompositeNegative-negative-delete.tsv"
+      ],
+      "exit_code": 1,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/20-V2016-TextCompositeNegative-negative-delete.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/20-V2016-TextCompositeNegative-negative-delete.stderr",
+        "bytes": 28,
+        "sha256": "2184b2eaeb94a09f63750f7356cb6f36b1b2d24012e9e9d855d772a0cbcaba80"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/21-V2016-BinaryCompositeNegative-negative-delete.accdb",
+        "BinaryCompositeNegative",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/21-V2016-BinaryCompositeNegative-negative-delete.tsv"
+      ],
+      "exit_code": 1,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/21-V2016-BinaryCompositeNegative-negative-delete.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/21-V2016-BinaryCompositeNegative-negative-delete.stderr",
+        "bytes": 28,
+        "sha256": "2184b2eaeb94a09f63750f7356cb6f36b1b2d24012e9e9d855d772a0cbcaba80"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/22-V2016-TextIgnoredNegative-negative-delete.accdb",
+        "TextIgnoredNegative",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/22-V2016-TextIgnoredNegative-negative-delete.tsv"
+      ],
+      "exit_code": 1,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/22-V2016-TextIgnoredNegative-negative-delete.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/22-V2016-TextIgnoredNegative-negative-delete.stderr",
+        "bytes": 39,
+        "sha256": "788a28734840c1ea3be1aefccaad72dd1b12b76ad8e59786f35c01ea0ae50878"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/23-V2016-BinaryIgnoredNegative-negative-delete.accdb",
+        "BinaryIgnoredNegative",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/23-V2016-BinaryIgnoredNegative-negative-delete.tsv"
+      ],
+      "exit_code": 1,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/23-V2016-BinaryIgnoredNegative-negative-delete.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/23-V2016-BinaryIgnoredNegative-negative-delete.stderr",
+        "bytes": 39,
+        "sha256": "788a28734840c1ea3be1aefccaad72dd1b12b76ad8e59786f35c01ea0ae50878"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/24-V2019-TextLegacyLeaf-delete-tie.accdb",
+        "TextLegacyLeaf",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/24-V2019-TextLegacyLeaf-delete-tie.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/24-V2019-TextLegacyLeaf-delete-tie.stdout",
+        "bytes": 25,
+        "sha256": "9590f38fa0cb0a151eeba2702055599ae3dc0dff5134280eb5525d7865f085d1"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/24-V2019-TextLegacyLeaf-delete-tie.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/24-V2019-TextLegacyLeaf-delete-tie.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/24-V2019-TextLegacyLeaf-delete-tie.getters.tsv",
+        "bytes": 1298269,
+        "sha256": "58945760e655f0cf894d99220fb9ec3671efad75e7c1ad5923862defc723578e"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/24-V2019-TextLegacyLeaf-delete-tie.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/25-V2019-TextLegacyLeaf-delete-null.accdb",
+        "TextLegacyLeaf",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/25-V2019-TextLegacyLeaf-delete-null.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/25-V2019-TextLegacyLeaf-delete-null.stdout",
+        "bytes": 25,
+        "sha256": "9590f38fa0cb0a151eeba2702055599ae3dc0dff5134280eb5525d7865f085d1"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/25-V2019-TextLegacyLeaf-delete-null.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/25-V2019-TextLegacyLeaf-delete-null.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/25-V2019-TextLegacyLeaf-delete-null.getters.tsv",
+        "bytes": 1298300,
+        "sha256": "1efeef99c1783e11edbf300583ee2ea732f67447e768f68f080ce0b714d4c8a8"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/25-V2019-TextLegacyLeaf-delete-null.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/26-V2019-TextLegacyLeaf-delete-all.accdb",
+        "TextLegacyLeaf",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/26-V2019-TextLegacyLeaf-delete-all.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/26-V2019-TextLegacyLeaf-delete-all.stdout",
+        "bytes": 26,
+        "sha256": "4c683828e518ececb47d33f4df6fbceef3bd9e8eea3be37f5813e9c05a98dff9"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/26-V2019-TextLegacyLeaf-delete-all.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/26-V2019-TextLegacyLeaf-delete-all.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/26-V2019-TextLegacyLeaf-delete-all.getters.tsv",
+        "bytes": 1285677,
+        "sha256": "6ff40409eebc81c1bbc91f47372356242089f76ba82bdf1b356ff895a1c897eb"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/26-V2019-TextLegacyLeaf-delete-all.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/27-V2019-TextModernLeaf-delete-tie.accdb",
+        "TextModernLeaf",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/27-V2019-TextModernLeaf-delete-tie.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/27-V2019-TextModernLeaf-delete-tie.stdout",
+        "bytes": 25,
+        "sha256": "9590f38fa0cb0a151eeba2702055599ae3dc0dff5134280eb5525d7865f085d1"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/27-V2019-TextModernLeaf-delete-tie.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/27-V2019-TextModernLeaf-delete-tie.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/27-V2019-TextModernLeaf-delete-tie.getters.tsv",
+        "bytes": 1298263,
+        "sha256": "60a97ccfc243046f0ea34b6b9452b5af601c1dfbfc589ca5552b3cd03a16e1ef"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/27-V2019-TextModernLeaf-delete-tie.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/28-V2019-TextModernLeaf-delete-null.accdb",
+        "TextModernLeaf",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/28-V2019-TextModernLeaf-delete-null.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/28-V2019-TextModernLeaf-delete-null.stdout",
+        "bytes": 25,
+        "sha256": "9590f38fa0cb0a151eeba2702055599ae3dc0dff5134280eb5525d7865f085d1"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/28-V2019-TextModernLeaf-delete-null.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/28-V2019-TextModernLeaf-delete-null.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/28-V2019-TextModernLeaf-delete-null.getters.tsv",
+        "bytes": 1298300,
+        "sha256": "d361baf8a12bbc33ea021935880457d95601a501108fb323dfdbcde73e2b5ad6"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/28-V2019-TextModernLeaf-delete-null.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/29-V2019-TextModernLeaf-delete-all.accdb",
+        "TextModernLeaf",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/29-V2019-TextModernLeaf-delete-all.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/29-V2019-TextModernLeaf-delete-all.stdout",
+        "bytes": 26,
+        "sha256": "4c683828e518ececb47d33f4df6fbceef3bd9e8eea3be37f5813e9c05a98dff9"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/29-V2019-TextModernLeaf-delete-all.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/29-V2019-TextModernLeaf-delete-all.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/29-V2019-TextModernLeaf-delete-all.getters.tsv",
+        "bytes": 1282399,
+        "sha256": "a2a9deadec05fe15e8b11359801fc357ed6981f9a45b73e55df2d27dcdc08b7f"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/29-V2019-TextModernLeaf-delete-all.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/30-V2019-BinaryLeaf-delete-tie.accdb",
+        "BinaryLeaf",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/30-V2019-BinaryLeaf-delete-tie.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/30-V2019-BinaryLeaf-delete-tie.stdout",
+        "bytes": 25,
+        "sha256": "9590f38fa0cb0a151eeba2702055599ae3dc0dff5134280eb5525d7865f085d1"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/30-V2019-BinaryLeaf-delete-tie.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/30-V2019-BinaryLeaf-delete-tie.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/30-V2019-BinaryLeaf-delete-tie.getters.tsv",
+        "bytes": 1298265,
+        "sha256": "ea0a8476463a53ed1c7ac8314f9fe24db5b6400b522c35373be48bd7f8a5e0af"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/30-V2019-BinaryLeaf-delete-tie.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/31-V2019-BinaryLeaf-delete-null.accdb",
+        "BinaryLeaf",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/31-V2019-BinaryLeaf-delete-null.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/31-V2019-BinaryLeaf-delete-null.stdout",
+        "bytes": 25,
+        "sha256": "9590f38fa0cb0a151eeba2702055599ae3dc0dff5134280eb5525d7865f085d1"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/31-V2019-BinaryLeaf-delete-null.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/31-V2019-BinaryLeaf-delete-null.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/31-V2019-BinaryLeaf-delete-null.getters.tsv",
+        "bytes": 1298332,
+        "sha256": "91ef3c5d535dd86eab40c1d801e4a9abfc13765cfe1eb015037501ce78998a33"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/31-V2019-BinaryLeaf-delete-null.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/32-V2019-BinaryLeaf-delete-all.accdb",
+        "BinaryLeaf",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/32-V2019-BinaryLeaf-delete-all.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/32-V2019-BinaryLeaf-delete-all.stdout",
+        "bytes": 26,
+        "sha256": "4c683828e518ececb47d33f4df6fbceef3bd9e8eea3be37f5813e9c05a98dff9"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/32-V2019-BinaryLeaf-delete-all.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/32-V2019-BinaryLeaf-delete-all.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/32-V2019-BinaryLeaf-delete-all.getters.tsv",
+        "bytes": 1284011,
+        "sha256": "0e71d7095c623613ab28f807e8013965469b55a272e0e999148e13afb0c8ae81"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/32-V2019-BinaryLeaf-delete-all.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/33-V2019-TextLegacyNode-delete-tie.accdb",
+        "TextLegacyNode",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/33-V2019-TextLegacyNode-delete-tie.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/33-V2019-TextLegacyNode-delete-tie.stdout",
+        "bytes": 25,
+        "sha256": "9590f38fa0cb0a151eeba2702055599ae3dc0dff5134280eb5525d7865f085d1"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/33-V2019-TextLegacyNode-delete-tie.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/33-V2019-TextLegacyNode-delete-tie.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/33-V2019-TextLegacyNode-delete-tie.getters.tsv",
+        "bytes": 1298269,
+        "sha256": "d50b6f59d28aa8091c71db207402ac55a09a990e0653305895a5772fb69f39d1"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/33-V2019-TextLegacyNode-delete-tie.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/34-V2019-TextLegacyNode-delete-null.accdb",
+        "TextLegacyNode",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/34-V2019-TextLegacyNode-delete-null.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/34-V2019-TextLegacyNode-delete-null.stdout",
+        "bytes": 25,
+        "sha256": "9590f38fa0cb0a151eeba2702055599ae3dc0dff5134280eb5525d7865f085d1"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/34-V2019-TextLegacyNode-delete-null.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/34-V2019-TextLegacyNode-delete-null.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/34-V2019-TextLegacyNode-delete-null.getters.tsv",
+        "bytes": 1298300,
+        "sha256": "d6f9c4b46527d3215f452cb58d9be8735c30c7c45d6005e910cd9ec4ddad696f"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/34-V2019-TextLegacyNode-delete-null.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/35-V2019-TextLegacyNode-delete-all.accdb",
+        "TextLegacyNode",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/35-V2019-TextLegacyNode-delete-all.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/35-V2019-TextLegacyNode-delete-all.stdout",
+        "bytes": 27,
+        "sha256": "bca824ebd8ea4ab74b178452c48c093d537bcfe3fe1da656d061392baa93dda7"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/35-V2019-TextLegacyNode-delete-all.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/35-V2019-TextLegacyNode-delete-all.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/35-V2019-TextLegacyNode-delete-all.getters.tsv",
+        "bytes": 924152,
+        "sha256": "7b1f8c5aea7edc874af79fff194fa8902f793f431d8921d3bfa2ec7ac43a0db5"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/35-V2019-TextLegacyNode-delete-all.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/36-V2019-TextModernNode-delete-tie.accdb",
+        "TextModernNode",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/36-V2019-TextModernNode-delete-tie.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/36-V2019-TextModernNode-delete-tie.stdout",
+        "bytes": 25,
+        "sha256": "9590f38fa0cb0a151eeba2702055599ae3dc0dff5134280eb5525d7865f085d1"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/36-V2019-TextModernNode-delete-tie.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/36-V2019-TextModernNode-delete-tie.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/36-V2019-TextModernNode-delete-tie.getters.tsv",
+        "bytes": 1298263,
+        "sha256": "81e4653f8d73f889339aefdafb46210a93591305664ed093827289530d9537c5"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/36-V2019-TextModernNode-delete-tie.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/37-V2019-TextModernNode-delete-null.accdb",
+        "TextModernNode",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/37-V2019-TextModernNode-delete-null.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/37-V2019-TextModernNode-delete-null.stdout",
+        "bytes": 25,
+        "sha256": "9590f38fa0cb0a151eeba2702055599ae3dc0dff5134280eb5525d7865f085d1"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/37-V2019-TextModernNode-delete-null.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/37-V2019-TextModernNode-delete-null.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/37-V2019-TextModernNode-delete-null.getters.tsv",
+        "bytes": 1298300,
+        "sha256": "fb49267c65b672090f55e93a0ed1c4988d9688bc0da3e33587441a70e441387a"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/37-V2019-TextModernNode-delete-null.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/38-V2019-TextModernNode-delete-all.accdb",
+        "TextModernNode",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/38-V2019-TextModernNode-delete-all.tsv"
+      ],
+      "exit_code": 1,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/38-V2019-TextModernNode-delete-all.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/38-V2019-TextModernNode-delete-all.stderr",
+        "bytes": 34,
+        "sha256": "b80b69309bc87efee1407a8c14ee150ccac38caf6cc701f833a5607af85d0d51"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/39-V2019-BinaryNode-delete-tie.accdb",
+        "BinaryNode",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/39-V2019-BinaryNode-delete-tie.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/39-V2019-BinaryNode-delete-tie.stdout",
+        "bytes": 25,
+        "sha256": "9590f38fa0cb0a151eeba2702055599ae3dc0dff5134280eb5525d7865f085d1"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/39-V2019-BinaryNode-delete-tie.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/39-V2019-BinaryNode-delete-tie.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/39-V2019-BinaryNode-delete-tie.getters.tsv",
+        "bytes": 1298265,
+        "sha256": "7d29d89869a1c56d2dec8845c54fb6f149cdfaf150f28660b8ff1e35501eacd5"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/39-V2019-BinaryNode-delete-tie.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/40-V2019-BinaryNode-delete-null.accdb",
+        "BinaryNode",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/40-V2019-BinaryNode-delete-null.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/40-V2019-BinaryNode-delete-null.stdout",
+        "bytes": 25,
+        "sha256": "9590f38fa0cb0a151eeba2702055599ae3dc0dff5134280eb5525d7865f085d1"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/40-V2019-BinaryNode-delete-null.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/40-V2019-BinaryNode-delete-null.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/40-V2019-BinaryNode-delete-null.getters.tsv",
+        "bytes": 1298332,
+        "sha256": "da61520505a30ba3b0747628f45139dadbc976520f13f073f6912c300a041577"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/40-V2019-BinaryNode-delete-null.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/41-V2019-BinaryNode-delete-all.accdb",
+        "BinaryNode",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/41-V2019-BinaryNode-delete-all.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/41-V2019-BinaryNode-delete-all.stdout",
+        "bytes": 27,
+        "sha256": "bca824ebd8ea4ab74b178452c48c093d537bcfe3fe1da656d061392baa93dda7"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/41-V2019-BinaryNode-delete-all.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/41-V2019-BinaryNode-delete-all.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/41-V2019-BinaryNode-delete-all.getters.tsv",
+        "bytes": 887963,
+        "sha256": "697e44fb066e776e1b955ddd4e1c3598f34d991c51b2946da392bd5df0d82f67"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/41-V2019-BinaryNode-delete-all.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/42-V2019-TextUniqueOverflow-negative-delete.accdb",
+        "TextUniqueOverflow",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/42-V2019-TextUniqueOverflow-negative-delete.tsv"
+      ],
+      "exit_code": 1,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/42-V2019-TextUniqueOverflow-negative-delete.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/42-V2019-TextUniqueOverflow-negative-delete.stderr",
+        "bytes": 39,
+        "sha256": "788a28734840c1ea3be1aefccaad72dd1b12b76ad8e59786f35c01ea0ae50878"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/43-V2019-MemoNegative-negative-delete.accdb",
+        "MemoNegative",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/43-V2019-MemoNegative-negative-delete.tsv"
+      ],
+      "exit_code": 1,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/43-V2019-MemoNegative-negative-delete.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/43-V2019-MemoNegative-negative-delete.stderr",
+        "bytes": 34,
+        "sha256": "b80b69309bc87efee1407a8c14ee150ccac38caf6cc701f833a5607af85d0d51"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/44-V2019-TextCompositeNegative-negative-delete.accdb",
+        "TextCompositeNegative",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/44-V2019-TextCompositeNegative-negative-delete.tsv"
+      ],
+      "exit_code": 1,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/44-V2019-TextCompositeNegative-negative-delete.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/44-V2019-TextCompositeNegative-negative-delete.stderr",
+        "bytes": 28,
+        "sha256": "2184b2eaeb94a09f63750f7356cb6f36b1b2d24012e9e9d855d772a0cbcaba80"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/45-V2019-BinaryCompositeNegative-negative-delete.accdb",
+        "BinaryCompositeNegative",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/45-V2019-BinaryCompositeNegative-negative-delete.tsv"
+      ],
+      "exit_code": 1,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/45-V2019-BinaryCompositeNegative-negative-delete.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/45-V2019-BinaryCompositeNegative-negative-delete.stderr",
+        "bytes": 28,
+        "sha256": "2184b2eaeb94a09f63750f7356cb6f36b1b2d24012e9e9d855d772a0cbcaba80"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/46-V2019-TextIgnoredNegative-negative-delete.accdb",
+        "TextIgnoredNegative",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/46-V2019-TextIgnoredNegative-negative-delete.tsv"
+      ],
+      "exit_code": 1,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/46-V2019-TextIgnoredNegative-negative-delete.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/46-V2019-TextIgnoredNegative-negative-delete.stderr",
+        "bytes": 39,
+        "sha256": "788a28734840c1ea3be1aefccaad72dd1b12b76ad8e59786f35c01ea0ae50878"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-delete-encoded-20261026",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-before.accdb",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/47-V2019-BinaryIgnoredNegative-negative-delete.accdb",
+        "BinaryIgnoredNegative",
+        "--delete-file",
+        ".cache/encoded-delete-originals-next-20261026/replay-final/47-V2019-BinaryIgnoredNegative-negative-delete.tsv"
+      ],
+      "exit_code": 1,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/47-V2019-BinaryIgnoredNegative-negative-delete.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/47-V2019-BinaryIgnoredNegative-negative-delete.stderr",
+        "bytes": 39,
+        "sha256": "788a28734840c1ea3be1aefccaad72dd1b12b76ad8e59786f35c01ea0ae50878"
+      }
+    }
+  ],
+  "results": [
+    {
+      "profile": "V2016",
+      "table": "TextLegacyLeaf",
+      "state": "delete-tie",
+      "expected_refusal": false,
+      "selected_rows": 1,
+      "command": 0,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/00-V2016-TextLegacyLeaf-delete-tie.tsv",
+        "bytes": 41,
+        "sha256": "f21d8a91a0f112652e899ba834293e7c1617243c6c87e68b41118f02e7e64c2d"
+      },
+      "agreed": true,
+      "candidate": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/00-V2016-TextLegacyLeaf-delete-tie.accdb",
+        "bytes": 1163264,
+        "sha256": "0aa54c1dc0137fd59713ec7d677d0b45452c9b91b2d537091a01a08d680fccc7"
+      },
+      "getter": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/00-V2016-TextLegacyLeaf-delete-tie.getters.tsv",
+        "bytes": 1298145,
+        "sha256": "dee1af1558c9535d7fe79fce55cb17c7ac39e8e0ba31545ba3f4529363abe1e1"
+      },
+      "retired_pages": [],
+      "actual_rows": 23,
+      "exact_retained_key_and_reference_match": true,
+      "independent_preservation_proof": true,
+      "refusal_class": null
+    },
+    {
+      "profile": "V2016",
+      "table": "TextLegacyLeaf",
+      "state": "delete-null",
+      "expected_refusal": false,
+      "selected_rows": 1,
+      "command": 2,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/01-V2016-TextLegacyLeaf-delete-null.tsv",
+        "bytes": 29,
+        "sha256": "9f61f87636665be1c412f595df0196d06767bd5de4c268645d8c3435ad044ac1"
+      },
+      "agreed": true,
+      "candidate": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/01-V2016-TextLegacyLeaf-delete-null.accdb",
+        "bytes": 1163264,
+        "sha256": "5b6cbf37fae0a04435230dd632519d59bc52e9e22702a2e166988c9ebb8cf72a"
+      },
+      "getter": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/01-V2016-TextLegacyLeaf-delete-null.getters.tsv",
+        "bytes": 1298176,
+        "sha256": "8bfb232fe090fc17694ef94170d3c02f42e5b40208dddb7f0bfab48d692a9e3d"
+      },
+      "retired_pages": [],
+      "actual_rows": 23,
+      "exact_retained_key_and_reference_match": true,
+      "independent_preservation_proof": true,
+      "refusal_class": null
+    },
+    {
+      "profile": "V2016",
+      "table": "TextLegacyLeaf",
+      "state": "delete-all",
+      "expected_refusal": false,
+      "selected_rows": 24,
+      "command": 4,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/02-V2016-TextLegacyLeaf-delete-all.tsv",
+        "bytes": 2934,
+        "sha256": "36d6496d94714fd944d6788b822610ee0e1308082aae71c000bb435f4b0442ec"
+      },
+      "agreed": true,
+      "candidate": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/02-V2016-TextLegacyLeaf-delete-all.accdb",
+        "bytes": 1163264,
+        "sha256": "0943547cfff4c65ff61f9af379f01c49e379f2a867ce6fb922cfad8a90b85434"
+      },
+      "getter": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/02-V2016-TextLegacyLeaf-delete-all.getters.tsv",
+        "bytes": 1285668,
+        "sha256": "b9bb66795a458b9a0738078886b0d248a999ca972b14bf9f3ee7749b9b5dd8fb"
+      },
+      "retired_pages": [],
+      "actual_rows": 0,
+      "exact_retained_key_and_reference_match": true,
+      "independent_preservation_proof": true,
+      "refusal_class": null
+    },
+    {
+      "profile": "V2016",
+      "table": "TextModernLeaf",
+      "state": "delete-tie",
+      "expected_refusal": false,
+      "selected_rows": 1,
+      "command": 6,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/03-V2016-TextModernLeaf-delete-tie.tsv",
+        "bytes": 41,
+        "sha256": "f21d8a91a0f112652e899ba834293e7c1617243c6c87e68b41118f02e7e64c2d"
+      },
+      "agreed": true,
+      "candidate": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/03-V2016-TextModernLeaf-delete-tie.accdb",
+        "bytes": 1163264,
+        "sha256": "802d211f7bde5e14d7f209780966d3338887e2105f58a4b8687d98e087392409"
+      },
+      "getter": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/03-V2016-TextModernLeaf-delete-tie.getters.tsv",
+        "bytes": 1298134,
+        "sha256": "ade9cd100a427b66e13ecf251f640e1c491a38696985c785302cbd1a9b2888d4"
+      },
+      "retired_pages": [],
+      "actual_rows": 23,
+      "exact_retained_key_and_reference_match": true,
+      "independent_preservation_proof": true,
+      "refusal_class": null
+    },
+    {
+      "profile": "V2016",
+      "table": "TextModernLeaf",
+      "state": "delete-null",
+      "expected_refusal": false,
+      "selected_rows": 1,
+      "command": 8,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/04-V2016-TextModernLeaf-delete-null.tsv",
+        "bytes": 29,
+        "sha256": "9f61f87636665be1c412f595df0196d06767bd5de4c268645d8c3435ad044ac1"
+      },
+      "agreed": true,
+      "candidate": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/04-V2016-TextModernLeaf-delete-null.accdb",
+        "bytes": 1163264,
+        "sha256": "7bb84507a3536bfb73e3e61ce1b84b79b0e32b93298f8a12eac28cc28e1b8fe4"
+      },
+      "getter": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/04-V2016-TextModernLeaf-delete-null.getters.tsv",
+        "bytes": 1298171,
+        "sha256": "2d7a604e5ed1a46ae4371ae2b935ab0e6c068ed7a8489ebf95b961af828f5270"
+      },
+      "retired_pages": [],
+      "actual_rows": 23,
+      "exact_retained_key_and_reference_match": true,
+      "independent_preservation_proof": true,
+      "refusal_class": null
+    },
+    {
+      "profile": "V2016",
+      "table": "TextModernLeaf",
+      "state": "delete-all",
+      "expected_refusal": false,
+      "selected_rows": 24,
+      "command": 10,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/05-V2016-TextModernLeaf-delete-all.tsv",
+        "bytes": 2934,
+        "sha256": "36d6496d94714fd944d6788b822610ee0e1308082aae71c000bb435f4b0442ec"
+      },
+      "agreed": true,
+      "candidate": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/05-V2016-TextModernLeaf-delete-all.accdb",
+        "bytes": 1163264,
+        "sha256": "2c0fc14d330e0430fe162f8c39032e8592eee16e25bc8a1ef91a4fdecd5dd035"
+      },
+      "getter": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/05-V2016-TextModernLeaf-delete-all.getters.tsv",
+        "bytes": 1282270,
+        "sha256": "3af8e1c464df7c4ea88c178110047ae2efe07271575fbdb3bcc56ba80ac6d8b5"
+      },
+      "retired_pages": [],
+      "actual_rows": 0,
+      "exact_retained_key_and_reference_match": true,
+      "independent_preservation_proof": true,
+      "refusal_class": null
+    },
+    {
+      "profile": "V2016",
+      "table": "BinaryLeaf",
+      "state": "delete-tie",
+      "expected_refusal": false,
+      "selected_rows": 1,
+      "command": 12,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/06-V2016-BinaryLeaf-delete-tie.tsv",
+        "bytes": 43,
+        "sha256": "8c102f93b37f4a7d91d383204eb5503b4e000d986e7974d4e2f37e124bd0ca03"
+      },
+      "agreed": true,
+      "candidate": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/06-V2016-BinaryLeaf-delete-tie.accdb",
+        "bytes": 1163264,
+        "sha256": "8eabb46de654653a26831dbb2a0b03c32b12e5794cf9ff1bdbdb4a8e5a423819"
+      },
+      "getter": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/06-V2016-BinaryLeaf-delete-tie.getters.tsv",
+        "bytes": 1298136,
+        "sha256": "e04c1d7a547334f4ef82713cddba0bcdd826fef20ab328d6d45e9e2495dcec4b"
+      },
+      "retired_pages": [],
+      "actual_rows": 23,
+      "exact_retained_key_and_reference_match": true,
+      "independent_preservation_proof": true,
+      "refusal_class": null
+    },
+    {
+      "profile": "V2016",
+      "table": "BinaryLeaf",
+      "state": "delete-null",
+      "expected_refusal": false,
+      "selected_rows": 1,
+      "command": 14,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/07-V2016-BinaryLeaf-delete-null.tsv",
+        "bytes": 29,
+        "sha256": "9f61f87636665be1c412f595df0196d06767bd5de4c268645d8c3435ad044ac1"
+      },
+      "agreed": true,
+      "candidate": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/07-V2016-BinaryLeaf-delete-null.accdb",
+        "bytes": 1163264,
+        "sha256": "52ed9c3f5ae9bb8ca960ddf5b1f09096ea70fd23422011f61179cbe4425acee3"
+      },
+      "getter": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/07-V2016-BinaryLeaf-delete-null.getters.tsv",
+        "bytes": 1298203,
+        "sha256": "01790442119024b9f588cb13530bb9c1e6f3d042c19a25727ba4d5f22f44293a"
+      },
+      "retired_pages": [],
+      "actual_rows": 23,
+      "exact_retained_key_and_reference_match": true,
+      "independent_preservation_proof": true,
+      "refusal_class": null
+    },
+    {
+      "profile": "V2016",
+      "table": "BinaryLeaf",
+      "state": "delete-all",
+      "expected_refusal": false,
+      "selected_rows": 24,
+      "command": 16,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/08-V2016-BinaryLeaf-delete-all.tsv",
+        "bytes": 2538,
+        "sha256": "23369b5fb453b3df433b6401456df6c8d114d76d14fdce44df34503721caa32a"
+      },
+      "agreed": true,
+      "candidate": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/08-V2016-BinaryLeaf-delete-all.accdb",
+        "bytes": 1163264,
+        "sha256": "6178b79e7036aa37b4245d5457026de27fc45a0803f078969439446df305cfb7"
+      },
+      "getter": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/08-V2016-BinaryLeaf-delete-all.getters.tsv",
+        "bytes": 1283882,
+        "sha256": "c29479982a4c588aa42476c8cd35236d302cbfd67057ffefd8fff4eb6d54aaa8"
+      },
+      "retired_pages": [],
+      "actual_rows": 0,
+      "exact_retained_key_and_reference_match": true,
+      "independent_preservation_proof": true,
+      "refusal_class": null
+    },
+    {
+      "profile": "V2016",
+      "table": "TextLegacyNode",
+      "state": "delete-tie",
+      "expected_refusal": false,
+      "selected_rows": 1,
+      "command": 18,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/09-V2016-TextLegacyNode-delete-tie.tsv",
+        "bytes": 41,
+        "sha256": "f21d8a91a0f112652e899ba834293e7c1617243c6c87e68b41118f02e7e64c2d"
+      },
+      "agreed": true,
+      "candidate": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/09-V2016-TextLegacyNode-delete-tie.accdb",
+        "bytes": 1163264,
+        "sha256": "3145d13d925b494407abe9569f44060f4718fce66f17ecde6db8f5c98dcaa155"
+      },
+      "getter": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/09-V2016-TextLegacyNode-delete-tie.getters.tsv",
+        "bytes": 1298140,
+        "sha256": "1fb9496de3b8199cabfbe58d1ea14cf7fd645b8a74aed142dcf2ed7e314a990d"
+      },
+      "retired_pages": [],
+      "actual_rows": 700,
+      "exact_retained_key_and_reference_match": true,
+      "independent_preservation_proof": true,
+      "refusal_class": null
+    },
+    {
+      "profile": "V2016",
+      "table": "TextLegacyNode",
+      "state": "delete-null",
+      "expected_refusal": false,
+      "selected_rows": 1,
+      "command": 20,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/10-V2016-TextLegacyNode-delete-null.tsv",
+        "bytes": 29,
+        "sha256": "9f61f87636665be1c412f595df0196d06767bd5de4c268645d8c3435ad044ac1"
+      },
+      "agreed": true,
+      "candidate": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/10-V2016-TextLegacyNode-delete-null.accdb",
+        "bytes": 1163264,
+        "sha256": "843e47f7bcb7c27904bae93880168ec4f7a0a25216094d3b048bc3abd1a11e98"
+      },
+      "getter": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/10-V2016-TextLegacyNode-delete-null.getters.tsv",
+        "bytes": 1298171,
+        "sha256": "14ba3b071ddf2b05975c1b48c17f85f1bc1f49fc8f52adc61da3ef521049d4f3"
+      },
+      "retired_pages": [],
+      "actual_rows": 700,
+      "exact_retained_key_and_reference_match": true,
+      "independent_preservation_proof": true,
+      "refusal_class": null
+    },
+    {
+      "profile": "V2016",
+      "table": "TextLegacyNode",
+      "state": "delete-all",
+      "expected_refusal": false,
+      "selected_rows": 701,
+      "command": 22,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/11-V2016-TextLegacyNode-delete-all.tsv",
+        "bytes": 82725,
+        "sha256": "857cdfc614dfbeaf99e8d3e1c57a1368268159862e10da072c15eeaeb272e7ca"
+      },
+      "agreed": true,
+      "candidate": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/11-V2016-TextLegacyNode-delete-all.accdb",
+        "bytes": 1163264,
+        "sha256": "a4d5b2c26b4f7dac184922a0828dd9a62345da5cb947c13b1ac9f3789d65c33e"
+      },
+      "getter": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/11-V2016-TextLegacyNode-delete-all.getters.tsv",
+        "bytes": 924023,
+        "sha256": "4e9a156ec48a6eb25ef5446441666bf6104e7b1cc0ab3311963f249a67b8cacd"
+      },
+      "retired_pages": [
+        143,
+        144,
+        118,
+        119,
+        124,
+        125,
+        130,
+        131,
+        134,
+        138,
+        141,
+        146,
+        120,
+        121,
+        123,
+        126,
+        127,
+        132,
+        136,
+        142
+      ],
+      "actual_rows": 0,
+      "exact_retained_key_and_reference_match": true,
+      "independent_preservation_proof": true,
+      "refusal_class": null
+    },
+    {
+      "profile": "V2016",
+      "table": "TextModernNode",
+      "state": "delete-tie",
+      "expected_refusal": false,
+      "selected_rows": 1,
+      "command": 24,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/12-V2016-TextModernNode-delete-tie.tsv",
+        "bytes": 41,
+        "sha256": "f21d8a91a0f112652e899ba834293e7c1617243c6c87e68b41118f02e7e64c2d"
+      },
+      "agreed": true,
+      "candidate": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/12-V2016-TextModernNode-delete-tie.accdb",
+        "bytes": 1163264,
+        "sha256": "11ede592ac5dea72721bc82be0e6fb101e1b374af83a0d0d3548ea71a4373cac"
+      },
+      "getter": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/12-V2016-TextModernNode-delete-tie.getters.tsv",
+        "bytes": 1298134,
+        "sha256": "803a4c1e358b30b5f0dbaf11e4034616072a5e2172eddfb5202046dfbe29a958"
+      },
+      "retired_pages": [],
+      "actual_rows": 700,
+      "exact_retained_key_and_reference_match": true,
+      "independent_preservation_proof": true,
+      "refusal_class": null
+    },
+    {
+      "profile": "V2016",
+      "table": "TextModernNode",
+      "state": "delete-null",
+      "expected_refusal": false,
+      "selected_rows": 1,
+      "command": 26,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/13-V2016-TextModernNode-delete-null.tsv",
+        "bytes": 29,
+        "sha256": "9f61f87636665be1c412f595df0196d06767bd5de4c268645d8c3435ad044ac1"
+      },
+      "agreed": true,
+      "candidate": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/13-V2016-TextModernNode-delete-null.accdb",
+        "bytes": 1163264,
+        "sha256": "7ca60a51d41565fb593e25b52d278ad429694ed76a196479b2d32bae08c59e9d"
+      },
+      "getter": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/13-V2016-TextModernNode-delete-null.getters.tsv",
+        "bytes": 1298171,
+        "sha256": "6834490985cb43ddf76461cd37f81e3f8659235b44dc2b04bd0658478b61bda7"
+      },
+      "retired_pages": [],
+      "actual_rows": 700,
+      "exact_retained_key_and_reference_match": true,
+      "independent_preservation_proof": true,
+      "refusal_class": null
+    },
+    {
+      "profile": "V2016",
+      "table": "TextModernNode",
+      "state": "delete-all",
+      "expected_refusal": true,
+      "selected_rows": 701,
+      "command": 28,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/14-V2016-TextModernNode-delete-all.tsv",
+        "bytes": 82725,
+        "sha256": "857cdfc614dfbeaf99e8d3e1c57a1368268159862e10da072c15eeaeb272e7ca"
+      },
+      "agreed": true,
+      "candidate_exists": false,
+      "diagnostic": "Error: Unsupported(IndexedColumn)\n",
+      "refusal_class": "known_internal_chain"
+    },
+    {
+      "profile": "V2016",
+      "table": "BinaryNode",
+      "state": "delete-tie",
+      "expected_refusal": false,
+      "selected_rows": 1,
+      "command": 29,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/15-V2016-BinaryNode-delete-tie.tsv",
+        "bytes": 43,
+        "sha256": "8c102f93b37f4a7d91d383204eb5503b4e000d986e7974d4e2f37e124bd0ca03"
+      },
+      "agreed": true,
+      "candidate": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/15-V2016-BinaryNode-delete-tie.accdb",
+        "bytes": 1163264,
+        "sha256": "cc4ab487b6d6e9b6c5538b28543b3b3f0511bfe91b32b78da5ef6756b4f63a77"
+      },
+      "getter": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/15-V2016-BinaryNode-delete-tie.getters.tsv",
+        "bytes": 1298136,
+        "sha256": "78acfec3139b7500832a9256d5efcbd193a5450bd865c7968a957beac6e80a94"
+      },
+      "retired_pages": [],
+      "actual_rows": 700,
+      "exact_retained_key_and_reference_match": true,
+      "independent_preservation_proof": true,
+      "refusal_class": null
+    },
+    {
+      "profile": "V2016",
+      "table": "BinaryNode",
+      "state": "delete-null",
+      "expected_refusal": false,
+      "selected_rows": 1,
+      "command": 31,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/16-V2016-BinaryNode-delete-null.tsv",
+        "bytes": 29,
+        "sha256": "9f61f87636665be1c412f595df0196d06767bd5de4c268645d8c3435ad044ac1"
+      },
+      "agreed": true,
+      "candidate": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/16-V2016-BinaryNode-delete-null.accdb",
+        "bytes": 1163264,
+        "sha256": "2f9db7fe36015aba4e91640fde7815b28f2ef153103093185042679fcca824dc"
+      },
+      "getter": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/16-V2016-BinaryNode-delete-null.getters.tsv",
+        "bytes": 1298203,
+        "sha256": "483050108e5a823f5bfff936fdf5b9e05a9d3c03fd07e93bc7cffe022b9dd6cf"
+      },
+      "retired_pages": [],
+      "actual_rows": 700,
+      "exact_retained_key_and_reference_match": true,
+      "independent_preservation_proof": true,
+      "refusal_class": null
+    },
+    {
+      "profile": "V2016",
+      "table": "BinaryNode",
+      "state": "delete-all",
+      "expected_refusal": false,
+      "selected_rows": 701,
+      "command": 33,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/17-V2016-BinaryNode-delete-all.tsv",
+        "bytes": 70447,
+        "sha256": "7a59ce423d38d0bbdeac10500f1e6a1f826ef460d29b0eb2b996553a56479f12"
+      },
+      "agreed": true,
+      "candidate": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/17-V2016-BinaryNode-delete-all.accdb",
+        "bytes": 1163264,
+        "sha256": "90208534cb058e32fff959a25c95ef4713e26eff07f2036f0480a1a2cd703549"
+      },
+      "getter": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/17-V2016-BinaryNode-delete-all.getters.tsv",
+        "bytes": 887834,
+        "sha256": "0ec6d3048e55853dacc2e22a4a554707f0ecd967177896619871505d7d2d224d"
+      },
+      "retired_pages": [
+        235,
+        236,
+        207,
+        208,
+        212,
+        216,
+        218,
+        221,
+        225,
+        228,
+        231,
+        234,
+        209,
+        210,
+        213,
+        214,
+        215,
+        219,
+        222,
+        224,
+        226,
+        229,
+        232,
+        237
+      ],
+      "actual_rows": 0,
+      "exact_retained_key_and_reference_match": true,
+      "independent_preservation_proof": true,
+      "refusal_class": null
+    },
+    {
+      "profile": "V2016",
+      "table": "TextUniqueOverflow",
+      "state": "negative-delete",
+      "expected_refusal": true,
+      "selected_rows": 1,
+      "command": 35,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/18-V2016-TextUniqueOverflow-negative-delete.tsv",
+        "bytes": 1049,
+        "sha256": "e98cbc48e68a56a8ca38f87f7bae3ba3b50e4a6d5c6f6d689fb4731b82380828"
+      },
+      "agreed": true,
+      "candidate_exists": false,
+      "diagnostic": "Error: Unsupported(ConstraintCoverage)\n",
+      "refusal_class": "unsupported_profile"
+    },
+    {
+      "profile": "V2016",
+      "table": "MemoNegative",
+      "state": "negative-delete",
+      "expected_refusal": true,
+      "selected_rows": 1,
+      "command": 36,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/19-V2016-MemoNegative-negative-delete.tsv",
+        "bytes": 29,
+        "sha256": "9f61f87636665be1c412f595df0196d06767bd5de4c268645d8c3435ad044ac1"
+      },
+      "agreed": true,
+      "candidate_exists": false,
+      "diagnostic": "Error: Unsupported(IndexedColumn)\n",
+      "refusal_class": "unsupported_profile"
+    },
+    {
+      "profile": "V2016",
+      "table": "TextCompositeNegative",
+      "state": "negative-delete",
+      "expected_refusal": true,
+      "selected_rows": 1,
+      "command": 37,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/20-V2016-TextCompositeNegative-negative-delete.tsv",
+        "bytes": 33,
+        "sha256": "cae9e5ccd2d5ec80487271b55add8680801fc68e70f1420f9b8fbb5be49a5aaf"
+      },
+      "agreed": true,
+      "candidate_exists": false,
+      "diagnostic": "Error: Inspect(Unsupported)\n",
+      "refusal_class": "unsupported_profile"
+    },
+    {
+      "profile": "V2016",
+      "table": "BinaryCompositeNegative",
+      "state": "negative-delete",
+      "expected_refusal": true,
+      "selected_rows": 1,
+      "command": 38,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/21-V2016-BinaryCompositeNegative-negative-delete.tsv",
+        "bytes": 31,
+        "sha256": "97576a1a3d096a43b345a71f2c4f058b07081e3f970921790ba92bd0a9cfc8f3"
+      },
+      "agreed": true,
+      "candidate_exists": false,
+      "diagnostic": "Error: Inspect(Unsupported)\n",
+      "refusal_class": "unsupported_profile"
+    },
+    {
+      "profile": "V2016",
+      "table": "TextIgnoredNegative",
+      "state": "negative-delete",
+      "expected_refusal": true,
+      "selected_rows": 1,
+      "command": 39,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/22-V2016-TextIgnoredNegative-negative-delete.tsv",
+        "bytes": 33,
+        "sha256": "cae9e5ccd2d5ec80487271b55add8680801fc68e70f1420f9b8fbb5be49a5aaf"
+      },
+      "agreed": true,
+      "candidate_exists": false,
+      "diagnostic": "Error: Unsupported(ConstraintCoverage)\n",
+      "refusal_class": "unsupported_profile"
+    },
+    {
+      "profile": "V2016",
+      "table": "BinaryIgnoredNegative",
+      "state": "negative-delete",
+      "expected_refusal": true,
+      "selected_rows": 1,
+      "command": 40,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/23-V2016-BinaryIgnoredNegative-negative-delete.tsv",
+        "bytes": 31,
+        "sha256": "97576a1a3d096a43b345a71f2c4f058b07081e3f970921790ba92bd0a9cfc8f3"
+      },
+      "agreed": true,
+      "candidate_exists": false,
+      "diagnostic": "Error: Unsupported(ConstraintCoverage)\n",
+      "refusal_class": "unsupported_profile"
+    },
+    {
+      "profile": "V2019",
+      "table": "TextLegacyLeaf",
+      "state": "delete-tie",
+      "expected_refusal": false,
+      "selected_rows": 1,
+      "command": 41,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/24-V2019-TextLegacyLeaf-delete-tie.tsv",
+        "bytes": 41,
+        "sha256": "f21d8a91a0f112652e899ba834293e7c1617243c6c87e68b41118f02e7e64c2d"
+      },
+      "agreed": true,
+      "candidate": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/24-V2019-TextLegacyLeaf-delete-tie.accdb",
+        "bytes": 1236992,
+        "sha256": "6b879e2b050dca21b5b921b871a8fe6b465d3e0c1451ac6499d125ce2a7f72dd"
+      },
+      "getter": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/24-V2019-TextLegacyLeaf-delete-tie.getters.tsv",
+        "bytes": 1298269,
+        "sha256": "58945760e655f0cf894d99220fb9ec3671efad75e7c1ad5923862defc723578e"
+      },
+      "retired_pages": [],
+      "actual_rows": 23,
+      "exact_retained_key_and_reference_match": true,
+      "independent_preservation_proof": true,
+      "refusal_class": null
+    },
+    {
+      "profile": "V2019",
+      "table": "TextLegacyLeaf",
+      "state": "delete-null",
+      "expected_refusal": false,
+      "selected_rows": 1,
+      "command": 43,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/25-V2019-TextLegacyLeaf-delete-null.tsv",
+        "bytes": 29,
+        "sha256": "9f61f87636665be1c412f595df0196d06767bd5de4c268645d8c3435ad044ac1"
+      },
+      "agreed": true,
+      "candidate": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/25-V2019-TextLegacyLeaf-delete-null.accdb",
+        "bytes": 1236992,
+        "sha256": "1c4d411af5be0481de453fbde02555e6ef387b45df802196456e55d23c1ce662"
+      },
+      "getter": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/25-V2019-TextLegacyLeaf-delete-null.getters.tsv",
+        "bytes": 1298300,
+        "sha256": "1efeef99c1783e11edbf300583ee2ea732f67447e768f68f080ce0b714d4c8a8"
+      },
+      "retired_pages": [],
+      "actual_rows": 23,
+      "exact_retained_key_and_reference_match": true,
+      "independent_preservation_proof": true,
+      "refusal_class": null
+    },
+    {
+      "profile": "V2019",
+      "table": "TextLegacyLeaf",
+      "state": "delete-all",
+      "expected_refusal": false,
+      "selected_rows": 24,
+      "command": 45,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/26-V2019-TextLegacyLeaf-delete-all.tsv",
+        "bytes": 2934,
+        "sha256": "36d6496d94714fd944d6788b822610ee0e1308082aae71c000bb435f4b0442ec"
+      },
+      "agreed": true,
+      "candidate": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/26-V2019-TextLegacyLeaf-delete-all.accdb",
+        "bytes": 1236992,
+        "sha256": "3113dc7fabaa28867d02b8bfa6af43555569f413be10670d346ab6e7d4939f31"
+      },
+      "getter": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/26-V2019-TextLegacyLeaf-delete-all.getters.tsv",
+        "bytes": 1285677,
+        "sha256": "6ff40409eebc81c1bbc91f47372356242089f76ba82bdf1b356ff895a1c897eb"
+      },
+      "retired_pages": [],
+      "actual_rows": 0,
+      "exact_retained_key_and_reference_match": true,
+      "independent_preservation_proof": true,
+      "refusal_class": null
+    },
+    {
+      "profile": "V2019",
+      "table": "TextModernLeaf",
+      "state": "delete-tie",
+      "expected_refusal": false,
+      "selected_rows": 1,
+      "command": 47,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/27-V2019-TextModernLeaf-delete-tie.tsv",
+        "bytes": 41,
+        "sha256": "f21d8a91a0f112652e899ba834293e7c1617243c6c87e68b41118f02e7e64c2d"
+      },
+      "agreed": true,
+      "candidate": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/27-V2019-TextModernLeaf-delete-tie.accdb",
+        "bytes": 1236992,
+        "sha256": "9992994f2d39711175f63843c525bb3062d203b522f20e0f7b2ecda8b2712f77"
+      },
+      "getter": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/27-V2019-TextModernLeaf-delete-tie.getters.tsv",
+        "bytes": 1298263,
+        "sha256": "60a97ccfc243046f0ea34b6b9452b5af601c1dfbfc589ca5552b3cd03a16e1ef"
+      },
+      "retired_pages": [],
+      "actual_rows": 23,
+      "exact_retained_key_and_reference_match": true,
+      "independent_preservation_proof": true,
+      "refusal_class": null
+    },
+    {
+      "profile": "V2019",
+      "table": "TextModernLeaf",
+      "state": "delete-null",
+      "expected_refusal": false,
+      "selected_rows": 1,
+      "command": 49,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/28-V2019-TextModernLeaf-delete-null.tsv",
+        "bytes": 29,
+        "sha256": "9f61f87636665be1c412f595df0196d06767bd5de4c268645d8c3435ad044ac1"
+      },
+      "agreed": true,
+      "candidate": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/28-V2019-TextModernLeaf-delete-null.accdb",
+        "bytes": 1236992,
+        "sha256": "f9b3d7d338d7839c2bbf98f0c2efff63ddce10ec87594ca775d3f86cff6b5a3b"
+      },
+      "getter": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/28-V2019-TextModernLeaf-delete-null.getters.tsv",
+        "bytes": 1298300,
+        "sha256": "d361baf8a12bbc33ea021935880457d95601a501108fb323dfdbcde73e2b5ad6"
+      },
+      "retired_pages": [],
+      "actual_rows": 23,
+      "exact_retained_key_and_reference_match": true,
+      "independent_preservation_proof": true,
+      "refusal_class": null
+    },
+    {
+      "profile": "V2019",
+      "table": "TextModernLeaf",
+      "state": "delete-all",
+      "expected_refusal": false,
+      "selected_rows": 24,
+      "command": 51,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/29-V2019-TextModernLeaf-delete-all.tsv",
+        "bytes": 2934,
+        "sha256": "36d6496d94714fd944d6788b822610ee0e1308082aae71c000bb435f4b0442ec"
+      },
+      "agreed": true,
+      "candidate": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/29-V2019-TextModernLeaf-delete-all.accdb",
+        "bytes": 1236992,
+        "sha256": "a15c85c5d0cea29cdd6382f4470edad28cf8d317e8ed0078c8a4a186fd267f0e"
+      },
+      "getter": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/29-V2019-TextModernLeaf-delete-all.getters.tsv",
+        "bytes": 1282399,
+        "sha256": "a2a9deadec05fe15e8b11359801fc357ed6981f9a45b73e55df2d27dcdc08b7f"
+      },
+      "retired_pages": [],
+      "actual_rows": 0,
+      "exact_retained_key_and_reference_match": true,
+      "independent_preservation_proof": true,
+      "refusal_class": null
+    },
+    {
+      "profile": "V2019",
+      "table": "BinaryLeaf",
+      "state": "delete-tie",
+      "expected_refusal": false,
+      "selected_rows": 1,
+      "command": 53,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/30-V2019-BinaryLeaf-delete-tie.tsv",
+        "bytes": 43,
+        "sha256": "8c102f93b37f4a7d91d383204eb5503b4e000d986e7974d4e2f37e124bd0ca03"
+      },
+      "agreed": true,
+      "candidate": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/30-V2019-BinaryLeaf-delete-tie.accdb",
+        "bytes": 1236992,
+        "sha256": "73794e9d5719f7acca9ae017535bda70d6bafdfe5daeba0c0e6f2f8d5bdfe727"
+      },
+      "getter": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/30-V2019-BinaryLeaf-delete-tie.getters.tsv",
+        "bytes": 1298265,
+        "sha256": "ea0a8476463a53ed1c7ac8314f9fe24db5b6400b522c35373be48bd7f8a5e0af"
+      },
+      "retired_pages": [],
+      "actual_rows": 23,
+      "exact_retained_key_and_reference_match": true,
+      "independent_preservation_proof": true,
+      "refusal_class": null
+    },
+    {
+      "profile": "V2019",
+      "table": "BinaryLeaf",
+      "state": "delete-null",
+      "expected_refusal": false,
+      "selected_rows": 1,
+      "command": 55,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/31-V2019-BinaryLeaf-delete-null.tsv",
+        "bytes": 29,
+        "sha256": "9f61f87636665be1c412f595df0196d06767bd5de4c268645d8c3435ad044ac1"
+      },
+      "agreed": true,
+      "candidate": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/31-V2019-BinaryLeaf-delete-null.accdb",
+        "bytes": 1236992,
+        "sha256": "1d5763bc9325c5c4ce9ed888df564619003f0942b5639ea75001db7abb5c9d46"
+      },
+      "getter": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/31-V2019-BinaryLeaf-delete-null.getters.tsv",
+        "bytes": 1298332,
+        "sha256": "91ef3c5d535dd86eab40c1d801e4a9abfc13765cfe1eb015037501ce78998a33"
+      },
+      "retired_pages": [],
+      "actual_rows": 23,
+      "exact_retained_key_and_reference_match": true,
+      "independent_preservation_proof": true,
+      "refusal_class": null
+    },
+    {
+      "profile": "V2019",
+      "table": "BinaryLeaf",
+      "state": "delete-all",
+      "expected_refusal": false,
+      "selected_rows": 24,
+      "command": 57,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/32-V2019-BinaryLeaf-delete-all.tsv",
+        "bytes": 2538,
+        "sha256": "23369b5fb453b3df433b6401456df6c8d114d76d14fdce44df34503721caa32a"
+      },
+      "agreed": true,
+      "candidate": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/32-V2019-BinaryLeaf-delete-all.accdb",
+        "bytes": 1236992,
+        "sha256": "a294c1f59f44fe43ab7254821327f890987890cfa2bcd7b21ff10dcbf9e771f6"
+      },
+      "getter": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/32-V2019-BinaryLeaf-delete-all.getters.tsv",
+        "bytes": 1284011,
+        "sha256": "0e71d7095c623613ab28f807e8013965469b55a272e0e999148e13afb0c8ae81"
+      },
+      "retired_pages": [],
+      "actual_rows": 0,
+      "exact_retained_key_and_reference_match": true,
+      "independent_preservation_proof": true,
+      "refusal_class": null
+    },
+    {
+      "profile": "V2019",
+      "table": "TextLegacyNode",
+      "state": "delete-tie",
+      "expected_refusal": false,
+      "selected_rows": 1,
+      "command": 59,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/33-V2019-TextLegacyNode-delete-tie.tsv",
+        "bytes": 41,
+        "sha256": "f21d8a91a0f112652e899ba834293e7c1617243c6c87e68b41118f02e7e64c2d"
+      },
+      "agreed": true,
+      "candidate": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/33-V2019-TextLegacyNode-delete-tie.accdb",
+        "bytes": 1236992,
+        "sha256": "76213708123103a828ac933e0f66b536e0457f9de1df3e58f07aa6dd482f689b"
+      },
+      "getter": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/33-V2019-TextLegacyNode-delete-tie.getters.tsv",
+        "bytes": 1298269,
+        "sha256": "d50b6f59d28aa8091c71db207402ac55a09a990e0653305895a5772fb69f39d1"
+      },
+      "retired_pages": [],
+      "actual_rows": 700,
+      "exact_retained_key_and_reference_match": true,
+      "independent_preservation_proof": true,
+      "refusal_class": null
+    },
+    {
+      "profile": "V2019",
+      "table": "TextLegacyNode",
+      "state": "delete-null",
+      "expected_refusal": false,
+      "selected_rows": 1,
+      "command": 61,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/34-V2019-TextLegacyNode-delete-null.tsv",
+        "bytes": 29,
+        "sha256": "9f61f87636665be1c412f595df0196d06767bd5de4c268645d8c3435ad044ac1"
+      },
+      "agreed": true,
+      "candidate": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/34-V2019-TextLegacyNode-delete-null.accdb",
+        "bytes": 1236992,
+        "sha256": "ebfd429aa751e30c6948ea7b8616e5687f6756cb94db7d66bf34c1734cb57b12"
+      },
+      "getter": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/34-V2019-TextLegacyNode-delete-null.getters.tsv",
+        "bytes": 1298300,
+        "sha256": "d6f9c4b46527d3215f452cb58d9be8735c30c7c45d6005e910cd9ec4ddad696f"
+      },
+      "retired_pages": [],
+      "actual_rows": 700,
+      "exact_retained_key_and_reference_match": true,
+      "independent_preservation_proof": true,
+      "refusal_class": null
+    },
+    {
+      "profile": "V2019",
+      "table": "TextLegacyNode",
+      "state": "delete-all",
+      "expected_refusal": false,
+      "selected_rows": 701,
+      "command": 63,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/35-V2019-TextLegacyNode-delete-all.tsv",
+        "bytes": 82725,
+        "sha256": "857cdfc614dfbeaf99e8d3e1c57a1368268159862e10da072c15eeaeb272e7ca"
+      },
+      "agreed": true,
+      "candidate": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/35-V2019-TextLegacyNode-delete-all.accdb",
+        "bytes": 1236992,
+        "sha256": "785fdbf1ab4e420566260ed6ea630dd2d19303dc099dd70f1e4065f79f7c72ec"
+      },
+      "getter": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/35-V2019-TextLegacyNode-delete-all.getters.tsv",
+        "bytes": 924152,
+        "sha256": "7b1f8c5aea7edc874af79fff194fa8902f793f431d8921d3bfa2ec7ac43a0db5"
+      },
+      "retired_pages": [
+        161,
+        162,
+        136,
+        137,
+        142,
+        143,
+        148,
+        149,
+        152,
+        156,
+        159,
+        164,
+        138,
+        139,
+        141,
+        144,
+        145,
+        150,
+        154,
+        160
+      ],
+      "actual_rows": 0,
+      "exact_retained_key_and_reference_match": true,
+      "independent_preservation_proof": true,
+      "refusal_class": null
+    },
+    {
+      "profile": "V2019",
+      "table": "TextModernNode",
+      "state": "delete-tie",
+      "expected_refusal": false,
+      "selected_rows": 1,
+      "command": 65,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/36-V2019-TextModernNode-delete-tie.tsv",
+        "bytes": 41,
+        "sha256": "f21d8a91a0f112652e899ba834293e7c1617243c6c87e68b41118f02e7e64c2d"
+      },
+      "agreed": true,
+      "candidate": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/36-V2019-TextModernNode-delete-tie.accdb",
+        "bytes": 1236992,
+        "sha256": "2a3026929b5cce5bdf086e12cdbec8b78890cc682635ab04e8c0dec8675b421b"
+      },
+      "getter": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/36-V2019-TextModernNode-delete-tie.getters.tsv",
+        "bytes": 1298263,
+        "sha256": "81e4653f8d73f889339aefdafb46210a93591305664ed093827289530d9537c5"
+      },
+      "retired_pages": [],
+      "actual_rows": 700,
+      "exact_retained_key_and_reference_match": true,
+      "independent_preservation_proof": true,
+      "refusal_class": null
+    },
+    {
+      "profile": "V2019",
+      "table": "TextModernNode",
+      "state": "delete-null",
+      "expected_refusal": false,
+      "selected_rows": 1,
+      "command": 67,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/37-V2019-TextModernNode-delete-null.tsv",
+        "bytes": 29,
+        "sha256": "9f61f87636665be1c412f595df0196d06767bd5de4c268645d8c3435ad044ac1"
+      },
+      "agreed": true,
+      "candidate": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/37-V2019-TextModernNode-delete-null.accdb",
+        "bytes": 1236992,
+        "sha256": "777c95cd6e798d0cb5829c60113776577d23647a20fc0bedac745ed28fdb02d9"
+      },
+      "getter": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/37-V2019-TextModernNode-delete-null.getters.tsv",
+        "bytes": 1298300,
+        "sha256": "fb49267c65b672090f55e93a0ed1c4988d9688bc0da3e33587441a70e441387a"
+      },
+      "retired_pages": [],
+      "actual_rows": 700,
+      "exact_retained_key_and_reference_match": true,
+      "independent_preservation_proof": true,
+      "refusal_class": null
+    },
+    {
+      "profile": "V2019",
+      "table": "TextModernNode",
+      "state": "delete-all",
+      "expected_refusal": true,
+      "selected_rows": 701,
+      "command": 69,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/38-V2019-TextModernNode-delete-all.tsv",
+        "bytes": 82725,
+        "sha256": "857cdfc614dfbeaf99e8d3e1c57a1368268159862e10da072c15eeaeb272e7ca"
+      },
+      "agreed": true,
+      "candidate_exists": false,
+      "diagnostic": "Error: Unsupported(IndexedColumn)\n",
+      "refusal_class": "known_internal_chain"
+    },
+    {
+      "profile": "V2019",
+      "table": "BinaryNode",
+      "state": "delete-tie",
+      "expected_refusal": false,
+      "selected_rows": 1,
+      "command": 70,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/39-V2019-BinaryNode-delete-tie.tsv",
+        "bytes": 43,
+        "sha256": "8c102f93b37f4a7d91d383204eb5503b4e000d986e7974d4e2f37e124bd0ca03"
+      },
+      "agreed": true,
+      "candidate": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/39-V2019-BinaryNode-delete-tie.accdb",
+        "bytes": 1236992,
+        "sha256": "18d8173bea9b48c9d15d39a47d597b4e0297fa4f441c1909731014210d43168b"
+      },
+      "getter": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/39-V2019-BinaryNode-delete-tie.getters.tsv",
+        "bytes": 1298265,
+        "sha256": "7d29d89869a1c56d2dec8845c54fb6f149cdfaf150f28660b8ff1e35501eacd5"
+      },
+      "retired_pages": [],
+      "actual_rows": 700,
+      "exact_retained_key_and_reference_match": true,
+      "independent_preservation_proof": true,
+      "refusal_class": null
+    },
+    {
+      "profile": "V2019",
+      "table": "BinaryNode",
+      "state": "delete-null",
+      "expected_refusal": false,
+      "selected_rows": 1,
+      "command": 72,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/40-V2019-BinaryNode-delete-null.tsv",
+        "bytes": 29,
+        "sha256": "9f61f87636665be1c412f595df0196d06767bd5de4c268645d8c3435ad044ac1"
+      },
+      "agreed": true,
+      "candidate": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/40-V2019-BinaryNode-delete-null.accdb",
+        "bytes": 1236992,
+        "sha256": "7f768bf6330068129b3daa2066f1c9f8157ce54419acc2d3704df8829a29ccd5"
+      },
+      "getter": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/40-V2019-BinaryNode-delete-null.getters.tsv",
+        "bytes": 1298332,
+        "sha256": "da61520505a30ba3b0747628f45139dadbc976520f13f073f6912c300a041577"
+      },
+      "retired_pages": [],
+      "actual_rows": 700,
+      "exact_retained_key_and_reference_match": true,
+      "independent_preservation_proof": true,
+      "refusal_class": null
+    },
+    {
+      "profile": "V2019",
+      "table": "BinaryNode",
+      "state": "delete-all",
+      "expected_refusal": false,
+      "selected_rows": 701,
+      "command": 74,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/41-V2019-BinaryNode-delete-all.tsv",
+        "bytes": 70447,
+        "sha256": "7a59ce423d38d0bbdeac10500f1e6a1f826ef460d29b0eb2b996553a56479f12"
+      },
+      "agreed": true,
+      "candidate": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/41-V2019-BinaryNode-delete-all.accdb",
+        "bytes": 1236992,
+        "sha256": "42aae8297a6a57e28de032c31f8fc21a4db1aa5802ad74bc849555fa40a2fc46"
+      },
+      "getter": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/41-V2019-BinaryNode-delete-all.getters.tsv",
+        "bytes": 887963,
+        "sha256": "697e44fb066e776e1b955ddd4e1c3598f34d991c51b2946da392bd5df0d82f67"
+      },
+      "retired_pages": [
+        252,
+        253,
+        224,
+        225,
+        229,
+        233,
+        235,
+        238,
+        242,
+        245,
+        248,
+        251,
+        226,
+        227,
+        230,
+        231,
+        232,
+        236,
+        239,
+        241,
+        243,
+        246,
+        249,
+        254
+      ],
+      "actual_rows": 0,
+      "exact_retained_key_and_reference_match": true,
+      "independent_preservation_proof": true,
+      "refusal_class": null
+    },
+    {
+      "profile": "V2019",
+      "table": "TextUniqueOverflow",
+      "state": "negative-delete",
+      "expected_refusal": true,
+      "selected_rows": 1,
+      "command": 76,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/42-V2019-TextUniqueOverflow-negative-delete.tsv",
+        "bytes": 1049,
+        "sha256": "e98cbc48e68a56a8ca38f87f7bae3ba3b50e4a6d5c6f6d689fb4731b82380828"
+      },
+      "agreed": true,
+      "candidate_exists": false,
+      "diagnostic": "Error: Unsupported(ConstraintCoverage)\n",
+      "refusal_class": "unsupported_profile"
+    },
+    {
+      "profile": "V2019",
+      "table": "MemoNegative",
+      "state": "negative-delete",
+      "expected_refusal": true,
+      "selected_rows": 1,
+      "command": 77,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/43-V2019-MemoNegative-negative-delete.tsv",
+        "bytes": 29,
+        "sha256": "9f61f87636665be1c412f595df0196d06767bd5de4c268645d8c3435ad044ac1"
+      },
+      "agreed": true,
+      "candidate_exists": false,
+      "diagnostic": "Error: Unsupported(IndexedColumn)\n",
+      "refusal_class": "unsupported_profile"
+    },
+    {
+      "profile": "V2019",
+      "table": "TextCompositeNegative",
+      "state": "negative-delete",
+      "expected_refusal": true,
+      "selected_rows": 1,
+      "command": 78,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/44-V2019-TextCompositeNegative-negative-delete.tsv",
+        "bytes": 33,
+        "sha256": "cae9e5ccd2d5ec80487271b55add8680801fc68e70f1420f9b8fbb5be49a5aaf"
+      },
+      "agreed": true,
+      "candidate_exists": false,
+      "diagnostic": "Error: Inspect(Unsupported)\n",
+      "refusal_class": "unsupported_profile"
+    },
+    {
+      "profile": "V2019",
+      "table": "BinaryCompositeNegative",
+      "state": "negative-delete",
+      "expected_refusal": true,
+      "selected_rows": 1,
+      "command": 79,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/45-V2019-BinaryCompositeNegative-negative-delete.tsv",
+        "bytes": 31,
+        "sha256": "97576a1a3d096a43b345a71f2c4f058b07081e3f970921790ba92bd0a9cfc8f3"
+      },
+      "agreed": true,
+      "candidate_exists": false,
+      "diagnostic": "Error: Inspect(Unsupported)\n",
+      "refusal_class": "unsupported_profile"
+    },
+    {
+      "profile": "V2019",
+      "table": "TextIgnoredNegative",
+      "state": "negative-delete",
+      "expected_refusal": true,
+      "selected_rows": 1,
+      "command": 80,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/46-V2019-TextIgnoredNegative-negative-delete.tsv",
+        "bytes": 33,
+        "sha256": "cae9e5ccd2d5ec80487271b55add8680801fc68e70f1420f9b8fbb5be49a5aaf"
+      },
+      "agreed": true,
+      "candidate_exists": false,
+      "diagnostic": "Error: Unsupported(ConstraintCoverage)\n",
+      "refusal_class": "unsupported_profile"
+    },
+    {
+      "profile": "V2019",
+      "table": "BinaryIgnoredNegative",
+      "state": "negative-delete",
+      "expected_refusal": true,
+      "selected_rows": 1,
+      "command": 81,
+      "request_file": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay-final/47-V2019-BinaryIgnoredNegative-negative-delete.tsv",
+        "bytes": 31,
+        "sha256": "97576a1a3d096a43b345a71f2c4f058b07081e3f970921790ba92bd0a9cfc8f3"
+      },
+      "agreed": true,
+      "candidate_exists": false,
+      "diagnostic": "Error: Unsupported(ConstraintCoverage)\n",
+      "refusal_class": "unsupported_profile"
+    }
+  ],
+  "controls": 48,
+  "disagreements": 0,
+  "source_hashes_unchanged": true,
+  "date": "2026-10-26",
+  "execution_provenance": "Historical accepted generation/capture/replay used private paths retained below. Exact private helper sources are publicly archived as inert text. Maintained public wrappers are separately executed and recorded in public_wrapper_verification; historical paths are never relabeled.",
+  "promotions": [
+    {
+      "actual_executed_source": {
+        "path": ".cache/encoded-delete-originals-next-20261026/capture.py",
+        "bytes": 8383,
+        "sha256": "361bd2c207df916326dce8db473a64f4cb4743123cd7c9d8a6122afdc9f691bf"
+      },
+      "byte_identical_public_archive": {
+        "path": "docs/testing/encoded_delete_originals/historical/capture.py.txt",
+        "bytes": 8383,
+        "sha256": "361bd2c207df916326dce8db473a64f4cb4743123cd7c9d8a6122afdc9f691bf"
+      }
+    },
+    {
+      "actual_executed_source": {
+        "path": ".cache/encoded-delete-originals-next-20261026/qualify.py",
+        "bytes": 5377,
+        "sha256": "a0ae7324b6553fa59baba55e0700586d4ee58d56f9c267cc5841c3971021c146"
+      },
+      "byte_identical_public_archive": {
+        "path": "docs/testing/encoded_delete_originals/historical/qualify.py.txt",
+        "bytes": 5377,
+        "sha256": "a0ae7324b6553fa59baba55e0700586d4ee58d56f9c267cc5841c3971021c146"
+      }
+    },
+    {
+      "actual_executed_source": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay.py",
+        "bytes": 14277,
+        "sha256": "143d8e575221bf7f26520e68946d6486ccf5bba4270147bc50f1b6f361841877"
+      },
+      "byte_identical_public_archive": {
+        "path": "docs/testing/encoded_delete_originals/historical/replay.py.txt",
+        "bytes": 14277,
+        "sha256": "143d8e575221bf7f26520e68946d6486ccf5bba4270147bc50f1b6f361841877"
+      }
+    },
+    {
+      "actual_executed_source": {
+        "path": ".cache/encoded-delete-originals-next-20261026/wire.py",
+        "bytes": 4060,
+        "sha256": "8256e1254e8fc1da30826be4f4abfa9e4afa067025a5436c1d3d5d773efb1c42"
+      },
+      "byte_identical_public_archive": {
+        "path": "docs/testing/encoded_delete_originals/historical/wire.py.txt",
+        "bytes": 4060,
+        "sha256": "8256e1254e8fc1da30826be4f4abfa9e4afa067025a5436c1d3d5d773efb1c42"
+      }
+    },
+    {
+      "actual_executed_source": {
+        "path": ".cache/encoded-delete-originals-next-20261026/EncodedDeleteFixture.java",
+        "bytes": 12772,
+        "sha256": "1bf7fced97992d29fdc90b38fdb3315901f37f199359f4895da0ef3bd966a725"
+      },
+      "byte_identical_public_source": {
+        "path": "docs/testing/EncodedDeleteFixture.java",
+        "bytes": 12772,
+        "sha256": "1bf7fced97992d29fdc90b38fdb3315901f37f199359f4895da0ef3bd966a725"
+      }
+    }
+  ],
+  "raw_report": {
+    "path": ".cache/encoded-delete-originals-next-20261026/replay-final.json",
+    "bytes": 129850,
+    "sha256": "10500858dc1004ffc06716a42d04754152d2eb39c09731ef0191613a3cd1a194"
+  },
+  "accepted_log": {
+    "path": ".cache/encoded-delete-originals-next-20261026/replay-final.log",
+    "bytes": 2704,
+    "sha256": "71bbe3b9a834d0aee354ec49e1af65101a3d2da231efb963cd303db0b5dcba5e"
+  },
+  "terminal_session": 23209,
+  "terminal_exit_code": 0,
+  "reference_receipt": "docs/testing/results/ace16-delete-encoded-original-reference-2026-10-26.json",
+  "build_receipt": "docs/testing/results/ace16-delete-encoded-example-build-2026-10-26.json",
+  "summary": {
+    "successful_candidates": 34,
+    "expected_refusals": 14,
+    "deleted_rows": 2972,
+    "surviving_target_rows_checked": 8676,
+    "retired_pages_checked": 88,
+    "controls_counted_once": 48,
+    "unsupported_profile_refusals": 12,
+    "known_internal_chain_refusals": 2
+  },
+  "excluded_initial_run": {
+    "report": {
+      "path": ".cache/encoded-delete-originals-next-20261026/replay-initial.json",
+      "bytes": 129805,
+      "sha256": "b10e53bba24ed0817233187b9ee6b88cda2b654f0fd59f8b5b0c4bc191312e56"
+    },
+    "log": {
+      "path": ".cache/encoded-delete-originals-next-20261026/replay-initial.log",
+      "bytes": 2704,
+      "sha256": "71bbe3b9a834d0aee354ec49e1af65101a3d2da231efb963cd303db0b5dcba5e"
+    },
+    "source": {
+      "path": ".cache/encoded-delete-originals-next-20261026/replay-before-command-index-fix.py",
+      "bytes": 13994,
+      "sha256": "64082fd9158470c32e3b803458a15fe37e15d47688fb42382596e82ebf560fa0"
+    },
+    "note": "Initial48/0 numerical outcomes retained. Report command pointers used control ordinal rather than the command-list index that also contains getter calls. The fresh accepted48/0 run corrects only linkage and adds source/report pins. No model or input bytes changed; do not count both runs."
+  },
+  "limitations": [
+    "No native Access execution, save/reopen, data macro, ordinary write or journal/apply qualification.",
+    "Both TextModernNode height2 delete-all cases retain Unsupported(IndexedColumn) for linked internal contraction in the frozen revision. Their one-row tie/NULL removals succeed; do not classify every height2 operation as refused.",
+    "Memo, Text/Binary composite, ignore-NULL and unique Text overflow controls remain refused without candidates.",
+    "No inferred Text weight generation or Binary semantic re-encoding permission; accepted DELETE keeps original checked encoded key/reference entries."
+  ],
+  "public_wrapper_verification": {
+    "scope": "Public tool execution, separate from immutable historical private-source run; same48controls counted once. No databases regenerated.",
+    "capture_terminal_session": 3021,
+    "capture_exit_code": 0,
+    "qualification_exit_code": 0,
+    "replay_terminal_session": 12091,
+    "replay_exit_code": 0,
+    "capture_report": {
+      "path": ".cache/encoded-delete-originals-next-20261026/public-capture.json",
+      "bytes": 2881686,
+      "sha256": "97297a7ee4c63a5546ba18134776ba81050e3ef520a9d71cd0af10fe1e96f90f"
+    },
+    "capture_log": {
+      "path": ".cache/encoded-delete-originals-next-20261026/public-capture.log",
+      "bytes": 468,
+      "sha256": "284ad572d74388fa4f65796be2c0ec21b9687fd67bd124e69d94509c021364d3"
+    },
+    "qualification_report": {
+      "path": ".cache/encoded-delete-originals-next-20261026/public-qualification.json",
+      "bytes": 12538,
+      "sha256": "465e718a627fb7f498af54d0f9eed42a84dd8ffaf95f01f57a6c7f79028c7132"
+    },
+    "qualification_log": {
+      "path": ".cache/encoded-delete-originals-next-20261026/public-qualification.log",
+      "bytes": 72,
+      "sha256": "5d3968b0271bd1b98bf8b7b7636ab60fd12f2661da02fc0bbc5cff55ad3c6d27"
+    },
+    "replay_report": {
+      "path": ".cache/encoded-delete-originals-next-20261026/public-replay.json",
+      "bytes": 131858,
+      "sha256": "24938b0144c6b6e3f366196887315fe1699b2188d237b585e643e8cd07613a4a"
+    },
+    "replay_log": {
+      "path": ".cache/encoded-delete-originals-next-20261026/public-replay.log",
+      "bytes": 2704,
+      "sha256": "71bbe3b9a834d0aee354ec49e1af65101a3d2da231efb963cd303db0b5dcba5e"
+    },
+    "sources": [
+      {
+        "path": "docs/testing/encoded_delete_originals/capture.py",
+        "bytes": 5141,
+        "sha256": "fbbfbd8a5e07504d34ae7e2d9dba7c9850a8be3226277276db6cc249b9d9046d"
+      },
+      {
+        "path": ".cache/encoded-delete-originals-next-20261026/public-common-before-pathsep.py",
+        "bytes": 1597,
+        "sha256": "26451b183b4c759fdd4f200e300d5887d0a8b540c4b300ff09480986fdac4ec5"
+      },
+      {
+        "path": "docs/testing/encoded_delete_originals/qualify.py",
+        "bytes": 6097,
+        "sha256": "5e332d4c965ef24453ea3ff286ee1cdfad1fdd0986fd7f6950f31a61e39c2cac"
+      },
+      {
+        "path": "docs/testing/encoded_delete_originals/replay.py",
+        "bytes": 17537,
+        "sha256": "c2ff136953e63472578b60d7ef5a2c574aafb9d3b16335324e6c44f0bd7aba63"
+      },
+      {
+        "path": "docs/testing/encoded_delete_originals/wire.py",
+        "bytes": 6423,
+        "sha256": "c75e98152710d6957c212d66da0c8c7f62fc5c6d0b159fdbb823d72bb22662a5"
+      }
+    ],
+    "controls": 48,
+    "disagreements": 0,
+    "successful_candidates": 34,
+    "unsupported_profile_refusals": 12,
+    "known_internal_chain_refusals": 2,
+    "all_command_source_candidate_getter_pins_reverified": true,
+    "inputs_unchanged": true,
+    "sources_role": "Exact executed sources; common.py preserved at private snapshot after the mechanical portability correction.",
+    "current_public_sources": [
+      {
+        "path": "docs/testing/encoded_delete_originals/capture.py",
+        "bytes": 5141,
+        "sha256": "fbbfbd8a5e07504d34ae7e2d9dba7c9850a8be3226277276db6cc249b9d9046d"
+      },
+      {
+        "path": "docs/testing/encoded_delete_originals/common.py",
+        "bytes": 1774,
+        "sha256": "59925dc923e19b31859ecc7f8a9102df90694670b4d68c42ed2f07fc80c44d7a"
+      },
+      {
+        "path": "docs/testing/encoded_delete_originals/qualify.py",
+        "bytes": 6097,
+        "sha256": "5e332d4c965ef24453ea3ff286ee1cdfad1fdd0986fd7f6950f31a61e39c2cac"
+      },
+      {
+        "path": "docs/testing/encoded_delete_originals/replay.py",
+        "bytes": 17537,
+        "sha256": "c2ff136953e63472578b60d7ef5a2c574aafb9d3b16335324e6c44f0bd7aba63"
+      },
+      {
+        "path": "docs/testing/encoded_delete_originals/wire.py",
+        "bytes": 6423,
+        "sha256": "c75e98152710d6957c212d66da0c8c7f62fc5c6d0b159fdbb823d72bb22662a5"
+      }
+    ],
+    "post_execution_portability_correction": {
+      "executed_common_source_archive": {
+        "path": ".cache/encoded-delete-originals-next-20261026/public-common-before-pathsep.py",
+        "bytes": 1597,
+        "sha256": "26451b183b4c759fdd4f200e300d5887d0a8b540c4b300ff09480986fdac4ec5"
+      },
+      "current_common_source": {
+        "path": "docs/testing/encoded_delete_originals/common.py",
+        "bytes": 1774,
+        "sha256": "59925dc923e19b31859ecc7f8a9102df90694670b4d68c42ed2f07fc80c44d7a"
+      },
+      "change": "Use os.pathsep instead of literal colon for cross-platform classpaths. All recorded macOS Java argv independently regenerated exactly; no additional48-control run needed or counted."
+    }
+  },
+  "artifact_label_normalization": {
+    "policy": "Public artifact path labels are repository-relative. Labels formerly absolute inside the checkout are normalized without changing file bytes, hashes, actual argv, or ignored raw reports. Maintained common.pin resolves paths relative to its repository root and rejects artifacts outside that root.",
+    "pre_change_common_source": {
+      "path": ".cache/encoded-delete-originals-next-20261026/public-common-before-relative-labels.py",
+      "bytes": 1630,
+      "sha256": "beb0826442dcb3253b5ed95f0c8006220222965fed1f598090b574738c6670e9"
+    },
+    "current_common_source": {
+      "path": "docs/testing/encoded_delete_originals/common.py",
+      "bytes": 1774,
+      "sha256": "59925dc923e19b31859ecc7f8a9102df90694670b4d68c42ed2f07fc80c44d7a"
+    },
+    "verification": "No consumer or payload change; no48-control rerun. Relative/absolute-in-repository label parity, outside-repository rejection, exact Java argv equality and recursive pin checks are verified separately."
+  }
+}

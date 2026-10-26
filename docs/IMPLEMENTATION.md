@@ -68,6 +68,15 @@ preserves initial fixture-layout and expectation failures with their causal
 diagnostics; no production correction followed those failures. Original-file
 Text/Binary candidate replay remains separate and unrun in this record.
 
+The subsequent [original-file comparison](testing/results/ace16-delete-encoded-internal-chains-originals-2026-10-26.json)
+passes all 48 controls on the repaired committed tool: 36 candidates and twelve
+unsupported-profile refusals. Independent getters and exact key/reference and
+preservation checks cover 4,374 deletions, 8,676 surviving target rows and 158
+retired pages. Both Modern Text height-two delete-all cases now pass. The
+[owning observations](testing/ENCODED_DELETE_OBSERVATIONS.md) retain the initial
+two refusals, provenance and public reproduction tools. These are repeated tests
+of the same selectors, not additional distinct controls or native Access evidence.
+
 ## Deletion candidates with existing-page contraction
 
 The opt-in ACE16 preview now removes empty leaves and branches, repairs surviving

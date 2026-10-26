@@ -1,0 +1,107 @@
+"""Independent raw framing reader shared by fresh fixture replay."""
+import struct
+
+def u16(data, offset):
+    return struct.unpack_from('<H', data, offset)[0]
+
+def u32(data, offset):
+    return struct.unpack_from('<I', data, offset)[0]
+
+def be32(data, offset):
+    return struct.unpack_from('>I', data, offset)[0]
+
+def row(raw, reference):
+    number, slot = reference >> 8, reference & 255
+    page = raw[number * 4096:(number + 1) * 4096]
+    assert page[:2] == b'\1\1' and slot < u16(page, 12)
+    word = u16(page, 14 + 2 * slot)
+    assert word & 0xe000 == 0
+    start = word & 0x1fff
+    end = 4096 if slot == 0 else u16(page, 12 + 2 * slot) & 0x1fff
+    assert 14 + 2 * u16(page, 12) <= start < end <= 4096
+    return page[start:end]
+
+def members(raw, reference):
+    payload = row(raw, reference)
+    if payload[0] == 0:
+        base = u32(payload, 1)
+        result = [base + byte * 8 + bit for byte, mask in enumerate(payload[5:])
+                  for bit in range(8) if mask & 1 << bit]
+    elif payload[0] == 1:
+        assert (len(payload) - 1) % 4 == 0
+        result = []
+        for number in range((len(payload) - 1) // 4):
+            pointer = u32(payload, 1 + number * 4)
+            if pointer:
+                page = raw[pointer * 4096:(pointer + 1) * 4096]
+                assert page[:4] == bytes([5, 1, 0, 0])
+                result.extend(number * 32736 + byte * 8 + bit
+                              for byte, mask in enumerate(page[4:])
+                              for bit in range(8) if mask & 1 << bit)
+    else:
+        raise AssertionError('unknown map')
+    assert result == sorted(set(result)) and all(page < len(raw) // 4096 for page in result)
+    return result
+
+def physical(raw, definition, number):
+    page = raw[definition * 4096:(definition + 1) * 4096]
+    columns = u16(page, 45)
+    physical_count = u32(page, 51)
+    assert number < physical_count
+    offset = 63 + physical_count * 12 + columns * 25
+    for _ in range(columns):
+        length = u16(page, offset)
+        offset += 2 + length
+    declaration = offset + number * 52
+    return u32(page, declaration + 34), u32(page, declaration + 38)
+
+def decode_tree(raw, number, owner, visited=None):
+    visited = set() if visited is None else visited
+    assert number not in visited
+    visited.add(number)
+    page = raw[number * 4096:(number + 1) * 4096]
+    assert page[0] in [3, 4] and page[1] == 1 and u32(page, 4) == owner
+    leaf = page[0] == 4
+    ends = [byte * 8 + bit for byte, mask in enumerate(page[27:480])
+            for bit in range(8) if mask & 1 << bit]
+    prefix = u16(page, 24)
+    previous = 0
+    first = None
+    entries = []
+    leaves = []
+    nodes = []
+    children = []
+    for end in ends:
+        assert previous < end <= 3616
+        fragment = page[480 + previous:480 + end]
+        full = fragment if first is None else first[:prefix] + fragment
+        if first is None:
+            first = full
+        assert prefix <= len(first)
+        trailer = 4 if leaf else 8
+        assert len(full) > trailer
+        key = full[:-trailer]
+        reference = be32(full, len(full) - trailer)
+        if leaf:
+            entries.append((key.hex(), reference >> 8, reference & 255))
+        else:
+            child = be32(full, len(full) - 4)
+            children.append(child)
+        previous = end
+    assert u16(page, 2) == 3616 - previous
+    assert ends or prefix == 0
+    links = {'page': number, 'kind': page[0], 'height': page[26],
+             'previous': u32(page, 12), 'next': u32(page, 16), 'tail': u32(page, 20)}
+    if leaf:
+        assert links['tail'] == 0
+        leaves.append(links | {'entries': len(entries)})
+    else:
+        if links['tail']:
+            children.append(links['tail'])
+        nodes.append(links | {'children': children[:]})
+        for child in children:
+            keys, child_leaves, child_nodes = decode_tree(raw, child, owner, visited)
+            entries.extend(keys)
+            leaves.extend(child_leaves)
+            nodes.extend(child_nodes)
+    return entries, leaves, nodes

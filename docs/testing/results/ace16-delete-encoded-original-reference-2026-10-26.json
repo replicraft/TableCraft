@@ -1,0 +1,5331 @@
+{
+  "date": "2026-10-26",
+  "scope": "Fresh public-Jackcess original/reference getters and independent raw entry/map inventory; no engine/candidate/Access SQL execution",
+  "execution_provenance": "Historical accepted generation/capture/replay used private paths retained below. Exact private helper sources are publicly archived as inert text. Maintained public wrappers are separately executed and recorded in public_wrapper_verification; historical paths are never relabeled.",
+  "promotions": [
+    {
+      "actual_executed_source": {
+        "path": ".cache/encoded-delete-originals-next-20261026/capture.py",
+        "bytes": 8383,
+        "sha256": "361bd2c207df916326dce8db473a64f4cb4743123cd7c9d8a6122afdc9f691bf"
+      },
+      "byte_identical_public_archive": {
+        "path": "docs/testing/encoded_delete_originals/historical/capture.py.txt",
+        "bytes": 8383,
+        "sha256": "361bd2c207df916326dce8db473a64f4cb4743123cd7c9d8a6122afdc9f691bf"
+      }
+    },
+    {
+      "actual_executed_source": {
+        "path": ".cache/encoded-delete-originals-next-20261026/qualify.py",
+        "bytes": 5377,
+        "sha256": "a0ae7324b6553fa59baba55e0700586d4ee58d56f9c267cc5841c3971021c146"
+      },
+      "byte_identical_public_archive": {
+        "path": "docs/testing/encoded_delete_originals/historical/qualify.py.txt",
+        "bytes": 5377,
+        "sha256": "a0ae7324b6553fa59baba55e0700586d4ee58d56f9c267cc5841c3971021c146"
+      }
+    },
+    {
+      "actual_executed_source": {
+        "path": ".cache/encoded-delete-originals-next-20261026/replay.py",
+        "bytes": 14277,
+        "sha256": "143d8e575221bf7f26520e68946d6486ccf5bba4270147bc50f1b6f361841877"
+      },
+      "byte_identical_public_archive": {
+        "path": "docs/testing/encoded_delete_originals/historical/replay.py.txt",
+        "bytes": 14277,
+        "sha256": "143d8e575221bf7f26520e68946d6486ccf5bba4270147bc50f1b6f361841877"
+      }
+    },
+    {
+      "actual_executed_source": {
+        "path": ".cache/encoded-delete-originals-next-20261026/wire.py",
+        "bytes": 4060,
+        "sha256": "8256e1254e8fc1da30826be4f4abfa9e4afa067025a5436c1d3d5d773efb1c42"
+      },
+      "byte_identical_public_archive": {
+        "path": "docs/testing/encoded_delete_originals/historical/wire.py.txt",
+        "bytes": 4060,
+        "sha256": "8256e1254e8fc1da30826be4f4abfa9e4afa067025a5436c1d3d5d773efb1c42"
+      }
+    },
+    {
+      "actual_executed_source": {
+        "path": ".cache/encoded-delete-originals-next-20261026/EncodedDeleteFixture.java",
+        "bytes": 12772,
+        "sha256": "1bf7fced97992d29fdc90b38fdb3315901f37f199359f4895da0ef3bd966a725"
+      },
+      "byte_identical_public_source": {
+        "path": "docs/testing/EncodedDeleteFixture.java",
+        "bytes": 12772,
+        "sha256": "1bf7fced97992d29fdc90b38fdb3315901f37f199359f4895da0ef3bd966a725"
+      }
+    }
+  ],
+  "jar": {
+    "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+    "bytes": 1407244,
+    "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+  },
+  "compiled_getter_class": {
+    "path": ".cache/encoded-delete-originals-next-20261026/com/healthmarketscience/jackcess/impl/EncodedDeleteFixture.class",
+    "bytes": 16511,
+    "sha256": "d3c01710c0bd9314523c47d6db316382df2e0bc09ce09197b66ea06bb0a76196"
+  },
+  "raw_capture_report": {
+    "path": ".cache/encoded-delete-originals-next-20261026/original-observations.json",
+    "bytes": 2881075,
+    "sha256": "810a9de6de608580c5ed0953d9608bcf0f83c27a68210c9c13dd7b30e9247a09"
+  },
+  "qualification_report": {
+    "path": ".cache/encoded-delete-originals-next-20261026/qualification.json",
+    "bytes": 12121,
+    "sha256": "1e1c0611b8ae5a68b25b3610608677ac24a85891a819228e81985bde2fb83b7a"
+  },
+  "qualification_source": {
+    "path": ".cache/encoded-delete-originals-next-20261026/qualify.py",
+    "bytes": 5377,
+    "sha256": "a0ae7324b6553fa59baba55e0700586d4ee58d56f9c267cc5841c3971021c146"
+  },
+  "capture_source": {
+    "path": ".cache/encoded-delete-originals-next-20261026/capture.py",
+    "bytes": 8383,
+    "sha256": "361bd2c207df916326dce8db473a64f4cb4743123cd7c9d8a6122afdc9f691bf"
+  },
+  "generation_logs": [
+    {
+      "path": ".cache/encoded-delete-originals-next-20261026/generate-V2016.log",
+      "bytes": 178,
+      "sha256": "b72319645bcb2b0a25a0eb6dd6467465f2b73a80232f00a57996570344456f8a"
+    },
+    {
+      "path": ".cache/encoded-delete-originals-next-20261026/generate-V2019.log",
+      "bytes": 178,
+      "sha256": "fc04560adb43a7a77369bf6d236979d053a0889ba27f6b02d6e99d2141dfeb35"
+    }
+  ],
+  "capture_log": {
+    "path": ".cache/encoded-delete-originals-next-20261026/capture.log",
+    "bytes": 468,
+    "sha256": "8484f7a5e94bfb09e846c51786f8b51ce2429c9338ec7cd49144410f4e637b72"
+  },
+  "qualification_log": {
+    "path": ".cache/encoded-delete-originals-next-20261026/qualification.log",
+    "bytes": 2421,
+    "sha256": "85909b8c339f7667e492b167bff61538ec75efc583a37695bffbddf9b9c14ba4"
+  },
+  "qualification_summary": {
+    "scope": "Independent original generator-value/getter/physical-entry and topology checks; no engine or Access SQL execution",
+    "file_states": 8,
+    "public_getter_model_value_cells": 13026,
+    "all_eight_source_hashes_unchanged": true,
+    "raw_key_and_row_reference_matches": true,
+    "cursor_order_matches_raw_references": true,
+    "sentinel_memo_ole_getters_unchanged_across_states": true
+  },
+  "commands": [
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-before.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/Encoded-V2016-before.getters.tsv",
+        "bytes": 1298444,
+        "sha256": "9baa586b1d20f1acaf923b186bb15877ea31bd40ab0eae5505dc7144e4f056a6"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/Encoded-V2016-before.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-delete-all.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/Encoded-V2016-delete-all.getters.tsv",
+        "bytes": 5809,
+        "sha256": "98d8ff326f420a27b999390d0dca4bad04734308b48954ef5e69ff945986ee86"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/Encoded-V2016-delete-all.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-delete-null.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/Encoded-V2016-delete-null.getters.tsv",
+        "bytes": 1296798,
+        "sha256": "eaa8585d2c878dabaade84b1add665a0e277c4251b21ea2470912fc6b282ce07"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/Encoded-V2016-delete-null.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-delete-tie.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/Encoded-V2016-delete-tie.getters.tsv",
+        "bytes": 1296533,
+        "sha256": "1f55a97990ee7fe5819f306659018b26811102ba9073270c8f3e7246efd01f1e"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/Encoded-V2016-delete-tie.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-before.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/Encoded-V2019-before.getters.tsv",
+        "bytes": 1298573,
+        "sha256": "fb970f4495f96aafa831375eda75d21fcf08b22b53d8c12f485eeb896cc82273"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/Encoded-V2019-before.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-delete-all.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/Encoded-V2019-delete-all.getters.tsv",
+        "bytes": 5818,
+        "sha256": "8190261e124f7f140c9831229544ee794f0967f1371f2938dde44527c4254cea"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/Encoded-V2019-delete-all.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-delete-null.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/Encoded-V2019-delete-null.getters.tsv",
+        "bytes": 1296922,
+        "sha256": "1fb2381b8a18211970105d14a339dfb4f8cbbc71b375a7256db76f564f82a495"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/Encoded-V2019-delete-null.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/encoded-delete-originals-next-20261026",
+        "com.healthmarketscience.jackcess.impl.EncodedDeleteFixture",
+        "oracle",
+        ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-delete-tie.accdb"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": ".cache/encoded-delete-originals-next-20261026/Encoded-V2019-delete-tie.getters.tsv",
+        "bytes": 1296657,
+        "sha256": "b59d74e51d5fb55cb4dcef872c38e167c34cbf97b4bc2aab3c8ec01eedd32e34"
+      },
+      "stderr": {
+        "path": ".cache/encoded-delete-originals-next-20261026/Encoded-V2019-delete-tie.getters.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "files": [
+    {
+      "input": {
+        "path": ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-before.accdb",
+        "bytes": 1163264,
+        "sha256": "e2b5193dc4eb6c024e1e2883e894d64b4ff82c435ca441f0745e677615fc9276"
+      },
+      "header_code": 5,
+      "subversion": 0,
+      "tables": {
+        "TextLegacyLeaf": {
+          "rows": 24,
+          "definition": 89,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x00000409, General]"
+          ]
+        },
+        "TextModernLeaf": {
+          "rows": 24,
+          "definition": 96,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "BinaryLeaf": {
+          "rows": 24,
+          "definition": 103,
+          "column": [
+            "BINARY",
+            "255",
+            "null"
+          ]
+        },
+        "TextLegacyNode": {
+          "rows": 701,
+          "definition": 110,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x00000409, General]"
+          ]
+        },
+        "TextModernNode": {
+          "rows": 701,
+          "definition": 147,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "BinaryNode": {
+          "rows": 701,
+          "definition": 199,
+          "column": [
+            "BINARY",
+            "255",
+            "null"
+          ]
+        },
+        "TextUniqueOverflow": {
+          "rows": 1,
+          "definition": 239,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "MemoNegative": {
+          "rows": 1,
+          "definition": 244,
+          "column": [
+            "MEMO",
+            "0",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "TextCompositeNegative": {
+          "rows": 2,
+          "definition": 249,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "BinaryCompositeNegative": {
+          "rows": 2,
+          "definition": 259,
+          "column": [
+            "BINARY",
+            "255",
+            "null"
+          ]
+        },
+        "TextIgnoredNegative": {
+          "rows": 1,
+          "definition": 254,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "BinaryIgnoredNegative": {
+          "rows": 1,
+          "definition": 264,
+          "column": [
+            "BINARY",
+            "255",
+            "null"
+          ]
+        },
+        "PreservedPayloads": {
+          "rows": 1,
+          "definition": 269
+        }
+      },
+      "indexes": [
+        {
+          "table": "TextLegacyLeaf",
+          "name": "Primary",
+          "physical": 0,
+          "root": 91,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 24,
+          "counter_offset": 67,
+          "entries": 24,
+          "usage": 23042,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyLeaf",
+          "name": "Asc",
+          "physical": 1,
+          "root": 92,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 7,
+          "counter_offset": 79,
+          "entries": 24,
+          "usage": 23043,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyLeaf",
+          "name": "Twin",
+          "physical": 1,
+          "root": 92,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 7,
+          "counter_offset": 79,
+          "entries": 24,
+          "usage": 23043,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyLeaf",
+          "name": "Desc",
+          "physical": 2,
+          "root": 93,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 7,
+          "counter_offset": 91,
+          "entries": 24,
+          "usage": 23044,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernLeaf",
+          "name": "Primary",
+          "physical": 0,
+          "root": 98,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 24,
+          "counter_offset": 67,
+          "entries": 24,
+          "usage": 24834,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernLeaf",
+          "name": "Asc",
+          "physical": 1,
+          "root": 99,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 8,
+          "counter_offset": 79,
+          "entries": 24,
+          "usage": 24835,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernLeaf",
+          "name": "Twin",
+          "physical": 1,
+          "root": 99,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 8,
+          "counter_offset": 79,
+          "entries": 24,
+          "usage": 24835,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernLeaf",
+          "name": "Desc",
+          "physical": 2,
+          "root": 100,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 8,
+          "counter_offset": 91,
+          "entries": 24,
+          "usage": 24836,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryLeaf",
+          "name": "Primary",
+          "physical": 0,
+          "root": 105,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 24,
+          "counter_offset": 67,
+          "entries": 24,
+          "usage": 26626,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryLeaf",
+          "name": "Asc",
+          "physical": 1,
+          "root": 106,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 9,
+          "counter_offset": 79,
+          "entries": 24,
+          "usage": 26627,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryLeaf",
+          "name": "Twin",
+          "physical": 1,
+          "root": 106,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 9,
+          "counter_offset": 79,
+          "entries": 24,
+          "usage": 26627,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryLeaf",
+          "name": "Desc",
+          "physical": 2,
+          "root": 107,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 9,
+          "counter_offset": 91,
+          "entries": 24,
+          "usage": 26628,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyNode",
+          "name": "Primary",
+          "physical": 0,
+          "root": 112,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 3,
+          "historical_count": 701,
+          "counter_offset": 67,
+          "entries": 701,
+          "usage": 28418,
+          "leaf_count": 2,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyNode",
+          "name": "Asc",
+          "physical": 1,
+          "root": 113,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 11,
+          "historical_count": 7,
+          "counter_offset": 79,
+          "entries": 701,
+          "usage": 28419,
+          "leaf_count": 10,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyNode",
+          "name": "Twin",
+          "physical": 1,
+          "root": 113,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 11,
+          "historical_count": 7,
+          "counter_offset": 79,
+          "entries": 701,
+          "usage": 28419,
+          "leaf_count": 10,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyNode",
+          "name": "Desc",
+          "physical": 2,
+          "root": 114,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 9,
+          "historical_count": 7,
+          "counter_offset": 91,
+          "entries": 701,
+          "usage": 28420,
+          "leaf_count": 8,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernNode",
+          "name": "Primary",
+          "physical": 0,
+          "root": 149,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 3,
+          "historical_count": 701,
+          "counter_offset": 67,
+          "entries": 701,
+          "usage": 37890,
+          "leaf_count": 2,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernNode",
+          "name": "Asc",
+          "physical": 1,
+          "root": 150,
+          "kind": 3,
+          "height": 2,
+          "owned_count": 18,
+          "historical_count": 8,
+          "counter_offset": 79,
+          "entries": 701,
+          "usage": 37891,
+          "leaf_count": 15,
+          "node_count": 3,
+          "linked_nonroot_node_count": 2
+        },
+        {
+          "table": "TextModernNode",
+          "name": "Twin",
+          "physical": 1,
+          "root": 150,
+          "kind": 3,
+          "height": 2,
+          "owned_count": 18,
+          "historical_count": 8,
+          "counter_offset": 79,
+          "entries": 701,
+          "usage": 37891,
+          "leaf_count": 15,
+          "node_count": 3,
+          "linked_nonroot_node_count": 2
+        },
+        {
+          "table": "TextModernNode",
+          "name": "Desc",
+          "physical": 2,
+          "root": 151,
+          "kind": 3,
+          "height": 2,
+          "owned_count": 17,
+          "historical_count": 8,
+          "counter_offset": 91,
+          "entries": 701,
+          "usage": 37892,
+          "leaf_count": 14,
+          "node_count": 3,
+          "linked_nonroot_node_count": 2
+        },
+        {
+          "table": "BinaryNode",
+          "name": "Primary",
+          "physical": 0,
+          "root": 201,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 3,
+          "historical_count": 701,
+          "counter_offset": 67,
+          "entries": 701,
+          "usage": 51202,
+          "leaf_count": 2,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryNode",
+          "name": "Asc",
+          "physical": 1,
+          "root": 202,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 11,
+          "historical_count": 9,
+          "counter_offset": 79,
+          "entries": 701,
+          "usage": 51203,
+          "leaf_count": 10,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryNode",
+          "name": "Twin",
+          "physical": 1,
+          "root": 202,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 11,
+          "historical_count": 9,
+          "counter_offset": 79,
+          "entries": 701,
+          "usage": 51203,
+          "leaf_count": 10,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryNode",
+          "name": "Desc",
+          "physical": 2,
+          "root": 203,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 13,
+          "historical_count": 9,
+          "counter_offset": 91,
+          "entries": 701,
+          "usage": 51204,
+          "leaf_count": 12,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextUniqueOverflow",
+          "name": "UniqueOverflow",
+          "physical": 0,
+          "root": 241,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 1,
+          "counter_offset": 67,
+          "entries": 1,
+          "usage": 61442,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "MemoNegative",
+          "name": "Memo",
+          "physical": 0,
+          "root": 246,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 1,
+          "counter_offset": 67,
+          "entries": 1,
+          "usage": 62722,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextCompositeNegative",
+          "name": "Composite",
+          "physical": 0,
+          "root": 251,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 2,
+          "counter_offset": 67,
+          "entries": 2,
+          "usage": 64002,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryCompositeNegative",
+          "name": "Composite",
+          "physical": 0,
+          "root": 261,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 2,
+          "counter_offset": 67,
+          "entries": 2,
+          "usage": 66562,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextIgnoredNegative",
+          "name": "Ignored",
+          "physical": 0,
+          "root": 256,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 1,
+          "counter_offset": 67,
+          "entries": 1,
+          "usage": 65282,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryIgnoredNegative",
+          "name": "Ignored",
+          "physical": 0,
+          "root": 266,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 1,
+          "counter_offset": 67,
+          "entries": 1,
+          "usage": 67842,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        }
+      ],
+      "preserved_payload_hashes": [
+        [
+          "PreservedPayloads",
+          "1fc5ce4336737f18b97b2c3a858dbd34c64715b68257b561c814d493f5b02113",
+          "0a44a320571de174033d2e1153da8fa45b6a5ddd7fc091ccf5c90e06db556c02"
+        ]
+      ],
+      "raw_getter_keys_match": true
+    },
+    {
+      "input": {
+        "path": ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-delete-all.accdb",
+        "bytes": 1163264,
+        "sha256": "9c7435b1b2f3c08a544e842ccdb0218ded64681a8e544a12076f03ed480c465f"
+      },
+      "header_code": 5,
+      "subversion": 0,
+      "tables": {
+        "TextLegacyLeaf": {
+          "rows": 0,
+          "definition": 89,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x00000409, General]"
+          ]
+        },
+        "TextModernLeaf": {
+          "rows": 0,
+          "definition": 96,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "BinaryLeaf": {
+          "rows": 0,
+          "definition": 103,
+          "column": [
+            "BINARY",
+            "255",
+            "null"
+          ]
+        },
+        "TextLegacyNode": {
+          "rows": 0,
+          "definition": 110,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x00000409, General]"
+          ]
+        },
+        "TextModernNode": {
+          "rows": 0,
+          "definition": 147,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "BinaryNode": {
+          "rows": 0,
+          "definition": 199,
+          "column": [
+            "BINARY",
+            "255",
+            "null"
+          ]
+        },
+        "TextUniqueOverflow": {
+          "rows": 1,
+          "definition": 239,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "MemoNegative": {
+          "rows": 1,
+          "definition": 244,
+          "column": [
+            "MEMO",
+            "0",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "TextCompositeNegative": {
+          "rows": 2,
+          "definition": 249,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "BinaryCompositeNegative": {
+          "rows": 2,
+          "definition": 259,
+          "column": [
+            "BINARY",
+            "255",
+            "null"
+          ]
+        },
+        "TextIgnoredNegative": {
+          "rows": 1,
+          "definition": 254,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "BinaryIgnoredNegative": {
+          "rows": 1,
+          "definition": 264,
+          "column": [
+            "BINARY",
+            "255",
+            "null"
+          ]
+        },
+        "PreservedPayloads": {
+          "rows": 1,
+          "definition": 269
+        }
+      },
+      "indexes": [
+        {
+          "table": "TextLegacyLeaf",
+          "name": "Primary",
+          "physical": 0,
+          "root": 91,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 24,
+          "counter_offset": 67,
+          "entries": 0,
+          "usage": 23042,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyLeaf",
+          "name": "Asc",
+          "physical": 1,
+          "root": 92,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 7,
+          "counter_offset": 79,
+          "entries": 0,
+          "usage": 23043,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyLeaf",
+          "name": "Twin",
+          "physical": 1,
+          "root": 92,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 7,
+          "counter_offset": 79,
+          "entries": 0,
+          "usage": 23043,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyLeaf",
+          "name": "Desc",
+          "physical": 2,
+          "root": 93,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 7,
+          "counter_offset": 91,
+          "entries": 0,
+          "usage": 23044,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernLeaf",
+          "name": "Primary",
+          "physical": 0,
+          "root": 98,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 24,
+          "counter_offset": 67,
+          "entries": 0,
+          "usage": 24834,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernLeaf",
+          "name": "Asc",
+          "physical": 1,
+          "root": 99,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 8,
+          "counter_offset": 79,
+          "entries": 0,
+          "usage": 24835,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernLeaf",
+          "name": "Twin",
+          "physical": 1,
+          "root": 99,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 8,
+          "counter_offset": 79,
+          "entries": 0,
+          "usage": 24835,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernLeaf",
+          "name": "Desc",
+          "physical": 2,
+          "root": 100,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 8,
+          "counter_offset": 91,
+          "entries": 0,
+          "usage": 24836,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryLeaf",
+          "name": "Primary",
+          "physical": 0,
+          "root": 105,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 24,
+          "counter_offset": 67,
+          "entries": 0,
+          "usage": 26626,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryLeaf",
+          "name": "Asc",
+          "physical": 1,
+          "root": 106,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 9,
+          "counter_offset": 79,
+          "entries": 0,
+          "usage": 26627,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryLeaf",
+          "name": "Twin",
+          "physical": 1,
+          "root": 106,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 9,
+          "counter_offset": 79,
+          "entries": 0,
+          "usage": 26627,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryLeaf",
+          "name": "Desc",
+          "physical": 2,
+          "root": 107,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 9,
+          "counter_offset": 91,
+          "entries": 0,
+          "usage": 26628,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyNode",
+          "name": "Primary",
+          "physical": 0,
+          "root": 112,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 701,
+          "counter_offset": 67,
+          "entries": 0,
+          "usage": 28418,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyNode",
+          "name": "Asc",
+          "physical": 1,
+          "root": 113,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 7,
+          "counter_offset": 79,
+          "entries": 0,
+          "usage": 28419,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyNode",
+          "name": "Twin",
+          "physical": 1,
+          "root": 113,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 7,
+          "counter_offset": 79,
+          "entries": 0,
+          "usage": 28419,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyNode",
+          "name": "Desc",
+          "physical": 2,
+          "root": 114,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 7,
+          "counter_offset": 91,
+          "entries": 0,
+          "usage": 28420,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernNode",
+          "name": "Primary",
+          "physical": 0,
+          "root": 149,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 701,
+          "counter_offset": 67,
+          "entries": 0,
+          "usage": 37890,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernNode",
+          "name": "Asc",
+          "physical": 1,
+          "root": 150,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 8,
+          "counter_offset": 79,
+          "entries": 0,
+          "usage": 37891,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernNode",
+          "name": "Twin",
+          "physical": 1,
+          "root": 150,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 8,
+          "counter_offset": 79,
+          "entries": 0,
+          "usage": 37891,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernNode",
+          "name": "Desc",
+          "physical": 2,
+          "root": 151,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 8,
+          "counter_offset": 91,
+          "entries": 0,
+          "usage": 37892,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryNode",
+          "name": "Primary",
+          "physical": 0,
+          "root": 201,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 701,
+          "counter_offset": 67,
+          "entries": 0,
+          "usage": 51202,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryNode",
+          "name": "Asc",
+          "physical": 1,
+          "root": 202,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 9,
+          "counter_offset": 79,
+          "entries": 0,
+          "usage": 51203,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryNode",
+          "name": "Twin",
+          "physical": 1,
+          "root": 202,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 9,
+          "counter_offset": 79,
+          "entries": 0,
+          "usage": 51203,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryNode",
+          "name": "Desc",
+          "physical": 2,
+          "root": 203,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 9,
+          "counter_offset": 91,
+          "entries": 0,
+          "usage": 51204,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextUniqueOverflow",
+          "name": "UniqueOverflow",
+          "physical": 0,
+          "root": 241,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 1,
+          "counter_offset": 67,
+          "entries": 1,
+          "usage": 61442,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "MemoNegative",
+          "name": "Memo",
+          "physical": 0,
+          "root": 246,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 1,
+          "counter_offset": 67,
+          "entries": 1,
+          "usage": 62722,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextCompositeNegative",
+          "name": "Composite",
+          "physical": 0,
+          "root": 251,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 2,
+          "counter_offset": 67,
+          "entries": 2,
+          "usage": 64002,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryCompositeNegative",
+          "name": "Composite",
+          "physical": 0,
+          "root": 261,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 2,
+          "counter_offset": 67,
+          "entries": 2,
+          "usage": 66562,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextIgnoredNegative",
+          "name": "Ignored",
+          "physical": 0,
+          "root": 256,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 1,
+          "counter_offset": 67,
+          "entries": 1,
+          "usage": 65282,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryIgnoredNegative",
+          "name": "Ignored",
+          "physical": 0,
+          "root": 266,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 1,
+          "counter_offset": 67,
+          "entries": 1,
+          "usage": 67842,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        }
+      ],
+      "preserved_payload_hashes": [
+        [
+          "PreservedPayloads",
+          "1fc5ce4336737f18b97b2c3a858dbd34c64715b68257b561c814d493f5b02113",
+          "0a44a320571de174033d2e1153da8fa45b6a5ddd7fc091ccf5c90e06db556c02"
+        ]
+      ],
+      "raw_getter_keys_match": true
+    },
+    {
+      "input": {
+        "path": ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-delete-null.accdb",
+        "bytes": 1163264,
+        "sha256": "1fef78d2e6b659ec8de041f9d888174c4a8e930da8b0bb469d3aa8f9e3e3f05e"
+      },
+      "header_code": 5,
+      "subversion": 0,
+      "tables": {
+        "TextLegacyLeaf": {
+          "rows": 23,
+          "definition": 89,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x00000409, General]"
+          ]
+        },
+        "TextModernLeaf": {
+          "rows": 23,
+          "definition": 96,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "BinaryLeaf": {
+          "rows": 23,
+          "definition": 103,
+          "column": [
+            "BINARY",
+            "255",
+            "null"
+          ]
+        },
+        "TextLegacyNode": {
+          "rows": 700,
+          "definition": 110,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x00000409, General]"
+          ]
+        },
+        "TextModernNode": {
+          "rows": 700,
+          "definition": 147,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "BinaryNode": {
+          "rows": 700,
+          "definition": 199,
+          "column": [
+            "BINARY",
+            "255",
+            "null"
+          ]
+        },
+        "TextUniqueOverflow": {
+          "rows": 1,
+          "definition": 239,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "MemoNegative": {
+          "rows": 1,
+          "definition": 244,
+          "column": [
+            "MEMO",
+            "0",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "TextCompositeNegative": {
+          "rows": 2,
+          "definition": 249,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "BinaryCompositeNegative": {
+          "rows": 2,
+          "definition": 259,
+          "column": [
+            "BINARY",
+            "255",
+            "null"
+          ]
+        },
+        "TextIgnoredNegative": {
+          "rows": 1,
+          "definition": 254,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "BinaryIgnoredNegative": {
+          "rows": 1,
+          "definition": 264,
+          "column": [
+            "BINARY",
+            "255",
+            "null"
+          ]
+        },
+        "PreservedPayloads": {
+          "rows": 1,
+          "definition": 269
+        }
+      },
+      "indexes": [
+        {
+          "table": "TextLegacyLeaf",
+          "name": "Primary",
+          "physical": 0,
+          "root": 91,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 24,
+          "counter_offset": 67,
+          "entries": 23,
+          "usage": 23042,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyLeaf",
+          "name": "Asc",
+          "physical": 1,
+          "root": 92,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 7,
+          "counter_offset": 79,
+          "entries": 23,
+          "usage": 23043,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyLeaf",
+          "name": "Twin",
+          "physical": 1,
+          "root": 92,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 7,
+          "counter_offset": 79,
+          "entries": 23,
+          "usage": 23043,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyLeaf",
+          "name": "Desc",
+          "physical": 2,
+          "root": 93,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 7,
+          "counter_offset": 91,
+          "entries": 23,
+          "usage": 23044,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernLeaf",
+          "name": "Primary",
+          "physical": 0,
+          "root": 98,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 24,
+          "counter_offset": 67,
+          "entries": 23,
+          "usage": 24834,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernLeaf",
+          "name": "Asc",
+          "physical": 1,
+          "root": 99,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 8,
+          "counter_offset": 79,
+          "entries": 23,
+          "usage": 24835,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernLeaf",
+          "name": "Twin",
+          "physical": 1,
+          "root": 99,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 8,
+          "counter_offset": 79,
+          "entries": 23,
+          "usage": 24835,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernLeaf",
+          "name": "Desc",
+          "physical": 2,
+          "root": 100,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 8,
+          "counter_offset": 91,
+          "entries": 23,
+          "usage": 24836,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryLeaf",
+          "name": "Primary",
+          "physical": 0,
+          "root": 105,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 24,
+          "counter_offset": 67,
+          "entries": 23,
+          "usage": 26626,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryLeaf",
+          "name": "Asc",
+          "physical": 1,
+          "root": 106,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 9,
+          "counter_offset": 79,
+          "entries": 23,
+          "usage": 26627,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryLeaf",
+          "name": "Twin",
+          "physical": 1,
+          "root": 106,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 9,
+          "counter_offset": 79,
+          "entries": 23,
+          "usage": 26627,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryLeaf",
+          "name": "Desc",
+          "physical": 2,
+          "root": 107,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 9,
+          "counter_offset": 91,
+          "entries": 23,
+          "usage": 26628,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyNode",
+          "name": "Primary",
+          "physical": 0,
+          "root": 112,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 3,
+          "historical_count": 701,
+          "counter_offset": 67,
+          "entries": 700,
+          "usage": 28418,
+          "leaf_count": 2,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyNode",
+          "name": "Asc",
+          "physical": 1,
+          "root": 113,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 11,
+          "historical_count": 7,
+          "counter_offset": 79,
+          "entries": 700,
+          "usage": 28419,
+          "leaf_count": 10,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyNode",
+          "name": "Twin",
+          "physical": 1,
+          "root": 113,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 11,
+          "historical_count": 7,
+          "counter_offset": 79,
+          "entries": 700,
+          "usage": 28419,
+          "leaf_count": 10,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyNode",
+          "name": "Desc",
+          "physical": 2,
+          "root": 114,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 9,
+          "historical_count": 7,
+          "counter_offset": 91,
+          "entries": 700,
+          "usage": 28420,
+          "leaf_count": 8,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernNode",
+          "name": "Primary",
+          "physical": 0,
+          "root": 149,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 3,
+          "historical_count": 701,
+          "counter_offset": 67,
+          "entries": 700,
+          "usage": 37890,
+          "leaf_count": 2,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernNode",
+          "name": "Asc",
+          "physical": 1,
+          "root": 150,
+          "kind": 3,
+          "height": 2,
+          "owned_count": 18,
+          "historical_count": 8,
+          "counter_offset": 79,
+          "entries": 700,
+          "usage": 37891,
+          "leaf_count": 15,
+          "node_count": 3,
+          "linked_nonroot_node_count": 2
+        },
+        {
+          "table": "TextModernNode",
+          "name": "Twin",
+          "physical": 1,
+          "root": 150,
+          "kind": 3,
+          "height": 2,
+          "owned_count": 18,
+          "historical_count": 8,
+          "counter_offset": 79,
+          "entries": 700,
+          "usage": 37891,
+          "leaf_count": 15,
+          "node_count": 3,
+          "linked_nonroot_node_count": 2
+        },
+        {
+          "table": "TextModernNode",
+          "name": "Desc",
+          "physical": 2,
+          "root": 151,
+          "kind": 3,
+          "height": 2,
+          "owned_count": 17,
+          "historical_count": 8,
+          "counter_offset": 91,
+          "entries": 700,
+          "usage": 37892,
+          "leaf_count": 14,
+          "node_count": 3,
+          "linked_nonroot_node_count": 2
+        },
+        {
+          "table": "BinaryNode",
+          "name": "Primary",
+          "physical": 0,
+          "root": 201,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 3,
+          "historical_count": 701,
+          "counter_offset": 67,
+          "entries": 700,
+          "usage": 51202,
+          "leaf_count": 2,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryNode",
+          "name": "Asc",
+          "physical": 1,
+          "root": 202,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 11,
+          "historical_count": 9,
+          "counter_offset": 79,
+          "entries": 700,
+          "usage": 51203,
+          "leaf_count": 10,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryNode",
+          "name": "Twin",
+          "physical": 1,
+          "root": 202,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 11,
+          "historical_count": 9,
+          "counter_offset": 79,
+          "entries": 700,
+          "usage": 51203,
+          "leaf_count": 10,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryNode",
+          "name": "Desc",
+          "physical": 2,
+          "root": 203,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 13,
+          "historical_count": 9,
+          "counter_offset": 91,
+          "entries": 700,
+          "usage": 51204,
+          "leaf_count": 12,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextUniqueOverflow",
+          "name": "UniqueOverflow",
+          "physical": 0,
+          "root": 241,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 1,
+          "counter_offset": 67,
+          "entries": 1,
+          "usage": 61442,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "MemoNegative",
+          "name": "Memo",
+          "physical": 0,
+          "root": 246,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 1,
+          "counter_offset": 67,
+          "entries": 1,
+          "usage": 62722,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextCompositeNegative",
+          "name": "Composite",
+          "physical": 0,
+          "root": 251,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 2,
+          "counter_offset": 67,
+          "entries": 2,
+          "usage": 64002,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryCompositeNegative",
+          "name": "Composite",
+          "physical": 0,
+          "root": 261,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 2,
+          "counter_offset": 67,
+          "entries": 2,
+          "usage": 66562,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextIgnoredNegative",
+          "name": "Ignored",
+          "physical": 0,
+          "root": 256,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 1,
+          "counter_offset": 67,
+          "entries": 1,
+          "usage": 65282,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryIgnoredNegative",
+          "name": "Ignored",
+          "physical": 0,
+          "root": 266,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 1,
+          "counter_offset": 67,
+          "entries": 1,
+          "usage": 67842,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        }
+      ],
+      "preserved_payload_hashes": [
+        [
+          "PreservedPayloads",
+          "1fc5ce4336737f18b97b2c3a858dbd34c64715b68257b561c814d493f5b02113",
+          "0a44a320571de174033d2e1153da8fa45b6a5ddd7fc091ccf5c90e06db556c02"
+        ]
+      ],
+      "raw_getter_keys_match": true
+    },
+    {
+      "input": {
+        "path": ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2016-delete-tie.accdb",
+        "bytes": 1163264,
+        "sha256": "7a3d147883e2b4a37c5c62ad451b3c3cc614fb6f6344a1bceed023e12074d627"
+      },
+      "header_code": 5,
+      "subversion": 0,
+      "tables": {
+        "TextLegacyLeaf": {
+          "rows": 23,
+          "definition": 89,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x00000409, General]"
+          ]
+        },
+        "TextModernLeaf": {
+          "rows": 23,
+          "definition": 96,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "BinaryLeaf": {
+          "rows": 23,
+          "definition": 103,
+          "column": [
+            "BINARY",
+            "255",
+            "null"
+          ]
+        },
+        "TextLegacyNode": {
+          "rows": 700,
+          "definition": 110,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x00000409, General]"
+          ]
+        },
+        "TextModernNode": {
+          "rows": 700,
+          "definition": 147,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "BinaryNode": {
+          "rows": 700,
+          "definition": 199,
+          "column": [
+            "BINARY",
+            "255",
+            "null"
+          ]
+        },
+        "TextUniqueOverflow": {
+          "rows": 1,
+          "definition": 239,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "MemoNegative": {
+          "rows": 1,
+          "definition": 244,
+          "column": [
+            "MEMO",
+            "0",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "TextCompositeNegative": {
+          "rows": 2,
+          "definition": 249,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "BinaryCompositeNegative": {
+          "rows": 2,
+          "definition": 259,
+          "column": [
+            "BINARY",
+            "255",
+            "null"
+          ]
+        },
+        "TextIgnoredNegative": {
+          "rows": 1,
+          "definition": 254,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "BinaryIgnoredNegative": {
+          "rows": 1,
+          "definition": 264,
+          "column": [
+            "BINARY",
+            "255",
+            "null"
+          ]
+        },
+        "PreservedPayloads": {
+          "rows": 1,
+          "definition": 269
+        }
+      },
+      "indexes": [
+        {
+          "table": "TextLegacyLeaf",
+          "name": "Primary",
+          "physical": 0,
+          "root": 91,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 24,
+          "counter_offset": 67,
+          "entries": 23,
+          "usage": 23042,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyLeaf",
+          "name": "Asc",
+          "physical": 1,
+          "root": 92,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 7,
+          "counter_offset": 79,
+          "entries": 23,
+          "usage": 23043,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyLeaf",
+          "name": "Twin",
+          "physical": 1,
+          "root": 92,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 7,
+          "counter_offset": 79,
+          "entries": 23,
+          "usage": 23043,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyLeaf",
+          "name": "Desc",
+          "physical": 2,
+          "root": 93,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 7,
+          "counter_offset": 91,
+          "entries": 23,
+          "usage": 23044,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernLeaf",
+          "name": "Primary",
+          "physical": 0,
+          "root": 98,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 24,
+          "counter_offset": 67,
+          "entries": 23,
+          "usage": 24834,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernLeaf",
+          "name": "Asc",
+          "physical": 1,
+          "root": 99,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 8,
+          "counter_offset": 79,
+          "entries": 23,
+          "usage": 24835,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernLeaf",
+          "name": "Twin",
+          "physical": 1,
+          "root": 99,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 8,
+          "counter_offset": 79,
+          "entries": 23,
+          "usage": 24835,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernLeaf",
+          "name": "Desc",
+          "physical": 2,
+          "root": 100,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 8,
+          "counter_offset": 91,
+          "entries": 23,
+          "usage": 24836,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryLeaf",
+          "name": "Primary",
+          "physical": 0,
+          "root": 105,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 24,
+          "counter_offset": 67,
+          "entries": 23,
+          "usage": 26626,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryLeaf",
+          "name": "Asc",
+          "physical": 1,
+          "root": 106,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 9,
+          "counter_offset": 79,
+          "entries": 23,
+          "usage": 26627,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryLeaf",
+          "name": "Twin",
+          "physical": 1,
+          "root": 106,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 9,
+          "counter_offset": 79,
+          "entries": 23,
+          "usage": 26627,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryLeaf",
+          "name": "Desc",
+          "physical": 2,
+          "root": 107,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 9,
+          "counter_offset": 91,
+          "entries": 23,
+          "usage": 26628,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyNode",
+          "name": "Primary",
+          "physical": 0,
+          "root": 112,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 3,
+          "historical_count": 701,
+          "counter_offset": 67,
+          "entries": 700,
+          "usage": 28418,
+          "leaf_count": 2,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyNode",
+          "name": "Asc",
+          "physical": 1,
+          "root": 113,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 11,
+          "historical_count": 7,
+          "counter_offset": 79,
+          "entries": 700,
+          "usage": 28419,
+          "leaf_count": 10,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyNode",
+          "name": "Twin",
+          "physical": 1,
+          "root": 113,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 11,
+          "historical_count": 7,
+          "counter_offset": 79,
+          "entries": 700,
+          "usage": 28419,
+          "leaf_count": 10,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyNode",
+          "name": "Desc",
+          "physical": 2,
+          "root": 114,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 9,
+          "historical_count": 7,
+          "counter_offset": 91,
+          "entries": 700,
+          "usage": 28420,
+          "leaf_count": 8,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernNode",
+          "name": "Primary",
+          "physical": 0,
+          "root": 149,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 3,
+          "historical_count": 701,
+          "counter_offset": 67,
+          "entries": 700,
+          "usage": 37890,
+          "leaf_count": 2,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernNode",
+          "name": "Asc",
+          "physical": 1,
+          "root": 150,
+          "kind": 3,
+          "height": 2,
+          "owned_count": 18,
+          "historical_count": 8,
+          "counter_offset": 79,
+          "entries": 700,
+          "usage": 37891,
+          "leaf_count": 15,
+          "node_count": 3,
+          "linked_nonroot_node_count": 2
+        },
+        {
+          "table": "TextModernNode",
+          "name": "Twin",
+          "physical": 1,
+          "root": 150,
+          "kind": 3,
+          "height": 2,
+          "owned_count": 18,
+          "historical_count": 8,
+          "counter_offset": 79,
+          "entries": 700,
+          "usage": 37891,
+          "leaf_count": 15,
+          "node_count": 3,
+          "linked_nonroot_node_count": 2
+        },
+        {
+          "table": "TextModernNode",
+          "name": "Desc",
+          "physical": 2,
+          "root": 151,
+          "kind": 3,
+          "height": 2,
+          "owned_count": 17,
+          "historical_count": 8,
+          "counter_offset": 91,
+          "entries": 700,
+          "usage": 37892,
+          "leaf_count": 14,
+          "node_count": 3,
+          "linked_nonroot_node_count": 2
+        },
+        {
+          "table": "BinaryNode",
+          "name": "Primary",
+          "physical": 0,
+          "root": 201,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 3,
+          "historical_count": 701,
+          "counter_offset": 67,
+          "entries": 700,
+          "usage": 51202,
+          "leaf_count": 2,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryNode",
+          "name": "Asc",
+          "physical": 1,
+          "root": 202,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 11,
+          "historical_count": 9,
+          "counter_offset": 79,
+          "entries": 700,
+          "usage": 51203,
+          "leaf_count": 10,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryNode",
+          "name": "Twin",
+          "physical": 1,
+          "root": 202,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 11,
+          "historical_count": 9,
+          "counter_offset": 79,
+          "entries": 700,
+          "usage": 51203,
+          "leaf_count": 10,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryNode",
+          "name": "Desc",
+          "physical": 2,
+          "root": 203,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 13,
+          "historical_count": 9,
+          "counter_offset": 91,
+          "entries": 700,
+          "usage": 51204,
+          "leaf_count": 12,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextUniqueOverflow",
+          "name": "UniqueOverflow",
+          "physical": 0,
+          "root": 241,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 1,
+          "counter_offset": 67,
+          "entries": 1,
+          "usage": 61442,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "MemoNegative",
+          "name": "Memo",
+          "physical": 0,
+          "root": 246,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 1,
+          "counter_offset": 67,
+          "entries": 1,
+          "usage": 62722,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextCompositeNegative",
+          "name": "Composite",
+          "physical": 0,
+          "root": 251,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 2,
+          "counter_offset": 67,
+          "entries": 2,
+          "usage": 64002,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryCompositeNegative",
+          "name": "Composite",
+          "physical": 0,
+          "root": 261,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 2,
+          "counter_offset": 67,
+          "entries": 2,
+          "usage": 66562,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextIgnoredNegative",
+          "name": "Ignored",
+          "physical": 0,
+          "root": 256,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 1,
+          "counter_offset": 67,
+          "entries": 1,
+          "usage": 65282,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryIgnoredNegative",
+          "name": "Ignored",
+          "physical": 0,
+          "root": 266,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 1,
+          "counter_offset": 67,
+          "entries": 1,
+          "usage": 67842,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        }
+      ],
+      "preserved_payload_hashes": [
+        [
+          "PreservedPayloads",
+          "1fc5ce4336737f18b97b2c3a858dbd34c64715b68257b561c814d493f5b02113",
+          "0a44a320571de174033d2e1153da8fa45b6a5ddd7fc091ccf5c90e06db556c02"
+        ]
+      ],
+      "raw_getter_keys_match": true
+    },
+    {
+      "input": {
+        "path": ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-before.accdb",
+        "bytes": 1236992,
+        "sha256": "636e137ee3a1d51f6525072de87963cb33a03b01a253be1d2124cf6bb4746279"
+      },
+      "header_code": 6,
+      "subversion": 0,
+      "tables": {
+        "TextLegacyLeaf": {
+          "rows": 24,
+          "definition": 106,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x00000409, General]"
+          ]
+        },
+        "TextModernLeaf": {
+          "rows": 24,
+          "definition": 113,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "BinaryLeaf": {
+          "rows": 24,
+          "definition": 120,
+          "column": [
+            "BINARY",
+            "255",
+            "null"
+          ]
+        },
+        "TextLegacyNode": {
+          "rows": 701,
+          "definition": 128,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x00000409, General]"
+          ]
+        },
+        "TextModernNode": {
+          "rows": 701,
+          "definition": 165,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "BinaryNode": {
+          "rows": 701,
+          "definition": 217,
+          "column": [
+            "BINARY",
+            "255",
+            "null"
+          ]
+        },
+        "TextUniqueOverflow": {
+          "rows": 1,
+          "definition": 256,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "MemoNegative": {
+          "rows": 1,
+          "definition": 261,
+          "column": [
+            "MEMO",
+            "0",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "TextCompositeNegative": {
+          "rows": 2,
+          "definition": 266,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "BinaryCompositeNegative": {
+          "rows": 2,
+          "definition": 276,
+          "column": [
+            "BINARY",
+            "255",
+            "null"
+          ]
+        },
+        "TextIgnoredNegative": {
+          "rows": 1,
+          "definition": 271,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "BinaryIgnoredNegative": {
+          "rows": 1,
+          "definition": 281,
+          "column": [
+            "BINARY",
+            "255",
+            "null"
+          ]
+        },
+        "PreservedPayloads": {
+          "rows": 1,
+          "definition": 286
+        }
+      },
+      "indexes": [
+        {
+          "table": "TextLegacyLeaf",
+          "name": "Primary",
+          "physical": 0,
+          "root": 108,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 24,
+          "counter_offset": 67,
+          "entries": 24,
+          "usage": 27394,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyLeaf",
+          "name": "Asc",
+          "physical": 1,
+          "root": 109,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 7,
+          "counter_offset": 79,
+          "entries": 24,
+          "usage": 27395,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyLeaf",
+          "name": "Twin",
+          "physical": 1,
+          "root": 109,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 7,
+          "counter_offset": 79,
+          "entries": 24,
+          "usage": 27395,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyLeaf",
+          "name": "Desc",
+          "physical": 2,
+          "root": 110,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 7,
+          "counter_offset": 91,
+          "entries": 24,
+          "usage": 27396,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernLeaf",
+          "name": "Primary",
+          "physical": 0,
+          "root": 115,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 24,
+          "counter_offset": 67,
+          "entries": 24,
+          "usage": 29186,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernLeaf",
+          "name": "Asc",
+          "physical": 1,
+          "root": 116,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 8,
+          "counter_offset": 79,
+          "entries": 24,
+          "usage": 29187,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernLeaf",
+          "name": "Twin",
+          "physical": 1,
+          "root": 116,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 8,
+          "counter_offset": 79,
+          "entries": 24,
+          "usage": 29187,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernLeaf",
+          "name": "Desc",
+          "physical": 2,
+          "root": 117,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 8,
+          "counter_offset": 91,
+          "entries": 24,
+          "usage": 29188,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryLeaf",
+          "name": "Primary",
+          "physical": 0,
+          "root": 122,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 24,
+          "counter_offset": 67,
+          "entries": 24,
+          "usage": 30978,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryLeaf",
+          "name": "Asc",
+          "physical": 1,
+          "root": 123,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 9,
+          "counter_offset": 79,
+          "entries": 24,
+          "usage": 30979,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryLeaf",
+          "name": "Twin",
+          "physical": 1,
+          "root": 123,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 9,
+          "counter_offset": 79,
+          "entries": 24,
+          "usage": 30979,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryLeaf",
+          "name": "Desc",
+          "physical": 2,
+          "root": 124,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 9,
+          "counter_offset": 91,
+          "entries": 24,
+          "usage": 30980,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyNode",
+          "name": "Primary",
+          "physical": 0,
+          "root": 130,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 3,
+          "historical_count": 701,
+          "counter_offset": 67,
+          "entries": 701,
+          "usage": 33026,
+          "leaf_count": 2,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyNode",
+          "name": "Asc",
+          "physical": 1,
+          "root": 131,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 11,
+          "historical_count": 7,
+          "counter_offset": 79,
+          "entries": 701,
+          "usage": 33027,
+          "leaf_count": 10,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyNode",
+          "name": "Twin",
+          "physical": 1,
+          "root": 131,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 11,
+          "historical_count": 7,
+          "counter_offset": 79,
+          "entries": 701,
+          "usage": 33027,
+          "leaf_count": 10,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyNode",
+          "name": "Desc",
+          "physical": 2,
+          "root": 132,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 9,
+          "historical_count": 7,
+          "counter_offset": 91,
+          "entries": 701,
+          "usage": 33028,
+          "leaf_count": 8,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernNode",
+          "name": "Primary",
+          "physical": 0,
+          "root": 167,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 3,
+          "historical_count": 701,
+          "counter_offset": 67,
+          "entries": 701,
+          "usage": 42498,
+          "leaf_count": 2,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernNode",
+          "name": "Asc",
+          "physical": 1,
+          "root": 168,
+          "kind": 3,
+          "height": 2,
+          "owned_count": 18,
+          "historical_count": 8,
+          "counter_offset": 79,
+          "entries": 701,
+          "usage": 42499,
+          "leaf_count": 15,
+          "node_count": 3,
+          "linked_nonroot_node_count": 2
+        },
+        {
+          "table": "TextModernNode",
+          "name": "Twin",
+          "physical": 1,
+          "root": 168,
+          "kind": 3,
+          "height": 2,
+          "owned_count": 18,
+          "historical_count": 8,
+          "counter_offset": 79,
+          "entries": 701,
+          "usage": 42499,
+          "leaf_count": 15,
+          "node_count": 3,
+          "linked_nonroot_node_count": 2
+        },
+        {
+          "table": "TextModernNode",
+          "name": "Desc",
+          "physical": 2,
+          "root": 169,
+          "kind": 3,
+          "height": 2,
+          "owned_count": 17,
+          "historical_count": 8,
+          "counter_offset": 91,
+          "entries": 701,
+          "usage": 42500,
+          "leaf_count": 14,
+          "node_count": 3,
+          "linked_nonroot_node_count": 2
+        },
+        {
+          "table": "BinaryNode",
+          "name": "Primary",
+          "physical": 0,
+          "root": 219,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 3,
+          "historical_count": 701,
+          "counter_offset": 67,
+          "entries": 701,
+          "usage": 55810,
+          "leaf_count": 2,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryNode",
+          "name": "Asc",
+          "physical": 1,
+          "root": 220,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 11,
+          "historical_count": 9,
+          "counter_offset": 79,
+          "entries": 701,
+          "usage": 55811,
+          "leaf_count": 10,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryNode",
+          "name": "Twin",
+          "physical": 1,
+          "root": 220,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 11,
+          "historical_count": 9,
+          "counter_offset": 79,
+          "entries": 701,
+          "usage": 55811,
+          "leaf_count": 10,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryNode",
+          "name": "Desc",
+          "physical": 2,
+          "root": 221,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 13,
+          "historical_count": 9,
+          "counter_offset": 91,
+          "entries": 701,
+          "usage": 55812,
+          "leaf_count": 12,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextUniqueOverflow",
+          "name": "UniqueOverflow",
+          "physical": 0,
+          "root": 258,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 1,
+          "counter_offset": 67,
+          "entries": 1,
+          "usage": 65794,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "MemoNegative",
+          "name": "Memo",
+          "physical": 0,
+          "root": 263,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 1,
+          "counter_offset": 67,
+          "entries": 1,
+          "usage": 67074,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextCompositeNegative",
+          "name": "Composite",
+          "physical": 0,
+          "root": 268,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 2,
+          "counter_offset": 67,
+          "entries": 2,
+          "usage": 68354,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryCompositeNegative",
+          "name": "Composite",
+          "physical": 0,
+          "root": 278,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 2,
+          "counter_offset": 67,
+          "entries": 2,
+          "usage": 70914,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextIgnoredNegative",
+          "name": "Ignored",
+          "physical": 0,
+          "root": 273,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 1,
+          "counter_offset": 67,
+          "entries": 1,
+          "usage": 69634,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryIgnoredNegative",
+          "name": "Ignored",
+          "physical": 0,
+          "root": 283,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 1,
+          "counter_offset": 67,
+          "entries": 1,
+          "usage": 72194,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        }
+      ],
+      "preserved_payload_hashes": [
+        [
+          "PreservedPayloads",
+          "1fc5ce4336737f18b97b2c3a858dbd34c64715b68257b561c814d493f5b02113",
+          "0a44a320571de174033d2e1153da8fa45b6a5ddd7fc091ccf5c90e06db556c02"
+        ]
+      ],
+      "raw_getter_keys_match": true
+    },
+    {
+      "input": {
+        "path": ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-delete-all.accdb",
+        "bytes": 1236992,
+        "sha256": "92b312b055a99da536beeb8887106117fe75538657458450d0dbc136e33d5568"
+      },
+      "header_code": 6,
+      "subversion": 0,
+      "tables": {
+        "TextLegacyLeaf": {
+          "rows": 0,
+          "definition": 106,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x00000409, General]"
+          ]
+        },
+        "TextModernLeaf": {
+          "rows": 0,
+          "definition": 113,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "BinaryLeaf": {
+          "rows": 0,
+          "definition": 120,
+          "column": [
+            "BINARY",
+            "255",
+            "null"
+          ]
+        },
+        "TextLegacyNode": {
+          "rows": 0,
+          "definition": 128,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x00000409, General]"
+          ]
+        },
+        "TextModernNode": {
+          "rows": 0,
+          "definition": 165,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "BinaryNode": {
+          "rows": 0,
+          "definition": 217,
+          "column": [
+            "BINARY",
+            "255",
+            "null"
+          ]
+        },
+        "TextUniqueOverflow": {
+          "rows": 1,
+          "definition": 256,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "MemoNegative": {
+          "rows": 1,
+          "definition": 261,
+          "column": [
+            "MEMO",
+            "0",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "TextCompositeNegative": {
+          "rows": 2,
+          "definition": 266,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "BinaryCompositeNegative": {
+          "rows": 2,
+          "definition": 276,
+          "column": [
+            "BINARY",
+            "255",
+            "null"
+          ]
+        },
+        "TextIgnoredNegative": {
+          "rows": 1,
+          "definition": 271,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "BinaryIgnoredNegative": {
+          "rows": 1,
+          "definition": 281,
+          "column": [
+            "BINARY",
+            "255",
+            "null"
+          ]
+        },
+        "PreservedPayloads": {
+          "rows": 1,
+          "definition": 286
+        }
+      },
+      "indexes": [
+        {
+          "table": "TextLegacyLeaf",
+          "name": "Primary",
+          "physical": 0,
+          "root": 108,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 24,
+          "counter_offset": 67,
+          "entries": 0,
+          "usage": 27394,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyLeaf",
+          "name": "Asc",
+          "physical": 1,
+          "root": 109,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 7,
+          "counter_offset": 79,
+          "entries": 0,
+          "usage": 27395,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyLeaf",
+          "name": "Twin",
+          "physical": 1,
+          "root": 109,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 7,
+          "counter_offset": 79,
+          "entries": 0,
+          "usage": 27395,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyLeaf",
+          "name": "Desc",
+          "physical": 2,
+          "root": 110,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 7,
+          "counter_offset": 91,
+          "entries": 0,
+          "usage": 27396,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernLeaf",
+          "name": "Primary",
+          "physical": 0,
+          "root": 115,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 24,
+          "counter_offset": 67,
+          "entries": 0,
+          "usage": 29186,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernLeaf",
+          "name": "Asc",
+          "physical": 1,
+          "root": 116,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 8,
+          "counter_offset": 79,
+          "entries": 0,
+          "usage": 29187,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernLeaf",
+          "name": "Twin",
+          "physical": 1,
+          "root": 116,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 8,
+          "counter_offset": 79,
+          "entries": 0,
+          "usage": 29187,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernLeaf",
+          "name": "Desc",
+          "physical": 2,
+          "root": 117,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 8,
+          "counter_offset": 91,
+          "entries": 0,
+          "usage": 29188,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryLeaf",
+          "name": "Primary",
+          "physical": 0,
+          "root": 122,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 24,
+          "counter_offset": 67,
+          "entries": 0,
+          "usage": 30978,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryLeaf",
+          "name": "Asc",
+          "physical": 1,
+          "root": 123,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 9,
+          "counter_offset": 79,
+          "entries": 0,
+          "usage": 30979,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryLeaf",
+          "name": "Twin",
+          "physical": 1,
+          "root": 123,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 9,
+          "counter_offset": 79,
+          "entries": 0,
+          "usage": 30979,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryLeaf",
+          "name": "Desc",
+          "physical": 2,
+          "root": 124,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 9,
+          "counter_offset": 91,
+          "entries": 0,
+          "usage": 30980,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyNode",
+          "name": "Primary",
+          "physical": 0,
+          "root": 130,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 701,
+          "counter_offset": 67,
+          "entries": 0,
+          "usage": 33026,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyNode",
+          "name": "Asc",
+          "physical": 1,
+          "root": 131,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 7,
+          "counter_offset": 79,
+          "entries": 0,
+          "usage": 33027,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyNode",
+          "name": "Twin",
+          "physical": 1,
+          "root": 131,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 7,
+          "counter_offset": 79,
+          "entries": 0,
+          "usage": 33027,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyNode",
+          "name": "Desc",
+          "physical": 2,
+          "root": 132,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 7,
+          "counter_offset": 91,
+          "entries": 0,
+          "usage": 33028,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernNode",
+          "name": "Primary",
+          "physical": 0,
+          "root": 167,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 701,
+          "counter_offset": 67,
+          "entries": 0,
+          "usage": 42498,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernNode",
+          "name": "Asc",
+          "physical": 1,
+          "root": 168,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 8,
+          "counter_offset": 79,
+          "entries": 0,
+          "usage": 42499,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernNode",
+          "name": "Twin",
+          "physical": 1,
+          "root": 168,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 8,
+          "counter_offset": 79,
+          "entries": 0,
+          "usage": 42499,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernNode",
+          "name": "Desc",
+          "physical": 2,
+          "root": 169,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 8,
+          "counter_offset": 91,
+          "entries": 0,
+          "usage": 42500,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryNode",
+          "name": "Primary",
+          "physical": 0,
+          "root": 219,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 701,
+          "counter_offset": 67,
+          "entries": 0,
+          "usage": 55810,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryNode",
+          "name": "Asc",
+          "physical": 1,
+          "root": 220,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 9,
+          "counter_offset": 79,
+          "entries": 0,
+          "usage": 55811,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryNode",
+          "name": "Twin",
+          "physical": 1,
+          "root": 220,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 9,
+          "counter_offset": 79,
+          "entries": 0,
+          "usage": 55811,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryNode",
+          "name": "Desc",
+          "physical": 2,
+          "root": 221,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 9,
+          "counter_offset": 91,
+          "entries": 0,
+          "usage": 55812,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextUniqueOverflow",
+          "name": "UniqueOverflow",
+          "physical": 0,
+          "root": 258,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 1,
+          "counter_offset": 67,
+          "entries": 1,
+          "usage": 65794,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "MemoNegative",
+          "name": "Memo",
+          "physical": 0,
+          "root": 263,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 1,
+          "counter_offset": 67,
+          "entries": 1,
+          "usage": 67074,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextCompositeNegative",
+          "name": "Composite",
+          "physical": 0,
+          "root": 268,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 2,
+          "counter_offset": 67,
+          "entries": 2,
+          "usage": 68354,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryCompositeNegative",
+          "name": "Composite",
+          "physical": 0,
+          "root": 278,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 2,
+          "counter_offset": 67,
+          "entries": 2,
+          "usage": 70914,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextIgnoredNegative",
+          "name": "Ignored",
+          "physical": 0,
+          "root": 273,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 1,
+          "counter_offset": 67,
+          "entries": 1,
+          "usage": 69634,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryIgnoredNegative",
+          "name": "Ignored",
+          "physical": 0,
+          "root": 283,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 1,
+          "counter_offset": 67,
+          "entries": 1,
+          "usage": 72194,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        }
+      ],
+      "preserved_payload_hashes": [
+        [
+          "PreservedPayloads",
+          "1fc5ce4336737f18b97b2c3a858dbd34c64715b68257b561c814d493f5b02113",
+          "0a44a320571de174033d2e1153da8fa45b6a5ddd7fc091ccf5c90e06db556c02"
+        ]
+      ],
+      "raw_getter_keys_match": true
+    },
+    {
+      "input": {
+        "path": ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-delete-null.accdb",
+        "bytes": 1236992,
+        "sha256": "a8feef2d9b9cac28605be952da0214b94116a1061142764c8abfda1e1bcd2dea"
+      },
+      "header_code": 6,
+      "subversion": 0,
+      "tables": {
+        "TextLegacyLeaf": {
+          "rows": 23,
+          "definition": 106,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x00000409, General]"
+          ]
+        },
+        "TextModernLeaf": {
+          "rows": 23,
+          "definition": 113,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "BinaryLeaf": {
+          "rows": 23,
+          "definition": 120,
+          "column": [
+            "BINARY",
+            "255",
+            "null"
+          ]
+        },
+        "TextLegacyNode": {
+          "rows": 700,
+          "definition": 128,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x00000409, General]"
+          ]
+        },
+        "TextModernNode": {
+          "rows": 700,
+          "definition": 165,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "BinaryNode": {
+          "rows": 700,
+          "definition": 217,
+          "column": [
+            "BINARY",
+            "255",
+            "null"
+          ]
+        },
+        "TextUniqueOverflow": {
+          "rows": 1,
+          "definition": 256,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "MemoNegative": {
+          "rows": 1,
+          "definition": 261,
+          "column": [
+            "MEMO",
+            "0",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "TextCompositeNegative": {
+          "rows": 2,
+          "definition": 266,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "BinaryCompositeNegative": {
+          "rows": 2,
+          "definition": 276,
+          "column": [
+            "BINARY",
+            "255",
+            "null"
+          ]
+        },
+        "TextIgnoredNegative": {
+          "rows": 1,
+          "definition": 271,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "BinaryIgnoredNegative": {
+          "rows": 1,
+          "definition": 281,
+          "column": [
+            "BINARY",
+            "255",
+            "null"
+          ]
+        },
+        "PreservedPayloads": {
+          "rows": 1,
+          "definition": 286
+        }
+      },
+      "indexes": [
+        {
+          "table": "TextLegacyLeaf",
+          "name": "Primary",
+          "physical": 0,
+          "root": 108,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 24,
+          "counter_offset": 67,
+          "entries": 23,
+          "usage": 27394,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyLeaf",
+          "name": "Asc",
+          "physical": 1,
+          "root": 109,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 7,
+          "counter_offset": 79,
+          "entries": 23,
+          "usage": 27395,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyLeaf",
+          "name": "Twin",
+          "physical": 1,
+          "root": 109,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 7,
+          "counter_offset": 79,
+          "entries": 23,
+          "usage": 27395,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyLeaf",
+          "name": "Desc",
+          "physical": 2,
+          "root": 110,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 7,
+          "counter_offset": 91,
+          "entries": 23,
+          "usage": 27396,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernLeaf",
+          "name": "Primary",
+          "physical": 0,
+          "root": 115,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 24,
+          "counter_offset": 67,
+          "entries": 23,
+          "usage": 29186,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernLeaf",
+          "name": "Asc",
+          "physical": 1,
+          "root": 116,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 8,
+          "counter_offset": 79,
+          "entries": 23,
+          "usage": 29187,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernLeaf",
+          "name": "Twin",
+          "physical": 1,
+          "root": 116,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 8,
+          "counter_offset": 79,
+          "entries": 23,
+          "usage": 29187,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernLeaf",
+          "name": "Desc",
+          "physical": 2,
+          "root": 117,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 8,
+          "counter_offset": 91,
+          "entries": 23,
+          "usage": 29188,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryLeaf",
+          "name": "Primary",
+          "physical": 0,
+          "root": 122,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 24,
+          "counter_offset": 67,
+          "entries": 23,
+          "usage": 30978,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryLeaf",
+          "name": "Asc",
+          "physical": 1,
+          "root": 123,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 9,
+          "counter_offset": 79,
+          "entries": 23,
+          "usage": 30979,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryLeaf",
+          "name": "Twin",
+          "physical": 1,
+          "root": 123,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 9,
+          "counter_offset": 79,
+          "entries": 23,
+          "usage": 30979,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryLeaf",
+          "name": "Desc",
+          "physical": 2,
+          "root": 124,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 9,
+          "counter_offset": 91,
+          "entries": 23,
+          "usage": 30980,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyNode",
+          "name": "Primary",
+          "physical": 0,
+          "root": 130,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 3,
+          "historical_count": 701,
+          "counter_offset": 67,
+          "entries": 700,
+          "usage": 33026,
+          "leaf_count": 2,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyNode",
+          "name": "Asc",
+          "physical": 1,
+          "root": 131,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 11,
+          "historical_count": 7,
+          "counter_offset": 79,
+          "entries": 700,
+          "usage": 33027,
+          "leaf_count": 10,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyNode",
+          "name": "Twin",
+          "physical": 1,
+          "root": 131,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 11,
+          "historical_count": 7,
+          "counter_offset": 79,
+          "entries": 700,
+          "usage": 33027,
+          "leaf_count": 10,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyNode",
+          "name": "Desc",
+          "physical": 2,
+          "root": 132,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 9,
+          "historical_count": 7,
+          "counter_offset": 91,
+          "entries": 700,
+          "usage": 33028,
+          "leaf_count": 8,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernNode",
+          "name": "Primary",
+          "physical": 0,
+          "root": 167,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 3,
+          "historical_count": 701,
+          "counter_offset": 67,
+          "entries": 700,
+          "usage": 42498,
+          "leaf_count": 2,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernNode",
+          "name": "Asc",
+          "physical": 1,
+          "root": 168,
+          "kind": 3,
+          "height": 2,
+          "owned_count": 18,
+          "historical_count": 8,
+          "counter_offset": 79,
+          "entries": 700,
+          "usage": 42499,
+          "leaf_count": 15,
+          "node_count": 3,
+          "linked_nonroot_node_count": 2
+        },
+        {
+          "table": "TextModernNode",
+          "name": "Twin",
+          "physical": 1,
+          "root": 168,
+          "kind": 3,
+          "height": 2,
+          "owned_count": 18,
+          "historical_count": 8,
+          "counter_offset": 79,
+          "entries": 700,
+          "usage": 42499,
+          "leaf_count": 15,
+          "node_count": 3,
+          "linked_nonroot_node_count": 2
+        },
+        {
+          "table": "TextModernNode",
+          "name": "Desc",
+          "physical": 2,
+          "root": 169,
+          "kind": 3,
+          "height": 2,
+          "owned_count": 17,
+          "historical_count": 8,
+          "counter_offset": 91,
+          "entries": 700,
+          "usage": 42500,
+          "leaf_count": 14,
+          "node_count": 3,
+          "linked_nonroot_node_count": 2
+        },
+        {
+          "table": "BinaryNode",
+          "name": "Primary",
+          "physical": 0,
+          "root": 219,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 3,
+          "historical_count": 701,
+          "counter_offset": 67,
+          "entries": 700,
+          "usage": 55810,
+          "leaf_count": 2,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryNode",
+          "name": "Asc",
+          "physical": 1,
+          "root": 220,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 11,
+          "historical_count": 9,
+          "counter_offset": 79,
+          "entries": 700,
+          "usage": 55811,
+          "leaf_count": 10,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryNode",
+          "name": "Twin",
+          "physical": 1,
+          "root": 220,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 11,
+          "historical_count": 9,
+          "counter_offset": 79,
+          "entries": 700,
+          "usage": 55811,
+          "leaf_count": 10,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryNode",
+          "name": "Desc",
+          "physical": 2,
+          "root": 221,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 13,
+          "historical_count": 9,
+          "counter_offset": 91,
+          "entries": 700,
+          "usage": 55812,
+          "leaf_count": 12,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextUniqueOverflow",
+          "name": "UniqueOverflow",
+          "physical": 0,
+          "root": 258,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 1,
+          "counter_offset": 67,
+          "entries": 1,
+          "usage": 65794,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "MemoNegative",
+          "name": "Memo",
+          "physical": 0,
+          "root": 263,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 1,
+          "counter_offset": 67,
+          "entries": 1,
+          "usage": 67074,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextCompositeNegative",
+          "name": "Composite",
+          "physical": 0,
+          "root": 268,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 2,
+          "counter_offset": 67,
+          "entries": 2,
+          "usage": 68354,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryCompositeNegative",
+          "name": "Composite",
+          "physical": 0,
+          "root": 278,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 2,
+          "counter_offset": 67,
+          "entries": 2,
+          "usage": 70914,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextIgnoredNegative",
+          "name": "Ignored",
+          "physical": 0,
+          "root": 273,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 1,
+          "counter_offset": 67,
+          "entries": 1,
+          "usage": 69634,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryIgnoredNegative",
+          "name": "Ignored",
+          "physical": 0,
+          "root": 283,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 1,
+          "counter_offset": 67,
+          "entries": 1,
+          "usage": 72194,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        }
+      ],
+      "preserved_payload_hashes": [
+        [
+          "PreservedPayloads",
+          "1fc5ce4336737f18b97b2c3a858dbd34c64715b68257b561c814d493f5b02113",
+          "0a44a320571de174033d2e1153da8fa45b6a5ddd7fc091ccf5c90e06db556c02"
+        ]
+      ],
+      "raw_getter_keys_match": true
+    },
+    {
+      "input": {
+        "path": ".cache/encoded-delete-originals-next-20261026/inputs/Encoded-V2019-delete-tie.accdb",
+        "bytes": 1236992,
+        "sha256": "4adabfd289b3404123d5578a4fb54e12736f169aadb2a5b5a218837338718aad"
+      },
+      "header_code": 6,
+      "subversion": 0,
+      "tables": {
+        "TextLegacyLeaf": {
+          "rows": 23,
+          "definition": 106,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x00000409, General]"
+          ]
+        },
+        "TextModernLeaf": {
+          "rows": 23,
+          "definition": 113,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "BinaryLeaf": {
+          "rows": 23,
+          "definition": 120,
+          "column": [
+            "BINARY",
+            "255",
+            "null"
+          ]
+        },
+        "TextLegacyNode": {
+          "rows": 700,
+          "definition": 128,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x00000409, General]"
+          ]
+        },
+        "TextModernNode": {
+          "rows": 700,
+          "definition": 165,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "BinaryNode": {
+          "rows": 700,
+          "definition": 217,
+          "column": [
+            "BINARY",
+            "255",
+            "null"
+          ]
+        },
+        "TextUniqueOverflow": {
+          "rows": 1,
+          "definition": 256,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "MemoNegative": {
+          "rows": 1,
+          "definition": 261,
+          "column": [
+            "MEMO",
+            "0",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "TextCompositeNegative": {
+          "rows": 2,
+          "definition": 266,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "BinaryCompositeNegative": {
+          "rows": 2,
+          "definition": 276,
+          "column": [
+            "BINARY",
+            "255",
+            "null"
+          ]
+        },
+        "TextIgnoredNegative": {
+          "rows": 1,
+          "definition": 271,
+          "column": [
+            "TEXT",
+            "510",
+            "SortOrder[0x01000409, General]"
+          ]
+        },
+        "BinaryIgnoredNegative": {
+          "rows": 1,
+          "definition": 281,
+          "column": [
+            "BINARY",
+            "255",
+            "null"
+          ]
+        },
+        "PreservedPayloads": {
+          "rows": 1,
+          "definition": 286
+        }
+      },
+      "indexes": [
+        {
+          "table": "TextLegacyLeaf",
+          "name": "Primary",
+          "physical": 0,
+          "root": 108,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 24,
+          "counter_offset": 67,
+          "entries": 23,
+          "usage": 27394,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyLeaf",
+          "name": "Asc",
+          "physical": 1,
+          "root": 109,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 7,
+          "counter_offset": 79,
+          "entries": 23,
+          "usage": 27395,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyLeaf",
+          "name": "Twin",
+          "physical": 1,
+          "root": 109,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 7,
+          "counter_offset": 79,
+          "entries": 23,
+          "usage": 27395,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyLeaf",
+          "name": "Desc",
+          "physical": 2,
+          "root": 110,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 7,
+          "counter_offset": 91,
+          "entries": 23,
+          "usage": 27396,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernLeaf",
+          "name": "Primary",
+          "physical": 0,
+          "root": 115,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 24,
+          "counter_offset": 67,
+          "entries": 23,
+          "usage": 29186,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernLeaf",
+          "name": "Asc",
+          "physical": 1,
+          "root": 116,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 8,
+          "counter_offset": 79,
+          "entries": 23,
+          "usage": 29187,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernLeaf",
+          "name": "Twin",
+          "physical": 1,
+          "root": 116,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 8,
+          "counter_offset": 79,
+          "entries": 23,
+          "usage": 29187,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernLeaf",
+          "name": "Desc",
+          "physical": 2,
+          "root": 117,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 8,
+          "counter_offset": 91,
+          "entries": 23,
+          "usage": 29188,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryLeaf",
+          "name": "Primary",
+          "physical": 0,
+          "root": 122,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 24,
+          "counter_offset": 67,
+          "entries": 23,
+          "usage": 30978,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryLeaf",
+          "name": "Asc",
+          "physical": 1,
+          "root": 123,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 9,
+          "counter_offset": 79,
+          "entries": 23,
+          "usage": 30979,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryLeaf",
+          "name": "Twin",
+          "physical": 1,
+          "root": 123,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 9,
+          "counter_offset": 79,
+          "entries": 23,
+          "usage": 30979,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryLeaf",
+          "name": "Desc",
+          "physical": 2,
+          "root": 124,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 9,
+          "counter_offset": 91,
+          "entries": 23,
+          "usage": 30980,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyNode",
+          "name": "Primary",
+          "physical": 0,
+          "root": 130,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 3,
+          "historical_count": 701,
+          "counter_offset": 67,
+          "entries": 700,
+          "usage": 33026,
+          "leaf_count": 2,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyNode",
+          "name": "Asc",
+          "physical": 1,
+          "root": 131,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 11,
+          "historical_count": 7,
+          "counter_offset": 79,
+          "entries": 700,
+          "usage": 33027,
+          "leaf_count": 10,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyNode",
+          "name": "Twin",
+          "physical": 1,
+          "root": 131,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 11,
+          "historical_count": 7,
+          "counter_offset": 79,
+          "entries": 700,
+          "usage": 33027,
+          "leaf_count": 10,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextLegacyNode",
+          "name": "Desc",
+          "physical": 2,
+          "root": 132,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 9,
+          "historical_count": 7,
+          "counter_offset": 91,
+          "entries": 700,
+          "usage": 33028,
+          "leaf_count": 8,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernNode",
+          "name": "Primary",
+          "physical": 0,
+          "root": 167,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 3,
+          "historical_count": 701,
+          "counter_offset": 67,
+          "entries": 700,
+          "usage": 42498,
+          "leaf_count": 2,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextModernNode",
+          "name": "Asc",
+          "physical": 1,
+          "root": 168,
+          "kind": 3,
+          "height": 2,
+          "owned_count": 18,
+          "historical_count": 8,
+          "counter_offset": 79,
+          "entries": 700,
+          "usage": 42499,
+          "leaf_count": 15,
+          "node_count": 3,
+          "linked_nonroot_node_count": 2
+        },
+        {
+          "table": "TextModernNode",
+          "name": "Twin",
+          "physical": 1,
+          "root": 168,
+          "kind": 3,
+          "height": 2,
+          "owned_count": 18,
+          "historical_count": 8,
+          "counter_offset": 79,
+          "entries": 700,
+          "usage": 42499,
+          "leaf_count": 15,
+          "node_count": 3,
+          "linked_nonroot_node_count": 2
+        },
+        {
+          "table": "TextModernNode",
+          "name": "Desc",
+          "physical": 2,
+          "root": 169,
+          "kind": 3,
+          "height": 2,
+          "owned_count": 17,
+          "historical_count": 8,
+          "counter_offset": 91,
+          "entries": 700,
+          "usage": 42500,
+          "leaf_count": 14,
+          "node_count": 3,
+          "linked_nonroot_node_count": 2
+        },
+        {
+          "table": "BinaryNode",
+          "name": "Primary",
+          "physical": 0,
+          "root": 219,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 3,
+          "historical_count": 701,
+          "counter_offset": 67,
+          "entries": 700,
+          "usage": 55810,
+          "leaf_count": 2,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryNode",
+          "name": "Asc",
+          "physical": 1,
+          "root": 220,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 11,
+          "historical_count": 9,
+          "counter_offset": 79,
+          "entries": 700,
+          "usage": 55811,
+          "leaf_count": 10,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryNode",
+          "name": "Twin",
+          "physical": 1,
+          "root": 220,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 11,
+          "historical_count": 9,
+          "counter_offset": 79,
+          "entries": 700,
+          "usage": 55811,
+          "leaf_count": 10,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryNode",
+          "name": "Desc",
+          "physical": 2,
+          "root": 221,
+          "kind": 3,
+          "height": 1,
+          "owned_count": 13,
+          "historical_count": 9,
+          "counter_offset": 91,
+          "entries": 700,
+          "usage": 55812,
+          "leaf_count": 12,
+          "node_count": 1,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextUniqueOverflow",
+          "name": "UniqueOverflow",
+          "physical": 0,
+          "root": 258,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 1,
+          "counter_offset": 67,
+          "entries": 1,
+          "usage": 65794,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "MemoNegative",
+          "name": "Memo",
+          "physical": 0,
+          "root": 263,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 1,
+          "counter_offset": 67,
+          "entries": 1,
+          "usage": 67074,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextCompositeNegative",
+          "name": "Composite",
+          "physical": 0,
+          "root": 268,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 2,
+          "counter_offset": 67,
+          "entries": 2,
+          "usage": 68354,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryCompositeNegative",
+          "name": "Composite",
+          "physical": 0,
+          "root": 278,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 2,
+          "counter_offset": 67,
+          "entries": 2,
+          "usage": 70914,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "TextIgnoredNegative",
+          "name": "Ignored",
+          "physical": 0,
+          "root": 273,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 1,
+          "counter_offset": 67,
+          "entries": 1,
+          "usage": 69634,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        },
+        {
+          "table": "BinaryIgnoredNegative",
+          "name": "Ignored",
+          "physical": 0,
+          "root": 283,
+          "kind": 4,
+          "height": 0,
+          "owned_count": 1,
+          "historical_count": 1,
+          "counter_offset": 67,
+          "entries": 1,
+          "usage": 72194,
+          "leaf_count": 1,
+          "node_count": 0,
+          "linked_nonroot_node_count": 0
+        }
+      ],
+      "preserved_payload_hashes": [
+        [
+          "PreservedPayloads",
+          "1fc5ce4336737f18b97b2c3a858dbd34c64715b68257b561c814d493f5b02113",
+          "0a44a320571de174033d2e1153da8fa45b6a5ddd7fc091ccf5c90e06db556c02"
+        ]
+      ],
+      "raw_getter_keys_match": true
+    }
+  ],
+  "public_wrapper_verification": {
+    "scope": "Public tool execution, separate from immutable historical private-source run; same48controls counted once. No databases regenerated.",
+    "capture_terminal_session": 3021,
+    "capture_exit_code": 0,
+    "qualification_exit_code": 0,
+    "replay_terminal_session": 12091,
+    "replay_exit_code": 0,
+    "capture_report": {
+      "path": ".cache/encoded-delete-originals-next-20261026/public-capture.json",
+      "bytes": 2881686,
+      "sha256": "97297a7ee4c63a5546ba18134776ba81050e3ef520a9d71cd0af10fe1e96f90f"
+    },
+    "capture_log": {
+      "path": ".cache/encoded-delete-originals-next-20261026/public-capture.log",
+      "bytes": 468,
+      "sha256": "284ad572d74388fa4f65796be2c0ec21b9687fd67bd124e69d94509c021364d3"
+    },
+    "qualification_report": {
+      "path": ".cache/encoded-delete-originals-next-20261026/public-qualification.json",
+      "bytes": 12538,
+      "sha256": "465e718a627fb7f498af54d0f9eed42a84dd8ffaf95f01f57a6c7f79028c7132"
+    },
+    "qualification_log": {
+      "path": ".cache/encoded-delete-originals-next-20261026/public-qualification.log",
+      "bytes": 72,
+      "sha256": "5d3968b0271bd1b98bf8b7b7636ab60fd12f2661da02fc0bbc5cff55ad3c6d27"
+    },
+    "replay_report": {
+      "path": ".cache/encoded-delete-originals-next-20261026/public-replay.json",
+      "bytes": 131858,
+      "sha256": "24938b0144c6b6e3f366196887315fe1699b2188d237b585e643e8cd07613a4a"
+    },
+    "replay_log": {
+      "path": ".cache/encoded-delete-originals-next-20261026/public-replay.log",
+      "bytes": 2704,
+      "sha256": "71bbe3b9a834d0aee354ec49e1af65101a3d2da231efb963cd303db0b5dcba5e"
+    },
+    "sources": [
+      {
+        "path": "docs/testing/encoded_delete_originals/capture.py",
+        "bytes": 5141,
+        "sha256": "fbbfbd8a5e07504d34ae7e2d9dba7c9850a8be3226277276db6cc249b9d9046d"
+      },
+      {
+        "path": ".cache/encoded-delete-originals-next-20261026/public-common-before-pathsep.py",
+        "bytes": 1597,
+        "sha256": "26451b183b4c759fdd4f200e300d5887d0a8b540c4b300ff09480986fdac4ec5"
+      },
+      {
+        "path": "docs/testing/encoded_delete_originals/qualify.py",
+        "bytes": 6097,
+        "sha256": "5e332d4c965ef24453ea3ff286ee1cdfad1fdd0986fd7f6950f31a61e39c2cac"
+      },
+      {
+        "path": "docs/testing/encoded_delete_originals/replay.py",
+        "bytes": 17537,
+        "sha256": "c2ff136953e63472578b60d7ef5a2c574aafb9d3b16335324e6c44f0bd7aba63"
+      },
+      {
+        "path": "docs/testing/encoded_delete_originals/wire.py",
+        "bytes": 6423,
+        "sha256": "c75e98152710d6957c212d66da0c8c7f62fc5c6d0b159fdbb823d72bb22662a5"
+      }
+    ],
+    "controls": 48,
+    "disagreements": 0,
+    "successful_candidates": 34,
+    "unsupported_profile_refusals": 12,
+    "known_internal_chain_refusals": 2,
+    "all_command_source_candidate_getter_pins_reverified": true,
+    "inputs_unchanged": true,
+    "sources_role": "Exact executed sources; common.py preserved at private snapshot after the mechanical portability correction.",
+    "current_public_sources": [
+      {
+        "path": "docs/testing/encoded_delete_originals/capture.py",
+        "bytes": 5141,
+        "sha256": "fbbfbd8a5e07504d34ae7e2d9dba7c9850a8be3226277276db6cc249b9d9046d"
+      },
+      {
+        "path": "docs/testing/encoded_delete_originals/common.py",
+        "bytes": 1774,
+        "sha256": "59925dc923e19b31859ecc7f8a9102df90694670b4d68c42ed2f07fc80c44d7a"
+      },
+      {
+        "path": "docs/testing/encoded_delete_originals/qualify.py",
+        "bytes": 6097,
+        "sha256": "5e332d4c965ef24453ea3ff286ee1cdfad1fdd0986fd7f6950f31a61e39c2cac"
+      },
+      {
+        "path": "docs/testing/encoded_delete_originals/replay.py",
+        "bytes": 17537,
+        "sha256": "c2ff136953e63472578b60d7ef5a2c574aafb9d3b16335324e6c44f0bd7aba63"
+      },
+      {
+        "path": "docs/testing/encoded_delete_originals/wire.py",
+        "bytes": 6423,
+        "sha256": "c75e98152710d6957c212d66da0c8c7f62fc5c6d0b159fdbb823d72bb22662a5"
+      }
+    ],
+    "post_execution_portability_correction": {
+      "executed_common_source_archive": {
+        "path": ".cache/encoded-delete-originals-next-20261026/public-common-before-pathsep.py",
+        "bytes": 1597,
+        "sha256": "26451b183b4c759fdd4f200e300d5887d0a8b540c4b300ff09480986fdac4ec5"
+      },
+      "current_common_source": {
+        "path": "docs/testing/encoded_delete_originals/common.py",
+        "bytes": 1774,
+        "sha256": "59925dc923e19b31859ecc7f8a9102df90694670b4d68c42ed2f07fc80c44d7a"
+      },
+      "change": "Use os.pathsep instead of literal colon for cross-platform classpaths. All recorded macOS Java argv independently regenerated exactly; no additional48-control run needed or counted."
+    }
+  },
+  "artifact_label_normalization": {
+    "policy": "Public artifact path labels are repository-relative. Labels formerly absolute inside the checkout are normalized without changing file bytes, hashes, actual argv, or ignored raw reports. Maintained common.pin resolves paths relative to its repository root and rejects artifacts outside that root.",
+    "pre_change_common_source": {
+      "path": ".cache/encoded-delete-originals-next-20261026/public-common-before-relative-labels.py",
+      "bytes": 1630,
+      "sha256": "beb0826442dcb3253b5ed95f0c8006220222965fed1f598090b574738c6670e9"
+    },
+    "current_common_source": {
+      "path": "docs/testing/encoded_delete_originals/common.py",
+      "bytes": 1774,
+      "sha256": "59925dc923e19b31859ecc7f8a9102df90694670b4d68c42ed2f07fc80c44d7a"
+    },
+    "verification": "No consumer or payload change; no48-control rerun. Relative/absolute-in-repository label parity, outside-repository rejection, exact Java argv equality and recursive pin checks are verified separately."
+  }
+}

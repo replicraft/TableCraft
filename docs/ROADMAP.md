@@ -32,6 +32,9 @@ Delivered read/query and engineering foundations:
   [32 deep/indirect original-file controls](testing/results/ace16-delete-internal-chains-originals-2026-10-26.json)
   without changing the earlier selectors, requests or budgets. Required splits
   still refuse, and Text/Binary UPDATE codecs remain unavailable.
+  A separate [48-control Text/Binary corpus](testing/ENCODED_DELETE_OBSERVATIONS.md)
+  checks 36 candidates and twelve unsupported-profile refusals on the same
+  committed tool, including the previously refused height-two delete-all cases.
   General ACE 16 saves are still unavailable.
 
 - [x] [Stateful streaming composition](query/PROGRESSIVE_QUERIES.md#stateful-retained-stages)

@@ -8899,3 +8899,48 @@ The [owning observations](DELETE_CONTRACTION_STORAGE_OBSERVATIONS.md) distinguis
 these reviewed-Jackcess facts from native Access/allocation qualification, give
 public-source reproduction commands, and record the real host E2BIG/request-file
 discriminator. No candidate execution is part of this reference registration.
+
+## Original encoded Text/Binary DELETE inputs
+
+Original Apache-2.0 [EncodedDeleteFixture.java](EncodedDeleteFixture.java),
+SHA-256 `1bf7fced97992d29fdc90b38fdb3315901f37f199359f4895da0ef3bd966a725`,
+uses the reviewed Jackcess 5.0.4 public builders and public `Table.deleteRow` on
+fresh copies. No upstream code or fixtures are copied. Expressions remain
+disabled, time zone is UTC, linked opens throw, and getter reopens are read-only.
+The JAR SHA-256 is
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+The source promotion is byte-identical to the actual private producer. Original
+and reference bytes remain ignored under
+`.cache/encoded-delete-originals-next-20261026/inputs/` and were not regenerated
+for publication.
+
+| Original/reference | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Encoded-V2016-before.accdb | 1,163,264 | `e2b5193dc4eb6c024e1e2883e894d64b4ff82c435ca441f0745e677615fc9276` |
+| Encoded-V2016-delete-all.accdb | 1,163,264 | `9c7435b1b2f3c08a544e842ccdb0218ded64681a8e544a12076f03ed480c465f` |
+| Encoded-V2016-delete-null.accdb | 1,163,264 | `1fef78d2e6b659ec8de041f9d888174c4a8e930da8b0bb469d3aa8f9e3e3f05e` |
+| Encoded-V2016-delete-tie.accdb | 1,163,264 | `7a3d147883e2b4a37c5c62ad451b3c3cc614fb6f6344a1bceed023e12074d627` |
+| Encoded-V2019-before.accdb | 1,236,992 | `636e137ee3a1d51f6525072de87963cb33a03b01a253be1d2124cf6bb4746279` |
+| Encoded-V2019-delete-all.accdb | 1,236,992 | `92b312b055a99da536beeb8887106117fe75538657458450d0dbc136e33d5568` |
+| Encoded-V2019-delete-null.accdb | 1,236,992 | `a8feef2d9b9cac28605be952da0214b94116a1061142764c8abfda1e1bcd2dea` |
+| Encoded-V2019-delete-tie.accdb | 1,236,992 | `4adabfd289b3404123d5578a4fb54e12736f169aadb2a5b5a218837338718aad` |
+
+The [owning observations](ENCODED_DELETE_OBSERVATIONS.md) and compact
+[reference](results/ace16-delete-encoded-original-reference-2026-10-26.json) /
+[candidate](results/ace16-delete-encoded-original-replay-2026-10-26.json) receipts
+record actual General legacy/2010 descriptors, Binary framing, NULL/empty/ties,
+nonunique Text overflow, physical aliases and preserved Memo/OLE. The 48 controls
+have 34 successful candidates, twelve unsupported-profile refusals and two
+linked-internal contraction refusals in the frozen revision. Height-2 Modern
+Text positives remain in the corpus; their delete-all limitation is not hidden.
+Independent public-getter agreement does not qualify native Access saves or
+ordinary writes. Exact private helper sources, public-tool verification and
+historical command associations are distinguished in the receipts.
+
+The same originals/selectors subsequently passed the
+[internal-chain follow-up](results/ace16-delete-encoded-internal-chains-originals-2026-10-26.json)
+on frozen `cd52af09c3f9253ed9aa7e3195a2210bf316efdc`: 36 candidates and twelve
+profile refusals, zero disagreements, including both Modern Text height-2
+delete-all cases. This supersedes that specific historical capability refusal;
+it does not remove Memo/composite/ignore-NULL/unique-overflow gates or qualify
+native Access saves. Originals and selector counts are unchanged.

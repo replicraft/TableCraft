@@ -1,0 +1,251 @@
+"""Finite original public-getter DELETE replay against a pinned engine example."""
+from pathlib import Path
+import argparse
+import hashlib
+import json
+import struct
+import subprocess
+import wire
+
+HOME = Path('.cache/encoded-delete-originals-next-20261026')
+JAR = Path('.cache/tablecraft-fixtures/jackcess-5.0.4.jar')
+DRIVER = Path('.cache/tablecraft-bin/ace16-delete-encoded-20261026')
+DRIVER_SHA = 'b5f30b31199d63a09a1aabcbeca8d841f89888f946a0390dd279cca1566afd66'
+REVISION = 'd5690381ef6eb394a998b43255f025b163329466'
+POSITIVE = ['TextLegacyLeaf', 'TextModernLeaf', 'BinaryLeaf', 'TextLegacyNode', 'TextModernNode', 'BinaryNode']
+NEGATIVE = ['TextUniqueOverflow', 'MemoNegative', 'TextCompositeNegative', 'BinaryCompositeNegative', 'TextIgnoredNegative', 'BinaryIgnoredNegative']
+
+
+def pin(path):
+    data = path.read_bytes()
+    return {'path': str(path), 'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()}
+
+
+def snapshot(path):
+    tables = {}
+    payload = []
+    for line in path.read_text().splitlines():
+        f = line.split('\t')
+        if f[0] == 'TABLE':
+            tables[f[1]] = {'count': int(f[2]), 'definition': int(f[3]), 'rows': [], 'indexes': {}}
+        elif f[0] == 'ROW':
+            tables[f[1]]['rows'].append(f[2:])
+        elif f[0] == 'INDEX':
+            tables[f[1]]['indexes'][f[2]] = {'physical': int(f[3]), 'root': int(f[4]), 'kind': int(f[5]),
+                'height': int(f[6]), 'owned_count': int(f[7]), 'historical': int(f[8]), 'entries': int(f[10]), 'order': [], 'keys': []}
+        elif f[0] == 'ORDER':
+            tables[f[1]]['indexes'][f[2]]['order'].append(int(f[3]))
+        elif f[0] == 'KEY':
+            tables[f[1]]['indexes'][f[2]]['keys'].append((f[5], int(f[3]), int(f[4])))
+        elif f[0] == 'PAYLOAD':
+            payload.append(f[1:])
+    return tables, payload
+
+
+def raw_rows(raw, definition, getters):
+    by_ref = {(int(r[1]), int(r[2])): int(r[0]) for r in getters}
+    owned = wire.members(raw, wire.u32(raw, definition * 4096 + 55))
+    result = []
+    for number in owned:
+        page = raw[number * 4096:(number + 1) * 4096]
+        assert page[:2] == b'\1\1' and wire.u32(page, 4) == definition
+        for slot in range(wire.u16(page, 12)):
+            word = wire.u16(page, 14 + 2 * slot)
+            if word & 0x8000:
+                continue
+            assert word & 0xe000 == 0
+            payload = wire.row(raw, (number << 8) | slot)
+            assert wire.u16(payload, 0) == 2
+            result.append({'id': by_ref[(number, slot)], 'payload': payload,
+                           'word_offset': number * 4096 + 14 + slot * 2})
+    assert len(result) == len(getters)
+    return result
+
+
+def cell(raw, reference, target):
+    page_no, slot = reference >> 8, reference & 255
+    page = raw[page_no * 4096:(page_no + 1) * 4096]
+    start = wire.u16(page, 14 + 2 * slot) & 0x1fff
+    payload = wire.row(raw, reference)
+    if payload[0] == 0:
+        relative = target - wire.u32(payload, 1)
+        assert relative >= 0 and 5 + relative // 8 < len(payload)
+        return page_no * 4096 + start + 5 + relative // 8, 1 << (relative % 8)
+    assert payload[0] == 1
+    block, relative = divmod(target, 32736)
+    pointer = wire.u32(payload, 1 + block * 4)
+    assert pointer and raw[pointer * 4096:pointer * 4096 + 4] == bytes([5, 1, 0, 0])
+    return pointer * 4096 + 4 + relative // 8, 1 << (relative % 8)
+
+
+def preservation(before, after, table, deleted, old_snapshot, new_snapshot):
+    assert len(before) == len(after)
+    allowed = bytearray(len(before))
+    def allow(start, length):
+        allowed[start:start + length] = bytes([1]) * length
+    definition = table['definition']
+    count_offset = definition * 4096 + 16
+    allow(count_offset, 4)
+    assert wire.u32(after, count_offset) == table['count'] - len(deleted)
+    for r in deleted:
+        offset = r['word_offset']
+        assert wire.u16(after, offset) == wire.u16(before, offset) | 0xc000
+        allow(offset, 2)
+    retired = []
+    handled = set()
+    expected_map_bytes = {}
+    for name, old in old_snapshot.items():
+        current = new_snapshot[name]
+        assert (old['physical'], old['root'], old['historical']) == (current['physical'], current['root'], current['historical'])
+        if old['physical'] in handled:
+            continue
+        handled.add(old['physical'])
+        usage, root = wire.physical(before, definition, old['physical'])
+        new_usage, new_root = wire.physical(after, definition, old['physical'])
+        assert (usage, root) == (new_usage, new_root)
+        original_pages = wire.members(before, usage)
+        current_pages = wire.members(after, usage)
+        assert set(current_pages).issubset(original_pages) and root in current_pages
+        removed = sorted(set(original_pages) - set(current_pages))
+        retired.extend(removed)
+        for number in removed:
+            assert number != root
+            start = number * 4096
+            assert after[start:start + 4] == bytes(4)
+            assert before[start + 4:start + 4096] == after[start + 4:start + 4096]
+            allow(start, 4)
+            for reference, setting in [(usage, False), (256, True)]:
+                offset, mask = cell(before, reference, number)
+                initial = before[offset]
+                assert bool(initial & mask) != setting
+                expected = expected_map_bytes.setdefault(offset, initial)
+                expected_map_bytes[offset] = expected | mask if setting else expected & ~mask
+        for number in current_pages:
+            start = number * 4096
+            assert before[start + 1:start + 2] == after[start + 1:start + 2]
+            assert before[start + 4:start + 12] == after[start + 4:start + 12]
+            if wire.u32(after, count_offset):
+                assert before[start:start + 2] == after[start:start + 2]
+                assert before[start + 26] == after[start + 26]
+            else:
+                assert number == root and after[start] == 4 and after[start + 26] == 0
+                assert after[start + 12:start + 24] == bytes(12)
+            old_end = 4096 - wire.u16(before, start + 2)
+            new_end = 4096 - wire.u16(after, start + 2)
+            assert before[start + max(old_end, new_end):start + 4096] == after[start + max(old_end, new_end):start + 4096]
+            allow(start, 1)
+            allow(start + 2, 2)
+            allow(start + 12, 15)
+            allow(start + 27, max(old_end, new_end) - 27)
+        original_map = wire.u32(before, definition * 4096 + 55)
+        assert wire.row(before, original_map) == wire.row(after, original_map)
+    assert len(retired) == len(set(retired))
+    for offset, value in expected_map_bytes.items():
+        assert after[offset] == value
+        allow(offset, 1)
+    for offset, (old, new) in enumerate(zip(before, after)):
+        assert allowed[offset] or old == new, ('unexpected changed byte', offset)
+    return retired
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--workdir', type=Path, required=True)
+    parser.add_argument('--report', type=Path, required=True)
+    args = parser.parse_args()
+    assert not args.report.exists()
+    args.workdir.mkdir(parents=True, exist_ok=False)
+    assert pin(DRIVER)['sha256'] == DRIVER_SHA
+    source_files = sorted((HOME / 'inputs').glob('*.accdb'))
+    source_pins = [pin(p) for p in source_files]
+    commands = []
+    results = []
+    observations = json.loads((HOME / 'original-observations.json').read_text())
+    for profile in ['V2016', 'V2019']:
+        source = HOME / 'inputs' / f'Encoded-{profile}-before.accdb'
+        before = source.read_bytes()
+        original, payloads = snapshot(HOME / f'Encoded-{profile}-before.getters.tsv')
+        topology = next(item for item in observations['files'] if item['input']['path'] == str(source))
+        for name in POSITIVE + NEGATIVE:
+            table = original[name]
+            roots = raw_rows(before, table['definition'], table['rows'])
+            for state in (['delete-tie', 'delete-null', 'delete-all'] if name in POSITIVE else ['negative-delete']):
+                index = len(results)
+                label = f'{index:02}-{profile}-{name}-{state}'
+                selected = [(ordinal, r) for ordinal, r in enumerate(roots)
+                            if state == 'delete-all' or r['id'] == (4 if state == 'delete-tie' else 1)]
+                assert selected
+                request_file = args.workdir / (label + '.tsv')
+                request_file.write_text(''.join(f"{ordinal}\t{r['payload'].hex()}\n" for ordinal, r in selected))
+                target = args.workdir / (label + '.accdb')
+                argv = [str(DRIVER), str(source), str(target), name, '--delete-file', str(request_file)]
+                stdout, stderr = args.workdir / (label + '.stdout'), args.workdir / (label + '.stderr')
+                with stdout.open('xb') as out, stderr.open('xb') as err:
+                    completed = subprocess.run(argv, stdout=out, stderr=err, timeout=60)
+                command = {'argv': argv, 'exit_code': completed.returncode, 'stdout': pin(stdout), 'stderr': pin(stderr)}
+                command_index = len(commands)
+                commands.append(command)
+                expected_refusal = name in NEGATIVE or (name == 'TextModernNode' and state == 'delete-all')
+                result = {'profile': profile, 'table': name, 'state': state, 'expected_refusal': expected_refusal,
+                          'selected_rows': len(selected), 'command': command_index, 'request_file': pin(request_file)}
+                if expected_refusal:
+                    agreed = completed.returncode != 0 and not target.exists() and stdout.read_bytes() == b'' and b'unsupported' in stderr.read_bytes().lower()
+                    result.update({'agreed': agreed, 'candidate_exists': target.exists(), 'diagnostic': stderr.read_text()})
+                elif completed.returncode == 0:
+                    assert target.exists() and stdout.read_text().strip() == f'candidate_deleted_rows={len(selected)}'
+                    after = target.read_bytes()
+                    output = args.workdir / (label + '.getters.tsv')
+                    errors = args.workdir / (label + '.getters.stderr')
+                    oracle = ['java', '-cp', f'{JAR}:{HOME}', 'com.healthmarketscience.jackcess.impl.EncodedDeleteFixture', 'oracle', str(target)]
+                    with output.open('xb') as out, errors.open('xb') as err:
+                        getter = subprocess.run(oracle, stdout=out, stderr=err, timeout=60)
+                    commands.append({'argv': oracle, 'exit_code': getter.returncode, 'stdout': pin(output), 'stderr': pin(errors)})
+                    assert getter.returncode == 0
+                    actual, actual_payload = snapshot(output)
+                    reference, reference_payload = snapshot(HOME / f'Encoded-{profile}-{state}.getters.tsv')
+                    selected_ids = {r['id'] for _, r in selected}
+                    assert actual[name]['rows'] == reference[name]['rows']
+                    assert actual[name]['count'] == table['count'] - len(selected)
+                    for field in ['order', 'keys', 'historical', 'physical', 'root']:
+                        for key, old in table['indexes'].items():
+                            if field == 'order':
+                                expected = [identifier for identifier in old[field] if identifier not in selected_ids]
+                            elif field == 'keys':
+                                retained_refs = {(int(r[1]), int(r[2])) for r in actual[name]['rows']}
+                                expected = [entry for entry in old[field] if (entry[1], entry[2]) in retained_refs]
+                            else:
+                                expected = old[field]
+                            assert actual[name]['indexes'][key][field] == expected
+                            if field != 'keys':
+                                assert actual[name]['indexes'][key][field] == reference[name]['indexes'][key][field]
+                    assert actual_payload == payloads == reference_payload
+                    for other in original:
+                        if other != name:
+                            assert actual[other] == original[other]
+                    retired = preservation(before, after, table, [r for _, r in selected], table['indexes'], actual[name]['indexes'])
+                    for item in actual[name]['indexes'].values():
+                        raw_keys, _, _ = wire.decode_tree(after, item['root'], table['definition'])
+                        assert raw_keys == item['keys']
+                    result.update({'agreed': True, 'candidate': pin(target), 'getter': pin(output), 'retired_pages': retired,
+                                   'actual_rows': actual[name]['count'], 'exact_retained_key_and_reference_match': True,
+                                   'independent_preservation_proof': True})
+                else:
+                    result.update({'agreed': False, 'diagnostic': stderr.read_text()})
+                results.append(result)
+                print(label, 'agreed', result['agreed'], 'exit', completed.returncode, flush=True)
+                assert [pin(path) for path in source_files] == source_pins
+    report = {'scope': 'Fresh original public-Jackcess values/raw keys/reference deletes; TableCraft engine example evaluates candidates, no native Access execution',
+              'driver': pin(DRIVER), 'compiled_revision': REVISION,
+              'helper': pin(HOME / 'EncodedDeleteFixture.java'), 'jar': pin(JAR),
+              'runner': pin(Path(__file__)), 'wire_reader': pin(HOME / 'wire.py'),
+              'qualification': pin(HOME / 'qualification.json'),
+              'original_observations': pin(HOME / 'original-observations.json'),
+              'sources': source_pins, 'commands': commands, 'results': results,
+              'controls': len(results), 'disagreements': sum(not result['agreed'] for result in results),
+              'source_hashes_unchanged': True}
+    args.report.write_text(json.dumps(report, indent=2) + '\n')
+    print('controls', len(results), 'disagreements', report['disagreements'], flush=True)
+
+
+if __name__ == '__main__':
+    main()

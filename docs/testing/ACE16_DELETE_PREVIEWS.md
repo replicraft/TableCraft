@@ -319,3 +319,18 @@ bytes. The [owning observations](DELETE_CONTRACTION_STORAGE_OBSERVATIONS.md#acce
 record valid candidate tail-only singleton internals versus bounded reference
 internals; the comparison establishes semantic/preservation agreement rather
 than identical reference bytes or native Access save/reopen qualification.
+
+## Original-file Short Text and Short Binary acceptance
+
+The separate [encoded-key original replay](results/ace16-delete-encoded-internal-chains-originals-2026-10-26.json)
+passes 48 controls on the same committed tool: 36 candidates and twelve
+unsupported-profile refusals. Both previously refused Modern Text height-two
+delete-all selections now succeed. The original files and selectors are unchanged.
+
+The [reference recipes and reproduction tools](ENCODED_DELETE_OBSERVATIONS.md)
+cover General legacy/2010, both directions, NULL/empty values, ties, Binary segment
+boundaries and supported nonunique Text overflow digests. Independent getters,
+exact retained encoded keys/references and whole-file preservation checks cover
+4,374 removed rows, 8,676 surviving target rows and 158 retired pages. Earlier
+refusals and source versions remain recorded separately. These engineering
+comparisons do not enable normal ACE writes or qualify native Access saves.
