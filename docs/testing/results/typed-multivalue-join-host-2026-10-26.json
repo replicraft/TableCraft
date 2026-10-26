@@ -1,0 +1,125 @@
+{
+  "date": "2026-10-26",
+  "scope": "Native Access and CLI conformance for explicit typed bare multivalue INNER joins and comma-source cross products; no adapter/CLI production changes in this slice",
+  "unique_tests": 11,
+  "new_tests": 11,
+  "native_tests": 8,
+  "cli_tests": 3,
+  "checks": [
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-access --test multivalue_join_results -p tablecraft-cli --test multivalue_join_queries",
+      "session": 10838,
+      "exit_code": 0,
+      "breakdown": {
+        "multivalue_join_results": 8,
+        "multivalue_join_queries": 3
+      },
+      "log": {
+        "path": ".cache/typed-multivalue-join-host-tests-final-20261026.log",
+        "bytes": 1924,
+        "sha256": "3353e461d0ffcb3812ff743ca3ed17ba2f81a526ee751c3b1b82b0d2f846b834"
+      }
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-access --lib --test multivalue_join_results -- -D warnings",
+      "session": 93228,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/typed-multivalue-join-access-clippy-20261026.log",
+        "bytes": 1224,
+        "sha256": "8290fc98d51df8cad5a52f2bc8ac6e407f14e4617dc0749fbb79e3ca58ba1476"
+      }
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-cli --test multivalue_join_queries -- -D warnings",
+      "session": 97550,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/typed-multivalue-join-cli-clippy-20261026.log",
+        "bytes": 1334,
+        "sha256": "381d3b43598d6bbb27b9b596ea21ea37c23e3a73c1ac065f87650e8d9c100853"
+      }
+    },
+    {
+      "command": "rustfmt --edition 2024 --check crates/backends/tablecraft-access/tests/multivalue_join_results.rs crates/backends/tablecraft-access/tests/multivalue_join_results/boundaries.rs crates/backends/tablecraft-access/tests/multivalue_join_results/fixture.rs crates/backends/tablecraft-access/tests/multivalue_join_results/forwarding.rs crates/backends/tablecraft-access/tests/multivalue_join_results/values.rs apps/tablecraft-cli/tests/multivalue_join_queries.rs",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/typed-multivalue-join-host-format-20261026.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "scope_files": [
+    {
+      "path": "crates/backends/tablecraft-access/tests/multivalue_join_results.rs",
+      "bytes": 3980,
+      "sha256": "6d65ca7ca2b1898a3aeb712f2d5199564e3c638455867ddf5b6321138662f4f6"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/multivalue_join_results/boundaries.rs",
+      "bytes": 2933,
+      "sha256": "ce69ad09c0ffad819ea3ea72703e98aa79df6b048ed6fdfd01788ab292dc7c5d"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/multivalue_join_results/fixture.rs",
+      "bytes": 1591,
+      "sha256": "50d5e02952ad684fbec337ef3d32b24794ee550dbdcbd8fde4446db4ffa14b3e"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/multivalue_join_results/forwarding.rs",
+      "bytes": 3858,
+      "sha256": "edf659fe420c6b466cfa6878ff8dcee764e710b482f9ff57e68d520b1a7b54ba"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/multivalue_join_results/values.rs",
+      "bytes": 3634,
+      "sha256": "314b28aafe1d3e1e7aa8e1895cad33633e73dbb25b0e86f3d66a9006f5f01e26"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/multivalue_join_queries.rs",
+      "bytes": 6471,
+      "sha256": "a042c43347a31e2e22792a4b7aa853d405400192761594b4a49a34e0a6d1257d"
+    }
+  ],
+  "prior_runs": [
+    {
+      "session": 75547,
+      "exit_code": 101,
+      "log": {
+        "path": ".cache/typed-multivalue-join-host-tests-20261026.log",
+        "bytes": 3042,
+        "sha256": "cf16bff6c1b95fc66f30c27142d4acc44390b821df9202d52d9d5c77c90aad12"
+      },
+      "counted": false,
+      "reason": "Two new native tests used explicit CROSS JOIN syntax, which the existing Access parser deliberately refuses before execution. Six native tests passed; CLI target was not reached. Only new SQL inputs changed to the documented comma-source cross-product form; no expected values or production behavior changed."
+    },
+    {
+      "session": 19819,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/typed-multivalue-join-host-tests-retry-20261026.log",
+        "bytes": 1693,
+        "sha256": "8c41df140de4399336f1728d1403945306755a5d25876c4aaaf692d7830c7a0f"
+      },
+      "counted": false,
+      "reason": "All eleven tests passed before the final binder stack-frame safety correction. Final source was recompiled and all eleven repeated successfully in session10838; duplicates are counted once."
+    }
+  ],
+  "acceptance": [
+    "Synthetic ACE2007/ACE2016/ACE2019 inputs preserve parent pair cardinality, ordered duplicate child values, NULL members, sole[NULL] lists and empty[] lists.",
+    "Both leaves expose the same Int32 element descriptor and local collection index0, while unequal parent identifiers and list payloads distinguish global metadata/list offsets.",
+    "Hidden .Value criteria independently match members but return both complete parent lists.",
+    "Explicit host-authorized linked/external leaves retain distinct native scopes and list contents under one cumulative native pool.",
+    "A scalar-only join leaf performs no child-record I/O and prunes an unselected corrupt child page; selecting that list must read and fail.",
+    "Outer joins, mixed visible .Value and list comparisons refuse before native table records.",
+    "Independent native/query limits and cancellation return errors without a typed result; CLI eager failures, selected corruption and output limits publish no prefix.",
+    "CLI temporary originals are read back unchanged before owned cleanup."
+  ],
+  "limitations": [
+    "Only the two listed focused targets were executed; no broader suite is inferred.",
+    "Synthetic native fixtures and TableCraft output goldens are not Microsoft Access SQL qualification.",
+    "The scalar-only leaf watcher proves absence of child-record I/O, not backend-neutral Source callback-method dispatch.",
+    "Original public-writer/getter CLI replay is separate parent-owned evidence and is not counted here."
+  ]
+}
