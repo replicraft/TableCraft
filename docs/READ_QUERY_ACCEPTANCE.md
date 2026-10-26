@@ -14,12 +14,11 @@ qualification recorded separately.
 - Table/catalog discovery, system-table filtering, declared row counts, scalar
   pages, explicit progressive TSV rows and bounded native index reads work.
   Qualified single Int32/Currency and ACE 16-family Int64 ignore-NULL indexes
-  support non-NULL seeks
-  and complete physical membership checks against independently counted eligible
-  rows. Automatic hints retain table order and residual predicates. Full-table
-  and NULL retrieval through omitting indexes, remaining carriers/composites and
-  native writes
-  retain their separate boundaries; see [index scope](NATIVE_INDEXES.md#single-integer-and-currency-ignore-null-selections).
+  support non-NULL seeks. Complete physical checks now cover all already-qualified
+  ignored-key codecs and tuples against independently counted eligible roots.
+  Automatic hints retain table order and residual predicates. Full-table/NULL
+  retrieval through omitting indexes, public seeks for remaining carriers/composites
+  and native writes retain their separate boundaries; see [index scope](NATIVE_INDEXES.md#single-integer-and-currency-ignore-null-selections).
   A [64-command original replay](testing/IGNORED_NULL_INDEXES.md) independently
   checks Int32 node/unique/shared indexes, exact membership and automatic table
   order across all four priority families. A further

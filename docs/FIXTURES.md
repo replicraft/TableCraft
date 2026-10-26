@@ -8622,3 +8622,29 @@ All eighteen artifacts and 47 selected query-source objects remain unchanged.
 The [report](testing/results/progressive-distinct-2026-10-25.json) preserves exact
 commands and results. This does not establish native Access SQL compatibility or
 expand the progressive output-type profile.
+
+## Original complete ignore-NULL index coverage
+
+Original Apache-2.0 [IgnoredIndexCoverageFixture.java](testing/IgnoredIndexCoverageFixture.java)
+uses the reviewed Jackcess 5.0.4 JAR, SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`,
+to create fresh inert V2016/V2019 tables. Public builders and row/index-cursor
+getters are supplemented by explicitly identified pinned implementation metadata
+getters and General sort constants. Evaluation is disabled, linked opens are
+refused, and no reference SQL, imported active content or copied upstream code runs.
+
+The two originals remain ignored under
+`.cache/tablecraft-fixtures/ignored-index-coverage-20261025/`:
+V2016 SHA-256 `90c5fc95e47be4996924ac6b0fe232a5209a12689527c5c05be593ec0b7f08df`,
+V2019 SHA-256 `2db1bd079e3f9df28dc82c2d3eb9dc82753a8a75273b67213eefa5e2ce872b05`.
+Each has 43 tables, 10,393 getter rows and 171 logical indexes; the independent
+model validates every actual physical population from key-column NULL facts.
+Historical one-column roots remain unchanged after adding fields. Exact commands,
+source-at-generation snapshot, getter transcripts and writer warnings are retained.
+
+The [172-command evidence](testing/IGNORED_INDEX_COVERAGE.md) compares complete
+physical-check reports against the previous frozen CLI, with 318 versus 116 checked
+logical profiles and 24 retained unique Memo/digest refusals. Seventeen artifacts
+and eight compiled native source snapshots remain unchanged. No fixture binaries
+are tracked. This adds neither public seek/write eligibility nor native Access
+integrity qualification.
