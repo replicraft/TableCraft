@@ -1,0 +1,2537 @@
+{
+  "scope": "Original public-builder tree partitions and public delete references; no candidate/native Access SQL",
+  "raw_capture": {
+    "path": ".cache/tablecraft-fixtures/delete-trees-20261026/reference-verified.json",
+    "sha256": "bee3f4909d6bbf495d3fa82fdbe0df8a44cd9bf560a1608a66514ec8c2e5bb22",
+    "bytes": 10184045,
+    "retained_ignored": true
+  },
+  "hashes_before": {
+    "docs/testing/DeleteTreeFixture.java": "6ba828bafb185fc27c8b0ea05fa6fe5d63c6a2050317f624d5be08556368a5bb",
+    "docs/testing/capture_delete_trees.py": "05f15179d1b4c689e1dd045617335f66b98189fbd12259838cc0ab5da4ebfdb1",
+    ".cache/tablecraft-fixtures/jackcess-5.0.4.jar": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before.accdb": "1f9f1cf80830ccda64d3b025ecbc5e648184665530ed301e9ad3ffddfe553400",
+    ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before-safe-maxima.accdb": "885b0b52ac86a638cb4e8bd5da6a17f6c8e252374acde61fc75b29e4ebb5893c",
+    ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before-safe-ties.accdb": "49746edb6e9110a1e162f67fd92d24e0f76566d00c2369aac528583c9b8b5578",
+    ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before-leaf-exhaustion-observation.accdb": "febe9c78b5f9fe728cbba176be965308312cf95a54c47ad4169e9d715b86a403",
+    ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before-delete-all-observation.accdb": "19fc27f175dc8b4cc88fb28f2763bf64b08045f03557a4d1415ee3bf4291e5f8",
+    ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before.accdb": "90a04486c3c7e01061bb8c68718c8442c4fdc712559d7006fe7ca3dc1c463dc2",
+    ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before-safe-maxima.accdb": "89b119e2caaf4a817963d1c2b466c9b119e21ab886266e3cd9b685f9428ac182",
+    ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before-safe-ties.accdb": "b83027f1266ef1c6a484b2b3afc2369d987c16a8fec73b00275a74f631d2c9e6",
+    ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before-leaf-exhaustion-observation.accdb": "094df570911e6254588c411bd6f722de9a3cb09ef8559237f85880f9dd23e011",
+    ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before-delete-all-observation.accdb": "a5d3a4bff7532ad3c33ccbc2bde874f310ddf120292b96aac3a32ce5070001a5"
+  },
+  "hashes_after": {
+    "docs/testing/DeleteTreeFixture.java": "6ba828bafb185fc27c8b0ea05fa6fe5d63c6a2050317f624d5be08556368a5bb",
+    "docs/testing/capture_delete_trees.py": "05f15179d1b4c689e1dd045617335f66b98189fbd12259838cc0ab5da4ebfdb1",
+    ".cache/tablecraft-fixtures/jackcess-5.0.4.jar": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before.accdb": "1f9f1cf80830ccda64d3b025ecbc5e648184665530ed301e9ad3ffddfe553400",
+    ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before-safe-maxima.accdb": "885b0b52ac86a638cb4e8bd5da6a17f6c8e252374acde61fc75b29e4ebb5893c",
+    ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before-safe-ties.accdb": "49746edb6e9110a1e162f67fd92d24e0f76566d00c2369aac528583c9b8b5578",
+    ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before-leaf-exhaustion-observation.accdb": "febe9c78b5f9fe728cbba176be965308312cf95a54c47ad4169e9d715b86a403",
+    ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before-delete-all-observation.accdb": "19fc27f175dc8b4cc88fb28f2763bf64b08045f03557a4d1415ee3bf4291e5f8",
+    ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before.accdb": "90a04486c3c7e01061bb8c68718c8442c4fdc712559d7006fe7ca3dc1c463dc2",
+    ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before-safe-maxima.accdb": "89b119e2caaf4a817963d1c2b466c9b119e21ab886266e3cd9b685f9428ac182",
+    ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before-safe-ties.accdb": "b83027f1266ef1c6a484b2b3afc2369d987c16a8fec73b00275a74f631d2c9e6",
+    ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before-leaf-exhaustion-observation.accdb": "094df570911e6254588c411bd6f722de9a3cb09ef8559237f85880f9dd23e011",
+    ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before-delete-all-observation.accdb": "a5d3a4bff7532ad3c33ccbc2bde874f310ddf120292b96aac3a32ce5070001a5"
+  },
+  "pins_unchanged": true,
+  "generation_commands": [
+    ["java", "-Dstdout.encoding=UTF-8", "-cp", ".cache/tablecraft-fixtures/jackcess-5.0.4.jar", "docs/testing/DeleteTreeFixture.java", "generate", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before.accdb", "V2016"],
+    ["java", "-Dstdout.encoding=UTF-8", "-cp", ".cache/tablecraft-fixtures/jackcess-5.0.4.jar", "docs/testing/DeleteTreeFixture.java", "generate", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before.accdb", "V2019"]
+  ],
+  "read_only_capture_command": ["python3", "docs/testing/capture_delete_trees.py", "--jar", ".cache/tablecraft-fixtures/jackcess-5.0.4.jar", "--inputs", ".cache/tablecraft-fixtures/delete-trees-20261026", "--report", ".cache/tablecraft-fixtures/delete-trees-20261026/reference-verified.json", "--existing-references"],
+  "existing_references_read_only": true,
+  "digest_encoding": {
+    "ordered_ids": "SHA256 of compact JSON integer array with separators comma/colon",
+    "full_entries": "SHA256 of concatenated independently decompressed full entry bytes in encounter order",
+    "row_payloads": "SHA256 of compact JSON row dictionary in observed insertion order; row-ID keys as strings; UTF-8 without ASCII escaping",
+    "node_separator_order": "SHA256 of compact JSON array of independently decompressed full key/row/child hexadecimal strings in stored order",
+    "node_boundary_records": "SHA256 of compact JSON array of [page, ordered full key/row/child hexadecimal strings] for node pages in ascending page order"
+  },
+  "getter_commands": [
+    {
+      "command": ["java", "-Dstdout.encoding=UTF-8", "-cp", ".cache/tablecraft-fixtures/jackcess-5.0.4.jar", "docs/testing/DeleteTreeFixture.java", "oracle", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before.accdb"],
+      "status": 0,
+      "stdout_sha256": "9a7ae83838b4bb130747e20173b23a0ad23514018c3290aeacd3c9cc88812488",
+      "stdout_bytes": 334030,
+      "record_counts": {
+        "TABLE": 3,
+        "COLUMN": 10,
+        "LOCATION": 1009,
+        "ROW": 1009,
+        "INDEX": 6,
+        "INDEX_COLUMN": 7,
+        "ENTRY": 6000
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0
+    },
+    {
+      "command": ["java", "-Dstdout.encoding=UTF-8", "-cp", ".cache/tablecraft-fixtures/jackcess-5.0.4.jar", "docs/testing/DeleteTreeFixture.java", "oracle", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before-safe-maxima.accdb"],
+      "status": 0,
+      "stdout_sha256": "a297a8f0b87361637cff5498ae682e08808a73d8870650d329b27f1c63851661",
+      "stdout_bytes": 329673,
+      "record_counts": {
+        "TABLE": 3,
+        "COLUMN": 10,
+        "LOCATION": 996,
+        "ROW": 996,
+        "INDEX": 6,
+        "INDEX_COLUMN": 7,
+        "ENTRY": 5922
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0
+    },
+    {
+      "command": ["java", "-Dstdout.encoding=UTF-8", "-cp", ".cache/tablecraft-fixtures/jackcess-5.0.4.jar", "docs/testing/DeleteTreeFixture.java", "oracle", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before-safe-ties.accdb"],
+      "status": 0,
+      "stdout_sha256": "60f3b98524c95ec7e12576ad34052a1c2d534d01dbffdd9cbe8cfaa4672cbe8f",
+      "stdout_bytes": 331690,
+      "record_counts": {
+        "TABLE": 3,
+        "COLUMN": 10,
+        "LOCATION": 1002,
+        "ROW": 1002,
+        "INDEX": 6,
+        "INDEX_COLUMN": 7,
+        "ENTRY": 5958
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0
+    },
+    {
+      "command": ["java", "-Dstdout.encoding=UTF-8", "-cp", ".cache/tablecraft-fixtures/jackcess-5.0.4.jar", "docs/testing/DeleteTreeFixture.java", "oracle", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before-leaf-exhaustion-observation.accdb"],
+      "status": 0,
+      "stdout_sha256": "75dc324f84cbb8fe08021d895ecd9735d4e326acce5d97cb4128880533709eff",
+      "stdout_bytes": 252642,
+      "record_counts": {
+        "TABLE": 3,
+        "COLUMN": 10,
+        "LOCATION": 765,
+        "ROW": 765,
+        "INDEX": 6,
+        "INDEX_COLUMN": 7,
+        "ENTRY": 4536
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0
+    },
+    {
+      "command": ["java", "-Dstdout.encoding=UTF-8", "-cp", ".cache/tablecraft-fixtures/jackcess-5.0.4.jar", "docs/testing/DeleteTreeFixture.java", "oracle", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before-delete-all-observation.accdb"],
+      "status": 0,
+      "stdout_sha256": "600164ebf7a880f40c7dcf2fcf614abefa13b9056c4d6a22a7627c24260c667c",
+      "stdout_bytes": 1411,
+      "record_counts": {
+        "TABLE": 3,
+        "COLUMN": 10,
+        "INDEX": 6,
+        "INDEX_COLUMN": 7,
+        "LOCATION": 9,
+        "ROW": 9
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0
+    },
+    {
+      "command": ["java", "-Dstdout.encoding=UTF-8", "-cp", ".cache/tablecraft-fixtures/jackcess-5.0.4.jar", "docs/testing/DeleteTreeFixture.java", "oracle", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before.accdb"],
+      "status": 0,
+      "stdout_sha256": "463833710a647a16602d6d22f12c1156c098fe2c3ae58021053d153154145f5f",
+      "stdout_bytes": 334031,
+      "record_counts": {
+        "TABLE": 3,
+        "COLUMN": 10,
+        "LOCATION": 1009,
+        "ROW": 1009,
+        "INDEX": 6,
+        "INDEX_COLUMN": 7,
+        "ENTRY": 6000
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0
+    },
+    {
+      "command": ["java", "-Dstdout.encoding=UTF-8", "-cp", ".cache/tablecraft-fixtures/jackcess-5.0.4.jar", "docs/testing/DeleteTreeFixture.java", "oracle", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before-safe-maxima.accdb"],
+      "status": 0,
+      "stdout_sha256": "ea8b2b82ad720411e5acc2b9a313f0b31ec5adbcd37cecafb8d460ff7cf2514e",
+      "stdout_bytes": 329674,
+      "record_counts": {
+        "TABLE": 3,
+        "COLUMN": 10,
+        "LOCATION": 996,
+        "ROW": 996,
+        "INDEX": 6,
+        "INDEX_COLUMN": 7,
+        "ENTRY": 5922
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0
+    },
+    {
+      "command": ["java", "-Dstdout.encoding=UTF-8", "-cp", ".cache/tablecraft-fixtures/jackcess-5.0.4.jar", "docs/testing/DeleteTreeFixture.java", "oracle", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before-safe-ties.accdb"],
+      "status": 0,
+      "stdout_sha256": "b2565651344754b1b462e7f80f3d1a7e121b3da95171a3e195564096fd2cb86e",
+      "stdout_bytes": 331691,
+      "record_counts": {
+        "TABLE": 3,
+        "COLUMN": 10,
+        "LOCATION": 1002,
+        "ROW": 1002,
+        "INDEX": 6,
+        "INDEX_COLUMN": 7,
+        "ENTRY": 5958
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0
+    },
+    {
+      "command": ["java", "-Dstdout.encoding=UTF-8", "-cp", ".cache/tablecraft-fixtures/jackcess-5.0.4.jar", "docs/testing/DeleteTreeFixture.java", "oracle", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before-leaf-exhaustion-observation.accdb"],
+      "status": 0,
+      "stdout_sha256": "2e7b0b22fa7b4d30ddb80e94afb88110e9ed99076e4534eede6d42ec68c51a55",
+      "stdout_bytes": 252643,
+      "record_counts": {
+        "TABLE": 3,
+        "COLUMN": 10,
+        "LOCATION": 765,
+        "ROW": 765,
+        "INDEX": 6,
+        "INDEX_COLUMN": 7,
+        "ENTRY": 4536
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0
+    },
+    {
+      "command": ["java", "-Dstdout.encoding=UTF-8", "-cp", ".cache/tablecraft-fixtures/jackcess-5.0.4.jar", "docs/testing/DeleteTreeFixture.java", "oracle", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before-delete-all-observation.accdb"],
+      "status": 0,
+      "stdout_sha256": "48c0a8383af58e8b1279f90f2336b7fa4b0201dddadce069cf09e3250d36669d",
+      "stdout_bytes": 1412,
+      "record_counts": {
+        "TABLE": 3,
+        "COLUMN": 10,
+        "INDEX": 6,
+        "INDEX_COLUMN": 7,
+        "LOCATION": 9,
+        "ROW": 9
+      },
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0
+    }
+  ],
+  "observations": [
+    {
+      "input": ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before.accdb",
+      "metadata": {
+        "Tree": {
+          "geometry": {
+            "live_rows": 1000,
+            "definition_page": 89,
+            "page_bytes": 4096,
+            "count_offset": 16,
+            "row_start": 14,
+            "mask_offset": 27,
+            "mask_bytes": 453
+          },
+          "columns": [
+            ["ID", "LONG", "0"],
+            ["GroupKey", "LONG", "1"],
+            ["Part", "INT", "2"],
+            ["Score", "LONG", "3"],
+            ["Memo", "MEMO", "4"],
+            ["Payload", "OLE", "5"]
+          ],
+          "row_count": 1000,
+          "row_order_sha256": "ae2beb114f7754fa8f6e84315a4436f0fcc02234bc2135b5b3c3442cffa463be",
+          "row_payloads_sha256": "2fd5eab2f4404b9c269e4519f186f93a0177360342c5c918a570c0d60558a62a",
+          "indexes": {
+            "PrimaryKey": {
+              "physical": 0,
+              "historical_count": 1000,
+              "counter_offset": 67,
+              "entry_count": 1000,
+              "owned_pages": 3,
+              "unique": "true",
+              "ignore_nulls": "false",
+              "columns": [
+                ["ID", "true"]
+              ],
+              "member_order_sha256": "0de41d33d8e41ee4a69e898bcbcc42f7c9e65f7cdce1239a00def95ef7dd206b",
+              "member_count": 1000
+            },
+            "GroupAsc": {
+              "physical": 1,
+              "historical_count": 12,
+              "counter_offset": 79,
+              "entry_count": 1000,
+              "owned_pages": 4,
+              "unique": "false",
+              "ignore_nulls": "false",
+              "columns": [
+                ["GroupKey", "true"]
+              ],
+              "member_order_sha256": "67405026d0aba8ebd2ec2d0dc661771b330d3bb008895c92339deee47a36e701",
+              "member_count": 1000
+            },
+            "GroupTwin": {
+              "physical": 1,
+              "historical_count": 12,
+              "counter_offset": 79,
+              "entry_count": 1000,
+              "owned_pages": 4,
+              "unique": "false",
+              "ignore_nulls": "false",
+              "columns": [
+                ["GroupKey", "true"]
+              ],
+              "member_order_sha256": "67405026d0aba8ebd2ec2d0dc661771b330d3bb008895c92339deee47a36e701",
+              "member_count": 1000
+            },
+            "GroupDesc": {
+              "physical": 2,
+              "historical_count": 12,
+              "counter_offset": 91,
+              "entry_count": 1000,
+              "owned_pages": 4,
+              "unique": "false",
+              "ignore_nulls": "false",
+              "columns": [
+                ["GroupKey", "false"]
+              ],
+              "member_order_sha256": "01cd05d2882135e8c17f5c3e2b9af0f4ccdbf3028d243ce362928274c1e9ceb7",
+              "member_count": 1000
+            },
+            "Compound": {
+              "physical": 3,
+              "historical_count": 60,
+              "counter_offset": 103,
+              "entry_count": 1000,
+              "owned_pages": 5,
+              "unique": "false",
+              "ignore_nulls": "false",
+              "columns": [
+                ["Part", "false"],
+                ["GroupKey", "true"]
+              ],
+              "member_order_sha256": "80cb2a60a506afdc62591f4a308afb7e6b209faf3627bd592ff1c8fa064f6e22",
+              "member_count": 1000
+            },
+            "UniqueScore": {
+              "physical": 4,
+              "historical_count": 1000,
+              "counter_offset": 115,
+              "entry_count": 1000,
+              "owned_pages": 3,
+              "unique": "true",
+              "ignore_nulls": "false",
+              "columns": [
+                ["Score", "true"]
+              ],
+              "member_order_sha256": "10d8f480c673f4927134169dc7bb815b5719e4478b4e5ad768e0b88368e50971",
+              "member_count": 1000
+            }
+          }
+        },
+        "Unindexed": {
+          "geometry": {
+            "live_rows": 8,
+            "definition_page": 158,
+            "page_bytes": 4096,
+            "count_offset": 16,
+            "row_start": 14,
+            "mask_offset": 27,
+            "mask_bytes": 453
+          },
+          "columns": [
+            ["ID", "LONG", "0"],
+            ["Score", "LONG", "1"]
+          ],
+          "row_count": 8,
+          "row_order_sha256": "b2ddd6543011e658aaebc223b42021e89fa9a18bd1f2207f6cb68e73ca5688b3",
+          "row_payloads_sha256": "d4504679d53695487592d859ff9baa11027eaf91f7cb456253ad2b7339338377",
+          "indexes": {}
+        },
+        "Sentinel": {
+          "geometry": {
+            "live_rows": 1,
+            "definition_page": 162,
+            "page_bytes": 4096,
+            "count_offset": 16,
+            "row_start": 14,
+            "mask_offset": 27,
+            "mask_bytes": 453
+          },
+          "columns": [
+            ["ID", "LONG", "0"],
+            ["TextValue", "TEXT", "1"]
+          ],
+          "row_count": 1,
+          "row_order_sha256": "f96df5fac036224d6e1674b3f8ea296f09763e9590f290f52ab02e354d22a0ea",
+          "row_payloads_sha256": "749dd4db2753d302fdfc555ce3c2eeafe6e3d7614f96bee33782b7a7986be457",
+          "indexes": {}
+        }
+      },
+      "raw_index_page_count": 19,
+      "trees": [
+        {
+          "root": 91,
+          "logical_names": ["PrimaryKey"],
+          "physical": 0,
+          "height": 1,
+          "owned_pages": [91, 143, 144],
+          "full_key_reference_sha256": "593949a521918dc226d37a6d7f38ef4501b8a26089978502ec271a6d33730aa9",
+          "owned_page_count": 3,
+          "node_pages": [
+            {
+              "page": 91,
+              "previous": 0,
+              "next": 0,
+              "tail": 143,
+              "height": 1,
+              "stamp_hex": "00000000",
+              "sha256": "eb4e03335f2947a9f04836a62f676753a704d1312d81427d9349f5343032b07e",
+              "separator_count": 1,
+              "separator_order_sha256": "149a95e3454be01678fc185f4905b70192a2a972677767f5ce105a50616c67f1",
+              "first_full_key_row_child_hex": "7f800001f800007d1200000090",
+              "last_full_key_row_child_hex": "7f800001f800007d1200000090"
+            }
+          ],
+          "leaf_partitions": [
+            {
+              "page": 144,
+              "entry_count": 504,
+              "first_id": 1,
+              "last_id": 504,
+              "ordered_ids_sha256": "07e4bcf094fdac887f2d4b328f9b24d004076aa75757dc5a01d332e83bb8682b",
+              "full_entries_sha256": "d70020a389116f0025bec8142c224dade250c4764a15c427ca57df84febd7da4",
+              "first_full_key_row_hex": "7f8000000100006900",
+              "last_full_key_row_hex": "7f800001f800007d12",
+              "previous": 0,
+              "next": 143,
+              "height": 0,
+              "page_sha256": "7fa0a1dc17a28c8188ff851ae04492accbf3a60a2e407fed46472f21d313b21f"
+            },
+            {
+              "page": 143,
+              "entry_count": 496,
+              "first_id": 505,
+              "last_id": 1000,
+              "ordered_ids_sha256": "85e987fc28124534fb1a549fa10fd0777c93fbffdf966d5f1c62fb5490828380",
+              "full_entries_sha256": "8295493e327df4177a901b33d31811cf75b61dcecca172443a0816fefd264f26",
+              "first_full_key_row_hex": "7f800001f900007c29",
+              "last_full_key_row_hex": "7f800003e80000691b",
+              "previous": 144,
+              "next": 0,
+              "height": 0,
+              "page_sha256": "38ed89aec0bddb71562a366d17a363cf30f9b313c51b5f946f6f9269f687b166"
+            }
+          ]
+        },
+        {
+          "root": 92,
+          "logical_names": ["GroupAsc", "GroupTwin"],
+          "physical": 1,
+          "height": 1,
+          "owned_pages": [92, 126, 127, 154],
+          "full_key_reference_sha256": "8736ad6f529e68697f2f98767406241e34e7dc01f86c66a273198399e681a7cf",
+          "owned_page_count": 4,
+          "node_pages": [
+            {
+              "page": 92,
+              "previous": 0,
+              "next": 0,
+              "tail": 126,
+              "height": 1,
+              "stamp_hex": "00000000",
+              "sha256": "8d423192106ef1bd05ddd3d9dcc7f73c24c9af6c30c0545c4978e4e673bef771",
+              "separator_count": 2,
+              "separator_order_sha256": "1e4be1a2463c3628fed1a8030f83e6369b11ae614fbbf24743b910a237cdc13f",
+              "first_full_key_row_child_hex": "7f7ffffffd0000770c0000009a",
+              "last_full_key_row_child_hex": "7f800000000000751f0000007f"
+            }
+          ],
+          "leaf_partitions": [
+            {
+              "page": 154,
+              "entry_count": 244,
+              "first_id": 408,
+              "last_id": 882,
+              "ordered_ids_sha256": "ba1942e6a46d12aa76c0ad46bfb818152edeec16358502d2407dc8a0c55fb5b3",
+              "full_entries_sha256": "87d97b3f0867529d2ee41e9999ffa671b3182b10eff8a68949cd6a751913d458",
+              "first_full_key_row_hex": "000000690b",
+              "last_full_key_row_hex": "7f7ffffffd0000770c",
+              "previous": 0,
+              "next": 127,
+              "height": 0,
+              "page_sha256": "702ff46e9523a02d2da029e7b44faafbbe3bb76437c19174cb88584f84fe32e3"
+            },
+            {
+              "page": 127,
+              "entry_count": 255,
+              "first_id": 178,
+              "last_id": 885,
+              "ordered_ids_sha256": "1a08b41a86fdd5b51e393e1382076b0d46619e11ef581551c9835f0ba0515760",
+              "full_entries_sha256": "1d77f05d790459cb7d906795027aa76ecfca527236d7942d8906b7bc75ab076b",
+              "first_full_key_row_hex": "7f7ffffffd00007714",
+              "last_full_key_row_hex": "7f800000000000751f",
+              "previous": 154,
+              "next": 126,
+              "height": 0,
+              "page_sha256": "2ec5def45615272f1808e8d08e431292152ce792135b685c9ab4336ad4cd25a3"
+            },
+            {
+              "page": 126,
+              "entry_count": 501,
+              "first_id": 181,
+              "last_id": 890,
+              "ordered_ids_sha256": "b136c97d2add9a7202215a265084c631665867b67c9c2166ff7053594a26adc3",
+              "full_entries_sha256": "0f30ca0a1f8ef6670f405e263d18f069fb9edc1a7d55ff8224d9c4ea1c8401af",
+              "first_full_key_row_hex": "7f8000000000007527",
+              "last_full_key_row_hex": "7f8000000500009d2e",
+              "previous": 127,
+              "next": 0,
+              "height": 0,
+              "page_sha256": "0636c4ac39d0ec31eb40637d0bfa7ce764ab4f06c9f6b4744699602a4d8b6d8c"
+            }
+          ]
+        },
+        {
+          "root": 93,
+          "logical_names": ["GroupDesc"],
+          "physical": 2,
+          "height": 1,
+          "owned_pages": [93, 128, 129, 152],
+          "full_key_reference_sha256": "550e7dd04e5e42307f0adb94314d3ef9ae2887c7a5f5c4db354eca1b3b772511",
+          "owned_page_count": 4,
+          "node_pages": [
+            {
+              "page": 93,
+              "previous": 0,
+              "next": 0,
+              "tail": 128,
+              "height": 1,
+              "stamp_hex": "00000000",
+              "sha256": "3e2140d2ba97ff7beaae8756b4236b28b0a6bad3c08e4f9e262660696d740ba9",
+              "separator_count": 2,
+              "separator_order_sha256": "d55a336ae23466a250a514008c2f89a403501751aaed6a37c4368aafd10a751f",
+              "first_full_key_row_child_hex": "807fffffff0000771d00000081",
+              "last_full_key_row_child_hex": "808000000200007d2600000098"
+            }
+          ],
+          "leaf_partitions": [
+            {
+              "page": 129,
+              "entry_count": 450,
+              "first_id": 186,
+              "last_id": 511,
+              "ordered_ids_sha256": "a181c038385b1a1690744b8c814468422021acc79ab7535d7bf45e5d7b22576f",
+              "full_entries_sha256": "1fa292948978f476a7fe7f17245aa1851a6afda69e50c3afd9aa1824a8bd1ef0",
+              "first_full_key_row_hex": "807ffffffa00006905",
+              "last_full_key_row_hex": "807fffffff0000771d",
+              "previous": 0,
+              "next": 152,
+              "height": 0,
+              "page_sha256": "02966aad467002666ba7b48f530e662a4520203cef036b6a1ea015f3628d56ed"
+            },
+            {
+              "page": 152,
+              "entry_count": 273,
+              "first_id": 214,
+              "last_id": 244,
+              "ordered_ids_sha256": "43336327ec6fe5e20bece4bce894ff55309d53157bd3a93556b5945c28eafe78",
+              "full_entries_sha256": "85ecd744d3e00a77c34fb57874391f83b9adb1463bf045868db3591d4e24acaa",
+              "first_full_key_row_hex": "807fffffff00007730",
+              "last_full_key_row_hex": "808000000200007d26",
+              "previous": 129,
+              "next": 128,
+              "height": 0,
+              "page_sha256": "99aa786b188af9f0a9d58f024d89d305d07d046f91fadeaf9550a773b4db566f"
+            },
+            {
+              "page": 128,
+              "entry_count": 277,
+              "first_id": 651,
+              "last_id": 816,
+              "ordered_ids_sha256": "3e5d5aa02072e82a75d7c19ecb91541d7b72a9c50c25735948f7274e52132e6f",
+              "full_entries_sha256": "11977ca7e4f02827697782d51ca927b6b3bc15fd8aad4de174e497e14ecbfe7a",
+              "first_full_key_row_hex": "808000000200007d31",
+              "last_full_key_row_hex": "ff00009d2c",
+              "previous": 152,
+              "next": 0,
+              "height": 0,
+              "page_sha256": "9db72c56ae0ce964f683268c3d18413d19629a664eb5c7b29a3b86442454acd1"
+            }
+          ]
+        },
+        {
+          "root": 94,
+          "logical_names": ["Compound"],
+          "physical": 3,
+          "height": 1,
+          "owned_pages": [94, 122, 123, 148, 150],
+          "full_key_reference_sha256": "40fb9b6eb0a1a675e84953b20ede21ee38b510fc0764218bb76441d1a34efe53",
+          "owned_page_count": 5,
+          "node_pages": [
+            {
+              "page": 94,
+              "previous": 0,
+              "next": 0,
+              "tail": 122,
+              "height": 1,
+              "stamp_hex": "00000000",
+              "sha256": "0dc5e6576cd7771a2b7edbe97b03dc38c182fbb5c2974584d0db2bb21094b76a",
+              "separator_count": 3,
+              "separator_order_sha256": "03b1ad303ded1139e1255fe35dc7141483e8974b1a9b657fbc992312ed421a5e",
+              "first_full_key_row_child_hex": "807ffe7f7ffffffd0000790a00000096",
+              "last_full_key_row_child_hex": "8080007f800000030000760900000094"
+            }
+          ],
+          "leaf_partitions": [
+            {
+              "page": 150,
+              "entry_count": 249,
+              "first_id": 629,
+              "last_id": 508,
+              "ordered_ids_sha256": "c2fc3861389ae1c961cbbf0c01e7183ca0a973aca1a54c53338f48606509f734",
+              "full_entries_sha256": "360f2f502e8f23bf07cb499568d4e27e61fdfc37f93504dd9dc467f228472e5c",
+              "first_full_key_row_hex": "807ffd000000692c",
+              "last_full_key_row_hex": "807ffe7f7ffffffd0000790a",
+              "previous": 0,
+              "next": 123,
+              "height": 0,
+              "page_sha256": "dcbbdcd8cf261045402a84f6803e0773ed4e9bafb5f572dd853795fdc65841b6"
+            },
+            {
+              "page": 123,
+              "entry_count": 250,
+              "first_id": 618,
+              "last_id": 852,
+              "ordered_ids_sha256": "fdfbafc96dd374a6aa86cc57358ad0d2943ee97403f4796a3a3bcfe556bcc795",
+              "full_entries_sha256": "03d41fd67a1efa7bc96b92b1716732569d69ee600a96cecd463286af0c575857",
+              "first_full_key_row_hex": "807ffe7f7ffffffd00007928",
+              "last_full_key_row_hex": "807fff7f8000000000006917",
+              "previous": 150,
+              "next": 148,
+              "height": 0,
+              "page_sha256": "da78b2786823b320d5ee0a71508df1efa67c6c8c6a0c1213edf320f32ed8299f"
+            },
+            {
+              "page": 148,
+              "entry_count": 256,
+              "first_id": 962,
+              "last_id": 921,
+              "ordered_ids_sha256": "f941d91aaf5cf34b2dc12f6f9beb1d1fe2f2481e18b36b2a202ba5a93aa92d71",
+              "full_entries_sha256": "a13e0cf6cd6f8c7c60441fe6f05da1dae9361333a875665d3a41c1e45a3bf02b",
+              "first_full_key_row_hex": "807fff7f8000000000007402",
+              "last_full_key_row_hex": "8080007f8000000300007609",
+              "previous": 123,
+              "next": 122,
+              "height": 0,
+              "page_sha256": "8f19a35e3570b5829db1fbac71b3b7c52caafaf3ed3e0e2040f57b02d20d769d"
+            },
+            {
+              "page": 122,
+              "entry_count": 245,
+              "first_id": 96,
+              "last_id": 890,
+              "ordered_ids_sha256": "3a1716c6c0a95609a02983707729fe844cbd7ad846043c95a91fc92d2273c437",
+              "full_entries_sha256": "f00f92168d6a7b0ad1dbc68a1b65cd058f3594aa5b2fcafb70d8688541155b51",
+              "first_full_key_row_hex": "8080007f8000000300007d22",
+              "last_full_key_row_hex": "8080017f8000000500009d2e",
+              "previous": 148,
+              "next": 0,
+              "height": 0,
+              "page_sha256": "7d5f4f1d9532ac5f477fd357151e35668dc9ca76fcf3a25d41502f1586459fef"
+            }
+          ]
+        },
+        {
+          "root": 95,
+          "logical_names": ["UniqueScore"],
+          "physical": 4,
+          "height": 1,
+          "owned_pages": [95, 145, 146],
+          "full_key_reference_sha256": "bc432acc62a2e3ae4489d325b57fdf419157a84d623ad10596e1cfb4521cdf44",
+          "owned_page_count": 3,
+          "node_pages": [
+            {
+              "page": 95,
+              "previous": 0,
+              "next": 0,
+              "tail": 145,
+              "height": 1,
+              "stamp_hex": "00000000",
+              "sha256": "a05f49472c92542e9621bc68fc5a39f697a7c90858cbf4d4417b2d0b81d98eaa",
+              "separator_count": 1,
+              "separator_order_sha256": "76535a99df2251832f6bd62e0e332969ccab461af3ee88b6edbee0c4d4e8e1ac",
+              "first_full_key_row_child_hex": "7f800005dd00008c1a00000092",
+              "last_full_key_row_child_hex": "7f800005dd00008c1a00000092"
+            }
+          ],
+          "leaf_partitions": [
+            {
+              "page": 146,
+              "entry_count": 501,
+              "first_id": 1000,
+              "last_id": 500,
+              "ordered_ids_sha256": "91201b45bb3fc7eb53fc323ea56b4a362bfff68c7b1f5a25104c0c39fb43cad0",
+              "full_entries_sha256": "fecd2f0817f7baa42b0376d970f1650474ca2541936badc82c563d06a96508ae",
+              "first_full_key_row_hex": "7f800000010000691b",
+              "last_full_key_row_hex": "7f800005dd00008c1a",
+              "previous": 0,
+              "next": 145,
+              "height": 0,
+              "page_sha256": "50504240e7fa5934441de2977da4ed5eef17f6c5f5991ba2e2528b1e143f208b"
+            },
+            {
+              "page": 145,
+              "entry_count": 499,
+              "first_id": 331,
+              "last_id": 169,
+              "ordered_ids_sha256": "4c6d55ea8d792bef9407959e11acc4e8b6e1e865f5be3bd2d6f472aa472659a4",
+              "full_entries_sha256": "5b3e56eca2ee060d5914799fc1a85f7c863eaa0f03a76502e59c4961d779b0ba",
+              "first_full_key_row_hex": "7f800005e000007427",
+              "last_full_key_row_hex": "7f80000bb60000820d",
+              "previous": 146,
+              "next": 0,
+              "height": 0,
+              "page_sha256": "2bb725ecb994dad4db2c60a4ad9740a2e4cd811f71c7dfbd35ed71981edc64c0"
+            }
+          ]
+        }
+      ],
+      "batches": {
+        "safe-maxima": [169, 244, 500, 504, 508, 511, 816, 852, 882, 885, 890, 921, 1000],
+        "safe-ties": [244, 508, 511, 852, 882, 885, 921],
+        "leaf-exhaustion-observation": [1, 11, 12, 17, 22, 23, 33, 34, 35, 44, 45, 51, 55, 56, 66, 67, 68, 77, 78, 85, 88, 89, 99, 100, 102, 110, 111, 112, 119, 121, 122, 132, 133, 136, 143, 144, 145, 153, 154, 155, 165, 166, 170, 176, 177, 187, 188, 198, 199, 204, 209, 210, 220, 221, 222, 231, 232, 238, 242, 243, 253, 254, 255, 264, 265, 272, 275, 276, 286, 287, 289, 297, 298, 306, 308, 309, 319, 320, 323, 330, 331, 332, 340, 341, 342, 352, 353, 357, 363, 364, 365, 374, 375, 385, 386, 391, 396, 397, 407, 408, 418, 419, 425, 429, 430, 440, 441, 442, 451, 452, 459, 462, 463, 473, 474, 475, 476, 484, 485, 493, 495, 496, 506, 507, 510, 517, 518, 519, 527, 528, 529, 539, 540, 544, 550, 551, 552, 561, 562, 572, 573, 578, 583, 584, 594, 595, 605, 606, 612, 616, 617, 627, 628, 629, 638, 639, 646, 649, 650, 660, 661, 662, 663, 671, 672, 680, 682, 683, 693, 694, 697, 704, 705, 714, 715, 716, 726, 727, 731, 737, 738, 739, 748, 749, 759, 760, 765, 770, 771, 772, 781, 782, 792, 793, 799, 803, 804, 814, 815, 816, 825, 826, 833, 836, 837, 847, 848, 849, 850, 858, 859, 867, 869, 870, 880, 881, 882, 884, 891, 892, 901, 902, 903, 913, 914, 918, 924, 925, 926, 935, 936, 946, 947, 952, 957, 958, 959, 968, 969, 979, 980, 986, 990, 991],
+        "delete-all-observation": "all"
+      },
+      "references": [
+        {
+          "state": "safe-maxima",
+          "path": ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before-safe-maxima.accdb",
+          "sha256": "885b0b52ac86a638cb4e8bd5da6a17f6c8e252374acde61fc75b29e4ebb5893c",
+          "raw_index_page_count": 19,
+          "topology_observation_error": null,
+          "selected_to_keep_all_original_leaves_nonempty": true,
+          "native_access_qualification": false,
+          "checks": {
+            "getter_population_payload_and_encounter_order": true,
+            "complete_logical_index_inventory": true,
+            "original_leaf_partitions_and_full_key_row_bytes_retained": true,
+            "root_child_tail_sibling_height_owner_stamp_unchanged": true
+          },
+          "table_results": {
+            "Tree": {
+              "row_count": 987,
+              "row_order_sha256": "4ebc4ea46644731da49bf599fd86b8b95eb7b11d6ddfb8c1a94111c02b979d54",
+              "row_payloads_sha256": "b3902f5198c3fdc6633d11fd5aa4eff5acce6f4f65edd1871122a5f6b350e834"
+            },
+            "Unindexed": {
+              "row_count": 8,
+              "row_order_sha256": "b2ddd6543011e658aaebc223b42021e89fa9a18bd1f2207f6cb68e73ca5688b3",
+              "row_payloads_sha256": "d4504679d53695487592d859ff9baa11027eaf91f7cb456253ad2b7339338377"
+            },
+            "Sentinel": {
+              "row_count": 1,
+              "row_order_sha256": "f96df5fac036224d6e1674b3f8ea296f09763e9590f290f52ab02e354d22a0ea",
+              "row_payloads_sha256": "749dd4db2753d302fdfc555ce3c2eeafe6e3d7614f96bee33782b7a7986be457"
+            }
+          },
+          "index_results": {
+            "PrimaryKey": {
+              "physical": 0,
+              "historical_count": 1000,
+              "entry_count": 987,
+              "owned_pages": 3,
+              "member_order_sha256": "b0e29025a876648c07029485cd15d16d5edec14e3a36a712555b5d3cff6ab20e",
+              "member_count": 987
+            },
+            "GroupAsc": {
+              "physical": 1,
+              "historical_count": 12,
+              "entry_count": 987,
+              "owned_pages": 4,
+              "member_order_sha256": "e79b951863f69e12617aa96fbcfad8a4c8997ab9115a9360df59a8feb082f743",
+              "member_count": 987
+            },
+            "GroupTwin": {
+              "physical": 1,
+              "historical_count": 12,
+              "entry_count": 987,
+              "owned_pages": 4,
+              "member_order_sha256": "e79b951863f69e12617aa96fbcfad8a4c8997ab9115a9360df59a8feb082f743",
+              "member_count": 987
+            },
+            "GroupDesc": {
+              "physical": 2,
+              "historical_count": 12,
+              "entry_count": 987,
+              "owned_pages": 4,
+              "member_order_sha256": "a3447a74d5fd3da4c6aedd5e982000766e4e9e03720a2417e54d43905ba2cd0d",
+              "member_count": 987
+            },
+            "Compound": {
+              "physical": 3,
+              "historical_count": 60,
+              "entry_count": 987,
+              "owned_pages": 5,
+              "member_order_sha256": "c8ca369f67ebdb9f89525c08bdabc2753eeb811dbaec9d107cbbfdf0f0da40af",
+              "member_count": 987
+            },
+            "UniqueScore": {
+              "physical": 4,
+              "historical_count": 1000,
+              "entry_count": 987,
+              "owned_pages": 3,
+              "member_order_sha256": "c24159a6071d1ba158cec8532cd9a5c22274d882e91acb0afb517d55870033b1",
+              "member_count": 987
+            }
+          },
+          "physical_tree_results": [
+            {
+              "root": 91,
+              "logical_names": ["PrimaryKey"],
+              "physical": 0,
+              "height": 1,
+              "owned_page_count": 3,
+              "full_key_reference_sha256": "48e6bb744c1a4dfe1659a208f3690b8e98d4bd5a7933e663a52be46704fa2bdf",
+              "owned_pages": [91, 143, 144],
+              "leaf_boundary_digests": [
+                [144, 500, 1, 503, "37a2cd2746c30c2dad9031f8ddf9062b3285a3e2578a24da079416adfe0ecbc0", "efefb663722800da4e8ec51312871e311b86ad15e0b816f41c90c09bd369096a", "7f8000000100006900", "7f800001f700007d2d"],
+                [143, 487, 505, 999, "23e8ff5be9240d8cb2ec9126eef98ab8497e6996bd8a907c8c9ad6d6594f599e", "87987b0be46eb21b2881d7c3b340f041b043988c4b14e01b918810cc7d9ac939", "7f800001f900007c29", "7f800003e700007403"]
+              ],
+              "node_boundary_records_sha256": "3e7bd158c05b6b83b8fdb7d518da2ed33080d02f3ce5b2914185ae3b27291ca5"
+            },
+            {
+              "root": 92,
+              "logical_names": ["GroupAsc", "GroupTwin"],
+              "physical": 1,
+              "height": 1,
+              "owned_page_count": 4,
+              "full_key_reference_sha256": "3aa8da0e2ecbbc724474d91ab6b7b741f7b28bddedfd83a6a520571928b15c26",
+              "owned_pages": [92, 126, 127, 154],
+              "leaf_boundary_digests": [
+                [154, 242, 408, 475, "30e2db55b796db1636f46df3b0542d34f6026278d46e25c76bec00ffc189423a", "337177e153d5365ba894bdddda6265d458311d767d12598eff8e7a9cc24ddfa0", "000000690b", "7f7ffffffd00007701"],
+                [127, 250, 178, 478, "1417a22e912feb370fae35d72fb768f64d7d4f09021473e23fef00d99544dd65", "696b72ccd18e8a75c6cd99836923382e8a44043b9bb1b85cc13e4637549f1234", "7f7ffffffd00007714", "7f8000000000007514"],
+                [126, 495, 181, 483, "f01fca3d28ca21c1baf5d764214282222a6ace7eadf01c8206d7cd037db02961", "1dbd872e6b14356bae06e58c24888efdb80f2cae8b203be251213af14a00e9e4", "7f8000000000007527", "7f8000000500009d23"]
+              ],
+              "node_boundary_records_sha256": "05fc157308cb70a405d46f1b009e09d9f17d10fdb42c99d4b9e58ee51ef663b0"
+            },
+            {
+              "root": 93,
+              "logical_names": ["GroupDesc"],
+              "physical": 2,
+              "height": 1,
+              "owned_page_count": 4,
+              "full_key_reference_sha256": "649f798d9fa21419d796f05e57fc76c870cef2de9ab827c19309d27177fa74fc",
+              "owned_pages": [93, 128, 129, 152],
+              "leaf_boundary_digests": [
+                [129, 443, 186, 104, "b80e6e61ee8512639e9a88c5833884622677296b0d4d38674c744b6f65586cda", "91e20ad40d14786137e7894eda85337a302603bfe713b135eec3143aa50a542e", "807ffffffa00006905", "807fffffff00007712"],
+                [152, 268, 214, 948, "9f2c940d96d68f6b54bd4f4df118ff555b6cb71223208472c35ed4a6908ab317", "52760609fa12c058dba28788ed382a83fcfc360d980a8977f6f974bbd18119b0", "807fffffff00007730", "808000000200007d1e"],
+                [128, 276, 651, 187, "d1d6e1ff8792bf0261a32342df2bc22dcf38f9cf5ef5766a91254dd191c5f467", "2f5c2c6efdf0344856dfbf0f4c41184590e4000af25288e0b5ec423e0ad0f778", "808000000200007d31", "ff00009d1b"]
+              ],
+              "node_boundary_records_sha256": "34376e4c7d94395c9b757cdbab4c07c716f1c31e1e76310b5d227b047df85fd7"
+            },
+            {
+              "root": 94,
+              "logical_names": ["Compound"],
+              "physical": 3,
+              "height": 1,
+              "owned_page_count": 5,
+              "full_key_reference_sha256": "7e2bf4c05111b903196f67fb5cbecf02ae192047c9e97fc7c0fcaf3155d07cd9",
+              "owned_pages": [94, 122, 123, 148, 150],
+              "leaf_boundary_digests": [
+                [150, 245, 629, 398, "e21ef96efef47d80889fc014c236868b8e3528fdd7add3febf6aa0f3f4a353f1", "7732e14906ad076eddccacf6e2ae1dc2c8754dce1a22a607784401eb6cbaf85c", "807ffd000000692c", "807ffe7f7ffffffd0000781e"],
+                [123, 248, 618, 972, "d15b9b89638d88514cc1e2da893b6338b481559d3331eca00e9379e68651baf6", "168305d6e96916c27353a4640494f4169979476742ad867dcd72086f4bc05225", "807ffe7f7ffffffd00007928", "807fff7f7fffffff00009720"],
+                [148, 253, 962, 811, "6701f798325a661675267364b7a10138f344fe31cecef4acc05f4d1f48959f08", "6ce5562a32c350e4c906f0642df31c47eaa6f9117f1d7cc65e5bbb20da174e48", "807fff7f8000000000007402", "8080007f800000030000751d"],
+                [122, 241, 96, 780, "05b68198766180bad22dfb4a14c325baea0604a21edaa4c917c9fd71a2a3a346", "d6fc29792b14ff8165bec3c54e7fd6240578a5127610b0617126b3e3836ab0a4", "8080007f8000000300007d22", "8080017f8000000500009d10"]
+              ],
+              "node_boundary_records_sha256": "ce2507320cf90c86302e80cfe91a5b5bd67ae5a0e56e18b04dd16118b78e357d"
+            },
+            {
+              "root": 95,
+              "logical_names": ["UniqueScore"],
+              "physical": 4,
+              "height": 1,
+              "owned_page_count": 3,
+              "full_key_reference_sha256": "6a7a49656038a3b1a22026f3d33e2667c1086a077d387a3871863f681e1f1c0e",
+              "owned_pages": [95, 145, 146],
+              "leaf_boundary_digests": [
+                [146, 493, 831, 669, "8dd4b49bd451c0aa3279dca611fe94a3fc32b5e84fc74594ff8a035864f07c75", "74a14ec40bf1f5a55b992373c598699b5eb8329e1f7f4d77f60acf9644287318", "7f8000000400008d27", "7f800005da00009d0d"],
+                [145, 494, 331, 338, "adbaa231adee556dc5f123ccd43c2517ce1d8f18bc0dbabba018f462a3d1ff2a", "687601cd53646dd7a6c1060cd2fdbf40943913676b65208fa8699c4a93302118", "7f800005e000007427", "7f80000bb300009c00"]
+              ],
+              "node_boundary_records_sha256": "1d882d77eb64fce7548f8cfb43bd2b6ea1f473d9198db6a0e18ca95540f03ddd"
+            }
+          ],
+          "raw_topology_sha256": "6cfedb8b3b79b3b2776a2354b78ffee3c83c16eee71d3c11304ebd00f7b2cc7e"
+        },
+        {
+          "state": "safe-ties",
+          "path": ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before-safe-ties.accdb",
+          "sha256": "49746edb6e9110a1e162f67fd92d24e0f76566d00c2369aac528583c9b8b5578",
+          "raw_index_page_count": 19,
+          "topology_observation_error": null,
+          "selected_to_keep_all_original_leaves_nonempty": true,
+          "native_access_qualification": false,
+          "checks": {
+            "getter_population_payload_and_encounter_order": true,
+            "complete_logical_index_inventory": true,
+            "original_leaf_partitions_and_full_key_row_bytes_retained": true,
+            "root_child_tail_sibling_height_owner_stamp_unchanged": true
+          },
+          "table_results": {
+            "Tree": {
+              "row_count": 993,
+              "row_order_sha256": "d9c7f8adbfdb18c4c4e82c69ae1fe798c2b3701beeb930a5d873fd7d3c71f4b8",
+              "row_payloads_sha256": "e68e30e9b4b31607a14a73ee3f243656d7b1088d6a0a483f60383e3bd332c8b3"
+            },
+            "Unindexed": {
+              "row_count": 8,
+              "row_order_sha256": "b2ddd6543011e658aaebc223b42021e89fa9a18bd1f2207f6cb68e73ca5688b3",
+              "row_payloads_sha256": "d4504679d53695487592d859ff9baa11027eaf91f7cb456253ad2b7339338377"
+            },
+            "Sentinel": {
+              "row_count": 1,
+              "row_order_sha256": "f96df5fac036224d6e1674b3f8ea296f09763e9590f290f52ab02e354d22a0ea",
+              "row_payloads_sha256": "749dd4db2753d302fdfc555ce3c2eeafe6e3d7614f96bee33782b7a7986be457"
+            }
+          },
+          "index_results": {
+            "PrimaryKey": {
+              "physical": 0,
+              "historical_count": 1000,
+              "entry_count": 993,
+              "owned_pages": 3,
+              "member_order_sha256": "fbf6cd416e5f44007dd9ad5cf8e8d5e1ebedda514e281cb6360f9d54a0012df1",
+              "member_count": 993
+            },
+            "GroupAsc": {
+              "physical": 1,
+              "historical_count": 12,
+              "entry_count": 993,
+              "owned_pages": 4,
+              "member_order_sha256": "3cf0a62474c49edd93db9f2db9528c9d3feb7e8c95bbe0225eec73325d338bc5",
+              "member_count": 993
+            },
+            "GroupTwin": {
+              "physical": 1,
+              "historical_count": 12,
+              "entry_count": 993,
+              "owned_pages": 4,
+              "member_order_sha256": "3cf0a62474c49edd93db9f2db9528c9d3feb7e8c95bbe0225eec73325d338bc5",
+              "member_count": 993
+            },
+            "GroupDesc": {
+              "physical": 2,
+              "historical_count": 12,
+              "entry_count": 993,
+              "owned_pages": 4,
+              "member_order_sha256": "c0ea6b211815b33f3302c2ebf490892e771ecfec3b55ac3fda216b6aeb659775",
+              "member_count": 993
+            },
+            "Compound": {
+              "physical": 3,
+              "historical_count": 60,
+              "entry_count": 993,
+              "owned_pages": 5,
+              "member_order_sha256": "fde6f4698b4caff05679ae98d608c6824c8385e4314b3ec8a5e0b142bf5640ac",
+              "member_count": 993
+            },
+            "UniqueScore": {
+              "physical": 4,
+              "historical_count": 1000,
+              "entry_count": 993,
+              "owned_pages": 3,
+              "member_order_sha256": "02085a3274bfb28df14eacc2b34bd9070aeea4605691bc97d7cab62232f806c8",
+              "member_count": 993
+            }
+          },
+          "physical_tree_results": [
+            {
+              "root": 91,
+              "logical_names": ["PrimaryKey"],
+              "physical": 0,
+              "height": 1,
+              "owned_page_count": 3,
+              "full_key_reference_sha256": "c9055614f334546cbaa071aac0607ce540f8e8e78bb80e159d40266ea10aef89",
+              "owned_pages": [91, 143, 144],
+              "leaf_boundary_digests": [
+                [144, 503, 1, 504, "5b4c6957c5cfd257ce0d8a12a63582f6891052caff2d1b54aa73242b6374b99b", "b58dae6388554f9e39bf02057067111a432639aeb1fe229460add44ec5b95335", "7f8000000100006900", "7f800001f800007d12"],
+                [143, 490, 505, 1000, "f86bfdc118adcdef6986fd493e5def5ef31840985eb4adcc7872e24d2376c523", "4a123cb08f727448793afd41ecab2bc0a4e91633737c6ede6502d6c1679b68c2", "7f800001f900007c29", "7f800003e80000691b"]
+              ],
+              "node_boundary_records_sha256": "3bbcaef6249380eb0e0c36f4adfccdec8b116f4fc3668926610b0b80c8b1d7fd"
+            },
+            {
+              "root": 92,
+              "logical_names": ["GroupAsc", "GroupTwin"],
+              "physical": 1,
+              "height": 1,
+              "owned_page_count": 4,
+              "full_key_reference_sha256": "58387dbd0b3d6c7a89e2e13a3c398e718b395fc9a1764d8eb57cdaf4a4a20c12",
+              "owned_pages": [92, 126, 127, 154],
+              "leaf_boundary_digests": [
+                [154, 243, 408, 475, "7e0cb2be8d27b69e3b4cea8a2aafa14a088b57685b4c1943634cb28471b864f4", "5472d324be6b1bf670e6de1280ed02b9b519cb32b8bd990912fee6aadadcd2dc", "000000690b", "7f7ffffffd00007701"],
+                [127, 251, 178, 478, "754ac37e79df176985c352c7cd3ac0fb0946e789ba96f950a35d54eae729e346", "5be1b9110f5685332efe1344c596820d805b54900eaba759d0ce369fe6ab23fe", "7f7ffffffd00007714", "7f8000000000007514"],
+                [126, 499, 181, 890, "be508b525f0a0c0d959893a42a0305e7af5a6943bec187e80ae3af9947378e4f", "dcf42a7ebe3f3bdd6b6983882fccd7e15857d5908a48712277a3f87f91e1c9bf", "7f8000000000007527", "7f8000000500009d2e"]
+              ],
+              "node_boundary_records_sha256": "05fc157308cb70a405d46f1b009e09d9f17d10fdb42c99d4b9e58ee51ef663b0"
+            },
+            {
+              "root": 93,
+              "logical_names": ["GroupDesc"],
+              "physical": 2,
+              "height": 1,
+              "owned_page_count": 4,
+              "full_key_reference_sha256": "d64a6aa98919da29cffad101785395f851ece1c88d7b94940caced723c0ef4d7",
+              "owned_pages": [93, 128, 129, 152],
+              "leaf_boundary_digests": [
+                [129, 446, 186, 104, "6ef9d20c36f0473f45933916687bfd2d5f281ea1523d30d8dc27259cb7b78109", "c445ba88e2dda3277787e9c8a7c942db36d78776a33be7058c04a6d37a80c956", "807ffffffa00006905", "807fffffff00007712"],
+                [152, 270, 214, 948, "93e44b3d81d9be2d0f89192e1be7b1003fe04a1998c26b0ae4c89acaf415d734", "588eadcf44019704ac00c9b634b41ba458b6d1c25049365675d19ff622e8b761", "807fffffff00007730", "808000000200007d1e"],
+                [128, 277, 651, 816, "3e5d5aa02072e82a75d7c19ecb91541d7b72a9c50c25735948f7274e52132e6f", "11977ca7e4f02827697782d51ca927b6b3bc15fd8aad4de174e497e14ecbfe7a", "808000000200007d31", "ff00009d2c"]
+              ],
+              "node_boundary_records_sha256": "34376e4c7d94395c9b757cdbab4c07c716f1c31e1e76310b5d227b047df85fd7"
+            },
+            {
+              "root": 94,
+              "logical_names": ["Compound"],
+              "physical": 3,
+              "height": 1,
+              "owned_page_count": 5,
+              "full_key_reference_sha256": "f20e0a7cc4bf1183754fb0a91babbf054d7cad799af5fa6b4a16ed9a45440a7f",
+              "owned_pages": [94, 122, 123, 148, 150],
+              "leaf_boundary_digests": [
+                [150, 247, 629, 398, "1fa0ca6d18310149a63a0fd58ff4e4c0d19232b1dcad19248f64807020de4c02", "48f0f2762cc74053db0c87898b00710912b23f54ae1ae35c04b2cc4a01f261e1", "807ffd000000692c", "807ffe7f7ffffffd0000781e"],
+                [123, 248, 618, 972, "d15b9b89638d88514cc1e2da893b6338b481559d3331eca00e9379e68651baf6", "168305d6e96916c27353a4640494f4169979476742ad867dcd72086f4bc05225", "807ffe7f7ffffffd00007928", "807fff7f7fffffff00009720"],
+                [148, 254, 962, 811, "7056098f9eb9a0ecb4f3961eaa9bbe36f9cfdb687353f34ba3cdfdec96e1a591", "bee231586262d32824fde87928e375a18b276da5f4992446bef9ff517ce0c393", "807fff7f8000000000007402", "8080007f800000030000751d"],
+                [122, 244, 96, 890, "79d63ef81062e6ad398f37876a0d2421475c662856bc5e63179e442687337797", "e1ed06ea1f98168ef311a5031557bf950292fb53d83384838b0147d554cb377b", "8080007f8000000300007d22", "8080017f8000000500009d2e"]
+              ],
+              "node_boundary_records_sha256": "ce2507320cf90c86302e80cfe91a5b5bd67ae5a0e56e18b04dd16118b78e357d"
+            },
+            {
+              "root": 95,
+              "logical_names": ["UniqueScore"],
+              "physical": 4,
+              "height": 1,
+              "owned_page_count": 3,
+              "full_key_reference_sha256": "a72cd00c4c4eacb4efaf7351a9fb32fa7605f2bb688c261b98fe52d734441ee1",
+              "owned_pages": [95, 145, 146],
+              "leaf_boundary_digests": [
+                [146, 496, 1000, 500, "3ff6385c45e0746f818b1601a47a7b2be12fe372d3498a0cd1d257b0feaa5c66", "4d7d825f87177a2252c2cda58d26b9067abc66fa0ac477469b6af782e73fe15a", "7f800000010000691b", "7f800005dd00008c1a"],
+                [145, 497, 331, 169, "9c634b583e52085b3b4a7da961368e6f9912e814f0e2abe33a212eed0522090c", "f8dbed12536413d95b616068b78f4520a72d44b6bcb9226609c9fff578cf1289", "7f800005e000007427", "7f80000bb60000820d"]
+              ],
+              "node_boundary_records_sha256": "438a4ea8d9ba341451eb81232b3a0ebf9631639742df95a6155723960d1d42f2"
+            }
+          ],
+          "raw_topology_sha256": "6cfedb8b3b79b3b2776a2354b78ffee3c83c16eee71d3c11304ebd00f7b2cc7e"
+        },
+        {
+          "state": "leaf-exhaustion-observation",
+          "path": ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before-leaf-exhaustion-observation.accdb",
+          "sha256": "febe9c78b5f9fe728cbba176be965308312cf95a54c47ad4169e9d715b86a403",
+          "raw_index_page_count": 18,
+          "topology_observation_error": null,
+          "selected_to_keep_all_original_leaves_nonempty": false,
+          "native_access_qualification": false,
+          "checks": {
+            "getter_population_payload_and_encounter_order": true,
+            "complete_logical_index_inventory": true
+          },
+          "table_results": {
+            "Tree": {
+              "row_count": 756,
+              "row_order_sha256": "b0dcef692ef5570cad75878fd7d2ddc717b9cf757f777c0f298ce2ddb16d7c83",
+              "row_payloads_sha256": "68677495299f3999dc57e0b0c30e1efefe41682fceb1ae1284f4da184c197645"
+            },
+            "Unindexed": {
+              "row_count": 8,
+              "row_order_sha256": "b2ddd6543011e658aaebc223b42021e89fa9a18bd1f2207f6cb68e73ca5688b3",
+              "row_payloads_sha256": "d4504679d53695487592d859ff9baa11027eaf91f7cb456253ad2b7339338377"
+            },
+            "Sentinel": {
+              "row_count": 1,
+              "row_order_sha256": "f96df5fac036224d6e1674b3f8ea296f09763e9590f290f52ab02e354d22a0ea",
+              "row_payloads_sha256": "749dd4db2753d302fdfc555ce3c2eeafe6e3d7614f96bee33782b7a7986be457"
+            }
+          },
+          "index_results": {
+            "PrimaryKey": {
+              "physical": 0,
+              "historical_count": 1000,
+              "entry_count": 756,
+              "owned_pages": 3,
+              "member_order_sha256": "6478685ac717241a1ea330cfd81215b4b0061d4d9cbe988b7f9c7feb3de10fd5",
+              "member_count": 756
+            },
+            "GroupAsc": {
+              "physical": 1,
+              "historical_count": 12,
+              "entry_count": 756,
+              "owned_pages": 3,
+              "member_order_sha256": "2acd7f1b640d848d48014784919f06527e4f24c3eeab5c84b1937bb7f5e6b3bf",
+              "member_count": 756
+            },
+            "GroupTwin": {
+              "physical": 1,
+              "historical_count": 12,
+              "entry_count": 756,
+              "owned_pages": 3,
+              "member_order_sha256": "2acd7f1b640d848d48014784919f06527e4f24c3eeab5c84b1937bb7f5e6b3bf",
+              "member_count": 756
+            },
+            "GroupDesc": {
+              "physical": 2,
+              "historical_count": 12,
+              "entry_count": 756,
+              "owned_pages": 4,
+              "member_order_sha256": "f66d0aaf671149d807fb1eae83495b22ba167053dd12cbc5ee4d7b61c66783ab",
+              "member_count": 756
+            },
+            "Compound": {
+              "physical": 3,
+              "historical_count": 60,
+              "entry_count": 756,
+              "owned_pages": 5,
+              "member_order_sha256": "3435a0c2c870143cac5b05f9714ce656276b2bf319f2d8313c883abf5f615f52",
+              "member_count": 756
+            },
+            "UniqueScore": {
+              "physical": 4,
+              "historical_count": 1000,
+              "entry_count": 756,
+              "owned_pages": 3,
+              "member_order_sha256": "7f3638e5cc321c41416f37662248c9f02fdba78cb309d3fd211831e0d0338909",
+              "member_count": 756
+            }
+          },
+          "physical_tree_results": [
+            {
+              "root": 91,
+              "logical_names": ["PrimaryKey"],
+              "physical": 0,
+              "height": 1,
+              "owned_page_count": 3,
+              "full_key_reference_sha256": "9fa4b0339fb4588465b17cf7f8600357aa73afaaa7a844e93efec3f7427e11c8",
+              "owned_pages": [91, 143, 144],
+              "leaf_boundary_digests": [
+                [144, 382, 2, 504, "41ae640d61d8894b2335fc35ab464ce05f3a8b1805b7d20379ff193e4ba7e0ac", "2e24690cd0fb6e1d5e9d33c2a777a9479eaeecd51bccfbd1111db29b02722502", "7f8000000200009d16", "7f800001f800007d12"],
+                [143, 374, 505, 1000, "2256440077fd5b1ab77fcd0c57b645240799ffb0e1776eeabc96c207c1f7ae89", "0d0a361f81e2aa76bff190412f1459f51c8164e4aea2bccfef60e6c611da3257", "7f800001f900007c29", "7f800003e80000691b"]
+              ],
+              "node_boundary_records_sha256": "3bbcaef6249380eb0e0c36f4adfccdec8b116f4fc3668926610b0b80c8b1d7fd"
+            },
+            {
+              "root": 92,
+              "logical_names": ["GroupAsc", "GroupTwin"],
+              "physical": 1,
+              "height": 1,
+              "owned_page_count": 3,
+              "full_key_reference_sha256": "a40757f08761c8dbe0bb39efb014d98e6e26cd3602f6279c905fd030c75fcac6",
+              "owned_pages": [92, 126, 127],
+              "leaf_boundary_digests": [
+                [127, 255, 178, 885, "1a08b41a86fdd5b51e393e1382076b0d46619e11ef581551c9835f0ba0515760", "1d77f05d790459cb7d906795027aa76ecfca527236d7942d8906b7bc75ab076b", "7f7ffffffd00007714", "7f800000000000751f"],
+                [126, 501, 181, 890, "b136c97d2add9a7202215a265084c631665867b67c9c2166ff7053594a26adc3", "0f30ca0a1f8ef6670f405e263d18f069fb9edc1a7d55ff8224d9c4ea1c8401af", "7f8000000000007527", "7f8000000500009d2e"]
+              ],
+              "node_boundary_records_sha256": "9cc746ba60cd47bc0ea5c349390c14b1d86ac8033b3fa213e33c37d4a5c8a6e0"
+            },
+            {
+              "root": 93,
+              "logical_names": ["GroupDesc"],
+              "physical": 2,
+              "height": 1,
+              "owned_page_count": 4,
+              "full_key_reference_sha256": "672ffdea45a5d6386da36534a37c21eefd1963b62c03da35dee6760394e25fc1",
+              "owned_pages": [93, 128, 129, 152],
+              "leaf_boundary_digests": [
+                [129, 450, 186, 511, "a181c038385b1a1690744b8c814468422021acc79ab7535d7bf45e5d7b22576f", "1fa292948978f476a7fe7f17245aa1851a6afda69e50c3afd9aa1824a8bd1ef0", "807ffffffa00006905", "807fffffff0000771d"],
+                [152, 257, 214, 244, "586f41b912160c49f6e598bdde4d9fdc5f7a2cc1e4bf5c29eb61646ab810c093", "5ad2d5bf2ee51853a91ff5cda55cb2f1bb1d0b963e28bc0c2164faebeb9fc001", "807fffffff00007730", "808000000200007d26"],
+                [128, 49, 651, 409, "19d94d02f21778050ead8f4cb481d10a4b0917f192653c34095ea9404eb7937c", "f7bd4da7e1b1f10dc1006200325fc4dd11c27d48446d7ddd9d916730302bd918", "808000000200007d31", "808000000200009d21"]
+              ],
+              "node_boundary_records_sha256": "f9d8d9d6f82a89cac24830d384d61571b5ac7cce1b2034182935fe52c4de1f4e"
+            },
+            {
+              "root": 94,
+              "logical_names": ["Compound"],
+              "physical": 3,
+              "height": 1,
+              "owned_page_count": 5,
+              "full_key_reference_sha256": "a8de32cd859e7506d1d0f3464d89363b2b9979d80fef3a98957eca3dd562ecae",
+              "owned_pages": [94, 122, 123, 148, 150],
+              "leaf_boundary_digests": [
+                [150, 155, 24, 508, "36f14418f993e056a013888d32114b527cc54ea3c67ed8575abc100948f608b8", "76a8cb33b8b438ee0276e3963caf96951bbfad6039b1908b05f021ca87721c2d", "807ffd7f7ffffffd00007c1c", "807ffe7f7ffffffd0000790a"],
+                [123, 197, 618, 852, "87cd5affed0b5be8a49d0ae32f6a80f13bbd1d3b14afac9241a2f48289d61d12", "9d8ed352364b648b04e2c4c89d9ff6a5852b8a07716b4aa51a3bd17d6997f9b6", "807ffe7f7ffffffd00007928", "807fff7f8000000000006917"],
+                [148, 208, 962, 921, "be0c3a2b8ca78bcf52ccd398b55642951d2ff67a72a971f2ef95eb8b1b231f90", "b946e459c65589910c613019495cbe19c83ed93e8a88b300abb7c2d248688561", "807fff7f8000000000007402", "8080007f8000000300007609"],
+                [122, 196, 96, 890, "bdd322156ec1dd9515c3fa6b9cd57c0842fc89ccf733e88543f4cd40b7e570b2", "6f6ce63261528c9b1747352619c81f8428852915b5c7b1c2c80e9774b4e0c228", "8080007f8000000300007d22", "8080017f8000000500009d2e"]
+              ],
+              "node_boundary_records_sha256": "77aa53af13b7abe1c8cbd2b06e148cce130e4f515d95b9cea1704714a35ac5b2"
+            },
+            {
+              "root": 95,
+              "logical_names": ["UniqueScore"],
+              "physical": 4,
+              "height": 1,
+              "owned_page_count": 3,
+              "full_key_reference_sha256": "6daf208521d6a9d68c22a76cb472a4d78ba684103f1eace622a3f13d4202ee1f",
+              "owned_pages": [95, 145, 146],
+              "leaf_boundary_digests": [
+                [146, 379, 1000, 500, "d65c255fdbf25a58ec14582607758e8d28501d6f07dc112a46bf88cb09c279d5", "fe23de40e0686503564cd224cb42d06ad766efd7829a02107333d584033aff17", "7f800000010000691b", "7f800005dd00008c1a"],
+                [145, 377, 162, 169, "f224fa8ca79593ecd9ddf7a5f487b0dc47eba22dbcf6e2ce34772413ba3bc83f", "f952f49187d8f66034666bd190e4ed297b3cbb0e08852cf5c70daced2fb6ddce", "7f800005e300009302", "7f80000bb60000820d"]
+              ],
+              "node_boundary_records_sha256": "438a4ea8d9ba341451eb81232b3a0ebf9631639742df95a6155723960d1d42f2"
+            }
+          ],
+          "raw_topology_sha256": "f316738815564bd329be5d7acacb89fc08a804fa20267985f0472db4081ac3c5"
+        },
+        {
+          "state": "delete-all-observation",
+          "path": ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before-delete-all-observation.accdb",
+          "sha256": "19fc27f175dc8b4cc88fb28f2763bf64b08045f03557a4d1415ee3bf4291e5f8",
+          "raw_index_page_count": 5,
+          "topology_observation_error": "Root getter-order identity is ambiguous or absent",
+          "selected_to_keep_all_original_leaves_nonempty": false,
+          "native_access_qualification": false,
+          "checks": {
+            "getter_population_payload_and_encounter_order": true,
+            "complete_logical_index_inventory": true
+          },
+          "unassigned_raw_pages": [
+            {
+              "page": 91,
+              "kind": 4,
+              "height": 0,
+              "previous": 0,
+              "next": 0,
+              "tail": 0,
+              "entry_count": 0,
+              "sha256": "d6450239b0f5cdbf93a5e15a6c99e65930e85e230e8f699ebab6fbaec2771b8f"
+            },
+            {
+              "page": 92,
+              "kind": 4,
+              "height": 0,
+              "previous": 0,
+              "next": 0,
+              "tail": 0,
+              "entry_count": 0,
+              "sha256": "e8c04c7da1651bba6743dda4872ab8cb69eed1d3617fc09994b33c57f16d0770"
+            },
+            {
+              "page": 93,
+              "kind": 4,
+              "height": 0,
+              "previous": 0,
+              "next": 0,
+              "tail": 0,
+              "entry_count": 0,
+              "sha256": "a8f35a1bca219c427033c83b7c52ae2141ca65f04020497f3da1aa2bb09e5d76"
+            },
+            {
+              "page": 94,
+              "kind": 4,
+              "height": 0,
+              "previous": 0,
+              "next": 0,
+              "tail": 0,
+              "entry_count": 0,
+              "sha256": "3cce6e5ceb45be2cd972b3a880f8421222039b0bd30e13ce4e15622c0092a198"
+            },
+            {
+              "page": 95,
+              "kind": 4,
+              "height": 0,
+              "previous": 0,
+              "next": 0,
+              "tail": 0,
+              "entry_count": 0,
+              "sha256": "033d0937b7a345f57edd9ee5e172249a6cca59f3192978b0c2fafbdf35b11082"
+            }
+          ],
+          "table_results": {
+            "Tree": {
+              "row_count": 0,
+              "row_order_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "row_payloads_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+            },
+            "Unindexed": {
+              "row_count": 8,
+              "row_order_sha256": "b2ddd6543011e658aaebc223b42021e89fa9a18bd1f2207f6cb68e73ca5688b3",
+              "row_payloads_sha256": "d4504679d53695487592d859ff9baa11027eaf91f7cb456253ad2b7339338377"
+            },
+            "Sentinel": {
+              "row_count": 1,
+              "row_order_sha256": "f96df5fac036224d6e1674b3f8ea296f09763e9590f290f52ab02e354d22a0ea",
+              "row_payloads_sha256": "749dd4db2753d302fdfc555ce3c2eeafe6e3d7614f96bee33782b7a7986be457"
+            }
+          },
+          "index_results": {
+            "PrimaryKey": {
+              "physical": 0,
+              "historical_count": 1000,
+              "entry_count": 0,
+              "owned_pages": 1,
+              "member_order_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "member_count": 0
+            },
+            "GroupAsc": {
+              "physical": 1,
+              "historical_count": 12,
+              "entry_count": 0,
+              "owned_pages": 1,
+              "member_order_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "member_count": 0
+            },
+            "GroupTwin": {
+              "physical": 1,
+              "historical_count": 12,
+              "entry_count": 0,
+              "owned_pages": 1,
+              "member_order_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "member_count": 0
+            },
+            "GroupDesc": {
+              "physical": 2,
+              "historical_count": 12,
+              "entry_count": 0,
+              "owned_pages": 1,
+              "member_order_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "member_count": 0
+            },
+            "Compound": {
+              "physical": 3,
+              "historical_count": 60,
+              "entry_count": 0,
+              "owned_pages": 1,
+              "member_order_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "member_count": 0
+            },
+            "UniqueScore": {
+              "physical": 4,
+              "historical_count": 1000,
+              "entry_count": 0,
+              "owned_pages": 1,
+              "member_order_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "member_count": 0
+            }
+          },
+          "raw_topology_sha256": "016e5b9d80a5f097284ecc3dd43552d624eecae99ea29032c72c77b6f775cded"
+        }
+      ]
+    },
+    {
+      "input": ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before.accdb",
+      "metadata": {
+        "Tree": {
+          "geometry": {
+            "live_rows": 1000,
+            "definition_page": 106,
+            "page_bytes": 4096,
+            "count_offset": 16,
+            "row_start": 14,
+            "mask_offset": 27,
+            "mask_bytes": 453
+          },
+          "columns": [
+            ["ID", "LONG", "0"],
+            ["GroupKey", "LONG", "1"],
+            ["Part", "INT", "2"],
+            ["Score", "LONG", "3"],
+            ["Memo", "MEMO", "4"],
+            ["Payload", "OLE", "5"]
+          ],
+          "row_count": 1000,
+          "row_order_sha256": "ae2beb114f7754fa8f6e84315a4436f0fcc02234bc2135b5b3c3442cffa463be",
+          "row_payloads_sha256": "2fd5eab2f4404b9c269e4519f186f93a0177360342c5c918a570c0d60558a62a",
+          "indexes": {
+            "PrimaryKey": {
+              "physical": 0,
+              "historical_count": 1000,
+              "counter_offset": 67,
+              "entry_count": 1000,
+              "owned_pages": 3,
+              "unique": "true",
+              "ignore_nulls": "false",
+              "columns": [
+                ["ID", "true"]
+              ],
+              "member_order_sha256": "0de41d33d8e41ee4a69e898bcbcc42f7c9e65f7cdce1239a00def95ef7dd206b",
+              "member_count": 1000
+            },
+            "GroupAsc": {
+              "physical": 1,
+              "historical_count": 12,
+              "counter_offset": 79,
+              "entry_count": 1000,
+              "owned_pages": 4,
+              "unique": "false",
+              "ignore_nulls": "false",
+              "columns": [
+                ["GroupKey", "true"]
+              ],
+              "member_order_sha256": "67405026d0aba8ebd2ec2d0dc661771b330d3bb008895c92339deee47a36e701",
+              "member_count": 1000
+            },
+            "GroupTwin": {
+              "physical": 1,
+              "historical_count": 12,
+              "counter_offset": 79,
+              "entry_count": 1000,
+              "owned_pages": 4,
+              "unique": "false",
+              "ignore_nulls": "false",
+              "columns": [
+                ["GroupKey", "true"]
+              ],
+              "member_order_sha256": "67405026d0aba8ebd2ec2d0dc661771b330d3bb008895c92339deee47a36e701",
+              "member_count": 1000
+            },
+            "GroupDesc": {
+              "physical": 2,
+              "historical_count": 12,
+              "counter_offset": 91,
+              "entry_count": 1000,
+              "owned_pages": 4,
+              "unique": "false",
+              "ignore_nulls": "false",
+              "columns": [
+                ["GroupKey", "false"]
+              ],
+              "member_order_sha256": "01cd05d2882135e8c17f5c3e2b9af0f4ccdbf3028d243ce362928274c1e9ceb7",
+              "member_count": 1000
+            },
+            "Compound": {
+              "physical": 3,
+              "historical_count": 60,
+              "counter_offset": 103,
+              "entry_count": 1000,
+              "owned_pages": 5,
+              "unique": "false",
+              "ignore_nulls": "false",
+              "columns": [
+                ["Part", "false"],
+                ["GroupKey", "true"]
+              ],
+              "member_order_sha256": "80cb2a60a506afdc62591f4a308afb7e6b209faf3627bd592ff1c8fa064f6e22",
+              "member_count": 1000
+            },
+            "UniqueScore": {
+              "physical": 4,
+              "historical_count": 1000,
+              "counter_offset": 115,
+              "entry_count": 1000,
+              "owned_pages": 3,
+              "unique": "true",
+              "ignore_nulls": "false",
+              "columns": [
+                ["Score", "true"]
+              ],
+              "member_order_sha256": "10d8f480c673f4927134169dc7bb815b5719e4478b4e5ad768e0b88368e50971",
+              "member_count": 1000
+            }
+          }
+        },
+        "Unindexed": {
+          "geometry": {
+            "live_rows": 8,
+            "definition_page": 175,
+            "page_bytes": 4096,
+            "count_offset": 16,
+            "row_start": 14,
+            "mask_offset": 27,
+            "mask_bytes": 453
+          },
+          "columns": [
+            ["ID", "LONG", "0"],
+            ["Score", "LONG", "1"]
+          ],
+          "row_count": 8,
+          "row_order_sha256": "b2ddd6543011e658aaebc223b42021e89fa9a18bd1f2207f6cb68e73ca5688b3",
+          "row_payloads_sha256": "d4504679d53695487592d859ff9baa11027eaf91f7cb456253ad2b7339338377",
+          "indexes": {}
+        },
+        "Sentinel": {
+          "geometry": {
+            "live_rows": 1,
+            "definition_page": 179,
+            "page_bytes": 4096,
+            "count_offset": 16,
+            "row_start": 14,
+            "mask_offset": 27,
+            "mask_bytes": 453
+          },
+          "columns": [
+            ["ID", "LONG", "0"],
+            ["TextValue", "TEXT", "1"]
+          ],
+          "row_count": 1,
+          "row_order_sha256": "f96df5fac036224d6e1674b3f8ea296f09763e9590f290f52ab02e354d22a0ea",
+          "row_payloads_sha256": "749dd4db2753d302fdfc555ce3c2eeafe6e3d7614f96bee33782b7a7986be457",
+          "indexes": {}
+        }
+      },
+      "raw_index_page_count": 19,
+      "trees": [
+        {
+          "root": 108,
+          "logical_names": ["PrimaryKey"],
+          "physical": 0,
+          "height": 1,
+          "owned_pages": [108, 160, 161],
+          "full_key_reference_sha256": "687b035ddb42deb63dd40cc16ea3b24a2a66c0cf7f4e11724936507dd66bc373",
+          "owned_page_count": 3,
+          "node_pages": [
+            {
+              "page": 108,
+              "previous": 0,
+              "next": 0,
+              "tail": 160,
+              "height": 1,
+              "stamp_hex": "00000000",
+              "sha256": "a20341cb27d46092a28491d02b582508c765ff0301f6d82ba9d4109f34887d4a",
+              "separator_count": 1,
+              "separator_order_sha256": "f5ed200178d8f0f02ac8826e9033aca4a8e9e3bfed94dddf822dff08d25bf8fb",
+              "first_full_key_row_child_hex": "7f800001f800008e12000000a1",
+              "last_full_key_row_child_hex": "7f800001f800008e12000000a1"
+            }
+          ],
+          "leaf_partitions": [
+            {
+              "page": 161,
+              "entry_count": 504,
+              "first_id": 1,
+              "last_id": 504,
+              "ordered_ids_sha256": "07e4bcf094fdac887f2d4b328f9b24d004076aa75757dc5a01d332e83bb8682b",
+              "full_entries_sha256": "84bd8d929c830b6a1eedde7fc5d498873896bb63cc2e95195c204ad902fe94b4",
+              "first_full_key_row_hex": "7f8000000100007a00",
+              "last_full_key_row_hex": "7f800001f800008e12",
+              "previous": 0,
+              "next": 160,
+              "height": 0,
+              "page_sha256": "37185ee333653442df89bc2342103af3f5dc5c46b672cf04368ca802ea7cdd86"
+            },
+            {
+              "page": 160,
+              "entry_count": 496,
+              "first_id": 505,
+              "last_id": 1000,
+              "ordered_ids_sha256": "85e987fc28124534fb1a549fa10fd0777c93fbffdf966d5f1c62fb5490828380",
+              "full_entries_sha256": "4de7f901b98da52cb1639f88ad733b04f7b5ccaf82344be0f9787f3f69c027f0",
+              "first_full_key_row_hex": "7f800001f900008d29",
+              "last_full_key_row_hex": "7f800003e800007a1b",
+              "previous": 161,
+              "next": 0,
+              "height": 0,
+              "page_sha256": "93c2658b3f38d266ce4ebbfb14bae460f351ce16757633ecc637371a56234fd4"
+            }
+          ]
+        },
+        {
+          "root": 109,
+          "logical_names": ["GroupAsc", "GroupTwin"],
+          "physical": 1,
+          "height": 1,
+          "owned_pages": [109, 143, 144, 171],
+          "full_key_reference_sha256": "15e931a2259cb6ee126d1534e41815fa535aae4d985e6a3c5323d340b9da9b5a",
+          "owned_page_count": 4,
+          "node_pages": [
+            {
+              "page": 109,
+              "previous": 0,
+              "next": 0,
+              "tail": 143,
+              "height": 1,
+              "stamp_hex": "00000000",
+              "sha256": "bf221d4272ee3811adc82aac201c3d65e57c454f991d3315b86b0448d33445d0",
+              "separator_count": 2,
+              "separator_order_sha256": "be8585d7836b0b122f64b16718b739174940aad0962baa9cf1a6b2be3f64dc6c",
+              "first_full_key_row_child_hex": "7f7ffffffd0000880c000000ab",
+              "last_full_key_row_child_hex": "7f800000000000861f00000090"
+            }
+          ],
+          "leaf_partitions": [
+            {
+              "page": 171,
+              "entry_count": 244,
+              "first_id": 408,
+              "last_id": 882,
+              "ordered_ids_sha256": "ba1942e6a46d12aa76c0ad46bfb818152edeec16358502d2407dc8a0c55fb5b3",
+              "full_entries_sha256": "b28241d623c87c8d4332a94eee86ac2db15827b81dd6f887abb64a297669d02c",
+              "first_full_key_row_hex": "0000007a0b",
+              "last_full_key_row_hex": "7f7ffffffd0000880c",
+              "previous": 0,
+              "next": 144,
+              "height": 0,
+              "page_sha256": "36fd627ae2f99265a067dc062c8c9e4b02d208798a71eb6d01d4cb97cba09b1d"
+            },
+            {
+              "page": 144,
+              "entry_count": 255,
+              "first_id": 178,
+              "last_id": 885,
+              "ordered_ids_sha256": "1a08b41a86fdd5b51e393e1382076b0d46619e11ef581551c9835f0ba0515760",
+              "full_entries_sha256": "72ebb54642033b594e3cfc9ebc0f4c5894ce16c199287e38694ded846f1984bd",
+              "first_full_key_row_hex": "7f7ffffffd00008814",
+              "last_full_key_row_hex": "7f800000000000861f",
+              "previous": 171,
+              "next": 143,
+              "height": 0,
+              "page_sha256": "fed5188e07f9e283870c769dd94dbb2b56336bbfe6a6d51492cb53888bd0905c"
+            },
+            {
+              "page": 143,
+              "entry_count": 501,
+              "first_id": 181,
+              "last_id": 890,
+              "ordered_ids_sha256": "b136c97d2add9a7202215a265084c631665867b67c9c2166ff7053594a26adc3",
+              "full_entries_sha256": "987e66fd2d1c17dff15450133a100963f6c73a5af4973c9eb0d03f7f91c056be",
+              "first_full_key_row_hex": "7f8000000000008627",
+              "last_full_key_row_hex": "7f800000050000ae2e",
+              "previous": 144,
+              "next": 0,
+              "height": 0,
+              "page_sha256": "1674efbff00dcf4eeb9de94125d2640832d010c4a8ad8ce3410f7be8436ffd8a"
+            }
+          ]
+        },
+        {
+          "root": 110,
+          "logical_names": ["GroupDesc"],
+          "physical": 2,
+          "height": 1,
+          "owned_pages": [110, 145, 146, 169],
+          "full_key_reference_sha256": "caf6f2fb83b02cc9f7ad5dd36c2a31cd9d232b7da001f04ff6bf97d46a671508",
+          "owned_page_count": 4,
+          "node_pages": [
+            {
+              "page": 110,
+              "previous": 0,
+              "next": 0,
+              "tail": 145,
+              "height": 1,
+              "stamp_hex": "00000000",
+              "sha256": "d700eee7a00672295cbc5776e24849e009fb1d646f6dd9d46f0294b209b5dbdc",
+              "separator_count": 2,
+              "separator_order_sha256": "7de45521e97a0e418e01fceb20df7a656587d45af0d148985526eb6b8e3e6ac5",
+              "first_full_key_row_child_hex": "807fffffff0000881d00000092",
+              "last_full_key_row_child_hex": "808000000200008e26000000a9"
+            }
+          ],
+          "leaf_partitions": [
+            {
+              "page": 146,
+              "entry_count": 450,
+              "first_id": 186,
+              "last_id": 511,
+              "ordered_ids_sha256": "a181c038385b1a1690744b8c814468422021acc79ab7535d7bf45e5d7b22576f",
+              "full_entries_sha256": "e05f6e9a49e1045bef110f25691e80c522275bb020c9ebbb74e1df199e5deec3",
+              "first_full_key_row_hex": "807ffffffa00007a05",
+              "last_full_key_row_hex": "807fffffff0000881d",
+              "previous": 0,
+              "next": 169,
+              "height": 0,
+              "page_sha256": "dba93b347ed505309944568d870fd9b8abde20d973829e2a1a80bc14ad54174e"
+            },
+            {
+              "page": 169,
+              "entry_count": 273,
+              "first_id": 214,
+              "last_id": 244,
+              "ordered_ids_sha256": "43336327ec6fe5e20bece4bce894ff55309d53157bd3a93556b5945c28eafe78",
+              "full_entries_sha256": "3c9da99af752c55f689a5fde1d65513b0339d020c3bf8aaba28fd3558d5bc126",
+              "first_full_key_row_hex": "807fffffff00008830",
+              "last_full_key_row_hex": "808000000200008e26",
+              "previous": 146,
+              "next": 145,
+              "height": 0,
+              "page_sha256": "c6436df7b8bd83fda72ec4d9643d9bf538bdcb375fc667223897cad2e94f2d0c"
+            },
+            {
+              "page": 145,
+              "entry_count": 277,
+              "first_id": 651,
+              "last_id": 816,
+              "ordered_ids_sha256": "3e5d5aa02072e82a75d7c19ecb91541d7b72a9c50c25735948f7274e52132e6f",
+              "full_entries_sha256": "c0ba9f7195b8d1063d1e25077e267256b734347950a05db2204df13efebfbbc1",
+              "first_full_key_row_hex": "808000000200008e31",
+              "last_full_key_row_hex": "ff0000ae2c",
+              "previous": 169,
+              "next": 0,
+              "height": 0,
+              "page_sha256": "b8ba92226783cd8d9345bc0ebac443f2fce0afc19571a635ecf151eb49f9328d"
+            }
+          ]
+        },
+        {
+          "root": 111,
+          "logical_names": ["Compound"],
+          "physical": 3,
+          "height": 1,
+          "owned_pages": [111, 139, 140, 165, 167],
+          "full_key_reference_sha256": "42890efca442f799c34340f366101ebb5e1ae32d36f1b6d0b5b50b690fb1910c",
+          "owned_page_count": 5,
+          "node_pages": [
+            {
+              "page": 111,
+              "previous": 0,
+              "next": 0,
+              "tail": 139,
+              "height": 1,
+              "stamp_hex": "00000000",
+              "sha256": "0535015e221905afea21baa4df6e716866e2f523a79d814ac389a989e1dafd45",
+              "separator_count": 3,
+              "separator_order_sha256": "cae05bdab897bd22ffe0407216ee96aa99cb4b1675d11c3a2f0c472d7b3ef757",
+              "first_full_key_row_child_hex": "807ffe7f7ffffffd00008a0a000000a7",
+              "last_full_key_row_child_hex": "8080007f8000000300008709000000a5"
+            }
+          ],
+          "leaf_partitions": [
+            {
+              "page": 167,
+              "entry_count": 249,
+              "first_id": 629,
+              "last_id": 508,
+              "ordered_ids_sha256": "c2fc3861389ae1c961cbbf0c01e7183ca0a973aca1a54c53338f48606509f734",
+              "full_entries_sha256": "8f41c359b3d6e883e5c7565f0439a166614c09e1cece4f9ae7e3ef5023f84d72",
+              "first_full_key_row_hex": "807ffd0000007a2c",
+              "last_full_key_row_hex": "807ffe7f7ffffffd00008a0a",
+              "previous": 0,
+              "next": 140,
+              "height": 0,
+              "page_sha256": "b6fe8a63f654056b398c7029c066ace237fc73ef76bb68ba3ecb091e5c0f1e89"
+            },
+            {
+              "page": 140,
+              "entry_count": 250,
+              "first_id": 618,
+              "last_id": 852,
+              "ordered_ids_sha256": "fdfbafc96dd374a6aa86cc57358ad0d2943ee97403f4796a3a3bcfe556bcc795",
+              "full_entries_sha256": "e9c363ab43f8a22bad62b3df82ddc3cdabe1e90dfb71ac98cffab922abf8c486",
+              "first_full_key_row_hex": "807ffe7f7ffffffd00008a28",
+              "last_full_key_row_hex": "807fff7f8000000000007a17",
+              "previous": 167,
+              "next": 165,
+              "height": 0,
+              "page_sha256": "b9346e6d0a89f33d1bef73538b49c0459b5b77ac11ab6782be647fe9f06b55e5"
+            },
+            {
+              "page": 165,
+              "entry_count": 256,
+              "first_id": 962,
+              "last_id": 921,
+              "ordered_ids_sha256": "f941d91aaf5cf34b2dc12f6f9beb1d1fe2f2481e18b36b2a202ba5a93aa92d71",
+              "full_entries_sha256": "da5795359c0cfcc66395e2f00c982b04ee99cd2937241d0baaa168de109661aa",
+              "first_full_key_row_hex": "807fff7f8000000000008502",
+              "last_full_key_row_hex": "8080007f8000000300008709",
+              "previous": 140,
+              "next": 139,
+              "height": 0,
+              "page_sha256": "1d5eb20f4a274b485d5087220edf3af965d958aac4f9dd6649418dbd52fd9f27"
+            },
+            {
+              "page": 139,
+              "entry_count": 245,
+              "first_id": 96,
+              "last_id": 890,
+              "ordered_ids_sha256": "3a1716c6c0a95609a02983707729fe844cbd7ad846043c95a91fc92d2273c437",
+              "full_entries_sha256": "176672c5504bdccff88f006bde5f78b456fda8285d39361c4904d2a8face1cd6",
+              "first_full_key_row_hex": "8080007f8000000300008e22",
+              "last_full_key_row_hex": "8080017f800000050000ae2e",
+              "previous": 165,
+              "next": 0,
+              "height": 0,
+              "page_sha256": "b8d81e7ada03052d09de1f319505e0c11920838c05e415a8f4cebefcba056ea7"
+            }
+          ]
+        },
+        {
+          "root": 112,
+          "logical_names": ["UniqueScore"],
+          "physical": 4,
+          "height": 1,
+          "owned_pages": [112, 162, 163],
+          "full_key_reference_sha256": "283234b98888b6fb918acd1dad793a44b8896724dc6bd7c22c426e94d023bd21",
+          "owned_page_count": 3,
+          "node_pages": [
+            {
+              "page": 112,
+              "previous": 0,
+              "next": 0,
+              "tail": 162,
+              "height": 1,
+              "stamp_hex": "00000000",
+              "sha256": "8d2bd9bbaacbafc82f97d49ebaf7aceb61e7b553afc91304170b10063486e081",
+              "separator_count": 1,
+              "separator_order_sha256": "7f4a0d6eefa8c3b1d02826ca191458d039a0750b3856fabe8113d0397f0b42e9",
+              "first_full_key_row_child_hex": "7f800005dd00009d1a000000a3",
+              "last_full_key_row_child_hex": "7f800005dd00009d1a000000a3"
+            }
+          ],
+          "leaf_partitions": [
+            {
+              "page": 163,
+              "entry_count": 501,
+              "first_id": 1000,
+              "last_id": 500,
+              "ordered_ids_sha256": "91201b45bb3fc7eb53fc323ea56b4a362bfff68c7b1f5a25104c0c39fb43cad0",
+              "full_entries_sha256": "77aaeed8b8b7d736b74096caf4263227b63f4ef0b4808ac4a5035c81f9f1e621",
+              "first_full_key_row_hex": "7f8000000100007a1b",
+              "last_full_key_row_hex": "7f800005dd00009d1a",
+              "previous": 0,
+              "next": 162,
+              "height": 0,
+              "page_sha256": "0c25eefb3fe130ef6433baf0d66d5c8bde4e44337f4fc04b55e505097ee08a35"
+            },
+            {
+              "page": 162,
+              "entry_count": 499,
+              "first_id": 331,
+              "last_id": 169,
+              "ordered_ids_sha256": "4c6d55ea8d792bef9407959e11acc4e8b6e1e865f5be3bd2d6f472aa472659a4",
+              "full_entries_sha256": "8e2479d4844795778c6e147e168c9d2e88ee441a915ad9cca871dd8172027ea7",
+              "first_full_key_row_hex": "7f800005e000008527",
+              "last_full_key_row_hex": "7f80000bb60000930d",
+              "previous": 163,
+              "next": 0,
+              "height": 0,
+              "page_sha256": "8ea8bed4a617e09e3faf466ae0a929a498e4f4bbc3af194fa650c6cb59c951d6"
+            }
+          ]
+        }
+      ],
+      "batches": {
+        "safe-maxima": [169, 244, 500, 504, 508, 511, 816, 852, 882, 885, 890, 921, 1000],
+        "safe-ties": [244, 508, 511, 852, 882, 885, 921],
+        "leaf-exhaustion-observation": [1, 11, 12, 17, 22, 23, 33, 34, 35, 44, 45, 51, 55, 56, 66, 67, 68, 77, 78, 85, 88, 89, 99, 100, 102, 110, 111, 112, 119, 121, 122, 132, 133, 136, 143, 144, 145, 153, 154, 155, 165, 166, 170, 176, 177, 187, 188, 198, 199, 204, 209, 210, 220, 221, 222, 231, 232, 238, 242, 243, 253, 254, 255, 264, 265, 272, 275, 276, 286, 287, 289, 297, 298, 306, 308, 309, 319, 320, 323, 330, 331, 332, 340, 341, 342, 352, 353, 357, 363, 364, 365, 374, 375, 385, 386, 391, 396, 397, 407, 408, 418, 419, 425, 429, 430, 440, 441, 442, 451, 452, 459, 462, 463, 473, 474, 475, 476, 484, 485, 493, 495, 496, 506, 507, 510, 517, 518, 519, 527, 528, 529, 539, 540, 544, 550, 551, 552, 561, 562, 572, 573, 578, 583, 584, 594, 595, 605, 606, 612, 616, 617, 627, 628, 629, 638, 639, 646, 649, 650, 660, 661, 662, 663, 671, 672, 680, 682, 683, 693, 694, 697, 704, 705, 714, 715, 716, 726, 727, 731, 737, 738, 739, 748, 749, 759, 760, 765, 770, 771, 772, 781, 782, 792, 793, 799, 803, 804, 814, 815, 816, 825, 826, 833, 836, 837, 847, 848, 849, 850, 858, 859, 867, 869, 870, 880, 881, 882, 884, 891, 892, 901, 902, 903, 913, 914, 918, 924, 925, 926, 935, 936, 946, 947, 952, 957, 958, 959, 968, 969, 979, 980, 986, 990, 991],
+        "delete-all-observation": "all"
+      },
+      "references": [
+        {
+          "state": "safe-maxima",
+          "path": ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before-safe-maxima.accdb",
+          "sha256": "89b119e2caaf4a817963d1c2b466c9b119e21ab886266e3cd9b685f9428ac182",
+          "raw_index_page_count": 19,
+          "topology_observation_error": null,
+          "selected_to_keep_all_original_leaves_nonempty": true,
+          "native_access_qualification": false,
+          "checks": {
+            "getter_population_payload_and_encounter_order": true,
+            "complete_logical_index_inventory": true,
+            "original_leaf_partitions_and_full_key_row_bytes_retained": true,
+            "root_child_tail_sibling_height_owner_stamp_unchanged": true
+          },
+          "table_results": {
+            "Tree": {
+              "row_count": 987,
+              "row_order_sha256": "4ebc4ea46644731da49bf599fd86b8b95eb7b11d6ddfb8c1a94111c02b979d54",
+              "row_payloads_sha256": "b3902f5198c3fdc6633d11fd5aa4eff5acce6f4f65edd1871122a5f6b350e834"
+            },
+            "Unindexed": {
+              "row_count": 8,
+              "row_order_sha256": "b2ddd6543011e658aaebc223b42021e89fa9a18bd1f2207f6cb68e73ca5688b3",
+              "row_payloads_sha256": "d4504679d53695487592d859ff9baa11027eaf91f7cb456253ad2b7339338377"
+            },
+            "Sentinel": {
+              "row_count": 1,
+              "row_order_sha256": "f96df5fac036224d6e1674b3f8ea296f09763e9590f290f52ab02e354d22a0ea",
+              "row_payloads_sha256": "749dd4db2753d302fdfc555ce3c2eeafe6e3d7614f96bee33782b7a7986be457"
+            }
+          },
+          "index_results": {
+            "PrimaryKey": {
+              "physical": 0,
+              "historical_count": 1000,
+              "entry_count": 987,
+              "owned_pages": 3,
+              "member_order_sha256": "b0e29025a876648c07029485cd15d16d5edec14e3a36a712555b5d3cff6ab20e",
+              "member_count": 987
+            },
+            "GroupAsc": {
+              "physical": 1,
+              "historical_count": 12,
+              "entry_count": 987,
+              "owned_pages": 4,
+              "member_order_sha256": "e79b951863f69e12617aa96fbcfad8a4c8997ab9115a9360df59a8feb082f743",
+              "member_count": 987
+            },
+            "GroupTwin": {
+              "physical": 1,
+              "historical_count": 12,
+              "entry_count": 987,
+              "owned_pages": 4,
+              "member_order_sha256": "e79b951863f69e12617aa96fbcfad8a4c8997ab9115a9360df59a8feb082f743",
+              "member_count": 987
+            },
+            "GroupDesc": {
+              "physical": 2,
+              "historical_count": 12,
+              "entry_count": 987,
+              "owned_pages": 4,
+              "member_order_sha256": "a3447a74d5fd3da4c6aedd5e982000766e4e9e03720a2417e54d43905ba2cd0d",
+              "member_count": 987
+            },
+            "Compound": {
+              "physical": 3,
+              "historical_count": 60,
+              "entry_count": 987,
+              "owned_pages": 5,
+              "member_order_sha256": "c8ca369f67ebdb9f89525c08bdabc2753eeb811dbaec9d107cbbfdf0f0da40af",
+              "member_count": 987
+            },
+            "UniqueScore": {
+              "physical": 4,
+              "historical_count": 1000,
+              "entry_count": 987,
+              "owned_pages": 3,
+              "member_order_sha256": "c24159a6071d1ba158cec8532cd9a5c22274d882e91acb0afb517d55870033b1",
+              "member_count": 987
+            }
+          },
+          "physical_tree_results": [
+            {
+              "root": 108,
+              "logical_names": ["PrimaryKey"],
+              "physical": 0,
+              "height": 1,
+              "owned_page_count": 3,
+              "full_key_reference_sha256": "e7407aa7324e23cef8baae8a75c7f0516a1d761c26daa0cd72e323d326a8a442",
+              "owned_pages": [108, 160, 161],
+              "leaf_boundary_digests": [
+                [161, 500, 1, 503, "37a2cd2746c30c2dad9031f8ddf9062b3285a3e2578a24da079416adfe0ecbc0", "fee231489e5522526d3eb38b8448a69cf87e4d173a8d7e08f4ee7746c831bb6f", "7f8000000100007a00", "7f800001f700008e2d"],
+                [160, 487, 505, 999, "23e8ff5be9240d8cb2ec9126eef98ab8497e6996bd8a907c8c9ad6d6594f599e", "44448e3b231dbbb696138ae45ff1615209af2343252f0aff18587ac7526239ee", "7f800001f900008d29", "7f800003e700008503"]
+              ],
+              "node_boundary_records_sha256": "e2ce2ec42774a6f29fbadae4e2476f429e7bb7b0f5e5cbbbde43d8f8fbd38284"
+            },
+            {
+              "root": 109,
+              "logical_names": ["GroupAsc", "GroupTwin"],
+              "physical": 1,
+              "height": 1,
+              "owned_page_count": 4,
+              "full_key_reference_sha256": "d6742da6625efab7868820040392885b1f55fe5488e1e6146a9ef0f7f7f61044",
+              "owned_pages": [109, 143, 144, 171],
+              "leaf_boundary_digests": [
+                [171, 242, 408, 475, "30e2db55b796db1636f46df3b0542d34f6026278d46e25c76bec00ffc189423a", "a340ba9237bcac3fe4231de6e2fd3ba4efc638de09f45711ce872d3419b96993", "0000007a0b", "7f7ffffffd00008801"],
+                [144, 250, 178, 478, "1417a22e912feb370fae35d72fb768f64d7d4f09021473e23fef00d99544dd65", "bfb30d744527026f0bf2764fd5cf74d1f53527b51f2e5ce3774fcc8163cb5d33", "7f7ffffffd00008814", "7f8000000000008614"],
+                [143, 495, 181, 483, "f01fca3d28ca21c1baf5d764214282222a6ace7eadf01c8206d7cd037db02961", "2f5edb9d95f9516f27117abb3e8da4aee78774ab98b19364a841e8514001a296", "7f8000000000008627", "7f800000050000ae23"]
+              ],
+              "node_boundary_records_sha256": "30a3aa38e454e4ba53cd471faa7df2688bb0f51b9c10289dfb2764e8e76d6ffa"
+            },
+            {
+              "root": 110,
+              "logical_names": ["GroupDesc"],
+              "physical": 2,
+              "height": 1,
+              "owned_page_count": 4,
+              "full_key_reference_sha256": "971f2241b6894781332cb9a6aaa21a7a9b99a24c289850a4d83e6227beea9672",
+              "owned_pages": [110, 145, 146, 169],
+              "leaf_boundary_digests": [
+                [146, 443, 186, 104, "b80e6e61ee8512639e9a88c5833884622677296b0d4d38674c744b6f65586cda", "e8625b95bc1314e1ef4dc5bfba18c196a28eae0717b05e60bf6578bc6f7ea065", "807ffffffa00007a05", "807fffffff00008812"],
+                [169, 268, 214, 948, "9f2c940d96d68f6b54bd4f4df118ff555b6cb71223208472c35ed4a6908ab317", "a1683d164d3997e8869f71f5f9324094b4b7951053f11cfe2851f453c2f49e4b", "807fffffff00008830", "808000000200008e1e"],
+                [145, 276, 651, 187, "d1d6e1ff8792bf0261a32342df2bc22dcf38f9cf5ef5766a91254dd191c5f467", "9d05845972bfa18b9877288d60c2b77d620be59c47c18d110eb4e373a8e564af", "808000000200008e31", "ff0000ae1b"]
+              ],
+              "node_boundary_records_sha256": "eb9c5f4e302b3f762af408876ddaa33e78b010d23a18be8de2403a2e7fa0aaf4"
+            },
+            {
+              "root": 111,
+              "logical_names": ["Compound"],
+              "physical": 3,
+              "height": 1,
+              "owned_page_count": 5,
+              "full_key_reference_sha256": "0002af911c93baeef5a6e48ef3248e1021ae91cfc88ad3c0783e203951be8654",
+              "owned_pages": [111, 139, 140, 165, 167],
+              "leaf_boundary_digests": [
+                [167, 245, 629, 398, "e21ef96efef47d80889fc014c236868b8e3528fdd7add3febf6aa0f3f4a353f1", "3e640f9eb07de486cde5170bf97092b10331f5b2df72e5026d391eb8faddd30b", "807ffd0000007a2c", "807ffe7f7ffffffd0000891e"],
+                [140, 248, 618, 972, "d15b9b89638d88514cc1e2da893b6338b481559d3331eca00e9379e68651baf6", "04463e9b54c01ab9652b3c824b36d267c0e854e7df6e602fdcfe48de7a74ab17", "807ffe7f7ffffffd00008a28", "807fff7f7fffffff0000a820"],
+                [165, 253, 962, 811, "6701f798325a661675267364b7a10138f344fe31cecef4acc05f4d1f48959f08", "35376e30aabd39955c53c59b2d6dc83af84194db37fc67b17ba131efa4de6a59", "807fff7f8000000000008502", "8080007f800000030000861d"],
+                [139, 241, 96, 780, "05b68198766180bad22dfb4a14c325baea0604a21edaa4c917c9fd71a2a3a346", "69df176f928ef420932efa942a308bbafe3cdbf05f38cc65ea2e56ca1038fedf", "8080007f8000000300008e22", "8080017f800000050000ae10"]
+              ],
+              "node_boundary_records_sha256": "5e5bba46d57eedd3bb3d97b9a9178dca65fb03f26a96b6b7da4c3c214d1116eb"
+            },
+            {
+              "root": 112,
+              "logical_names": ["UniqueScore"],
+              "physical": 4,
+              "height": 1,
+              "owned_page_count": 3,
+              "full_key_reference_sha256": "f77ff8f6751c0f74cce8919859f79d3721947bda46ac9117586c3177085207b3",
+              "owned_pages": [112, 162, 163],
+              "leaf_boundary_digests": [
+                [163, 493, 831, 669, "8dd4b49bd451c0aa3279dca611fe94a3fc32b5e84fc74594ff8a035864f07c75", "70b84b7e8d2c8b458bde92edba4c734466397f8059cd7b37551a82b2029b1334", "7f8000000400009e27", "7f800005da0000ae0d"],
+                [162, 494, 331, 338, "adbaa231adee556dc5f123ccd43c2517ce1d8f18bc0dbabba018f462a3d1ff2a", "da82e39d78bd61c9311c7ac84f85366467756f6967f05d8eec8d77e1647acfab", "7f800005e000008527", "7f80000bb30000ad00"]
+              ],
+              "node_boundary_records_sha256": "b8cb79e9e8d2b04896561497df588600f8318eae4722757be66b80083e193872"
+            }
+          ],
+          "raw_topology_sha256": "432448bcb8826eb49ff8eccbcaa5170ec4b04cc2b63d66ab4acdc09e19d200a2"
+        },
+        {
+          "state": "safe-ties",
+          "path": ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before-safe-ties.accdb",
+          "sha256": "b83027f1266ef1c6a484b2b3afc2369d987c16a8fec73b00275a74f631d2c9e6",
+          "raw_index_page_count": 19,
+          "topology_observation_error": null,
+          "selected_to_keep_all_original_leaves_nonempty": true,
+          "native_access_qualification": false,
+          "checks": {
+            "getter_population_payload_and_encounter_order": true,
+            "complete_logical_index_inventory": true,
+            "original_leaf_partitions_and_full_key_row_bytes_retained": true,
+            "root_child_tail_sibling_height_owner_stamp_unchanged": true
+          },
+          "table_results": {
+            "Tree": {
+              "row_count": 993,
+              "row_order_sha256": "d9c7f8adbfdb18c4c4e82c69ae1fe798c2b3701beeb930a5d873fd7d3c71f4b8",
+              "row_payloads_sha256": "e68e30e9b4b31607a14a73ee3f243656d7b1088d6a0a483f60383e3bd332c8b3"
+            },
+            "Unindexed": {
+              "row_count": 8,
+              "row_order_sha256": "b2ddd6543011e658aaebc223b42021e89fa9a18bd1f2207f6cb68e73ca5688b3",
+              "row_payloads_sha256": "d4504679d53695487592d859ff9baa11027eaf91f7cb456253ad2b7339338377"
+            },
+            "Sentinel": {
+              "row_count": 1,
+              "row_order_sha256": "f96df5fac036224d6e1674b3f8ea296f09763e9590f290f52ab02e354d22a0ea",
+              "row_payloads_sha256": "749dd4db2753d302fdfc555ce3c2eeafe6e3d7614f96bee33782b7a7986be457"
+            }
+          },
+          "index_results": {
+            "PrimaryKey": {
+              "physical": 0,
+              "historical_count": 1000,
+              "entry_count": 993,
+              "owned_pages": 3,
+              "member_order_sha256": "fbf6cd416e5f44007dd9ad5cf8e8d5e1ebedda514e281cb6360f9d54a0012df1",
+              "member_count": 993
+            },
+            "GroupAsc": {
+              "physical": 1,
+              "historical_count": 12,
+              "entry_count": 993,
+              "owned_pages": 4,
+              "member_order_sha256": "3cf0a62474c49edd93db9f2db9528c9d3feb7e8c95bbe0225eec73325d338bc5",
+              "member_count": 993
+            },
+            "GroupTwin": {
+              "physical": 1,
+              "historical_count": 12,
+              "entry_count": 993,
+              "owned_pages": 4,
+              "member_order_sha256": "3cf0a62474c49edd93db9f2db9528c9d3feb7e8c95bbe0225eec73325d338bc5",
+              "member_count": 993
+            },
+            "GroupDesc": {
+              "physical": 2,
+              "historical_count": 12,
+              "entry_count": 993,
+              "owned_pages": 4,
+              "member_order_sha256": "c0ea6b211815b33f3302c2ebf490892e771ecfec3b55ac3fda216b6aeb659775",
+              "member_count": 993
+            },
+            "Compound": {
+              "physical": 3,
+              "historical_count": 60,
+              "entry_count": 993,
+              "owned_pages": 5,
+              "member_order_sha256": "fde6f4698b4caff05679ae98d608c6824c8385e4314b3ec8a5e0b142bf5640ac",
+              "member_count": 993
+            },
+            "UniqueScore": {
+              "physical": 4,
+              "historical_count": 1000,
+              "entry_count": 993,
+              "owned_pages": 3,
+              "member_order_sha256": "02085a3274bfb28df14eacc2b34bd9070aeea4605691bc97d7cab62232f806c8",
+              "member_count": 993
+            }
+          },
+          "physical_tree_results": [
+            {
+              "root": 108,
+              "logical_names": ["PrimaryKey"],
+              "physical": 0,
+              "height": 1,
+              "owned_page_count": 3,
+              "full_key_reference_sha256": "776a5aaee0092e67e71f9cb6750d278153bf845295d115d71645347a73f63ab4",
+              "owned_pages": [108, 160, 161],
+              "leaf_boundary_digests": [
+                [161, 503, 1, 504, "5b4c6957c5cfd257ce0d8a12a63582f6891052caff2d1b54aa73242b6374b99b", "116095f6f33c86a0f2abb4e77c756cb08d071881e9e12dcc9c65a99485b224d2", "7f8000000100007a00", "7f800001f800008e12"],
+                [160, 490, 505, 1000, "f86bfdc118adcdef6986fd493e5def5ef31840985eb4adcc7872e24d2376c523", "326b8604478dc0596626c35633b32eb11d38b3d94d69a6bc19933e696043584e", "7f800001f900008d29", "7f800003e800007a1b"]
+              ],
+              "node_boundary_records_sha256": "1e036c9568edd5fb0d3040decd66419690a583f6f5fc9020e5544f9bd4f4f723"
+            },
+            {
+              "root": 109,
+              "logical_names": ["GroupAsc", "GroupTwin"],
+              "physical": 1,
+              "height": 1,
+              "owned_page_count": 4,
+              "full_key_reference_sha256": "cba2e01e30e11ca4e9bcc4c8789be9cd8db968a4f01dd644338842687de7b264",
+              "owned_pages": [109, 143, 144, 171],
+              "leaf_boundary_digests": [
+                [171, 243, 408, 475, "7e0cb2be8d27b69e3b4cea8a2aafa14a088b57685b4c1943634cb28471b864f4", "34f9e3bca241d36da8265665583082b3e9e90b72ca5f44f72bdf68785adf824d", "0000007a0b", "7f7ffffffd00008801"],
+                [144, 251, 178, 478, "754ac37e79df176985c352c7cd3ac0fb0946e789ba96f950a35d54eae729e346", "202b9ebb39720ab32eaed38d87e8712dcdc656d97506b703760f90c328a9bdb6", "7f7ffffffd00008814", "7f8000000000008614"],
+                [143, 499, 181, 890, "be508b525f0a0c0d959893a42a0305e7af5a6943bec187e80ae3af9947378e4f", "e94527900ba4a1bd523b36c589c783e4c06047f4f91fd6af1c1c4894814332bf", "7f8000000000008627", "7f800000050000ae2e"]
+              ],
+              "node_boundary_records_sha256": "30a3aa38e454e4ba53cd471faa7df2688bb0f51b9c10289dfb2764e8e76d6ffa"
+            },
+            {
+              "root": 110,
+              "logical_names": ["GroupDesc"],
+              "physical": 2,
+              "height": 1,
+              "owned_page_count": 4,
+              "full_key_reference_sha256": "9fdea20e34af567bf31254005a221f7eb7414c592bb67be17025e86e557f363a",
+              "owned_pages": [110, 145, 146, 169],
+              "leaf_boundary_digests": [
+                [146, 446, 186, 104, "6ef9d20c36f0473f45933916687bfd2d5f281ea1523d30d8dc27259cb7b78109", "2133367df03cbd7dd29f1b104d6544476a453bdad2656e64c99d5c5d81cdb73e", "807ffffffa00007a05", "807fffffff00008812"],
+                [169, 270, 214, 948, "93e44b3d81d9be2d0f89192e1be7b1003fe04a1998c26b0ae4c89acaf415d734", "a8746a0fca0f6bafd056684ec8b847dcea3e229dfa33f96f32f0dd7b122bff66", "807fffffff00008830", "808000000200008e1e"],
+                [145, 277, 651, 816, "3e5d5aa02072e82a75d7c19ecb91541d7b72a9c50c25735948f7274e52132e6f", "c0ba9f7195b8d1063d1e25077e267256b734347950a05db2204df13efebfbbc1", "808000000200008e31", "ff0000ae2c"]
+              ],
+              "node_boundary_records_sha256": "eb9c5f4e302b3f762af408876ddaa33e78b010d23a18be8de2403a2e7fa0aaf4"
+            },
+            {
+              "root": 111,
+              "logical_names": ["Compound"],
+              "physical": 3,
+              "height": 1,
+              "owned_page_count": 5,
+              "full_key_reference_sha256": "05242809c931ba68012f233f7832e965f96d6b27ee9cbca47e89c8ebb2beebb4",
+              "owned_pages": [111, 139, 140, 165, 167],
+              "leaf_boundary_digests": [
+                [167, 247, 629, 398, "1fa0ca6d18310149a63a0fd58ff4e4c0d19232b1dcad19248f64807020de4c02", "b6913105a176220e0a1d78294889cb3c8e53b912a52b63f39fc9bce59cd043a8", "807ffd0000007a2c", "807ffe7f7ffffffd0000891e"],
+                [140, 248, 618, 972, "d15b9b89638d88514cc1e2da893b6338b481559d3331eca00e9379e68651baf6", "04463e9b54c01ab9652b3c824b36d267c0e854e7df6e602fdcfe48de7a74ab17", "807ffe7f7ffffffd00008a28", "807fff7f7fffffff0000a820"],
+                [165, 254, 962, 811, "7056098f9eb9a0ecb4f3961eaa9bbe36f9cfdb687353f34ba3cdfdec96e1a591", "abd583202099dfc880480d3658e851e19ebd068bd5855924fd0e76e4b1b0ba83", "807fff7f8000000000008502", "8080007f800000030000861d"],
+                [139, 244, 96, 890, "79d63ef81062e6ad398f37876a0d2421475c662856bc5e63179e442687337797", "a4459a46ebf11f62f59aa63eb52f29568ed1a2a2207156a1f726201a7bfe7fb8", "8080007f8000000300008e22", "8080017f800000050000ae2e"]
+              ],
+              "node_boundary_records_sha256": "5e5bba46d57eedd3bb3d97b9a9178dca65fb03f26a96b6b7da4c3c214d1116eb"
+            },
+            {
+              "root": 112,
+              "logical_names": ["UniqueScore"],
+              "physical": 4,
+              "height": 1,
+              "owned_page_count": 3,
+              "full_key_reference_sha256": "0eca59d446786929b990d6f306abac76647924204711f3b9d351319a04beb59f",
+              "owned_pages": [112, 162, 163],
+              "leaf_boundary_digests": [
+                [163, 496, 1000, 500, "3ff6385c45e0746f818b1601a47a7b2be12fe372d3498a0cd1d257b0feaa5c66", "f14b825109468c2a9bf88df90c41c39750d3365d0295602a4804fde0aa0672cc", "7f8000000100007a1b", "7f800005dd00009d1a"],
+                [162, 497, 331, 169, "9c634b583e52085b3b4a7da961368e6f9912e814f0e2abe33a212eed0522090c", "820d1c6bb5815413c88e4fa6bd5cb70c3562ac2ad63a7542117bcc1f17abbd03", "7f800005e000008527", "7f80000bb60000930d"]
+              ],
+              "node_boundary_records_sha256": "621fe1b93846ee16b5578dfaa20223e4aab0740375ddecdec3f7657e4478db1d"
+            }
+          ],
+          "raw_topology_sha256": "432448bcb8826eb49ff8eccbcaa5170ec4b04cc2b63d66ab4acdc09e19d200a2"
+        },
+        {
+          "state": "leaf-exhaustion-observation",
+          "path": ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before-leaf-exhaustion-observation.accdb",
+          "sha256": "094df570911e6254588c411bd6f722de9a3cb09ef8559237f85880f9dd23e011",
+          "raw_index_page_count": 18,
+          "topology_observation_error": null,
+          "selected_to_keep_all_original_leaves_nonempty": false,
+          "native_access_qualification": false,
+          "checks": {
+            "getter_population_payload_and_encounter_order": true,
+            "complete_logical_index_inventory": true
+          },
+          "table_results": {
+            "Tree": {
+              "row_count": 756,
+              "row_order_sha256": "b0dcef692ef5570cad75878fd7d2ddc717b9cf757f777c0f298ce2ddb16d7c83",
+              "row_payloads_sha256": "68677495299f3999dc57e0b0c30e1efefe41682fceb1ae1284f4da184c197645"
+            },
+            "Unindexed": {
+              "row_count": 8,
+              "row_order_sha256": "b2ddd6543011e658aaebc223b42021e89fa9a18bd1f2207f6cb68e73ca5688b3",
+              "row_payloads_sha256": "d4504679d53695487592d859ff9baa11027eaf91f7cb456253ad2b7339338377"
+            },
+            "Sentinel": {
+              "row_count": 1,
+              "row_order_sha256": "f96df5fac036224d6e1674b3f8ea296f09763e9590f290f52ab02e354d22a0ea",
+              "row_payloads_sha256": "749dd4db2753d302fdfc555ce3c2eeafe6e3d7614f96bee33782b7a7986be457"
+            }
+          },
+          "index_results": {
+            "PrimaryKey": {
+              "physical": 0,
+              "historical_count": 1000,
+              "entry_count": 756,
+              "owned_pages": 3,
+              "member_order_sha256": "6478685ac717241a1ea330cfd81215b4b0061d4d9cbe988b7f9c7feb3de10fd5",
+              "member_count": 756
+            },
+            "GroupAsc": {
+              "physical": 1,
+              "historical_count": 12,
+              "entry_count": 756,
+              "owned_pages": 3,
+              "member_order_sha256": "2acd7f1b640d848d48014784919f06527e4f24c3eeab5c84b1937bb7f5e6b3bf",
+              "member_count": 756
+            },
+            "GroupTwin": {
+              "physical": 1,
+              "historical_count": 12,
+              "entry_count": 756,
+              "owned_pages": 3,
+              "member_order_sha256": "2acd7f1b640d848d48014784919f06527e4f24c3eeab5c84b1937bb7f5e6b3bf",
+              "member_count": 756
+            },
+            "GroupDesc": {
+              "physical": 2,
+              "historical_count": 12,
+              "entry_count": 756,
+              "owned_pages": 4,
+              "member_order_sha256": "f66d0aaf671149d807fb1eae83495b22ba167053dd12cbc5ee4d7b61c66783ab",
+              "member_count": 756
+            },
+            "Compound": {
+              "physical": 3,
+              "historical_count": 60,
+              "entry_count": 756,
+              "owned_pages": 5,
+              "member_order_sha256": "3435a0c2c870143cac5b05f9714ce656276b2bf319f2d8313c883abf5f615f52",
+              "member_count": 756
+            },
+            "UniqueScore": {
+              "physical": 4,
+              "historical_count": 1000,
+              "entry_count": 756,
+              "owned_pages": 3,
+              "member_order_sha256": "7f3638e5cc321c41416f37662248c9f02fdba78cb309d3fd211831e0d0338909",
+              "member_count": 756
+            }
+          },
+          "physical_tree_results": [
+            {
+              "root": 108,
+              "logical_names": ["PrimaryKey"],
+              "physical": 0,
+              "height": 1,
+              "owned_page_count": 3,
+              "full_key_reference_sha256": "f5ec9a656bfd76307175072f4cd8ba6f11dab786224b8cbc75b0a08c8bf7cc21",
+              "owned_pages": [108, 160, 161],
+              "leaf_boundary_digests": [
+                [161, 382, 2, 504, "41ae640d61d8894b2335fc35ab464ce05f3a8b1805b7d20379ff193e4ba7e0ac", "4d60af0ff5cb0792d324dc7b4c4fee77aa9acff4c77c5c895dc42beb9f99ba2e", "7f800000020000ae16", "7f800001f800008e12"],
+                [160, 374, 505, 1000, "2256440077fd5b1ab77fcd0c57b645240799ffb0e1776eeabc96c207c1f7ae89", "58404b30e6ab8a9ba13c31ff6caf6ba4767fc72c3f1a709ac43c6b195c0dacf3", "7f800001f900008d29", "7f800003e800007a1b"]
+              ],
+              "node_boundary_records_sha256": "1e036c9568edd5fb0d3040decd66419690a583f6f5fc9020e5544f9bd4f4f723"
+            },
+            {
+              "root": 109,
+              "logical_names": ["GroupAsc", "GroupTwin"],
+              "physical": 1,
+              "height": 1,
+              "owned_page_count": 3,
+              "full_key_reference_sha256": "ac991ceeaaa33ac45f51ef9493ebc108256931dae575417e7a3309ad8235eac2",
+              "owned_pages": [109, 143, 144],
+              "leaf_boundary_digests": [
+                [144, 255, 178, 885, "1a08b41a86fdd5b51e393e1382076b0d46619e11ef581551c9835f0ba0515760", "72ebb54642033b594e3cfc9ebc0f4c5894ce16c199287e38694ded846f1984bd", "7f7ffffffd00008814", "7f800000000000861f"],
+                [143, 501, 181, 890, "b136c97d2add9a7202215a265084c631665867b67c9c2166ff7053594a26adc3", "987e66fd2d1c17dff15450133a100963f6c73a5af4973c9eb0d03f7f91c056be", "7f8000000000008627", "7f800000050000ae2e"]
+              ],
+              "node_boundary_records_sha256": "d957b98345d1c0113e981edd263883348d632578dc99b914468f9896ba0484bb"
+            },
+            {
+              "root": 110,
+              "logical_names": ["GroupDesc"],
+              "physical": 2,
+              "height": 1,
+              "owned_page_count": 4,
+              "full_key_reference_sha256": "6fb9567c589a1f25ce70d35135fe14f9766bc37d6d4a2a8e68eacf49e7b8b7cf",
+              "owned_pages": [110, 145, 146, 169],
+              "leaf_boundary_digests": [
+                [146, 450, 186, 511, "a181c038385b1a1690744b8c814468422021acc79ab7535d7bf45e5d7b22576f", "e05f6e9a49e1045bef110f25691e80c522275bb020c9ebbb74e1df199e5deec3", "807ffffffa00007a05", "807fffffff0000881d"],
+                [169, 257, 214, 244, "586f41b912160c49f6e598bdde4d9fdc5f7a2cc1e4bf5c29eb61646ab810c093", "9669a3bd8500b6aa4df0abdfb5f3c403c2d0059fad737c9671d65f03b4df9c9c", "807fffffff00008830", "808000000200008e26"],
+                [145, 49, 651, 409, "19d94d02f21778050ead8f4cb481d10a4b0917f192653c34095ea9404eb7937c", "e408e4350d773e19173776677f8e9be4f7f05a9581a4647a8bd485e8dd1d91c7", "808000000200008e31", "80800000020000ae21"]
+              ],
+              "node_boundary_records_sha256": "cf3798c13fdd020fe58ff9c4697dfdbce34260e6e29cb85a51cc92a790639f52"
+            },
+            {
+              "root": 111,
+              "logical_names": ["Compound"],
+              "physical": 3,
+              "height": 1,
+              "owned_page_count": 5,
+              "full_key_reference_sha256": "accc3b8c29df88c66ccc57f25c82c29cd3712b49387e0a36447fe12a54381172",
+              "owned_pages": [111, 139, 140, 165, 167],
+              "leaf_boundary_digests": [
+                [167, 155, 24, 508, "36f14418f993e056a013888d32114b527cc54ea3c67ed8575abc100948f608b8", "423e9739f9230b91e9744646dac9397bf9f04b8acd05c4b125ccd19f0b5621bb", "807ffd7f7ffffffd00008d1c", "807ffe7f7ffffffd00008a0a"],
+                [140, 197, 618, 852, "87cd5affed0b5be8a49d0ae32f6a80f13bbd1d3b14afac9241a2f48289d61d12", "e0d09be8f34574e1077c172888f581f04d79523560d42f0f1a27f8690ae2c4c2", "807ffe7f7ffffffd00008a28", "807fff7f8000000000007a17"],
+                [165, 208, 962, 921, "be0c3a2b8ca78bcf52ccd398b55642951d2ff67a72a971f2ef95eb8b1b231f90", "3fef16448d2d3f3101e062ce8ff945dd6945253afc3f628d585f9c3b2395aab8", "807fff7f8000000000008502", "8080007f8000000300008709"],
+                [139, 196, 96, 890, "bdd322156ec1dd9515c3fa6b9cd57c0842fc89ccf733e88543f4cd40b7e570b2", "5d67b4d7aa755f9453a539fed16e85db2e5078accaf1806cc8da17d1760b8164", "8080007f8000000300008e22", "8080017f800000050000ae2e"]
+              ],
+              "node_boundary_records_sha256": "1e785512cce303e7c66975658bca233408336b5f5e0e8e8a39eaa9332e5bec15"
+            },
+            {
+              "root": 112,
+              "logical_names": ["UniqueScore"],
+              "physical": 4,
+              "height": 1,
+              "owned_page_count": 3,
+              "full_key_reference_sha256": "b6e7ea516c569124f4cea55ff5d2ff1092a77172720d7833b77deb961abc39c5",
+              "owned_pages": [112, 162, 163],
+              "leaf_boundary_digests": [
+                [163, 379, 1000, 500, "d65c255fdbf25a58ec14582607758e8d28501d6f07dc112a46bf88cb09c279d5", "b402633d0b0219a0c253e5625717c3766544add3da31f24c36ff54f57546e9e4", "7f8000000100007a1b", "7f800005dd00009d1a"],
+                [162, 377, 162, 169, "f224fa8ca79593ecd9ddf7a5f487b0dc47eba22dbcf6e2ce34772413ba3bc83f", "58bd3032214b91beb88f41528fd7f5528da725a1a67be603aca1c76423ff2466", "7f800005e30000a402", "7f80000bb60000930d"]
+              ],
+              "node_boundary_records_sha256": "621fe1b93846ee16b5578dfaa20223e4aab0740375ddecdec3f7657e4478db1d"
+            }
+          ],
+          "raw_topology_sha256": "afff1448d52044fd89f21bac524eca044c44f2e37979c923858c5f1ded2bab2c"
+        },
+        {
+          "state": "delete-all-observation",
+          "path": ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before-delete-all-observation.accdb",
+          "sha256": "a5d3a4bff7532ad3c33ccbc2bde874f310ddf120292b96aac3a32ce5070001a5",
+          "raw_index_page_count": 5,
+          "topology_observation_error": "Root getter-order identity is ambiguous or absent",
+          "selected_to_keep_all_original_leaves_nonempty": false,
+          "native_access_qualification": false,
+          "checks": {
+            "getter_population_payload_and_encounter_order": true,
+            "complete_logical_index_inventory": true
+          },
+          "unassigned_raw_pages": [
+            {
+              "page": 108,
+              "kind": 4,
+              "height": 0,
+              "previous": 0,
+              "next": 0,
+              "tail": 0,
+              "entry_count": 0,
+              "sha256": "f7fa7ecc883f6b9126cec852eeb07743217fefe5eb90bd9e4e2cc132ed3238bf"
+            },
+            {
+              "page": 109,
+              "kind": 4,
+              "height": 0,
+              "previous": 0,
+              "next": 0,
+              "tail": 0,
+              "entry_count": 0,
+              "sha256": "29e8cfc904fa57a566770c5a28a6498a9c5118adb9258205ce169e9dfb5754b8"
+            },
+            {
+              "page": 110,
+              "kind": 4,
+              "height": 0,
+              "previous": 0,
+              "next": 0,
+              "tail": 0,
+              "entry_count": 0,
+              "sha256": "0d6ae8622ac3c8ae3efb06b3c49d2d0dc9c9f492928b803ff4c133f88a527d93"
+            },
+            {
+              "page": 111,
+              "kind": 4,
+              "height": 0,
+              "previous": 0,
+              "next": 0,
+              "tail": 0,
+              "entry_count": 0,
+              "sha256": "8ec5679e013319f29cbe3b2b2c00cfb779a321b66a89ee7424f5b6df2a87a789"
+            },
+            {
+              "page": 112,
+              "kind": 4,
+              "height": 0,
+              "previous": 0,
+              "next": 0,
+              "tail": 0,
+              "entry_count": 0,
+              "sha256": "99337eb04168a8bb5c9592632c3d28d94e1f39bd55768b5b44ccf963dbe5c127"
+            }
+          ],
+          "table_results": {
+            "Tree": {
+              "row_count": 0,
+              "row_order_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "row_payloads_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+            },
+            "Unindexed": {
+              "row_count": 8,
+              "row_order_sha256": "b2ddd6543011e658aaebc223b42021e89fa9a18bd1f2207f6cb68e73ca5688b3",
+              "row_payloads_sha256": "d4504679d53695487592d859ff9baa11027eaf91f7cb456253ad2b7339338377"
+            },
+            "Sentinel": {
+              "row_count": 1,
+              "row_order_sha256": "f96df5fac036224d6e1674b3f8ea296f09763e9590f290f52ab02e354d22a0ea",
+              "row_payloads_sha256": "749dd4db2753d302fdfc555ce3c2eeafe6e3d7614f96bee33782b7a7986be457"
+            }
+          },
+          "index_results": {
+            "PrimaryKey": {
+              "physical": 0,
+              "historical_count": 1000,
+              "entry_count": 0,
+              "owned_pages": 1,
+              "member_order_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "member_count": 0
+            },
+            "GroupAsc": {
+              "physical": 1,
+              "historical_count": 12,
+              "entry_count": 0,
+              "owned_pages": 1,
+              "member_order_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "member_count": 0
+            },
+            "GroupTwin": {
+              "physical": 1,
+              "historical_count": 12,
+              "entry_count": 0,
+              "owned_pages": 1,
+              "member_order_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "member_count": 0
+            },
+            "GroupDesc": {
+              "physical": 2,
+              "historical_count": 12,
+              "entry_count": 0,
+              "owned_pages": 1,
+              "member_order_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "member_count": 0
+            },
+            "Compound": {
+              "physical": 3,
+              "historical_count": 60,
+              "entry_count": 0,
+              "owned_pages": 1,
+              "member_order_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "member_count": 0
+            },
+            "UniqueScore": {
+              "physical": 4,
+              "historical_count": 1000,
+              "entry_count": 0,
+              "owned_pages": 1,
+              "member_order_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "member_count": 0
+            }
+          },
+          "raw_topology_sha256": "49381b7b98e750e48d298cc597d873c5b7f2556becc1cac4dd4c4077e60d17e7"
+        }
+      ]
+    }
+  ],
+  "failure": null,
+  "reference_creation_transcript": {
+    "path": ".cache/tablecraft-fixtures/delete-trees-20261026/reference-initial.json",
+    "sha256": "9a32ed6846437f40fbeff0785b5f311a48d8ecf70503bf21f96cb0a8022fb270",
+    "initial_capture_source": {
+      "path": ".cache/delete-tree-exploration-20261026/capture_delete_trees-initial.py",
+      "sha256": "919fda24c6e1138b658c282862ad9151f4a7411bd89a725e8d56f8b1ea5f4d02"
+    },
+    "commands": [
+      {
+        "command": ["java", "-Dstdout.encoding=UTF-8", "-cp", ".cache/tablecraft-fixtures/jackcess-5.0.4.jar", "docs/testing/DeleteTreeFixture.java", "oracle", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before.accdb"],
+        "status": 0,
+        "stdout_sha256": "9a7ae83838b4bb130747e20173b23a0ad23514018c3290aeacd3c9cc88812488",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command": ["java", "-Dstdout.encoding=UTF-8", "-cp", ".cache/tablecraft-fixtures/jackcess-5.0.4.jar", "docs/testing/DeleteTreeFixture.java", "delete", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before.accdb", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before-safe-maxima.accdb", "169,244,500,504,508,511,816,852,882,885,890,921,1000"],
+        "status": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command": ["java", "-Dstdout.encoding=UTF-8", "-cp", ".cache/tablecraft-fixtures/jackcess-5.0.4.jar", "docs/testing/DeleteTreeFixture.java", "oracle", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before-safe-maxima.accdb"],
+        "status": 0,
+        "stdout_sha256": "a297a8f0b87361637cff5498ae682e08808a73d8870650d329b27f1c63851661",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command": ["java", "-Dstdout.encoding=UTF-8", "-cp", ".cache/tablecraft-fixtures/jackcess-5.0.4.jar", "docs/testing/DeleteTreeFixture.java", "delete", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before.accdb", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before-safe-ties.accdb", "244,508,511,852,882,885,921"],
+        "status": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command": ["java", "-Dstdout.encoding=UTF-8", "-cp", ".cache/tablecraft-fixtures/jackcess-5.0.4.jar", "docs/testing/DeleteTreeFixture.java", "oracle", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before-safe-ties.accdb"],
+        "status": 0,
+        "stdout_sha256": "60f3b98524c95ec7e12576ad34052a1c2d534d01dbffdd9cbe8cfaa4672cbe8f",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command": ["java", "-Dstdout.encoding=UTF-8", "-cp", ".cache/tablecraft-fixtures/jackcess-5.0.4.jar", "docs/testing/DeleteTreeFixture.java", "delete", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before.accdb", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before-leaf-exhaustion-observation.accdb", "1,11,12,17,22,23,33,34,35,44,45,51,55,56,66,67,68,77,78,85,88,89,99,100,102,110,111,112,119,121,122,132,133,136,143,144,145,153,154,155,165,166,170,176,177,187,188,198,199,204,209,210,220,221,222,231,232,238,242,243,253,254,255,264,265,272,275,276,286,287,289,297,298,306,308,309,319,320,323,330,331,332,340,341,342,352,353,357,363,364,365,374,375,385,386,391,396,397,407,408,418,419,425,429,430,440,441,442,451,452,459,462,463,473,474,475,476,484,485,493,495,496,506,507,510,517,518,519,527,528,529,539,540,544,550,551,552,561,562,572,573,578,583,584,594,595,605,606,612,616,617,627,628,629,638,639,646,649,650,660,661,662,663,671,672,680,682,683,693,694,697,704,705,714,715,716,726,727,731,737,738,739,748,749,759,760,765,770,771,772,781,782,792,793,799,803,804,814,815,816,825,826,833,836,837,847,848,849,850,858,859,867,869,870,880,881,882,884,891,892,901,902,903,913,914,918,924,925,926,935,936,946,947,952,957,958,959,968,969,979,980,986,990,991"],
+        "status": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command": ["java", "-Dstdout.encoding=UTF-8", "-cp", ".cache/tablecraft-fixtures/jackcess-5.0.4.jar", "docs/testing/DeleteTreeFixture.java", "oracle", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before-leaf-exhaustion-observation.accdb"],
+        "status": 0,
+        "stdout_sha256": "75dc324f84cbb8fe08021d895ecd9735d4e326acce5d97cb4128880533709eff",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command": ["java", "-Dstdout.encoding=UTF-8", "-cp", ".cache/tablecraft-fixtures/jackcess-5.0.4.jar", "docs/testing/DeleteTreeFixture.java", "delete", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before.accdb", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before-delete-all-observation.accdb", "all"],
+        "status": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command": ["java", "-Dstdout.encoding=UTF-8", "-cp", ".cache/tablecraft-fixtures/jackcess-5.0.4.jar", "docs/testing/DeleteTreeFixture.java", "oracle", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before-delete-all-observation.accdb"],
+        "status": 0,
+        "stdout_sha256": "600164ebf7a880f40c7dcf2fcf614abefa13b9056c4d6a22a7627c24260c667c",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command": ["java", "-Dstdout.encoding=UTF-8", "-cp", ".cache/tablecraft-fixtures/jackcess-5.0.4.jar", "docs/testing/DeleteTreeFixture.java", "oracle", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before.accdb"],
+        "status": 0,
+        "stdout_sha256": "463833710a647a16602d6d22f12c1156c098fe2c3ae58021053d153154145f5f",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command": ["java", "-Dstdout.encoding=UTF-8", "-cp", ".cache/tablecraft-fixtures/jackcess-5.0.4.jar", "docs/testing/DeleteTreeFixture.java", "delete", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before.accdb", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before-safe-maxima.accdb", "169,244,500,504,508,511,816,852,882,885,890,921,1000"],
+        "status": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command": ["java", "-Dstdout.encoding=UTF-8", "-cp", ".cache/tablecraft-fixtures/jackcess-5.0.4.jar", "docs/testing/DeleteTreeFixture.java", "oracle", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before-safe-maxima.accdb"],
+        "status": 0,
+        "stdout_sha256": "ea8b2b82ad720411e5acc2b9a313f0b31ec5adbcd37cecafb8d460ff7cf2514e",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command": ["java", "-Dstdout.encoding=UTF-8", "-cp", ".cache/tablecraft-fixtures/jackcess-5.0.4.jar", "docs/testing/DeleteTreeFixture.java", "delete", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before.accdb", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before-safe-ties.accdb", "244,508,511,852,882,885,921"],
+        "status": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command": ["java", "-Dstdout.encoding=UTF-8", "-cp", ".cache/tablecraft-fixtures/jackcess-5.0.4.jar", "docs/testing/DeleteTreeFixture.java", "oracle", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before-safe-ties.accdb"],
+        "status": 0,
+        "stdout_sha256": "b2565651344754b1b462e7f80f3d1a7e121b3da95171a3e195564096fd2cb86e",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command": ["java", "-Dstdout.encoding=UTF-8", "-cp", ".cache/tablecraft-fixtures/jackcess-5.0.4.jar", "docs/testing/DeleteTreeFixture.java", "delete", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before.accdb", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before-leaf-exhaustion-observation.accdb", "1,11,12,17,22,23,33,34,35,44,45,51,55,56,66,67,68,77,78,85,88,89,99,100,102,110,111,112,119,121,122,132,133,136,143,144,145,153,154,155,165,166,170,176,177,187,188,198,199,204,209,210,220,221,222,231,232,238,242,243,253,254,255,264,265,272,275,276,286,287,289,297,298,306,308,309,319,320,323,330,331,332,340,341,342,352,353,357,363,364,365,374,375,385,386,391,396,397,407,408,418,419,425,429,430,440,441,442,451,452,459,462,463,473,474,475,476,484,485,493,495,496,506,507,510,517,518,519,527,528,529,539,540,544,550,551,552,561,562,572,573,578,583,584,594,595,605,606,612,616,617,627,628,629,638,639,646,649,650,660,661,662,663,671,672,680,682,683,693,694,697,704,705,714,715,716,726,727,731,737,738,739,748,749,759,760,765,770,771,772,781,782,792,793,799,803,804,814,815,816,825,826,833,836,837,847,848,849,850,858,859,867,869,870,880,881,882,884,891,892,901,902,903,913,914,918,924,925,926,935,936,946,947,952,957,958,959,968,969,979,980,986,990,991"],
+        "status": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command": ["java", "-Dstdout.encoding=UTF-8", "-cp", ".cache/tablecraft-fixtures/jackcess-5.0.4.jar", "docs/testing/DeleteTreeFixture.java", "oracle", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before-leaf-exhaustion-observation.accdb"],
+        "status": 0,
+        "stdout_sha256": "2e7b0b22fa7b4d30ddb80e94afb88110e9ed99076e4534eede6d42ec68c51a55",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command": ["java", "-Dstdout.encoding=UTF-8", "-cp", ".cache/tablecraft-fixtures/jackcess-5.0.4.jar", "docs/testing/DeleteTreeFixture.java", "delete", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before.accdb", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before-delete-all-observation.accdb", "all"],
+        "status": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command": ["java", "-Dstdout.encoding=UTF-8", "-cp", ".cache/tablecraft-fixtures/jackcess-5.0.4.jar", "docs/testing/DeleteTreeFixture.java", "oracle", ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before-delete-all-observation.accdb"],
+        "status": 0,
+        "stdout_sha256": "48c0a8383af58e8b1279f90f2336b7fa4b0201dddadce069cf09e3250d36669d",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ]
+  },
+  "reference_leaf_digest_columns": ["page", "entry_count", "first_id", "last_id", "ordered_ids_sha256", "full_entries_sha256", "first_full_key_row_hex", "last_full_key_row_hex"]
+}

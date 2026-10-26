@@ -8780,3 +8780,57 @@ python3 docs/testing/capture_delete_candidates.py \
 
 Selected output filenames and the report must not already exist. The capture
 uses a 120-second timeout per Java getter command.
+
+## Original ACE16 multi-level DELETE reference inputs
+
+[DeleteTreeFixture.java](DeleteTreeFixture.java) and
+[capture_delete_trees.py](capture_delete_trees.py) are original repository-owned
+code under the root license. Reviewed Jackcess 5.0.4, JAR SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`,
+created fresh V2016/V2019 originals with 1,000 indexed rows, permuted physical
+insertion order, nullable/tied Int32 keys, unique keys, ascending/descending and
+reversed composite keys, and a real logical alias. Sparse Unicode Memo/12 KiB
+OLE payloads, eight unindexed rows and an untouched sentinel provide preservation
+controls. Expression evaluation is disabled, dates use UTC, linked opens throw,
+and getter reopens are read-only. There are no ignored-NULL indexes or
+relationships. No stored/reference SQL, imported active content, third-party
+fixture bytes or native Access operations are used.
+
+Originals and public `Table.deleteRow` reference copies remain ignored under
+`.cache/tablecraft-fixtures/delete-trees-20261026/`. Earlier corpora are unchanged.
+
+| Profile | State | Bytes | SHA-256 |
+| --- | --- | ---: | --- |
+| V2016 | before | 679,936 | `1f9f1cf80830ccda64d3b025ecbc5e648184665530ed301e9ad3ffddfe553400` |
+| V2016 | safe-maxima | 679,936 | `885b0b52ac86a638cb4e8bd5da6a17f6c8e252374acde61fc75b29e4ebb5893c` |
+| V2016 | safe-ties | 679,936 | `49746edb6e9110a1e162f67fd92d24e0f76566d00c2369aac528583c9b8b5578` |
+| V2016 | leaf-exhaustion-observation | 679,936 | `febe9c78b5f9fe728cbba176be965308312cf95a54c47ad4169e9d715b86a403` |
+| V2016 | delete-all-observation | 679,936 | `19fc27f175dc8b4cc88fb28f2763bf64b08045f03557a4d1415ee3bf4291e5f8` |
+| V2019 | before | 753,664 | `90a04486c3c7e01061bb8c68718c8442c4fdc712559d7006fe7ca3dc1c463dc2` |
+| V2019 | safe-maxima | 753,664 | `89b119e2caaf4a817963d1c2b466c9b119e21ab886266e3cd9b685f9428ac182` |
+| V2019 | safe-ties | 753,664 | `b83027f1266ef1c6a484b2b3afc2369d987c16a8fec73b00275a74f631d2c9e6` |
+| V2019 | leaf-exhaustion-observation | 753,664 | `094df570911e6254588c411bd6f722de9a3cb09ef8559237f85880f9dd23e011` |
+| V2019 | delete-all-observation | 753,664 | `a5d3a4bff7532ad3c33ccbc2bde874f310ddf120292b96aac3a32ce5070001a5` |
+
+The [compact reference summary](results/delete-tree-reference-2026-10-26.json) records
+ten read-only getter receipts and thirteen unchanged file pins: two recipes, the
+JAR and ten databases. Public rows/index cursors establish complete populations,
+order and payload hashes; identified pinned implementation getters establish
+physical declarations, locations, counters and owned-page counts. Independent
+Python reconstructs full prefix-compressed node/leaf entries, matches roots to
+unique getter encounter orders and verifies exact child-subtree key/row maxima.
+Each original has five node roots, fourteen leaves and nineteen index pages.
+The 13-row maxima and 7-row tie-boundary reference batches retain every original leaf and all
+page topology/header fields; exact surviving physical key/reference bytes remain
+in their original leaf partitions. Full getter stdout and per-row/entry arrays
+remain ignored in the hash-pinned raw capture; public structured records retain
+exact root/page/leaf counts, key/order digests and boundary samples.
+
+Separate leaf-exhaustion and delete-all copies record public-writer contraction
+observations. They do not establish candidate admission, retirement/allocation
+correctness or native Access save/reopen. Delete-all leaves every index empty, so
+root identity cannot be uniquely inferred from equal empty cursor orders; that
+ambiguity remains explicit in the report. See
+[the owning observations](DELETE_TREE_STORAGE_OBSERVATIONS.md) for boundaries,
+actual reproduction commands and preserved initial captures. Fresh file hashes
+are recorded, not claimed reproducible.
