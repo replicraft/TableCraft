@@ -372,18 +372,6 @@ fn patches_with(
             }
         }
     }
-    #[cfg(feature = "ace16-write-preview")]
-    if !patches.retired.is_empty() {
-        super::retirement::patches(
-            image,
-            schema,
-            indexes,
-            &patches.retired,
-            &mut patches.indexes,
-            budget,
-            cancelled,
-        )?;
-    }
     check(budget, cancelled)?;
     Ok(patches)
 }

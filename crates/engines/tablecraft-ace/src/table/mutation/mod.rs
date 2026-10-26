@@ -15,7 +15,7 @@ mod preview;
 mod rows;
 
 #[cfg(feature = "ace16-write-preview")]
-pub use delete::{Ace16DeletePreview, RowDelete};
+pub use delete::{Ace16DeletePreview, RowDelete, TableRowDeletes};
 pub use error::{EditError, WriteBlocker};
 #[cfg(feature = "ace16-write-preview")]
 pub use fixed::{FixedColumnUpdates, FixedScalarUpdate};

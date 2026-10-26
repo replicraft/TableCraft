@@ -1,5 +1,34 @@
 # Implementation status
 
+## Explicit multi-table deletion candidates
+
+The optional ACE16 preview now accepts `TableRowDeletes` groups through
+`preview_ace16_batch_deletes`. Every table and expected raw row is qualified
+against the same original image before staging. Complete final membership permits
+explicit child and parent removals together; a surviving reference from any
+incoming edge rejects the entire candidate. Empty named groups retain validation,
+and duplicate table groups refuse.
+
+Retirement changes now compose typed owned-clear/global-free-set intents once
+across table owners. An independent union audit checks the exact global bitmap
+changes; per-table ownership, empty-root, retired-payload and sibling proofs
+remain separate. Cross-table page claims cannot overlap. The single-table entry
+uses the same path, retaining its non-journalable result and normal save gates.
+
+This is an explicit final-image engineering batch, not SQL RESTRICT timing or
+automatic cascade execution. Self relationships, other delete actions, unknown
+properties and active content retain their refusals. Allocation, general INSERT,
+record growth, macro eligibility and native Access save/reopen remain unfinished.
+
+The [verification record](testing/results/ace16-batch-delete-native-2026-10-26.json)
+records 239 passing engine functions, including nine new controls, and three
+compile-fail checks. Strict lint, minimal compilation and scoped formatting pass.
+Independent whole-image checks cover two table owners retiring pages in one
+shared bitmap byte, reversed group order, preserved deleted payloads and refused
+free/cross-owned original pages. The initial lint-only helper argument-count
+failure is retained; the correction passes the existing typed retirement context.
+Original-file batch and native Access comparisons remain separate work.
+
 ## Original-file LONG AutoNumber deletion preservation
 
 The frozen committed ACE16 deletion tool now passes sixteen selections over two

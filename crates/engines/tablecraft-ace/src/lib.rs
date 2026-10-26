@@ -50,7 +50,7 @@ pub use preservation::{
     OpaquePayload, PayloadPresence,
 };
 #[cfg(feature = "ace16-write-preview")]
-pub use table::{Ace16DeletePreview, Ace16WritePreview, RowDelete};
+pub use table::{Ace16DeletePreview, Ace16WritePreview, RowDelete, TableRowDeletes};
 pub use table::{
     AttachmentColumn, AttachmentMetadataColumn, StoredAttachment, read_attachment_column,
     read_attachment_column_with_limits, read_attachment_metadata,

@@ -1,15 +1,11 @@
 //! Explicit cardinality-changing engineering candidates; no save authorization.
+mod batch;
 mod patches;
 mod relationships;
 
-use super::{EditError, NativeEditPlan, gates, preview, rows};
-use crate::{
-    InspectError, NativeImage,
-    format::{page::PAGE_BYTES, reader::Reader},
-    header::check,
-    table::indexes::{audit_retirements, audit_siblings, index_delete_patches},
-};
-use tablecraft_core::limits::{Resource, ResourceBudget};
+use super::{EditError, NativeEditPlan, rows};
+use crate::NativeImage;
+use tablecraft_core::limits::ResourceBudget;
 
 /// One live ordinal in the exact captured image, with its complete raw payload.
 ///
@@ -43,6 +39,32 @@ impl RowDelete {
 impl rows::RowAssignment for RowDelete {
     fn row(&self) -> usize {
         self.row
+    }
+}
+
+/// Explicit row deletions for one table in the original captured image.
+///
+/// Empty groups still qualify that table. Table names may not repeat within a
+/// batch, including through case-insensitive spellings. No cascade is inferred.
+pub struct TableRowDeletes<'a> {
+    table: &'a str,
+    deletes: &'a [RowDelete],
+}
+
+impl<'a> TableRowDeletes<'a> {
+    /// Borrow one table name and its snapshot-local raw row requests.
+    pub const fn new(table: &'a str, deletes: &'a [RowDelete]) -> Self {
+        Self { table, deletes }
+    }
+
+    /// Explicit native table name, resolved through the original catalog.
+    pub const fn table(&self) -> &'a str {
+        self.table
+    }
+
+    /// Exact original row requests for this table.
+    pub const fn deletes(&self) -> &'a [RowDelete] {
+        self.deletes
     }
 }
 
@@ -103,65 +125,6 @@ impl NativeImage {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Ace16DeletePreview, EditError> {
-        let _span =
-            tracing::debug_span!("native.delete.preview", assignments = deletes.len()).entered();
-        check(budget, cancelled)?;
-        preview::qualify(&self)?;
-        let before = gates::before_delete(&self, table, budget, cancelled)?;
-        let scope = self.catalog().catalog().scope();
-        relationships::qualify(&self, before.schema().name(), budget, cancelled)?;
-        rows::unique(deletes, budget, cancelled)?;
-        for request in deletes {
-            check(budget, cancelled)?;
-            if request.expected.len() > PAGE_BYTES {
-                return Err(InspectError::StructureLimit.into());
-            }
-            budget
-                .charge(Resource::Steps, request.expected.len() as u64)
-                .map_err(InspectError::from)?;
-        }
-        let mut source = self.reader();
-        let mut reader = Reader {
-            source: &mut source,
-            header: self.catalog().header(),
-            budget,
-            cancelled,
-            reads: 0,
-        };
-        let (records, references) = patches::records(&mut reader, before.schema(), deletes)?;
-        let indexes = index_delete_patches(
-            &self,
-            before.schema(),
-            before.indexes(),
-            &references,
-            reader.budget,
-            reader.cancelled,
-        )?;
-        let plan = self.finish_updates(
-            table,
-            &records,
-            &indexes.indexes,
-            deletes.len(),
-            budget,
-            cancelled,
-        )?;
-        audit_retirements(
-            plan.before_bytes(),
-            plan.after_bytes(),
-            scope,
-            table,
-            &indexes.retired,
-            budget,
-            cancelled,
-        )?;
-        audit_siblings(
-            plan.before_bytes(),
-            plan.after_bytes(),
-            &indexes.siblings,
-            &indexes.retired,
-            budget,
-            cancelled,
-        )?;
-        Ok(Ace16DeletePreview { plan })
+        self.preview_ace16_batch_deletes(&[TableRowDeletes::new(table, deletes)], budget, cancelled)
     }
 }
