@@ -124,3 +124,24 @@ read-only capture is [capture_delete_candidates.py](capture_delete_candidates.py
 This reference chunk does not execute a TableCraft candidate or establish native
 Access DELETE compatibility. Historical observations and reports above remain
 unchanged.
+
+## TableCraft candidate replay
+
+The [comparison example](../../crates/engines/tablecraft-ace/examples/preview_ace16_delete.rs)
+built from committed revision `df6e235d0fcca26854c65be584eb331e333abcc7`
+passes all 70 [original-file replay controls](results/ace16-delete-originals-2026-10-26.json):
+64 candidates reopen with matching getters and six stale/duplicate/output-path
+controls refuse. Sixteen successful candidates start from the registered
+delete-one/delete-null inputs, checking live ordinals after prior tombstones.
+
+The [runner](compare_delete_candidates.py) checks the committed reference hashes,
+complete table/column/index inventories, row/index encounter order, full surviving
+physical key/reference bytes and exact slot/count/entry patch locality. It also
+checks all original record bodies, including preexisting tombstones, long-value
+digests, historical counters, alias identities and protected header/map bytes.
+The [frozen build receipt](results/ace16-delete-example-build-2026-10-26.json)
+pins the executable and supplemental committed sources. Its selected source pins
+are not a complete compiler-input manifest. Generated candidates remain ignored;
+the report retains their hashes and every invocation, including expected failures.
+This is independent physical engineering evidence, not native Access SQL,
+data-macro eligibility, durable recovery or a production write qualification.

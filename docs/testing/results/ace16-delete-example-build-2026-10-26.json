@@ -1,0 +1,44 @@
+{
+  "scope": "Frozen feature-gated comparison example; no normal CLI or production ACE save",
+  "compiled_revision": "df6e235d0fcca26854c65be584eb331e333abcc7",
+  "git_tree": "782dea31e946941900014976caa7dfdcd988417c",
+  "command": "cargo build --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --example preview_ace16_delete",
+  "exit_code": 0,
+  "rustc": [
+    "rustc 1.99.0 (b940084d7 2026-09-28)",
+    "binary: rustc",
+    "commit-hash: b940084d7eb6a299eb4bfeb8e34901bc051e7ac4",
+    "commit-date: 2026-09-28",
+    "host: aarch64-apple-darwin",
+    "release: 1.99.0",
+    "LLVM version: 23.1.1"
+  ],
+  "frozen_example": {
+    "path": ".cache/tablecraft-bin/ace16-delete-preview-20261026",
+    "bytes": 17101912,
+    "sha256": "10fe2c46e817417e12727d79aea5c3d61083d0775db54ff7f284b360d5c4be3b"
+  },
+  "supplemental_committed_source_objects": {
+    "crates/engines/tablecraft-ace/Cargo.toml": {
+      "bytes": 1943,
+      "sha256": "a56035c34352e47169b9fb152bf897270dab14f72b409acf5e0b9ca355f8fdbf"
+    },
+    "crates/engines/tablecraft-ace/examples/preview_ace16_delete.rs": {
+      "bytes": 3530,
+      "sha256": "1c329ad348f79bb5920b468390280c69292e698dc409b15caf3a094b23e9c7b2"
+    },
+    "crates/engines/tablecraft-ace/src/table/mutation/preview.rs": {
+      "bytes": 3280,
+      "sha256": "d47843d50db3f9023490b78f420b80f5380f4cbdab9570c9afa8b47b73e3d31d"
+    },
+    "crates/engines/tablecraft-ace/src/table/indexes/mutation/plan.rs": {
+      "bytes": 12793,
+      "sha256": "1e7fd9816c05c944e8a5adcca150a9a813f4be371b082bfe582b664e7142d7ee"
+    }
+  },
+  "limitations": [
+    "Development build, not a release performance measurement.",
+    "Selected source pins supplement replay evidence; they are not a complete compiler-input manifest.",
+    "Data-macro eligibility, native Access save/reopen and general ACE writes remain unqualified."
+  ]
+}
