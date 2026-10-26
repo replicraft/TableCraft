@@ -1,12 +1,12 @@
 //! Explicit cardinality-changing engineering candidates; no save authorization.
 mod patches;
+mod relationships;
 
-use super::{EditError, NativeEditPlan, WriteBlocker, gates, preview, rows};
+use super::{EditError, NativeEditPlan, gates, preview, rows};
 use crate::{
     InspectError, NativeImage,
     format::{page::PAGE_BYTES, reader::Reader},
     header::check,
-    inspect_relationships,
     table::indexes::{audit_retirements, audit_siblings, index_delete_patches},
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -90,10 +90,12 @@ impl NativeImage {
     /// an empty tree reuses its root as a height-zero leaf. Historical counters,
     /// file length and record payloads stay fixed. Missing map representation,
     /// unsafe allocation metadata or a required split refuses the whole candidate.
-    /// Declared relationships touching this table are refused, including empty
-    /// requests; no delete action or cascade is silently omitted. Existing active
-    /// content, property, constraint, ignored-NULL and historical-layout gates
-    /// remain. Normal ACE writes stay blocked; no macro eligibility is implied.
+    /// Only qualified cross-table enforced RESTRICT relationships are admitted;
+    /// complete final membership rejects surviving references to deleted parents.
+    /// Self references and other delete actions refuse even empty requests.
+    /// Existing active content, property, constraint, ignored-NULL membership
+    /// and historical-layout gates remain. Normal ACE writes stay blocked;
+    /// no macro eligibility is implied.
     pub fn preview_ace16_deletes(
         self,
         table: &str,
@@ -107,21 +109,7 @@ impl NativeImage {
         preview::qualify(&self)?;
         let before = gates::before_delete(&self, table, budget, cancelled)?;
         let scope = self.catalog().catalog().scope();
-        for relationship in inspect_relationships(&mut self.reader(), scope, budget, cancelled)? {
-            check(budget, cancelled)?;
-            let declaration = relationship.declaration();
-            if declaration
-                .parent_table()
-                .as_str()
-                .eq_ignore_ascii_case(before.schema().name())
-                || declaration
-                    .child_table()
-                    .as_str()
-                    .eq_ignore_ascii_case(before.schema().name())
-            {
-                return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
-            }
-        }
+        relationships::qualify(&self, before.schema().name(), budget, cancelled)?;
         rows::unique(deletes, budget, cancelled)?;
         for request in deletes {
             check(budget, cancelled)?;

@@ -36,6 +36,17 @@ The [original-file comparison](../../testing/IGNORED_DELETE_OBSERVATIONS.md) pas
 fifty positive candidates while keeping reference sequencing/allocation changes
 separate from atomic candidate preservation.
 
+The deletion preview also admits qualified cross-table enforced RESTRICT
+relationships. Complete before/after membership checks permit child deletion and
+unreferenced parent deletion, while a surviving dependent rejects the candidate
+with `ConstraintViolation::MissingParent`. Exact paired integral, Currency, GUID
+and matching Decimal keys retain their existing mutation qualification. All-NULL
+child tuples are exempt; partially NULL tuples require their exact parent.
+Self relationships, unenforced declarations and other delete actions remain
+refused even for empty requests. See the
+[closed relationship profile](../../testing/ACE16_DELETE_PREVIEWS.md#cross-table-enforced-restrict-relationships).
+This does not enable normal saves or establish native Access action timing.
+
 `NativeImage::plan_int32_updates` produces complete before/after images without
 writing to its source. The current engineering profile is unencoded Jet 4 only:
 existing non-NULL fixed Int32 fields in unflagged local tables, with the native

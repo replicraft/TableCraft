@@ -266,7 +266,11 @@ GUID keys/tuples and their declared cascades now participate in existing-page
 previews. Decimal previews now reuse existing 17-byte variable slots and qualified
 indexes/tuples, including same-precision/scale declared update cascades, without
 resizing records. Boolean/IEEE/legacy DATE index updates now participate in fixed batches;
-relationship-action coverage for those additional carriers remains unimplemented. Delete actions, remaining indexed carriers and production saves remain explicit
+relationship-action coverage for those additional carriers remains unimplemented.
+The separate deletion preview now admits qualified cross-table enforced RESTRICT
+relationships, retaining complete before/after membership and exact missing-parent
+failures. Self relationships and other delete actions remain refused. Broader
+delete actions, remaining indexed carriers and production saves remain explicit
 blockers. Reciprocal pointer/role/action
 inspection, relationship-catalog agreement and qualified physical reads/checks
 are implemented. Bounded final-child nodes now have authored ACE preview regression
