@@ -1,6 +1,11 @@
-//! Retain page topology and entry counts. Single-key fixed updates retain byte
+//! Retain page topology. Equal-cardinality updates retain counts and fixed byte
 //! layout; nullable and composite changes repack only admitted existing regions.
 //! The completed source check establishes ownership, ordering and row coverage.
+#[cfg(feature = "ace16-write-preview")]
+mod deletion;
+#[cfg(feature = "ace16-write-preview")]
+pub(super) use deletion::Deletion;
+
 use super::super::{
     header::IndexHeader,
     page::{self, ENTRY_START, Entry, KeyRef},

@@ -28,7 +28,7 @@ transitions use the page repacking profiles below. Qualified GUID, Boolean/IEEE/
 indexes and existing-width Decimal slots have their own profiles below. Other
 variable carriers, INSERT, schema changes, AutoNumber and broader index topology
 changes remain unsupported. Ordinary-root deletion has a separate
-[root-leaf candidate API](ACE16_DELETE_PREVIEWS.md), with its own request and return
+[existing-page candidate API](ACE16_DELETE_PREVIEWS.md), with its own request and return
 types; it does not turn these fixed-field APIs into a general writer.
 
 The physical patch machinery is private and shared. Format admission now resides
