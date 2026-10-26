@@ -96,13 +96,15 @@ fn unit_counts_literal_runs_classes_and_pattern_spaces_have_explicit_semantics()
 }
 
 #[test]
-fn complete_patterns_validate_before_matching_and_null_guards_preserve_existing_order() {
+fn reached_patterns_validate_and_null_guards_preserve_existing_order() {
     for pattern in ["[z-a]", "[a-b-c]", "[!]"] {
         for text in ["", "irrelevant"] {
-            assert_eq!(
-                run(text, pattern, LikeMode::Ansi89, &Weighted),
+            let expected = if text.is_empty() {
+                Ok(Truth::False)
+            } else {
                 Err(EvalError::InvalidPattern)
-            );
+            };
+            assert_eq!(run(text, pattern, LikeMode::Ansi89, &Weighted), expected);
         }
     }
     for mode in [Some(LikeMode::Ansi89), None] {
@@ -207,5 +209,60 @@ proptest! {
         for mode in [LikeMode::Ansi89,LikeMode::Ansi92] {
             prop_assert_eq!(run(&text,&pattern,mode,&Identity(true)),run(&text,&pattern,mode,&Identity(false)));
         }
+    }
+}
+
+#[test]
+fn formal_timing_matrix_preserves_weighted_transition_boundaries() {
+    for mode in [LikeMode::Ansi89, LikeMode::Ansi92] {
+        for (text, pattern, expected) in super::super::timing_tests::cases(mode) {
+            assert_eq!(
+                run(text, &pattern, mode, &Weighted),
+                expected,
+                "{text:?} / {pattern:?}"
+            );
+        }
+    }
+}
+
+struct RangeFailure {
+    calls: Cell<usize>,
+}
+
+impl Collation for RangeFailure {
+    fn compare(&self, _: &str, _: &str) -> Result<Ordering, EvalError> {
+        Err(EvalError::UnsupportedExpression)
+    }
+
+    fn like_profile(&self) -> LikeProfile {
+        LikeProfile::Utf16Weights
+    }
+
+    fn compare_like_units(&self, left: &[u16], right: &[u16]) -> Result<Ordering, EvalError> {
+        if left == [122] && right == [97] {
+            self.calls.set(self.calls.get() + 1);
+            return Err(EvalError::Cancelled);
+        }
+        Ok(weights(left).cmp(&weights(right)))
+    }
+
+    fn is_like_unit(&self, units: &[u16]) -> Result<bool, EvalError> {
+        Weighted.is_like_unit(units)
+    }
+}
+
+#[test]
+fn weighted_range_providers_wait_for_the_first_nonempty_reachable_class() {
+    let provider = RangeFailure {
+        calls: Cell::new(0),
+    };
+    for (text, pattern, expected, calls) in [
+        ("", "*[z-a]", Ok(Truth::False), 0),
+        ("x", "*a[z-a]", Ok(Truth::False), 0),
+        ("ß", "ss[z-a]", Ok(Truth::False), 0),
+        ("ßx", "ss[z-a]", Err(EvalError::Cancelled), 1),
+    ] {
+        assert_eq!(run(text, pattern, LikeMode::Ansi89, &provider), expected);
+        assert_eq!(provider.calls.get(), calls);
     }
 }

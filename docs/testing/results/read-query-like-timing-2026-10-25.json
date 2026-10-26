@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "scope": "LIKE malformed-pattern and range-error timing at reachable element frontiers; no public API or new option",
+  "review_base_revision": "c4d3413b1b37eda8a5c35992c7e91d0346380dc9",
+  "unique_tests": 219,
+  "new_tests": 10,
+  "existing_regression_tests": 209,
+  "new_test_breakdown": {
+    "expression_matcher": 5,
+    "query": 3,
+    "cli": 2
+  },
+  "query_target_counts": {
+    "collation_routing": 112,
+    "retrieval": 64,
+    "date_text_predicates": 3,
+    "predicate_declarations": 4,
+    "raw_string_predicates": 4,
+    "like_pattern_timing": 3
+  },
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-expressions --features sql --lib predicates::like -j2 --locked --offline",
+      "exit_code": 0,
+      "log": ".cache/like-timing-expression-final-20261025.log",
+      "log_sha256": "d5f3f54684e0bee89899d37adc065d0c47acfcedef30eca9d97391172103963a",
+      "session": 60583,
+      "passed_tests": 16
+    },
+    {
+      "command": "cargo test -p tablecraft-expressions --features sql --lib evaluation::like -j2 --locked --offline",
+      "exit_code": 0,
+      "log": ".cache/like-timing-evaluator-20261025.log",
+      "log_sha256": "9f79cd33d42bef64aa84834a0c9ad7c823bd43d164ee3e7f75eecdeee1e02631",
+      "passed_tests": 7
+    },
+    {
+      "command": "cargo test -p tablecraft-query --test like_pattern_timing --test collation_routing --test retrieval --test predicate_declarations --test raw_string_predicates --test date_text_predicates -j2 --locked --offline",
+      "exit_code": 0,
+      "log": ".cache/like-timing-query-initial-20261025.log",
+      "log_sha256": "457a3e50c62058cbbf4016db8dcf97cb0382316b90c7501e48bbc3c3384b0145",
+      "session": 77462,
+      "passed_tests": 190
+    },
+    {
+      "command": "cargo test -p tablecraft-cli --test like_pattern_timing --test like -j2 --locked --offline",
+      "exit_code": 0,
+      "log": ".cache/like-timing-cli-initial-20261025.log",
+      "log_sha256": "3e42f23933a709bce326206186e3986567586c96b8a6b0f564466ab67ddd7bb0",
+      "session": 5692,
+      "passed_tests": 6
+    },
+    {
+      "command": "cargo clippy -p tablecraft-expressions -p tablecraft-query --features tablecraft-expressions/sql --lib --tests -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "log": ".cache/like-timing-core-clippy-accepted-20261025.log",
+      "log_sha256": "f02b7fe381669085395bb757559661a68daea92cb3825e82a441b624437864d3",
+      "session": 48383
+    },
+    {
+      "command": "cargo clippy -p tablecraft-cli --bin tablecraft --test like_pattern_timing --test like -j2 --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "log": ".cache/like-timing-cli-clippy-20261025.log",
+      "log_sha256": "ae25e177574db614a38645f9810c64a25cb93ae953f2b7fa46351b0de51f2a3c",
+      "session": 40099
+    },
+    {
+      "command": "cargo check -p tablecraft-expressions --no-default-features --locked --offline -j2",
+      "exit_code": 0,
+      "log": ".cache/like-timing-expression-minimal-20261025.log",
+      "log_sha256": "68d8a7d41f0ec8ee4c36dbcafb1de27347ba3a56462e432927337ff4b284f39a"
+    },
+    {
+      "command": "cargo check -p tablecraft-query --lib --no-default-features -j2 --locked --offline",
+      "exit_code": 0,
+      "log": ".cache/like-timing-query-minimal-20261025.log",
+      "log_sha256": "3715949f9af1e58be30ddc482e52632ce146dd367a4ff7f6bbd707c36c99e179",
+      "session": 84755
+    },
+    {
+      "command": "rustfmt --edition 2024 --check crates/query/tablecraft-expressions/src/predicates/like/mod.rs crates/query/tablecraft-expressions/src/predicates/like/pattern.rs crates/query/tablecraft-expressions/src/predicates/like/raw_tests.rs crates/query/tablecraft-expressions/src/predicates/like/tests.rs crates/query/tablecraft-expressions/src/predicates/like/timing_tests.rs crates/query/tablecraft-expressions/src/predicates/like/utf16/mod.rs crates/query/tablecraft-expressions/src/predicates/like/utf16/pattern.rs crates/query/tablecraft-expressions/src/predicates/like/utf16/tests.rs crates/query/tablecraft-query/tests/like_pattern_timing.rs apps/tablecraft-cli/tests/like_pattern_timing.rs",
+      "exit_code": 0,
+      "log": ".cache/like-timing-format-20261025.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "excluded_attempts": [
+    {
+      "command": "cargo test -p tablecraft-expressions --features sql --lib predicates::like -j2 --locked --offline",
+      "session": 95291,
+      "exit_code": 101,
+      "log": ".cache/like-timing-expression-initial-20261025.log",
+      "log_sha256": "b6b47846fc3469bcf76e581f3aeef657575af7d74274abc3bc17f4e086105ede",
+      "observed": "14 passed, one existing raw-empty assertion failed: empty input with malformed opening class now returns False under the approved exhaustion interpretation.",
+      "correction": "Only the obsolete raw-empty upfront-error expectation changed to False; independent valid-pattern goldens were unchanged."
+    },
+    {
+      "command": "cargo clippy -p tablecraft-expressions -p tablecraft-query --features tablecraft-expressions/sql --lib --tests -j2 --locked --offline -- -D warnings",
+      "session": 8426,
+      "exit_code": 101,
+      "log": ".cache/like-timing-core-clippy-20261025.log",
+      "log_sha256": "3ac5909abcda9b91c32b03782d8c225203870a40de05e604a36546de5caa4507",
+      "observed": "Eleven clone_on_copy warnings in the new expected-error case matrix.",
+      "correction": "Removed unnecessary clones of Copy expected results; no semantic or expected-value change."
+    }
+  ],
+  "superseded_success_not_counted_twice": {
+    "command": "cargo test -p tablecraft-expressions --features sql --lib predicates::like -j2 --locked --offline",
+    "exit_code": 0,
+    "log": ".cache/like-timing-expression-accepted-20261025.log",
+    "log_sha256": "dfac4fd8810f4336c9a11cdb139443acf8019e047e11736e581b1bd300f15a24",
+    "session": 63002,
+    "passed_tests": 16
+  },
+  "primary_contracts": [
+    {
+      "url": "https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/792d4f80-72c1-49da-98a7-37d5783a8615",
+      "scope": "Element-by-element matching, exhaustion and mismatch before unreached malformed elements; reached star validates suffix grammar; range ordering is a separate semantic check."
+    },
+    {
+      "url": "https://support.microsoft.com/en-us/access/like-operator",
+      "scope": "Direct Access SQL operator and wildcard query use; does not establish invalid-pattern timing."
+    }
+  ],
+  "contract_boundaries": [
+    "Explicit exhaustion interpretation: a further consuming malformed class is not reached after input exhaustion; zero-width [] and reached stars still operate.",
+    "A reached star checks suffix grammar without activating unreached provider-dependent range ordering.",
+    "A reached class retains whole-class range-order validation; no new within-list early-match rule.",
+    "Both ANSI modes use this TableCraft timing profile, including the explicit analogous ANSI-92 percent wildcard.",
+    "NULL, eager operands, String conversion, raw publication and typed provider/cancellation/resource failures remain at their existing boundaries.",
+    "Scalar matching now uses two UTF-8-byte-indexed input frontiers; weighted matching retains three UTF-16-unit-indexed frontiers. All allocation/work remains charged."
+  ],
+  "implementation_inventory": [
+    "crates/query/tablecraft-expressions/src/predicates/like/mod.rs",
+    "crates/query/tablecraft-expressions/src/predicates/like/pattern.rs",
+    "crates/query/tablecraft-expressions/src/predicates/like/raw_tests.rs",
+    "crates/query/tablecraft-expressions/src/predicates/like/tests.rs",
+    "crates/query/tablecraft-expressions/src/predicates/like/timing_tests.rs",
+    "crates/query/tablecraft-expressions/src/predicates/like/utf16/mod.rs",
+    "crates/query/tablecraft-expressions/src/predicates/like/utf16/pattern.rs",
+    "crates/query/tablecraft-expressions/src/predicates/like/utf16/tests.rs",
+    "crates/query/tablecraft-query/tests/like_pattern_timing.rs",
+    "apps/tablecraft-cli/tests/like_pattern_timing.rs",
+    "docs/PATTERN_MATCHING.md"
+  ],
+  "working_tree_file_sha256": {
+    "crates/query/tablecraft-expressions/src/predicates/like/mod.rs": "9f9fa76064d6be26898db0ceeb64acb0203e550bf133edbceae89fe8f91b4ecf",
+    "crates/query/tablecraft-expressions/src/predicates/like/pattern.rs": "a162d6c146065c211f63173b766e6fcb20d80afd838eecc334b4fcea28be2efc",
+    "crates/query/tablecraft-expressions/src/predicates/like/raw_tests.rs": "0a50c131075d096779aac99bfc1af5d33fb65dc740624f206923d99b5f56bb79",
+    "crates/query/tablecraft-expressions/src/predicates/like/tests.rs": "a4dc2b590357360eaef8412d2d19e63a3363af876177d80ac4d63f1bc2f82b01",
+    "crates/query/tablecraft-expressions/src/predicates/like/timing_tests.rs": "b59e6e17e59149fde1b1be5212dab145e10e353ff202893c22994aabbd89e606",
+    "crates/query/tablecraft-expressions/src/predicates/like/utf16/mod.rs": "42fcf803fcc05ca37d6c8ee9a4e0577c5c21889b87b5a1135240fa3501b86295",
+    "crates/query/tablecraft-expressions/src/predicates/like/utf16/pattern.rs": "d594205c4859661ae18d6c435af1f55042f5d0fd09dd656e48cc1def90e486d5",
+    "crates/query/tablecraft-expressions/src/predicates/like/utf16/tests.rs": "0ce1ea0696a81d12f29d210fc9b88f2a7af7a7d631cccb6595ea7a348c76881d",
+    "crates/query/tablecraft-query/tests/like_pattern_timing.rs": "d6509ae40e48798a6949576206da5d75ffc87813b2a3a1c9f04ba16b069412fa",
+    "apps/tablecraft-cli/tests/like_pattern_timing.rs": "8dc8f00f5762543279802478cd37b3dcea3784c544d9a73e4c5ff7ddd0294ad9",
+    "docs/PATTERN_MATCHING.md": "ba7be850379f097744d78a9dfaf93e25af6669ca01414143103e194ede542c1b"
+  },
+  "record_file": "docs/testing/results/read-query-like-timing-2026-10-25.json",
+  "limits": [
+    "No Microsoft Access/ACE execution or native Windows/NLS error-order qualification.",
+    "No native fixture replay, benchmark, new dependency, flag, raised default budget or write eligibility change.",
+    "Earlier LIKE coercion and frozen replay evidence remains historical and is not recounted as new timing evidence."
+  ]
+}

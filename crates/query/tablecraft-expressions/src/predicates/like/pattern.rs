@@ -5,6 +5,7 @@ use std::cmp::Ordering;
 const UTF8_CHAR_BYTES: usize = char::MAX.len_utf8();
 
 pub(super) enum Token<'a> {
+    Invalid,
     Many,
     One,
     Digit,
@@ -19,6 +20,7 @@ impl Token<'_> {
         work: &mut Work<'_>,
     ) -> Result<bool, EvalError> {
         Ok(match self {
+            Self::Invalid => return Err(EvalError::InvalidPattern),
             Self::Many | Self::One => true,
             Self::Digit => value.is_ascii_digit(),
             Self::Literal(literal) => compare(*literal, value, collation, work)? == Ordering::Equal,
@@ -73,7 +75,6 @@ fn ranges(list: &str) -> impl Iterator<Item = Result<(char, char), EvalError>> +
 pub(super) fn compile<'a>(
     pattern: &'a str,
     mode: LikeMode,
-    collation: &dyn Collation,
     work: &mut Work<'_>,
 ) -> Result<Vec<Token<'a>>, EvalError> {
     // UTF-8 byte length bounds the number of tokens, without a separate uncharged scan.
@@ -99,7 +100,11 @@ pub(super) fn compile<'a>(
                         break;
                     }
                 }
-                let list = &pattern[start..end.ok_or(EvalError::InvalidPattern)?];
+                let Some(end) = end else {
+                    tokens.push(Token::Invalid);
+                    break;
+                };
+                let list = &pattern[start..end];
                 // Access [] denotes a zero-length string, not an empty character set.
                 if list.is_empty() {
                     continue;
@@ -111,12 +116,14 @@ pub(super) fn compile<'a>(
                     list
                 };
                 if list.is_empty() {
-                    return Err(EvalError::InvalidPattern);
+                    tokens.push(Token::Invalid);
+                    break;
                 }
                 for range in ranges(list) {
-                    let (low, high) = range?;
-                    if compare(low, high, collation, work)? == Ordering::Greater {
-                        return Err(EvalError::InvalidPattern);
+                    work.tick()?;
+                    if range.is_err() {
+                        tokens.push(Token::Invalid);
+                        return Ok(tokens);
                     }
                 }
                 Token::Class(list, negated)
@@ -126,4 +133,21 @@ pub(super) fn compile<'a>(
         tokens.push(token);
     }
     Ok(tokens)
+}
+
+/// Range ordering is semantic, so providers run only for a reached class.
+pub(super) fn validate_class(
+    token: &Token<'_>,
+    collation: &dyn Collation,
+    work: &mut Work<'_>,
+) -> Result<(), EvalError> {
+    if let Token::Class(list, _) = token {
+        for range in ranges(list) {
+            let (low, high) = range?;
+            if compare(low, high, collation, work)? == Ordering::Greater {
+                return Err(EvalError::InvalidPattern);
+            }
+        }
+    }
+    Ok(())
 }

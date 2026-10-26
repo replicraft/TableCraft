@@ -59,8 +59,8 @@ fn wildcard_goldens_cover_modes_lists_ranges_empty_unicode_and_literals() {
     }
     for mode in [LikeMode::Ansi89, LikeMode::Ansi92] {
         for pattern in ["[", "x[abc", "[z-a]", "[a-b-c]"] {
-            // Compile all syntax even when no possible prefix could match.
-            assert_eq!(matches("", pattern, mode), Err(EvalError::InvalidPattern));
+            // Exhaustion precedes an unreached consuming malformed element.
+            assert_eq!(matches("", pattern, mode), Ok(Truth::False));
         }
     }
 }
