@@ -1,10 +1,10 @@
 //! Cardinality changes retain every original nonempty leaf partition and link.
 use super::super::{NativeIndex, header::IndexHeader, page};
 use super::{
-    IndexDataPatch,
+    PatchSet,
     profile::WriteProfile,
     repack,
-    tree::{Deletion, Tree},
+    tree::{Contraction, Deletion, Tree},
 };
 use crate::{
     EditError, InspectError, NativeImage, WriteBlocker,
@@ -18,7 +18,7 @@ pub(super) fn edit<P: WriteProfile, const N: usize>(
     owner: u32,
     references: &[u32],
     profile: &P,
-    patches: &mut Vec<IndexDataPatch>,
+    patches: &mut PatchSet,
 ) -> Result<(), EditError> {
     let mut root = page::read_profile::<_, _, N>(reader, index.root_page(), owner, profile)?;
     if !root.leaf {
@@ -77,7 +77,7 @@ pub(super) fn edit<P: WriteProfile, const N: usize>(
         original,
         &after,
         index.root_page(),
-        patches,
+        &mut patches.indexes,
         reader.budget,
         reader.cancelled,
     )
@@ -90,7 +90,7 @@ fn edit_tree<P: WriteProfile, const N: usize>(
     owner: u32,
     references: &[u32],
     profile: &P,
-    patches: &mut Vec<IndexDataPatch>,
+    patches: &mut PatchSet,
 ) -> Result<(), EditError> {
     let mut keys = Vec::new();
     let tree = Tree::read::<P, N>(
@@ -108,6 +108,42 @@ fn edit_tree<P: WriteProfile, const N: usize>(
         reader.tick()?;
         return Ok(());
     }
+    let mut original = keys.as_slice();
+    let contraction =
+        tree.needs_contraction(&mut original, references, reader.budget, reader.cancelled)?;
+    if !original.is_empty() {
+        return Err(EditError::Preservation);
+    }
+    if contraction {
+        let mut remaining = keys.as_slice();
+        let mut state = Contraction {
+            profile,
+            references,
+            index,
+            retired: &mut patches.retired,
+            leaves: Vec::new(),
+            removed: 0,
+        };
+        tree.contract::<P, N>(
+            image,
+            &mut remaining,
+            &mut state,
+            &mut patches.indexes,
+            reader.budget,
+            reader.cancelled,
+        )?;
+        if !remaining.is_empty() || state.removed != references.len() {
+            return Err(EditError::Preservation);
+        }
+        super::retirement::leaf_links(
+            image,
+            &state.leaves,
+            &mut patches.indexes,
+            reader.budget,
+            reader.cancelled,
+        )?;
+        return Ok(());
+    }
     let mut remaining = keys.as_slice();
     let mut state = Deletion {
         profile,
@@ -118,7 +154,7 @@ fn edit_tree<P: WriteProfile, const N: usize>(
         image,
         &mut remaining,
         &mut state,
-        patches,
+        &mut patches.indexes,
         reader.budget,
         reader.cancelled,
     )?;

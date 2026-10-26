@@ -1,6 +1,6 @@
 # Compatibility-driven roadmap
 
-## Delivery snapshot — 25 October 2026
+## Delivery snapshot — 26 October 2026
 
 The numbered milestones below are broad epics, rather than individual tasks.
 Recent delivery has primarily advanced local reads, query composition and scale;
@@ -28,8 +28,10 @@ Delivered read/query and engineering foundations:
   These now include [checked root-leaf deletion candidates](testing/ACE16_DELETE_PREVIEWS.md),
   with 70 passing original-file controls and unchanged source bytes.
   Multi-level deletion additionally retains nonempty original leaf partitions and
-  exact ancestor boundaries, with 24 passing original-file controls. Empty-branch
-  contraction and required splits remain atomic refusals.
+  exact ancestor boundaries, with 24 passing original-file controls. Qualified
+  existing-page contraction now retires empty branches through checked owned/free
+  maps; its 141 engine checks are separate from pending original-file replay.
+  Required splits still refuse atomically.
   General ACE 16 saves are still unavailable.
 
 - [x] [Stateful streaming composition](query/PROGRESSIVE_QUERIES.md#stateful-retained-stages)
@@ -44,8 +46,8 @@ Major gates still open before the full backend is complete:
 - [ ] Broader ACE 16 validation/preservation and required data-macro safety.
 - [ ] General physical mutation: record growth/allocation, index splits/merges,
   general INSERT/DELETE and wider relationship/write-query actions. Deletion
-  candidates retain qualified topology; contraction, allocation and production
-  saves remain unfinished.
+  candidates now support qualified existing-page contraction; allocation and
+  production saves remain unfinished.
 - [ ] Production transaction/recovery qualification, native shared-file
   coordination and mixed-client behavior.
 - [ ] Remaining backend contracts, application session/cursor lifecycle, object lifecycle, background

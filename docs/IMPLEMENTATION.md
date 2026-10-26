@@ -1,5 +1,27 @@
 # Implementation status
 
+## Deletion candidates with existing-page contraction
+
+The opt-in ACE16 preview now removes empty leaves and branches, repairs surviving
+leaf links and updates existing owned/global-free bitmap cells. Nonempty nodes
+keep their original heights and child forms; a fully empty tree keeps its root
+as a height-zero leaf. Same-byte bitmap edits merge before construction. No new
+pages, map growth, INSERT or ordinary ACE saves are enabled.
+
+Mutation admission now checks map-container roles and allocation of the touched
+table's data, index and supporting metadata pages. A retained causal probe showed
+that read checks alone could accept a globally-free map container; the new guards
+refuse that input and globally-free target data before constructing a candidate.
+Final audits check exact ownership removal, global additions, retained roots and
+retired-page residual bytes. This is not a database-wide allocator audit.
+
+The scoped batch passes 138 engine tests and three compile-fail checks, plus four
+separate request-consumer tests. Strict lint, minimal compilation and formatting
+pass. [The verification record](testing/results/ace16-delete-contraction-native-2026-10-26.json)
+preserves failed probes and exact source/log hashes. Original-file contraction
+replay remains pending; native Access save/reopen and data-macro qualification
+remain separate. See [the contract](testing/ACE16_DELETE_PREVIEWS.md#existing-page-contraction).
+
 ## Deletion through existing multi-level index trees
 
 ACE16 deletion candidates now retain each original leaf partition while removing

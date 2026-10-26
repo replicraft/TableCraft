@@ -27,16 +27,21 @@ including an empty request; this slice does not implement RESTRICT/cascades or
 skip required relationship actions. Ignored-NULL indexes remain write blockers,
 even when their physical membership is completely readable/checkable.
 
-Every physical index must have a checked supported existing topology. A root leaf
-can become empty. In a multi-level tree, every original non-root leaf must remain
-nonempty; requests never redistribute entries across original leaf partitions.
-Both bounded-final-child and tail-child node forms retain their exact child and
-sibling pointers, heights, root identities and ownership maps. Existing write
-codecs are reused: Boolean, integral/Currency, finite Single/Double/legacy
-DATE, GUID and Decimal, plus the existing supported mixed composite profiles.
-This does not enable Text/Binary index mutation, empty-branch/root contraction,
-splits/merges, allocation or long-value reclamation. Logical aliases sharing a physical declaration receive
+Every physical index must have a checked supported existing topology. Requests
+remove entries within their original leaf partitions without redistributing
+retained entries. Empty nonroot leaves and branches can be retired when their
+existing owned and global-free bitmap cells qualify. Every nonempty node retains
+its original height and bounded-final-child or tail-child form; surviving leaf
+links are repaired in encounter order. An entirely empty tree retains its root
+page as a height-zero leaf. Logical aliases sharing a physical declaration receive
 one edit; unrelated physical declarations sharing a root refuse.
+
+Existing write codecs are reused: Boolean, integral/Currency, finite
+Single/Double/legacy DATE, GUID and Decimal, plus the supported mixed composite
+profiles. Text/Binary index mutation, page allocation, map growth/window shifts,
+nonempty root promotion and long-value reclamation remain unsupported. These
+limits do not prevent qualified existing-page contraction, including a retained
+single-child chain at its original heights.
 
 For each selected ordinary root, the checked slot word gains both native
 `tombstone` flags (`0xc000`) while retaining its payload offset. The table's live
@@ -47,15 +52,17 @@ row-reference entries, retaining encounter/tie order and repacking only existing
 pages. Multi-level deletion consumes each leaf's original population before
 filtering and recomputes every ancestor separator from the complete retained
 key/row maximum of its child subtree. The optional tail child contributes its
-subtree maximum without adding a stored separator. A leaf emptied by a batch or
-an ancestor requiring a split refuses the entire candidate, even when other
-indexes could complete. Deleting all rows from an existing root leaf creates a
-zero-entry, zero-prefix leaf without reclaiming its page; delete-all from a node
-tree remains refused. Stored historical index counters are not decremented as if
+subtree maximum without adding a stored separator. An ancestor requiring a split
+refuses the entire candidate, even when other
+indexes could complete. Deleting all rows converts each original index root to a
+zero-entry, zero-prefix height-zero leaf and retires its descendants.
+Stored historical index counters are not decremented as if
 they were current live counts.
 
-Record bodies, neighboring slots, Memo/OLE storage, allocation maps, file length
-and all bytes outside the authorized slot/count/index spans remain unchanged.
+Record bodies, neighboring slots, Memo/OLE storage, file length and all bytes
+outside the authorized slot/count/index/map spans remain unchanged. Retirement
+clears owned bits, sets global-free bits and zeros only the retired page's first
+four bytes; its remaining bytes stay intact.
 Deleted data are not erased. Full post-edit structure and supported constraint
 checks run before a candidate can be returned, including unindexed tombstones.
 Cumulative bytes, row and work budgets and cancellation apply to preflight,
@@ -136,7 +143,61 @@ leaf remaining nonempty. Batch exhaustion, malformed topology, cumulative quotas
 and cancellation remain atomic failures. Public-writer node input/candidate replay
 is separate from these engine checks and is not native Access qualification.
 
-True empty-branch/root contraction still requires qualified child removal,
-sibling repairs, root-identity/height changes and page ownership/free-map behavior.
-This extension neither supplies an allocator nor enables INSERT, ordinary ACE
-saves or required data-macro execution.
+The nonempty-leaf record above describes its historical implementation boundary.
+Existing-page contraction is described below; it does not supply an allocator or
+enable INSERT, ordinary ACE saves or required data-macro execution.
+
+## Existing-page contraction
+
+When deletion empties an original leaf or branch, the preview removes that child
+from its original parent and recomputes complete retained key/row maxima. A
+nonempty root or internal node keeps its height, including a bounded single-child
+chain. The original tail/bounded representation is retained from actual metadata;
+page counts alone never choose a node form. An empty complete tree reuses its
+original root as an empty leaf. Required separator growth that cannot fit an
+existing page refuses the complete operation.
+
+Retirement uses existing represented cells in inline or indirect owned and
+global-free maps. It does not enumerate future global bits as owned pages,
+allocate bitmap pages, change pointers, slide an inline window or grow a row.
+Map containers qualify by role: owned-map containers have owner zero, and the
+fixed global page-one/row-zero container has owner one. Missing representation,
+map/data/index overlap, cross-index ownership overlap or an already-free live
+page refuses the candidate. Global header/map storage, selected table-definition
+and data-owned pages, and index-owned pages must be represented as allocated.
+This qualification concerns the touched table and supporting metadata; it is not
+a database-wide allocator-coherence proof.
+
+Edits sharing a bitmap byte are merged before candidate construction; conflicting
+set/clear requests fail. Root/data/map storage cannot be retired. Full structural
+and supported constraint checks run after edits, followed by an independent audit
+of exact owned-set removal, global-byte additions, retained roots/storage and
+retired headers/residual bytes. Every other bit, including beyond-EOF global
+free bits, remains unchanged. Operations with no retirement retain their earlier
+allocation behavior and do not start requiring global-map metadata.
+
+Review identified two safety gaps before acceptance. The first draft trusted a
+map container's own owner declaration; it now requires the explicit role owners.
+A causal synthetic probe also showed that an allocator-free map container could
+produce a candidate even though ordinary table checks passed. Reserved, map,
+table-definition and target-data allocation checks now reject that input. The
+unsafe synthetic source/candidate and failed probe are retained separately from
+accepted results. Ordinary table checks are not presented as global allocation
+qualification.
+
+The [contraction implementation record](results/ace16-delete-contraction-native-2026-10-26.json)
+records 138 passing engine unit/integration functions: twelve new contraction
+controls, twenty-two earlier DELETE controls, ninety-eight writer regressions and
+six private encoding controls. Three compile-fail documentation tests also pass.
+The separately committed request-file consumer contributes four passing tests;
+these are reported separately from engine totals. Selected library/test/example
+strict lint and the no-default-features library check pass. Original public-writer
+candidate replay is a separate evidence step and is not counted here.
+
+The earlier exhaustion-negative fixtures have no global allocation metadata.
+Their refusal now reports malformed allocation metadata instead of unsupported
+tree contraction; their original bytes, no-candidate expectation and no-retirement
+positive controls remain intact. A diagnostic records the exact changed error.
+One expanded lint run found the resulting unused test import; it was removed
+without changing an expected result. Superseded green checks, failed causal probes
+and diagnostic capture setup failures remain identified in the record.

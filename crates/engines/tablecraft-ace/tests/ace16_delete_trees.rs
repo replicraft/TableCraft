@@ -129,7 +129,7 @@ fn every_numeric_codec_preserves_leaf_partitions_and_exact_node_maxima() {
 }
 
 #[test]
-fn original_leaf_exhaustion_is_atomic_and_node_noops_are_byte_identical() {
+fn unqualified_retirement_is_atomic_and_node_noops_are_byte_identical() {
     for bounded in [false, true] {
         let (bytes, partitions) = fixture::database(6, 4, false, bounded);
         let noop = capture(&bytes)
@@ -144,7 +144,7 @@ fn original_leaf_exhaustion_is_atomic_and_node_noops_are_byte_identical() {
             capture(&bytes)
                 .preview_ace16_deletes("Items", &requests, &mut budget(), &|| false)
                 .err(),
-            Some(EditError::Unsupported(WriteBlocker::IndexedColumn))
+            Some(EditError::Inspect(tablecraft_ace::InspectError::Malformed))
         );
     }
 }

@@ -20,6 +20,9 @@ pub(super) struct IndexHeader {
     _level: u8,
 }
 
+#[cfg(feature = "ace16-write-preview")]
+pub(super) const LEVEL_OFFSET: usize = std::mem::offset_of!(IndexHeader, _level);
+
 impl IndexHeader {
     // Native mutation requires a zero write stamp and the exact subtree height
     // observed in independent fixtures. Reads retain their broader profile.
