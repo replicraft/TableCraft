@@ -1,5 +1,22 @@
 # Implementation status
 
+## GUID-structure equality predicates
+
+Contextual `=`/`<>` predicates now compare a stored Guid with exactly sixteen
+GUID-structure Binary bytes in either order, enabling filters against the existing
+GUIDFromString result. The existing uuid codec performs a fixed allocation-free
+byte mapping. Ordinary/declared execution, membership, quantified equality,
+joins, HAVING, domains and progressive filters share the service. Pure comparison,
+strict group/set keys, source values and index hints remain unchanged. Malformed
+widths, ordering and unrelated Binary comparisons retain explicit refusals.
+
+Four expression, five query and CLI controls cover independent byte goldens and
+generated reversal/bit-flips, NULL, budgets, eager failures, parameter reuse,
+strict keys, streaming and cancellation. See [the contract](GUID_CONVERSIONS.md#guid-structure-predicate-equality)
+and [verification](testing/results/guid-byte-predicates-2026-10-25.json).
+This is a bounded engineering coercion rule grounded in Microsoft's Byte-array
+contract, not native Access comparison evidence or full P0 completion.
+
 ## Independent stored arithmetic/UNION replay
 
 The [stored-field replay](QUERY_RESULT_TYPES.md#stored-field-agreement-replay--25-october-2026)

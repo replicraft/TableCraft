@@ -693,6 +693,14 @@ write transactions/recovery, schema editing, data-macro write safety, UI, forms/
 reports and SQLite expansion are outside this read/query checklist. They remain
 in the broader backend roadmap; this list does not mark them completed or waived.
 
+## GUID-structure predicate coercion
+
+[GUID/byte-structure equality](GUID_CONVERSIONS.md#guid-structure-predicate-equality)
+now lets filters compare stored GUIDs against the existing GUIDFromString byte
+result. Ordinary and declared predicate consumers share the fixed-size rule;
+strict keys, storage and native index hints retain their existing contracts.
+Broader array semantics, native comparison qualification and full P0 remain open.
+
 ## Successful unknown-category arithmetic composition
 
 Declared-profile arithmetic with unknown provenance now has

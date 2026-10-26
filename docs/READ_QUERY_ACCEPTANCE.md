@@ -1141,6 +1141,16 @@ Extrema, statistics, grouping and wider progressive sources remain separate work
 this does not establish complete read/query or native execution qualification.
 
 
+## GUID byte-structure equality predicates
+
+[Contextual GUID equality](GUID_CONVERSIONS.md#guid-structure-predicate-equality)
+now compares stored Guid fields with sixteen GUID-structure Binary bytes,
+including GUIDFromString results. Both operand orders and existing relational
+predicate consumers share the rule. Strict keys/storage and index hints stay
+separate; unsupported widths/order/general Binary comparisons still refuse.
+This closes one concrete coercion gap without establishing native byte order,
+comparison/array semantics or full P0 acceptance.
+
 ## Stored arithmetic composition evidence
 
 The [native-field replay](QUERY_RESULT_TYPES.md#stored-field-agreement-replay--25-october-2026)
