@@ -1,0 +1,327 @@
+{
+  "date": "2026-10-26",
+  "scope": "Existing explicit member Count capability and evidence gate against an unsupported bare-list SQL extension; no implementation change",
+  "compiled_revision": "fbe0e840e42039732eb763a738ef48ed379ef7a1",
+  "compiled_revision_note": "Resolved below from the committed outer-join feature; no new build was needed.",
+  "controls": 9,
+  "disagreements": 0,
+  "immutable_artifacts_before_after": [
+    {
+      "path": ".cache/tablecraft-bin/typed-multivalue-outer-20261026",
+      "bytes": 43207576,
+      "sha256": "44679046d3b5320f928b0967612dc9b79a1fb8c6de2df4b868e6f32f3c7f41c4"
+    },
+    {
+      "path": "docs/testing/compare_bare_multivalue_results.py",
+      "bytes": 12476,
+      "sha256": "79da66bdfbf7ef2ae892ae959c6f2177822cd4d4e7916112282588cff5b495d2"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007.accdb",
+      "bytes": 589824,
+      "sha256": "583d4b99abf504cd8b1bae72423cffc02390bdbd2e46fb8ba1667abf7aaab0da"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007-Ints-getter.stdout",
+      "bytes": 817,
+      "sha256": "8d14e243d8035f4a5e0b44f8997658f7ea0a53b5e66a54b1325cdcc60672327c"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016.accdb",
+      "bytes": 622592,
+      "sha256": "ef784999fcb08b6e50a875e05ba702259d900a2ff9d1c79f28a64dec64457c58"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016-Ints-getter.stdout",
+      "bytes": 817,
+      "sha256": "8d14e243d8035f4a5e0b44f8997658f7ea0a53b5e66a54b1325cdcc60672327c"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019.accdb",
+      "bytes": 696320,
+      "sha256": "3b53417c687f0e4096f5a584bc134b74ece7ae2569fcd847b520231f2e45e295"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019-Ints-getter.stdout",
+      "bytes": 817,
+      "sha256": "8d14e243d8035f4a5e0b44f8997658f7ea0a53b5e66a54b1325cdcc60672327c"
+    }
+  ],
+  "observations": [
+    {
+      "profile": "V2007",
+      "case": "parent-count",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-outer-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS N FROM Multivalues",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 0,
+      "stdout": "N\n4\n",
+      "stderr": "",
+      "expected_rows": [
+        [
+          "I64:4"
+        ]
+      ],
+      "agrees": true
+    },
+    {
+      "profile": "V2007",
+      "case": "per-parent-member-count",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-outer-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT ID,Count(Ints.Value) AS N FROM Multivalues GROUP BY ID ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 0,
+      "stdout": "ID\tN\n1\t3\n2\t0\n3\t0\n4\t100\n",
+      "stderr": "",
+      "expected_rows": [
+        [
+          "I32:1",
+          "I64:3"
+        ],
+        [
+          "I32:2",
+          "I64:0"
+        ],
+        [
+          "I32:3",
+          "I64:0"
+        ],
+        [
+          "I32:4",
+          "I64:100"
+        ]
+      ],
+      "agrees": true
+    },
+    {
+      "profile": "V2007",
+      "case": "bare-list-count-refusal",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-outer-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(Ints) AS N FROM Multivalues",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2007.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: query feature is not implemented\n",
+      "expected_rows": [],
+      "agrees": true
+    },
+    {
+      "profile": "V2016",
+      "case": "parent-count",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-outer-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS N FROM Multivalues",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 0,
+      "stdout": "N\n4\n",
+      "stderr": "",
+      "expected_rows": [
+        [
+          "I64:4"
+        ]
+      ],
+      "agrees": true
+    },
+    {
+      "profile": "V2016",
+      "case": "per-parent-member-count",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-outer-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT ID,Count(Ints.Value) AS N FROM Multivalues GROUP BY ID ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 0,
+      "stdout": "ID\tN\n1\t3\n2\t0\n3\t0\n4\t100\n",
+      "stderr": "",
+      "expected_rows": [
+        [
+          "I32:1",
+          "I64:3"
+        ],
+        [
+          "I32:2",
+          "I64:0"
+        ],
+        [
+          "I32:3",
+          "I64:0"
+        ],
+        [
+          "I32:4",
+          "I64:100"
+        ]
+      ],
+      "agrees": true
+    },
+    {
+      "profile": "V2016",
+      "case": "bare-list-count-refusal",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-outer-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(Ints) AS N FROM Multivalues",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2016.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: query feature is not implemented\n",
+      "expected_rows": [],
+      "agrees": true
+    },
+    {
+      "profile": "V2019",
+      "case": "parent-count",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-outer-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(*) AS N FROM Multivalues",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 0,
+      "stdout": "N\n4\n",
+      "stderr": "",
+      "expected_rows": [
+        [
+          "I64:4"
+        ]
+      ],
+      "agrees": true
+    },
+    {
+      "profile": "V2019",
+      "case": "per-parent-member-count",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-outer-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT ID,Count(Ints.Value) AS N FROM Multivalues GROUP BY ID ORDER BY ID",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 0,
+      "stdout": "ID\tN\n1\t3\n2\t0\n3\t0\n4\t100\n",
+      "stderr": "",
+      "expected_rows": [
+        [
+          "I32:1",
+          "I64:3"
+        ],
+        [
+          "I32:2",
+          "I64:0"
+        ],
+        [
+          "I32:3",
+          "I64:0"
+        ],
+        [
+          "I32:4",
+          "I64:100"
+        ]
+      ],
+      "agrees": true
+    },
+    {
+      "profile": "V2019",
+      "case": "bare-list-count-refusal",
+      "command": [
+        ".cache/tablecraft-bin/typed-multivalue-outer-20261026",
+        "--format",
+        "tsv",
+        "query",
+        "run",
+        "SELECT Count(Ints) AS N FROM Multivalues",
+        "--database",
+        ".cache/tablecraft-fixtures/bare-multivalue-results-20261025/V2019.accdb",
+        "--multivalues",
+        "--native-bytes",
+        "67108864"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "error: query feature is not implemented\n",
+      "expected_rows": [],
+      "agrees": true
+    }
+  ],
+  "primary_references": [
+    {
+      "url": "https://support.microsoft.com/en-us/access/count-data-by-using-a-query",
+      "finding": "Count excludes fields containing complex repeating scalar data, including multivalued lists."
+    },
+    {
+      "url": "https://support.microsoft.com/en-us/access/using-lookup-and-multivalued-fields-in-queries",
+      "finding": "Value calculations/grouping/sorting use the Value member; bare-field grouping is invalid. The designer counting example does not print generated SQL."
+    }
+  ],
+  "limitations": [
+    "These are independent stored-child Count models, not native Access SQL or aggregate subtype qualification.",
+    "Exact SQL generated by the designer example remains unobserved; no bare-list Count extension is authorized by that omission."
+  ]
+}
