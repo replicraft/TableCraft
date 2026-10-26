@@ -1141,6 +1141,15 @@ Extrema, statistics, grouping and wider progressive sources remain separate work
 this does not establish complete read/query or native execution qualification.
 
 
+## Stored arithmetic composition evidence
+
+The [native-field replay](QUERY_RESULT_TYPES.md#stored-field-agreement-replay--25-october-2026)
+now checks the agreement-result change across four unchanged native originals.
+All 312 controls pass, covering both executables/profiles/arm orders, expected
+common conversions, NULL/empty results and retained widening refusals. It verifies
+bounded engineering composition, not native Access aggregate/UNION declarations
+or completion of P0 semantics.
+
 ## Successful unknown-category arithmetic metadata
 
 [Agreement-based result metadata](QUERY_RESULT_TYPES.md#successful-arithmetic-with-unknown-declaration-provenance)
