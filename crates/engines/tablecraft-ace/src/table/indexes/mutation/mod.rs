@@ -19,6 +19,8 @@ mod tree;
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) use plan::delete_patches;
 pub(in crate::table) use plan::patches;
+#[cfg(feature = "ace16-write-preview")]
+pub(in crate::table) use tree::audit_siblings;
 
 pub(in crate::table) struct IndexKeyUpdate {
     pub reference: u32,
@@ -37,6 +39,8 @@ pub(in crate::table) struct PatchSet {
     pub indexes: Vec<IndexDataPatch>,
     #[cfg(feature = "ace16-write-preview")]
     pub retired: Vec<RetiredPage>,
+    #[cfg(feature = "ace16-write-preview")]
+    pub siblings: Vec<tree::SiblingAudit>,
 }
 
 #[cfg(test)]

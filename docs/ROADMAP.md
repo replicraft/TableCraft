@@ -34,8 +34,9 @@ Delivered read/query and engineering foundations:
   Required splits still refuse atomically.
   Single Short Text/Binary deletion now retains checked original key bytes;
   their UPDATE codecs remain unavailable.
-  Nonzero internal-node sibling chains also remain refused; deeper original
-  fixtures identify checked chain repair as the next contraction extension.
+  Internal-node sibling chains now qualify and repair by height, with a separate
+  final audit. Repaired original-file acceptance requires fresh candidate replay;
+  the earlier sixteen refusals remain an immutable baseline.
   General ACE 16 saves are still unavailable.
 
 - [x] [Stateful streaming composition](query/PROGRESSIVE_QUERIES.md#stateful-retained-stages)

@@ -11,7 +11,7 @@ use crate::table::indexes::{
     },
     page::{Entry, KeyRef, LEAF},
 };
-use crate::{EditError, InspectError, NativeImage, WriteBlocker, header::check};
+use crate::{EditError, InspectError, NativeImage, header::check};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 pub(in crate::table::indexes::mutation) struct Contraction<'a, P> {
@@ -67,9 +67,6 @@ impl Tree {
         check(budget, cancelled)?;
         let raw = raw_page(image, self.number)?;
         let header = IndexHeader::read(raw)?;
-        if !self.children.is_empty() && (header.previous.get() != 0 || header.next.get() != 0) {
-            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
-        }
         budget
             .charge_allocation(self.count as u64, size_of::<Entry<P::Key>>() as u64)
             .map_err(InspectError::from)?;
