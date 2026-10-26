@@ -3,6 +3,8 @@ use super::super::{
     header::IndexHeader,
     page::{ENTRY_START, Entry},
 };
+#[cfg(feature = "ace16-write-preview")]
+use super::retained::RetainedProfile;
 use super::{IndexDataPatch, encoding, profile::WriteProfile};
 use crate::{EditError, InspectError, WriteBlocker, format::page::PAGE_BYTES, header::check};
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -19,6 +21,39 @@ pub(super) fn page<P: WriteProfile, const N: usize>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, EditError> {
+    page_with::<_, N>(
+        original,
+        entries,
+        |entry| encoding::entry::<P, N>(entry, profile),
+        budget,
+        cancelled,
+    )
+}
+
+#[cfg(feature = "ace16-write-preview")]
+pub(super) fn retained_page<P: RetainedProfile, const N: usize>(
+    original: &[u8],
+    entries: &[Entry<P::Key>],
+    profile: &P,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, EditError> {
+    page_with::<_, N>(
+        original,
+        entries,
+        |entry| encoding::retained_entry::<P, N>(entry, profile),
+        budget,
+        cancelled,
+    )
+}
+
+fn page_with<K, const N: usize>(
+    original: &[u8],
+    entries: &[Entry<K>],
+    encode: impl Fn(&Entry<K>) -> Result<encoding::Encoded<N>, InspectError>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, EditError> {
     if original.len() != PAGE_BYTES {
         return Err(EditError::Preservation);
     }
@@ -31,7 +66,7 @@ pub(super) fn page<P: WriteProfile, const N: usize>(
         budget
             .charge(Resource::Steps, N as u64)
             .map_err(InspectError::from)?;
-        let encoded = encoding::entry::<_, N>(entry, profile)?;
+        let encoded = encode(entry)?;
         total = total
             .checked_add(encoded.length)
             .ok_or(InspectError::StructureLimit)?;
@@ -79,7 +114,7 @@ pub(super) fn page<P: WriteProfile, const N: usize>(
         budget
             .charge(Resource::Steps, N as u64)
             .map_err(InspectError::from)?;
-        let encoded = encoding::entry::<_, N>(entry, profile)?;
+        let encoded = encode(entry)?;
         let shared = if position == 0 { 0 } else { prefix };
         let next = end + encoded.length - shared;
         after[ENTRY_START + end..ENTRY_START + next]

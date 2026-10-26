@@ -1,9 +1,8 @@
-//! Cardinality changes retain every original nonempty leaf partition and link.
+//! Cardinality changes preserve retained original keys and qualified page ownership.
 use super::super::{NativeIndex, header::IndexHeader, page};
 use super::{
-    PatchSet,
-    profile::WriteProfile,
-    repack,
+    PatchSet, repack,
+    retained::RetainedProfile,
     tree::{Contraction, Deletion, Tree},
 };
 use crate::{
@@ -11,7 +10,7 @@ use crate::{
     format::{page::PAGE_BYTES, reader::Reader},
 };
 
-pub(super) fn edit<P: WriteProfile, const N: usize>(
+pub(super) fn edit<P: RetainedProfile, const N: usize>(
     image: &NativeImage,
     reader: &mut Reader<'_, std::io::Cursor<&[u8]>>,
     index: &NativeIndex,
@@ -66,7 +65,7 @@ pub(super) fn edit<P: WriteProfile, const N: usize>(
     if references.is_empty() {
         return Ok(());
     }
-    let after = repack::page::<P, N>(
+    let after = repack::retained_page::<P, N>(
         original,
         &root.entries,
         profile,
@@ -83,7 +82,7 @@ pub(super) fn edit<P: WriteProfile, const N: usize>(
     )
 }
 
-fn edit_tree<P: WriteProfile, const N: usize>(
+fn edit_tree<P: RetainedProfile, const N: usize>(
     image: &NativeImage,
     reader: &mut Reader<'_, std::io::Cursor<&[u8]>>,
     index: &NativeIndex,

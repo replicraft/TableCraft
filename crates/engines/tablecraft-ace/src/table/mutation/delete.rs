@@ -82,8 +82,9 @@ impl Ace16DeletePreview {
 impl NativeImage {
     /// Prepare ordinary-root deletion inside existing ACE16 pages.
     ///
-    /// All physical indexes must qualify for existing write codecs. Entries are
-    /// removed within their original leaf partitions; ancestor bounds use full
+    /// All physical indexes must qualify for the existing write codecs or the
+    /// delete-only single Short Text/Short Binary preservation profile. Entries
+    /// are removed within their original leaf partitions; ancestor bounds use full
     /// retained key/row maxima. Empty nonroot pages may retire through qualified
     /// existing owned/global bitmap cells. Nonempty nodes retain their heights;
     /// an empty tree reuses its root as a height-zero leaf. Historical counters,
@@ -104,7 +105,7 @@ impl NativeImage {
             tracing::debug_span!("native.delete.preview", assignments = deletes.len()).entered();
         check(budget, cancelled)?;
         preview::qualify(&self)?;
-        let before = gates::before(&self, table, budget, cancelled)?;
+        let before = gates::before_delete(&self, table, budget, cancelled)?;
         let scope = self.catalog().catalog().scope();
         for relationship in inspect_relationships(&mut self.reader(), scope, budget, cancelled)? {
             check(budget, cancelled)?;

@@ -9,11 +9,19 @@ Jet 4 planner follows the bounded native contract below.
 
 The separate feature-gated [existing-page delete preview](../../testing/ACE16_DELETE_PREVIEWS.md)
 now prepares ordinary ACE16 tombstones, live-count changes and exact existing-leaf
-entry removal, including empty root leaves. Multi-level trees retain original leaf
-partitions and require each leaf to remain nonempty, with exact key/row ancestor
-bounds. It returns `Ace16DeletePreview`, never a journalable plan, and preserves
-all normal ACE write/data-macro gates. Empty-branch/root contraction, allocation
-and ordinary SQL/backend DELETE remain unimplemented.
+entry removal. Multi-level trees preserve surviving leaf partitions and exact
+key/row ancestor bounds. Qualified empty leaves and branches retire through
+existing owned/global-free map cells; a fully empty tree retains its original
+root as a height-zero leaf. It returns `Ace16DeletePreview`, never a journalable
+plan, and preserves all normal ACE write/data-macro gates. Qualified single Short
+Text and Short Binary indexes now retain checked original key bytes during
+deletion; this does not enable their UPDATE codecs. Allocation, Text/Binary
+composite deletion and ordinary SQL/backend DELETE remain unimplemented. Engine checks
+and original-file candidate replay have separate evidence records in the preview
+contract; neither establishes native Access save/reopen.
+The current contraction profile refuses nonzero internal-node sibling links.
+The [deep reference corpus](../../testing/DELETE_CONTRACTION_STORAGE_OBSERVATIONS.md)
+contains those links; supporting their checked repair remains a concrete gap.
 
 `NativeImage::plan_int32_updates` produces complete before/after images without
 writing to its source. The current engineering profile is unencoded Jet 4 only:

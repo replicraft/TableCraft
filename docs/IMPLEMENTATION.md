@@ -1,5 +1,28 @@
 # Implementation status
 
+## Deletion with preserved Short Text and Short Binary keys
+
+The feature-gated ACE16 deletion preview now retains checked original encoded keys
+for qualified single Short Text General and Short Binary indexes. A deletion-only
+transport owns semantic keys and exact wire bytes, with fallible, metered retained
+copies. Existing read profiles still compare keys and full before/after checks
+still encode source values for agreement. The shared page decoder and UPDATE
+profiles are unchanged.
+
+Both directions, NULL/empty values, nonunique ties, physical aliases and supported
+nonunique Text overflow digests are covered. Unknown sort families, unique digest
+ambiguity, Memo/Long Text, Text/Binary composites and ignored-NULL indexes remain
+refused. The existing nonzero internal-node sibling-link contraction limit also
+remains; this feature does not repair that separate gap or enable normal ACE saves.
+
+The scoped batch passes 178 engine functions, including ten new controls, plus
+three compile-fail checks. Root-leaf positives cover both ACE16-family headers.
+Strict lint, minimal compilation and formatting pass. The
+[verification record](testing/results/ace16-delete-encoded-native-2026-10-26.json)
+preserves initial fixture-layout and expectation failures with their causal
+diagnostics; no production correction followed those failures. Original-file
+Text/Binary candidate replay remains separate and unrun in this record.
+
 ## Deletion candidates with existing-page contraction
 
 The opt-in ACE16 preview now removes empty leaves and branches, repairs surviving

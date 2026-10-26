@@ -4,6 +4,11 @@ use super::super::{
     decimal::{self, DecimalIndexSelection, DecimalProfile, DecimalType},
     guid::{self, GuidProfile},
 };
+#[cfg(feature = "ace16-write-preview")]
+use super::{
+    super::{binary, text},
+    retained::Preserved,
+};
 use super::{
     IndexDataPatch, IndexKeyUpdate, NumericKey, PatchSet,
     composite::TupleProfile,
@@ -11,6 +16,8 @@ use super::{
     profile::{SingleProfile, WriteProfile},
     tree::{Rewrite, Tree},
 };
+#[cfg(feature = "ace16-write-preview")]
+use crate::format::data_type::{SHORT_BINARY, SHORT_TEXT};
 use crate::{
     EditError, FileFormat, InspectError, NativeImage, TableSchema, WriteBlocker,
     format::reader::Reader, header::check,
@@ -168,6 +175,45 @@ fn patches_with(
             let kind = schema.columns[column]
                 .scalar_type()
                 .ok_or(InspectError::Unsupported)?;
+            #[cfg(feature = "ace16-write-preview")]
+            if let Change::Delete(references) = change {
+                let metadata = &schema.columns[column];
+                if metadata.native_type() == SHORT_TEXT && kind == ScalarType::Text {
+                    let profile = Preserved(text::TextProfile::new(
+                        column,
+                        metadata,
+                        index.columns()[0].descending(),
+                    )?);
+                    super::delete::edit::<_, { text::MAX_ENTRY_BYTES }>(
+                        image,
+                        &mut reader,
+                        index,
+                        schema.definition,
+                        references,
+                        &profile,
+                        &mut patches,
+                    )?;
+                    continue;
+                }
+                if metadata.native_type() == SHORT_BINARY && kind == ScalarType::Binary {
+                    let profile = Preserved(binary::BinaryProfile {
+                        column,
+                        descending: index.columns()[0].descending(),
+                        maximum: metadata.storage_length(),
+                        selection: binary::BinaryIndexSelection::All,
+                    });
+                    super::delete::edit::<_, { binary::MAX_ENTRY_BYTES }>(
+                        image,
+                        &mut reader,
+                        index,
+                        schema.definition,
+                        references,
+                        &profile,
+                        &mut patches,
+                    )?;
+                    continue;
+                }
+            }
             if kind == ScalarType::Decimal {
                 if !matches!(
                     image.catalog().header().format(),
