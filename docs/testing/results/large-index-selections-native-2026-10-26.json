@@ -1,0 +1,259 @@
+{
+  "date": "2026-10-26",
+  "scope": "Bounded whole-preflight data-page bitmap membership for partial native index reads above 4,096 table data pages; index-owned/complete/check/mutation materialized limits unchanged",
+  "unique_tests": 170,
+  "new_tests": 10,
+  "new_public_tests": 6,
+  "new_private_tests": 4,
+  "existing_tests": 160,
+  "checks": [
+    {
+      "command": "cargo check --locked --offline -j2 -p tablecraft-ace --lib",
+      "session": 99249,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/large-index-selections-check-20261026.log",
+        "bytes": 183,
+        "sha256": "0d040ab4832aa682446b7c7f24f78ba954dc26ad56a19df6ac511f3db1cda9ed"
+      }
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --test large_index_selections",
+      "session": 56987,
+      "exit_code": 0,
+      "unique_tests": 6,
+      "log": {
+        "path": ".cache/large-index-selections-tests-20261026.log",
+        "bytes": 899,
+        "sha256": "af330b00d96d94f1f2db3aff420634f9881a2fdd02618f4baed13ad5ec9410a5"
+      }
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --lib format::allocation",
+      "session": 72573,
+      "exit_code": 0,
+      "unique_tests": 14,
+      "new_tests": 4,
+      "filtered_tests_not_counted": 164,
+      "log": {
+        "path": ".cache/large-index-selections-allocation-tests-20261026.log",
+        "bytes": 1983,
+        "sha256": "14477d5330a91c363060fe9066d6b4abef3ee2e8ebc5eb59cbe13679a029bd27"
+      }
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test indexes --test index_nodes --test index_projection --test boolean_indexes --test narrow_ranges --test currency_indexes --test guid_indexes --test decimal_indexes --test date_indexes --test indexed_nulls --test ace16_fixed_updates --test ignored_index_checks --test table_pages",
+      "session": 84142,
+      "exit_code": 0,
+      "unique_tests": 150,
+      "log": {
+        "path": ".cache/large-index-selections-regressions-final-20261026.log",
+        "bytes": 15800,
+        "sha256": "c1351427d458e0732835bd6f2edda6813b1761fd448b2b86440af8060a2cfb02"
+      },
+      "breakdown": {
+        "ace16_fixed_updates": 6,
+        "boolean_indexes": 10,
+        "currency_indexes": 7,
+        "date_indexes": 6,
+        "decimal_indexes": 14,
+        "guid_indexes": 13,
+        "ignored_index_checks": 13,
+        "index_nodes": 10,
+        "index_projection": 3,
+        "indexed_nulls": 7,
+        "indexes": 25,
+        "narrow_ranges": 1,
+        "table_pages": 35
+      }
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib --test large_index_selections --test indexes --test index_nodes --test index_projection --test table_pages --test indexed_nulls --test ace16_fixed_updates -- -D warnings",
+      "session": 97752,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/large-index-selections-clippy-20261026.log",
+        "bytes": 183,
+        "sha256": "3ab6347da9f69e7b772874c406f79d4243367db2f540ae139c997a4e1d46744b"
+      }
+    },
+    {
+      "command": "cargo check --locked --offline -j2 -p tablecraft-ace --lib --no-default-features",
+      "session": 68812,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/large-index-selections-minimal-20261026.log",
+        "bytes": 183,
+        "sha256": "3c9f99f96708ef21dd4f9a8e74bd9b5867e27bc2f3c99c9cca018710c26a5001"
+      }
+    },
+    {
+      "command": "rustfmt --edition 2024 --check crates/engines/tablecraft-ace/src/format/allocation.rs crates/engines/tablecraft-ace/src/format/allocation/cursor.rs crates/engines/tablecraft-ace/src/format/allocation/cursor/membership.rs crates/engines/tablecraft-ace/src/format/allocation/cursor/membership/tests.rs crates/engines/tablecraft-ace/src/table/indexes/read.rs crates/engines/tablecraft-ace/src/table/indexes/read/membership.rs crates/engines/tablecraft-ace/tests/large_index_selections.rs crates/engines/tablecraft-ace/tests/large_index_selections/fixture.rs",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/large-index-selections-format-20261026.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "scope_files": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/allocation.rs",
+      "bytes": 4218,
+      "sha256": "252d0f9f09870a03d26123a3cbdb05aabfa8eb6e3a2f7ef42caa3b419ab4a1b6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/allocation/cursor.rs",
+      "bytes": 6819,
+      "sha256": "4f7bcef80c32a75528bad469028ad3124736c02e3716ad242df6efb09899cb38"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/allocation/cursor/membership.rs",
+      "bytes": 3679,
+      "sha256": "28d0f301e80bb315eb31910dd784d905d201045404d82a343f6803e0cf91c75e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/allocation/cursor/membership/tests.rs",
+      "bytes": 3445,
+      "sha256": "32e476d61c5d77daaff01603dee3bc1fde613fd96a7edf91480155a30d8ad058"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/read.rs",
+      "bytes": 25733,
+      "sha256": "55493ef7fd86ae63f90e31e9d15e7a33b7b15486f6a8d53ffb8336b76ea9617d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/read/membership.rs",
+      "bytes": 1040,
+      "sha256": "26bcfab0a2f482d01cfb5270010427a7c319dd934e9dc4c02a382bf1c9487f1b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/large_index_selections.rs",
+      "bytes": 5551,
+      "sha256": "475ee3724bab99dc4b0936045de6824ee29646b7beb5ab4bf5d352c8ee9013ea"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/large_index_selections/fixture.rs",
+      "bytes": 4782,
+      "sha256": "e81a3714a8a1d0f05639432ab42d31182a2a65055d9949ff5c3ae5fe846962b0"
+    },
+    {
+      "path": "docs/NATIVE_INDEXES.md",
+      "bytes": 78064,
+      "sha256": "4294b3168396bcd9bf7c437e2f1e1449e78307d4c56d41687a3848c436b2767d"
+    },
+    {
+      "path": "docs/testing/LARGE_INDEX_SELECTIONS.md",
+      "bytes": 4770,
+      "sha256": "5469233ddc8422c2b9e7bbdffef3aba5e1084abd5f973207e961b06b0007571b"
+    },
+    {
+      "path": "docs/testing/LargeUsageMapProbe.java",
+      "bytes": 5310,
+      "sha256": "bb207c72e9324f166a160929e9596da09d4b15b45de7d2414d44ec20eed88b13"
+    }
+  ],
+  "excluded_runs": [
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test indexes --test index_nodes --test index_projection --test boolean_indexes --test narrow_ranges --test currency_indexes --test guid_indexes --test decimal_indexes --test date_indexes --test indexed_nulls --test ace16_fixed_updates --test ignored_index_checks --test large_maps",
+      "exit_code": 101,
+      "tests_run": 0,
+      "log": {
+        "path": ".cache/large-index-selections-regressions-20261026.log",
+        "bytes": 1817,
+        "sha256": "a50b6d5459758c79aab89f82845fe308b3379e2c65547d0ab0e07ded81db7971"
+      },
+      "reason": "Authored command used helper directory large_maps as a target; corrected to actual table_pages before any test ran."
+    }
+  ],
+  "boundaries": [
+    "PageMembership::new consumes the existing PageCursor complete map/bitmap preflight. One map and one bitmap are retained in fallible prepaid heap storage; lookup uses the existing bitmap set-bit grammar.",
+    "Newly loaded cached bitmaps are signature/address-validated before lookup. Empty selections still preflight complete usage metadata.",
+    "Only table data-page membership for profile.complete()==false changes. All/complete reads, full checks, index-owned page materialization and mutation gates retain the 4,096-address limit.",
+    "Selected roots still require membership, live slots/owner, bounded relocation, schema validation and exact key agreement; no fallback, codec or write support added.",
+    "Stable/offline source ownership remains required; cache reread checks do not promise live-file snapshot isolation.",
+    "No Access/query/CLI tests or original after-change CLI run are counted here."
+  ],
+  "original_baseline": {
+    "generator": {
+      "path": "docs/testing/LargeUsageMapProbe.java",
+      "bytes": 5310,
+      "sha256": "bb207c72e9324f166a160929e9596da09d4b15b45de7d2414d44ec20eed88b13"
+    },
+    "private_generator_sha256": "bb207c72e9324f166a160929e9596da09d4b15b45de7d2414d44ec20eed88b13",
+    "baseline_report": {
+      "path": ".cache/large-indexed-table-probe-20261026/baseline-reproduction.json",
+      "bytes": 12228,
+      "sha256": "6ef8d7453b754c1fc4864c4fcf182ee066dff9b8ea2f3aa2fc8e270d90f413ee"
+    },
+    "generation_getter_commands": {
+      "path": ".cache/large-indexed-table-probe-20261026/commands.json",
+      "bytes": 1681,
+      "sha256": "81d2472243fa22b7d9dfb15f0eee04b200d4209f73ddaae7e4adae36da36564a"
+    },
+    "controls": 12,
+    "actual_rows_per_profile": 5000,
+    "owned_data_pages_per_profile": 5000,
+    "index_owned_pages_per_profile": 17,
+    "note": "Private command records can contain local absolute paths; they are pinned rather than copied into public evidence. The owning recipe document gives relative reproducible equivalents. These observations establish the before-change refusal, not post-change CLI success.",
+    "artifacts": [
+      {
+        "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "bytes": 1407244,
+        "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+      },
+      {
+        "path": ".cache/large-indexed-table-probe-20261026/V2016.accdb",
+        "bytes": 20934656,
+        "sha256": "a92022ed6a1a63335cf82901da00d9d9b7d6013792042f90fce328304c0319f4"
+      },
+      {
+        "path": ".cache/large-indexed-table-probe-20261026/V2016-generate.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": ".cache/large-indexed-table-probe-20261026/V2016-generate.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": ".cache/large-indexed-table-probe-20261026/V2016-oracle.stdout",
+        "bytes": 506004,
+        "sha256": "09018306f3c8b51cbb3e513504e746b7d2edd0333e02bea30387e29aa25feb33"
+      },
+      {
+        "path": ".cache/large-indexed-table-probe-20261026/V2016-oracle.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": ".cache/large-indexed-table-probe-20261026/V2019.accdb",
+        "bytes": 21004288,
+        "sha256": "0dc0bf89240ab499427e546502e983547715b3a27698dd4c1eb6a86d96cf558b"
+      },
+      {
+        "path": ".cache/large-indexed-table-probe-20261026/V2019-generate.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": ".cache/large-indexed-table-probe-20261026/V2019-generate.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": ".cache/large-indexed-table-probe-20261026/V2019-oracle.stdout",
+        "bytes": 506053,
+        "sha256": "46022af4c5f7719abdb0906ede3212124c1936589e53990ac25703361a8559ea"
+      },
+      {
+        "path": ".cache/large-indexed-table-probe-20261026/V2019-oracle.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ]
+  },
+  "fixture_registration": "docs/FIXTURES.md"
+}

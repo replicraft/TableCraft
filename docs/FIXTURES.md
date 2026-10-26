@@ -8679,3 +8679,35 @@ pins 36 artifacts and forty selected compiled source objects. Bracketed-list TSV
 is an explicit TableCraft presentation; NaN display does not identify payload or
 sign, while separate typed API tests preserve exact Single bits. No native Access
 SQL/lookup or collection result-representation qualification is inferred.
+
+## Original ACE16 large indexed-table selection inputs
+
+[LargeUsageMapProbe.java](testing/LargeUsageMapProbe.java) is repository-owned
+code under the root license, promoted byte-identically from the actual generator
+and read-only getter source (SHA-256
+`bb207c72e9324f166a160929e9596da09d4b15b45de7d2414d44ec20eed88b13`).
+It uses reviewed Jackcess 5.0.4, JAR SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`,
+to create fresh V2016/V2019 databases with 5,000 rows, an Int32 primary index and
+twelve 240-byte Binary fields. Expression evaluation is disabled and linked opens
+are refused. No third-party fixture, reference SQL or active content is executed.
+
+| Profile | Original bytes | Original SHA-256 |
+| --- | ---: | --- |
+| V2016 | 20,934,656 | `a92022ed6a1a63335cf82901da00d9d9b7d6013792042f90fce328304c0319f4` |
+| V2019 | 21,004,288 | `0dc0bf89240ab499427e546502e983547715b3a27698dd4c1eb6a86d96cf558b` |
+
+Originals and raw generation/getter transcripts remain ignored under
+`.cache/large-indexed-table-probe-20261026/`. Public row and index-cursor getters
+establish all 5,000 IDs and Binary payload hashes; explicitly identified pinned
+implementation getters establish 5,000 owned data pages and seventeen index
+pages per profile. The independent model reproduces the Binary bytes. Exact
+commands and excluded initial probe details are retained, with relative fresh
+reproduction commands in [the owning evidence document](testing/LARGE_INDEX_SELECTIONS.md).
+Fresh generation is not promised byte-identical. Originals remain unchanged.
+
+The twelve baseline controls establish sequential success and the previous
+partial-index structural refusal. Focused engine tests qualify the new bounded
+bitmap-membership path separately; complete indexed reads, full checks and
+mutation map ceilings remain explicit. This evidence does not establish native
+Access compatibility or enable writes.

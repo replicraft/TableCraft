@@ -1,3 +1,4 @@
+mod membership;
 use super::super::TableSchema;
 use super::super::{record, snapshot::TableSnapshot};
 use super::binary::BinaryIndexSelection;
@@ -23,6 +24,7 @@ use crate::{
     },
     limits::MAX_LIVE_ROWS,
 };
+use membership::DataPages;
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -592,7 +594,7 @@ fn read_rows<R: crate::NativeReadSource, P: KeyProfile, const N: usize>(
         entries.sort_unstable_by_key(|entry| entry.row);
         reader.tick()?;
     }
-    let data_pages = allocation::pages(&mut reader, schema.layout.usage)?;
+    let mut data_pages = DataPages::new(&mut reader, schema.layout.usage, complete)?;
     let mut rows = Vec::new();
     let mut current_page = None;
     for (position, entry) in entries.into_iter().enumerate() {
@@ -609,7 +611,7 @@ fn read_rows<R: crate::NativeReadSource, P: KeyProfile, const N: usize>(
         reader.budget.charge(Resource::Rows, 1)?;
         let page_number = reference_page(entry.row);
         let slot = reference_slot(entry.row);
-        if data_pages.binary_search(&page_number).is_err() {
+        if !data_pages.contains(&mut reader, page_number)? {
             return Err(InspectError::Malformed);
         }
         if !matches!(&current_page, Some((number, _)) if *number == page_number) {
