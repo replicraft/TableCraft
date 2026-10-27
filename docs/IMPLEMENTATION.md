@@ -62,6 +62,22 @@ passes 34 distinct runtime functions, including six new controls for complete
 images, slot ceilings, no-ops, unowned hints and correlated attempt/map forgeries.
 Original-file multiple-hint behavior remains unqualified.
 
+## Compressed Memo reference observations
+
+Two [finite public-writer experiments](testing/COMPRESSED_MEMO_UPDATE_OBSERVATIONS.md)
+complete 148 updates in 456 bounded processes. Of those, 132 requested values
+reopen exactly and sixteen leading-FEFF inputs normalize; those sixteen are
+explicit observations, not value-equality passes. Exact encoded streams establish
+this writer's compression boundary at 1,024 UTF-16 units, together with its
+minimum length and narrow-unit restrictions. Mixed/NUL and longer values stay
+raw. No production encoder or native Access qualification follows automatically.
+
+Read-only verification rehashes both saved reports and confirms 1,302 cumulative
+old-chunk comparisons, 1,332 stable map-wire proofs and 140 direct decoder streams.
+The tracked Java helper is byte-identical to the executed source; later Python
+capture wrappers are explicitly separate. Raw Memo/OLE candidate acceptance and
+its unchanged inputs remain independent of these observations.
+
 ## Fixed Int32 leaf split candidates
 
 The separate feature-gated `preview_ace16_split_int32_updates` service can turn a

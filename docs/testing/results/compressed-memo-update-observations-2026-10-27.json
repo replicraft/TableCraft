@@ -1,0 +1,442 @@
+{
+  "scope": "Independent public Jackcess5.0.4 ordinary compressed/raw Memo UPDATE observations only. No TableCraft candidates, Microsoft Access execution or production admission expansion.",
+  "counts": {
+    "public_updates": 148,
+    "bounded_processes": 456,
+    "process_failures": 0,
+    "requested_value_equal": 132,
+    "requested_getter_mismatches": 16,
+    "metadata_prerequisites": 4,
+    "immediate_old_chunk_comparisons": 996,
+    "cumulative_ancestor_chunk_comparisons": 1302,
+    "changed_old_bodies_or_slot_words": 0,
+    "stable_map_wire_proofs": 1332,
+    "eof_owned_additions_equal_global_clears": 60,
+    "owned_removals": 0,
+    "existing_lval_page_reuse_cases": 76,
+    "standalone_decoder_streams": 140
+  },
+  "experiments": [
+    {
+      "name": "first92",
+      "updates": 92,
+      "processes": 283,
+      "terminal_status": 0,
+      "retries": 0,
+      "first_compile_status": 0,
+      "recursive_live_pins_verified": 694,
+      "forms": {
+        "NULL": 6,
+        "inline": 44,
+        "single": 24,
+        "chain": 18
+      },
+      "growth_bytes": {
+        "0": 74,
+        "12288": 14,
+        "16384": 4
+      },
+      "transitions": {
+        "chain->NULL": 4,
+        "chain->inline": 38,
+        "chain->single": 24,
+        "chain->chain": 16,
+        "inline->chain": 2,
+        "single->inline": 2,
+        "inline->inline": 2,
+        "inline->NULL": 2,
+        "NULL->inline": 2
+      },
+      "map_additions": {
+        "GlobalFree": 0,
+        "TableOwned": 0,
+        "TableHint": 0,
+        "CompactMemoOwned": 32,
+        "CompactMemoHint": 10,
+        "RawMemoOwned": 26,
+        "RawMemoHint": 8,
+        "OLEOwned": 0,
+        "OLEHint": 0
+      },
+      "map_removals": {
+        "GlobalFree": 58,
+        "TableOwned": 0,
+        "TableHint": 0,
+        "CompactMemoOwned": 0,
+        "CompactMemoHint": 10,
+        "RawMemoOwned": 0,
+        "RawMemoHint": 8,
+        "OLEOwned": 0,
+        "OLEHint": 0
+      }
+    },
+    {
+      "name": "threshold56",
+      "updates": 56,
+      "processes": 173,
+      "terminal_status": 0,
+      "retries": 0,
+      "first_compile_status": 0,
+      "recursive_live_pins_verified": 435,
+      "forms": {
+        "single": 54,
+        "NULL": 2
+      },
+      "growth_bytes": {
+        "0": 54,
+        "4096": 2
+      },
+      "transitions": {
+        "chain->single": 50,
+        "single->single": 4,
+        "single->NULL": 2
+      },
+      "map_additions": {
+        "GlobalFree": 0,
+        "TableOwned": 0,
+        "TableHint": 0,
+        "CompactMemoOwned": 2,
+        "CompactMemoHint": 2,
+        "RawMemoOwned": 0,
+        "RawMemoHint": 0,
+        "OLEOwned": 0,
+        "OLEHint": 0
+      },
+      "map_removals": {
+        "GlobalFree": 2,
+        "TableOwned": 0,
+        "TableHint": 0,
+        "CompactMemoOwned": 0,
+        "CompactMemoHint": 2,
+        "RawMemoOwned": 0,
+        "RawMemoHint": 0,
+        "OLEOwned": 0,
+        "OLEHint": 0
+      }
+    }
+  ],
+  "pin_count_scope": "694 and435 are separate recursive verification counts with overlap; not a unique combined total.",
+  "originals": [
+    {
+      "path": ".cache/ace16-compressed-memo-observations-first-20261027/originals/V2016-before.accdb",
+      "bytes": 417792,
+      "sha256": "01f21fd2cdf84c583045847a507725671ea9e48021b353b577ea8e44da4d2d73"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-observations-first-20261027/originals/V2019-before.accdb",
+      "bytes": 487424,
+      "sha256": "1b618f20f0ebccd84ed0d4d753b10bd94cf2f816e750ce2fa5debdc75f624b94"
+    }
+  ],
+  "threshold_source_originals": {
+    "V2016": {
+      "path": ".cache/ace16-compressed-memo-observations-first-20261027/originals/V2016-before.accdb",
+      "bytes": 417792,
+      "sha256": "01f21fd2cdf84c583045847a507725671ea9e48021b353b577ea8e44da4d2d73"
+    },
+    "V2019": {
+      "path": ".cache/ace16-compressed-memo-observations-first-20261027/originals/V2019-before.accdb",
+      "bytes": 487424,
+      "sha256": "1b618f20f0ebccd84ed0d4d753b10bd94cf2f816e750ce2fa5debdc75f624b94"
+    }
+  },
+  "metadata": {
+    "table": "CompressedMemos",
+    "rows": [
+      91,
+      92
+    ],
+    "selected_fields": {
+      "CompactMemo": {
+        "native": 12,
+        "flags": 2,
+        "extended_flags": 1,
+        "declared_length": 0
+      },
+      "RawMemo": {
+        "native": 12,
+        "flags": 2,
+        "extended_flags": 0,
+        "declared_length": 0
+      }
+    },
+    "ole_sentinel": {
+      "native": 11,
+      "flags": 2,
+      "extended_flags": 0
+    },
+    "properties": [],
+    "memo_indexes": 0,
+    "id_logical_indexes": 3,
+    "actual_alias": "IDAsc and IDTwin share physical data/root; primary remains distinct."
+  },
+  "measured_compression": {
+    "compact_ties_units": [
+      1,
+      2
+    ],
+    "compact_ties_storage": "raw",
+    "compact_eligible_units": [
+      3,
+      1024
+    ],
+    "compact_eligible_units_scope": "Observed finite controls and exact source reference, not exhaustive Unicode/native Access qualification.",
+    "eligible_unit_range": [
+      1,
+      255
+    ],
+    "compact_ascii_latin1_threshold": {
+      "1023": 1025,
+      "1024": 1026,
+      "1025": 2050
+    },
+    "raw_ascii_latin1_threshold": {
+      "1023": 2046,
+      "1024": 2048,
+      "1025": 2050
+    },
+    "nul_wide_nonbmp_units1024_bytes": 2048,
+    "mixed_mode_switch_emitted": false,
+    "long_latin1_stays_raw": true
+  },
+  "normalization_observations": {
+    "count": 16,
+    "first92": [
+      "V2016-CompactMemo-leading-feff",
+      "V2016-CompactMemo-leading-feff-ab",
+      "V2016-RawMemo-leading-feff",
+      "V2016-RawMemo-leading-feff-ab",
+      "V2019-CompactMemo-leading-feff",
+      "V2019-CompactMemo-leading-feff-ab",
+      "V2019-RawMemo-leading-feff",
+      "V2019-RawMemo-leading-feff-ab"
+    ],
+    "threshold56": [
+      "V2016-CompactMemo-feff1024",
+      "V2016-CompactMemo-feff1025",
+      "V2016-RawMemo-feff1024",
+      "V2016-RawMemo-feff1025",
+      "V2019-CompactMemo-feff1024",
+      "V2019-CompactMemo-feff1025",
+      "V2019-RawMemo-feff1024",
+      "V2019-RawMemo-feff1025"
+    ],
+    "meaning": "All 16 public updates succeeded but requested text did not reopen exactly. FEFF drops; FFFE controls remain exact. These are not value equality passes."
+  },
+  "source_reference": {
+    "artifact": "com.healthmarketscience.jackcess:jackcess:5.0.4:sources",
+    "url": "https://repo.maven.apache.org/maven2/com/healthmarketscience/jackcess/jackcess/5.0.4/jackcess-5.0.4-sources.jar",
+    "scm_tag_from_binary_pom": "svn://svn.code.sf.net/p/jackcess/code/jackcess/tags/jackcess-5.0.4",
+    "lines": {
+      "LongValueColumnImpl.java": [
+        134
+      ],
+      "ColumnImpl.java": [
+        1780,
+        1829
+      ],
+      "JetFormat.java": [
+        1012,
+        1112,
+        1151,
+        1181,
+        1207
+      ]
+    },
+    "license": "Apache-2.0 retained source headers; review copies ignored. No upstream implementation copied into production.",
+    "authority": "Independent writer source only; not Microsoft Access/native authority."
+  },
+  "public_source_identity": {
+    "java": "Byte-identical to executed compiled helper.",
+    "capture": "Later public root/count/create-or-reuse parameterization; AST and both frozen plans verified without executing public actions. Exact original executed Python drivers remain pinned separately.",
+    "verify": "Later public read-only saved-report/hash verifier executed on both unchanged reports; no Java/database/native calls.",
+    "new_action_runs_after_public_refactor": 0
+  },
+  "static_failures_preserved": [
+    "Initial freeze dependency list named nonexistent namespace __init__.py; failure/source retained, zero Java/database actions.",
+    "Pre-execution FFFE normalization classification corrected; earlier freeze/source/plan retained, same payloads/selectors."
+  ],
+  "raw60_boundary": "Existing raw60 candidate acceptance and its original first-refusal/correction history remain separate and unchanged.",
+  "artifacts": [
+    {
+      "path": ".cache/ace16-compressed-memo-next-20261027/freeze.json",
+      "bytes": 6060,
+      "sha256": "add80cb1597c085f17dabd5aea5c6a59cbb6ad340be3fc419c823e5f56eab2d1"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-next-20261027/plan.json",
+      "bytes": 50719,
+      "sha256": "93842f27d2f644c6a94c4e745f902aa95cb7b4a62853a3a639f3eaf0daad5004"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-next-20261027/first-execution.log",
+      "bytes": 353,
+      "sha256": "0c1ff3ae8fff500507790fd8984dcf0fe80b3a1bdc44b674899d02529cd9d159"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-observations-first-20261027/report.json",
+      "bytes": 21523651,
+      "sha256": "02e9d93758c878f2b49292a3199ed06deb13521a89f6aa53da60ecd7fc5fd534"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-next-20261027/public-verify-first.json",
+      "bytes": 12288,
+      "sha256": "b51940061994d22640fdc8e19faaa420256721e5348341db2c556aa44be2100b"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-threshold-next-20261027/freeze.json",
+      "bytes": 5634,
+      "sha256": "65240943e7e7c1465928e8897d1cded302e09d95e6f738b138232bd4d179fce8"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-threshold-next-20261027/plan.json",
+      "bytes": 33945,
+      "sha256": "88e82fa499763612ec14a15b81416ee37069d96691671e1a15ab63f9f6cc5ad3"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-threshold-next-20261027/first-execution.log",
+      "bytes": 309,
+      "sha256": "6fd9efe4a1d78645f143608b6d44db1d8bede168b8a0e07f532ca6231e9f5b1a"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-threshold-first-20261027/report.json",
+      "bytes": 13155657,
+      "sha256": "ffa683f07f55f81195272e69b867b30c409a6e16458794eec32c0c2dcff9b5b7"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-threshold-next-20261027/public-verify-first.json",
+      "bytes": 9125,
+      "sha256": "125e4c8998ff56399b1de6f1e49c1ab3e706dff08340548fb902017ae20cad98"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-next-20261027/static-preparation-initial/prepare.py",
+      "bytes": 6835,
+      "sha256": "c3072b29dc85b86e4300caadc9ee2ac3d147e4371a4eb507a7b29b11feca0779"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-next-20261027/static-preparation-initial/plan.json",
+      "bytes": 50718,
+      "sha256": "3650a068dce4234135a6f8d89d9f5d903d3ffc50b62e0250f113d9551a50bd09"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-next-20261027/static-preparation-initial/failure.json",
+      "bytes": 371,
+      "sha256": "65cbf71bedc1a921f77d72e674375ee21d27f6ee6e495322950fca80e8d8b526"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-next-20261027/before-fffe-observation-fix/freeze.json",
+      "bytes": 6060,
+      "sha256": "c01136dd0fadb47b8e66cd81ad08e4bd7a0492264047325e29ed3345f8f413f8"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-next-20261027/before-fffe-observation-fix/plan.json",
+      "bytes": 50718,
+      "sha256": "3650a068dce4234135a6f8d89d9f5d903d3ffc50b62e0250f113d9551a50bd09"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-next-20261027/before-fffe-observation-fix/reason.json",
+      "bytes": 303,
+      "sha256": "c35c31d20e809ce599e6bbc4ca61dec338ac7f504d6a0d5ea5e65ff24af5657a"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-source-review-20261027/download.json",
+      "bytes": 357,
+      "sha256": "c52422ec141096f09a353b8b5a9fc10d098774a4e5c55761ad6cba9c093ccfff"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-source-review-20261027/review-pins.json",
+      "bytes": 1157,
+      "sha256": "509d8f73c97abee1a11070f7f79bb22695f0c5ce33c7f4002c25f15df6283fff"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-source-review-20261027/jackcess-5.0.4-sources.jar",
+      "bytes": 878581,
+      "sha256": "4de1bc2f1663b0946ce39057dd90eace355f4f74b8f818c0fe167f0c65815428"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-source-review-20261027/ColumnImpl.java",
+      "bytes": 93146,
+      "sha256": "ea185d4d48e8d92f11109de5ac13d6628f0defac30d2d810d2a40714806df64e"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-source-review-20261027/LongValueColumnImpl.java",
+      "bytes": 17224,
+      "sha256": "ca48eb7bda66a8f4217d45ec71742826ccb4af648298f542d6ec537e17ea48cc"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-source-review-20261027/JetFormat.java",
+      "bytes": 44329,
+      "sha256": "5b624ed983ed8581cfb8e8bd6e72b8d8e32880039c855f3250d5e7418c3af94b"
+    }
+  ],
+  "sources": [
+    {
+      "path": ".cache/ace16-compressed-memo-next-20261027/CompressedMemoUpdateProbe.java",
+      "bytes": 15135,
+      "sha256": "4363bb143ec13091c879ba33f14287dd1f3f90c24372db38d597de73d259677a"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-next-20261027/capture.py",
+      "bytes": 30543,
+      "sha256": "f73afdfa681d865b19e14a1bdccc9e8dcbb592a17a65a50e398798be52bb27fa"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-next-20261027/prepare.py",
+      "bytes": 6931,
+      "sha256": "9c13c54094142d01eb835f0b63b6e551a03964ad72576328a44bf223f920a4f5"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-threshold-next-20261027/capture.py",
+      "bytes": 30785,
+      "sha256": "3f05bcaf92c02faf30ac4671afe354f275364b192d60fa245cb46f5d77e2fa9f"
+    },
+    {
+      "path": "docs/testing/CompressedMemoUpdateProbe.java",
+      "bytes": 15135,
+      "sha256": "4363bb143ec13091c879ba33f14287dd1f3f90c24372db38d597de73d259677a"
+    },
+    {
+      "path": "docs/testing/compressed_memo_observations/capture.py",
+      "bytes": 31241,
+      "sha256": "8692ae6a51aa176dafce8b82539309576aa9bccc8888bd6cf15e0923a027a2b8"
+    },
+    {
+      "path": "docs/testing/compressed_memo_observations/verify.py",
+      "bytes": 7335,
+      "sha256": "7a79f10c1f60bb5b388638a4af790351673063c14df416c96adb5f0964006a1f"
+    },
+    {
+      "path": "docs/testing/COMPRESSED_MEMO_UPDATE_OBSERVATIONS.md",
+      "bytes": 8725,
+      "sha256": "c785b8b3db2114ce66da0f9f606255c26a08af7267fe8f9e4c4fa033e933002b"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+      "bytes": 1407244,
+      "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+    }
+  ],
+  "compiled_classes": {
+    "first92": [
+      {
+        "path": ".cache/ace16-compressed-memo-observations-first-20261027/classes/CompressedMemoUpdateProbe.class",
+        "bytes": 18700,
+        "sha256": "75c89db7569602b45286a210207d1d29e944b8a91dc10eef75d53525830f0329"
+      }
+    ],
+    "threshold56": [
+      {
+        "path": ".cache/ace16-compressed-memo-threshold-first-20261027/classes/CompressedMemoUpdateProbe.class",
+        "bytes": 18700,
+        "sha256": "75c89db7569602b45286a210207d1d29e944b8a91dc10eef75d53525830f0329"
+      }
+    ]
+  },
+  "verification": {
+    "python_ast": "passed for public capture/verify",
+    "public_capture_verify_only": "Passed both frozen plans, zero external processes.",
+    "public_saved_report_verifier": "Passed 694 and 435 recursive pins; saved counts/preservation/global EOF proofs derive from unchanged reports.",
+    "java_formatter": "Not run; no Java source changes from exact alreadycompiled executed helper.",
+    "cargo": "Not run or needed for observation-only promotion."
+  }
+}
