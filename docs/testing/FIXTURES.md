@@ -9362,3 +9362,14 @@ The [separate receipt](results/ace16-cross-page-update-originals-2026-10-26.json
 pins source/output hashes, tools, actual executed sources and all 32 command
 records. These are public-writer observations, with no engineering candidate or
 native Access qualification implied.
+
+### Separate same-page UPDATE candidate replay
+
+The [page-update comparison](PAGE_UPDATE_OBSERVATIONS.md) retains the original
+162 assignments and adds fourteen no-ops on actual public growth outputs plus
+four shrink/regrowth actions on observed forwarding descendants. Its frozen
+consumer passes all 180 controls on the first attempt: 156 complete candidates
+and 24 exact typed refusals, with 336 commands and 382 unchanged immutable pins.
+The independent record/page/index/whole-image model predates candidate execution.
+The exact-span corpus remains unchanged; neither comparison qualifies native
+Access saves or required data macros.

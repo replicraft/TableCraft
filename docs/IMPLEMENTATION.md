@@ -15,6 +15,14 @@ API and contract. See the [page-update contract](testing/ACE16_PAGE_UPDATES.md)
 for admission, preservation and scoped verification; native Access and data-macro
 qualification remain pending.
 
+The frozen committed consumer now passes all
+[180 original-file controls](testing/PAGE_UPDATE_OBSERVATIONS.md) on its first
+attempt: 156 candidates and 24 typed refusals. The independent model checks 122
+fitted records, sixteen appends and eighteen byte-identical no-ops, including
+repeated forwarding history. Complete values, index keys/bounds, record framing,
+maps and protected image bytes match. This remains separate from both the
+earlier exact-span corpus and Microsoft Access qualification.
+
 ## Existing-width Text and Binary UPDATE candidates
 
 The separate `preview_ace16_slot_updates` engineering API now updates qualified
