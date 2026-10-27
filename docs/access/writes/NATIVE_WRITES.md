@@ -184,6 +184,12 @@ now confirms six exact no-ops and six `IndexedColumn` growth refusals without
 output on those sources. It explicitly selects the historical variable service;
 it does not exercise a new combined allocator.
 
+Existing variable and index previews now consume the same
+[append-state implementation](../../testing/ACE16_SHARED_APPEND_STATE.md), with
+typed DATA/index/bitmap reservations and one byte ledger per operation. Existing
+domain admission and independent audits remain separate. No combined API or
+production write qualification follows from this extraction.
+
 A separate [index-owned map promotion service](../../testing/ACE16_INDEX_MAP_GROWTH.md)
 now extends the same engineering split APIs when an inline map's complete required
 span exceeds its qualified window. It preserves the original map-row extent,

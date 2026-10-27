@@ -150,6 +150,7 @@ fn fresh_internal_links_padding_and_unrequested_map_bits_are_rejected() {
         forged(|staged| {
             let global = staged
                 .plan
+                .append
                 .map_edits
                 .iter_mut()
                 .find(|edit| edit.offset / PAGE == 1)

@@ -1,9 +1,12 @@
 //! Represented owned/candidate/global cells composed against one frozen image.
-use super::super::{EditError, WriteBlocker};
+use super::super::{
+    EditError, WriteBlocker,
+    append::{self, State},
+};
 use crate::{
     InspectError, NativeImage, TableSchema,
     format::{
-        allocation::{self, GLOBAL_FREE_REFERENCE, MapCell, MapRole, RepresentedMap},
+        allocation::{self, GLOBAL_FREE_REFERENCE, MapRole, RepresentedMap},
         bytes::u32_at,
         definition,
         layout::TABLE_FREE_MAP_OFFSET,
@@ -12,18 +15,10 @@ use crate::{
     header::check,
 };
 use std::io::Cursor;
-use tablecraft_core::limits::{Resource, ResourceBudget};
-
-pub(super) struct Edit {
-    pub offset: usize,
-    pub before: u8,
-    pub after: u8,
-    touched: u8,
-}
+use tablecraft_core::limits::ResourceBudget;
 
 pub(super) struct Maps {
     pub owned_pages: Vec<u32>,
-    pub edits: Vec<Edit>,
     owned: RepresentedMap,
     hint: RepresentedMap,
     global: RepresentedMap,
@@ -63,7 +58,6 @@ impl Maps {
         }
         Ok(Self {
             owned_pages,
-            edits: Vec::new(),
             owned,
             hint,
             global,
@@ -71,67 +65,11 @@ impl Maps {
         })
     }
 
-    fn current(
-        &self,
-        cell: &MapCell,
-        reader: &mut Reader<'_, Cursor<&[u8]>>,
-    ) -> Result<bool, EditError> {
-        reader.work(self.edits.len())?;
-        let value = self
-            .edits
-            .iter()
-            .find(|edit| edit.offset == cell.offset)
-            .map_or(cell.before, |edit| edit.after);
-        Ok(value & cell.mask != 0)
-    }
-
-    fn change(
-        &mut self,
-        cell: MapCell,
-        set: bool,
-        reader: &mut Reader<'_, Cursor<&[u8]>>,
-    ) -> Result<(), EditError> {
-        reader.work(self.edits.len())?;
-        if let Some(edit) = self
-            .edits
-            .iter_mut()
-            .find(|edit| edit.offset == cell.offset)
-        {
-            if edit.before != cell.before || edit.touched & cell.mask != 0 {
-                return Err(EditError::Preservation);
-            }
-            edit.after = if set {
-                edit.after | cell.mask
-            } else {
-                edit.after & !cell.mask
-            };
-            edit.touched |= cell.mask;
-        } else {
-            reader
-                .budget
-                .charge_allocation(1, size_of::<Edit>() as u64)
-                .map_err(InspectError::from)?;
-            self.edits
-                .try_reserve(1)
-                .map_err(|_| InspectError::Allocation)?;
-            self.edits.push(Edit {
-                offset: cell.offset,
-                before: cell.before,
-                after: if set {
-                    cell.before | cell.mask
-                } else {
-                    cell.before & !cell.mask
-                },
-                touched: cell.mask,
-            });
-        }
-        Ok(())
-    }
-
     /// Highest hinted owned page, including already staged EOF pages.
     pub(super) fn candidate(
         &self,
         image: &NativeImage,
+        append: &State,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Option<u32>, EditError> {
@@ -154,7 +92,7 @@ impl Maps {
             } else {
                 self.hint.future_cell(&mut reader, number)?
             };
-            if self.current(&cell, &mut reader)? {
+            if append::current(&append.map_edits, &cell, &mut reader)? {
                 return Ok(Some(number));
             }
         }
@@ -165,6 +103,7 @@ impl Maps {
         &mut self,
         image: &NativeImage,
         number: u32,
+        append: &mut State,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
@@ -181,26 +120,18 @@ impl Maps {
         } else {
             self.hint.future_cell(&mut reader, number)?
         };
-        if !self.current(&cell, &mut reader)? {
+        if !append::current(&append.map_edits, &cell, &mut reader)? {
             return Err(EditError::Preservation);
         }
-        // A page added in this same operation may later fail to fit. Its
-        // provisional set and subsequent clear are one coherent staged intent.
-        if let Some(edit) = self
-            .edits
-            .iter_mut()
-            .find(|edit| edit.offset == cell.offset && edit.touched & cell.mask != 0)
-        {
-            edit.after &= !cell.mask;
-            return Ok(());
-        }
-        self.change(cell, false, &mut reader)
+        // A provisional new-DATA hint may be cleared after a real later miss.
+        append::clear_hint(&mut append.map_edits, cell, &mut reader)
     }
 
     pub(super) fn allocate(
         &mut self,
         image: &NativeImage,
         number: u32,
+        append: &mut State,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
@@ -227,15 +158,15 @@ impl Maps {
         let owned = self.owned.future_cell(&mut reader, number)?;
         let hint = self.hint.future_cell(&mut reader, number)?;
         let global = self.global.future_cell(&mut reader, number)?;
-        if self.current(&owned, &mut reader)?
-            || self.current(&hint, &mut reader)?
-            || !self.current(&global, &mut reader)?
+        if append::current(&append.map_edits, &owned, &mut reader)?
+            || append::current(&append.map_edits, &hint, &mut reader)?
+            || !append::current(&append.map_edits, &global, &mut reader)?
         {
             return Err(InspectError::Malformed.into());
         }
-        self.change(owned, true, &mut reader)?;
-        self.change(hint, true, &mut reader)?;
-        self.change(global, false, &mut reader)?;
+        append::claim(&mut append.map_edits, owned, true, &mut reader)?;
+        append::claim(&mut append.map_edits, hint, true, &mut reader)?;
+        append::claim(&mut append.map_edits, global, false, &mut reader)?;
         reader
             .budget
             .charge_allocation(1, size_of::<u32>() as u64)
@@ -244,28 +175,6 @@ impl Maps {
             .try_reserve(1)
             .map_err(|_| InspectError::Allocation)?;
         self.owned_pages.push(number);
-        Ok(())
-    }
-
-    pub(super) fn audit_bytes(
-        &self,
-        before: &[u8],
-        after: &[u8],
-        budget: &mut ResourceBudget,
-        cancelled: &dyn Fn() -> bool,
-    ) -> Result<(), EditError> {
-        for edit in &self.edits {
-            check(budget, cancelled)?;
-            budget
-                .charge(Resource::Steps, 1)
-                .map_err(InspectError::from)?;
-            if before.get(edit.offset) != Some(&edit.before)
-                || after.get(edit.offset) != Some(&edit.after)
-                || (edit.before ^ edit.after) & !edit.touched != 0
-            {
-                return Err(EditError::Preservation);
-            }
-        }
         Ok(())
     }
 

@@ -246,7 +246,7 @@ fn unrequested_index_keys_residue_and_eof_do_not_gain_patch_authority() {
                 checked(&bytes, "b");
             }
             _ => {
-                forged.plan.length += PAGE;
+                forged.plan.append.length += PAGE;
             }
         }
         assert_eq!(

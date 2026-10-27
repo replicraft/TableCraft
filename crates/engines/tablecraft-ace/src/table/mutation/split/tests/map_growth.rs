@@ -114,6 +114,7 @@ fn rewritten_pointer_rows_and_unrelated_future_global_bits_do_not_come_from_stag
             // The authorized pages600..605 share this byte.606 is not a request.
             let global = staged
                 .plan
+                .append
                 .map_edits
                 .iter_mut()
                 .find(|edit| edit.offset == 599 * 4096 + 4 + 600 / 8)

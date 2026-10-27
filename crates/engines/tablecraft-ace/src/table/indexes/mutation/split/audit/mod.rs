@@ -123,18 +123,18 @@ fn prove_with(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
-    if plan.original_length != image.as_bytes().len()
-        || plan.length != after.len()
-        || plan.length < plan.original_length
-        || plan.length as u64 > MAX_IMAGE_BYTES
-        || !plan.length.is_multiple_of(PAGE_BYTES)
+    if plan.append.original_length != image.as_bytes().len()
+        || plan.append.length != after.len()
+        || plan.append.length < plan.append.original_length
+        || plan.append.length as u64 > MAX_IMAGE_BYTES
+        || !plan.append.length.is_multiple_of(PAGE_BYTES)
     {
         return Err(EditError::Preservation);
     }
     let schema = checked.schema();
     let indexes = checked.indexes();
     let mut source = image.reader();
-    if plan.length != plan.original_length {
+    if plan.append.length != plan.append.original_length {
         allocated_source(
             &mut Reader {
                 source: &mut source,
@@ -346,14 +346,14 @@ fn prove_with(
         }
     }
     if split_position != plan.certificates.len()
-        || plan.added.len() != (next_eof as usize - plan.original_length / PAGE_BYTES)
-        || next_eof as usize * PAGE_BYTES != plan.length
+        || plan.added.len() != (next_eof as usize - plan.append.original_length / PAGE_BYTES)
+        || next_eof as usize * PAGE_BYTES != plan.append.length
     {
         return Err(EditError::Preservation);
     }
     for (position, page) in plan.added.iter().enumerate() {
         check(actual.budget, cancelled)?;
-        if page.number as usize != plan.original_length / PAGE_BYTES + position
+        if page.number as usize != plan.append.original_length / PAGE_BYTES + position
             || page.bytes.len() != PAGE_BYTES
             || after.get(page.number as usize * PAGE_BYTES..(page.number as usize + 1) * PAGE_BYTES)
                 != Some(page.bytes.as_slice())

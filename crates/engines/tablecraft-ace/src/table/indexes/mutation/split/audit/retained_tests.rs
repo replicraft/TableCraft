@@ -71,7 +71,7 @@ fn transport<P: RetainedProfile, const N: usize>(model: model::Model, profile: P
     .unwrap();
     assert!(patches.is_empty());
     assert!(plan.added.is_empty());
-    assert!(plan.map_edits.is_empty());
+    assert!(plan.append.map_edits.is_empty());
     edit_prepared(
         &nonroot::Operation::<P, N> {
             image: &image,

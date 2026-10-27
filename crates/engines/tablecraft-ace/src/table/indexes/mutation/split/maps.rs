@@ -5,15 +5,12 @@ use crate::{
         allocation::{self, GLOBAL_FREE_REFERENCE, MapCell, MapRole, RepresentedMap},
         reader::Reader,
     },
+    table::mutation::append,
 };
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
 
-pub(in crate::table) struct Edit {
-    pub offset: usize,
-    pub before: u8,
-    pub after: u8,
-}
+pub(in crate::table) use crate::table::mutation::append::Edit;
 
 pub(super) fn allocate_nonroot(
     image: &NativeImage,
@@ -54,31 +51,5 @@ pub(super) fn change(
     set: bool,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<(), EditError> {
-    reader.work(edits.len())?;
-    if let Some(edit) = edits.iter_mut().find(|edit| edit.offset == cell.offset) {
-        if edit.before != cell.before {
-            return Err(EditError::Preservation);
-        }
-        edit.after = if set {
-            edit.after | cell.mask
-        } else {
-            edit.after & !cell.mask
-        };
-    } else {
-        reader
-            .budget
-            .charge_allocation(1, size_of::<Edit>() as u64)
-            .map_err(InspectError::from)?;
-        edits.try_reserve(1).map_err(|_| InspectError::Allocation)?;
-        edits.push(Edit {
-            offset: cell.offset,
-            before: cell.before,
-            after: if set {
-                cell.before | cell.mask
-            } else {
-                cell.before & !cell.mask
-            },
-        });
-    }
-    Ok(())
+    append::merge(edits, cell, set, reader)
 }

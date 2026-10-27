@@ -52,8 +52,8 @@ fn repack(original: &[u8], entries: &[Vec<u8>], prefix: usize) -> Vec<u8> {
 
 fn compose(before: &[u8], staged: &Staged<4>) -> Vec<u8> {
     assert!(staged.plan.added.is_empty());
-    assert!(staged.plan.map_edits.is_empty());
-    assert_eq!(staged.plan.length, before.len());
+    assert!(staged.plan.append.map_edits.is_empty());
+    assert_eq!(staged.plan.append.length, before.len());
     let mut after = before.to_vec();
     for patch in &staged.patches {
         after[patch.offset..patch.offset + patch.after.len()].copy_from_slice(&patch.after);

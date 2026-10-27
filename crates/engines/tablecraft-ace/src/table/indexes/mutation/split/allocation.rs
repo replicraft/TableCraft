@@ -8,7 +8,6 @@ use crate::{
         reader::Reader,
         row::{reference_page, reference_slot},
     },
-    limits::MAX_IMAGE_BYTES,
     table::mutation::map_authority::{self, Owner},
 };
 use std::io::Cursor;
@@ -37,16 +36,7 @@ pub(super) fn reserve(
     plan: &mut Plan,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<u32, EditError> {
-    let number = reserve_inner(image, index, plan, reader)?;
-    reader
-        .budget
-        .charge_allocation(1, size_of::<(u32, u32)>() as u64)
-        .map_err(InspectError::from)?;
-    plan.reservations
-        .try_reserve(1)
-        .map_err(|_| InspectError::Allocation)?;
-    plan.reservations.push((index.usage_map(), number));
-    Ok(number)
+    reserve_inner(image, index, plan, reader)
 }
 
 fn reserve_inner(
@@ -55,9 +45,8 @@ fn reserve_inner(
     plan: &mut Plan,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<u32, EditError> {
-    let number =
-        u32::try_from(plan.length / PAGE_BYTES).map_err(|_| InspectError::StructureLimit)?;
-    let next_length = advance(plan.length, 1)?;
+    let number = plan.append.next()?;
+    plan.append.preview(1)?;
     reader.work(plan.promotions.len())?;
     if let Some(promotion) = plan
         .promotions
@@ -65,8 +54,9 @@ fn reserve_inner(
         .find(|p| p.usage == index.usage_map())
     {
         set_member(&mut promotion.bitmap, number, reader)?;
-        global(image, number, &mut plan.map_edits, reader)?;
-        plan.length = next_length;
+        global(image, number, &mut plan.append.map_edits, reader)?;
+        plan.append
+            .reserve_index(number, index, reader.budget, reader.cancelled)?;
         return Ok(number);
     }
 
@@ -77,11 +67,12 @@ fn reserve_inner(
                 image,
                 index,
                 number,
-                &mut plan.map_edits,
+                &mut plan.append.map_edits,
                 reader.budget,
                 reader.cancelled,
             )?;
-            plan.length = next_length;
+            plan.append
+                .reserve_index(number, index, reader.budget, reader.cancelled)?;
             Ok(number)
         }
         Err(InspectError::Unsupported) if owned.kind() == INLINE_KIND => {
@@ -108,7 +99,10 @@ fn promote(
         return Err(InspectError::Unsupported.into());
     }
     let mut members = allocation::pages(reader, usage)?;
-    for &(prior_usage, number) in &plan.reservations {
+    reader.work(plan.append.reservations_len())?;
+    for reservation in plan.append.indexes() {
+        let prior_usage = reservation.usage;
+        let number = reservation.number;
         reader.tick()?;
         if prior_usage == usage {
             reader
@@ -153,7 +147,7 @@ fn promote(
         &[
             Owner::GlobalFree,
             Owner::IndexOwned {
-                definition: plan.owner,
+                definition: plan.append.owner,
                 physical: index.data_number(),
             },
         ],
@@ -162,7 +156,7 @@ fn promote(
     )?;
 
     let metadata = number.checked_add(1).ok_or(InspectError::StructureLimit)?;
-    let length = advance(plan.length, 2)?;
+    plan.append.preview(2)?;
     let global_map = RepresentedMap::read(reader, GLOBAL_FREE_REFERENCE, MapRole::GlobalFree)?;
     global_map.require_allocated_storage(reader, &global_map)?;
     let owned = RepresentedMap::read(reader, usage, MapRole::Owned)?;
@@ -204,12 +198,13 @@ fn promote(
         .offset
         .checked_add(row.data.len())
         .ok_or(InspectError::StructureLimit)?;
-    reader.work(plan.map_edits.len())?;
-    plan.map_edits
+    reader.work(plan.append.map_edits.len())?;
+    plan.append
+        .map_edits
         .retain(|edit| edit.offset < row.offset || edit.offset >= record_end);
 
-    global(image, number, &mut plan.map_edits, reader)?;
-    global(image, metadata, &mut plan.map_edits, reader)?;
+    global(image, number, &mut plan.append.map_edits, reader)?;
+    global(image, metadata, &mut plan.append.map_edits, reader)?;
     reader
         .budget
         .charge_allocation(1, size_of::<Promotion>() as u64)
@@ -225,7 +220,8 @@ fn promote(
         after,
         bitmap,
     });
-    plan.length = length;
+    plan.append
+        .reserve_index_bitmap(number, index, reader.budget, reader.cancelled)?;
 
     Ok(())
 }
@@ -272,13 +268,6 @@ fn global(
     maps::change(edits, cell, false, &mut original)
 }
 
-fn advance(length: usize, pages: usize) -> Result<usize, EditError> {
-    length
-        .checked_add(pages * PAGE_BYTES)
-        .filter(|length| *length as u64 <= MAX_IMAGE_BYTES)
-        .ok_or_else(|| InspectError::StructureLimit.into())
-}
-
 pub(super) fn seal(
     image: &NativeImage,
     indexes: &[IndexCheck],
@@ -296,23 +285,28 @@ pub(super) fn seal(
         reader
             .budget
             .charge_allocation(
-                (plan.reservations.len() + 1) as u64,
+                (plan.append.reservations_len() + 1) as u64,
                 size_of::<Owner>() as u64,
             )
             .map_err(InspectError::from)?;
         owners
-            .try_reserve(plan.reservations.len() + 1)
+            .try_reserve(plan.append.reservations_len() + 1)
             .map_err(|_| InspectError::Allocation)?;
         owners.push(Owner::GlobalFree);
-        for &(usage, _) in &plan.reservations {
+        reader.work(plan.append.reservations_len())?;
+        for reservation in plan.append.indexes() {
+            let usage = reservation.usage;
             reader.tick()?;
             reader.work(indexes.len() + owners.len())?;
             let index = indexes
                 .iter()
                 .find(|checked| checked.index().usage_map() == usage)
                 .ok_or(EditError::Preservation)?;
+            if index.index().data_number() != reservation.physical {
+                return Err(EditError::Preservation);
+            }
             let owner = Owner::IndexOwned {
-                definition: plan.owner,
+                definition: plan.append.owner,
                 physical: index.index().data_number(),
             };
             if !owners.contains(&owner) {
@@ -324,6 +318,20 @@ pub(super) fn seal(
 
     for promotion in &plan.promotions {
         reader.tick()?;
+        reader.work(indexes.len())?;
+        let physical = indexes
+            .iter()
+            .find(|checked| checked.index().usage_map() == promotion.usage)
+            .ok_or(EditError::Preservation)?
+            .index()
+            .data_number();
+        plan.append.require_index_bitmap(
+            promotion.number,
+            physical,
+            promotion.usage,
+            reader.budget,
+            reader.cancelled,
+        )?;
         reader
             .budget
             .charge_allocation(PAGE_BYTES as u64, 1)

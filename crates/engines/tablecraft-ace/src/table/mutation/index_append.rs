@@ -8,11 +8,12 @@ use std::ops::Range;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 pub(super) fn qualify(image: &NativeImage, plan: &SplitIndexPlan) -> Result<(), EditError> {
-    if plan.original_length != image.as_bytes().len()
-        || plan.length < plan.original_length
-        || plan.length as u64 > MAX_IMAGE_BYTES
-        || !plan.length.is_multiple_of(PAGE_BYTES)
-        || plan.added.len().checked_mul(PAGE_BYTES) != plan.length.checked_sub(plan.original_length)
+    if plan.append.original_length != image.as_bytes().len()
+        || plan.append.length < plan.append.original_length
+        || plan.append.length as u64 > MAX_IMAGE_BYTES
+        || !plan.append.length.is_multiple_of(PAGE_BYTES)
+        || plan.added.len().checked_mul(PAGE_BYTES)
+            != plan.append.length.checked_sub(plan.append.original_length)
     {
         return Err(EditError::Preservation);
     }
@@ -29,11 +30,11 @@ pub(super) fn compose<P: BytePatch>(
     check(budget, cancelled)?;
     qualify(image, plan)?;
     budget
-        .charge_allocation(plan.length as u64, 1)
+        .charge_allocation(plan.append.length as u64, 1)
         .map_err(InspectError::from)?;
     let mut after = Vec::new();
     after
-        .try_reserve_exact(plan.length)
+        .try_reserve_exact(plan.append.length)
         .map_err(|_| InspectError::Allocation)?;
     for chunk in image.as_bytes().chunks(COPY_CHUNK_BYTES) {
         check(budget, cancelled)?;
@@ -43,10 +44,11 @@ pub(super) fn compose<P: BytePatch>(
         after.extend_from_slice(chunk);
     }
     budget
-        .charge(Resource::Steps, (plan.length - after.len()) as u64)
+        .charge(Resource::Steps, (plan.append.length - after.len()) as u64)
         .map_err(InspectError::from)?;
-    after.resize(plan.length, 0);
-    let count = fields.len() + plan.patches.len() + plan.map_edits.len() + plan.promotions.len();
+    after.resize(plan.append.length, 0);
+    let count =
+        fields.len() + plan.patches.len() + plan.append.map_edits.len() + plan.promotions.len();
     budget
         .charge_allocation(count as u64, size_of::<Range<usize>>() as u64)
         .map_err(InspectError::from)?;
@@ -90,7 +92,7 @@ pub(super) fn compose<P: BytePatch>(
             cancelled,
         )?);
     }
-    for edit in &plan.map_edits {
+    for edit in &plan.append.map_edits {
         check(budget, cancelled)?;
         spans.push(write(
             image,
@@ -104,7 +106,7 @@ pub(super) fn compose<P: BytePatch>(
     }
     for (position, page) in plan.added.iter().enumerate() {
         check(budget, cancelled)?;
-        let start = plan.original_length + position * PAGE_BYTES;
+        let start = plan.append.original_length + position * PAGE_BYTES;
         if page.number as usize * PAGE_BYTES != start || page.bytes.len() != PAGE_BYTES {
             return Err(EditError::Preservation);
         }
@@ -118,7 +120,7 @@ pub(super) fn compose<P: BytePatch>(
     }
     preservation::prove(
         image.as_bytes(),
-        &after[..plan.original_length],
+        &after[..plan.append.original_length],
         spans,
         budget,
         cancelled,
