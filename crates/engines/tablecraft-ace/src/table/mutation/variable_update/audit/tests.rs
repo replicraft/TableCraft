@@ -91,7 +91,7 @@ fn after_audit_rejects_forged_eof_headers_padding_and_old_hidden_bodies() {
                 .unwrap();
             page.after[offset] ^= 1;
             assert_eq!(
-                super::pages(plan, &mut budget(), &|| false),
+                super::pages(plan.view(), &mut budget(), &|| false),
                 Err(EditError::Preservation)
             );
         });

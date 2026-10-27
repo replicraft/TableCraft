@@ -17,7 +17,7 @@ use crate::{
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
 
-pub(super) struct Maps {
+pub(in crate::table::mutation) struct Maps {
     pub owned_pages: Vec<u32>,
     owned: RepresentedMap,
     hint: RepresentedMap,

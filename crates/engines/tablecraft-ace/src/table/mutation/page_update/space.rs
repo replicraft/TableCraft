@@ -1,5 +1,5 @@
 //! Explicit candidate-hint authority, separate from owned/global map polarity.
-use super::super::{EditError, WriteBlocker};
+use super::super::{EditError, WriteBlocker, variable_split::metadata::Metadata};
 use crate::{
     InspectError, NativeImage, TableSchema,
     format::{
@@ -19,6 +19,7 @@ pub(in crate::table::mutation) struct Space {
     hint: RepresentedMap,
     global: RepresentedMap,
     protected: Vec<u32>,
+    metadata: Option<Metadata>,
 }
 
 impl Space {
@@ -74,7 +75,25 @@ impl Space {
             hint,
             global,
             protected,
+            metadata: None,
         })
+    }
+
+    pub(in crate::table::mutation) fn with_metadata(mut self, metadata: Metadata) -> Self {
+        self.metadata = Some(metadata);
+        self
+    }
+
+    pub(in crate::table::mutation) fn require_metadata_page(
+        &self,
+        number: u32,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        if let Some(metadata) = &self.metadata {
+            metadata.require_data_page(number, budget, cancelled)?;
+        }
+        Ok(())
     }
 
     pub(in crate::table::mutation) fn definition(&self) -> u32 {
@@ -115,6 +134,8 @@ impl Space {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
+        self.require_metadata_page(number, budget, cancelled)?;
+
         let mut source = image.reader();
         let mut reader = Reader {
             source: &mut source,

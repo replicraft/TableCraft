@@ -6,7 +6,9 @@ mod nonroot;
 mod pages;
 mod slot;
 
-pub(in crate::table) use slot::{patches as slot_patches, qualify as qualify_slot};
+pub(in crate::table) use slot::{
+    continue_patches as continue_slot_patches, patches as slot_patches, qualify as qualify_slot,
+};
 
 use super::{
     IndexDataPatch, IndexKeyUpdate, encoding, plan::keys, profile::SingleProfile, repack,
@@ -18,7 +20,7 @@ use crate::{
     header::check,
     table::{
         indexes::page::{Entry, KeyRef},
-        mutation::append::State,
+        mutation::{CertifiedData, append::State},
     },
 };
 use std::io::Cursor;
@@ -62,8 +64,12 @@ pub(in crate::table) struct Plan {
 
 impl Plan {
     pub(super) fn new(image: &NativeImage, owner: u32) -> Self {
+        Self::with_append(State::new(image, owner))
+    }
+
+    pub(super) fn with_append(append: State) -> Self {
         Self {
-            append: State::new(image, owner),
+            append,
             patches: Vec::new(),
             added: Vec::new(),
             certificates: Vec::new(),
@@ -93,6 +99,17 @@ impl Plan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
         audit::prove_slot(image, checked, changes, self, after, budget, cancelled)
+    }
+
+    pub(in crate::table) fn audit_slot_after_data(
+        &self,
+        image: &NativeImage,
+        data: &CertifiedData<'_>,
+        after: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        audit::prove_slot_after_data(image, data, self, after, budget, cancelled)
     }
 }
 

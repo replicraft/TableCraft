@@ -37,7 +37,7 @@ pub(super) fn finish(
     )?;
     let verified = operation.prove(&image, &original, budget, cancelled)?;
     verified.compare(plan, changed, budget, cancelled)?;
-    super::audit::pages(plan, budget, cancelled)?;
+    super::audit::pages(plan.view(), budget, cancelled)?;
     super::map_audit::prove(
         &image,
         original.schema(),

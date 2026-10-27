@@ -3,7 +3,7 @@
 mod tests;
 
 use super::super::EditError;
-use super::placement::Plan;
+use super::placement::DataView;
 use crate::{
     InspectError,
     format::{
@@ -22,13 +22,13 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 const FREE_OFFSET: usize = DATA_SIGNATURE.len();
 const POINTER_BYTES: usize = size_of::<u32>();
 
-pub(super) fn pages(
-    plan: &Plan,
+pub(in crate::table::mutation) fn pages(
+    plan: DataView<'_>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
     let mut added = 0;
-    for page in &plan.pages {
+    for page in plan.pages {
         check(budget, cancelled)?;
         budget
             .charge_allocation((2 * PAGE_BYTES) as u64, 1)
@@ -75,7 +75,7 @@ pub(super) fn pages(
         allowed.resize(PAGE_BYTES, false);
         let base = page.number as usize * PAGE_BYTES;
 
-        for event in &plan.events {
+        for event in plan.events {
             check(budget, cancelled)?;
             if event.target.start / PAGE_BYTES == page.number as usize {
                 let start = event
@@ -183,7 +183,7 @@ pub(super) fn pages(
             }
         }
     }
-    if plan.append.length != plan.append.original_length + added * PAGE_BYTES {
+    if plan.length != plan.append.original_length + added * PAGE_BYTES {
         return Err(EditError::Preservation);
     }
     Ok(())

@@ -22,10 +22,13 @@ use crate::{
     header::check,
     inspect_header,
     limits::MAX_IMAGE_BYTES,
-    table::indexes::{
-        header::{IndexHeader, LEVEL_OFFSET},
-        mutation::{IndexKeyUpdate, NumericKey},
-        page::ENTRY_START,
+    table::{
+        indexes::{
+            header::{IndexHeader, LEVEL_OFFSET},
+            mutation::{IndexKeyUpdate, NumericKey},
+            page::ENTRY_START,
+        },
+        mutation::CertifiedData,
     },
 };
 use std::io::Cursor;
@@ -77,17 +80,59 @@ pub(super) fn prove_slot(
     )
 }
 
+pub(super) fn prove_slot_after_data(
+    image: &NativeImage,
+    data: &CertifiedData<'_>,
+    plan: &Plan,
+    after: &[u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    check(budget, cancelled)?;
+    data.require_source(image)?;
+    data.require_after(after)?;
+    let keys = data.keys(budget, cancelled)?;
+    let changes = SlotKeyChanges {
+        column: data.column(),
+        updates: &keys,
+    };
+    prove_with(
+        image,
+        data.original(),
+        Updates::AfterData(&changes, data),
+        plan,
+        after,
+        budget,
+        cancelled,
+    )
+}
+
 #[derive(Clone, Copy)]
 enum Updates<'a> {
     Fixed(&'a [IndexKeyUpdate]),
     Slot(&'a SlotKeyChanges<'a>),
+    AfterData(&'a SlotKeyChanges<'a>, &'a CertifiedData<'a>),
 }
 
-impl Updates<'_> {
+impl<'a> Updates<'a> {
+    fn data(self) -> Option<&'a CertifiedData<'a>> {
+        match self {
+            Self::AfterData(_, data) => Some(data),
+            _ => None,
+        }
+    }
+
+    fn slots(self) -> Option<&'a SlotKeyChanges<'a>> {
+        match self {
+            Self::Slot(changes) | Self::AfterData(changes, _) => Some(changes),
+            Self::Fixed(_) => None,
+        }
+    }
+
     fn len(self) -> usize {
         match self {
             Self::Fixed(updates) => updates.len(),
-            Self::Slot(changes) => changes.updates.len(),
+            Self::Slot(changes) | Self::AfterData(changes, _) => changes.updates.len(),
         }
     }
 
@@ -101,7 +146,7 @@ impl Updates<'_> {
                         .any(|key| key.number() == column.number())
                 })
             }),
-            Self::Slot(changes) => {
+            Self::Slot(changes) | Self::AfterData(changes, _) => {
                 !changes.updates.is_empty()
                     && schema.columns.get(changes.column).is_some_and(|column| {
                         index
@@ -156,8 +201,25 @@ fn prove_with(
         cancelled,
         reads: 0,
     };
-    let mut expected_edits = maps::Expected::default();
-    let mut next_eof = image.catalog().header().page_count();
+    let mut expected_edits = if let Some(data) = updates.data() {
+        maps::seed(
+            image,
+            data,
+            &mut Reader {
+                source: &mut source,
+                header: image.catalog().header(),
+                budget: actual.budget,
+                cancelled,
+                reads: 0,
+            },
+        )?
+    } else {
+        maps::Expected::default()
+    };
+    let index_begin = updates
+        .data()
+        .map_or(image.catalog().header().page_count(), CertifiedData::end);
+    let mut next_eof = index_begin;
     let mut split_position = 0;
     let mut affected_pages = Vec::new();
 
@@ -257,7 +319,7 @@ fn prove_with(
             split = disposition.split_root;
             verified_nonroot = disposition.recursive;
         }
-        if affected && let Updates::Slot(changes) = updates {
+        if affected && let Some(changes) = updates.slots() {
             let disposition = slot::prove(
                 &slot::Operation {
                     image,
@@ -346,14 +408,17 @@ fn prove_with(
         }
     }
     if split_position != plan.certificates.len()
-        || plan.added.len() != (next_eof as usize - plan.append.original_length / PAGE_BYTES)
+        || plan.added.len()
+            != next_eof
+                .checked_sub(index_begin)
+                .ok_or(EditError::Preservation)? as usize
         || next_eof as usize * PAGE_BYTES != plan.append.length
     {
         return Err(EditError::Preservation);
     }
     for (position, page) in plan.added.iter().enumerate() {
         check(actual.budget, cancelled)?;
-        if page.number as usize != plan.append.original_length / PAGE_BYTES + position
+        if page.number as usize != index_begin as usize + position
             || page.bytes.len() != PAGE_BYTES
             || after.get(page.number as usize * PAGE_BYTES..(page.number as usize + 1) * PAGE_BYTES)
                 != Some(page.bytes.as_slice())
@@ -401,6 +466,20 @@ fn prove_with(
         plan,
         after,
     )?;
+    if let Some(data) = updates.data() {
+        maps::cover_suffix(
+            &mut Reader {
+                source: &mut source,
+                header: image.catalog().header(),
+                budget: actual.budget,
+                cancelled,
+                reads: 0,
+            },
+            &expected_edits,
+            data,
+            next_eof,
+        )?;
+    }
     Ok(())
 }
 

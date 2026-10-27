@@ -1,14 +1,18 @@
 //! Exact-slot replacements use genuine owned encoded keys for index splitting.
-use super::super::replacement::{self, ReplacementProfile, SlotKeyUpdate};
+use super::super::replacement::{self, ReplacementProfile, SlotKeyChanges, SlotKeyUpdate};
 use super::{Plan, edit_prepared, nonroot, seal};
 use crate::{
     EditError, IndexCheck, InspectError, NativeImage, NativeIndex, TableSchema, WriteBlocker,
     format::{
         data_type::{SHORT_BINARY, SHORT_TEXT},
+        page::PAGE_BYTES,
         reader::Reader,
     },
     header::check,
-    table::indexes::{IndexDataPatch, binary, text},
+    table::{
+        indexes::{IndexDataPatch, binary, text},
+        mutation::append::State,
+    },
 };
 use std::io::Cursor;
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -50,9 +54,40 @@ pub(in crate::table) fn patches(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Plan, EditError> {
+    continue_patches(
+        image,
+        schema,
+        indexes,
+        &SlotKeyChanges { column, updates },
+        State::new(image, schema.definition),
+        budget,
+        cancelled,
+    )
+}
+
+pub(in crate::table) fn continue_patches(
+    image: &NativeImage,
+    schema: &TableSchema,
+    indexes: &[IndexCheck],
+    changes: &SlotKeyChanges<'_>,
+    append: State,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Plan, EditError> {
+    let column = changes.column;
+    let updates = changes.updates;
     qualify(schema, indexes, column, budget, cancelled)?;
 
-    let mut plan = Plan::new(image, schema.definition);
+    if append.original_length != image.as_bytes().len()
+        || append.owner != schema.definition
+        || append.length < append.original_length
+        || !append.length.is_multiple_of(PAGE_BYTES)
+    {
+        return Err(EditError::Preservation);
+    }
+    append.preview(0)?;
+
+    let mut plan = Plan::with_append(append);
     let mut patches = Vec::new();
     let mut source = image.reader();
     let mut reader = Reader {
