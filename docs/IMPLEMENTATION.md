@@ -231,6 +231,27 @@ on unchanged Byte/Int16/Int64/Currency originals. All sixteen fixture commands
 pass without retries or regeneration, separately from prior public writer actions.
 Normal native saves and Microsoft Access qualification remain open.
 
+## Shared native map authority
+
+The engineering [map-authority service](testing/ACE16_MAP_AUTHORITY.md) now
+captures canonical map owners across the complete local catalog, including
+ordinary, physical-index and current/historical long-value maps. Operations select
+explicit mutable owners; exact record ranges and bitmap/container footprints
+must be exclusive. Logical aliases of one physical index remain one owner, and
+disjoint map rows may share their container. This is footprint authority, not
+payload membership, writable-cell authority or implemented map growth.
+
+The existing Memo/OLE replacement service consumes this shared inventory while
+retaining its five selected owners, separate payload/live-reference checks and
+immutable-original final recensus. Unreferenced physical index slots now refuse
+write authority explicitly even when ordinary reads and LVAL storage checks pass.
+The scoped batch passes 43 distinct runtime functions, including five new
+functions, plus three compile-fail checks and scoped strict/default lint, minimal
+compilation and formatting. All 44 separate source admissions pass on 22 unchanged
+originals; these are not mutation candidates. Per-table read-count ceilings remain
+separate from the shared operation budget. Check ordering and paid work need not
+match the previous implementation exactly.
+
 ## Usage-map growth reference evidence
 
 A [separate independent-writer experiment](testing/USAGE_MAP_GROWTH_OBSERVATIONS.md)

@@ -1,86 +1,46 @@
-//! Mutable map rows and bitmap storage need authority even without data members.
-use super::super::super::{EditError, WriteBlocker};
+//! Exact semantic owner claims and protected storage footprints.
+use super::Owner;
 use crate::{
     InspectError,
     format::{
-        allocation::{MapRole, MapStorage, RepresentedMap},
+        allocation::{MapStorage, RepresentedMap},
         reader::Reader,
         row::reference_page,
     },
     header::check,
+    table::mutation::{EditError, WriteBlocker},
 };
 use std::io::Cursor;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
-// Global plus ordinary and selected-column owned/candidate pairs.
-const MUTABLE_ROLES: usize = 5;
-
 #[cfg(test)]
 mod tests;
 
-#[derive(Clone, Copy, PartialEq, Eq)]
-pub(super) enum Role {
-    GlobalFree,
-    OrdinaryOwned,
-    OrdinaryCandidate,
-    IndexOwned(u32),
-    ColumnOwned(usize),
-    ColumnCandidate(usize),
-}
-
-impl Role {
-    fn grammar(self) -> MapRole {
-        match self {
-            Self::GlobalFree => MapRole::GlobalFree,
-            Self::OrdinaryCandidate => MapRole::TableFreeSpace,
-            Self::ColumnCandidate(_) => MapRole::LongValueCandidate,
-            Self::OrdinaryOwned | Self::IndexOwned(_) | Self::ColumnOwned(_) => MapRole::Owned,
-        }
-    }
-
-    fn mutable(self, definition: u32, selected: u32, column: usize) -> bool {
-        match self {
-            Self::GlobalFree => true,
-            Self::OrdinaryOwned | Self::OrdinaryCandidate => definition == selected,
-            Self::ColumnOwned(number) | Self::ColumnCandidate(number) => {
-                definition == selected && number == column
-            }
-            Self::IndexOwned(_) => false,
-        }
-    }
-}
-
 struct Claim {
-    definition: u32,
-    role: Role,
+    owner: Owner,
     reference: u32,
     // The first page is the container; remaining pages are bitmap storage.
     storage: MapStorage,
 }
 
-pub(super) struct Census {
+pub(in crate::table) struct Census {
     claims: Vec<Claim>,
 }
 
 impl Census {
-    pub fn new() -> Self {
+    pub(super) fn new() -> Self {
         Self { claims: Vec::new() }
     }
 
-    pub fn capture(
+    pub(super) fn capture(
         &mut self,
-        definition: u32,
-        role: Role,
+        owner: Owner,
         reference: u32,
         reader: &mut Reader<'_, Cursor<&[u8]>>,
     ) -> Result<&[u32], EditError> {
         reader.tick()?;
         reader.work(self.claims.len())?;
-        if let Some(position) = self
-            .claims
-            .iter()
-            .position(|claim| claim.definition == definition && claim.role == role)
-        {
+        if let Some(position) = self.claims.iter().position(|claim| claim.owner == owner) {
             // Logical aliases of one physical index have one canonical owner.
             // Conflicting references for that owner are malformed metadata.
             let claim = &self.claims[position];
@@ -91,7 +51,7 @@ impl Census {
             return Ok(&claim.storage.pages);
         }
 
-        let storage = RepresentedMap::read_storage(reader, reference, role.grammar())?;
+        let storage = RepresentedMap::read_storage(reader, reference, owner.grammar())?;
         if storage.pages.first().copied() != Some(reference_page(reference)) {
             return Err(InspectError::Malformed.into());
         }
@@ -103,8 +63,7 @@ impl Census {
             .try_reserve(1)
             .map_err(|_| InspectError::Allocation)?;
         self.claims.push(Claim {
-            definition,
-            role,
+            owner,
             reference,
             storage,
         });
@@ -113,27 +72,57 @@ impl Census {
         Ok(&last.storage.pages)
     }
 
+    pub(in crate::table) fn protect_storage(
+        &self,
+        protected: &mut Vec<u32>,
+        reader: &mut Reader<'_, Cursor<&[u8]>>,
+    ) -> Result<(), EditError> {
+        for claim in &self.claims {
+            for &page in &claim.storage.pages {
+                reader.tick()?;
+                reader.work(protected.len())?;
+                if protected.contains(&page) {
+                    continue;
+                }
+                reader
+                    .budget
+                    .charge_allocation(1, size_of::<u32>() as u64)
+                    .map_err(InspectError::from)?;
+                protected
+                    .try_reserve(1)
+                    .map_err(|_| InspectError::Allocation)?;
+                protected.push(page);
+            }
+        }
+
+        Ok(())
+    }
+
     pub fn require_exclusive(
         &self,
-        definition: u32,
-        column: usize,
+        selected: &[Owner],
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
-        let mut mutable = 0;
-        for claim in &self.claims {
+        for (position, owner) in selected.iter().enumerate() {
             check(budget, cancelled)?;
-            if !claim.role.mutable(claim.definition, definition, column) {
-                continue;
+            budget
+                .charge(Resource::Steps, (position + self.claims.len()) as u64)
+                .map_err(InspectError::from)?;
+            if selected[..position].contains(owner) {
+                return Err(EditError::Unsupported(WriteBlocker::RowLayout));
             }
-
-            mutable += 1;
+            let claim = self
+                .claims
+                .iter()
+                .find(|claim| claim.owner == *owner)
+                .ok_or(EditError::Unsupported(WriteBlocker::RowLayout))?;
             for other in &self.claims {
                 check(budget, cancelled)?;
                 budget
                     .charge(Resource::Steps, 1)
                     .map_err(InspectError::from)?;
-                if claim.definition == other.definition && claim.role == other.role {
+                if claim.owner == other.owner {
                     continue;
                 }
                 if claim.reference == other.reference {
@@ -166,9 +155,6 @@ impl Census {
                     }
                 }
             }
-        }
-        if mutable != MUTABLE_ROLES {
-            return Err(EditError::Unsupported(WriteBlocker::RowLayout));
         }
 
         Ok(())
