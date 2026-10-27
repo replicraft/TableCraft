@@ -1,0 +1,160 @@
+{
+  "date": "2026-10-26",
+  "compiled_revision": "978435fa08c6d92577b031929d8abdeb3bd4b247",
+  "command": "cargo build --locked --offline -j2 -p tablecraft-cli",
+  "exit_code": 0,
+  "build_log": {
+    "path": ".cache/french-physical-cli-build-20261026.log",
+    "bytes": 403,
+    "sha256": "88ab07c516955185e7339e937adfdd8e91ca72cc838160d65b9ec6c15b2ee10c"
+  },
+  "frozen_cli": {
+    "path": ".cache/tablecraft-bin/tablecraft-french-physical-20261026",
+    "bytes": 43407944,
+    "sha256": "fc11c14e3bb34119888deaeef6ee5e4c6ee785679bba9ace84aaacde195c672b"
+  },
+  "source_pins": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/collation/sort_order.rs",
+      "bytes": 3459,
+      "sha256": "e33d6e7e181c253285d38fd648f0c7d5038f718ae451fca0cbd0ad5aaa178e2d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/collation/key/mod.rs",
+      "bytes": 2864,
+      "sha256": "175885fad56935cc54ec90be868f07a7ff1a4636011277b3e2fec4d7388aceb9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/collation/key/encode.rs",
+      "bytes": 9534,
+      "sha256": "0c84580e536311330c9ec408e13830c60caf97601bef8a5c864ff8a955de3b28"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/collation/key/french.rs",
+      "bytes": 642,
+      "sha256": "4fde9ba6edb7475f0719d8af8044a4f2a7bce2c2bd119391df08ce79906597f4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/text.rs",
+      "bytes": 8465,
+      "sha256": "81bcc7231cefc3e78a38791a5233f1c331b33a1cba4537b6b9c93af900457ccd"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/text/tests.rs",
+      "bytes": 8454,
+      "sha256": "76373828bcd6640a98bdb8d39a0eaea139acb845864d5152838902650e4140d7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/encoded_tuple/component.rs",
+      "bytes": 3657,
+      "sha256": "f2dcdf73798fd2fa1f1c1ab994e40c4ce0b5e3e9953726052e66fb19cf2c6cad"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/profile.rs",
+      "bytes": 10498,
+      "sha256": "93016c3e5a9b5c9bd5cb3f6acc96265a79a0e5270c025a3453d0a890bed79690"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/plan.rs",
+      "bytes": 16594,
+      "sha256": "98c339b34fb197df4740a2712187ac3bb8d8839c48d475927d1b2513310611bb"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/gates.rs",
+      "bytes": 8453,
+      "sha256": "9f67d0b985d0b2c790141c8e6a9782c47fa0f4b5d91ff8c7c8ee056a9464b2f8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/french_legacy_keys.rs",
+      "bytes": 2565,
+      "sha256": "eeb0a5ad0fb90aaebff7ea751185c5a5cd02fbea3780dc72b04888c266de5b4b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/french_legacy_keys/vectors.tsv",
+      "bytes": 396498,
+      "sha256": "38a420d3457d687a3534cd3defaf43cc47e6247b53d710b585a226e1e098c507"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/french_legacy_keys/bmp.sha256",
+      "bytes": 17408,
+      "sha256": "f4eb391311fd91f5a8b1f12859b3542c66f9594a7c61707d94e46ee6a92e6efe"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/french_legacy_reads.rs",
+      "bytes": 454,
+      "sha256": "a3fa604d74a4ecd5f2592c609bb0d6b55e9a6f492168c1ae5a694c87a51e700c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/french_legacy_reads/model.rs",
+      "bytes": 6658,
+      "sha256": "69f65bbf0cf39932fa60d089d9597d5f111dbaab6609561941a26524f020bc44"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/french_legacy_reads/values.rs",
+      "bytes": 4998,
+      "sha256": "456ea796974f7a3d41248d0e2df65146fe73a467e37996af614570493422c6cf"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/french_legacy_reads/boundaries.rs",
+      "bytes": 9922,
+      "sha256": "758c03621faeb13ebf6d5c64dfa7c411d6e0ba5cbc9f3f85d6dc85cb5c5964db"
+    },
+    {
+      "path": "docs/testing/FrenchKeysOracle.java",
+      "bytes": 5433,
+      "sha256": "4ec72e1b8680d327db3c6a07d552dde35d9eea6e5997a71250a15f61abcbf96b"
+    },
+    {
+      "path": "docs/access/indexes/NATIVE_TEXT.md",
+      "bytes": 66107,
+      "sha256": "42cbd2ff75da2ea296a0cfa6f0e7c1afe3555140b620760e613ef6cb543605bb"
+    },
+    {
+      "path": "docs/testing/FRENCH_LEGACY_INDEX_OBSERVATIONS.md",
+      "bytes": 8070,
+      "sha256": "d32a49b68e6f1addd5c021128d031e0378eb07e8cd61d22b03fd7237c00ab68f"
+    },
+    {
+      "path": "docs/testing/FIXTURES.md",
+      "bytes": 556111,
+      "sha256": "613ce3f71a2235313e85385b2c73bde2d013707a3ac0ef1a31388ea8326c1145"
+    },
+    {
+      "path": "Cargo.toml",
+      "bytes": 6943,
+      "sha256": "714849d1ee46102f9e708ff6346c988688bfc6ea2cd5d40ca12e3a0a5c558b03"
+    },
+    {
+      "path": "Cargo.lock",
+      "bytes": 54179,
+      "sha256": "e9b5e8378cfd444ceac716d9e8598e24d0b336c44ce6d97e71706b75e4937725"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/Cargo.toml",
+      "bytes": 2057,
+      "sha256": "53c4d69671efa7dd8fcfd065dd4a5a8ba1652fcaa696be943e1efeec71c71f03"
+    },
+    {
+      "path": "apps/tablecraft-cli/Cargo.toml",
+      "bytes": 1202,
+      "sha256": "0423ed1762dd85df975528a675e6a37a910477d358135d437802a644c6b4649b"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/main.rs",
+      "bytes": 3373,
+      "sha256": "e0b047760c99b22153b8fc17f63ce0d743a6370db2f1efdbd41367e674b04397"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/retrieval.rs",
+      "bytes": 12967,
+      "sha256": "61e687c9018689054b6a796b0f8b1489352be8482df4768810d6d5e5a072abf5"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/collation.rs",
+      "bytes": 6972,
+      "sha256": "a97c0056d6853c6d737babe8943b4f7fdf3ebec9d6f0cfedfea943b3ea429837"
+    }
+  ],
+  "compiler_inputs_clean_before_and_after_build": true,
+  "scope": "Normal CLI build with committed French physical-read feature; original-file selected reads and SQL comparison qualification remain separate."
+}
