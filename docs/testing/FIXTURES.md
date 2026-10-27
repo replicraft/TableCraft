@@ -9421,3 +9421,16 @@ whose sources are generated growth candidates. Complete expected-image, map,
 value and primary/index proofs pass with 268-byte capacity and preserved opaque
 padding. Original public references, older Text/PAGE results and native Access
 qualification retain their separate scopes.
+
+### Int32 root-leaf split references
+
+The [split observations](INDEX_SPLIT_OBSERVATIONS.md) use the unchanged registered
+BatchDelete originals. Two frozen fixed-Int32 requests refuse atomically with
+`Unsupported(IndexedColumn)`; two matching public UPDATEs succeed and create two
+EOF leaves while retaining the primary root and all original row references.
+The [receipt](results/ace16-index-split-originals-2026-10-26.json) preserves all
+12 commands and the initial verifier's exit 1: its unaffected-index byte-identity
+hypothesis failed when the public writer redistributed unchanged Wide keys.
+Separate read-only diagnosis verifies the complete final streams, bounds, maps
+and counters. That public redistribution is not a required engineering byte
+golden; this reference capture does not implement a split API or qualify Access.
