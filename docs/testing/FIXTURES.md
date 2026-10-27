@@ -9454,3 +9454,11 @@ copies update successfully. All twelve original commands and first verifier exit
 Separate saved-byte analyses verify the actual leaf/parent/map changes and equal
 Memo/OLE payloads despite nine new public LVAL pages. No original database was
 modified, no action was repeated, and no non-root kernel success is claimed.
+
+The subsequent [non-root candidate acceptance](NONROOT_SPLIT_UPDATE_OBSERVATIONS.md)
+uses those same originals and ID requests through a frozen committed consumer.
+Both first-attempt images match the independently frozen complete-byte models;
+all original long-value descriptors/pages remain unchanged and each image grows
+by one index page. The [candidate receipt](results/ace16-nonroot-split-originals-2026-10-27.json)
+pins six commands, outputs and exact executed sources. The preceding public
+reference capture and its verifier failure remain separate evidence.

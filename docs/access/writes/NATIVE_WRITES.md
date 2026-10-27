@@ -62,6 +62,13 @@ immutable request authority and independent final audits. Old chunks remain
 allocated; unknown ownership, broader field/map profiles and normal saves remain
 unqualified. Its original-file candidate replay follows a frozen consumer build.
 
+The separate [Int32 leaf-split service](../../testing/ACE16_INDEX_SPLITS.md) now
+supports root-leaf and non-root leaf growth through represented EOF index pages.
+Its [root](../../testing/ROOT_SPLIT_UPDATE_OBSERVATIONS.md) and
+[non-root](../../testing/NONROOT_SPLIT_UPDATE_OBSERVATIONS.md) two-file candidate
+comparisons pass complete independent image proofs. Internal-node overflow,
+other codecs, map growth and production saves retain their separate gaps.
+
 Contraction now qualifies complete internal-node sibling chains by height and
 repairs retained neighbors. Entirely unlinked levels retain their existing
 profile; partial or malformed chains refuse. The
