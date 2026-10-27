@@ -5,7 +5,7 @@
   "distinct_test_definitions": 10,
   "new_example_tests": 6,
   "shared_existing_request_tests": 4,
-  "counting": "Six new consumer definitions plus four existing shared parser definitions. The shared four execute in both old and new example targets: 10 new-target executions plus4 old-target executions =14 executions of10 distinct definitions. These are not new engine compatibility functions.",
+  "counting": "Six new consumer definitions plus four existing shared parser definitions. The shared four execute in both old and new example targets: 10 new-target executions plus 4 old-target executions = 14 executions of 10 distinct definitions. These are not new engine compatibility functions.",
   "scope_files": [
     {
       "path": "crates/engines/tablecraft-ace/Cargo.toml",
@@ -111,7 +111,7 @@
     "OsString pairs validate table selectors as UTF-8 and retain native PathBuf request/source/output paths without lossy conversion.",
     "Exact quoted TSV payloads and row ordinals survive loading; duplicate case-insensitive table groups refuse.",
     "Malformed later records fail before any database open or output creation; no earlier partial request prefix is published.",
-    "Per-file32MiB,4096-request and4096-record-byte ceilings remain separate from engine cumulative table/request caps. Byte, row and step budgets are shared across files and later native capture/planning.",
+    "Per-file limits of 32 MiB, 4096 requests and 4096 record bytes remain separate from the engine cumulative table/request caps. Byte, row and step budgets are shared across files and later native capture/planning.",
     "An actual authored two-table RESTRICT candidate deletes three roots, preserves source bytes and file length, and refuses existing output without changing it.",
     "Fresh output publication propagates write/sync errors, removes its newly created incomplete copy when possible, and reports any cleanup failure explicitly."
   ],

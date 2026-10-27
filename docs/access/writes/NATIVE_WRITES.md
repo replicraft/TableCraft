@@ -46,6 +46,10 @@ Self relationships, unenforced declarations and other delete actions remain
 refused even for empty requests. See the
 [closed relationship profile](../../testing/ACE16_DELETE_PREVIEWS.md#cross-table-enforced-restrict-relationships).
 This does not enable normal saves or establish native Access action timing.
+The [84-control original-file comparison](../../testing/RESTRICT_DELETE_OBSERVATIONS.md)
+passes the explicit final-image model but retains six public per-row action
+disagreements for NULL parent keys with all-NULL children. This is not full
+RESTRICT action parity; native Access qualification remains pending.
 
 Explicit `TableRowDeletes` groups now stage several tables against one original
 image and validate one complete final image. Shared global-free bitmap bytes are

@@ -9038,3 +9038,42 @@ The nonunique keys include NULL/empty/case/ties/punctuation/expansions and
 510-byte overflow; unique overflow is not qualified. Raw captures/database bytes
 stay ignored. This is independent stored-index evidence, not implemented French
 engine support, native Access/NLS/SQL comparison, LIKE/search or write qualification.
+
+## New cross-table RESTRICT DELETE comparison originals
+
+Original Apache-2.0 [RestrictDeleteFixture.java](RestrictDeleteFixture.java),
+SHA-256 `c26f63b4db4c62f22895b2b90e4e45e49eb8646f936de3cf5bb5b73bc5f03d79`,
+uses the reviewed Jackcess 5.0.4 public builders and per-row delete API. Explicit
+foreign-key enforcement is enabled, expressions are disabled, time zone is UTC
+and linked opens throw. The separate original
+[RestrictNullJoinProbe.java](RestrictNullJoinProbe.java) is read-only. No upstream
+implementation or fixture is copied; the reviewed JAR SHA-256 remains
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+
+These are NEW original identities, not restoration of unavailable historical
+FK/update-cascade inputs. A bounded local hash recovery found no matching old
+bytes; historical receipts remain unchanged. Fresh files stay ignored under
+`.cache/restrict-delete-originals-next-20261026/`:
+
+| New original | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Restrict-V2016-new.accdb | 884,736 | `5eccd93dec9cd34d107fcc94252128baff8ee01b70a529ddf0c39ccb576fb423` |
+| Restrict-V2019-new.accdb | 950,272 | `270fc7b02debd5f29bb26c012576dd4d0d38f96c356abc54efc14a90ea9af60b` |
+
+Each file has nineteen tables, 133 rows and ten enforced cross-table delete-RESTRICT
+relationships, with five update-RESTRICT and five update-CASCADE actions. Seven
+scalar key families plus two nullable fixed composites preserve ordinary unique
+nullable parent keys separately from non-NULL ID primaries. Actual BigInt/Decimal
+metadata, physical roots, all-NULL/partial-NULL shapes, bounds and exact adjacency
+are captured before actions; no header or index flags were patched.
+
+The [owning observations](RESTRICT_DELETE_OBSERVATIONS.md) and compact
+[reference](results/ace16-delete-restrict-original-reference-2026-10-26.json) /
+[candidate](results/ace16-delete-restrict-original-replay-2026-10-26.json) receipts
+report 84 controls with zero final-image-model discrepancies **and six public-action
+disagreements**. Candidates have 64 successes/twenty typed no-output refusals;
+public actions have 58 successes/26 byte-identical refusals. NULL-parent Joiner
+action lookup remains distinct from the explicit all-NULL-exempt final-image rule.
+Initial incomplete 26/1 evidence, exact source versions, histories and raw outputs
+remain pinned. No full action parity, native SQL timing, Access save or ordinary
+write qualification is claimed.
