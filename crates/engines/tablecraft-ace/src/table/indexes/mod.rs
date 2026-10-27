@@ -8,6 +8,7 @@ pub use decimal::DecimalIndexSelection;
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) use decimal::DecimalType;
 mod definition;
+pub use definition::IndexHistoricalCounter;
 pub(in crate::table) use definition::read_with_tail as definitions_with_tail;
 mod floating;
 mod guid;
@@ -61,6 +62,36 @@ pub fn inspect_table_indexes<R: crate::NativeReadSource>(
     reader.tick()?;
     Ok(IndexInspection { schema, indexes })
 }
+
+/// Inspect the stored historical counter for one explicitly selected native index.
+/// Validates table/index metadata without traversing rows or executing content.
+/// Logical aliases share the same physical counter. This value is not a live
+/// row count and its decoded-image span grants no native mutation authority.
+pub fn inspect_table_index_counter<R: crate::NativeReadSource>(
+    source: &mut R,
+    scope: CatalogScope,
+    table: &str,
+    index: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<IndexHistoricalCounter, InspectError> {
+    let _span = tracing::debug_span!("native.index.counter.inspect").entered();
+    let inspection = inspect_table_indexes(source, scope, table, budget, cancelled)?;
+    let selected = inspection
+        .indexes()
+        .iter()
+        .find(|candidate| candidate.name().eq_ignore_ascii_case(index))
+        .ok_or(InspectError::Unsupported)?;
+    let mut reader = Reader {
+        source,
+        header: inspection.schema().header,
+        budget,
+        cancelled,
+        reads: 0,
+    };
+    definition::read_counter(&mut reader, inspection.schema(), selected.data_number())
+}
+
 mod binary;
 pub use binary::BinaryIndexSelection;
 pub use read::read_table_binary_index_range;

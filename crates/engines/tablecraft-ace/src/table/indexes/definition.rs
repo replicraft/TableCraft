@@ -1,3 +1,7 @@
+mod counters;
+pub use counters::IndexHistoricalCounter;
+pub(super) use counters::read_counter;
+
 use super::super::schema::TableSchema;
 use super::{IndexColumn, NativeIndex};
 use crate::{

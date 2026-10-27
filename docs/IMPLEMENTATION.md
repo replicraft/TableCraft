@@ -12,6 +12,16 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Explicit historical index counters
+
+The bounded [`inspect_table_index_counter` service](access/indexes/NATIVE_INDEXES.md#explicit-historical-counter-inspection)
+returns the original physical index's historical distinct-entry counter and exact
+decoded-image byte range. Logical aliases share that physical identity. Existing
+index inspection stays lazy and unchanged; the counter is never recomputed from
+live rows. Five focused functions, feature/default strict lint and formatting
+pass. This supplies inspection needed for future INSERT work, not counter mutation
+or insertion admission.
+
 ## Combined allocation-map transitions
 
 The existing combined variable-record/index engineering service now supports

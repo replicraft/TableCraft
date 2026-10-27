@@ -79,7 +79,10 @@ pub use indexes::{
 pub use indexes::{
     ForeignIndexInspection, ForeignIndexLink, ForeignIndexReference, inspect_foreign_index_links,
 };
-pub use indexes::{IndexColumn, IndexInspection, NativeIndex, inspect_table_indexes};
+pub use indexes::{
+    IndexColumn, IndexHistoricalCounter, IndexInspection, NativeIndex, inspect_table_index_counter,
+    inspect_table_indexes,
+};
 
 pub(crate) use record::decode_selected as decode_projected_record;
 pub(crate) use snapshot::read_selected;
