@@ -1,0 +1,125 @@
+{
+  "date": "2026-10-26",
+  "scope": "Separate feature-gated engineering example for explicit multi-table DELETE candidates; no engine admission, normal CLI/backend save or automatic action changes.",
+  "example_test_executions": 14,
+  "distinct_test_definitions": 10,
+  "new_example_tests": 6,
+  "shared_existing_request_tests": 4,
+  "counting": "Six new consumer definitions plus four existing shared parser definitions. The shared four execute in both old and new example targets: 10 new-target executions plus4 old-target executions =14 executions of10 distinct definitions. These are not new engine compatibility functions.",
+  "scope_files": [
+    {
+      "path": "crates/engines/tablecraft-ace/Cargo.toml",
+      "bytes": 2057,
+      "sha256": "53c4d69671efa7dd8fcfd065dd4a5a8ba1652fcaa696be943e1efeec71c71f03"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/examples/preview_ace16_delete/requests.rs",
+      "bytes": 7180,
+      "sha256": "10a128b323b1e127774ebeb842ff0dfc4733e319c95e1da4d35b19c852a66d87"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/examples/preview_ace16_batch_delete.rs",
+      "bytes": 2831,
+      "sha256": "8ba1170a2c59984c4db7cac0a7f3f451f4c0847e24a0300afdaf50743d8c1c79"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/examples/preview_ace16_batch_delete/input.rs",
+      "bytes": 2008,
+      "sha256": "355c2161ea1b4eae7ef757b5ad30298edea8dc7804af1fc491ec34516dee2644"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/examples/preview_ace16_batch_delete/tests.rs",
+      "bytes": 8647,
+      "sha256": "da84cb394b12d2cb6b8e6b03c190e393eb65239a454c94ee593aa6515a70de1a"
+    },
+    {
+      "path": "docs/testing/DELETE_REQUEST_FILES.md",
+      "bytes": 4134,
+      "sha256": "aea13a60f7d3f700081ba19adee2907cfd569b552a2e1f259671fac33332aa33"
+    }
+  ],
+  "read_only_shared_sources": [
+    {
+      "path": "crates/engines/tablecraft-ace/examples/preview_ace16_delete.rs",
+      "bytes": 1721,
+      "sha256": "6765f411289c4b596c416b71db9c9dbc72257bcb9d32e79d26ba60c13c4989cf"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/examples/preview_ace16_delete/requests/tests.rs",
+      "bytes": 2464,
+      "sha256": "089c83fd48ec4eb633cda76e4a8e8a13396d381c7adff7ef48ea6b47fe2b9e08"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_restrict_delete_contract/model.rs",
+      "bytes": 14711,
+      "sha256": "37f0afacb060df7f571aa0927b32bda617c82a8aa0e74762b37524a02f3853b8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/mutation/fixture.rs",
+      "bytes": 5609,
+      "sha256": "9d66669d6fce171118e39d07afe54f6f3298f8168f5d088befbc8649baf6bae3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/support/mod.rs",
+      "bytes": 3496,
+      "sha256": "395145db02a7fc23388bd6ba065ee62992e823df0306bff205a2ae2304438c99"
+    }
+  ],
+  "implementation_record": "docs/testing/results/ace16-batch-delete-native-2026-10-26.json",
+  "checks": [
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --example preview_ace16_delete --example preview_ace16_batch_delete",
+      "session": 46139,
+      "exit_code": 0,
+      "executions": 14,
+      "log": {
+        "path": ".cache/ace16-batch-delete-example-tests-20261026.log",
+        "bytes": 1889,
+        "sha256": "5428752a0f93fa08f03e790c1eccd673d17ebe01e5978de2ffaa3378efa42752"
+      }
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --example preview_ace16_delete --example preview_ace16_batch_delete -- -D warnings",
+      "session": 3237,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-batch-delete-example-clippy-20261026.log",
+        "bytes": 183,
+        "sha256": "8cc8d86bcb1447f63b6d71475195d4eade3a6bec1efa2ef327f52a32689f1bd0"
+      }
+    },
+    {
+      "command": "rustfmt --edition 2024 --check --config skip_children=true crates/engines/tablecraft-ace/examples/preview_ace16_delete/requests.rs crates/engines/tablecraft-ace/examples/preview_ace16_batch_delete.rs crates/engines/tablecraft-ace/examples/preview_ace16_batch_delete/input.rs crates/engines/tablecraft-ace/examples/preview_ace16_batch_delete/tests.rs",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-batch-delete-example-format-20261026.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "log": null,
+      "observation": "Successful tool output only; no file log captured."
+    }
+  ],
+  "failed_attempts": [],
+  "acceptance": [
+    "clap Parser requires repeated complete --group TABLE DELETE_TSV_PATH pairs; no source-less request or old single-example --delete/--delete-file switch accepted by batch example.",
+    "File-only Requests factory uses the existing Requests::load path and minimally extracted pub(super)load_file, keeping old argument exclusivity and parser limits unchanged. No dead_code suppression remains on the shared module.",
+    "OsString pairs validate table selectors as UTF-8 and retain native PathBuf request/source/output paths without lossy conversion.",
+    "Exact quoted TSV payloads and row ordinals survive loading; duplicate case-insensitive table groups refuse.",
+    "Malformed later records fail before any database open or output creation; no earlier partial request prefix is published.",
+    "Per-file32MiB,4096-request and4096-record-byte ceilings remain separate from engine cumulative table/request caps. Byte, row and step budgets are shared across files and later native capture/planning.",
+    "An actual authored two-table RESTRICT candidate deletes three roots, preserves source bytes and file length, and refuses existing output without changing it.",
+    "Fresh output publication propagates write/sync errors, removes its newly created incomplete copy when possible, and reports any cleanup failure explicitly."
+  ],
+  "boundaries": [
+    "Only engineering example/input files and an explicit required-feature example manifest entry changed; no engine Rust or dependency versions/features changed.",
+    "Output cleanup failure behavior is implemented but no filesystem fault-injection test was run; existing-output refusal is tested.",
+    "No original public-Jackcess file replay, frozen example executable, native Access comparison or source database write is claimed by this record.",
+    "Automatic cascades, SET NULL, self-relationship action timing, data-macro qualification and normal ACE saves remain outside this consumer.",
+    "The root will separately build/freeze the committed executable and run original-file comparisons."
+  ]
+}

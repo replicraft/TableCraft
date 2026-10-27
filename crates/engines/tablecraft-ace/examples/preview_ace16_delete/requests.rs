@@ -1,7 +1,11 @@
 //! Bounded application input; physical record validation stays in the engine.
 use clap::Args;
 use csv::{ReaderBuilder, StringRecord};
-use std::{error::Error, fs::File, path::PathBuf};
+use std::{
+    error::Error,
+    fs::File,
+    path::{Path, PathBuf},
+};
 use tablecraft_ace::RowDelete;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
@@ -32,28 +36,24 @@ pub(super) struct Requests {
     delete_file: Option<PathBuf>,
 }
 
+// The batch example creates the same checked file-only request source without
+// reparsing synthetic command-line arguments or exposing private inline state.
+impl From<PathBuf> for Requests {
+    fn from(path: PathBuf) -> Self {
+        Self {
+            deletes: Vec::new(),
+            delete_file: Some(path),
+        }
+    }
+}
+
 impl Requests {
     pub(super) fn load(
         self,
         budget: &mut ResourceBudget,
     ) -> Result<Vec<RowDelete>, Box<dyn Error>> {
         if let Some(path) = self.delete_file {
-            let mut file = File::open(path)?;
-            let length = tablecraft_io::seek_to_end(&mut file, budget, &|| false)?;
-            if length > MAX_REQUEST_FILE_BYTES {
-                return Err("Delete-request file exceeds the 32 MiB input limit".into());
-            }
-            budget.charge_allocation(length, 1)?;
-            budget.charge(Resource::Steps, length)?;
-            let length = usize::try_from(length)?;
-            let mut input = Vec::new();
-            input.try_reserve_exact(length)?;
-            input.resize(length, 0);
-            tablecraft_io::read_exact_at(&mut file, 0, &mut input, budget, &|| false)?;
-            if tablecraft_io::seek_to_end(&mut file, budget, &|| false)? != length as u64 {
-                return Err("Delete-request file length changed during capture".into());
-            }
-            return parse_tsv(&input, budget);
+            return load_file(&path, budget);
         }
 
         if self.deletes.len() > MAX_REQUEST_ROWS {
@@ -70,6 +70,28 @@ impl Requests {
         }
         Ok(result)
     }
+}
+
+pub(super) fn load_file(
+    path: &Path,
+    budget: &mut ResourceBudget,
+) -> Result<Vec<RowDelete>, Box<dyn Error>> {
+    let mut file = File::open(path)?;
+    let length = tablecraft_io::seek_to_end(&mut file, budget, &|| false)?;
+    if length > MAX_REQUEST_FILE_BYTES {
+        return Err("Delete-request file exceeds the 32 MiB input limit".into());
+    }
+    budget.charge_allocation(length, 1)?;
+    budget.charge(Resource::Steps, length)?;
+    let length = usize::try_from(length)?;
+    let mut input = Vec::new();
+    input.try_reserve_exact(length)?;
+    input.resize(length, 0);
+    tablecraft_io::read_exact_at(&mut file, 0, &mut input, budget, &|| false)?;
+    if tablecraft_io::seek_to_end(&mut file, budget, &|| false)? != length as u64 {
+        return Err("Delete-request file length changed during capture".into());
+    }
+    parse_tsv(&input, budget)
 }
 
 fn parse_tsv(input: &[u8], budget: &mut ResourceBudget) -> Result<Vec<RowDelete>, Box<dyn Error>> {

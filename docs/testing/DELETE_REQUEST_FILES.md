@@ -34,3 +34,38 @@ checks duplicate/stale ordinals, exact records and its own narrower profile.
 Four focused example tests cover clap source exclusivity, quoted records and exact
 bytes, malformed batches, payload/row limits and independent byte/row/work budget
 failures. Original-file comparison evidence remains separate from parser tests.
+
+## Explicit multi-table comparison example
+
+The separate `preview_ace16_batch_delete` example accepts repeated exact
+`--group TABLE DELETE_TSV_PATH` pairs. It calls the
+[explicit final-image batch API](ACE16_DELETE_PREVIEWS.md#explicit-multi-table-deletion-batches);
+it does not infer a cascade or enable ordinary saves.
+
+```sh
+cargo run --locked -p tablecraft-ace --features ace16-write-preview \
+  --example preview_ace16_batch_delete -- original.accdb candidate.accdb \
+  --group Children children.tsv --group Parents parents.tsv
+```
+
+Every file uses the same quoted, headerless ROW/HEX format and the unchanged
+32 MiB/4096-request/4096-byte-per-record ceilings. Empty files refuse. Table names
+must be UTF-8; native filesystem paths remain `PathBuf` values without lossy
+conversion. Repeated table selectors refuse case-insensitively. The engine's
+cumulative table/request ceilings also apply; the example does not reset its
+256 MiB byte, 100,000 row and 100 million step operation budget between files,
+database capture or candidate planning.
+
+All request files must be captured and parsed before the database is opened.
+An invalid later file cannot publish a valid earlier group. After the complete
+engine candidate passes, the output is created with exclusive fresh-file
+semantics. Existing outputs remain untouched. A write/sync failure attempts to
+remove the newly created incomplete copy; a cleanup failure is reported explicitly
+rather than hiding the remaining file. The source is always opened read-only.
+
+The single-table example's positional arguments and mutually exclusive
+`--delete`/`--delete-file` switches are unchanged; they are not batch switches.
+The [consumer verification record](results/ace16-batch-delete-example-2026-10-26.json)
+separates six new tests from four shared request-parser tests that execute in both
+example targets. These checks are example/input evidence, not additional engine
+compatibility tests or native Access action/save qualification.
