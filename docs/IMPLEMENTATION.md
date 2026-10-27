@@ -324,6 +324,20 @@ publication tests are counted once. The first independent run's two authored
 assumptions and later mechanical compile/lint corrections remain in the result;
 no failed attempt or expected-byte change is hidden.
 
+## Combined record and index pressure sources
+
+Two new [maximum-width pressure sources](testing/VARIABLE_ENCODED_SPLIT_SOURCE_OBSERVATIONS.md)
+now pass a first-attempt five-command construction/inspection phase. Each has
+2,701 rows with fixed GUID/BYTE companions. Every target occupies ten DATA pages
+with 90 ordinary records and 32 free bytes each. Each maximum-width replacement
+requires a larger record and overflows its General/Binary indexes.
+
+The independent encoder confirms the Modern 510-byte truncated keys and their
+digests against a separate model before any UPDATE. Saved verification checks
+5,402 typed rows, 5,400 target slots and 60 target DATA pages. Persisted changed
+keys, combined candidates and the complete native metadata-role census remain
+separate qualifications. These source observations add no normal save path.
+
 ## Index-owned map promotion
 
 The optional engineering split services now support

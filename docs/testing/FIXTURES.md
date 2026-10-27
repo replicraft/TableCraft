@@ -9930,3 +9930,22 @@ native/JVM calls. It explicitly records its read-only Git metadata subprocesses.
 Static setup corrections remain archived; no original, request, proof or golden
 byte changed for acceptance. Normal writes and native Access qualification remain
 unfinished.
+
+### Maximum-width combined DATA/index pressure sources
+
+The [separate source phase](VARIABLE_ENCODED_SPLIT_SOURCE_OBSERVATIONS.md) creates
+two new unchanged ACE 16 originals with 900 rows in each General legacy/modern
+and Binary target, plus one Memo/OLE sentinel. Fixed GUID/BYTE companions yield
+43-byte records, ten 90-row DATA pages per target and only 32 free bytes/page.
+Exact helper bytes and function-equivalent model are tracked; native type,
+mask/footer/offset, physical alias and map checks accompany all 5,402 typed rows.
+The Modern requested 510-byte keys match the independent finite digest oracle;
+persisted changed keys have not been qualified by this source phase.
+
+All five actual source commands pass first attempt. Before execution only one
+private residue-policy paragraph was corrected and re-frozen; its unexecuted
+predecessor remains archived. The saved verifier checks 49 identities, including
+those archived inputs, without starting a child process. No source byte, request,
+layout or oracle was adjusted after execution. The 26 observed user/global map
+roles do not establish the complete catalog/historical census or native write
+admission of the future combined service.

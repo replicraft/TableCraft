@@ -198,6 +198,13 @@ six index pages. Committed-consumer candidate comparisons remain separate.
   without changing sources, requests or budgets. Tuple allocation, broader
   profiles, combined record growth and normal saves remain unfinished.
 
+New [combined pressure sources](testing/VARIABLE_ENCODED_SPLIT_SOURCE_OBSERVATIONS.md)
+now establish maximum-width record and index growth inputs in both ACE 16 formats:
+43-byte records, 90 per DATA page, only 32 free bytes, and independently confirmed
+maximum-width encoded keys. All five construction/inspection commands pass first
+attempt. They do not establish a combined writer, persisted new-key behavior or
+complete native metadata authority.
+
 - [x] Qualified [index-owned map promotion](testing/ACE16_INDEX_MAP_GROWTH.md)
   now composes same-extent pointer-row rewrites and distinct bitmap metadata with
   recursive/repeated splits. Independent images cover late promotion and mixed

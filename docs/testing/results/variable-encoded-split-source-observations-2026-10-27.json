@@ -1,0 +1,489 @@
+{
+  "date": "2026-10-27",
+  "status": "source_observations_only",
+  "scope": "Fresh combined DATA-capacity and encoded-index pressure inputs; no combined mutation, public UPDATE or native candidate qualification.",
+  "history": {
+    "pre_execution_review": "One private DESIGN paragraph was corrected before authorization; exact unexecuted draft and freeze archived. Helper, model, recipe, oracle and all five argv remained unchanged. This was not a failed fixture attempt.",
+    "source_session": 10150,
+    "source_commands": 5,
+    "source_status": 0,
+    "first_attempt": true,
+    "public_updates_in_source_phase": 0,
+    "native_calls_in_source_phase": 0,
+    "source_regenerations": 0,
+    "phase": "One javac, followed by create and inert inspect for each of two profiles."
+  },
+  "limits": {
+    "child_deadline_seconds": 30,
+    "java_heap_mib": 512,
+    "writable_file_bytes": 8388608,
+    "live_stream_bytes_each": 16777216,
+    "source_command_limit": 5
+  },
+  "inert_policy": {
+    "evaluate_expressions": false,
+    "enforce_foreign_keys": true,
+    "reuse_free_pages": false,
+    "timezone": "UTC",
+    "linked_opens": "refuse"
+  },
+  "observations": [
+    {
+      "profile": "V2016",
+      "original": {
+        "path": ".cache/ace16-variable-encoded-source-first-20261027/V2016-original.accdb",
+        "bytes": 610304,
+        "sha256": "2e7ca607356bf41af05d3fad6f94db9d8c78673478f64e24e941ac666114e994"
+      },
+      "file_pages": 149,
+      "rows": 2701,
+      "captured_map_roles": 26,
+      "logical_indexes": 13,
+      "physical_indexes": 10,
+      "targets": {
+        "TextLegacy": {
+          "definition": 89,
+          "data_geometry": {
+            "rows_per_page": 90,
+            "body_bytes": 43,
+            "free_bytes": 32,
+            "pages": [
+              94,
+              96,
+              97,
+              98,
+              99,
+              100,
+              101,
+              104,
+              105,
+              106
+            ]
+          },
+          "hint_members": [
+            106
+          ],
+          "asc_desc_roots": [
+            92,
+            93
+          ]
+        },
+        "TextModern": {
+          "definition": 107,
+          "data_geometry": {
+            "rows_per_page": 90,
+            "body_bytes": 43,
+            "free_bytes": 32,
+            "pages": [
+              112,
+              114,
+              115,
+              116,
+              117,
+              118,
+              119,
+              122,
+              123,
+              124
+            ]
+          },
+          "hint_members": [
+            124
+          ],
+          "asc_desc_roots": [
+            110,
+            111
+          ]
+        },
+        "BinaryOne": {
+          "definition": 125,
+          "data_geometry": {
+            "rows_per_page": 90,
+            "body_bytes": 43,
+            "free_bytes": 32,
+            "pages": [
+              130,
+              132,
+              133,
+              134,
+              135,
+              136,
+              137,
+              140,
+              141,
+              142
+            ]
+          },
+          "hint_members": [
+            142
+          ],
+          "asc_desc_roots": [
+            128,
+            129
+          ]
+        }
+      }
+    },
+    {
+      "profile": "V2019",
+      "original": {
+        "path": ".cache/ace16-variable-encoded-source-first-20261027/V2019-original.accdb",
+        "bytes": 684032,
+        "sha256": "c5959e39bda1828d53891542210eba9b40422e0bd6b7f4023114ecc1b0dd6484"
+      },
+      "file_pages": 167,
+      "rows": 2701,
+      "captured_map_roles": 26,
+      "logical_indexes": 13,
+      "physical_indexes": 10,
+      "targets": {
+        "TextLegacy": {
+          "definition": 106,
+          "data_geometry": {
+            "rows_per_page": 90,
+            "body_bytes": 43,
+            "free_bytes": 32,
+            "pages": [
+              111,
+              113,
+              114,
+              115,
+              116,
+              117,
+              118,
+              121,
+              122,
+              123
+            ]
+          },
+          "hint_members": [
+            123
+          ],
+          "asc_desc_roots": [
+            109,
+            110
+          ]
+        },
+        "TextModern": {
+          "definition": 124,
+          "data_geometry": {
+            "rows_per_page": 90,
+            "body_bytes": 43,
+            "free_bytes": 32,
+            "pages": [
+              129,
+              131,
+              132,
+              133,
+              134,
+              135,
+              136,
+              139,
+              140,
+              141
+            ]
+          },
+          "hint_members": [
+            141
+          ],
+          "asc_desc_roots": [
+            127,
+            128
+          ]
+        },
+        "BinaryOne": {
+          "definition": 142,
+          "data_geometry": {
+            "rows_per_page": 90,
+            "body_bytes": 43,
+            "free_bytes": 32,
+            "pages": [
+              148,
+              150,
+              151,
+              152,
+              153,
+              154,
+              155,
+              158,
+              159,
+              160
+            ]
+          },
+          "hint_members": [
+            160
+          ],
+          "asc_desc_roots": [
+            145,
+            146
+          ]
+        }
+      }
+    }
+  ],
+  "records": {
+    "old_body_bytes": 43,
+    "text": {
+      "columns": 8,
+      "mask_bytes": 1,
+      "fixed_prefix": 30,
+      "selected_range": [
+        30,
+        36
+      ],
+      "footer_bytes": 7,
+      "requested_payload_bytes": 510,
+      "requested_completed_body_bytes": 547
+    },
+    "binary": {
+      "columns": 12,
+      "mask_bytes": 2,
+      "fixed_prefix": 34,
+      "selected_range": [
+        34,
+        35
+      ],
+      "footer_bytes": 8,
+      "requested_payload_bytes": 255,
+      "requested_completed_body_bytes": 297
+    },
+    "source_target_data_pages_per_profile": 30,
+    "rows_per_target_page": 90,
+    "free_bytes_each": 32,
+    "root_capacity_reclaimed": false
+  },
+  "actual_encoder_and_capacity": [
+    {
+      "family": "TextLegacy",
+      "direction": "Ascending",
+      "old_bytes": 6,
+      "requested_bytes": 258,
+      "requested_sha256": "d9f869e76ba1c028e187c7bcb7b28a613264d74cf1935a679f3dbaf6cc339155",
+      "requested_tail": "0100",
+      "changed_root_bytes": 8353,
+      "half_bytes": [
+        1806,
+        4303
+      ]
+    },
+    {
+      "family": "TextLegacy",
+      "direction": "Descending",
+      "old_bytes": 7,
+      "requested_bytes": 259,
+      "requested_sha256": "9b07c487d3483bc317250a051dda9549c6cc49382c40a2fea5a8cc6f2af55f4b",
+      "requested_tail": "ff00",
+      "changed_root_bytes": 9253,
+      "half_bytes": [
+        4753,
+        1807
+      ]
+    },
+    {
+      "family": "TextModern",
+      "direction": "Ascending",
+      "old_bytes": 9,
+      "requested_bytes": 510,
+      "requested_sha256": "2bff92d33795b1a4ca676e6ca8df94d39b328a1131aafd7a8d2165eb1eac446a",
+      "requested_tail": "c1ae",
+      "changed_root_bytes": 10403,
+      "half_bytes": [
+        1809,
+        5453
+      ]
+    },
+    {
+      "family": "TextModern",
+      "direction": "Descending",
+      "old_bytes": 10,
+      "requested_bytes": 510,
+      "requested_sha256": "e244d4bbf9b6f2cf6ebe84ae0a36508e61a918b70a2ceda0fac9fe87d045f5d8",
+      "requested_tail": "ce3d",
+      "changed_root_bytes": 11302,
+      "half_bytes": [
+        5902,
+        1810
+      ]
+    },
+    {
+      "family": "BinaryOne",
+      "direction": "Ascending",
+      "old_bytes": 10,
+      "requested_bytes": 289,
+      "requested_sha256": "771d35c41b7192c171afc897c1b8914295a63439fb0ee7c9572851c5611a6928",
+      "requested_tail": "0007",
+      "changed_root_bytes": 11980,
+      "half_bytes": [
+        1810,
+        6130
+      ]
+    },
+    {
+      "family": "BinaryOne",
+      "direction": "Descending",
+      "old_bytes": 10,
+      "requested_bytes": 289,
+      "requested_sha256": "efe845cca7ad36952f117a73d3097cb01b4ded6ddc8702fde7a230e3373b6f92",
+      "requested_tail": "fff8",
+      "changed_root_bytes": 11980,
+      "half_bytes": [
+        6130,
+        1810
+      ]
+    }
+  ],
+  "capacity_scope": "Measured source active length matches public key-only prefix framing. ROW bytes remain per entry. Capacity is 3,616 bytes. Changed wires are actual independent createEntryBytes results; changed persisted raw entries and public tree partitions are not yet measured.",
+  "byte_carrier_scope": "The Java helper normalizes Number to unsigned BYTE; raw bytes and descriptors independently agree. No particular concrete Java Number class is qualified.",
+  "authority_scope": "The 26 captured user/global map roles do not establish complete catalog, physical-slot, historical declaration or write authority.",
+  "preservation": {
+    "frozen_input_and_freeze_checks": 28,
+    "created_artifact_pins": 17,
+    "all_unchanged": true,
+    "separate_saved_postcheck_unique_artifacts": 45,
+    "original_report_unmodified": true
+  },
+  "saved_verification": {
+    "verified": true,
+    "fixture_processes": 0,
+    "source_commands": 5,
+    "public_updates": 0,
+    "native_calls_in_source_phase": 0,
+    "unique_saved_pins": 49,
+    "pre_execution_correction": "Only private residue-policy prose changed; original draft archived, no failed fixture attempt.",
+    "typed_rows_rechecked": 5402,
+    "raw_target_slots_rechecked": 5400,
+    "logical_index_entries_including_aliases": 21602,
+    "target_data_pages": 60,
+    "helper_byte_identity": true,
+    "model_function_ast_identity": true
+  },
+  "source_identity": {
+    "public_helper": "Byte-identical executed helper.",
+    "maintained_model": "Repository-root composition changes only; all eight function ASTs match executed source.",
+    "saved_verifier": "Later read-only consumer; no compiler, JVM or native process."
+  },
+  "not_qualified": [
+    "Persisted changed max255 raw key entries",
+    "Public combined DATA/index allocation order or partition",
+    "Full-catalog write admission",
+    "Combined engineering candidate images",
+    "Normal native saves, macros or Microsoft Access parity"
+  ],
+  "pins": [
+    {
+      "path": ".cache/ace16-variable-encoded-source-first-20261027/report.json",
+      "bytes": 20800,
+      "sha256": "8caf0502ea7ef86ceaf6854a453b3184ab2a230d02e8d58807fc5fed9e7120be"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-source-next-20261027/freeze.json",
+      "bytes": 8091,
+      "sha256": "3588b8d9d4160d4e626e1b32acbbc0535561dbb3c2447f0cf2f43bb298bc861a"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-source-next-20261027/source-plan.json",
+      "bytes": 2843,
+      "sha256": "5d1b18f2101947e8bc9fe36b11ff17f07a19a20e7993f5be19930af5de5f2f12"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-source-next-20261027/VariableEncodedProbe.java",
+      "bytes": 20618,
+      "sha256": "b502f3faffa61c0df905f82102a650690eb48399598f08b38db31f3fd1aa54a4"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-source-next-20261027/model.py",
+      "bytes": 21924,
+      "sha256": "c5d3560ff600fa33a0854f2fa13e07526b24b528a316a1e7c283ae7fb0f10640"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-source-next-20261027/source_capture.py",
+      "bytes": 7542,
+      "sha256": "ad3cfd86e00fe4c00b54a1acf7134a06295280e5c706b7f00d1177709f4dd717"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-source-next-20261027/bounded.py",
+      "bytes": 5367,
+      "sha256": "58737fa3fcdd45b86d0ed2483fef4c8327823d980c7fb02cddfccd9aa2859b13"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-source-next-20261027/recipe.json",
+      "bytes": 3183,
+      "sha256": "281f49ccf6216a6adcdaa3c5846086397637484db3d7eb2e0c4e61cf76fb7cec"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-source-next-20261027/DESIGN.md",
+      "bytes": 10191,
+      "sha256": "2d41268b4c718a7536750d1e8db02194ec1bcc7591d5bd1dc4846ce4fa71d02a"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-source-next-20261027/static_validate.py",
+      "bytes": 5179,
+      "sha256": "b4e4d7245f360cf022e134433dc98e107facd3b34a9bcae1bb71e662c22b2a0a"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-source-next-20261027/static-validate.json",
+      "bytes": 6384,
+      "sha256": "817de16376214fd5bfcce88f0738c81ab19a3cc7e624ce051e7b2a7a631fd22e"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-source-next-20261027/before-residue-prose-correction/source-pins.json",
+      "bytes": 888,
+      "sha256": "2e679a536cffff2d5ecc2407f6b02266dbccc9077cce488b08450d6cbaea2866"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-source-next-20261027/before-residue-prose-correction/DESIGN.md",
+      "bytes": 10013,
+      "sha256": "5cfc98513ee9902b40ebe44e846f4bccb191e57ca305974d1e5acbced7c1bee1"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-source-next-20261027/before-residue-prose-correction/freeze.json",
+      "bytes": 8091,
+      "sha256": "b18c3a3fef557edd843f3bd2442f67fd925db29d24ec531a57e2e4f1707faa72"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-source-next-20261027/before-residue-prose-correction/handoff.json",
+      "bytes": 2648,
+      "sha256": "2809942ab53dbbb3484353c3eee68b7e55bdb0f3613735a10638cce5d769dffc"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-source-next-20261027/before-residue-prose-correction/static-validate.json",
+      "bytes": 6384,
+      "sha256": "817de16376214fd5bfcce88f0738c81ab19a3cc7e624ce051e7b2a7a631fd22e"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-source-first-20261027/postcheck.py",
+      "bytes": 3136,
+      "sha256": "96c85b241114fd24f0b8d0b5c1fe28d62776b0c91a7115586497458f2297fbf9"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-source-first-20261027/postcheck.json",
+      "bytes": 19127,
+      "sha256": "128ba72e0e1a6d73df9b1605ba5825cdea19045e284781e3b576f4b4c282c72d"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-source-first-20261027/public-saved-verify-final.json",
+      "bytes": 18095,
+      "sha256": "07f184d89a67f08d119202b8df97cf0ff95acd909ec0ab69f50ef8876df3507b"
+    },
+    {
+      "path": "docs/testing/VARIABLE_ENCODED_SPLIT_SOURCE_OBSERVATIONS.md",
+      "bytes": 7888,
+      "sha256": "10bc5f898c5dea971e1363755f357556e0ac87c2648c2079182c84f2538c32c9"
+    },
+    {
+      "path": "docs/testing/variable_encoded_split_sources/VariableEncodedProbe.java",
+      "bytes": 20618,
+      "sha256": "b502f3faffa61c0df905f82102a650690eb48399598f08b38db31f3fd1aa54a4"
+    },
+    {
+      "path": "docs/testing/variable_encoded_split_sources/model.py",
+      "bytes": 21924,
+      "sha256": "36cb5acf474c283d6bd21643cb006fdd7f63785ba99e79d250f53947bddc0f1a"
+    },
+    {
+      "path": "docs/testing/variable_encoded_split_sources/verify.py",
+      "bytes": 6357,
+      "sha256": "8b8f3095dfdb71fb38aa978137a46b8c074c3f6e4d066a127bfc5fe090f1b241"
+    }
+  ]
+}
