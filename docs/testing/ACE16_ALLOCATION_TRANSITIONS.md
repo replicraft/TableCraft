@@ -79,3 +79,10 @@ are separate preparation evidence. They do not yet qualify this implementation
 on original files. Their public UPDATE references and committed-consumer replay
 remain subsequent work. Native Microsoft Access comparison, required data-macro
 qualification and production saves remain unfinished.
+
+The [isolated consumer build](results/ace16-hint-transition-example-build-2026-10-27.json)
+compiles committed `69443c6a` into a separate frozen example. Its complete export
+contains 4,217 Git-verified files; all remain unchanged after compilation, with
+295 selected source pins recorded separately. The first offline dev build passes
+with explicit debug information disabled. This is build evidence only, with no
+original-file candidate calls or performance qualification.
