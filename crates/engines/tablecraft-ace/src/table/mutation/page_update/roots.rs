@@ -6,8 +6,8 @@ use crate::{
         allocation,
         bytes::u32_at,
         page::{DATA_SIGNATURE, OWNER_OFFSET, PAGE_BYTES},
-        reader::{PhysicalRow, Reader, row_count, row_range},
-        row::{DELETED_MASK, reference},
+        reader::{PhysicalRow, Reader, live_row_range, row_count},
+        row::reference,
     },
     header::check,
     limits::MAX_LIVE_ROWS,
@@ -89,10 +89,9 @@ pub(in crate::table::mutation) fn capture<'u>(
         }
         for slot in 0..row_count(&page)? {
             reader.tick()?;
-            let (word, start, end) = row_range(&page, slot)?;
-            if word & DELETED_MASK != 0 {
+            let Some((word, start, end)) = live_row_range(&page, slot)? else {
                 continue;
-            }
+            };
             if ordinal >= declared {
                 return Err(InspectError::Malformed.into());
             }

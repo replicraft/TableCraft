@@ -39,8 +39,13 @@ consumer; the prior public transition corpus is not candidate evidence.
 The first frozen 60-case original-file attempt refused all cases atomically,
 without output: V2016 returned unsupported-column errors and V2019 returned
 malformed-structure errors. Selected field metadata matches the intended raw
-profile; diagnosis of the complete original-image admission remains in progress.
-These cases are unmet, not passing candidate evidence.
+profile. The [preserved refusal record](testing/LONG_VALUE_UPDATE_REFUSALS.md)
+separates that outcome from the subsequent diagnosis: the census rejected a
+known opaque system backing field and interpreted a valid empty deleted slot
+before checking its flags. The [correction](testing/results/ace16-long-value-census-correction-2026-10-27.json)
+passes 152 distinct runtime functions and three compile-fail checks; both complete
+original catalog censuses now pass read-only. Replacement acceptance remains
+unmet pending a separate revised frozen-artifact replay.
 
 ## Fixed Int32 leaf split candidates
 

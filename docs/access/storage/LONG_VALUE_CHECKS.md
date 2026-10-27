@@ -51,6 +51,11 @@ capture. External references must lie in the column-owned set. Memo also passes
 its existing bounded text decoder; OLE bytes remain uninterpreted. Normal reads
 without tracing retain their prior decoder behavior and limits.
 
+Logical-root enumeration skips deleted/hidden slots from their raw flag before
+interpreting a former body, including valid empty deleted/relocated slots. Live
+malformed ranges still fail. This does not change explicit physical target or
+LVAL chunk validation, and opaque backing-field scalar coverage remains explicit.
+
 Owned storage is not equated with current reachability. Orphan rows are framed
 and counted while their bodies remain opaque: the first four bytes of an orphan
 are not guessed to be a chain link. `owned_rows()`, `distinct_chunks()` and

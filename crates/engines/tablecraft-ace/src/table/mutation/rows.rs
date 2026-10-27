@@ -5,8 +5,8 @@ use crate::{
         allocation,
         bytes::{u16_at, u32_at},
         page::{DATA_SIGNATURE, OWNER_OFFSET, PAGE_BYTES},
-        reader::{Reader, row_count, row_range},
-        row::{DELETED_MASK, MASK_BITS, OFFSET_MASK, reference},
+        reader::{Reader, live_row_range, row_count},
+        row::{MASK_BITS, OFFSET_MASK, reference},
     },
     header::check,
     limits::MAX_LIVE_ROWS,
@@ -81,10 +81,9 @@ pub(super) fn visit_with_budget<'u, R: crate::NativeReadSource, U: RowAssignment
         }
         for slot in 0..row_count(&page)? {
             reader.tick()?;
-            let (flags, start, end) = row_range(&page, slot)?;
-            if flags & DELETED_MASK != 0 {
+            let Some((flags, start, end)) = live_row_range(&page, slot)? else {
                 continue;
-            }
+            };
             reader
                 .budget
                 .charge(Resource::Rows, 1)

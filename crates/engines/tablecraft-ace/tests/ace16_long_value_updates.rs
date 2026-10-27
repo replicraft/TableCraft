@@ -12,8 +12,9 @@ mod support;
 use model::*;
 use std::io::Cursor;
 use tablecraft_ace::{
-    Ace16WritePreview, EditError, IndexCheckStatus, InspectError, NativeImage, SlotScalarUpdate,
-    WriteBlocker, check_table, check_table_constraints, check_table_long_values, read_table,
+    Ace16WritePreview, EditError, IndexCheckStatus, InspectError, Int32Update, NativeImage,
+    SlotScalarUpdate, WriteBlocker, check_table, check_table_constraints, check_table_long_values,
+    read_table,
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
@@ -81,6 +82,48 @@ fn genuine_empty_memo_index_is_read_checked_before_the_selected_write_guard() {
         assert_eq!(
             run(&bytes, "Memo", &[]).err(),
             Some(EditError::Unsupported(WriteBlocker::IndexedColumn))
+        );
+    }
+}
+
+#[test]
+fn selected_logical_roots_and_fixed_visitors_skip_an_empty_deleted_hidden_slot() {
+    for code in [5, 6] {
+        let mut bytes = source(code, 1);
+        let live = body(&bytes, ROOT, 0).to_vec();
+        let rows = [(0, live), (0xc000, Vec::new()), (0x8000, vec![0xa7; 7])];
+        install(&mut bytes, ROOT, &page(10, &rows));
+        assert_eq!(word(&bytes, ROOT, 1) & 0x1fff, word(&bytes, ROOT, 0));
+        check(&bytes);
+
+        let variable = run(&bytes, "Memo", &[memo_update(Value::Null)]).unwrap();
+        assert_eq!(read(variable.candidate_bytes())[0][1], Value::Null);
+        assert_eq!(
+            word(variable.candidate_bytes(), ROOT, 1),
+            word(&bytes, ROOT, 1)
+        );
+        assert_eq!(
+            body(variable.candidate_bytes(), ROOT, 2),
+            body(&bytes, ROOT, 2)
+        );
+
+        let fixed = capture(&bytes)
+            .preview_ace16_int32_updates(
+                "Items",
+                "Id",
+                &[Int32Update::new(0, 1, 2)],
+                &mut budget(),
+                &|| false,
+            )
+            .unwrap();
+        assert_eq!(read(fixed.candidate_bytes())[0][0], Value::Int32(2));
+        assert_eq!(
+            word(fixed.candidate_bytes(), ROOT, 1),
+            word(&bytes, ROOT, 1)
+        );
+        assert_eq!(
+            body(fixed.candidate_bytes(), ROOT, 2),
+            body(&bytes, ROOT, 2)
         );
     }
 }
