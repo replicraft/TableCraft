@@ -174,9 +174,10 @@ Delivered read/query and engineering foundations:
   now composes same-extent pointer-row rewrites and distinct bitmap metadata with
   recursive/repeated splits. Independent images cover late promotion and mixed
   represented peers. Its 92 distinct runtime functions and scoped build/lint/doc
-  checks pass; exact original-file candidate replay remains pending. General
-  allocation, other map roles/windows, normal saves and native Access
-  qualification remain unfinished.
+  checks pass. Its [first two-original replay](testing/INDEX_MAP_GROWTH_UPDATE_OBSERVATIONS.md)
+  now matches both independently frozen complete images and fresh row/index/map
+  inspections through four successful commands. General allocation, other map
+  roles/windows, normal saves and native Access qualification remain unfinished.
 
 - [x] Shared [native map authority](testing/ACE16_MAP_AUTHORITY.md) now serves the
   existing long-value engineering consumer, with explicit canonical mutable
