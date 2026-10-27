@@ -182,8 +182,10 @@ Delivered read/query and engineering foundations:
 Separate [Text/Binary source observations](testing/ENCODED_INDEX_SPLIT_SOURCE_OBSERVATIONS.md)
 now establish measured root overflow and repeated demand for both General text
 families and Short Binary on two unchanged 2,701-row sources. The corrected five
-source commands pass after an earlier compile failure. Public update references,
-native baseline calls and candidate split qualification remain separate work.
+source commands pass after an earlier compile failure. The subsequent
+[old-slot baseline](testing/ENCODED_INDEX_SPLIT_BASELINES.md) passes six
+byte-identical no-ops and six exact IndexedColumn refusals with no output. Public
+update references and new split candidate qualification remain separate work.
 
 - [x] Qualified [index-owned map promotion](testing/ACE16_INDEX_MAP_GROWTH.md)
   now composes same-extent pointer-row rewrites and distinct bitmap metadata with

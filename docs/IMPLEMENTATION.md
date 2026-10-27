@@ -277,6 +277,13 @@ source phase passes. No public UPDATE or native baseline call has run in this
 source phase. These observations do not add Text/Binary split admission or qualify
 candidate images, normal saves or native Access compatibility.
 
+The subsequent [frozen existing-slot baseline](testing/ENCODED_INDEX_SPLIT_BASELINES.md)
+now passes six byte-identical no-ops and six exact IndexedColumn refusals without
+output, covering all three key families in both source formats. Its twelve
+native calls are separate from source construction and public writer actions.
+All sources and frozen inputs remain unchanged. New split candidates and normal
+saves remain unfinished.
+
 ## Index-owned map promotion
 
 The optional engineering split services now support

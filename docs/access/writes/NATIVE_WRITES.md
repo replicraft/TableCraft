@@ -150,6 +150,10 @@ now measures overflow and repeated split demand in both General text families an
 Short Binary on two unchanged ACE 16 sources. Complete typed/index/map observations
 and raw slot geometry are checked. Source construction does not grant new split
 eligibility or establish a working candidate/save path.
+The separate [old-slot baseline](../../testing/ENCODED_INDEX_SPLIT_BASELINES.md)
+now confirms six byte-identical no-ops and six IndexedColumn growth refusals on
+those unchanged sources. These twelve native calls establish existing admission
+and refusal behavior, not the new split consumer or production-save eligibility.
 
 A separate [index-owned map promotion service](../../testing/ACE16_INDEX_MAP_GROWTH.md)
 now extends the same engineering split APIs when an inline map's complete required
