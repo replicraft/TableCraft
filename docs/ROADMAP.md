@@ -115,9 +115,12 @@ Delivered read/query and engineering foundations:
   now passes nine source commands and thirteen separate reference commands:
   four facade no-ops preserve complete originals, four prior MAX attempts refuse
   atomically and four public updates split the remaining oversized halves. Their
-  six-EOF-page topology is measured. Repeated splitting is now implemented in the
-  engineering services; candidate qualification on those four originals still
-  requires a new frozen committed consumer and independent replay.
+  six-EOF-page topology is measured. The subsequent
+  [four first-run candidates](testing/REPEATED_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
+  now match their frozen complete images and fresh typed/index/map inspections
+  through a new committed consumer. All eight commands pass without changing the
+  originals, selectors, expectations or budgets. Map growth and native saves
+  remain separate work.
   Their [separate MAX reference actions](testing/INTEGRAL_INDEX_SPLIT_OBSERVATIONS.md)
   now record eight successful public updates and eight old-consumer atomic
   refusals on unchanged originals. All sixteen physical roots split; new typed

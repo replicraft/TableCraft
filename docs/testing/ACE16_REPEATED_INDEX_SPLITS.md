@@ -126,7 +126,9 @@ original versus fresh seeds and exact fitting/overflow capacities.
 The source/reference package records nine source and thirteen reference processes,
 including four old typed-service refusals and four public repeated split successes.
 Those actions, and the historical typed8 candidate receipt, are separate from this
-implementation's runtime test totals. A new committed artifact and independent
-four-original replay are required before claiming candidate acceptance on these
-900-key originals. No such new candidate execution is implied by unit tests or
-these public writer observations.
+implementation's runtime test totals. The subsequent
+[first four-original replay](REPEATED_INDEX_SPLIT_UPDATE_OBSERVATIONS.md) now passes
+all four exact candidate images and fresh typed/index/map inspections through a
+new committed consumer, with eight successful first-run commands. That separate
+receipt establishes candidate evidence for these 900-key originals; unit tests
+and public writer observations alone do not establish it.
