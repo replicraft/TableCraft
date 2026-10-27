@@ -56,6 +56,44 @@ required key and ignore-NULL); unknown profiles remain explicit. Qualified
 [Exact numeric constraint validation](../NATIVE_CHECKS.md#qualified-index-constraints) belongs
 to check_table, not metadata inspection or normal indexed retrieval.
 
+## Explicit historical counter inspection
+
+`inspect_table_index_counter(source, scope, table, index, budget, cancelled)` now
+reads the stored historical distinct-entry counter for one explicitly selected
+logical index. `IndexHistoricalCounter` exposes its original definition page,
+physical index number, stored `u32` value and exact four-byte decoded-image range.
+Logical aliases keep their own names and resolve to the same physical counter.
+The service validates table/index metadata and the complete definition chain;
+it does not traverse the selected table's DATA/index pages, execute queries or
+alter ordinary `inspect_table_indexes` work or allocation budgets.
+
+The historical value is not the current live row count. A deletion or replacement
+need not decrement or recompute it. The accessor returns the original value,
+including zero or `u32::MAX`, without repairing it from current entries. Its range
+is native metadata, not permission to patch an encoded file or admit INSERT.
+Missing logical names, invalid physical slots, inconsistent captured/source
+physical counts, truncated records and malformed chains remain errors. Byte/work
+budgets and immediate or later cancellation propagate before a result is returned.
+
+The format reference is the reviewed Jackcess 5.0.4 source archived and pinned in
+[the map-growth candidate receipt](../../testing/results/ace16-index-map-growth-originals-2026-10-27.json):
+`IndexData.create` reads the field four bytes into each physical count descriptor,
+`IndexData.commitAddRow` increments it only for a new distinct key, and
+`TableImpl.updateTableDefinition` writes each physical counter separately from
+the table row count. The archived source SHA-256 values are
+`0551e6eabb46cb15e58e7af87101ac7e372f41d3450ef89c6ca145ebe6deacb0`
+(`IndexData.java`) and
+`039936524508caccfefb67a006d4bf8e1d61878cedc07c3785dea573b921a7a4`
+(`TableImpl.java`). No upstream implementation was copied into the accessor.
+
+Five focused literal tests pass on the first compile/runtime run. They check the
+independent little-endian value and absolute range, historical values different
+from three live rows, genuine logical aliases, explicit name selection, malformed
+metadata/chain refusals, byte/work limits, cancellation and retry. Literal headers
+cover the existing 4 KiB Jet 4/ACE codes 1/2/3/5/6; Jet 3 remains unsupported by
+this accessor. This is bounded engine inspection, not native Microsoft Access
+INSERT, counter-mutation, save or full-format compatibility qualification.
+
 ## Layout and limits
 
 The table header's logical count at 47 differs from its physical count at 51.

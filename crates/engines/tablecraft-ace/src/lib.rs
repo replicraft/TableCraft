@@ -98,7 +98,10 @@ pub use table::{
     ForeignIndexInspection, ForeignIndexLink, ForeignIndexReference, inspect_foreign_index_links,
 };
 pub use table::{IndexCheck, IndexCheckStatus, TableCheck, check_table};
-pub use table::{IndexColumn, IndexInspection, NativeIndex, inspect_table_indexes};
+pub use table::{
+    IndexColumn, IndexHistoricalCounter, IndexInspection, NativeIndex, inspect_table_index_counter,
+    inspect_table_indexes,
+};
 pub use table::{IndexConstraintViolation, IndexConstraints};
 pub use table::{
     MultivaluePageCell, MultivaluePageValue, MultivalueTablePage, read_multivalue_table_page,
