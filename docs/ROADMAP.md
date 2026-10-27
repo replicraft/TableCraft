@@ -76,7 +76,7 @@ Delivered read/query and engineering foundations:
   Access qualification remain separate. Separate
   [Byte/Int16/Int64/Currency sources](testing/INTEGRAL_INDEX_SPLIT_SOURCE_OBSERVATIONS.md)
   now pass measured root-leaf overflow gates and eight byte-identical typed no-ops
-  in both ACE 16 formats; non-noop actions and typed split admission remain open.
+  in both ACE 16 formats; that source phase alone does not establish typed split admission.
   Its [two unchanged-original candidates](testing/ROOT_SPLIT_UPDATE_OBSERVATIONS.md)
   now pass their first complete-image, typed-value and index/reference proofs
   through a frozen committed consumer.
@@ -99,6 +99,10 @@ Delivered read/query and engineering foundations:
   now establish new-left/retained-right internal splitting on both originals,
   with a retained height-two root and two EOF pages. The old consumer still
   refuses those edits; new-kernel candidate acceptance is recorded separately above.
+  Their [separate MAX reference actions](testing/INTEGRAL_INDEX_SPLIT_OBSERVATIONS.md)
+  now record eight successful public updates and eight old-consumer atomic
+  refusals on unchanged originals. All sixteen physical roots split; new typed
+  candidate acceptance and native Access qualification remain separate.
   A separate [ordinary Memo/OLE replacement service](testing/ACE16_LONG_VALUE_UPDATES.md)
   now composes qualified column-owned LVAL append/EOF allocation with parent
   descriptor forwarding and independently replays request/map/payload authority.

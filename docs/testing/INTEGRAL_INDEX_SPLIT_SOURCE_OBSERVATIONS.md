@@ -100,3 +100,7 @@ A separate action phase must retain actual old-service error classes and fresh
 public UPDATE outcomes, including both index directions and actual historical
 counter behavior. Source preparation and capacity arithmetic do not establish
 split output compatibility or a new typed split API.
+
+The subsequent [MAX-action reference phase](INTEGRAL_INDEX_SPLIT_OBSERVATIONS.md)
+uses these exact unchanged sources. Its public updates and old-consumer refusals
+are separate from this source/no-op phase and from new typed candidate acceptance.

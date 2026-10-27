@@ -177,8 +177,15 @@ both generated formats.
 Independent complete key/ROW capacity checks prove that the fixed future MAX
 requests overflow each selected root leaf and that both halves fit. These are
 source/admission measurements, not new typed split support or update outcomes.
-Actual non-noop/public writer comparisons and the closed typed split extension
-remain separate work; no new carrier was enabled merely from its physical width.
+The subsequent [MAX reference phase](testing/INTEGRAL_INDEX_SPLIT_OBSERVATIONS.md)
+now completes all 25 fixture commands: eight old-consumer atomic refusals, eight
+public updates and eight fresh read-only descriptions after one compile. All
+sixteen physical roots grow to height one with four EOF pages per edited copy;
+complete typed rows, key/ROW streams, maps and counters match expectations.
+All 32 public fresh leaves retain nonzero unused scratch, separate from kernel
+padding contracts. The new typed split implementation and candidate acceptance
+remain separate work; these are independent-reader/writer observations, not
+native Access qualification.
 
 ## Measured Int32 parent overflow and root growth
 

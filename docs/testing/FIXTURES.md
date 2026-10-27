@@ -9611,3 +9611,19 @@ from the preceding compressed/raw histories, with all source hashes unchanged.
 Those 44 probes perform no stage, finish, publication or JVM action. The temporary
 probe/diagnostic sources are archived outside registered inputs. They do not
 replace frozen original-file candidate evidence or qualify native Access saves.
+
+### Fixed numeric MAX split references
+
+The [MAX reference phase](INTEGRAL_INDEX_SPLIT_OBSERVATIONS.md) uses the same
+unchanged V2016/V2019 originals and ID 1/ordinal zero for all four typed targets.
+The first 25 fixture commands produce eight exact typed public updates and eight
+old-consumer atomic IndexedColumn refusals, followed by fresh complete getters.
+All sixteen physical roots retain their page IDs and grow from leaf to height
+one; every copy adds four index pages in physical order, right before left.
+No ROW references, historical/getter counters or unrelated index pages change.
+The [receipt](results/ace16-integral-index-split-actions-2026-10-27.json) retains
+the original raw report, reviewed freeze, immutable tools, postcheck and later
+saved-proof verifier. Exact Java/Python observation sources are published beside
+that verifier. All 32 public fresh leaves have nonzero unused scratch; those
+bytes are not candidate goldens. These actions do not invoke the new typed split
+facade, regenerate sources, rerun earlier actions or establish native Access saves.
