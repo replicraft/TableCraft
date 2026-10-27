@@ -170,6 +170,12 @@ Delivered read/query and engineering foundations:
   retaining independent association, index-entry and unchanged-byte checks.
   General ACE 16 saves are still unavailable.
 
+- [x] Shared [native map authority](testing/ACE16_MAP_AUTHORITY.md) now serves the
+  existing long-value engineering consumer, with explicit canonical mutable
+  owners and complete catalog/current/historical footprint checks. Its 43 scoped
+  runtime checks and 44 separate unchanged-original admissions pass. Missing
+  physical index ownership coverage refuses; actual map growth remains open.
+
 - [x] Independent [usage-map growth observations](testing/USAGE_MAP_GROWTH_OBSERVATIONS.md)
   distinguish selected index children from newly allocated bitmap metadata and
   preserve the original map extent, root identity and unrelated bytes. The

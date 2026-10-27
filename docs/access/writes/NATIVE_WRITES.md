@@ -135,6 +135,13 @@ sparse inputs, alongside two atomic refusals from the existing kernel. Its
 active tree/map geometry guides recursive implementation; public scratch bytes
 are not byte goldens or native Access qualification.
 
+The [shared map-authority service](../../testing/ACE16_MAP_AUTHORITY.md) now
+inventories every qualified local catalog owner before granting exclusivity to
+an explicit operation-selected set. The LVAL consumer retains separate payload
+membership and final original recensus. Unknown physical slots refuse rather
+than silently disappear from coverage; metadata footprints alone grant no
+writable cells or allocation permission. Actual map growth remains unfinished.
+
 Separate [usage-map growth observations](../../testing/USAGE_MAP_GROWTH_OBSERVATIONS.md)
 now establish same-extent inline index-owned promotion and first bitmap allocation
 on two immutable originals. The bitmap is metadata, not an index-owned child;

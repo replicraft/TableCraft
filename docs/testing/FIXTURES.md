@@ -9773,3 +9773,19 @@ remain separately pinned. V2016 was not retried or regenerated. A later saved
 verifier performs no fixture calls. This is independent reference evidence,
 not engine map growth, an atomicity guarantee for the failed helper, or native
 Access qualification.
+
+### Shared map-authority controls
+
+The [shared authority batch](ACE16_MAP_AUTHORITY.md) retains literal footprint
+controls for record overlap and bitmap/container sharing, adds explicit selected
+owner presence/uniqueness checks, and preserves real logical aliases and shared
+containers. A readable unreferenced physical descriptor with a real map identity
+now refuses write authority instead of creating incomplete ownership evidence.
+A separate damaged-payload discriminator shows why metadata exclusivity cannot
+replace the LVAL consumer's live-reference and payload checks.
+
+The batch has 43 distinct runtime functions, including five new controls. A
+separate temporary read-only admission harness checks 22 immutable originals
+with two Memo columns each; all 44 pass. Its initial relative-manifest setup
+failure occurred before opening sources and remains recorded. The hook is removed;
+these admissions perform no candidate stage, finish, publication or JVM calls.

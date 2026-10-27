@@ -1,0 +1,427 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-27",
+  "scope": "Shared ACE16 map-footprint authority extraction with a working existing LVAL consumer; no allocator or native save qualification.",
+  "source_context": {
+    "reference_revision": "1e8586503927e97ab189eac88e546ea794328c6e",
+    "scope": "Seven final Rust files and two deleted predecessor files only. Peer reference documentation committed during this work. No exhaustive compiler-input closure or unchanged whole-tree claim. No dependencies, feature defaults, normal hosts or public API added.",
+    "files": [
+      {
+        "path": "crates/engines/tablecraft-ace/src/table/mutation/mod.rs",
+        "bytes": 1056,
+        "sha256": "c9c9e7c64da791e66c5e255630f123a9eb4d60d923ae69547ade5680fcf71d44"
+      },
+      {
+        "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/ownership.rs",
+        "bytes": 8437,
+        "sha256": "4eea47b775308871e8de811d1721fac21815402d7738cfc976a5fe1d1ac33361"
+      },
+      {
+        "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/ownership/tests.rs",
+        "bytes": 4999,
+        "sha256": "9dd6c1423d92c134a514c3af86f6fdfd99e1d59ea95764a7d0bccc785b3f2da6"
+      },
+      {
+        "path": "crates/engines/tablecraft-ace/src/table/mutation/map_authority/mod.rs",
+        "bytes": 996,
+        "sha256": "15bb82e1c4b04fca344cb402fa9acd1e724e67770ecc90865c765ec8c7a9c5d4"
+      },
+      {
+        "path": "crates/engines/tablecraft-ace/src/table/mutation/map_authority/catalog.rs",
+        "bytes": 4774,
+        "sha256": "c4f3b9a315674fee655c37fd5212a2cc0a0e31eb5e86a7a56914fa4824870ea2"
+      },
+      {
+        "path": "crates/engines/tablecraft-ace/src/table/mutation/map_authority/claims.rs",
+        "bytes": 5531,
+        "sha256": "7c523eee65c3c196ff4977061ceb11ac518c530e54634e2550af3e4b6e941e15"
+      },
+      {
+        "path": "crates/engines/tablecraft-ace/src/table/mutation/map_authority/claims/tests.rs",
+        "bytes": 5718,
+        "sha256": "2ce645f174aed34e14b87cdf081cb052968e2a5ca89355ac30932377cc27f569"
+      }
+    ],
+    "deleted_predecessors": [
+      {
+        "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/ownership/maps.rs",
+        "revision": "1e8586503927e97ab189eac88e546ea794328c6e",
+        "bytes": 5771,
+        "sha256": "69496e9138ed0fd4ee3363842b370afea977677507a8a7755a04098204e1d2f4"
+      },
+      {
+        "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/ownership/maps/tests.rs",
+        "revision": "1e8586503927e97ab189eac88e546ea794328c6e",
+        "bytes": 2005,
+        "sha256": "e2dd12cd3b5b7dc9b20097793afb73d5eca1dd2888d8f9a2219c567e58f59921"
+      }
+    ]
+  },
+  "admission_contract": {
+    "owners": [
+      "GlobalFree",
+      "OrdinaryOwned(definition)",
+      "OrdinaryCandidate(definition)",
+      "IndexOwned(definition,physical)",
+      "ColumnOwned(definition,column)",
+      "ColumnCandidate(definition,column)"
+    ],
+    "selection": "Every selected canonical owner must exist, selected identities must be unique, and every selected footprint is checked against all foreign catalog claims. No hardcoded mutable-role count.",
+    "coverage": "All local table schemas, ordinary usage/optional hint, all parsed physical index owners, and complete current/historical LVAL declaration tails. Every declared physical slot must have a parsed logical owner; an orphan physical slot is an explicit Unsupported(RowLayout) coverage refusal.",
+    "lval": "Exact existing five owners selected by caller. Ordinary/index/LVAL payload membership remains separate from metadata footprints; immutable original finalizer recensus retained. Foreign read-only grammar grants no writable membership/cell authority.",
+    "resources": "All scans/allocations/checks paid; original per-table Reader ceilings preserved. Owner selection and deferred map-footprint protection alter some work/check ordering, so identical resource/cancellation boundaries are not claimed."
+  },
+  "runtime": {
+    "distinct_functions": 43,
+    "new_functions": 5,
+    "existing_integration_functions": 36,
+    "private_functions": 7,
+    "counts": "Five existing integration targets: compressed Memo5, map authority6, long-value author2, long-value contract15, mixed maps8. Private: four shared claims tests and three LVAL ownership tests. One moved footprint test and one retained finalizer test are existing, not new. Repeated executions counted once.",
+    "temporary_original_admissions": {
+      "source_files": 22,
+      "calls": 44,
+      "successes": 44,
+      "failed_calls": 0,
+      "scope": "Only original NativeImage capture, prepare/map capture and original ownership/exclusivity; no stage, finish, candidate publication, JVM/getter or source mutation. Temporary diagnostic function excluded from runtime-function total and removed.",
+      "inputs": [
+        {
+          "path": ".cache/ace16-compressed-memo-observations-first-20261027/originals/V2016-before.accdb",
+          "bytes": 417792,
+          "sha256": "01f21fd2cdf84c583045847a507725671ea9e48021b353b577ea8e44da4d2d73"
+        },
+        {
+          "path": ".cache/ace16-compressed-memo-observations-first-20261027/originals/V2019-before.accdb",
+          "bytes": 487424,
+          "sha256": "1b618f20f0ebccd84ed0d4d753b10bd94cf2f816e750ce2fa5debdc75f624b94"
+        },
+        {
+          "path": ".cache/ace16-compressed-memo-observations-first-20261027/updates/V2016-CompactMemo-ABC.accdb",
+          "bytes": 417792,
+          "sha256": "6afd928cad5b77b48cac685ed2ace2990e3439123b2246753c1666cd3ae79a61"
+        },
+        {
+          "path": ".cache/ace16-compressed-memo-observations-first-20261027/updates/V2016-history-1-chain4077.accdb",
+          "bytes": 430080,
+          "sha256": "ec129fb0871e4e2ba06783d3a4b37f5b4081bab82a3262b2ab410b4482231be4"
+        },
+        {
+          "path": ".cache/ace16-compressed-memo-observations-first-20261027/updates/V2016-history-2-mixed-wide.accdb",
+          "bytes": 430080,
+          "sha256": "d35feb9b03e26cc6440ae8bfadd41980908749d1ad2c696be717b87e320ed6ed"
+        },
+        {
+          "path": ".cache/ace16-compressed-memo-observations-first-20261027/updates/V2016-history-3-inline64.accdb",
+          "bytes": 430080,
+          "sha256": "1dcca302c79c0a08a0d325571b692d89f1e6ce85d0e054e53aa5d86a6169e67a"
+        },
+        {
+          "path": ".cache/ace16-compressed-memo-observations-first-20261027/updates/V2016-history-4-empty.accdb",
+          "bytes": 430080,
+          "sha256": "a5ffc39863b168decf62c661f1f6b90b69c11fbfc10ef0eb5098f433b9eade6b"
+        },
+        {
+          "path": ".cache/ace16-compressed-memo-observations-first-20261027/updates/V2016-history-5-null.accdb",
+          "bytes": 430080,
+          "sha256": "b01434dbd22baecebe1c6cba34aa262b04880efe60ab587ad09ee82b8734bd79"
+        },
+        {
+          "path": ".cache/ace16-compressed-memo-observations-first-20261027/updates/V2019-CompactMemo-ABC.accdb",
+          "bytes": 487424,
+          "sha256": "abfb95e24a543b98b8ac0dae7513b49aa617c339e274eec73d51bd2f3b93ae54"
+        },
+        {
+          "path": ".cache/ace16-compressed-memo-observations-first-20261027/updates/V2019-history-1-chain4077.accdb",
+          "bytes": 499712,
+          "sha256": "349c2f9e9f2159a95bc3c1e3f9b01a14ae017b75a4ad8cc152f745e30061caff"
+        },
+        {
+          "path": ".cache/ace16-compressed-memo-observations-first-20261027/updates/V2019-history-2-mixed-wide.accdb",
+          "bytes": 499712,
+          "sha256": "761bc9e1be8905b3d61ffd3a1a6cefecddeb7d6b452e7725d1f39caaf1a50b24"
+        },
+        {
+          "path": ".cache/ace16-compressed-memo-observations-first-20261027/updates/V2019-history-3-inline64.accdb",
+          "bytes": 499712,
+          "sha256": "ed7f2d04be8625db18a2654dc0776795532563336a3c650073479e8078fb29ef"
+        },
+        {
+          "path": ".cache/ace16-compressed-memo-observations-first-20261027/updates/V2019-history-4-empty.accdb",
+          "bytes": 499712,
+          "sha256": "6f11477ae4ab89282230e8318897d6919b7f3c9453b2b29b4adeb6c7544aa828"
+        },
+        {
+          "path": ".cache/ace16-compressed-memo-observations-first-20261027/updates/V2019-history-5-null.accdb",
+          "bytes": 499712,
+          "sha256": "a70c9d5e423b0336ca94d87ccc9e8f273af6f9dbfbed491d1b7ed8f553438193"
+        },
+        {
+          "path": ".cache/ace16-compressed-memo-threshold-first-20261027/originals/V2016-before.accdb",
+          "bytes": 417792,
+          "sha256": "01f21fd2cdf84c583045847a507725671ea9e48021b353b577ea8e44da4d2d73"
+        },
+        {
+          "path": ".cache/ace16-compressed-memo-threshold-first-20261027/originals/V2019-before.accdb",
+          "bytes": 487424,
+          "sha256": "1b618f20f0ebccd84ed0d4d753b10bd94cf2f816e750ce2fa5debdc75f624b94"
+        },
+        {
+          "path": ".cache/ace16-compressed-memo-threshold-first-20261027/updates/V2016-history-1-ascii1023.accdb",
+          "bytes": 417792,
+          "sha256": "451f96098166aec9c1ef5c4f5d0c716696cd8a6830a4c210ebee78d0d323b686"
+        },
+        {
+          "path": ".cache/ace16-compressed-memo-threshold-first-20261027/updates/V2016-history-2-ascii1025.accdb",
+          "bytes": 421888,
+          "sha256": "16b97c9347e85ffa42fb12849b33d95f64c840cd11d9aa1657387cb9338ba0fe"
+        },
+        {
+          "path": ".cache/ace16-compressed-memo-threshold-first-20261027/updates/V2016-history-3-ascii1024.accdb",
+          "bytes": 421888,
+          "sha256": "5d468f78c46cdf0443e783ef3ab4df4edfa61c32c8b89c115042f85f12d9b8dc"
+        },
+        {
+          "path": ".cache/ace16-compressed-memo-threshold-first-20261027/updates/V2019-history-1-ascii1023.accdb",
+          "bytes": 487424,
+          "sha256": "4626b327310206e438f774ac6646bd9a5bc7d3459273e711813ef458a54c6566"
+        },
+        {
+          "path": ".cache/ace16-compressed-memo-threshold-first-20261027/updates/V2019-history-2-ascii1025.accdb",
+          "bytes": 491520,
+          "sha256": "a52532c57a7a59ec388e1cb0b15a60d073e3c38ae3b12101b22052611b5797a7"
+        },
+        {
+          "path": ".cache/ace16-compressed-memo-threshold-first-20261027/updates/V2019-history-3-ascii1024.accdb",
+          "bytes": 491520,
+          "sha256": "ff7bee4797a718c4a606e5e57c457d7762a9822e789a339b1fa2c7ce169153d8"
+        }
+      ]
+    }
+  },
+  "checks": [
+    {
+      "label": "private",
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib table::mutation::map_authority",
+      "exit_code": 0,
+      "log": ".cache/ace16-map-authority-private-final-20261027.log"
+    },
+    {
+      "label": "ownership",
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib table::mutation::long_value::ownership",
+      "exit_code": 0,
+      "log": ".cache/ace16-map-authority-ownership-final-20261027.log"
+    },
+    {
+      "label": "strict",
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib --test ace16_long_value_updates --test ace16_long_value_updates_contract --test ace16_long_value_map_authority_contract --test ace16_mixed_long_value_maps_contract --test ace16_compressed_memo_updates -- -D warnings",
+      "exit_code": 0,
+      "log": ".cache/ace16-map-authority-strict-final-20261027.log"
+    },
+    {
+      "label": "default-strict",
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-ace --lib -- -D warnings",
+      "exit_code": 0,
+      "log": ".cache/ace16-map-authority-default-strict-final-20261027.log"
+    },
+    {
+      "label": "minimal",
+      "command": "cargo check --locked --offline -j2 -p tablecraft-ace --no-default-features --lib",
+      "exit_code": 0,
+      "log": ".cache/ace16-map-authority-minimal-final-20261027.log"
+    },
+    {
+      "label": "docs",
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --doc",
+      "exit_code": 0,
+      "log": ".cache/ace16-map-authority-docs-final-20261027.log"
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test ace16_long_value_updates --test ace16_long_value_updates_contract --test ace16_long_value_map_authority_contract --test ace16_mixed_long_value_maps_contract --test ace16_compressed_memo_updates",
+      "exit_code": 0,
+      "log": ".cache/ace16-map-authority-related-final-20261027.log"
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib table::mutation::long_value::ownership",
+      "exit_code": 0,
+      "log": ".cache/ace16-map-authority-ownership-final-20261027.log"
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib --tests -- -D warnings",
+      "exit_code": 0,
+      "log": ".cache/ace16-map-authority-private-strict-final-20261027.log"
+    }
+  ],
+  "docs_compile_fail_functions": 3,
+  "preserved_initial_failures": [
+    {
+      "session": 84697,
+      "exit_code": 101,
+      "cause": "New collector compared u32 data number with usize physical slot; corrected to checked u32 conversion, no profile/fixture change."
+    },
+    {
+      "session": 27035,
+      "exit_code": 101,
+      "cause": "Assembly-only compile error after preventing external empty-Census construction: protected storage called on temporary Option rather than completed local Census; corrected target, no fixture change."
+    },
+    {
+      "session": 63381,
+      "exit_code": 101,
+      "cause": "Temporary source-admission harness manifest environment used repository-relative path but Cargo test cwd is member directory; failed before input opening. Same source rerun with absolute manifest environment; 44/44 passed."
+    }
+  ],
+  "formatting": {
+    "command": "rustfmt --edition 2024 --check on seven final owned Rust files",
+    "exit_code": 0
+  },
+  "limitations": [
+    "No generic usage-map storage growth or writable authority from census alone.",
+    "Unreferenced physical descriptors conservatively refuse; their raw grammar is not inferred.",
+    "No native Access application/save comparison, new original mutation or normal backend write enablement."
+  ],
+  "artifacts": [
+    {
+      "path": ".cache/ace16-map-authority-private-final-20261027.log",
+      "bytes": 867,
+      "sha256": "a541af962f229580f603dbb1d1b810a4864f016553a0828c00624100baf653ea"
+    },
+    {
+      "path": ".cache/ace16-map-authority-ownership-final-20261027.log",
+      "bytes": 778,
+      "sha256": "a96a1f41a3f5629fd9324348451ac02124de1c6164f177038cd1abb67eae7a27"
+    },
+    {
+      "path": ".cache/ace16-map-authority-strict-final-20261027.log",
+      "bytes": 183,
+      "sha256": "f4bf7c0a757cd1fd317cc56cd0fcdb9693c21d8813efb3738e90f2e108bc852b"
+    },
+    {
+      "path": ".cache/ace16-map-authority-default-strict-final-20261027.log",
+      "bytes": 183,
+      "sha256": "aa963bc1abc03a52113c682ad3fb5002d0b2a4123842f48ecd29cb05287dfbb7"
+    },
+    {
+      "path": ".cache/ace16-map-authority-minimal-final-20261027.log",
+      "bytes": 183,
+      "sha256": "4c3d465ced6849a478e72136174d78ecd96d7a61fd34ca5f725cc4f76a89ef49"
+    },
+    {
+      "path": ".cache/ace16-map-authority-docs-final-20261027.log",
+      "bytes": 738,
+      "sha256": "083bd5f4612b3e763d19076c61dddff4a39687fdfd75e62a66aeb4f797d0186e"
+    },
+    {
+      "path": ".cache/ace16-map-authority-related-final-20261027.log",
+      "bytes": 4578,
+      "sha256": "e83162669c4e4f3a297f553c73129d8f97c1adc1e1b38b2f353970d9375decb6"
+    },
+    {
+      "path": ".cache/ace16-map-authority-private-strict-final-20261027.log",
+      "bytes": 184,
+      "sha256": "3d5a0718b265054a054c46f2f0b3b93bafa17b412b38694be8dbf4790176a2bb"
+    },
+    {
+      "path": ".cache/ace16-map-authority-library-initial-20261027.log",
+      "bytes": 909,
+      "sha256": "79150c7264c1fdd4f49170d18210e563cb849b7c973efbdeeb42a32f9ca03a0b"
+    },
+    {
+      "path": ".cache/ace16-map-authority-private-initial-20261027.log",
+      "bytes": 510,
+      "sha256": "11fe3f3bed5637167c0b36eebf24cee9f3f4848073a905950031528aa33be113"
+    },
+    {
+      "path": ".cache/ace16-map-authority-ownership-initial-20261027.log",
+      "bytes": 648,
+      "sha256": "c19ed19e60c1b4da45e62ed5bec6a04459fc460c45ee2747c9f279a3a0982484"
+    },
+    {
+      "path": ".cache/ace16-map-authority-related-initial-20261027.log",
+      "bytes": 1281,
+      "sha256": "d8b1e1d818b2d2b268a79ae8294402978907d6ffd5c542e6a9f956b504ab675a"
+    },
+    {
+      "path": ".cache/ace16-map-authority-related-retry-20261027.log",
+      "bytes": 4578,
+      "sha256": "aa5d8f62ac45d6a9a279dd1e81ee01dd39e29ab0d333b5383b16119e70a46325"
+    },
+    {
+      "path": ".cache/ace16-map-authority-strict-initial-20261027.log",
+      "bytes": 183,
+      "sha256": "edf6c4b6e20846f4e98b80b3282ff9ce19864dccce9caa2f102a8429859d0af5"
+    },
+    {
+      "path": ".cache/ace16-map-authority-final-checks-20261027.json",
+      "bytes": 1641,
+      "sha256": "7d395587bb5a56a6cf40fcc48bb621b703e7a1a51accb7aa6e45e1ec74044445"
+    },
+    {
+      "path": ".cache/ace16-map-authority-post-import-checks-20261027.json",
+      "bytes": 880,
+      "sha256": "afff7b4ad0ce9bf8f9d39c25240f150925a093f1602ee4f7a560d3521a7a34ce"
+    },
+    {
+      "path": ".cache/ace16-map-authority-original-admission-20261027/diagnostic-executed.rs",
+      "bytes": 2272,
+      "sha256": "901f9c3ad1657a21e4b20dd4b49bc892a757c93f885040b915599417b66740e9"
+    },
+    {
+      "path": ".cache/ace16-map-authority-original-admission-20261027/ownership-registration.rs",
+      "bytes": 8466,
+      "sha256": "76eae5e88ba944832d76ab13bfe533779291005e5caa45b7f47f346cd0087e17"
+    },
+    {
+      "path": ".cache/ace16-map-authority-original-admission-20261027/ownership-final-registration.rs",
+      "bytes": 8466,
+      "sha256": "76eae5e88ba944832d76ab13bfe533779291005e5caa45b7f47f346cd0087e17"
+    },
+    {
+      "path": ".cache/ace16-map-authority-original-admission-20261027/execution.log",
+      "bytes": 1076,
+      "sha256": "886a84dacd2b0ff21d67533e458616e7e6701eddaff08730b9058d128546d834"
+    },
+    {
+      "path": ".cache/ace16-map-authority-original-admission-20261027/execution-retry.log",
+      "bytes": 6112,
+      "sha256": "39c8796fd8623205c713623f935c3ca2a5e72a4d2abc5a96dc8d33f4737c7853"
+    },
+    {
+      "path": ".cache/ace16-map-authority-original-admission-20261027/execution-final.log",
+      "bytes": 6223,
+      "sha256": "2b9e85e27be7d311a8dca902ddc1ef7b5459882fb84d12360bde936e20417966"
+    },
+    {
+      "path": ".cache/ace16-map-authority-original-admission-20261027/input-postcheck.json",
+      "bytes": 5089,
+      "sha256": "aadd5f0421d9d4ea7e8f038ed34a84a22cb060acd7d120eb77ccbbb2b904765e"
+    },
+    {
+      "path": ".cache/ace16-map-authority-original-admission-20261027/input-final-postcheck.json",
+      "bytes": 5089,
+      "sha256": "aadd5f0421d9d4ea7e8f038ed34a84a22cb060acd7d120eb77ccbbb2b904765e"
+    },
+    {
+      "path": ".cache/ace16-lval-map-identity-causal-20261027/admission-manifest.tsv",
+      "bytes": 4520,
+      "sha256": "830b2ef9fcf0f65781da765fedf1c6ffc65add419faeca54c69a5b6053d7b5d1"
+    },
+    {
+      "path": ".cache/ace16-lval-map-identity-causal-20261027/admission-before-pins.json",
+      "bytes": 4815,
+      "sha256": "e43a5c79315fb2b30edb408faa8d0418cffdc5148e1a98b62a771a63585e950f"
+    },
+    {
+      "path": ".cache/ace16-map-authority-initial-20261027/catalog.rs",
+      "bytes": 4335,
+      "sha256": "a7ebb82a800a27aac437d815e8cba0535ce8af56b7502baacd6cbd942519f526"
+    },
+    {
+      "path": ".cache/ace16-map-authority-initial-20261027/ownership-before-assembly-correction.rs",
+      "bytes": 8470,
+      "sha256": "c37c15f3d911f2cab0f47363156dda935bec99e108d559d26ccd41137e6b8825"
+    }
+  ],
+  "owning_document": {
+    "path": "docs/testing/ACE16_MAP_AUTHORITY.md",
+    "bytes": 4701,
+    "sha256": "cbfa39875d38a46ecaaecc3a27e0181baf301823e3999a3be4d256e9e0c970a0"
+  }
+}

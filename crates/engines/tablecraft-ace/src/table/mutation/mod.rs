@@ -9,6 +9,8 @@ mod gates;
 #[cfg(feature = "ace16-write-preview")]
 mod long_value;
 #[cfg(feature = "ace16-write-preview")]
+pub(in crate::table) mod map_authority;
+#[cfg(feature = "ace16-write-preview")]
 mod page_update;
 mod patch;
 mod physical;
