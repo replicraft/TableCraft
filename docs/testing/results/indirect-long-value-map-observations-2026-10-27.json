@@ -1,0 +1,187 @@
+{
+  "scope": "Fresh ACE16 public-builder indirect-owned/inline-candidate column-LVAL source observations; no native candidate or engine admission",
+  "attempt": "first; no failures, retries, adaptations or fixture regeneration",
+  "counts": {
+    "profiles": 2,
+    "fixture_commands": 13,
+    "compiler_commands": 1,
+    "public_construction_commands": 6,
+    "read_only_getter_commands": 6,
+    "native_candidate_commands": 0,
+    "user_rows_per_profile": 702
+  },
+  "limits": {
+    "heap_mib": 512,
+    "compiler_heap_mib": 512,
+    "timeout_seconds": 30,
+    "file_bytes": 8388608,
+    "largest_scalar_bytes": 16384
+  },
+  "observed": {
+    "V2016": {
+      "file": {
+        "path": ".cache/ace16-indirect-lval-observations-first-20261027/originals/V2016-before.accdb",
+        "bytes": 3321856,
+        "sha256": "d621911f3385f87295472996ceae7a13c2824c0b09da970eb61b38dd0c18c1b4"
+      },
+      "geometry": {
+        "memo_owned_type": 1,
+        "memo_candidate_type": 0,
+        "memo_owned_span": 716,
+        "memo_owned_bitmap_pages": [
+          806
+        ],
+        "memo_candidate_bitmap_pages": [],
+        "owned_indirect_hypothesis_met": true,
+        "candidate_indirect_observed": false,
+        "no_recipe_adaptation": true
+      }
+    },
+    "V2019": {
+      "file": {
+        "path": ".cache/ace16-indirect-lval-observations-first-20261027/originals/V2019-before.accdb",
+        "bytes": 3391488,
+        "sha256": "f7608d0b973d7f7ed55100a459179f516a7141fd209786f8b1d0c4707e1fd4ce"
+      },
+      "geometry": {
+        "memo_owned_type": 1,
+        "memo_candidate_type": 0,
+        "memo_owned_span": 716,
+        "memo_owned_bitmap_pages": [
+          823
+        ],
+        "memo_candidate_bitmap_pages": [],
+        "owned_indirect_hypothesis_met": true,
+        "candidate_indirect_observed": false,
+        "no_recipe_adaptation": true
+      }
+    }
+  },
+  "saved_verification": {
+    "scope": "saved-source verification only; no fixture processes",
+    "fixture_processes_repeated": 0,
+    "saved_fixture_commands": 13,
+    "unique_live_pins": 48,
+    "counts": {
+      "snapshots": 6,
+      "raw_row_bodies": 2808,
+      "live_chunk_bodies": 48,
+      "map_roles": 672,
+      "mutable_role_comparisons": 3240
+    }
+  },
+  "source_identity": {
+    "java": "public helper is byte-identical to executed helper",
+    "python": "public wrapper differs only in description and root calculation; exact diff pinned",
+    "frozen_sources_edited_after_execution": false
+  },
+  "limitations": [
+    "No Microsoft Access behavior qualification",
+    "No indirect candidate-map or multiple-bitmap-span observation",
+    "No new map growth, storage reclamation, normal native save or engineering replacement qualification",
+    "Cursor order does not establish new physical index key correctness",
+    "Raw60/compressed148 acceptance remain separate"
+  ],
+  "pins": [
+    {
+      "path": ".cache/ace16-indirect-lval-next-20261027/freeze.json",
+      "bytes": 4875,
+      "sha256": "13558cdba87a75ff3ec86bf76aa0a66e89b0e1812fb70483d7ab19f4a56d909b"
+    },
+    {
+      "path": ".cache/ace16-indirect-lval-next-20261027/recipe.json",
+      "bytes": 1905,
+      "sha256": "d5c51cb7b02f545ae7c4f3708dc659515a9f90dbd3cae7ce1fb5c8fbcc02ddbd"
+    },
+    {
+      "path": ".cache/ace16-indirect-lval-next-20261027/IndirectLongValueProbe.java",
+      "bytes": 14225,
+      "sha256": "d12a9f028f63843ea9959ac64a589937cf74a4b8e4b0319d882f4336dab2c261"
+    },
+    {
+      "path": ".cache/ace16-indirect-lval-next-20261027/capture.py",
+      "bytes": 16711,
+      "sha256": "ed36de5739d385cc510a4bc3bbe26cffe23edce645284cb6dda2bc85b074fce5"
+    },
+    {
+      "path": ".cache/ace16-indirect-lval-next-20261027/DESIGN.md",
+      "bytes": 7787,
+      "sha256": "3d3f4d8d576e78057962651cde84c5aad7eca9d7602fa7567676b5e8330ce666"
+    },
+    {
+      "path": ".cache/ace16-indirect-lval-next-20261027/SOURCE_REVIEW.md",
+      "bytes": 2067,
+      "sha256": "3a9e0b0a1ba71fff931d010be7d508feef9b15168402b340a7c82bbb310f90d2"
+    },
+    {
+      "path": ".cache/ace16-indirect-lval-observations-first-20261027/report.json",
+      "bytes": 30832445,
+      "sha256": "6c531878e983c4c807f9ce32671e8a3ec5ad05327bfee6173bb5adb9eccad13b"
+    },
+    {
+      "path": ".cache/ace16-indirect-lval-observations-first-20261027/postcheck.json",
+      "bytes": 5953,
+      "sha256": "ac249a46d641c2b67c362afdf52586192c48bbbc4325eb0360241e11c6ac79a2"
+    },
+    {
+      "path": ".cache/ace16-indirect-lval-observations-first-20261027/public-verify-initial.json",
+      "bytes": 1578,
+      "sha256": "a30925634a2c886a719009ba25cb07112744f379cde0f6401fdc1b9c403d2f85"
+    },
+    {
+      "path": ".cache/ace16-indirect-lval-observations-first-20261027/public-wrapper.diff",
+      "bytes": 553,
+      "sha256": "f61234140469194dd104d93e01fc321e0dc332e924d3455e71cf209625624567"
+    },
+    {
+      "path": "docs/testing/indirect_lval_observations/IndirectLongValueProbe.java",
+      "bytes": 14225,
+      "sha256": "d12a9f028f63843ea9959ac64a589937cf74a4b8e4b0319d882f4336dab2c261"
+    },
+    {
+      "path": "docs/testing/indirect_lval_observations/capture.py",
+      "bytes": 16712,
+      "sha256": "9832f4a15918a0b586bc14c695bba5afb5220a189c658bab7174f6ea8157311e"
+    },
+    {
+      "path": "docs/testing/indirect_lval_observations/verify.py",
+      "bytes": 5237,
+      "sha256": "2e47c1ed0e9adca0904f943068c6210a18b4404151fb3ac58a6d0e5b47a19e98"
+    },
+    {
+      "path": "docs/testing/INDIRECT_LONG_VALUE_MAP_OBSERVATIONS.md",
+      "bytes": 6282,
+      "sha256": "31357bb2dc47568b873af476691adaab5487ef136c4c86b4ef4bcfff541c58c0"
+    },
+    {
+      "path": ".cache/ace16-indirect-lval-observations-first-20261027/originals/V2016-after-first.accdb",
+      "bytes": 421888,
+      "sha256": "5332a3c2d203a6bd9d58597dfecae2cc4c6f268b9ce54eb4602cf36403bf15ca"
+    },
+    {
+      "path": ".cache/ace16-indirect-lval-observations-first-20261027/originals/V2016-after-padding.accdb",
+      "bytes": 3297280,
+      "sha256": "60b26ac1064b78c6f6150753648484d1cf6089c0289fa1cf96080176f9e72505"
+    },
+    {
+      "path": ".cache/ace16-indirect-lval-observations-first-20261027/originals/V2016-before.accdb",
+      "bytes": 3321856,
+      "sha256": "d621911f3385f87295472996ceae7a13c2824c0b09da970eb61b38dd0c18c1b4"
+    },
+    {
+      "path": ".cache/ace16-indirect-lval-observations-first-20261027/originals/V2019-after-first.accdb",
+      "bytes": 491520,
+      "sha256": "c56fd31c2abab619269f1eff325df4e566fb4c69d078ae5365e83db8a71481d6"
+    },
+    {
+      "path": ".cache/ace16-indirect-lval-observations-first-20261027/originals/V2019-after-padding.accdb",
+      "bytes": 3366912,
+      "sha256": "42e6a66564bc98262778e629a4009077611507cb415573cd38905c4e43d37dae"
+    },
+    {
+      "path": ".cache/ace16-indirect-lval-observations-first-20261027/originals/V2019-before.accdb",
+      "bytes": 3391488,
+      "sha256": "f7608d0b973d7f7ed55100a459179f516a7141fd209786f8b1d0c4707e1fd4ce"
+    }
+  ]
+}

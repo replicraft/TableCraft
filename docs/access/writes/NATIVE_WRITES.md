@@ -79,6 +79,10 @@ It closes a reproduced cross-table ownership change while retaining disjoint map
 rows in shared containers and strict writable provenance. Its scoped checks and
 44 read-only source admissions do not rerun preceding candidate acceptance or
 admit indirect selected LVAL maps.
+The [indirect-map source experiment](../../testing/INDIRECT_LONG_VALUE_MAP_OBSERVATIONS.md)
+now supplies two actual mixed indirect-owned/inline-candidate originals under a
+fixed construction recipe. Its complete saved storage/ownership observations are
+prerequisites for future admission; they do not enable replacement or map growth.
 
 The separate [Int32 leaf-split service](../../testing/ACE16_INDEX_SPLITS.md) now
 supports root-leaf and non-root leaf growth through represented EOF index pages.
