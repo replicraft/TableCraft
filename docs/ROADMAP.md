@@ -34,6 +34,10 @@ Delivered read/query and engineering foundations:
   still refuse. A separate [existing-width Text/Binary UPDATE preview](testing/ACE16_WRITE_PREVIEWS.md#existing-width-short-text-and-binary-slots)
   now performs actual slot and single/mixed tuple key replacements, with full
   constraints and no record growth or ordinary save capability.
+  A separate [same-page Text/Binary service](testing/ACE16_PAGE_UPDATES.md) now
+  fits records within retained capacity or appends hidden forwarding targets
+  while preserving original logical roots. Page allocation, index splitting and
+  ordinary saves remain unfinished.
   A separate [48-control Text/Binary corpus](testing/ENCODED_DELETE_OBSERVATIONS.md)
   checks 36 candidates and twelve unsupported-profile refusals on the same
   committed tool, including the previously refused height-two delete-all cases.

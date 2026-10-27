@@ -12,13 +12,13 @@ struct Entry {
     request: usize,
 }
 
-pub(super) struct Directory {
+pub(in crate::table::mutation) struct Directory {
     entries: Vec<Entry>,
     next: usize,
 }
 
 impl Directory {
-    pub(super) fn new<U: RowAssignment>(
+    pub(in crate::table::mutation) fn new<U: RowAssignment>(
         requests: &[U],
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
@@ -58,7 +58,7 @@ impl Directory {
         Ok(Self { entries, next: 0 })
     }
 
-    pub(super) fn require_unique(
+    pub(in crate::table::mutation) fn require_unique(
         &self,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
@@ -76,7 +76,7 @@ impl Directory {
     /// Ties retain the first original request, as the previous linear find did.
     /// The walker still compares its matched count with the original request
     /// count, so missing and duplicate requests cannot become successful reads.
-    pub(super) fn at(
+    pub(in crate::table::mutation) fn at(
         &mut self,
         ordinal: usize,
         budget: &mut ResourceBudget,

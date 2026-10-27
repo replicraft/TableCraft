@@ -1,5 +1,20 @@
 # Implementation status
 
+## Same-page Text and Binary UPDATE candidates
+
+The separate `preview_ace16_page_updates` engineering API now reuses fitted
+record capacity or appends a hidden target on the original logical root's page.
+Existing forwarding chains retain their logical row/index references, and
+selected final targets require exclusive logical ownership. Other records,
+opaque bytes and allocation maps remain protected by independent audits.
+
+This extends the physical growth path without allocating pages or enabling
+normal saves. Missing candidate hints, exhausted slots or insufficient space
+refuse rather than choosing another page. Exact-span updates keep their existing
+API and contract. See the [page-update contract](testing/ACE16_PAGE_UPDATES.md)
+for admission, preservation and scoped verification; native Access and data-macro
+qualification remain pending.
+
 ## Existing-width Text and Binary UPDATE candidates
 
 The separate `preview_ace16_slot_updates` engineering API now updates qualified
