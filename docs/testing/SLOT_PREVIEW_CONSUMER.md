@@ -131,3 +131,9 @@ records the executable built from committed revision `fd2a23cd`, its SHA-256,
 94 selected committed source pins and the consumer test/lint logs. The original
 exact-slot comparison executable remains separate and unchanged. Building this
 tool does not establish original-file or native Access outcomes.
+
+The separate [variable-mode build receipt](results/ace16-variable-example-build-2026-10-26.json)
+records the executable built from committed revision `87c35d43`, 107 selected
+committed source pins and its eleven passing consumer tests. Its allocation
+results require their own original-file comparison; neither older executable
+supplies that evidence.
