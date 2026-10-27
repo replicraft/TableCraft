@@ -1,0 +1,1414 @@
+{
+  "date": "2026-10-27",
+  "scope": "New ACE16 Byte/Int16/Int64/Currency root-leaf source qualification and existing non-splitting typed fixed-preview no-ops; no update/split actions",
+  "counts": {
+    "profiles": 2,
+    "source_files": 2,
+    "user_rows_per_profile": 2729,
+    "target_rows_per_profile": 2600,
+    "unique_control_rows_per_profile": 128,
+    "preserved_rows_per_profile": 1,
+    "first_fixture_processes": 13,
+    "javac_processes": 1,
+    "generation_jvms": 2,
+    "read_only_describe_jvms": 2,
+    "native_exact_noop_processes": 8,
+    "byte_identical_noop_outputs": 8,
+    "nonnoop_native_updates": 0,
+    "public_update_calls": 0,
+    "split_candidate_calls": 0,
+    "retries": 0,
+    "accepted_inputs_regenerated": 0
+  },
+  "first_execution": {
+    "terminal_session": 41549,
+    "exit_code": 0,
+    "log": {
+      "path": ".cache/ace16-integral-splits-next-20261027/first-execution.log",
+      "bytes": 1626,
+      "sha256": "7e0416761a67769b9cb49033ea24cf5e2954f34d135667c44f29701f48abf23b"
+    },
+    "report": {
+      "path": ".cache/ace16-integral-split-sources-first-20261027/report.json",
+      "bytes": 4516424,
+      "sha256": "04a96f271752720be4ddbd1683d69182870c0cf4e0daef88e8ee2b416a97e9f0"
+    },
+    "status": "all source gates and eight exact no-op admissions passed",
+    "executed_freeze": {
+      "path": ".cache/ace16-integral-splits-next-20261027/freeze.json",
+      "bytes": 13731,
+      "sha256": "e96b36b6bd262fe17e9e90a2fe33edfb335ae42964f9603fac657770eceb6187"
+    }
+  },
+  "executed_source_provenance": {
+    "kind": "Actual private source paths and exact precall archives retained; current public wrapper paths are not retroactive execution labels.",
+    "sources": [
+      {
+        "path": ".cache/ace16-integral-splits-next-20261027/IntegralSplitFixture.java",
+        "bytes": 7277,
+        "sha256": "2121d318f1b972adc707fb8f39b2fc8d6369c039d6c80496bebf8a4fb28656cb"
+      },
+      {
+        "path": ".cache/ace16-integral-splits-next-20261027/model.py",
+        "bytes": 14901,
+        "sha256": "5aa5faae9f5de5e96007ef79e5475f5e78732f6e274dc93279b2c8f26dfc3f0b"
+      },
+      {
+        "path": ".cache/ace16-integral-splits-next-20261027/capture.py",
+        "bytes": 8187,
+        "sha256": "1177e05468c24c2afd15ed602a9ac1ca80a6c79e7cb9cac3176b0312b8fc6207"
+      },
+      {
+        "path": ".cache/ace16-integral-splits-next-20261027/selfcheck.py",
+        "bytes": 1980,
+        "sha256": "d73f4d44d9f5baa1b6a0770a86a0551e1bbaa048cae9589b0f3e2e6ba2eafd77"
+      },
+      {
+        "path": ".cache/ace16-integral-splits-next-20261027/DESIGN.md",
+        "bytes": 14712,
+        "sha256": "ddd70185ce1da8f8f7613fe8fa868f0a9bd212b0252976a4220c4d0c6d7edd26"
+      },
+      {
+        "path": "docs/testing/parent_index_split_originals/BoundedFileChannel.java",
+        "bytes": 3952,
+        "sha256": "2191d11f88f3158e83929591acee803553c703e06127839caa7143340f8afd7e"
+      },
+      {
+        "path": "docs/testing/SlotUpdateFixture.java",
+        "bytes": 18037,
+        "sha256": "2d92ce90bd970c0d613ddc8a6bca3146a551c48f5aef3026c728dd69822493a6"
+      },
+      {
+        "path": "docs/testing/SlotMapProbe.java",
+        "bytes": 4799,
+        "sha256": "acb378dbad504d1152297ad80ecf45401b1c73f22779769dd51a6cf7027a40a3"
+      },
+      {
+        "path": "docs/testing/slot_preview_originals/facts.py",
+        "bytes": 8072,
+        "sha256": "1e6b085db3335f29ef5b9bf299cde2a62e863e09698d6efb4c93b76db00dd687"
+      },
+      {
+        "path": "docs/testing/slot_preview_originals/common.py",
+        "bytes": 2697,
+        "sha256": "4d6e13158e1c039f1a75bb12828cfa7eaf811e58e06e5e4de0f4c605e1519f8c"
+      },
+      {
+        "path": "docs/testing/capture_delete_trees.py",
+        "bytes": 20353,
+        "sha256": "05f15179d1b4c689e1dd045617335f66b98189fbd12259838cc0ab5da4ebfdb1"
+      },
+      {
+        "path": "docs/testing/delete_reference_maps.py",
+        "bytes": 8635,
+        "sha256": "9fca51758e0f26e37dab2e27ff2c41c0e8a7a8110e9a047eda1ccb2a91eadda8"
+      },
+      {
+        "path": "docs/testing/parent_index_split_originals/wire.py",
+        "bytes": 15798,
+        "sha256": "556e6663c9fe6fec52e4d0a9f76b171629a29559fd21e85a74d4a6adde5b91f9"
+      }
+    ],
+    "precall_archives": [
+      {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/precall-sources/00-IntegralSplitFixture.java",
+        "bytes": 7277,
+        "sha256": "2121d318f1b972adc707fb8f39b2fc8d6369c039d6c80496bebf8a4fb28656cb"
+      },
+      {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/precall-sources/01-model.py",
+        "bytes": 14901,
+        "sha256": "5aa5faae9f5de5e96007ef79e5475f5e78732f6e274dc93279b2c8f26dfc3f0b"
+      },
+      {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/precall-sources/02-capture.py",
+        "bytes": 8187,
+        "sha256": "1177e05468c24c2afd15ed602a9ac1ca80a6c79e7cb9cac3176b0312b8fc6207"
+      },
+      {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/precall-sources/03-selfcheck.py",
+        "bytes": 1980,
+        "sha256": "d73f4d44d9f5baa1b6a0770a86a0551e1bbaa048cae9589b0f3e2e6ba2eafd77"
+      },
+      {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/precall-sources/04-DESIGN.md",
+        "bytes": 14712,
+        "sha256": "ddd70185ce1da8f8f7613fe8fa868f0a9bd212b0252976a4220c4d0c6d7edd26"
+      },
+      {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/precall-sources/05-BoundedFileChannel.java",
+        "bytes": 3952,
+        "sha256": "2191d11f88f3158e83929591acee803553c703e06127839caa7143340f8afd7e"
+      },
+      {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/precall-sources/06-SlotUpdateFixture.java",
+        "bytes": 18037,
+        "sha256": "2d92ce90bd970c0d613ddc8a6bca3146a551c48f5aef3026c728dd69822493a6"
+      },
+      {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/precall-sources/07-SlotMapProbe.java",
+        "bytes": 4799,
+        "sha256": "acb378dbad504d1152297ad80ecf45401b1c73f22779769dd51a6cf7027a40a3"
+      },
+      {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/precall-sources/08-facts.py",
+        "bytes": 8072,
+        "sha256": "1e6b085db3335f29ef5b9bf299cde2a62e863e09698d6efb4c93b76db00dd687"
+      },
+      {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/precall-sources/09-common.py",
+        "bytes": 2697,
+        "sha256": "4d6e13158e1c039f1a75bb12828cfa7eaf811e58e06e5e4de0f4c605e1519f8c"
+      },
+      {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/precall-sources/10-capture_delete_trees.py",
+        "bytes": 20353,
+        "sha256": "05f15179d1b4c689e1dd045617335f66b98189fbd12259838cc0ab5da4ebfdb1"
+      },
+      {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/precall-sources/11-delete_reference_maps.py",
+        "bytes": 8635,
+        "sha256": "9fca51758e0f26e37dab2e27ff2c41c0e8a7a8110e9a047eda1ccb2a91eadda8"
+      },
+      {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/precall-sources/12-wire.py",
+        "bytes": 15798,
+        "sha256": "556e6663c9fe6fec52e4d0a9f76b171629a29559fd21e85a74d4a6adde5b91f9"
+      }
+    ],
+    "actual_compiled_classes": [
+      {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/classes/BoundedFileChannel.class",
+        "bytes": 3080,
+        "sha256": "608c31190c2bcbc9582fd0332813b8697820604b208b9d17c7b1548791c3916b"
+      },
+      {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/classes/IntegralSplitFixture$1.class",
+        "bytes": 821,
+        "sha256": "1ccc2a820307331f82ce638f6408a3bc9ab718ad07d4c2e64b2e3a316afc9766"
+      },
+      {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/classes/IntegralSplitFixture.class",
+        "bytes": 10422,
+        "sha256": "420ff608e928205e9e57b1afefdded4afe30f781b2c064ab84f731939de55c9d"
+      },
+      {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/classes/SlotMapProbe.class",
+        "bytes": 6843,
+        "sha256": "b6a05af31fa3aff81874378721adbef3397d080da114882f20706d328e7c854b"
+      },
+      {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/classes/SlotUpdateFixture.class",
+        "bytes": 19746,
+        "sha256": "4b9a9f7a4f13ba1d237bfeabebbd3609db1c5db3e27aef21a1e4fc11e81a5fcf"
+      }
+    ],
+    "jar": {
+      "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+      "bytes": 1407244,
+      "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+    },
+    "native_baseline": {
+      "path": ".cache/tablecraft-bin/ace16-integral-split-baseline-20261027",
+      "bytes": 16506688,
+      "sha256": "a6bc5c96f1432731fd4c6c734b22b5c90eb4eee4134f29f5c8505de3fcab7936"
+    },
+    "native_baseline_build_receipt": {
+      "path": "docs/testing/results/ace16-integral-split-baseline-build-2026-10-27.json",
+      "bytes": 42445,
+      "sha256": "74c31306bad56ab7f3223f1aac27b933a8ce86b9e6f5728ee5eb9ea4726cfba2"
+    },
+    "compiled_revision": "452f2bde94a2580bd0a64e166cc11384f1ff8a4a",
+    "historical_git_objects_validated": 199,
+    "no_new_dependencies": true
+  },
+  "commands": [
+    {
+      "label": "compile",
+      "argv": [
+        "javac",
+        "-J-Xmx512m",
+        "-encoding",
+        "UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "-d",
+        ".cache/ace16-integral-split-sources-first-20261027/classes",
+        ".cache/ace16-integral-splits-next-20261027/IntegralSplitFixture.java",
+        "docs/testing/parent_index_split_originals/BoundedFileChannel.java",
+        "docs/testing/SlotUpdateFixture.java",
+        "docs/testing/SlotMapProbe.java"
+      ],
+      "status": 0,
+      "stopped_for": null,
+      "stdout": {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "V2016-generate",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-integral-split-sources-first-20261027/classes",
+        "IntegralSplitFixture",
+        "generate",
+        ".cache/ace16-integral-split-sources-first-20261027/V2016-before.accdb",
+        "V2016"
+      ],
+      "status": 0,
+      "stopped_for": null,
+      "stdout": {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/V2016-generate.stdout",
+        "bytes": 169,
+        "sha256": "ddd39d0fa2c616470c2d60180f52b395f127b198a5f617c4a8a8e1f971b7856c"
+      },
+      "stderr": {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/V2016-generate.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "V2016-describe",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-integral-split-sources-first-20261027/classes",
+        "IntegralSplitFixture",
+        "describe",
+        ".cache/ace16-integral-split-sources-first-20261027/V2016-before.accdb"
+      ],
+      "status": 0,
+      "stopped_for": null,
+      "stdout": {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/V2016-describe.stdout",
+        "bytes": 630891,
+        "sha256": "8fe14b5eb31eed6c31f33f06fa12600c985e4b509f91aa2bebff9c2b9d75f257"
+      },
+      "stderr": {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/V2016-describe.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "V2016-ByteKeys-noop",
+      "argv": [
+        ".cache/tablecraft-bin/ace16-integral-split-baseline-20261027",
+        ".cache/ace16-integral-split-sources-first-20261027/V2016-before.accdb",
+        ".cache/ace16-integral-split-sources-first-20261027/V2016-ByteKeys-noop.accdb",
+        "ByteKeys",
+        "KeyValue",
+        "0",
+        "byte",
+        "0",
+        "0"
+      ],
+      "status": 0,
+      "stopped_for": null,
+      "stdout": {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/V2016-ByteKeys-noop.stdout",
+        "bytes": 25,
+        "sha256": "4488bd9e667e5af69d5eddc238e52ce4c26a3c72bb5d8463250182c4cba04f59"
+      },
+      "stderr": {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/V2016-ByteKeys-noop.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "label": "V2016-Int16Keys-noop",
+      "argv": [
+        ".cache/tablecraft-bin/ace16-integral-split-baseline-20261027",
+        ".cache/ace16-integral-split-sources-first-20261027/V2016-before.accdb",
+        ".cache/ace16-integral-split-sources-first-20261027/V2016-Int16Keys-noop.accdb",
+        "Int16Keys",
+        "KeyValue",
+        "0",
+        "int16",
+        "0",
+        "0"
+      ],
+      "status": 0,
+      "stopped_for": null,
+      "stdout": {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/V2016-Int16Keys-noop.stdout",
+        "bytes": 25,
+        "sha256": "4488bd9e667e5af69d5eddc238e52ce4c26a3c72bb5d8463250182c4cba04f59"
+      },
+      "stderr": {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/V2016-Int16Keys-noop.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "label": "V2016-Int64Keys-noop",
+      "argv": [
+        ".cache/tablecraft-bin/ace16-integral-split-baseline-20261027",
+        ".cache/ace16-integral-split-sources-first-20261027/V2016-before.accdb",
+        ".cache/ace16-integral-split-sources-first-20261027/V2016-Int64Keys-noop.accdb",
+        "Int64Keys",
+        "KeyValue",
+        "0",
+        "int64",
+        "0",
+        "0"
+      ],
+      "status": 0,
+      "stopped_for": null,
+      "stdout": {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/V2016-Int64Keys-noop.stdout",
+        "bytes": 25,
+        "sha256": "4488bd9e667e5af69d5eddc238e52ce4c26a3c72bb5d8463250182c4cba04f59"
+      },
+      "stderr": {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/V2016-Int64Keys-noop.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "label": "V2016-CurrencyKeys-noop",
+      "argv": [
+        ".cache/tablecraft-bin/ace16-integral-split-baseline-20261027",
+        ".cache/ace16-integral-split-sources-first-20261027/V2016-before.accdb",
+        ".cache/ace16-integral-split-sources-first-20261027/V2016-CurrencyKeys-noop.accdb",
+        "CurrencyKeys",
+        "KeyValue",
+        "0",
+        "currency-scaled",
+        "0",
+        "0"
+      ],
+      "status": 0,
+      "stopped_for": null,
+      "stdout": {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/V2016-CurrencyKeys-noop.stdout",
+        "bytes": 25,
+        "sha256": "4488bd9e667e5af69d5eddc238e52ce4c26a3c72bb5d8463250182c4cba04f59"
+      },
+      "stderr": {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/V2016-CurrencyKeys-noop.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "label": "V2019-generate",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-integral-split-sources-first-20261027/classes",
+        "IntegralSplitFixture",
+        "generate",
+        ".cache/ace16-integral-split-sources-first-20261027/V2019-before.accdb",
+        "V2019"
+      ],
+      "status": 0,
+      "stopped_for": null,
+      "stdout": {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/V2019-generate.stdout",
+        "bytes": 169,
+        "sha256": "a497053f0023c568999ab7f9c05caee4584d9dd3b71148151d6974e32d180a35"
+      },
+      "stderr": {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/V2019-generate.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "V2019-describe",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-integral-split-sources-first-20261027/classes",
+        "IntegralSplitFixture",
+        "describe",
+        ".cache/ace16-integral-split-sources-first-20261027/V2019-before.accdb"
+      ],
+      "status": 0,
+      "stopped_for": null,
+      "stdout": {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/V2019-describe.stdout",
+        "bytes": 632616,
+        "sha256": "d2b98f04ef6004f7a69648a0eac535d31f763a6fa30c4cbea58f1f3b024bcc4a"
+      },
+      "stderr": {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/V2019-describe.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "V2019-ByteKeys-noop",
+      "argv": [
+        ".cache/tablecraft-bin/ace16-integral-split-baseline-20261027",
+        ".cache/ace16-integral-split-sources-first-20261027/V2019-before.accdb",
+        ".cache/ace16-integral-split-sources-first-20261027/V2019-ByteKeys-noop.accdb",
+        "ByteKeys",
+        "KeyValue",
+        "0",
+        "byte",
+        "0",
+        "0"
+      ],
+      "status": 0,
+      "stopped_for": null,
+      "stdout": {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/V2019-ByteKeys-noop.stdout",
+        "bytes": 25,
+        "sha256": "4488bd9e667e5af69d5eddc238e52ce4c26a3c72bb5d8463250182c4cba04f59"
+      },
+      "stderr": {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/V2019-ByteKeys-noop.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "label": "V2019-Int16Keys-noop",
+      "argv": [
+        ".cache/tablecraft-bin/ace16-integral-split-baseline-20261027",
+        ".cache/ace16-integral-split-sources-first-20261027/V2019-before.accdb",
+        ".cache/ace16-integral-split-sources-first-20261027/V2019-Int16Keys-noop.accdb",
+        "Int16Keys",
+        "KeyValue",
+        "0",
+        "int16",
+        "0",
+        "0"
+      ],
+      "status": 0,
+      "stopped_for": null,
+      "stdout": {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/V2019-Int16Keys-noop.stdout",
+        "bytes": 25,
+        "sha256": "4488bd9e667e5af69d5eddc238e52ce4c26a3c72bb5d8463250182c4cba04f59"
+      },
+      "stderr": {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/V2019-Int16Keys-noop.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "label": "V2019-Int64Keys-noop",
+      "argv": [
+        ".cache/tablecraft-bin/ace16-integral-split-baseline-20261027",
+        ".cache/ace16-integral-split-sources-first-20261027/V2019-before.accdb",
+        ".cache/ace16-integral-split-sources-first-20261027/V2019-Int64Keys-noop.accdb",
+        "Int64Keys",
+        "KeyValue",
+        "0",
+        "int64",
+        "0",
+        "0"
+      ],
+      "status": 0,
+      "stopped_for": null,
+      "stdout": {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/V2019-Int64Keys-noop.stdout",
+        "bytes": 25,
+        "sha256": "4488bd9e667e5af69d5eddc238e52ce4c26a3c72bb5d8463250182c4cba04f59"
+      },
+      "stderr": {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/V2019-Int64Keys-noop.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "label": "V2019-CurrencyKeys-noop",
+      "argv": [
+        ".cache/tablecraft-bin/ace16-integral-split-baseline-20261027",
+        ".cache/ace16-integral-split-sources-first-20261027/V2019-before.accdb",
+        ".cache/ace16-integral-split-sources-first-20261027/V2019-CurrencyKeys-noop.accdb",
+        "CurrencyKeys",
+        "KeyValue",
+        "0",
+        "currency-scaled",
+        "0",
+        "0"
+      ],
+      "status": 0,
+      "stopped_for": null,
+      "stdout": {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/V2019-CurrencyKeys-noop.stdout",
+        "bytes": 25,
+        "sha256": "4488bd9e667e5af69d5eddc238e52ce4c26a3c72bb5d8463250182c4cba04f59"
+      },
+      "stderr": {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/V2019-CurrencyKeys-noop.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    }
+  ],
+  "profiles": [
+    {
+      "profile": "V2016",
+      "original": {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/V2016-before.accdb",
+        "bytes": 757760,
+        "sha256": "8e976662f1c2ddf2e7616870082a71da3a618017ab0cca6faf78f7fe301350a6"
+      },
+      "user_rows": 2729,
+      "target_facts": {
+        "ByteKeys": {
+          "rows": 900,
+          "native_type": 2,
+          "payload_width": 1,
+          "column_flags": 3,
+          "extended_flags": 0,
+          "kind": "byte",
+          "selected_identity": 1,
+          "original_ordinal": 0,
+          "original_reference": 24064,
+          "actual_properties": [
+            [
+              "ID",
+              "Required",
+              "1",
+              "true",
+              "Boolean:true"
+            ],
+            [
+              "KeyValue",
+              "Required",
+              "1",
+              "true",
+              "Boolean:true"
+            ]
+          ],
+          "physical_index_order": [
+            1,
+            2
+          ],
+          "alias_shares_ascending": true,
+          "indexes": {
+            "Ascending": {
+              "physical": 1,
+              "root": 92,
+              "height": 0,
+              "source_prefix": 2,
+              "source_free_bytes": 14,
+              "source_entries": 900,
+              "physical_flags": 136,
+              "unexecuted_max_best_bytes": 4501,
+              "unexecuted_max_half_best_bytes": [
+                904,
+                2251
+              ]
+            },
+            "Descending": {
+              "physical": 2,
+              "root": 93,
+              "height": 0,
+              "source_prefix": 2,
+              "source_free_bytes": 14,
+              "source_entries": 900,
+              "physical_flags": 136,
+              "unexecuted_max_best_bytes": 4501,
+              "unexecuted_max_half_best_bytes": [
+                2251,
+                904
+              ]
+            },
+            "Alias": {
+              "physical": 1,
+              "root": 92,
+              "height": 0,
+              "source_prefix": 2,
+              "source_free_bytes": 14,
+              "source_entries": 900,
+              "physical_flags": 136,
+              "unexecuted_max_best_bytes": 4501,
+              "unexecuted_max_half_best_bytes": [
+                904,
+                2251
+              ]
+            }
+          },
+          "future_cells_checked": 8
+        },
+        "Int16Keys": {
+          "rows": 900,
+          "native_type": 3,
+          "payload_width": 2,
+          "column_flags": 3,
+          "extended_flags": 0,
+          "kind": "int16",
+          "selected_identity": 1,
+          "original_ordinal": 0,
+          "original_reference": 29184,
+          "actual_properties": [
+            [
+              "ID",
+              "Required",
+              "1",
+              "true",
+              "Boolean:true"
+            ],
+            [
+              "KeyValue",
+              "Required",
+              "1",
+              "true",
+              "Boolean:true"
+            ]
+          ],
+          "physical_index_order": [
+            1,
+            2
+          ],
+          "alias_shares_ascending": true,
+          "indexes": {
+            "Ascending": {
+              "physical": 1,
+              "root": 111,
+              "height": 0,
+              "source_prefix": 3,
+              "source_free_bytes": 13,
+              "source_entries": 900,
+              "physical_flags": 136,
+              "unexecuted_max_best_bytes": 5401,
+              "unexecuted_max_half_best_bytes": [
+                905,
+                2701
+              ]
+            },
+            "Descending": {
+              "physical": 2,
+              "root": 112,
+              "height": 0,
+              "source_prefix": 3,
+              "source_free_bytes": 13,
+              "source_entries": 900,
+              "physical_flags": 136,
+              "unexecuted_max_best_bytes": 5401,
+              "unexecuted_max_half_best_bytes": [
+                2701,
+                905
+              ]
+            },
+            "Alias": {
+              "physical": 1,
+              "root": 111,
+              "height": 0,
+              "source_prefix": 3,
+              "source_free_bytes": 13,
+              "source_entries": 900,
+              "physical_flags": 136,
+              "unexecuted_max_best_bytes": 5401,
+              "unexecuted_max_half_best_bytes": [
+                905,
+                2701
+              ]
+            }
+          },
+          "future_cells_checked": 8
+        },
+        "Int64Keys": {
+          "rows": 400,
+          "native_type": 19,
+          "payload_width": 8,
+          "column_flags": 3,
+          "extended_flags": 0,
+          "kind": "int64",
+          "selected_identity": 1,
+          "original_ordinal": 0,
+          "original_reference": 34048,
+          "actual_properties": [
+            [
+              "ID",
+              "Required",
+              "1",
+              "true",
+              "Boolean:true"
+            ],
+            [
+              "KeyValue",
+              "Required",
+              "1",
+              "true",
+              "Boolean:true"
+            ]
+          ],
+          "physical_index_order": [
+            1,
+            2
+          ],
+          "alias_shares_ascending": true,
+          "indexes": {
+            "Ascending": {
+              "physical": 1,
+              "root": 131,
+              "height": 0,
+              "source_prefix": 9,
+              "source_free_bytes": 2007,
+              "source_entries": 400,
+              "physical_flags": 136,
+              "unexecuted_max_best_bytes": 4801,
+              "unexecuted_max_half_best_bytes": [
+                411,
+                2401
+              ]
+            },
+            "Descending": {
+              "physical": 2,
+              "root": 132,
+              "height": 0,
+              "source_prefix": 9,
+              "source_free_bytes": 2007,
+              "source_entries": 400,
+              "physical_flags": 136,
+              "unexecuted_max_best_bytes": 4801,
+              "unexecuted_max_half_best_bytes": [
+                2401,
+                411
+              ]
+            },
+            "Alias": {
+              "physical": 1,
+              "root": 131,
+              "height": 0,
+              "source_prefix": 9,
+              "source_free_bytes": 2007,
+              "source_entries": 400,
+              "physical_flags": 136,
+              "unexecuted_max_best_bytes": 4801,
+              "unexecuted_max_half_best_bytes": [
+                411,
+                2401
+              ]
+            }
+          },
+          "future_cells_checked": 8
+        },
+        "CurrencyKeys": {
+          "rows": 400,
+          "native_type": 5,
+          "payload_width": 8,
+          "column_flags": 3,
+          "extended_flags": 0,
+          "kind": "currency-scaled",
+          "selected_identity": 1,
+          "original_ordinal": 0,
+          "original_reference": 38144,
+          "actual_properties": [
+            [
+              "ID",
+              "Required",
+              "1",
+              "true",
+              "Boolean:true"
+            ],
+            [
+              "KeyValue",
+              "Required",
+              "1",
+              "true",
+              "Boolean:true"
+            ]
+          ],
+          "physical_index_order": [
+            1,
+            2
+          ],
+          "alias_shares_ascending": true,
+          "indexes": {
+            "Ascending": {
+              "physical": 1,
+              "root": 147,
+              "height": 0,
+              "source_prefix": 9,
+              "source_free_bytes": 2007,
+              "source_entries": 400,
+              "physical_flags": 136,
+              "unexecuted_max_best_bytes": 4801,
+              "unexecuted_max_half_best_bytes": [
+                411,
+                2401
+              ]
+            },
+            "Descending": {
+              "physical": 2,
+              "root": 148,
+              "height": 0,
+              "source_prefix": 9,
+              "source_free_bytes": 2007,
+              "source_entries": 400,
+              "physical_flags": 136,
+              "unexecuted_max_best_bytes": 4801,
+              "unexecuted_max_half_best_bytes": [
+                2401,
+                411
+              ]
+            },
+            "Alias": {
+              "physical": 1,
+              "root": 147,
+              "height": 0,
+              "source_prefix": 9,
+              "source_free_bytes": 2007,
+              "source_entries": 400,
+              "physical_flags": 136,
+              "unexecuted_max_best_bytes": 4801,
+              "unexecuted_max_half_best_bytes": [
+                411,
+                2401
+              ]
+            }
+          },
+          "future_cells_checked": 8
+        }
+      },
+      "exact_noop_outputs": [
+        {
+          "command_label": "V2016-ByteKeys-noop",
+          "output": {
+            "path": ".cache/ace16-integral-split-sources-first-20261027/V2016-ByteKeys-noop.accdb",
+            "bytes": 757760,
+            "sha256": "8e976662f1c2ddf2e7616870082a71da3a618017ab0cca6faf78f7fe301350a6"
+          },
+          "byte_identical": true
+        },
+        {
+          "command_label": "V2016-Int16Keys-noop",
+          "output": {
+            "path": ".cache/ace16-integral-split-sources-first-20261027/V2016-Int16Keys-noop.accdb",
+            "bytes": 757760,
+            "sha256": "8e976662f1c2ddf2e7616870082a71da3a618017ab0cca6faf78f7fe301350a6"
+          },
+          "byte_identical": true
+        },
+        {
+          "command_label": "V2016-Int64Keys-noop",
+          "output": {
+            "path": ".cache/ace16-integral-split-sources-first-20261027/V2016-Int64Keys-noop.accdb",
+            "bytes": 757760,
+            "sha256": "8e976662f1c2ddf2e7616870082a71da3a618017ab0cca6faf78f7fe301350a6"
+          },
+          "byte_identical": true
+        },
+        {
+          "command_label": "V2016-CurrencyKeys-noop",
+          "output": {
+            "path": ".cache/ace16-integral-split-sources-first-20261027/V2016-CurrencyKeys-noop.accdb",
+            "bytes": 757760,
+            "sha256": "8e976662f1c2ddf2e7616870082a71da3a618017ab0cca6faf78f7fe301350a6"
+          },
+          "byte_identical": true
+        }
+      ]
+    },
+    {
+      "profile": "V2019",
+      "original": {
+        "path": ".cache/ace16-integral-split-sources-first-20261027/V2019-before.accdb",
+        "bytes": 827392,
+        "sha256": "dcb7f14d9eab21dd9f518ddd3aafdc90b06f9325a20b5bbe60cdc44303f39dd7"
+      },
+      "user_rows": 2729,
+      "target_facts": {
+        "ByteKeys": {
+          "rows": 900,
+          "native_type": 2,
+          "payload_width": 1,
+          "column_flags": 3,
+          "extended_flags": 0,
+          "kind": "byte",
+          "selected_identity": 1,
+          "original_ordinal": 0,
+          "original_reference": 28416,
+          "actual_properties": [
+            [
+              "ID",
+              "Required",
+              "1",
+              "true",
+              "Boolean:true"
+            ],
+            [
+              "KeyValue",
+              "Required",
+              "1",
+              "true",
+              "Boolean:true"
+            ]
+          ],
+          "physical_index_order": [
+            1,
+            2
+          ],
+          "alias_shares_ascending": true,
+          "indexes": {
+            "Ascending": {
+              "physical": 1,
+              "root": 109,
+              "height": 0,
+              "source_prefix": 2,
+              "source_free_bytes": 14,
+              "source_entries": 900,
+              "physical_flags": 136,
+              "unexecuted_max_best_bytes": 4501,
+              "unexecuted_max_half_best_bytes": [
+                904,
+                2251
+              ]
+            },
+            "Descending": {
+              "physical": 2,
+              "root": 110,
+              "height": 0,
+              "source_prefix": 2,
+              "source_free_bytes": 14,
+              "source_entries": 900,
+              "physical_flags": 136,
+              "unexecuted_max_best_bytes": 4501,
+              "unexecuted_max_half_best_bytes": [
+                2251,
+                904
+              ]
+            },
+            "Alias": {
+              "physical": 1,
+              "root": 109,
+              "height": 0,
+              "source_prefix": 2,
+              "source_free_bytes": 14,
+              "source_entries": 900,
+              "physical_flags": 136,
+              "unexecuted_max_best_bytes": 4501,
+              "unexecuted_max_half_best_bytes": [
+                904,
+                2251
+              ]
+            }
+          },
+          "future_cells_checked": 8
+        },
+        "Int16Keys": {
+          "rows": 900,
+          "native_type": 3,
+          "payload_width": 2,
+          "column_flags": 3,
+          "extended_flags": 0,
+          "kind": "int16",
+          "selected_identity": 1,
+          "original_ordinal": 0,
+          "original_reference": 33536,
+          "actual_properties": [
+            [
+              "ID",
+              "Required",
+              "1",
+              "true",
+              "Boolean:true"
+            ],
+            [
+              "KeyValue",
+              "Required",
+              "1",
+              "true",
+              "Boolean:true"
+            ]
+          ],
+          "physical_index_order": [
+            1,
+            2
+          ],
+          "alias_shares_ascending": true,
+          "indexes": {
+            "Ascending": {
+              "physical": 1,
+              "root": 129,
+              "height": 0,
+              "source_prefix": 3,
+              "source_free_bytes": 13,
+              "source_entries": 900,
+              "physical_flags": 136,
+              "unexecuted_max_best_bytes": 5401,
+              "unexecuted_max_half_best_bytes": [
+                905,
+                2701
+              ]
+            },
+            "Descending": {
+              "physical": 2,
+              "root": 130,
+              "height": 0,
+              "source_prefix": 3,
+              "source_free_bytes": 13,
+              "source_entries": 900,
+              "physical_flags": 136,
+              "unexecuted_max_best_bytes": 5401,
+              "unexecuted_max_half_best_bytes": [
+                2701,
+                905
+              ]
+            },
+            "Alias": {
+              "physical": 1,
+              "root": 129,
+              "height": 0,
+              "source_prefix": 3,
+              "source_free_bytes": 13,
+              "source_entries": 900,
+              "physical_flags": 136,
+              "unexecuted_max_best_bytes": 5401,
+              "unexecuted_max_half_best_bytes": [
+                905,
+                2701
+              ]
+            }
+          },
+          "future_cells_checked": 8
+        },
+        "Int64Keys": {
+          "rows": 400,
+          "native_type": 19,
+          "payload_width": 8,
+          "column_flags": 3,
+          "extended_flags": 0,
+          "kind": "int64",
+          "selected_identity": 1,
+          "original_ordinal": 0,
+          "original_reference": 38400,
+          "actual_properties": [
+            [
+              "ID",
+              "Required",
+              "1",
+              "true",
+              "Boolean:true"
+            ],
+            [
+              "KeyValue",
+              "Required",
+              "1",
+              "true",
+              "Boolean:true"
+            ]
+          ],
+          "physical_index_order": [
+            1,
+            2
+          ],
+          "alias_shares_ascending": true,
+          "indexes": {
+            "Ascending": {
+              "physical": 1,
+              "root": 148,
+              "height": 0,
+              "source_prefix": 9,
+              "source_free_bytes": 2007,
+              "source_entries": 400,
+              "physical_flags": 136,
+              "unexecuted_max_best_bytes": 4801,
+              "unexecuted_max_half_best_bytes": [
+                411,
+                2401
+              ]
+            },
+            "Descending": {
+              "physical": 2,
+              "root": 149,
+              "height": 0,
+              "source_prefix": 9,
+              "source_free_bytes": 2007,
+              "source_entries": 400,
+              "physical_flags": 136,
+              "unexecuted_max_best_bytes": 4801,
+              "unexecuted_max_half_best_bytes": [
+                2401,
+                411
+              ]
+            },
+            "Alias": {
+              "physical": 1,
+              "root": 148,
+              "height": 0,
+              "source_prefix": 9,
+              "source_free_bytes": 2007,
+              "source_entries": 400,
+              "physical_flags": 136,
+              "unexecuted_max_best_bytes": 4801,
+              "unexecuted_max_half_best_bytes": [
+                411,
+                2401
+              ]
+            }
+          },
+          "future_cells_checked": 8
+        },
+        "CurrencyKeys": {
+          "rows": 400,
+          "native_type": 5,
+          "payload_width": 8,
+          "column_flags": 3,
+          "extended_flags": 0,
+          "kind": "currency-scaled",
+          "selected_identity": 1,
+          "original_ordinal": 0,
+          "original_reference": 42496,
+          "actual_properties": [
+            [
+              "ID",
+              "Required",
+              "1",
+              "true",
+              "Boolean:true"
+            ],
+            [
+              "KeyValue",
+              "Required",
+              "1",
+              "true",
+              "Boolean:true"
+            ]
+          ],
+          "physical_index_order": [
+            1,
+            2
+          ],
+          "alias_shares_ascending": true,
+          "indexes": {
+            "Ascending": {
+              "physical": 1,
+              "root": 164,
+              "height": 0,
+              "source_prefix": 9,
+              "source_free_bytes": 2007,
+              "source_entries": 400,
+              "physical_flags": 136,
+              "unexecuted_max_best_bytes": 4801,
+              "unexecuted_max_half_best_bytes": [
+                411,
+                2401
+              ]
+            },
+            "Descending": {
+              "physical": 2,
+              "root": 165,
+              "height": 0,
+              "source_prefix": 9,
+              "source_free_bytes": 2007,
+              "source_entries": 400,
+              "physical_flags": 136,
+              "unexecuted_max_best_bytes": 4801,
+              "unexecuted_max_half_best_bytes": [
+                2401,
+                411
+              ]
+            },
+            "Alias": {
+              "physical": 1,
+              "root": 164,
+              "height": 0,
+              "source_prefix": 9,
+              "source_free_bytes": 2007,
+              "source_entries": 400,
+              "physical_flags": 136,
+              "unexecuted_max_best_bytes": 4801,
+              "unexecuted_max_half_best_bytes": [
+                411,
+                2401
+              ]
+            }
+          },
+          "future_cells_checked": 8
+        }
+      },
+      "exact_noop_outputs": [
+        {
+          "command_label": "V2019-ByteKeys-noop",
+          "output": {
+            "path": ".cache/ace16-integral-split-sources-first-20261027/V2019-ByteKeys-noop.accdb",
+            "bytes": 827392,
+            "sha256": "dcb7f14d9eab21dd9f518ddd3aafdc90b06f9325a20b5bbe60cdc44303f39dd7"
+          },
+          "byte_identical": true
+        },
+        {
+          "command_label": "V2019-Int16Keys-noop",
+          "output": {
+            "path": ".cache/ace16-integral-split-sources-first-20261027/V2019-Int16Keys-noop.accdb",
+            "bytes": 827392,
+            "sha256": "dcb7f14d9eab21dd9f518ddd3aafdc90b06f9325a20b5bbe60cdc44303f39dd7"
+          },
+          "byte_identical": true
+        },
+        {
+          "command_label": "V2019-Int64Keys-noop",
+          "output": {
+            "path": ".cache/ace16-integral-split-sources-first-20261027/V2019-Int64Keys-noop.accdb",
+            "bytes": 827392,
+            "sha256": "dcb7f14d9eab21dd9f518ddd3aafdc90b06f9325a20b5bbe60cdc44303f39dd7"
+          },
+          "byte_identical": true
+        },
+        {
+          "command_label": "V2019-CurrencyKeys-noop",
+          "output": {
+            "path": ".cache/ace16-integral-split-sources-first-20261027/V2019-CurrencyKeys-noop.accdb",
+            "bytes": 827392,
+            "sha256": "dcb7f14d9eab21dd9f518ddd3aafdc90b06f9325a20b5bbe60cdc44303f39dd7"
+          },
+          "byte_identical": true
+        }
+      ]
+    }
+  ],
+  "separate_post_execution_check": {
+    "receipt": {
+      "path": ".cache/ace16-integral-split-sources-first-20261027/post-execution-pins.json",
+      "bytes": 9991,
+      "sha256": "aee7155365e3a0d8421b3c797d1f39f2e0f67bb97641d2f618c73361576c87df"
+    },
+    "frozen_direct_pins": 20,
+    "mismatches": 0,
+    "raw_report_unchanged": true
+  },
+  "pre_action_review_corrections": {
+    "initial_freeze": {
+      "path": ".cache/ace16-integral-splits-next-20261027/before-header-proof-correction/freeze.json",
+      "bytes": 12426,
+      "sha256": "d13a14b283bd95f3b731fe341fce86cdf361971336bf228bb2bb631df422df1e"
+    },
+    "initial_model": {
+      "path": ".cache/ace16-integral-splits-next-20261027/before-header-proof-correction/model.py",
+      "bytes": 14386,
+      "sha256": "5fe2fc3056a2c428e717fbc111f39cd8514a74807840c27dbdf3117cb0f1ca7f"
+    },
+    "reason": {
+      "path": ".cache/ace16-integral-splits-next-20261027/before-header-proof-correction/reason.json",
+      "bytes": 408,
+      "sha256": "b1027749491069f8d22867409e3738a5ba4299441c7357c3db244b2413402ca9"
+    },
+    "corrections": [
+      "Qualify decoded-zero encoding key using the observed fb8abc4e XOR field, not raw zero; producer/header/flags unchanged.",
+      "Bind the approved 512 MiB heap to both generation/describe Java and javac processes.",
+      "Currency source getter remains exact BigDecimal and scaled Decimal zero, avoiding a truncating int conversion."
+    ]
+  },
+  "limits": {
+    "maximum_inserted_rows_per_database": 4096,
+    "planned_inserted_rows": 2729,
+    "maximum_database_bytes": 67108864,
+    "per_process_timeout_seconds": 120,
+    "maximum_stdout_or_stderr_bytes": 16777216,
+    "java_heap_bytes": 536870912,
+    "java_heap_flag": "-Xmx512m; javac -J-Xmx512m"
+  },
+  "owning_document": {
+    "path": "docs/testing/INTEGRAL_INDEX_SPLIT_SOURCE_OBSERVATIONS.md",
+    "bytes": 5972,
+    "sha256": "a62b140604361f78f9870defa72883c760bb9dc637b1ebc1d3f3f9594bd26ce7"
+  },
+  "current_public_tools": {
+    "files": [
+      {
+        "path": "docs/testing/integral_split_originals/IntegralSplitFixture.java",
+        "bytes": 7277,
+        "sha256": "2121d318f1b972adc707fb8f39b2fc8d6369c039d6c80496bebf8a4fb28656cb"
+      },
+      {
+        "path": "docs/testing/integral_split_originals/model.py",
+        "bytes": 14901,
+        "sha256": "5aa5faae9f5de5e96007ef79e5475f5e78732f6e274dc93279b2c8f26dfc3f0b"
+      },
+      {
+        "path": "docs/testing/integral_split_originals/capture_sources.py",
+        "bytes": 8192,
+        "sha256": "80df4b85d60c960593774a5faf0cb6e7cb444e3e5a566cd7751ca8b9a8ba48a1"
+      },
+      {
+        "path": "docs/testing/integral_split_originals/selfcheck.py",
+        "bytes": 1980,
+        "sha256": "112555b9ca2dbb722408b9fe647c58ee7a2c4e9961f6a331cac6cb57ae0e31a6"
+      },
+      {
+        "path": "docs/testing/integral_split_originals/verify_sources.py",
+        "bytes": 3214,
+        "sha256": "e2387580b59a27b99a4c06269b1934d637ad904ccf984c152418577b0ae2885e"
+      },
+      {
+        "path": "docs/testing/integral_split_originals/source-plan.json",
+        "bytes": 12510,
+        "sha256": "e5fe248fecc136d9d8c8d27a95c67c238c1631882d2b45547cde16b44455629d"
+      }
+    ],
+    "byte_identical_promotions": [
+      "IntegralSplitFixture.java",
+      "model.py"
+    ],
+    "post_execution_versions": [
+      "capture_sources.py",
+      "selfcheck.py",
+      "verify_sources.py",
+      "source-plan.json"
+    ],
+    "distinction": "Capture/selfcheck wrappers adjust repository discovery and a separate fresh output plan. The verifier rechecks saved facts with JSON dictionary-key normalization only. No public generation/native/JVM reproduction has been run.",
+    "read_only_checks": [
+      {
+        "command": "python3 docs/testing/integral_split_originals/verify_sources.py --report .cache/ace16-integral-split-sources-first-20261027/report.json",
+        "exit_code": 0,
+        "log": {
+          "path": ".cache/ace16-integral-splits-next-20261027/public-verification.log",
+          "bytes": 579,
+          "sha256": "8dc68fbaddd0d893e6f6f2c8c9f3715d0c7b949b437a5ab7030f30d1b563acf0"
+        }
+      },
+      {
+        "command": "python3 docs/testing/integral_split_originals/selfcheck.py",
+        "exit_code": 0,
+        "log": {
+          "path": ".cache/ace16-integral-splits-next-20261027/public-selfcheck.json",
+          "bytes": 1392,
+          "sha256": "28ce3dfa5cd6571fcbf45a2347400698a908b3710efc9edb62b50e1f5ebefc50"
+        }
+      },
+      {
+        "command": "python3 docs/testing/integral_split_originals/capture_sources.py",
+        "exit_code": 0,
+        "log": {
+          "path": ".cache/ace16-integral-splits-next-20261027/public-static-validation.log",
+          "bytes": 88,
+          "sha256": "4f5d8ec1cfa8c27f3d6f07869ec9e3a2aa74420b566dbfef792e9142b600f515"
+        }
+      }
+    ]
+  },
+  "acceptance": [
+    "Actual Required=true column properties and required ordinary indexes are captured; no blanket empty-property assumption or unknown-metadata fallback is used.",
+    "Exact native carriers, raw field spans/masks/markers, complete key+ROW streams and public cursor orders agree. Byte is unsigned, and Currency uses exact BigDecimal/scaled i64 values.",
+    "Both directions in both formats are real root leaves with measured best-prefix overflow under the fixed but unexecuted typed-MAX action; both halves fit. Actual aliases share Ascending physical storage.",
+    "Owned/global role provenance and represented future cells qualify before actual typed no-op admission. All eight complete native no-op candidates match original bytes.",
+    "Originals, raw reports, command outputs and first source versions are immutable; the separate postcheck rehashes rather than rewrites historical evidence."
+  ],
+  "limitations": [
+    "This is source/admission evidence, not a new typed split implementation, a public UPDATE outcome or an original-file split candidate replay.",
+    "Public Jackcess comparisons and isolated engineering previews do not qualify Microsoft Access saves, data macros, locking/recovery or complete ACE16 compatibility.",
+    "The planned MAX capacities are arithmetic over checked original streams. Actual split geometry and historical-counter behavior need a separately frozen action phase."
+  ]
+}

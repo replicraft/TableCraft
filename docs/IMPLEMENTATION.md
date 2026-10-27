@@ -148,6 +148,22 @@ images, fresh getters, row identities and maps. Their eight native/JVM fixture
 commands remain separate from the reference writer actions. Normal saves,
 other-codec splits and native Access qualification remain unfinished.
 
+## Other fixed numeric split sources
+
+The [finite Byte/Int16/Int64/Currency source phase](testing/INTEGRAL_INDEX_SPLIT_SOURCE_OBSERVATIONS.md)
+now passes all thirteen native/JVM fixture commands on new V2016/V2019 originals.
+Each file has 2,729 user rows under unchanged caps. Eight exact typed fixed-preview
+no-ops preserve complete images, qualifying the actual Required properties,
+fixed carriers, unsigned Byte/scaled Currency values, both index directions and
+real Ascending/Alias sharing before any split action. BIG_INT type 0x13 works in
+both generated formats.
+
+Independent complete key/ROW capacity checks prove that the fixed future MAX
+requests overflow each selected root leaf and that both halves fit. These are
+source/admission measurements, not new typed split support or update outcomes.
+Actual non-noop/public writer comparisons and the closed typed split extension
+remain separate work; no new carrier was enabled merely from its physical width.
+
 ## Measured Int32 parent overflow and root growth
 
 The [separate public-reference action phase](testing/PARENT_INDEX_SPLIT_OBSERVATIONS.md)
