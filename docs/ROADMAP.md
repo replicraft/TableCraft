@@ -44,8 +44,9 @@ Delivered read/query and engineering foundations:
   A further [variable-update service](testing/ACE16_VARIABLE_UPDATES.md) now adds
   alternate owned destinations and EOF data-page allocation through existing map
   representation, with independent placement/map replay. Map growth, arbitrary
-  free-page reuse and production saves remain unfinished; its original-file
-  acceptance remains separate from the earlier PAGE results.
+  free-page reuse and production saves remain unfinished. Its
+  [eight original-file candidates](testing/VARIABLE_UPDATE_OBSERVATIONS.md) now
+  pass complete byte/value/index proofs, separately from the earlier PAGE results.
   A separate [48-control Text/Binary corpus](testing/ENCODED_DELETE_OBSERVATIONS.md)
   checks 36 candidates and twelve unsupported-profile refusals on the same
   committed tool, including the previously refused height-two delete-all cases.

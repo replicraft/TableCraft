@@ -44,8 +44,11 @@ adds alternate owned-page placement and EOF allocation where all required map
 cells already exist. It preserves logical roots and derives exact map changes
 through independent event replay. The grown image receives fresh header/catalog
 and complete constraint checks through a non-journalable finalizer. General map
-growth, arbitrary free-page reuse and production ACE saves remain unavailable;
-original-file candidate acceptance is separate from the earlier PAGE corpus.
+growth, arbitrary free-page reuse and production ACE saves remain unavailable.
+Its [eight original-file candidates](../../testing/VARIABLE_UPDATE_OBSERVATIONS.md)
+now pass exact image, map, value and index checks, with each shrink starting
+from the corresponding generated growth candidate. The earlier PAGE corpus
+retains its separate implementation and outcome counts.
 Contraction now qualifies complete internal-node sibling chains by height and
 repairs retained neighbors. Entirely unlinked levels retain their existing
 profile; partial or malformed chains refuse. The

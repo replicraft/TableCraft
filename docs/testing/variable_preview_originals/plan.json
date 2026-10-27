@@ -1,0 +1,542 @@
+{
+  "scope": "SEPARATE eight variable-update engineering candidates; no actions before committed frozen artifact; no normal-save/native Access claim",
+  "reference_receipt": {
+    "path": "docs/testing/results/ace16-cross-page-update-originals-2026-10-26.json",
+    "bytes": 97111,
+    "sha256": "36911dffcc781e3629f0e266cdd1e5777b82c5b0de47d0f500fbbc9058dc3e71"
+  },
+  "raw_reference_report": {
+    "path": ".cache/ace16-cross-page-update-next-20261026/report.json",
+    "bytes": 1405408,
+    "sha256": "3d7359ab7453c61906e54aef1aae6cfff13b56548ce564212e98a1fd6edd6137"
+  },
+  "expected_candidates": 8,
+  "cases": [
+    {
+      "id": "V2016-true-hint-grow",
+      "profile": "V2016",
+      "history": "true-hint",
+      "action": "grow",
+      "table": "RawLegacy",
+      "column": "Label",
+      "ordinal": 0,
+      "physical_parent_ID": 1,
+      "expected_kind": "null",
+      "expected_text": null,
+      "replacement_text": "\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100",
+      "source": {
+        "path": ".cache/ace16-slot-boundary-next-20261026/V2016-wide-04.accdb",
+        "bytes": 1044480,
+        "sha256": "7d48e9088f1d07a668fc60b78fcc560fb2dcc81db32cfb791cc73246cafc070a"
+      },
+      "public_reference": {
+        "path": ".cache/ace16-cross-page-update-next-20261026/V2016-true-hint-grown.accdb",
+        "bytes": 1048576,
+        "sha256": "379e21aab7822a5455cc962d0e4d95967fff4a7ac536ca8e6cf0f28f6f636fe4"
+      },
+      "reference_getter": {
+        "path": ".cache/ace16-cross-page-update-next-20261026/00-V2016-true-hint-grow-after-getter.stdout",
+        "bytes": 743903,
+        "sha256": "6cba7c13cdcbef02cb9397115c388b3bf5839cb4d1a41be4270cea4e63486e5c"
+      },
+      "reference_maps": {
+        "path": ".cache/ace16-cross-page-update-next-20261026/00-V2016-true-hint-grow-after-maps.stdout",
+        "bytes": 271,
+        "sha256": "5c2614c4b39b902bdd7e820d3f19fe0a73a0c088e2214bc732d056a68242277f"
+      },
+      "expected_success": true,
+      "expected_file_growth_bytes": 4096,
+      "root_page": 97,
+      "root_slot": 0,
+      "target_page": 255,
+      "target_slot": 0,
+      "target_capacity_bytes": 523,
+      "table_and_first_index_historical_count": 21,
+      "expected_maps_from_public_raw": {
+        "JackcessGlobalFree": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": [
+            {
+              "offset": 8159,
+              "before": 128,
+              "after": 0
+            }
+          ]
+        },
+        "TableOwned": {
+          "added_file_members": [
+            255
+          ],
+          "removed_file_members": [],
+          "changed_existing_bytes": [
+            {
+              "offset": 401443,
+              "before": 0,
+              "after": 128
+            }
+          ]
+        },
+        "TableFreeSpace": {
+          "added_file_members": [
+            255
+          ],
+          "removed_file_members": [
+            97
+          ],
+          "changed_existing_bytes": [
+            {
+              "offset": 393095,
+              "before": 2,
+              "after": 0
+            },
+            {
+              "offset": 393114,
+              "before": 0,
+              "after": 128
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "V2016-true-hint-shrink",
+      "profile": "V2016",
+      "history": "true-hint",
+      "action": "shrink",
+      "table": "RawLegacy",
+      "column": "Label",
+      "ordinal": 0,
+      "physical_parent_ID": 1,
+      "expected_kind": "text",
+      "expected_text": "\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100",
+      "replacement_text": "B",
+      "source": {
+        "candidate_from": "V2016-true-hint-grow"
+      },
+      "public_reference": {
+        "path": ".cache/ace16-cross-page-update-next-20261026/V2016-true-hint-shrunk.accdb",
+        "bytes": 1048576,
+        "sha256": "66ea7a559bd8cb647dda0cf6d1b539060fdcbda34a98bbcb35492f197045136a"
+      },
+      "reference_getter": {
+        "path": ".cache/ace16-cross-page-update-next-20261026/01-V2016-true-hint-shrink-after-getter.stdout",
+        "bytes": 742887,
+        "sha256": "056bd026ef63e85675010736a764cc47dcb4c35322fc5cdac487fc010de0094d"
+      },
+      "reference_maps": {
+        "path": ".cache/ace16-cross-page-update-next-20261026/01-V2016-true-hint-shrink-after-maps.stdout",
+        "bytes": 271,
+        "sha256": "5c2614c4b39b902bdd7e820d3f19fe0a73a0c088e2214bc732d056a68242277f"
+      },
+      "expected_success": true,
+      "expected_file_growth_bytes": 0,
+      "root_page": 97,
+      "root_slot": 0,
+      "target_page": 255,
+      "target_slot": 0,
+      "target_capacity_bytes": 523,
+      "table_and_first_index_historical_count": 21,
+      "expected_maps_from_public_raw": {
+        "JackcessGlobalFree": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableOwned": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableFreeSpace": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        }
+      }
+    },
+    {
+      "id": "V2016-false-hint-grow",
+      "profile": "V2016",
+      "history": "false-hint",
+      "action": "grow",
+      "table": "RawLegacy",
+      "column": "Label",
+      "ordinal": 0,
+      "physical_parent_ID": 1,
+      "expected_kind": "null",
+      "expected_text": null,
+      "replacement_text": "\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100",
+      "source": {
+        "path": ".cache/ace16-slot-boundary-next-20261026/V2016-wide-05.accdb",
+        "bytes": 1048576,
+        "sha256": "f48f750915d7dd9459141d7bf82761e29e4e67511bf37d30b375065e039e00c1"
+      },
+      "public_reference": {
+        "path": ".cache/ace16-cross-page-update-next-20261026/V2016-false-hint-grown.accdb",
+        "bytes": 1048576,
+        "sha256": "57e71e129dcc8de63df249d23d93270097aef33881095a517b8386656dad38cb"
+      },
+      "reference_getter": {
+        "path": ".cache/ace16-cross-page-update-next-20261026/02-V2016-false-hint-grow-after-getter.stdout",
+        "bytes": 746075,
+        "sha256": "bd02a57a03b05d8a3db5c4c1fab3cdbb0e6b0fcdfaeefd2e516f61621207750a"
+      },
+      "reference_maps": {
+        "path": ".cache/ace16-cross-page-update-next-20261026/02-V2016-false-hint-grow-after-maps.stdout",
+        "bytes": 271,
+        "sha256": "d5e6f3a07eee0e881719d35288d6b616d43737e737e800541d906adc703f8522"
+      },
+      "expected_success": true,
+      "expected_file_growth_bytes": 0,
+      "root_page": 97,
+      "root_slot": 0,
+      "target_page": 255,
+      "target_slot": 1,
+      "target_capacity_bytes": 523,
+      "table_and_first_index_historical_count": 22,
+      "expected_maps_from_public_raw": {
+        "JackcessGlobalFree": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableOwned": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableFreeSpace": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        }
+      }
+    },
+    {
+      "id": "V2016-false-hint-shrink",
+      "profile": "V2016",
+      "history": "false-hint",
+      "action": "shrink",
+      "table": "RawLegacy",
+      "column": "Label",
+      "ordinal": 0,
+      "physical_parent_ID": 1,
+      "expected_kind": "text",
+      "expected_text": "\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100",
+      "replacement_text": "B",
+      "source": {
+        "candidate_from": "V2016-false-hint-grow"
+      },
+      "public_reference": {
+        "path": ".cache/ace16-cross-page-update-next-20261026/V2016-false-hint-shrunk.accdb",
+        "bytes": 1048576,
+        "sha256": "2884e3b3794dbab98b57239c7650b83c6904346d0948bd2fba951ef6166e2a5b"
+      },
+      "reference_getter": {
+        "path": ".cache/ace16-cross-page-update-next-20261026/03-V2016-false-hint-shrink-after-getter.stdout",
+        "bytes": 745059,
+        "sha256": "80655db5d1eb6528fc2f7a7fe3ff1daa76565ab19cf82d531bce9bae880df1de"
+      },
+      "reference_maps": {
+        "path": ".cache/ace16-cross-page-update-next-20261026/03-V2016-false-hint-shrink-after-maps.stdout",
+        "bytes": 271,
+        "sha256": "d5e6f3a07eee0e881719d35288d6b616d43737e737e800541d906adc703f8522"
+      },
+      "expected_success": true,
+      "expected_file_growth_bytes": 0,
+      "root_page": 97,
+      "root_slot": 0,
+      "target_page": 255,
+      "target_slot": 1,
+      "target_capacity_bytes": 523,
+      "table_and_first_index_historical_count": 22,
+      "expected_maps_from_public_raw": {
+        "JackcessGlobalFree": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableOwned": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableFreeSpace": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        }
+      }
+    },
+    {
+      "id": "V2019-true-hint-grow",
+      "profile": "V2019",
+      "history": "true-hint",
+      "action": "grow",
+      "table": "RawLegacy",
+      "column": "Label",
+      "ordinal": 0,
+      "physical_parent_ID": 1,
+      "expected_kind": "null",
+      "expected_text": null,
+      "replacement_text": "\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100",
+      "source": {
+        "path": ".cache/ace16-slot-boundary-next-20261026/V2019-wide-04.accdb",
+        "bytes": 1114112,
+        "sha256": "e42167f5666fc075c44d67ad55ec9cbc758f3f385e90ff62f4fee16894c27952"
+      },
+      "public_reference": {
+        "path": ".cache/ace16-cross-page-update-next-20261026/V2019-true-hint-grown.accdb",
+        "bytes": 1118208,
+        "sha256": "937ec57358a0aa93a9a37104377e44220fb9c92f9ff45ee3424e8a0c49369267"
+      },
+      "reference_getter": {
+        "path": ".cache/ace16-cross-page-update-next-20261026/04-V2019-true-hint-grow-after-getter.stdout",
+        "bytes": 743946,
+        "sha256": "722685f9b2e108757faab0d957895629b5ee5e7b6a08d897800cabf80a267a6a"
+      },
+      "reference_maps": {
+        "path": ".cache/ace16-cross-page-update-next-20261026/04-V2019-true-hint-grow-after-maps.stdout",
+        "bytes": 512,
+        "sha256": "e550ad63f2d03ea0a24c12959fc248f60c502517a95baff7ee8e222f8ae18f9a"
+      },
+      "expected_success": true,
+      "expected_file_growth_bytes": 4096,
+      "root_page": 114,
+      "root_slot": 0,
+      "target_page": 272,
+      "target_slot": 0,
+      "target_capacity_bytes": 523,
+      "table_and_first_index_historical_count": 21,
+      "expected_maps_from_public_raw": {
+        "JackcessGlobalFree": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": [
+            {
+              "offset": 8162,
+              "before": 255,
+              "after": 254
+            }
+          ]
+        },
+        "TableOwned": {
+          "added_file_members": [
+            272
+          ],
+          "removed_file_members": [],
+          "changed_existing_bytes": [
+            {
+              "offset": 471078,
+              "before": 0,
+              "after": 1
+            }
+          ]
+        },
+        "TableFreeSpace": {
+          "added_file_members": [
+            272
+          ],
+          "removed_file_members": [
+            114
+          ],
+          "changed_existing_bytes": [
+            {
+              "offset": 462729,
+              "before": 4,
+              "after": 0
+            },
+            {
+              "offset": 462749,
+              "before": 0,
+              "after": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "V2019-true-hint-shrink",
+      "profile": "V2019",
+      "history": "true-hint",
+      "action": "shrink",
+      "table": "RawLegacy",
+      "column": "Label",
+      "ordinal": 0,
+      "physical_parent_ID": 1,
+      "expected_kind": "text",
+      "expected_text": "\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100",
+      "replacement_text": "B",
+      "source": {
+        "candidate_from": "V2019-true-hint-grow"
+      },
+      "public_reference": {
+        "path": ".cache/ace16-cross-page-update-next-20261026/V2019-true-hint-shrunk.accdb",
+        "bytes": 1118208,
+        "sha256": "a7fd9960390d460bac0afca72f2a187973b4a01fce280fd1bc7dfad80e44a57d"
+      },
+      "reference_getter": {
+        "path": ".cache/ace16-cross-page-update-next-20261026/05-V2019-true-hint-shrink-after-getter.stdout",
+        "bytes": 742930,
+        "sha256": "4fc08946962c0df7dfe86224c48b0b957f00d879292430dd56950d30ab88abb1"
+      },
+      "reference_maps": {
+        "path": ".cache/ace16-cross-page-update-next-20261026/05-V2019-true-hint-shrink-after-maps.stdout",
+        "bytes": 512,
+        "sha256": "e550ad63f2d03ea0a24c12959fc248f60c502517a95baff7ee8e222f8ae18f9a"
+      },
+      "expected_success": true,
+      "expected_file_growth_bytes": 0,
+      "root_page": 114,
+      "root_slot": 0,
+      "target_page": 272,
+      "target_slot": 0,
+      "target_capacity_bytes": 523,
+      "table_and_first_index_historical_count": 21,
+      "expected_maps_from_public_raw": {
+        "JackcessGlobalFree": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableOwned": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableFreeSpace": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        }
+      }
+    },
+    {
+      "id": "V2019-false-hint-grow",
+      "profile": "V2019",
+      "history": "false-hint",
+      "action": "grow",
+      "table": "RawLegacy",
+      "column": "Label",
+      "ordinal": 0,
+      "physical_parent_ID": 1,
+      "expected_kind": "null",
+      "expected_text": null,
+      "replacement_text": "\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100",
+      "source": {
+        "path": ".cache/ace16-slot-boundary-next-20261026/V2019-wide-05.accdb",
+        "bytes": 1118208,
+        "sha256": "fb4d1b46a83940ae06224665d403464d5d21a61986a84a5c2c63f1fe8e7a00e0"
+      },
+      "public_reference": {
+        "path": ".cache/ace16-cross-page-update-next-20261026/V2019-false-hint-grown.accdb",
+        "bytes": 1118208,
+        "sha256": "2b50008288bd7d9d9379d6475ff6e44167f9dd038ec21c1149da4f539a78f9c4"
+      },
+      "reference_getter": {
+        "path": ".cache/ace16-cross-page-update-next-20261026/06-V2019-false-hint-grow-after-getter.stdout",
+        "bytes": 746118,
+        "sha256": "61ab637e5480e52f92e2aeed8711b706d0d7c2138a3d8f8558a45248b0e81c2a"
+      },
+      "reference_maps": {
+        "path": ".cache/ace16-cross-page-update-next-20261026/06-V2019-false-hint-grow-after-maps.stdout",
+        "bytes": 512,
+        "sha256": "b9a7b8f00c7721d754ce49a40e484465adbdb94875e95d2e0251db7c469ed9bb"
+      },
+      "expected_success": true,
+      "expected_file_growth_bytes": 0,
+      "root_page": 114,
+      "root_slot": 0,
+      "target_page": 272,
+      "target_slot": 1,
+      "target_capacity_bytes": 523,
+      "table_and_first_index_historical_count": 22,
+      "expected_maps_from_public_raw": {
+        "JackcessGlobalFree": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableOwned": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableFreeSpace": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        }
+      }
+    },
+    {
+      "id": "V2019-false-hint-shrink",
+      "profile": "V2019",
+      "history": "false-hint",
+      "action": "shrink",
+      "table": "RawLegacy",
+      "column": "Label",
+      "ordinal": 0,
+      "physical_parent_ID": 1,
+      "expected_kind": "text",
+      "expected_text": "\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100\u0100",
+      "replacement_text": "B",
+      "source": {
+        "candidate_from": "V2019-false-hint-grow"
+      },
+      "public_reference": {
+        "path": ".cache/ace16-cross-page-update-next-20261026/V2019-false-hint-shrunk.accdb",
+        "bytes": 1118208,
+        "sha256": "d6da7556d961a796e11694f6357a41b8b9f8000cd844af904748ccb0abd06bc6"
+      },
+      "reference_getter": {
+        "path": ".cache/ace16-cross-page-update-next-20261026/07-V2019-false-hint-shrink-after-getter.stdout",
+        "bytes": 745102,
+        "sha256": "20196d699f22d84c17565206c9dcbe171fb003537e6cce4651b974870ba182be"
+      },
+      "reference_maps": {
+        "path": ".cache/ace16-cross-page-update-next-20261026/07-V2019-false-hint-shrink-after-maps.stdout",
+        "bytes": 512,
+        "sha256": "b9a7b8f00c7721d754ce49a40e484465adbdb94875e95d2e0251db7c469ed9bb"
+      },
+      "expected_success": true,
+      "expected_file_growth_bytes": 0,
+      "root_page": 114,
+      "root_slot": 0,
+      "target_page": 272,
+      "target_slot": 1,
+      "target_capacity_bytes": 523,
+      "table_and_first_index_historical_count": 22,
+      "expected_maps_from_public_raw": {
+        "JackcessGlobalFree": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableOwned": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableFreeSpace": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        }
+      }
+    }
+  ],
+  "proofs": [
+    "all original four source images and eight public reference images unchanged",
+    "fresh candidate source for each grow, shrink chains only from corresponding candidate grow",
+    "exact full typed getter values and all complete logical index orders match public references semantically",
+    "independent original-page byte authorization: root pointer/flags, selected final record, exact existing bitmap bytes; all unrelated bytes/pages remain original",
+    "new EOF page literal zero header/reserved/free/count/directory and exact raw UTF16 record; one page only where expected",
+    "preserve original root identity and full old hidden/unselected row bodies; selected target capacity523 retained on shrink",
+    "shrink original target payload after new two-byte B remains original through old payload-end; only variable payload end offset changes; public canonicalization not wire golden",
+    "source table count and historical index counter unchanged21/22; all preexisting index-signature pages unchanged",
+    "only actual highest hinted original candidate considered once, no free-in-file reuse/map growth",
+    "no expected refusal waivers or model edits after frozen candidate start"
+  ]
+}

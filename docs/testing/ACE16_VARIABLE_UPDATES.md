@@ -85,5 +85,8 @@ length/placement facts. These checks establish bounded engineering behavior,
 not Microsoft Access native save/reopen compatibility.
 
 The eight public-writer UPDATE observations establish independent storage facts.
-Executing this new service against those immutable inputs is a separate
-original-file acceptance step; it is not claimed by the core test record.
+The subsequent [original-file comparison](VARIABLE_UPDATE_OBSERVATIONS.md)
+passes all eight candidates on its first run with 32 commands. Each shrink
+starts from the corresponding generated growth candidate. Full typed values,
+index orders and exact image/map/EOF/padding proofs agree. These later results
+remain separate from the original core test record and native Access qualification.
