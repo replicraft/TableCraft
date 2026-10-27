@@ -28,8 +28,12 @@ Matching currently materializes a second complete scalar snapshot; unrelated
 Memo/OLE can consume allowance despite unchanged payloads. This is explicitly
 bounded engineering behavior. Independent public self-tree actions left dangling
 children and loop/cycle actions overflowed their stack; none qualifies those
-profiles. Original-file candidate replay, native SQL action timing, macros and
-Access save/reopen remain separate acceptance work.
+profiles. The subsequent [original-file replay](testing/CASCADE_DELETE_OBSERVATIONS.md)
+passes 24 acyclic candidates and eight exact self/cycle refusals on a frozen
+committed tool. Independent association and byte models check original records,
+complete index entries, maps and protected bytes; the 24 supported candidates
+also match public-action final rows and index order. Native SQL action timing,
+macros and Access save/reopen remain separate acceptance work.
 
 ## Native French field query replay
 
