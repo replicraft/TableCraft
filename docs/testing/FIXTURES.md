@@ -9385,3 +9385,15 @@ new-page, typed-row and index proofs pass; fitted padding follows the explicit
 engineering contract rather than public-writer byte canonicalization. Original
 source identities, older Slot/PAGE outcomes and native qualification remain
 separate.
+
+### Short Binary allocation descendants
+
+The [Binary allocation observations](BINARY_ALLOCATION_OBSERVATIONS.md) extend
+these same originals through a repository-owned public-API append helper.
+Twenty-six INSERT checkpoints establish four actual space-exhaustion sources;
+eight separate public UPDATEs then exercise EOF growth, alternate-owned reuse
+and shrink at retained 268-byte capacity. All 34 actions and 107 bounded
+processes succeed with original sources unchanged. The
+[receipt](results/ace16-binary-allocation-originals-2026-10-26.json) pins every
+checkpoint, tool, selector and output. These public-writer facts remain separate
+from engineering candidate acceptance and native Access qualification.
