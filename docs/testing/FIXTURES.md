@@ -9806,3 +9806,19 @@ class was corrected. Two later controls add independent late/mixed whole images.
 The source and base byte oracle remain unchanged. Reader-purpose tests isolate
 non-activation by index/usage signatures and are not healthy native database
 fixtures. Whole-original candidate acceptance remains separate.
+
+### Index-map promotion original-file acceptance
+
+The [first two-candidate replay](INDEX_MAP_GROWTH_UPDATE_OBSERVATIONS.md) uses both
+unchanged 900-target/700-padding-row originals. Before candidate execution, a
+separate source-only model freezes exact selected field bytes, root bounds,
+right/bitmap/left EOF identities, map-pointer rows, complete bitmap membership and
+global bits. Its pure checks preserve 3,200 user record bodies and four complete
+physical trees; public-writer compression and scratch choices are not byte goldens.
+
+Both first candidates match those complete images, retain all source row
+identities and pass fresh typed row/index/map getters. Four native/getter commands
+succeed; all 48 reviewed input pins remain unchanged. Each image adds 12,288 bytes.
+The earlier 18-command reference history, two frozen old-consumer MAX refusals
+and two no-op admissions remain distinct evidence. This replay does not qualify
+other map transitions, arbitrary databases, native Access saves or normal editing.

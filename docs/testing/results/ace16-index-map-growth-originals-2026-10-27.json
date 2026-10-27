@@ -1,0 +1,712 @@
+{
+  "date": "2026-10-27",
+  "scope": "First successful exact two-original Int32 index-owned map promotion engineering replay. No native Access or normal-save qualification.",
+  "counts": {
+    "cases": 2,
+    "candidate_calls": 2,
+    "fresh_read_only_inspections": 2,
+    "fixture_commands": 4,
+    "accepted": 2,
+    "unmet": 0,
+    "source_database_files": 2,
+    "source_user_records_per_file": 1600,
+    "complete_source_record_model_checks": 3200,
+    "complete_physical_tree_model_checks": 4,
+    "new_pages_per_candidate": 3,
+    "new_index_pages_per_candidate": 2,
+    "new_metadata_pages_per_candidate": 1,
+    "growth_bytes_per_candidate": 12288,
+    "unchanged_before_after_pin_occurrences": 48,
+    "historical_compiled_git_objects": 241,
+    "new_generation_or_public_update_calls": 0
+  },
+  "first_terminal": {
+    "path": ".cache/ace16-map-growth-acceptance-next-20261027/first-terminal.json",
+    "bytes": 514,
+    "sha256": "85547882b4614664f82ad7545bc268df09deabcca9398c7095aa61ad6adaa7b7"
+  },
+  "outer_log": {
+    "path": ".cache/ace16-map-growth-acceptance-next-20261027/first-execution.log",
+    "bytes": 444,
+    "sha256": "220f426e6b7f2782d2c4df537ff1dc7c9a658b4b199947768b76f8add0ae7b9d"
+  },
+  "raw_report": {
+    "path": ".cache/ace16-map-growth-candidates-first-20261027/report.json",
+    "bytes": 14369015,
+    "sha256": "901688a5052f7a9d0d97b1be935c68ba91e4aaffec32fa8ac05cc88afc7bdf2f"
+  },
+  "raw_report_boundary": "Expanded row/key/map arrays, raw streams and immutable exact plans remain ignored. Every created file is retained; public receipt contains compact counts, hashes and boundaries.",
+  "compiled_revision": "ce230b92adb192199ff273300b52b9acc29f3896",
+  "build_receipt": {
+    "path": "docs/testing/results/ace16-map-growth-example-build-2026-10-27.json",
+    "bytes": 51083,
+    "sha256": "1c5bb2157b42b523e10c62634fb7b3c727675ad2b38a17f57004e444237bbd60"
+  },
+  "artifact": {
+    "path": ".cache/tablecraft-bin/ace16-map-growth-20261027",
+    "bytes": 16493264,
+    "sha256": "d09deff8766eb906488ca42c214231a8e3ec0061893049cc185e829fb8166549"
+  },
+  "compiled_source_boundary": "The committed build receipt pins historical Git objects; later mutable worktree files are not treated as compiled source.",
+  "artifact_binding": {
+    "path": ".cache/ace16-map-growth-acceptance-next-20261027/artifact-binding.json",
+    "bytes": 1436,
+    "sha256": "52c8ceeb7651c71062f13bd5df2d3b758f4e64d9f6510505150061830c921193"
+  },
+  "frozen_plan": {
+    "path": ".cache/ace16-map-growth-acceptance-next-20261027/plan.json",
+    "bytes": 116292,
+    "sha256": "48b32bb601b1b5333e6014fc2285905e110a581c3927a4b197e61452c921699f"
+  },
+  "frozen_proof": {
+    "path": ".cache/ace16-map-growth-acceptance-next-20261027/proof.py",
+    "bytes": 5394,
+    "sha256": "d4e913333d557ae03257e96113a426f539a4de92b63efe51c268c9cc14e131e9"
+  },
+  "oracle_input_freeze": {
+    "path": ".cache/ace16-map-growth-acceptance-next-20261027/freeze.json",
+    "bytes": 3812,
+    "sha256": "630240b9f1481674c721f5876df26287e86cfeb9f17677099b91f132cec781ad"
+  },
+  "execution_driver": {
+    "path": ".cache/ace16-map-growth-acceptance-next-20261027/replay.py",
+    "bytes": 11270,
+    "sha256": "0bda02da51751f5546db0a069a2552fcaa2608a7505709784e8b5d7ab9bfcdf5"
+  },
+  "bounded_capture": {
+    "path": ".cache/ace16-map-growth-acceptance-next-20261027/bounded.py",
+    "bytes": 4922,
+    "sha256": "58163694740cf9992a6b2cca3763dc9dfe5420b9fbabc6c82683c03cd23e4e9b"
+  },
+  "runner_input_freeze": {
+    "path": ".cache/ace16-map-growth-acceptance-next-20261027/runner-source-freeze.json",
+    "bytes": 3009,
+    "sha256": "8b539d428f80eaacc2f0ac2aa5d0442cb75afbd58f75b98193d6ef9935673bec"
+  },
+  "executed_source_archives": [
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/001-artifact-binding.json",
+      "bytes": 1436,
+      "sha256": "52c8ceeb7651c71062f13bd5df2d3b758f4e64d9f6510505150061830c921193"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/002-bounded.py",
+      "bytes": 4922,
+      "sha256": "58163694740cf9992a6b2cca3763dc9dfe5420b9fbabc6c82683c03cd23e4e9b"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/003-check.py",
+      "bytes": 2361,
+      "sha256": "e05a08163aae8606674333b63fbbcdc70682157ef07b26bd42d360d7aa7e87fc"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/004-freeze.json",
+      "bytes": 3812,
+      "sha256": "630240b9f1481674c721f5876df26287e86cfeb9f17677099b91f132cec781ad"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/005-plan.json",
+      "bytes": 116292,
+      "sha256": "48b32bb601b1b5333e6014fc2285905e110a581c3927a4b197e61452c921699f"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/006-prepare.py",
+      "bytes": 6442,
+      "sha256": "773efd2f5e89731c1902a3ab294d0f842bcccae5768937dc889fba6c41b49e13"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/007-proof.py",
+      "bytes": 5394,
+      "sha256": "d4e913333d557ae03257e96113a426f539a4de92b63efe51c268c9cc14e131e9"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/008-replay.py",
+      "bytes": 11270,
+      "sha256": "0bda02da51751f5546db0a069a2552fcaa2608a7505709784e8b5d7ab9bfcdf5"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/009-runner-source-freeze.json",
+      "bytes": 3009,
+      "sha256": "8b539d428f80eaacc2f0ac2aa5d0442cb75afbd58f75b98193d6ef9935673bec"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/010-archive-source-manifest.json",
+      "bytes": 452564,
+      "sha256": "6e41adf96d8b364c75c2c8e05be94d9990052cab5890c6e9fc99d9683cf766ed"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/012-freeze.py",
+      "bytes": 4933,
+      "sha256": "2971fb3c66248d5db600f8489639f2eea64f95d7b60d6628ca72d345f6d2af7a"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/019-report.json",
+      "bytes": 20107352,
+      "sha256": "86b4515be7ad4f55167130771d5e02c842caddd3375b6b733728a0eed014d97c"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/020-BoundedFileChannel.java",
+      "bytes": 3952,
+      "sha256": "2191d11f88f3158e83929591acee803553c703e06127839caa7143340f8afd7e"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/022-Database.java",
+      "bytes": 24450,
+      "sha256": "f4234f8b2fd49751f7eff872de59ff6956f5e8491ab1b2a672282a8f353940c3"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/023-DatabaseBuilder.java",
+      "bytes": 14566,
+      "sha256": "2eb4616afb19d7280c9ab487f31002c9feb504cb6b09fc848af9d046f44614dd"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/024-IndexData.java",
+      "bytes": 91887,
+      "sha256": "0551e6eabb46cb15e58e7af87101ac7e372f41d3450ef89c6ca145ebe6deacb0"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/025-IndexPageCache.java",
+      "bytes": 52782,
+      "sha256": "85a6e5121f23890de3abcc02e165129e6e0aa61368501b178a73c83d4b524191"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/026-JetFormat.java",
+      "bytes": 44329,
+      "sha256": "5b624ed983ed8581cfb8e8bd6e72b8d8e32880039c855f3250d5e7418c3af94b"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/027-PageChannel.java",
+      "bytes": 20875,
+      "sha256": "30effc6e29fa0eb01d3609f31759b74e451871fce2775acdecab519d62b2f189"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/028-TableImpl.java",
+      "bytes": 128309,
+      "sha256": "039936524508caccfefb67a006d4bf8e1d61878cedc07c3785dea573b921a7a4"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/029-UsageMap.java",
+      "bytes": 39050,
+      "sha256": "c3c7023a603de962d5fa658576454d533ffe0e8d721ede34ff2702e5e3eff4d1"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/030-UsageMapGrowthProbe.java",
+      "bytes": 17473,
+      "sha256": "fe7cbee6698d53e305bf1547deacee7f06ee1ebdce63e06278ddf7017414a64a"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/031-capture.py",
+      "bytes": 19693,
+      "sha256": "56d16d9bb754a54b8300ac1ab71abff0e25bf2e4a9582006cb4e135deb12ab50"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/032-freeze.json",
+      "bytes": 7976,
+      "sha256": "bfba00216be111667aa195107671cc3cc6a2cea8269e403b5086a9fb9fb14b18"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/033-recipe.json",
+      "bytes": 3007,
+      "sha256": "f6c5266b076dbd1c76a4c104e4d9394b89b4fa1d4b24eb223bdc7760ed9e097d"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/036-capture_delete_trees.py",
+      "bytes": 20353,
+      "sha256": "05f15179d1b4c689e1dd045617335f66b98189fbd12259838cc0ab5da4ebfdb1"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/037-capture.py",
+      "bytes": 31241,
+      "sha256": "8692ae6a51aa176dafce8b82539309576aa9bccc8888bd6cf15e0923a027a2b8"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/038-delete_reference_maps.py",
+      "bytes": 8635,
+      "sha256": "9fca51758e0f26e37dab2e27ff2c41c0e8a7a8110e9a047eda1ccb2a91eadda8"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/039-capture.py",
+      "bytes": 16712,
+      "sha256": "9832f4a15918a0b586bc14c695bba5afb5220a189c658bab7174f6ea8157311e"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/040-model.py",
+      "bytes": 14901,
+      "sha256": "5aa5faae9f5de5e96007ef79e5475f5e78732f6e274dc93279b2c8f26dfc3f0b"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/041-BoundedFileChannel.java",
+      "bytes": 3952,
+      "sha256": "2191d11f88f3158e83929591acee803553c703e06127839caa7143340f8afd7e"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/042-wire.py",
+      "bytes": 15798,
+      "sha256": "556e6663c9fe6fec52e4d0a9f76b171629a29559fd21e85a74d4a6adde5b91f9"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/043-candidate_model.py",
+      "bytes": 10765,
+      "sha256": "96ef7b9532a6ea35acf67c2a4fdeadb3c7409466afaa0d3339bf8900501eace9"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/044-ace16-map-growth-example-build-2026-10-27.json",
+      "bytes": 51083,
+      "sha256": "1c5bb2157b42b523e10c62634fb7b3c727675ad2b38a17f57004e444237bbd60"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/045-common.py",
+      "bytes": 2697,
+      "sha256": "4d6e13158e1c039f1a75bb12828cfa7eaf811e58e06e5e4de0f4c605e1519f8c"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/046-facts.py",
+      "bytes": 8072,
+      "sha256": "1e6b085db3335f29ef5b9bf299cde2a62e863e09698d6efb4c93b76db00dd687"
+    },
+    {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/precall-sources/047-model.py",
+      "bytes": 13057,
+      "sha256": "d5f43e9a07f53a3f05389e39e2dbe8f62b092e19913a3e9af1aabc8030226ef4"
+    }
+  ],
+  "saved_private_verifier": {
+    "path": ".cache/ace16-map-growth-acceptance-next-20261027/verify_saved.py",
+    "bytes": 5839,
+    "sha256": "01f332b5c6e27bd33d05ad8d918bec5cd7401469554c10ed3793cbd13d197c41"
+  },
+  "saved_private_postcheck": {
+    "path": ".cache/ace16-map-growth-acceptance-next-20261027/saved-postcheck.json",
+    "bytes": 837,
+    "sha256": "22a53a3e9b29331880a43e1eb4a0cb72c5fc4e3137f3b8af2de70e8d97d13272"
+  },
+  "saved_private_postcheck_stderr": {
+    "path": ".cache/ace16-map-growth-acceptance-next-20261027/saved-postcheck.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "public_saved_postcheck": {
+    "path": ".cache/ace16-map-growth-acceptance-next-20261027/public-saved-postcheck.json",
+    "bytes": 837,
+    "sha256": "22a53a3e9b29331880a43e1eb4a0cb72c5fc4e3137f3b8af2de70e8d97d13272"
+  },
+  "public_saved_postcheck_stderr": {
+    "path": ".cache/ace16-map-growth-acceptance-next-20261027/public-saved-postcheck.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "public_files": [
+    {
+      "path": "docs/testing/usage_map_growth/candidate_model.py",
+      "bytes": 5394,
+      "sha256": "d4e913333d557ae03257e96113a426f539a4de92b63efe51c268c9cc14e131e9"
+    },
+    {
+      "path": "docs/testing/usage_map_growth/verify_candidates.py",
+      "bytes": 5839,
+      "sha256": "2c62871216cd603e46172390b211eaeb66f518153289428629e85877bbb32afa"
+    },
+    {
+      "path": "docs/testing/INDEX_MAP_GROWTH_UPDATE_OBSERVATIONS.md",
+      "bytes": 4813,
+      "sha256": "6c7d0fcf69c83c44c096003cc466de926a2e5fd736a5010d54d87aa775edfb89"
+    }
+  ],
+  "public_source_identity": {
+    "candidate_model": "Byte-identical to actual executed proof d4e91333; no production serializer or candidate output used to derive expectations.",
+    "verifier": "Later saved-result tool; private source retained. Only repository-root parents[2] to parents[3] differs. It never invokes native/JVM fixtures."
+  },
+  "reference_lineage": {
+    "receipt": {
+      "path": "docs/testing/results/usage-map-growth-observations-2026-10-27.json",
+      "bytes": 8794,
+      "sha256": "7e4fd42e0c62adde54f333989d53abbf9be08cf1c71ec090a1e44ea1df052586"
+    },
+    "scope": "18 earlier reference fixture commands:13source passes, failed V2016 update helper, one saved-copy read-only classification, three corrected V2019 commands. These are not18successful actions. No generation/public UPDATE repeated for acceptance.",
+    "old_MAX_refusals": {
+      "path": ".cache/ace16-map-growth-baseline-first-20261027/report.json",
+      "bytes": 8924,
+      "sha256": "98c6d721f261fe03befa7e59a16096703d87a07a1ced4852cff15560b3f6bf98"
+    },
+    "separate_noop_admissions": {
+      "path": ".cache/ace16-map-growth-noop-first-20261027/report.json",
+      "bytes": 8302,
+      "sha256": "3b59d931bae32b892561d3ec4ff93379cfbc02ce6db11094891f85d5c628081a"
+    },
+    "baseline_boundary": "Two atomic old-artifact MAX refusals and two byte-identical no-op admissions are separate controls, not part of four candidate/getter calls."
+  },
+  "precall_capture_refinement": {
+    "scope": "Unexecuted bounded capture exception cleanup gained bounded reap/join before pinning streams. No fixture call or expectation change preceded this refinement.",
+    "old_runner_freeze": {
+      "path": ".cache/ace16-map-growth-acceptance-next-20261027/before-exception-cleanup/runner-source-freeze.json",
+      "bytes": 3009,
+      "sha256": "d9e6d211ffc024047ba00fcc0720e27ea90408eb1d80a18c5bd9488d9a513463"
+    },
+    "old_bounded_source": {
+      "path": ".cache/ace16-map-growth-acceptance-next-20261027/before-exception-cleanup/bounded.py",
+      "bytes": 4485,
+      "sha256": "10818413e0418cf0409abe631a9d51453a4c13b5b58878e424a1a70d65d7b5f4"
+    }
+  },
+  "cases": [
+    {
+      "id": "V2016-GrowthKeys",
+      "source": {
+        "path": ".cache/ace16-usage-map-growth-first-20261027/originals/V2016-before.accdb",
+        "bytes": 3293184,
+        "sha256": "16b67ad1eca404c9b172edf79c3a4c2d64ff490b0a2f7bd53088a353e11f4272"
+      },
+      "candidate": {
+        "path": ".cache/ace16-map-growth-candidates-first-20261027/V2016-GrowthKeys-candidate.accdb",
+        "bytes": 3305472,
+        "sha256": "f1e8d9b0f9770d89a8226fcbec5e3b25a6cda52f8d43f99f71bea151d53ec63e"
+      },
+      "source_after": {
+        "path": ".cache/ace16-usage-map-growth-first-20261027/originals/V2016-before.accdb",
+        "bytes": 3293184,
+        "sha256": "16b67ad1eca404c9b172edf79c3a4c2d64ff490b0a2f7bd53088a353e11f4272"
+      },
+      "cached_before_getter": {
+        "path": ".cache/ace16-usage-map-growth-first-20261027/V2016-before-inspect.stdout",
+        "bytes": 1039146,
+        "sha256": "de493d9bcb0a911de5b56041e17668644e70047b02b77c7a627eb9e758116fea"
+      },
+      "agrees": true,
+      "request": {
+        "table": "GrowthKeys",
+        "column": "KeyValue",
+        "ordinal": 0,
+        "kind": "int32",
+        "expected": 0,
+        "replacement": 2147483647
+      },
+      "selected_reference": 24320,
+      "selected_field_offset": 393207,
+      "owned_map_range": [
+        372460,
+        372529
+      ],
+      "owned_reference": 23043,
+      "global_edits": [
+        {
+          "offset": 2101352,
+          "before": 240,
+          "after": 128
+        }
+      ],
+      "expected_image": {
+        "whole_image_sha256": "f1e8d9b0f9770d89a8226fcbec5e3b25a6cda52f8d43f99f71bea151d53ec63e",
+        "file_growth": 12288,
+        "index_pages": [
+          804,
+          806
+        ],
+        "metadata_pages": [
+          805
+        ],
+        "root": 92,
+        "root_bound": "7f80000000000061d200000326",
+        "root_tail": 804,
+        "left_prefix": 7,
+        "right_prefix": 1,
+        "left_count": 450,
+        "right_count": 450,
+        "fresh_unused_bytes_zero": true,
+        "root_residue_preserved": true,
+        "owned_map_hex": "012503000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "bitmap_sha256": "ea175c74c93b0c6ad6e6fa2ade73914359327817234700b4852a1b670025463c"
+      },
+      "complete_key_row_stream": {
+        "entries": 900,
+        "bytes": 8100,
+        "sha256": "0a346db450facdbca6cb54701aa108b962257fa4ee033ab67c39baee6ca27253"
+      },
+      "transition": {
+        "existing_prefix_exact_outside_fixed_value_root_map_and_global_cells": true,
+        "source_eof": 804,
+        "appended_index_pages": [
+          804,
+          806
+        ],
+        "appended_bitmap_page": 805,
+        "owned_added": [
+          804,
+          806
+        ],
+        "global_allocated": [
+          804,
+          805,
+          806
+        ],
+        "old_root_retained": 92
+      }
+    },
+    {
+      "id": "V2019-GrowthKeys",
+      "source": {
+        "path": ".cache/ace16-usage-map-growth-first-20261027/originals/V2019-before.accdb",
+        "bytes": 3366912,
+        "sha256": "f676a0704bef73114177356149edff272abffb9c19f21eec29a595d3a230e096"
+      },
+      "candidate": {
+        "path": ".cache/ace16-map-growth-candidates-first-20261027/V2019-GrowthKeys-candidate.accdb",
+        "bytes": 3379200,
+        "sha256": "6f14d117e61c60426c53548580cd36db799664efbb4e804a13fbc8cecafc5b9e"
+      },
+      "source_after": {
+        "path": ".cache/ace16-usage-map-growth-first-20261027/originals/V2019-before.accdb",
+        "bytes": 3366912,
+        "sha256": "f676a0704bef73114177356149edff272abffb9c19f21eec29a595d3a230e096"
+      },
+      "cached_before_getter": {
+        "path": ".cache/ace16-usage-map-growth-first-20261027/V2019-before-inspect.stdout",
+        "bytes": 1042833,
+        "sha256": "6654e02a5d517834eacb7a5d8a50f2adff6bb60bbfd543341eb895f2d2adf449"
+      },
+      "agrees": true,
+      "request": {
+        "table": "GrowthKeys",
+        "column": "KeyValue",
+        "ordinal": 0,
+        "kind": "int32",
+        "expected": 0,
+        "replacement": 2147483647
+      },
+      "selected_reference": 28928,
+      "selected_field_offset": 466935,
+      "owned_map_range": [
+        442092,
+        442161
+      ],
+      "owned_reference": 27395,
+      "global_edits": [
+        {
+          "offset": 2101354,
+          "before": 192,
+          "after": 0
+        },
+        {
+          "offset": 2101355,
+          "before": 255,
+          "after": 254
+        }
+      ],
+      "expected_image": {
+        "whole_image_sha256": "6f14d117e61c60426c53548580cd36db799664efbb4e804a13fbc8cecafc5b9e",
+        "file_growth": 12288,
+        "index_pages": [
+          822,
+          824
+        ],
+        "metadata_pages": [
+          823
+        ],
+        "root": 109,
+        "root_bound": "7f80000000000073d200000338",
+        "root_tail": 822,
+        "left_prefix": 7,
+        "right_prefix": 1,
+        "left_count": 450,
+        "right_count": 450,
+        "fresh_unused_bytes_zero": true,
+        "root_residue_preserved": true,
+        "owned_map_hex": "013703000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "bitmap_sha256": "e7972a4df22ab85328a0c416594a423c21ee05378d0e1d16a1160d4fd83879e9"
+      },
+      "complete_key_row_stream": {
+        "entries": 900,
+        "bytes": 8100,
+        "sha256": "2d0430170e8096eaebe3e28b0856a3101c3f5059681218fbeb8b225345f70fb2"
+      },
+      "transition": {
+        "existing_prefix_exact_outside_fixed_value_root_map_and_global_cells": true,
+        "source_eof": 822,
+        "appended_index_pages": [
+          822,
+          824
+        ],
+        "appended_bitmap_page": 823,
+        "owned_added": [
+          822,
+          824
+        ],
+        "global_allocated": [
+          822,
+          823,
+          824
+        ],
+        "old_root_retained": 109
+      }
+    }
+  ],
+  "commands": [
+    {
+      "label": "V2016-GrowthKeys-native",
+      "argv": [
+        ".cache/tablecraft-bin/ace16-map-growth-20261027",
+        ".cache/ace16-usage-map-growth-first-20261027/originals/V2016-before.accdb",
+        ".cache/ace16-map-growth-candidates-first-20261027/V2016-GrowthKeys-candidate.accdb",
+        "GrowthKeys",
+        "KeyValue",
+        "0",
+        "int32",
+        "0",
+        "2147483647"
+      ],
+      "status": 0,
+      "stopped_for": null,
+      "timeout_seconds": 30,
+      "stream_limit_bytes": 8388608,
+      "observed_stream_bytes": [
+        25,
+        85
+      ],
+      "capture_errors": [],
+      "stdout": {
+        "path": ".cache/ace16-map-growth-candidates-first-20261027/V2016-GrowthKeys-native.stdout",
+        "bytes": 25,
+        "sha256": "6c0d0787710c780f70f807198b638d69620d3c1a5340c100a3bcf81240fec7b8"
+      },
+      "stderr": {
+        "path": ".cache/ace16-map-growth-candidates-first-20261027/V2016-GrowthKeys-native.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "label": "V2016-GrowthKeys-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-usage-map-growth-first-20261027/classes",
+        "UsageMapGrowthProbe",
+        "inspect",
+        ".cache/ace16-map-growth-candidates-first-20261027/V2016-GrowthKeys-candidate.accdb",
+        "after"
+      ],
+      "status": 0,
+      "stopped_for": null,
+      "timeout_seconds": 30,
+      "stream_limit_bytes": 8388608,
+      "observed_stream_bytes": [
+        1039223,
+        0
+      ],
+      "capture_errors": [],
+      "stdout": {
+        "path": ".cache/ace16-map-growth-candidates-first-20261027/V2016-GrowthKeys-inspect.stdout",
+        "bytes": 1039223,
+        "sha256": "6097cdc7afa598a73eb41058744bb5d294a16e21bfc32b63a52a6aafc9ea7c5a"
+      },
+      "stderr": {
+        "path": ".cache/ace16-map-growth-candidates-first-20261027/V2016-GrowthKeys-inspect.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "V2019-GrowthKeys-native",
+      "argv": [
+        ".cache/tablecraft-bin/ace16-map-growth-20261027",
+        ".cache/ace16-usage-map-growth-first-20261027/originals/V2019-before.accdb",
+        ".cache/ace16-map-growth-candidates-first-20261027/V2019-GrowthKeys-candidate.accdb",
+        "GrowthKeys",
+        "KeyValue",
+        "0",
+        "int32",
+        "0",
+        "2147483647"
+      ],
+      "status": 0,
+      "stopped_for": null,
+      "timeout_seconds": 30,
+      "stream_limit_bytes": 8388608,
+      "observed_stream_bytes": [
+        25,
+        85
+      ],
+      "capture_errors": [],
+      "stdout": {
+        "path": ".cache/ace16-map-growth-candidates-first-20261027/V2019-GrowthKeys-native.stdout",
+        "bytes": 25,
+        "sha256": "6c0d0787710c780f70f807198b638d69620d3c1a5340c100a3bcf81240fec7b8"
+      },
+      "stderr": {
+        "path": ".cache/ace16-map-growth-candidates-first-20261027/V2019-GrowthKeys-native.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "label": "V2019-GrowthKeys-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-usage-map-growth-first-20261027/classes",
+        "UsageMapGrowthProbe",
+        "inspect",
+        ".cache/ace16-map-growth-candidates-first-20261027/V2019-GrowthKeys-candidate.accdb",
+        "after"
+      ],
+      "status": 0,
+      "stopped_for": null,
+      "timeout_seconds": 30,
+      "stream_limit_bytes": 8388608,
+      "observed_stream_bytes": [
+        1042914,
+        0
+      ],
+      "capture_errors": [],
+      "stdout": {
+        "path": ".cache/ace16-map-growth-candidates-first-20261027/V2019-GrowthKeys-inspect.stdout",
+        "bytes": 1042914,
+        "sha256": "ee52cfe4887500a1bd3a813973d3e0d3277c6475a5d8ce211722823171aaf5c2"
+      },
+      "stderr": {
+        "path": ".cache/ace16-map-growth-candidates-first-20261027/V2019-GrowthKeys-inspect.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "saved_verification": {
+    "scope": "Saved outcomes/images/getters only; zero native/JVM fixture calls",
+    "raw_report": {
+      "path": ".cache/ace16-map-growth-candidates-first-20261027/report.json",
+      "bytes": 14369015,
+      "sha256": "901688a5052f7a9d0d97b1be935c68ba91e4aaffec32fa8ac05cc88afc7bdf2f"
+    },
+    "attempted_cases": 2,
+    "accepted_cases": 2,
+    "unmet": 0,
+    "saved_commands": 4,
+    "complete_cached_getters": 2,
+    "recursive_live_pin_occurrences": 166,
+    "historical_git_objects": 241,
+    "success": true,
+    "cases": [
+      {
+        "id": "V2016-GrowthKeys",
+        "recorded_agreement": true,
+        "candidate_present": true,
+        "candidate_matches_independent_image": true
+      },
+      {
+        "id": "V2019-GrowthKeys",
+        "recorded_agreement": true,
+        "candidate_present": true,
+        "candidate_matches_independent_image": true
+      }
+    ]
+  },
+  "limits": [
+    "Original-file promotion evidence is Int32 only. Separate Int32 literal tests cover multiple owners, late promotion and represented peers; inherited other-carrier split tests do not establish promotion combinations.",
+    "No map-row resize, additional bitmap span, global bootstrap, in-file reuse or retirement.",
+    "Exact initialized append-purpose proof does not claim health of unrelated foreign payloads.",
+    "No native Access, data-macro, ordinary-save, locking or recovery qualification."
+  ]
+}

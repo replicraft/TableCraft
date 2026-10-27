@@ -256,8 +256,11 @@ rustdoc and formatting. One old unsupported-width regression exposed a changed
 handler error order; recognizing the supported shape before census restored the
 original refusal without changing its test or fixture.
 
-The source-only model for both unchanged public originals is frozen separately;
-new committed-consumer candidate acceptance remains pending. Candidate/ordinary
+The [first committed-consumer replay](testing/INDEX_MAP_GROWTH_UPDATE_OBSERVATIONS.md)
+now passes both unchanged public originals. All four native/getter commands
+succeed, and each candidate matches its pre-execution whole-image expectation,
+including exact pointer/global bytes, protected source residue and fresh padding.
+Both source files and all reviewed input pins remain unchanged. Candidate/ordinary
 map growth, shifted-inline windows, new map containers, global bootstrap, free-page
 reuse, reclamation and native Access saves remain unfinished.
 

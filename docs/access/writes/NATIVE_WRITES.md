@@ -141,8 +141,11 @@ span exceeds its qualified window. It preserves the original map-row extent,
 allocates bitmap metadata separately from index children and independently replays
 all pointer/member/global effects. Earlier represented reservations compose into
 later promotion. Mixed operations bind all mutated reservation owners to the
-original catalog. Every appended page has a checked non-DATA purpose. Original-file
-candidate replay, other map transitions and normal saves remain separate work.
+original catalog. Every appended page has a checked non-DATA purpose. The
+[first two-original replay](../../testing/INDEX_MAP_GROWTH_UPDATE_OBSERVATIONS.md)
+now passes exact pre-frozen images and fresh row/index/map inspections through
+four successful commands. Other map transitions and normal saves remain separate
+work.
 
 The [shared map-authority service](../../testing/ACE16_MAP_AUTHORITY.md) now
 inventories every qualified local catalog owner before granting exclusivity to

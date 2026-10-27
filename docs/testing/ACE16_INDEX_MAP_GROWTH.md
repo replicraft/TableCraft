@@ -79,7 +79,10 @@ consumer MAX refusals are separate baseline evidence.
 The scoped [implementation record](results/ace16-index-map-growth-native-2026-10-27.json)
 records literal whole-image, late-promotion, mixed-owner, role-alias, resource,
 reader-purpose and private finalizer checks, with first failures retained.
-These checks do not establish Microsoft Access native save behavior. Actual
-original-file candidate qualification against a newly committed frozen consumer
-remains a separate step. Ordinary table/LVAL map growth, shifted inline windows,
-larger map records and missing-pointer creation remain unfinished work.
+These checks do not establish Microsoft Access native save behavior. The separate
+[original-file replay](INDEX_MAP_GROWTH_UPDATE_OBSERVATIONS.md) now passes both
+unchanged originals through a newly committed frozen consumer. Each complete
+image matches its pre-execution model and fresh typed row/index/map inspection;
+all four commands pass without retries or changed inputs. Ordinary table/LVAL
+map growth, shifted inline windows, larger map records and missing-pointer
+creation remain unfinished work.
