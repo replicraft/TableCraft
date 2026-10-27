@@ -10000,3 +10000,11 @@ and sixteen bitmap pages. Lower untried hints remain intact; all padding records
 physical counter blocks and protected original bytes pass. These observations
 are independent-writer evidence; native candidates and Microsoft Access
 qualification remain separate.
+
+The [separate native candidate replay](ORDINARY_HINT_CANDIDATE_OBSERVATIONS.md)
+now passes all twelve complete images generated independently before execution,
+then twelve fresh read-only getter proofs. The committed `69443c6a` consumer
+retains all original source/request/model bytes and its frozen budgets. All 24
+first-attempt calls pass, including distinct ordinary candidate and index bitmap
+purposes. These are engineering candidate results, not production saves or
+Microsoft Access conformance.

@@ -75,16 +75,16 @@ before bytes, invalid ranges, exhausted resources and cancellation without a
 partially rewritten ledger.
 
 The [four enlarged source copies](ORDINARY_HINT_GROWTH_SOURCE_OBSERVATIONS.md)
-are separate preparation evidence. They do not yet qualify this implementation
-on original files. Their public UPDATE references and committed-consumer replay
-are separate: the [twelve public-writer cases](ORDINARY_HINT_UPDATE_OBSERVATIONS.md)
-now pass, while native candidate replay remains pending. Native Microsoft Access
-comparison, required data-macro qualification and production saves remain
-unfinished.
+are separate preparation evidence. The [twelve public-writer cases](ORDINARY_HINT_UPDATE_OBSERVATIONS.md)
+and [twelve committed-consumer candidates](ORDINARY_HINT_CANDIDATE_OBSERVATIONS.md)
+now pass in separate phases. Every native image matches its independent byte
+model before a fresh getter; all 24 native/getter commands pass first attempt.
+Native Microsoft Access comparison, required data-macro qualification and
+production saves remain unfinished.
 
 The [isolated consumer build](results/ace16-hint-transition-example-build-2026-10-27.json)
 compiles committed `69443c6a` into a separate frozen example. Its complete export
 contains 4,217 Git-verified files; all remain unchanged after compilation, with
 295 selected source pins recorded separately. The first offline dev build passes
-with explicit debug information disabled. This is build evidence only, with no
-original-file candidate calls or performance qualification.
+with explicit debug information disabled. The build receipt is separate from
+the subsequent candidate replay and establishes no performance qualification.

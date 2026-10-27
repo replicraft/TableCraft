@@ -1,0 +1,1221 @@
+{
+  "date": "2026-10-27",
+  "scope": "Twelve committed-engineering candidates on four unchanged enlarged ACE16 sources. Full image matches precede twelve read-only getter proofs. No normal save or Microsoft Access qualification.",
+  "compiled_revision": "69443c6accdd5b6c3118a5a9a31ba30c0fc4d03b",
+  "artifact": {
+    "path": ".cache/tablecraft-bin/ace16-hint-transition-20261027",
+    "bytes": 16203984,
+    "sha256": "dab3bc46a6ee39cb5f6622215a11dd3c7e8906ed1bf46ba137fba2944fe533bb"
+  },
+  "build_receipt": {
+    "path": "docs/testing/results/ace16-hint-transition-example-build-2026-10-27.json",
+    "bytes": 63259,
+    "sha256": "6ed6bdeaa38f39930592b49da4564fbfe0770a998a7a6e7ff869e6ff02de6a71"
+  },
+  "build_receipt_revision": "fe67cc3adb5d9113bc5247408c8f7d85adafc8da",
+  "build_scope": {
+    "selected_Git_source_objects": 295,
+    "complete_exported_files": 4217,
+    "profile": "Cargo dev with debug=0; no release/optimization override"
+  },
+  "phases": {
+    "native": {
+      "session": 90333,
+      "exit_code": 0,
+      "attempted": 12,
+      "completed": 12,
+      "getter_calls": 0,
+      "raw_report": {
+        "path": ".cache/ace16-hint-transition-acceptance-first-20261027/native/report.json",
+        "bytes": 161322,
+        "sha256": "19ba7d3b97e298e05ca1eec10ca38f5853422434ae195d87bd6256521c57ec96"
+      },
+      "execution_stdout": {
+        "path": ".cache/ace16-hint-transition-acceptance-next-20261027/native-first-execution.stdout",
+        "bytes": 1640,
+        "sha256": "a3f18656a5cc758b294482b5070c0478cb74c636d6120e10c5c62d57e763ad15"
+      },
+      "execution_stderr": {
+        "path": ".cache/ace16-hint-transition-acceptance-next-20261027/native-first-execution.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "input_checks": 64,
+      "output_checks": 12,
+      "retained_artifacts": 100,
+      "inventory_errors": 0
+    },
+    "getters": {
+      "session": 94612,
+      "exit_code": 0,
+      "attempted": 12,
+      "completed": 12,
+      "native_calls": 0,
+      "raw_report": {
+        "path": ".cache/ace16-hint-transition-acceptance-first-20261027/getters/report.json",
+        "bytes": 176637,
+        "sha256": "5c3789172d2a23325c41267e669c0f05774ee8dabdd3e65c012e9171720b900e"
+      },
+      "execution_stdout": {
+        "path": ".cache/ace16-hint-transition-acceptance-next-20261027/getters-first-execution.stdout",
+        "bytes": 1641,
+        "sha256": "c22e9b05628d191084282cb60883be37d6910a95e15253496d0a3d9fb3d7f419"
+      },
+      "execution_stderr": {
+        "path": ".cache/ace16-hint-transition-acceptance-next-20261027/getters-first-execution.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "input_checks": 77,
+      "retained_artifacts": 138,
+      "inventory_errors": 0
+    }
+  },
+  "counts": {
+    "fixture_commands": 24,
+    "native_candidates": 12,
+    "fresh_readonly_getters": 12,
+    "complete_image_matches_before_any_getter": 12,
+    "fresh_getter_proofs": 12,
+    "retries": 0,
+    "public_updates": 0,
+    "source_regenerations": 0,
+    "typed_rows_checked": 38916,
+    "logical_entries_including_aliases": 129612,
+    "physical_tree_instances_checked": 120,
+    "original_prefix_bytes_checked": 34603008,
+    "new_DATA_pages": 12,
+    "new_index_pages": 72,
+    "new_index_bitmap_pages": 12,
+    "new_candidate_bitmap_pages": 4,
+    "new_pages": 100,
+    "growth_bytes": 409600,
+    "hint_inline_rebases": 8,
+    "hint_promotions": 4,
+    "index_owned_promotions": 12,
+    "index_owned_represented_instances": 12,
+    "index_rebase_witnesses": 0,
+    "semantic_noop_cases": 0,
+    "requests_per_case": 1
+  },
+  "limits": {
+    "native_bytes": 268435456,
+    "native_rows": 100000,
+    "native_steps": 100000000,
+    "request_file_bytes": 16777216,
+    "request_rows": 4096,
+    "request_value_bytes": 1024,
+    "database_bytes": 8388608,
+    "timeout_seconds": 30,
+    "stream_bytes": 16777216,
+    "JVM_heap_mib": 512
+  },
+  "phase_limits": {
+    "native": 12,
+    "getters": 12,
+    "maximum_total_fixture_calls": 24
+  },
+  "runner": {
+    "freeze": {
+      "path": ".cache/ace16-hint-transition-acceptance-next-20261027/freeze.json",
+      "bytes": 13718,
+      "sha256": "c2367630828e938c6a424d6e3b7efbb77e2f28b8145dfba33126620b3a26cdb9"
+    },
+    "protocol": {
+      "path": ".cache/ace16-hint-transition-acceptance-next-20261027/protocol.json",
+      "bytes": 33389,
+      "sha256": "9c747ef64791eac8e7f2e878b4c5a3c657a6172d9feb0980f23cf16f3219f677"
+    },
+    "source": {
+      "path": ".cache/ace16-hint-transition-acceptance-next-20261027/replay.py",
+      "bytes": 15129,
+      "sha256": "24f3727a33b964ef1c4c82767f555b1d3c554aee25fe21d18a948f17a3bca833"
+    },
+    "bounded_transport": {
+      "path": ".cache/ace16-hint-transition-acceptance-next-20261027/bounded.py",
+      "bytes": 5401,
+      "sha256": "6bf97834287fe48d0c8f911cb708a687829f48701d47a3858958255fbc28325c"
+    }
+  },
+  "models": {
+    "first_expected_image_computation": {
+      "path": ".cache/ace16-hint-transition-model-next-20261027/first-model-attempt.json",
+      "bytes": 221978,
+      "sha256": "eefd1631bb9b2737fba16e49d76774f6b9e893660dca4f1ab2ebcfa743e455fe"
+    },
+    "candidate_model": {
+      "path": ".cache/ace16-hint-transition-model-next-20261027/candidate_model.py",
+      "bytes": 13043,
+      "sha256": "1da25424ff2b259866b652d3f50c9e17f3c79f44554087c4cf70d817954c829a"
+    },
+    "allocation_model": {
+      "path": ".cache/ace16-hint-transition-model-next-20261027/allocation_model.py",
+      "bytes": 6373,
+      "sha256": "68bbbeb0f27399318a7838d4a6bee2a84f23867340d5c4a04f77de1c410f552f"
+    },
+    "old_cohort_six_unchanged_hashes": {
+      "path": ".cache/ace16-hint-transition-model-next-20261027/old-cohort-regression.json",
+      "bytes": 721,
+      "sha256": "cf9aa98d8e65ab844e8ab3d29ea5b7c8548cc2ac5277abaac7f87c006fb81c4c"
+    }
+  },
+  "case_results": [
+    {
+      "id": "V2016-padding384-TextLegacy",
+      "source": {
+        "path": ".cache/ace16-ordinary-hint-growth-sources-first-20261027/V2016-padding384.accdb",
+        "bytes": 2199552,
+        "sha256": "f827703094960ea70f6c03c03c1fcd936b049b50b8488ca04f5cb49a7fe5baac"
+      },
+      "request": {
+        "path": ".cache/ace16-variable-encoded-acceptance-next-20261027/requests/V2016-TextLegacy.tsv",
+        "bytes": 272,
+        "sha256": "278bc10d7f0954ae507bde917c1e3cd75504aa3eca2fa2406365ab8e8d35f9a8"
+      },
+      "expected": {
+        "path": ".cache/ace16-hint-transition-model-next-20261027/V2016-padding384-TextLegacy-expected.bin",
+        "bytes": 2228224,
+        "sha256": "f519ead5c91d189b3fc7645d5b1f6aea011ee85c0356b5e59604e31678bfc99c"
+      },
+      "candidate": {
+        "path": ".cache/ace16-hint-transition-acceptance-first-20261027/V2016-padding384-TextLegacy-candidate.accdb",
+        "bytes": 2228224,
+        "sha256": "f519ead5c91d189b3fc7645d5b1f6aea011ee85c0356b5e59604e31678bfc99c"
+      },
+      "fresh_getter_facts": {
+        "path": ".cache/ace16-hint-transition-acceptance-first-20261027/getters/V2016-padding384-TextLegacy-facts.json",
+        "bytes": 11498621,
+        "sha256": "17791d4ff1de0fb5bda141d9dcf1de8c743201e21b9dc7ec83dcef49c07251a0"
+      },
+      "whole_image_match_before_getter": true,
+      "complete_original_prefix_bytes_checked": 2199552,
+      "typed_suffix_purposes": [
+        {
+          "page": 537,
+          "kind": "DATA",
+          "definition": 89
+        },
+        {
+          "page": 538,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 23043
+        },
+        {
+          "page": 539,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 23043
+        },
+        {
+          "page": 540,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 23043
+        },
+        {
+          "page": 541,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 23044
+        },
+        {
+          "page": 542,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 23044
+        },
+        {
+          "page": 543,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 23044
+        }
+      ]
+    },
+    {
+      "id": "V2016-padding384-TextModern",
+      "source": {
+        "path": ".cache/ace16-ordinary-hint-growth-sources-first-20261027/V2016-padding384.accdb",
+        "bytes": 2199552,
+        "sha256": "f827703094960ea70f6c03c03c1fcd936b049b50b8488ca04f5cb49a7fe5baac"
+      },
+      "request": {
+        "path": ".cache/ace16-variable-encoded-acceptance-next-20261027/requests/V2016-TextModern.tsv",
+        "bytes": 272,
+        "sha256": "278bc10d7f0954ae507bde917c1e3cd75504aa3eca2fa2406365ab8e8d35f9a8"
+      },
+      "expected": {
+        "path": ".cache/ace16-hint-transition-model-next-20261027/V2016-padding384-TextModern-expected.bin",
+        "bytes": 2228224,
+        "sha256": "7b17fca6b8935eac6da0d13559332b3d3eed9009dcc5cf46ac95a6a9b9906bc1"
+      },
+      "candidate": {
+        "path": ".cache/ace16-hint-transition-acceptance-first-20261027/V2016-padding384-TextModern-candidate.accdb",
+        "bytes": 2228224,
+        "sha256": "7b17fca6b8935eac6da0d13559332b3d3eed9009dcc5cf46ac95a6a9b9906bc1"
+      },
+      "fresh_getter_facts": {
+        "path": ".cache/ace16-hint-transition-acceptance-first-20261027/getters/V2016-padding384-TextModern-facts.json",
+        "bytes": 11498637,
+        "sha256": "db09e04b34a45d609ef9d604cdcf98bc81aa98cadcb1931ede4ce633541496f4"
+      },
+      "whole_image_match_before_getter": true,
+      "complete_original_prefix_bytes_checked": 2199552,
+      "typed_suffix_purposes": [
+        {
+          "page": 537,
+          "kind": "DATA",
+          "definition": 107
+        },
+        {
+          "page": 538,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 27651
+        },
+        {
+          "page": 539,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 27651
+        },
+        {
+          "page": 540,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 27651
+        },
+        {
+          "page": 541,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 27652
+        },
+        {
+          "page": 542,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 27652
+        },
+        {
+          "page": 543,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 27652
+        }
+      ]
+    },
+    {
+      "id": "V2016-padding384-BinaryOne",
+      "source": {
+        "path": ".cache/ace16-ordinary-hint-growth-sources-first-20261027/V2016-padding384.accdb",
+        "bytes": 2199552,
+        "sha256": "f827703094960ea70f6c03c03c1fcd936b049b50b8488ca04f5cb49a7fe5baac"
+      },
+      "request": {
+        "path": ".cache/ace16-variable-encoded-acceptance-next-20261027/requests/V2016-BinaryOne.tsv",
+        "bytes": 530,
+        "sha256": "2ed7549148bfe86de1678a73b310eb2d367f7603e111b7b5c79a43da53fbed06"
+      },
+      "expected": {
+        "path": ".cache/ace16-hint-transition-model-next-20261027/V2016-padding384-BinaryOne-expected.bin",
+        "bytes": 2228224,
+        "sha256": "1a645f692b555a2212f9cad52e4ed09bc420fa9c2558628da270ee248bd53d25"
+      },
+      "candidate": {
+        "path": ".cache/ace16-hint-transition-acceptance-first-20261027/V2016-padding384-BinaryOne-candidate.accdb",
+        "bytes": 2228224,
+        "sha256": "1a645f692b555a2212f9cad52e4ed09bc420fa9c2558628da270ee248bd53d25"
+      },
+      "fresh_getter_facts": {
+        "path": ".cache/ace16-hint-transition-acceptance-first-20261027/getters/V2016-padding384-BinaryOne-facts.json",
+        "bytes": 11497129,
+        "sha256": "73af36661aef8fd893158bcbf14cbad165642f823da7982b0eebd97e25adb658"
+      },
+      "whole_image_match_before_getter": true,
+      "complete_original_prefix_bytes_checked": 2199552,
+      "typed_suffix_purposes": [
+        {
+          "page": 537,
+          "kind": "DATA",
+          "definition": 125
+        },
+        {
+          "page": 538,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 32259
+        },
+        {
+          "page": 539,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 32259
+        },
+        {
+          "page": 540,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 32259
+        },
+        {
+          "page": 541,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 32260
+        },
+        {
+          "page": 542,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 32260
+        },
+        {
+          "page": 543,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 32260
+        }
+      ]
+    },
+    {
+      "id": "V2016-padding700-TextLegacy",
+      "source": {
+        "path": ".cache/ace16-ordinary-hint-growth-sources-first-20261027/V2016-padding700.accdb",
+        "bytes": 3493888,
+        "sha256": "239c6987531a878f2c0ed6ddc5f50403070c24ee5a297197407e7d792ce662a6"
+      },
+      "request": {
+        "path": ".cache/ace16-variable-encoded-acceptance-next-20261027/requests/V2016-TextLegacy.tsv",
+        "bytes": 272,
+        "sha256": "278bc10d7f0954ae507bde917c1e3cd75504aa3eca2fa2406365ab8e8d35f9a8"
+      },
+      "expected": {
+        "path": ".cache/ace16-hint-transition-model-next-20261027/V2016-padding700-TextLegacy-expected.bin",
+        "bytes": 3530752,
+        "sha256": "5865424ea838863c9ef828166f1702f89e0cf446ecc4ef379cb5be52dd67b110"
+      },
+      "candidate": {
+        "path": ".cache/ace16-hint-transition-acceptance-first-20261027/V2016-padding700-TextLegacy-candidate.accdb",
+        "bytes": 3530752,
+        "sha256": "5865424ea838863c9ef828166f1702f89e0cf446ecc4ef379cb5be52dd67b110"
+      },
+      "fresh_getter_facts": {
+        "path": ".cache/ace16-hint-transition-acceptance-first-20261027/getters/V2016-padding700-TextLegacy-facts.json",
+        "bytes": 16219105,
+        "sha256": "5f35be536e76b7fb032906df101bc4dbd55667325af55d5916291edbdd0bb728"
+      },
+      "whole_image_match_before_getter": true,
+      "complete_original_prefix_bytes_checked": 3493888,
+      "typed_suffix_purposes": [
+        {
+          "page": 853,
+          "kind": "DATA",
+          "definition": 89
+        },
+        {
+          "page": 854,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 23043
+        },
+        {
+          "page": 855,
+          "kind": "INDEX_BITMAP",
+          "physical": 1,
+          "usage": 23043
+        },
+        {
+          "page": 856,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 23043
+        },
+        {
+          "page": 857,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 23043
+        },
+        {
+          "page": 858,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 23044
+        },
+        {
+          "page": 859,
+          "kind": "INDEX_BITMAP",
+          "physical": 2,
+          "usage": 23044
+        },
+        {
+          "page": 860,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 23044
+        },
+        {
+          "page": 861,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 23044
+        }
+      ]
+    },
+    {
+      "id": "V2016-padding700-TextModern",
+      "source": {
+        "path": ".cache/ace16-ordinary-hint-growth-sources-first-20261027/V2016-padding700.accdb",
+        "bytes": 3493888,
+        "sha256": "239c6987531a878f2c0ed6ddc5f50403070c24ee5a297197407e7d792ce662a6"
+      },
+      "request": {
+        "path": ".cache/ace16-variable-encoded-acceptance-next-20261027/requests/V2016-TextModern.tsv",
+        "bytes": 272,
+        "sha256": "278bc10d7f0954ae507bde917c1e3cd75504aa3eca2fa2406365ab8e8d35f9a8"
+      },
+      "expected": {
+        "path": ".cache/ace16-hint-transition-model-next-20261027/V2016-padding700-TextModern-expected.bin",
+        "bytes": 3534848,
+        "sha256": "270680947265539886694287c006fe27c8541653d7a13ac8f2da1df6413e09ee"
+      },
+      "candidate": {
+        "path": ".cache/ace16-hint-transition-acceptance-first-20261027/V2016-padding700-TextModern-candidate.accdb",
+        "bytes": 3534848,
+        "sha256": "270680947265539886694287c006fe27c8541653d7a13ac8f2da1df6413e09ee"
+      },
+      "fresh_getter_facts": {
+        "path": ".cache/ace16-hint-transition-acceptance-first-20261027/getters/V2016-padding700-TextModern-facts.json",
+        "bytes": 16219385,
+        "sha256": "4e080233df74c566cf7dfc75d5bea629cb2b6d4147404a16c580263715691d67"
+      },
+      "whole_image_match_before_getter": true,
+      "complete_original_prefix_bytes_checked": 3493888,
+      "typed_suffix_purposes": [
+        {
+          "page": 853,
+          "kind": "DATA",
+          "definition": 107
+        },
+        {
+          "page": 854,
+          "kind": "CANDIDATE_BITMAP",
+          "definition": 107
+        },
+        {
+          "page": 855,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 27651
+        },
+        {
+          "page": 856,
+          "kind": "INDEX_BITMAP",
+          "physical": 1,
+          "usage": 27651
+        },
+        {
+          "page": 857,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 27651
+        },
+        {
+          "page": 858,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 27651
+        },
+        {
+          "page": 859,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 27652
+        },
+        {
+          "page": 860,
+          "kind": "INDEX_BITMAP",
+          "physical": 2,
+          "usage": 27652
+        },
+        {
+          "page": 861,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 27652
+        },
+        {
+          "page": 862,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 27652
+        }
+      ]
+    },
+    {
+      "id": "V2016-padding700-BinaryOne",
+      "source": {
+        "path": ".cache/ace16-ordinary-hint-growth-sources-first-20261027/V2016-padding700.accdb",
+        "bytes": 3493888,
+        "sha256": "239c6987531a878f2c0ed6ddc5f50403070c24ee5a297197407e7d792ce662a6"
+      },
+      "request": {
+        "path": ".cache/ace16-variable-encoded-acceptance-next-20261027/requests/V2016-BinaryOne.tsv",
+        "bytes": 530,
+        "sha256": "2ed7549148bfe86de1678a73b310eb2d367f7603e111b7b5c79a43da53fbed06"
+      },
+      "expected": {
+        "path": ".cache/ace16-hint-transition-model-next-20261027/V2016-padding700-BinaryOne-expected.bin",
+        "bytes": 3534848,
+        "sha256": "5829fa870ea03940d824050da48966e8bbe48c7e45172f3fc79e610b7ab4fd53"
+      },
+      "candidate": {
+        "path": ".cache/ace16-hint-transition-acceptance-first-20261027/V2016-padding700-BinaryOne-candidate.accdb",
+        "bytes": 3534848,
+        "sha256": "5829fa870ea03940d824050da48966e8bbe48c7e45172f3fc79e610b7ab4fd53"
+      },
+      "fresh_getter_facts": {
+        "path": ".cache/ace16-hint-transition-acceptance-first-20261027/getters/V2016-padding700-BinaryOne-facts.json",
+        "bytes": 16217874,
+        "sha256": "98ade47d47b1cd939516d8d5286f40c7173b0b80d1a6e164b0612226b77acd9e"
+      },
+      "whole_image_match_before_getter": true,
+      "complete_original_prefix_bytes_checked": 3493888,
+      "typed_suffix_purposes": [
+        {
+          "page": 853,
+          "kind": "DATA",
+          "definition": 125
+        },
+        {
+          "page": 854,
+          "kind": "CANDIDATE_BITMAP",
+          "definition": 125
+        },
+        {
+          "page": 855,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 32259
+        },
+        {
+          "page": 856,
+          "kind": "INDEX_BITMAP",
+          "physical": 1,
+          "usage": 32259
+        },
+        {
+          "page": 857,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 32259
+        },
+        {
+          "page": 858,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 32259
+        },
+        {
+          "page": 859,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 32260
+        },
+        {
+          "page": 860,
+          "kind": "INDEX_BITMAP",
+          "physical": 2,
+          "usage": 32260
+        },
+        {
+          "page": 861,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 32260
+        },
+        {
+          "page": 862,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 32260
+        }
+      ]
+    },
+    {
+      "id": "V2019-padding384-TextLegacy",
+      "source": {
+        "path": ".cache/ace16-ordinary-hint-growth-sources-first-20261027/V2019-padding384.accdb",
+        "bytes": 2273280,
+        "sha256": "c2c05bdd1918690df58fa29a861e8c41269c02e280ee7cf65e410354d9b54eeb"
+      },
+      "request": {
+        "path": ".cache/ace16-variable-encoded-acceptance-next-20261027/requests/V2019-TextLegacy.tsv",
+        "bytes": 272,
+        "sha256": "278bc10d7f0954ae507bde917c1e3cd75504aa3eca2fa2406365ab8e8d35f9a8"
+      },
+      "expected": {
+        "path": ".cache/ace16-hint-transition-model-next-20261027/V2019-padding384-TextLegacy-expected.bin",
+        "bytes": 2301952,
+        "sha256": "325da50b1c6de9360016ee37543668393d28d9a615ecd5825368c0224bb0832d"
+      },
+      "candidate": {
+        "path": ".cache/ace16-hint-transition-acceptance-first-20261027/V2019-padding384-TextLegacy-candidate.accdb",
+        "bytes": 2301952,
+        "sha256": "325da50b1c6de9360016ee37543668393d28d9a615ecd5825368c0224bb0832d"
+      },
+      "fresh_getter_facts": {
+        "path": ".cache/ace16-hint-transition-acceptance-first-20261027/getters/V2019-padding384-TextLegacy-facts.json",
+        "bytes": 11498871,
+        "sha256": "74b4a31119547ad77c525769267e731f8b554c261ee890f834fb07b68af3b32e"
+      },
+      "whole_image_match_before_getter": true,
+      "complete_original_prefix_bytes_checked": 2273280,
+      "typed_suffix_purposes": [
+        {
+          "page": 555,
+          "kind": "DATA",
+          "definition": 106
+        },
+        {
+          "page": 556,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 27395
+        },
+        {
+          "page": 557,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 27395
+        },
+        {
+          "page": 558,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 27395
+        },
+        {
+          "page": 559,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 27396
+        },
+        {
+          "page": 560,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 27396
+        },
+        {
+          "page": 561,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 27396
+        }
+      ]
+    },
+    {
+      "id": "V2019-padding384-TextModern",
+      "source": {
+        "path": ".cache/ace16-ordinary-hint-growth-sources-first-20261027/V2019-padding384.accdb",
+        "bytes": 2273280,
+        "sha256": "c2c05bdd1918690df58fa29a861e8c41269c02e280ee7cf65e410354d9b54eeb"
+      },
+      "request": {
+        "path": ".cache/ace16-variable-encoded-acceptance-next-20261027/requests/V2019-TextModern.tsv",
+        "bytes": 272,
+        "sha256": "278bc10d7f0954ae507bde917c1e3cd75504aa3eca2fa2406365ab8e8d35f9a8"
+      },
+      "expected": {
+        "path": ".cache/ace16-hint-transition-model-next-20261027/V2019-padding384-TextModern-expected.bin",
+        "bytes": 2301952,
+        "sha256": "c2303142bbb0a1470c9a926891e49542985db9e82bef6a3a38fc6080d90a8437"
+      },
+      "candidate": {
+        "path": ".cache/ace16-hint-transition-acceptance-first-20261027/V2019-padding384-TextModern-candidate.accdb",
+        "bytes": 2301952,
+        "sha256": "c2303142bbb0a1470c9a926891e49542985db9e82bef6a3a38fc6080d90a8437"
+      },
+      "fresh_getter_facts": {
+        "path": ".cache/ace16-hint-transition-acceptance-first-20261027/getters/V2019-padding384-TextModern-facts.json",
+        "bytes": 11498871,
+        "sha256": "f1814ca6d1d01f7e70e1f663218b615bdea8a6eb5cfb17fd34ee68e2052f01fc"
+      },
+      "whole_image_match_before_getter": true,
+      "complete_original_prefix_bytes_checked": 2273280,
+      "typed_suffix_purposes": [
+        {
+          "page": 555,
+          "kind": "DATA",
+          "definition": 124
+        },
+        {
+          "page": 556,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 32003
+        },
+        {
+          "page": 557,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 32003
+        },
+        {
+          "page": 558,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 32003
+        },
+        {
+          "page": 559,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 32004
+        },
+        {
+          "page": 560,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 32004
+        },
+        {
+          "page": 561,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 32004
+        }
+      ]
+    },
+    {
+      "id": "V2019-padding384-BinaryOne",
+      "source": {
+        "path": ".cache/ace16-ordinary-hint-growth-sources-first-20261027/V2019-padding384.accdb",
+        "bytes": 2273280,
+        "sha256": "c2c05bdd1918690df58fa29a861e8c41269c02e280ee7cf65e410354d9b54eeb"
+      },
+      "request": {
+        "path": ".cache/ace16-variable-encoded-acceptance-next-20261027/requests/V2019-BinaryOne.tsv",
+        "bytes": 530,
+        "sha256": "2ed7549148bfe86de1678a73b310eb2d367f7603e111b7b5c79a43da53fbed06"
+      },
+      "expected": {
+        "path": ".cache/ace16-hint-transition-model-next-20261027/V2019-padding384-BinaryOne-expected.bin",
+        "bytes": 2301952,
+        "sha256": "a3cf678eb34ec89a9763b85f124e6a53f35773fb6b1b5a7074178ba761b5ba99"
+      },
+      "candidate": {
+        "path": ".cache/ace16-hint-transition-acceptance-first-20261027/V2019-padding384-BinaryOne-candidate.accdb",
+        "bytes": 2301952,
+        "sha256": "a3cf678eb34ec89a9763b85f124e6a53f35773fb6b1b5a7074178ba761b5ba99"
+      },
+      "fresh_getter_facts": {
+        "path": ".cache/ace16-hint-transition-acceptance-first-20261027/getters/V2019-padding384-BinaryOne-facts.json",
+        "bytes": 11497363,
+        "sha256": "54ca30109d68fc99b7d6878341faab46897c3e3fc0225dd3b57d9204db0426c8"
+      },
+      "whole_image_match_before_getter": true,
+      "complete_original_prefix_bytes_checked": 2273280,
+      "typed_suffix_purposes": [
+        {
+          "page": 555,
+          "kind": "DATA",
+          "definition": 142
+        },
+        {
+          "page": 556,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 36611
+        },
+        {
+          "page": 557,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 36611
+        },
+        {
+          "page": 558,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 36611
+        },
+        {
+          "page": 559,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 36612
+        },
+        {
+          "page": 560,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 36612
+        },
+        {
+          "page": 561,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 36612
+        }
+      ]
+    },
+    {
+      "id": "V2019-padding700-TextLegacy",
+      "source": {
+        "path": ".cache/ace16-ordinary-hint-growth-sources-first-20261027/V2019-padding700.accdb",
+        "bytes": 3567616,
+        "sha256": "457870f9f628fb6a5ef5c305f6d50298d7dfe2276d73f6999b7f02b12e0285a1"
+      },
+      "request": {
+        "path": ".cache/ace16-variable-encoded-acceptance-next-20261027/requests/V2019-TextLegacy.tsv",
+        "bytes": 272,
+        "sha256": "278bc10d7f0954ae507bde917c1e3cd75504aa3eca2fa2406365ab8e8d35f9a8"
+      },
+      "expected": {
+        "path": ".cache/ace16-hint-transition-model-next-20261027/V2019-padding700-TextLegacy-expected.bin",
+        "bytes": 3604480,
+        "sha256": "65ff21c5f05f97468d23afa90c431ea4258a758f956b66018de3c0c17352d671"
+      },
+      "candidate": {
+        "path": ".cache/ace16-hint-transition-acceptance-first-20261027/V2019-padding700-TextLegacy-candidate.accdb",
+        "bytes": 3604480,
+        "sha256": "65ff21c5f05f97468d23afa90c431ea4258a758f956b66018de3c0c17352d671"
+      },
+      "fresh_getter_facts": {
+        "path": ".cache/ace16-hint-transition-acceptance-first-20261027/getters/V2019-padding700-TextLegacy-facts.json",
+        "bytes": 16219345,
+        "sha256": "0dfbd885bd48281686dfab394db1453bddbb019b839fbd46dc4647f228df2f51"
+      },
+      "whole_image_match_before_getter": true,
+      "complete_original_prefix_bytes_checked": 3567616,
+      "typed_suffix_purposes": [
+        {
+          "page": 871,
+          "kind": "DATA",
+          "definition": 106
+        },
+        {
+          "page": 872,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 27395
+        },
+        {
+          "page": 873,
+          "kind": "INDEX_BITMAP",
+          "physical": 1,
+          "usage": 27395
+        },
+        {
+          "page": 874,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 27395
+        },
+        {
+          "page": 875,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 27395
+        },
+        {
+          "page": 876,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 27396
+        },
+        {
+          "page": 877,
+          "kind": "INDEX_BITMAP",
+          "physical": 2,
+          "usage": 27396
+        },
+        {
+          "page": 878,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 27396
+        },
+        {
+          "page": 879,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 27396
+        }
+      ]
+    },
+    {
+      "id": "V2019-padding700-TextModern",
+      "source": {
+        "path": ".cache/ace16-ordinary-hint-growth-sources-first-20261027/V2019-padding700.accdb",
+        "bytes": 3567616,
+        "sha256": "457870f9f628fb6a5ef5c305f6d50298d7dfe2276d73f6999b7f02b12e0285a1"
+      },
+      "request": {
+        "path": ".cache/ace16-variable-encoded-acceptance-next-20261027/requests/V2019-TextModern.tsv",
+        "bytes": 272,
+        "sha256": "278bc10d7f0954ae507bde917c1e3cd75504aa3eca2fa2406365ab8e8d35f9a8"
+      },
+      "expected": {
+        "path": ".cache/ace16-hint-transition-model-next-20261027/V2019-padding700-TextModern-expected.bin",
+        "bytes": 3608576,
+        "sha256": "38dcf66904c109b4eb8eed4d8e7b22cd5b93428a6ba4d14bfd5c7edb20134d69"
+      },
+      "candidate": {
+        "path": ".cache/ace16-hint-transition-acceptance-first-20261027/V2019-padding700-TextModern-candidate.accdb",
+        "bytes": 3608576,
+        "sha256": "38dcf66904c109b4eb8eed4d8e7b22cd5b93428a6ba4d14bfd5c7edb20134d69"
+      },
+      "fresh_getter_facts": {
+        "path": ".cache/ace16-hint-transition-acceptance-first-20261027/getters/V2019-padding700-TextModern-facts.json",
+        "bytes": 16219619,
+        "sha256": "135f6094bcc356c61f537d838db411269d497799a249af68fafb4e95e132e59f"
+      },
+      "whole_image_match_before_getter": true,
+      "complete_original_prefix_bytes_checked": 3567616,
+      "typed_suffix_purposes": [
+        {
+          "page": 871,
+          "kind": "DATA",
+          "definition": 124
+        },
+        {
+          "page": 872,
+          "kind": "CANDIDATE_BITMAP",
+          "definition": 124
+        },
+        {
+          "page": 873,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 32003
+        },
+        {
+          "page": 874,
+          "kind": "INDEX_BITMAP",
+          "physical": 1,
+          "usage": 32003
+        },
+        {
+          "page": 875,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 32003
+        },
+        {
+          "page": 876,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 32003
+        },
+        {
+          "page": 877,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 32004
+        },
+        {
+          "page": 878,
+          "kind": "INDEX_BITMAP",
+          "physical": 2,
+          "usage": 32004
+        },
+        {
+          "page": 879,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 32004
+        },
+        {
+          "page": 880,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 32004
+        }
+      ]
+    },
+    {
+      "id": "V2019-padding700-BinaryOne",
+      "source": {
+        "path": ".cache/ace16-ordinary-hint-growth-sources-first-20261027/V2019-padding700.accdb",
+        "bytes": 3567616,
+        "sha256": "457870f9f628fb6a5ef5c305f6d50298d7dfe2276d73f6999b7f02b12e0285a1"
+      },
+      "request": {
+        "path": ".cache/ace16-variable-encoded-acceptance-next-20261027/requests/V2019-BinaryOne.tsv",
+        "bytes": 530,
+        "sha256": "2ed7549148bfe86de1678a73b310eb2d367f7603e111b7b5c79a43da53fbed06"
+      },
+      "expected": {
+        "path": ".cache/ace16-hint-transition-model-next-20261027/V2019-padding700-BinaryOne-expected.bin",
+        "bytes": 3608576,
+        "sha256": "090e9a37112dd150920f50c322c61c204d9327a8f2314eae6b896c71b58595b3"
+      },
+      "candidate": {
+        "path": ".cache/ace16-hint-transition-acceptance-first-20261027/V2019-padding700-BinaryOne-candidate.accdb",
+        "bytes": 3608576,
+        "sha256": "090e9a37112dd150920f50c322c61c204d9327a8f2314eae6b896c71b58595b3"
+      },
+      "fresh_getter_facts": {
+        "path": ".cache/ace16-hint-transition-acceptance-first-20261027/getters/V2019-padding700-BinaryOne-facts.json",
+        "bytes": 16218108,
+        "sha256": "2138587d3c81a0ad690b5814df935e1a81ae2352eb71015f6badad9876816a64"
+      },
+      "whole_image_match_before_getter": true,
+      "complete_original_prefix_bytes_checked": 3567616,
+      "typed_suffix_purposes": [
+        {
+          "page": 871,
+          "kind": "DATA",
+          "definition": 142
+        },
+        {
+          "page": 872,
+          "kind": "CANDIDATE_BITMAP",
+          "definition": 142
+        },
+        {
+          "page": 873,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 36611
+        },
+        {
+          "page": 874,
+          "kind": "INDEX_BITMAP",
+          "physical": 1,
+          "usage": 36611
+        },
+        {
+          "page": 875,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 36611
+        },
+        {
+          "page": 876,
+          "kind": "INDEX",
+          "physical": 1,
+          "usage": 36611
+        },
+        {
+          "page": 877,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 36612
+        },
+        {
+          "page": 878,
+          "kind": "INDEX_BITMAP",
+          "physical": 2,
+          "usage": 36612
+        },
+        {
+          "page": 879,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 36612
+        },
+        {
+          "page": 880,
+          "kind": "INDEX",
+          "physical": 2,
+          "usage": 36612
+        }
+      ]
+    }
+  ],
+  "reference_tool_binding": {
+    "freeze": {
+      "path": ".cache/ace16-ordinary-hint-reference-next-20261027/freeze.json",
+      "bytes": 25880,
+      "sha256": "be7063ee7d2ea0a2aaa1448a77f6aa0a483d8c5feb8d716b0843fe5c63a67c94"
+    },
+    "successful_public_update_report": {
+      "path": ".cache/ace16-ordinary-hint-reference-first-20261027/updates/report.json",
+      "bytes": 111249,
+      "sha256": "9feb967e798c7595e00846e9fee691ffdd2abf0da8f7853ee25b93cd5bc1b4ab"
+    },
+    "successful_public_getter_report": {
+      "path": ".cache/ace16-ordinary-hint-reference-first-20261027/inspect/report.json",
+      "bytes": 109673,
+      "sha256": "b1a5a1e021d0677bfdaa7b7f6b1a44217fda0f4064c1dec90587b253fd7234e9"
+    },
+    "classes": [
+      {
+        "path": ".cache/ace16-ordinary-hint-reference-first-20261027/classes/BoundedFileChannel.class",
+        "bytes": 3080,
+        "sha256": "608c31190c2bcbc9582fd0332813b8697820604b208b9d17c7b1548791c3916b"
+      },
+      {
+        "path": ".cache/ace16-ordinary-hint-reference-first-20261027/classes/OrdinaryHintReferenceProbe.class",
+        "bytes": 19831,
+        "sha256": "05c0c978ff936eaa83895a82e6bc251ff3cf0467c56529fd973b64e200166435"
+      }
+    ],
+    "scope": "Only established read-only classes/parser/proofs are reused; public after bytes do not define candidate images."
+  },
+  "post_terminal_check": {
+    "path": ".cache/ace16-hint-transition-acceptance-next-20261027/post-terminal-check.json",
+    "bytes": 115549,
+    "sha256": "2e60f05b581aa101774636f250fc0488118527db58574b43a2655bf8898a8e47"
+  },
+  "post_terminal_unique_identity_checks": 203,
+  "first_saved_verification": {
+    "session": 90975,
+    "exit_code": 0,
+    "result": {
+      "path": ".cache/ace16-hint-transition-acceptance-next-20261027/public-saved-verification-first.json",
+      "bytes": 17918,
+      "sha256": "a5231d18cc08dda0779c6f4ceb2d99fff1dfe57fbf6ab188dcbadb4a6b8df461"
+    },
+    "stdout": {
+      "path": ".cache/ace16-hint-transition-acceptance-next-20261027/public-saved-verification-first.stdout",
+      "bytes": 17918,
+      "sha256": "a5231d18cc08dda0779c6f4ceb2d99fff1dfe57fbf6ab188dcbadb4a6b8df461"
+    },
+    "stderr": {
+      "path": ".cache/ace16-hint-transition-acceptance-next-20261027/public-saved-verification-first.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "saved_pin_occurrences": 649,
+    "unique_saved_paths": 204,
+    "compiled_Git_objects": 295,
+    "receipt_Git_objects": 1,
+    "Git_processes": 1,
+    "fixture_processes": 0
+  },
+  "maintained_tools": [
+    {
+      "path": "docs/testing/ordinary_hint_growth_candidates/allocation_model.py",
+      "bytes": 6373,
+      "sha256": "68bbbeb0f27399318a7838d4a6bee2a84f23867340d5c4a04f77de1c410f552f"
+    },
+    {
+      "path": "docs/testing/ordinary_hint_growth_candidates/candidate_model.py",
+      "bytes": 13039,
+      "sha256": "2c96991de439b06237128548ffb35371aa0858ff2e46c1e4fedb0ce9385fcca4"
+    },
+    {
+      "path": "docs/testing/ordinary_hint_growth_candidates/verify.py",
+      "bytes": 11474,
+      "sha256": "033c286309a412f32682baa8ae07f9104725b67e73775130dd3f301281ec84cf"
+    }
+  ],
+  "public_document": {
+    "path": "docs/testing/ORDINARY_HINT_CANDIDATE_OBSERVATIONS.md",
+    "bytes": 10005,
+    "sha256": "eed8af6c7d34b1a125bdea7a17adb06bc1bb3c0635287ee044b03446ef601601"
+  },
+  "preserved_history": "Source preparation had three successful commands, a Python JSON-key proof assembly failure, saved-only correction and six unique continuation commands. Public reference25 and old combined6 are separate. Both candidate phases and the first saved verifier passed without fixture/request/oracle changes.",
+  "scope_limits": [
+    "One changed row and one new DATA page per operation; no semantic noops or original-file index rebase.",
+    "Current69443c6a counter blocks remain unchanged; later counter-writing code needs separately bound expectations.",
+    "No normal saves, native Access execution, macro qualification, arbitrary reuse/reclamation or universal map growth."
+  ]
+}

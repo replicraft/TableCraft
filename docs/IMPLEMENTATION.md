@@ -34,9 +34,12 @@ wrappers retain their admission rules, and normal ACE saves remain closed.
 The scoped checks pass 290 engine unit functions (one existing ignored test),
 42 selected public write-preview contracts, three compile-fail doctests and
 strict feature/default lint. Fifteen new runtime functions cover authority,
-complete images, bitmaps and strict window boundaries. Original-file candidates
-for this extension remain pending; the separately qualified enlarged source
-copies are preparation evidence only.
+complete images, bitmaps and strict window boundaries. The
+[twelve enlarged-source candidates](testing/ORDINARY_HINT_CANDIDATE_OBSERVATIONS.md)
+now match independently generated complete images before fresh getters, with
+all 24 first-attempt native/getter calls passing. The separate public-writer
+references pass 25 commands including compilation. This does not enable normal
+saves or establish native Microsoft Access compatibility.
 
 ## Explicit Memo/OLE storage checks
 
