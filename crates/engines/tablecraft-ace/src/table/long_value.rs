@@ -1,5 +1,14 @@
 //! Bounded native long-value storage shared by MEMO and opaque OLE bytes.
+mod check;
 mod definition;
+mod maps;
+mod model;
+mod trace;
+pub use check::check_table_long_values;
+pub use model::{
+    LongValueCheck, LongValueCheckStatus, LongValueCounts, LongValueMapReferences,
+    TableLongValueCheck,
+};
 #[cfg(test)]
 mod tests;
 mod visited;
@@ -7,7 +16,7 @@ use crate::{
     InspectError, LongValueReadLimits, NativeReadSource,
     format::{
         bytes::u32_at,
-        page::{DATA_SIGNATURE, OWNER_OFFSET},
+        page::{DATA_SIGNATURE, OWNER_OFFSET, PAGE_BYTES},
         reader::{Reader, row_range},
         row::{DELETED_MASK, RELOCATED_MASK, reference_page, reference_slot},
     },
@@ -29,6 +38,14 @@ const EXTENDED_BATCH_CHUNKS: usize = 256;
 pub(super) fn read<R: NativeReadSource>(
     reader: &mut Reader<'_, R>,
     definition: &[u8],
+) -> Result<Option<Vec<u8>>, InspectError> {
+    read_with_trace(reader, definition, None)
+}
+
+fn read_with_trace<R: NativeReadSource>(
+    reader: &mut Reader<'_, R>,
+    definition: &[u8],
+    trace: Option<&mut Vec<trace::Chunk>>,
 ) -> Result<Option<Vec<u8>>, InspectError> {
     reader.tick()?;
     if definition.is_empty() {
@@ -71,9 +88,17 @@ pub(super) fn read<R: NativeReadSource>(
                     kind,
                     length,
                     &mut bytes,
+                    trace,
                 )?;
             } else {
-                read_external(reader, descriptor.reference.get(), kind, length, &mut bytes)?;
+                read_external(
+                    reader,
+                    descriptor.reference.get(),
+                    kind,
+                    length,
+                    &mut bytes,
+                    trace,
+                )?;
             }
         }
         _ => return Err(InspectError::Unsupported),
@@ -88,6 +113,7 @@ fn read_external<R: NativeReadSource>(
     kind: u32,
     length: usize,
     bytes: &mut Vec<u8>,
+    mut trace: Option<&mut Vec<trace::Chunk>>,
 ) -> Result<(), InspectError> {
     let limits = reader.source.long_value_limits();
     let extended = limits.maximum_bytes() > LongValueReadLimits::DEFAULT_BYTES;
@@ -99,6 +125,7 @@ fn read_external<R: NativeReadSource>(
             reader.reads = 0;
         }
 
+        let current = reference;
         let page = reader.page(reference_page(reference))?;
         if page[..DATA_SIGNATURE.len()] != DATA_SIGNATURE
             || page.get(OWNER_OFFSET..OWNER_OFFSET + LVAL_SIGNATURE.len()) != Some(LVAL_SIGNATURE)
@@ -122,6 +149,19 @@ fn read_external<R: NativeReadSource>(
         let remaining = length - bytes.len();
         if payload.is_empty() || payload.len() > remaining {
             return Err(InspectError::Malformed);
+        }
+        if let Some(chunks) = trace.as_deref_mut() {
+            reader
+                .budget
+                .charge_allocation(1, size_of::<trace::Chunk>() as u64)?;
+            chunks
+                .try_reserve(1)
+                .map_err(|_| InspectError::Allocation)?;
+            chunks.push(trace::Chunk {
+                reference: current,
+                offset: reference_page(current) as usize * PAGE_BYTES + start,
+                bytes: row.len(),
+            });
         }
         bytes.extend_from_slice(payload);
         if bytes.len() == length {

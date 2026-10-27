@@ -33,6 +33,9 @@ Delivered read/query and engineering foundations:
   stages. Text membership uses complete policies.
 - [x] [Cursor/read failure controls](access/storage/NATIVE_READ_FAILURES.md), cumulative limits,
   cancellation and [high-offset Memo/OLE checks](access/storage/NATIVE_HIGH_OFFSET_PAYLOADS.md).
+- [x] Explicit [ACE 16 Memo/OLE storage checks](access/storage/LONG_VALUE_CHECKS.md)
+  for qualified column maps, live descriptors, owned pages, orphan counts and
+  sharing. Unknown profiles remain visible; this does not authorize writes.
 - [x] Offline Jet 4 fixed Int32 UPDATE copies and separate
   [ACE 16 engineering write previews](testing/ACE16_WRITE_PREVIEWS.md).
   [Deletion candidates](testing/ACE16_DELETE_PREVIEWS.md) retain original key/row

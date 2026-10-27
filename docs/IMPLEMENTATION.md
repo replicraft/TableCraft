@@ -1,5 +1,21 @@
 # Implementation status
 
+## Explicit Memo/OLE storage checks
+
+The default engine now exposes a separate bounded
+[`check_table_long_values` service](access/storage/LONG_VALUE_CHECKS.md). It checks
+qualified ACE 16 column maps, allocated LVAL pages and complete live descriptors,
+and reports orphan storage and sharing without treating them as corruption or
+write authority. Unknown, historical, indirect and unsupported profiles remain
+explicit. Ordinary Memo/OLE reads keep their existing behavior.
+
+The [scoped record](testing/results/long-value-storage-native-2026-10-26.json)
+records 148 distinct passing runtime functions and three compile-fail checks.
+Two frozen read-only consumers each checked the same 60 saved independent-writer
+outputs, with all 120 column reports matching independently captured expectations.
+These are storage-check results, not new UPDATE actions or native Access
+qualification. Memo/OLE replacement and normal ACE saves remain unfinished.
+
 ## Alternate-page placement and EOF allocation candidates
 
 The separate `preview_ace16_variable_updates` engineering API now places growing

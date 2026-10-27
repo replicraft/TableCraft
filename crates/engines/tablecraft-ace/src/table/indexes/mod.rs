@@ -8,6 +8,7 @@ pub use decimal::DecimalIndexSelection;
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) use decimal::DecimalType;
 mod definition;
+pub(in crate::table) use definition::read_with_tail as definitions_with_tail;
 mod floating;
 mod guid;
 pub use guid::GuidIndexSelection;
