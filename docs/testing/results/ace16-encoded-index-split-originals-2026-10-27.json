@@ -1,0 +1,549 @@
+{
+  "date": "2026-10-27",
+  "scope": "First six-original committed-consumer exact-slot General Legacy/Modern Short Text and Short Binary split candidate acceptance. No normal-save or Microsoft Access save/reopen qualification.",
+  "first_actual": {
+    "terminal_session": 4664,
+    "exit_code": 0,
+    "report": {
+      "path": ".cache/ace16-encoded-split-acceptance-first-20261027/report.json",
+      "bytes": 151579,
+      "sha256": "db862fc01722e09373be34298be21ae78b50e3ee41ee7703bd64faebc5ecfa57"
+    },
+    "execution_log": {
+      "path": ".cache/ace16-encoded-originals-next-20261027/first-execution.log",
+      "bytes": 1378,
+      "sha256": "a034f8669849d07cfc278941199fca63fc5906891aa9f9fd420ade61e2c0a6c2"
+    },
+    "terminal_receipt": {
+      "path": ".cache/ace16-encoded-originals-next-20261027/first-terminal.json",
+      "bytes": 1984,
+      "sha256": "8c917fb9dcddede39966270b4fbf87bca9890cfdf73e576197886e4988d9d833"
+    }
+  },
+  "compiled_revision": "85576d139a3c02a89d2ef5eeef2720e7d6aaa8fb",
+  "artifact": {
+    "path": ".cache/tablecraft-bin/ace16-encoded-split-20261027",
+    "bytes": 15651632,
+    "sha256": "f41164e513e8cc8dd6f755d4c8cbda51b25d476fe217dac61e6b738ad2db5f41"
+  },
+  "build_receipt": {
+    "path": "docs/testing/results/ace16-encoded-split-example-build-2026-10-27.json",
+    "bytes": 55623,
+    "sha256": "8ff64aa1cd03e41414455319b29686343c89ef88ac39e1abcc35b05579bbf5ba"
+  },
+  "build_receipt_revision": "e623ecd5be50d39f5bc2f1f8dd4bdff8cc56f724",
+  "counts": {
+    "attempted": 6,
+    "whole_image_matches": 6,
+    "fresh_read_only_getter_matches": 6,
+    "unmet": 0,
+    "fixture_commands": 12,
+    "native_candidates": 6,
+    "JVM_read_only_inspects": 6,
+    "public_updates": 0,
+    "generation_or_compile_calls": 0,
+    "retries": 0,
+    "affected_physical_trees": 12,
+    "new_index_pages": 36,
+    "growth_bytes_per_candidate": 24576,
+    "original_record_instance_checks": 16206,
+    "unique_original_user_records": 5402,
+    "physical_tree_instances_checked": 60,
+    "before_and_after_input_pins": 71,
+    "input_or_inventory_errors": 0,
+    "compiled_git_source_objects": 263,
+    "complete_exported_source_files": 2602
+  },
+  "native_consumer_limits": {
+    "database_bytes": 8388608,
+    "heap_mib": 512,
+    "consumer_budget": {
+      "bytes": 268435456,
+      "rows": 100000,
+      "steps": 100000000
+    },
+    "request_caps": {
+      "file_bytes": 16777216,
+      "rows": 4096,
+      "encoded_value_bytes": 1024
+    },
+    "index_depth": 16
+  },
+  "originals": [
+    {
+      "path": ".cache/ace16-encoded-index-source-corrected-first-20261027/V2016-original.accdb",
+      "bytes": 557056,
+      "sha256": "362a2f603036f836489f87cd24d58c7c4383329dddd065349b48452bd5f480c8"
+    },
+    {
+      "path": ".cache/ace16-encoded-index-source-corrected-first-20261027/V2019-original.accdb",
+      "bytes": 630784,
+      "sha256": "bbe12b91fa29b78032eb1485b801350d309e31d58680630686046716a442bd1b"
+    }
+  ],
+  "inspection_inputs": [
+    {
+      "path": ".cache/ace16-encoded-index-source-corrected-first-20261027/classes/BoundedFileChannel.class",
+      "bytes": 3080,
+      "sha256": "608c31190c2bcbc9582fd0332813b8697820604b208b9d17c7b1548791c3916b"
+    },
+    {
+      "path": ".cache/ace16-encoded-index-source-corrected-first-20261027/classes/EncodedSplitProbe.class",
+      "bytes": 20454,
+      "sha256": "b06859fe3c1a84a6f8a78119e19855ae422fcf357d668f0fbce35ac106a02587"
+    },
+    {
+      "path": ".cache/ace16-encoded-index-source-first-20261027/classes/BoundedFileChannel.class",
+      "bytes": 3080,
+      "sha256": "608c31190c2bcbc9582fd0332813b8697820604b208b9d17c7b1548791c3916b"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+      "bytes": 1407244,
+      "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+    }
+  ],
+  "cases": [
+    {
+      "id": "V2016-TextLegacy",
+      "selected_row_ordinal": 0,
+      "selected_id": 1,
+      "table": "TextLegacy",
+      "column": "KeyValue",
+      "source_profile": "V2016",
+      "request": {
+        "path": ".cache/ace16-encoded-originals-next-20261027/V2016-TextLegacy.tsv",
+        "bytes": 20,
+        "sha256": "6c72a1487d5a89ef76e33d6ab4eecc57f0a9568cb95ee654585ccb74a13524d7"
+      },
+      "pre_frozen_expected": {
+        "path": ".cache/ace16-encoded-originals-next-20261027/V2016-TextLegacy.expected.bin",
+        "bytes": 581632,
+        "sha256": "5603c1bd9324c6a19bb1610e4b312ae508916c51527be93b8a7a522b75160c26"
+      },
+      "candidate": {
+        "path": ".cache/ace16-encoded-split-acceptance-first-20261027/V2016-TextLegacy-candidate.accdb",
+        "bytes": 581632,
+        "sha256": "5603c1bd9324c6a19bb1610e4b312ae508916c51527be93b8a7a522b75160c26"
+      },
+      "fresh_snapshot": {
+        "path": ".cache/ace16-encoded-split-acceptance-first-20261027/V2016-TextLegacy-fresh-facts.json",
+        "bytes": 2184580,
+        "sha256": "ad72d858b8f8bf2f004f679dcb7cf9a99337d84cbd85bd03046cb8a8f353075d"
+      },
+      "command_labels": [
+        "V2016-TextLegacy-native",
+        "V2016-TextLegacy-inspect"
+      ],
+      "slot_offset": 389107,
+      "slot_width": 6,
+      "growth_bytes": 24576
+    },
+    {
+      "id": "V2016-TextModern",
+      "selected_row_ordinal": 0,
+      "selected_id": 1,
+      "table": "TextModern",
+      "column": "KeyValue",
+      "source_profile": "V2016",
+      "request": {
+        "path": ".cache/ace16-encoded-originals-next-20261027/V2016-TextModern.tsv",
+        "bytes": 20,
+        "sha256": "6c72a1487d5a89ef76e33d6ab4eecc57f0a9568cb95ee654585ccb74a13524d7"
+      },
+      "pre_frozen_expected": {
+        "path": ".cache/ace16-encoded-originals-next-20261027/V2016-TextModern.expected.bin",
+        "bytes": 581632,
+        "sha256": "c904b1c96d97cb974aa451a17fd96e5af6e64ea4c1b2afa89d81515ef37daac5"
+      },
+      "candidate": {
+        "path": ".cache/ace16-encoded-split-acceptance-first-20261027/V2016-TextModern-candidate.accdb",
+        "bytes": 581632,
+        "sha256": "c904b1c96d97cb974aa451a17fd96e5af6e64ea4c1b2afa89d81515ef37daac5"
+      },
+      "fresh_snapshot": {
+        "path": ".cache/ace16-encoded-split-acceptance-first-20261027/V2016-TextModern-fresh-facts.json",
+        "bytes": 2184580,
+        "sha256": "af850d07906acc96f037131f0aa0e60d51617b485389c22031b316aa372645eb"
+      },
+      "command_labels": [
+        "V2016-TextModern-native",
+        "V2016-TextModern-inspect"
+      ],
+      "slot_offset": 446451,
+      "slot_width": 6,
+      "growth_bytes": 24576
+    },
+    {
+      "id": "V2016-BinaryOne",
+      "selected_row_ordinal": 0,
+      "selected_id": 1,
+      "table": "BinaryOne",
+      "column": "KeyValue",
+      "source_profile": "V2016",
+      "request": {
+        "path": ".cache/ace16-encoded-originals-next-20261027/V2016-BinaryOne.tsv",
+        "bytes": 22,
+        "sha256": "12282938c41dd85df27995ed0f1abb28a1802a7b11381435ece78f615e426ba8"
+      },
+      "pre_frozen_expected": {
+        "path": ".cache/ace16-encoded-originals-next-20261027/V2016-BinaryOne.expected.bin",
+        "bytes": 581632,
+        "sha256": "d26de985a3ad93a423d7a18d6b80168774db990980db2d05ef7c65a9ca57e3b7"
+      },
+      "candidate": {
+        "path": ".cache/ace16-encoded-split-acceptance-first-20261027/V2016-BinaryOne-candidate.accdb",
+        "bytes": 581632,
+        "sha256": "d26de985a3ad93a423d7a18d6b80168774db990980db2d05ef7c65a9ca57e3b7"
+      },
+      "fresh_snapshot": {
+        "path": ".cache/ace16-encoded-split-acceptance-first-20261027/V2016-BinaryOne-fresh-facts.json",
+        "bytes": 2184577,
+        "sha256": "4ce77ecd93716fb654d349bcd459fe03e1f950aece52629224f389f09a883304"
+      },
+      "command_labels": [
+        "V2016-BinaryOne-native",
+        "V2016-BinaryOne-inspect"
+      ],
+      "slot_offset": 503800,
+      "slot_width": 1,
+      "growth_bytes": 24576
+    },
+    {
+      "id": "V2019-TextLegacy",
+      "selected_row_ordinal": 0,
+      "selected_id": 1,
+      "table": "TextLegacy",
+      "column": "KeyValue",
+      "source_profile": "V2019",
+      "request": {
+        "path": ".cache/ace16-encoded-originals-next-20261027/V2019-TextLegacy.tsv",
+        "bytes": 20,
+        "sha256": "6c72a1487d5a89ef76e33d6ab4eecc57f0a9568cb95ee654585ccb74a13524d7"
+      },
+      "pre_frozen_expected": {
+        "path": ".cache/ace16-encoded-originals-next-20261027/V2019-TextLegacy.expected.bin",
+        "bytes": 655360,
+        "sha256": "f007a0820f12bbd63df0f6d3f0fef8d3639453c1c360f0b5512d5cff3ec7e0ce"
+      },
+      "candidate": {
+        "path": ".cache/ace16-encoded-split-acceptance-first-20261027/V2019-TextLegacy-candidate.accdb",
+        "bytes": 655360,
+        "sha256": "f007a0820f12bbd63df0f6d3f0fef8d3639453c1c360f0b5512d5cff3ec7e0ce"
+      },
+      "fresh_snapshot": {
+        "path": ".cache/ace16-encoded-split-acceptance-first-20261027/V2019-TextLegacy-fresh-facts.json",
+        "bytes": 2185379,
+        "sha256": "e6a0b55be56b15f9a028d60fe25d26f223de2182cd2d4b10040160d94427e253"
+      },
+      "command_labels": [
+        "V2019-TextLegacy-native",
+        "V2019-TextLegacy-inspect"
+      ],
+      "slot_offset": 458739,
+      "slot_width": 6,
+      "growth_bytes": 24576
+    },
+    {
+      "id": "V2019-TextModern",
+      "selected_row_ordinal": 0,
+      "selected_id": 1,
+      "table": "TextModern",
+      "column": "KeyValue",
+      "source_profile": "V2019",
+      "request": {
+        "path": ".cache/ace16-encoded-originals-next-20261027/V2019-TextModern.tsv",
+        "bytes": 20,
+        "sha256": "6c72a1487d5a89ef76e33d6ab4eecc57f0a9568cb95ee654585ccb74a13524d7"
+      },
+      "pre_frozen_expected": {
+        "path": ".cache/ace16-encoded-originals-next-20261027/V2019-TextModern.expected.bin",
+        "bytes": 655360,
+        "sha256": "d907ca7dc6d64669a0c7f6d784de2de8948fdc6208705909df1caa94462a517e"
+      },
+      "candidate": {
+        "path": ".cache/ace16-encoded-split-acceptance-first-20261027/V2019-TextModern-candidate.accdb",
+        "bytes": 655360,
+        "sha256": "d907ca7dc6d64669a0c7f6d784de2de8948fdc6208705909df1caa94462a517e"
+      },
+      "fresh_snapshot": {
+        "path": ".cache/ace16-encoded-split-acceptance-first-20261027/V2019-TextModern-fresh-facts.json",
+        "bytes": 2185379,
+        "sha256": "bc3796c0ff636dee2b6dda017740cbca9731d495b5ce8dada877f7c1c2765609"
+      },
+      "command_labels": [
+        "V2019-TextModern-native",
+        "V2019-TextModern-inspect"
+      ],
+      "slot_offset": 516083,
+      "slot_width": 6,
+      "growth_bytes": 24576
+    },
+    {
+      "id": "V2019-BinaryOne",
+      "selected_row_ordinal": 0,
+      "selected_id": 1,
+      "table": "BinaryOne",
+      "column": "KeyValue",
+      "source_profile": "V2019",
+      "request": {
+        "path": ".cache/ace16-encoded-originals-next-20261027/V2019-BinaryOne.tsv",
+        "bytes": 22,
+        "sha256": "12282938c41dd85df27995ed0f1abb28a1802a7b11381435ece78f615e426ba8"
+      },
+      "pre_frozen_expected": {
+        "path": ".cache/ace16-encoded-originals-next-20261027/V2019-BinaryOne.expected.bin",
+        "bytes": 655360,
+        "sha256": "0c512badfd617cc89165f570a8ec190aa523b1753172bcc3af8e78c8675af785"
+      },
+      "candidate": {
+        "path": ".cache/ace16-encoded-split-acceptance-first-20261027/V2019-BinaryOne-candidate.accdb",
+        "bytes": 655360,
+        "sha256": "0c512badfd617cc89165f570a8ec190aa523b1753172bcc3af8e78c8675af785"
+      },
+      "fresh_snapshot": {
+        "path": ".cache/ace16-encoded-split-acceptance-first-20261027/V2019-BinaryOne-fresh-facts.json",
+        "bytes": 2185376,
+        "sha256": "c012ed528ca3d9068cd112d62d91aac01e47b1052c6acc5acb2bae89c03a1476"
+      },
+      "command_labels": [
+        "V2019-BinaryOne-native",
+        "V2019-BinaryOne-inspect"
+      ],
+      "slot_offset": 577528,
+      "slot_width": 1,
+      "growth_bytes": 24576
+    }
+  ],
+  "public_promotion": {
+    "candidate_model": "Exact byte-identical copy of executed frozen proof.py. No expected bytes regenerated.",
+    "saved_verifier": "Maintained later tool. Rebuilds entire source-derived image before reparsing the selected-table cached getter; historical compiled sources are checked through Git, not the working tree.",
+    "helper_sources": [
+      {
+        "path": "docs/testing/encoded_index_split_originals/candidate_model.py",
+        "bytes": 12480,
+        "sha256": "39476ef54c2437ff80f20626ce78b3a9d206d294340dd95cab51e05d1e3d0089"
+      },
+      {
+        "path": "docs/testing/encoded_index_split_originals/verify_candidates.py",
+        "bytes": 8056,
+        "sha256": "dca11963f382f35d3e3a36c3a11fbe87fb4d6cb3119a547d05d3e883b50e1477"
+      },
+      {
+        "path": "docs/testing/encoded_index_split_sources/action_model.py",
+        "bytes": 17016,
+        "sha256": "939868b37326de5f811bc14e660d0d7da20d0f36f69c3790610e5f87bec124f8"
+      },
+      {
+        "path": "docs/testing/encoded_index_split_sources/reference_proof.py",
+        "bytes": 5616,
+        "sha256": "3920c8c38ee328aa713f67d2a693d006785856e190cb1efd20652fa7e5645e02"
+      },
+      {
+        "path": "docs/testing/capture_delete_trees.py",
+        "bytes": 20353,
+        "sha256": "05f15179d1b4c689e1dd045617335f66b98189fbd12259838cc0ab5da4ebfdb1"
+      },
+      {
+        "path": "docs/testing/delete_reference_maps.py",
+        "bytes": 8635,
+        "sha256": "9fca51758e0f26e37dab2e27ff2c41c0e8a7a8110e9a047eda1ccb2a91eadda8"
+      },
+      {
+        "path": "docs/testing/integral_split_originals/model.py",
+        "bytes": 14901,
+        "sha256": "5aa5faae9f5de5e96007ef79e5475f5e78732f6e274dc93279b2c8f26dfc3f0b"
+      },
+      {
+        "path": "docs/testing/slot_preview_originals/facts.py",
+        "bytes": 8072,
+        "sha256": "1e6b085db3335f29ef5b9bf299cde2a62e863e09698d6efb4c93b76db00dd687"
+      },
+      {
+        "path": "docs/testing/slot_preview_originals/common.py",
+        "bytes": 2697,
+        "sha256": "4d6e13158e1c039f1a75bb12828cfa7eaf811e58e06e5e4de0f4c605e1519f8c"
+      },
+      {
+        "path": "docs/testing/parent_index_split_originals/wire.py",
+        "bytes": 15798,
+        "sha256": "556e6663c9fe6fec52e4d0a9f76b171629a29559fd21e85a74d4a6adde5b91f9"
+      }
+    ],
+    "verifier_first_run": {
+      "exit_code": 0,
+      "result": {
+        "path": ".cache/ace16-encoded-originals-next-20261027/public-postcheck-first.json",
+        "bytes": 2366,
+        "sha256": "49dc655a7e98a5be35858d4dd12bc81454cb33754d10783c17de0fad7985a77c"
+      },
+      "stderr": {
+        "path": ".cache/ace16-encoded-originals-next-20261027/public-postcheck-first.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "accepted_images": 6,
+      "live_pin_occurrences": 326,
+      "compiled_git_objects": 263,
+      "build_receipt_git_objects": 1,
+      "git_metadata_child_processes": 264,
+      "native_fixture_calls": 0,
+      "JVM_fixture_calls": 0
+    }
+  },
+  "executed_private_protocol": [
+    {
+      "path": ".cache/ace16-encoded-originals-next-20261027/plan.json",
+      "bytes": 31977,
+      "sha256": "de7db4e5b2d67c79ca1d8f7635ea3986695b8865d87188e1b6f32fbe1e604831"
+    },
+    {
+      "path": ".cache/ace16-encoded-originals-next-20261027/freeze.json",
+      "bytes": 3119,
+      "sha256": "102d89c085a00003b74c6233edb78917a644207405cf3be3de11b5483d33335d"
+    },
+    {
+      "path": ".cache/ace16-encoded-originals-next-20261027/proof.py",
+      "bytes": 12480,
+      "sha256": "39476ef54c2437ff80f20626ce78b3a9d206d294340dd95cab51e05d1e3d0089"
+    },
+    {
+      "path": ".cache/ace16-encoded-originals-next-20261027/prepare.py",
+      "bytes": 4511,
+      "sha256": "a901d366417a2988a951c48a4fe2d5db5f83c29784367884d5f05e941c1f02ff"
+    },
+    {
+      "path": ".cache/ace16-encoded-originals-next-20261027/replay.py",
+      "bytes": 13869,
+      "sha256": "5d1f970b23d8700576b997528983e6f9ceeb34b286145bb3c8adceb8abb433c0"
+    },
+    {
+      "path": ".cache/ace16-encoded-originals-next-20261027/runner-freeze.json",
+      "bytes": 14215,
+      "sha256": "eb17b15a567a03f9fe698cc3ad4b7633d302ddd45f6aa021881198f0ae7fa033"
+    },
+    {
+      "path": ".cache/ace16-encoded-originals-next-20261027/binding.json",
+      "bytes": 6736,
+      "sha256": "4c841b2cc3e1405dee69a3791127506f31127c181f3cb31e8f2bc82522cb560e"
+    },
+    {
+      "path": ".cache/ace16-encoded-originals-next-20261027/bound-static-receipt.json",
+      "bytes": 1874,
+      "sha256": "b7e54885f75ecb1abf811127f186126aad280ba70d41acde81dd74205ff0c1c5"
+    },
+    {
+      "path": ".cache/ace16-encoded-originals-next-20261027/bound-static-first.log",
+      "bytes": 96,
+      "sha256": "fab34eae142d1197a0e1034211c2fad96174ad39de29337f8f40a82cd805fc65"
+    },
+    {
+      "path": ".cache/ace16-encoded-originals-next-20261027/first-terminal.json",
+      "bytes": 1984,
+      "sha256": "8c917fb9dcddede39966270b4fbf87bca9890cfdf73e576197886e4988d9d833"
+    },
+    {
+      "path": ".cache/ace16-encoded-originals-next-20261027/first-execution.log",
+      "bytes": 1378,
+      "sha256": "a034f8669849d07cfc278941199fca63fc5906891aa9f9fd420ade61e2c0a6c2"
+    },
+    {
+      "path": ".cache/ace16-encoded-originals-next-20261027/verify_accepted.py",
+      "bytes": 4340,
+      "sha256": "24486731ab9ac6cba1a7d6573ffde823d7bf1e393abbd4f68bc33c1aa916b0f8"
+    },
+    {
+      "path": ".cache/ace16-encoded-originals-next-20261027/saved-postcheck.json",
+      "bytes": 254,
+      "sha256": "23376f110b3924ff8b29679cba342190b5db8862c89419030d981e84427a5ab2"
+    },
+    {
+      "path": ".cache/ace16-encoded-originals-next-20261027/saved-postcheck.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "preserved_pre_execution_setup": {
+    "metadata_comparison": "Initial pure verifier failed on tuple/list proof metadata equality after exact first-image byte comparison. JSON metadata normalization only, before any fixture call.",
+    "bounded_role": "First unbound static runner selected the source-only five-process helper. Explicit twelve-process helper selection was corrected after preserving draft/log. No fixture process executed.",
+    "budget_labels": "Initial unbound plan labels were replaced with the actual unchanged consumer budget/request caps. Native originals, six requests, proof and expected bytes stayed exact.",
+    "artifacts": [
+      {
+        "path": ".cache/ace16-encoded-originals-next-20261027/before-json-metadata-normalization/verify.py",
+        "bytes": 1822,
+        "sha256": "146df00139b394bfca2fa8f6a513f968a2fe02a5ee652387f9593151cee4ca20"
+      },
+      {
+        "path": ".cache/ace16-encoded-originals-next-20261027/before-json-metadata-normalization/verify-initial.log",
+        "bytes": 398,
+        "sha256": "f598f5f2c06fcbb2d4b02aefb342b2b57f296e03afe353bcfdcfefc689635237"
+      },
+      {
+        "path": ".cache/ace16-encoded-originals-next-20261027/before-bounded-role-selection/replay.py",
+        "bytes": 13763,
+        "sha256": "1d9a803831f95a54d8e57aa39b3942570e71f0a0cb03f74d86ccd7a6c8094fb5"
+      },
+      {
+        "path": ".cache/ace16-encoded-originals-next-20261027/before-bounded-role-selection/runner-freeze.json",
+        "bytes": 14209,
+        "sha256": "3c07e06ae830b008519c738543eb8db975be03f12a3708e5b3864556344ff423"
+      },
+      {
+        "path": ".cache/ace16-encoded-originals-next-20261027/before-bounded-role-selection/runner-unbound-static.log",
+        "bytes": 618,
+        "sha256": "3564229f0481449bffe38f62b8459a4d8547f72455a7d1fd06175188c84508cb"
+      },
+      {
+        "path": ".cache/ace16-encoded-originals-next-20261027/before-consumer-budget-labels/plan.json",
+        "bytes": 31869,
+        "sha256": "b9138a78ecc99508ef54c459b1d09b37bd6b48b681813ee03f8a4639dae2b8ab"
+      },
+      {
+        "path": ".cache/ace16-encoded-originals-next-20261027/before-consumer-budget-labels/freeze.json",
+        "bytes": 3119,
+        "sha256": "8445e1885aeabfa98f34f33a7f0a622722d423b316e615e91d55d93c4816706e"
+      },
+      {
+        "path": ".cache/ace16-encoded-originals-next-20261027/before-consumer-budget-labels/prepare.py",
+        "bytes": 4259,
+        "sha256": "0a889abd431921c01737b6dbcba339fcfe7df352cf42b6ef28141d3f2e2d86ce"
+      },
+      {
+        "path": ".cache/ace16-encoded-originals-next-20261027/verify-budget-final.log",
+        "bytes": 189,
+        "sha256": "5f3b91b57e7ae77ed19396562d97e7818e3e5cd1c48f71563f42781b05a26a59"
+      }
+    ]
+  },
+  "separate_prior_phases": {
+    "source_observations": {
+      "path": "docs/testing/results/encoded-index-split-source-observations-2026-10-27.json",
+      "bytes": 11423,
+      "sha256": "377403871c620685859a142d37e3b6596406ca64882bea800a493bd5bd42b49e"
+    },
+    "baseline_observations": {
+      "path": "docs/testing/results/encoded-index-split-old-slot-native-2026-10-27.json",
+      "bytes": 7551,
+      "sha256": "9847f76931f069fdab1a9c5fc40bc7718ceb5bfa64f4e0d4ad625371cfb8864e"
+    },
+    "public_reference_observations": {
+      "path": "docs/testing/results/encoded-index-split-update-observations-2026-10-27.json",
+      "bytes": 12218,
+      "sha256": "0ff7a9e669c7c55e6a8072845576c64de7a31017936317dbf69a471b01a9a101"
+    },
+    "distinction": "Failed javac, corrected five source commands, six old-service no-op admissions/six IndexedColumn refusals and six public UPDATE/six getter calls are separate from this first twelve-command native candidate replay."
+  },
+  "preservation_policy": [
+    "Full source-derived expected bytes precede fresh getter execution.",
+    "Fresh pages use zero unused bytes and seed zero, with common full key/ROW compression only when capacity requires it.",
+    "Retained roots preserve original suffix bytes; public writer key-only prefixes and scratch are not candidate goldens.",
+    "Only exact selected payload, selected root framing and composed index-owned/global cells may change in the original prefix.",
+    "Original masks, variable footers, fixed siblings, other record bodies/ROW identities, counters, LVAL storage and unaffected indexes remain exact."
+  ],
+  "limitations": [
+    "These originals cover non-NULL exact-slot root/repeated splitting; other literal engineering coverage remains separate.",
+    "No changed non-NULL long-digest oracle or affected tuple allocation claim.",
+    "No French/unknown/Memo/ignore-NULL or unsupported unique-overflow write expansion.",
+    "No data-page allocation, record resizing, normal native save, journal operation, macro execution or Microsoft Access execution/save parity."
+  ]
+}

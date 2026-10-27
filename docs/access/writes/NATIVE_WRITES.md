@@ -167,6 +167,11 @@ final key replay. Fixed and slot candidates share only exact-before append
 composition, without producing a journalable edit plan. Independent literal
 images cover recursive/repeated growth and multiple map owners. This does not
 resize data records, admit tuple allocation or change normal backend saves.
+Its [first six original-file candidates](../../testing/ENCODED_INDEX_SPLIT_CANDIDATE_OBSERVATIONS.md)
+now pass exact whole-image expectations before fresh independent typed/index/map
+getters, on unchanged General/Binary sources. All twelve fixture commands pass
+first attempt; independent-engine observations and native Access save
+qualification remain separate.
 
 A separate [index-owned map promotion service](../../testing/ACE16_INDEX_MAP_GROWTH.md)
 now extends the same engineering split APIs when an inline map's complete required
