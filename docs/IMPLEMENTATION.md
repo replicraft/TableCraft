@@ -308,10 +308,13 @@ each keeps its own typed authority and independent index audit.
 
 Independent complete-image tests cover both General families, Binary, NULL/empty
 values, ties, long unchanged digest wires, internal growth, multiple physical
-owners and map promotion. The original-file baseline remains separate; no new
-committed-consumer original-file split replay or native Access comparison is
-claimed here. Tuple allocation, unsupported sorts, ignore-NULL mutation and
-normal saves remain outside this service. Its dedicated clap consumer uses the
+owners and map promotion. The separate
+[first original-file replay](testing/ENCODED_INDEX_SPLIT_CANDIDATE_OBSERVATIONS.md)
+now passes six exact candidate images and six fresh getter/map/tree checks on
+unchanged sources, through twelve successful first-attempt fixture commands.
+Every output adds six index pages; all original/input pins remain unchanged.
+Tuple allocation, unsupported sorts, ignore-NULL mutation and normal saves remain
+outside this service. Its dedicated clap consumer uses the
 existing bounded TSV parser and publishes only fresh engineering candidates.
 
 The scoped batch passes 142 distinct runtime functions, including fifteen new

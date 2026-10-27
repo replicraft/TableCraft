@@ -9915,3 +9915,18 @@ prefix bytes without starting a child process. The exact executed action model
 and byte-proof function bodies are preserved in maintained tools. Public
 key-only prefixes and scratch bytes do not define engineering candidate goldens
 or native Access save compatibility.
+
+### Committed encoded split candidates on original files
+
+The [first six-image replay](ENCODED_INDEX_SPLIT_CANDIDATE_OBSERVATIONS.md)
+uses the committed isolated consumer and unchanged V2016/V2019 originals.
+Every complete image equals the source-derived frozen golden before its fresh
+getter; all twelve native/getter commands pass first attempt. Six index pages
+are added per image, with exact field spans, original row references, aliases,
+map bits, preserved root residue and zero fresh padding. All 71 input identities
+remain unchanged. The saved verifier checks six images, 326 live pin occurrences,
+263 compiled source objects and the committed build-receipt object without new
+native/JVM calls. It explicitly records its read-only Git metadata subprocesses.
+Static setup corrections remain archived; no original, request, proof or golden
+byte changed for acceptance. Normal writes and native Access qualification remain
+unfinished.

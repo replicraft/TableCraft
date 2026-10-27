@@ -192,8 +192,11 @@ six index pages. Committed-consumer candidate comparisons remain separate.
 - [x] A separate [exact-slot Text/Binary split preview](testing/ACE16_ENCODED_INDEX_SPLITS.md)
   now supplies a working General legacy/modern and Binary consumer of retained
   keys, with independent complete-image, request-authority, alias and map checks.
-  It preserves field widths and original row locations. Original-file candidate
-  replay, tuple allocation, broader profiles and normal saves remain unfinished.
+  It preserves field widths and original row locations. The
+  [first six original-file candidates](testing/ENCODED_INDEX_SPLIT_CANDIDATE_OBSERVATIONS.md)
+  now match independently frozen complete images and pass six fresh getters,
+  without changing sources, requests or budgets. Tuple allocation, broader
+  profiles, combined record growth and normal saves remain unfinished.
 
 - [x] Qualified [index-owned map promotion](testing/ACE16_INDEX_MAP_GROWTH.md)
   now composes same-extent pointer-row rewrites and distinct bitmap metadata with

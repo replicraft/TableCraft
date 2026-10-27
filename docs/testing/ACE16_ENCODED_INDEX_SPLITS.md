@@ -82,6 +82,9 @@ compile/style errors and exact source/log histories remain pinned separately.
 
 This chunk runs authored in-memory fixtures and filesystem consumer tests. It does
 not claim original-file candidates or public/native write parity. Qualified source
-and frozen old-slot baseline evidence are separate; committed-artifact original
-candidate comparisons remain pending. No independent changed non-NULL long-digest
+and frozen old-slot baseline evidence are separate. The subsequent
+[first original-file replay](ENCODED_INDEX_SPLIT_CANDIDATE_OBSERVATIONS.md) now
+passes six complete expected images before six fresh getters on unchanged
+sources, through a frozen committed consumer. This does not qualify normal
+saves or native Access comparisons. No independent changed non-NULL long-digest
 key oracle is claimed; long-key controls retain existing wires or replace with NULL.
