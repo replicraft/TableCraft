@@ -82,6 +82,14 @@ impl Evaluator<'_> {
             return Ok(Value::Null);
         };
 
+        if self
+            .collation
+            .is_some_and(|policy| policy.like_profile() == LikeProfile::Unsupported)
+        {
+            self.check(0)?;
+            return Err(EvalError::UnsupportedExpression);
+        }
+
         let raw = matches!(value, Operand::Raw(_)) || matches!(pattern, Operand::Raw(_));
         if raw
             && let Some(collation) = self.collation
@@ -123,3 +131,6 @@ mod tests;
 
 #[cfg(test)]
 mod coercion_tests;
+
+#[cfg(test)]
+mod unsupported_tests;

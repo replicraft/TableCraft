@@ -18,7 +18,7 @@ const GENERAL_2010_ORDER: [u8; 4] = [9, 4, 0, 1];
 
 #[derive(Clone, Copy, ValueEnum)]
 pub(crate) enum TextCollation {
-    /// Stored General database/default and per-field policies; unresolved conflicts fail.
+    /// Stored General/French comparison policies; unresolved conflicts fail.
     Database,
     /// Unicode ordinal order, case-sensitive; no normalization or locale rules.
     Ordinal,

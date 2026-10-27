@@ -392,9 +392,11 @@ fn edit<P: WriteProfile, const N: usize>(
     profile: &P,
     patches: &mut PatchSet,
 ) -> Result<(), EditError> {
+    #[cfg(not(feature = "ace16-write-preview"))]
+    let Change::Update(updates) = change;
+    #[cfg(feature = "ace16-write-preview")]
     let updates = match change {
         Change::Update(updates) => updates,
-        #[cfg(feature = "ace16-write-preview")]
         Change::Delete(references) => {
             return super::delete::edit::<P, N>(
                 image, reader, index, owner, references, profile, patches,

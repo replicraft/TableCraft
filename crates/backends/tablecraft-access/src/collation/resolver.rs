@@ -1,9 +1,7 @@
-//! Closed General descriptor resolution over one explicitly shared quota.
-use super::GeneralCollation;
+//! Exact native comparison descriptor resolution over one shared quota.
+use super::{FrenchLegacyCollation, GeneralCollation};
 use std::cell::RefCell;
-use tablecraft_ace::{
-    GeneralEqualityPrefix, GeneralSortFamily, InspectError, NativeSortOrder, TextIndexSelection,
-};
+use tablecraft_ace::{GeneralEqualityPrefix, InspectError, NativeSortOrder, TextIndexSelection};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_expressions::{
     EvalError,
@@ -16,20 +14,23 @@ use tablecraft_query::{
 
 const LEGACY_ORDER: [u8; 4] = [9, 4, 0, 0];
 const GENERAL_2010_ORDER: [u8; 4] = [9, 4, 0, 1];
+const FRENCH_LEGACY_ORDER: [u8; 4] = [12, 4, 0, 0];
 const _: () = assert!(GeneralEqualityPrefix::MAX_BYTES <= TextEqualityKey::MAX_BYTES);
 
-/// Native General legacy/2010 query policies sharing one caller-owned quota.
+/// Native General legacy/2010 and comparison-only French legacy policies.
+/// All policies share one caller-owned cumulative quota.
 /// Exact unknown identities fail; no ordinal/default fallback or OS locale is
 /// inferred. The weight/lineage models remain provisional without native SQL qualification.
 /// Hosts own the budget cell and cancellation lifetime; reentrant borrowing fails
 /// explicitly. No heap-owned cache, runtime or source discovery is introduced.
 pub struct NativeCollationResolver<'a> {
-    default: GeneralSortFamily,
+    default: NativeSortOrder,
     legacy: GeneralCollation<'a>,
     modern: GeneralCollation<'a>,
+    french: FrenchLegacyCollation<'a>,
 }
 impl<'a> NativeCollationResolver<'a> {
-    /// Validate the stored default descriptor and construct both supported policies.
+    /// Validate the stored default descriptor and construct the exact policies.
     /// Construction, resolution, comparisons, searches and LIKE callbacks consume
     /// the same cumulative caller-owned quota across families and executions.
     pub fn new(
@@ -40,9 +41,13 @@ impl<'a> NativeCollationResolver<'a> {
         if cancelled() {
             return Err(InspectError::Cancelled);
         }
-        let family = default.general_family().ok_or(InspectError::Unsupported)?;
+        if default.general_family().is_none()
+            && default != NativeSortOrder::from_native_bytes(FRENCH_LEGACY_ORDER)
+        {
+            return Err(InspectError::Unsupported);
+        }
         let resolver = Self {
-            default: family,
+            default,
             legacy: GeneralCollation::new_shared(
                 NativeSortOrder::from_native_bytes(LEGACY_ORDER),
                 budget,
@@ -50,6 +55,11 @@ impl<'a> NativeCollationResolver<'a> {
             )?,
             modern: GeneralCollation::new_shared(
                 NativeSortOrder::from_native_bytes(GENERAL_2010_ORDER),
+                budget,
+                cancelled,
+            )?,
+            french: FrenchLegacyCollation::new_shared(
+                NativeSortOrder::from_native_bytes(FRENCH_LEGACY_ORDER),
                 budget,
                 cancelled,
             )?,
@@ -63,14 +73,20 @@ impl<'a> NativeCollationResolver<'a> {
     pub fn with_option_compare(mut self, mode: StringCompareMode) -> Self {
         self.legacy = self.legacy.with_option_compare(mode);
         self.modern = self.modern.with_option_compare(mode);
+        self.french = self.french.with_option_compare(mode);
         self
     }
     /// Borrow the configured database/default policy; unknown defaults never
     /// reach construction and the descriptor is not inferred from file generation.
-    pub fn default_collation(&self) -> &GeneralCollation<'a> {
-        match self.default {
-            GeneralSortFamily::Legacy => &self.legacy,
-            GeneralSortFamily::General2010 => &self.modern,
+    /// The trait return replaces the previous GeneralCollation reference so a
+    /// French default retains its exact provider instead of a General fallback.
+    pub fn default_collation(&self) -> &dyn Collation {
+        if self.default == self.legacy.order {
+            &self.legacy
+        } else if self.default == self.modern.order {
+            &self.modern
+        } else {
+            &self.french
         }
     }
 }
@@ -122,10 +138,12 @@ impl CollationResolver for NativeCollationResolver<'_> {
                 .map_err(|_| EvalError::CollationFailed)?;
             budget.charge(Resource::Steps, 1)?;
         }
-        let policy = if key == identity(self.legacy.order) {
+        let policy: &dyn Collation = if key == identity(self.legacy.order) {
             &self.legacy
         } else if key == identity(self.modern.order) {
             &self.modern
+        } else if key == identity(NativeSortOrder::from_native_bytes(FRENCH_LEGACY_ORDER)) {
+            &self.french
         } else {
             return Err(EvalError::CollationRequired.into());
         };

@@ -1,6 +1,8 @@
 //! Native text-order metadata, separate from decoded string comparison.
 mod comparison;
+mod french;
 pub(crate) use comparison::equality_primary_prefix;
+pub use french::{compare_french_legacy_text, compare_french_legacy_utf16};
 mod key;
 mod like_units;
 mod search;
