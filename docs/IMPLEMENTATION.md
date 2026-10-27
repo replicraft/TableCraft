@@ -284,6 +284,13 @@ native calls are separate from source construction and public writer actions.
 All sources and frozen inputs remain unchanged. New split candidates and normal
 saves remain unfinished.
 
+The separate [public-writer reference phase](testing/ENCODED_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
+now passes six same-width replacements and six fresh getters on the unchanged
+originals. Each output adds six index pages, retains both root IDs and all row
+references, and preserves other records, counters and Memo/OLE storage. Its
+measured key-only prefix policy remains separate from engineering full-key/ROW
+packing; these public outputs are not substituted for independent byte goldens.
+
 ## Exact-slot General Text/Binary index splits
 
 A separate [engineering split service](testing/ACE16_ENCODED_INDEX_SPLITS.md)
