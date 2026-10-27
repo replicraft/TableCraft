@@ -68,6 +68,11 @@ Its [root](../../testing/ROOT_SPLIT_UPDATE_OBSERVATIONS.md) and
 [non-root](../../testing/NONROOT_SPLIT_UPDATE_OBSERVATIONS.md) two-file candidate
 comparisons pass complete independent image proofs. Internal-node overflow,
 other codecs, map growth and production saves retain their separate gaps.
+The [parent-overflow reference](../../testing/PARENT_INDEX_SPLIT_OBSERVATIONS.md)
+now measures two successful public-writer root-growth histories on unchanged
+sparse inputs, alongside two atomic refusals from the existing kernel. Its
+active tree/map geometry guides recursive implementation; public scratch bytes
+are not byte goldens or native Access qualification.
 
 Contraction now qualifies complete internal-node sibling chains by height and
 repairs retained neighbors. Entirely unlinked levels retain their existing

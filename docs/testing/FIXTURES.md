@@ -9474,3 +9474,16 @@ intermediate, selection, class, map/getter and complete tree identities. Measure
 leaf and parent capacity both overflow for the separately planned MAX update.
 The larger 99,424-row targets are generation artifacts, not qualified mutation
 inputs, and no overflowing UPDATE is part of this source-phase qualification.
+
+### Sparse Int32 parent-overflow actions
+
+The [separate first action phase](PARENT_INDEX_SPLIT_OBSERVATIONS.md) completes
+nine processes on those same sparse inputs: two atomic frozen-kernel refusals,
+two successful public Jackcess updates and their read-only descriptions. Both
+roots grow from height one to two while retaining their IDs. Each image adds
+three index pages, preserves every live row reference and changes only the
+requested four bytes on the selected data page. Complete active key/ROW/child,
+sibling and map geometry is verified independently of public scratch rewrites.
+The [action receipt](results/ace16-parent-index-split-originals-2026-10-27.json)
+pins exact first-run sources, inputs, outputs and later saved-byte analyses.
+No recursive kernel success or native Microsoft Access qualification is claimed.
