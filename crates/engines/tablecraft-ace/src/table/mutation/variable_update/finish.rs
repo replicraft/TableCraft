@@ -1,6 +1,6 @@
 //! Growth candidates never pass through the equal-length journalable planner.
 use super::super::{Ace16WritePreview, EditError, WriteBlocker, append, gates, preservation};
-use super::placement::Plan;
+use super::{authority::Operation, placement::Plan};
 use crate::{
     IndexCheckStatus, InspectError, NativeImage, check_table, check_table_constraints,
     format::page::PAGE_BYTES, header::check, inspect_catalog, limits::MAX_IMAGE_BYTES,
@@ -11,7 +11,7 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 
 pub(super) fn finish(
     image: NativeImage,
-    table: &str,
+    operation: &Operation<'_>,
     plan: &Plan,
     indexes: &[IndexDataPatch],
     changed: usize,
@@ -31,11 +31,21 @@ pub(super) fn finish(
     let original = check_table(
         &mut Cursor::new(image.as_bytes()),
         scope,
-        table,
+        operation.table,
         budget,
         cancelled,
     )?;
-    super::map_audit::prove(&image, original.schema(), plan, budget, cancelled)?;
+    let verified = operation.prove(&image, &original, budget, cancelled)?;
+    verified.compare(plan, changed, budget, cancelled)?;
+    super::audit::pages(plan, budget, cancelled)?;
+    super::map_audit::prove(
+        &image,
+        original.schema(),
+        plan,
+        &verified.records,
+        budget,
+        cancelled,
+    )?;
 
     budget
         .charge_allocation(plan.append.length as u64, 1)
@@ -144,7 +154,13 @@ pub(super) fn finish(
     // Reparse the catalog/header from actual grown bytes; old page_count must
     // never constrain or authorize reads of the newly appended pages.
     inspect_catalog(&mut Cursor::new(&after), scope, budget, cancelled)?;
-    let checked = check_table(&mut Cursor::new(&after), scope, table, budget, cancelled)?;
+    let checked = check_table(
+        &mut Cursor::new(&after),
+        scope,
+        operation.table,
+        budget,
+        cancelled,
+    )?;
     if checked
         .indexes()
         .iter()
@@ -155,7 +171,7 @@ pub(super) fn finish(
     gates::qualified(&check_table_constraints(
         &mut Cursor::new(&after),
         scope,
-        table,
+        operation.table,
         budget,
         cancelled,
     )?)?;

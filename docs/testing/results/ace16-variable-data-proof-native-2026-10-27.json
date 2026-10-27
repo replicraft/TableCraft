@@ -1,0 +1,367 @@
+{
+  "date": "2026-10-27",
+  "scope": "Independent immutable-request record serialization and placement-length authority for the existing ACE16 ordinary-variable engineering preview; no combined API.",
+  "counts": {
+    "distinct_runtime_functions": 33,
+    "new_private_functions": 8,
+    "private_functions": 11,
+    "existing_variable_integration_functions": 11,
+    "existing_consumer_functions": 11,
+    "compile_fail_docs": 3,
+    "native_original_candidate_calls": 0,
+    "JVM_or_public_writer_calls": 0
+  },
+  "counting_policy": "11 private (3 prior +8 new) +11 existing integration +11 existing consumer =33 distinct. Repeated causal/diagnostic/retry executions are excluded. Three doctests are separate.",
+  "source_context": {
+    "revision_before_final_batch": "820a7babc80d928d0b95eb0ccb8c621913237484",
+    "scope": "Ten selected Rust files only, not a full compiler closure or frozen artifact. Root owns map_audit.rs and map_audit/tests.rs; all other scoped implementation/test changes belong to this record. Existing fixture inputs/expected image goldens and dependencies/manifests/public APIs are unchanged.",
+    "final_source_manifest": {
+      "path": ".cache/ace16-data-record-proof-implementation-next-20261027/final-source-pins.json",
+      "bytes": 2055,
+      "sha256": "ee000c26f2bc2f552a0397252c857199b44b5267726e328c38e6c3013c3f5bea"
+    },
+    "continuity": "All ten source pins were verified unchanged after final bounded checks. No Rust edits after the final batch snapshot.",
+    "resource_policy": "Additional original-root traversal, decoding, expected-record storage, wire encoding, byte comparisons and page audit are paid; exact limit/cancellation thresholds can tighten."
+  },
+  "source_files": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_update/audit/tests.rs",
+      "bytes": 8773,
+      "sha256": "0d7af71fdc8a0c0b551acc9d32002e0e140077a1cec922e700066f5ff38f3a40"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_update/authority/tests.rs",
+      "bytes": 5252,
+      "sha256": "b7e2fc4f2f239b72ce4de6d03a2d55dd66a648db13e728faddd3a4b758ccd79e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_update/authority.rs",
+      "bytes": 5354,
+      "sha256": "527fa9265fd551c3e2a193f6b2e9897cc0f09e100861f07819200f889b2d6b60"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_update/finish.rs",
+      "bytes": 6406,
+      "sha256": "56d629a13f8da6e8294ccffa27ea011d1d466bf2ec56fdee1e8fd5856fea033c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_update/map_audit/tests.rs",
+      "bytes": 4752,
+      "sha256": "4fea75817d62e682ea164a67f03381cdd4026fa45488754cbd89a0c7044e4400"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_update/map_audit.rs",
+      "bytes": 9851,
+      "sha256": "774f674aeb60d650167f9ff181e32e8af0c98a5158f43adf0b0d9c0481f0d515"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_update/mod.rs",
+      "bytes": 3757,
+      "sha256": "5ad2ebfe86e5100c4bfe4c27420f91eda0a5d2242681ef877ac6e9579d4df8d4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_update/record_proof/mod.rs",
+      "bytes": 5713,
+      "sha256": "096a0c133e9b58bf675964f2e490498ff43c00ac876d7e1e708bb258450e9012"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_update/record_proof/payload.rs",
+      "bytes": 2728,
+      "sha256": "6696df73d833c852f8b4c9b7724ea52708a0cae687e387548367b387addb1936"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_update/record_proof/tests.rs",
+      "bytes": 5722,
+      "sha256": "5793348a842a66b06b109c857a92ccb945263b5e3aa725fa477aaf5bfb89f9b3"
+    }
+  ],
+  "implementation": {
+    "binding": "Operation holds original table/column/request slice. Finalizer checks original table, rebinds selected field and recaptures physical-order exclusive original roots. It validates expected values and complete layout before excluding semantic noops.",
+    "serialization": "Independent preferred encoder validates actual carriers and metadata. Text compresses only when flag enabled, UTF16 count>2 and all units1..255. Two-unit tie raw; NULL/present empty distinct masks. Reader decoder proves requested Text roundtrip. No builder/replace_payload/exact-slot encoder is used as certification authority.",
+    "geometry": "Lnew=max(L,E-selected_span+preferred_payload+original_footer). Preserve original physical C, actual stored V/all offsets/historical slots, whole masks and stationary unused padding; update only actual selected physical-number bit. Smaller readable physical C remains writer refusal.",
+    "records": "Audit-owned ChangedRecord carries root/reference/word/range, original final offset/capacity and exact reconstructed bytes. No plan/event input supplies these facts. Verified compares exact count/order/identity, fitted offset, branch, target size and all record bytes.",
+    "placement": "Root map audit independently derives lengths from certified bytes and original capacity, replays original highest-hint geometry, failed fits, represented EOF and exact original-before/current-after owned/hint/global union. Event target length no longer grants authority.",
+    "final_checks": "Existing page audit is also rerun inside finalizer. Original-prefix protection, exact maps, actual grown catalog/table/index/constraint and membership checks remain. Existing admission/ordinary-root zeroing and forwarded/retired-hidden preservation policies are unchanged."
+  },
+  "accepted_checks": [
+    {
+      "name": "private-final",
+      "session": 91146,
+      "exit_code": 0,
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib table::mutation::variable_update -- --nocapture",
+      "log": {
+        "path": ".cache/ace16-data-record-proof-implementation-next-20261027/private-final.log",
+        "bytes": 1835,
+        "sha256": "4ce13befa7d34cb7ceeca12c8fcd22b569777c61932aebccb159985b0d425697"
+      }
+    },
+    {
+      "name": "integration-final",
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test ace16_variable_updates --test ace16_variable_updates_contract",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-data-record-proof-implementation-next-20261027/integration-final.log",
+        "bytes": 1614,
+        "sha256": "9131180be10700f0b6f318349301a66d6d7def10004616eeaf8bab992c429661"
+      }
+    },
+    {
+      "name": "consumer-final",
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --example preview_ace16_slot",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-data-record-proof-implementation-next-20261027/consumer-final.log",
+        "bytes": 1380,
+        "sha256": "12c42100e67bfd9b6a1d6fb8729759eff28a7af4bb7258df5e2a6f11d80c6dd6"
+      }
+    },
+    {
+      "name": "strict-final",
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib --tests --example preview_ace16_slot -- -D warnings",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-data-record-proof-implementation-next-20261027/strict-final.log",
+        "bytes": 184,
+        "sha256": "35c667145e85b00d554180cde652b2ad9aeed1004738aa6738a4dae033e4f0f0"
+      }
+    },
+    {
+      "name": "default-strict-final",
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-ace --lib -- -D warnings",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-data-record-proof-implementation-next-20261027/default-strict-final.log",
+        "bytes": 72,
+        "sha256": "2bc683fb4e4f4f21ee9ee39e2b8ecce2efe20d3b1be57bda5316aa519ab3d30a"
+      }
+    },
+    {
+      "name": "minimal-final",
+      "command": "cargo check --locked --offline -j2 -p tablecraft-ace --no-default-features --lib",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-data-record-proof-implementation-next-20261027/minimal-final.log",
+        "bytes": 72,
+        "sha256": "22e0df986057b9ba5be07526ac5fb348862a3dedef42108383cc3e088acbb889"
+      }
+    },
+    {
+      "name": "docs-final",
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --doc",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-data-record-proof-implementation-next-20261027/docs-final.log",
+        "bytes": 627,
+        "sha256": "8317acbd7cd14a4ca393cd9a50bf80a7a60b7aeff1cabe7af274596367d97af5"
+      }
+    },
+    {
+      "name": "scoped-format",
+      "exit_code": 0,
+      "result": {
+        "path": ".cache/ace16-data-record-proof-implementation-next-20261027/format-final.json",
+        "bytes": 981,
+        "sha256": "9b83c898eaf7f88947ce39dfcae22c88a2c3bd3dc5aa55c943cb6eda454e61c3"
+      },
+      "log": {
+        "path": ".cache/ace16-data-record-proof-implementation-next-20261027/format-final.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "initial_history": [
+    {
+      "name": "causal-before",
+      "session": 56948,
+      "exit_code": 101,
+      "classification": "Healthy old finalizer control succeeds; an unrequested staged Binary byte is then accepted as Ok instead of expected Preservation. Private certification gap, not a public-input emitted corruption.",
+      "log": {
+        "path": ".cache/ace16-data-record-proof-implementation-next-20261027/causal-before.log",
+        "bytes": 1097,
+        "sha256": "0b31da401b17c2bcd2360027893a02adaeb9fbbffac105cfcafa1abefed70e2c"
+      }
+    },
+    {
+      "name": "primary-initial",
+      "session": 48958,
+      "exit_code": 101,
+      "classification": "Compiles; 8 of 9 pass. Smaller-column-count literal returns reader InspectUnsupported before intended writer RowLayout. Corrected only synthetic geometry maxV5 to maxV4 so storedV3 is reader-valid with one future slot, explicitly checked before writer refusal.",
+      "log": {
+        "path": ".cache/ace16-data-record-proof-implementation-next-20261027/primary-initial.log",
+        "bytes": 2195,
+        "sha256": "737656ca5b78a232aba145c7c6ddb0c40768ecef27c675bc10a73710ecbf2661"
+      }
+    },
+    {
+      "name": "primary-retry",
+      "session": 54856,
+      "exit_code": 101,
+      "classification": "Test-only E0433: newly added parse control omitted top-level record_layout import. Import added; no production or value/golden change.",
+      "log": {
+        "path": ".cache/ace16-data-record-proof-implementation-next-20261027/primary-retry.log",
+        "bytes": 815,
+        "sha256": "5b04913e9f46e87f2eb59cf11261152bc5948169884e784b50b45164e66fa765"
+      }
+    },
+    {
+      "name": "primary-corrected",
+      "session": 42725,
+      "exit_code": 0,
+      "classification": "All first 9 private functions pass.",
+      "log": {
+        "path": ".cache/ace16-data-record-proof-implementation-next-20261027/primary-corrected.log",
+        "bytes": 1553,
+        "sha256": "56cf494bce0bf8858b76c393c5f134f3227c18f3f0e37ef98297f8d713b08777"
+      }
+    },
+    {
+      "name": "primary-expanded",
+      "session": 36641,
+      "exit_code": 101,
+      "classification": "Compiles; 9 of 11 pass. Two new Text test fixtures omitted the represented global-map row required by Plan::capture. Existing complete reads/checks/before gates pass. Added the same literal global map used by prior private DATA fixtures; no production fix or policy relaxation.",
+      "log": {
+        "path": ".cache/ace16-data-record-proof-implementation-next-20261027/primary-expanded.log",
+        "bytes": 2903,
+        "sha256": "681cf34d5c16335b07dbba7f8e16d6f0cc9fd916ec850884265207b1b3d313c5"
+      }
+    },
+    {
+      "name": "text-fixture-diagnostic",
+      "session": 23751,
+      "exit_code": 101,
+      "classification": "Saved diagnostic: ordinary read, table check and constraints pass; Plan::capture fails.",
+      "log": {
+        "path": ".cache/ace16-data-record-proof-implementation-next-20261027/text-fixture-diagnostic.log",
+        "bytes": 1249,
+        "sha256": "9227228b78fa2e2a341df41ec8a0d404cc05060771f619512f9753c0b46ddfc6"
+      }
+    },
+    {
+      "name": "text-fixture-boundary-diagnostic",
+      "session": 83515,
+      "exit_code": 101,
+      "classification": "Saved diagnostic: foreign links, object children/payloads and properties also pass. Failure still at Plan::capture; the earlier status message calling it a before-gate failure was mistaken.",
+      "log": {
+        "path": ".cache/ace16-data-record-proof-implementation-next-20261027/text-fixture-boundary-diagnostic.log",
+        "bytes": 1314,
+        "sha256": "200fb92ca264bf998b206a598c24c663a43b95357cf69592ff02b9554cc35621"
+      }
+    },
+    {
+      "name": "text-fixture-identity-diagnostic",
+      "session": 62950,
+      "exit_code": 101,
+      "classification": "Saved diagnostic: original table object matches captured catalog origins. Restored diagnostics out and supplied the missing global-map row before final private run.",
+      "log": {
+        "path": ".cache/ace16-data-record-proof-implementation-next-20261027/text-fixture-identity-diagnostic.log",
+        "bytes": 1465,
+        "sha256": "e2ba76c9749a1d6668740204a49dd1732322546b3388d326f23c3b112e927d1f"
+      }
+    },
+    {
+      "name": "private-final",
+      "session": 91146,
+      "exit_code": 0,
+      "classification": "All 11 private functions pass, including exact preferred Text wire and marker-empty no-op.",
+      "log": {
+        "path": ".cache/ace16-data-record-proof-implementation-next-20261027/private-final.log",
+        "bytes": 1835,
+        "sha256": "4ce13befa7d34cb7ceeca12c8fcd22b569777c61932aebccb159985b0d425697"
+      }
+    },
+    {
+      "name": "bounded-final",
+      "session": 59351,
+      "exit_code": 0,
+      "classification": "Existing variable integration11 and existing consumer11 pass, plus feature/default strict, minimal and docs3."
+    }
+  ],
+  "historical_artifacts": [
+    {
+      "path": ".cache/ace16-data-record-proof-implementation-next-20261027/before-pins.json",
+      "bytes": 800,
+      "sha256": "53f0ab7ed61354dcddb1128d8f7bd9aaedd7acef93c76dbf990f0aef4d4a1bab"
+    },
+    {
+      "path": ".cache/ace16-data-record-proof-implementation-next-20261027/causal-before-executed.rs",
+      "bytes": 8265,
+      "sha256": "76967349eb64c0e42a242fc960cff869357839a9e68eb1cd2bccd818dd3299ad"
+    },
+    {
+      "path": ".cache/ace16-data-record-proof-implementation-next-20261027/record-tests-initial.rs",
+      "bytes": 5586,
+      "sha256": "07dfa82f65a32148b3e96908bd9b844b7740c9e16b8e0e78603fa4d410d89a90"
+    },
+    {
+      "path": ".cache/ace16-data-record-proof-implementation-next-20261027/record-tests-before-import-fix.rs",
+      "bytes": 5696,
+      "sha256": "bd9f87e081883494f579ca2af7334e5f6b48455cca16ccb7162b482d0995fa17"
+    },
+    {
+      "path": ".cache/ace16-data-record-proof-implementation-next-20261027/text-tests-initial.rs",
+      "bytes": 5035,
+      "sha256": "e561469fb35ebbad4981cd676375d2c46224cb4aeaf43d874edc7894e3e87a1d"
+    },
+    {
+      "path": ".cache/ace16-data-record-proof-implementation-next-20261027/text-fixture-diagnostic-executed.rs",
+      "bytes": 9653,
+      "sha256": "e7e9d81ab8ec6429e9121039ea58dae99f576c202077aebb04057ec7c72aa56f"
+    }
+  ],
+  "historical_source_objects": [
+    {
+      "path": ".cache/ace16-data-record-proof-implementation-next-20261027/before/crates/engines/tablecraft-ace/src/table/mutation/variable_update/audit/tests.rs",
+      "bytes": 7299,
+      "sha256": "fe1c937368e7a31311d7b5f4acbdbf5d32dfc2e8e75512f2e2286a4b9aa54369"
+    },
+    {
+      "path": ".cache/ace16-data-record-proof-implementation-next-20261027/before/crates/engines/tablecraft-ace/src/table/mutation/variable_update/audit.rs",
+      "bytes": 7904,
+      "sha256": "9cdfff2c4e0d19856ef309fd55f57e0137c4da3624dd2e8f68189baac2036e2d"
+    },
+    {
+      "path": ".cache/ace16-data-record-proof-implementation-next-20261027/before/crates/engines/tablecraft-ace/src/table/mutation/variable_update/finish.rs",
+      "bytes": 6034,
+      "sha256": "07237317f50d01a83af4ff9fb407e804913e4499866fa8390de76e84d75d853e"
+    },
+    {
+      "path": ".cache/ace16-data-record-proof-implementation-next-20261027/before/crates/engines/tablecraft-ace/src/table/mutation/variable_update/mod.rs",
+      "bytes": 3679,
+      "sha256": "99f83e083ec151620e454bf0bf1bb7aecbfdcce4476634107afc1f28606b11a5"
+    }
+  ],
+  "independent_model_context": [
+    {
+      "path": ".cache/ace16-data-record-proof-next-20261027/DATA_RECORD_PROOF.md",
+      "bytes": 11518,
+      "sha256": "5c0af61b9722e81f5c3bbd2e52c85f27ead689f547ebfe2082711a6c991a1e38"
+    },
+    {
+      "path": ".cache/ace16-data-record-proof-next-20261027/oracle.py",
+      "bytes": 6343,
+      "sha256": "d752cdc6f8738d8d7338eb356857a8fdc5abd29c03bfdc35be3d8aa7924990b3"
+    },
+    {
+      "path": ".cache/ace16-data-record-proof-next-20261027/selfcheck.json",
+      "bytes": 1869,
+      "sha256": "518500775481c8050f8b3722aa68a3daedd88728a0dfcc81f02d78a71132cb19"
+    },
+    {
+      "path": ".cache/ace16-data-record-proof-next-20261027/handoff.json",
+      "bytes": 2870,
+      "sha256": "9fe28af852ec510622d6f28a26ccf96e5cc464afdd05b2215c30488a44efb6dd"
+    }
+  ],
+  "limits": [
+    "No combined DATA-plus-index writer or audit continuation seed is implemented in this checkpoint.",
+    "Historical C9/V3/maxV5 record controls isolate private framing from normal dropped-column write admission; they do not widen the public gates.",
+    "The two equivalent Text encodings are reader-valid but only the immutable requested preferred wire is certified.",
+    "No original-file candidate/JVM/reference rerun or native Access save qualification. No performance claim."
+  ],
+  "owning_document": {
+    "path": "docs/testing/ACE16_VARIABLE_DATA_PROOF.md",
+    "bytes": 4092,
+    "sha256": "23007402f3fbf38dd8e77829a5c99b07fda5640a543c7db731d4b88a5ecccfc6"
+  }
+}

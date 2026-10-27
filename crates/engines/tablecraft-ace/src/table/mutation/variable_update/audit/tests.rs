@@ -1,5 +1,5 @@
 //! Forged after-images must fail independently of the placement builder.
-use super::super::{finish, placement::Plan};
+use super::super::{authority::Operation, finish, placement::Plan};
 use crate::{
     EditError, NativeImage, SlotScalarUpdate,
     limits::MAX_IMAGE_BYTES,
@@ -111,7 +111,7 @@ fn append_finalizer_rejects_unauthorized_map_bits_and_rechecks_fresh_eof_header(
             assert_eq!(
                 finish::finish(
                     capture(image.as_bytes()),
-                    "Items",
+                    &Operation::new("Items", "Score", &requested()),
                     plan,
                     &[],
                     1,
@@ -126,7 +126,7 @@ fn append_finalizer_rejects_unauthorized_map_bits_and_rechecks_fresh_eof_header(
     with_plan(|image, plan| {
         let valid = finish::finish(
             capture(image.as_bytes()),
-            "Items",
+            &Operation::new("Items", "Score", &requested()),
             plan,
             &[],
             1,
@@ -141,7 +141,7 @@ fn append_finalizer_rejects_unauthorized_map_bits_and_rechecks_fresh_eof_header(
         assert_eq!(
             finish::finish(
                 capture(image.as_bytes()),
-                "Items",
+                &Operation::new("Items", "Score", &requested()),
                 plan,
                 &[],
                 1,
@@ -164,7 +164,7 @@ fn append_finalizer_rejects_unauthorized_map_bits_and_rechecks_fresh_eof_header(
         assert!(
             finish::finish(
                 capture(image.as_bytes()),
-                "Items",
+                &Operation::new("Items", "Score", &requested()),
                 plan,
                 &[],
                 1,
@@ -181,7 +181,7 @@ fn append_finalizer_rejects_hint_clear_without_an_actual_failed_placement() {
     with_plan(|image, plan| {
         let valid = finish::finish(
             capture(image.as_bytes()),
-            "Items",
+            &Operation::new("Items", "Score", &requested()),
             plan,
             &[],
             1,
@@ -217,7 +217,7 @@ fn append_finalizer_rejects_hint_clear_without_an_actual_failed_placement() {
         assert_eq!(
             finish::finish(
                 capture(image.as_bytes()),
-                "Items",
+                &Operation::new("Items", "Score", &requested()),
                 plan,
                 &[],
                 1,
@@ -228,4 +228,50 @@ fn append_finalizer_rejects_hint_clear_without_an_actual_failed_placement() {
             Some(EditError::Preservation)
         );
     });
+}
+
+#[test]
+fn append_finalizer_binds_record_bytes_to_original_requested_value() {
+    with_plan(|image, plan| {
+        finish::finish(
+            capture(image.as_bytes()),
+            &Operation::new("Items", "Score", &requested()),
+            plan,
+            &[],
+            1,
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+
+        let target = plan.events[0].target.clone();
+        let page = plan
+            .pages
+            .iter_mut()
+            .find(|page| page.number as usize == target.start / PAGE_BYTES)
+            .unwrap();
+        let selected = target.start % PAGE_BYTES + 6;
+        page.after[selected] = 0x59;
+        assert_eq!(
+            finish::finish(
+                capture(image.as_bytes()),
+                &Operation::new("Items", "Score", &requested()),
+                plan,
+                &[],
+                1,
+                &mut budget(),
+                &|| false,
+            )
+            .err(),
+            Some(EditError::Preservation)
+        );
+    });
+}
+
+fn requested() -> [SlotScalarUpdate; 1] {
+    [SlotScalarUpdate::new(
+        0,
+        Value::Binary(vec![b'A']),
+        Value::Binary(vec![0x5a; 255]),
+    )]
 }

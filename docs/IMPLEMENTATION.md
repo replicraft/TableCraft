@@ -361,6 +361,17 @@ duplicate allocation state without adding a combined update API or normal save.
 The recorded 123-function batch precedes a narrow hint-clear consistency fix;
 the causal control and 17 focused append/DATA functions pass after that fix.
 
+## Request-derived variable record and placement audit
+
+The existing variable-update preview now independently reconstructs complete
+records from original metadata and requests before publishing a candidate.
+The [record and placement proof](testing/ACE16_VARIABLE_DATA_PROOF.md) checks exact
+preferred Text/Binary bytes, original capacity, stored historical offsets/masks,
+expected values and logical-root identity. Map replay derives record lengths from
+those certified bytes rather than staged target ranges. Semantic no-ops remain
+byte-identical. This strengthens the working standalone service; combined
+DATA/index allocation and production saves remain unfinished.
+
 ## Index-owned map promotion
 
 The optional engineering split services now support
