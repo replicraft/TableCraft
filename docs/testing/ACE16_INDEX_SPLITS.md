@@ -124,6 +124,9 @@ new-left leaf and right-then-left internal allocation, two-bound root and comple
 subtree maxima inform this profile. Public scratch rewrites remain observations;
 the engineering candidate preserves original residue and zeroes fresh padding.
 No parent-growth candidate comparison is established by those public actions.
+The subsequent [four-original candidate replay](RECURSIVE_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
+matches both root-growth and both below-root internal-parent whole-image models
+using a separate committed frozen consumer and fresh read-only getters.
 
 ## Engineering consumer
 
@@ -206,6 +209,6 @@ equal-key boundary was not actually paired: the input produced 150/151. The
 fixture owner corrected only that input pairing to produce 150/150 and retained
 the original source and failing log. A subsequent test-only clone lint was also
 preserved and corrected. Neither diagnostic required a production or candidate
-byte-golden change. Actual original-file candidate comparison requires its own
-committed build and separate replay receipt; these implementation tests do not
-claim one.
+byte-golden change. The separate [original-file acceptance](RECURSIVE_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
+records four passing candidates against a committed build; those runtime calls
+are separate from the implementation test totals above.

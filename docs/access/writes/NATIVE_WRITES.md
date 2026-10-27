@@ -78,8 +78,9 @@ comparisons pass complete independent image proofs. The subsequent
 [recursive implementation](../../testing/ACE16_INDEX_SPLITS.md) now propagates
 internal-parent overflow and retained-root growth with independent full key/ROW,
 capacity, framing, sibling and map audits. Its 108 scoped runtime checks pass;
-original-file recursive candidate acceptance remains a separate frozen-consumer
-gate. Other codecs, map growth and production saves retain their separate gaps.
+its [four original-file recursive candidates](../../testing/RECURSIVE_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
+now pass separate complete-image/getter/map proofs through the committed consumer.
+Other codecs, map growth and production saves retain their separate gaps.
 The [parent-overflow reference](../../testing/PARENT_INDEX_SPLIT_OBSERVATIONS.md)
 now measures two successful public-writer root-growth histories on unchanged
 sparse inputs, alongside two atomic refusals from the existing kernel. Its

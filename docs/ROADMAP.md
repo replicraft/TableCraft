@@ -70,8 +70,10 @@ Delivered read/query and engineering foundations:
   right page and repaired neighbors/ancestor bounds when every parent fits.
   Qualified internal-parent splitting and retained-root growth now propagate
   recursively under independent count/capacity/EOF/framing audits and 108 scoped
-  runtime checks. Recursive original-file candidate acceptance, other-codec splits,
-  normal saves and native Access qualification remain separate.
+  runtime checks. Its [four recursive original-file candidates](testing/RECURSIVE_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
+  now pass first-run complete-image/getter/map proofs across retained-root growth
+  and below-root internal splits. Other-codec splits, normal saves and native
+  Access qualification remain separate.
   Its [two unchanged-original candidates](testing/ROOT_SPLIT_UPDATE_OBSERVATIONS.md)
   now pass their first complete-image, typed-value and index/reference proofs
   through a frozen committed consumer.
@@ -85,7 +87,7 @@ Delivered read/query and engineering foundations:
   [nine-process public-reference phase](testing/PARENT_INDEX_SPLIT_OBSERVATIONS.md)
   now measures actual retained-root growth to height two and three EOF index
   pages on both sources; the prior frozen kernel refuses those two edits
-  atomically. Recursive candidate acceptance remains separate from the new implementation.
+  atomically. Recursive candidate acceptance now passes separately on the new committed consumer.
   A distinct [below-root internal-parent source](testing/INTERNAL_PARENT_INDEX_SPLIT_SOURCE_OBSERVATIONS.md)
   now retains 963 live target rows under a height-two root after bounded public
   pruning, with all 497 index pages and three sibling levels preserved. Its
@@ -93,7 +95,7 @@ Delivered read/query and engineering foundations:
   Its [separate public MAX actions](testing/INTERNAL_PARENT_INDEX_SPLIT_OBSERVATIONS.md)
   now establish new-left/retained-right internal splitting on both originals,
   with a retained height-two root and two EOF pages. The old consumer still
-  refuses those edits; new-kernel candidate acceptance remains separate.
+  refuses those edits; new-kernel candidate acceptance is recorded separately above.
   A separate [ordinary Memo/OLE replacement service](testing/ACE16_LONG_VALUE_UPDATES.md)
   now composes qualified column-owned LVAL append/EOF allocation with parent
   descriptor forwarding and independently replays request/map/payload authority.

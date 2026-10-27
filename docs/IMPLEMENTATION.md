@@ -137,8 +137,12 @@ framing and maps without trusting the builder's arena. The
 [new scoped record](testing/results/ace16-parent-index-splits-native-2026-10-27.json)
 passes 108 distinct runtime functions, including eight new controls, and three
 compile-fail checks, plus strict lint, minimal compilation, rustdoc and formatting.
-Original-file candidate acceptance for this recursive stage remains a separate
-frozen-consumer gate; normal saves and other-codec splits remain unfinished.
+The [four original-file candidates](testing/RECURSIVE_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
+now pass on their first run through a frozen committed consumer: both retained-root
+growth images and both below-root internal splits match the independent complete
+images, fresh getters, row identities and maps. Their eight native/JVM fixture
+commands remain separate from the reference writer actions. Normal saves,
+other-codec splits and native Access qualification remain unfinished.
 
 ## Measured Int32 parent overflow and root growth
 
@@ -155,9 +159,9 @@ The [receipt](testing/results/ace16-parent-index-split-originals-2026-10-27.json
 pins the actual sources, immutable input histories, commands and saved framing
 proofs. Read-only verification recomputes both actual tree/map outcomes without
 rerunning database actions. Public unused-byte rewrites are retained as
-observations, not engineering byte goldens. Recursive kernel splitting and its
-candidate acceptance remain unfinished; these results do not qualify normal
-saves or Microsoft Access behavior.
+observations, not engineering byte goldens. These reference results do not qualify
+normal saves or Microsoft Access behavior. The recursive candidate acceptance above
+uses its own committed artifact and complete-image models.
 
 ## Non-root internal-parent overflow sources
 
@@ -183,7 +187,8 @@ bounded children. Each operation adds a left leaf and left internal page while
 retaining the original right leaf/parent, complete physical row references and
 historical counter. Read-only replay verifies all 1,926 original record bodies,
 full key/ROW streams and maps. These are observed reference actions; recursive
-TableCraft candidate acceptance remains separate.
+TableCraft candidate acceptance is recorded separately above with four complete
+original-file proofs.
 
 ## Alternate-page placement and EOF allocation candidates
 
