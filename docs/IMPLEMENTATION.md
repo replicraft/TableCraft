@@ -15,6 +15,13 @@ compile-fail checks, plus strict lint, minimal compilation and formatting.
 Independent original-file candidate replay remains separate from these tests.
 See the [exact storage and index contract](testing/ACE16_WRITE_PREVIEWS.md#existing-width-short-text-and-binary-slots).
 
+The subsequent [original-file replay](testing/SLOT_UPDATE_OBSERVATIONS.md) now
+passes its fixed 162 controls: 124 complete candidates and 38 typed refusals.
+It checks actual values, complete index orders and ancestor bounds, topology and
+every byte outside the permitted changes. Four no-ops preserve entire files.
+Public canonicalization and two incorrect FEFF round trips remain separate
+reference observations; they are not candidate goldens or Access qualification.
+
 ## Bounded original-row request matching
 
 The shared mutation walker now uses a paid original-position directory for

@@ -773,3 +773,9 @@ attempts separately from original-file candidate comparisons.
 The [bounded slot-preview consumer](SLOT_PREVIEW_CONSUMER.md) accepts a headerless
 five-field quoted TSV, captures every request before opening the database, and
 publishes only a complete candidate to a fresh output path.
+
+A subsequent [original-file comparison](SLOT_UPDATE_OBSERVATIONS.md) passes its
+unchanged 162-control plan: 124 full candidates and 38 typed atomic refusals.
+Actual stored fields, logical index orders, complete ancestor keys and permitted
+byte changes are checked independently. Public canonicalization, FEFF value
+discrepancies and expressions-disabled reference writes remain separate evidence.

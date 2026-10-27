@@ -9316,3 +9316,36 @@ no reader ceiling change or new native Access compatibility claim follows.
 Eight frozen CLI controls also pass: exact 600-row TSV output and `Count(*)=600`
 for each profile, with empty stderr and unchanged original hashes. The receipt
 links the frozen artifact/build source pins and ignored raw capture.
+
+## Existing-slot Text and Binary preview originals
+
+Repository-owned [SlotUpdateFixture.java](SlotUpdateFixture.java) uses reviewed
+Jackcess 5.0.4 public builders/getters (JAR SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
+It creates fresh inert V2016/V2019 originals with expressions disabled, UTC,
+foreign-key enforcement and a throwing linked-source resolver. No third-party
+source/database is copied; accepted originals are never patched or regenerated.
+
+| Original | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Slot-V2016-before.accdb | 1,044,480 | `feeeab8b1a5d51cd6d2366cdc54b895da9bd023c48c364896a9beffc7215dd46` |
+| Slot-V2019-before.accdb | 1,114,112 | `2994922c9fef5302e08bfc4db66b8cbfe01e8d47b025e1a4f9b6db10d2a66092` |
+
+Each has 17 tables/1,125 rows, actual stored Text/Binary spans and descriptors,
+44 logical indexes/36 physical roots, General legacy/modern orders, aliases,
+both directions, supported mixed keys, NULL/empty/noncanonical values, field
+properties and protected Memo/OLE. Physical heights are zero/one. Indexed French
+and ignore-NULL fields remain explicit preview refusals.
+
+[Owning observations](SLOT_UPDATE_OBSERVATIONS.md), the
+[reference receipt](results/ace16-slot-original-references-2026-10-26.json) and
+[candidate receipt](results/ace16-slot-original-candidates-2026-10-26.json)
+preserve the immutable 152 initial plus ten NULL controls. Public calls produce
+150 successes/12 unchanged-copy refusals; two successful FEFF writes reopen the
+wrong requested value. The separate frozen engineering model agrees on all 162:
+124 checked candidates/38 typed refusals, with preserved original residues,
+complete index/ancestor and whole-image byte proofs. This is not full public
+per-row parity or native Access qualification. Current parameterized public tools
+and their read-only verification are distinguished from archived executed private
+sources; expanded getters/images remain ignored. Batch, boundary and forwarding
+experiments are not included in these 162 controls.

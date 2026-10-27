@@ -22,6 +22,11 @@ or enable ordinary saves. Allocation, Text/Binary
 composite deletion and ordinary SQL/backend DELETE remain unimplemented. Engine checks
 and original-file candidate replay have separate evidence records in the preview
 contract; neither establishes native Access save/reopen.
+The separate [slot-update original corpus](../../testing/SLOT_UPDATE_OBSERVATIONS.md)
+passes 124 complete candidates and 38 atomic refusals on the frozen committed
+consumer, with exact retained keys, ancestor bounds and unchanged-byte proofs.
+These results retain their distinction from public-writer canonicalization and
+native Access save semantics.
 Contraction now qualifies complete internal-node sibling chains by height and
 repairs retained neighbors. Entirely unlinked levels retain their existing
 profile; partial or malformed chains refuse. The
