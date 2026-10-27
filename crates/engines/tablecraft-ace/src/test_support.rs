@@ -1,4 +1,6 @@
 //! Independent raw fixtures shared by private unit-test modules.
+pub(crate) mod tuples;
+
 #[allow(dead_code)]
 #[path = "../tests/mutation/fixture.rs"]
 pub(crate) mod base;

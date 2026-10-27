@@ -245,8 +245,24 @@ ordinary checks and the finalizer. The audit now derives the required layout
 from its own measurement and the original/fresh seed, rejecting both forgeries.
 The scoped batch passes 115 distinct runtime functions, including five new
 functions, plus three compile-fail checks, strict/default lint, minimal build and
-formatting. Existing-fit composite framing remains a separate unexecuted probe;
-this result does not claim broader composite or native Access qualification.
+formatting. That batch leaves existing-fit composite framing separate; the
+subsequent correction below records its own causal evidence and checks.
+
+## Existing-fit composite framing correction
+
+The [composite audit](testing/ACE16_COMPOSITE_FITTING_AUDIT.md) now reconstructs
+admitted numeric, GUID and Decimal tuple keys from immutable original requests.
+It retains original topology and derives exact child maxima, prefix/bitmap/free
+framing and encoded key/ROW/child bytes independently of the builder. Original
+headers and inactive suffix bytes remain protected.
+
+The first causal test showed that the old finalizer accepted a reader-valid
+alternative prefix. The corrected finalizer rejects it while retaining the
+healthy update. The scoped batch passes 62 distinct runtime functions, including
+four new functions, and three compile-fail doctests, feature/default strict
+checks, minimal compilation and formatting. This adds no composite allocation,
+new mutation eligibility or production save path. Native Access qualification
+remains pending.
 
 ## Index-owned map promotion
 

@@ -9839,3 +9839,19 @@ images and source goldens remain unchanged. The 115-function batch includes five
 new controls; compile-fail checks and initial compilation diagnostics remain
 separate. The proposed composite fallback discriminator has not been executed
 or qualified by this record.
+
+### Existing-fit composite framing authority
+
+The [composite framing batch](ACE16_COMPOSITE_FITTING_AUDIT.md) executes the
+previously separate discriminator using unchanged repository-owned tuple
+fixtures. On 200 equal Int32/Int32 tuples, the original prefix is 13 and the
+changed request requires 9. A reader/index/constraint-valid alternative prefix
+of 8 was accepted by the old finalizer; the corrected audit rejects it while
+preserving the healthy control. No original database or existing golden changed.
+
+Four new functions cover numeric/GUID/Decimal families, original bounded and tail
+nodes, full key/ROW maxima, preserved residue, request failures and resource/
+cancellation controls. The 62 distinct runtime checks and three compile-fail
+doctests remain separate from earlier retained-planner counts. The scoped record
+preserves causal before/after logs and authoring diagnostics. This is defensive
+engineering certification, not composite allocation or native Access evidence.

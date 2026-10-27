@@ -1,15 +1,8 @@
-#[allow(dead_code)]
-#[path = "../../../../tests/decimal_composite_indexes/fixture.rs"]
-mod decimal_fixture;
-#[allow(dead_code)]
-#[path = "../../../../tests/composite_indexes/fixture.rs"]
-mod numeric_fixture;
-
 use super::{Coverage, IndexProfile, NativeIndex};
 use crate::{
     IndexInspection, InspectError, inspect_table_indexes,
     table::indexes::composite::{Columns, DecimalColumns},
-    test_support::{base, support},
+    test_support::tuples::{decimal_fixture, numeric_fixture},
 };
 use decimal_fixture::Cell;
 use std::io::Cursor;

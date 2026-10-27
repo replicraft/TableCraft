@@ -173,8 +173,11 @@ Delivered read/query and engineering foundations:
 - [x] [Retained-key split transport](testing/ACE16_RETAINED_SPLIT_PLANNER.md)
   supports real profile-owned keys internally while preserving numeric public
   consumers. Independent fast-path framing now enforces fresh/original prefix
-  policy. Its 115 runtime functions and scoped checks pass; Text/Binary mutation
-  and existing-fit composite framing qualification remain separate work.
+  policy. Its 115 runtime functions and scoped checks pass. The subsequent
+  [existing-fit composite audit](testing/ACE16_COMPOSITE_FITTING_AUDIT.md) separately
+  derives exact tuple wire bytes and original topology under 62 scoped runtime
+  functions, including four new controls. Text/Binary split mutation, composite
+  allocation and normal native saves remain separate work.
 
 - [x] Qualified [index-owned map promotion](testing/ACE16_INDEX_MAP_GROWTH.md)
   now composes same-extent pointer-row rewrites and distinct bitmap metadata with

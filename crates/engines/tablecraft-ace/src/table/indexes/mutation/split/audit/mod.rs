@@ -1,4 +1,5 @@
 //! Re-derive split, map and opaque-byte authority from the frozen source.
+mod fitting;
 mod framing;
 mod maps;
 mod nonroot;
@@ -351,6 +352,17 @@ pub(super) fn prove(
                 expected_pages.extend([right, left]);
                 split_position += 1;
             }
+        }
+        if affected && index.columns().len() > 1 {
+            fitting::prove(
+                &fitting::Operation {
+                    image,
+                    schema,
+                    index,
+                    updates,
+                },
+                &mut actual,
+            )?;
         }
         actual.work(
             expected_pages
