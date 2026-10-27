@@ -2,6 +2,7 @@
 mod fixed;
 mod nonroot;
 mod parent;
+mod repeated;
 
 use super::super::physical::Patch;
 use super::{Operation, Staged, finish, stage};

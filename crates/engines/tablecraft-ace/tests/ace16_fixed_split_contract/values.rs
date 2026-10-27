@@ -112,16 +112,23 @@ fn genuine_best_prefix_parent_overflow_grows_roots_without_leaf_overflow() {
         assert_eq!(best, kind.width() + 3);
         assert!(encoded_len(&original_bounds, best) <= PAGE - ENTRY);
         if matches!(kind, Kind::Int64 | Kind::Currency) {
-            // The exact original MAX request cannot fit its descending new
-            // left half: 299 bounds require 4,785 bytes even at best prefix.
-            // Keep that refusal and the same 600-child source. A one-unit
-            // replacement still overflows the parent, while both halves fit.
-            let original = model.bytes.clone();
+            // The former single-pass profile refused this exact MAX request:
+            // one 299-bound half still needed 4,785 bytes. Repeated planning
+            // now splits that fresh half again. Keep the same code5/600 source
+            // and compare its complete image with the independent worklist.
+            let repeated = repeated_model::Target {
+                source: source(5, kind, vec![1; bounds], false),
+                changes: vec![(0, kind.maximum())],
+            };
+            assert_eq!(repeated.source.bytes, model.bytes);
+            let maximum = run(&model).unwrap();
             assert_eq!(
-                run(&model).err(),
-                Some(EditError::Unsupported(WriteBlocker::IndexedColumn))
+                maximum.candidate_bytes(),
+                repeated_model::expected(&repeated).bytes
             );
-            assert_eq!(model.bytes, original);
+            assert_eq!(model.bytes, repeated.source.bytes);
+            // The original exact-one positive remains a separate fitting-half
+            // control over the same unmodified 600-child source.
             model.replacement = 1;
         }
         let mut changed = model.values.clone();

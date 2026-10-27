@@ -3,7 +3,7 @@ mod framing;
 mod maps;
 mod nonroot;
 
-use super::super::{encoding, plan::keys, profile::SingleProfile, repack};
+use super::super::{encoding, plan::keys, profile::SingleProfile};
 use super::{Plan, leaf_entries};
 use crate::{
     EditError, IndexCheck, InspectError, NativeImage, TableCheck, TableSchema,
@@ -162,16 +162,30 @@ pub(super) fn prove(
                         ..(index.root_page() as usize + 1) * PAGE_BYTES,
                 )
                 .ok_or(InspectError::Malformed)?;
-            if prepared.tree.is_leaf() {
+            let recursive = if prepared.tree.is_leaf() {
                 let entries = leaf_entries(&prepared.entries, actual.budget, cancelled)?;
-                split = !repack::fits::<_, { encoding::MAX_ENTRY_BYTES }>(
-                    original_root,
+                let overflowing = !nonroot::fits(
                     &entries,
+                    usize::from(IndexHeader::read(original_root)?.prefix.get()),
                     &profile,
-                    actual.budget,
-                    cancelled,
+                    &mut actual,
                 )?;
+                if overflowing {
+                    if entries.len() < 2 {
+                        return Err(EditError::Preservation);
+                    }
+                    let middle = entries.len() / 2;
+                    let left_fits = nonroot::fits(&entries[..middle], 0, &profile, &mut actual)?;
+                    let right_fits = nonroot::fits(&entries[middle..], 0, &profile, &mut actual)?;
+                    split = left_fits && right_fits;
+                    !split
+                } else {
+                    false
+                }
             } else {
+                true
+            };
+            if recursive {
                 let added = nonroot::prove(
                     &nonroot::Operation {
                         image,

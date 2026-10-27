@@ -116,6 +116,23 @@ pub(super) fn fits<P: WriteProfile, const N: usize>(
     Ok(layout.length <= PAGE_BYTES - ENTRY_START)
 }
 
+#[cfg(feature = "ace16-write-preview")]
+pub(super) fn fits_fresh<P: WriteProfile, const N: usize>(
+    entries: &[Entry<P::Key>],
+    profile: &P,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<bool, EditError> {
+    let layout = measure(
+        entries,
+        0,
+        &|entry| encoding::entry::<P, N>(entry, profile),
+        budget,
+        cancelled,
+    )?;
+    Ok(layout.length <= PAGE_BYTES - ENTRY_START)
+}
+
 fn page_with<K, const N: usize>(
     original: &[u8],
     entries: &[Entry<K>],

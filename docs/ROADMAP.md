@@ -102,8 +102,11 @@ Delivered read/query and engineering foundations:
   The [exact typed facade](testing/ACE16_FIXED_INDEX_SPLITS.md) now implements
   Byte/Int16/Int32/Int64/Currency recursive splits with request-derived final
   authority and a fresh-output engineering consumer; 124 distinct scoped runtime
-  functions and strict/minimal/docs checks pass. Oversized balanced halves still
-  refuse; other codecs, general allocation and normal saves remain unfinished.
+  functions and strict/minimal/docs checks pass. The subsequent
+  [repeated-overflow extension](testing/ACE16_REPEATED_INDEX_SPLITS.md) now splits
+  oversized halves with independent capacity/topology audits, passing 139 distinct
+  scoped functions, including fifteen new controls. Other codecs, general
+  allocation and normal saves remain unfinished.
   Its [eight first original-file candidates](testing/FIXED_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
   now match independent complete images and fresh getter/index/map checks on the
   unchanged sources, through a committed frozen consumer and sixteen successful
@@ -112,8 +115,9 @@ Delivered read/query and engineering foundations:
   now passes nine source commands and thirteen separate reference commands:
   four facade no-ops preserve complete originals, four prior MAX attempts refuse
   atomically and four public updates split the remaining oversized halves. Their
-  six-EOF-page topology is measured; repeated-split implementation and candidate
-  qualification remain unfinished.
+  six-EOF-page topology is measured. Repeated splitting is now implemented in the
+  engineering services; candidate qualification on those four originals still
+  requires a new frozen committed consumer and independent replay.
   Their [separate MAX reference actions](testing/INTEGRAL_INDEX_SPLIT_OBSERVATIONS.md)
   now record eight successful public updates and eight old-consumer atomic
   refusals on unchanged originals. All sixteen physical roots split; new typed

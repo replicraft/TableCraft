@@ -7,10 +7,14 @@ use crate::{
     EditError, InspectError,
     format::{page::PAGE_BYTES, reader::Reader},
     limits::MAX_INDEX_DEPTH,
-    table::indexes::header::{IndexHeader, LEVEL_OFFSET},
+    table::indexes::{
+        header::{IndexHeader, LEVEL_OFFSET},
+        page::NODE,
+    },
 };
 use std::io::Cursor;
 
+const KIND_OFFSET: usize = std::mem::offset_of!(IndexHeader, kind);
 const PREVIOUS_OFFSET: usize = std::mem::offset_of!(IndexHeader, previous);
 const NEXT_OFFSET: usize = std::mem::offset_of!(IndexHeader, next);
 const TAIL_OFFSET: usize = std::mem::offset_of!(IndexHeader, tail);
@@ -203,5 +207,8 @@ fn serialize(
     after[NEXT_OFFSET..NEXT_OFFSET + size_of::<u32>()].copy_from_slice(&node.next.to_le_bytes());
     after[TAIL_OFFSET..TAIL_OFFSET + size_of::<u32>()].copy_from_slice(&tail.to_le_bytes());
     after[LEVEL_OFFSET] = node.height;
+    if node.grown_root {
+        after[KIND_OFFSET] = NODE;
+    }
     Ok(after)
 }

@@ -30,3 +30,7 @@ pub(crate) mod nonroot_model;
 
 #[cfg(feature = "ace16-write-preview")]
 pub(crate) use crate as engine;
+
+#[cfg(feature = "ace16-write-preview")]
+#[path = "test_support/fixed_split.rs"]
+pub(crate) mod fixed_split;

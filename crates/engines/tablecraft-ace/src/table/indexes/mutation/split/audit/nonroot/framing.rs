@@ -68,11 +68,13 @@ pub(super) fn prove(
         }
         Source::GrownRoot(before) => {
             let old = IndexHeader::read(before)?;
-            if old.kind != NODE
+            let leaf_root = old.kind == LEAF && before[LEVEL_OFFSET] == 0;
+            if (!leaf_root && old.kind != NODE)
                 || before[LEVEL_OFFSET].checked_add(1) != Some(spec.height)
                 || old.previous.get() != 0
                 || old.next.get() != 0
-                || spec.tail != 0
+                || (leaf_root && spec.tail == 0)
+                || (!leaf_root && spec.tail != 0)
             {
                 return Err(EditError::Preservation);
             }
@@ -92,7 +94,8 @@ pub(super) fn prove(
             || (MASK_START..end).contains(&position)
             || (fresh || grown)
                 && ((TAIL_OFFSET..TAIL_OFFSET + size_of::<u32>()).contains(&position)
-                    || position == LEVEL_OFFSET)
+                    || position == LEVEL_OFFSET
+                    || (grown && position == KIND_OFFSET))
             || fresh
                 && (position == KIND_OFFSET
                     || position == VERSION_OFFSET
@@ -105,13 +108,26 @@ pub(super) fn prove(
     Ok(())
 }
 
-pub(super) fn layout(
+struct Measurement {
+    prefix: usize,
+    bytes: usize,
+}
+
+pub(super) fn fits(
     entries: &[Entry],
-    original_prefix: usize,
-    raw: &[u8],
+    seed: usize,
     profile: &SingleProfile,
     actual: &mut Reader<'_, Cursor<&[u8]>>,
-) -> Result<usize, EditError> {
+) -> Result<bool, EditError> {
+    Ok(measure(entries, seed, profile, actual)?.bytes <= PAGE_BYTES - ENTRY_START)
+}
+
+fn measure(
+    entries: &[Entry],
+    original_prefix: usize,
+    profile: &SingleProfile,
+    actual: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<Measurement, EditError> {
     let mut total = 0_usize;
     let mut common = 0_usize;
     let mut first = [0; encoding::MAX_ENTRY_BYTES];
@@ -140,8 +156,29 @@ pub(super) fn layout(
     }
     let saved = entries.len().saturating_sub(1);
     let mut prefix = original_prefix.min(common);
-    if total - prefix * saved > PAGE_BYTES - ENTRY_START {
+    let retained = total
+        .checked_sub(prefix.checked_mul(saved).ok_or(EditError::Preservation)?)
+        .ok_or(EditError::Preservation)?;
+    if retained > PAGE_BYTES - ENTRY_START {
         prefix = common;
+    }
+    let bytes = total
+        .checked_sub(prefix.checked_mul(saved).ok_or(EditError::Preservation)?)
+        .ok_or(EditError::Preservation)?;
+    Ok(Measurement { prefix, bytes })
+}
+
+pub(super) fn layout(
+    entries: &[Entry],
+    original_prefix: usize,
+    raw: &[u8],
+    profile: &SingleProfile,
+    actual: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<usize, EditError> {
+    let measured = measure(entries, original_prefix, profile, actual)?;
+    let prefix = measured.prefix;
+    if measured.bytes > PAGE_BYTES - ENTRY_START {
+        return Err(EditError::Preservation);
     }
     let header = IndexHeader::read(raw)?;
     if usize::from(header.prefix.get()) != prefix {
@@ -167,10 +204,14 @@ pub(super) fn layout(
         .budget
         .charge(Resource::Steps, MASK_BYTES as u64)
         .map_err(InspectError::from)?;
-    if raw[MASK_START..ENTRY_START] != expected_bitmap
+    if end != measured.bytes
+        || raw[MASK_START..ENTRY_START] != expected_bitmap
         || usize::from(header.free.get()) != PAGE_BYTES - ENTRY_START - end
     {
         return Err(EditError::Preservation);
     }
     Ok(ENTRY_START + end)
 }
+
+#[cfg(test)]
+mod tests;

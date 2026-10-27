@@ -9715,8 +9715,14 @@ right tails. All row references, typed values, complete key/ROW streams, alias
 sharing, maps and counters are checked; unused public scratch is measured rather
 than used as a candidate golden. The two compact receipts retain exact executed
 private helpers and separately identified maintained public wrappers. A saved
-verifier repeats no fixture calls. Repeated kernel splitting, odd partition
-policy, deeper repeated parents and native Access qualification remain separate.
+verifier repeats no fixture calls. The subsequent
+[engineering implementation](ACE16_REPEATED_INDEX_SPLITS.md) has independent
+full-image literal controls for repeated leaf/parent splits, NULL peers, aliases,
+protected padding, map effects and a multi-offender schedule discriminator. Its
+139 distinct runtime functions include fifteen new controls. These synthetic
+fixtures do not qualify the four original candidates, odd partition/native
+allocation policy or native Access saves. Initial fixture and causal fault
+experiments remain preserved separately in the scoped result.
 
 ### Mixed indirect-map original-file replacement acceptance
 

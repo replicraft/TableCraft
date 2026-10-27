@@ -138,6 +138,33 @@ pub(super) fn edit(
     if entries.len() < 2 {
         return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
     }
+    let middle = entries.len() / 2;
+    let left_fits = repack::fits_fresh::<_, { encoding::MAX_ENTRY_BYTES }>(
+        &entries[..middle],
+        profile,
+        reader.budget,
+        reader.cancelled,
+    )?;
+    let right_fits = repack::fits_fresh::<_, { encoding::MAX_ENTRY_BYTES }>(
+        &entries[middle..],
+        profile,
+        reader.budget,
+        reader.cancelled,
+    )?;
+    if !left_fits || !right_fits {
+        return nonroot::edit(
+            &nonroot::Operation {
+                image,
+                index,
+                profile,
+                keys: &prepared.entries,
+            },
+            &prepared.tree,
+            plan,
+            reader,
+            patches,
+        );
+    }
     let length = plan
         .length
         .checked_add(2 * PAGE_BYTES)
@@ -156,7 +183,6 @@ pub(super) fn edit(
         left,
         count: entries.len(),
     };
-    let middle = entries.len() / 2;
     let left_page = pages::leaf(
         owner,
         0,

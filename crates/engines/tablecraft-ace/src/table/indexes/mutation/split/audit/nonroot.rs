@@ -4,7 +4,11 @@ mod replay;
 
 use super::super::super::{profile::SingleProfile, tree::Tree};
 use super::maps;
-use crate::{EditError, NativeImage, format::reader::Reader, table::indexes::page::KeyRef};
+use crate::{
+    EditError, NativeImage,
+    format::reader::Reader,
+    table::indexes::page::{Entry, KeyRef},
+};
 use std::io::Cursor;
 
 pub(super) struct Operation<'a> {
@@ -27,4 +31,13 @@ pub(super) fn prove(
     progress: &mut Progress<'_>,
 ) -> Result<Vec<u32>, EditError> {
     replay::prove(operation, actual, progress)
+}
+
+pub(super) fn fits(
+    entries: &[Entry],
+    seed: usize,
+    profile: &SingleProfile,
+    actual: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<bool, EditError> {
+    framing::fits(entries, seed, profile, actual)
 }

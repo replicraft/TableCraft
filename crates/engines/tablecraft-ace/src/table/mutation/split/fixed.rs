@@ -26,7 +26,8 @@ impl NativeImage {
     /// Existing NULL peers retain their masks/payloads and indexed membership;
     /// NULL requests and new Boolean/float/DATE/GUID/Decimal/composite allocation
     /// are not admitted. Qualified composite indexes may still be maintained when
-    /// their existing pages fit. All original gates and final constraints apply.
+    /// their existing pages fit. Oversized integral halves are split again in
+    /// deterministic paid passes. All original gates and final constraints apply.
     ///
     /// This feature-gated engineering candidate is non-journalable and does not
     /// widen ordinary saves or the existing fixed/page/variable preview methods.
