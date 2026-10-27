@@ -5,11 +5,13 @@ use crate::{
 };
 use tablecraft_core::limits::LimitError;
 
+const VALUE_BYTES: usize = 1024;
+
 #[test]
 fn quoted_text_nul_empty_null_and_binary_are_exact_distinct_carriers() {
     let raw =
         b"0\ttext\t\"a\tb\0\n\"\ttext\t\"a\"\"b\"\n1\tnull\t\ttext\t\n2\tbinary\t00fF\tbinary\t\n";
-    let rows = parse(raw, &mut budget()).unwrap();
+    let rows = parse(raw, &mut budget(), VALUE_BYTES).unwrap();
     assert_eq!(rows.len(), 3);
     assert_eq!(rows[0].row(), 0);
     assert_eq!(rows[0].expected(), &Value::Text("a\tb\0\n".into()));
@@ -34,17 +36,22 @@ fn malformed_kinds_fields_rows_hex_and_utf8_never_return_a_partial_batch() {
         b"0\tText\tx\ttext\ty\n",
         b"0\ttext\tx\ttext\n",
     ] {
-        assert!(parse(bad, &mut budget()).is_err());
+        assert!(parse(bad, &mut budget(), VALUE_BYTES).is_err());
     }
 }
 
 #[test]
 fn request_count_value_width_and_hostile_field_count_remain_bounded() {
     let full = "0\tnull\t\tnull\t\n".repeat(MAX_REQUESTS);
-    assert_eq!(parse(full.as_bytes(), &mut budget()).unwrap().len(), 4096);
+    assert_eq!(
+        parse(full.as_bytes(), &mut budget(), VALUE_BYTES)
+            .unwrap()
+            .len(),
+        4096
+    );
     let excessive = full + "0\tnull\t\tnull\t\n";
     assert!(
-        parse(excessive.as_bytes(), &mut budget())
+        parse(excessive.as_bytes(), &mut budget(), VALUE_BYTES)
             .err()
             .unwrap()
             .to_string()
@@ -52,7 +59,7 @@ fn request_count_value_width_and_hostile_field_count_remain_bounded() {
     );
     let wide = format!("0\ttext\t{}\tnull\t\n", "x".repeat(1025));
     assert!(
-        parse(wide.as_bytes(), &mut budget())
+        parse(wide.as_bytes(), &mut budget(), VALUE_BYTES)
             .err()
             .unwrap()
             .to_string()
@@ -60,7 +67,7 @@ fn request_count_value_width_and_hostile_field_count_remain_bounded() {
     );
     let hostile = "\t".repeat(16_384);
     assert!(
-        parse(hostile.as_bytes(), &mut budget())
+        parse(hostile.as_bytes(), &mut budget(), VALUE_BYTES)
             .err()
             .unwrap()
             .to_string()
@@ -85,7 +92,7 @@ fn parser_scratch_rows_and_work_share_typed_operation_limits() {
             Resource::Steps,
         ),
     ] {
-        let error = parse(raw, &mut allowance).err().unwrap();
+        let error = parse(raw, &mut allowance, VALUE_BYTES).err().unwrap();
         assert_eq!(
             error.downcast_ref::<LimitError>().unwrap().resource,
             expected
@@ -103,6 +110,6 @@ fn file_length_ceiling_refuses_before_capture_or_parsing() {
         .unwrap()
         .set_len(16 * 1024 * 1024 + 1)
         .unwrap();
-    let error = load(&path, &mut budget()).err().unwrap();
+    let error = load(&path, &mut budget(), VALUE_BYTES).err().unwrap();
     assert!(error.to_string().contains("16 MiB"));
 }
