@@ -86,6 +86,12 @@ python3 docs/testing/capture_french_legacy_indexes.py \
 
 ## Local physical-read implementation checks
 
+This section records the physical-read milestone. The later separate
+[complete comparison provider](FRENCH_COMPARISON_OBSERVATIONS.md) adds explicit
+French field comparison through the resolver; General constructors and matching
+APIs retain their own boundaries. Its evidence does not retroactively expand the
+frozen physical CLI profile below.
+
 The subsequent engine slice admits only exact French `1036/0/0` single Short Text
 physical encoding, complete reads/checks, NULL selection and explicit ranges.
 It reuses the existing Legacy weight data, pads the complete secondary character

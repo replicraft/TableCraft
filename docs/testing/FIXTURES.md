@@ -9191,3 +9191,14 @@ General Short/Memo exact 1033/0/0. Eighteen Memo controls per profile retain
 Read-only inspection leaves originals unchanged; raw values remain ignored.
 This field-data receipt invokes no query/comparator and establishes no native
 Access SQL/NLS order, Memo index support or ordinary write qualification.
+
+The later [native-field comparison replay](results/french-comparison-fields-replay-2026-10-26.json)
+uses the same immutable originals: 112 controls across ordinary/declared profiles
+agree, with 96 successes and 16 buffered refusals, 1,204 rows and 1,548 cells.
+Short expectations use independent exact keys; clean-Latin long Memo expectations
+use the pinned measured-handler model, not truncated index keys or native SQL.
+Actual database defaults are separately General2010/GeneralLegacy, so built-in
+operation-default search is distinct from field-policy comparison. All original
+sizes/selectors remain, with explicit separate native/comparison allowances.
+The initial 60 native work refusals, sole-native-step Len probe and executed
+source snapshots remain preserved. See the owning field observations for limits.
