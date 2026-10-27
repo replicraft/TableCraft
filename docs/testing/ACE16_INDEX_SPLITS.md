@@ -143,7 +143,7 @@ reports 100 distinct runtime functions: 70 existing regressions, 23 primary
 functions and seven private controls. Ten functions are new in this slice.
 Three compile-fail docs, scoped strict lint, standalone minimal compilation,
 warnings-denied rustdoc and formatting also pass. The original root-leaf result
-record remains unchanged. Its literal tests cover
+record remains unchanged. The new literal tests cover
 first/middle/last leaf insertions, both directions and node forms, full row-tie
 bounds, aliases and physical owners sharing map bytes, nonoverflowing NULL
 peers, explicit parent-capacity refusal, quotas/cancellation and retry. Private
