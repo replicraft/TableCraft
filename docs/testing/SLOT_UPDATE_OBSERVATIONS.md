@@ -158,3 +158,52 @@ getters, images and reports stay ignored and unchanged.
 No native Access SQL/action/save, per-row timing equivalence, arbitrary encoding,
 record-growth, unsupported index or normal editing profile is qualified. Later
 batch, boundary and forwarding experiments are separate corpora and counts.
+
+## Separate multi-row final-image supplement
+
+A separately frozen plan adds **eight scenarios / 16 native candidates**, not
+additional executions or changed expectations for the original 162. All 16 pass
+on their first attempt. Each scenario runs physical and reversed request order;
+all eight pairs produce identical complete candidate bytes.
+
+| Scenario, each V2016/V2019 | Field and original IDs | Original span |
+| --- | --- | ---: |
+| Unique Text swap | `UniqueLegacy.Label`, 1 and 2 | 11 bytes |
+| Unique Binary swap | `UniqueModern.Bytes`, 1 and 2 | 8 bytes |
+| Indexed Text pair | `IndexedLegacy.Label`, 4 and 5 | 6 bytes |
+| Indexed Binary cycle | `IndexedModern.Bytes`, 3, 9 and 15 | 7 bytes |
+
+Requests use original typed getter values as preconditions and permute existing
+valid values within equal spans. The genuine unique swaps preserve the complete
+unique-value multiset. Indexed tuple uniqueness retains the unchanged primary ID
+component. Native candidates originate from untouched originals, never a staged
+reference copy, and use the same frozen consumer/build as the first 162 controls.
+
+Four separate direct public first-swap calls correctly refuse uniqueness and
+leave byte-identical copies. An independent **final-state** oracle instead uses
+explicit unused sentinels: `uniq-9999` or eight `FF` bytes, then three safe calls
+for each unique swap. Nonunique permutations use ordinary two/three-call
+sequences. There are 22 successful staging calls. Those intermediate public
+operations are not an atomic SQL statement or the engineering batch's per-row
+semantics; the direct refusals remain separate results.
+
+All 16 candidates match independently constructed final typed rows and complete
+public final index orders/semantic keys. Original slot spans, other bytes/mask
+bits, retained key/row entries, leaf populations, full ancestor maxima, physical
+aliases, topology, allocations, historical counters and opaque values pass the
+same preservation checks. The supplement records 66 commands: 26 public actions,
+eight final reference getters, 16 native calls and 16 candidate getters. Inputs,
+tools and the original 162 plan/reports remain unchanged.
+
+The [separate receipt](results/ace16-slot-batch-originals-2026-10-26.json) pins the
+pre-call plan (`99ceb013e5c3de1ea87d5bd349b1d02e0679869cffc4fb237bfffe0e2c34021d`),
+actual private execution sources, requests, stages, getters and outputs.
+The parameterized [recipe/proof](slot_preview_originals/batch.py) reproduces the
+same eight scenario definitions. The
+[batch runner](slot_preview_originals/batch_replay.py) accepts explicit plan/hash,
+preparation, frozen artifact/build receipt, JAR/classes and fresh work/report
+paths. Its `--verify-existing` mode is checked against these existing images;
+no historical native or public action is reissued by that check. As with the
+first 162, current public wrapper sources are distinguished from the archived
+private execution sources. No new engine capability, normal write path, native
+Access save/SQL or direct per-row uniqueness parity is qualified.
