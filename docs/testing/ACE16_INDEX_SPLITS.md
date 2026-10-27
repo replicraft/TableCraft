@@ -11,6 +11,10 @@ Microsoft Access/data-macro qualification. Existing fixed, nullable, slot, page
 and variable preview APIs retain their contracts. ACE 16 compatibility remains the overall target; this exact codec and allocation
 profile does not qualify every index split.
 
+The separate [exact fixed-scalar facade](ACE16_FIXED_INDEX_SPLITS.md) also accepts
+non-NULL Byte, Int16, Int64 and Currency requests through `FixedScalarUpdate`,
+while retaining this Int32 API and its request ordering.
+
 ## Admission and exact operation
 
 Only the existing plain, unencoded, subversion-zero ACE 16 2016/2019 preview

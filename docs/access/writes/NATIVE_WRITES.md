@@ -94,7 +94,13 @@ internal-parent overflow and retained-root growth with independent full key/ROW,
 capacity, framing, sibling and map audits. Its 108 scoped runtime checks pass;
 its [four original-file recursive candidates](../../testing/RECURSIVE_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
 now pass separate complete-image/getter/map proofs through the committed consumer.
-Other codecs, map growth and production saves retain their separate gaps.
+The separate [exact typed split facade](../../testing/ACE16_FIXED_INDEX_SPLITS.md)
+now reuses this planner/auditor for non-NULL Byte, Int16, Int32, Int64 and Currency
+updates. Actual field kind/width and original request bytes are rebound during
+final authority; the old Int32 preflight remains unchanged. Its 124 distinct
+runtime checks pass. Oversized balanced halves refuse rather than creating an
+invalid page; repeated splitting, broader codecs, map growth, original typed
+candidate acceptance and production saves retain their separate gaps.
 A separate [fixed numeric reference phase](../../testing/INTEGRAL_INDEX_SPLIT_OBSERVATIONS.md)
 now measures Byte, Int16, Int64 and Currency root-leaf splits on both unchanged
 originals. Its eight successful Jackcess updates and eight frozen old-consumer

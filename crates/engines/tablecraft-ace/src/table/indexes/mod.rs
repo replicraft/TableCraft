@@ -94,4 +94,6 @@ pub use read::{
 };
 
 #[cfg(feature = "ace16-write-preview")]
-pub(in crate::table) use mutation::{SplitIndexPlan, splitting_patches as index_split_patches};
+pub(in crate::table) use mutation::{
+    SplitIndexPlan, split_scalar_supported, splitting_patches as index_split_patches,
+};

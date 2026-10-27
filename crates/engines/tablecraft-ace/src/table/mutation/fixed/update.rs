@@ -35,7 +35,13 @@ impl FixedScalarUpdate {
     }
 }
 
-pub(super) struct EncodedUpdate<const WIDTH: usize> {
+impl RowAssignment for FixedScalarUpdate {
+    fn row(&self) -> usize {
+        self.row()
+    }
+}
+
+pub(in crate::table::mutation) struct EncodedUpdate<const WIDTH: usize> {
     pub row: usize,
     pub expected: [u8; WIDTH],
     pub value: [u8; WIDTH],

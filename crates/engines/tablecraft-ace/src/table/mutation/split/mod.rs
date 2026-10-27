@@ -1,11 +1,13 @@
-//! Separate fixed Int32 candidates with qualified recursive index splitting.
+//! Separate fixed integral/Currency candidates with qualified recursive index splitting.
 mod authority;
+mod binding;
 mod finish;
+mod fixed;
 #[cfg(test)]
 mod tests;
 
 use super::physical::Patch;
-use super::{Ace16WritePreview, EditError, Int32Update, field, gates, physical, preview, rows};
+use super::{Ace16WritePreview, EditError, Int32Update, gates, preview};
 use crate::{
     InspectError, NativeImage, TableCheck,
     format::reader::Reader,
@@ -13,8 +15,8 @@ use crate::{
     limits::MAX_LIVE_ROWS,
     table::indexes::{IndexKeyUpdate, MutationKey, SplitIndexPlan, index_split_patches},
 };
+use binding::{Binding, Scope};
 use tablecraft_core::limits::ResourceBudget;
-use tablecraft_schema::ScalarType;
 
 impl NativeImage {
     /// Preview fixed non-NULL Int32 replacements, including bounded recursive index splits.
@@ -60,9 +62,9 @@ struct Operation<'a> {
     requests: &'a [Int32Update],
 }
 
-struct Staged {
+struct Staged<const WIDTH: usize = { size_of::<i32>() }> {
     structural: TableCheck,
-    patches: Vec<Patch<{ size_of::<i32>() }>>,
+    patches: Vec<Patch<WIDTH>>,
     plan: SplitIndexPlan,
 }
 
@@ -72,20 +74,36 @@ fn stage(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Staged, EditError> {
-    let table = operation.table;
-    let column = operation.column;
-    let updates = operation.requests;
+    let structural = preflight(image, operation, budget, cancelled)?;
+    stage_checked(image, operation, structural, budget, cancelled)
+}
+
+fn preflight(
+    image: &NativeImage,
+    operation: &impl Scope,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<TableCheck, EditError> {
     check(budget, cancelled)?;
     preview::qualify(image)?;
-    if updates.len() > MAX_LIVE_ROWS {
+    if operation.request_count() > MAX_LIVE_ROWS {
         return Err(InspectError::StructureLimit.into());
     }
-    rows::unique(updates, budget, cancelled)?;
-    let structural = gates::before(image, table, budget, cancelled)?;
+    operation.unique(budget, cancelled)?;
+    gates::before(image, operation.table(), budget, cancelled)
+}
+
+fn stage_checked<const WIDTH: usize>(
+    image: &NativeImage,
+    operation: &impl Binding<WIDTH>,
+    structural: TableCheck,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Staged<WIDTH>, EditError> {
     let schema = structural.schema();
-    let position = field::fixed_column(schema, column, ScalarType::Int32, size_of::<i32>())?;
+    let (position, selected_kind) = binding::position(operation, schema)?;
     let mut source = image.reader();
-    let patches = physical::patches(
+    let patches = operation.patches(
         &mut Reader {
             source: &mut source,
             header: image.catalog().header(),
@@ -95,7 +113,6 @@ fn stage(
         },
         schema,
         position,
-        updates,
     )?;
     let indexed = structural.indexes().iter().any(|index| {
         index
@@ -111,7 +128,7 @@ fn stage(
             .map_err(InspectError::from)?;
         keys.try_reserve_exact(patches.len())
             .map_err(|_| InspectError::Allocation)?;
-        let kind = MutationKey::new(ScalarType::Int32)?;
+        let kind = MutationKey::new(selected_kind)?;
         for patch in &patches {
             check(budget, cancelled)?;
             keys.push(IndexKeyUpdate {

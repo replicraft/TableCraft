@@ -2,7 +2,7 @@ use super::super::{EditError, WriteBlocker};
 use tablecraft_core::values::Value;
 use tablecraft_schema::ScalarType;
 
-pub(super) fn encode<const WIDTH: usize>(
+pub(in crate::table::mutation) fn encode<const WIDTH: usize>(
     kind: ScalarType,
     value: &Value,
 ) -> Result<[u8; WIDTH], EditError> {

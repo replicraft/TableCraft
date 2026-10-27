@@ -12,7 +12,9 @@ mod split;
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) use plan::splitting_patches;
 #[cfg(feature = "ace16-write-preview")]
-pub(in crate::table) use split::Plan as SplitIndexPlan;
+pub(in crate::table) use split::{
+    Plan as SplitIndexPlan, supported_scalar as split_scalar_supported,
+};
 mod profile;
 mod repack;
 #[cfg(feature = "ace16-write-preview")]

@@ -99,6 +99,12 @@ Delivered read/query and engineering foundations:
   now establish new-left/retained-right internal splitting on both originals,
   with a retained height-two root and two EOF pages. The old consumer still
   refuses those edits; new-kernel candidate acceptance is recorded separately above.
+  The [exact typed facade](testing/ACE16_FIXED_INDEX_SPLITS.md) now implements
+  Byte/Int16/Int32/Int64/Currency recursive splits with request-derived final
+  authority and a fresh-output engineering consumer; 124 distinct scoped runtime
+  functions and strict/minimal/docs checks pass. Oversized balanced halves still
+  refuse; other codecs, general allocation, original typed candidate replay and
+  normal saves remain unfinished.
   Their [separate MAX reference actions](testing/INTEGRAL_INDEX_SPLIT_OBSERVATIONS.md)
   now record eight successful public updates and eight old-consumer atomic
   refusals on unchanged originals. All sixteen physical roots split; new typed

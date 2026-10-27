@@ -9644,3 +9644,21 @@ The saved verifier rebuilds six snapshots with 2,808 repeated record-body and 48
 live-chunk comparisons; these are comparison counts, not distinct stored objects.
 No selected-map admission, indirect candidate layout, map growth, reclamation or
 native Access save qualification is established.
+
+### Exact fixed-scalar split literals and consumer
+
+The [typed split contract](ACE16_FIXED_INDEX_SPLITS.md) adds independent literal
+Byte/Int16/Int64/Currency fixtures for both format codes, physical directions,
+row ties, aliases, NULL peers and root/non-root/parent-only growth. All eight
+independent functions pass. The initial positive parent loop incorrectly assumed
+that wide descending balanced halves fit: the exact 600-child/MAX case needs
+4,785 bytes in a 3,616-byte region and is retained as an atomic refusal. The same
+source with exact value 1 supplies the successful wide parent-growth control.
+No production correction or smaller source was used to satisfy that failure.
+
+The [scoped record](results/ace16-fixed-index-splits-native-2026-10-27.json) retains
+initial source/log identities, exact-width request authority/preflight controls,
+working clap consumer tests and the final 124 distinct runtime checks. The
+original eight-case expected-image model remains separate and unchanged;
+these literals and consumer checks do not establish a committed original-file
+candidate replay, Microsoft Access compatibility or normal save qualification.

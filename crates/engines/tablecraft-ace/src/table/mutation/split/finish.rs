@@ -1,6 +1,6 @@
 //! Append-aware split certification returns no journalable edit plan.
 use super::super::{Ace16WritePreview, EditError, WriteBlocker, gates, preservation};
-use super::{Operation, Staged};
+use super::{Operation, Staged, binding::Binding};
 use crate::{
     IndexCheckStatus, InspectError, NativeImage, check_table, check_table_constraints,
     format::page::PAGE_BYTES, header::check, inspect_catalog, limits::MAX_IMAGE_BYTES,
@@ -16,7 +16,17 @@ pub(super) fn finish(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Ace16WritePreview, EditError> {
-    let table = operation.table;
+    bound(image, operation, staged, budget, cancelled)
+}
+
+pub(super) fn bound<const WIDTH: usize>(
+    image: NativeImage,
+    operation: &impl Binding<WIDTH>,
+    staged: &Staged<WIDTH>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Ace16WritePreview, EditError> {
+    let table = operation.table();
     let structural = &staged.structural;
     let fields = &staged.patches;
     let plan = &staged.plan;
