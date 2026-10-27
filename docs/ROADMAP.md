@@ -68,6 +68,9 @@ Delivered read/query and engineering foundations:
   two represented EOF leaves, with request-derived row authority and independent
   map/framing audits. Deeper and other-codec splits remain unfinished; normal
   saves and native Access qualification remain separate.
+  Its [two unchanged-original candidates](testing/ROOT_SPLIT_UPDATE_OBSERVATIONS.md)
+  now pass their first complete-image, typed-value and index/reference proofs
+  through a frozen committed consumer.
   A separate [48-control Text/Binary corpus](testing/ENCODED_DELETE_OBSERVATIONS.md)
   checks 36 candidates and twelve unsupported-profile refusals on the same
   committed tool, including the previously refused height-two delete-all cases.

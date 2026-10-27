@@ -1,0 +1,872 @@
+{
+  "date": "2026-10-27",
+  "scope": "Two original ACE16 fixed Int32 root-leaf split engineering candidates; no native Access save/data-macro or ordinary writer qualification",
+  "actual": {
+    "session": 88428,
+    "terminal_status": 0,
+    "first_attempt": true,
+    "candidates": 2,
+    "disagreements": 0,
+    "commands": 6,
+    "native_calls": 2,
+    "read_only_getter_map_calls": 4,
+    "public_update_calls": 0,
+    "candidate_retries": 0,
+    "immutable_inputs_unchanged": true
+  },
+  "build": {
+    "receipt": {
+      "path": "docs/testing/results/ace16-root-split-example-build-2026-10-27.json",
+      "bytes": 30596,
+      "sha256": "a9d4fb2ae812b7351e88381ed35f28e216beafb5f4fc3c00330891f37b339b3d"
+    },
+    "artifact": {
+      "path": ".cache/tablecraft-bin/ace16-root-split-20261027",
+      "bytes": 18402984,
+      "sha256": "8245c35b6b533dbdc8f6dec5fed74aab0c0fdaf0da73e5df529dd3053eae4709"
+    },
+    "compiled_revision": "0c0dc6d904bd112236a383c74b04192ee6c5f90f",
+    "immutable_selected_Git_objects": 143
+  },
+  "frozen_plan": {
+    "path": ".cache/ace16-index-split-acceptance-next-20261027/plan.json",
+    "bytes": 41295,
+    "sha256": "ea06b8c3d1fd426e6680f24c4bb7ae5beac086a7e5b5f098e9b318d3dd0582db"
+  },
+  "executed_private_sources": [
+    {
+      "path": ".cache/ace16-index-split-acceptance-next-20261027/prepare.py",
+      "bytes": 4250,
+      "sha256": "a5d8911589ca13ad53fb390c56ae4f89d863e4dd114e74bf0a9c0edd0da0521a"
+    },
+    {
+      "path": ".cache/ace16-index-split-acceptance-next-20261027/proof.py",
+      "bytes": 4528,
+      "sha256": "d932823b6b96ce678cefce678f7fe7bb7b6d6aa8f687e7d7dbac2138952ade28"
+    },
+    {
+      "path": ".cache/ace16-index-split-acceptance-next-20261027/replay.py",
+      "bytes": 10880,
+      "sha256": "5f2d044799c6a24408b0e62cb0081eb5225fc3be3f488ba232918baf494d4af4"
+    }
+  ],
+  "executed_source_archives": [
+    {
+      "executed_source": {
+        "path": ".cache/ace16-index-split-acceptance-next-20261027/replay.py",
+        "bytes": 10880,
+        "sha256": "5f2d044799c6a24408b0e62cb0081eb5225fc3be3f488ba232918baf494d4af4"
+      },
+      "archive": {
+        "path": ".cache/ace16-index-split-acceptance-first-20261027/run/executed-sources/replay.py",
+        "bytes": 10880,
+        "sha256": "5f2d044799c6a24408b0e62cb0081eb5225fc3be3f488ba232918baf494d4af4"
+      }
+    },
+    {
+      "executed_source": {
+        "path": ".cache/ace16-index-split-acceptance-next-20261027/proof.py",
+        "bytes": 4528,
+        "sha256": "d932823b6b96ce678cefce678f7fe7bb7b6d6aa8f687e7d7dbac2138952ade28"
+      },
+      "archive": {
+        "path": ".cache/ace16-index-split-acceptance-first-20261027/run/executed-sources/proof.py",
+        "bytes": 4528,
+        "sha256": "d932823b6b96ce678cefce678f7fe7bb7b6d6aa8f687e7d7dbac2138952ade28"
+      }
+    },
+    {
+      "executed_source": {
+        "path": ".cache/ace16-index-split-acceptance-next-20261027/plan.json",
+        "bytes": 41295,
+        "sha256": "ea06b8c3d1fd426e6680f24c4bb7ae5beac086a7e5b5f098e9b318d3dd0582db"
+      },
+      "archive": {
+        "path": ".cache/ace16-index-split-acceptance-first-20261027/run/executed-sources/plan.json",
+        "bytes": 41295,
+        "sha256": "ea06b8c3d1fd426e6680f24c4bb7ae5beac086a7e5b5f098e9b318d3dd0582db"
+      }
+    }
+  ],
+  "precall_snapshot": {
+    "path": ".cache/ace16-index-split-acceptance-first-20261027/run/before-first-call.json",
+    "bytes": 9823,
+    "sha256": "f7fc2afeca15b7de1d29ee42dca8e43002833814f7e2a94b85055c2cf281b9cd"
+  },
+  "raw_report": {
+    "path": ".cache/ace16-index-split-acceptance-first-20261027/run/report.json",
+    "bytes": 4448003,
+    "sha256": "4614219ac0d31fa8d1a3b71946d67e012f2661c8a24a348a20a3e782d9cf058c"
+  },
+  "first_terminal_log": {
+    "path": ".cache/ace16-index-split-acceptance-first-20261027/replay-first.log",
+    "bytes": 238,
+    "sha256": "ef3a425a27e89679927bdd0f30b72f74cf500d63751619de3d948db46d4dd0f4"
+  },
+  "before_candidate_preflight": {
+    "path": ".cache/ace16-index-split-acceptance-next-20261027/preflight-before-artifact-20261027.json",
+    "bytes": 1309,
+    "sha256": "596bc6ae247b38a2397ff45736a647c7e9d3e922fdb78db5c2a2c85becabdce3"
+  },
+  "preflight_authoring_issue": "Before native/JVM calls an ad-hoc assertion treated case.expected (whole-image facts) as scalar1. Correct exact argv inspection passed; frozen selector/program/model bytes unchanged. No candidate or public action retry.",
+  "immutable_runtime_inputs": [
+    {
+      "path": ".cache/ace16-index-split-original-actions-initial-20261026/report.json",
+      "bytes": 8566033,
+      "sha256": "e833421cdb38701bac257d34db2dcf8a2c0fdb45f670b4fe7c96fd8076e60137"
+    },
+    {
+      "path": ".cache/ace16-index-split-next-20261026/original-future-map-cells.json",
+      "bytes": 1936,
+      "sha256": "9d64ba602f64b317cbe16129336a9528c7b6500d3a01b723ed0ef9f0bb685208"
+    },
+    {
+      "path": ".cache/ace16-index-split-acceptance-next-20261027/proof.py",
+      "bytes": 4528,
+      "sha256": "d932823b6b96ce678cefce678f7fe7bb7b6d6aa8f687e7d7dbac2138952ade28"
+    },
+    {
+      "path": ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+      "bytes": 987136,
+      "sha256": "ebb1f05f264dddf5e8195633a0bd5077f5ea6bb1211da0943086a1dbf713ff80"
+    },
+    {
+      "path": ".cache/ace16-index-split-original-actions-initial-20261026/V2016-public-reference.accdb",
+      "bytes": 995328,
+      "sha256": "9c957d7f6bf8cb663ae886e04c40c60fa985d0ce221c412a98e33e857095d046"
+    },
+    {
+      "path": ".cache/ace16-index-split-original-actions-initial-20261026/V2016-before-getter.stdout",
+      "bytes": 577708,
+      "sha256": "b7b4dc8161f1a5d820182e9746eb4513ff9ac52a6e4075b58cbf9cbab9b3078b"
+    },
+    {
+      "path": ".cache/ace16-index-split-original-actions-initial-20261026/V2016-before-maps.stdout",
+      "bytes": 4803,
+      "sha256": "59432bab1803637549004a314f3ab27ba58581eed0195a615237ab0c9d782562"
+    },
+    {
+      "path": ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+      "bytes": 1056768,
+      "sha256": "eb29beb6a77359ac517233e95f375642a03a4a1623540958d85bef161fad995b"
+    },
+    {
+      "path": ".cache/ace16-index-split-original-actions-initial-20261026/V2019-public-reference.accdb",
+      "bytes": 1064960,
+      "sha256": "be082015bb405a37e00a2b65b2f6647597470f4c00a4c221490c24b97f1c0a93"
+    },
+    {
+      "path": ".cache/ace16-index-split-original-actions-initial-20261026/V2019-before-getter.stdout",
+      "bytes": 577734,
+      "sha256": "dac44884e8c10118cd445e1efe75295dd946ddf8f3dad4914062193d55b97f9f"
+    },
+    {
+      "path": ".cache/ace16-index-split-original-actions-initial-20261026/V2019-before-maps.stdout",
+      "bytes": 5070,
+      "sha256": "ba68504a43d0322d08bf4fa9976bf34e761ae5846cde3cc85fe3b3b756803f0f"
+    },
+    {
+      "path": "docs/testing/index_split_originals/capture.py",
+      "bytes": 18394,
+      "sha256": "52662e335fe5df269d9553be034f1efeeb313c82e642b3c2fca10a24a32dfdac"
+    },
+    {
+      "path": "docs/testing/capture_delete_trees.py",
+      "bytes": 20353,
+      "sha256": "05f15179d1b4c689e1dd045617335f66b98189fbd12259838cc0ab5da4ebfdb1"
+    },
+    {
+      "path": "docs/testing/delete_reference_maps.py",
+      "bytes": 8635,
+      "sha256": "9fca51758e0f26e37dab2e27ff2c41c0e8a7a8110e9a047eda1ccb2a91eadda8"
+    },
+    {
+      "path": "docs/testing/slot_preview_originals/common.py",
+      "bytes": 2697,
+      "sha256": "4d6e13158e1c039f1a75bb12828cfa7eaf811e58e06e5e4de0f4c605e1519f8c"
+    },
+    {
+      "path": "docs/testing/BatchDeleteFixture.java",
+      "bytes": 15343,
+      "sha256": "5e670dfef8058350c5d6851bfb819d27653cdc1058c0b98bcc2a27ea65d740ea"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+      "bytes": 1407244,
+      "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+    },
+    {
+      "path": ".cache/ace16-index-split-acceptance-next-20261027/plan.json",
+      "bytes": 41295,
+      "sha256": "ea06b8c3d1fd426e6680f24c4bb7ae5beac086a7e5b5f098e9b318d3dd0582db"
+    },
+    {
+      "path": ".cache/ace16-index-split-acceptance-next-20261027/proof.py",
+      "bytes": 4528,
+      "sha256": "d932823b6b96ce678cefce678f7fe7bb7b6d6aa8f687e7d7dbac2138952ade28"
+    },
+    {
+      "path": ".cache/ace16-index-split-acceptance-next-20261027/replay.py",
+      "bytes": 10880,
+      "sha256": "5f2d044799c6a24408b0e62cb0081eb5225fc3be3f488ba232918baf494d4af4"
+    },
+    {
+      "path": "docs/testing/results/ace16-root-split-example-build-2026-10-27.json",
+      "bytes": 30596,
+      "sha256": "a9d4fb2ae812b7351e88381ed35f28e216beafb5f4fc3c00330891f37b339b3d"
+    },
+    {
+      "path": ".cache/tablecraft-bin/ace16-root-split-20261027",
+      "bytes": 18402984,
+      "sha256": "8245c35b6b533dbdc8f6dec5fed74aab0c0fdaf0da73e5df529dd3053eae4709"
+    },
+    {
+      "path": ".cache/ace16-index-split-original-actions-initial-20261026/V2016-before-getter.stdout",
+      "bytes": 577708,
+      "sha256": "b7b4dc8161f1a5d820182e9746eb4513ff9ac52a6e4075b58cbf9cbab9b3078b"
+    },
+    {
+      "path": ".cache/ace16-index-split-original-actions-initial-20261026/V2016-before-getter.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-index-split-original-actions-initial-20261026/V2016-before-maps.stdout",
+      "bytes": 4803,
+      "sha256": "59432bab1803637549004a314f3ab27ba58581eed0195a615237ab0c9d782562"
+    },
+    {
+      "path": ".cache/ace16-index-split-original-actions-initial-20261026/V2016-before-maps.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-index-split-original-actions-initial-20261026/V2016-after-getter.stdout",
+      "bytes": 577780,
+      "sha256": "e34fd02a5f80958ac4a1183a107887ba6cec0e45247d0c079979511bbb8ea018"
+    },
+    {
+      "path": ".cache/ace16-index-split-original-actions-initial-20261026/V2016-after-getter.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-index-split-original-actions-initial-20261026/V2016-after-maps.stdout",
+      "bytes": 4865,
+      "sha256": "1332b4ddb458b431f5891c8c68899766ba42dcabb8c47c7eed0516e7a8ce765f"
+    },
+    {
+      "path": ".cache/ace16-index-split-original-actions-initial-20261026/V2016-after-maps.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-index-split-original-actions-initial-20261026/V2019-before-getter.stdout",
+      "bytes": 577734,
+      "sha256": "dac44884e8c10118cd445e1efe75295dd946ddf8f3dad4914062193d55b97f9f"
+    },
+    {
+      "path": ".cache/ace16-index-split-original-actions-initial-20261026/V2019-before-getter.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-index-split-original-actions-initial-20261026/V2019-before-maps.stdout",
+      "bytes": 5070,
+      "sha256": "ba68504a43d0322d08bf4fa9976bf34e761ae5846cde3cc85fe3b3b756803f0f"
+    },
+    {
+      "path": ".cache/ace16-index-split-original-actions-initial-20261026/V2019-before-maps.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-index-split-original-actions-initial-20261026/V2019-after-getter.stdout",
+      "bytes": 577806,
+      "sha256": "24be85c9354bd9d7732e6a9f54776112aae48cb7a7a9145bb5f0569b04b107b2"
+    },
+    {
+      "path": ".cache/ace16-index-split-original-actions-initial-20261026/V2019-after-getter.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-index-split-original-actions-initial-20261026/V2019-after-maps.stdout",
+      "bytes": 5132,
+      "sha256": "1fde1eefdb8826de336c36ee8a19ec8a504c96c7f437f7be010e19dffe04373e"
+    },
+    {
+      "path": ".cache/ace16-index-split-original-actions-initial-20261026/V2019-after-maps.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-index-split-acceptance-first-20261027/run/V2016-request.json",
+      "bytes": 302,
+      "sha256": "0fde6c404a0a95ec9e900f1f14b5330a8d2cf1ebc37adc6fc9713ffdb364c40d"
+    },
+    {
+      "path": ".cache/ace16-index-split-acceptance-first-20261027/run/V2019-request.json",
+      "bytes": 302,
+      "sha256": "5a98be4a73acabc1ae0b1e975563564ddb84f990c43b654f06bd3234093b327d"
+    }
+  ],
+  "cases": [
+    {
+      "profile": "V2016",
+      "original": {
+        "path": ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        "bytes": 987136,
+        "sha256": "ebb1f05f264dddf5e8195633a0bd5077f5ea6bb1211da0943086a1dbf713ff80"
+      },
+      "public_reference": {
+        "path": ".cache/ace16-index-split-original-actions-initial-20261026/V2016-public-reference.accdb",
+        "bytes": 995328,
+        "sha256": "9c957d7f6bf8cb663ae886e04c40c60fa985d0ce221c412a98e33e857095d046"
+      },
+      "request": {
+        "path": ".cache/ace16-index-split-acceptance-first-20261027/run/V2016-request.json",
+        "bytes": 302,
+        "sha256": "0fde6c404a0a95ec9e900f1f14b5330a8d2cf1ebc37adc6fc9713ffdb364c40d"
+      },
+      "candidate": {
+        "path": ".cache/ace16-index-split-acceptance-first-20261027/run/V2016-split-candidate.accdb",
+        "bytes": 995328,
+        "sha256": "a8647884b25bdf5c84e672e22177f5efc98be4e05d4ead755d433a8b2676adc8"
+      },
+      "complete": true,
+      "whole_image_proof": {
+        "root": 95,
+        "height": 1,
+        "right_eof_first": 241,
+        "left_eof_second": 242,
+        "left_count": 250,
+        "right_count": 250,
+        "left_maximum_full_key_row_hex": "7f800000fb00009d14",
+        "right_maximum_full_key_row_hex": "7fffffffff00006500",
+        "all_500_reference_identities_preserved": true,
+        "full_key_row_sha256": "c2b80df1c34782fdba26ac407fcda090970ac480fc3b3ced55143a88f19c2141",
+        "root_residual_start": 389613,
+        "whole_expected_image_sha256": "a8647884b25bdf5c84e672e22177f5efc98be4e05d4ead755d433a8b2676adc8"
+      },
+      "reference_agreement": {
+        "all_typed_rows_locations_logical_indexes_full_key_row_streams_agree": true,
+        "public_Wide_redistribution_is_not_byte_golden": true
+      },
+      "maps": [
+        {
+          "offset": 388936,
+          "before": 0,
+          "after": 12,
+          "roles": [
+            {
+              "role": "IndexChildren0Owned",
+              "page": 241,
+              "mask": 4
+            },
+            {
+              "role": "IndexChildren0Owned",
+              "page": 242,
+              "mask": 8
+            }
+          ]
+        },
+        {
+          "offset": 8158,
+          "before": 254,
+          "after": 248,
+          "roles": [
+            {
+              "role": "JackcessGlobalFree",
+              "page": 241,
+              "mask": 2
+            },
+            {
+              "role": "JackcessGlobalFree",
+              "page": 242,
+              "mask": 4
+            }
+          ]
+        }
+      ],
+      "getter_stdout": {
+        "path": ".cache/ace16-index-split-acceptance-first-20261027/run/V2016-candidate-getter.stdout",
+        "bytes": 577780,
+        "sha256": "e34fd02a5f80958ac4a1183a107887ba6cec0e45247d0c079979511bbb8ea018"
+      },
+      "map_probe_stdout": {
+        "path": ".cache/ace16-index-split-acceptance-first-20261027/run/V2016-candidate-maps.stdout",
+        "bytes": 4865,
+        "sha256": "1332b4ddb458b431f5891c8c68899766ba42dcabb8c47c7eed0516e7a8ce765f"
+      },
+      "other_original_index_pages_byte_identical": [
+        91,
+        92,
+        96,
+        97,
+        103,
+        104,
+        105,
+        106,
+        109,
+        110,
+        111,
+        112,
+        115,
+        117,
+        119,
+        120,
+        121,
+        122,
+        123,
+        126,
+        127,
+        128,
+        131,
+        132,
+        133,
+        134,
+        135,
+        138,
+        139,
+        140,
+        142,
+        144,
+        145,
+        146,
+        147,
+        150,
+        151,
+        153,
+        154,
+        156,
+        158,
+        159,
+        160,
+        161,
+        163,
+        164,
+        165,
+        166,
+        167,
+        171,
+        172,
+        173,
+        175,
+        176,
+        178,
+        179,
+        180,
+        181,
+        183,
+        184,
+        185,
+        186,
+        188,
+        189,
+        190,
+        192,
+        194,
+        195,
+        197,
+        198,
+        200,
+        203,
+        205,
+        207,
+        208,
+        209,
+        210,
+        211,
+        214,
+        215,
+        216,
+        217,
+        218,
+        219,
+        220,
+        222,
+        224,
+        227
+      ]
+    },
+    {
+      "profile": "V2019",
+      "original": {
+        "path": ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        "bytes": 1056768,
+        "sha256": "eb29beb6a77359ac517233e95f375642a03a4a1623540958d85bef161fad995b"
+      },
+      "public_reference": {
+        "path": ".cache/ace16-index-split-original-actions-initial-20261026/V2019-public-reference.accdb",
+        "bytes": 1064960,
+        "sha256": "be082015bb405a37e00a2b65b2f6647597470f4c00a4c221490c24b97f1c0a93"
+      },
+      "request": {
+        "path": ".cache/ace16-index-split-acceptance-first-20261027/run/V2019-request.json",
+        "bytes": 302,
+        "sha256": "5a98be4a73acabc1ae0b1e975563564ddb84f990c43b654f06bd3234093b327d"
+      },
+      "candidate": {
+        "path": ".cache/ace16-index-split-acceptance-first-20261027/run/V2019-split-candidate.accdb",
+        "bytes": 1064960,
+        "sha256": "6e37605b34950d678ca61aae0b97cd641f5e42f49808c6b2e05f219f5f617100"
+      },
+      "complete": true,
+      "whole_image_proof": {
+        "root": 112,
+        "height": 1,
+        "right_eof_first": 258,
+        "left_eof_second": 259,
+        "left_count": 250,
+        "right_count": 250,
+        "left_maximum_full_key_row_hex": "7f800000fb0000ae14",
+        "right_maximum_full_key_row_hex": "7fffffffff00007600",
+        "all_500_reference_identities_preserved": true,
+        "full_key_row_sha256": "430e1cbc88f14e354712f2a62c4e91c0566c1c62b5457ab112afa1de1411fcad",
+        "root_residual_start": 459245,
+        "whole_expected_image_sha256": "6e37605b34950d678ca61aae0b97cd641f5e42f49808c6b2e05f219f5f617100"
+      },
+      "reference_agreement": {
+        "all_typed_rows_locations_logical_indexes_full_key_row_streams_agree": true,
+        "public_Wide_redistribution_is_not_byte_golden": true
+      },
+      "maps": [
+        {
+          "offset": 458568,
+          "before": 0,
+          "after": 12,
+          "roles": [
+            {
+              "role": "IndexChildren0Owned",
+              "page": 258,
+              "mask": 4
+            },
+            {
+              "role": "IndexChildren0Owned",
+              "page": 259,
+              "mask": 8
+            }
+          ]
+        },
+        {
+          "offset": 8160,
+          "before": 252,
+          "after": 240,
+          "roles": [
+            {
+              "role": "JackcessGlobalFree",
+              "page": 258,
+              "mask": 4
+            },
+            {
+              "role": "JackcessGlobalFree",
+              "page": 259,
+              "mask": 8
+            }
+          ]
+        }
+      ],
+      "getter_stdout": {
+        "path": ".cache/ace16-index-split-acceptance-first-20261027/run/V2019-candidate-getter.stdout",
+        "bytes": 577806,
+        "sha256": "24be85c9354bd9d7732e6a9f54776112aae48cb7a7a9145bb5f0569b04b107b2"
+      },
+      "map_probe_stdout": {
+        "path": ".cache/ace16-index-split-acceptance-first-20261027/run/V2019-candidate-maps.stdout",
+        "bytes": 5132,
+        "sha256": "1fde1eefdb8826de336c36ee8a19ec8a504c96c7f437f7be010e19dffe04373e"
+      },
+      "other_original_index_pages_byte_identical": [
+        108,
+        109,
+        113,
+        114,
+        120,
+        121,
+        122,
+        123,
+        126,
+        127,
+        128,
+        129,
+        132,
+        134,
+        136,
+        137,
+        138,
+        139,
+        140,
+        143,
+        144,
+        145,
+        148,
+        149,
+        150,
+        151,
+        152,
+        155,
+        156,
+        157,
+        159,
+        161,
+        162,
+        163,
+        164,
+        167,
+        168,
+        170,
+        171,
+        173,
+        175,
+        176,
+        177,
+        178,
+        180,
+        181,
+        182,
+        183,
+        184,
+        188,
+        189,
+        190,
+        192,
+        193,
+        195,
+        196,
+        197,
+        198,
+        200,
+        201,
+        202,
+        203,
+        205,
+        206,
+        207,
+        209,
+        211,
+        212,
+        214,
+        215,
+        217,
+        220,
+        222,
+        224,
+        225,
+        226,
+        227,
+        228,
+        231,
+        232,
+        233,
+        234,
+        235,
+        236,
+        237,
+        239,
+        241,
+        244
+      ]
+    }
+  ],
+  "command_receipts": [
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-root-split-20261027",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/ace16-index-split-acceptance-first-20261027/run/V2016-split-candidate.accdb",
+        "Children",
+        "ID",
+        "0",
+        "1",
+        "2147483647"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-index-split-acceptance-first-20261027/run/V2016-candidate.stdout",
+        "bytes": 25,
+        "sha256": "6c0d0787710c780f70f807198b638d69620d3c1a5340c100a3bcf81240fec7b8"
+      },
+      "stderr": {
+        "path": ".cache/ace16-index-split-acceptance-first-20261027/run/V2016-candidate.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "oracle",
+        ".cache/ace16-index-split-acceptance-first-20261027/run/V2016-split-candidate.accdb"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-index-split-acceptance-first-20261027/run/V2016-candidate-getter.stdout",
+        "bytes": 577780,
+        "sha256": "e34fd02a5f80958ac4a1183a107887ba6cec0e45247d0c079979511bbb8ea018"
+      },
+      "stderr": {
+        "path": ".cache/ace16-index-split-acceptance-first-20261027/run/V2016-candidate-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "maps",
+        ".cache/ace16-index-split-acceptance-first-20261027/run/V2016-split-candidate.accdb"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-index-split-acceptance-first-20261027/run/V2016-candidate-maps.stdout",
+        "bytes": 4865,
+        "sha256": "1332b4ddb458b431f5891c8c68899766ba42dcabb8c47c7eed0516e7a8ce765f"
+      },
+      "stderr": {
+        "path": ".cache/ace16-index-split-acceptance-first-20261027/run/V2016-candidate-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-root-split-20261027",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/ace16-index-split-acceptance-first-20261027/run/V2019-split-candidate.accdb",
+        "Children",
+        "ID",
+        "0",
+        "1",
+        "2147483647"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-index-split-acceptance-first-20261027/run/V2019-candidate.stdout",
+        "bytes": 25,
+        "sha256": "6c0d0787710c780f70f807198b638d69620d3c1a5340c100a3bcf81240fec7b8"
+      },
+      "stderr": {
+        "path": ".cache/ace16-index-split-acceptance-first-20261027/run/V2019-candidate.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "oracle",
+        ".cache/ace16-index-split-acceptance-first-20261027/run/V2019-split-candidate.accdb"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-index-split-acceptance-first-20261027/run/V2019-candidate-getter.stdout",
+        "bytes": 577806,
+        "sha256": "24be85c9354bd9d7732e6a9f54776112aae48cb7a7a9145bb5f0569b04b107b2"
+      },
+      "stderr": {
+        "path": ".cache/ace16-index-split-acceptance-first-20261027/run/V2019-candidate-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "maps",
+        ".cache/ace16-index-split-acceptance-first-20261027/run/V2019-split-candidate.accdb"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-index-split-acceptance-first-20261027/run/V2019-candidate-maps.stdout",
+        "bytes": 5132,
+        "sha256": "1fde1eefdb8826de336c36ee8a19ec8a504c96c7f437f7be010e19dffe04373e"
+      },
+      "stderr": {
+        "path": ".cache/ace16-index-split-acceptance-first-20261027/run/V2019-candidate-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "historical_baseline": {
+    "path": "docs/testing/results/ace16-index-split-originals-2026-10-26.json",
+    "bytes": 160159,
+    "sha256": "8cb3d13436bed507f5021fa3bff7e69f629ba1be4e86835dd0813b5fde196d8c"
+  },
+  "public_maintenance_sources": [
+    {
+      "path": "docs/testing/compare_root_split_updates.py",
+      "bytes": 188,
+      "sha256": "513cb77cc5a7a2a5d3933f17fadb371e62f42c071c100aff0632ffe438532caa"
+    },
+    {
+      "path": "docs/testing/root_split_preview_originals/proof.py",
+      "bytes": 4528,
+      "sha256": "d932823b6b96ce678cefce678f7fe7bb7b6d6aa8f687e7d7dbac2138952ade28"
+    },
+    {
+      "path": "docs/testing/root_split_preview_originals/replay.py",
+      "bytes": 11373,
+      "sha256": "69a81a6981ed3215b3c8290d5fbc8e4f0b2550b58f549d6da7ea024d738185af"
+    },
+    {
+      "path": "docs/testing/root_split_preview_originals/verify_existing.py",
+      "bytes": 6143,
+      "sha256": "e8eee88de37911ae767feec4275113d88021b18f11a3e2621db0c1cb7a6d36d3"
+    }
+  ],
+  "promotion_identity": {
+    "proof_byte_identical_to_executed_private_source": true,
+    "replay": "Parameterized public derivative; not the historical executed runner",
+    "read_only_verification": "New cached-byte/getter/map/Git verification only; no native/JVM/database actions"
+  },
+  "read_only_public_verification": {
+    "path": ".cache/ace16-index-split-acceptance-first-20261027/read-only-public-verification-final.json",
+    "bytes": 1020,
+    "sha256": "1e9726b9471ae8176744aef416c4dd0572fec1127dad7bb0a0514d21f35ae075"
+  },
+  "verification_command": [
+    "python3",
+    "docs/testing/compare_root_split_updates.py",
+    "--verify-existing",
+    ".cache/ace16-index-split-acceptance-first-20261027/run/report.json",
+    "--output",
+    ".cache/ace16-index-split-acceptance-first-20261027/read-only-public-verification-final.json"
+  ],
+  "verification_terminal_status": 0,
+  "limits": [
+    "Only these two unchanged registered originals and fixed selectors",
+    "Public Wide redistribution compared semantically; candidate untouched Wide bytes are the independent preservation golden",
+    "Non-root/internal propagation, map expansion, general native saves and data macros remain outside this evidence",
+    "All raw expanded transcripts/key arrays stay ignored and pinned"
+  ]
+}

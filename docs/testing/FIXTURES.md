@@ -9434,3 +9434,12 @@ hypothesis failed when the public writer redistributed unchanged Wide keys.
 Separate read-only diagnosis verifies the complete final streams, bounds, maps
 and counters. That public redistribution is not a required engineering byte
 golden; this reference capture does not implement a split API or qualify Access.
+
+The subsequent [two-candidate acceptance](ROOT_SPLIT_UPDATE_OBSERVATIONS.md)
+uses those exact originals and requests through a separately frozen committed
+split consumer. Both first-attempt outputs match complete independent expected
+images, preserve original Wide bytes and agree with the existing public typed
+values and full key/row streams. The
+[candidate receipt](results/ace16-root-split-originals-2026-10-27.json) pins all six
+commands, outputs and immutable sources; no new public UPDATE was performed.
+Native Access/data-macro qualification remains separate.

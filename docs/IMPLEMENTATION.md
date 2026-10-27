@@ -29,8 +29,11 @@ The [split contract](testing/ACE16_INDEX_SPLITS.md) describes request-derived ro
 authority, independent page/map audits and non-journalable output. Scoped checks
 pass 173 distinct runtime functions, including 153 existing regressions, and three
 compile-fail checks. Strict lint, standalone minimal compilation and rustdoc pass.
-Original-file candidate comparison is a subsequent gate; native Access,
-data-macro semantics and normal saves remain unqualified.
+The subsequent [two original-file candidates](testing/ROOT_SPLIT_UPDATE_OBSERVATIONS.md)
+both pass on their first run through a frozen committed consumer. Each complete
+image matches the independently frozen model, including all 500 row references,
+250/250 leaf partitions, map changes and preserved unrelated index bytes.
+Native Access, data-macro semantics and normal saves remain unqualified.
 
 ## Alternate-page placement and EOF allocation candidates
 
