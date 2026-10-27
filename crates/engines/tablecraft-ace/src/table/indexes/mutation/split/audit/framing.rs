@@ -1,16 +1,17 @@
 //! Raw framing and opaque-byte proof independent of page construction.
-use super::super::super::{encoding, profile::SingleProfile};
+use super::super::super::{encoding, retained::RetainedProfile};
 use super::super::Certificate;
 use super::AUDIT_CHUNK_BYTES;
 use crate::{
     EditError, InspectError,
-    format::page::PAGE_BYTES,
+    format::{page::PAGE_BYTES, reader::Reader},
     header::check,
     table::indexes::{
         header::{IndexHeader, LEVEL_OFFSET},
         page::{CHILD_BYTES, ENTRY_START, Entry, KeyRef, LEAF, NODE, ROW_BYTES},
     },
 };
+use std::io::Cursor;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const MASK_START: usize = size_of::<IndexHeader>();
@@ -19,11 +20,11 @@ const FREE_OFFSET: usize = std::mem::offset_of!(IndexHeader, free);
 const PREFIX_OFFSET: usize = std::mem::offset_of!(IndexHeader, prefix);
 const TAIL_OFFSET: usize = std::mem::offset_of!(IndexHeader, tail);
 
-pub(super) fn bitmap(
+pub(super) fn bitmap<P: RetainedProfile, const N: usize>(
     raw: &[u8],
-    entries: &[KeyRef],
+    entries: &[KeyRef<P::Key>],
     child: u32,
-    profile: &SingleProfile,
+    profile: &P,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<usize, EditError> {
@@ -34,11 +35,11 @@ pub(super) fn bitmap(
     for (position, value) in entries.iter().enumerate() {
         check(budget, cancelled)?;
         budget
-            .charge(Resource::Steps, encoding::MAX_ENTRY_BYTES as u64)
+            .charge(Resource::Steps, N as u64)
             .map_err(InspectError::from)?;
-        let wire = encoding::entry::<_, { encoding::MAX_ENTRY_BYTES }>(
+        let wire = encoding::borrowed_entry::<P, N>(
             &Entry {
-                value: *value,
+                value: super::super::borrowed_reference(value),
                 child,
             },
             profile,
@@ -64,14 +65,13 @@ pub(super) fn bitmap(
     Ok(ENTRY_START + end)
 }
 
-pub(super) fn leaf(
+pub(super) fn leaf<P: RetainedProfile, const N: usize>(
     raw: &[u8],
     owner: u32,
     links: (u32, u32),
-    expected: &[KeyRef],
-    profile: &SingleProfile,
-    budget: &mut ResourceBudget,
-    cancelled: &dyn Fn() -> bool,
+    expected: &[KeyRef<P::Key>],
+    profile: &P,
+    actual: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<(), EditError> {
     let header = IndexHeader::read(raw)?;
     if header.kind != LEAF
@@ -85,12 +85,14 @@ pub(super) fn leaf(
     {
         return Err(EditError::Preservation);
     }
-    let end = bitmap(raw, expected, 0, profile, budget, cancelled)?;
-    budget
+    let entries = super::super::leaf_entries(expected, actual.budget, actual.cancelled)?;
+    let end = super::nonroot::layout::<P, N>(&entries, 0, raw, profile, actual)?;
+    actual
+        .budget
         .charge(Resource::Steps, (PAGE_BYTES - end) as u64)
         .map_err(InspectError::from)?;
     for chunk in raw[end..].chunks(AUDIT_CHUNK_BYTES) {
-        check(budget, cancelled)?;
+        check(actual.budget, actual.cancelled)?;
         if chunk.iter().any(|byte| *byte != 0) {
             return Err(EditError::Preservation);
         }
@@ -98,12 +100,12 @@ pub(super) fn leaf(
     Ok(())
 }
 
-pub(super) fn root(
+pub(super) fn root<P: RetainedProfile, const N: usize>(
     before: &[u8],
     after: &[u8],
     fact: &Certificate,
-    maximum: KeyRef,
-    profile: &SingleProfile,
+    maximum: &KeyRef<P::Key>,
+    profile: &P,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
@@ -124,7 +126,14 @@ pub(super) fn root(
     {
         return Err(EditError::Preservation);
     }
-    let end = bitmap(after, &[maximum], left, profile, budget, cancelled)?;
+    let end = bitmap::<P, N>(
+        after,
+        std::slice::from_ref(maximum),
+        left,
+        profile,
+        budget,
+        cancelled,
+    )?;
     budget
         .charge(Resource::Steps, PAGE_BYTES as u64)
         .map_err(InspectError::from)?;

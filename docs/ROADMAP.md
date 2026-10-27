@@ -170,6 +170,12 @@ Delivered read/query and engineering foundations:
   retaining independent association, index-entry and unchanged-byte checks.
   General ACE 16 saves are still unavailable.
 
+- [x] [Retained-key split transport](testing/ACE16_RETAINED_SPLIT_PLANNER.md)
+  supports real profile-owned keys internally while preserving numeric public
+  consumers. Independent fast-path framing now enforces fresh/original prefix
+  policy. Its 115 runtime functions and scoped checks pass; Text/Binary mutation
+  and existing-fit composite framing qualification remain separate work.
+
 - [x] Qualified [index-owned map promotion](testing/ACE16_INDEX_MAP_GROWTH.md)
   now composes same-extent pointer-row rewrites and distinct bitmap metadata with
   recursive/repeated splits. Independent images cover late promotion and mixed

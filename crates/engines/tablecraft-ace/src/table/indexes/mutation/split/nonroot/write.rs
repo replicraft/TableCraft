@@ -1,5 +1,5 @@
 //! Derive final level links, preserve old residue and initialize fresh pages.
-use super::super::super::{IndexDataPatch, encoding, repack};
+use super::super::super::{IndexDataPatch, repack, retained::RetainedProfile};
 use super::super::{AddedPage, Plan, leaf_entries, pages};
 use super::Operation;
 use super::arena::{self, Arena, Contents, Node};
@@ -20,8 +20,8 @@ const NEXT_OFFSET: usize = std::mem::offset_of!(IndexHeader, next);
 const TAIL_OFFSET: usize = std::mem::offset_of!(IndexHeader, tail);
 const PREFIX_OFFSET: usize = std::mem::offset_of!(IndexHeader, prefix);
 
-pub(super) fn emit(
-    operation: &Operation<'_>,
+pub(super) fn emit<P: RetainedProfile, const N: usize>(
+    operation: &Operation<'_, P, N>,
     arena: &mut Arena,
     plan: &mut Plan,
     patches: &mut Vec<IndexDataPatch>,
@@ -120,8 +120,8 @@ fn collect(
     Ok(())
 }
 
-fn serialize(
-    operation: &Operation<'_>,
+fn serialize<P: RetainedProfile, const N: usize>(
+    operation: &Operation<'_, P, N>,
     arena: &Arena,
     node: &Node,
     owner: u32,
@@ -139,7 +139,7 @@ fn serialize(
             0,
         ),
         Contents::Branch { children, tail } => {
-            let entries = arena::bounds(&arena.nodes, children, *tail, reader)?;
+            let entries = arena::bounds(operation.keys, &arena.nodes, children, *tail, reader)?;
             let tail = if *tail {
                 let &last = children.last().ok_or(EditError::Preservation)?;
                 arena.nodes.get(last).ok_or(EditError::Preservation)?.number
@@ -151,7 +151,7 @@ fn serialize(
     };
     if fresh {
         if node.height == 0 {
-            return pages::leaf(
+            return pages::leaf::<P, N>(
                 owner,
                 node.previous,
                 node.next,
@@ -161,7 +161,7 @@ fn serialize(
                 reader.cancelled,
             );
         }
-        return pages::node(
+        return pages::node::<P, N>(
             &pages::NodeHeader {
                 owner,
                 height: node.height,
@@ -186,7 +186,7 @@ fn serialize(
             .map_err(|_| InspectError::Allocation)?;
         seed.extend_from_slice(original);
         seed[PREFIX_OFFSET..PREFIX_OFFSET + size_of::<u16>()].fill(0);
-        repack::page::<_, { encoding::MAX_ENTRY_BYTES }>(
+        repack::borrowed_page::<P, N>(
             &seed,
             &entries,
             operation.profile,
@@ -194,7 +194,7 @@ fn serialize(
             reader.cancelled,
         )?
     } else {
-        repack::page::<_, { encoding::MAX_ENTRY_BYTES }>(
+        repack::borrowed_page::<P, N>(
             original,
             &entries,
             operation.profile,

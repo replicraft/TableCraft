@@ -1,13 +1,14 @@
 //! Stable allocation-order passes; logical sibling order is tracked separately.
+use super::super::super::super::retained::RetainedProfile;
 use super::{
-    Arena, Contents, Operation, Plan, allocate, bounds, copy_children, encoding, leaf_entries,
-    push_branch, push_child, push_leaf, raw, repack,
+    Arena, Contents, Operation, Plan, allocate, bounds, copy_children, leaf_entries, push_branch,
+    push_child, push_leaf, raw, repack,
 };
 use crate::{EditError, InspectError, WriteBlocker, format::reader::Reader};
 use std::io::Cursor;
 
-pub(super) fn run(
-    operation: &Operation<'_>,
+pub(super) fn run<P: RetainedProfile, const N: usize>(
+    operation: &Operation<'_, P, N>,
     arena: &mut Arena,
     plan: &mut Plan,
     pair: (usize, usize),
@@ -55,8 +56,8 @@ pub(super) fn run(
     }
 }
 
-pub(super) fn fits(
-    operation: &Operation<'_>,
+pub(super) fn fits<P: RetainedProfile, const N: usize>(
+    operation: &Operation<'_, P, N>,
     arena: &Arena,
     index: usize,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
@@ -72,17 +73,19 @@ pub(super) fn fits(
             reader.budget,
             reader.cancelled,
         )?,
-        Contents::Branch { children, tail } => bounds(&arena.nodes, children, *tail, reader)?,
+        Contents::Branch { children, tail } => {
+            bounds(operation.keys, &arena.nodes, children, *tail, reader)?
+        }
     };
     if node.number >= operation.image.catalog().header().page_count() || node.grown_root {
-        repack::fits_fresh::<_, { encoding::MAX_ENTRY_BYTES }>(
+        repack::borrowed_fits_fresh::<P, N>(
             &entries,
             operation.profile,
             reader.budget,
             reader.cancelled,
         )
     } else {
-        repack::fits::<_, { encoding::MAX_ENTRY_BYTES }>(
+        repack::borrowed_fits::<P, N>(
             raw(operation.image, node.number)?,
             &entries,
             operation.profile,
@@ -92,8 +95,8 @@ pub(super) fn fits(
     }
 }
 
-pub(super) fn divide(
-    operation: &Operation<'_>,
+pub(super) fn divide<P: RetainedProfile, const N: usize>(
+    operation: &Operation<'_, P, N>,
     arena: &mut Arena,
     plan: &mut Plan,
     index: usize,

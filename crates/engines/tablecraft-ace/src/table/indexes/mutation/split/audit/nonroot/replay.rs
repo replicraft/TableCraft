@@ -1,6 +1,6 @@
 //! Independent postorder capacity proof, followed by per-height link checks.
 mod normalize;
-use super::super::super::super::{encoding, tree::Tree};
+use super::super::super::super::{retained::RetainedProfile, tree::Tree};
 use super::super::super::leaf_entries;
 use super::{Operation, Progress, framing};
 use crate::{
@@ -12,28 +12,28 @@ use crate::{
         page::{self, Entry, KeyRef},
     },
 };
-use std::io::Cursor;
+use std::{io::Cursor, ops::Range};
 
 #[derive(Clone, Copy)]
 struct Child {
     number: u32,
-    maximum: KeyRef,
+    maximum: usize,
 }
 
-enum Payload<'a> {
-    Leaf(&'a [KeyRef]),
+enum Payload {
+    Leaf(Range<usize>),
     Branch { children: Vec<Child>, tail: bool },
 }
 
 struct Candidate<'a> {
     number: u32,
     height: u8,
-    contents: Payload<'a>,
+    contents: Payload,
     source: framing::Source<'a>,
 }
 
-struct Replay<'a, 'b> {
-    operation: &'a Operation<'b>,
+struct Replay<'a, 'b, P: RetainedProfile, const N: usize> {
+    operation: &'a Operation<'b, P, N>,
     position: usize,
     added: Vec<u32>,
     levels: [Vec<u32>; MAX_INDEX_DEPTH],
@@ -47,16 +47,16 @@ struct Branch<'a> {
     source: framing::Source<'a>,
 }
 
-struct PageSpec<'a> {
+struct PageSpec<'a, P: RetainedProfile> {
     number: u32,
     height: u8,
-    entries: &'a [Entry],
+    entries: &'a [Entry<&'a P::Key>],
     tail: u32,
     source: framing::Source<'a>,
 }
 
-pub(super) fn prove(
-    operation: &Operation<'_>,
+pub(super) fn prove<P: RetainedProfile, const N: usize>(
+    operation: &Operation<'_, P, N>,
     actual: &mut Reader<'_, Cursor<&[u8]>>,
     progress: &mut Progress<'_>,
 ) -> Result<Vec<u32>, EditError> {
@@ -85,7 +85,7 @@ pub(super) fn prove(
     Ok(replay.added)
 }
 
-impl Replay<'_, '_> {
+impl<P: RetainedProfile, const N: usize> Replay<'_, '_, P, N> {
     fn walk(
         &mut self,
         tree: &Tree,
@@ -104,9 +104,9 @@ impl Replay<'_, '_> {
                 .checked_add(tree.count())
                 .filter(|end| *end <= self.operation.keys.len())
                 .ok_or(EditError::Preservation)?;
-            let keys = &self.operation.keys[self.position..end];
+            let range = self.position..end;
             self.position = end;
-            Payload::Leaf(keys)
+            Payload::Leaf(range)
         } else {
             let mut children = Vec::new();
             for child in tree.children() {
@@ -134,10 +134,18 @@ impl Replay<'_, '_> {
     fn leaf_page(
         &mut self,
         number: u32,
-        keys: &[KeyRef],
+        range: Range<usize>,
         source: framing::Source<'_>,
         actual: &mut Reader<'_, Cursor<&[u8]>>,
     ) -> Result<Child, EditError> {
+        if range.start >= range.end {
+            return Err(EditError::Preservation);
+        }
+        let keys = self
+            .operation
+            .keys
+            .get(range.clone())
+            .ok_or(EditError::Preservation)?;
         let entries = leaf_entries(keys, actual.budget, actual.cancelled)?;
         self.page(
             &PageSpec {
@@ -151,7 +159,7 @@ impl Replay<'_, '_> {
         )?;
         Ok(Child {
             number,
-            maximum: *keys.last().ok_or(EditError::Preservation)?,
+            maximum: range.end.checked_sub(1).ok_or(EditError::Preservation)?,
         })
     }
 
@@ -160,7 +168,7 @@ impl Replay<'_, '_> {
         branch: &Branch<'_>,
         actual: &mut Reader<'_, Cursor<&[u8]>>,
     ) -> Result<Child, EditError> {
-        let entries = bounds(branch.children, branch.tail, actual)?;
+        let entries = bounds(self.operation.keys, branch.children, branch.tail, actual)?;
         let last = branch.children.last().ok_or(EditError::Preservation)?;
         self.page(
             &PageSpec {
@@ -180,7 +188,7 @@ impl Replay<'_, '_> {
 
     fn page(
         &mut self,
-        spec: &PageSpec<'_>,
+        spec: &PageSpec<'_, P>,
         actual: &mut Reader<'_, Cursor<&[u8]>>,
     ) -> Result<(), EditError> {
         let PageSpec {
@@ -190,7 +198,7 @@ impl Replay<'_, '_> {
             tail,
             source,
         } = *spec;
-        let page = page::read_profile::<_, _, { encoding::MAX_ENTRY_BYTES }>(
+        let page = page::read_profile::<_, P, N>(
             actual,
             number,
             self.operation.owner,
@@ -201,12 +209,15 @@ impl Replay<'_, '_> {
         }
         for (entry, expected) in page.entries.iter().zip(entries) {
             actual.tick()?;
-            if entry.value != expected.value || entry.child != expected.child {
+            if entry.value.row != expected.value.row
+                || entry.value.key != *expected.value.key
+                || entry.child != expected.child
+            {
                 return Err(EditError::Preservation);
             }
         }
         let bytes = actual.page(number)?;
-        framing::prove(
+        framing::prove::<P, N>(
             &framing::Spec {
                 source,
                 after: &bytes,
@@ -248,11 +259,12 @@ impl Replay<'_, '_> {
     }
 }
 
-fn bounds(
+fn bounds<'a, K>(
+    keys: &'a [KeyRef<K>],
     children: &[Child],
     tail: bool,
     actual: &mut Reader<'_, Cursor<&[u8]>>,
-) -> Result<Vec<Entry>, EditError> {
+) -> Result<Vec<Entry<&'a K>>, EditError> {
     let count = children
         .len()
         .checked_sub(usize::from(tail))
@@ -262,7 +274,9 @@ fn bounds(
         push(
             &mut entries,
             Entry {
-                value: child.maximum,
+                value: super::super::super::borrowed_reference(
+                    keys.get(child.maximum).ok_or(EditError::Preservation)?,
+                ),
                 child: child.number,
             },
             actual,

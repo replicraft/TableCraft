@@ -38,3 +38,7 @@ pub(crate) mod fixed_split;
 #[cfg(feature = "ace16-write-preview")]
 #[path = "test_support/map_growth.rs"]
 pub(crate) mod map_growth;
+
+#[cfg(feature = "ace16-write-preview")]
+#[path = "test_support/encoded.rs"]
+pub(crate) mod encoded;

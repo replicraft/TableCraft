@@ -1,6 +1,6 @@
 //! Postorder decisions use original leaf counts and complete final child maxima.
 mod normalize;
-use super::super::super::{encoding, repack, tree::Tree};
+use super::super::super::{repack, retained::RetainedProfile, tree::Tree};
 use super::super::{Plan, leaf_entries};
 use super::Operation;
 use crate::{
@@ -22,7 +22,7 @@ pub(super) enum Contents {
 pub(super) struct Node {
     pub number: u32,
     pub height: u8,
-    pub maximum: KeyRef,
+    pub maximum: usize,
     pub contents: Contents,
     pub grown_root: bool,
     pub previous: u32,
@@ -36,8 +36,8 @@ pub(super) struct Arena {
     position: usize,
 }
 
-pub(super) fn prepare(
-    operation: &Operation<'_>,
+pub(super) fn prepare<P: RetainedProfile, const N: usize>(
+    operation: &Operation<'_, P, N>,
     tree: &Tree,
     plan: &mut Plan,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
@@ -56,8 +56,8 @@ pub(super) fn prepare(
     Ok(arena)
 }
 
-fn build(
-    operation: &Operation<'_>,
+fn build<P: RetainedProfile, const N: usize>(
+    operation: &Operation<'_, P, N>,
     tree: &Tree,
     root: bool,
     arena: &mut Arena,
@@ -73,7 +73,7 @@ fn build(
             .filter(|end| start < *end && *end <= operation.keys.len())
             .ok_or(EditError::Preservation)?;
         arena.position = end;
-        (Contents::Leaf(start..end), operation.keys[end - 1])
+        (Contents::Leaf(start..end), end - 1)
     } else {
         let mut children = Vec::new();
         for child in tree.children() {
@@ -139,8 +139,8 @@ fn build(
     Ok(result)
 }
 
-fn allocate(
-    operation: &Operation<'_>,
+fn allocate<P: RetainedProfile, const N: usize>(
+    operation: &Operation<'_, P, N>,
     arena: &mut Arena,
     plan: &mut Plan,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
@@ -158,20 +158,18 @@ fn allocate(
     Ok(number)
 }
 
-fn push_leaf(
+fn push_leaf<P: RetainedProfile, const N: usize>(
     arena: &mut Arena,
     number: u32,
     range: Range<usize>,
-    operation: &Operation<'_>,
+    operation: &Operation<'_, P, N>,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<usize, EditError> {
     if range.start >= range.end {
         return Err(EditError::Preservation);
     }
-    let maximum = *operation
-        .keys
-        .get(range.end.checked_sub(1).ok_or(EditError::Preservation)?)
-        .ok_or(EditError::Preservation)?;
+    let maximum = range.end.checked_sub(1).ok_or(EditError::Preservation)?;
+    operation.keys.get(maximum).ok_or(EditError::Preservation)?;
     push(
         arena,
         Node {
@@ -266,19 +264,20 @@ fn copy_children(
     Ok(copy)
 }
 
-pub(super) fn bounds(
+pub(super) fn bounds<'a, K>(
+    keys: &'a [KeyRef<K>],
     nodes: &[Node],
     children: &[usize],
     tail: bool,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
-) -> Result<Vec<Entry>, EditError> {
+) -> Result<Vec<Entry<&'a K>>, EditError> {
     let count = children
         .len()
         .checked_sub(usize::from(tail))
         .ok_or(EditError::Preservation)?;
     reader
         .budget
-        .charge_allocation(count as u64, size_of::<Entry>() as u64)
+        .charge_allocation(count as u64, size_of::<Entry<&K>>() as u64)
         .map_err(InspectError::from)?;
     let mut entries = Vec::new();
     entries
@@ -288,7 +287,9 @@ pub(super) fn bounds(
         reader.tick()?;
         let node = nodes.get(child).ok_or(EditError::Preservation)?;
         entries.push(Entry {
-            value: node.maximum,
+            value: super::super::borrowed_reference(
+                keys.get(node.maximum).ok_or(EditError::Preservation)?,
+            ),
             child: node.number,
         });
     }
