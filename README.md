@@ -5,6 +5,11 @@ faithful native MDB/ACCDB behavior and familiar Access workflows. The CLI suppor
 bounded browsing and queries; the desktop UI and general native editing are
 still in development.
 
+Current work focuses on Microsoft Access compatibility, with ACE 16 primary.
+SQLite and `.tcraft` projects are paused, including Python automation and project
+conversion. The [product direction](docs/decisions/0003_ACCESS_BEHAVIORAL_PARITY.md)
+sets the target for Access workflows, defaults, restrictions and documented quirks.
+
 ## Compatibility and planned tiers
 
 | Format | Current support | Planned tier |
