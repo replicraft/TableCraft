@@ -9515,3 +9515,18 @@ these experiments. The [receipt](results/compressed-memo-update-observations-202
 pins exact first-run helpers, plans, originals, outputs, decoder and source-review
 artifacts, and separate later public verification wrappers. Native Access
 qualification, broader map transitions and mode-switch authoring remain open.
+
+### Non-root internal-parent overflow sources
+
+The [distinct bounded source experiment](INTERNAL_PARENT_INDEX_SPLIT_SOURCE_OBSERVATIONS.md)
+finds its first natural gate at 149,184 target rows in each profile, below the
+unchanged 150,000 aggregate cap. Fresh pruning preserves all 497 index pages,
+complete internal bounds/children/tails, all three sibling chains and kept row
+references while reducing each target to 963 rows plus a separate sentinel.
+A height-one parent distinct from the height-two root and its rightmost leaf
+both overflow for the fixed future MAX replacement. All nine first source
+processes pass; there is no native admission or MAX action in this phase.
+The [receipt](results/ace16-internal-parent-split-sources-2026-10-27.json) pins
+originals, intermediate/pruned hashes, selections, raw captures, exact executed
+helpers and later public read-only tools. Existing root-growth sources remain
+unchanged. Internal retention/allocation behavior awaits a separate action phase.

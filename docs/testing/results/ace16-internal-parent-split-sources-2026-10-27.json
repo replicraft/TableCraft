@@ -1,0 +1,707 @@
+{
+  "date": "2026-10-27",
+  "scope": "Fresh bounded public-builder internal-parent source/pruning evidence only; no MAX UPDATE/native admission or internal-page split outcome",
+  "actual": {
+    "session": 90573,
+    "terminal_status": 0,
+    "source_processes": 9,
+    "java_compilations": 1,
+    "generations": 2,
+    "public_prune_histories": 2,
+    "read_only_descriptions": 4,
+    "native_calls": 0,
+    "max_update_calls": 0,
+    "completed_profiles": 2
+  },
+  "limits": {
+    "aggregate_generation_rows": 150000,
+    "target_generation_rows": 149999,
+    "file_bytes": 67108864,
+    "jvm_heap": "512MiB",
+    "depth": 16,
+    "sparse_target_rows": 16384,
+    "checkpoint_inserts": 32,
+    "per_process_seconds": 1200
+  },
+  "raw_report": {
+    "path": ".cache/ace16-internal-parent-source-first-20261027/report.json",
+    "bytes": 28500,
+    "sha256": "2bcc4c81eb83e00f3ac6d49e8aec0efc3a39f68f0816aa4aeea8a2d523062c66"
+  },
+  "execution_log": {
+    "path": ".cache/ace16-internal-parent-source-next-20261027/first-execution.log",
+    "bytes": 226,
+    "sha256": "bcabdd246bc7ff1194039232059c563e5044d503d2dbf6029deb3276a9f441df"
+  },
+  "freeze": {
+    "path": ".cache/ace16-internal-parent-source-next-20261027/freeze.json",
+    "bytes": 2474,
+    "sha256": "3759472d5807cd9c52c404ec3ac494e98b0278ed1b70194d3c95dbb1417aa884"
+  },
+  "precall": {
+    "path": ".cache/ace16-internal-parent-source-first-20261027/before-first-command.json",
+    "bytes": 3500,
+    "sha256": "e7a04fb6e22f37a34e257c481e32fe684171109ddf330aa5c37dcd2e96c00116"
+  },
+  "executed_source_archives": [
+    {
+      "source": {
+        "path": ".cache/ace16-internal-parent-source-next-20261027/InternalParentSplitFixture.java",
+        "bytes": 25204,
+        "sha256": "4d8b10a9612125f70707b19a33fee0ec72ce6c63193c94303b42f769df5f19f8"
+      },
+      "archive": {
+        "path": ".cache/ace16-internal-parent-source-first-20261027/precall-sources/0-InternalParentSplitFixture.java",
+        "bytes": 25204,
+        "sha256": "4d8b10a9612125f70707b19a33fee0ec72ce6c63193c94303b42f769df5f19f8"
+      }
+    },
+    {
+      "source": {
+        "path": ".cache/ace16-internal-parent-source-next-20261027/capture.py",
+        "bytes": 9058,
+        "sha256": "6cd594e7131749fd756b02184f73871990f76d6f9e0629b50e24d7e1bd65d249"
+      },
+      "archive": {
+        "path": ".cache/ace16-internal-parent-source-first-20261027/precall-sources/1-capture.py",
+        "bytes": 9058,
+        "sha256": "6cd594e7131749fd756b02184f73871990f76d6f9e0629b50e24d7e1bd65d249"
+      }
+    },
+    {
+      "source": {
+        "path": ".cache/ace16-internal-parent-source-next-20261027/certificate.py",
+        "bytes": 3343,
+        "sha256": "0bb3d17c368d904af3af46347e0fd51ca4048f4a67be17fd69feebf91893ea86"
+      },
+      "archive": {
+        "path": ".cache/ace16-internal-parent-source-first-20261027/precall-sources/2-certificate.py",
+        "bytes": 3343,
+        "sha256": "0bb3d17c368d904af3af46347e0fd51ca4048f4a67be17fd69feebf91893ea86"
+      }
+    },
+    {
+      "source": {
+        "path": ".cache/ace16-internal-parent-source-next-20261027/DESIGN.md",
+        "bytes": 3348,
+        "sha256": "0f405946b847a0acfe7688d83f4e252c27c3309bbab3ab54562b6e56fa844a6c"
+      },
+      "archive": {
+        "path": ".cache/ace16-internal-parent-source-first-20261027/precall-sources/3-DESIGN.md",
+        "bytes": 3348,
+        "sha256": "0f405946b847a0acfe7688d83f4e252c27c3309bbab3ab54562b6e56fa844a6c"
+      }
+    },
+    {
+      "source": {
+        "path": "docs/testing/parent_index_split_originals/BoundedFileChannel.java",
+        "bytes": 3952,
+        "sha256": "2191d11f88f3158e83929591acee803553c703e06127839caa7143340f8afd7e"
+      },
+      "archive": {
+        "path": ".cache/ace16-internal-parent-source-first-20261027/precall-sources/4-BoundedFileChannel.java",
+        "bytes": 3952,
+        "sha256": "2191d11f88f3158e83929591acee803553c703e06127839caa7143340f8afd7e"
+      }
+    },
+    {
+      "source": {
+        "path": "docs/testing/parent_index_split_originals/wire.py",
+        "bytes": 15798,
+        "sha256": "556e6663c9fe6fec52e4d0a9f76b171629a29559fd21e85a74d4a6adde5b91f9"
+      },
+      "archive": {
+        "path": ".cache/ace16-internal-parent-source-first-20261027/precall-sources/5-wire.py",
+        "bytes": 15798,
+        "sha256": "556e6663c9fe6fec52e4d0a9f76b171629a29559fd21e85a74d4a6adde5b91f9"
+      }
+    },
+    {
+      "source": {
+        "path": "docs/testing/delete_reference_maps.py",
+        "bytes": 8635,
+        "sha256": "9fca51758e0f26e37dab2e27ff2c41c0e8a7a8110e9a047eda1ccb2a91eadda8"
+      },
+      "archive": {
+        "path": ".cache/ace16-internal-parent-source-first-20261027/precall-sources/6-delete_reference_maps.py",
+        "bytes": 8635,
+        "sha256": "9fca51758e0f26e37dab2e27ff2c41c0e8a7a8110e9a047eda1ccb2a91eadda8"
+      }
+    }
+  ],
+  "classes": [
+    {
+      "path": ".cache/ace16-internal-parent-source-first-20261027/classes/BoundedFileChannel.class",
+      "bytes": 3080,
+      "sha256": "608c31190c2bcbc9582fd0332813b8697820604b208b9d17c7b1548791c3916b"
+    },
+    {
+      "path": ".cache/ace16-internal-parent-source-first-20261027/classes/InternalParentSplitFixture$Entry.class",
+      "bytes": 1368,
+      "sha256": "45b5d325aeb0d4d47399157dca956a62256b2aac991bde09aa95334a875081da"
+    },
+    {
+      "path": ".cache/ace16-internal-parent-source-first-20261027/classes/InternalParentSplitFixture$Gate.class",
+      "bytes": 2397,
+      "sha256": "6d707dd47126b5c43b3509aaf32a4f83d84f177a50cede8e638006f4983bed6e"
+    },
+    {
+      "path": ".cache/ace16-internal-parent-source-first-20261027/classes/InternalParentSplitFixture$Page.class",
+      "bytes": 2077,
+      "sha256": "0f5e2ea93bfc5578c2766dd1936f08cbf3522aa16bcab2ae75cb215d88b19f35"
+    },
+    {
+      "path": ".cache/ace16-internal-parent-source-first-20261027/classes/InternalParentSplitFixture.class",
+      "bytes": 24212,
+      "sha256": "e237e2317479087bfa53e072836b7216810cdea0eda29bb0fbef0e94c729ca04"
+    }
+  ],
+  "reviewed_jar": {
+    "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+    "bytes": 1407244,
+    "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+  },
+  "static_authoring_note": {
+    "path": ".cache/ace16-internal-parent-source-next-20261027/static-authoring-note.json",
+    "bytes": 367,
+    "sha256": "80752e74a0fded4af3085dc1580cf161c75d34f562e5da6c96a705a5ba056fc2"
+  },
+  "public_tools": [
+    {
+      "path": "docs/testing/internal_parent_split_originals/InternalParentSplitFixture.java",
+      "bytes": 25204,
+      "sha256": "4d8b10a9612125f70707b19a33fee0ec72ce6c63193c94303b42f769df5f19f8"
+    },
+    {
+      "path": "docs/testing/internal_parent_split_originals/capture.py",
+      "bytes": 10050,
+      "sha256": "28fff81a14409319d973d93777698e9047cbd67ac38f0f18329ab125bb537fcc"
+    },
+    {
+      "path": "docs/testing/internal_parent_split_originals/certificate.py",
+      "bytes": 3343,
+      "sha256": "633b21700a0426c8f3fd0e980dde8e0b7706383a6d4da041b31844de23addde9"
+    },
+    {
+      "path": "docs/testing/internal_parent_split_originals/verify_existing.py",
+      "bytes": 3558,
+      "sha256": "f4b3261353a1eabef66b2825461ca3bccd58983454611f9d72f1ca07912817a9"
+    }
+  ],
+  "source_identity": "Java byte-identical; certificate repository-root adjustment only; capture current-source manifest/repository-root wrapper distinct from actual private execution; verifier new",
+  "public_read_only_verification": {
+    "path": ".cache/ace16-internal-parent-source-first-20261027/public-read-only-verification.json",
+    "bytes": 231,
+    "sha256": "26f111553446530cab9520ef4bfcff22aaa22784daebc29b4bd08883e250f073"
+  },
+  "cases": [
+    {
+      "profile": "V2016",
+      "generated_target_rows": 149184,
+      "sentinel_rows": 1,
+      "sparse_target_rows": 963,
+      "larger_file": {
+        "path": ".cache/ace16-internal-parent-source-first-20261027/V2016-larger.accdb",
+        "bytes": 4837376,
+        "sha256": "ae203b53881957d2f1c61aeb61f24735bf16b6c3e4d2450e2d418a7c1d153cba"
+      },
+      "sparse_file": {
+        "path": ".cache/ace16-internal-parent-source-first-20261027/V2016-sparse.accdb",
+        "bytes": 4837376,
+        "sha256": "2b0d90ac6db86314a8ef5298f7fa871bfda43cecda8aa45121a840ae6c02bbb2"
+      },
+      "selection": {
+        "path": ".cache/ace16-internal-parent-source-first-20261027/V2016-selection.tsv",
+        "bytes": 25499,
+        "sha256": "d3c34992dab11ecdc80d11109c656091e20d99a620c20e6a36386c033efe483b"
+      },
+      "larger_capture": {
+        "file": {
+          "path": ".cache/ace16-internal-parent-source-first-20261027/V2016-larger.accdb",
+          "bytes": 4837376,
+          "sha256": "ae203b53881957d2f1c61aeb61f24735bf16b6c3e4d2450e2d418a7c1d153cba"
+        },
+        "proof": {
+          "path": ".cache/ace16-internal-parent-source-first-20261027/V2016-larger-description.proof.json",
+          "bytes": 704766,
+          "sha256": "b0b5cf4a9d0744a2720a97cac6ba945b3d68cb422fdd136476a1320c137a89dc"
+        },
+        "command": {
+          "argv_repository_relative": [
+            "java",
+            "-Xmx512m",
+            "-Dstdout.encoding=UTF-8",
+            "-cp",
+            ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-internal-parent-source-first-20261027/classes",
+            "InternalParentSplitFixture",
+            "describe",
+            ".cache/ace16-internal-parent-source-first-20261027/V2016-larger.accdb"
+          ],
+          "status": 0,
+          "timed_out": false,
+          "timeout_seconds": 1200,
+          "stdout": {
+            "path": ".cache/ace16-internal-parent-source-first-20261027/V2016-larger-description.stdout",
+            "bytes": 11697696,
+            "sha256": "b27138bf3a7f38a0ed6ccec0d830740bd4c4e7790ab17ce10f44a0e564a0f3a4"
+          },
+          "stderr": {
+            "path": ".cache/ace16-internal-parent-source-first-20261027/V2016-larger-description.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "sparse_capture": {
+        "file": {
+          "path": ".cache/ace16-internal-parent-source-first-20261027/V2016-sparse.accdb",
+          "bytes": 4837376,
+          "sha256": "2b0d90ac6db86314a8ef5298f7fa871bfda43cecda8aa45121a840ae6c02bbb2"
+        },
+        "proof": {
+          "path": ".cache/ace16-internal-parent-source-first-20261027/V2016-sparse-description.proof.json",
+          "bytes": 704256,
+          "sha256": "cf9e002daa027915b370512588e023fa8a08aaf7afe7d8e26f0b67d4d0113dcc"
+        },
+        "command": {
+          "argv_repository_relative": [
+            "java",
+            "-Xmx512m",
+            "-Dstdout.encoding=UTF-8",
+            "-cp",
+            ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-internal-parent-source-first-20261027/classes",
+            "InternalParentSplitFixture",
+            "describe",
+            ".cache/ace16-internal-parent-source-first-20261027/V2016-sparse.accdb"
+          ],
+          "status": 0,
+          "timed_out": false,
+          "timeout_seconds": 1200,
+          "stdout": {
+            "path": ".cache/ace16-internal-parent-source-first-20261027/V2016-sparse-description.stdout",
+            "bytes": 98837,
+            "sha256": "62cd70fa4b6aeb0e4ab0950a5ac50086d321fbd3ff317fea77188f0716fdc354"
+          },
+          "stderr": {
+            "path": ".cache/ace16-internal-parent-source-first-20261027/V2016-sparse-description.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "root": 91,
+      "root_height": 2,
+      "parent": 820,
+      "parent_is_root": false,
+      "target_leaf": 100,
+      "target_leaf_population": 470,
+      "ordered_height_counts": {
+        "0": 494,
+        "1": 2,
+        "2": 1
+      },
+      "capacity_sizes": {
+        "unsplit_leaf_best_bytes": 3761,
+        "left_best_bytes": 1413,
+        "right_best_bytes": 1881,
+        "parent_best_bytes": 3621
+      },
+      "selected_value": 149184,
+      "selected_row": {
+        "ordinal": 962,
+        "marker": 447552,
+        "page": 1180,
+        "slot": 8,
+        "native_ordinal": 962
+      },
+      "maps_member_counts": {
+        "JackcessGlobalFree": 0,
+        "TableOwned": 586,
+        "TableFreeSpace": 1,
+        "IndexOwned": 497
+      },
+      "unchanged_history": {
+        "same_all_original_tree_pages": true,
+        "same_heights_child_tail_siblings": true,
+        "all_subtree_maxima_retained": true,
+        "actual_pruning_or_merge": false,
+        "parent_bytes_before": 3621,
+        "parent_bytes_after": 3621,
+        "all_three_sibling_levels_preserved": true,
+        "every_internal_full_bound_and_child_preserved": true
+      },
+      "full_key_row_sha256": "aa0b0ec60e99d7b803ef53b0997b5bba1c82b75887f3b1293012c8f0da2bd623",
+      "future_cells_observation_only": {
+        "JackcessGlobalFree": [
+          {
+            "page": 1181,
+            "offset": 2101399,
+            "mask": 32,
+            "before": 224,
+            "set": true
+          },
+          {
+            "page": 1182,
+            "offset": 2101399,
+            "mask": 64,
+            "before": 224,
+            "set": true
+          },
+          {
+            "page": 1183,
+            "offset": 2101399,
+            "mask": 128,
+            "before": 224,
+            "set": true
+          }
+        ],
+        "IndexOwned": [
+          {
+            "page": 1181,
+            "offset": 2478231,
+            "mask": 32,
+            "before": 10,
+            "set": false
+          },
+          {
+            "page": 1182,
+            "offset": 2478231,
+            "mask": 64,
+            "before": 10,
+            "set": false
+          },
+          {
+            "page": 1183,
+            "offset": 2478231,
+            "mask": 128,
+            "before": 10,
+            "set": false
+          }
+        ]
+      }
+    },
+    {
+      "profile": "V2019",
+      "generated_target_rows": 149184,
+      "sentinel_rows": 1,
+      "sparse_target_rows": 963,
+      "larger_file": {
+        "path": ".cache/ace16-internal-parent-source-first-20261027/V2019-larger.accdb",
+        "bytes": 4907008,
+        "sha256": "6f7b5d8adacee1f9d1cc5605887dd3fd8d63de40bd24902f2089e8c585ce1e1a"
+      },
+      "sparse_file": {
+        "path": ".cache/ace16-internal-parent-source-first-20261027/V2019-sparse.accdb",
+        "bytes": 4907008,
+        "sha256": "40b998b125a515de9856f26b1138fc211d840b8844cae5780587a4d8361ab53e"
+      },
+      "selection": {
+        "path": ".cache/ace16-internal-parent-source-first-20261027/V2019-selection.tsv",
+        "bytes": 25508,
+        "sha256": "a0125aef14bf1151efe996aca1fb0bce6f71b26d22fb4bb94a8da83177ba2cde"
+      },
+      "larger_capture": {
+        "file": {
+          "path": ".cache/ace16-internal-parent-source-first-20261027/V2019-larger.accdb",
+          "bytes": 4907008,
+          "sha256": "6f7b5d8adacee1f9d1cc5605887dd3fd8d63de40bd24902f2089e8c585ce1e1a"
+        },
+        "proof": {
+          "path": ".cache/ace16-internal-parent-source-first-20261027/V2019-larger-description.proof.json",
+          "bytes": 710209,
+          "sha256": "2a1e0e986cf7c704cb5476b043470f7e088b3562a2f1eb3712a035b1d98b6fff"
+        },
+        "command": {
+          "argv_repository_relative": [
+            "java",
+            "-Xmx512m",
+            "-Dstdout.encoding=UTF-8",
+            "-cp",
+            ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-internal-parent-source-first-20261027/classes",
+            "InternalParentSplitFixture",
+            "describe",
+            ".cache/ace16-internal-parent-source-first-20261027/V2019-larger.accdb"
+          ],
+          "status": 0,
+          "timed_out": false,
+          "timeout_seconds": 1200,
+          "stdout": {
+            "path": ".cache/ace16-internal-parent-source-first-20261027/V2019-larger-description.stdout",
+            "bytes": 11700784,
+            "sha256": "500b45f09e75a65ecb0e19f956ab997784a2932fd0126f4b6a3cc1910f690f86"
+          },
+          "stderr": {
+            "path": ".cache/ace16-internal-parent-source-first-20261027/V2019-larger-description.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "sparse_capture": {
+        "file": {
+          "path": ".cache/ace16-internal-parent-source-first-20261027/V2019-sparse.accdb",
+          "bytes": 4907008,
+          "sha256": "40b998b125a515de9856f26b1138fc211d840b8844cae5780587a4d8361ab53e"
+        },
+        "proof": {
+          "path": ".cache/ace16-internal-parent-source-first-20261027/V2019-sparse-description.proof.json",
+          "bytes": 709699,
+          "sha256": "8d18118d63d4ee0e986a92d10b28415a7d1cd5198d80ba75a0b2a5cad751ba09"
+        },
+        "command": {
+          "argv_repository_relative": [
+            "java",
+            "-Xmx512m",
+            "-Dstdout.encoding=UTF-8",
+            "-cp",
+            ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-internal-parent-source-first-20261027/classes",
+            "InternalParentSplitFixture",
+            "describe",
+            ".cache/ace16-internal-parent-source-first-20261027/V2019-sparse.accdb"
+          ],
+          "status": 0,
+          "timed_out": false,
+          "timeout_seconds": 1200,
+          "stdout": {
+            "path": ".cache/ace16-internal-parent-source-first-20261027/V2019-sparse-description.stdout",
+            "bytes": 98875,
+            "sha256": "ad4e8d633f641f6e2cc88c6c95a921c694866aef065afc1b5ab914533d27a758"
+          },
+          "stderr": {
+            "path": ".cache/ace16-internal-parent-source-first-20261027/V2019-sparse-description.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "root": 108,
+      "root_height": 2,
+      "parent": 837,
+      "parent_is_root": false,
+      "target_leaf": 117,
+      "target_leaf_population": 470,
+      "ordered_height_counts": {
+        "0": 494,
+        "1": 2,
+        "2": 1
+      },
+      "capacity_sizes": {
+        "unsplit_leaf_best_bytes": 3761,
+        "left_best_bytes": 1413,
+        "right_best_bytes": 1881,
+        "parent_best_bytes": 3621
+      },
+      "selected_value": 149184,
+      "selected_row": {
+        "ordinal": 962,
+        "marker": 447552,
+        "page": 1197,
+        "slot": 8,
+        "native_ordinal": 962
+      },
+      "maps_member_counts": {
+        "JackcessGlobalFree": 0,
+        "TableOwned": 586,
+        "TableFreeSpace": 1,
+        "IndexOwned": 497
+      },
+      "unchanged_history": {
+        "same_all_original_tree_pages": true,
+        "same_heights_child_tail_siblings": true,
+        "all_subtree_maxima_retained": true,
+        "actual_pruning_or_merge": false,
+        "parent_bytes_before": 3621,
+        "parent_bytes_after": 3621,
+        "all_three_sibling_levels_preserved": true,
+        "every_internal_full_bound_and_child_preserved": true
+      },
+      "full_key_row_sha256": "f9b8c2ba42768be647501970feef5ccdd1a873e22a2daa1e2d0abd588391d181",
+      "future_cells_observation_only": {
+        "JackcessGlobalFree": [
+          {
+            "page": 1198,
+            "offset": 2101401,
+            "mask": 64,
+            "before": 192,
+            "set": true
+          },
+          {
+            "page": 1199,
+            "offset": 2101401,
+            "mask": 128,
+            "before": 192,
+            "set": true
+          },
+          {
+            "page": 1200,
+            "offset": 2101402,
+            "mask": 1,
+            "before": 255,
+            "set": true
+          }
+        ],
+        "IndexOwned": [
+          {
+            "page": 1198,
+            "offset": 2547865,
+            "mask": 64,
+            "before": 21,
+            "set": false
+          },
+          {
+            "page": 1199,
+            "offset": 2547865,
+            "mask": 128,
+            "before": 21,
+            "set": false
+          },
+          {
+            "page": 1200,
+            "offset": 2547866,
+            "mask": 1,
+            "before": 0,
+            "set": false
+          }
+        ]
+      }
+    }
+  ],
+  "process_receipts": [
+    {
+      "index": 0,
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-internal-parent-source-first-20261027/compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": ".cache/ace16-internal-parent-source-first-20261027/compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 1,
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-internal-parent-source-first-20261027/V2016-generate.stdout",
+        "bytes": 188114,
+        "sha256": "d263f385978afe10684213cf40fb05691e4f31e92c2da4966120bf69dc5843c1"
+      },
+      "stderr": {
+        "path": ".cache/ace16-internal-parent-source-first-20261027/V2016-generate.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 2,
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-internal-parent-source-first-20261027/V2016-larger-description.stdout",
+        "bytes": 11697696,
+        "sha256": "b27138bf3a7f38a0ed6ccec0d830740bd4c4e7790ab17ce10f44a0e564a0f3a4"
+      },
+      "stderr": {
+        "path": ".cache/ace16-internal-parent-source-first-20261027/V2016-larger-description.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 3,
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-internal-parent-source-first-20261027/V2016-prune.stdout",
+        "bytes": 18,
+        "sha256": "4d50fd6704d5835304fa88fa385ff97cbfa87a9bdb44195cedccd5163b5f39a8"
+      },
+      "stderr": {
+        "path": ".cache/ace16-internal-parent-source-first-20261027/V2016-prune.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 4,
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-internal-parent-source-first-20261027/V2016-sparse-description.stdout",
+        "bytes": 98837,
+        "sha256": "62cd70fa4b6aeb0e4ab0950a5ac50086d321fbd3ff317fea77188f0716fdc354"
+      },
+      "stderr": {
+        "path": ".cache/ace16-internal-parent-source-first-20261027/V2016-sparse-description.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 5,
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-internal-parent-source-first-20261027/V2019-generate.stdout",
+        "bytes": 189665,
+        "sha256": "40b3e66b30cf802f0c7612b3322b84f821e55bdd6ca49f88adfee7ae610fad35"
+      },
+      "stderr": {
+        "path": ".cache/ace16-internal-parent-source-first-20261027/V2019-generate.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 6,
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-internal-parent-source-first-20261027/V2019-larger-description.stdout",
+        "bytes": 11700784,
+        "sha256": "500b45f09e75a65ecb0e19f956ab997784a2932fd0126f4b6a3cc1910f690f86"
+      },
+      "stderr": {
+        "path": ".cache/ace16-internal-parent-source-first-20261027/V2019-larger-description.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 7,
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-internal-parent-source-first-20261027/V2019-prune.stdout",
+        "bytes": 18,
+        "sha256": "4d50fd6704d5835304fa88fa385ff97cbfa87a9bdb44195cedccd5163b5f39a8"
+      },
+      "stderr": {
+        "path": ".cache/ace16-internal-parent-source-first-20261027/V2019-prune.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 8,
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-internal-parent-source-first-20261027/V2019-sparse-description.stdout",
+        "bytes": 98875,
+        "sha256": "ad4e8d633f641f6e2cc88c6c95a921c694866aef065afc1b5ab914533d27a758"
+      },
+      "stderr": {
+        "path": ".cache/ace16-internal-parent-source-first-20261027/V2019-sparse-description.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "command_rendering": "Public argv_repository_relative is a portable rendering, not exact actual argv; unchanged raw command receipts remain pinned."
+}

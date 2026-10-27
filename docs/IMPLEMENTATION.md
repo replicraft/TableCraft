@@ -133,6 +133,23 @@ observations, not engineering byte goldens. Recursive kernel splitting and its
 candidate acceptance remain unfinished; these results do not qualify normal
 saves or Microsoft Access behavior.
 
+## Non-root internal-parent overflow sources
+
+A [separate bounded source experiment](testing/INTERNAL_PARENT_INDEX_SPLIT_SOURCE_OBSERVATIONS.md)
+now finds genuine below-root internal-parent overflow in both ACE 16 profiles.
+Its first nine source processes pass. Natural generation stops at 149,184 target
+rows under the unchanged 150,000 aggregate cap; fresh public pruning retains
+963 target rows plus a sentinel. The height-two root and distinct height-one
+parent are verified independently, together with all 497 index pages, internal
+full key/ROW bounds, child/tail structure, three sibling levels and kept physical
+row identities. The fixed MAX request exceeds both leaf and parent capacity.
+
+The [source receipt](testing/results/ace16-internal-parent-split-sources-2026-10-27.json)
+records original hashes, exact first-run helpers and read-only sparse-history
+proofs. Larger intermediates are not mutation inputs. No native admission,
+MAX action, internal-page retention rule or native Access qualification follows
+from these source-generation results.
+
 ## Alternate-page placement and EOF allocation candidates
 
 The separate `preview_ace16_variable_updates` engineering API now places growing
