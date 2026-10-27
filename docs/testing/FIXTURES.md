@@ -9443,3 +9443,14 @@ values and full key/row streams. The
 [candidate receipt](results/ace16-root-split-originals-2026-10-27.json) pins all six
 commands, outputs and immutable sources; no new public UPDATE was performed.
 Native Access/data-macro qualification remains separate.
+
+### Non-root Int32 split reference copies
+
+The [non-root observations](NONROOT_INDEX_SPLIT_OBSERVATIONS.md) reuse the exact
+registered 1,000-row DeleteTree originals and select live ordinal 27, ID 1000.
+The frozen root-leaf consumer refuses both attempts atomically; both fresh public
+copies update successfully. All twelve original commands and first verifier exit
+1 remain pinned in the [receipt](results/ace16-nonroot-index-split-originals-2026-10-27.json).
+Separate saved-byte analyses verify the actual leaf/parent/map changes and equal
+Memo/OLE payloads despite nine new public LVAL pages. No original database was
+modified, no action was repeated, and no non-root kernel success is claimed.

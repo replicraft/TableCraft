@@ -1,0 +1,88 @@
+{
+  "scope": "Separate read-only next non-root split action plan; no actions authorized/executed",
+  "sequence": "Only after current two-candidate root-leaf acceptance passes on committed frozen artifact and root authorizes next measurement",
+  "inventory": {
+    "path": ".cache/ace16-nonroot-split-inventory-20261027/inventory.json",
+    "bytes": 8687,
+    "sha256": "7ab26741c1caab7e5998f0270aa6d6bd799637f3de90367765c058af57d97808"
+  },
+  "source_pins": [
+    {
+      "path": "docs/testing/DeleteTreeFixture.java",
+      "bytes": 9873,
+      "sha256": "6ba828bafb185fc27c8b0ea05fa6fe5d63c6a2050317f624d5be08556368a5bb"
+    },
+    {
+      "path": "docs/testing/capture_delete_trees.py",
+      "bytes": 20353,
+      "sha256": "05f15179d1b4c689e1dd045617335f66b98189fbd12259838cc0ab5da4ebfdb1"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/limits.rs",
+      "bytes": 964,
+      "sha256": "22a05c995adcff0bf393faf86d0200fbeed5e6c1b7a8dac5d3866c57848efeaf"
+    }
+  ],
+  "limits": "Current source MAX_LIVE_ROWS=16384; both original tables have1000. No cap or source modification. Other existing guards retained.",
+  "cases": [
+    {
+      "original": {
+        "path": ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before.accdb",
+        "bytes": 679936,
+        "sha256": "1f9f1cf80830ccda64d3b025ecbc5e648184665530ed301e9ad3ffddfe553400"
+      },
+      "table": "Tree",
+      "column": "ID",
+      "snapshot_live_ordinal": 27,
+      "expected": 1000,
+      "replacement": 2147483647,
+      "record_reference_hex": "0000691b",
+      "root": 91,
+      "original_leaf": 143,
+      "leaf_population": 496,
+      "original_prefix": 3,
+      "best_updated_prefix": 1,
+      "required_updated_wire_bytes": 3969,
+      "capacity_bytes": 3616,
+      "overflow_bytes": 353,
+      "root_word": 1948,
+      "four_byte_field_offset": 432030,
+      "preservation": "All original row references and record bytes except the selected four bytes; all unrelated index full key+row streams and page bodies",
+      "actual_long_value_source": {
+        "Memo_UTF8_bytes": "12600",
+        "OLE_bytes": "12288"
+      },
+      "admission_uncertainty": "No new UPDATE call or before/post mutation qualification performed; ordinary numeric metadata and historic DELETE/read evidence do not establish properties/macros/payload/relationship UPDATE admission. Preserve the actual first gate/error before interpreting capacity. Target record is ordinary/unforwarded, native LONG value1000 verified directly."
+    },
+    {
+      "original": {
+        "path": ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before.accdb",
+        "bytes": 753664,
+        "sha256": "90a04486c3c7e01061bb8c68718c8442c4fdc712559d7006fe7ca3dc1c463dc2"
+      },
+      "table": "Tree",
+      "column": "ID",
+      "snapshot_live_ordinal": 27,
+      "expected": 1000,
+      "replacement": 2147483647,
+      "record_reference_hex": "00007a1b",
+      "root": 108,
+      "original_leaf": 160,
+      "leaf_population": 496,
+      "original_prefix": 3,
+      "best_updated_prefix": 1,
+      "required_updated_wire_bytes": 3969,
+      "capacity_bytes": 3616,
+      "overflow_bytes": 353,
+      "root_word": 1948,
+      "four_byte_field_offset": 501662,
+      "preservation": "All original row references and record bytes except the selected four bytes; all unrelated index full key+row streams and page bodies",
+      "actual_long_value_source": {
+        "Memo_UTF8_bytes": "12600",
+        "OLE_bytes": "12288"
+      },
+      "admission_uncertainty": "No new UPDATE call or before/post mutation qualification performed; ordinary numeric metadata and historic DELETE/read evidence do not establish properties/macros/payload/relationship UPDATE admission. Preserve the actual first gate/error before interpreting capacity. Target record is ordinary/unforwarded, native LONG value1000 verified directly."
+    }
+  ],
+  "unresolved_parent_split": "This actual primary parent has one separator with3603bytes free; adding one13byte separator does not overflow it. No parent capacity witness claimed."
+}

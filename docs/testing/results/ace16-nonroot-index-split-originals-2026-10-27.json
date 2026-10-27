@@ -1,0 +1,484 @@
+{
+  "scope": "Two frozen root-leaf kernel refusals and two public non-root UPDATE successes; initial verifier failure and separate read-only diagnoses retained. No native Access qualification.",
+  "date": "2026-10-27",
+  "counts": {
+    "commands": 12,
+    "kernel_atomic_refusals": 2,
+    "public_update_successes": 2,
+    "initial_complete_profiles": 0,
+    "diagnosed_profiles": 2,
+    "native_access_calls": 0
+  },
+  "first_terminal": {
+    "exit_code": 1,
+    "session": 73896,
+    "status_source": "Coordinator-observed unified-exec terminal; transcription, not a subprocess capture",
+    "tool_chunk": "a368ff"
+  },
+  "compiled_revision": "0c0dc6d904bd112236a383c74b04192ee6c5f90f",
+  "build_receipt": {
+    "path": "docs/testing/results/ace16-root-split-example-build-2026-10-27.json",
+    "bytes": 30596,
+    "sha256": "a9d4fb2ae812b7351e88381ed35f28e216beafb5f4fc3c00330891f37b339b3d"
+  },
+  "artifact": {
+    "path": ".cache/tablecraft-bin/ace16-root-split-20261027",
+    "bytes": 18402984,
+    "sha256": "8245c35b6b533dbdc8f6dec5fed74aab0c0fdaf0da73e5df529dd3053eae4709"
+  },
+  "owning_document": {
+    "path": "docs/testing/NONROOT_INDEX_SPLIT_OBSERVATIONS.md",
+    "bytes": 5331,
+    "sha256": "6f9de7a4774f136b74c0d7f9c3c168fdf65872dea3d5ff074679078585c39d6c"
+  },
+  "actual_execution": {
+    "plan": {
+      "path": ".cache/ace16-nonroot-split-inventory-20261027/action-plan.json",
+      "bytes": 4083,
+      "sha256": "44f35ae7dbd339d0a1f3d4f9bc8c2b9bc6e7eaf1a1e3fbc8216a8d92e3716f20"
+    },
+    "frozen_manifest": {
+      "path": ".cache/ace16-nonroot-split-next-20261027/freeze.json",
+      "bytes": 2305,
+      "sha256": "6f0b0585031e910c3dbf1b8a54cf3006bb2a1ae22ea676265c4578192400012e"
+    },
+    "runner": {
+      "path": ".cache/ace16-nonroot-split-next-20261027/run.py",
+      "bytes": 15783,
+      "sha256": "cd380a15e34217b16fb4ec7db1b359325528da2ca420941d7ecfac06c659e5cd"
+    },
+    "reference_helper": {
+      "path": ".cache/ace16-nonroot-split-next-20261027/NonrootSplitReference.java",
+      "bytes": 7679,
+      "sha256": "cfde35e00bd7230df54ce54975ba10ae8de98eba6a0a646049083c511228c951"
+    },
+    "raw_report": {
+      "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/report.json",
+      "bytes": 6435161,
+      "sha256": "36f22c7426f5e569b4f7c8a1adf8d42f002cc488034f2bda9201948b0f192bc3"
+    },
+    "execution_log": {
+      "path": ".cache/ace16-nonroot-split-next-20261027/initial-execution.log",
+      "bytes": 217,
+      "sha256": "5a3b329c845d442f88c78759871a1e362ed23216e6c444c9a368dab36256e608"
+    },
+    "precall": {
+      "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/before-first-call.json",
+      "bytes": 4351,
+      "sha256": "ce9916d1d32d1da53b29824e430216d1a3baa867baccd18e68fa58a9607772ef"
+    },
+    "source_archives": [
+      {
+        "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/precall-sources/0-run.py",
+        "bytes": 15783,
+        "sha256": "cd380a15e34217b16fb4ec7db1b359325528da2ca420941d7ecfac06c659e5cd"
+      },
+      {
+        "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/precall-sources/1-action-plan.json",
+        "bytes": 4083,
+        "sha256": "44f35ae7dbd339d0a1f3d4f9bc8c2b9bc6e7eaf1a1e3fbc8216a8d92e3716f20"
+      },
+      {
+        "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/precall-sources/3-DeleteTreeFixture.java",
+        "bytes": 9873,
+        "sha256": "6ba828bafb185fc27c8b0ea05fa6fe5d63c6a2050317f624d5be08556368a5bb"
+      },
+      {
+        "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/precall-sources/4-NonrootSplitReference.java",
+        "bytes": 7679,
+        "sha256": "cfde35e00bd7230df54ce54975ba10ae8de98eba6a0a646049083c511228c951"
+      },
+      {
+        "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/precall-sources/5-capture_delete_trees.py",
+        "bytes": 20353,
+        "sha256": "05f15179d1b4c689e1dd045617335f66b98189fbd12259838cc0ab5da4ebfdb1"
+      },
+      {
+        "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/precall-sources/6-delete_reference_maps.py",
+        "bytes": 8635,
+        "sha256": "9fca51758e0f26e37dab2e27ff2c41c0e8a7a8110e9a047eda1ccb2a91eadda8"
+      },
+      {
+        "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/precall-sources/7-capture.py",
+        "bytes": 18394,
+        "sha256": "52662e335fe5df269d9553be034f1efeeb313c82e642b3c2fca10a24a32dfdac"
+      },
+      {
+        "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/precall-sources/8-common.py",
+        "bytes": 2697,
+        "sha256": "4d6e13158e1c039f1a75bb12828cfa7eaf811e58e06e5e4de0f4c605e1519f8c"
+      }
+    ],
+    "immutable_input_pins": [
+      {
+        "path": ".cache/ace16-nonroot-split-next-20261027/run.py",
+        "bytes": 15783,
+        "sha256": "cd380a15e34217b16fb4ec7db1b359325528da2ca420941d7ecfac06c659e5cd"
+      },
+      {
+        "path": ".cache/ace16-nonroot-split-inventory-20261027/action-plan.json",
+        "bytes": 4083,
+        "sha256": "44f35ae7dbd339d0a1f3d4f9bc8c2b9bc6e7eaf1a1e3fbc8216a8d92e3716f20"
+      },
+      {
+        "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "bytes": 1407244,
+        "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+      },
+      {
+        "path": "docs/testing/DeleteTreeFixture.java",
+        "bytes": 9873,
+        "sha256": "6ba828bafb185fc27c8b0ea05fa6fe5d63c6a2050317f624d5be08556368a5bb"
+      },
+      {
+        "path": ".cache/ace16-nonroot-split-next-20261027/NonrootSplitReference.java",
+        "bytes": 7679,
+        "sha256": "cfde35e00bd7230df54ce54975ba10ae8de98eba6a0a646049083c511228c951"
+      },
+      {
+        "path": "docs/testing/capture_delete_trees.py",
+        "bytes": 20353,
+        "sha256": "05f15179d1b4c689e1dd045617335f66b98189fbd12259838cc0ab5da4ebfdb1"
+      },
+      {
+        "path": "docs/testing/delete_reference_maps.py",
+        "bytes": 8635,
+        "sha256": "9fca51758e0f26e37dab2e27ff2c41c0e8a7a8110e9a047eda1ccb2a91eadda8"
+      },
+      {
+        "path": "docs/testing/index_split_originals/capture.py",
+        "bytes": 18394,
+        "sha256": "52662e335fe5df269d9553be034f1efeeb313c82e642b3c2fca10a24a32dfdac"
+      },
+      {
+        "path": "docs/testing/slot_preview_originals/common.py",
+        "bytes": 2697,
+        "sha256": "4d6e13158e1c039f1a75bb12828cfa7eaf811e58e06e5e4de0f4c605e1519f8c"
+      },
+      {
+        "path": ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before.accdb",
+        "bytes": 679936,
+        "sha256": "1f9f1cf80830ccda64d3b025ecbc5e648184665530ed301e9ad3ffddfe553400"
+      },
+      {
+        "path": ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before.accdb",
+        "bytes": 753664,
+        "sha256": "90a04486c3c7e01061bb8c68718c8442c4fdc712559d7006fe7ca3dc1c463dc2"
+      }
+    ]
+  },
+  "post_execution_analyses": {
+    "diagnosis_source": {
+      "path": ".cache/ace16-nonroot-split-next-20261027/analyze.py",
+      "bytes": 7539,
+      "sha256": "46b75940144b4910c9a3a86c9d8a2e80bf26c34244af76812791f74bba89e0eb"
+    },
+    "source_pinned_before_execution": {
+      "path": ".cache/ace16-nonroot-split-next-20261027/analysis-source-before-execution.json",
+      "bytes": 165,
+      "sha256": "6be9a6ea87cc6cd67656033009aa348df45c33fbc967852c9b4c4b2bd805c305"
+    },
+    "diagnosis": {
+      "path": ".cache/ace16-nonroot-split-next-20261027/diagnosis.json",
+      "bytes": 773568,
+      "sha256": "8fd4f8271b0625a0bb38edae540914731e5e167ce2d735c15e00a2e2f7c2f4c4"
+    },
+    "diagnosis_log": {
+      "path": ".cache/ace16-nonroot-split-next-20261027/diagnosis.log",
+      "bytes": 163,
+      "sha256": "f0f204711715dcbb0ac94f3fe04c91168a6b6a1e0698b21402c77faa44e084d3"
+    },
+    "diagnosis_exit": 0,
+    "lval_source": {
+      "path": ".cache/ace16-nonroot-split-next-20261027/lval_chains.py",
+      "bytes": 3356,
+      "sha256": "68bbfedd094621ec6acc239aa243d1349e1df571bcdf16d3806e2db5c89e7a52"
+    },
+    "lval_source_pinned_before_execution": {
+      "path": ".cache/ace16-nonroot-split-next-20261027/lval-source-before-execution.json",
+      "bytes": 169,
+      "sha256": "d43a76bb71cca07336c5bbeccbbb448f9532cf7b56bc0a58560199954f9d6061"
+    },
+    "lval_proof": {
+      "path": ".cache/ace16-nonroot-split-next-20261027/lval-chains.json",
+      "bytes": 2269,
+      "sha256": "fd2bc5320a32023f19f404d96a96f3d8359d8cdeacec9c374f7de0afb9f26e46"
+    },
+    "lval_log": {
+      "path": ".cache/ace16-nonroot-split-next-20261027/lval-chains.log",
+      "bytes": 1317,
+      "sha256": "cae01ebbaae98452d668d8f9b481d628aa3f24b62c74649a50c3dc30445c44e0"
+    },
+    "lval_exit": 0
+  },
+  "public_sources": [
+    {
+      "path": "docs/testing/nonroot_index_split_originals/NonrootSplitReference.java",
+      "bytes": 7679,
+      "sha256": "cfde35e00bd7230df54ce54975ba10ae8de98eba6a0a646049083c511228c951"
+    },
+    {
+      "path": "docs/testing/nonroot_index_split_originals/analyze.py",
+      "bytes": 8350,
+      "sha256": "bae56d48e12110a3de2f25a39db2bd127f3ef42b92d9162e98a8152c1c0296ea"
+    },
+    {
+      "path": "docs/testing/nonroot_index_split_originals/capture.py",
+      "bytes": 16330,
+      "sha256": "af59ff62cab153ecea22077712f1ee02f8faaeb9ecbfaba420a91498621aee8b"
+    },
+    {
+      "path": "docs/testing/nonroot_index_split_originals/lval.py",
+      "bytes": 4025,
+      "sha256": "f6f88b91026a3d24f3787b8e05146c5449fe4a450794539f69c8a5e2fab26520"
+    },
+    {
+      "path": "docs/testing/nonroot_index_split_originals/plan.json",
+      "bytes": 4083,
+      "sha256": "44f35ae7dbd339d0a1f3d4f9bc8c2b9bc6e7eaf1a1e3fbc8216a8d92e3716f20"
+    }
+  ],
+  "public_source_identity": "Java helper and plan byte-identical; Python wrappers are post-execution path/argument adaptations, not historical execution sources. Saved-proof verification rerun only, no native/JVM calls.",
+  "cases": [
+    {
+      "profile": "V2016",
+      "original": {
+        "path": ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before.accdb",
+        "bytes": 679936,
+        "sha256": "1f9f1cf80830ccda64d3b025ecbc5e648184665530ed301e9ad3ffddfe553400"
+      },
+      "selector": {
+        "table": "Tree",
+        "column": "ID",
+        "snapshot_live_ordinal": 27,
+        "expected": 1000,
+        "replacement": 2147483647,
+        "record_reference_hex": "0000691b"
+      },
+      "native_error": "Error: Unsupported(IndexedColumn)\n",
+      "atomic_refusal": true,
+      "public_copy": {
+        "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2016-public-reference.accdb",
+        "bytes": 720896,
+        "sha256": "1fdc81ddf1a8a9328502eab35ed0a26e2528fb8c6595a75944457ca9d502a3d7"
+      },
+      "initial_verifier_failure": {
+        "class": "AssertionError",
+        "message": "",
+        "traceback": "Traceback (most recent call last):\n  File \"/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-nonroot-split-next-20261027/run.py\", line 260, in execute\n    item['comparison'] = compare(case, before, after)\n                         ~~~~~~~^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-nonroot-split-next-20261027/run.py\", line 121, in compare\n    assert bytes.fromhex(actual['hex']) == expected_body\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+      },
+      "command_associations": [
+        {
+          "index": 0,
+          "status": 0,
+          "timed_out": false,
+          "stdout": {
+            "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2016-before-getter.stdout",
+            "bytes": 334030,
+            "sha256": "9a7ae83838b4bb130747e20173b23a0ad23514018c3290aeacd3c9cc88812488"
+          },
+          "stderr": {
+            "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2016-before-getter.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "index": 1,
+          "status": 0,
+          "timed_out": false,
+          "stdout": {
+            "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2016-before-maps.stdout",
+            "bytes": 1814,
+            "sha256": "ff727f8f5f9246fc4d45619de64573b8b22b1d7fd3f1a32e256b9cc6ab1acf53"
+          },
+          "stderr": {
+            "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2016-before-maps.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "index": 2,
+          "status": 1,
+          "timed_out": false,
+          "stdout": {
+            "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2016-current-attempt.stdout",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2016-current-attempt.stderr",
+            "bytes": 34,
+            "sha256": "b80b69309bc87efee1407a8c14ee150ccac38caf6cc701f833a5607af85d0d51"
+          }
+        },
+        {
+          "index": 3,
+          "status": 0,
+          "timed_out": false,
+          "stdout": {
+            "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2016-public-update.stdout",
+            "bytes": 61,
+            "sha256": "7d1355d6920cd98447f3e0f9f16ee58c02bc9290ea0d9eaad7a3346507641344"
+          },
+          "stderr": {
+            "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2016-public-update.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "index": 4,
+          "status": 0,
+          "timed_out": false,
+          "stdout": {
+            "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2016-after-getter.stdout",
+            "bytes": 334078,
+            "sha256": "2557511c10f978784847acc018af9d86390caf2fcaee933b99e62f9b0ee0da4c"
+          },
+          "stderr": {
+            "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2016-after-getter.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "index": 5,
+          "status": 0,
+          "timed_out": false,
+          "stdout": {
+            "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2016-after-maps.stdout",
+            "bytes": 1841,
+            "sha256": "4217e5940793472eb831d88ab77495fba7334d6655b9012e960dd6d6d846b547"
+          },
+          "stderr": {
+            "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2016-after-maps.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      ]
+    },
+    {
+      "profile": "V2019",
+      "original": {
+        "path": ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before.accdb",
+        "bytes": 753664,
+        "sha256": "90a04486c3c7e01061bb8c68718c8442c4fdc712559d7006fe7ca3dc1c463dc2"
+      },
+      "selector": {
+        "table": "Tree",
+        "column": "ID",
+        "snapshot_live_ordinal": 27,
+        "expected": 1000,
+        "replacement": 2147483647,
+        "record_reference_hex": "00007a1b"
+      },
+      "native_error": "Error: Unsupported(IndexedColumn)\n",
+      "atomic_refusal": true,
+      "public_copy": {
+        "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2019-public-reference.accdb",
+        "bytes": 794624,
+        "sha256": "c44a436994402fc32bb9db90b065789076d05d5fe2d1fd06620f49cc48105db8"
+      },
+      "initial_verifier_failure": {
+        "class": "AssertionError",
+        "message": "",
+        "traceback": "Traceback (most recent call last):\n  File \"/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-nonroot-split-next-20261027/run.py\", line 260, in execute\n    item['comparison'] = compare(case, before, after)\n                         ~~~~~~~^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-nonroot-split-next-20261027/run.py\", line 121, in compare\n    assert bytes.fromhex(actual['hex']) == expected_body\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+      },
+      "command_associations": [
+        {
+          "index": 6,
+          "status": 0,
+          "timed_out": false,
+          "stdout": {
+            "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2019-before-getter.stdout",
+            "bytes": 334031,
+            "sha256": "463833710a647a16602d6d22f12c1156c098fe2c3ae58021053d153154145f5f"
+          },
+          "stderr": {
+            "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2019-before-getter.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "index": 7,
+          "status": 0,
+          "timed_out": false,
+          "stdout": {
+            "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2019-before-maps.stdout",
+            "bytes": 2074,
+            "sha256": "31bfac2d513b9949454380adc0a5f692aed2d76f653b8e76c3be109289bd9fc0"
+          },
+          "stderr": {
+            "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2019-before-maps.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "index": 8,
+          "status": 1,
+          "timed_out": false,
+          "stdout": {
+            "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2019-current-attempt.stdout",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2019-current-attempt.stderr",
+            "bytes": 34,
+            "sha256": "b80b69309bc87efee1407a8c14ee150ccac38caf6cc701f833a5607af85d0d51"
+          }
+        },
+        {
+          "index": 9,
+          "status": 0,
+          "timed_out": false,
+          "stdout": {
+            "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2019-public-update.stdout",
+            "bytes": 61,
+            "sha256": "7d1355d6920cd98447f3e0f9f16ee58c02bc9290ea0d9eaad7a3346507641344"
+          },
+          "stderr": {
+            "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2019-public-update.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "index": 10,
+          "status": 0,
+          "timed_out": false,
+          "stdout": {
+            "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2019-after-getter.stdout",
+            "bytes": 334079,
+            "sha256": "ffc5dc7a3a4f80533beaf3af2f97f525bd14d1eb29a8eafa9d99a419ccbf229e"
+          },
+          "stderr": {
+            "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2019-after-getter.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "index": 11,
+          "status": 0,
+          "timed_out": false,
+          "stdout": {
+            "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2019-after-maps.stdout",
+            "bytes": 2101,
+            "sha256": "9811fb69247064a62b9ee1f06de99e31b6dac1e84fb2e1955401b40d4bd74aa5"
+          },
+          "stderr": {
+            "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2019-after-maps.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      ]
+    }
+  ]
+}

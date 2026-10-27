@@ -35,6 +35,13 @@ image matches the independently frozen model, including all 500 row references,
 250/250 leaf partitions, map changes and preserved unrelated index bytes.
 Native Access, data-macro semantics and normal saves remain unqualified.
 
+The next [non-root reference capture](testing/NONROOT_INDEX_SPLIT_OBSERVATIONS.md)
+records two current-service refusals and two successful public updates. Its first
+verifier's exit 1 is retained: the reference writer also reallocated unchanged
+Memo/OLE values. Read-only diagnosis verifies their equal payloads and the actual
+new-left/retained-right leaf split. This establishes the next implementation
+geometry, not successful non-root TableCraft candidates.
+
 ## Alternate-page placement and EOF allocation candidates
 
 The separate `preview_ace16_variable_updates` engineering API now places growing
