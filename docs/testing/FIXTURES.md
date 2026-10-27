@@ -9265,3 +9265,27 @@ controls and 85 commands. All protected bytes, original records, exact key/row
 filters and complete logical index orders pass; 241 immutable pins and 32 requests
 remain unchanged. Raw expanded commands/getters stay ignored. No native Access
 SQL/save, mixed per-row timing, data-macro or self/cycle qualification is claimed.
+
+## Cascade association facts with same-table Memo/OLE
+
+Repository-owned [CascadeKeyFactsFixture.java](CascadeKeyFactsFixture.java) uses
+the reviewed Jackcess 5.0.4 public builders, with expressions disabled, UTC
+explicit and linked opens refused. Fresh originals contain nine rows each,
+interleaved composite keys and unindexed Memo/OLE payloads in both affected
+tables. No accepted earlier corpus, descriptor or header is patched.
+
+| Original | Bytes | SHA-256 |
+| --- | ---: | --- |
+| KeyFacts-V2016-before.accdb | 2,039,808 | `c718b3c4a65817a9bdca5c18cb680eef211af6ee690456cae41e6bceaadef08b` |
+| KeyFacts-V2019-before.accdb | 2,113,536 | `44b950b5948aa82fcfe04ced869e8f7c0ba6321106b539211d744dda2adb33ae` |
+
+[Measured observations](CASCADE_KEY_FACTS.md) and the
+[scoped receipt](results/ace16-cascade-key-facts-2026-10-26.json) retain actual
+getter values/locations, raw geometry, six frozen-before candidates and equal
+new candidate bytes. The facts pass avoids 132 parent and 264 child LVAL page
+reads; full validation still decodes these values. Cumulative resource charges
+are separate from elapsed time and peak memory. Corrupt copies invalidate all
+known LVAL owner signatures: key projections succeed, but complete reads and
+cascade preflight refuse. Original inputs remain unchanged. The source/metrics
+probes and initial preparation diagnostics are pinned; no native Access
+SQL/action/save or broader write profile is qualified.
