@@ -111,14 +111,25 @@ fn chain_allocations_reads_work_and_cancellation_share_caller_allowances() {
     ));
 }
 proptest! {
-    #![proptest_config(proptest::test_runner::Config {cases:256,rng_seed:proptest::test_runner::RngSeed::Fixed(0x5441_424c_5444_4546),..Default::default()})]
+    #![proptest_config(proptest::test_runner::Config {
+        cases: 256,
+        rng_seed: proptest::test_runner::RngSeed::Fixed(0x5441_424c_5444_4546),
+        ..Default::default()
+    })]
     #[test]
-    fn mutated_chains_are_bounded_and_never_return_partial_bytes(edits in prop::collection::vec((4096_usize..4*4096,any::<u8>()), 0..16)) {
+    fn mutated_chains_are_bounded_and_never_return_partial_bytes(
+        edits in prop::collection::vec((4096_usize..4 * 4096, any::<u8>()), 0..16)
+    ) {
         let (mut file, _) = image(9000);
-        for (at, value) in edits { file[at] = value; }
+        for (at, value) in edits {
+            file[at] = value;
+        }
+
         if let Ok(actual) = decode(file, &mut budget(), &|| false) {
             prop_assert_eq!(actual.len(), actual.length);
             prop_assert!(actual.len() <= 261640);
         }
     }
 }
+
+mod visits;

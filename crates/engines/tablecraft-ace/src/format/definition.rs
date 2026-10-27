@@ -4,7 +4,7 @@ use super::{
     page::{PAGE_BYTES, TABLE_DEFINITION_SIGNATURE},
     reader::Reader,
 };
-use crate::{InspectError, limits::MAX_DEFINITION_PAGES};
+use crate::{InspectError, NativeReadSource, limits::MAX_DEFINITION_PAGES};
 use std::ops::Deref;
 
 const PAGE_HEADER_BYTES: usize = 2 * size_of::<u16>() + size_of::<u32>();
@@ -20,6 +20,7 @@ pub(crate) struct Definition {
     joined: Vec<u8>,
     length: usize,
 }
+
 impl Deref for Definition {
     type Target = [u8];
     fn deref(&self) -> &[u8] {
@@ -30,9 +31,21 @@ impl Deref for Definition {
         }
     }
 }
-pub(crate) fn read<R: crate::NativeReadSource>(
+
+pub(crate) fn read<R: NativeReadSource>(
     reader: &mut Reader<'_, R>,
     root: u32,
+) -> Result<Definition, InspectError> {
+    read_with_pages(reader, root, |_, _| Ok(()))
+}
+
+/// Visit each checked physical definition page while retaining logical bytes.
+/// A later chain or visitor error returns no definition; callers must not treat
+/// a partial visitor inventory as a completed storage proof.
+pub(crate) fn read_with_pages<R: NativeReadSource>(
+    reader: &mut Reader<'_, R>,
+    root: u32,
+    mut visit: impl FnMut(u32, &mut Reader<'_, R>) -> Result<(), InspectError>,
 ) -> Result<Definition, InspectError> {
     let first = reader.page(root)?;
     validate(&first)?;
@@ -53,6 +66,7 @@ pub(crate) fn read<R: crate::NativeReadSource>(
         if next != 0 {
             return Err(InspectError::Malformed);
         }
+        visit(root, reader)?;
         return Ok(result);
     }
     reader.budget.charge_allocation(length as u64, 1)?;
@@ -61,6 +75,7 @@ pub(crate) fn read<R: crate::NativeReadSource>(
         .try_reserve_exact(length)
         .map_err(|_| InspectError::Allocation)?;
     result.joined.extend_from_slice(&result.first);
+    visit(root, reader)?;
     let mut visited = [0_u32; MAX_DEFINITION_PAGES];
     visited[0] = root;
     let mut count = 1;
@@ -79,6 +94,7 @@ pub(crate) fn read<R: crate::NativeReadSource>(
         count += 1;
         let page = reader.page(next)?;
         validate(&page)?;
+        visit(next, reader)?;
         next = u32_at(&page, NEXT_PAGE_OFFSET)?;
         let take = (length - result.joined.len()).min(CONTINUATION_BYTES);
         result
@@ -91,6 +107,7 @@ pub(crate) fn read<R: crate::NativeReadSource>(
     reader.tick()?;
     Ok(result)
 }
+
 fn validate(page: &[u8; PAGE_BYTES]) -> Result<(), InspectError> {
     if page[..TABLE_DEFINITION_SIGNATURE.len()] != TABLE_DEFINITION_SIGNATURE {
         return Err(InspectError::Malformed);
