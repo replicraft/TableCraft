@@ -1,0 +1,168 @@
+{
+  "date": "2026-10-26",
+  "scope": "Feature-gated existing-slot engineering example and bounded typed TSV consumer; no engine implementation, dependency, normal CLI or save-scope change.",
+  "core_revision": "282ccf1f15dcad3be6cdfa785354e6221ea51b25",
+  "core_record": {
+    "path": "docs/testing/results/ace16-slot-updates-native-2026-10-26.json",
+    "bytes": 17375,
+    "sha256": "cb4e80e298e96d43b799dee1fe815e42e125575c304eecb8f70a86792151b8d6"
+  },
+  "source_scope": "Consumer files were uncommitted during these checks; core API bytes match the committed feature. Final committed consumer artifact/replay is separate. The core record remains historical after this consumer adds its owning guide link.",
+  "source_snapshot": [
+    {
+      "path": "crates/engines/tablecraft-ace/examples/preview_ace16_slot.rs",
+      "bytes": 1920,
+      "sha256": "4c0941925f987d38164e6db7fedf23c0d154306058b5d9289f503e437675007a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/examples/preview_ace16_slot/input.rs",
+      "bytes": 5651,
+      "sha256": "ed722b8be0b293c3880a78bbab8efc8075b6f150413e37074e8cda9679339bf4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/examples/preview_ace16_slot/input/tests.rs",
+      "bytes": 3383,
+      "sha256": "4e5f05c3eabdf364b45d839f5f2a3875ae2b39e6d32c4a1902ca06f7a753511c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/examples/preview_ace16_slot/output.rs",
+      "bytes": 1041,
+      "sha256": "bed6bffa99fb59dafa5eb106236bc57948a7b6fb0d548f5bf7e7c9aa2f1b6d00"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/examples/preview_ace16_slot/output/tests.rs",
+      "bytes": 880,
+      "sha256": "9d4d71ebb9899ce8e6c236ec2e280b509b1db76bdd0baeff30f8dda25a6fc31d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/examples/preview_ace16_slot/tests.rs",
+      "bytes": 4513,
+      "sha256": "75aef755521638e0f28dd6395f7e21250645d789e7953e1058aa5507e0da5fa2"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/Cargo.toml",
+      "bytes": 2142,
+      "sha256": "882d72512882777c70c4fad168270bbfdde2dd22147b41e1685408d8eb007e3a"
+    },
+    {
+      "path": "docs/testing/SLOT_PREVIEW_CONSUMER.md",
+      "bytes": 4608,
+      "sha256": "be97a82f306a415f59ece71a521aa6abcd9c10d3ae86db2f56cac8268be50841"
+    },
+    {
+      "path": "docs/testing/ACE16_WRITE_PREVIEWS.md",
+      "bytes": 50732,
+      "sha256": "c5837175f051a154524b25be13579494c616dcebb035a1f911fea577e3d0e262"
+    }
+  ],
+  "selected_example_functions": 22,
+  "new_consumer_functions": 9,
+  "retained_batch_consumer_functions": 13,
+  "counting": "Final new9 plus unchanged batch13, each counted once. Initial successful22 and one-test failure are not counted again. Core runtime159 and docs3 belong to the separate core record.",
+  "checks": [
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --example preview_ace16_slot --example preview_ace16_batch_delete",
+      "session": 67325,
+      "exit_code": 0,
+      "passed_functions": 22,
+      "log": {
+        "path": ".cache/ace16-slot-consumer-next-20261026/accepted-tests.log",
+        "bytes": 2669,
+        "sha256": "875c114a89875c79d4c72de5555c46f8127b36d95d2e7962033fa4e0ba923c3e"
+      }
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --example preview_ace16_slot --example preview_ace16_batch_delete -- -D warnings",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-slot-consumer-next-20261026/clippy.log",
+        "bytes": 183,
+        "sha256": "540afc03aa5da0f2cf9f2c8c18c921a375db58fda5c49fef74daedf0cd05807a"
+      }
+    },
+    {
+      "command": "cargo build --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --example preview_ace16_slot",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-slot-consumer-next-20261026/build.log",
+        "bytes": 183,
+        "sha256": "13551d389ace2e788c86c4a7da0bd243902a4efe2c8a7c85ae14222248d586da"
+      }
+    },
+    {
+      "command": "target/debug/examples/preview_ace16_slot --help",
+      "exit_code": 0,
+      "output": {
+        "path": ".cache/ace16-slot-consumer-next-20261026/help.txt",
+        "bytes": 371,
+        "sha256": "41fa27678a83d2c3395dee1859151d615873b4e883da92675bcfc2bda5cb7f33"
+      }
+    },
+    {
+      "command": "rustfmt --edition 2024 --check crates/engines/tablecraft-ace/examples/preview_ace16_slot.rs crates/engines/tablecraft-ace/examples/preview_ace16_slot/input.rs crates/engines/tablecraft-ace/examples/preview_ace16_slot/input/tests.rs crates/engines/tablecraft-ace/examples/preview_ace16_slot/output.rs crates/engines/tablecraft-ace/examples/preview_ace16_slot/output/tests.rs crates/engines/tablecraft-ace/examples/preview_ace16_slot/tests.rs",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-slot-consumer-next-20261026/format.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "initial_successful_draft": {
+    "session": 30009,
+    "exit_code": 0,
+    "passed_functions": 22,
+    "scope": "Before adding the independently reviewed signed-hex refusal control; superseded by final source and accepted22, not additional passing functions.",
+    "log": {
+      "path": ".cache/ace16-slot-consumer-next-20261026/initial-tests.log",
+      "bytes": 2669,
+      "sha256": "f6d99283d23cda11e86f622a6b5095720d126a302655eee943b57354cd9e7d7b"
+    }
+  },
+  "preserved_failure": {
+    "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --example preview_ace16_slot malformed_kinds_fields_rows_hex_and_utf8",
+    "session": 17454,
+    "exit_code": 101,
+    "passed_functions": 0,
+    "reason": "The prototype used u8::from_str_radix and accepted +1 as a byte. A new literal malformed-hex control exposed the mismatch with ASCII hex-pair grammar. Replaced only consumer decoding with explicit ASCII nibble admission; no engine/golden widening.",
+    "log": {
+      "path": ".cache/ace16-slot-consumer-next-20261026/hex-diagnostic.log",
+      "bytes": 1137,
+      "sha256": "2d4e340ce5fd8607cfae6b136b5e6d85716bb584e2759bb31fe606174726f244"
+    },
+    "exact_input_sources": [
+      {
+        "path": ".cache/ace16-slot-consumer-next-20261026/before-strict-hex/input.rs",
+        "bytes": 5394,
+        "sha256": "21cfcb4ae16fc6e932c6846cbfec8073a23fba3e4ca72a9497a41c8336804ddd"
+      },
+      {
+        "path": ".cache/ace16-slot-consumer-next-20261026/before-strict-hex/tests.rs",
+        "bytes": 3383,
+        "sha256": "4e5f05c3eabdf364b45d839f5f2a3875ae2b39e6d32c4a1902ca06f7a753511c"
+      }
+    ]
+  },
+  "reviewed_private_prototype": {
+    "path": ".cache/ace16-slot-consumer-next-20261026/input-prototype-reviewed.rs.txt",
+    "bytes": 6122,
+    "sha256": "20aa03f72dab48960915fda79543bb35517d5f46137cdaebf3dd941af4b78db0"
+  },
+  "acceptance": [
+    "Exact positional SOURCE OUTPUT TABLE COLUMN TSV, without normal CLI/write switches.",
+    "Headerless five-field quoted TSV: literal UTF8 Text including NUL; exact ASCII hex Binary; NULL requires empty data; all empty carriers remain distinct.",
+    "All file capture/parsing precedes database and output opens; malformed later assignment returns no batch or candidate.",
+    "16MiB capture, 4096 requests, 1024 encoded bytes per data field, subject to one shared 256MiB/100kRows/100MSteps allowance.",
+    "Three prepaid record buffers total (two header caches and the reused explicitly sized ByteRecord); hostile field counts, count/width limits and typed Bytes/Rows/Steps exhaustion covered.",
+    "Real API filesystem candidate reopens with the ordinary reader/checker; fresh output only, existing output and original source preserved.",
+    "Injected partial-write failure removes only newly owned output; existing path prevents the callback and preserves its bytes."
+  ],
+  "boundaries": [
+    "Native Access comparison, macro qualification, normal backend saves, arbitrary width growth and journalability remain outside this engineering consumer.",
+    "Existing engine property/index/relationship/codec/expected-value gates remain unchanged.",
+    "The new parser uses csv existing quoted-TSV behavior rather than claiming an additional strict CSV grammar.",
+    "Input ceilings do not promise every below-ceiling file fits cumulative parser/image/check budgets.",
+    "No original database or accepted fixture/helper was modified or regenerated.",
+    "No new dependency or lockfile change."
+  ]
+}

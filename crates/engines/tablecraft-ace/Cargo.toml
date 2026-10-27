@@ -99,3 +99,7 @@ required-features = ["ace16-write-preview"]
 [[example]]
 name = "preview_ace16_batch_delete"
 required-features = ["ace16-write-preview"]
+
+[[example]]
+name = "preview_ace16_slot"
+required-features = ["ace16-write-preview"]
