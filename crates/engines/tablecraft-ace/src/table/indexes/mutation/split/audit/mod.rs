@@ -1,6 +1,7 @@
 //! Re-derive split, map and opaque-byte authority from the frozen source.
 mod framing;
 mod maps;
+mod nonroot;
 
 use super::super::{encoding, plan::keys, profile::SingleProfile, repack};
 use super::{Plan, leaf_entries};
@@ -50,7 +51,7 @@ pub(super) fn prove(
     let schema = checked.schema();
     let indexes = checked.indexes();
     let mut source = image.reader();
-    if !plan.certificates.is_empty() {
+    if plan.length != plan.original_length {
         allocated_source(
             &mut Reader {
                 source: &mut source,
@@ -124,6 +125,7 @@ pub(super) fn prove(
                 .find(|column| column.number() == index.columns()[0].number())
                 .is_some_and(|column| column.scalar_type() == Some(ScalarType::Int32));
         let mut split = false;
+        let mut verified_nonroot = false;
         if affected && single_i32 {
             let column = schema
                 .columns
@@ -165,6 +167,31 @@ pub(super) fn prove(
                     actual.budget,
                     cancelled,
                 )?;
+            } else {
+                let added = nonroot::prove(
+                    &nonroot::Operation {
+                        image,
+                        tree: &prepared.tree,
+                        keys: &prepared.entries,
+                        profile: &profile,
+                        owner: schema.definition,
+                        usage: index.usage_map(),
+                    },
+                    &mut actual,
+                    &mut nonroot::Progress {
+                        next_eof: &mut next_eof,
+                        map_edits: &mut expected_edits,
+                    },
+                )?;
+                actual
+                    .budget
+                    .charge_allocation(added.len() as u64, size_of::<u32>() as u64)
+                    .map_err(InspectError::from)?;
+                expected_pages
+                    .try_reserve(added.len())
+                    .map_err(|_| InspectError::Allocation)?;
+                expected_pages.extend(added);
+                verified_nonroot = true;
             }
             if split {
                 let right = next_eof;
@@ -291,7 +318,7 @@ pub(super) fn prove(
             .filter(|number| *number < image.catalog().header().page_count())
         {
             actual.tick()?;
-            if split && number == index.root_page() {
+            if verified_nonroot || split && number == index.root_page() {
                 continue;
             }
             let start = number as usize * PAGE_BYTES;
@@ -332,7 +359,7 @@ pub(super) fn prove(
         }
     }
     if split_position != plan.certificates.len()
-        || plan.added.len() != 2 * split_position
+        || plan.added.len() != (next_eof as usize - plan.original_length / PAGE_BYTES)
         || next_eof as usize * PAGE_BYTES != plan.length
     {
         return Err(EditError::Preservation);

@@ -66,7 +66,9 @@ Delivered read/query and engineering foundations:
   A separate [Int32 root-leaf split service](testing/ACE16_INDEX_SPLITS.md) now
   grows qualified overflowing single-field root leaves into a retained root and
   two represented EOF leaves, with request-derived row authority and independent
-  map/framing audits. Deeper and other-codec splits remain unfinished; normal
+  map/framing audits. Non-root leaves now split with a new left page, a retained
+  right page and repaired neighbors/ancestor bounds when every parent fits.
+  Internal-node and other-codec splits remain unfinished; normal
   saves and native Access qualification remain separate.
   Its [two unchanged-original candidates](testing/ROOT_SPLIT_UPDATE_OBSERVATIONS.md)
   now pass their first complete-image, typed-value and index/reference proofs

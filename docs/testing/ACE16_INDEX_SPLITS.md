@@ -1,4 +1,4 @@
-# ACE 16 fixed Int32 root-leaf split previews
+# ACE 16 fixed Int32 leaf split previews
 
 The optional `ace16-write-preview` feature supplies
 `NativeImage::preview_ace16_split_int32_updates(table, column, updates, budget, cancelled)`.
@@ -9,7 +9,7 @@ plan, execute required cascades or enable normal CLI/backend saves.
 This is a working bounded allocation service, not general index splitting or
 Microsoft Access/data-macro qualification. Existing fixed, nullable, slot, page
 and variable preview APIs retain their contracts. ACE 16 compatibility remains
-the overall target; internal/non-root split propagation is still implementation
+the overall target; overflowing internal-node propagation remains implementation
 work, not a permanent exclusion.
 
 ## Admission and exact operation
@@ -37,8 +37,19 @@ each leaf contains 250 entries. Leaf siblings are reciprocal with zero external
 end links; the root stores the complete left maximum **key and row reference**,
 left child pointer and right tail.
 
+For an existing non-root leaf, the service first consumes the globally sorted
+final key sequence using each original leaf's entry count. An overflowing leaf
+is divided at the middle entry count: one new **left** leaf is allocated at EOF,
+and the original page retains the right half. This preserves the observed
+new-left/retained-right geometry. Neighbor links are repaired across parent
+boundaries; every parent separator uses the complete resulting subtree maximum
+key and row reference. Existing bounded-child versus right-tail node forms,
+root ID and tree height remain unchanged. Every resulting leaf and parent must
+fit. Multiple leaf allocations follow source leaf traversal and physical-index
+order; logical aliases do not duplicate physical work.
+
 Other nonoverflowing qualified indexes use existing replacement machinery.
-An overflowing internal node, non-root leaf, other codec/composite, or half that
+An overflowing internal node, other codec/composite, or half that
 still requires another split refuses atomically. UPDATE ignore-NULL blockers are
 unchanged. Physical read support does not grant new mutation-codec authority.
 
@@ -54,11 +65,13 @@ Audit keys derive solely from this replay, not a supplied mutable key vector.
 Physical split logic belongs to the index subsystem. Its independent audit
 reconstructs required splits from original keys and actual replacement capacity,
 then checks the exact root/leaf key streams, row-inclusive bounds, order, links,
-height, endpoint bitmap and free bytes. Newly appended pages have initialized
+height, endpoint bitmap and free bytes. Non-root allocation authority is rederived
+from original leaf counts and actual replacement capacity, independently of
+planner-supplied page patches. Newly appended pages have initialized
 headers and zero unused residue. The original root keeps opaque bytes outside
 its explicitly authorized header/bitmap/new entry regions.
 
-Allocation requires existing represented cells for both new pages. Only the
+Allocation requires existing represented cells for every new index page. Only the
 selected physical index-owned bits are set and global future-free bits cleared;
 table data-owned and candidate-hint maps remain unchanged. Map-role/storage
 ownership is checked. Expected byte effects are rederived from source descriptors
@@ -80,6 +93,13 @@ service's golden: the engineering contract deliberately protects original
 unaffected Wide bytes. Those observations remain separate from candidate replay
 against a committed build of the new service.
 
+The separate [non-root observations](NONROOT_INDEX_SPLIT_OBSERVATIONS.md) retain
+two earlier atomic refusals and two public update successes. Their first verifier
+exited 1 because the public writer also rewrote unchanged Memo/OLE references;
+read-only diagnosis verifies the complete values and actual split geometry.
+The engineering service preserves those original descriptors/chains and adds
+only the required index page. Public reserialization is not its byte golden.
+
 ## Engineering consumer
 
 The feature-gated [example](../../crates/engines/tablecraft-ace/examples/preview_ace16_split.rs)
@@ -99,7 +119,7 @@ is not a qualified native save, locking/recovery guarantee or data-macro result.
 
 ## Verification
 
-Final selected verification passes 173 distinct runtime functions (153 existing,
+The original root-leaf slice passed 173 distinct runtime functions (153 existing,
 15 primary and five private), three compile-fail docs, scoped strict lint,
 standalone minimal compilation, warnings-denied all-feature rustdoc and formatting.
 The [scoped result record](results/ace16-index-splits-native-2026-10-27.json)
@@ -117,3 +137,22 @@ extra/missing/wrong-row/wrong-value controls pass. Separate harness compile
 failures and the mode-specific malformed-versus-unsupported map expectation are
 retained and excluded from final passing counts. No model bytes were changed to
 match a candidate.
+
+The [non-root implementation record](results/ace16-nonroot-index-splits-native-2026-10-27.json)
+reports 100 distinct runtime functions: 70 existing regressions, 23 primary
+functions and seven private controls. Ten functions are new in this slice.
+Three compile-fail docs, scoped strict lint, standalone minimal compilation,
+warnings-denied rustdoc and formatting also pass. The original root-leaf result
+record remains unchanged. Its literal tests cover
+first/middle/last leaf insertions, both directions and node forms, full row-tie
+bounds, aliases and physical owners sharing map bytes, nonoverflowing NULL
+peers, explicit parent-capacity refusal, quotas/cancellation and retry. Private
+forgeries independently check neighbor links, row-inclusive parent bounds,
+original residual bytes, fresh-page residue and unused future-free bits.
+
+The first authored non-root split returned `Preservation`: its builder had
+changed temporary header links but used the existing repack patch emitter, which
+intentionally excludes those header fields. The independent after-audit caught
+the missing emitted changes. Explicit paid four-byte link patches fixed the
+production draft; source/log evidence is retained. This was not an oracle
+correction or a published corrupt candidate.

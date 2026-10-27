@@ -1,4 +1,4 @@
-//! Separate fixed Int32 candidates that can split eligible original root leaves.
+//! Separate fixed Int32 candidates that can split eligible index leaves.
 mod authority;
 mod finish;
 #[cfg(test)]
@@ -17,10 +17,12 @@ use tablecraft_core::limits::ResourceBudget;
 use tablecraft_schema::ScalarType;
 
 impl NativeImage {
-    /// Preview fixed non-NULL Int32 replacements, including bounded root-leaf splits.
+    /// Preview fixed non-NULL Int32 replacements, including bounded leaf splits.
     ///
-    /// Only a qualified single-Int32 original root leaf may grow into a height-one
-    /// root with two represented EOF index leaves. Other overflowing shapes refuse.
+    /// A qualified single-Int32 original root leaf may grow into a height-one
+    /// root with two represented EOF index leaves. An existing non-root leaf may
+    /// add one left sibling while retaining its right half and tree height;
+    /// every resulting parent must still fit. Internal-node overflow refuses.
     /// Every original gate, final constraint and physical row reference is retained.
     /// Unaffected index bytes remain unchanged; no required cascade executes.
     ///

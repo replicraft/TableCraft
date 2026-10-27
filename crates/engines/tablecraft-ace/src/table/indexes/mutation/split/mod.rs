@@ -1,12 +1,10 @@
 //! Separate, bounded root-leaf splitting; ordinary replacement paths stay closed.
 mod audit;
 mod maps;
+mod nonroot;
 mod pages;
 
-use super::{
-    IndexDataPatch, IndexKeyUpdate, encoding, plan::keys, profile::SingleProfile, repack,
-    tree::Rewrite,
-};
+use super::{IndexDataPatch, IndexKeyUpdate, encoding, plan::keys, profile::SingleProfile, repack};
 use crate::{
     EditError, InspectError, NativeImage, NativeIndex, TableCheck, WriteBlocker,
     format::{page::PAGE_BYTES, reader::Reader},
@@ -83,22 +81,18 @@ pub(super) fn edit(
         image, reader, index, owner, updates, profile,
     )?;
     if !prepared.tree.is_leaf() {
-        let mut remaining = prepared.entries.as_slice();
-        prepared.tree.rewrite::<_, { encoding::MAX_ENTRY_BYTES }>(
-            image,
-            &mut remaining,
-            &Rewrite {
+        return nonroot::edit(
+            &nonroot::Operation {
+                image,
+                index,
                 profile,
-                mode: prepared.mode,
             },
+            &prepared.tree,
+            &prepared.entries,
+            plan,
+            reader,
             patches,
-            reader.budget,
-            reader.cancelled,
-        )?;
-        if !remaining.is_empty() {
-            return Err(EditError::Preservation);
-        }
-        return Ok(());
+        );
     }
     let entries = leaf_entries(&prepared.entries, reader.budget, reader.cancelled)?;
     let offset = index.root_page() as usize * PAGE_BYTES;

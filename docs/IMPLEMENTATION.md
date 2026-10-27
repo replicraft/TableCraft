@@ -16,13 +16,13 @@ outputs, with all 120 column reports matching independently captured expectation
 These are storage-check results, not new UPDATE actions or native Access
 qualification. Memo/OLE replacement and normal ACE saves remain unfinished.
 
-## Fixed Int32 root-leaf split candidates
+## Fixed Int32 leaf split candidates
 
 The separate feature-gated `preview_ace16_split_int32_updates` service can turn a
 qualified overflowing single-Int32 root leaf into a height-one root and two EOF
 leaves. It preserves logical row references, complete key/row bounds, unrelated
 index bytes and counters, and updates only represented index-owned/global map
-cells. Deeper or other-codec overflows still refuse. Existing fixed, page and
+cells. Other-codec overflows still refuse. Existing fixed, page and
 variable previews retain their previous admission and behavior.
 
 The [split contract](testing/ACE16_INDEX_SPLITS.md) describes request-derived row
@@ -35,12 +35,20 @@ image matches the independently frozen model, including all 500 row references,
 250/250 leaf partitions, map changes and preserved unrelated index bytes.
 Native Access, data-macro semantics and normal saves remain unqualified.
 
-The next [non-root reference capture](testing/NONROOT_INDEX_SPLIT_OBSERVATIONS.md)
+The service now also splits existing non-root leaves when every resulting parent
+fits. A new left leaf precedes the retained right page; neighbor links and full
+key/row parent bounds are repaired without changing the root ID or height.
+The [non-root scoped record](testing/results/ace16-nonroot-index-splits-native-2026-10-27.json)
+passes 100 distinct runtime functions, including retained root-leaf regressions,
+and three compile-fail checks. Internal-node overflow remains an atomic refusal.
+New-kernel original-file comparison remains a separate next gate.
+
+The [non-root reference capture](testing/NONROOT_INDEX_SPLIT_OBSERVATIONS.md)
 records two current-service refusals and two successful public updates. Its first
 verifier's exit 1 is retained: the reference writer also reallocated unchanged
 Memo/OLE values. Read-only diagnosis verifies their equal payloads and the actual
-new-left/retained-right leaf split. This establishes the next implementation
-geometry, not successful non-root TableCraft candidates.
+new-left/retained-right leaf split. These are the preceding frozen consumer's
+results, not successful non-root TableCraft candidates.
 
 ## Alternate-page placement and EOF allocation candidates
 
