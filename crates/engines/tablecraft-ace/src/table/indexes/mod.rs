@@ -73,6 +73,10 @@ pub(super) use mutation::{
     PatchSet as DeleteIndexPlan, RetirementTable, audit_global, audit_retirements, audit_siblings,
     compose as compose_retirements, delete_patches as index_delete_patches,
 };
+#[cfg(feature = "ace16-write-preview")]
+pub(in crate::table) use mutation::{
+    SlotKeyUpdate, qualify_slot_indexes, slot_patches as index_slot_patches,
+};
 mod read;
 mod selection;
 mod walk;

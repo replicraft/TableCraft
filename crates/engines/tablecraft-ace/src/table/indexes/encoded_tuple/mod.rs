@@ -32,6 +32,13 @@ pub(in crate::table::indexes) struct EncodedTupleKey {
     bytes: Vec<u8>,
     row_nulls: Option<u16>,
 }
+#[cfg(feature = "ace16-write-preview")]
+impl EncodedTupleKey {
+    pub(in crate::table::indexes) fn into_bytes(self) -> Vec<u8> {
+        self.bytes
+    }
+}
+
 impl PartialEq for EncodedTupleKey {
     fn eq(&self, other: &Self) -> bool {
         self.bytes == other.bytes

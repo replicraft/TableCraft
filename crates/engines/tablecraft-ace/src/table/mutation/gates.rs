@@ -31,10 +31,22 @@ pub(super) fn before_delete(
     before_with(image, table, Admission::Delete, budget, cancelled)
 }
 
+#[cfg(feature = "ace16-write-preview")]
+pub(super) fn before_slot(
+    image: &NativeImage,
+    table: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<TableCheck, EditError> {
+    before_with(image, table, Admission::SlotUpdate, budget, cancelled)
+}
+
 enum Admission {
     Update,
     #[cfg(feature = "ace16-write-preview")]
     Delete,
+    #[cfg(feature = "ace16-write-preview")]
+    SlotUpdate,
 }
 
 fn before_with(
@@ -112,7 +124,7 @@ fn before_with(
         index.status() != IndexCheckStatus::Checked
             // Complete physical membership permits the separate DELETE request
             // subset. Every UPDATE, including an empty one, retains its blocker.
-            || (matches!(admission, Admission::Update)
+            || (!matches_delete(&admission)
                 && index.index().constraints().is_some_and(|constraints| constraints.ignore_nulls()))
             || (!foreign_preview && index.index().native_type() == FOREIGN_INDEX)
     }) {
@@ -209,4 +221,12 @@ pub(super) fn qualified(report: &ConstraintReport) -> Result<(), EditError> {
         return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
     }
     Ok(())
+}
+
+fn matches_delete(admission: &Admission) -> bool {
+    match admission {
+        #[cfg(feature = "ace16-write-preview")]
+        Admission::Delete => true,
+        _ => false,
+    }
 }

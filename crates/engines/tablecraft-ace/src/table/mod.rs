@@ -43,7 +43,7 @@ pub use indexes::{IndexCheck, IndexCheckStatus, TableCheck, check_table};
 pub use mutation::{Ace16DeletePreview, Ace16WritePreview, RowDelete, TableRowDeletes};
 pub use mutation::{EditError, Int32Update, NativeEditPlan, WriteBlocker};
 #[cfg(feature = "ace16-write-preview")]
-pub use mutation::{FixedColumnUpdates, FixedScalarUpdate};
+pub use mutation::{FixedColumnUpdates, FixedScalarUpdate, SlotScalarUpdate};
 pub use schema::{NativeColumn, TableSchema, inspect_table_schema};
 mod page;
 mod record;

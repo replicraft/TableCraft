@@ -89,7 +89,7 @@ pub use table::{
 pub use table::{ComplexColumnSchema, ComplexTableSchema, inspect_complex_schema};
 pub use table::{EditError, Int32Update, NativeEditPlan, WriteBlocker};
 #[cfg(feature = "ace16-write-preview")]
-pub use table::{FixedColumnUpdates, FixedScalarUpdate};
+pub use table::{FixedColumnUpdates, FixedScalarUpdate, SlotScalarUpdate};
 pub use table::{
     ForeignIndexInspection, ForeignIndexLink, ForeignIndexReference, inspect_foreign_index_links,
 };

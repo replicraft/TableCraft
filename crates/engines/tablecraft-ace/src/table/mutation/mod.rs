@@ -13,6 +13,10 @@ mod preservation;
 #[cfg(feature = "ace16-write-preview")]
 mod preview;
 mod rows;
+#[cfg(feature = "ace16-write-preview")]
+mod slot;
+#[cfg(feature = "ace16-write-preview")]
+pub use slot::SlotScalarUpdate;
 
 #[cfg(feature = "ace16-write-preview")]
 pub use delete::{Ace16DeletePreview, RowDelete, TableRowDeletes};

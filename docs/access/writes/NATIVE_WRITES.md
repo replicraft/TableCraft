@@ -1,7 +1,7 @@
 # Bounded offline native edits
 
 An opt-in [ACE 16 engineering preview](../../testing/ACE16_WRITE_PREVIEWS.md) now creates
-physical fixed scalar candidates for disposable-copy comparisons. It returns a separate,
+physical fixed scalar and existing-width Text/Binary candidates for disposable-copy comparisons. It returns a separate,
 non-journalable type and does not enable the normal ACE save/commit path. Data-macro
 semantics and actual native Access qualification remain pending. The optional [declared update-cascade planner](../../testing/ACE16_WRITE_PREVIEWS.md#declared-update-cascade-batches)
 expands bounded integral/Currency/GUID actions inside that engineering boundary. The qualified
@@ -15,7 +15,10 @@ existing owned/global-free map cells; a fully empty tree retains its original
 root as a height-zero leaf. It returns `Ace16DeletePreview`, never a journalable
 plan, and preserves all normal ACE write/data-macro gates. Qualified single Short
 Text and Short Binary indexes now retain checked original key bytes during
-deletion; this does not enable their UPDATE codecs. Allocation, Text/Binary
+deletion. A separate [slot-update service](../../testing/ACE16_WRITE_PREVIEWS.md#existing-width-short-text-and-binary-slots)
+now re-encodes changed single/mixed Text/Binary keys, preserving actual field
+spans and index topology with full final constraints. It does not resize records
+or enable ordinary saves. Allocation, Text/Binary
 composite deletion and ordinary SQL/backend DELETE remain unimplemented. Engine checks
 and original-file candidate replay have separate evidence records in the preview
 contract; neither establishes native Access save/reopen.

@@ -1,5 +1,20 @@
 # Implementation status
 
+## Existing-width Text and Binary UPDATE candidates
+
+The separate `preview_ace16_slot_updates` engineering API now updates qualified
+Short Text/Binary fields within their actual variable-slot spans. Exact expected
+values, NULL/empty distinctions and no-op bytes remain intact. Affected single
+and mixed tuple indexes use real replacement encoders and complete ancestor
+maintenance; complete final constraints still validate logical values. No record
+growth, allocation, ordinary ACE saves or data-macro qualification is supplied.
+
+The [scoped record](testing/results/ace16-slot-updates-native-2026-10-26.json)
+passes nine author functions, 150 existing writer/read/delete functions and three
+compile-fail checks, plus strict lint, minimal compilation and formatting.
+Independent original-file candidate replay remains separate from these tests.
+See the [exact storage and index contract](testing/ACE16_WRITE_PREVIEWS.md#existing-width-short-text-and-binary-slots).
+
 ## Bounded original-row request matching
 
 The shared mutation walker now uses a paid original-position directory for
