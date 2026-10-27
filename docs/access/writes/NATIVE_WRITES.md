@@ -91,6 +91,11 @@ capacity, framing, sibling and map audits. Its 108 scoped runtime checks pass;
 its [four original-file recursive candidates](../../testing/RECURSIVE_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
 now pass separate complete-image/getter/map proofs through the committed consumer.
 Other codecs, map growth and production saves retain their separate gaps.
+A separate [fixed numeric reference phase](../../testing/INTEGRAL_INDEX_SPLIT_OBSERVATIONS.md)
+now measures Byte, Int16, Int64 and Currency root-leaf splits on both unchanged
+originals. Its eight successful Jackcess updates and eight frozen old-consumer
+refusals are reference evidence, not new typed candidate or production-save
+qualification.
 The [parent-overflow reference](../../testing/PARENT_INDEX_SPLIT_OBSERVATIONS.md)
 now measures two successful public-writer root-growth histories on unchanged
 sparse inputs, alongside two atomic refusals from the existing kernel. Its
