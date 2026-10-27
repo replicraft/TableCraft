@@ -344,6 +344,14 @@ no-ops and six maximum-width growth refusals with `IndexedColumn` and no output.
 Every call explicitly selects the variable-update service. This establishes its
 existing admission boundary, not a combined record/index writer.
 
+The separate [public-writer reference phase](testing/VARIABLE_ENCODED_SPLIT_UPDATE_OBSERVATIONS.md)
+now passes six fresh-copy replacements and six inert inspections, all first
+attempt. Each output adds one DATA page and six index leaves. Complete proofs
+verify root forwarding, fixed companions, all typed rows, persisted maximum-width
+keys, map effects and protected bytes. Modern DESC's mixed leaf needs a two-byte
+prefix; maximum-width inputs remain unchanged. These independent-writer results
+do not qualify TableCraft's future combined candidate or native Access saves.
+
 ## Shared append state for engineering writers
 
 Existing variable-record and index-split previews now use the same

@@ -1,0 +1,506 @@
+{
+  "date": "2026-10-27",
+  "status": "public_reference_observations_only",
+  "scope": "Combined ordinary DATA forwarding/allocation and encoded General/Binary repeated index splits on six fresh copies of accepted ACE16 originals; no native candidate or normal-save qualification.",
+  "counts": {
+    "public_updates": 6,
+    "inert_readonly_inspections": 6,
+    "fixture_commands": 12,
+    "first_attempt": true,
+    "fixture_retries": 0,
+    "failed_fixture_commands": 0,
+    "native_preview_calls": 0,
+    "compilation_calls": 0,
+    "source_generation_calls": 0,
+    "new_DATA_pages": 6,
+    "new_index_leaves": 36
+  },
+  "history": {
+    "actual_session": 49157,
+    "actual_status": 0,
+    "source_phase": "The earlier five-command source phase and its pre-execution prose correction remain separate.",
+    "baseline": "The earlier twelve old-variable native no-ops/refusals remain separate.",
+    "static_preparation": "A class-name argv index assertion used position 6 instead of 5; original static source/freeze and structured failure note archived. Only that static check changed before authorization. No fixture process ran during the failure.",
+    "saved_verifier": "First saved-only invocation had copied model/proof source suffixes and raised StopIteration before replay. Exact source and structured diagnostic archived; only the two suffix selectors changed, with no fixture rerun.",
+    "not_adapted": "Helper/classes, maximum 255-unit/byte values, selectors, counters, flags, record schema, action model/proof and runtime expectations were not changed after actual actions."
+  },
+  "limits": {
+    "child_seconds": 30,
+    "JVM_heap_mib": 512,
+    "writable_file_bytes": 8388608,
+    "live_stream_bytes_each": 16777216
+  },
+  "originals": [
+    {
+      "path": ".cache/ace16-variable-encoded-source-first-20261027/V2016-original.accdb",
+      "bytes": 610304,
+      "sha256": "2e7ca607356bf41af05d3fad6f94db9d8c78673478f64e24e941ac666114e994"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-source-first-20261027/V2019-original.accdb",
+      "bytes": 684032,
+      "sha256": "c5959e39bda1828d53891542210eba9b40422e0bd6b7f4023114ecc1b0dd6484"
+    }
+  ],
+  "observations": [
+    {
+      "id": "V2016-TextLegacy",
+      "output": {
+        "path": ".cache/ace16-variable-encoded-reference-first-20261027/V2016-TextLegacy.accdb",
+        "bytes": 638976,
+        "sha256": "ca15ddcf4553970bf7b1d9c061ad35d4a92abd401dd1b78e57c38e8dd63668e3"
+      },
+      "retained_roots": {
+        "Ascending": 92,
+        "Descending": 93
+      },
+      "data_page": 149,
+      "index_pages": [
+        150,
+        151,
+        152,
+        153,
+        154,
+        155
+      ],
+      "observed_suffix_order": "One DATA page, then three Ascending leaves, then three Descending leaves.",
+      "new_hidden_body_bytes": 547,
+      "failed_old_hint_page": 106,
+      "exact_map_byte_edits": 7,
+      "after_height": 1
+    },
+    {
+      "id": "V2016-TextModern",
+      "output": {
+        "path": ".cache/ace16-variable-encoded-reference-first-20261027/V2016-TextModern.accdb",
+        "bytes": 638976,
+        "sha256": "3c8879c08e9aef0cea9dc62df18efd3d5c4aa030858b0bde7c1797a0b141955d"
+      },
+      "retained_roots": {
+        "Ascending": 110,
+        "Descending": 111
+      },
+      "data_page": 149,
+      "index_pages": [
+        150,
+        151,
+        152,
+        153,
+        154,
+        155
+      ],
+      "observed_suffix_order": "One DATA page, then three Ascending leaves, then three Descending leaves.",
+      "new_hidden_body_bytes": 547,
+      "failed_old_hint_page": 124,
+      "exact_map_byte_edits": 7,
+      "after_height": 1
+    },
+    {
+      "id": "V2016-BinaryOne",
+      "output": {
+        "path": ".cache/ace16-variable-encoded-reference-first-20261027/V2016-BinaryOne.accdb",
+        "bytes": 638976,
+        "sha256": "5df48a6ec285a542efdd53bff1bc4439877400ac45065c5d1800bc5e4e65853a"
+      },
+      "retained_roots": {
+        "Ascending": 128,
+        "Descending": 129
+      },
+      "data_page": 149,
+      "index_pages": [
+        150,
+        151,
+        152,
+        153,
+        154,
+        155
+      ],
+      "observed_suffix_order": "One DATA page, then three Ascending leaves, then three Descending leaves.",
+      "new_hidden_body_bytes": 297,
+      "failed_old_hint_page": 142,
+      "exact_map_byte_edits": 8,
+      "after_height": 1
+    },
+    {
+      "id": "V2019-TextLegacy",
+      "output": {
+        "path": ".cache/ace16-variable-encoded-reference-first-20261027/V2019-TextLegacy.accdb",
+        "bytes": 712704,
+        "sha256": "52d1e92682ce3026e3527859b53c52956aa7a8df351c3bc966c04fc0605e9d56"
+      },
+      "retained_roots": {
+        "Ascending": 109,
+        "Descending": 110
+      },
+      "data_page": 167,
+      "index_pages": [
+        168,
+        169,
+        170,
+        171,
+        172,
+        173
+      ],
+      "observed_suffix_order": "One DATA page, then three Ascending leaves, then three Descending leaves.",
+      "new_hidden_body_bytes": 547,
+      "failed_old_hint_page": 123,
+      "exact_map_byte_edits": 7,
+      "after_height": 1
+    },
+    {
+      "id": "V2019-TextModern",
+      "output": {
+        "path": ".cache/ace16-variable-encoded-reference-first-20261027/V2019-TextModern.accdb",
+        "bytes": 712704,
+        "sha256": "c1c54e38045e67c9dc2741e43f6f283bd92665bc576345ee6144c600d7d1f162"
+      },
+      "retained_roots": {
+        "Ascending": 127,
+        "Descending": 128
+      },
+      "data_page": 167,
+      "index_pages": [
+        168,
+        169,
+        170,
+        171,
+        172,
+        173
+      ],
+      "observed_suffix_order": "One DATA page, then three Ascending leaves, then three Descending leaves.",
+      "new_hidden_body_bytes": 547,
+      "failed_old_hint_page": 141,
+      "exact_map_byte_edits": 7,
+      "after_height": 1
+    },
+    {
+      "id": "V2019-BinaryOne",
+      "output": {
+        "path": ".cache/ace16-variable-encoded-reference-first-20261027/V2019-BinaryOne.accdb",
+        "bytes": 712704,
+        "sha256": "4179a72e1c49fff6cba65c63e2d2b8504500e0da489b897a6922a732fcbe5d4f"
+      },
+      "retained_roots": {
+        "Ascending": 145,
+        "Descending": 146
+      },
+      "data_page": 167,
+      "index_pages": [
+        168,
+        169,
+        170,
+        171,
+        172,
+        173
+      ],
+      "observed_suffix_order": "One DATA page, then three Ascending leaves, then three Descending leaves.",
+      "new_hidden_body_bytes": 297,
+      "failed_old_hint_page": 160,
+      "exact_map_byte_edits": 7,
+      "after_height": 1
+    }
+  ],
+  "observed_root_and_record_policy": {
+    "old_root_allocation_bytes": 43,
+    "root_flag": 16384,
+    "pointer_bytes": 4,
+    "zero_remainder_bytes": 39,
+    "capacity_reclaimed": false,
+    "new_target_slot": 0,
+    "new_target_hidden_flag": 32768,
+    "Text_completed_record_bytes": 547,
+    "Binary_completed_record_bytes": 297,
+    "Text_new_DATA_free": 3533,
+    "Binary_new_DATA_free": 3783,
+    "all_old_DATA_geometry": "Ten pages per target retain 90 slots and 32 free bytes; only selected root flag/body changes.",
+    "fixed_companions": "All original ID, Marker, GUID and BYTE bytes remain exact in the reconstructed new record."
+  },
+  "persisted_keys": {
+    "match_original_independent_encoder": true,
+    "Modern_ASC_bytes": 510,
+    "Modern_ASC_digest_tail": "c1ae",
+    "Modern_DESC_bytes": 510,
+    "Modern_DESC_digest_tail": "ce3d",
+    "Binary_bytes": 289,
+    "Legacy_ASC_bytes": 258,
+    "Legacy_DESC_bytes": 259
+  },
+  "actual_leaf_layout_same_in_both_profiles": {
+    "TextLegacy": {
+      "Ascending": [
+        {
+          "entries": 450,
+          "prefix_bytes": 6,
+          "active_bytes": 1806
+        },
+        {
+          "entries": 225,
+          "prefix_bytes": 0,
+          "active_bytes": 2250
+        },
+        {
+          "entries": 225,
+          "prefix_bytes": 0,
+          "active_bytes": 2502
+        }
+      ],
+      "Descending": [
+        {
+          "entries": 225,
+          "prefix_bytes": 0,
+          "active_bytes": 2727
+        },
+        {
+          "entries": 225,
+          "prefix_bytes": 0,
+          "active_bytes": 2475
+        },
+        {
+          "entries": 450,
+          "prefix_bytes": 7,
+          "active_bytes": 1807
+        }
+      ]
+    },
+    "TextModern": {
+      "Ascending": [
+        {
+          "entries": 450,
+          "prefix_bytes": 9,
+          "active_bytes": 1809
+        },
+        {
+          "entries": 225,
+          "prefix_bytes": 0,
+          "active_bytes": 2925
+        },
+        {
+          "entries": 225,
+          "prefix_bytes": 0,
+          "active_bytes": 3426
+        }
+      ],
+      "Descending": [
+        {
+          "entries": 225,
+          "prefix_bytes": 2,
+          "active_bytes": 3202
+        },
+        {
+          "entries": 225,
+          "prefix_bytes": 0,
+          "active_bytes": 3150
+        },
+        {
+          "entries": 450,
+          "prefix_bytes": 10,
+          "active_bytes": 1810
+        }
+      ]
+    },
+    "BinaryOne": {
+      "Ascending": [
+        {
+          "entries": 450,
+          "prefix_bytes": 10,
+          "active_bytes": 1810
+        },
+        {
+          "entries": 225,
+          "prefix_bytes": 0,
+          "active_bytes": 3150
+        },
+        {
+          "entries": 225,
+          "prefix_bytes": 0,
+          "active_bytes": 3429
+        }
+      ],
+      "Descending": [
+        {
+          "entries": 225,
+          "prefix_bytes": 0,
+          "active_bytes": 3429
+        },
+        {
+          "entries": 225,
+          "prefix_bytes": 0,
+          "active_bytes": 3150
+        },
+        {
+          "entries": 450,
+          "prefix_bytes": 10,
+          "active_bytes": 1810
+        }
+      ]
+    }
+  },
+  "packing_boundary": "Public KEY-only prefixes and raw index scratch are observations, not engineering full-key/ROW candidate goldens. The DATA-first suffix order was discovered, not required by the proof. The Modern DESC mixed 225-entry leaf uses prefix 2 and 3,202 active bytes; raw 3,650 would exceed 3,616.",
+  "preservation": {
+    "input_and_freeze_checks": 47,
+    "created_artifact_pins": 37,
+    "all_unchanged": true,
+    "root_and_logical_index_ROW_identity_retained": true,
+    "all_unselected_records_and_exact_original_prefix_allowlist_checked": true,
+    "primary_sibling_TD_counters_sentinel_LVAL_storage_unchanged": true,
+    "ordinary_owned_additions": "DATA only",
+    "physical_index_owned_additions": "Their actual new tree leaves only; true aliases canonicalized",
+    "global_free_clears": "Exactly all seven suffix pages per copy",
+    "hints": "Exactly the highest genuinely failed old candidate cleared, new DATA candidate set",
+    "map_kinds_record_ranges_bitmap_storage_unchanged": true,
+    "new_DATA_page": "Complete literal zero-initialized page and record proof",
+    "suffix_purpose": "Every appended page classified exactly once as selected DATA or affected index node/leaf; no metadata allocation."
+  },
+  "saved_verification": {
+    "verified": true,
+    "fixture_processes": 0,
+    "saved_pins": 84,
+    "public_updates": 6,
+    "readonly_getters": 6,
+    "new_index_pages_observed": 36,
+    "new_data_pages_observed": 6,
+    "after_typed_row_comparisons": 16206,
+    "after_logical_index_entry_comparisons_including_aliases": 64806,
+    "original_prefix_bytes_rechecked_across_copies": 3883008,
+    "maintained_model_and_proof_function_ast_identity": true
+  },
+  "source_identity": "Published model/proof change repository-root composition only; all executed function ASTs match. Published helper is reused unchanged from source-only package.",
+  "not_qualified": [
+    "Full-catalog mutation authority from the 26 source map roles",
+    "Combined engineering candidate bytes",
+    "NULL/empty, unique overflow, tuples or other collations",
+    "Data macros, journaling, normal saves or Microsoft Access parity"
+  ],
+  "pins": [
+    {
+      "path": ".cache/ace16-variable-encoded-reference-first-20261027/report.json",
+      "bytes": 44483,
+      "sha256": "0d8d1c3327f0b68617f420a01007c17537f68257a5b8d2f92e273887d94e573e"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-reference-next-20261027/freeze.json",
+      "bytes": 25558,
+      "sha256": "692b5ed468bbc06d354ddaf7e69390a27e4484f92d41bccb54db746e857a1f99"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-reference-next-20261027/plan.json",
+      "bytes": 16406,
+      "sha256": "0a3a5b4f9e4a98065d461de8f5522ee82c59aae6b477709d5c702ba58abbea18"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-reference-next-20261027/action_model.py",
+      "bytes": 24639,
+      "sha256": "b8911d2a991c0e5b8c2f7132a279ea4463eee231227c8a289fa9f9b3c13ac400"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-reference-next-20261027/proof.py",
+      "bytes": 8011,
+      "sha256": "bfa5fbb6a5513311c124c40bfe0e7eb89c5c8e635186f64a201770ae8bf7c427"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-reference-next-20261027/capture.py",
+      "bytes": 7637,
+      "sha256": "ef1b6c6d20bd0012cd07300f0c1e4e89cf616e1b24ff371310a41eed198dfe33"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-reference-next-20261027/DESIGN.md",
+      "bytes": 5211,
+      "sha256": "1f415ab8f21bda559345cdde3058559b16d585f2f3feef124391f781bad09e24"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-reference-next-20261027/static_validate.py",
+      "bytes": 3332,
+      "sha256": "107c08e38e4dfbbfb6a0bce9347de5da24a657a988d52d81ad83e18f8c270d4a"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-reference-next-20261027/static-validate.json",
+      "bytes": 437,
+      "sha256": "32fa3d0266e045bf1b38dfe42d800925dd06e68e19afca6764b539e2b84402ad"
+    },
+    {
+      "path": ".cache/ace16-encoded-old-slot-baseline-next-20261027/bounded.py",
+      "bytes": 5401,
+      "sha256": "6bf97834287fe48d0c8f911cb708a687829f48701d47a3858958255fbc28325c"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-source-next-20261027/freeze.json",
+      "bytes": 8091,
+      "sha256": "3588b8d9d4160d4e626e1b32acbbc0535561dbb3c2447f0cf2f43bb298bc861a"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-source-next-20261027/VariableEncodedProbe.java",
+      "bytes": 20618,
+      "sha256": "b502f3faffa61c0df905f82102a650690eb48399598f08b38db31f3fd1aa54a4"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-source-first-20261027/report.json",
+      "bytes": 20800,
+      "sha256": "8caf0502ea7ef86ceaf6854a453b3184ab2a230d02e8d58807fc5fed9e7120be"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-reference-first-20261027/postcheck.py",
+      "bytes": 3719,
+      "sha256": "cccf1f7d6f8bb541bbaef699f58660c4f5fd97369db27535f0e9a0b12b5e69d1"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-reference-first-20261027/postcheck.json",
+      "bytes": 19460,
+      "sha256": "3a3fb8d652e31c924896fefb9f7a3dc1ff8946f66e9a104938bea180e6392e03"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-reference-first-20261027/public-saved-verify-final.json",
+      "bytes": 13636,
+      "sha256": "d9c1140c76369ff51aa6d8ada10fedf6be32973f312747b83df73eb3aa9d2e1e"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-reference-next-20261027/before-static-argv-index-fix/static_validate.py",
+      "bytes": 3332,
+      "sha256": "a6c87ee84b00b80852e409ee220fa3d7f719f76f6d5b9a8eb985f7765e684c9a"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-reference-next-20261027/before-static-argv-index-fix/freeze.json",
+      "bytes": 25558,
+      "sha256": "3d5a6a7e4e4165820d37f5102d0b61f0ebce7074226b51eba09a9d832cc49794"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-reference-next-20261027/before-static-argv-index-fix/static-validate.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-reference-next-20261027/before-static-argv-index-fix/failure.txt",
+      "bytes": 275,
+      "sha256": "05b1ebeace96b921ada01b43601b079be6cecd7d951c23b7024063bc001a9052"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-reference-first-20261027/before-public-verifier-source-suffix-correction/verify_references.py",
+      "bytes": 5444,
+      "sha256": "6a2f8166fda7efb17ab1df66848bb62340531c50750181faa363a2f94491dfee"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-reference-first-20261027/before-public-verifier-source-suffix-correction/failure.json",
+      "bytes": 389,
+      "sha256": "9d01caf800e23866bdef47e451d91ef62d4f8ad7891f394bcbda551d07945971"
+    },
+    {
+      "path": "docs/testing/VARIABLE_ENCODED_SPLIT_UPDATE_OBSERVATIONS.md",
+      "bytes": 8114,
+      "sha256": "fc3ed665a3ac4dfaca12de0ba6a9cc3c801f29721b8845d4ec4362cfe8ba6760"
+    },
+    {
+      "path": "docs/testing/variable_encoded_split_sources/action_model.py",
+      "bytes": 24639,
+      "sha256": "549d39089c82329a9ffb06d6c5adb3c25593d706a74c37a29f1b8a9d75906fbd"
+    },
+    {
+      "path": "docs/testing/variable_encoded_split_sources/reference_proof.py",
+      "bytes": 8011,
+      "sha256": "687b45a546da59c35c338b9a21afc3971a796397faa946bbb5c079fab93d6572"
+    },
+    {
+      "path": "docs/testing/variable_encoded_split_sources/verify_references.py",
+      "bytes": 5450,
+      "sha256": "7d61509fe64939d6efd7b0a43daf19f68aee4ed88980538fe5c87fcd9f25317f"
+    }
+  ]
+}

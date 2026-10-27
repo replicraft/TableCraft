@@ -9956,3 +9956,11 @@ calls pass first attempt: six exact no-op copies and six maximum-width
 `IndexedColumn` refusals without output. The historical binary, selected source
 objects, requests, ordinal bindings and captured streams are pinned separately.
 No new source generation or public-writer action occurs in that baseline.
+
+The [separate public-writer reference phase](VARIABLE_ENCODED_SPLIT_UPDATE_OBSERVATIONS.md)
+reuses those original bytes and accepted helper/classes for six fresh-copy
+maximum-width replacements and six inert inspections. All twelve first-attempt
+commands pass, with one DATA page and six index leaves per output. Its saved
+proof checks 84 identities, complete original-prefix preservation and all
+record/key/map effects. Original inputs, selected values and oracle expectations
+remain unchanged; no TableCraft combined candidate runs in this phase.

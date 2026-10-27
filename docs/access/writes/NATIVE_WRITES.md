@@ -184,6 +184,12 @@ now confirms six exact no-ops and six `IndexedColumn` growth refusals without
 output on those sources. It explicitly selects the historical variable service;
 it does not exercise a new combined allocator.
 
+The [independent public-writer references](../../testing/VARIABLE_ENCODED_SPLIT_UPDATE_OBSERVATIONS.md)
+now show six successful maximum-width record/index replacements and six fresh
+inspections on unchanged sources. Complete DATA/root/key/map proofs pass. These
+observations supply a reference boundary for the combined service, separately
+from engineering page packing, scratch preservation and native Access behavior.
+
 Existing variable and index previews now consume the same
 [append-state implementation](../../testing/ACE16_SHARED_APPEND_STATE.md), with
 typed DATA/index/bitmap reservations and one byte ledger per operation. Existing
