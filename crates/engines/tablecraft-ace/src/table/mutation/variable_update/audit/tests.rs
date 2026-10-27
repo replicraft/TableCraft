@@ -103,10 +103,10 @@ fn append_finalizer_rejects_unauthorized_map_bits_and_rechecks_fresh_eof_header(
     for mutation in 0..4 {
         with_plan(|image, plan| {
             match mutation {
-                0 => plan.original_length -= PAGE_BYTES,
-                1 => plan.length = image.as_bytes().len() - PAGE_BYTES,
-                2 => plan.length += 1,
-                _ => plan.length = MAX_IMAGE_BYTES as usize + PAGE_BYTES,
+                0 => plan.append.original_length -= PAGE_BYTES,
+                1 => plan.append.length = image.as_bytes().len() - PAGE_BYTES,
+                2 => plan.append.length += 1,
+                _ => plan.append.length = MAX_IMAGE_BYTES as usize + PAGE_BYTES,
             }
             assert_eq!(
                 finish::finish(
@@ -135,7 +135,7 @@ fn append_finalizer_rejects_unauthorized_map_bits_and_rechecks_fresh_eof_header(
         )
         .unwrap();
         assert_eq!(valid.candidate_bytes().len(), 15 * PAGE_BYTES);
-        let edit = plan.maps.edits.first_mut().unwrap();
+        let edit = plan.append.map_edits.first_mut().unwrap();
         // Bit0 is not among the original page12 or appended page14 intents.
         edit.after ^= 1;
         assert_eq!(
@@ -206,7 +206,13 @@ fn append_finalizer_rejects_hint_clear_without_an_actual_failed_placement() {
         // The selected row was already placed successfully. A second record
         // of the same size would fit; no failed placement authorized this clear.
         plan.maps
-            .failed_fit(image, EOF_PAGE as u32, &mut budget(), &|| false)
+            .failed_fit(
+                image,
+                EOF_PAGE as u32,
+                &mut plan.append,
+                &mut budget(),
+                &|| false,
+            )
             .unwrap();
         assert_eq!(
             finish::finish(

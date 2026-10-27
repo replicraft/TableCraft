@@ -1,6 +1,7 @@
 //! Real alternate-page placement and bounded EOF data-page initialization.
 use super::super::{
     EditError, WriteBlocker,
+    append::State,
     page_update::{roots::Root, space::Space, stage::Placement},
 };
 use super::maps::Maps;
@@ -16,7 +17,6 @@ use crate::{
         },
     },
     header::check,
-    limits::MAX_IMAGE_BYTES,
 };
 use std::ops::Range;
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -42,9 +42,7 @@ pub(super) struct Event {
 pub(super) struct Plan {
     pub pages: Vec<Page>,
     pub maps: Maps,
-    pub original_length: usize,
-    pub length: usize,
-    pub(super) owner: u32,
+    pub append: State,
     pub(super) events: Vec<Event>,
 }
 
@@ -58,9 +56,7 @@ impl Plan {
         Ok(Self {
             pages: Vec::new(),
             maps: Maps::capture(image, schema, budget, cancelled)?,
-            original_length: image.as_bytes().len(),
-            length: image.as_bytes().len(),
-            owner: schema.definition,
+            append: State::new(image, schema.definition),
             events: Vec::new(),
         })
     }
@@ -84,7 +80,8 @@ impl Plan {
             .as_bytes()
             .get(start..start + PAGE_BYTES)
             .ok_or(InspectError::Malformed)?;
-        if raw[..DATA_SIGNATURE.len()] != DATA_SIGNATURE || u32_at(raw, OWNER_OFFSET)? != self.owner
+        if raw[..DATA_SIGNATURE.len()] != DATA_SIGNATURE
+            || u32_at(raw, OWNER_OFFSET)? != self.append.owner
         {
             return Err(InspectError::Malformed.into());
         }
@@ -153,22 +150,22 @@ impl Plan {
         if length + SLOT_BYTES > EMPTY_FREE {
             return Err(EditError::Unsupported(WriteBlocker::RowLayout));
         }
-        if let Some(number) = self.maps.candidate(image, budget, cancelled)? {
+        if let Some(number) = self
+            .maps
+            .candidate(image, &self.append, budget, cancelled)?
+        {
             let position = self.page(image, number, budget, cancelled)?;
             let (count, end) = Self::geometry(&self.pages[position].after)?;
             if count < MAX_SLOTS && length + SLOT_BYTES <= end - slot_offset(count) {
                 return Ok(position);
             }
-            self.maps.failed_fit(image, number, budget, cancelled)?;
+            self.maps
+                .failed_fit(image, number, &mut self.append, budget, cancelled)?;
         }
-        let length = self
-            .length
-            .checked_add(PAGE_BYTES)
-            .filter(|&length| length as u64 <= MAX_IMAGE_BYTES)
-            .ok_or(InspectError::StructureLimit)?;
-        let number =
-            u32::try_from(self.length / PAGE_BYTES).map_err(|_| InspectError::StructureLimit)?;
-        self.maps.allocate(image, number, budget, cancelled)?;
+        self.append.preview(1)?;
+        let number = self.append.next()?;
+        self.maps
+            .allocate(image, number, &mut self.append, budget, cancelled)?;
         budget
             .charge_allocation(PAGE_BYTES as u64, 1)
             .map_err(InspectError::from)?;
@@ -181,9 +178,9 @@ impl Plan {
         initial[FREE_OFFSET..FREE_OFFSET + size_of::<u16>()]
             .copy_from_slice(&(EMPTY_FREE as u16).to_le_bytes());
         initial[OWNER_OFFSET..OWNER_OFFSET + size_of::<u32>()]
-            .copy_from_slice(&self.owner.to_le_bytes());
+            .copy_from_slice(&self.append.owner.to_le_bytes());
         self.push_page(number, &[], &initial, budget)?;
-        self.length = length;
+        self.append.reserve_data(number, budget, cancelled)?;
         Ok(self.pages.len() - 1)
     }
 }

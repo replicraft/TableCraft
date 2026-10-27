@@ -344,6 +344,15 @@ no-ops and six maximum-width growth refusals with `IndexedColumn` and no output.
 Every call explicitly selects the variable-update service. This establishes its
 existing admission boundary, not a combined record/index writer.
 
+## Shared append state for engineering writers
+
+Existing variable-record and index-split previews now use the same
+[typed append cursor and map-byte ledger](testing/ACE16_SHARED_APPEND_STATE.md).
+DATA, index and bitmap reservations retain distinct purposes. This removes
+duplicate allocation state without adding a combined update API or normal save.
+The recorded 123-function batch precedes a narrow hint-clear consistency fix;
+the causal control and 17 focused append/DATA functions pass after that fix.
+
 ## Index-owned map promotion
 
 The optional engineering split services now support

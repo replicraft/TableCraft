@@ -141,7 +141,7 @@ fn edit<P: ReplacementProfile, const N: usize>(
     let prepared = replacement::keys::prepare::<P, N>(
         operation.image,
         reader,
-        plan.owner,
+        plan.append.owner,
         operation.index,
         operation.profile,
         operation.updates,

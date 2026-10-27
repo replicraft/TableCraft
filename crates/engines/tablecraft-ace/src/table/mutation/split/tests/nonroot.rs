@@ -76,6 +76,7 @@ fn nonroot_new_left_residue_and_unused_future_free_bits_are_certified() {
         forged(|staged| {
             let global = staged
                 .plan
+                .append
                 .map_edits
                 .iter_mut()
                 .find(|edit| edit.offset / model::PAGE == 1)

@@ -92,6 +92,7 @@ fn unrelated_original_bytes_and_unrequested_future_global_bits_are_protected() {
         forged(|staged| {
             let global = staged
                 .plan
+                .append
                 .map_edits
                 .iter_mut()
                 .find(|edit| edit.offset / PAGE == 1)
@@ -112,10 +113,10 @@ fn forged_original_identity_and_unaligned_or_overcap_lengths_refuse_before_copy(
         assert_eq!(
             forged(|staged| {
                 match kind {
-                    0 => staged.plan.original_length -= PAGE,
-                    1 => staged.plan.length = staged.plan.original_length - PAGE,
-                    2 => staged.plan.length += 1,
-                    _ => staged.plan.length = MAX_IMAGE_BYTES as usize + PAGE,
+                    0 => staged.plan.append.original_length -= PAGE,
+                    1 => staged.plan.append.length = staged.plan.append.original_length - PAGE,
+                    2 => staged.plan.append.length += 1,
+                    _ => staged.plan.append.length = MAX_IMAGE_BYTES as usize + PAGE,
                 }
             })
             .err(),

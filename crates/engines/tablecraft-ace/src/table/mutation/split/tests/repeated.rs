@@ -21,14 +21,14 @@ const NODE_ENTRY_BYTES: usize = KEY_ROW_BYTES + CHILD_BYTES;
 
 fn compose(before: &[u8], staged: &Staged<8>) -> Vec<u8> {
     let mut after = before.to_vec();
-    after.resize(staged.plan.length, 0);
+    after.resize(staged.plan.append.length, 0);
     for patch in &staged.patches {
         after[patch.offset..patch.offset + patch.after.len()].copy_from_slice(&patch.after);
     }
     for patch in &staged.plan.patches {
         after[patch.offset..patch.offset + patch.after.len()].copy_from_slice(&patch.after);
     }
-    for edit in &staged.plan.map_edits {
+    for edit in &staged.plan.append.map_edits {
         after[edit.offset] = edit.after;
     }
     for page in &staged.plan.added {
@@ -116,6 +116,7 @@ fn an_unused_future_global_bit_is_not_a_split_event() {
             assert_eq!(eof, 24);
             let edit = staged
                 .plan
+                .append
                 .map_edits
                 .iter_mut()
                 .find(|edit| edit.offset / PAGE == 1)

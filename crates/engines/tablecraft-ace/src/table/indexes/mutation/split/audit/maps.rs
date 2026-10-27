@@ -219,15 +219,16 @@ pub(super) fn finish(
     plan: &Plan,
     after: &[u8],
 ) -> Result<(), EditError> {
-    if expected.edits.len() != plan.map_edits.len()
+    if expected.edits.len() != plan.append.map_edits.len()
         || expected.promoted.len() != plan.promotions.len()
     {
         return Err(EditError::Preservation);
     }
     for byte in &expected.edits {
         reader.tick()?;
-        reader.work(plan.map_edits.len())?;
+        reader.work(plan.append.map_edits.len())?;
         let matching = plan
+            .append
             .map_edits
             .iter()
             .find(|edit| edit.offset == byte.offset)

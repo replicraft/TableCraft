@@ -1,3 +1,5 @@
+#[cfg(feature = "ace16-write-preview")]
+pub(in crate::table) mod append;
 mod apply;
 #[cfg(feature = "ace16-write-preview")]
 mod delete;

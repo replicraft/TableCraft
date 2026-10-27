@@ -16,7 +16,10 @@ use crate::{
     EditError, IndexCheck, InspectError, NativeImage, NativeIndex, TableCheck, WriteBlocker,
     format::{page::PAGE_BYTES, reader::Reader},
     header::check,
-    table::indexes::page::{Entry, KeyRef},
+    table::{
+        indexes::page::{Entry, KeyRef},
+        mutation::append::State,
+    },
 };
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
@@ -50,29 +53,21 @@ pub(super) struct Certificate {
 }
 
 pub(in crate::table) struct Plan {
-    pub original_length: usize,
-    pub length: usize,
+    pub append: State,
     pub patches: Vec<IndexDataPatch>,
     pub added: Vec<AddedPage>,
-    pub map_edits: Vec<maps::Edit>,
     certificates: Vec<Certificate>,
-    owner: u32,
     pub(in crate::table) promotions: Vec<allocation::Promotion>,
-    reservations: Vec<(u32, u32)>,
 }
 
 impl Plan {
     pub(super) fn new(image: &NativeImage, owner: u32) -> Self {
         Self {
-            original_length: image.as_bytes().len(),
-            length: image.as_bytes().len(),
+            append: State::new(image, owner),
             patches: Vec::new(),
             added: Vec::new(),
-            map_edits: Vec::new(),
             certificates: Vec::new(),
-            owner,
             promotions: Vec::new(),
-            reservations: Vec::new(),
         }
     }
 
@@ -110,7 +105,7 @@ pub(super) fn edit(
     patches: &mut Vec<IndexDataPatch>,
     plan: &mut Plan,
 ) -> Result<(), EditError> {
-    let owner = plan.owner;
+    let owner = plan.append.owner;
     let prepared = keys::prepare::<_, { encoding::MAX_ENTRY_BYTES }>(
         image, reader, index, owner, updates, profile,
     )?;
@@ -141,7 +136,7 @@ fn edit_prepared<P: RetainedProfile, const N: usize>(
     let image = operation.image;
     let index = operation.index;
     let profile = operation.profile;
-    let owner = plan.owner;
+    let owner = plan.append.owner;
 
     if !tree.is_leaf() {
         return nonroot::edit(operation, tree, plan, reader, patches);

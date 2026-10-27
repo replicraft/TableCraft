@@ -229,7 +229,8 @@ pub(super) fn prove(
         state.count += 1;
         state.end = start;
     }
-    if plan.length / PAGE_BYTES != next_eof as usize || states.len() != plan.maps.owned_pages.len()
+    if plan.append.length / PAGE_BYTES != next_eof as usize
+        || states.len() != plan.maps.owned_pages.len()
     {
         return Err(EditError::Preservation);
     }
@@ -239,14 +240,14 @@ pub(super) fn prove(
             return Err(EditError::Preservation);
         }
     }
-    if expected.len() != plan.maps.edits.len() {
+    if expected.len() != plan.append.map_edits.len() {
         return Err(EditError::Preservation);
     }
     for byte in expected {
-        reader.work(plan.maps.edits.len())?;
+        reader.work(plan.append.map_edits.len())?;
         let actual = plan
-            .maps
-            .edits
+            .append
+            .map_edits
             .iter()
             .find(|edit| edit.offset == byte.offset)
             .ok_or(EditError::Preservation)?;

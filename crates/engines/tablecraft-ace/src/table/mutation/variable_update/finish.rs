@@ -1,5 +1,5 @@
 //! Growth candidates never pass through the equal-length journalable planner.
-use super::super::{Ace16WritePreview, EditError, WriteBlocker, gates, preservation};
+use super::super::{Ace16WritePreview, EditError, WriteBlocker, append, gates, preservation};
 use super::placement::Plan;
 use crate::{
     IndexCheckStatus, InspectError, NativeImage, check_table, check_table_constraints,
@@ -19,10 +19,10 @@ pub(super) fn finish(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Ace16WritePreview, EditError> {
     check(budget, cancelled)?;
-    if plan.original_length != image.as_bytes().len()
-        || plan.length < plan.original_length
-        || plan.length as u64 > MAX_IMAGE_BYTES
-        || !plan.length.is_multiple_of(PAGE_BYTES)
+    if plan.append.original_length != image.as_bytes().len()
+        || plan.append.length < plan.append.original_length
+        || plan.append.length as u64 > MAX_IMAGE_BYTES
+        || !plan.append.length.is_multiple_of(PAGE_BYTES)
     {
         return Err(EditError::Preservation);
     }
@@ -38,11 +38,11 @@ pub(super) fn finish(
     super::map_audit::prove(&image, original.schema(), plan, budget, cancelled)?;
 
     budget
-        .charge_allocation(plan.length as u64, 1)
+        .charge_allocation(plan.append.length as u64, 1)
         .map_err(InspectError::from)?;
     let mut after = Vec::new();
     after
-        .try_reserve_exact(plan.length)
+        .try_reserve_exact(plan.append.length)
         .map_err(|_| InspectError::Allocation)?;
     for chunk in image.as_bytes().chunks(COPY_CHUNK_BYTES) {
         check(budget, cancelled)?;
@@ -52,10 +52,10 @@ pub(super) fn finish(
         after.extend_from_slice(chunk);
     }
     budget
-        .charge(Resource::Steps, (plan.length - after.len()) as u64)
+        .charge(Resource::Steps, (plan.append.length - after.len()) as u64)
         .map_err(InspectError::from)?;
-    after.resize(plan.length, 0);
-    let span_count = plan.pages.len() + plan.maps.edits.len() + indexes.len();
+    after.resize(plan.append.length, 0);
+    let span_count = plan.pages.len() + plan.append.map_edits.len() + indexes.len();
     budget
         .charge_allocation(span_count as u64, size_of::<Range<usize>>() as u64)
         .map_err(InspectError::from)?;
@@ -87,10 +87,10 @@ pub(super) fn finish(
             .ok_or(EditError::Preservation)?
             .copy_from_slice(&page.after);
     }
-    if next_eof != plan.length {
+    if next_eof != plan.append.length {
         return Err(EditError::Preservation);
     }
-    for edit in &plan.maps.edits {
+    for edit in &plan.append.map_edits {
         check(budget, cancelled)?;
         if image.as_bytes().get(edit.offset) != Some(&edit.before)
             || after.get(edit.offset) != Some(&edit.before)
@@ -134,8 +134,13 @@ pub(super) fn finish(
             return Err(EditError::Preservation);
         }
     }
-    plan.maps
-        .audit_bytes(image.as_bytes(), &after, budget, cancelled)?;
+    append::audit_bytes(
+        &plan.append.map_edits,
+        image.as_bytes(),
+        &after,
+        budget,
+        cancelled,
+    )?;
     // Reparse the catalog/header from actual grown bytes; old page_count must
     // never constrain or authorize reads of the newly appended pages.
     inspect_catalog(&mut Cursor::new(&after), scope, budget, cancelled)?;

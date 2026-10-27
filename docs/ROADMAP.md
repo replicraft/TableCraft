@@ -209,6 +209,11 @@ The [old variable-service baseline](testing/VARIABLE_ENCODED_SPLIT_BASELINES.md)
 now passes six exact no-ops and six `IndexedColumn` growth refusals without output
 on these unchanged inputs. Combined allocation remains unfinished.
 
+The existing variable and index previews now share a
+[typed append state](testing/ACE16_SHARED_APPEND_STATE.md), including one EOF
+cursor and original-before/current-after map-byte ledger per operation.
+Independent request-derived DATA replay and a combined update API remain next.
+
 - [x] Qualified [index-owned map promotion](testing/ACE16_INDEX_MAP_GROWTH.md)
   now composes same-extent pointer-row rewrites and distinct bitmap metadata with
   recursive/repeated splits. Independent images cover late promotion and mixed

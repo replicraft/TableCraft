@@ -47,7 +47,7 @@ pub(super) fn emit<P: RetainedProfile, const N: usize>(
     let original_eof = operation.image.catalog().header().page_count();
     for node in arena.nodes.iter().filter(|node| node.number < original_eof) {
         let before = arena::raw(operation.image, node.number)?;
-        let after = serialize(operation, arena, node, plan.owner, reader)?;
+        let after = serialize(operation, arena, node, plan.append.owner, reader)?;
         reader.work(PAGE_BYTES)?;
         if before == after {
             continue;
@@ -82,7 +82,7 @@ pub(super) fn emit<P: RetainedProfile, const N: usize>(
             .iter()
             .find(|node| node.number == number)
             .ok_or(EditError::Preservation)?;
-        let bytes = serialize(operation, arena, node, plan.owner, reader)?;
+        let bytes = serialize(operation, arena, node, plan.append.owner, reader)?;
         reader
             .budget
             .charge_allocation(1, size_of::<AddedPage>() as u64)

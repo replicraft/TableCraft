@@ -38,8 +38,9 @@ pub(super) fn pages(
             .try_reserve_exact(PAGE_BYTES)
             .map_err(|_| InspectError::Allocation)?;
         if page.before.is_empty() {
+            plan.append.require_data(page.number, budget, cancelled)?;
             added += 1;
-            if page.number as usize * PAGE_BYTES < plan.original_length {
+            if page.number as usize * PAGE_BYTES < plan.append.original_length {
                 return Err(EditError::Preservation);
             }
             initial.resize(PAGE_BYTES, 0);
@@ -48,10 +49,10 @@ pub(super) fn pages(
             initial[FREE_OFFSET..FREE_OFFSET + size_of::<u16>()]
                 .copy_from_slice(&(free as u16).to_le_bytes());
             initial[OWNER_OFFSET..OWNER_OFFSET + size_of::<u32>()]
-                .copy_from_slice(&plan.owner.to_le_bytes());
+                .copy_from_slice(&plan.append.owner.to_le_bytes());
         } else {
             if page.before.len() != PAGE_BYTES
-                || page.number as usize * PAGE_BYTES >= plan.original_length
+                || page.number as usize * PAGE_BYTES >= plan.append.original_length
             {
                 return Err(EditError::Preservation);
             }
@@ -182,7 +183,7 @@ pub(super) fn pages(
             }
         }
     }
-    if plan.length != plan.original_length + added * PAGE_BYTES {
+    if plan.append.length != plan.append.original_length + added * PAGE_BYTES {
         return Err(EditError::Preservation);
     }
     Ok(())
