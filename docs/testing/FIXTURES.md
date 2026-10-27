@@ -9373,3 +9373,15 @@ and 24 exact typed refusals, with 336 commands and 382 unchanged immutable pins.
 The independent record/page/index/whole-image model predates candidate execution.
 The exact-span corpus remains unchanged; neither comparison qualifies native
 Access saves or required data macros.
+
+### Alternate-page and EOF UPDATE candidates
+
+The [separate variable-update comparison](VARIABLE_UPDATE_OBSERVATIONS.md)
+uses the four preserved Text allocation-boundary sources and eight public
+reference outcomes. A separately frozen committed consumer produces eight
+passing candidates with 32 commands, including four growth-to-shrink chains
+whose second input is the generated candidate. Exact complete-image, map-bit,
+new-page, typed-row and index proofs pass; fitted padding follows the explicit
+engineering contract rather than public-writer byte canonicalization. Original
+source identities, older Slot/PAGE outcomes and native qualification remain
+separate.

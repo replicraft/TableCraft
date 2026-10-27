@@ -13,8 +13,10 @@ geometry and actual placement failures. A separate finalizer validates the grown
 header/catalog, complete constraints and protected bytes without creating a
 journalable edit plan. The [scoped record](testing/results/ace16-variable-updates-native-2026-10-26.json)
 passes 233 runtime functions and three compile-fail checks, plus strict lint,
-minimal compilation and formatting. Original-file acceptance is a separate next
-step; the earlier PAGE comparison does not qualify this new implementation.
+minimal compilation and formatting. Its subsequent
+[eight original-file candidates](testing/VARIABLE_UPDATE_OBSERVATIONS.md) all
+pass on their first run, including candidate growth-to-shrink chains, exact EOF
+pages and represented map changes. The earlier PAGE comparison remains separate.
 See the [allocation contract](testing/ACE16_VARIABLE_UPDATES.md).
 
 ## Same-page Text and Binary UPDATE candidates

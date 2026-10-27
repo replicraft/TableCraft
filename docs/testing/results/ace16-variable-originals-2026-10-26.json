@@ -1,0 +1,2556 @@
+{
+  "date": "2026-10-26",
+  "scope": "SEPARATE eight bounded unindexed Short Text variable-record allocation engineering candidates; not native Access/save qualification",
+  "first_execution": {
+    "session": 23034,
+    "exit_code": 0,
+    "candidates": 8,
+    "disagreements": 0,
+    "commands": 32,
+    "native_calls": 8,
+    "read_only_getters": 12,
+    "read_only_map_probes": 12,
+    "model_or_selector_corrections": 0
+  },
+  "compiled": {
+    "revision": "87c35d435450251d69f305cb247741ccbf7be7e2",
+    "artifact": {
+      "path": ".cache/tablecraft-bin/ace16-variable-20261026",
+      "bytes": 17512496,
+      "sha256": "2d2b173617e115a3bca3b10018086dab1c5d8f3d72b536fe3825d21e19cb4a5f"
+    },
+    "build_receipt": {
+      "path": "docs/testing/results/ace16-variable-example-build-2026-10-26.json",
+      "bytes": 23502,
+      "sha256": "6096b0a06152bc9ea802617cee6ed200ba1480ca74c78a9a2aed4944c81ef604"
+    },
+    "selected_git_source_objects": 107,
+    "source_scope": "Selected previous consumer inputs plus all source changes since 79f964ae; the compiled revision identifies the full source tree. This is not an exhaustive compiler input inventory."
+  },
+  "frozen_plan": {
+    "path": ".cache/ace16-variable-originals-next-20261026/plan.json",
+    "bytes": 31044,
+    "sha256": "24e0bc6eb9af67b39976a4a8eb731402e6291216c0015c50687ffb578cc9a022"
+  },
+  "raw_report": {
+    "path": ".cache/ace16-variable-original-candidates-initial-20261026/report.json",
+    "bytes": 792887,
+    "sha256": "4ea3ded5cd3bc792b09c0cafc9d558708ea647f20c9333797cfc3d7a2c9ff4d6"
+  },
+  "raw_log": {
+    "path": ".cache/ace16-variable-originals-next-20261026/candidate-initial.log",
+    "bytes": 226,
+    "sha256": "af5fb8923f3e77c9715f15e95991ae6655e055871c0390083891cd7cac0a8b26"
+  },
+  "before_first_call": {
+    "path": ".cache/ace16-variable-original-candidates-initial-20261026/before-first-call.json",
+    "bytes": 35266,
+    "sha256": "3cd474561e5355fd0c9d0115be03d81d5e7d7a83e91f4c9736d06095a0b24252"
+  },
+  "executed_sources_and_inputs": {
+    "archived_source_files": [
+      {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/precall-source/0-replay.py",
+        "bytes": 9388,
+        "sha256": "f974fde8b03ebb12e7c0eed6cc715f828fb3818480330a84ad97f2e503e3597b"
+      },
+      {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/precall-source/1-proof.py",
+        "bytes": 5616,
+        "sha256": "63b6e283adfe7bd69b16794fe6678cf82bacaff9699a2abca4c3a965b5398e8d"
+      },
+      {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/precall-source/2-capture_cross_page_updates.py",
+        "bytes": 13030,
+        "sha256": "2627fa020ca8b29df398d62504b731f519e2c7b52095ca31b15d9c340688ac1b"
+      },
+      {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/precall-source/3-common.py",
+        "bytes": 2697,
+        "sha256": "4d6e13158e1c039f1a75bb12828cfa7eaf811e58e06e5e4de0f4c605e1519f8c"
+      },
+      {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/precall-source/4-facts.py",
+        "bytes": 8072,
+        "sha256": "1e6b085db3335f29ef5b9bf299cde2a62e863e09698d6efb4c93b76db00dd687"
+      },
+      {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/precall-source/5-delete_reference_maps.py",
+        "bytes": 8635,
+        "sha256": "9fca51758e0f26e37dab2e27ff2c41c0e8a7a8110e9a047eda1ccb2a91eadda8"
+      },
+      {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/precall-source/plan.json",
+        "bytes": 31044,
+        "sha256": "24e0bc6eb9af67b39976a4a8eb731402e6291216c0015c50687ffb578cc9a022"
+      }
+    ],
+    "tool_files": [
+      {
+        "path": ".cache/ace16-variable-originals-next-20261026/replay.py",
+        "bytes": 9388,
+        "sha256": "f974fde8b03ebb12e7c0eed6cc715f828fb3818480330a84ad97f2e503e3597b"
+      },
+      {
+        "path": ".cache/ace16-variable-originals-next-20261026/proof.py",
+        "bytes": 5616,
+        "sha256": "63b6e283adfe7bd69b16794fe6678cf82bacaff9699a2abca4c3a965b5398e8d"
+      },
+      {
+        "path": "docs/testing/capture_cross_page_updates.py",
+        "bytes": 13030,
+        "sha256": "2627fa020ca8b29df398d62504b731f519e2c7b52095ca31b15d9c340688ac1b"
+      },
+      {
+        "path": "docs/testing/slot_preview_originals/common.py",
+        "bytes": 2697,
+        "sha256": "4d6e13158e1c039f1a75bb12828cfa7eaf811e58e06e5e4de0f4c605e1519f8c"
+      },
+      {
+        "path": "docs/testing/slot_preview_originals/facts.py",
+        "bytes": 8072,
+        "sha256": "1e6b085db3335f29ef5b9bf299cde2a62e863e09698d6efb4c93b76db00dd687"
+      },
+      {
+        "path": "docs/testing/delete_reference_maps.py",
+        "bytes": 8635,
+        "sha256": "9fca51758e0f26e37dab2e27ff2c41c0e8a7a8110e9a047eda1ccb2a91eadda8"
+      },
+      {
+        "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "bytes": 1407244,
+        "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+      },
+      {
+        "path": ".cache/ace16-slot-originals-next-20261026/classes/SlotUpdateFixture.class",
+        "bytes": 19746,
+        "sha256": "4b9a9f7a4f13ba1d237bfeabebbd3609db1c5db3e27aef21a1e4fc11e81a5fcf"
+      },
+      {
+        "path": ".cache/ace16-slot-originals-next-20261026/classes/SlotMapProbe.class",
+        "bytes": 6843,
+        "sha256": "b6a05af31fa3aff81874378721adbef3397d080da114882f20706d328e7c854b"
+      }
+    ],
+    "source_and_reference_pins": [
+      {
+        "path": "docs/testing/results/ace16-cross-page-update-originals-2026-10-26.json",
+        "bytes": 97111,
+        "sha256": "36911dffcc781e3629f0e266cdd1e5777b82c5b0de47d0f500fbbc9058dc3e71"
+      },
+      {
+        "path": ".cache/ace16-cross-page-update-next-20261026/report.json",
+        "bytes": 1405408,
+        "sha256": "3d7359ab7453c61906e54aef1aae6cfff13b56548ce564212e98a1fd6edd6137"
+      },
+      {
+        "path": ".cache/ace16-slot-boundary-next-20261026/V2016-wide-04.accdb",
+        "bytes": 1044480,
+        "sha256": "7d48e9088f1d07a668fc60b78fcc560fb2dcc81db32cfb791cc73246cafc070a"
+      },
+      {
+        "path": ".cache/ace16-cross-page-update-next-20261026/V2016-true-hint-grown.accdb",
+        "bytes": 1048576,
+        "sha256": "379e21aab7822a5455cc962d0e4d95967fff4a7ac536ca8e6cf0f28f6f636fe4"
+      },
+      {
+        "path": ".cache/ace16-cross-page-update-next-20261026/00-V2016-true-hint-grow-after-getter.stdout",
+        "bytes": 743903,
+        "sha256": "6cba7c13cdcbef02cb9397115c388b3bf5839cb4d1a41be4270cea4e63486e5c"
+      },
+      {
+        "path": ".cache/ace16-cross-page-update-next-20261026/00-V2016-true-hint-grow-after-maps.stdout",
+        "bytes": 271,
+        "sha256": "5c2614c4b39b902bdd7e820d3f19fe0a73a0c088e2214bc732d056a68242277f"
+      },
+      {
+        "path": ".cache/ace16-cross-page-update-next-20261026/V2016-true-hint-shrunk.accdb",
+        "bytes": 1048576,
+        "sha256": "66ea7a559bd8cb647dda0cf6d1b539060fdcbda34a98bbcb35492f197045136a"
+      },
+      {
+        "path": ".cache/ace16-cross-page-update-next-20261026/01-V2016-true-hint-shrink-after-getter.stdout",
+        "bytes": 742887,
+        "sha256": "056bd026ef63e85675010736a764cc47dcb4c35322fc5cdac487fc010de0094d"
+      },
+      {
+        "path": ".cache/ace16-cross-page-update-next-20261026/01-V2016-true-hint-shrink-after-maps.stdout",
+        "bytes": 271,
+        "sha256": "5c2614c4b39b902bdd7e820d3f19fe0a73a0c088e2214bc732d056a68242277f"
+      },
+      {
+        "path": ".cache/ace16-slot-boundary-next-20261026/V2016-wide-05.accdb",
+        "bytes": 1048576,
+        "sha256": "f48f750915d7dd9459141d7bf82761e29e4e67511bf37d30b375065e039e00c1"
+      },
+      {
+        "path": ".cache/ace16-cross-page-update-next-20261026/V2016-false-hint-grown.accdb",
+        "bytes": 1048576,
+        "sha256": "57e71e129dcc8de63df249d23d93270097aef33881095a517b8386656dad38cb"
+      },
+      {
+        "path": ".cache/ace16-cross-page-update-next-20261026/02-V2016-false-hint-grow-after-getter.stdout",
+        "bytes": 746075,
+        "sha256": "bd02a57a03b05d8a3db5c4c1fab3cdbb0e6b0fcdfaeefd2e516f61621207750a"
+      },
+      {
+        "path": ".cache/ace16-cross-page-update-next-20261026/02-V2016-false-hint-grow-after-maps.stdout",
+        "bytes": 271,
+        "sha256": "d5e6f3a07eee0e881719d35288d6b616d43737e737e800541d906adc703f8522"
+      },
+      {
+        "path": ".cache/ace16-cross-page-update-next-20261026/V2016-false-hint-shrunk.accdb",
+        "bytes": 1048576,
+        "sha256": "2884e3b3794dbab98b57239c7650b83c6904346d0948bd2fba951ef6166e2a5b"
+      },
+      {
+        "path": ".cache/ace16-cross-page-update-next-20261026/03-V2016-false-hint-shrink-after-getter.stdout",
+        "bytes": 745059,
+        "sha256": "80655db5d1eb6528fc2f7a7fe3ff1daa76565ab19cf82d531bce9bae880df1de"
+      },
+      {
+        "path": ".cache/ace16-cross-page-update-next-20261026/03-V2016-false-hint-shrink-after-maps.stdout",
+        "bytes": 271,
+        "sha256": "d5e6f3a07eee0e881719d35288d6b616d43737e737e800541d906adc703f8522"
+      },
+      {
+        "path": ".cache/ace16-slot-boundary-next-20261026/V2019-wide-04.accdb",
+        "bytes": 1114112,
+        "sha256": "e42167f5666fc075c44d67ad55ec9cbc758f3f385e90ff62f4fee16894c27952"
+      },
+      {
+        "path": ".cache/ace16-cross-page-update-next-20261026/V2019-true-hint-grown.accdb",
+        "bytes": 1118208,
+        "sha256": "937ec57358a0aa93a9a37104377e44220fb9c92f9ff45ee3424e8a0c49369267"
+      },
+      {
+        "path": ".cache/ace16-cross-page-update-next-20261026/04-V2019-true-hint-grow-after-getter.stdout",
+        "bytes": 743946,
+        "sha256": "722685f9b2e108757faab0d957895629b5ee5e7b6a08d897800cabf80a267a6a"
+      },
+      {
+        "path": ".cache/ace16-cross-page-update-next-20261026/04-V2019-true-hint-grow-after-maps.stdout",
+        "bytes": 512,
+        "sha256": "e550ad63f2d03ea0a24c12959fc248f60c502517a95baff7ee8e222f8ae18f9a"
+      },
+      {
+        "path": ".cache/ace16-cross-page-update-next-20261026/V2019-true-hint-shrunk.accdb",
+        "bytes": 1118208,
+        "sha256": "a7fd9960390d460bac0afca72f2a187973b4a01fce280fd1bc7dfad80e44a57d"
+      },
+      {
+        "path": ".cache/ace16-cross-page-update-next-20261026/05-V2019-true-hint-shrink-after-getter.stdout",
+        "bytes": 742930,
+        "sha256": "4fc08946962c0df7dfe86224c48b0b957f00d879292430dd56950d30ab88abb1"
+      },
+      {
+        "path": ".cache/ace16-cross-page-update-next-20261026/05-V2019-true-hint-shrink-after-maps.stdout",
+        "bytes": 512,
+        "sha256": "e550ad63f2d03ea0a24c12959fc248f60c502517a95baff7ee8e222f8ae18f9a"
+      },
+      {
+        "path": ".cache/ace16-slot-boundary-next-20261026/V2019-wide-05.accdb",
+        "bytes": 1118208,
+        "sha256": "fb4d1b46a83940ae06224665d403464d5d21a61986a84a5c2c63f1fe8e7a00e0"
+      },
+      {
+        "path": ".cache/ace16-cross-page-update-next-20261026/V2019-false-hint-grown.accdb",
+        "bytes": 1118208,
+        "sha256": "2b50008288bd7d9d9379d6475ff6e44167f9dd038ec21c1149da4f539a78f9c4"
+      },
+      {
+        "path": ".cache/ace16-cross-page-update-next-20261026/06-V2019-false-hint-grow-after-getter.stdout",
+        "bytes": 746118,
+        "sha256": "61ab637e5480e52f92e2aeed8711b706d0d7c2138a3d8f8558a45248b0e81c2a"
+      },
+      {
+        "path": ".cache/ace16-cross-page-update-next-20261026/06-V2019-false-hint-grow-after-maps.stdout",
+        "bytes": 512,
+        "sha256": "b9a7b8f00c7721d754ce49a40e484465adbdb94875e95d2e0251db7c469ed9bb"
+      },
+      {
+        "path": ".cache/ace16-cross-page-update-next-20261026/V2019-false-hint-shrunk.accdb",
+        "bytes": 1118208,
+        "sha256": "d6da7556d961a796e11694f6357a41b8b9f8000cd844af904748ccb0abd06bc6"
+      },
+      {
+        "path": ".cache/ace16-cross-page-update-next-20261026/07-V2019-false-hint-shrink-after-getter.stdout",
+        "bytes": 745102,
+        "sha256": "20196d699f22d84c17565206c9dcbe171fb003537e6cce4651b974870ba182be"
+      },
+      {
+        "path": ".cache/ace16-cross-page-update-next-20261026/07-V2019-false-hint-shrink-after-maps.stdout",
+        "bytes": 512,
+        "sha256": "b9a7b8f00c7721d754ce49a40e484465adbdb94875e95d2e0251db7c469ed9bb"
+      }
+    ],
+    "requests": [
+      {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-grow.tsv",
+        "bytes": 524,
+        "sha256": "59eb8b2533d5db52bbf3247d85c6fb6eec42dceaa6e32f4027acaf759e2f2495"
+      },
+      {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-shrink.tsv",
+        "bytes": 525,
+        "sha256": "096606492b7c65782dbac46db8ca42cbad68e230e513f66e817c22e7c364894c"
+      },
+      {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-grow.tsv",
+        "bytes": 524,
+        "sha256": "59eb8b2533d5db52bbf3247d85c6fb6eec42dceaa6e32f4027acaf759e2f2495"
+      },
+      {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-shrink.tsv",
+        "bytes": 525,
+        "sha256": "096606492b7c65782dbac46db8ca42cbad68e230e513f66e817c22e7c364894c"
+      },
+      {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-grow.tsv",
+        "bytes": 524,
+        "sha256": "59eb8b2533d5db52bbf3247d85c6fb6eec42dceaa6e32f4027acaf759e2f2495"
+      },
+      {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-shrink.tsv",
+        "bytes": 525,
+        "sha256": "096606492b7c65782dbac46db8ca42cbad68e230e513f66e817c22e7c364894c"
+      },
+      {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-grow.tsv",
+        "bytes": 524,
+        "sha256": "59eb8b2533d5db52bbf3247d85c6fb6eec42dceaa6e32f4027acaf759e2f2495"
+      },
+      {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-shrink.tsv",
+        "bytes": 525,
+        "sha256": "096606492b7c65782dbac46db8ca42cbad68e230e513f66e817c22e7c364894c"
+      }
+    ],
+    "scope": "actual historical private runner/proof and imported helpers archived before candidate calls; current public wrapper was not this executed program"
+  },
+  "independent_post_run_review": {
+    "path": ".cache/ace16-variable-original-candidates-initial-20261026/independent-post-run-review.json",
+    "bytes": 19435,
+    "sha256": "9f7d41422c3f447a4c2c894b3bbd603b3bd6ac774986e577ccb0871dcc398a64"
+  },
+  "outcomes": {
+    "growth_to_new_eof_page": 2,
+    "growth_to_existing_owned_page": 2,
+    "fitted_shrinks_of_candidate_generated_targets": 4,
+    "shrink_target_capacity_bytes": 523,
+    "native_engineering_notice_verified": 8,
+    "immutable_inputs_tools_requests": true,
+    "full_typed_rows_and_complete_index_orders_match_reference": true,
+    "whole_image_independent_byte_proofs": 8,
+    "distinct_from_existing_slot_page_and_public_update_counts": true
+  },
+  "cases": [
+    {
+      "id": "V2016-true-hint-grow",
+      "plan_id": "V2016-true-hint-grow",
+      "actual_source": {
+        "path": ".cache/ace16-slot-boundary-next-20261026/V2016-wide-04.accdb",
+        "bytes": 1044480,
+        "sha256": "7d48e9088f1d07a668fc60b78fcc560fb2dcc81db32cfb791cc73246cafc070a"
+      },
+      "source_after": {
+        "path": ".cache/ace16-slot-boundary-next-20261026/V2016-wide-04.accdb",
+        "bytes": 1044480,
+        "sha256": "7d48e9088f1d07a668fc60b78fcc560fb2dcc81db32cfb791cc73246cafc070a"
+      },
+      "public_reference": {
+        "path": ".cache/ace16-cross-page-update-next-20261026/V2016-true-hint-grown.accdb",
+        "bytes": 1048576,
+        "sha256": "379e21aab7822a5455cc962d0e4d95967fff4a7ac536ca8e6cf0f28f6f636fe4"
+      },
+      "request": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-grow.tsv",
+        "bytes": 524,
+        "sha256": "59eb8b2533d5db52bbf3247d85c6fb6eec42dceaa6e32f4027acaf759e2f2495"
+      },
+      "candidate": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-grow-candidate.accdb",
+        "bytes": 1048576,
+        "sha256": "379e21aab7822a5455cc962d0e4d95967fff4a7ac536ca8e6cf0f28f6f636fe4"
+      },
+      "native_command_stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-grow-native.stdout",
+        "bytes": 25,
+        "sha256": "6c0d0787710c780f70f807198b638d69620d3c1a5340c100a3bcf81240fec7b8"
+      },
+      "native_command_stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-grow-native.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      },
+      "getter_stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-grow-after-getter.stdout",
+        "bytes": 743903,
+        "sha256": "6cba7c13cdcbef02cb9397115c388b3bf5839cb4d1a41be4270cea4e63486e5c"
+      },
+      "map_probe_stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-grow-after-maps.stdout",
+        "bytes": 271,
+        "sha256": "5c2614c4b39b902bdd7e820d3f19fe0a73a0c088e2214bc732d056a68242277f"
+      },
+      "complete": true,
+      "expected_file_growth_bytes": 4096,
+      "root_page": 97,
+      "root_slot": 0,
+      "target_page": 255,
+      "target_slot": 0,
+      "proof": {
+        "whole_image_allowed_bytes_exact": true,
+        "full_new_page_literal_exact": true,
+        "all_preexisting_raw_index_pages_unchanged": [
+          7,
+          8,
+          10,
+          12,
+          14,
+          15,
+          16,
+          20,
+          21,
+          22,
+          43,
+          44,
+          45,
+          50,
+          51,
+          52,
+          56,
+          60,
+          61,
+          65,
+          66,
+          72,
+          73,
+          91,
+          96,
+          101,
+          106,
+          111,
+          112,
+          113,
+          114,
+          115,
+          116,
+          117,
+          120,
+          121,
+          123,
+          125,
+          126,
+          127,
+          129,
+          130,
+          131,
+          132,
+          133,
+          134,
+          135,
+          136,
+          137,
+          139,
+          140,
+          141,
+          142,
+          144,
+          147,
+          148,
+          149,
+          150,
+          151,
+          152,
+          153,
+          157,
+          158,
+          160,
+          161,
+          163,
+          164,
+          165,
+          166,
+          168,
+          169,
+          170,
+          171,
+          172,
+          173,
+          174,
+          175,
+          176,
+          178,
+          179,
+          181,
+          182,
+          185,
+          186,
+          187,
+          192,
+          193,
+          194,
+          199,
+          204,
+          209,
+          214,
+          219,
+          224,
+          225,
+          231,
+          232,
+          237,
+          238,
+          243
+        ],
+        "map_byte_changes": [
+          {
+            "role": "JackcessGlobalFree",
+            "offset": 8159,
+            "before": 128,
+            "after": 0
+          },
+          {
+            "role": "TableOwned",
+            "offset": 401443,
+            "before": 0,
+            "after": 128
+          },
+          {
+            "role": "TableFreeSpace",
+            "offset": 393095,
+            "before": 2,
+            "after": 0
+          },
+          {
+            "role": "TableFreeSpace",
+            "offset": 393114,
+            "before": 0,
+            "after": 128
+          }
+        ],
+        "image_sha256": "379e21aab7822a5455cc962d0e4d95967fff4a7ac536ca8e6cf0f28f6f636fe4",
+        "target_capacity": 523,
+        "candidate_padding_contract_distinct_from_reference": false
+      }
+    },
+    {
+      "id": "V2016-true-hint-shrink",
+      "plan_id": "V2016-true-hint-shrink",
+      "actual_source": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-grow-candidate.accdb",
+        "bytes": 1048576,
+        "sha256": "379e21aab7822a5455cc962d0e4d95967fff4a7ac536ca8e6cf0f28f6f636fe4"
+      },
+      "source_after": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-grow-candidate.accdb",
+        "bytes": 1048576,
+        "sha256": "379e21aab7822a5455cc962d0e4d95967fff4a7ac536ca8e6cf0f28f6f636fe4"
+      },
+      "public_reference": {
+        "path": ".cache/ace16-cross-page-update-next-20261026/V2016-true-hint-shrunk.accdb",
+        "bytes": 1048576,
+        "sha256": "66ea7a559bd8cb647dda0cf6d1b539060fdcbda34a98bbcb35492f197045136a"
+      },
+      "request": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-shrink.tsv",
+        "bytes": 525,
+        "sha256": "096606492b7c65782dbac46db8ca42cbad68e230e513f66e817c22e7c364894c"
+      },
+      "candidate": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-shrink-candidate.accdb",
+        "bytes": 1048576,
+        "sha256": "40a1f73340a7bb2de5e245eee4195ce47592e906c157b8c84e9eee8d0a737b5e"
+      },
+      "native_command_stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-shrink-native.stdout",
+        "bytes": 25,
+        "sha256": "6c0d0787710c780f70f807198b638d69620d3c1a5340c100a3bcf81240fec7b8"
+      },
+      "native_command_stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-shrink-native.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      },
+      "getter_stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-shrink-after-getter.stdout",
+        "bytes": 742887,
+        "sha256": "f1aad9fc6d756c904964bcb8334fae83342cc760a092b057778d81f4d735f727"
+      },
+      "map_probe_stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-shrink-after-maps.stdout",
+        "bytes": 271,
+        "sha256": "5c2614c4b39b902bdd7e820d3f19fe0a73a0c088e2214bc732d056a68242277f"
+      },
+      "complete": true,
+      "expected_file_growth_bytes": 0,
+      "root_page": 97,
+      "root_slot": 0,
+      "target_page": 255,
+      "target_slot": 0,
+      "proof": {
+        "whole_image_allowed_bytes_exact": true,
+        "full_new_page_literal_exact": false,
+        "all_preexisting_raw_index_pages_unchanged": [
+          7,
+          8,
+          10,
+          12,
+          14,
+          15,
+          16,
+          20,
+          21,
+          22,
+          43,
+          44,
+          45,
+          50,
+          51,
+          52,
+          56,
+          60,
+          61,
+          65,
+          66,
+          72,
+          73,
+          91,
+          96,
+          101,
+          106,
+          111,
+          112,
+          113,
+          114,
+          115,
+          116,
+          117,
+          120,
+          121,
+          123,
+          125,
+          126,
+          127,
+          129,
+          130,
+          131,
+          132,
+          133,
+          134,
+          135,
+          136,
+          137,
+          139,
+          140,
+          141,
+          142,
+          144,
+          147,
+          148,
+          149,
+          150,
+          151,
+          152,
+          153,
+          157,
+          158,
+          160,
+          161,
+          163,
+          164,
+          165,
+          166,
+          168,
+          169,
+          170,
+          171,
+          172,
+          173,
+          174,
+          175,
+          176,
+          178,
+          179,
+          181,
+          182,
+          185,
+          186,
+          187,
+          192,
+          193,
+          194,
+          199,
+          204,
+          209,
+          214,
+          219,
+          224,
+          225,
+          231,
+          232,
+          237,
+          238,
+          243
+        ],
+        "map_byte_changes": [],
+        "image_sha256": "40a1f73340a7bb2de5e245eee4195ce47592e906c157b8c84e9eee8d0a737b5e",
+        "target_capacity": 523,
+        "candidate_padding_contract_distinct_from_reference": true
+      }
+    },
+    {
+      "id": "V2016-false-hint-grow",
+      "plan_id": "V2016-false-hint-grow",
+      "actual_source": {
+        "path": ".cache/ace16-slot-boundary-next-20261026/V2016-wide-05.accdb",
+        "bytes": 1048576,
+        "sha256": "f48f750915d7dd9459141d7bf82761e29e4e67511bf37d30b375065e039e00c1"
+      },
+      "source_after": {
+        "path": ".cache/ace16-slot-boundary-next-20261026/V2016-wide-05.accdb",
+        "bytes": 1048576,
+        "sha256": "f48f750915d7dd9459141d7bf82761e29e4e67511bf37d30b375065e039e00c1"
+      },
+      "public_reference": {
+        "path": ".cache/ace16-cross-page-update-next-20261026/V2016-false-hint-grown.accdb",
+        "bytes": 1048576,
+        "sha256": "57e71e129dcc8de63df249d23d93270097aef33881095a517b8386656dad38cb"
+      },
+      "request": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-grow.tsv",
+        "bytes": 524,
+        "sha256": "59eb8b2533d5db52bbf3247d85c6fb6eec42dceaa6e32f4027acaf759e2f2495"
+      },
+      "candidate": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-grow-candidate.accdb",
+        "bytes": 1048576,
+        "sha256": "57e71e129dcc8de63df249d23d93270097aef33881095a517b8386656dad38cb"
+      },
+      "native_command_stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-grow-native.stdout",
+        "bytes": 25,
+        "sha256": "6c0d0787710c780f70f807198b638d69620d3c1a5340c100a3bcf81240fec7b8"
+      },
+      "native_command_stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-grow-native.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      },
+      "getter_stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-grow-after-getter.stdout",
+        "bytes": 746075,
+        "sha256": "bd02a57a03b05d8a3db5c4c1fab3cdbb0e6b0fcdfaeefd2e516f61621207750a"
+      },
+      "map_probe_stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-grow-after-maps.stdout",
+        "bytes": 271,
+        "sha256": "d5e6f3a07eee0e881719d35288d6b616d43737e737e800541d906adc703f8522"
+      },
+      "complete": true,
+      "expected_file_growth_bytes": 0,
+      "root_page": 97,
+      "root_slot": 0,
+      "target_page": 255,
+      "target_slot": 1,
+      "proof": {
+        "whole_image_allowed_bytes_exact": true,
+        "full_new_page_literal_exact": false,
+        "all_preexisting_raw_index_pages_unchanged": [
+          7,
+          8,
+          10,
+          12,
+          14,
+          15,
+          16,
+          20,
+          21,
+          22,
+          43,
+          44,
+          45,
+          50,
+          51,
+          52,
+          56,
+          60,
+          61,
+          65,
+          66,
+          72,
+          73,
+          91,
+          96,
+          101,
+          106,
+          111,
+          112,
+          113,
+          114,
+          115,
+          116,
+          117,
+          120,
+          121,
+          123,
+          125,
+          126,
+          127,
+          129,
+          130,
+          131,
+          132,
+          133,
+          134,
+          135,
+          136,
+          137,
+          139,
+          140,
+          141,
+          142,
+          144,
+          147,
+          148,
+          149,
+          150,
+          151,
+          152,
+          153,
+          157,
+          158,
+          160,
+          161,
+          163,
+          164,
+          165,
+          166,
+          168,
+          169,
+          170,
+          171,
+          172,
+          173,
+          174,
+          175,
+          176,
+          178,
+          179,
+          181,
+          182,
+          185,
+          186,
+          187,
+          192,
+          193,
+          194,
+          199,
+          204,
+          209,
+          214,
+          219,
+          224,
+          225,
+          231,
+          232,
+          237,
+          238,
+          243
+        ],
+        "map_byte_changes": [],
+        "image_sha256": "57e71e129dcc8de63df249d23d93270097aef33881095a517b8386656dad38cb",
+        "target_capacity": 523,
+        "candidate_padding_contract_distinct_from_reference": false
+      }
+    },
+    {
+      "id": "V2016-false-hint-shrink",
+      "plan_id": "V2016-false-hint-shrink",
+      "actual_source": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-grow-candidate.accdb",
+        "bytes": 1048576,
+        "sha256": "57e71e129dcc8de63df249d23d93270097aef33881095a517b8386656dad38cb"
+      },
+      "source_after": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-grow-candidate.accdb",
+        "bytes": 1048576,
+        "sha256": "57e71e129dcc8de63df249d23d93270097aef33881095a517b8386656dad38cb"
+      },
+      "public_reference": {
+        "path": ".cache/ace16-cross-page-update-next-20261026/V2016-false-hint-shrunk.accdb",
+        "bytes": 1048576,
+        "sha256": "2884e3b3794dbab98b57239c7650b83c6904346d0948bd2fba951ef6166e2a5b"
+      },
+      "request": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-shrink.tsv",
+        "bytes": 525,
+        "sha256": "096606492b7c65782dbac46db8ca42cbad68e230e513f66e817c22e7c364894c"
+      },
+      "candidate": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-shrink-candidate.accdb",
+        "bytes": 1048576,
+        "sha256": "ac04152fa25a6b88958ac3c7678581c5bfe28ea6ce59e34b325504e954fa573a"
+      },
+      "native_command_stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-shrink-native.stdout",
+        "bytes": 25,
+        "sha256": "6c0d0787710c780f70f807198b638d69620d3c1a5340c100a3bcf81240fec7b8"
+      },
+      "native_command_stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-shrink-native.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      },
+      "getter_stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-shrink-after-getter.stdout",
+        "bytes": 745059,
+        "sha256": "713c1ada26e1e2a0811e2548301706379d44e3898384e915d6522865983a1e19"
+      },
+      "map_probe_stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-shrink-after-maps.stdout",
+        "bytes": 271,
+        "sha256": "d5e6f3a07eee0e881719d35288d6b616d43737e737e800541d906adc703f8522"
+      },
+      "complete": true,
+      "expected_file_growth_bytes": 0,
+      "root_page": 97,
+      "root_slot": 0,
+      "target_page": 255,
+      "target_slot": 1,
+      "proof": {
+        "whole_image_allowed_bytes_exact": true,
+        "full_new_page_literal_exact": false,
+        "all_preexisting_raw_index_pages_unchanged": [
+          7,
+          8,
+          10,
+          12,
+          14,
+          15,
+          16,
+          20,
+          21,
+          22,
+          43,
+          44,
+          45,
+          50,
+          51,
+          52,
+          56,
+          60,
+          61,
+          65,
+          66,
+          72,
+          73,
+          91,
+          96,
+          101,
+          106,
+          111,
+          112,
+          113,
+          114,
+          115,
+          116,
+          117,
+          120,
+          121,
+          123,
+          125,
+          126,
+          127,
+          129,
+          130,
+          131,
+          132,
+          133,
+          134,
+          135,
+          136,
+          137,
+          139,
+          140,
+          141,
+          142,
+          144,
+          147,
+          148,
+          149,
+          150,
+          151,
+          152,
+          153,
+          157,
+          158,
+          160,
+          161,
+          163,
+          164,
+          165,
+          166,
+          168,
+          169,
+          170,
+          171,
+          172,
+          173,
+          174,
+          175,
+          176,
+          178,
+          179,
+          181,
+          182,
+          185,
+          186,
+          187,
+          192,
+          193,
+          194,
+          199,
+          204,
+          209,
+          214,
+          219,
+          224,
+          225,
+          231,
+          232,
+          237,
+          238,
+          243
+        ],
+        "map_byte_changes": [],
+        "image_sha256": "ac04152fa25a6b88958ac3c7678581c5bfe28ea6ce59e34b325504e954fa573a",
+        "target_capacity": 523,
+        "candidate_padding_contract_distinct_from_reference": true
+      }
+    },
+    {
+      "id": "V2019-true-hint-grow",
+      "plan_id": "V2019-true-hint-grow",
+      "actual_source": {
+        "path": ".cache/ace16-slot-boundary-next-20261026/V2019-wide-04.accdb",
+        "bytes": 1114112,
+        "sha256": "e42167f5666fc075c44d67ad55ec9cbc758f3f385e90ff62f4fee16894c27952"
+      },
+      "source_after": {
+        "path": ".cache/ace16-slot-boundary-next-20261026/V2019-wide-04.accdb",
+        "bytes": 1114112,
+        "sha256": "e42167f5666fc075c44d67ad55ec9cbc758f3f385e90ff62f4fee16894c27952"
+      },
+      "public_reference": {
+        "path": ".cache/ace16-cross-page-update-next-20261026/V2019-true-hint-grown.accdb",
+        "bytes": 1118208,
+        "sha256": "937ec57358a0aa93a9a37104377e44220fb9c92f9ff45ee3424e8a0c49369267"
+      },
+      "request": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-grow.tsv",
+        "bytes": 524,
+        "sha256": "59eb8b2533d5db52bbf3247d85c6fb6eec42dceaa6e32f4027acaf759e2f2495"
+      },
+      "candidate": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-grow-candidate.accdb",
+        "bytes": 1118208,
+        "sha256": "937ec57358a0aa93a9a37104377e44220fb9c92f9ff45ee3424e8a0c49369267"
+      },
+      "native_command_stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-grow-native.stdout",
+        "bytes": 25,
+        "sha256": "6c0d0787710c780f70f807198b638d69620d3c1a5340c100a3bcf81240fec7b8"
+      },
+      "native_command_stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-grow-native.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      },
+      "getter_stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-grow-after-getter.stdout",
+        "bytes": 743946,
+        "sha256": "722685f9b2e108757faab0d957895629b5ee5e7b6a08d897800cabf80a267a6a"
+      },
+      "map_probe_stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-grow-after-maps.stdout",
+        "bytes": 512,
+        "sha256": "e550ad63f2d03ea0a24c12959fc248f60c502517a95baff7ee8e222f8ae18f9a"
+      },
+      "complete": true,
+      "expected_file_growth_bytes": 4096,
+      "root_page": 114,
+      "root_slot": 0,
+      "target_page": 272,
+      "target_slot": 0,
+      "proof": {
+        "whole_image_allowed_bytes_exact": true,
+        "full_new_page_literal_exact": true,
+        "all_preexisting_raw_index_pages_unchanged": [
+          7,
+          8,
+          10,
+          12,
+          14,
+          15,
+          16,
+          20,
+          21,
+          22,
+          45,
+          46,
+          47,
+          52,
+          55,
+          56,
+          59,
+          60,
+          71,
+          72,
+          73,
+          75,
+          76,
+          83,
+          86,
+          108,
+          113,
+          118,
+          124,
+          129,
+          130,
+          131,
+          132,
+          133,
+          134,
+          135,
+          138,
+          139,
+          141,
+          143,
+          144,
+          145,
+          147,
+          148,
+          149,
+          150,
+          151,
+          152,
+          153,
+          154,
+          155,
+          157,
+          158,
+          159,
+          160,
+          162,
+          165,
+          166,
+          167,
+          168,
+          169,
+          170,
+          171,
+          174,
+          175,
+          177,
+          178,
+          180,
+          181,
+          182,
+          183,
+          185,
+          186,
+          187,
+          188,
+          189,
+          190,
+          191,
+          192,
+          193,
+          195,
+          196,
+          198,
+          199,
+          202,
+          203,
+          204,
+          209,
+          210,
+          211,
+          216,
+          221,
+          226,
+          231,
+          236,
+          242,
+          243,
+          248,
+          249,
+          254,
+          255,
+          260
+        ],
+        "map_byte_changes": [
+          {
+            "role": "JackcessGlobalFree",
+            "offset": 8162,
+            "before": 255,
+            "after": 254
+          },
+          {
+            "role": "TableOwned",
+            "offset": 471078,
+            "before": 0,
+            "after": 1
+          },
+          {
+            "role": "TableFreeSpace",
+            "offset": 462729,
+            "before": 4,
+            "after": 0
+          },
+          {
+            "role": "TableFreeSpace",
+            "offset": 462749,
+            "before": 0,
+            "after": 1
+          }
+        ],
+        "image_sha256": "937ec57358a0aa93a9a37104377e44220fb9c92f9ff45ee3424e8a0c49369267",
+        "target_capacity": 523,
+        "candidate_padding_contract_distinct_from_reference": false
+      }
+    },
+    {
+      "id": "V2019-true-hint-shrink",
+      "plan_id": "V2019-true-hint-shrink",
+      "actual_source": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-grow-candidate.accdb",
+        "bytes": 1118208,
+        "sha256": "937ec57358a0aa93a9a37104377e44220fb9c92f9ff45ee3424e8a0c49369267"
+      },
+      "source_after": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-grow-candidate.accdb",
+        "bytes": 1118208,
+        "sha256": "937ec57358a0aa93a9a37104377e44220fb9c92f9ff45ee3424e8a0c49369267"
+      },
+      "public_reference": {
+        "path": ".cache/ace16-cross-page-update-next-20261026/V2019-true-hint-shrunk.accdb",
+        "bytes": 1118208,
+        "sha256": "a7fd9960390d460bac0afca72f2a187973b4a01fce280fd1bc7dfad80e44a57d"
+      },
+      "request": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-shrink.tsv",
+        "bytes": 525,
+        "sha256": "096606492b7c65782dbac46db8ca42cbad68e230e513f66e817c22e7c364894c"
+      },
+      "candidate": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-shrink-candidate.accdb",
+        "bytes": 1118208,
+        "sha256": "d87f9fe35329798c26675b281d2536a3a22c7a78c3b2e1f251d8d72b8d8a6853"
+      },
+      "native_command_stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-shrink-native.stdout",
+        "bytes": 25,
+        "sha256": "6c0d0787710c780f70f807198b638d69620d3c1a5340c100a3bcf81240fec7b8"
+      },
+      "native_command_stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-shrink-native.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      },
+      "getter_stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-shrink-after-getter.stdout",
+        "bytes": 742930,
+        "sha256": "46e4d7f0ccfa3c3999bd48a0b613566ed1c94ea43c1ab8fe77a3a3342a06b574"
+      },
+      "map_probe_stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-shrink-after-maps.stdout",
+        "bytes": 512,
+        "sha256": "e550ad63f2d03ea0a24c12959fc248f60c502517a95baff7ee8e222f8ae18f9a"
+      },
+      "complete": true,
+      "expected_file_growth_bytes": 0,
+      "root_page": 114,
+      "root_slot": 0,
+      "target_page": 272,
+      "target_slot": 0,
+      "proof": {
+        "whole_image_allowed_bytes_exact": true,
+        "full_new_page_literal_exact": false,
+        "all_preexisting_raw_index_pages_unchanged": [
+          7,
+          8,
+          10,
+          12,
+          14,
+          15,
+          16,
+          20,
+          21,
+          22,
+          45,
+          46,
+          47,
+          52,
+          55,
+          56,
+          59,
+          60,
+          71,
+          72,
+          73,
+          75,
+          76,
+          83,
+          86,
+          108,
+          113,
+          118,
+          124,
+          129,
+          130,
+          131,
+          132,
+          133,
+          134,
+          135,
+          138,
+          139,
+          141,
+          143,
+          144,
+          145,
+          147,
+          148,
+          149,
+          150,
+          151,
+          152,
+          153,
+          154,
+          155,
+          157,
+          158,
+          159,
+          160,
+          162,
+          165,
+          166,
+          167,
+          168,
+          169,
+          170,
+          171,
+          174,
+          175,
+          177,
+          178,
+          180,
+          181,
+          182,
+          183,
+          185,
+          186,
+          187,
+          188,
+          189,
+          190,
+          191,
+          192,
+          193,
+          195,
+          196,
+          198,
+          199,
+          202,
+          203,
+          204,
+          209,
+          210,
+          211,
+          216,
+          221,
+          226,
+          231,
+          236,
+          242,
+          243,
+          248,
+          249,
+          254,
+          255,
+          260
+        ],
+        "map_byte_changes": [],
+        "image_sha256": "d87f9fe35329798c26675b281d2536a3a22c7a78c3b2e1f251d8d72b8d8a6853",
+        "target_capacity": 523,
+        "candidate_padding_contract_distinct_from_reference": true
+      }
+    },
+    {
+      "id": "V2019-false-hint-grow",
+      "plan_id": "V2019-false-hint-grow",
+      "actual_source": {
+        "path": ".cache/ace16-slot-boundary-next-20261026/V2019-wide-05.accdb",
+        "bytes": 1118208,
+        "sha256": "fb4d1b46a83940ae06224665d403464d5d21a61986a84a5c2c63f1fe8e7a00e0"
+      },
+      "source_after": {
+        "path": ".cache/ace16-slot-boundary-next-20261026/V2019-wide-05.accdb",
+        "bytes": 1118208,
+        "sha256": "fb4d1b46a83940ae06224665d403464d5d21a61986a84a5c2c63f1fe8e7a00e0"
+      },
+      "public_reference": {
+        "path": ".cache/ace16-cross-page-update-next-20261026/V2019-false-hint-grown.accdb",
+        "bytes": 1118208,
+        "sha256": "2b50008288bd7d9d9379d6475ff6e44167f9dd038ec21c1149da4f539a78f9c4"
+      },
+      "request": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-grow.tsv",
+        "bytes": 524,
+        "sha256": "59eb8b2533d5db52bbf3247d85c6fb6eec42dceaa6e32f4027acaf759e2f2495"
+      },
+      "candidate": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-grow-candidate.accdb",
+        "bytes": 1118208,
+        "sha256": "2b50008288bd7d9d9379d6475ff6e44167f9dd038ec21c1149da4f539a78f9c4"
+      },
+      "native_command_stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-grow-native.stdout",
+        "bytes": 25,
+        "sha256": "6c0d0787710c780f70f807198b638d69620d3c1a5340c100a3bcf81240fec7b8"
+      },
+      "native_command_stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-grow-native.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      },
+      "getter_stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-grow-after-getter.stdout",
+        "bytes": 746118,
+        "sha256": "61ab637e5480e52f92e2aeed8711b706d0d7c2138a3d8f8558a45248b0e81c2a"
+      },
+      "map_probe_stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-grow-after-maps.stdout",
+        "bytes": 512,
+        "sha256": "b9a7b8f00c7721d754ce49a40e484465adbdb94875e95d2e0251db7c469ed9bb"
+      },
+      "complete": true,
+      "expected_file_growth_bytes": 0,
+      "root_page": 114,
+      "root_slot": 0,
+      "target_page": 272,
+      "target_slot": 1,
+      "proof": {
+        "whole_image_allowed_bytes_exact": true,
+        "full_new_page_literal_exact": false,
+        "all_preexisting_raw_index_pages_unchanged": [
+          7,
+          8,
+          10,
+          12,
+          14,
+          15,
+          16,
+          20,
+          21,
+          22,
+          45,
+          46,
+          47,
+          52,
+          55,
+          56,
+          59,
+          60,
+          71,
+          72,
+          73,
+          75,
+          76,
+          83,
+          86,
+          108,
+          113,
+          118,
+          124,
+          129,
+          130,
+          131,
+          132,
+          133,
+          134,
+          135,
+          138,
+          139,
+          141,
+          143,
+          144,
+          145,
+          147,
+          148,
+          149,
+          150,
+          151,
+          152,
+          153,
+          154,
+          155,
+          157,
+          158,
+          159,
+          160,
+          162,
+          165,
+          166,
+          167,
+          168,
+          169,
+          170,
+          171,
+          174,
+          175,
+          177,
+          178,
+          180,
+          181,
+          182,
+          183,
+          185,
+          186,
+          187,
+          188,
+          189,
+          190,
+          191,
+          192,
+          193,
+          195,
+          196,
+          198,
+          199,
+          202,
+          203,
+          204,
+          209,
+          210,
+          211,
+          216,
+          221,
+          226,
+          231,
+          236,
+          242,
+          243,
+          248,
+          249,
+          254,
+          255,
+          260
+        ],
+        "map_byte_changes": [],
+        "image_sha256": "2b50008288bd7d9d9379d6475ff6e44167f9dd038ec21c1149da4f539a78f9c4",
+        "target_capacity": 523,
+        "candidate_padding_contract_distinct_from_reference": false
+      }
+    },
+    {
+      "id": "V2019-false-hint-shrink",
+      "plan_id": "V2019-false-hint-shrink",
+      "actual_source": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-grow-candidate.accdb",
+        "bytes": 1118208,
+        "sha256": "2b50008288bd7d9d9379d6475ff6e44167f9dd038ec21c1149da4f539a78f9c4"
+      },
+      "source_after": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-grow-candidate.accdb",
+        "bytes": 1118208,
+        "sha256": "2b50008288bd7d9d9379d6475ff6e44167f9dd038ec21c1149da4f539a78f9c4"
+      },
+      "public_reference": {
+        "path": ".cache/ace16-cross-page-update-next-20261026/V2019-false-hint-shrunk.accdb",
+        "bytes": 1118208,
+        "sha256": "d6da7556d961a796e11694f6357a41b8b9f8000cd844af904748ccb0abd06bc6"
+      },
+      "request": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-shrink.tsv",
+        "bytes": 525,
+        "sha256": "096606492b7c65782dbac46db8ca42cbad68e230e513f66e817c22e7c364894c"
+      },
+      "candidate": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-shrink-candidate.accdb",
+        "bytes": 1118208,
+        "sha256": "14f44b840ccb57e02784e5bf12ca9a5e75588bf0d28eb9248e44bc1b248888b1"
+      },
+      "native_command_stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-shrink-native.stdout",
+        "bytes": 25,
+        "sha256": "6c0d0787710c780f70f807198b638d69620d3c1a5340c100a3bcf81240fec7b8"
+      },
+      "native_command_stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-shrink-native.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      },
+      "getter_stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-shrink-after-getter.stdout",
+        "bytes": 745102,
+        "sha256": "c7776b05780f0cd30710081faeaf90e9dc48e669d421be685da778ad08e984ae"
+      },
+      "map_probe_stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-shrink-after-maps.stdout",
+        "bytes": 512,
+        "sha256": "b9a7b8f00c7721d754ce49a40e484465adbdb94875e95d2e0251db7c469ed9bb"
+      },
+      "complete": true,
+      "expected_file_growth_bytes": 0,
+      "root_page": 114,
+      "root_slot": 0,
+      "target_page": 272,
+      "target_slot": 1,
+      "proof": {
+        "whole_image_allowed_bytes_exact": true,
+        "full_new_page_literal_exact": false,
+        "all_preexisting_raw_index_pages_unchanged": [
+          7,
+          8,
+          10,
+          12,
+          14,
+          15,
+          16,
+          20,
+          21,
+          22,
+          45,
+          46,
+          47,
+          52,
+          55,
+          56,
+          59,
+          60,
+          71,
+          72,
+          73,
+          75,
+          76,
+          83,
+          86,
+          108,
+          113,
+          118,
+          124,
+          129,
+          130,
+          131,
+          132,
+          133,
+          134,
+          135,
+          138,
+          139,
+          141,
+          143,
+          144,
+          145,
+          147,
+          148,
+          149,
+          150,
+          151,
+          152,
+          153,
+          154,
+          155,
+          157,
+          158,
+          159,
+          160,
+          162,
+          165,
+          166,
+          167,
+          168,
+          169,
+          170,
+          171,
+          174,
+          175,
+          177,
+          178,
+          180,
+          181,
+          182,
+          183,
+          185,
+          186,
+          187,
+          188,
+          189,
+          190,
+          191,
+          192,
+          193,
+          195,
+          196,
+          198,
+          199,
+          202,
+          203,
+          204,
+          209,
+          210,
+          211,
+          216,
+          221,
+          226,
+          231,
+          236,
+          242,
+          243,
+          248,
+          249,
+          254,
+          255,
+          260
+        ],
+        "map_byte_changes": [],
+        "image_sha256": "14f44b840ccb57e02784e5bf12ca9a5e75588bf0d28eb9248e44bc1b248888b1",
+        "target_capacity": 523,
+        "candidate_padding_contract_distinct_from_reference": true
+      }
+    }
+  ],
+  "command_receipts": [
+    {
+      "index": 0,
+      "argv_display": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-slot-originals-next-20261026/classes",
+        "SlotUpdateFixture",
+        "oracle",
+        ".cache/ace16-slot-boundary-next-20261026/V2016-wide-04.accdb"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-grow-before-getter.stdout",
+        "bytes": 741858,
+        "sha256": "d94c33278eccd60afc36d39fc425acb20d373537b11bddfda0874478fbe2d21d"
+      },
+      "stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-grow-before-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 1,
+      "argv_display": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-slot-originals-next-20261026/classes",
+        "SlotMapProbe",
+        ".cache/ace16-slot-boundary-next-20261026/V2016-wide-04.accdb",
+        "RawLegacy",
+        "1"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-grow-before-maps.stdout",
+        "bytes": 247,
+        "sha256": "4f2b19b0ff44a8ab1ba514aa6123ca1e6e8d7bfb06a014fba65c862f143eb31f"
+      },
+      "stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-grow-before-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 2,
+      "argv_display": [
+        ".cache/tablecraft-bin/ace16-variable-20261026",
+        ".cache/ace16-slot-boundary-next-20261026/V2016-wide-04.accdb",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-grow-candidate.accdb",
+        "RawLegacy",
+        "Label",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-grow.tsv",
+        "--variable-updates"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-grow-native.stdout",
+        "bytes": 25,
+        "sha256": "6c0d0787710c780f70f807198b638d69620d3c1a5340c100a3bcf81240fec7b8"
+      },
+      "stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-grow-native.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "index": 3,
+      "argv_display": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-slot-originals-next-20261026/classes",
+        "SlotUpdateFixture",
+        "oracle",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-grow-candidate.accdb"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-grow-after-getter.stdout",
+        "bytes": 743903,
+        "sha256": "6cba7c13cdcbef02cb9397115c388b3bf5839cb4d1a41be4270cea4e63486e5c"
+      },
+      "stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-grow-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 4,
+      "argv_display": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-slot-originals-next-20261026/classes",
+        "SlotMapProbe",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-grow-candidate.accdb",
+        "RawLegacy",
+        "1"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-grow-after-maps.stdout",
+        "bytes": 271,
+        "sha256": "5c2614c4b39b902bdd7e820d3f19fe0a73a0c088e2214bc732d056a68242277f"
+      },
+      "stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-grow-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 5,
+      "argv_display": [
+        ".cache/tablecraft-bin/ace16-variable-20261026",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-grow-candidate.accdb",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-shrink-candidate.accdb",
+        "RawLegacy",
+        "Label",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-shrink.tsv",
+        "--variable-updates"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-shrink-native.stdout",
+        "bytes": 25,
+        "sha256": "6c0d0787710c780f70f807198b638d69620d3c1a5340c100a3bcf81240fec7b8"
+      },
+      "stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-shrink-native.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "index": 6,
+      "argv_display": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-slot-originals-next-20261026/classes",
+        "SlotUpdateFixture",
+        "oracle",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-shrink-candidate.accdb"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-shrink-after-getter.stdout",
+        "bytes": 742887,
+        "sha256": "f1aad9fc6d756c904964bcb8334fae83342cc760a092b057778d81f4d735f727"
+      },
+      "stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-shrink-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 7,
+      "argv_display": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-slot-originals-next-20261026/classes",
+        "SlotMapProbe",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-shrink-candidate.accdb",
+        "RawLegacy",
+        "1"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-shrink-after-maps.stdout",
+        "bytes": 271,
+        "sha256": "5c2614c4b39b902bdd7e820d3f19fe0a73a0c088e2214bc732d056a68242277f"
+      },
+      "stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-true-hint-shrink-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 8,
+      "argv_display": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-slot-originals-next-20261026/classes",
+        "SlotUpdateFixture",
+        "oracle",
+        ".cache/ace16-slot-boundary-next-20261026/V2016-wide-05.accdb"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-grow-before-getter.stdout",
+        "bytes": 744030,
+        "sha256": "f1d4d068f8177c40aba4206c4730f13cb8d126575676751bb4734f59052d0823"
+      },
+      "stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-grow-before-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 9,
+      "argv_display": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-slot-originals-next-20261026/classes",
+        "SlotMapProbe",
+        ".cache/ace16-slot-boundary-next-20261026/V2016-wide-05.accdb",
+        "RawLegacy",
+        "1"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-grow-before-maps.stdout",
+        "bytes": 270,
+        "sha256": "82d26f8d03930d40ca636b18d7637192e71213d0c974fd6639eeb86c71b70699"
+      },
+      "stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-grow-before-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 10,
+      "argv_display": [
+        ".cache/tablecraft-bin/ace16-variable-20261026",
+        ".cache/ace16-slot-boundary-next-20261026/V2016-wide-05.accdb",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-grow-candidate.accdb",
+        "RawLegacy",
+        "Label",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-grow.tsv",
+        "--variable-updates"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-grow-native.stdout",
+        "bytes": 25,
+        "sha256": "6c0d0787710c780f70f807198b638d69620d3c1a5340c100a3bcf81240fec7b8"
+      },
+      "stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-grow-native.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "index": 11,
+      "argv_display": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-slot-originals-next-20261026/classes",
+        "SlotUpdateFixture",
+        "oracle",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-grow-candidate.accdb"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-grow-after-getter.stdout",
+        "bytes": 746075,
+        "sha256": "bd02a57a03b05d8a3db5c4c1fab3cdbb0e6b0fcdfaeefd2e516f61621207750a"
+      },
+      "stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-grow-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 12,
+      "argv_display": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-slot-originals-next-20261026/classes",
+        "SlotMapProbe",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-grow-candidate.accdb",
+        "RawLegacy",
+        "1"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-grow-after-maps.stdout",
+        "bytes": 271,
+        "sha256": "d5e6f3a07eee0e881719d35288d6b616d43737e737e800541d906adc703f8522"
+      },
+      "stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-grow-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 13,
+      "argv_display": [
+        ".cache/tablecraft-bin/ace16-variable-20261026",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-grow-candidate.accdb",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-shrink-candidate.accdb",
+        "RawLegacy",
+        "Label",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-shrink.tsv",
+        "--variable-updates"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-shrink-native.stdout",
+        "bytes": 25,
+        "sha256": "6c0d0787710c780f70f807198b638d69620d3c1a5340c100a3bcf81240fec7b8"
+      },
+      "stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-shrink-native.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "index": 14,
+      "argv_display": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-slot-originals-next-20261026/classes",
+        "SlotUpdateFixture",
+        "oracle",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-shrink-candidate.accdb"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-shrink-after-getter.stdout",
+        "bytes": 745059,
+        "sha256": "713c1ada26e1e2a0811e2548301706379d44e3898384e915d6522865983a1e19"
+      },
+      "stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-shrink-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 15,
+      "argv_display": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-slot-originals-next-20261026/classes",
+        "SlotMapProbe",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-shrink-candidate.accdb",
+        "RawLegacy",
+        "1"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-shrink-after-maps.stdout",
+        "bytes": 271,
+        "sha256": "d5e6f3a07eee0e881719d35288d6b616d43737e737e800541d906adc703f8522"
+      },
+      "stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2016-false-hint-shrink-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 16,
+      "argv_display": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-slot-originals-next-20261026/classes",
+        "SlotUpdateFixture",
+        "oracle",
+        ".cache/ace16-slot-boundary-next-20261026/V2019-wide-04.accdb"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-grow-before-getter.stdout",
+        "bytes": 741901,
+        "sha256": "7f79d7a158525a795e35d58999101d21e24351e48e92f4f7c61c894ac9649b22"
+      },
+      "stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-grow-before-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 17,
+      "argv_display": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-slot-originals-next-20261026/classes",
+        "SlotMapProbe",
+        ".cache/ace16-slot-boundary-next-20261026/V2019-wide-04.accdb",
+        "RawLegacy",
+        "1"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-grow-before-maps.stdout",
+        "bytes": 490,
+        "sha256": "3b78a444fbf154d723ad21260d6a449818f918cd284dde8fd5a45305c93100a8"
+      },
+      "stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-grow-before-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 18,
+      "argv_display": [
+        ".cache/tablecraft-bin/ace16-variable-20261026",
+        ".cache/ace16-slot-boundary-next-20261026/V2019-wide-04.accdb",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-grow-candidate.accdb",
+        "RawLegacy",
+        "Label",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-grow.tsv",
+        "--variable-updates"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-grow-native.stdout",
+        "bytes": 25,
+        "sha256": "6c0d0787710c780f70f807198b638d69620d3c1a5340c100a3bcf81240fec7b8"
+      },
+      "stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-grow-native.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "index": 19,
+      "argv_display": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-slot-originals-next-20261026/classes",
+        "SlotUpdateFixture",
+        "oracle",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-grow-candidate.accdb"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-grow-after-getter.stdout",
+        "bytes": 743946,
+        "sha256": "722685f9b2e108757faab0d957895629b5ee5e7b6a08d897800cabf80a267a6a"
+      },
+      "stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-grow-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 20,
+      "argv_display": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-slot-originals-next-20261026/classes",
+        "SlotMapProbe",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-grow-candidate.accdb",
+        "RawLegacy",
+        "1"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-grow-after-maps.stdout",
+        "bytes": 512,
+        "sha256": "e550ad63f2d03ea0a24c12959fc248f60c502517a95baff7ee8e222f8ae18f9a"
+      },
+      "stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-grow-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 21,
+      "argv_display": [
+        ".cache/tablecraft-bin/ace16-variable-20261026",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-grow-candidate.accdb",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-shrink-candidate.accdb",
+        "RawLegacy",
+        "Label",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-shrink.tsv",
+        "--variable-updates"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-shrink-native.stdout",
+        "bytes": 25,
+        "sha256": "6c0d0787710c780f70f807198b638d69620d3c1a5340c100a3bcf81240fec7b8"
+      },
+      "stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-shrink-native.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "index": 22,
+      "argv_display": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-slot-originals-next-20261026/classes",
+        "SlotUpdateFixture",
+        "oracle",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-shrink-candidate.accdb"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-shrink-after-getter.stdout",
+        "bytes": 742930,
+        "sha256": "46e4d7f0ccfa3c3999bd48a0b613566ed1c94ea43c1ab8fe77a3a3342a06b574"
+      },
+      "stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-shrink-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 23,
+      "argv_display": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-slot-originals-next-20261026/classes",
+        "SlotMapProbe",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-shrink-candidate.accdb",
+        "RawLegacy",
+        "1"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-shrink-after-maps.stdout",
+        "bytes": 512,
+        "sha256": "e550ad63f2d03ea0a24c12959fc248f60c502517a95baff7ee8e222f8ae18f9a"
+      },
+      "stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-true-hint-shrink-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 24,
+      "argv_display": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-slot-originals-next-20261026/classes",
+        "SlotUpdateFixture",
+        "oracle",
+        ".cache/ace16-slot-boundary-next-20261026/V2019-wide-05.accdb"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-grow-before-getter.stdout",
+        "bytes": 744073,
+        "sha256": "7b665b0b095850dd1ae89b0507605862a96f8783fff58f2b0dd35411548636dd"
+      },
+      "stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-grow-before-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 25,
+      "argv_display": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-slot-originals-next-20261026/classes",
+        "SlotMapProbe",
+        ".cache/ace16-slot-boundary-next-20261026/V2019-wide-05.accdb",
+        "RawLegacy",
+        "1"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-grow-before-maps.stdout",
+        "bytes": 512,
+        "sha256": "6d468b0cddd47cd876c6c8c84154983756f56cceedda627b88f585485756a957"
+      },
+      "stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-grow-before-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 26,
+      "argv_display": [
+        ".cache/tablecraft-bin/ace16-variable-20261026",
+        ".cache/ace16-slot-boundary-next-20261026/V2019-wide-05.accdb",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-grow-candidate.accdb",
+        "RawLegacy",
+        "Label",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-grow.tsv",
+        "--variable-updates"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-grow-native.stdout",
+        "bytes": 25,
+        "sha256": "6c0d0787710c780f70f807198b638d69620d3c1a5340c100a3bcf81240fec7b8"
+      },
+      "stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-grow-native.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "index": 27,
+      "argv_display": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-slot-originals-next-20261026/classes",
+        "SlotUpdateFixture",
+        "oracle",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-grow-candidate.accdb"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-grow-after-getter.stdout",
+        "bytes": 746118,
+        "sha256": "61ab637e5480e52f92e2aeed8711b706d0d7c2138a3d8f8558a45248b0e81c2a"
+      },
+      "stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-grow-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 28,
+      "argv_display": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-slot-originals-next-20261026/classes",
+        "SlotMapProbe",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-grow-candidate.accdb",
+        "RawLegacy",
+        "1"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-grow-after-maps.stdout",
+        "bytes": 512,
+        "sha256": "b9a7b8f00c7721d754ce49a40e484465adbdb94875e95d2e0251db7c469ed9bb"
+      },
+      "stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-grow-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 29,
+      "argv_display": [
+        ".cache/tablecraft-bin/ace16-variable-20261026",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-grow-candidate.accdb",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-shrink-candidate.accdb",
+        "RawLegacy",
+        "Label",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-shrink.tsv",
+        "--variable-updates"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-shrink-native.stdout",
+        "bytes": 25,
+        "sha256": "6c0d0787710c780f70f807198b638d69620d3c1a5340c100a3bcf81240fec7b8"
+      },
+      "stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-shrink-native.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "index": 30,
+      "argv_display": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-slot-originals-next-20261026/classes",
+        "SlotUpdateFixture",
+        "oracle",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-shrink-candidate.accdb"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-shrink-after-getter.stdout",
+        "bytes": 745102,
+        "sha256": "c7776b05780f0cd30710081faeaf90e9dc48e669d421be685da778ad08e984ae"
+      },
+      "stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-shrink-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 31,
+      "argv_display": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-slot-originals-next-20261026/classes",
+        "SlotMapProbe",
+        ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-shrink-candidate.accdb",
+        "RawLegacy",
+        "1"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-shrink-after-maps.stdout",
+        "bytes": 512,
+        "sha256": "b9a7b8f00c7721d754ce49a40e484465adbdb94875e95d2e0251db7c469ed9bb"
+      },
+      "stderr": {
+        "path": ".cache/ace16-variable-original-candidates-initial-20261026/V2019-false-hint-shrink-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "current_public_sources": [
+    {
+      "path": "docs/testing/variable_preview_originals/replay.py",
+      "bytes": 16084,
+      "sha256": "c3b4f58544a0385d7ae2d30c9d7a0ac1b3c875c79395998a6ef4adda22ed7dbe"
+    },
+    {
+      "path": "docs/testing/variable_preview_originals/proof.py",
+      "bytes": 5667,
+      "sha256": "04de5919313b7b6a4516948d8b31d1d7c69971dc642ec4ca581ec36c2a1a3512"
+    },
+    {
+      "path": "docs/testing/variable_preview_originals/plan.json",
+      "bytes": 31044,
+      "sha256": "24e0bc6eb9af67b39976a4a8eb731402e6291216c0015c50687ffb578cc9a022"
+    }
+  ],
+  "owning_document": {
+    "path": "docs/testing/VARIABLE_UPDATE_OBSERVATIONS.md",
+    "bytes": 6128,
+    "sha256": "3504c1c6ca8dcc50cf8d8b16856727b5bf4d03f96ef2335ab743c9c469357caf"
+  },
+  "public_wrapper_verification": {
+    "historical_execution": false,
+    "mode": "--verify-existing, no native/getter/map processes",
+    "exit_code": 0,
+    "complete_proofs": 8,
+    "log": {
+      "path": ".cache/ace16-variable-originals-next-20261026/public-verify-existing-final.log",
+      "bytes": 313,
+      "sha256": "d61f355ad459885cab95a997dd864b64b6c83a647852f8d77bc4ad4eed9ac3fe"
+    },
+    "help_log": {
+      "path": ".cache/ace16-variable-originals-next-20261026/public-help-final.log",
+      "bytes": 894,
+      "sha256": "4cd599be0d702ef4f7f53216ccfe77b1c6b2bc3cd3075ba1d91e82fdf0ee290e"
+    },
+    "syntax_check_exit_code": 0,
+    "changes": "package ROOT/sibling imports, input modes and read-only verification in runner; readability-only proof changes; tracked plan remains byte-identical24e0"
+  },
+  "public_path_policy": "Repository-relative pin labels. argv_display strips the repository absolute prefix only; actual ignored raw reports and argv remain unchanged. No payload or selected value normalization.",
+  "qualification": [
+    "Independent Jackcess 5.0.4 public UPDATE references, not Microsoft Access execution or save qualification",
+    "Selected Label is unindexed; no index split/new key qualification",
+    "No arbitrary in-file free-page reuse, map growth, Memo/OLE or Binary allocation claim",
+    "Existing exact-span and same-page APIs remain separate; no normal CLI/backend write broadening"
+  ]
+}
