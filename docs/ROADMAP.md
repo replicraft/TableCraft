@@ -40,6 +40,9 @@ Delivered read/query and engineering foundations:
   [fifty original-file candidates](testing/IGNORED_DELETE_OBSERVATIONS.md) all pass,
   including physically empty indexes with live NULL table rows and unchanged
   index bytes for zero-effective requests.
+  The separate acyclic Cascade service now passes
+  [24 original-file candidates and eight self/cycle refusals](testing/CASCADE_DELETE_OBSERVATIONS.md),
+  retaining independent association, index-entry and unchanged-byte checks.
   General ACE 16 saves are still unavailable.
 
 - [x] [Stateful streaming composition](query/PROGRESSIVE_QUERIES.md#stateful-retained-stages)

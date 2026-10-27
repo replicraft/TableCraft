@@ -1,0 +1,1645 @@
+{
+  "date": "2026-10-26",
+  "scope": "Fresh public-builder ACE16 cascade originals, public per-row action observations and separately checked engineering candidates; no native Access SQL/save qualification.",
+  "candidate_controls": {
+    "total": 32,
+    "matches": 32,
+    "disagreements": 0,
+    "complete_candidates": 24,
+    "typed_self_cycle_refusals_without_output": 8,
+    "commands": 85
+  },
+  "public_action_observations": {
+    "total": 32,
+    "acyclic_closure_agreements": 24,
+    "self_tree_success_with_dangling_child": 2,
+    "isolated_stack_overflow_failures": 6,
+    "timeouts": 0,
+    "commands": 99
+  },
+  "distinction": "The24 acyclic candidates agree with independent original-association models and24 successful public action copies. Eight engineering self/cycle refusals are held-profile checks, not public action parity: two public self-tree calls returned incorrect closure and six loop/cycle calls overflowed.",
+  "compiled_revision": "b16c4ecef86b1ffcafc67a64a7bbb51387197871",
+  "frozen_example": {
+    "path": ".cache/tablecraft-bin/ace16-cascading-delete-20261026",
+    "bytes": 18611432,
+    "sha256": "074b97e2bc6588082c950fb87a4982c87f046a021e7423d697ae19b1713a1017"
+  },
+  "build_receipt": {
+    "path": "docs/testing/results/ace16-cascading-delete-example-build-2026-10-26.json",
+    "bytes": 11882,
+    "sha256": "1a422ae4d5a54649fa9a6174f23a648c4343b6098a9dc0cf3c1e23d0fe5b45f3"
+  },
+  "compiled_source_verification": {
+    "git_objects": 55,
+    "all_matched_raw_git_show_at_compiled_revision_before_and_after": true,
+    "live_source_inventory_not_used": true
+  },
+  "execution": {
+    "session": 87000,
+    "exit_code": 0,
+    "fatal_error": null,
+    "command": "python3 .cache/ace16-cascade-consumer-next-20261026/compare_cascading_deletes.py --example .cache/tablecraft-bin/ace16-cascading-delete-20261026 --example-sha256 074b97e2bc6588082c950fb87a4982c87f046a021e7423d697ae19b1713a1017 --compiled-revision b16c4ecef86b1ffcafc67a64a7bbb51387197871 --build-receipt docs/testing/results/ace16-cascading-delete-example-build-2026-10-26.json --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar --workdir .cache/ace16-cascading-delete-originals-initial-20261026 --report .cache/ace16-cascading-delete-originals-initial-20261026.json",
+    "raw_report": {
+      "path": ".cache/ace16-cascading-delete-originals-initial-20261026.json",
+      "bytes": 295357,
+      "sha256": "6e6cb1f89f37447981ebb2d65b0342967af2725bb485e1584b6018fa8ea250d7"
+    },
+    "log": {
+      "path": ".cache/ace16-cascading-delete-originals-initial-20261026.log",
+      "bytes": 818,
+      "sha256": "491e35c9dddb268f820da04224ff068c4632f1fdc42e615f14f3ce97fe9e1cdf"
+    },
+    "raw_command_receipts": {
+      "path": ".cache/ace16-cascading-delete-originals-initial-20261026/commands.jsonl",
+      "bytes": 62982,
+      "sha256": "68eb8b7de2f269e3a8cbe3f05995c5b309028e75aa76b2915594beac5b6648c3"
+    },
+    "preserved_failed_candidate_attempts": []
+  },
+  "reference_capture": {
+    "preparation": {
+      "path": ".cache/ace16-delete-cascade-next-20261026/original-preparation.json",
+      "bytes": 4895,
+      "sha256": "6a5800e089a36236c6ada1063c5d9948d7a8dcdee910fab14c0d2484d126d787"
+    },
+    "original_associations_before_actions": {
+      "path": ".cache/ace16-delete-cascade-next-20261026/original-associations-before-actions.json",
+      "bytes": 189533,
+      "sha256": "2e0b29dc9c7933df9b54ad218c973934a3a12da90fbbb0042a44e7cc12be7008"
+    },
+    "metadata_inspection_log": {
+      "path": ".cache/ace16-delete-cascade-next-20261026/original-metadata.log",
+      "bytes": 654,
+      "sha256": "534beb73d4c36f234dc4f3f2adda404dbf446adba99634e303beb4a7f7d56c6f"
+    },
+    "public_action_summary": {
+      "path": ".cache/ace16-delete-cascade-next-20261026/public-action-observations-initial.json",
+      "bytes": 46586,
+      "sha256": "626ea595b000fcc8b32fd6fcec3b87c54c00c11b8c5224b1dc15f156342f0199"
+    },
+    "raw_action_report": {
+      "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial/report.json",
+      "bytes": 137898,
+      "sha256": "d399a19a9591a87114f4f25042409f54f8f7e75545bfb9e7c4a7374ffa102dee"
+    },
+    "raw_action_commands": {
+      "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial/commands.jsonl",
+      "bytes": 72985,
+      "sha256": "4854e8ebc1128493112fed2728c35a6323a864c2801d431d945be05ab5544266"
+    },
+    "action_log": {
+      "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial.log",
+      "bytes": 2550,
+      "sha256": "963c30bd988f21f7b2d0fce58a60a4e6fe7fb8835441324c514d07fb9991765d"
+    },
+    "action_timeout_seconds": 10,
+    "action_jvm_stack": "-Xss1m",
+    "generation_commands": [
+      [
+        "javac",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "-d",
+        ".cache/ace16-delete-cascade-next-20261026/classes",
+        "docs/testing/CascadeDeleteFixture.java"
+      ],
+      [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-delete-cascade-next-20261026/classes",
+        "CascadeDeleteFixture",
+        "generate",
+        ".cache/ace16-delete-cascade-next-20261026/Cascade-V2016-before.accdb",
+        "V2016"
+      ],
+      [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-delete-cascade-next-20261026/classes",
+        "CascadeDeleteFixture",
+        "oracle",
+        ".cache/ace16-delete-cascade-next-20261026/Cascade-V2016-before.accdb"
+      ],
+      [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-delete-cascade-next-20261026/classes",
+        "CascadeDeleteFixture",
+        "generate",
+        ".cache/ace16-delete-cascade-next-20261026/Cascade-V2019-before.accdb",
+        "V2019"
+      ],
+      [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-delete-cascade-next-20261026/classes",
+        "CascadeDeleteFixture",
+        "oracle",
+        ".cache/ace16-delete-cascade-next-20261026/Cascade-V2019-before.accdb"
+      ]
+    ],
+    "getter_or_action_modes": [
+      "oracle PATH",
+      "delete ORIGINAL FRESH_COPY TABLE COMMA_SEPARATED_LABEL_IDS"
+    ],
+    "read_only_index_mode": "CascadeDeleteIndexInspection PATH",
+    "no_larger_stack_retry": true
+  },
+  "reviewed_public_tool": {
+    "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+    "bytes": 1407244,
+    "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+  },
+  "tool_provenance": "Jackcess5.0.4 reviewed public API JAR reused from the existing fixture ledger; repository-owned Java helpers do not copy upstream implementation code. JAR remains ignored and no new third-party files/licenses ship.",
+  "public_and_executed_sources": [
+    {
+      "public": {
+        "path": "docs/testing/CascadeDeleteFixture.java",
+        "bytes": 16467,
+        "sha256": "fc0aa785e8ae036f95d3d0495b022592c0f574742d64defa69609738138b7683"
+      },
+      "executed": {
+        "path": "docs/testing/CascadeDeleteFixture.java",
+        "bytes": 16467,
+        "sha256": "fc0aa785e8ae036f95d3d0495b022592c0f574742d64defa69609738138b7683"
+      },
+      "byte_identical": true
+    },
+    {
+      "public": {
+        "path": "docs/testing/CascadeDeleteIndexInspection.java",
+        "bytes": 1758,
+        "sha256": "bf40a6907fda2a3a25c7b26489453c3041258bfeaee2840dde22fae4eb7b2e47"
+      },
+      "executed": {
+        "path": "docs/testing/CascadeDeleteIndexInspection.java",
+        "bytes": 1758,
+        "sha256": "bf40a6907fda2a3a25c7b26489453c3041258bfeaee2840dde22fae4eb7b2e47"
+      },
+      "byte_identical": true
+    },
+    {
+      "public": {
+        "path": "docs/testing/cascade_delete_model.py",
+        "bytes": 8735,
+        "sha256": "9feb6e4f257ba74478de68eb98f5eea34e7b48f00129e43364dcd738e14bc2ab"
+      },
+      "executed": {
+        "path": ".cache/ace16-cascade-consumer-next-20261026/cascade_delete_model.py",
+        "bytes": 8735,
+        "sha256": "9feb6e4f257ba74478de68eb98f5eea34e7b48f00129e43364dcd738e14bc2ab"
+      },
+      "byte_identical": true
+    },
+    {
+      "public": {
+        "path": "docs/testing/compare_cascading_deletes.py",
+        "bytes": 14098,
+        "sha256": "1e3e8d6fc13d5fae2fb3d0d3d8845809c06154b4d849956b82ab9034d9097495"
+      },
+      "executed": {
+        "path": ".cache/ace16-cascade-consumer-next-20261026/compare_cascading_deletes.py",
+        "bytes": 14098,
+        "sha256": "1e3e8d6fc13d5fae2fb3d0d3d8845809c06154b4d849956b82ab9034d9097495"
+      },
+      "byte_identical": true
+    }
+  ],
+  "original_profiles": [
+    {
+      "profile": "V2016",
+      "original": {
+        "path": ".cache/ace16-delete-cascade-next-20261026/Cascade-V2016-before.accdb",
+        "bytes": 1040384,
+        "sha256": "dda43690cef6f64acfac8b317eae0a9751a4a3451e0293d31af659b985edb4db"
+      },
+      "tables": 27,
+      "live_rows": 121,
+      "physical_root_leaves": 44,
+      "foreign_endpoints": 36,
+      "physical_flags": {
+        "137": 26,
+        "128": 18
+      },
+      "relationships": [
+        {
+          "name": "ChainRoot_ChainBranch",
+          "parent": "ChainRoot",
+          "child": "ChainBranch",
+          "columns": [
+            [
+              "ID",
+              "RootID"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 5,
+          "original_association_compact_json_sha256": "e35635a3248495dcd21dc8325ed0f9b986921f7a8a1d286ad5a8db023ba8c7ca",
+          "all_null_child_count": 1
+        },
+        {
+          "name": "ChainBranch_ChainLeaf",
+          "parent": "ChainBranch",
+          "child": "ChainLeaf",
+          "columns": [
+            [
+              "ID",
+              "BranchID"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 5,
+          "original_association_compact_json_sha256": "d7320d1c6f12f769269a5ac61d3f47b770e4072b3f2a6700a62c5535d0f65c36",
+          "all_null_child_count": 1
+        },
+        {
+          "name": "DiamondRoot_DiamondLeft",
+          "parent": "DiamondRoot",
+          "child": "DiamondLeft",
+          "columns": [
+            [
+              "ID",
+              "RootID"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 4,
+          "original_association_compact_json_sha256": "7e3d86afe227eb566866ed5ce53fa918af7f8a8562bb4552641ef1d8695ca6cd",
+          "all_null_child_count": 1
+        },
+        {
+          "name": "DiamondRoot_DiamondRight",
+          "parent": "DiamondRoot",
+          "child": "DiamondRight",
+          "columns": [
+            [
+              "ID",
+              "RootID"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 4,
+          "original_association_compact_json_sha256": "e30521551a2e134704a1204f42f228885ac3f48129649ed6bad26f5a0e906a33",
+          "all_null_child_count": 1
+        },
+        {
+          "name": "DiamondLeft_DiamondLeaf",
+          "parent": "DiamondLeft",
+          "child": "DiamondLeaf",
+          "columns": [
+            [
+              "ID",
+              "LeftID"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 5,
+          "original_association_compact_json_sha256": "05d38d84ae5fbdc5d908927901ee5c6bbb9abe327c980d072c3aeb5faab2fc81",
+          "all_null_child_count": 1
+        },
+        {
+          "name": "DiamondRight_DiamondLeaf",
+          "parent": "DiamondRight",
+          "child": "DiamondLeaf",
+          "columns": [
+            [
+              "ID",
+              "RightID"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 5,
+          "original_association_compact_json_sha256": "ccfcda5a4aa0f73263655f0b1dbb16731cb813ceada9b88684892133bcaa116b",
+          "all_null_child_count": 1
+        },
+        {
+          "name": "ByteParents_ByteChildren",
+          "parent": "ByteParents",
+          "child": "ByteChildren",
+          "columns": [
+            [
+              "KeyValue",
+              "KeyValue"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 5,
+          "original_association_compact_json_sha256": "e35635a3248495dcd21dc8325ed0f9b986921f7a8a1d286ad5a8db023ba8c7ca",
+          "all_null_child_count": 1
+        },
+        {
+          "name": "I16Parents_I16Children",
+          "parent": "I16Parents",
+          "child": "I16Children",
+          "columns": [
+            [
+              "KeyValue",
+              "KeyValue"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 5,
+          "original_association_compact_json_sha256": "e35635a3248495dcd21dc8325ed0f9b986921f7a8a1d286ad5a8db023ba8c7ca",
+          "all_null_child_count": 1
+        },
+        {
+          "name": "I32Parents_I32Children",
+          "parent": "I32Parents",
+          "child": "I32Children",
+          "columns": [
+            [
+              "KeyValue",
+              "KeyValue"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 5,
+          "original_association_compact_json_sha256": "e35635a3248495dcd21dc8325ed0f9b986921f7a8a1d286ad5a8db023ba8c7ca",
+          "all_null_child_count": 1
+        },
+        {
+          "name": "I64Parents_I64Children",
+          "parent": "I64Parents",
+          "child": "I64Children",
+          "columns": [
+            [
+              "KeyValue",
+              "KeyValue"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 5,
+          "original_association_compact_json_sha256": "e35635a3248495dcd21dc8325ed0f9b986921f7a8a1d286ad5a8db023ba8c7ca",
+          "all_null_child_count": 1
+        },
+        {
+          "name": "CurrencyParents_CurrencyChildren",
+          "parent": "CurrencyParents",
+          "child": "CurrencyChildren",
+          "columns": [
+            [
+              "KeyValue",
+              "KeyValue"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 5,
+          "original_association_compact_json_sha256": "e35635a3248495dcd21dc8325ed0f9b986921f7a8a1d286ad5a8db023ba8c7ca",
+          "all_null_child_count": 1
+        },
+        {
+          "name": "GuidParents_GuidChildren",
+          "parent": "GuidParents",
+          "child": "GuidChildren",
+          "columns": [
+            [
+              "KeyValue",
+              "KeyValue"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 5,
+          "original_association_compact_json_sha256": "e35635a3248495dcd21dc8325ed0f9b986921f7a8a1d286ad5a8db023ba8c7ca",
+          "all_null_child_count": 1
+        },
+        {
+          "name": "DecimalParents_DecimalChildren",
+          "parent": "DecimalParents",
+          "child": "DecimalChildren",
+          "columns": [
+            [
+              "KeyValue",
+              "KeyValue"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 5,
+          "original_association_compact_json_sha256": "e35635a3248495dcd21dc8325ed0f9b986921f7a8a1d286ad5a8db023ba8c7ca",
+          "all_null_child_count": 1
+        },
+        {
+          "name": "SelfTree_SelfTree",
+          "parent": "SelfTree",
+          "child": "SelfTree",
+          "columns": [
+            [
+              "ID",
+              "ParentID"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 3,
+          "original_association_compact_json_sha256": "6b9259cc4bb95258915132c4b542ec3776ff41541346425d2d3accea7690859e",
+          "all_null_child_count": 3
+        },
+        {
+          "name": "SelfLoop_SelfLoop",
+          "parent": "SelfLoop",
+          "child": "SelfLoop",
+          "columns": [
+            [
+              "ID",
+              "ParentID"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 1,
+          "original_association_compact_json_sha256": "5cc6a8a697bb6f2fcb468ef02cf2a76e9ad3f5da223682f1ca29288836ee66b3",
+          "all_null_child_count": 1
+        },
+        {
+          "name": "SelfCycle_SelfCycle",
+          "parent": "SelfCycle",
+          "child": "SelfCycle",
+          "columns": [
+            [
+              "ID",
+              "ParentID"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 2,
+          "original_association_compact_json_sha256": "507aa9b221726527e8352d41199d112b97970842bd11578bb875adc014faecfa",
+          "all_null_child_count": 1
+        },
+        {
+          "name": "CycleA_CycleB",
+          "parent": "CycleA",
+          "child": "CycleB",
+          "columns": [
+            [
+              "ID",
+              "OtherID"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 2,
+          "original_association_compact_json_sha256": "f762c54b17b732b3e50500869795f3ced47520a8adbf26da0cd8852f5f521d41",
+          "all_null_child_count": 0
+        },
+        {
+          "name": "CycleB_CycleA",
+          "parent": "CycleB",
+          "child": "CycleA",
+          "columns": [
+            [
+              "ID",
+              "OtherID"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 2,
+          "original_association_compact_json_sha256": "f762c54b17b732b3e50500869795f3ced47520a8adbf26da0cd8852f5f521d41",
+          "all_null_child_count": 0
+        }
+      ]
+    },
+    {
+      "profile": "V2019",
+      "original": {
+        "path": ".cache/ace16-delete-cascade-next-20261026/Cascade-V2019-before.accdb",
+        "bytes": 1110016,
+        "sha256": "509bff43379aa5d8ecab643e7641e745e9ff0375402da1d977631687d7a51296"
+      },
+      "tables": 27,
+      "live_rows": 121,
+      "physical_root_leaves": 44,
+      "foreign_endpoints": 36,
+      "physical_flags": {
+        "137": 26,
+        "128": 18
+      },
+      "relationships": [
+        {
+          "name": "ChainRoot_ChainBranch",
+          "parent": "ChainRoot",
+          "child": "ChainBranch",
+          "columns": [
+            [
+              "ID",
+              "RootID"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 5,
+          "original_association_compact_json_sha256": "e35635a3248495dcd21dc8325ed0f9b986921f7a8a1d286ad5a8db023ba8c7ca",
+          "all_null_child_count": 1
+        },
+        {
+          "name": "ChainBranch_ChainLeaf",
+          "parent": "ChainBranch",
+          "child": "ChainLeaf",
+          "columns": [
+            [
+              "ID",
+              "BranchID"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 5,
+          "original_association_compact_json_sha256": "d7320d1c6f12f769269a5ac61d3f47b770e4072b3f2a6700a62c5535d0f65c36",
+          "all_null_child_count": 1
+        },
+        {
+          "name": "DiamondRoot_DiamondLeft",
+          "parent": "DiamondRoot",
+          "child": "DiamondLeft",
+          "columns": [
+            [
+              "ID",
+              "RootID"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 4,
+          "original_association_compact_json_sha256": "7e3d86afe227eb566866ed5ce53fa918af7f8a8562bb4552641ef1d8695ca6cd",
+          "all_null_child_count": 1
+        },
+        {
+          "name": "DiamondRoot_DiamondRight",
+          "parent": "DiamondRoot",
+          "child": "DiamondRight",
+          "columns": [
+            [
+              "ID",
+              "RootID"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 4,
+          "original_association_compact_json_sha256": "e30521551a2e134704a1204f42f228885ac3f48129649ed6bad26f5a0e906a33",
+          "all_null_child_count": 1
+        },
+        {
+          "name": "DiamondLeft_DiamondLeaf",
+          "parent": "DiamondLeft",
+          "child": "DiamondLeaf",
+          "columns": [
+            [
+              "ID",
+              "LeftID"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 5,
+          "original_association_compact_json_sha256": "05d38d84ae5fbdc5d908927901ee5c6bbb9abe327c980d072c3aeb5faab2fc81",
+          "all_null_child_count": 1
+        },
+        {
+          "name": "DiamondRight_DiamondLeaf",
+          "parent": "DiamondRight",
+          "child": "DiamondLeaf",
+          "columns": [
+            [
+              "ID",
+              "RightID"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 5,
+          "original_association_compact_json_sha256": "ccfcda5a4aa0f73263655f0b1dbb16731cb813ceada9b88684892133bcaa116b",
+          "all_null_child_count": 1
+        },
+        {
+          "name": "ByteParents_ByteChildren",
+          "parent": "ByteParents",
+          "child": "ByteChildren",
+          "columns": [
+            [
+              "KeyValue",
+              "KeyValue"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 5,
+          "original_association_compact_json_sha256": "e35635a3248495dcd21dc8325ed0f9b986921f7a8a1d286ad5a8db023ba8c7ca",
+          "all_null_child_count": 1
+        },
+        {
+          "name": "I16Parents_I16Children",
+          "parent": "I16Parents",
+          "child": "I16Children",
+          "columns": [
+            [
+              "KeyValue",
+              "KeyValue"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 5,
+          "original_association_compact_json_sha256": "e35635a3248495dcd21dc8325ed0f9b986921f7a8a1d286ad5a8db023ba8c7ca",
+          "all_null_child_count": 1
+        },
+        {
+          "name": "I32Parents_I32Children",
+          "parent": "I32Parents",
+          "child": "I32Children",
+          "columns": [
+            [
+              "KeyValue",
+              "KeyValue"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 5,
+          "original_association_compact_json_sha256": "e35635a3248495dcd21dc8325ed0f9b986921f7a8a1d286ad5a8db023ba8c7ca",
+          "all_null_child_count": 1
+        },
+        {
+          "name": "I64Parents_I64Children",
+          "parent": "I64Parents",
+          "child": "I64Children",
+          "columns": [
+            [
+              "KeyValue",
+              "KeyValue"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 5,
+          "original_association_compact_json_sha256": "e35635a3248495dcd21dc8325ed0f9b986921f7a8a1d286ad5a8db023ba8c7ca",
+          "all_null_child_count": 1
+        },
+        {
+          "name": "CurrencyParents_CurrencyChildren",
+          "parent": "CurrencyParents",
+          "child": "CurrencyChildren",
+          "columns": [
+            [
+              "KeyValue",
+              "KeyValue"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 5,
+          "original_association_compact_json_sha256": "e35635a3248495dcd21dc8325ed0f9b986921f7a8a1d286ad5a8db023ba8c7ca",
+          "all_null_child_count": 1
+        },
+        {
+          "name": "GuidParents_GuidChildren",
+          "parent": "GuidParents",
+          "child": "GuidChildren",
+          "columns": [
+            [
+              "KeyValue",
+              "KeyValue"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 5,
+          "original_association_compact_json_sha256": "e35635a3248495dcd21dc8325ed0f9b986921f7a8a1d286ad5a8db023ba8c7ca",
+          "all_null_child_count": 1
+        },
+        {
+          "name": "DecimalParents_DecimalChildren",
+          "parent": "DecimalParents",
+          "child": "DecimalChildren",
+          "columns": [
+            [
+              "KeyValue",
+              "KeyValue"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 5,
+          "original_association_compact_json_sha256": "e35635a3248495dcd21dc8325ed0f9b986921f7a8a1d286ad5a8db023ba8c7ca",
+          "all_null_child_count": 1
+        },
+        {
+          "name": "SelfTree_SelfTree",
+          "parent": "SelfTree",
+          "child": "SelfTree",
+          "columns": [
+            [
+              "ID",
+              "ParentID"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 3,
+          "original_association_compact_json_sha256": "6b9259cc4bb95258915132c4b542ec3776ff41541346425d2d3accea7690859e",
+          "all_null_child_count": 3
+        },
+        {
+          "name": "SelfLoop_SelfLoop",
+          "parent": "SelfLoop",
+          "child": "SelfLoop",
+          "columns": [
+            [
+              "ID",
+              "ParentID"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 1,
+          "original_association_compact_json_sha256": "5cc6a8a697bb6f2fcb468ef02cf2a76e9ad3f5da223682f1ca29288836ee66b3",
+          "all_null_child_count": 1
+        },
+        {
+          "name": "SelfCycle_SelfCycle",
+          "parent": "SelfCycle",
+          "child": "SelfCycle",
+          "columns": [
+            [
+              "ID",
+              "ParentID"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 2,
+          "original_association_compact_json_sha256": "507aa9b221726527e8352d41199d112b97970842bd11578bb875adc014faecfa",
+          "all_null_child_count": 1
+        },
+        {
+          "name": "CycleA_CycleB",
+          "parent": "CycleA",
+          "child": "CycleB",
+          "columns": [
+            [
+              "ID",
+              "OtherID"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 2,
+          "original_association_compact_json_sha256": "f762c54b17b732b3e50500869795f3ced47520a8adbf26da0cd8852f5f521d41",
+          "all_null_child_count": 0
+        },
+        {
+          "name": "CycleB_CycleA",
+          "parent": "CycleB",
+          "child": "CycleA",
+          "columns": [
+            [
+              "ID",
+              "OtherID"
+            ]
+          ],
+          "required_primary_nonnull_parent_verified": true,
+          "original_association_count": 2,
+          "original_association_compact_json_sha256": "f762c54b17b732b3e50500869795f3ced47520a8adbf26da0cd8852f5f521d41",
+          "all_null_child_count": 0
+        }
+      ]
+    }
+  ],
+  "checks": {
+    "immutable_local_files_rehashed_before_and_after": 241,
+    "request_files_rehashed_before_and_after": 32,
+    "created_candidates_rehashed_and_accounted_for": 24,
+    "originals_reference_copies_helpers_jar_raw_captures_unchanged": true,
+    "exact_typed_rows_carriers_physical_locations_and_first_order": true,
+    "complete_logical_index_alias_inventory_and_key_order": true,
+    "independent_full_original_raw_key_row_entry_filter": true,
+    "exact_original_tombstones_live_counts_all_record_bodies": true,
+    "all_other_bytes_including_maps_historical_counters_headers_memo_ole_preserved": true,
+    "candidate_files_unchanged_by_read_only_getters": true
+  },
+  "cases": [
+    {
+      "profile": "V2016",
+      "case": "chain-one",
+      "seed_table": "ChainRoot",
+      "seed_order": [
+        1
+      ],
+      "candidate_status": 0,
+      "matches": true,
+      "reference_action_status": 0,
+      "reference_stack_overflow": false,
+      "reference_matches_finite_closure": true,
+      "reference_copy": {
+        "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial/V2016-chain-one.accdb",
+        "bytes": 1040384,
+        "sha256": "36acb8deafcf8b745fa5451e60d4116df2a651adfe20d9286f681dec6e2004bb"
+      },
+      "candidate": {
+        "path": ".cache/ace16-cascading-delete-originals-initial-20261026/V2016-chain-one.accdb",
+        "bytes": 1040384,
+        "sha256": "4db0310c6263eae96231092a70ddf7f5b7b01467c1ea5b38226df19b12792138"
+      },
+      "deleted_roots": 5,
+      "public_typed_rows_locations_logical_key_order_agree": true,
+      "original_record_bodies_preserved": 121,
+      "root_leaves_full_original_key_row_filter_checked": 44,
+      "all_protected_bytes_preserved": true
+    },
+    {
+      "profile": "V2016",
+      "case": "chain-two",
+      "seed_table": "ChainRoot",
+      "seed_order": [
+        1,
+        2
+      ],
+      "candidate_status": 0,
+      "matches": true,
+      "reference_action_status": 0,
+      "reference_stack_overflow": false,
+      "reference_matches_finite_closure": true,
+      "reference_copy": {
+        "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial/V2016-chain-two.accdb",
+        "bytes": 1040384,
+        "sha256": "6c6e6a4b20eefd42c004f9b820d12033ebd6e689e11223ffbfc1c64b7707d45c"
+      },
+      "candidate": {
+        "path": ".cache/ace16-cascading-delete-originals-initial-20261026/V2016-chain-two.accdb",
+        "bytes": 1040384,
+        "sha256": "eba58dfec07d55e254e7f0012dfc3ef92fb7e005394ab82e888584b188458694"
+      },
+      "deleted_roots": 8,
+      "public_typed_rows_locations_logical_key_order_agree": true,
+      "original_record_bodies_preserved": 121,
+      "root_leaves_full_original_key_row_filter_checked": 44,
+      "all_protected_bytes_preserved": true
+    },
+    {
+      "profile": "V2016",
+      "case": "diamond-one",
+      "seed_table": "DiamondRoot",
+      "seed_order": [
+        1
+      ],
+      "candidate_status": 0,
+      "matches": true,
+      "reference_action_status": 0,
+      "reference_stack_overflow": false,
+      "reference_matches_finite_closure": true,
+      "reference_copy": {
+        "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial/V2016-diamond-one.accdb",
+        "bytes": 1040384,
+        "sha256": "b249d4543b48b6253062d999e5d17f7268f30f4951803967682cdb9d0199799b"
+      },
+      "candidate": {
+        "path": ".cache/ace16-cascading-delete-originals-initial-20261026/V2016-diamond-one.accdb",
+        "bytes": 1040384,
+        "sha256": "fbaa44f37abcc99aba5c87000039ab06fe513d2ec45a6fb9fd630bd812cfd357"
+      },
+      "deleted_roots": 7,
+      "public_typed_rows_locations_logical_key_order_agree": true,
+      "original_record_bodies_preserved": 121,
+      "root_leaves_full_original_key_row_filter_checked": 44,
+      "all_protected_bytes_preserved": true
+    },
+    {
+      "profile": "V2016",
+      "case": "diamond-two",
+      "seed_table": "DiamondRoot",
+      "seed_order": [
+        1,
+        2
+      ],
+      "candidate_status": 0,
+      "matches": true,
+      "reference_action_status": 0,
+      "reference_stack_overflow": false,
+      "reference_matches_finite_closure": true,
+      "reference_copy": {
+        "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial/V2016-diamond-two.accdb",
+        "bytes": 1040384,
+        "sha256": "bfa93b9e71b6e6f534a1f36ebb2a5d57d126343f5a3c60348c3bc28214613f94"
+      },
+      "candidate": {
+        "path": ".cache/ace16-cascading-delete-originals-initial-20261026/V2016-diamond-two.accdb",
+        "bytes": 1040384,
+        "sha256": "fc8edb00f9bed669d1f11e6f3ab3970fc6b3da05fe9fc9d0386932614f26ea77"
+      },
+      "deleted_roots": 12,
+      "public_typed_rows_locations_logical_key_order_agree": true,
+      "original_record_bodies_preserved": 121,
+      "root_leaves_full_original_key_row_filter_checked": 44,
+      "all_protected_bytes_preserved": true
+    },
+    {
+      "profile": "V2016",
+      "case": "diamond-reversed",
+      "seed_table": "DiamondRoot",
+      "seed_order": [
+        2,
+        1
+      ],
+      "candidate_status": 0,
+      "matches": true,
+      "reference_action_status": 0,
+      "reference_stack_overflow": false,
+      "reference_matches_finite_closure": true,
+      "reference_copy": {
+        "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial/V2016-diamond-reversed.accdb",
+        "bytes": 1040384,
+        "sha256": "bfa93b9e71b6e6f534a1f36ebb2a5d57d126343f5a3c60348c3bc28214613f94"
+      },
+      "candidate": {
+        "path": ".cache/ace16-cascading-delete-originals-initial-20261026/V2016-diamond-reversed.accdb",
+        "bytes": 1040384,
+        "sha256": "fc8edb00f9bed669d1f11e6f3ab3970fc6b3da05fe9fc9d0386932614f26ea77"
+      },
+      "deleted_roots": 12,
+      "public_typed_rows_locations_logical_key_order_agree": true,
+      "original_record_bodies_preserved": 121,
+      "root_leaves_full_original_key_row_filter_checked": 44,
+      "all_protected_bytes_preserved": true
+    },
+    {
+      "profile": "V2016",
+      "case": "byte-one",
+      "seed_table": "ByteParents",
+      "seed_order": [
+        1
+      ],
+      "candidate_status": 0,
+      "matches": true,
+      "reference_action_status": 0,
+      "reference_stack_overflow": false,
+      "reference_matches_finite_closure": true,
+      "reference_copy": {
+        "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial/V2016-byte-one.accdb",
+        "bytes": 1040384,
+        "sha256": "4d8d9c92de8ab5ca8435802dcdc2544ef36c7c18cc3bc4cee88373167a70fd31"
+      },
+      "candidate": {
+        "path": ".cache/ace16-cascading-delete-originals-initial-20261026/V2016-byte-one.accdb",
+        "bytes": 1040384,
+        "sha256": "d7755d950cf057f4677e9086ce6862733f8f55b6be093b841c4a646d09882b7f"
+      },
+      "deleted_roots": 3,
+      "public_typed_rows_locations_logical_key_order_agree": true,
+      "original_record_bodies_preserved": 121,
+      "root_leaves_full_original_key_row_filter_checked": 44,
+      "all_protected_bytes_preserved": true
+    },
+    {
+      "profile": "V2016",
+      "case": "i16-one",
+      "seed_table": "I16Parents",
+      "seed_order": [
+        1
+      ],
+      "candidate_status": 0,
+      "matches": true,
+      "reference_action_status": 0,
+      "reference_stack_overflow": false,
+      "reference_matches_finite_closure": true,
+      "reference_copy": {
+        "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial/V2016-i16-one.accdb",
+        "bytes": 1040384,
+        "sha256": "efc7dd0eb8cbf346db161c5f83eaf09fb52a52b30deb21c8383f84143a3386d3"
+      },
+      "candidate": {
+        "path": ".cache/ace16-cascading-delete-originals-initial-20261026/V2016-i16-one.accdb",
+        "bytes": 1040384,
+        "sha256": "dc19a474bae2d8dd22c8119fb263987739170f3711ad2697452d37d48129c344"
+      },
+      "deleted_roots": 3,
+      "public_typed_rows_locations_logical_key_order_agree": true,
+      "original_record_bodies_preserved": 121,
+      "root_leaves_full_original_key_row_filter_checked": 44,
+      "all_protected_bytes_preserved": true
+    },
+    {
+      "profile": "V2016",
+      "case": "i32-one",
+      "seed_table": "I32Parents",
+      "seed_order": [
+        1
+      ],
+      "candidate_status": 0,
+      "matches": true,
+      "reference_action_status": 0,
+      "reference_stack_overflow": false,
+      "reference_matches_finite_closure": true,
+      "reference_copy": {
+        "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial/V2016-i32-one.accdb",
+        "bytes": 1040384,
+        "sha256": "9820621039c91f869ccdfe4323072c5f9bc5676c0ed24d0c104ff734d9b0c5a7"
+      },
+      "candidate": {
+        "path": ".cache/ace16-cascading-delete-originals-initial-20261026/V2016-i32-one.accdb",
+        "bytes": 1040384,
+        "sha256": "e5598a6e372a77eaafa5f84347594774743800cbcf03e17ae532c4003840f643"
+      },
+      "deleted_roots": 3,
+      "public_typed_rows_locations_logical_key_order_agree": true,
+      "original_record_bodies_preserved": 121,
+      "root_leaves_full_original_key_row_filter_checked": 44,
+      "all_protected_bytes_preserved": true
+    },
+    {
+      "profile": "V2016",
+      "case": "i64-one",
+      "seed_table": "I64Parents",
+      "seed_order": [
+        1
+      ],
+      "candidate_status": 0,
+      "matches": true,
+      "reference_action_status": 0,
+      "reference_stack_overflow": false,
+      "reference_matches_finite_closure": true,
+      "reference_copy": {
+        "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial/V2016-i64-one.accdb",
+        "bytes": 1040384,
+        "sha256": "6c9595acd20f2e89fd20afec457fa6366c14c49c78cb86fd3bbaa8279874e1f4"
+      },
+      "candidate": {
+        "path": ".cache/ace16-cascading-delete-originals-initial-20261026/V2016-i64-one.accdb",
+        "bytes": 1040384,
+        "sha256": "ae261955d9bea68e468e3295609246cf3aa35d7163683987b33a4b624210d065"
+      },
+      "deleted_roots": 3,
+      "public_typed_rows_locations_logical_key_order_agree": true,
+      "original_record_bodies_preserved": 121,
+      "root_leaves_full_original_key_row_filter_checked": 44,
+      "all_protected_bytes_preserved": true
+    },
+    {
+      "profile": "V2016",
+      "case": "currency-one",
+      "seed_table": "CurrencyParents",
+      "seed_order": [
+        1
+      ],
+      "candidate_status": 0,
+      "matches": true,
+      "reference_action_status": 0,
+      "reference_stack_overflow": false,
+      "reference_matches_finite_closure": true,
+      "reference_copy": {
+        "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial/V2016-currency-one.accdb",
+        "bytes": 1040384,
+        "sha256": "7f0132469a2a1847bb8656384f85273e293ca012f66ff1e8d3b497797d303e72"
+      },
+      "candidate": {
+        "path": ".cache/ace16-cascading-delete-originals-initial-20261026/V2016-currency-one.accdb",
+        "bytes": 1040384,
+        "sha256": "ac71d59d43fd71b95584d6a4dd0f2b17d38fdd7b60291c8ed49102797dcb759b"
+      },
+      "deleted_roots": 3,
+      "public_typed_rows_locations_logical_key_order_agree": true,
+      "original_record_bodies_preserved": 121,
+      "root_leaves_full_original_key_row_filter_checked": 44,
+      "all_protected_bytes_preserved": true
+    },
+    {
+      "profile": "V2016",
+      "case": "guid-one",
+      "seed_table": "GuidParents",
+      "seed_order": [
+        1
+      ],
+      "candidate_status": 0,
+      "matches": true,
+      "reference_action_status": 0,
+      "reference_stack_overflow": false,
+      "reference_matches_finite_closure": true,
+      "reference_copy": {
+        "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial/V2016-guid-one.accdb",
+        "bytes": 1040384,
+        "sha256": "c532700f7fec0fc14b59dddd7064ebaca2a82ca7b26dad88c69577360f08b1b3"
+      },
+      "candidate": {
+        "path": ".cache/ace16-cascading-delete-originals-initial-20261026/V2016-guid-one.accdb",
+        "bytes": 1040384,
+        "sha256": "218539a66b6fb926e4d48f86c374b108c2df21c9b225c4a2f7e6e150ac25964a"
+      },
+      "deleted_roots": 3,
+      "public_typed_rows_locations_logical_key_order_agree": true,
+      "original_record_bodies_preserved": 121,
+      "root_leaves_full_original_key_row_filter_checked": 44,
+      "all_protected_bytes_preserved": true
+    },
+    {
+      "profile": "V2016",
+      "case": "decimal-one",
+      "seed_table": "DecimalParents",
+      "seed_order": [
+        1
+      ],
+      "candidate_status": 0,
+      "matches": true,
+      "reference_action_status": 0,
+      "reference_stack_overflow": false,
+      "reference_matches_finite_closure": true,
+      "reference_copy": {
+        "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial/V2016-decimal-one.accdb",
+        "bytes": 1040384,
+        "sha256": "3b95871174838d784fd0b7218af5d66cd24b32991ffd1056a7bb6a8a07f7b546"
+      },
+      "candidate": {
+        "path": ".cache/ace16-cascading-delete-originals-initial-20261026/V2016-decimal-one.accdb",
+        "bytes": 1040384,
+        "sha256": "fc897c428fd4c59f8da4587d21cefa906000760239dc4aadef6343b407758f7d"
+      },
+      "deleted_roots": 3,
+      "public_typed_rows_locations_logical_key_order_agree": true,
+      "original_record_bodies_preserved": 121,
+      "root_leaves_full_original_key_row_filter_checked": 44,
+      "all_protected_bytes_preserved": true
+    },
+    {
+      "profile": "V2016",
+      "case": "self-tree",
+      "seed_table": "SelfTree",
+      "seed_order": [
+        1
+      ],
+      "candidate_status": 1,
+      "matches": true,
+      "reference_action_status": 0,
+      "reference_stack_overflow": false,
+      "reference_matches_finite_closure": false,
+      "reference_copy": {
+        "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial/V2016-self-tree.accdb",
+        "bytes": 1040384,
+        "sha256": "9b44ae5614948a7eaf57f961bef6dae17dcc79efe062f2dc818640d24a82b5e5"
+      },
+      "typed_constraint_coverage_refusal_no_stdout_or_candidate": true,
+      "public_returned_success_but_left_dangling_child": {
+        "child_ID": 3,
+        "ParentID": 1
+      }
+    },
+    {
+      "profile": "V2016",
+      "case": "self-loop",
+      "seed_table": "SelfLoop",
+      "seed_order": [
+        1
+      ],
+      "candidate_status": 1,
+      "matches": true,
+      "reference_action_status": 1,
+      "reference_stack_overflow": true,
+      "reference_matches_finite_closure": false,
+      "reference_copy": {
+        "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial/V2016-self-loop.accdb",
+        "bytes": 1040384,
+        "sha256": "dda43690cef6f64acfac8b317eae0a9751a4a3451e0293d31af659b985edb4db"
+      },
+      "typed_constraint_coverage_refusal_no_stdout_or_candidate": true
+    },
+    {
+      "profile": "V2016",
+      "case": "self-cycle",
+      "seed_table": "SelfCycle",
+      "seed_order": [
+        1
+      ],
+      "candidate_status": 1,
+      "matches": true,
+      "reference_action_status": 1,
+      "reference_stack_overflow": true,
+      "reference_matches_finite_closure": false,
+      "reference_copy": {
+        "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial/V2016-self-cycle.accdb",
+        "bytes": 1040384,
+        "sha256": "dda43690cef6f64acfac8b317eae0a9751a4a3451e0293d31af659b985edb4db"
+      },
+      "typed_constraint_coverage_refusal_no_stdout_or_candidate": true
+    },
+    {
+      "profile": "V2016",
+      "case": "cross-cycle",
+      "seed_table": "CycleA",
+      "seed_order": [
+        1
+      ],
+      "candidate_status": 1,
+      "matches": true,
+      "reference_action_status": 1,
+      "reference_stack_overflow": true,
+      "reference_matches_finite_closure": false,
+      "reference_copy": {
+        "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial/V2016-cross-cycle.accdb",
+        "bytes": 1040384,
+        "sha256": "dda43690cef6f64acfac8b317eae0a9751a4a3451e0293d31af659b985edb4db"
+      },
+      "typed_constraint_coverage_refusal_no_stdout_or_candidate": true
+    },
+    {
+      "profile": "V2019",
+      "case": "chain-one",
+      "seed_table": "ChainRoot",
+      "seed_order": [
+        1
+      ],
+      "candidate_status": 0,
+      "matches": true,
+      "reference_action_status": 0,
+      "reference_stack_overflow": false,
+      "reference_matches_finite_closure": true,
+      "reference_copy": {
+        "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial/V2019-chain-one.accdb",
+        "bytes": 1110016,
+        "sha256": "4400acdbab2d35115400625a4e29411c7b16fa437593ac9b61fd577b349be9ed"
+      },
+      "candidate": {
+        "path": ".cache/ace16-cascading-delete-originals-initial-20261026/V2019-chain-one.accdb",
+        "bytes": 1110016,
+        "sha256": "a4800f0fd6a9c1c1e05f7346458bfff59db13124e59d38708687633b88a5323f"
+      },
+      "deleted_roots": 5,
+      "public_typed_rows_locations_logical_key_order_agree": true,
+      "original_record_bodies_preserved": 121,
+      "root_leaves_full_original_key_row_filter_checked": 44,
+      "all_protected_bytes_preserved": true
+    },
+    {
+      "profile": "V2019",
+      "case": "chain-two",
+      "seed_table": "ChainRoot",
+      "seed_order": [
+        1,
+        2
+      ],
+      "candidate_status": 0,
+      "matches": true,
+      "reference_action_status": 0,
+      "reference_stack_overflow": false,
+      "reference_matches_finite_closure": true,
+      "reference_copy": {
+        "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial/V2019-chain-two.accdb",
+        "bytes": 1110016,
+        "sha256": "60c3a780a3080a494225e99fa38c5b440d1ef027406e677c5da13169ef2e5df3"
+      },
+      "candidate": {
+        "path": ".cache/ace16-cascading-delete-originals-initial-20261026/V2019-chain-two.accdb",
+        "bytes": 1110016,
+        "sha256": "c03e812e1009e9b35ca9a863323e1f3a88c16aa4a8b3009f2372f722c52680e1"
+      },
+      "deleted_roots": 8,
+      "public_typed_rows_locations_logical_key_order_agree": true,
+      "original_record_bodies_preserved": 121,
+      "root_leaves_full_original_key_row_filter_checked": 44,
+      "all_protected_bytes_preserved": true
+    },
+    {
+      "profile": "V2019",
+      "case": "diamond-one",
+      "seed_table": "DiamondRoot",
+      "seed_order": [
+        1
+      ],
+      "candidate_status": 0,
+      "matches": true,
+      "reference_action_status": 0,
+      "reference_stack_overflow": false,
+      "reference_matches_finite_closure": true,
+      "reference_copy": {
+        "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial/V2019-diamond-one.accdb",
+        "bytes": 1110016,
+        "sha256": "b28adfd5280d8d600200c91454b95149ae421a4368f92ffd93b981351fd687ac"
+      },
+      "candidate": {
+        "path": ".cache/ace16-cascading-delete-originals-initial-20261026/V2019-diamond-one.accdb",
+        "bytes": 1110016,
+        "sha256": "035ae193e562cc617685a70d4cfdaf798f4368a1833cba81aa8f93ffe317c7c5"
+      },
+      "deleted_roots": 7,
+      "public_typed_rows_locations_logical_key_order_agree": true,
+      "original_record_bodies_preserved": 121,
+      "root_leaves_full_original_key_row_filter_checked": 44,
+      "all_protected_bytes_preserved": true
+    },
+    {
+      "profile": "V2019",
+      "case": "diamond-two",
+      "seed_table": "DiamondRoot",
+      "seed_order": [
+        1,
+        2
+      ],
+      "candidate_status": 0,
+      "matches": true,
+      "reference_action_status": 0,
+      "reference_stack_overflow": false,
+      "reference_matches_finite_closure": true,
+      "reference_copy": {
+        "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial/V2019-diamond-two.accdb",
+        "bytes": 1110016,
+        "sha256": "14b7476997b133e2035e7e7250b879ff1e06d94c9c02ae2ea44b101fed6c7501"
+      },
+      "candidate": {
+        "path": ".cache/ace16-cascading-delete-originals-initial-20261026/V2019-diamond-two.accdb",
+        "bytes": 1110016,
+        "sha256": "be454678f10dd201ebe6d38fa669d100179b8b959ae4a60d206a0af07d1cca99"
+      },
+      "deleted_roots": 12,
+      "public_typed_rows_locations_logical_key_order_agree": true,
+      "original_record_bodies_preserved": 121,
+      "root_leaves_full_original_key_row_filter_checked": 44,
+      "all_protected_bytes_preserved": true
+    },
+    {
+      "profile": "V2019",
+      "case": "diamond-reversed",
+      "seed_table": "DiamondRoot",
+      "seed_order": [
+        2,
+        1
+      ],
+      "candidate_status": 0,
+      "matches": true,
+      "reference_action_status": 0,
+      "reference_stack_overflow": false,
+      "reference_matches_finite_closure": true,
+      "reference_copy": {
+        "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial/V2019-diamond-reversed.accdb",
+        "bytes": 1110016,
+        "sha256": "14b7476997b133e2035e7e7250b879ff1e06d94c9c02ae2ea44b101fed6c7501"
+      },
+      "candidate": {
+        "path": ".cache/ace16-cascading-delete-originals-initial-20261026/V2019-diamond-reversed.accdb",
+        "bytes": 1110016,
+        "sha256": "be454678f10dd201ebe6d38fa669d100179b8b959ae4a60d206a0af07d1cca99"
+      },
+      "deleted_roots": 12,
+      "public_typed_rows_locations_logical_key_order_agree": true,
+      "original_record_bodies_preserved": 121,
+      "root_leaves_full_original_key_row_filter_checked": 44,
+      "all_protected_bytes_preserved": true
+    },
+    {
+      "profile": "V2019",
+      "case": "byte-one",
+      "seed_table": "ByteParents",
+      "seed_order": [
+        1
+      ],
+      "candidate_status": 0,
+      "matches": true,
+      "reference_action_status": 0,
+      "reference_stack_overflow": false,
+      "reference_matches_finite_closure": true,
+      "reference_copy": {
+        "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial/V2019-byte-one.accdb",
+        "bytes": 1110016,
+        "sha256": "2441ddb4448191408ebefaead6a9360666c0fb8b21bd25674ed5d3ed096baabb"
+      },
+      "candidate": {
+        "path": ".cache/ace16-cascading-delete-originals-initial-20261026/V2019-byte-one.accdb",
+        "bytes": 1110016,
+        "sha256": "a0bf4abe3e366a474f23738a4239467b6cea280ff5fac79e32f4023b7832e589"
+      },
+      "deleted_roots": 3,
+      "public_typed_rows_locations_logical_key_order_agree": true,
+      "original_record_bodies_preserved": 121,
+      "root_leaves_full_original_key_row_filter_checked": 44,
+      "all_protected_bytes_preserved": true
+    },
+    {
+      "profile": "V2019",
+      "case": "i16-one",
+      "seed_table": "I16Parents",
+      "seed_order": [
+        1
+      ],
+      "candidate_status": 0,
+      "matches": true,
+      "reference_action_status": 0,
+      "reference_stack_overflow": false,
+      "reference_matches_finite_closure": true,
+      "reference_copy": {
+        "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial/V2019-i16-one.accdb",
+        "bytes": 1110016,
+        "sha256": "ba898d950d4b9a3e9cf6e0674a4022505464d0cddc8145d0fb4412fc7b6f88dd"
+      },
+      "candidate": {
+        "path": ".cache/ace16-cascading-delete-originals-initial-20261026/V2019-i16-one.accdb",
+        "bytes": 1110016,
+        "sha256": "e278115032be5b95789d8dfb473a1441ebd335353def55e02ca841f134b23a48"
+      },
+      "deleted_roots": 3,
+      "public_typed_rows_locations_logical_key_order_agree": true,
+      "original_record_bodies_preserved": 121,
+      "root_leaves_full_original_key_row_filter_checked": 44,
+      "all_protected_bytes_preserved": true
+    },
+    {
+      "profile": "V2019",
+      "case": "i32-one",
+      "seed_table": "I32Parents",
+      "seed_order": [
+        1
+      ],
+      "candidate_status": 0,
+      "matches": true,
+      "reference_action_status": 0,
+      "reference_stack_overflow": false,
+      "reference_matches_finite_closure": true,
+      "reference_copy": {
+        "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial/V2019-i32-one.accdb",
+        "bytes": 1110016,
+        "sha256": "528730042040825bf8ab65a1ea0bcf6f99ef6652cd8de916355c222cf36f7166"
+      },
+      "candidate": {
+        "path": ".cache/ace16-cascading-delete-originals-initial-20261026/V2019-i32-one.accdb",
+        "bytes": 1110016,
+        "sha256": "2e20ffa42d49270d3cbfc85e4a115dc571d72fb0de878b7584a27a19df4f8240"
+      },
+      "deleted_roots": 3,
+      "public_typed_rows_locations_logical_key_order_agree": true,
+      "original_record_bodies_preserved": 121,
+      "root_leaves_full_original_key_row_filter_checked": 44,
+      "all_protected_bytes_preserved": true
+    },
+    {
+      "profile": "V2019",
+      "case": "i64-one",
+      "seed_table": "I64Parents",
+      "seed_order": [
+        1
+      ],
+      "candidate_status": 0,
+      "matches": true,
+      "reference_action_status": 0,
+      "reference_stack_overflow": false,
+      "reference_matches_finite_closure": true,
+      "reference_copy": {
+        "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial/V2019-i64-one.accdb",
+        "bytes": 1110016,
+        "sha256": "50c83ec85c78e3a2bc97cd605c47ce0d9fa2ff9b2856c4851fdee52eed5789b8"
+      },
+      "candidate": {
+        "path": ".cache/ace16-cascading-delete-originals-initial-20261026/V2019-i64-one.accdb",
+        "bytes": 1110016,
+        "sha256": "cbff3b555c1937b330ec3f7bb54ddaa45693e15cdfc254d2c6b915aa1d3190c4"
+      },
+      "deleted_roots": 3,
+      "public_typed_rows_locations_logical_key_order_agree": true,
+      "original_record_bodies_preserved": 121,
+      "root_leaves_full_original_key_row_filter_checked": 44,
+      "all_protected_bytes_preserved": true
+    },
+    {
+      "profile": "V2019",
+      "case": "currency-one",
+      "seed_table": "CurrencyParents",
+      "seed_order": [
+        1
+      ],
+      "candidate_status": 0,
+      "matches": true,
+      "reference_action_status": 0,
+      "reference_stack_overflow": false,
+      "reference_matches_finite_closure": true,
+      "reference_copy": {
+        "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial/V2019-currency-one.accdb",
+        "bytes": 1110016,
+        "sha256": "aec7f88ea5d496d62676a3711bf4306bc5ba13fd31c6d5d9e84b82fa862b3881"
+      },
+      "candidate": {
+        "path": ".cache/ace16-cascading-delete-originals-initial-20261026/V2019-currency-one.accdb",
+        "bytes": 1110016,
+        "sha256": "2e8c033c5744282df85db6505f817e9ace933432a1bf391936f321581393c739"
+      },
+      "deleted_roots": 3,
+      "public_typed_rows_locations_logical_key_order_agree": true,
+      "original_record_bodies_preserved": 121,
+      "root_leaves_full_original_key_row_filter_checked": 44,
+      "all_protected_bytes_preserved": true
+    },
+    {
+      "profile": "V2019",
+      "case": "guid-one",
+      "seed_table": "GuidParents",
+      "seed_order": [
+        1
+      ],
+      "candidate_status": 0,
+      "matches": true,
+      "reference_action_status": 0,
+      "reference_stack_overflow": false,
+      "reference_matches_finite_closure": true,
+      "reference_copy": {
+        "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial/V2019-guid-one.accdb",
+        "bytes": 1110016,
+        "sha256": "82215798979559a7690f5ac772deaa598b17e0998b9460f896441c6966a34ccc"
+      },
+      "candidate": {
+        "path": ".cache/ace16-cascading-delete-originals-initial-20261026/V2019-guid-one.accdb",
+        "bytes": 1110016,
+        "sha256": "81396ce6930692b2147fbe333f46cb595a1b63a68d3f9aa2801e24b74283d2d1"
+      },
+      "deleted_roots": 3,
+      "public_typed_rows_locations_logical_key_order_agree": true,
+      "original_record_bodies_preserved": 121,
+      "root_leaves_full_original_key_row_filter_checked": 44,
+      "all_protected_bytes_preserved": true
+    },
+    {
+      "profile": "V2019",
+      "case": "decimal-one",
+      "seed_table": "DecimalParents",
+      "seed_order": [
+        1
+      ],
+      "candidate_status": 0,
+      "matches": true,
+      "reference_action_status": 0,
+      "reference_stack_overflow": false,
+      "reference_matches_finite_closure": true,
+      "reference_copy": {
+        "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial/V2019-decimal-one.accdb",
+        "bytes": 1110016,
+        "sha256": "9e1915f000874f7c80735c8962ee8bd037f5446f66c03046295b6bb0d3614329"
+      },
+      "candidate": {
+        "path": ".cache/ace16-cascading-delete-originals-initial-20261026/V2019-decimal-one.accdb",
+        "bytes": 1110016,
+        "sha256": "28b5a717a25df2f2e56a457a73f35e043fc9c6c11da55590365e5ba18cb72234"
+      },
+      "deleted_roots": 3,
+      "public_typed_rows_locations_logical_key_order_agree": true,
+      "original_record_bodies_preserved": 121,
+      "root_leaves_full_original_key_row_filter_checked": 44,
+      "all_protected_bytes_preserved": true
+    },
+    {
+      "profile": "V2019",
+      "case": "self-tree",
+      "seed_table": "SelfTree",
+      "seed_order": [
+        1
+      ],
+      "candidate_status": 1,
+      "matches": true,
+      "reference_action_status": 0,
+      "reference_stack_overflow": false,
+      "reference_matches_finite_closure": false,
+      "reference_copy": {
+        "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial/V2019-self-tree.accdb",
+        "bytes": 1110016,
+        "sha256": "699bb070305abeb44745d72747cdaa0817ce70c5ee12073e587b068d6fe6d97b"
+      },
+      "typed_constraint_coverage_refusal_no_stdout_or_candidate": true,
+      "public_returned_success_but_left_dangling_child": {
+        "child_ID": 3,
+        "ParentID": 1
+      }
+    },
+    {
+      "profile": "V2019",
+      "case": "self-loop",
+      "seed_table": "SelfLoop",
+      "seed_order": [
+        1
+      ],
+      "candidate_status": 1,
+      "matches": true,
+      "reference_action_status": 1,
+      "reference_stack_overflow": true,
+      "reference_matches_finite_closure": false,
+      "reference_copy": {
+        "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial/V2019-self-loop.accdb",
+        "bytes": 1110016,
+        "sha256": "509bff43379aa5d8ecab643e7641e745e9ff0375402da1d977631687d7a51296"
+      },
+      "typed_constraint_coverage_refusal_no_stdout_or_candidate": true
+    },
+    {
+      "profile": "V2019",
+      "case": "self-cycle",
+      "seed_table": "SelfCycle",
+      "seed_order": [
+        1
+      ],
+      "candidate_status": 1,
+      "matches": true,
+      "reference_action_status": 1,
+      "reference_stack_overflow": true,
+      "reference_matches_finite_closure": false,
+      "reference_copy": {
+        "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial/V2019-self-cycle.accdb",
+        "bytes": 1110016,
+        "sha256": "509bff43379aa5d8ecab643e7641e745e9ff0375402da1d977631687d7a51296"
+      },
+      "typed_constraint_coverage_refusal_no_stdout_or_candidate": true
+    },
+    {
+      "profile": "V2019",
+      "case": "cross-cycle",
+      "seed_table": "CycleA",
+      "seed_order": [
+        1
+      ],
+      "candidate_status": 1,
+      "matches": true,
+      "reference_action_status": 1,
+      "reference_stack_overflow": true,
+      "reference_matches_finite_closure": false,
+      "reference_copy": {
+        "path": ".cache/ace16-delete-cascade-next-20261026/actions-initial/V2019-cross-cycle.accdb",
+        "bytes": 1110016,
+        "sha256": "509bff43379aa5d8ecab643e7641e745e9ff0375402da1d977631687d7a51296"
+      },
+      "typed_constraint_coverage_refusal_no_stdout_or_candidate": true
+    }
+  ],
+  "boundaries": [
+    "Root-leaf originals only: no new multilevel contraction/cascade qualification.",
+    "No automatic SET_NULL, self/cyclic Cascade or data-macro eligibility; existing normal save paths remain blocked.",
+    "Required genuine parent-primary lookup keys and exact Byte/Int16/Int32/Int64/Currency/GUID/Decimal associations; nullable allNULL child sentinels remain.",
+    "Original per-row public action observations and engineering final-image behavior remain separate; no native SQL mixed-action timing claim.",
+    "Run public scripts from the repository root. Python promotion is byte-identical to the exact executed private paths; accepted raw source pins retain those historical paths."
+  ]
+}

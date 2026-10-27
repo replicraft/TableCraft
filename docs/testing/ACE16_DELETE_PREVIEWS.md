@@ -176,10 +176,12 @@ claim the order or error behavior of SQL or successive mixed-action DELETE calls
 All index, typed map-composition, global union and per-table root/ownership/sibling
 proofs remain required before candidate publication.
 
-Separate fresh public-builder and read-only getter captures cover both ACE16
-profiles, a chain, a diamond, overlapping/reversed seeds and all seven declared
-carrier families; their source and original-file receipts remain a separate
-evidence promotion. Twenty-four acyclic public Jackcess actions matched frozen
+The separate [original-file observations and replay](CASCADE_DELETE_OBSERVATIONS.md)
+cover both ACE16 profiles, a chain, a diamond, overlapping/reversed seeds and all
+seven declared carrier families. The candidate comparison passes 24 complete
+acyclic candidates plus eight typed self/cycle refusals, with independent raw
+preservation checks; this is distinct from the public action outcomes below.
+Twenty-four acyclic public Jackcess actions matched frozen
 original-association models, complete typed rows and logical index orders; NULL
 child sentinels remained. These are independent-reader observations, not native
 Microsoft Access qualification. Separate bounded self probes are contrary evidence:

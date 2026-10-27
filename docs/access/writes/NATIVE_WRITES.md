@@ -71,6 +71,11 @@ apply. Self/cyclic cascades and SET NULL remain refused. This does not enable
 ordinary ACE saves or change the explicit RESTRICT-only batch API. Matching uses
 bounded full scalar snapshots, including unrelated Memo/OLE; see
 [the closed cascade contract](../../testing/ACE16_DELETE_PREVIEWS.md#separate-acyclic-cascading-deletions).
+Its [original-file replay](../../testing/CASCADE_DELETE_OBSERVATIONS.md) now passes
+24 supported acyclic candidates and eight closed-profile refusals. Original
+record bodies, complete surviving keys, typed values and protected bytes are
+checked independently. The public reference's self-tree and stack-overflow
+counterexamples remain separate from those supported action comparisons.
 
 Existing LONG AutoNumber deletion now has an
 [original-file preservation comparison](../../testing/AUTONUMBER_DELETE_OBSERVATIONS.md):

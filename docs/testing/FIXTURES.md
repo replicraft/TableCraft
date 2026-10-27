@@ -9234,3 +9234,34 @@ Originals/companions and source/model/oracle hashes are checked before/after;
 full page maps, getter values and commands stay ignored and hash-pinned.
 This adds no native Access/NLS/save, general query DDL, macro or ordinary write
 qualification and does not rewrite the older 112 corpus's named-source boundary.
+
+## Original acyclic cascade DELETE inputs
+
+Repository-owned [CascadeDeleteFixture.java](CascadeDeleteFixture.java) and its
+[read-only index helper](CascadeDeleteIndexInspection.java) use the existing
+reviewed public Jackcess 5.0.4 JAR, SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+No upstream code or fixture bytes are copied. Fresh ignored originals under
+`.cache/ace16-delete-cascade-next-20261026/` are immutable:
+
+| Original | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Cascade-V2016-before.accdb | 1,040,384 | `dda43690cef6f64acfac8b317eae0a9751a4a3451e0293d31af659b985edb4db` |
+| Cascade-V2019-before.accdb | 1,110,016 | `509bff43379aa5d8ecab643e7641e745e9ff0375402da1d977631687d7a51296` |
+
+Each has 27 inert tables, 121 rows, 44 root-leaf physical indexes and 18 enforced
+Cascade relationships with 36 reciprocal endpoints. Genuine required non-NULL
+parent primaries cover Byte/Int16/Int32/Int64/Currency/GUID/Decimal; nullable child
+sentinels and Unicode Memo/OLE payloads are retained. Expressions are disabled,
+links throw, no properties/AutoNumber are added and metadata flags are not patched.
+
+[Owning observations](CASCADE_DELETE_OBSERVATIONS.md) and the compact
+[reference/candidate receipt](results/ace16-cascading-delete-originals-2026-10-26.json)
+pin generation, helpers, JAR, originals, reference copies and created candidates.
+Public actions are 24 acyclic agreements, two successful self-tree calls leaving a
+dangling child, and six isolated stack overflows. The distinct engineering replay
+is 24 complete candidate agreements plus eight typed self/cycle refusals, 32/32
+controls and 85 commands. All protected bytes, original records, exact key/row
+filters and complete logical index orders pass; 241 immutable pins and 32 requests
+remain unchanged. Raw expanded commands/getters stay ignored. No native Access
+SQL/save, mixed per-row timing, data-macro or self/cycle qualification is claimed.
