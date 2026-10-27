@@ -23,7 +23,10 @@ pub(crate) enum MapRole {
     Owned,
     GlobalFree,
     // Candidate data pages, not a complete free-byte or ownership inventory.
+    #[cfg(feature = "ace16-write-preview")]
     TableFreeSpace,
+    // Column-specific candidate pages, selected through qualified LVAL metadata.
+    LongValueCandidate,
 }
 
 pub(crate) struct MapCell {
@@ -40,7 +43,12 @@ pub(crate) struct RepresentedMap {
 }
 
 impl RepresentedMap {
+    pub(crate) fn kind(&self) -> u8 {
+        self.payload[0]
+    }
+
     /// Retain physical metadata identities for an independent unchanged-page audit.
+    #[cfg(feature = "ace16-write-preview")]
     pub(crate) fn protect_storage<R: NativeReadSource>(
         &self,
         reader: &mut Reader<'_, R>,
@@ -88,7 +96,9 @@ impl RepresentedMap {
         // Public producer/getter bytes establish owner0 for owned usage rows
         // and self-owner1 for the fixed global page1,row0 container.
         let owner = match role {
-            MapRole::Owned | MapRole::TableFreeSpace => OWNED_CONTAINER_OWNER,
+            MapRole::Owned | MapRole::LongValueCandidate => OWNED_CONTAINER_OWNER,
+            #[cfg(feature = "ace16-write-preview")]
+            MapRole::TableFreeSpace => OWNED_CONTAINER_OWNER,
             MapRole::GlobalFree => {
                 if reference != GLOBAL_FREE_REFERENCE {
                     return Err(InspectError::Unsupported);
@@ -138,7 +148,7 @@ impl RepresentedMap {
             }
             _ => return Err(InspectError::Unsupported),
         }
-        if matches!(role, MapRole::Owned | MapRole::TableFreeSpace) {
+        if !matches!(role, MapRole::GlobalFree) {
             // Owned addresses and qualified table candidate addresses are in
             // file. This shares only bitmap grammar/address validation; their
             // membership meanings remain distinct. Global FREE bits may name

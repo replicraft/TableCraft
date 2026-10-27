@@ -66,6 +66,10 @@ pub use indexes::{
 pub use indexes::{IndexConstraintViolation, IndexConstraints};
 mod long_text;
 mod long_value;
+pub use long_value::{
+    LongValueCheck, LongValueCheckStatus, LongValueCounts, LongValueMapReferences,
+    TableLongValueCheck, check_table_long_values,
+};
 mod row_layout;
 pub use indexes::{
     BooleanIndexSelection, ByteIndexSelection, CurrencyIndexSelection, DateTimeIndexSelection,

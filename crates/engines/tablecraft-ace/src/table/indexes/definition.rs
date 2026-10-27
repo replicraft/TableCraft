@@ -27,10 +27,22 @@ const NUMBER_OFFSET: usize = 4;
 const DATA_NUMBER_OFFSET: usize = 8;
 const TYPE_OFFSET: usize = 23;
 
+pub(in crate::table) struct Definitions {
+    pub indexes: Vec<NativeIndex>,
+    pub tail: usize,
+}
+
 pub(super) fn read<R: crate::NativeReadSource>(
     reader: &mut Reader<'_, R>,
     schema: &TableSchema,
 ) -> Result<Vec<NativeIndex>, InspectError> {
+    Ok(read_with_tail(reader, schema)?.indexes)
+}
+
+pub(in crate::table) fn read_with_tail<R: crate::NativeReadSource>(
+    reader: &mut Reader<'_, R>,
+    schema: &TableSchema,
+) -> Result<Definitions, InspectError> {
     let page = definition::read(reader, schema.definition)?;
     let layout = &schema.layout;
     let logical_start = layout.index_start + layout.physical_indexes * PHYSICAL_BYTES;
@@ -132,5 +144,8 @@ pub(super) fn read<R: crate::NativeReadSource>(
         reader.tick()?;
         index.backing_primary = primary_data == Some(index.data_number);
     }
-    Ok(indexes)
+    Ok(Definitions {
+        indexes,
+        tail: position,
+    })
 }

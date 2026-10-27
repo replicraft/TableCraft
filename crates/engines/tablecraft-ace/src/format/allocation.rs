@@ -7,11 +7,9 @@ use crate::InspectError;
 use crate::limits::MAX_MAPPED_PAGES;
 
 mod cursor;
-#[cfg(feature = "ace16-write-preview")]
-mod edit;
+mod represented;
 pub(crate) use cursor::{PageCursor, PageMembership};
-#[cfg(feature = "ace16-write-preview")]
-pub(crate) use edit::{GLOBAL_FREE_REFERENCE, MapCell, MapRole, RepresentedMap};
+pub(crate) use represented::{GLOBAL_FREE_REFERENCE, MapCell, MapRole, RepresentedMap};
 
 const INLINE_MAP: u8 = 0;
 const INDIRECT_MAP: u8 = 1;

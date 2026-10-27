@@ -1,0 +1,333 @@
+{
+  "schema_version": 1,
+  "scope": "Default-build explicit read-only ACE16 column long-value storage checks; no writer or native Access qualification.",
+  "api": "check_table_long_values -> TableLongValueCheck with per-column status, memberships, orphan and sharing counts",
+  "qualified_profile": {
+    "format": "plain unencoded ACE16 codes5/6 subversion0",
+    "columns": "variable Memo/OLE flag2/ext0 declared length0",
+    "column_maps": "qualified inline records; indirect/absent/unknown/historical profiles remain explicit",
+    "sharing": "owned orphans, shared references and overlapping column ownership are not invented corruption"
+  },
+  "source_files": [
+    {
+      "path": "crates/engines/tablecraft-ace/examples/check_long_values.rs",
+      "bytes": 2185,
+      "sha256": "8dfe13bb20eec6439ec7d265bc5d8ccc2782c0aeb21b0d819813a2ff3a093249"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/allocation/represented.rs",
+      "bytes": 10023,
+      "sha256": "0e56f52be43681a5535ecfb5ab8dbc95498245a10f338e5f812dc2a87a757faf"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/allocation.rs",
+      "bytes": 4322,
+      "sha256": "a3d00f707468cbb169e55fffbfa9be946ab9f9d11d944145a117a230b762aa11"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/lib.rs",
+      "bytes": 5996,
+      "sha256": "3afe5ad8be4f9a12d420a44ed7ee6a6858ae9695132e0fff6c027a4886b187de"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/definition.rs",
+      "bytes": 5516,
+      "sha256": "f9e4a1232d6c4017acdad9ce75139c7e6b2714645884d296cf91be8783dd24e9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mod.rs",
+      "bytes": 3332,
+      "sha256": "77996c739291de1dd6a24258944f73c420519e79b865ab139be919c022abbd21"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/long_value/check.rs",
+      "bytes": 13177,
+      "sha256": "24abf6a2bda6cb93c200beea959b24f13f4e3d7a913654b15554d4f7391d38bc"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/long_value/maps.rs",
+      "bytes": 8715,
+      "sha256": "4a1adf2f0e3f91826424500ff2b78d0fef3a0edaec28a7623d463f470b0e7518"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/long_value/model.rs",
+      "bytes": 5495,
+      "sha256": "5338f8a536253ede502774867d45110fcdc02b67910959aee670024268ac39a6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/long_value/trace.rs",
+      "bytes": 1234,
+      "sha256": "3e173bf5dd1c2f2e8d240db408af9d49cbe95728765e15d615a771f1de9be40b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/long_value.rs",
+      "bytes": 6001,
+      "sha256": "8fa397956821729eaa90093c69ad8825c7b87d2983b0c86c4910a6ff08a61642"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mod.rs",
+      "bytes": 4091,
+      "sha256": "bc5901d5e94b36dcc1a10a1fd54afbdae36f8ce3cf6a14c8887adca9c92b62a3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/long_value_storage/boundaries.rs",
+      "bytes": 2489,
+      "sha256": "05cbcc94af2bebd953dd543bf12a110e811a345c6137b343d7c29056ad4132ed"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/long_value_storage/model.rs",
+      "bytes": 4428,
+      "sha256": "4d87f6383348a1c08d7e4adfdb600ce1ad2c23146f3e2e4a824bff54dce7bbad"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/long_value_storage/values.rs",
+      "bytes": 3022,
+      "sha256": "79a73d6924e7c590aa3446f6e08c8901f44a040ba6e57a1b8f00f2a75ebf4d5b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/long_value_storage.rs",
+      "bytes": 1024,
+      "sha256": "1effcab95ec629683493d948ca1ac840acdbd2711e9608e073934d02e50c375c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/long_value_storage_contract/model.rs",
+      "bytes": 5058,
+      "sha256": "ca972cdcec09a5e6c57a694a00189472209aab8ae718e4188f718f51b802aa63"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/long_value_storage_contract/values.rs",
+      "bytes": 4179,
+      "sha256": "080cbfbabb04f72a2deff1ac5cada9213c8a21f8cddb0286aaa44bed447ef7d6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/long_value_storage_contract.rs",
+      "bytes": 217,
+      "sha256": "c60e736518bf8e10d58f9c4f479d1231403d92aac8fbe52e2c1a7cf71f27d65a"
+    },
+    {
+      "path": "docs/access/storage/LONG_VALUE_CHECKS.md",
+      "bytes": 5021,
+      "sha256": "020772d0e8d395314af3d6df868c4e1590859dcf519772af774e3f232ebe76b2"
+    }
+  ],
+  "removed_source": "crates/engines/tablecraft-ace/src/format/allocation/edit.rs",
+  "shared_file_staging": "indexes/mod.rs includes concurrent split work; checker owns only definitions_with_tail re-export. Other concurrent split files and manifest are excluded.",
+  "test_authorship": "Four author integration functions, six root-authored independent literal integration functions, one new unaligned zerocopy golden; existing regressions retained.",
+  "counts": {
+    "distinct_runtime_functions": 148,
+    "new_runtime_functions": 11,
+    "existing_runtime_functions": 137,
+    "compile_fail_documentation": 3,
+    "repeated_default_preview_checker_functions_counted_once": 10
+  },
+  "checks": [
+    {
+      "name": "default checker targets",
+      "command": "cargo test --locked -p tablecraft-ace --test long_value_storage --test long_value_storage_contract",
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/long-value-storage-primary-final-20261027.log",
+        "bytes": 1534,
+        "sha256": "68e5e43a654e7c382c2881f19ea9f157d50c3113a2bc5087b99de9f898ee3d3a"
+      },
+      "passed_functions": 10
+    },
+    {
+      "name": "preview checker repeat",
+      "command": "cargo test --locked -p tablecraft-ace --features ace16-write-preview --test long_value_storage --test long_value_storage_contract",
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/long-value-storage-preview-primary-final-20261027.log",
+        "bytes": 1534,
+        "sha256": "24229b1b250a764745f905b91d7d867fb95d23e63d049b8dbe9f478f7e95ab08"
+      },
+      "passed_functions": 10
+    },
+    {
+      "name": "shared long-value and text decoders",
+      "command": "cargo test --locked -p tablecraft-ace --lib table::long_",
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/long-value-storage-decoder-final-20261027.log",
+        "bytes": 1634,
+        "sha256": "be437673e878a2fcd9374d05ec38ca7aa6474eb98f5c37ee7646f9a166b90de6"
+      },
+      "passed_functions": 12
+    },
+    {
+      "name": "read and index regressions",
+      "command": "cargo test --locked -p tablecraft-ace --test table_pages --test indexes --test binary_indexes",
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/long-value-storage-read-regressions-20261027.log",
+        "bytes": 6381,
+        "sha256": "d791020afdd0022746bd511511c4543bc4404fc10676422ca3e6459b58bd122f"
+      },
+      "passed_functions": 65
+    },
+    {
+      "name": "preview regressions",
+      "command": "cargo test --locked -p tablecraft-ace --features ace16-write-preview --test mutation --test ace16_write_preview --test ace16_delete_contraction_contract --test ace16_internal_chain_contract --test ace16_ignored_delete_contract --test ace16_variable_updates --test ace16_variable_updates_contract",
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/long-value-storage-preview-regressions-20261027.log",
+        "bytes": 7145,
+        "sha256": "cc0cdf35edeaef10cfcdaa46971ede330c768fb950a6e82666af340593fe6687"
+      },
+      "passed_functions": 61
+    },
+    {
+      "name": "default strict",
+      "command": "cargo clippy --locked -p tablecraft-ace --lib --test long_value_storage --test long_value_storage_contract --example check_long_values -- -D warnings",
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/long-value-storage-default-strict-final-20261027.log",
+        "bytes": 183,
+        "sha256": "0554c37425963773fd47d67c82089b23d73677fce8a003225c5cfb3aeecfa294"
+      }
+    },
+    {
+      "name": "minimal default library",
+      "command": "cargo check --locked -p tablecraft-ace --lib --no-default-features",
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/long-value-storage-minimal-final-20261027.log",
+        "bytes": 183,
+        "sha256": "8d7ac6e3302eb29563d1fb08085ef50fe9cfe621b34bce6b2cd642855989dfb8"
+      }
+    },
+    {
+      "name": "compile-fail documentation",
+      "command": "cargo test --locked -p tablecraft-ace --features ace16-write-preview --doc",
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/long-value-storage-doc-final-20261027.log",
+        "bytes": 627,
+        "sha256": "fdf37653f62ab76794d0c2d791fc4db73f8217cb1b64b2604afcea8cd3554bce"
+      },
+      "passed_functions": 3
+    },
+    {
+      "name": "scoped formatting",
+      "command": "rustfmt --edition 2024 --check --config skip_children=true [19 explicitly listed Rust files]",
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/long-value-storage-fmt-final-20261027.log",
+        "bytes": 14,
+        "sha256": "ed163d69a09ddc0ffcbdf126a42d5745a93449fa7a39354788e948b7ac795c04"
+      }
+    },
+    {
+      "name": "final default consumer build",
+      "command": "cargo build --locked -p tablecraft-ace --example check_long_values",
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/long-value-storage-example-build-final-20261027.log",
+        "bytes": 183,
+        "sha256": "12139d98d59fd730d0962cc404882ac7ffb8b48d5749086736cb5603e2fd9aed"
+      }
+    }
+  ],
+  "preserved_attempts": [
+    {
+      "name": "initial default library",
+      "exit_status": 101,
+      "log": {
+        "path": ".cache/long-value-storage-initial-check-20261026.log",
+        "bytes": 1035,
+        "sha256": "68e66b569d794bbb174c2484452786a225a160347fcec401fcd4c944d6bf8a9a"
+      },
+      "observation": "Ambiguous integer type for checked_add and unused import; fixed explicit usize and actual MapCell use."
+    },
+    {
+      "name": "initial default strict",
+      "exit_status": 101,
+      "log": {
+        "path": ".cache/long-value-storage-default-strict-initial-20261027.log",
+        "bytes": 708,
+        "sha256": "7772aabe70abda751f2483afde9d08f8d14682f4cdd2ccda9fcb61206488dd54"
+      },
+      "observation": "needless_option_as_deref in traced decoder; fixed exclusive-branch ownership without suppression."
+    },
+    {
+      "name": "contextual preview strict",
+      "exit_status": 101,
+      "log": {
+        "path": ".cache/long-value-storage-preview-strict-final-20261027.log",
+        "bytes": 4443,
+        "sha256": "2b2c82cb6ce115877246f2a2d7b7d615e783f8a51f436f914462118db10c19aa"
+      },
+      "observation": "Eight too_many_arguments diagnostics in concurrent index-split work. No checker diagnostic; clean preview strict deferred to the owning peer after Cargo handoff."
+    },
+    {
+      "name": "initial repeated nine tests",
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/long-value-storage-primary-initial-20261026.log",
+        "bytes": 1497,
+        "sha256": "1669dd2b91845d1d78d3003c6488cde6cb4df281b92f982702f0d0296e69c18c"
+      },
+      "observation": "Author four plus original independent five passed; parent ran the same nine separately. Repeats are not added to distinct counts."
+    }
+  ],
+  "original_output_checks": {
+    "fixed_cases": 60,
+    "column_reports_per_run": 120,
+    "initial_attempt": "60/60 first attempt; all source inputs unchanged",
+    "final_attempt": "Same 60 selectors and independently captured expected reports;60/60;inputs unchanged",
+    "claim": "Read-only checks of saved public-Jackcess outputs, not new UPDATE actions or Microsoft Access execution",
+    "artifacts": [
+      {
+        "path": ".cache/long-value-storage-check-initial-20261026/consumer-build.json",
+        "bytes": 462,
+        "sha256": "8407c5aff10b27690b0446ee6facba7bcdecd6dc045e0a4e56551457e15714d3"
+      },
+      {
+        "path": ".cache/long-value-storage-check-initial-20261026/consumer-build-final.json",
+        "bytes": 476,
+        "sha256": "e6c85a85375897377cb639564660784f38d637cb9bbbc2a451afbcc1574964bf"
+      },
+      {
+        "path": ".cache/long-value-storage-check-initial-20261026/consumer-build-source-before.json",
+        "bytes": 66891,
+        "sha256": "8e6642a5f3829bda3d204e25a29458f550aca45c221f3fc3f1a124b1526eac9c"
+      },
+      {
+        "path": ".cache/long-value-storage-check-initial-20261026/consumer-build-final-source-before.json",
+        "bytes": 67271,
+        "sha256": "4243e34699517415c27dce3cb9c540143448cd34cf43968b2554fe942d8a2a7f"
+      },
+      {
+        "path": ".cache/long-value-storage-check-initial-20261026/check_saved_outputs.py",
+        "bytes": 4586,
+        "sha256": "b7020dc0b502106a952edcd5b6acaffa2990f6a5a4b94e5cb19ea3e4356677bf"
+      },
+      {
+        "path": ".cache/long-value-storage-check-initial-20261026/check_saved_outputs_final.py",
+        "bytes": 4590,
+        "sha256": "21105b24b38c7d531d5de858d356f23697ac05c98cf02db97a028253634c7606"
+      },
+      {
+        "path": ".cache/long-value-storage-check-originals-initial-20261026/report.json",
+        "bytes": 158694,
+        "sha256": "d271bcbd0653952827c30a78598e86d17aa518a611ea0d2d72f34428c027b027"
+      },
+      {
+        "path": ".cache/long-value-storage-check-originals-final-20261027/report.json",
+        "bytes": 158344,
+        "sha256": "1c1d826d763e17e418191b315966bee21861347717e8ad1c370b24db9de6a998"
+      },
+      {
+        "path": ".cache/long-value-storage-check-originals-initial-20261026.log",
+        "bytes": 51,
+        "sha256": "021e12dafef03cc076aaf9669f1bf22d9a1391edf3e15ecf1be66612d112c5e6"
+      },
+      {
+        "path": ".cache/long-value-storage-check-originals-final-20261027.log",
+        "bytes": 51,
+        "sha256": "021e12dafef03cc076aaf9669f1bf22d9a1391edf3e15ecf1be66612d112c5e6"
+      }
+    ]
+  },
+  "limits": "No constraint, macro, retirement, exclusive ownership, general indirect column-map, journal or native-save authority. Ordinary unsupported-profile reads retain existing behavior."
+}
