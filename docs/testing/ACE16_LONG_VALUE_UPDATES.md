@@ -202,5 +202,7 @@ that raw bytes for a compression-eligible request, compressed bytes for a raw
 field, and compression above 1,024 units fail with `Preservation`. Allocation/map
 replay remains independently derived from actual appended lengths and placement
 history. Existing property/index/history, ownership, old-chain and macro gates
-remain required. Original-file candidate qualification for this new compressed
-profile is still pending; the completed raw 60-case acceptance remains separate.
+remain required. The [original-file compressed replay](COMPRESSED_MEMO_ACCEPTANCE_OBSERVATIONS.md)
+matches 132 complete candidate images/getters and 16 typed atomic refusals.
+Native Access qualification remains pending; the raw 60-case acceptance remains
+separate.

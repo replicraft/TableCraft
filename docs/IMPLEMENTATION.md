@@ -72,8 +72,12 @@ extended shapes remain refused. The
 [compressed implementation record](testing/results/ace16-compressed-memo-native-2026-10-27.json)
 passes 68 distinct runtime functions, including eight new functions, three
 compile-fail checks, scoped feature/default strict checks, minimal compilation
-and formatting. Actual original-file compressed candidate acceptance remains a
-separate committed-consumer gate.
+and formatting. Its [first original-file candidate replay](testing/COMPRESSED_MEMO_ACCEPTANCE_OBSERVATIONS.md)
+now matches all 148 frozen controls: 132 exact complete images/getter results and
+sixteen typed atomic refusals for lossy leading-FEFF requests. The source strings,
+metadata, selectors and budgets are unchanged; no public writer action is rerun.
+The sixteen refusals are distinct from the public writer's normalization results.
+No semantic no-op or multiple-hint selection is qualified by this corpus.
 
 ## Compressed Memo reference observations
 

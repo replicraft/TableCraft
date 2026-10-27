@@ -9561,3 +9561,19 @@ first-run sources, plans, compiled Git objects, outputs and read-only replay.
 Earlier public reference actions and prior-consumer refusals remain distinct;
 no fixture was regenerated and no actual candidate was retried. This remains an
 engineering Int32 preview, not native Access or normal-save qualification.
+
+### Compressed Memo original-file candidate acceptance
+
+The [first committed-consumer replay](COMPRESSED_MEMO_ACCEPTANCE_OBSERVATIONS.md)
+uses all 148 unchanged controls from the two public observation series: 132
+complete expected-image/getter matches and sixteen typed atomic refusals for
+lossy leading-FEFF requests. It executes 280 native/JVM fixture commands with
+no public UPDATE, generation, retry, selector change or budget change. All
+source/request/artifact manifests remain unchanged. The
+[receipt](results/ace16-compressed-memo-originals-2026-10-27.json) pins the exact
+executed driver, frozen independent model, input histories, compiled Git objects,
+outputs and separate saved-proof verifier. Its 884 before-live-chunk comparisons,
+1,188 map-wire proofs and sixty global free-bit clears match expectations.
+The public writer's sixteen normalized values remain separate observations.
+No-op behavior, multiple-hint ordering, broader map/encoding profiles, normal
+saves and native Access qualification are not established by this corpus.

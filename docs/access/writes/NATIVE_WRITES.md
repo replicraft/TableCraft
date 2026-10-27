@@ -67,8 +67,11 @@ now passes all 60 unchanged raw Memo/OLE controls with complete independent imag
 getter and map proofs. The initial zero-of-60 atomic census refusals and subsequent
 narrow correction remain separately recorded; normal saves stay unavailable.
 The compressed extension's 68 scoped runtime checks pass, including default
-storage checks and reader-valid alternate-encoding forgeries. Its original-file
-candidate acceptance remains a separate committed-consumer qualification.
+storage checks and reader-valid alternate-encoding forgeries. Its
+[first original-file replay](../../testing/COMPRESSED_MEMO_ACCEPTANCE_OBSERVATIONS.md)
+now passes 132 complete candidate images/getters and sixteen exact typed atomic
+refusals for lossy leading-FEFF inputs, without changing selectors or budgets.
+Broader encoding and normal native saves remain unqualified.
 
 The separate [Int32 leaf-split service](../../testing/ACE16_INDEX_SPLITS.md) now
 supports root-leaf and non-root leaf growth through represented EOF index pages.
