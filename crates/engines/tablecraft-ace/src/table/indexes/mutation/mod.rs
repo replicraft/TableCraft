@@ -7,6 +7,12 @@ use super::composite::DecimalValue;
 pub(in crate::table) use super::numeric::NumericKey;
 pub(in crate::table) use kind::MutationKey;
 mod plan;
+#[cfg(feature = "ace16-write-preview")]
+mod split;
+#[cfg(feature = "ace16-write-preview")]
+pub(in crate::table) use plan::splitting_patches;
+#[cfg(feature = "ace16-write-preview")]
+pub(in crate::table) use split::Plan as SplitIndexPlan;
 mod profile;
 mod repack;
 #[cfg(feature = "ace16-write-preview")]

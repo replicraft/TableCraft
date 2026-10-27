@@ -45,6 +45,11 @@ pub(super) struct Tree {
 }
 
 impl Tree {
+    #[cfg(feature = "ace16-write-preview")]
+    pub(super) fn is_leaf(&self) -> bool {
+        self.children.is_empty() && self.height == 0
+    }
+
     pub(super) fn read<P: KeyProfile, const N: usize>(
         image: &NativeImage,
         reader: &mut Reader<'_, std::io::Cursor<&[u8]>>,
