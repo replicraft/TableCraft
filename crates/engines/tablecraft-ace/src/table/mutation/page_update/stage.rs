@@ -8,7 +8,7 @@ use super::{
     space::Space,
 };
 use crate::{
-    InspectError, NativeImage, TableCheck,
+    InspectError, NativeImage, TableCheck, TableSchema,
     format::{page::PAGE_BYTES, reader::Reader, row::reference_page},
     header::check,
     table::{indexes::SlotKeyUpdate, record as native_record, record_layout},
@@ -29,11 +29,15 @@ struct Change<'u> {
 pub(in crate::table::mutation) struct Staged<'u, P> {
     pub plan: P,
     pub space: Space,
+    facts: KeyFacts<'u>,
+}
+
+pub(in crate::table::mutation) struct KeyFacts<'u> {
     columns: Vec<usize>,
     changes: Vec<Change<'u>>,
 }
 
-impl<P: Placement> Staged<'_, P> {
+impl KeyFacts<'_> {
     pub(in crate::table::mutation) fn changed_rows(&self) -> usize {
         self.changes.len()
     }
@@ -67,6 +71,25 @@ impl<P: Placement> Staged<'_, P> {
         }
         Ok(result)
     }
+}
+
+impl<'u, P: Placement> Staged<'u, P> {
+    pub(in crate::table::mutation) fn changed_rows(&self) -> usize {
+        self.facts.changed_rows()
+    }
+
+    pub(in crate::table::mutation) fn keys(
+        &self,
+        column: usize,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<SlotKeyUpdate<'_>>, EditError> {
+        self.facts.keys(column, budget, cancelled)
+    }
+
+    pub(in crate::table::mutation) fn into_parts(self) -> (P, KeyFacts<'u>, Space) {
+        (self.plan, self.facts, self.space)
+    }
 
     pub(in crate::table::mutation) fn audit(
         &self,
@@ -77,7 +100,7 @@ impl<P: Placement> Staged<'_, P> {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
         self.plan.audit(budget, cancelled)?;
-        for change in &self.changes {
+        for change in &self.facts.changes {
             check(budget, cancelled)?;
             let after = self.plan.target(change.target.clone(), budget, cancelled)?;
             if after != change.record {
@@ -127,7 +150,7 @@ pub(in crate::table::mutation) fn build_with<'u, P: Placement>(
 ) -> Result<Staged<'u, P>, EditError> {
     let schema = structural.schema();
     let captured = roots::capture(image, schema, updates, budget, cancelled)?;
-    let space = Space::capture(image, schema, &captured.owned, budget, cancelled)?;
+    let space = plan.capture_space(image, schema, &captured.owned, budget, cancelled)?;
     budget
         .charge_allocation(schema.columns.len() as u64, size_of::<usize>() as u64)
         .map_err(InspectError::from)?;
@@ -230,13 +253,23 @@ pub(in crate::table::mutation) fn build_with<'u, P: Placement>(
     Ok(Staged {
         plan,
         space,
-        columns,
-        changes,
+        facts: KeyFacts { columns, changes },
     })
 }
 
 /// Real placement consumers share checked roots, record serialization and keys.
 pub(in crate::table::mutation) trait Placement {
+    fn capture_space(
+        &mut self,
+        image: &NativeImage,
+        schema: &TableSchema,
+        owned: &[u32],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Space, EditError> {
+        Space::capture(image, schema, owned, budget, cancelled)
+    }
+
     fn apply(
         &mut self,
         image: &NativeImage,

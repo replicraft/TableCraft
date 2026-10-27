@@ -8,7 +8,10 @@ use crate::{
         reader::Reader,
         row::{reference_page, reference_slot},
     },
-    table::mutation::map_authority::{self, Owner},
+    table::mutation::{
+        CertifiedData,
+        map_authority::{self, Owner},
+    },
 };
 use std::io::Cursor;
 
@@ -38,8 +41,50 @@ struct Promoted {
 #[derive(Default)]
 pub(super) struct Expected {
     edits: Vec<Byte>,
+    data_offsets: Vec<usize>,
     promoted: Vec<Promoted>,
     reservations: Vec<(u32, u32)>,
+}
+
+pub(super) fn seed(
+    image: &NativeImage,
+    data: &CertifiedData<'_>,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<Expected, EditError> {
+    data.require_source(image)?;
+    let mut expected = Expected::default();
+    for (offset, before, after) in data.edits() {
+        reader.tick()?;
+        reader.work(expected.edits.len())?;
+        if image.as_bytes().get(offset) != Some(&before)
+            || expected.edits.iter().any(|prior| prior.offset == offset)
+        {
+            return Err(EditError::Preservation);
+        }
+
+        reader
+            .budget
+            .charge_allocation(1, (size_of::<Byte>() + size_of::<usize>()) as u64)
+            .map_err(InspectError::from)?;
+        expected
+            .edits
+            .try_reserve(1)
+            .map_err(|_| InspectError::Allocation)?;
+        expected
+            .data_offsets
+            .try_reserve(1)
+            .map_err(|_| InspectError::Allocation)?;
+        expected.edits.push(Byte {
+            offset,
+            before,
+            after,
+        });
+        expected.data_offsets.push(offset);
+    }
+
+    // DATA membership must never participate in late IndexOwned promotion.
+    // Only independent index reserve() calls populate reservations below.
+    Ok(expected)
 }
 
 fn bit(
@@ -157,6 +202,14 @@ pub(super) fn reserve(
                     .offset
                     .checked_add(original.data.len())
                     .ok_or(EditError::Preservation)?;
+                reader.work(expected.data_offsets.len())?;
+                if expected
+                    .data_offsets
+                    .iter()
+                    .any(|offset| original.offset <= *offset && *offset < end)
+                {
+                    return Err(EditError::Preservation);
+                }
                 reader.work(expected.edits.len())?;
                 expected
                     .edits
@@ -296,6 +349,61 @@ pub(super) fn finish(
             }
         }
     }
+    Ok(())
+}
+
+pub(super) fn cover_suffix(
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+    expected: &Expected,
+    data: &CertifiedData<'_>,
+    end: u32,
+) -> Result<(), EditError> {
+    let count = data
+        .pages()
+        .len()
+        .checked_add(expected.reservations.len())
+        .and_then(|count| count.checked_add(expected.promoted.len()))
+        .ok_or(EditError::Preservation)?;
+    let original = reader.header.page_count();
+    if usize::try_from(end.checked_sub(original).ok_or(EditError::Preservation)?)
+        .map_err(|_| EditError::Preservation)?
+        != count
+    {
+        return Err(EditError::Preservation);
+    }
+
+    reader
+        .budget
+        .charge_allocation(count as u64, size_of::<u32>() as u64)
+        .map_err(InspectError::from)?;
+    let mut purposes = Vec::new();
+    purposes
+        .try_reserve_exact(count)
+        .map_err(|_| InspectError::Allocation)?;
+    for &number in data.pages() {
+        reader.tick()?;
+        purposes.push(number);
+    }
+    for &(_, number) in &expected.reservations {
+        reader.tick()?;
+        purposes.push(number);
+    }
+    for promotion in &expected.promoted {
+        reader.tick()?;
+        purposes.push(promotion.bitmap_page);
+    }
+
+    let levels = count.checked_ilog2().unwrap_or(0) as usize + 1;
+    reader.work(count.saturating_mul(levels))?;
+    purposes.sort_unstable();
+    for (position, number) in purposes.into_iter().enumerate() {
+        reader.tick()?;
+        let position = u32::try_from(position).map_err(|_| EditError::Preservation)?;
+        if original.checked_add(position) != Some(number) {
+            return Err(EditError::Preservation);
+        }
+    }
+
     Ok(())
 }
 

@@ -1,10 +1,10 @@
 //! Separate alternative-owned-page and represented-EOF forwarding previews.
-mod audit;
-mod authority;
+pub(super) mod audit;
+pub(super) mod authority;
 mod finish;
-mod map_audit;
-mod maps;
-mod placement;
+pub(super) mod map_audit;
+pub(super) mod maps;
+pub(super) mod placement;
 mod record_proof;
 
 use super::{

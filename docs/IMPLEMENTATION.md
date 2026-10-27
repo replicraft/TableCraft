@@ -372,6 +372,24 @@ those certified bytes rather than staged target ranges. Semantic no-ops remain
 byte-identical. This strengthens the working standalone service; combined
 DATA/index allocation and production saves remain unfinished.
 
+## Combined variable DATA and encoded-index growth
+
+The separate
+[`preview_ace16_variable_split_updates` service](testing/ACE16_VARIABLE_INDEX_SPLITS.md)
+now combines variable Text/Binary records and qualified encoded index splits.
+DATA placement and index/bitmap allocation consume one append state and one
+map-byte ledger. Final certification rebinds original requests, proves DATA
+placement, then continues the independent index audit from the derived DATA end.
+Certificates remain bound to the actual original and composed candidate.
+
+Complete metadata discovery protects all definition chains and map storage,
+including historical column roles. A protected highest candidate refuses before
+any failed-fit hint clear. Literal Binary-255 complete images cover shared global
+bytes, immediate and late index-map promotion and original logical ROW identity.
+Actual maximum-width Text/Binary originals await the committed-consumer replay.
+This remains an explicit non-journalable engineering preview, with no normal
+save, macro or native Access qualification claim.
+
 ## Index-owned map promotion
 
 The optional engineering split services now support

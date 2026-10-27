@@ -1,10 +1,15 @@
 //! Independent placement replay derives map authority without planner masks.
+mod certified;
 #[cfg(test)]
 mod tests;
 
+pub(in crate::table) use certified::CertifiedData;
+pub(in crate::table::mutation) use certified::certify;
+
 use super::super::EditError;
+use super::super::variable_split::metadata::Metadata;
 use super::authority::ChangedRecord;
-use super::placement::Plan;
+use super::placement::{DataView, Plan};
 use crate::{
     InspectError, NativeImage, TableSchema,
     format::{
@@ -14,12 +19,12 @@ use crate::{
         layout::TABLE_FREE_MAP_OFFSET,
         page::{DATA_SIGNATURE, OWNER_OFFSET, PAGE_BYTES},
         reader::{Reader, row_count, row_range},
-        row::{MAX_SLOTS, SLOT_BYTES, slot_offset},
+        row::{MAX_SLOTS, SLOT_BYTES, reference_page, slot_offset},
     },
     header::check,
 };
 use std::io::Cursor;
-use tablecraft_core::limits::ResourceBudget;
+use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const FREE_OFFSET: usize = DATA_SIGNATURE.len();
 
@@ -34,6 +39,12 @@ struct ExpectedByte {
     offset: usize,
     before: u8,
     after: u8,
+}
+
+struct Replay {
+    end: u32,
+    edits: Vec<ExpectedByte>,
+    data_pages: Vec<u32>,
 }
 
 fn expect(
@@ -91,6 +102,19 @@ pub(super) fn prove(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
+    let replay = replay(image, schema, plan.view(), records, None, budget, cancelled)?;
+    compare(&replay.edits, plan, budget, cancelled)
+}
+
+fn replay(
+    image: &NativeImage,
+    schema: &TableSchema,
+    plan: DataView<'_>,
+    records: &[ChangedRecord],
+    metadata: Option<&Metadata>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Replay, EditError> {
     if plan.events.len() != records.len() || plan.append.owner != schema.definition {
         return Err(EditError::Preservation);
     }
@@ -103,8 +127,8 @@ pub(super) fn prove(
         cancelled,
         reads: 0,
     };
-    let metadata = definition::read(&mut reader, schema.definition)?;
-    let hint_reference = u32_at(&metadata, TABLE_FREE_MAP_OFFSET)?;
+    let definition_bytes = definition::read(&mut reader, schema.definition)?;
+    let hint_reference = u32_at(&definition_bytes, TABLE_FREE_MAP_OFFSET)?;
     let owned = RepresentedMap::read(&mut reader, schema.layout.usage, MapRole::Owned)?;
     let hint = RepresentedMap::read(&mut reader, hint_reference, MapRole::TableFreeSpace)?;
     let global = RepresentedMap::read(&mut reader, GLOBAL_FREE_REFERENCE, MapRole::GlobalFree)?;
@@ -121,6 +145,7 @@ pub(super) fn prove(
         .try_reserve_exact(original.len() + plan.events.len())
         .map_err(|_| InspectError::Allocation)?;
     let mut expected = Vec::new();
+    let mut data_pages = Vec::new();
 
     for number in original {
         reader.tick()?;
@@ -155,6 +180,16 @@ pub(super) fn prove(
     let mut next_eof = original_eof;
     for (event, record) in plan.events.iter().zip(records) {
         reader.tick()?;
+        if let Some(metadata) = metadata {
+            metadata.require_data_page(
+                reference_page(record.reference),
+                reader.budget,
+                cancelled,
+            )?;
+            let final_page = u32::try_from(record.final_offset / PAGE_BYTES)
+                .map_err(|_| EditError::Preservation)?;
+            metadata.require_data_page(final_page, reader.budget, cancelled)?;
+        }
         if event.root != record.reference
             || event.word != record.root_word
             || event.root_range != record.root_range
@@ -189,6 +224,11 @@ pub(super) fn prove(
         let mut destination = None;
         if let Some(position) = highest {
             let state = &mut states[position];
+            if let Some(metadata) = metadata {
+                // A metadata-bearing highest hint is a refusal, never a
+                // capacity failure which grants permission to clear its bit.
+                metadata.require_data_page(state.number, reader.budget, cancelled)?;
+            }
             let free = state
                 .end
                 .checked_sub(slot_offset(state.count))
@@ -239,6 +279,14 @@ pub(super) fn prove(
                 end: PAGE_BYTES,
                 hinted: true,
             });
+            reader
+                .budget
+                .charge_allocation(1, size_of::<u32>() as u64)
+                .map_err(InspectError::from)?;
+            data_pages
+                .try_reserve(1)
+                .map_err(|_| InspectError::Allocation)?;
+            data_pages.push(number);
             next_eof = next_eof.checked_add(1).ok_or(EditError::Preservation)?;
             states.len() - 1
         };
@@ -257,7 +305,8 @@ pub(super) fn prove(
         state.count += 1;
         state.end = start;
     }
-    if plan.append.length / PAGE_BYTES != next_eof as usize
+    if !plan.length.is_multiple_of(PAGE_BYTES)
+        || plan.length / PAGE_BYTES != next_eof as usize
         || states.len() != plan.maps.owned_pages.len()
     {
         return Err(EditError::Preservation);
@@ -268,11 +317,28 @@ pub(super) fn prove(
             return Err(EditError::Preservation);
         }
     }
+    check(reader.budget, reader.cancelled)?;
+    Ok(Replay {
+        end: next_eof,
+        edits: expected,
+        data_pages,
+    })
+}
+
+fn compare(
+    expected: &[ExpectedByte],
+    plan: &Plan,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
     if expected.len() != plan.append.map_edits.len() {
         return Err(EditError::Preservation);
     }
     for byte in expected {
-        reader.work(plan.append.map_edits.len())?;
+        check(budget, cancelled)?;
+        budget
+            .charge(Resource::Steps, plan.append.map_edits.len() as u64)
+            .map_err(InspectError::from)?;
         let actual = plan
             .append
             .map_edits
@@ -285,6 +351,6 @@ pub(super) fn prove(
     }
     // Header/slot geometry is also independently checked against complete page
     // bytes. This replay only grants exact map transitions, never page contents.
-    check(reader.budget, reader.cancelled)?;
+    check(budget, cancelled)?;
     Ok(())
 }

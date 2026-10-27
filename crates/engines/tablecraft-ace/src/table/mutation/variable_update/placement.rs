@@ -3,6 +3,7 @@ use super::super::{
     EditError, WriteBlocker,
     append::State,
     page_update::{roots::Root, space::Space, stage::Placement},
+    variable_split::metadata::Metadata,
 };
 use super::maps::Maps;
 use crate::{
@@ -25,29 +26,112 @@ const FREE_OFFSET: usize = DATA_SIGNATURE.len();
 const POINTER_BYTES: usize = size_of::<u32>();
 const EMPTY_FREE: usize = PAGE_BYTES - ROW_COUNT_OFFSET - size_of::<u16>();
 
-pub(super) struct Page {
+pub(in crate::table::mutation) struct Page {
     pub number: u32,
     pub before: Vec<u8>,
     pub after: Vec<u8>,
 }
 
-pub(super) struct Event {
-    pub(super) root: u32,
-    pub(super) word: u16,
-    pub(super) root_range: Range<usize>,
-    pub(super) target: Range<usize>,
-    pub(super) appended: Option<u8>,
+pub(in crate::table::mutation) struct Event {
+    pub(in crate::table::mutation) root: u32,
+    pub(in crate::table::mutation) word: u16,
+    pub(in crate::table::mutation) root_range: Range<usize>,
+    pub(in crate::table::mutation) target: Range<usize>,
+    pub(in crate::table::mutation) appended: Option<u8>,
 }
 
-pub(super) struct Plan {
+pub(in crate::table::mutation) struct Plan {
     pub pages: Vec<Page>,
     pub maps: Maps,
     pub append: State,
     pub(super) events: Vec<Event>,
+    metadata: Option<Metadata>,
+}
+
+pub(in crate::table::mutation) struct Data {
+    pub pages: Vec<Page>,
+    pub maps: Maps,
+    pub events: Vec<Event>,
+    pub length: usize,
+}
+
+#[derive(Clone, Copy)]
+pub(in crate::table::mutation) struct DataView<'a> {
+    pub pages: &'a [Page],
+    pub maps: &'a Maps,
+    pub events: &'a [Event],
+    pub append: &'a State,
+    pub length: usize,
+}
+
+impl Data {
+    pub(in crate::table::mutation) fn view<'a>(&'a self, append: &'a State) -> DataView<'a> {
+        DataView {
+            pages: &self.pages,
+            maps: &self.maps,
+            events: &self.events,
+            append,
+            length: self.length,
+        }
+    }
+
+    pub(in crate::table::mutation) fn audit_membership(
+        &self,
+        after: &[u8],
+        schema: &TableSchema,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        self.maps.audit_membership(after, schema, budget, cancelled)
+    }
+}
+
+impl<'a> DataView<'a> {
+    pub(in crate::table::mutation) fn target(
+        self,
+        range: Range<usize>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<&'a [u8], EditError> {
+        check(budget, cancelled)?;
+        budget
+            .charge(Resource::Steps, self.pages.len() as u64)
+            .map_err(InspectError::from)?;
+        let number = range.start / PAGE_BYTES;
+        let page = self
+            .pages
+            .iter()
+            .find(|page| page.number as usize == number)
+            .ok_or(EditError::Preservation)?;
+        let base = number * PAGE_BYTES;
+        page.after
+            .get(range.start - base..range.end - base)
+            .ok_or(EditError::Preservation)
+    }
 }
 
 impl Plan {
-    pub(super) fn capture(
+    pub(in crate::table::mutation) fn view(&self) -> DataView<'_> {
+        DataView {
+            pages: &self.pages,
+            maps: &self.maps,
+            events: &self.events,
+            append: &self.append,
+            length: self.append.length,
+        }
+    }
+
+    pub(in crate::table::mutation) fn into_parts(self) -> (Data, State) {
+        let data = Data {
+            pages: self.pages,
+            maps: self.maps,
+            events: self.events,
+            length: self.append.length,
+        };
+        (data, self.append)
+    }
+
+    pub(in crate::table::mutation) fn capture(
         image: &NativeImage,
         schema: &TableSchema,
         budget: &mut ResourceBudget,
@@ -58,7 +142,20 @@ impl Plan {
             maps: Maps::capture(image, schema, budget, cancelled)?,
             append: State::new(image, schema.definition),
             events: Vec::new(),
+            metadata: None,
         })
+    }
+
+    pub(in crate::table::mutation) fn capture_protected(
+        image: &NativeImage,
+        schema: &TableSchema,
+        metadata: Metadata,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        let mut plan = Self::capture(image, schema, budget, cancelled)?;
+        plan.metadata = Some(metadata);
+        Ok(plan)
     }
 
     fn page(
@@ -144,6 +241,7 @@ impl Plan {
         &mut self,
         image: &NativeImage,
         length: usize,
+        space: &Space,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<usize, EditError> {
@@ -154,6 +252,7 @@ impl Plan {
             .maps
             .candidate(image, &self.append, budget, cancelled)?
         {
+            space.require_metadata_page(number, budget, cancelled)?;
             let position = self.page(image, number, budget, cancelled)?;
             let (count, end) = Self::geometry(&self.pages[position].after)?;
             if count < MAX_SLOTS && length + SLOT_BYTES <= end - slot_offset(count) {
@@ -186,6 +285,21 @@ impl Plan {
 }
 
 impl Placement for Plan {
+    fn capture_space(
+        &mut self,
+        image: &NativeImage,
+        schema: &TableSchema,
+        owned: &[u32],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Space, EditError> {
+        let space = Space::capture(image, schema, owned, budget, cancelled)?;
+        Ok(match self.metadata.take() {
+            Some(metadata) => space.with_metadata(metadata),
+            None => space,
+        })
+    }
+
     fn apply(
         &mut self,
         image: &NativeImage,
@@ -211,7 +325,7 @@ impl Placement for Plan {
             {
                 return Err(EditError::Unsupported(WriteBlocker::RowLayout));
             }
-            let position = self.destination(image, record.len(), budget, cancelled)?;
+            let position = self.destination(image, record.len(), space, budget, cancelled)?;
             let page = &mut self.pages[position];
             let (count, end) = Self::geometry(&page.after)?;
             let slot = u8::try_from(count).map_err(|_| InspectError::Malformed)?;
@@ -286,7 +400,7 @@ impl Placement for Plan {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
-        super::audit::pages(self, budget, cancelled)
+        super::audit::pages(self.view(), budget, cancelled)
     }
 
     fn target(
@@ -295,19 +409,6 @@ impl Placement for Plan {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<&[u8], EditError> {
-        check(budget, cancelled)?;
-        budget
-            .charge(Resource::Steps, self.pages.len() as u64)
-            .map_err(InspectError::from)?;
-        let number = range.start / PAGE_BYTES;
-        let page = self
-            .pages
-            .iter()
-            .find(|page| page.number as usize == number)
-            .ok_or(EditError::Preservation)?;
-        let base = number * PAGE_BYTES;
-        page.after
-            .get(range.start - base..range.end - base)
-            .ok_or(EditError::Preservation)
+        self.view().target(range, budget, cancelled)
     }
 }

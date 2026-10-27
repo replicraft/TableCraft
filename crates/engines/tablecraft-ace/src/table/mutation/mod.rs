@@ -30,9 +30,13 @@ mod split;
 #[cfg(feature = "ace16-write-preview")]
 mod split_slot;
 #[cfg(feature = "ace16-write-preview")]
+mod variable_split;
+#[cfg(feature = "ace16-write-preview")]
 mod variable_update;
 #[cfg(feature = "ace16-write-preview")]
 pub use slot::SlotScalarUpdate;
+#[cfg(feature = "ace16-write-preview")]
+pub(in crate::table) use variable_update::map_audit::CertifiedData;
 
 #[cfg(feature = "ace16-write-preview")]
 pub use delete::{Ace16DeletePreview, RowDelete, TableRowDeletes};

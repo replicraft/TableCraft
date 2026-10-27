@@ -119,3 +119,7 @@ required-features = ["ace16-write-preview"]
 [[example]]
 name = "preview_ace16_split_slot"
 required-features = ["ace16-write-preview"]
+
+[[example]]
+name = "preview_ace16_variable_split"
+required-features = ["ace16-write-preview"]

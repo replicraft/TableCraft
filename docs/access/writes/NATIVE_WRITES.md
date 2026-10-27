@@ -203,6 +203,14 @@ geometry determine exact record lengths and placement/map effects. A staged
 destination cannot authorize a different record size or invented failed fit.
 The existing semantic no-op and retained-padding policies remain intact.
 
+The separate [combined variable/index service](../../testing/ACE16_VARIABLE_INDEX_SPLITS.md)
+now moves the same append state from DATA placement into encoded index growth.
+Its finalizer re-proves original requests and metadata, derives DATA effects,
+then independently continues index allocation and verifies the complete typed
+suffix. Shared global bytes compose once; index-owned promotion never acquires
+DATA or bitmap pages as index members. Literal Binary-255 complete-image controls
+pass. Original-file replay is separate, and ordinary native saves remain closed.
+
 A separate [index-owned map promotion service](../../testing/ACE16_INDEX_MAP_GROWTH.md)
 now extends the same engineering split APIs when an inline map's complete required
 span exceeds its qualified window. It preserves the original map-row extent,
