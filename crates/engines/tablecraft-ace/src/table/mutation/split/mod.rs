@@ -22,11 +22,11 @@ impl NativeImage {
     /// Preview fixed non-NULL Int32 replacements, including bounded recursive index splits.
     ///
     /// A qualified single-Int32 original root leaf may grow into a height-one
-    /// root with two represented EOF index leaves. An existing non-root leaf may
+    /// root with two or more represented EOF index leaves. An existing non-root leaf may
     /// add one left sibling while retaining its right half. Overflowing internal
     /// nodes propagate complete child maxima upward; an overflowing root retains
-    /// its ID and grows one height with two bounded children. Every split half
-    /// must fit within the existing codec, depth and represented-map limits.
+    /// its ID and grows one height. Oversized halves are split again in paid
+    /// deterministic passes within the existing codec, depth and map limits.
     /// Every original gate, final constraint and physical row reference is retained.
     /// Unaffected index bytes remain unchanged; no required cascade executes.
     ///

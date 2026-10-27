@@ -1,5 +1,6 @@
 //! Independent postorder capacity proof, followed by per-height link checks.
-use super::super::super::super::{encoding, repack, tree::Tree};
+mod normalize;
+use super::super::super::super::{encoding, tree::Tree};
 use super::super::super::leaf_entries;
 use super::{Operation, Progress, framing};
 use crate::{
@@ -19,9 +20,16 @@ struct Child {
     maximum: KeyRef,
 }
 
-struct Bound {
-    left: Option<Child>,
-    right: Child,
+enum Payload<'a> {
+    Leaf(&'a [KeyRef]),
+    Branch { children: Vec<Child>, tail: bool },
+}
+
+struct Candidate<'a> {
+    number: u32,
+    height: u8,
+    contents: Payload<'a>,
+    source: framing::Source<'a>,
 }
 
 struct Replay<'a, 'b> {
@@ -59,7 +67,7 @@ pub(super) fn prove(
         levels: std::array::from_fn(|_| Vec::new()),
     };
     let result = replay.walk(operation.tree, true, actual, progress)?;
-    if result.left.is_some() || replay.position != operation.keys.len() {
+    if result.len() != 1 || replay.position != operation.keys.len() {
         return Err(EditError::Preservation);
     }
     for numbers in &replay.levels {
@@ -84,164 +92,43 @@ impl Replay<'_, '_> {
         root: bool,
         actual: &mut Reader<'_, Cursor<&[u8]>>,
         progress: &mut Progress<'_>,
-    ) -> Result<Bound, EditError> {
+    ) -> Result<Vec<Child>, EditError> {
         actual.tick()?;
-        if tree.is_leaf() {
-            return self.leaf(tree, root, actual, progress);
-        }
         let original = raw(self.operation.image, tree.number())?;
-        let tail = IndexHeader::read(original)?.tail.get() != 0;
-        let mut children = Vec::new();
-        for child in tree.children() {
-            let bound = self.walk(child, false, actual, progress)?;
-            if let Some(left) = bound.left {
-                push(&mut children, left, actual)?;
+        let contents = if tree.is_leaf() {
+            if tree.count() == 0 {
+                return Err(EditError::Preservation);
             }
-            push(&mut children, bound.right, actual)?;
-        }
-        let entries = bounds(&children, tail, actual)?;
-        if repack::fits::<_, { encoding::MAX_ENTRY_BYTES }>(
-            original,
-            &entries,
-            self.operation.profile,
-            actual.budget,
-            actual.cancelled,
-        )? {
-            let right = self.branch(
-                &Branch {
-                    number: tree.number(),
-                    height: tree.height(),
-                    children: &children,
-                    tail,
-                    source: framing::Source::Existing(original),
-                },
-                actual,
-            )?;
-            return Ok(Bound { left: None, right });
-        }
-        if children.len() < 2 {
-            return Err(EditError::Preservation);
-        }
-        let middle = children.len() / 2;
-        if root {
-            let height = tree
-                .height()
-                .checked_add(1)
-                .filter(|height| usize::from(*height) < MAX_INDEX_DEPTH)
+            let end = self
+                .position
+                .checked_add(tree.count())
+                .filter(|end| *end <= self.operation.keys.len())
                 .ok_or(EditError::Preservation)?;
-            let right_number = self.allocate(actual, progress)?;
-            let left_number = self.allocate(actual, progress)?;
-            // Allocation is right-first; sibling order remains left-first.
-            let left = self.branch(
-                &Branch {
-                    number: left_number,
-                    height: tree.height(),
-                    children: &children[..middle],
-                    tail: true,
-                    source: framing::Source::Fresh,
-                },
-                actual,
-            )?;
-            let right = self.branch(
-                &Branch {
-                    number: right_number,
-                    height: tree.height(),
-                    children: &children[middle..],
-                    tail: true,
-                    source: framing::Source::Fresh,
-                },
-                actual,
-            )?;
-            let right = self.branch(
-                &Branch {
-                    number: tree.number(),
-                    height,
-                    children: &[left, right],
-                    tail: false,
-                    source: framing::Source::GrownRoot(original),
-                },
-                actual,
-            )?;
-            Ok(Bound { left: None, right })
+            let keys = &self.operation.keys[self.position..end];
+            self.position = end;
+            Payload::Leaf(keys)
         } else {
-            let number = self.allocate(actual, progress)?;
-            let left = self.branch(
-                &Branch {
-                    number,
-                    height: tree.height(),
-                    children: &children[..middle],
-                    tail: true,
-                    source: framing::Source::Fresh,
-                },
-                actual,
-            )?;
-            let right = self.branch(
-                &Branch {
-                    number: tree.number(),
-                    height: tree.height(),
-                    children: &children[middle..],
-                    tail,
-                    source: framing::Source::Existing(original),
-                },
-                actual,
-            )?;
-            Ok(Bound {
-                left: Some(left),
-                right,
-            })
-        }
-    }
-
-    fn leaf(
-        &mut self,
-        tree: &Tree,
-        root: bool,
-        actual: &mut Reader<'_, Cursor<&[u8]>>,
-        progress: &mut Progress<'_>,
-    ) -> Result<Bound, EditError> {
-        if tree.count() == 0 {
-            return Err(EditError::Preservation);
-        }
-        let end = self
-            .position
-            .checked_add(tree.count())
-            .filter(|end| *end <= self.operation.keys.len())
-            .ok_or(EditError::Preservation)?;
-        let keys = &self.operation.keys[self.position..end];
-        self.position = end;
-        let original = raw(self.operation.image, tree.number())?;
-        let entries = leaf_entries(keys, actual.budget, actual.cancelled)?;
-        if repack::fits::<_, { encoding::MAX_ENTRY_BYTES }>(
-            original,
-            &entries,
-            self.operation.profile,
-            actual.budget,
-            actual.cancelled,
-        )? {
-            let right = self.leaf_page(
-                tree.number(),
-                keys,
-                framing::Source::Existing(original),
-                actual,
-            )?;
-            return Ok(Bound { left: None, right });
-        }
-        if root || keys.len() < 2 {
-            return Err(EditError::Preservation);
-        }
-        let middle = keys.len() / 2;
-        let number = self.allocate(actual, progress)?;
-        let left = self.leaf_page(number, &keys[..middle], framing::Source::Fresh, actual)?;
-        let right = self.leaf_page(
-            tree.number(),
-            &keys[middle..],
-            framing::Source::Existing(original),
+            let mut children = Vec::new();
+            for child in tree.children() {
+                for result in self.walk(child, false, actual, progress)? {
+                    push(&mut children, result, actual)?;
+                }
+            }
+            let tail = IndexHeader::read(original)?.tail.get() != 0;
+            Payload::Branch { children, tail }
+        };
+        normalize::finish(
+            self,
+            Candidate {
+                number: tree.number(),
+                height: tree.height(),
+                contents,
+                source: framing::Source::Existing(original),
+            },
+            root,
             actual,
-        )?;
-        Ok(Bound {
-            left: Some(left),
-            right,
-        })
+            progress,
+        )
     }
 
     fn leaf_page(

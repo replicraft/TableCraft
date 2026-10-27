@@ -1,5 +1,9 @@
 //! Independent bounded Jet/ACE reads and offline edit plans. No active content.
 #![deny(missing_docs)]
+
+#[cfg(all(test, feature = "ace16-write-preview"))]
+extern crate self as tablecraft_ace;
+
 mod catalog;
 mod collation;
 pub use collation::{

@@ -40,13 +40,18 @@ overflow propagates upward, and a growing root retains its ID with two bounded
 children and no tail. Sibling chains are maintained at every height.
 
 The common prefix is measured for each actual codec and full row-inclusive
-entry. Balanced entry/child-count halves must each fit. An oversized half
-refuses atomically; repeated splitting of that half is a remaining capability,
-not silently replaced by a different partition policy. In particular, a literal
-600-child descending Int64/Currency parent with a MAX replacement produces a
-299-bound half requiring 4,785 bytes in a 3,616-byte region and refuses. The same
-source with exact integer/scaled value 1 exercises successful parent-only growth.
-Byte/Int16 MAX controls and wide ascending halves fit independently.
+entry. The [repeated-overflow extension](ACE16_REPEATED_INDEX_SPLITS.md) rechecks
+balanced halves until they fit, within existing image/depth/map/caller limits.
+Stable page-order passes retain right IDs and append new left siblings; final
+logical order is distinct from allocation order. Source-original residue and
+fresh zero padding remain separate even when an appended page splits again.
+
+The initial typed slice refused a literal 600-child descending Int64/Currency
+parent with MAX replacement: its 299-bound half needs 4,785 bytes in a 3,616-byte
+region. That exact historical refusal remains preserved. The repeated extension
+now admits the same source/MAX with an independent full-image expectation, while
+retaining its same-source exact-value-1 positive. No source count or field carrier
+was changed to bypass capacity.
 
 The private operation binding retains original borrowed requests and selected
 names. The finalizer rebinds actual native metadata, replays exact row identity,
@@ -97,7 +102,9 @@ wide half. Isolated runtime and capacity diagnostics established the existing
 atomic refusal; the owner retained that exact negative and added the same-source
 value-1 positive. No production change or smaller source was used to satisfy it.
 A private test compile used an obsolete staged-key field, and a helper borrow lint
-was corrected separately; exact initial sources/logs are retained. Diagnostics
+was corrected separately; exact initial sources/logs are retained. The later
+repeated implementation has its own result record and does not rewrite those
+historical outcomes. Diagnostics
 are excluded from accepted function totals.
 
 The separate [source observations](INTEGRAL_INDEX_SPLIT_SOURCE_OBSERVATIONS.md)

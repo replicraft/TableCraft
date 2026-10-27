@@ -1,4 +1,5 @@
 //! Postorder decisions use original leaf counts and complete final child maxima.
+mod normalize;
 use super::super::super::{encoding, repack, tree::Tree};
 use super::super::{Plan, leaf_entries, maps};
 use super::Operation;
@@ -35,11 +36,6 @@ pub(super) struct Arena {
     position: usize,
 }
 
-struct ResultChild {
-    left: Option<usize>,
-    right: usize,
-}
-
 pub(super) fn prepare(
     operation: &Operation<'_>,
     tree: &Tree,
@@ -53,10 +49,10 @@ pub(super) fn prepare(
         position: 0,
     };
     let result = build(operation, tree, true, &mut arena, plan, reader)?;
-    if result.left.is_some() || arena.position != operation.keys.len() {
+    if result.len() != 1 || arena.position != operation.keys.len() {
         return Err(EditError::Preservation);
     }
-    arena.root = result.right;
+    arena.root = result[0];
     Ok(arena)
 }
 
@@ -67,141 +63,80 @@ fn build(
     arena: &mut Arena,
     plan: &mut Plan,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
-) -> Result<ResultChild, EditError> {
+) -> Result<Vec<usize>, EditError> {
     reader.tick()?;
     let original = raw(operation.image, tree.number())?;
-    if tree.is_leaf() {
+    let (contents, maximum) = if tree.is_leaf() {
         let start = arena.position;
         let end = start
             .checked_add(tree.count())
-            .filter(|end| *end <= operation.keys.len())
+            .filter(|end| start < *end && *end <= operation.keys.len())
             .ok_or(EditError::Preservation)?;
         arena.position = end;
-        let entries = leaf_entries(&operation.keys[start..end], reader.budget, reader.cancelled)?;
-        if repack::fits::<_, { encoding::MAX_ENTRY_BYTES }>(
-            original,
-            &entries,
-            operation.profile,
-            reader.budget,
-            reader.cancelled,
-        )? {
-            let right = push_leaf(arena, tree.number(), start..end, operation, reader)?;
-            return Ok(ResultChild { left: None, right });
+        (Contents::Leaf(start..end), operation.keys[end - 1])
+    } else {
+        let mut children = Vec::new();
+        for child in tree.children() {
+            for result in build(operation, child, false, arena, plan, reader)? {
+                push_child(&mut children, result, reader)?;
+            }
         }
-        if root || end - start < 2 {
-            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
-        }
-        let middle = start + (end - start) / 2;
-        let number = allocate(operation, arena, plan, reader)?;
-        let left = push_leaf(arena, number, start..middle, operation, reader)?;
-        let right = push_leaf(arena, tree.number(), middle..end, operation, reader)?;
-        return Ok(ResultChild {
-            left: Some(left),
-            right,
-        });
+        let last = *children.last().ok_or(EditError::Preservation)?;
+        let maximum = arena.nodes[last].maximum;
+        let tail = IndexHeader::read(original)?.tail.get() != 0;
+        (Contents::Branch { children, tail }, maximum)
+    };
+    let index = push(
+        arena,
+        Node {
+            number: tree.number(),
+            height: tree.height(),
+            maximum,
+            contents,
+            grown_root: false,
+            previous: 0,
+            next: 0,
+        },
+        reader,
+    )?;
+    if normalize::fits(operation, arena, index, reader)? {
+        let mut result = Vec::new();
+        push_child(&mut result, index, reader)?;
+        return Ok(result);
     }
-    let mut children = Vec::new();
-    for child in tree.children() {
-        let result = build(operation, child, false, arena, plan, reader)?;
-        if let Some(left) = result.left {
-            push_child(&mut children, left, reader)?;
-        }
-        push_child(&mut children, result.right, reader)?;
+    if !root {
+        let left = normalize::divide(operation, arena, plan, index, reader)?;
+        return normalize::run(operation, arena, plan, (index, left), reader);
     }
-    let tail = IndexHeader::read(original)?.tail.get() != 0;
-    let entries = bounds(&arena.nodes, &children, tail, reader)?;
-    if repack::fits::<_, { encoding::MAX_ENTRY_BYTES }>(
-        original,
-        &entries,
-        operation.profile,
-        reader.budget,
-        reader.cancelled,
-    )? {
-        let right = push_branch(
-            arena,
-            tree.number(),
-            tree.height(),
-            children,
-            tail,
-            false,
-            reader,
-        )?;
-        return Ok(ResultChild { left: None, right });
+
+    let height = tree
+        .height()
+        .checked_add(1)
+        .filter(|height| usize::from(*height) < MAX_INDEX_DEPTH)
+        .ok_or(InspectError::StructureLimit)?;
+    // The original root is replaced only after its lower siblings normalize.
+    // Its nested right page is allocated before the first new left sibling.
+    arena.nodes[index].number = allocate(operation, arena, plan, reader)?;
+    if let Contents::Branch { tail, .. } = &mut arena.nodes[index].contents {
+        *tail = true;
     }
-    if children.len() < 2 {
+    let left = normalize::divide(operation, arena, plan, index, reader)?;
+    let children = normalize::run(operation, arena, plan, (index, left), reader)?;
+    let root = push_branch(
+        arena,
+        tree.number(),
+        height,
+        children,
+        tree.is_leaf(),
+        true,
+        reader,
+    )?;
+    if !normalize::fits(operation, arena, root, reader)? {
         return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
     }
-    let middle = children.len() / 2;
-    let left_children = copy_children(&children[..middle], reader)?;
-    let right_children = copy_children(&children[middle..], reader)?;
-    if root {
-        let height = tree
-            .height()
-            .checked_add(1)
-            .filter(|height| usize::from(*height) < MAX_INDEX_DEPTH)
-            .ok_or(InspectError::StructureLimit)?;
-        // Root ID stays fixed; actual reference order is right, then left.
-        let right_number = allocate(operation, arena, plan, reader)?;
-        let left_number = allocate(operation, arena, plan, reader)?;
-        let right = push_branch(
-            arena,
-            right_number,
-            tree.height(),
-            right_children,
-            true,
-            false,
-            reader,
-        )?;
-        let left = push_branch(
-            arena,
-            left_number,
-            tree.height(),
-            left_children,
-            true,
-            false,
-            reader,
-        )?;
-        let mut root_children = Vec::new();
-        push_child(&mut root_children, left, reader)?;
-        push_child(&mut root_children, right, reader)?;
-        let root = push_branch(
-            arena,
-            tree.number(),
-            height,
-            root_children,
-            false,
-            true,
-            reader,
-        )?;
-        Ok(ResultChild {
-            left: None,
-            right: root,
-        })
-    } else {
-        let number = allocate(operation, arena, plan, reader)?;
-        let left = push_branch(
-            arena,
-            number,
-            tree.height(),
-            left_children,
-            true,
-            false,
-            reader,
-        )?;
-        let right = push_branch(
-            arena,
-            tree.number(),
-            tree.height(),
-            right_children,
-            tail,
-            false,
-            reader,
-        )?;
-        Ok(ResultChild {
-            left: Some(left),
-            right,
-        })
-    }
+    let mut result = Vec::new();
+    push_child(&mut result, root, reader)?;
+    Ok(result)
 }
 
 fn allocate(

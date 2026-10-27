@@ -33,8 +33,8 @@ than publishing successive intermediate changes.
 
 A single-Int32 original root leaf can be recompressed to fit. If the best valid
 common prefix still overflows, its final sorted key-plus-row sequence is divided
-at the middle entry count. Both nonempty halves must fit independently. The
-service allocates exactly two represented EOF index pages, right first and left
+at the middle entry count. Each nonempty half is measured independently. The
+ordinary two-leaf case allocates exactly two represented EOF index pages, right first and left
 second, and retains the original root ID as a height-one node. For 500 entries,
 each leaf contains 250 entries. Leaf siblings are reciprocal with zero external
 end links; the root stores the complete left maximum **key and row reference**,
@@ -61,12 +61,16 @@ model remain distinct from a candidate replay or Microsoft Access qualification.
 
 For an overflowing internal root, the service allocates the right node and then
 the left node, after descendant allocations. Both new lower nodes use right
-tails. The original root ID remains fixed at height plus one, with **two bounded
-maxima and no tail**. Child maxima include full row references, even when numeric
+tails. The original root ID remains fixed at height plus one, with **bounded
+maxima and no tail** (two children in the original single-split case). Child maxima include full row references, even when numeric
 keys tie. Reciprocal sibling chains are rederived for every final height.
 The unchanged root-leaf split described above still uses its original single
 bound/right-tail form. An empty non-root leaf, depth beyond the existing index
-ceiling, or a half that still cannot fit refuses atomically.
+ceiling, missing represented capacity or an unsplittable range refuses atomically.
+The separate [repeated-overflow extension](ACE16_REPEATED_INDEX_SPLITS.md) normalizes
+halves that still exceed page capacity, using stable paid passes and independent
+replay. Existing two-leaf complete images and the original request boundary remain
+unchanged; newly admitted bulk scheduling is an explicit engineering policy.
 
 Other nonoverflowing qualified indexes use existing replacement machinery.
 An unqualified codec/composite refuses atomically. UPDATE ignore-NULL blockers are

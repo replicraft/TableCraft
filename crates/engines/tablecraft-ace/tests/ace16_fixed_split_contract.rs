@@ -13,8 +13,13 @@ mod support;
 
 #[path = "ace16_fixed_split_contract/model.rs"]
 mod model;
+#[allow(dead_code)]
+#[path = "ace16_repeated_fixed_split_contract/model.rs"]
+mod repeated_model;
 #[path = "ace16_fixed_split_contract/values.rs"]
 mod values;
+
+use model as fixture_model;
 
 use model::*;
 use std::{cell::Cell, io::Cursor};

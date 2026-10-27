@@ -219,7 +219,9 @@ rustdoc and formatting. Independent whole-image controls cover root, non-root an
 parent-only growth. An authored wide descending parent case exceeded balanced-half
 capacity; that exact source/request remains an atomic refusal, with a separate
 same-source value-1 positive. No production change was needed for that diagnostic.
-Repeated splitting of an oversized half remains unfinished.
+That historical refusal is retained in the original record. The subsequent
+[repeated-overflow service](testing/ACE16_REPEATED_INDEX_SPLITS.md) now handles
+that exact source/request through independently checked repeated splits.
 
 A working clap-based engineering consumer uses exact integer/scaled Currency
 arguments, validates carriers before source I/O and publishes only fresh synced
@@ -228,6 +230,29 @@ now passes all eight complete expected images and fresh getter/index/map checks
 on unchanged Byte/Int16/Int64/Currency originals. All sixteen fixture commands
 pass without retries or regeneration, separately from prior public writer actions.
 Normal native saves and Microsoft Access qualification remain open.
+
+## Repeated-overflow numeric split previews
+
+The [existing engineering split services](testing/ACE16_REPEATED_INDEX_SPLITS.md)
+now subdivide oversized halves until each page fits, retaining exact request
+identity, original/fresh page origins, complete key/ROW bounds and represented
+allocation-map authority. Paid stable allocation-order passes preserve the old
+two-leaf images; newly appended left siblings are visited in the same pass.
+The audit independently reconstructs topology, capacity, framing and EOF effects.
+
+The scoped batch passes 139 distinct runtime functions, including fifteen new
+functions, plus three compile-fail checks and scoped strict/default lint, minimal
+compilation, rustdoc and formatting. Independent full-image fixtures cover root,
+non-root and parent repetition, NULL peers, aliases, two simultaneous offenders,
+all admitted widths, protected residue, resource exhaustion and cancellation.
+A correlated fitting-request/unnecessary-growth control passes ordinary complete
+checks but fails operation certification. A temporary causal builder fault first
+exposed the shared-capacity audit gap; audit-owned measurement now rejects it.
+Exact initial failures and removed fault sources remain recorded separately.
+
+These are literal engineering results. The four new 900-key originals still need
+a new committed consumer and independent candidate replay. Other codecs, map
+growth, normal saves and native Access qualification remain unfinished.
 
 ## Repeated numeric split source and reference observations
 
