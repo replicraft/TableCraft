@@ -1,0 +1,5634 @@
+{
+  "date": "2026-10-26",
+  "scope": "Original public-Jackcess Binary capacity/allocation observations; no engine candidate or native Microsoft Access qualification.",
+  "session": 35928,
+  "exit_code": 0,
+  "first_attempt": true,
+  "public_row_actions": 34,
+  "INSERT_checkpoint_actions": 26,
+  "UPDATE_actions": 8,
+  "commands": 107,
+  "complete_row_actions": 34,
+  "immutable_inputs_tools_classes_unchanged": true,
+  "raw_report": {
+    "path": ".cache/ace16-binary-allocation-next-20261026/report.json",
+    "bytes": 5797323,
+    "sha256": "b276e509f1789bfafa18db53bd1e2432639b7563a3d0e33b8b77ba48e61d0203"
+  },
+  "raw_commands": {
+    "path": ".cache/ace16-binary-allocation-next-20261026/commands.jsonl",
+    "bytes": 81549,
+    "sha256": "c8494b4469aeaeb6901afc2df1ba48c22dce0ccdbbb89382ceea60b87f62e6cc"
+  },
+  "raw_log": {
+    "path": ".cache/ace16-binary-allocation-next-20261026/capture-initial.log",
+    "bytes": 1185,
+    "sha256": "098b21f852469f43b715cf8242ee694af6b7b500e7de4d0d82f953214f9eec8e"
+  },
+  "frozen_selectors": {
+    "path": ".cache/ace16-binary-allocation-next-20261026/selectors.json",
+    "bytes": 14451,
+    "sha256": "608977bce7787268e8b532edf6c20c681e70ab718f68b62a86af46401c1d3cbf"
+  },
+  "pre_action_inventory": {
+    "path": ".cache/ace16-binary-allocation-next-20261026/inventory.json",
+    "bytes": 4509,
+    "sha256": "b61c25e31bc70ebd5409c7e0230e1d3477a5dc71e5cd382e1e764f09b608ebd1"
+  },
+  "historical_source_archive": [
+    {
+      "executed": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/capture.py",
+        "bytes": 9544,
+        "sha256": "f3c34f0a62efabdf0fbb25c4bb8cd45552c4d1cce64632fe96b00098bcc9d71c"
+      },
+      "archive": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/executed-sources/capture.py.txt",
+        "bytes": 9544,
+        "sha256": "f3c34f0a62efabdf0fbb25c4bb8cd45552c4d1cce64632fe96b00098bcc9d71c"
+      }
+    },
+    {
+      "executed": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/BinaryBoundaryAppend.java",
+        "bytes": 3136,
+        "sha256": "e2dddca43b0022992089c539b71be63ebbfdbbac3791180a956cdd7fd919528d"
+      },
+      "archive": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/executed-sources/BinaryBoundaryAppend.java.txt",
+        "bytes": 3136,
+        "sha256": "e2dddca43b0022992089c539b71be63ebbfdbbac3791180a956cdd7fd919528d"
+      },
+      "public_byte_identical_copy": {
+        "path": "docs/testing/BinaryBoundaryAppend.java",
+        "bytes": 3136,
+        "sha256": "e2dddca43b0022992089c539b71be63ebbfdbbac3791180a956cdd7fd919528d"
+      }
+    },
+    {
+      "executed": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/selectors.json",
+        "bytes": 14451,
+        "sha256": "608977bce7787268e8b532edf6c20c681e70ab718f68b62a86af46401c1d3cbf"
+      },
+      "archive": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/executed-sources/selectors.json",
+        "bytes": 14451,
+        "sha256": "608977bce7787268e8b532edf6c20c681e70ab718f68b62a86af46401c1d3cbf"
+      }
+    }
+  ],
+  "historical_immutable_inputs_tools": [
+    {
+      "path": ".cache/ace16-slot-originals-next-20261026/Slot-V2016-before.accdb",
+      "bytes": 1044480,
+      "sha256": "feeeab8b1a5d51cd6d2366cdc54b895da9bd023c48c364896a9beffc7215dd46"
+    },
+    {
+      "path": ".cache/ace16-slot-originals-next-20261026/Slot-V2019-before.accdb",
+      "bytes": 1114112,
+      "sha256": "2994922c9fef5302e08bfc4db66b8cbfe01e8d47b025e1a4f9b6db10d2a66092"
+    },
+    {
+      "path": ".cache/ace16-slot-originals-next-20261026/original-facts-initial.json",
+      "bytes": 3041910,
+      "sha256": "2f47f94c875530b0d23637f04b762e0a9f34cfb5d7e5f1ffa549a0111e542521"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+      "bytes": 1407244,
+      "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+    },
+    {
+      "path": ".cache/ace16-binary-allocation-next-20261026/BinaryBoundaryAppend.java",
+      "bytes": 3136,
+      "sha256": "e2dddca43b0022992089c539b71be63ebbfdbbac3791180a956cdd7fd919528d"
+    },
+    {
+      "path": ".cache/ace16-binary-allocation-next-20261026/capture.py",
+      "bytes": 9544,
+      "sha256": "f3c34f0a62efabdf0fbb25c4bb8cd45552c4d1cce64632fe96b00098bcc9d71c"
+    },
+    {
+      "path": ".cache/ace16-binary-allocation-next-20261026/selectors.json",
+      "bytes": 14451,
+      "sha256": "608977bce7787268e8b532edf6c20c681e70ab718f68b62a86af46401c1d3cbf"
+    },
+    {
+      "path": ".cache/ace16-binary-allocation-next-20261026/inventory.json",
+      "bytes": 4509,
+      "sha256": "b61c25e31bc70ebd5409c7e0230e1d3477a5dc71e5cd382e1e764f09b608ebd1"
+    },
+    {
+      "path": "docs/testing/SlotUpdateFixture.java",
+      "bytes": 18037,
+      "sha256": "2d92ce90bd970c0d613ddc8a6bca3146a551c48f5aef3026c728dd69822493a6"
+    },
+    {
+      "path": "docs/testing/SlotMapProbe.java",
+      "bytes": 4799,
+      "sha256": "acb378dbad504d1152297ad80ecf45401b1c73f22779769dd51a6cf7027a40a3"
+    },
+    {
+      "path": "docs/testing/capture_cross_page_updates.py",
+      "bytes": 13030,
+      "sha256": "2627fa020ca8b29df398d62504b731f519e2c7b52095ca31b15d9c340688ac1b"
+    },
+    {
+      "path": "docs/testing/slot_preview_originals/common.py",
+      "bytes": 2697,
+      "sha256": "4d6e13158e1c039f1a75bb12828cfa7eaf811e58e06e5e4de0f4c605e1519f8c"
+    }
+  ],
+  "compiled_classes": [
+    {
+      "path": ".cache/ace16-binary-allocation-next-20261026/classes/BinaryBoundaryAppend.class",
+      "bytes": 5045,
+      "sha256": "12701bcb034a5cbf926498469017a1a384f12a0f14aee3394f052e2997966b91"
+    },
+    {
+      "path": ".cache/ace16-binary-allocation-next-20261026/classes/SlotMapProbe.class",
+      "bytes": 6843,
+      "sha256": "b6a05af31fa3aff81874378721adbef3397d080da114882f20706d328e7c854b"
+    },
+    {
+      "path": ".cache/ace16-binary-allocation-next-20261026/classes/SlotUpdateFixture.class",
+      "bytes": 19746,
+      "sha256": "4b9a9f7a4f13ba1d237bfeabebbd3609db1c5db3e27aef21a1e4fc11e81a5fcf"
+    }
+  ],
+  "outcomes": [
+    {
+      "action_ordinal": 0,
+      "profile": "V2016",
+      "action": "INSERT-checkpoint",
+      "checkpoint_or_step": 1,
+      "ID": 10001,
+      "source": {
+        "path": ".cache/ace16-slot-originals-next-20261026/Slot-V2016-before.accdb",
+        "bytes": 1044480,
+        "sha256": "feeeab8b1a5d51cd6d2366cdc54b895da9bd023c48c364896a9beffc7215dd46"
+      },
+      "output": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-append-01.accdb",
+        "bytes": 1044480,
+        "sha256": "217fab65995de7d75758c2074b73eb12307d684e246b6dcbf1153ef20892155e"
+      },
+      "declared_rows_before": 10,
+      "declared_rows_after": 11,
+      "historical_index_rows_before": 10,
+      "historical_index_rows_after": 11,
+      "owned_headers_after": {
+        "200": {
+          "free_bytes": 3095,
+          "physical_slots": 11,
+          "prefix_hex": "0101170cc5000000000000000b00"
+        }
+      },
+      "map_changes": {},
+      "complete": true,
+      "command_index": 5,
+      "insert_proof": {
+        "all_prior_rows_and_raw_bodies_unchanged": true,
+        "all_other_tables_unchanged": true,
+        "root_ID1_unchanged": true,
+        "primary_order_adds_exact_ID": true,
+        "new_owned_pages": [],
+        "file_bytes_added": 0
+      },
+      "inserted_row_frame": {
+        "page": 200,
+        "slot": 10,
+        "word": 3131,
+        "flags": 0,
+        "start": 822331,
+        "end": 822599,
+        "bytes": 268,
+        "body_sha256": "49f2ec17f4b61e0873c3fda02fce8e2cc227ccffd37cea8841e56bcbba684937"
+      },
+      "ID1_root": {
+        "page": 200,
+        "slot": 0,
+        "body_sha256": "8465e76f518fe4583e985db902d5d4ff74f38b4a2f297eb3547d81a1c55d0b00"
+      },
+      "all_maps_unchanged": true
+    },
+    {
+      "action_ordinal": 1,
+      "profile": "V2016",
+      "action": "INSERT-checkpoint",
+      "checkpoint_or_step": 2,
+      "ID": 10002,
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-append-01.accdb",
+        "bytes": 1044480,
+        "sha256": "217fab65995de7d75758c2074b73eb12307d684e246b6dcbf1153ef20892155e"
+      },
+      "output": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-append-02.accdb",
+        "bytes": 1044480,
+        "sha256": "5f2cf94d700a02c50d5f8a052030916c645fca6591292af9ac22b616bcfc7d69"
+      },
+      "declared_rows_before": 11,
+      "declared_rows_after": 12,
+      "historical_index_rows_before": 11,
+      "historical_index_rows_after": 12,
+      "owned_headers_after": {
+        "200": {
+          "free_bytes": 2825,
+          "physical_slots": 12,
+          "prefix_hex": "0101090bc5000000000000000c00"
+        }
+      },
+      "map_changes": {},
+      "complete": true,
+      "command_index": 8,
+      "insert_proof": {
+        "all_prior_rows_and_raw_bodies_unchanged": true,
+        "all_other_tables_unchanged": true,
+        "root_ID1_unchanged": true,
+        "primary_order_adds_exact_ID": true,
+        "new_owned_pages": [],
+        "file_bytes_added": 0
+      },
+      "inserted_row_frame": {
+        "page": 200,
+        "slot": 11,
+        "word": 2863,
+        "flags": 0,
+        "start": 822063,
+        "end": 822331,
+        "bytes": 268,
+        "body_sha256": "56407b8cb93dda670e400bb0f24ee09ae4f280aad8b400ece0a934ed5fc1efce"
+      },
+      "ID1_root": {
+        "page": 200,
+        "slot": 0,
+        "body_sha256": "8465e76f518fe4583e985db902d5d4ff74f38b4a2f297eb3547d81a1c55d0b00"
+      },
+      "all_maps_unchanged": true
+    },
+    {
+      "action_ordinal": 2,
+      "profile": "V2016",
+      "action": "INSERT-checkpoint",
+      "checkpoint_or_step": 3,
+      "ID": 10003,
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-append-02.accdb",
+        "bytes": 1044480,
+        "sha256": "5f2cf94d700a02c50d5f8a052030916c645fca6591292af9ac22b616bcfc7d69"
+      },
+      "output": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-append-03.accdb",
+        "bytes": 1044480,
+        "sha256": "28d40b30821e7cc012d9b61fc9ee8f4e96c40b3008c2024efcc54ff44f4bea28"
+      },
+      "declared_rows_before": 12,
+      "declared_rows_after": 13,
+      "historical_index_rows_before": 12,
+      "historical_index_rows_after": 13,
+      "owned_headers_after": {
+        "200": {
+          "free_bytes": 2555,
+          "physical_slots": 13,
+          "prefix_hex": "0101fb09c5000000000000000d00"
+        }
+      },
+      "map_changes": {},
+      "complete": true,
+      "command_index": 11,
+      "insert_proof": {
+        "all_prior_rows_and_raw_bodies_unchanged": true,
+        "all_other_tables_unchanged": true,
+        "root_ID1_unchanged": true,
+        "primary_order_adds_exact_ID": true,
+        "new_owned_pages": [],
+        "file_bytes_added": 0
+      },
+      "inserted_row_frame": {
+        "page": 200,
+        "slot": 12,
+        "word": 2595,
+        "flags": 0,
+        "start": 821795,
+        "end": 822063,
+        "bytes": 268,
+        "body_sha256": "3c96e7b8fc5a7c5186ba5551c549bcd44ac3018a790399fe037c612f657b0efe"
+      },
+      "ID1_root": {
+        "page": 200,
+        "slot": 0,
+        "body_sha256": "8465e76f518fe4583e985db902d5d4ff74f38b4a2f297eb3547d81a1c55d0b00"
+      },
+      "all_maps_unchanged": true
+    },
+    {
+      "action_ordinal": 3,
+      "profile": "V2016",
+      "action": "INSERT-checkpoint",
+      "checkpoint_or_step": 4,
+      "ID": 10004,
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-append-03.accdb",
+        "bytes": 1044480,
+        "sha256": "28d40b30821e7cc012d9b61fc9ee8f4e96c40b3008c2024efcc54ff44f4bea28"
+      },
+      "output": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-append-04.accdb",
+        "bytes": 1044480,
+        "sha256": "81fbfd418fe0da132a27a6105b35a6e55c8f920f74ec0cfd2212904385d2e7c0"
+      },
+      "declared_rows_before": 13,
+      "declared_rows_after": 14,
+      "historical_index_rows_before": 13,
+      "historical_index_rows_after": 14,
+      "owned_headers_after": {
+        "200": {
+          "free_bytes": 2285,
+          "physical_slots": 14,
+          "prefix_hex": "0101ed08c5000000000000000e00"
+        }
+      },
+      "map_changes": {},
+      "complete": true,
+      "command_index": 14,
+      "insert_proof": {
+        "all_prior_rows_and_raw_bodies_unchanged": true,
+        "all_other_tables_unchanged": true,
+        "root_ID1_unchanged": true,
+        "primary_order_adds_exact_ID": true,
+        "new_owned_pages": [],
+        "file_bytes_added": 0
+      },
+      "inserted_row_frame": {
+        "page": 200,
+        "slot": 13,
+        "word": 2327,
+        "flags": 0,
+        "start": 821527,
+        "end": 821795,
+        "bytes": 268,
+        "body_sha256": "056994c6cca1b611e59f4bc686ebf12008d8bd803a674cfb9dcb04ee72db692b"
+      },
+      "ID1_root": {
+        "page": 200,
+        "slot": 0,
+        "body_sha256": "8465e76f518fe4583e985db902d5d4ff74f38b4a2f297eb3547d81a1c55d0b00"
+      },
+      "all_maps_unchanged": true
+    },
+    {
+      "action_ordinal": 4,
+      "profile": "V2016",
+      "action": "INSERT-checkpoint",
+      "checkpoint_or_step": 5,
+      "ID": 10005,
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-append-04.accdb",
+        "bytes": 1044480,
+        "sha256": "81fbfd418fe0da132a27a6105b35a6e55c8f920f74ec0cfd2212904385d2e7c0"
+      },
+      "output": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-append-05.accdb",
+        "bytes": 1044480,
+        "sha256": "adac58c68c15ed4613416372cdb81510dcbc47a2933194bfcbd3a9c7a52eba23"
+      },
+      "declared_rows_before": 14,
+      "declared_rows_after": 15,
+      "historical_index_rows_before": 14,
+      "historical_index_rows_after": 15,
+      "owned_headers_after": {
+        "200": {
+          "free_bytes": 2015,
+          "physical_slots": 15,
+          "prefix_hex": "0101df07c5000000000000000f00"
+        }
+      },
+      "map_changes": {},
+      "complete": true,
+      "command_index": 17,
+      "insert_proof": {
+        "all_prior_rows_and_raw_bodies_unchanged": true,
+        "all_other_tables_unchanged": true,
+        "root_ID1_unchanged": true,
+        "primary_order_adds_exact_ID": true,
+        "new_owned_pages": [],
+        "file_bytes_added": 0
+      },
+      "inserted_row_frame": {
+        "page": 200,
+        "slot": 14,
+        "word": 2059,
+        "flags": 0,
+        "start": 821259,
+        "end": 821527,
+        "bytes": 268,
+        "body_sha256": "f4b79276c4fd85078fc4829f3a453598d9146232670a735f50ddf4a79a2f8b1f"
+      },
+      "ID1_root": {
+        "page": 200,
+        "slot": 0,
+        "body_sha256": "8465e76f518fe4583e985db902d5d4ff74f38b4a2f297eb3547d81a1c55d0b00"
+      },
+      "all_maps_unchanged": true
+    },
+    {
+      "action_ordinal": 5,
+      "profile": "V2016",
+      "action": "INSERT-checkpoint",
+      "checkpoint_or_step": 6,
+      "ID": 10006,
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-append-05.accdb",
+        "bytes": 1044480,
+        "sha256": "adac58c68c15ed4613416372cdb81510dcbc47a2933194bfcbd3a9c7a52eba23"
+      },
+      "output": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-append-06.accdb",
+        "bytes": 1044480,
+        "sha256": "2d8bbe84d0ce292094f08469236e8cc76e51cea3ccccf9da9389fb4aa3e1fd08"
+      },
+      "declared_rows_before": 15,
+      "declared_rows_after": 16,
+      "historical_index_rows_before": 15,
+      "historical_index_rows_after": 16,
+      "owned_headers_after": {
+        "200": {
+          "free_bytes": 1745,
+          "physical_slots": 16,
+          "prefix_hex": "0101d106c5000000000000001000"
+        }
+      },
+      "map_changes": {},
+      "complete": true,
+      "command_index": 20,
+      "insert_proof": {
+        "all_prior_rows_and_raw_bodies_unchanged": true,
+        "all_other_tables_unchanged": true,
+        "root_ID1_unchanged": true,
+        "primary_order_adds_exact_ID": true,
+        "new_owned_pages": [],
+        "file_bytes_added": 0
+      },
+      "inserted_row_frame": {
+        "page": 200,
+        "slot": 15,
+        "word": 1791,
+        "flags": 0,
+        "start": 820991,
+        "end": 821259,
+        "bytes": 268,
+        "body_sha256": "06412cf5edd3026198a075cd8e680018063415e0ec97b02e5e3d336dd4331516"
+      },
+      "ID1_root": {
+        "page": 200,
+        "slot": 0,
+        "body_sha256": "8465e76f518fe4583e985db902d5d4ff74f38b4a2f297eb3547d81a1c55d0b00"
+      },
+      "all_maps_unchanged": true
+    },
+    {
+      "action_ordinal": 6,
+      "profile": "V2016",
+      "action": "INSERT-checkpoint",
+      "checkpoint_or_step": 7,
+      "ID": 10007,
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-append-06.accdb",
+        "bytes": 1044480,
+        "sha256": "2d8bbe84d0ce292094f08469236e8cc76e51cea3ccccf9da9389fb4aa3e1fd08"
+      },
+      "output": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-append-07.accdb",
+        "bytes": 1044480,
+        "sha256": "a48f4e6f08b989a93412ca84193a9ae6d4bd472dd88fe99779f7a22b1981d47a"
+      },
+      "declared_rows_before": 16,
+      "declared_rows_after": 17,
+      "historical_index_rows_before": 16,
+      "historical_index_rows_after": 17,
+      "owned_headers_after": {
+        "200": {
+          "free_bytes": 1475,
+          "physical_slots": 17,
+          "prefix_hex": "0101c305c5000000000000001100"
+        }
+      },
+      "map_changes": {},
+      "complete": true,
+      "command_index": 23,
+      "insert_proof": {
+        "all_prior_rows_and_raw_bodies_unchanged": true,
+        "all_other_tables_unchanged": true,
+        "root_ID1_unchanged": true,
+        "primary_order_adds_exact_ID": true,
+        "new_owned_pages": [],
+        "file_bytes_added": 0
+      },
+      "inserted_row_frame": {
+        "page": 200,
+        "slot": 16,
+        "word": 1523,
+        "flags": 0,
+        "start": 820723,
+        "end": 820991,
+        "bytes": 268,
+        "body_sha256": "b3182b35cdff49c84139896cee5c05e8a3339238306163e788996c467818f0c3"
+      },
+      "ID1_root": {
+        "page": 200,
+        "slot": 0,
+        "body_sha256": "8465e76f518fe4583e985db902d5d4ff74f38b4a2f297eb3547d81a1c55d0b00"
+      },
+      "all_maps_unchanged": true
+    },
+    {
+      "action_ordinal": 7,
+      "profile": "V2016",
+      "action": "INSERT-checkpoint",
+      "checkpoint_or_step": 8,
+      "ID": 10008,
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-append-07.accdb",
+        "bytes": 1044480,
+        "sha256": "a48f4e6f08b989a93412ca84193a9ae6d4bd472dd88fe99779f7a22b1981d47a"
+      },
+      "output": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-append-08.accdb",
+        "bytes": 1044480,
+        "sha256": "eb0150c727941d0fbb8efcd1180cae213f9556d1b0a380c31a690955d79a3025"
+      },
+      "declared_rows_before": 17,
+      "declared_rows_after": 18,
+      "historical_index_rows_before": 17,
+      "historical_index_rows_after": 18,
+      "owned_headers_after": {
+        "200": {
+          "free_bytes": 1205,
+          "physical_slots": 18,
+          "prefix_hex": "0101b504c5000000000000001200"
+        }
+      },
+      "map_changes": {},
+      "complete": true,
+      "command_index": 26,
+      "insert_proof": {
+        "all_prior_rows_and_raw_bodies_unchanged": true,
+        "all_other_tables_unchanged": true,
+        "root_ID1_unchanged": true,
+        "primary_order_adds_exact_ID": true,
+        "new_owned_pages": [],
+        "file_bytes_added": 0
+      },
+      "inserted_row_frame": {
+        "page": 200,
+        "slot": 17,
+        "word": 1255,
+        "flags": 0,
+        "start": 820455,
+        "end": 820723,
+        "bytes": 268,
+        "body_sha256": "4a90d84f7995dcbacfe197b3065c9a1a9e4db65860eb6ffe846962cdbbfc946c"
+      },
+      "ID1_root": {
+        "page": 200,
+        "slot": 0,
+        "body_sha256": "8465e76f518fe4583e985db902d5d4ff74f38b4a2f297eb3547d81a1c55d0b00"
+      },
+      "all_maps_unchanged": true
+    },
+    {
+      "action_ordinal": 8,
+      "profile": "V2016",
+      "action": "INSERT-checkpoint",
+      "checkpoint_or_step": 9,
+      "ID": 10009,
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-append-08.accdb",
+        "bytes": 1044480,
+        "sha256": "eb0150c727941d0fbb8efcd1180cae213f9556d1b0a380c31a690955d79a3025"
+      },
+      "output": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-append-09.accdb",
+        "bytes": 1044480,
+        "sha256": "68075fbb97465f98a859d26f61d1be60e7b47771c6dec3cc154877faad0338bd"
+      },
+      "declared_rows_before": 18,
+      "declared_rows_after": 19,
+      "historical_index_rows_before": 18,
+      "historical_index_rows_after": 19,
+      "owned_headers_after": {
+        "200": {
+          "free_bytes": 935,
+          "physical_slots": 19,
+          "prefix_hex": "0101a703c5000000000000001300"
+        }
+      },
+      "map_changes": {},
+      "complete": true,
+      "command_index": 29,
+      "insert_proof": {
+        "all_prior_rows_and_raw_bodies_unchanged": true,
+        "all_other_tables_unchanged": true,
+        "root_ID1_unchanged": true,
+        "primary_order_adds_exact_ID": true,
+        "new_owned_pages": [],
+        "file_bytes_added": 0
+      },
+      "inserted_row_frame": {
+        "page": 200,
+        "slot": 18,
+        "word": 987,
+        "flags": 0,
+        "start": 820187,
+        "end": 820455,
+        "bytes": 268,
+        "body_sha256": "885f40d93c9eb6ce111119f752252ece65756d2be6785ba87e38914d50dec615"
+      },
+      "ID1_root": {
+        "page": 200,
+        "slot": 0,
+        "body_sha256": "8465e76f518fe4583e985db902d5d4ff74f38b4a2f297eb3547d81a1c55d0b00"
+      },
+      "all_maps_unchanged": true
+    },
+    {
+      "action_ordinal": 9,
+      "profile": "V2016",
+      "action": "INSERT-checkpoint",
+      "checkpoint_or_step": 10,
+      "ID": 10010,
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-append-09.accdb",
+        "bytes": 1044480,
+        "sha256": "68075fbb97465f98a859d26f61d1be60e7b47771c6dec3cc154877faad0338bd"
+      },
+      "output": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-append-10.accdb",
+        "bytes": 1044480,
+        "sha256": "952a639d90bfe5d51a13916967e1f7ff35f3baaa48b23bb7896bd84b68ec0d50"
+      },
+      "declared_rows_before": 19,
+      "declared_rows_after": 20,
+      "historical_index_rows_before": 19,
+      "historical_index_rows_after": 20,
+      "owned_headers_after": {
+        "200": {
+          "free_bytes": 665,
+          "physical_slots": 20,
+          "prefix_hex": "01019902c5000000000000001400"
+        }
+      },
+      "map_changes": {},
+      "complete": true,
+      "command_index": 32,
+      "insert_proof": {
+        "all_prior_rows_and_raw_bodies_unchanged": true,
+        "all_other_tables_unchanged": true,
+        "root_ID1_unchanged": true,
+        "primary_order_adds_exact_ID": true,
+        "new_owned_pages": [],
+        "file_bytes_added": 0
+      },
+      "inserted_row_frame": {
+        "page": 200,
+        "slot": 19,
+        "word": 719,
+        "flags": 0,
+        "start": 819919,
+        "end": 820187,
+        "bytes": 268,
+        "body_sha256": "056c2306bf21443349ca4b5f731499106d6c376a29f4af510d1f49843228abde"
+      },
+      "ID1_root": {
+        "page": 200,
+        "slot": 0,
+        "body_sha256": "8465e76f518fe4583e985db902d5d4ff74f38b4a2f297eb3547d81a1c55d0b00"
+      },
+      "all_maps_unchanged": true
+    },
+    {
+      "action_ordinal": 10,
+      "profile": "V2016",
+      "action": "INSERT-checkpoint",
+      "checkpoint_or_step": 11,
+      "ID": 10011,
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-append-10.accdb",
+        "bytes": 1044480,
+        "sha256": "952a639d90bfe5d51a13916967e1f7ff35f3baaa48b23bb7896bd84b68ec0d50"
+      },
+      "output": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-append-11.accdb",
+        "bytes": 1044480,
+        "sha256": "2901ad0627d4e49ce3131b8faae01e8c6c66cbc49715fcad4c3f50dd410e23ff"
+      },
+      "declared_rows_before": 20,
+      "declared_rows_after": 21,
+      "historical_index_rows_before": 20,
+      "historical_index_rows_after": 21,
+      "owned_headers_after": {
+        "200": {
+          "free_bytes": 395,
+          "physical_slots": 21,
+          "prefix_hex": "01018b01c5000000000000001500"
+        }
+      },
+      "map_changes": {},
+      "complete": true,
+      "command_index": 35,
+      "insert_proof": {
+        "all_prior_rows_and_raw_bodies_unchanged": true,
+        "all_other_tables_unchanged": true,
+        "root_ID1_unchanged": true,
+        "primary_order_adds_exact_ID": true,
+        "new_owned_pages": [],
+        "file_bytes_added": 0
+      },
+      "inserted_row_frame": {
+        "page": 200,
+        "slot": 20,
+        "word": 451,
+        "flags": 0,
+        "start": 819651,
+        "end": 819919,
+        "bytes": 268,
+        "body_sha256": "728c846def45f0c06fc5f2e44d0f6d5d0245ad9599a9978916c6c173a8bc477f"
+      },
+      "ID1_root": {
+        "page": 200,
+        "slot": 0,
+        "body_sha256": "8465e76f518fe4583e985db902d5d4ff74f38b4a2f297eb3547d81a1c55d0b00"
+      },
+      "all_maps_unchanged": true
+    },
+    {
+      "action_ordinal": 11,
+      "profile": "V2016",
+      "action": "INSERT-checkpoint",
+      "checkpoint_or_step": 12,
+      "ID": 10012,
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-append-11.accdb",
+        "bytes": 1044480,
+        "sha256": "2901ad0627d4e49ce3131b8faae01e8c6c66cbc49715fcad4c3f50dd410e23ff"
+      },
+      "output": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-append-12.accdb",
+        "bytes": 1044480,
+        "sha256": "96536a4fabcd0aa53a0f931200755611e0f7cd08e1b14748d8e786c1440c4f3a"
+      },
+      "declared_rows_before": 21,
+      "declared_rows_after": 22,
+      "historical_index_rows_before": 21,
+      "historical_index_rows_after": 22,
+      "owned_headers_after": {
+        "200": {
+          "free_bytes": 125,
+          "physical_slots": 22,
+          "prefix_hex": "01017d00c5000000000000001600"
+        }
+      },
+      "map_changes": {},
+      "complete": true,
+      "command_index": 38,
+      "insert_proof": {
+        "all_prior_rows_and_raw_bodies_unchanged": true,
+        "all_other_tables_unchanged": true,
+        "root_ID1_unchanged": true,
+        "primary_order_adds_exact_ID": true,
+        "new_owned_pages": [],
+        "file_bytes_added": 0
+      },
+      "inserted_row_frame": {
+        "page": 200,
+        "slot": 21,
+        "word": 183,
+        "flags": 0,
+        "start": 819383,
+        "end": 819651,
+        "bytes": 268,
+        "body_sha256": "4e3047c221c2c7850be7c1b9d8c737b12c1d53527a6ed130c47d49c253ee7317"
+      },
+      "ID1_root": {
+        "page": 200,
+        "slot": 0,
+        "body_sha256": "8465e76f518fe4583e985db902d5d4ff74f38b4a2f297eb3547d81a1c55d0b00"
+      },
+      "all_maps_unchanged": true
+    },
+    {
+      "action_ordinal": 12,
+      "profile": "V2016",
+      "action": "INSERT-checkpoint",
+      "checkpoint_or_step": 13,
+      "ID": 10013,
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-append-12.accdb",
+        "bytes": 1044480,
+        "sha256": "96536a4fabcd0aa53a0f931200755611e0f7cd08e1b14748d8e786c1440c4f3a"
+      },
+      "output": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-append-13.accdb",
+        "bytes": 1048576,
+        "sha256": "abbd0100ec8c72c9693e08b8ee5285f067e956cc9802f7c781d5e46dda2d0055"
+      },
+      "declared_rows_before": 22,
+      "declared_rows_after": 23,
+      "historical_index_rows_before": 22,
+      "historical_index_rows_after": 23,
+      "owned_headers_after": {
+        "200": {
+          "free_bytes": 125,
+          "physical_slots": 22,
+          "prefix_hex": "01017d00c5000000000000001600"
+        },
+        "255": {
+          "free_bytes": 3812,
+          "physical_slots": 1,
+          "prefix_hex": "0101e40ec5000000000000000100"
+        }
+      },
+      "map_changes": {
+        "JackcessGlobalFree": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": [
+            {
+              "offset": 8159,
+              "before": 128,
+              "after": 0,
+              "changed_mask": 128
+            }
+          ]
+        },
+        "TableOwned": {
+          "added_file_members": [
+            255
+          ],
+          "removed_file_members": [],
+          "changed_existing_bytes": [
+            {
+              "offset": 823331,
+              "before": 0,
+              "after": 128,
+              "changed_mask": 128
+            }
+          ]
+        },
+        "TableFreeSpace": {
+          "added_file_members": [
+            255
+          ],
+          "removed_file_members": [
+            200
+          ],
+          "changed_existing_bytes": [
+            {
+              "offset": 814996,
+              "before": 1,
+              "after": 0,
+              "changed_mask": 1
+            },
+            {
+              "offset": 815002,
+              "before": 0,
+              "after": 128,
+              "changed_mask": 128
+            }
+          ]
+        }
+      },
+      "complete": true,
+      "command_index": 41,
+      "insert_proof": {
+        "all_prior_rows_and_raw_bodies_unchanged": true,
+        "all_other_tables_unchanged": true,
+        "root_ID1_unchanged": true,
+        "primary_order_adds_exact_ID": true,
+        "new_owned_pages": [
+          255
+        ],
+        "file_bytes_added": 4096
+      },
+      "inserted_row_frame": {
+        "page": 255,
+        "slot": 0,
+        "word": 3828,
+        "flags": 0,
+        "start": 1048308,
+        "end": 1048576,
+        "bytes": 268,
+        "body_sha256": "66eb51403a818e39ab7b2f28b00b6efd406c20981d6cf52cb2e7e0279856a130"
+      },
+      "ID1_root": {
+        "page": 200,
+        "slot": 0,
+        "body_sha256": "8465e76f518fe4583e985db902d5d4ff74f38b4a2f297eb3547d81a1c55d0b00"
+      },
+      "all_maps_unchanged": false
+    },
+    {
+      "action_ordinal": 13,
+      "profile": "V2016",
+      "action": "UPDATE-grow",
+      "checkpoint_or_step": 12,
+      "ID": 1,
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-append-12.accdb",
+        "bytes": 1044480,
+        "sha256": "96536a4fabcd0aa53a0f931200755611e0f7cd08e1b14748d8e786c1440c4f3a"
+      },
+      "output": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-checkpoint-12-grown.accdb",
+        "bytes": 1048576,
+        "sha256": "7c0fcb0a7763953861b2113e2b00443c4275091d0e1462ee797501dcef376112"
+      },
+      "declared_rows_before": 22,
+      "declared_rows_after": 22,
+      "historical_index_rows_before": 22,
+      "historical_index_rows_after": 22,
+      "owned_headers_before": {
+        "200": {
+          "free_bytes": 125,
+          "physical_slots": 22,
+          "prefix_hex": "01017d00c5000000000000001600"
+        }
+      },
+      "owned_headers_after": {
+        "200": {
+          "free_bytes": 125,
+          "physical_slots": 22,
+          "prefix_hex": "01017d00c5000000000000001600"
+        },
+        "255": {
+          "free_bytes": 3812,
+          "physical_slots": 1,
+          "prefix_hex": "0101e40ec5000000000000000100"
+        }
+      },
+      "root_before": {
+        "page": 200,
+        "slot": 0,
+        "word": 4083,
+        "flags": 0,
+        "start": 823283,
+        "end": 823296,
+        "bytes": 13,
+        "body_sha256": "8465e76f518fe4583e985db902d5d4ff74f38b4a2f297eb3547d81a1c55d0b00"
+      },
+      "root_after": {
+        "page": 200,
+        "slot": 0,
+        "word": 20467,
+        "flags": 16384,
+        "start": 823283,
+        "end": 823296,
+        "bytes": 13,
+        "body_sha256": "fe58d496b5d9f081bb223431780e73b37c6a3b38b0d2ea283055df5ce9539179"
+      },
+      "target_before": {
+        "page": 200,
+        "slot": 0,
+        "word": 4083,
+        "flags": 0,
+        "start": 823283,
+        "end": 823296,
+        "bytes": 13,
+        "body_sha256": "8465e76f518fe4583e985db902d5d4ff74f38b4a2f297eb3547d81a1c55d0b00"
+      },
+      "target_after": {
+        "page": 255,
+        "slot": 0,
+        "word": 36596,
+        "flags": 32768,
+        "start": 1048308,
+        "end": 1048576,
+        "bytes": 268,
+        "body_sha256": "0855670f8781820b0aab13bafdcae074bf0f6d319bfeddf6913362d5de9539d8"
+      },
+      "map_changes": {
+        "JackcessGlobalFree": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": [
+            {
+              "offset": 8159,
+              "before": 128,
+              "after": 0,
+              "changed_mask": 128
+            }
+          ]
+        },
+        "TableOwned": {
+          "added_file_members": [
+            255
+          ],
+          "removed_file_members": [],
+          "changed_existing_bytes": [
+            {
+              "offset": 823331,
+              "before": 0,
+              "after": 128,
+              "changed_mask": 128
+            }
+          ]
+        },
+        "TableFreeSpace": {
+          "added_file_members": [
+            255
+          ],
+          "removed_file_members": [
+            200
+          ],
+          "changed_existing_bytes": [
+            {
+              "offset": 814996,
+              "before": 1,
+              "after": 0,
+              "changed_mask": 1
+            },
+            {
+              "offset": 815002,
+              "before": 0,
+              "after": 128,
+              "changed_mask": 128
+            }
+          ]
+        }
+      },
+      "complete": true,
+      "command_index": 44,
+      "update_comparison": {
+        "all_other_rows_and_raw_bodies_unchanged": true,
+        "all_logical_index_metadata_and_orders_unchanged": true,
+        "table_and_historical_index_counters_unchanged": true,
+        "root_identity_unchanged": true,
+        "same_target": false,
+        "prior_orphan_hidden_target_preserved": null,
+        "old_file_changed_pages": [
+          1,
+          198,
+          200,
+          201
+        ],
+        "file_bytes_added": 4096
+      },
+      "preexisting_raw_index_pages_byte_identical": [
+        7,
+        8,
+        10,
+        12,
+        14,
+        15,
+        16,
+        20,
+        21,
+        22,
+        43,
+        44,
+        45,
+        50,
+        51,
+        52,
+        56,
+        60,
+        61,
+        65,
+        66,
+        72,
+        73,
+        91,
+        96,
+        101,
+        106,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        120,
+        121,
+        123,
+        125,
+        126,
+        127,
+        129,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135,
+        136,
+        137,
+        139,
+        140,
+        141,
+        142,
+        144,
+        147,
+        148,
+        149,
+        150,
+        151,
+        152,
+        153,
+        157,
+        158,
+        160,
+        161,
+        163,
+        164,
+        165,
+        166,
+        168,
+        169,
+        170,
+        171,
+        172,
+        173,
+        174,
+        175,
+        176,
+        178,
+        179,
+        181,
+        182,
+        185,
+        186,
+        187,
+        192,
+        193,
+        194,
+        199,
+        204,
+        209,
+        214,
+        219,
+        224,
+        225,
+        231,
+        232,
+        237,
+        238,
+        243
+      ]
+    },
+    {
+      "action_ordinal": 14,
+      "profile": "V2016",
+      "action": "UPDATE-shrink",
+      "checkpoint_or_step": 12,
+      "ID": 1,
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-checkpoint-12-grown.accdb",
+        "bytes": 1048576,
+        "sha256": "7c0fcb0a7763953861b2113e2b00443c4275091d0e1462ee797501dcef376112"
+      },
+      "output": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-checkpoint-12-shrunk.accdb",
+        "bytes": 1048576,
+        "sha256": "89d51a87b72573a732a1e1ff9fe1bb9c33c57255b3e46c03986914c39cf8d9b2"
+      },
+      "declared_rows_before": 22,
+      "declared_rows_after": 22,
+      "historical_index_rows_before": 22,
+      "historical_index_rows_after": 22,
+      "owned_headers_before": {
+        "200": {
+          "free_bytes": 125,
+          "physical_slots": 22,
+          "prefix_hex": "01017d00c5000000000000001600"
+        },
+        "255": {
+          "free_bytes": 3812,
+          "physical_slots": 1,
+          "prefix_hex": "0101e40ec5000000000000000100"
+        }
+      },
+      "owned_headers_after": {
+        "200": {
+          "free_bytes": 125,
+          "physical_slots": 22,
+          "prefix_hex": "01017d00c5000000000000001600"
+        },
+        "255": {
+          "free_bytes": 3812,
+          "physical_slots": 1,
+          "prefix_hex": "0101e40ec5000000000000000100"
+        }
+      },
+      "root_before": {
+        "page": 200,
+        "slot": 0,
+        "word": 20467,
+        "flags": 16384,
+        "start": 823283,
+        "end": 823296,
+        "bytes": 13,
+        "body_sha256": "fe58d496b5d9f081bb223431780e73b37c6a3b38b0d2ea283055df5ce9539179"
+      },
+      "root_after": {
+        "page": 200,
+        "slot": 0,
+        "word": 20467,
+        "flags": 16384,
+        "start": 823283,
+        "end": 823296,
+        "bytes": 13,
+        "body_sha256": "fe58d496b5d9f081bb223431780e73b37c6a3b38b0d2ea283055df5ce9539179"
+      },
+      "target_before": {
+        "page": 255,
+        "slot": 0,
+        "word": 36596,
+        "flags": 32768,
+        "start": 1048308,
+        "end": 1048576,
+        "bytes": 268,
+        "body_sha256": "0855670f8781820b0aab13bafdcae074bf0f6d319bfeddf6913362d5de9539d8"
+      },
+      "target_after": {
+        "page": 255,
+        "slot": 0,
+        "word": 36596,
+        "flags": 32768,
+        "start": 1048308,
+        "end": 1048576,
+        "bytes": 268,
+        "body_sha256": "51da7a1c9f88eef67d208c667ec927e2d62079002ffbe0d946096faf48f0e980"
+      },
+      "map_changes": {
+        "JackcessGlobalFree": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableOwned": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableFreeSpace": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        }
+      },
+      "complete": true,
+      "command_index": 47,
+      "update_comparison": {
+        "all_other_rows_and_raw_bodies_unchanged": true,
+        "all_logical_index_metadata_and_orders_unchanged": true,
+        "table_and_historical_index_counters_unchanged": true,
+        "root_identity_unchanged": true,
+        "same_target": true,
+        "prior_orphan_hidden_target_preserved": null,
+        "old_file_changed_pages": [
+          255
+        ],
+        "file_bytes_added": 0
+      },
+      "preexisting_raw_index_pages_byte_identical": [
+        7,
+        8,
+        10,
+        12,
+        14,
+        15,
+        16,
+        20,
+        21,
+        22,
+        43,
+        44,
+        45,
+        50,
+        51,
+        52,
+        56,
+        60,
+        61,
+        65,
+        66,
+        72,
+        73,
+        91,
+        96,
+        101,
+        106,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        120,
+        121,
+        123,
+        125,
+        126,
+        127,
+        129,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135,
+        136,
+        137,
+        139,
+        140,
+        141,
+        142,
+        144,
+        147,
+        148,
+        149,
+        150,
+        151,
+        152,
+        153,
+        157,
+        158,
+        160,
+        161,
+        163,
+        164,
+        165,
+        166,
+        168,
+        169,
+        170,
+        171,
+        172,
+        173,
+        174,
+        175,
+        176,
+        178,
+        179,
+        181,
+        182,
+        185,
+        186,
+        187,
+        192,
+        193,
+        194,
+        199,
+        204,
+        209,
+        214,
+        219,
+        224,
+        225,
+        231,
+        232,
+        237,
+        238,
+        243
+      ]
+    },
+    {
+      "action_ordinal": 15,
+      "profile": "V2016",
+      "action": "UPDATE-grow",
+      "checkpoint_or_step": 13,
+      "ID": 1,
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-append-13.accdb",
+        "bytes": 1048576,
+        "sha256": "abbd0100ec8c72c9693e08b8ee5285f067e956cc9802f7c781d5e46dda2d0055"
+      },
+      "output": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-checkpoint-13-grown.accdb",
+        "bytes": 1048576,
+        "sha256": "bfef5c357285221db6597734d392fe0956ede71d1d88490367ee1c7763c1937a"
+      },
+      "declared_rows_before": 23,
+      "declared_rows_after": 23,
+      "historical_index_rows_before": 23,
+      "historical_index_rows_after": 23,
+      "owned_headers_before": {
+        "200": {
+          "free_bytes": 125,
+          "physical_slots": 22,
+          "prefix_hex": "01017d00c5000000000000001600"
+        },
+        "255": {
+          "free_bytes": 3812,
+          "physical_slots": 1,
+          "prefix_hex": "0101e40ec5000000000000000100"
+        }
+      },
+      "owned_headers_after": {
+        "200": {
+          "free_bytes": 125,
+          "physical_slots": 22,
+          "prefix_hex": "01017d00c5000000000000001600"
+        },
+        "255": {
+          "free_bytes": 3542,
+          "physical_slots": 2,
+          "prefix_hex": "0101d60dc5000000000000000200"
+        }
+      },
+      "root_before": {
+        "page": 200,
+        "slot": 0,
+        "word": 4083,
+        "flags": 0,
+        "start": 823283,
+        "end": 823296,
+        "bytes": 13,
+        "body_sha256": "8465e76f518fe4583e985db902d5d4ff74f38b4a2f297eb3547d81a1c55d0b00"
+      },
+      "root_after": {
+        "page": 200,
+        "slot": 0,
+        "word": 20467,
+        "flags": 16384,
+        "start": 823283,
+        "end": 823296,
+        "bytes": 13,
+        "body_sha256": "2511931471762153554d73a4cc508dfcda1e72fc4cfec733eb5650c4e0f6185c"
+      },
+      "target_before": {
+        "page": 200,
+        "slot": 0,
+        "word": 4083,
+        "flags": 0,
+        "start": 823283,
+        "end": 823296,
+        "bytes": 13,
+        "body_sha256": "8465e76f518fe4583e985db902d5d4ff74f38b4a2f297eb3547d81a1c55d0b00"
+      },
+      "target_after": {
+        "page": 255,
+        "slot": 1,
+        "word": 36328,
+        "flags": 32768,
+        "start": 1048040,
+        "end": 1048308,
+        "bytes": 268,
+        "body_sha256": "0855670f8781820b0aab13bafdcae074bf0f6d319bfeddf6913362d5de9539d8"
+      },
+      "map_changes": {
+        "JackcessGlobalFree": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableOwned": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableFreeSpace": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        }
+      },
+      "complete": true,
+      "command_index": 50,
+      "update_comparison": {
+        "all_other_rows_and_raw_bodies_unchanged": true,
+        "all_logical_index_metadata_and_orders_unchanged": true,
+        "table_and_historical_index_counters_unchanged": true,
+        "root_identity_unchanged": true,
+        "same_target": false,
+        "prior_orphan_hidden_target_preserved": null,
+        "old_file_changed_pages": [
+          200,
+          255
+        ],
+        "file_bytes_added": 0
+      },
+      "preexisting_raw_index_pages_byte_identical": [
+        7,
+        8,
+        10,
+        12,
+        14,
+        15,
+        16,
+        20,
+        21,
+        22,
+        43,
+        44,
+        45,
+        50,
+        51,
+        52,
+        56,
+        60,
+        61,
+        65,
+        66,
+        72,
+        73,
+        91,
+        96,
+        101,
+        106,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        120,
+        121,
+        123,
+        125,
+        126,
+        127,
+        129,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135,
+        136,
+        137,
+        139,
+        140,
+        141,
+        142,
+        144,
+        147,
+        148,
+        149,
+        150,
+        151,
+        152,
+        153,
+        157,
+        158,
+        160,
+        161,
+        163,
+        164,
+        165,
+        166,
+        168,
+        169,
+        170,
+        171,
+        172,
+        173,
+        174,
+        175,
+        176,
+        178,
+        179,
+        181,
+        182,
+        185,
+        186,
+        187,
+        192,
+        193,
+        194,
+        199,
+        204,
+        209,
+        214,
+        219,
+        224,
+        225,
+        231,
+        232,
+        237,
+        238,
+        243
+      ]
+    },
+    {
+      "action_ordinal": 16,
+      "profile": "V2016",
+      "action": "UPDATE-shrink",
+      "checkpoint_or_step": 13,
+      "ID": 1,
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-checkpoint-13-grown.accdb",
+        "bytes": 1048576,
+        "sha256": "bfef5c357285221db6597734d392fe0956ede71d1d88490367ee1c7763c1937a"
+      },
+      "output": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-checkpoint-13-shrunk.accdb",
+        "bytes": 1048576,
+        "sha256": "e19be9d5fa618fea79d90261416074db9f9a240924894a3c7aad83fa4b8c6fd6"
+      },
+      "declared_rows_before": 23,
+      "declared_rows_after": 23,
+      "historical_index_rows_before": 23,
+      "historical_index_rows_after": 23,
+      "owned_headers_before": {
+        "200": {
+          "free_bytes": 125,
+          "physical_slots": 22,
+          "prefix_hex": "01017d00c5000000000000001600"
+        },
+        "255": {
+          "free_bytes": 3542,
+          "physical_slots": 2,
+          "prefix_hex": "0101d60dc5000000000000000200"
+        }
+      },
+      "owned_headers_after": {
+        "200": {
+          "free_bytes": 125,
+          "physical_slots": 22,
+          "prefix_hex": "01017d00c5000000000000001600"
+        },
+        "255": {
+          "free_bytes": 3542,
+          "physical_slots": 2,
+          "prefix_hex": "0101d60dc5000000000000000200"
+        }
+      },
+      "root_before": {
+        "page": 200,
+        "slot": 0,
+        "word": 20467,
+        "flags": 16384,
+        "start": 823283,
+        "end": 823296,
+        "bytes": 13,
+        "body_sha256": "2511931471762153554d73a4cc508dfcda1e72fc4cfec733eb5650c4e0f6185c"
+      },
+      "root_after": {
+        "page": 200,
+        "slot": 0,
+        "word": 20467,
+        "flags": 16384,
+        "start": 823283,
+        "end": 823296,
+        "bytes": 13,
+        "body_sha256": "2511931471762153554d73a4cc508dfcda1e72fc4cfec733eb5650c4e0f6185c"
+      },
+      "target_before": {
+        "page": 255,
+        "slot": 1,
+        "word": 36328,
+        "flags": 32768,
+        "start": 1048040,
+        "end": 1048308,
+        "bytes": 268,
+        "body_sha256": "0855670f8781820b0aab13bafdcae074bf0f6d319bfeddf6913362d5de9539d8"
+      },
+      "target_after": {
+        "page": 255,
+        "slot": 1,
+        "word": 36328,
+        "flags": 32768,
+        "start": 1048040,
+        "end": 1048308,
+        "bytes": 268,
+        "body_sha256": "51da7a1c9f88eef67d208c667ec927e2d62079002ffbe0d946096faf48f0e980"
+      },
+      "map_changes": {
+        "JackcessGlobalFree": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableOwned": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableFreeSpace": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        }
+      },
+      "complete": true,
+      "command_index": 53,
+      "update_comparison": {
+        "all_other_rows_and_raw_bodies_unchanged": true,
+        "all_logical_index_metadata_and_orders_unchanged": true,
+        "table_and_historical_index_counters_unchanged": true,
+        "root_identity_unchanged": true,
+        "same_target": true,
+        "prior_orphan_hidden_target_preserved": null,
+        "old_file_changed_pages": [
+          255
+        ],
+        "file_bytes_added": 0
+      },
+      "preexisting_raw_index_pages_byte_identical": [
+        7,
+        8,
+        10,
+        12,
+        14,
+        15,
+        16,
+        20,
+        21,
+        22,
+        43,
+        44,
+        45,
+        50,
+        51,
+        52,
+        56,
+        60,
+        61,
+        65,
+        66,
+        72,
+        73,
+        91,
+        96,
+        101,
+        106,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        120,
+        121,
+        123,
+        125,
+        126,
+        127,
+        129,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135,
+        136,
+        137,
+        139,
+        140,
+        141,
+        142,
+        144,
+        147,
+        148,
+        149,
+        150,
+        151,
+        152,
+        153,
+        157,
+        158,
+        160,
+        161,
+        163,
+        164,
+        165,
+        166,
+        168,
+        169,
+        170,
+        171,
+        172,
+        173,
+        174,
+        175,
+        176,
+        178,
+        179,
+        181,
+        182,
+        185,
+        186,
+        187,
+        192,
+        193,
+        194,
+        199,
+        204,
+        209,
+        214,
+        219,
+        224,
+        225,
+        231,
+        232,
+        237,
+        238,
+        243
+      ]
+    },
+    {
+      "action_ordinal": 17,
+      "profile": "V2019",
+      "action": "INSERT-checkpoint",
+      "checkpoint_or_step": 1,
+      "ID": 10001,
+      "source": {
+        "path": ".cache/ace16-slot-originals-next-20261026/Slot-V2019-before.accdb",
+        "bytes": 1114112,
+        "sha256": "2994922c9fef5302e08bfc4db66b8cbfe01e8d47b025e1a4f9b6db10d2a66092"
+      },
+      "output": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-append-01.accdb",
+        "bytes": 1114112,
+        "sha256": "6b30516783f647d8094b9a89f1dbe88730e92ca791f639c7e97727df8b6e4663"
+      },
+      "declared_rows_before": 10,
+      "declared_rows_after": 11,
+      "historical_index_rows_before": 10,
+      "historical_index_rows_after": 11,
+      "owned_headers_after": {
+        "217": {
+          "free_bytes": 3095,
+          "physical_slots": 11,
+          "prefix_hex": "0101170cd6000000000000000b00"
+        }
+      },
+      "map_changes": {},
+      "complete": true,
+      "command_index": 56,
+      "insert_proof": {
+        "all_prior_rows_and_raw_bodies_unchanged": true,
+        "all_other_tables_unchanged": true,
+        "root_ID1_unchanged": true,
+        "primary_order_adds_exact_ID": true,
+        "new_owned_pages": [],
+        "file_bytes_added": 0
+      },
+      "inserted_row_frame": {
+        "page": 217,
+        "slot": 10,
+        "word": 3131,
+        "flags": 0,
+        "start": 891963,
+        "end": 892231,
+        "bytes": 268,
+        "body_sha256": "49f2ec17f4b61e0873c3fda02fce8e2cc227ccffd37cea8841e56bcbba684937"
+      },
+      "ID1_root": {
+        "page": 217,
+        "slot": 0,
+        "body_sha256": "8465e76f518fe4583e985db902d5d4ff74f38b4a2f297eb3547d81a1c55d0b00"
+      },
+      "all_maps_unchanged": true
+    },
+    {
+      "action_ordinal": 18,
+      "profile": "V2019",
+      "action": "INSERT-checkpoint",
+      "checkpoint_or_step": 2,
+      "ID": 10002,
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-append-01.accdb",
+        "bytes": 1114112,
+        "sha256": "6b30516783f647d8094b9a89f1dbe88730e92ca791f639c7e97727df8b6e4663"
+      },
+      "output": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-append-02.accdb",
+        "bytes": 1114112,
+        "sha256": "d8d9b00b9e962b4498fa766b63970eb6b4f36887b210fc41694ca12559df130f"
+      },
+      "declared_rows_before": 11,
+      "declared_rows_after": 12,
+      "historical_index_rows_before": 11,
+      "historical_index_rows_after": 12,
+      "owned_headers_after": {
+        "217": {
+          "free_bytes": 2825,
+          "physical_slots": 12,
+          "prefix_hex": "0101090bd6000000000000000c00"
+        }
+      },
+      "map_changes": {},
+      "complete": true,
+      "command_index": 59,
+      "insert_proof": {
+        "all_prior_rows_and_raw_bodies_unchanged": true,
+        "all_other_tables_unchanged": true,
+        "root_ID1_unchanged": true,
+        "primary_order_adds_exact_ID": true,
+        "new_owned_pages": [],
+        "file_bytes_added": 0
+      },
+      "inserted_row_frame": {
+        "page": 217,
+        "slot": 11,
+        "word": 2863,
+        "flags": 0,
+        "start": 891695,
+        "end": 891963,
+        "bytes": 268,
+        "body_sha256": "56407b8cb93dda670e400bb0f24ee09ae4f280aad8b400ece0a934ed5fc1efce"
+      },
+      "ID1_root": {
+        "page": 217,
+        "slot": 0,
+        "body_sha256": "8465e76f518fe4583e985db902d5d4ff74f38b4a2f297eb3547d81a1c55d0b00"
+      },
+      "all_maps_unchanged": true
+    },
+    {
+      "action_ordinal": 19,
+      "profile": "V2019",
+      "action": "INSERT-checkpoint",
+      "checkpoint_or_step": 3,
+      "ID": 10003,
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-append-02.accdb",
+        "bytes": 1114112,
+        "sha256": "d8d9b00b9e962b4498fa766b63970eb6b4f36887b210fc41694ca12559df130f"
+      },
+      "output": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-append-03.accdb",
+        "bytes": 1114112,
+        "sha256": "e422318400217fea0b0b1568811cc822a8c5609d8675b353fc0969b64b699934"
+      },
+      "declared_rows_before": 12,
+      "declared_rows_after": 13,
+      "historical_index_rows_before": 12,
+      "historical_index_rows_after": 13,
+      "owned_headers_after": {
+        "217": {
+          "free_bytes": 2555,
+          "physical_slots": 13,
+          "prefix_hex": "0101fb09d6000000000000000d00"
+        }
+      },
+      "map_changes": {},
+      "complete": true,
+      "command_index": 62,
+      "insert_proof": {
+        "all_prior_rows_and_raw_bodies_unchanged": true,
+        "all_other_tables_unchanged": true,
+        "root_ID1_unchanged": true,
+        "primary_order_adds_exact_ID": true,
+        "new_owned_pages": [],
+        "file_bytes_added": 0
+      },
+      "inserted_row_frame": {
+        "page": 217,
+        "slot": 12,
+        "word": 2595,
+        "flags": 0,
+        "start": 891427,
+        "end": 891695,
+        "bytes": 268,
+        "body_sha256": "3c96e7b8fc5a7c5186ba5551c549bcd44ac3018a790399fe037c612f657b0efe"
+      },
+      "ID1_root": {
+        "page": 217,
+        "slot": 0,
+        "body_sha256": "8465e76f518fe4583e985db902d5d4ff74f38b4a2f297eb3547d81a1c55d0b00"
+      },
+      "all_maps_unchanged": true
+    },
+    {
+      "action_ordinal": 20,
+      "profile": "V2019",
+      "action": "INSERT-checkpoint",
+      "checkpoint_or_step": 4,
+      "ID": 10004,
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-append-03.accdb",
+        "bytes": 1114112,
+        "sha256": "e422318400217fea0b0b1568811cc822a8c5609d8675b353fc0969b64b699934"
+      },
+      "output": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-append-04.accdb",
+        "bytes": 1114112,
+        "sha256": "d5c36caae65c4c5c5fd5ce0db1165e44253e437f94e802cb1daaac7f30bdf48d"
+      },
+      "declared_rows_before": 13,
+      "declared_rows_after": 14,
+      "historical_index_rows_before": 13,
+      "historical_index_rows_after": 14,
+      "owned_headers_after": {
+        "217": {
+          "free_bytes": 2285,
+          "physical_slots": 14,
+          "prefix_hex": "0101ed08d6000000000000000e00"
+        }
+      },
+      "map_changes": {},
+      "complete": true,
+      "command_index": 65,
+      "insert_proof": {
+        "all_prior_rows_and_raw_bodies_unchanged": true,
+        "all_other_tables_unchanged": true,
+        "root_ID1_unchanged": true,
+        "primary_order_adds_exact_ID": true,
+        "new_owned_pages": [],
+        "file_bytes_added": 0
+      },
+      "inserted_row_frame": {
+        "page": 217,
+        "slot": 13,
+        "word": 2327,
+        "flags": 0,
+        "start": 891159,
+        "end": 891427,
+        "bytes": 268,
+        "body_sha256": "056994c6cca1b611e59f4bc686ebf12008d8bd803a674cfb9dcb04ee72db692b"
+      },
+      "ID1_root": {
+        "page": 217,
+        "slot": 0,
+        "body_sha256": "8465e76f518fe4583e985db902d5d4ff74f38b4a2f297eb3547d81a1c55d0b00"
+      },
+      "all_maps_unchanged": true
+    },
+    {
+      "action_ordinal": 21,
+      "profile": "V2019",
+      "action": "INSERT-checkpoint",
+      "checkpoint_or_step": 5,
+      "ID": 10005,
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-append-04.accdb",
+        "bytes": 1114112,
+        "sha256": "d5c36caae65c4c5c5fd5ce0db1165e44253e437f94e802cb1daaac7f30bdf48d"
+      },
+      "output": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-append-05.accdb",
+        "bytes": 1114112,
+        "sha256": "af0b08070d498e0d81523671ce0e7d827e442b6311b455fe51ed035c95215c41"
+      },
+      "declared_rows_before": 14,
+      "declared_rows_after": 15,
+      "historical_index_rows_before": 14,
+      "historical_index_rows_after": 15,
+      "owned_headers_after": {
+        "217": {
+          "free_bytes": 2015,
+          "physical_slots": 15,
+          "prefix_hex": "0101df07d6000000000000000f00"
+        }
+      },
+      "map_changes": {},
+      "complete": true,
+      "command_index": 68,
+      "insert_proof": {
+        "all_prior_rows_and_raw_bodies_unchanged": true,
+        "all_other_tables_unchanged": true,
+        "root_ID1_unchanged": true,
+        "primary_order_adds_exact_ID": true,
+        "new_owned_pages": [],
+        "file_bytes_added": 0
+      },
+      "inserted_row_frame": {
+        "page": 217,
+        "slot": 14,
+        "word": 2059,
+        "flags": 0,
+        "start": 890891,
+        "end": 891159,
+        "bytes": 268,
+        "body_sha256": "f4b79276c4fd85078fc4829f3a453598d9146232670a735f50ddf4a79a2f8b1f"
+      },
+      "ID1_root": {
+        "page": 217,
+        "slot": 0,
+        "body_sha256": "8465e76f518fe4583e985db902d5d4ff74f38b4a2f297eb3547d81a1c55d0b00"
+      },
+      "all_maps_unchanged": true
+    },
+    {
+      "action_ordinal": 22,
+      "profile": "V2019",
+      "action": "INSERT-checkpoint",
+      "checkpoint_or_step": 6,
+      "ID": 10006,
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-append-05.accdb",
+        "bytes": 1114112,
+        "sha256": "af0b08070d498e0d81523671ce0e7d827e442b6311b455fe51ed035c95215c41"
+      },
+      "output": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-append-06.accdb",
+        "bytes": 1114112,
+        "sha256": "26b9a3833c45f5675ea2af49445d20079a37202a54f1df9d29dec68c9a38ba01"
+      },
+      "declared_rows_before": 15,
+      "declared_rows_after": 16,
+      "historical_index_rows_before": 15,
+      "historical_index_rows_after": 16,
+      "owned_headers_after": {
+        "217": {
+          "free_bytes": 1745,
+          "physical_slots": 16,
+          "prefix_hex": "0101d106d6000000000000001000"
+        }
+      },
+      "map_changes": {},
+      "complete": true,
+      "command_index": 71,
+      "insert_proof": {
+        "all_prior_rows_and_raw_bodies_unchanged": true,
+        "all_other_tables_unchanged": true,
+        "root_ID1_unchanged": true,
+        "primary_order_adds_exact_ID": true,
+        "new_owned_pages": [],
+        "file_bytes_added": 0
+      },
+      "inserted_row_frame": {
+        "page": 217,
+        "slot": 15,
+        "word": 1791,
+        "flags": 0,
+        "start": 890623,
+        "end": 890891,
+        "bytes": 268,
+        "body_sha256": "06412cf5edd3026198a075cd8e680018063415e0ec97b02e5e3d336dd4331516"
+      },
+      "ID1_root": {
+        "page": 217,
+        "slot": 0,
+        "body_sha256": "8465e76f518fe4583e985db902d5d4ff74f38b4a2f297eb3547d81a1c55d0b00"
+      },
+      "all_maps_unchanged": true
+    },
+    {
+      "action_ordinal": 23,
+      "profile": "V2019",
+      "action": "INSERT-checkpoint",
+      "checkpoint_or_step": 7,
+      "ID": 10007,
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-append-06.accdb",
+        "bytes": 1114112,
+        "sha256": "26b9a3833c45f5675ea2af49445d20079a37202a54f1df9d29dec68c9a38ba01"
+      },
+      "output": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-append-07.accdb",
+        "bytes": 1114112,
+        "sha256": "bcc07dfb929d3cea62765c965d25c9f4fc26ad036be43945c96e151c3fcd78d5"
+      },
+      "declared_rows_before": 16,
+      "declared_rows_after": 17,
+      "historical_index_rows_before": 16,
+      "historical_index_rows_after": 17,
+      "owned_headers_after": {
+        "217": {
+          "free_bytes": 1475,
+          "physical_slots": 17,
+          "prefix_hex": "0101c305d6000000000000001100"
+        }
+      },
+      "map_changes": {},
+      "complete": true,
+      "command_index": 74,
+      "insert_proof": {
+        "all_prior_rows_and_raw_bodies_unchanged": true,
+        "all_other_tables_unchanged": true,
+        "root_ID1_unchanged": true,
+        "primary_order_adds_exact_ID": true,
+        "new_owned_pages": [],
+        "file_bytes_added": 0
+      },
+      "inserted_row_frame": {
+        "page": 217,
+        "slot": 16,
+        "word": 1523,
+        "flags": 0,
+        "start": 890355,
+        "end": 890623,
+        "bytes": 268,
+        "body_sha256": "b3182b35cdff49c84139896cee5c05e8a3339238306163e788996c467818f0c3"
+      },
+      "ID1_root": {
+        "page": 217,
+        "slot": 0,
+        "body_sha256": "8465e76f518fe4583e985db902d5d4ff74f38b4a2f297eb3547d81a1c55d0b00"
+      },
+      "all_maps_unchanged": true
+    },
+    {
+      "action_ordinal": 24,
+      "profile": "V2019",
+      "action": "INSERT-checkpoint",
+      "checkpoint_or_step": 8,
+      "ID": 10008,
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-append-07.accdb",
+        "bytes": 1114112,
+        "sha256": "bcc07dfb929d3cea62765c965d25c9f4fc26ad036be43945c96e151c3fcd78d5"
+      },
+      "output": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-append-08.accdb",
+        "bytes": 1114112,
+        "sha256": "2f0a3d8aac5fb56c2ab0d63509c77b27975183aef5729ffb51536f06c7d50eef"
+      },
+      "declared_rows_before": 17,
+      "declared_rows_after": 18,
+      "historical_index_rows_before": 17,
+      "historical_index_rows_after": 18,
+      "owned_headers_after": {
+        "217": {
+          "free_bytes": 1205,
+          "physical_slots": 18,
+          "prefix_hex": "0101b504d6000000000000001200"
+        }
+      },
+      "map_changes": {},
+      "complete": true,
+      "command_index": 77,
+      "insert_proof": {
+        "all_prior_rows_and_raw_bodies_unchanged": true,
+        "all_other_tables_unchanged": true,
+        "root_ID1_unchanged": true,
+        "primary_order_adds_exact_ID": true,
+        "new_owned_pages": [],
+        "file_bytes_added": 0
+      },
+      "inserted_row_frame": {
+        "page": 217,
+        "slot": 17,
+        "word": 1255,
+        "flags": 0,
+        "start": 890087,
+        "end": 890355,
+        "bytes": 268,
+        "body_sha256": "4a90d84f7995dcbacfe197b3065c9a1a9e4db65860eb6ffe846962cdbbfc946c"
+      },
+      "ID1_root": {
+        "page": 217,
+        "slot": 0,
+        "body_sha256": "8465e76f518fe4583e985db902d5d4ff74f38b4a2f297eb3547d81a1c55d0b00"
+      },
+      "all_maps_unchanged": true
+    },
+    {
+      "action_ordinal": 25,
+      "profile": "V2019",
+      "action": "INSERT-checkpoint",
+      "checkpoint_or_step": 9,
+      "ID": 10009,
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-append-08.accdb",
+        "bytes": 1114112,
+        "sha256": "2f0a3d8aac5fb56c2ab0d63509c77b27975183aef5729ffb51536f06c7d50eef"
+      },
+      "output": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-append-09.accdb",
+        "bytes": 1114112,
+        "sha256": "80b11f014e4c8ad5a43468b0058a7bd3919c67adc7e845b4c0937b808d3503f3"
+      },
+      "declared_rows_before": 18,
+      "declared_rows_after": 19,
+      "historical_index_rows_before": 18,
+      "historical_index_rows_after": 19,
+      "owned_headers_after": {
+        "217": {
+          "free_bytes": 935,
+          "physical_slots": 19,
+          "prefix_hex": "0101a703d6000000000000001300"
+        }
+      },
+      "map_changes": {},
+      "complete": true,
+      "command_index": 80,
+      "insert_proof": {
+        "all_prior_rows_and_raw_bodies_unchanged": true,
+        "all_other_tables_unchanged": true,
+        "root_ID1_unchanged": true,
+        "primary_order_adds_exact_ID": true,
+        "new_owned_pages": [],
+        "file_bytes_added": 0
+      },
+      "inserted_row_frame": {
+        "page": 217,
+        "slot": 18,
+        "word": 987,
+        "flags": 0,
+        "start": 889819,
+        "end": 890087,
+        "bytes": 268,
+        "body_sha256": "885f40d93c9eb6ce111119f752252ece65756d2be6785ba87e38914d50dec615"
+      },
+      "ID1_root": {
+        "page": 217,
+        "slot": 0,
+        "body_sha256": "8465e76f518fe4583e985db902d5d4ff74f38b4a2f297eb3547d81a1c55d0b00"
+      },
+      "all_maps_unchanged": true
+    },
+    {
+      "action_ordinal": 26,
+      "profile": "V2019",
+      "action": "INSERT-checkpoint",
+      "checkpoint_or_step": 10,
+      "ID": 10010,
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-append-09.accdb",
+        "bytes": 1114112,
+        "sha256": "80b11f014e4c8ad5a43468b0058a7bd3919c67adc7e845b4c0937b808d3503f3"
+      },
+      "output": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-append-10.accdb",
+        "bytes": 1114112,
+        "sha256": "1f98865011b7b60b6d598644375cf12ab6380c6b4399d82cdb5ec996f6ed7345"
+      },
+      "declared_rows_before": 19,
+      "declared_rows_after": 20,
+      "historical_index_rows_before": 19,
+      "historical_index_rows_after": 20,
+      "owned_headers_after": {
+        "217": {
+          "free_bytes": 665,
+          "physical_slots": 20,
+          "prefix_hex": "01019902d6000000000000001400"
+        }
+      },
+      "map_changes": {},
+      "complete": true,
+      "command_index": 83,
+      "insert_proof": {
+        "all_prior_rows_and_raw_bodies_unchanged": true,
+        "all_other_tables_unchanged": true,
+        "root_ID1_unchanged": true,
+        "primary_order_adds_exact_ID": true,
+        "new_owned_pages": [],
+        "file_bytes_added": 0
+      },
+      "inserted_row_frame": {
+        "page": 217,
+        "slot": 19,
+        "word": 719,
+        "flags": 0,
+        "start": 889551,
+        "end": 889819,
+        "bytes": 268,
+        "body_sha256": "056c2306bf21443349ca4b5f731499106d6c376a29f4af510d1f49843228abde"
+      },
+      "ID1_root": {
+        "page": 217,
+        "slot": 0,
+        "body_sha256": "8465e76f518fe4583e985db902d5d4ff74f38b4a2f297eb3547d81a1c55d0b00"
+      },
+      "all_maps_unchanged": true
+    },
+    {
+      "action_ordinal": 27,
+      "profile": "V2019",
+      "action": "INSERT-checkpoint",
+      "checkpoint_or_step": 11,
+      "ID": 10011,
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-append-10.accdb",
+        "bytes": 1114112,
+        "sha256": "1f98865011b7b60b6d598644375cf12ab6380c6b4399d82cdb5ec996f6ed7345"
+      },
+      "output": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-append-11.accdb",
+        "bytes": 1114112,
+        "sha256": "4e4cd022da8022f618fea7c72c08dc7d8a2304de3ba93ac31bb989533b6f767c"
+      },
+      "declared_rows_before": 20,
+      "declared_rows_after": 21,
+      "historical_index_rows_before": 20,
+      "historical_index_rows_after": 21,
+      "owned_headers_after": {
+        "217": {
+          "free_bytes": 395,
+          "physical_slots": 21,
+          "prefix_hex": "01018b01d6000000000000001500"
+        }
+      },
+      "map_changes": {},
+      "complete": true,
+      "command_index": 86,
+      "insert_proof": {
+        "all_prior_rows_and_raw_bodies_unchanged": true,
+        "all_other_tables_unchanged": true,
+        "root_ID1_unchanged": true,
+        "primary_order_adds_exact_ID": true,
+        "new_owned_pages": [],
+        "file_bytes_added": 0
+      },
+      "inserted_row_frame": {
+        "page": 217,
+        "slot": 20,
+        "word": 451,
+        "flags": 0,
+        "start": 889283,
+        "end": 889551,
+        "bytes": 268,
+        "body_sha256": "728c846def45f0c06fc5f2e44d0f6d5d0245ad9599a9978916c6c173a8bc477f"
+      },
+      "ID1_root": {
+        "page": 217,
+        "slot": 0,
+        "body_sha256": "8465e76f518fe4583e985db902d5d4ff74f38b4a2f297eb3547d81a1c55d0b00"
+      },
+      "all_maps_unchanged": true
+    },
+    {
+      "action_ordinal": 28,
+      "profile": "V2019",
+      "action": "INSERT-checkpoint",
+      "checkpoint_or_step": 12,
+      "ID": 10012,
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-append-11.accdb",
+        "bytes": 1114112,
+        "sha256": "4e4cd022da8022f618fea7c72c08dc7d8a2304de3ba93ac31bb989533b6f767c"
+      },
+      "output": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-append-12.accdb",
+        "bytes": 1114112,
+        "sha256": "49b27f73cbe5b32f19b57b16c9c2c88335a266ed0e0324f64c7cd923ff5ea2f2"
+      },
+      "declared_rows_before": 21,
+      "declared_rows_after": 22,
+      "historical_index_rows_before": 21,
+      "historical_index_rows_after": 22,
+      "owned_headers_after": {
+        "217": {
+          "free_bytes": 125,
+          "physical_slots": 22,
+          "prefix_hex": "01017d00d6000000000000001600"
+        }
+      },
+      "map_changes": {},
+      "complete": true,
+      "command_index": 89,
+      "insert_proof": {
+        "all_prior_rows_and_raw_bodies_unchanged": true,
+        "all_other_tables_unchanged": true,
+        "root_ID1_unchanged": true,
+        "primary_order_adds_exact_ID": true,
+        "new_owned_pages": [],
+        "file_bytes_added": 0
+      },
+      "inserted_row_frame": {
+        "page": 217,
+        "slot": 21,
+        "word": 183,
+        "flags": 0,
+        "start": 889015,
+        "end": 889283,
+        "bytes": 268,
+        "body_sha256": "4e3047c221c2c7850be7c1b9d8c737b12c1d53527a6ed130c47d49c253ee7317"
+      },
+      "ID1_root": {
+        "page": 217,
+        "slot": 0,
+        "body_sha256": "8465e76f518fe4583e985db902d5d4ff74f38b4a2f297eb3547d81a1c55d0b00"
+      },
+      "all_maps_unchanged": true
+    },
+    {
+      "action_ordinal": 29,
+      "profile": "V2019",
+      "action": "INSERT-checkpoint",
+      "checkpoint_or_step": 13,
+      "ID": 10013,
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-append-12.accdb",
+        "bytes": 1114112,
+        "sha256": "49b27f73cbe5b32f19b57b16c9c2c88335a266ed0e0324f64c7cd923ff5ea2f2"
+      },
+      "output": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-append-13.accdb",
+        "bytes": 1118208,
+        "sha256": "783be19c3cf5047507c15014d79e15467df22fbcc9ec99f972b56a9016ec0b31"
+      },
+      "declared_rows_before": 22,
+      "declared_rows_after": 23,
+      "historical_index_rows_before": 22,
+      "historical_index_rows_after": 23,
+      "owned_headers_after": {
+        "217": {
+          "free_bytes": 125,
+          "physical_slots": 22,
+          "prefix_hex": "01017d00d6000000000000001600"
+        },
+        "272": {
+          "free_bytes": 3812,
+          "physical_slots": 1,
+          "prefix_hex": "0101e40ed6000000000000000100"
+        }
+      },
+      "map_changes": {
+        "JackcessGlobalFree": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": [
+            {
+              "offset": 8162,
+              "before": 255,
+              "after": 254,
+              "changed_mask": 1
+            }
+          ]
+        },
+        "TableOwned": {
+          "added_file_members": [
+            272
+          ],
+          "removed_file_members": [],
+          "changed_existing_bytes": [
+            {
+              "offset": 892966,
+              "before": 0,
+              "after": 1,
+              "changed_mask": 1
+            }
+          ]
+        },
+        "TableFreeSpace": {
+          "added_file_members": [
+            272
+          ],
+          "removed_file_members": [
+            217
+          ],
+          "changed_existing_bytes": [
+            {
+              "offset": 884630,
+              "before": 2,
+              "after": 0,
+              "changed_mask": 2
+            },
+            {
+              "offset": 884637,
+              "before": 0,
+              "after": 1,
+              "changed_mask": 1
+            }
+          ]
+        }
+      },
+      "complete": true,
+      "command_index": 92,
+      "insert_proof": {
+        "all_prior_rows_and_raw_bodies_unchanged": true,
+        "all_other_tables_unchanged": true,
+        "root_ID1_unchanged": true,
+        "primary_order_adds_exact_ID": true,
+        "new_owned_pages": [
+          272
+        ],
+        "file_bytes_added": 4096
+      },
+      "inserted_row_frame": {
+        "page": 272,
+        "slot": 0,
+        "word": 3828,
+        "flags": 0,
+        "start": 1117940,
+        "end": 1118208,
+        "bytes": 268,
+        "body_sha256": "66eb51403a818e39ab7b2f28b00b6efd406c20981d6cf52cb2e7e0279856a130"
+      },
+      "ID1_root": {
+        "page": 217,
+        "slot": 0,
+        "body_sha256": "8465e76f518fe4583e985db902d5d4ff74f38b4a2f297eb3547d81a1c55d0b00"
+      },
+      "all_maps_unchanged": false
+    },
+    {
+      "action_ordinal": 30,
+      "profile": "V2019",
+      "action": "UPDATE-grow",
+      "checkpoint_or_step": 12,
+      "ID": 1,
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-append-12.accdb",
+        "bytes": 1114112,
+        "sha256": "49b27f73cbe5b32f19b57b16c9c2c88335a266ed0e0324f64c7cd923ff5ea2f2"
+      },
+      "output": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-checkpoint-12-grown.accdb",
+        "bytes": 1118208,
+        "sha256": "4b91b7969ee65548ff384a788ecb396c2962e082886ae1bf7b7c80007640991e"
+      },
+      "declared_rows_before": 22,
+      "declared_rows_after": 22,
+      "historical_index_rows_before": 22,
+      "historical_index_rows_after": 22,
+      "owned_headers_before": {
+        "217": {
+          "free_bytes": 125,
+          "physical_slots": 22,
+          "prefix_hex": "01017d00d6000000000000001600"
+        }
+      },
+      "owned_headers_after": {
+        "217": {
+          "free_bytes": 125,
+          "physical_slots": 22,
+          "prefix_hex": "01017d00d6000000000000001600"
+        },
+        "272": {
+          "free_bytes": 3812,
+          "physical_slots": 1,
+          "prefix_hex": "0101e40ed6000000000000000100"
+        }
+      },
+      "root_before": {
+        "page": 217,
+        "slot": 0,
+        "word": 4083,
+        "flags": 0,
+        "start": 892915,
+        "end": 892928,
+        "bytes": 13,
+        "body_sha256": "8465e76f518fe4583e985db902d5d4ff74f38b4a2f297eb3547d81a1c55d0b00"
+      },
+      "root_after": {
+        "page": 217,
+        "slot": 0,
+        "word": 20467,
+        "flags": 16384,
+        "start": 892915,
+        "end": 892928,
+        "bytes": 13,
+        "body_sha256": "c910fbb1839f2ed45d1cc55ed09289aff5243bfeb9e23859a1f3b9c644dde7e9"
+      },
+      "target_before": {
+        "page": 217,
+        "slot": 0,
+        "word": 4083,
+        "flags": 0,
+        "start": 892915,
+        "end": 892928,
+        "bytes": 13,
+        "body_sha256": "8465e76f518fe4583e985db902d5d4ff74f38b4a2f297eb3547d81a1c55d0b00"
+      },
+      "target_after": {
+        "page": 272,
+        "slot": 0,
+        "word": 36596,
+        "flags": 32768,
+        "start": 1117940,
+        "end": 1118208,
+        "bytes": 268,
+        "body_sha256": "0855670f8781820b0aab13bafdcae074bf0f6d319bfeddf6913362d5de9539d8"
+      },
+      "map_changes": {
+        "JackcessGlobalFree": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": [
+            {
+              "offset": 8162,
+              "before": 255,
+              "after": 254,
+              "changed_mask": 1
+            }
+          ]
+        },
+        "TableOwned": {
+          "added_file_members": [
+            272
+          ],
+          "removed_file_members": [],
+          "changed_existing_bytes": [
+            {
+              "offset": 892966,
+              "before": 0,
+              "after": 1,
+              "changed_mask": 1
+            }
+          ]
+        },
+        "TableFreeSpace": {
+          "added_file_members": [
+            272
+          ],
+          "removed_file_members": [
+            217
+          ],
+          "changed_existing_bytes": [
+            {
+              "offset": 884630,
+              "before": 2,
+              "after": 0,
+              "changed_mask": 2
+            },
+            {
+              "offset": 884637,
+              "before": 0,
+              "after": 1,
+              "changed_mask": 1
+            }
+          ]
+        }
+      },
+      "complete": true,
+      "command_index": 95,
+      "update_comparison": {
+        "all_other_rows_and_raw_bodies_unchanged": true,
+        "all_logical_index_metadata_and_orders_unchanged": true,
+        "table_and_historical_index_counters_unchanged": true,
+        "root_identity_unchanged": true,
+        "same_target": false,
+        "prior_orphan_hidden_target_preserved": null,
+        "old_file_changed_pages": [
+          1,
+          215,
+          217,
+          218
+        ],
+        "file_bytes_added": 4096
+      },
+      "preexisting_raw_index_pages_byte_identical": [
+        7,
+        8,
+        10,
+        12,
+        14,
+        15,
+        16,
+        20,
+        21,
+        22,
+        45,
+        46,
+        47,
+        52,
+        55,
+        56,
+        59,
+        60,
+        71,
+        72,
+        73,
+        75,
+        76,
+        83,
+        86,
+        108,
+        113,
+        118,
+        124,
+        129,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135,
+        138,
+        139,
+        141,
+        143,
+        144,
+        145,
+        147,
+        148,
+        149,
+        150,
+        151,
+        152,
+        153,
+        154,
+        155,
+        157,
+        158,
+        159,
+        160,
+        162,
+        165,
+        166,
+        167,
+        168,
+        169,
+        170,
+        171,
+        174,
+        175,
+        177,
+        178,
+        180,
+        181,
+        182,
+        183,
+        185,
+        186,
+        187,
+        188,
+        189,
+        190,
+        191,
+        192,
+        193,
+        195,
+        196,
+        198,
+        199,
+        202,
+        203,
+        204,
+        209,
+        210,
+        211,
+        216,
+        221,
+        226,
+        231,
+        236,
+        242,
+        243,
+        248,
+        249,
+        254,
+        255,
+        260
+      ]
+    },
+    {
+      "action_ordinal": 31,
+      "profile": "V2019",
+      "action": "UPDATE-shrink",
+      "checkpoint_or_step": 12,
+      "ID": 1,
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-checkpoint-12-grown.accdb",
+        "bytes": 1118208,
+        "sha256": "4b91b7969ee65548ff384a788ecb396c2962e082886ae1bf7b7c80007640991e"
+      },
+      "output": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-checkpoint-12-shrunk.accdb",
+        "bytes": 1118208,
+        "sha256": "aa30126f3dfe4ba67a866dc5720a689ac5ae3fcc20a6b4e337b128ccd7180cc1"
+      },
+      "declared_rows_before": 22,
+      "declared_rows_after": 22,
+      "historical_index_rows_before": 22,
+      "historical_index_rows_after": 22,
+      "owned_headers_before": {
+        "217": {
+          "free_bytes": 125,
+          "physical_slots": 22,
+          "prefix_hex": "01017d00d6000000000000001600"
+        },
+        "272": {
+          "free_bytes": 3812,
+          "physical_slots": 1,
+          "prefix_hex": "0101e40ed6000000000000000100"
+        }
+      },
+      "owned_headers_after": {
+        "217": {
+          "free_bytes": 125,
+          "physical_slots": 22,
+          "prefix_hex": "01017d00d6000000000000001600"
+        },
+        "272": {
+          "free_bytes": 3812,
+          "physical_slots": 1,
+          "prefix_hex": "0101e40ed6000000000000000100"
+        }
+      },
+      "root_before": {
+        "page": 217,
+        "slot": 0,
+        "word": 20467,
+        "flags": 16384,
+        "start": 892915,
+        "end": 892928,
+        "bytes": 13,
+        "body_sha256": "c910fbb1839f2ed45d1cc55ed09289aff5243bfeb9e23859a1f3b9c644dde7e9"
+      },
+      "root_after": {
+        "page": 217,
+        "slot": 0,
+        "word": 20467,
+        "flags": 16384,
+        "start": 892915,
+        "end": 892928,
+        "bytes": 13,
+        "body_sha256": "c910fbb1839f2ed45d1cc55ed09289aff5243bfeb9e23859a1f3b9c644dde7e9"
+      },
+      "target_before": {
+        "page": 272,
+        "slot": 0,
+        "word": 36596,
+        "flags": 32768,
+        "start": 1117940,
+        "end": 1118208,
+        "bytes": 268,
+        "body_sha256": "0855670f8781820b0aab13bafdcae074bf0f6d319bfeddf6913362d5de9539d8"
+      },
+      "target_after": {
+        "page": 272,
+        "slot": 0,
+        "word": 36596,
+        "flags": 32768,
+        "start": 1117940,
+        "end": 1118208,
+        "bytes": 268,
+        "body_sha256": "51da7a1c9f88eef67d208c667ec927e2d62079002ffbe0d946096faf48f0e980"
+      },
+      "map_changes": {
+        "JackcessGlobalFree": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableOwned": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableFreeSpace": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        }
+      },
+      "complete": true,
+      "command_index": 98,
+      "update_comparison": {
+        "all_other_rows_and_raw_bodies_unchanged": true,
+        "all_logical_index_metadata_and_orders_unchanged": true,
+        "table_and_historical_index_counters_unchanged": true,
+        "root_identity_unchanged": true,
+        "same_target": true,
+        "prior_orphan_hidden_target_preserved": null,
+        "old_file_changed_pages": [
+          272
+        ],
+        "file_bytes_added": 0
+      },
+      "preexisting_raw_index_pages_byte_identical": [
+        7,
+        8,
+        10,
+        12,
+        14,
+        15,
+        16,
+        20,
+        21,
+        22,
+        45,
+        46,
+        47,
+        52,
+        55,
+        56,
+        59,
+        60,
+        71,
+        72,
+        73,
+        75,
+        76,
+        83,
+        86,
+        108,
+        113,
+        118,
+        124,
+        129,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135,
+        138,
+        139,
+        141,
+        143,
+        144,
+        145,
+        147,
+        148,
+        149,
+        150,
+        151,
+        152,
+        153,
+        154,
+        155,
+        157,
+        158,
+        159,
+        160,
+        162,
+        165,
+        166,
+        167,
+        168,
+        169,
+        170,
+        171,
+        174,
+        175,
+        177,
+        178,
+        180,
+        181,
+        182,
+        183,
+        185,
+        186,
+        187,
+        188,
+        189,
+        190,
+        191,
+        192,
+        193,
+        195,
+        196,
+        198,
+        199,
+        202,
+        203,
+        204,
+        209,
+        210,
+        211,
+        216,
+        221,
+        226,
+        231,
+        236,
+        242,
+        243,
+        248,
+        249,
+        254,
+        255,
+        260
+      ]
+    },
+    {
+      "action_ordinal": 32,
+      "profile": "V2019",
+      "action": "UPDATE-grow",
+      "checkpoint_or_step": 13,
+      "ID": 1,
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-append-13.accdb",
+        "bytes": 1118208,
+        "sha256": "783be19c3cf5047507c15014d79e15467df22fbcc9ec99f972b56a9016ec0b31"
+      },
+      "output": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-checkpoint-13-grown.accdb",
+        "bytes": 1118208,
+        "sha256": "12ad41b5cca6c2ff0bd71dba4bed281618060ad3edc816e5f1a06fbacd75c226"
+      },
+      "declared_rows_before": 23,
+      "declared_rows_after": 23,
+      "historical_index_rows_before": 23,
+      "historical_index_rows_after": 23,
+      "owned_headers_before": {
+        "217": {
+          "free_bytes": 125,
+          "physical_slots": 22,
+          "prefix_hex": "01017d00d6000000000000001600"
+        },
+        "272": {
+          "free_bytes": 3812,
+          "physical_slots": 1,
+          "prefix_hex": "0101e40ed6000000000000000100"
+        }
+      },
+      "owned_headers_after": {
+        "217": {
+          "free_bytes": 125,
+          "physical_slots": 22,
+          "prefix_hex": "01017d00d6000000000000001600"
+        },
+        "272": {
+          "free_bytes": 3542,
+          "physical_slots": 2,
+          "prefix_hex": "0101d60dd6000000000000000200"
+        }
+      },
+      "root_before": {
+        "page": 217,
+        "slot": 0,
+        "word": 4083,
+        "flags": 0,
+        "start": 892915,
+        "end": 892928,
+        "bytes": 13,
+        "body_sha256": "8465e76f518fe4583e985db902d5d4ff74f38b4a2f297eb3547d81a1c55d0b00"
+      },
+      "root_after": {
+        "page": 217,
+        "slot": 0,
+        "word": 20467,
+        "flags": 16384,
+        "start": 892915,
+        "end": 892928,
+        "bytes": 13,
+        "body_sha256": "a65ed2acc267deabe8a5b72a03683f44d9682d26270b4533632305c2a2f739d6"
+      },
+      "target_before": {
+        "page": 217,
+        "slot": 0,
+        "word": 4083,
+        "flags": 0,
+        "start": 892915,
+        "end": 892928,
+        "bytes": 13,
+        "body_sha256": "8465e76f518fe4583e985db902d5d4ff74f38b4a2f297eb3547d81a1c55d0b00"
+      },
+      "target_after": {
+        "page": 272,
+        "slot": 1,
+        "word": 36328,
+        "flags": 32768,
+        "start": 1117672,
+        "end": 1117940,
+        "bytes": 268,
+        "body_sha256": "0855670f8781820b0aab13bafdcae074bf0f6d319bfeddf6913362d5de9539d8"
+      },
+      "map_changes": {
+        "JackcessGlobalFree": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableOwned": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableFreeSpace": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        }
+      },
+      "complete": true,
+      "command_index": 101,
+      "update_comparison": {
+        "all_other_rows_and_raw_bodies_unchanged": true,
+        "all_logical_index_metadata_and_orders_unchanged": true,
+        "table_and_historical_index_counters_unchanged": true,
+        "root_identity_unchanged": true,
+        "same_target": false,
+        "prior_orphan_hidden_target_preserved": null,
+        "old_file_changed_pages": [
+          217,
+          272
+        ],
+        "file_bytes_added": 0
+      },
+      "preexisting_raw_index_pages_byte_identical": [
+        7,
+        8,
+        10,
+        12,
+        14,
+        15,
+        16,
+        20,
+        21,
+        22,
+        45,
+        46,
+        47,
+        52,
+        55,
+        56,
+        59,
+        60,
+        71,
+        72,
+        73,
+        75,
+        76,
+        83,
+        86,
+        108,
+        113,
+        118,
+        124,
+        129,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135,
+        138,
+        139,
+        141,
+        143,
+        144,
+        145,
+        147,
+        148,
+        149,
+        150,
+        151,
+        152,
+        153,
+        154,
+        155,
+        157,
+        158,
+        159,
+        160,
+        162,
+        165,
+        166,
+        167,
+        168,
+        169,
+        170,
+        171,
+        174,
+        175,
+        177,
+        178,
+        180,
+        181,
+        182,
+        183,
+        185,
+        186,
+        187,
+        188,
+        189,
+        190,
+        191,
+        192,
+        193,
+        195,
+        196,
+        198,
+        199,
+        202,
+        203,
+        204,
+        209,
+        210,
+        211,
+        216,
+        221,
+        226,
+        231,
+        236,
+        242,
+        243,
+        248,
+        249,
+        254,
+        255,
+        260
+      ]
+    },
+    {
+      "action_ordinal": 33,
+      "profile": "V2019",
+      "action": "UPDATE-shrink",
+      "checkpoint_or_step": 13,
+      "ID": 1,
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-checkpoint-13-grown.accdb",
+        "bytes": 1118208,
+        "sha256": "12ad41b5cca6c2ff0bd71dba4bed281618060ad3edc816e5f1a06fbacd75c226"
+      },
+      "output": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-checkpoint-13-shrunk.accdb",
+        "bytes": 1118208,
+        "sha256": "0e3ca032d3486cc72b61080c31ea79469ba73aacc4e8785b572d5083dcf532fc"
+      },
+      "declared_rows_before": 23,
+      "declared_rows_after": 23,
+      "historical_index_rows_before": 23,
+      "historical_index_rows_after": 23,
+      "owned_headers_before": {
+        "217": {
+          "free_bytes": 125,
+          "physical_slots": 22,
+          "prefix_hex": "01017d00d6000000000000001600"
+        },
+        "272": {
+          "free_bytes": 3542,
+          "physical_slots": 2,
+          "prefix_hex": "0101d60dd6000000000000000200"
+        }
+      },
+      "owned_headers_after": {
+        "217": {
+          "free_bytes": 125,
+          "physical_slots": 22,
+          "prefix_hex": "01017d00d6000000000000001600"
+        },
+        "272": {
+          "free_bytes": 3542,
+          "physical_slots": 2,
+          "prefix_hex": "0101d60dd6000000000000000200"
+        }
+      },
+      "root_before": {
+        "page": 217,
+        "slot": 0,
+        "word": 20467,
+        "flags": 16384,
+        "start": 892915,
+        "end": 892928,
+        "bytes": 13,
+        "body_sha256": "a65ed2acc267deabe8a5b72a03683f44d9682d26270b4533632305c2a2f739d6"
+      },
+      "root_after": {
+        "page": 217,
+        "slot": 0,
+        "word": 20467,
+        "flags": 16384,
+        "start": 892915,
+        "end": 892928,
+        "bytes": 13,
+        "body_sha256": "a65ed2acc267deabe8a5b72a03683f44d9682d26270b4533632305c2a2f739d6"
+      },
+      "target_before": {
+        "page": 272,
+        "slot": 1,
+        "word": 36328,
+        "flags": 32768,
+        "start": 1117672,
+        "end": 1117940,
+        "bytes": 268,
+        "body_sha256": "0855670f8781820b0aab13bafdcae074bf0f6d319bfeddf6913362d5de9539d8"
+      },
+      "target_after": {
+        "page": 272,
+        "slot": 1,
+        "word": 36328,
+        "flags": 32768,
+        "start": 1117672,
+        "end": 1117940,
+        "bytes": 268,
+        "body_sha256": "51da7a1c9f88eef67d208c667ec927e2d62079002ffbe0d946096faf48f0e980"
+      },
+      "map_changes": {
+        "JackcessGlobalFree": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableOwned": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableFreeSpace": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        }
+      },
+      "complete": true,
+      "command_index": 104,
+      "update_comparison": {
+        "all_other_rows_and_raw_bodies_unchanged": true,
+        "all_logical_index_metadata_and_orders_unchanged": true,
+        "table_and_historical_index_counters_unchanged": true,
+        "root_identity_unchanged": true,
+        "same_target": true,
+        "prior_orphan_hidden_target_preserved": null,
+        "old_file_changed_pages": [
+          272
+        ],
+        "file_bytes_added": 0
+      },
+      "preexisting_raw_index_pages_byte_identical": [
+        7,
+        8,
+        10,
+        12,
+        14,
+        15,
+        16,
+        20,
+        21,
+        22,
+        45,
+        46,
+        47,
+        52,
+        55,
+        56,
+        59,
+        60,
+        71,
+        72,
+        73,
+        75,
+        76,
+        83,
+        86,
+        108,
+        113,
+        118,
+        124,
+        129,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135,
+        138,
+        139,
+        141,
+        143,
+        144,
+        145,
+        147,
+        148,
+        149,
+        150,
+        151,
+        152,
+        153,
+        154,
+        155,
+        157,
+        158,
+        159,
+        160,
+        162,
+        165,
+        166,
+        167,
+        168,
+        169,
+        170,
+        171,
+        174,
+        175,
+        177,
+        178,
+        180,
+        181,
+        182,
+        183,
+        185,
+        186,
+        187,
+        188,
+        189,
+        190,
+        191,
+        192,
+        193,
+        195,
+        196,
+        198,
+        199,
+        202,
+        203,
+        204,
+        209,
+        210,
+        211,
+        216,
+        221,
+        226,
+        231,
+        236,
+        242,
+        243,
+        248,
+        249,
+        254,
+        255,
+        260
+      ]
+    }
+  ],
+  "command_receipts": [
+    {
+      "argv": [
+        "javac",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "-d",
+        ".cache/ace16-binary-allocation-next-20261026/classes",
+        ".cache/ace16-binary-allocation-next-20261026/BinaryBoundaryAppend.java",
+        "docs/testing/SlotUpdateFixture.java",
+        "docs/testing/SlotMapProbe.java"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-initial-getter.stdout",
+        "bytes": 733170,
+        "sha256": "dff348bcf05b38b817d3653adadf132c210c416b1b5b953b067d36386d515a4d"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-initial-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "a84509a8b8a2bf186cadc2944595f132d6fcbcf1c579c7e0cad1fa47dabe656e",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-initial-maps.stdout",
+        "bytes": 253,
+        "sha256": "1ce09ffe8e2f0add89fe68af928fd43efb543598430dd72bc39b8abdfd89e9ca"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-initial-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "641b066a93f6219033d56fb152e88470a67cb7c170aa5c121dd8dd20f90bc032",
+      "role": "read-only-map-probe"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-initial-getter.stdout",
+        "bytes": 733209,
+        "sha256": "e05d38a5fee9c6b081de6b3c7ca1326514de8bb7a9cb9c740c998cf3e6f97854"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-initial-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "8a8f9ae559a5828a202cff9b1b8b925c29dd360c19c6eb00094a832d166c864f",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-initial-maps.stdout",
+        "bytes": 490,
+        "sha256": "c1b72d7196f5da93211003823a66b234c27f5f504e433b182698a143c24ac572"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-initial-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "e1b05078404aed43d65738b80420f7b48bbcb49a697b33d1fb8fa94b8f15e1e9",
+      "role": "read-only-map-probe"
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "BinaryBoundaryAppend",
+        ".cache/ace16-slot-originals-next-20261026/Slot-V2016-before.accdb",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-append-01.accdb",
+        "10001"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/00-V2016-INSERT-checkpoint-1-action.stdout",
+        "bytes": 37,
+        "sha256": "89be3963f893cc7460daf40f3f8c5bc4f872b915b3bd381f00b5999f8486cc91"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/00-V2016-INSERT-checkpoint-1-action.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/00-V2016-INSERT-checkpoint-1-after-getter.stdout",
+        "bytes": 734333,
+        "sha256": "5ad503aee158f85c5e974bbbf398b1243d59c2fd7ae01ab609f9bfcd99bea77f"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/00-V2016-INSERT-checkpoint-1-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "8f37ef2a4798dbdea97de4eeab0bca0afd22a9aa35f42e401affcf353e41478a",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/00-V2016-INSERT-checkpoint-1-after-maps.stdout",
+        "bytes": 253,
+        "sha256": "1ce09ffe8e2f0add89fe68af928fd43efb543598430dd72bc39b8abdfd89e9ca"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/00-V2016-INSERT-checkpoint-1-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "b0e1c1161aa6a5022a2f9fdd19bf1e1d9d14b8cc90ef6c22b172cc99182499d9",
+      "role": "read-only-map-probe"
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "BinaryBoundaryAppend",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-append-01.accdb",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-append-02.accdb",
+        "10002"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/01-V2016-INSERT-checkpoint-2-action.stdout",
+        "bytes": 37,
+        "sha256": "d07463603437e7a7ac5da66dd11fb8c5b6999bbcb8b9600d511681c4f189f205"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/01-V2016-INSERT-checkpoint-2-action.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/01-V2016-INSERT-checkpoint-2-after-getter.stdout",
+        "bytes": 735496,
+        "sha256": "5a837cf5ea61a037ba5c89ca55df93b8829fb3d394f499e348caad22dfaa2223"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/01-V2016-INSERT-checkpoint-2-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "4f29f9fd239203d1bce8748ce69f6c35721f7f2394f31e38312f1d4c222208c5",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/01-V2016-INSERT-checkpoint-2-after-maps.stdout",
+        "bytes": 253,
+        "sha256": "1ce09ffe8e2f0add89fe68af928fd43efb543598430dd72bc39b8abdfd89e9ca"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/01-V2016-INSERT-checkpoint-2-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "eb7fc853c5d13128ff2c3d7c001730a2900eb184679d0c4ab7d860f320586f2f",
+      "role": "read-only-map-probe"
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "BinaryBoundaryAppend",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-append-02.accdb",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-append-03.accdb",
+        "10003"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/02-V2016-INSERT-checkpoint-3-action.stdout",
+        "bytes": 37,
+        "sha256": "e3c9a97d3e8f4e39aef7db9f6103e3ad9697c3c59bca52e902774823d11f242e"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/02-V2016-INSERT-checkpoint-3-action.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/02-V2016-INSERT-checkpoint-3-after-getter.stdout",
+        "bytes": 736659,
+        "sha256": "7d102d91602e509d26df1e1d2c3d2f89ec6e4677c3134bcadd98f136cb1dc0ec"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/02-V2016-INSERT-checkpoint-3-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "3fc1a846f9b02c402dbac62d23e6ae016bd426abde028df4dd964a9516e5f0d9",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/02-V2016-INSERT-checkpoint-3-after-maps.stdout",
+        "bytes": 253,
+        "sha256": "1ce09ffe8e2f0add89fe68af928fd43efb543598430dd72bc39b8abdfd89e9ca"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/02-V2016-INSERT-checkpoint-3-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "b00042ea4f9c191f85609ce3de2b3842629a73d89c3532b7a4a8ef59cec09ea3",
+      "role": "read-only-map-probe"
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "BinaryBoundaryAppend",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-append-03.accdb",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-append-04.accdb",
+        "10004"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/03-V2016-INSERT-checkpoint-4-action.stdout",
+        "bytes": 37,
+        "sha256": "2676dde82cbbe173cab0e051020c5ef57e5e95863860af97345121be3ce68aa6"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/03-V2016-INSERT-checkpoint-4-action.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/03-V2016-INSERT-checkpoint-4-after-getter.stdout",
+        "bytes": 737822,
+        "sha256": "3d08c947e0a5f837954ef05700758f40de72b02d133bdb23b8a332bced090e9c"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/03-V2016-INSERT-checkpoint-4-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "1f1595ea18f5bdaaff382767c811036d0e9774bffce2406fd155927ab87c391f",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/03-V2016-INSERT-checkpoint-4-after-maps.stdout",
+        "bytes": 253,
+        "sha256": "1ce09ffe8e2f0add89fe68af928fd43efb543598430dd72bc39b8abdfd89e9ca"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/03-V2016-INSERT-checkpoint-4-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "833ad74e35396ecd4033410e56d3fad411580734d0e23ff85005d6fa01518776",
+      "role": "read-only-map-probe"
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "BinaryBoundaryAppend",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-append-04.accdb",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-append-05.accdb",
+        "10005"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/04-V2016-INSERT-checkpoint-5-action.stdout",
+        "bytes": 37,
+        "sha256": "3ef22fb2a3b8636d31a568200784750660df6a11c28c192f41efdd999d671d5c"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/04-V2016-INSERT-checkpoint-5-action.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/04-V2016-INSERT-checkpoint-5-after-getter.stdout",
+        "bytes": 738985,
+        "sha256": "fc965b804a39fc2f61f54d378dce65ca8d86a9850c294c690af5002310d570ca"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/04-V2016-INSERT-checkpoint-5-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "986eaa40839758920aefb293b002222361f3a199b5098916d6017758c45f8f72",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/04-V2016-INSERT-checkpoint-5-after-maps.stdout",
+        "bytes": 253,
+        "sha256": "1ce09ffe8e2f0add89fe68af928fd43efb543598430dd72bc39b8abdfd89e9ca"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/04-V2016-INSERT-checkpoint-5-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "5bb5f4c9a6a0da563195058dfd876cf794b476bfe1804cc7be2d19586923802b",
+      "role": "read-only-map-probe"
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "BinaryBoundaryAppend",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-append-05.accdb",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-append-06.accdb",
+        "10006"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/05-V2016-INSERT-checkpoint-6-action.stdout",
+        "bytes": 37,
+        "sha256": "78277597c5ed014505958cce3e123c48b7c30cd795b9289bf46346deb2c2ab6e"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/05-V2016-INSERT-checkpoint-6-action.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/05-V2016-INSERT-checkpoint-6-after-getter.stdout",
+        "bytes": 740148,
+        "sha256": "b1a11869711684f829fb64064ecb27c01578ab792d7e3b0857573a0272da033e"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/05-V2016-INSERT-checkpoint-6-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "244a534fe8201c9f329012acaa360d43f6fc15b5b22ca8fa37c90b20c5c792b6",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/05-V2016-INSERT-checkpoint-6-after-maps.stdout",
+        "bytes": 253,
+        "sha256": "1ce09ffe8e2f0add89fe68af928fd43efb543598430dd72bc39b8abdfd89e9ca"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/05-V2016-INSERT-checkpoint-6-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "5f73261d44b1c970c27b8b4fe3b445e1febecbf53804b2c89eccf22b69d23ee2",
+      "role": "read-only-map-probe"
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "BinaryBoundaryAppend",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-append-06.accdb",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-append-07.accdb",
+        "10007"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/06-V2016-INSERT-checkpoint-7-action.stdout",
+        "bytes": 37,
+        "sha256": "62b7e8f3a848f3b3b7f05fb8ae6173db16cf6bcc32e317b45bbb1b37f079ddd2"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/06-V2016-INSERT-checkpoint-7-action.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/06-V2016-INSERT-checkpoint-7-after-getter.stdout",
+        "bytes": 741311,
+        "sha256": "ac7a6946d0ef01ce9477e0a59f6697a0324c4bba9b3574fddfb7c5b77571e940"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/06-V2016-INSERT-checkpoint-7-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "b4e65604360db18568c43bb143cde9345b1b79b76653ee06341bd397c241ef8b",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/06-V2016-INSERT-checkpoint-7-after-maps.stdout",
+        "bytes": 253,
+        "sha256": "1ce09ffe8e2f0add89fe68af928fd43efb543598430dd72bc39b8abdfd89e9ca"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/06-V2016-INSERT-checkpoint-7-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "b0d285612317e97149d7fa8680f2ca5e33c0424a71ad0a7be479721df70bd9b5",
+      "role": "read-only-map-probe"
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "BinaryBoundaryAppend",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-append-07.accdb",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-append-08.accdb",
+        "10008"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/07-V2016-INSERT-checkpoint-8-action.stdout",
+        "bytes": 37,
+        "sha256": "2dc8276ad518add44d1abfa41c13151b73dcdd53b99ccf41dcf4b7887615b87c"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/07-V2016-INSERT-checkpoint-8-action.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/07-V2016-INSERT-checkpoint-8-after-getter.stdout",
+        "bytes": 742474,
+        "sha256": "4aa255528dae4d0cf107a4a5ef32289c4d125908c87fbf1bc4d87f6441898911"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/07-V2016-INSERT-checkpoint-8-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "8fb1903cfe7459ced4167db4683fed0c9e215f0de1b3628be7911c5f65ea553a",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/07-V2016-INSERT-checkpoint-8-after-maps.stdout",
+        "bytes": 253,
+        "sha256": "1ce09ffe8e2f0add89fe68af928fd43efb543598430dd72bc39b8abdfd89e9ca"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/07-V2016-INSERT-checkpoint-8-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "d32d385e6614410c1b700eb63af621eece76ae1e3f8b97854a1681d59e5081fb",
+      "role": "read-only-map-probe"
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "BinaryBoundaryAppend",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-append-08.accdb",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-append-09.accdb",
+        "10009"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/08-V2016-INSERT-checkpoint-9-action.stdout",
+        "bytes": 37,
+        "sha256": "e5e3e46e51355c295dc41d226d4e2a5d851c58e700acf5f0a81498c993c28647"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/08-V2016-INSERT-checkpoint-9-action.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/08-V2016-INSERT-checkpoint-9-after-getter.stdout",
+        "bytes": 743637,
+        "sha256": "24fc8aaaa8c9a1d457d5c09800bf32b7d3635150cc1275c262f9947dfeb301eb"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/08-V2016-INSERT-checkpoint-9-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "778aca6232971796c72c7c6d2a3bf3afb3e1ffc298312de9d99fc4dfe47b36cc",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/08-V2016-INSERT-checkpoint-9-after-maps.stdout",
+        "bytes": 253,
+        "sha256": "1ce09ffe8e2f0add89fe68af928fd43efb543598430dd72bc39b8abdfd89e9ca"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/08-V2016-INSERT-checkpoint-9-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "05d5414b1eb37a55248f0388758936d5b8dba34cfc1d6c0f85446515b0f8663b",
+      "role": "read-only-map-probe"
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "BinaryBoundaryAppend",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-append-09.accdb",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-append-10.accdb",
+        "10010"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/09-V2016-INSERT-checkpoint-10-action.stdout",
+        "bytes": 37,
+        "sha256": "63b1838665a319ade30a1312270b5f84b09beac1fe95447ddbd8952b1aba1e27"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/09-V2016-INSERT-checkpoint-10-action.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/09-V2016-INSERT-checkpoint-10-after-getter.stdout",
+        "bytes": 744800,
+        "sha256": "85ecd5f867d5832cdc86cbc39b483d3c3ec14734fdb3debe842f7a8d0ff5ec6e"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/09-V2016-INSERT-checkpoint-10-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "e28430cb76c083cc16d3a82267fc5f04a62f522ecb164db581b9598d628ab524",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/09-V2016-INSERT-checkpoint-10-after-maps.stdout",
+        "bytes": 253,
+        "sha256": "1ce09ffe8e2f0add89fe68af928fd43efb543598430dd72bc39b8abdfd89e9ca"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/09-V2016-INSERT-checkpoint-10-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "bc42b58dd272848b3aa2f0dd2466088be935c5c65ca06fac61f3d06f6125acf9",
+      "role": "read-only-map-probe"
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "BinaryBoundaryAppend",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-append-10.accdb",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-append-11.accdb",
+        "10011"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/10-V2016-INSERT-checkpoint-11-action.stdout",
+        "bytes": 37,
+        "sha256": "cb5d963c638b25cebcec98a048fd2e08d492413a3e587b6c0380dfdd8f79a0b5"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/10-V2016-INSERT-checkpoint-11-action.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/10-V2016-INSERT-checkpoint-11-after-getter.stdout",
+        "bytes": 745963,
+        "sha256": "ab8047f1faee0a1334e4d98a34243f6b976e979b818708896a9af7efd255a589"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/10-V2016-INSERT-checkpoint-11-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "c44a4e8d62c567dc05e0312b4e291065d4d52b364b3caaeb70eb9d509c7f2208",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/10-V2016-INSERT-checkpoint-11-after-maps.stdout",
+        "bytes": 253,
+        "sha256": "1ce09ffe8e2f0add89fe68af928fd43efb543598430dd72bc39b8abdfd89e9ca"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/10-V2016-INSERT-checkpoint-11-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "a4babf25ef318432cb1a07986ad044dd307067632adf0e99ea48fc59c0545163",
+      "role": "read-only-map-probe"
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "BinaryBoundaryAppend",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-append-11.accdb",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-append-12.accdb",
+        "10012"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/11-V2016-INSERT-checkpoint-12-action.stdout",
+        "bytes": 37,
+        "sha256": "61161231c2a29f1eaf4aaa0ba2852a75b95e1483f165f79b8411c18a544066ae"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/11-V2016-INSERT-checkpoint-12-action.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/11-V2016-INSERT-checkpoint-12-after-getter.stdout",
+        "bytes": 747126,
+        "sha256": "fb85b0babdb989c685836ca3d82b0bc590faff415e1c5231547a6326c03b0908"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/11-V2016-INSERT-checkpoint-12-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "c5f624b3b94176bb8df8c68070a1e46636e065ed3a93b85aff961a36657073d7",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/11-V2016-INSERT-checkpoint-12-after-maps.stdout",
+        "bytes": 253,
+        "sha256": "1ce09ffe8e2f0add89fe68af928fd43efb543598430dd72bc39b8abdfd89e9ca"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/11-V2016-INSERT-checkpoint-12-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "50744827df7cd34ed2d2484426f046f2d05d23dfd582356bf37b8fd38d6efa4a",
+      "role": "read-only-map-probe"
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "BinaryBoundaryAppend",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-append-12.accdb",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-append-13.accdb",
+        "10013"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/12-V2016-INSERT-checkpoint-13-action.stdout",
+        "bytes": 37,
+        "sha256": "47d9962830520ebf28a5e17ca3d9c438ebf1de1bafda642ecd88e98a2db6a84c"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/12-V2016-INSERT-checkpoint-13-action.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/12-V2016-INSERT-checkpoint-13-after-getter.stdout",
+        "bytes": 748288,
+        "sha256": "5e2cee84e0d7230176a5d9dea70fecc32b8615717d119fc7eb091173f97998a3"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/12-V2016-INSERT-checkpoint-13-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "b10dc0a14338289ca210187750ab4d305ba23fa6f6097a662b06ca18a201814c",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/12-V2016-INSERT-checkpoint-13-after-maps.stdout",
+        "bytes": 275,
+        "sha256": "003b5304089a0d62da308c84704caddbb23033e14d4772565b42f9e37a84a9ec"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/12-V2016-INSERT-checkpoint-13-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "eeef2cf7caacf7f7bbd75e444084242be4b64ae277947d2819924fbb593591b9",
+      "role": "read-only-map-probe"
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "SlotUpdateFixture",
+        "update",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-append-12.accdb",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-checkpoint-12-grown.accdb",
+        "BinaryStorage",
+        "1",
+        "Bytes",
+        "binary:11304f6e8daccbea0928476685a4c3e201203f5e7d9cbbdaf91837567594b3d2f1102f4e6d8cabcae90827466584a3c2e1001f3e5d7c9bbad9f81736557493b2d1f00f2e4d6c8baac9e80726456483a2c1e0ff1e3d5c7b9ab9d8f71635547392b1d0ef0e2d4c6b8aa9c8e70625446382a1c0dffe1d3c5b7a99b8d7f61534537291b0cfee0d2c4b6a89a8c7e60524436281a0bfdefd1c3b5a7998b7d6f51433527190afceed0c2b4a6988a7c6e504234261809fbeddfc1b3a597897b6d5f4133251708faecdec0b2a496887a6c5e4032241607f9ebddcfb1a39587796b5d4f31231506f8eadcceb0a29486786a5c4e30221405f7e9dbcdbfa1938577695b4d3"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/13-V2016-UPDATE-grow-12-action.stdout",
+        "bytes": 30,
+        "sha256": "4fafd877557e68a007bf7254b9e4ea711a8a4b64d801af76747f3e951c65fc8c"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/13-V2016-UPDATE-grow-12-action.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/13-V2016-UPDATE-grow-12-after-getter.stdout",
+        "bytes": 748149,
+        "sha256": "9f7cb2469409b8f06a2973878cd304ccbc18d2d6301d2c888be973fc31adb48b"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/13-V2016-UPDATE-grow-12-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "f65e0d01487cb7010cdfcdac70ec621ceb9080bead5584ae2305d67c0393f839",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/13-V2016-UPDATE-grow-12-after-maps.stdout",
+        "bytes": 275,
+        "sha256": "7cfcf24358648b67bbbe1505c8320f72b0f748175ed57e7983d6358fd3acab53"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/13-V2016-UPDATE-grow-12-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "a9e0db6d20303e1a6c18bf57a6d417566992eed1318e4d18ce5a0f94a21bc96f",
+      "role": "read-only-map-probe"
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "SlotUpdateFixture",
+        "update",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-checkpoint-12-grown.accdb",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-checkpoint-12-shrunk.accdb",
+        "BinaryStorage",
+        "1",
+        "Bytes",
+        "binary:133251708faecd"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/14-V2016-UPDATE-shrink-12-action.stdout",
+        "bytes": 30,
+        "sha256": "4fafd877557e68a007bf7254b9e4ea711a8a4b64d801af76747f3e951c65fc8c"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/14-V2016-UPDATE-shrink-12-action.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/14-V2016-UPDATE-shrink-12-after-getter.stdout",
+        "bytes": 747653,
+        "sha256": "20a6f7f0d04c0eea2aa4ba4a7ef94b46257a9556cba63ea41db7ca7a72361776"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/14-V2016-UPDATE-shrink-12-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "a5eabc9d93e09c064769bdf4a2b763b5d0fd9353bd52e34f607c6a96a0c6e598",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/14-V2016-UPDATE-shrink-12-after-maps.stdout",
+        "bytes": 275,
+        "sha256": "7cfcf24358648b67bbbe1505c8320f72b0f748175ed57e7983d6358fd3acab53"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/14-V2016-UPDATE-shrink-12-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "79a7f055533a9b2f05a4ae4ebb13262afd58dad100a0db3a1b4c08f64dafbb83",
+      "role": "read-only-map-probe"
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "SlotUpdateFixture",
+        "update",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-append-13.accdb",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-checkpoint-13-grown.accdb",
+        "BinaryStorage",
+        "1",
+        "Bytes",
+        "binary:11304f6e8daccbea0928476685a4c3e201203f5e7d9cbbdaf91837567594b3d2f1102f4e6d8cabcae90827466584a3c2e1001f3e5d7c9bbad9f81736557493b2d1f00f2e4d6c8baac9e80726456483a2c1e0ff1e3d5c7b9ab9d8f71635547392b1d0ef0e2d4c6b8aa9c8e70625446382a1c0dffe1d3c5b7a99b8d7f61534537291b0cfee0d2c4b6a89a8c7e60524436281a0bfdefd1c3b5a7998b7d6f51433527190afceed0c2b4a6988a7c6e504234261809fbeddfc1b3a597897b6d5f4133251708faecdec0b2a496887a6c5e4032241607f9ebddcfb1a39587796b5d4f31231506f8eadcceb0a29486786a5c4e30221405f7e9dbcdbfa1938577695b4d3"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/15-V2016-UPDATE-grow-13-action.stdout",
+        "bytes": 30,
+        "sha256": "4fafd877557e68a007bf7254b9e4ea711a8a4b64d801af76747f3e951c65fc8c"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/15-V2016-UPDATE-grow-13-action.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/15-V2016-UPDATE-grow-13-after-getter.stdout",
+        "bytes": 749311,
+        "sha256": "6bd2d6bdd7b48f1288830daef8fd2c999cebfad6239a208961df76dd0e147e63"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/15-V2016-UPDATE-grow-13-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "7bfc51ef08eab48d7669328610e3929e140b6324a748d02c3a03a784d8d63452",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/15-V2016-UPDATE-grow-13-after-maps.stdout",
+        "bytes": 275,
+        "sha256": "66798501c49d3206a716efed6f1ff678c5c936a7ff96bb95975ecb1e89a99487"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/15-V2016-UPDATE-grow-13-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "7e40533e41112ca872d87b31094df0a8ab8941717e0836703799496e92168fd8",
+      "role": "read-only-map-probe"
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "SlotUpdateFixture",
+        "update",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-checkpoint-13-grown.accdb",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-checkpoint-13-shrunk.accdb",
+        "BinaryStorage",
+        "1",
+        "Bytes",
+        "binary:133251708faecd"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/16-V2016-UPDATE-shrink-13-action.stdout",
+        "bytes": 30,
+        "sha256": "4fafd877557e68a007bf7254b9e4ea711a8a4b64d801af76747f3e951c65fc8c"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/16-V2016-UPDATE-shrink-13-action.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/16-V2016-UPDATE-shrink-13-after-getter.stdout",
+        "bytes": 748815,
+        "sha256": "484b4841fedd200556390435f923682428955b7b82ebafa8c9ef00510c077199"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/16-V2016-UPDATE-shrink-13-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "e705a65a83e272d0efa8c6e8986e78585c82d06bc4c26a39ed474c78e9c666c7",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/16-V2016-UPDATE-shrink-13-after-maps.stdout",
+        "bytes": 275,
+        "sha256": "66798501c49d3206a716efed6f1ff678c5c936a7ff96bb95975ecb1e89a99487"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/16-V2016-UPDATE-shrink-13-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "a4bdd74d569a43be68c1afe06cc513cc2c5140ba4e93eb0fd13e94c711a2e7b1",
+      "role": "read-only-map-probe"
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "BinaryBoundaryAppend",
+        ".cache/ace16-slot-originals-next-20261026/Slot-V2019-before.accdb",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-append-01.accdb",
+        "10001"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/17-V2019-INSERT-checkpoint-1-action.stdout",
+        "bytes": 37,
+        "sha256": "89be3963f893cc7460daf40f3f8c5bc4f872b915b3bd381f00b5999f8486cc91"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/17-V2019-INSERT-checkpoint-1-action.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/17-V2019-INSERT-checkpoint-1-after-getter.stdout",
+        "bytes": 734372,
+        "sha256": "5e5ab36e3b76147b8147fdef355933a65c559e5ca71a03067ec81685d498e2e9"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/17-V2019-INSERT-checkpoint-1-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "39b2596bc4f5ee8fff0968340d246f154b2cf060a5cce6ea943c9f59d2e0159a",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/17-V2019-INSERT-checkpoint-1-after-maps.stdout",
+        "bytes": 490,
+        "sha256": "c1b72d7196f5da93211003823a66b234c27f5f504e433b182698a143c24ac572"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/17-V2019-INSERT-checkpoint-1-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "41135f3c5ddf1fad8a9f81cf3745de5e24344bcca3d318ca476c00aec0af812b",
+      "role": "read-only-map-probe"
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "BinaryBoundaryAppend",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-append-01.accdb",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-append-02.accdb",
+        "10002"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/18-V2019-INSERT-checkpoint-2-action.stdout",
+        "bytes": 37,
+        "sha256": "d07463603437e7a7ac5da66dd11fb8c5b6999bbcb8b9600d511681c4f189f205"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/18-V2019-INSERT-checkpoint-2-action.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/18-V2019-INSERT-checkpoint-2-after-getter.stdout",
+        "bytes": 735535,
+        "sha256": "290559530477372bb923d5a7bcacd5b898723c1e772e99cea461902e381cda97"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/18-V2019-INSERT-checkpoint-2-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "195c3287761d482d1678ae9f4a31c170449049b8ef2fcb4d25a8bb73dccdb5a7",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/18-V2019-INSERT-checkpoint-2-after-maps.stdout",
+        "bytes": 490,
+        "sha256": "c1b72d7196f5da93211003823a66b234c27f5f504e433b182698a143c24ac572"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/18-V2019-INSERT-checkpoint-2-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "7d9303bcfc4f53c097e96f7eb09ff8acddab4da1efaf9077cebf1f647300968e",
+      "role": "read-only-map-probe"
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "BinaryBoundaryAppend",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-append-02.accdb",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-append-03.accdb",
+        "10003"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/19-V2019-INSERT-checkpoint-3-action.stdout",
+        "bytes": 37,
+        "sha256": "e3c9a97d3e8f4e39aef7db9f6103e3ad9697c3c59bca52e902774823d11f242e"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/19-V2019-INSERT-checkpoint-3-action.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/19-V2019-INSERT-checkpoint-3-after-getter.stdout",
+        "bytes": 736698,
+        "sha256": "172f7ac8a80b35d20b089935fac02898fb4998409d59d8fd2ef9ae65bff1c563"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/19-V2019-INSERT-checkpoint-3-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "eb18b2fe453b33a487b7fc19fe9aa4bde7fe853ce26401a8111bf702695f6a9c",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/19-V2019-INSERT-checkpoint-3-after-maps.stdout",
+        "bytes": 490,
+        "sha256": "c1b72d7196f5da93211003823a66b234c27f5f504e433b182698a143c24ac572"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/19-V2019-INSERT-checkpoint-3-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "de0a5c6e84d2d4499718eb0bf726021ae4b9fa351da276a3b30dc797330bc673",
+      "role": "read-only-map-probe"
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "BinaryBoundaryAppend",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-append-03.accdb",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-append-04.accdb",
+        "10004"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/20-V2019-INSERT-checkpoint-4-action.stdout",
+        "bytes": 37,
+        "sha256": "2676dde82cbbe173cab0e051020c5ef57e5e95863860af97345121be3ce68aa6"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/20-V2019-INSERT-checkpoint-4-action.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/20-V2019-INSERT-checkpoint-4-after-getter.stdout",
+        "bytes": 737861,
+        "sha256": "fb432ea6775ed74f15ffe0bb7fccf6e22a07fcde9dbd1c9b3ef69003432ff467"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/20-V2019-INSERT-checkpoint-4-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "0e5fca10e270dd33d6a0ec62dec03e60b0486483829344bd71d4dd052c7d9586",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/20-V2019-INSERT-checkpoint-4-after-maps.stdout",
+        "bytes": 490,
+        "sha256": "c1b72d7196f5da93211003823a66b234c27f5f504e433b182698a143c24ac572"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/20-V2019-INSERT-checkpoint-4-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "b18414ed1441f50eea78abab617d199c58b768a9659c07e648b002af3d719585",
+      "role": "read-only-map-probe"
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "BinaryBoundaryAppend",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-append-04.accdb",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-append-05.accdb",
+        "10005"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/21-V2019-INSERT-checkpoint-5-action.stdout",
+        "bytes": 37,
+        "sha256": "3ef22fb2a3b8636d31a568200784750660df6a11c28c192f41efdd999d671d5c"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/21-V2019-INSERT-checkpoint-5-action.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/21-V2019-INSERT-checkpoint-5-after-getter.stdout",
+        "bytes": 739024,
+        "sha256": "6f11a2bfb22bb391a10c41e18258a9c11b2d80b1b1cd8559e1deb1231f7b7df4"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/21-V2019-INSERT-checkpoint-5-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "d515fb86967b64045b5a317ff9d2d912568ce078c5c0d931eea92af98dc1f59f",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/21-V2019-INSERT-checkpoint-5-after-maps.stdout",
+        "bytes": 490,
+        "sha256": "c1b72d7196f5da93211003823a66b234c27f5f504e433b182698a143c24ac572"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/21-V2019-INSERT-checkpoint-5-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "2b5e51cbe053fd2ff43cce4f865edecc62d521f72349e1a3810bc2b0d3491a47",
+      "role": "read-only-map-probe"
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "BinaryBoundaryAppend",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-append-05.accdb",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-append-06.accdb",
+        "10006"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/22-V2019-INSERT-checkpoint-6-action.stdout",
+        "bytes": 37,
+        "sha256": "78277597c5ed014505958cce3e123c48b7c30cd795b9289bf46346deb2c2ab6e"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/22-V2019-INSERT-checkpoint-6-action.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/22-V2019-INSERT-checkpoint-6-after-getter.stdout",
+        "bytes": 740187,
+        "sha256": "b30656d2b60c97fb3614a5772644cd467439651be4ff342b489ee4096811f8b5"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/22-V2019-INSERT-checkpoint-6-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "7dbd6fa5612f7e5814d2eb9aff76c6cd4cb0da16c580dcd24a5c5159ff813bb7",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/22-V2019-INSERT-checkpoint-6-after-maps.stdout",
+        "bytes": 490,
+        "sha256": "c1b72d7196f5da93211003823a66b234c27f5f504e433b182698a143c24ac572"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/22-V2019-INSERT-checkpoint-6-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "8e04fec5a76524c4dbb8b07c23372db8df8f82332f7777b14fd75e831d492ca7",
+      "role": "read-only-map-probe"
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "BinaryBoundaryAppend",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-append-06.accdb",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-append-07.accdb",
+        "10007"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/23-V2019-INSERT-checkpoint-7-action.stdout",
+        "bytes": 37,
+        "sha256": "62b7e8f3a848f3b3b7f05fb8ae6173db16cf6bcc32e317b45bbb1b37f079ddd2"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/23-V2019-INSERT-checkpoint-7-action.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/23-V2019-INSERT-checkpoint-7-after-getter.stdout",
+        "bytes": 741350,
+        "sha256": "0835a117517fc727d99c9eec39ec54f94e7455fc84e84f7d5695b65901aaac40"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/23-V2019-INSERT-checkpoint-7-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "60fd7d56cc95dad17a933c1ed955e28235238a0e121ce716726279ca2c23d319",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/23-V2019-INSERT-checkpoint-7-after-maps.stdout",
+        "bytes": 490,
+        "sha256": "c1b72d7196f5da93211003823a66b234c27f5f504e433b182698a143c24ac572"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/23-V2019-INSERT-checkpoint-7-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "77d2f2d017ad1f68215f1fb2c7e74e6eb978506267244af5071ca6ad5c94364d",
+      "role": "read-only-map-probe"
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "BinaryBoundaryAppend",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-append-07.accdb",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-append-08.accdb",
+        "10008"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/24-V2019-INSERT-checkpoint-8-action.stdout",
+        "bytes": 37,
+        "sha256": "2dc8276ad518add44d1abfa41c13151b73dcdd53b99ccf41dcf4b7887615b87c"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/24-V2019-INSERT-checkpoint-8-action.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/24-V2019-INSERT-checkpoint-8-after-getter.stdout",
+        "bytes": 742513,
+        "sha256": "9260e6004d8cf55f22c74e142d8473045203c0aead4376fe9d158558780b71e8"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/24-V2019-INSERT-checkpoint-8-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "c2d7648a8e2ece45d69050697ce4fe34f2cf201debf5959017e7bba32a92e3cb",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/24-V2019-INSERT-checkpoint-8-after-maps.stdout",
+        "bytes": 490,
+        "sha256": "c1b72d7196f5da93211003823a66b234c27f5f504e433b182698a143c24ac572"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/24-V2019-INSERT-checkpoint-8-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "fae4566ed9e259327dfe966be78ecc4a57021d6d2e64986ddfc92df42e29b6f9",
+      "role": "read-only-map-probe"
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "BinaryBoundaryAppend",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-append-08.accdb",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-append-09.accdb",
+        "10009"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/25-V2019-INSERT-checkpoint-9-action.stdout",
+        "bytes": 37,
+        "sha256": "e5e3e46e51355c295dc41d226d4e2a5d851c58e700acf5f0a81498c993c28647"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/25-V2019-INSERT-checkpoint-9-action.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/25-V2019-INSERT-checkpoint-9-after-getter.stdout",
+        "bytes": 743676,
+        "sha256": "fea14d12ff6e3fbd433a2eabfbdb7d47113f27ea1919bd13f4bd27c27b89db33"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/25-V2019-INSERT-checkpoint-9-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "bfc94722402e0b51a2d436aafbc1c83616a7543f41d9024b0ef89a3b7d24b8d3",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/25-V2019-INSERT-checkpoint-9-after-maps.stdout",
+        "bytes": 490,
+        "sha256": "c1b72d7196f5da93211003823a66b234c27f5f504e433b182698a143c24ac572"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/25-V2019-INSERT-checkpoint-9-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "90b5cbca320a0584a313c9fbaa94a2e3339b7f60b1c3c18d710ea8f98cbc33c2",
+      "role": "read-only-map-probe"
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "BinaryBoundaryAppend",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-append-09.accdb",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-append-10.accdb",
+        "10010"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/26-V2019-INSERT-checkpoint-10-action.stdout",
+        "bytes": 37,
+        "sha256": "63b1838665a319ade30a1312270b5f84b09beac1fe95447ddbd8952b1aba1e27"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/26-V2019-INSERT-checkpoint-10-action.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/26-V2019-INSERT-checkpoint-10-after-getter.stdout",
+        "bytes": 744839,
+        "sha256": "107b28f767ff5776aed190a6e3fd8d84d99fdafbc66c7ead8aba193976fc4412"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/26-V2019-INSERT-checkpoint-10-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "923a5419d56612b90d5c241b540f628d1810fb018e78af603fe480998e22f298",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/26-V2019-INSERT-checkpoint-10-after-maps.stdout",
+        "bytes": 490,
+        "sha256": "c1b72d7196f5da93211003823a66b234c27f5f504e433b182698a143c24ac572"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/26-V2019-INSERT-checkpoint-10-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "c5f9d829a81e3bc0dd38b66b32fb06f7ed29f53dfcad28868ae5a35989b4a6b3",
+      "role": "read-only-map-probe"
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "BinaryBoundaryAppend",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-append-10.accdb",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-append-11.accdb",
+        "10011"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/27-V2019-INSERT-checkpoint-11-action.stdout",
+        "bytes": 37,
+        "sha256": "cb5d963c638b25cebcec98a048fd2e08d492413a3e587b6c0380dfdd8f79a0b5"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/27-V2019-INSERT-checkpoint-11-action.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/27-V2019-INSERT-checkpoint-11-after-getter.stdout",
+        "bytes": 746002,
+        "sha256": "da3b124225bde852f2929c6583e74058e51b11ca037bc742e354aa1059a7f72c"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/27-V2019-INSERT-checkpoint-11-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "1f8c83a21cbc7fb29155935e83ddefc59012bbcc3f4f53f482613c2e6096548d",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/27-V2019-INSERT-checkpoint-11-after-maps.stdout",
+        "bytes": 490,
+        "sha256": "c1b72d7196f5da93211003823a66b234c27f5f504e433b182698a143c24ac572"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/27-V2019-INSERT-checkpoint-11-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "20f2f0d2628d5ba8b4e47700ca7439144c70bdcfe8bd89f8a7e80181b3e0f00b",
+      "role": "read-only-map-probe"
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "BinaryBoundaryAppend",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-append-11.accdb",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-append-12.accdb",
+        "10012"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/28-V2019-INSERT-checkpoint-12-action.stdout",
+        "bytes": 37,
+        "sha256": "61161231c2a29f1eaf4aaa0ba2852a75b95e1483f165f79b8411c18a544066ae"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/28-V2019-INSERT-checkpoint-12-action.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/28-V2019-INSERT-checkpoint-12-after-getter.stdout",
+        "bytes": 747165,
+        "sha256": "e1cd36fc62958da802b157d50cb1d0379909853beb162a5164fc83acdf5d4ea9"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/28-V2019-INSERT-checkpoint-12-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "14d0fa7dbf483e2fe23586acf5d88018b9e11ae70815d16466ad9f43aca7f5aa",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/28-V2019-INSERT-checkpoint-12-after-maps.stdout",
+        "bytes": 490,
+        "sha256": "c1b72d7196f5da93211003823a66b234c27f5f504e433b182698a143c24ac572"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/28-V2019-INSERT-checkpoint-12-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "b9484ca94422778524e27f1501efa969ed734e25a278faff8ef55bb4cce051c3",
+      "role": "read-only-map-probe"
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "BinaryBoundaryAppend",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-append-12.accdb",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-append-13.accdb",
+        "10013"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/29-V2019-INSERT-checkpoint-13-action.stdout",
+        "bytes": 37,
+        "sha256": "47d9962830520ebf28a5e17ca3d9c438ebf1de1bafda642ecd88e98a2db6a84c"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/29-V2019-INSERT-checkpoint-13-action.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/29-V2019-INSERT-checkpoint-13-after-getter.stdout",
+        "bytes": 748327,
+        "sha256": "7029802d2b8daa67aa0d1e497e2ad3f6632dc42ac315e831e8dbecec5d64bf18"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/29-V2019-INSERT-checkpoint-13-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "2fc5ee44f99a410f7b1ab6c74d8a573f25c82be00444a72f6dcb035ea50105cc",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/29-V2019-INSERT-checkpoint-13-after-maps.stdout",
+        "bytes": 512,
+        "sha256": "ec155f4186e5c5b50465650c0bdc2c9427ac5ef9a147fedb360619dca243c508"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/29-V2019-INSERT-checkpoint-13-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "1aca0c041b5effeb32761e57d150830ac447214671234695efd24c1b8d54badf",
+      "role": "read-only-map-probe"
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "SlotUpdateFixture",
+        "update",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-append-12.accdb",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-checkpoint-12-grown.accdb",
+        "BinaryStorage",
+        "1",
+        "Bytes",
+        "binary:11304f6e8daccbea0928476685a4c3e201203f5e7d9cbbdaf91837567594b3d2f1102f4e6d8cabcae90827466584a3c2e1001f3e5d7c9bbad9f81736557493b2d1f00f2e4d6c8baac9e80726456483a2c1e0ff1e3d5c7b9ab9d8f71635547392b1d0ef0e2d4c6b8aa9c8e70625446382a1c0dffe1d3c5b7a99b8d7f61534537291b0cfee0d2c4b6a89a8c7e60524436281a0bfdefd1c3b5a7998b7d6f51433527190afceed0c2b4a6988a7c6e504234261809fbeddfc1b3a597897b6d5f4133251708faecdec0b2a496887a6c5e4032241607f9ebddcfb1a39587796b5d4f31231506f8eadcceb0a29486786a5c4e30221405f7e9dbcdbfa1938577695b4d3"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/30-V2019-UPDATE-grow-12-action.stdout",
+        "bytes": 30,
+        "sha256": "4fafd877557e68a007bf7254b9e4ea711a8a4b64d801af76747f3e951c65fc8c"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/30-V2019-UPDATE-grow-12-action.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/30-V2019-UPDATE-grow-12-after-getter.stdout",
+        "bytes": 748188,
+        "sha256": "b2d08f6f3d1794534f253ea468298c31113bb7515765648178cdb61aca2ac8f1"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/30-V2019-UPDATE-grow-12-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "a1579e631cb07b579b394381b0c735b80635d7db3a9149a66920c96265368c09",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/30-V2019-UPDATE-grow-12-after-maps.stdout",
+        "bytes": 512,
+        "sha256": "890ac9271e2e82171177ff8fae9cafad0f5cd8d67897fa379bcc32d6faa641d1"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/30-V2019-UPDATE-grow-12-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "8a50dc79bd21d3dba0fd77c4caad14d0904a5a75046fb653370222a449e96fc5",
+      "role": "read-only-map-probe"
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "SlotUpdateFixture",
+        "update",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-checkpoint-12-grown.accdb",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-checkpoint-12-shrunk.accdb",
+        "BinaryStorage",
+        "1",
+        "Bytes",
+        "binary:133251708faecd"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/31-V2019-UPDATE-shrink-12-action.stdout",
+        "bytes": 30,
+        "sha256": "4fafd877557e68a007bf7254b9e4ea711a8a4b64d801af76747f3e951c65fc8c"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/31-V2019-UPDATE-shrink-12-action.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/31-V2019-UPDATE-shrink-12-after-getter.stdout",
+        "bytes": 747692,
+        "sha256": "d0f7d9f0837e1d459d0e640945735bffe9895711242d2d54880ba781ad6f0fdb"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/31-V2019-UPDATE-shrink-12-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "2bd3dba535ed9948d0d9a973fd143b98e4f04a17037c4f2e55fd93a42a03d735",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/31-V2019-UPDATE-shrink-12-after-maps.stdout",
+        "bytes": 512,
+        "sha256": "890ac9271e2e82171177ff8fae9cafad0f5cd8d67897fa379bcc32d6faa641d1"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/31-V2019-UPDATE-shrink-12-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "54c8c9cfa189f8ba0fe03b83822327a88a39d3532498ce22941756a6a521b66a",
+      "role": "read-only-map-probe"
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "SlotUpdateFixture",
+        "update",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-append-13.accdb",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-checkpoint-13-grown.accdb",
+        "BinaryStorage",
+        "1",
+        "Bytes",
+        "binary:11304f6e8daccbea0928476685a4c3e201203f5e7d9cbbdaf91837567594b3d2f1102f4e6d8cabcae90827466584a3c2e1001f3e5d7c9bbad9f81736557493b2d1f00f2e4d6c8baac9e80726456483a2c1e0ff1e3d5c7b9ab9d8f71635547392b1d0ef0e2d4c6b8aa9c8e70625446382a1c0dffe1d3c5b7a99b8d7f61534537291b0cfee0d2c4b6a89a8c7e60524436281a0bfdefd1c3b5a7998b7d6f51433527190afceed0c2b4a6988a7c6e504234261809fbeddfc1b3a597897b6d5f4133251708faecdec0b2a496887a6c5e4032241607f9ebddcfb1a39587796b5d4f31231506f8eadcceb0a29486786a5c4e30221405f7e9dbcdbfa1938577695b4d3"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/32-V2019-UPDATE-grow-13-action.stdout",
+        "bytes": 30,
+        "sha256": "4fafd877557e68a007bf7254b9e4ea711a8a4b64d801af76747f3e951c65fc8c"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/32-V2019-UPDATE-grow-13-action.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/32-V2019-UPDATE-grow-13-after-getter.stdout",
+        "bytes": 749350,
+        "sha256": "c6d46ff48c1c1465f19a8f70b442f67c90225bd0ac118bba3f7f97a69bcb8fc2"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/32-V2019-UPDATE-grow-13-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "614f3f4a2615eb3c1ce7d8ebb3f24632c4fc5b554620727e176916d57c0fc7a3",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/32-V2019-UPDATE-grow-13-after-maps.stdout",
+        "bytes": 512,
+        "sha256": "58f64b14d61052c8ebd495daff4e9de6dcae3a2303ec3150572630673c41c7ee"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/32-V2019-UPDATE-grow-13-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "caac3b6892887bfe295fdc46f529192cd8f9df4edbb5840b70d0e85910aa373a",
+      "role": "read-only-map-probe"
+    },
+    {
+      "argv": [
+        "java",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "SlotUpdateFixture",
+        "update",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-checkpoint-13-grown.accdb",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-checkpoint-13-shrunk.accdb",
+        "BinaryStorage",
+        "1",
+        "Bytes",
+        "binary:133251708faecd"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/33-V2019-UPDATE-shrink-13-action.stdout",
+        "bytes": 30,
+        "sha256": "4fafd877557e68a007bf7254b9e4ea711a8a4b64d801af76747f3e951c65fc8c"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/33-V2019-UPDATE-shrink-13-action.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/33-V2019-UPDATE-shrink-13-after-getter.stdout",
+        "bytes": 748854,
+        "sha256": "35c8032f9db349a20b7467436166804fd8408077b55631e7aa7d9b571dee01d0"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/33-V2019-UPDATE-shrink-13-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "ab8e0cf33826158b1237fb927b57fdf7474bb4b2ec8abfd7b09f9b178bc186ea",
+      "role": "read-only-getter"
+    },
+    {
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/33-V2019-UPDATE-shrink-13-after-maps.stdout",
+        "bytes": 512,
+        "sha256": "58f64b14d61052c8ebd495daff4e9de6dcae3a2303ec3150572630673c41c7ee"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/33-V2019-UPDATE-shrink-13-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv_canonical_sha256": "a843629c069fcecf8766f64b3bdebc845249554bcfcb627b16e2746048608416",
+      "role": "read-only-map-probe"
+    }
+  ],
+  "current_public_wrapper": {
+    "file": {
+      "path": "docs/testing/capture_binary_allocation.py",
+      "bytes": 10386,
+      "sha256": "39f022a489e80e8a2d4344718723ca9157db80ae2b28e89126c4429fea979992"
+    },
+    "historical_execution": false,
+    "verification": "Python syntax and --help only; no wrapper actions were run."
+  },
+  "schema": "BinaryStorage(ID ordinary LONG primary, Bytes variable ShortBinary length255), selected Bytes flag2/ext0 and unindexed.",
+  "qualification": [
+    "Existing ample-space BinaryStorage remains a non-witness; new fresh checkpoints create the measured boundary.",
+    "All26 INSERT checkpoints are separate from eight actual UPDATE observations.",
+    "No native candidate, native Access save/execution, data macro, arbitrary free-page reuse or map-growth qualification."
+  ]
+}
