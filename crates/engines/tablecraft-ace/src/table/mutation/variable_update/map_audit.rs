@@ -1,5 +1,9 @@
 //! Independent placement replay derives map authority without planner masks.
+#[cfg(test)]
+mod tests;
+
 use super::super::EditError;
+use super::authority::ChangedRecord;
 use super::placement::Plan;
 use crate::{
     InspectError, NativeImage, TableSchema,
@@ -83,9 +87,14 @@ pub(super) fn prove(
     image: &NativeImage,
     schema: &TableSchema,
     plan: &Plan,
+    records: &[ChangedRecord],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
+    if plan.events.len() != records.len() || plan.append.owner != schema.definition {
+        return Err(EditError::Preservation);
+    }
+
     let mut source = image.reader();
     let mut reader = Reader {
         source: &mut source,
@@ -144,16 +153,35 @@ pub(super) fn prove(
     }
     let original_eof = reader.header.page_count();
     let mut next_eof = original_eof;
-    for event in &plan.events {
+    for (event, record) in plan.events.iter().zip(records) {
         reader.tick()?;
-        let Some(slot) = event.appended else {
+        if event.root != record.reference
+            || event.word != record.root_word
+            || event.root_range != record.root_range
+        {
+            return Err(EditError::Preservation);
+        }
+
+        // Record capacity and preferred wire bytes come from the original
+        // request proof, never the builder's selected destination range.
+        let length = record.bytes.len();
+        if length == record.original_length {
+            let end = record
+                .final_offset
+                .checked_add(length)
+                .ok_or(EditError::Preservation)?;
+            if event.appended.is_some() || event.target != (record.final_offset..end) {
+                return Err(EditError::Preservation);
+            }
+
             continue;
-        };
-        let length = event
-            .target
-            .end
-            .checked_sub(event.target.start)
-            .ok_or(EditError::Preservation)?;
+        }
+
+        if length < record.original_length {
+            return Err(EditError::Preservation);
+        }
+
+        let slot = event.appended.ok_or(EditError::Preservation)?;
         let number =
             u32::try_from(event.target.start / PAGE_BYTES).map_err(|_| EditError::Preservation)?;
         reader.work(states.len())?;

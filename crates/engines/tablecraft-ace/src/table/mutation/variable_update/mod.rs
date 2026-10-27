@@ -1,9 +1,11 @@
 //! Separate alternative-owned-page and represented-EOF forwarding previews.
 mod audit;
+mod authority;
 mod finish;
 mod map_audit;
 mod maps;
 mod placement;
+mod record_proof;
 
 use super::{
     Ace16WritePreview, EditError, SlotScalarUpdate, WriteBlocker, gates, page_update::stage,
@@ -91,7 +93,7 @@ impl NativeImage {
         )?;
         finish::finish(
             self,
-            table,
+            &authority::Operation::new(table, column, updates),
             &staged.plan,
             &indexes,
             staged.changed_rows(),

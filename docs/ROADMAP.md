@@ -218,7 +218,10 @@ combined candidate remains unfinished.
 The existing variable and index previews now share a
 [typed append state](testing/ACE16_SHARED_APPEND_STATE.md), including one EOF
 cursor and original-before/current-after map-byte ledger per operation.
-Independent request-derived DATA replay and a combined update API remain next.
+The standalone writer now has
+[request-derived record and placement replay](testing/ACE16_VARIABLE_DATA_PROOF.md),
+including exact preferred wire bytes and original record capacity. Combining
+that proof with index allocation and a new update API remains next.
 
 - [x] Qualified [index-owned map promotion](testing/ACE16_INDEX_MAP_GROWTH.md)
   now composes same-extent pointer-row rewrites and distinct bitmap metadata with
