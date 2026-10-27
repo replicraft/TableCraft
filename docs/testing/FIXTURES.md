@@ -9349,3 +9349,16 @@ per-row parity or native Access qualification. Current parameterized public tool
 and their read-only verification are distinguished from archived executed private
 sources; expanded getters/images remain ignored. Batch, boundary and forwarding
 experiments are not included in these 162 controls.
+
+### Separate cross-page UPDATE descendants
+
+The [cross-page observations](CROSS_PAGE_UPDATE_OBSERVATIONS.md) use four
+preserved allocation-boundary descendants of these same originals. Eight public
+UPDATE calls run only on fresh copies: four large replacements followed by four
+shrinks. Two growths append an EOF page with exact represented map-bit changes;
+two reuse an owned alternate page without changing maps or file length. All
+logical roots, table/index counters and unrelated row/index bytes remain intact.
+The [separate receipt](results/ace16-cross-page-update-originals-2026-10-26.json)
+pins source/output hashes, tools, actual executed sources and all 32 command
+records. These are public-writer observations, with no engineering candidate or
+native Access qualification implied.
