@@ -55,6 +55,11 @@ cargo build --locked -p tablecraft-ace --features ace16-write-preview --example 
 target/debug/examples/preview_ace16_update original.accdb candidate.accdb Items Score 1 20 27
 ```
 
+The separate [fixed-Int32 comparison build](results/ace16-index-split-example-build-2026-10-26.json)
+freezes this existing consumer at revision `2fc75f6f` with 108 selected committed
+source pins and a strict example-lint check. It provides a reproducible tool for
+measuring current index-capacity refusals; building it does not add index splits.
+
 Arguments are source, fresh output, table, column, zero-based live-row ordinal,
 expected Int32 and replacement Int32. Clap handles signed values and argument errors.
 The example reads an explicit stable/offline source, completes the preview before
