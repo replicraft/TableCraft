@@ -35,6 +35,10 @@ target ownership and independent opaque-byte/map audits. Slot, physical-space
 and candidate-hint limits refuse without allocating another page. This remains
 an engineering candidate, with ordinary ACE saves and data-macro qualification
 still unavailable.
+Its [fixed original-file comparison](../../testing/PAGE_UPDATE_OBSERVATIONS.md)
+passes 156 candidates and 24 typed refusals, including sixteen hidden appends
+and eighteen byte-identical no-ops. Earlier exact-span results retain their
+original selectors, tool and counts.
 Contraction now qualifies complete internal-node sibling chains by height and
 repairs retained neighbors. Entirely unlinked levels retain their existing
 profile; partial or malformed chains refuse. The

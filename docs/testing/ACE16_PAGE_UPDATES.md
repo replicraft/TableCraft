@@ -67,5 +67,8 @@ private tests demonstrate that ordinary semantic checks accept forged opaque
 bytes which the strengthened independent record audit rejects.
 
 Public-builder observations informed same-page forwarding and candidate-hint
-semantics. A separate predeclared 180-control original-file comparison awaits a
-committed consumer artifact; those outcomes are not claimed by this core record.
+semantics. The subsequent [predeclared original-file comparison](PAGE_UPDATE_OBSERVATIONS.md)
+passes all 180 controls using a separately committed frozen consumer: 156
+candidates and 24 typed refusals. Its proof covers 122 fitted records, sixteen
+appends and eighteen byte-identical no-ops. These later outcomes are separate
+from the original scoped implementation record and native Access qualification.

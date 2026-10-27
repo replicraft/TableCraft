@@ -38,6 +38,9 @@ Delivered read/query and engineering foundations:
   fits records within retained capacity or appends hidden forwarding targets
   while preserving original logical roots. Page allocation, index splitting and
   ordinary saves remain unfinished.
+  Its [separate original-file replay](testing/PAGE_UPDATE_OBSERVATIONS.md) now
+  passes 180 controls: 156 candidates and 24 typed refusals, with complete
+  record/index/map and protected-byte proofs.
   A separate [48-control Text/Binary corpus](testing/ENCODED_DELETE_OBSERVATIONS.md)
   checks 36 candidates and twelve unsupported-profile refusals on the same
   committed tool, including the previously refused height-two delete-all cases.
