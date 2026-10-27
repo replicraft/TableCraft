@@ -57,6 +57,10 @@ composed from typed retirement intents, with an exact union audit plus per-table
 ownership and sibling proofs. Child/parent removals may therefore be explicitly
 batched without an intermediate broken image. This does not dispatch cascades or
 claim SQL RESTRICT action timing; the same engineering-only save boundary applies.
+The [original-file batch replay](../../testing/BATCH_DELETE_OBSERVATIONS.md)
+passes 28 controls, including height-two trees on both owners and exact shared
+bitmap-byte retirement unions. All eight table-order pairs are byte-identical;
+this remains separate from native Access action/save qualification.
 
 Existing LONG AutoNumber deletion now has an
 [original-file preservation comparison](../../testing/AUTONUMBER_DELETE_OBSERVATIONS.md):

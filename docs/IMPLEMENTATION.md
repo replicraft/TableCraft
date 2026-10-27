@@ -1,5 +1,27 @@
 # Implementation status
 
+## Original-file multi-table deletion qualification
+
+The [batch comparison](testing/BATCH_DELETE_OBSERVATIONS.md) passes all 28
+controls on unchanged ACE16 V2016/V2019 originals: sixteen candidates and twelve
+typed refusals. Each original has 500 parents and 500 children with an enforced
+non-NULL Int32 RESTRICT relationship and height-two GUID tuple indexes on both
+owners. Both explicit table orders produce identical candidate bytes.
+
+Independent graph/map proofs cover complete original leaf partitions, retained
+key/row maxima, per-height sibling chains and global bytes containing retirement
+bits from both owners. The subtree-union case retires nineteen parent and eighteen
+child pages; all-row deletion retires 41/43. Original record bodies, the inert
+Memo/OLE sentinel and every byte outside exact slot/count/index/map spans remain
+unchanged. Eight public child-before-parent reference states reach the same final
+rows and keys without requiring identical physical layouts.
+
+The [compact receipt](testing/results/ace16-batch-delete-originals-2026-10-26.json)
+retains 88 command associations and both hashes in every table-order pair. Raw
+arrays remain ignored and pinned. This is final-state engineering evidence;
+automatic cascades, SQL action timing, macros, ordinary ACE saves and native
+Access qualification remain unfinished.
+
 ## Exact French legacy physical index reads
 
 Native Short Text indexes with exact descriptor `1036/0/0` now use the existing

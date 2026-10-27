@@ -9086,3 +9086,71 @@ action lookup remains distinct from the explicit all-NULL-exempt final-image rul
 Initial incomplete 26/1 evidence, exact source versions, histories and raw outputs
 remain pinned. No full action parity, native SQL timing, Access save or ordinary
 write qualification is claimed.
+
+## Original multi-table deletion batch inputs
+
+[BatchDeleteFixture.java](BatchDeleteFixture.java),
+[the independent model](batch_delete_model.py) and
+[the comparison runner](compare_batch_deletes.py) are original repository-owned
+test code. The reviewed Jackcess 5.0.4 JAR is unchanged (SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
+No JAR or database binary is tracked. Fresh public builders create two plain
+ACE16 files with 500 parents, 500 matching children, enforced non-NULL Int32
+RESTRICT keys, ten GUID key components per owner and real wide-index aliases.
+Actual wide trees have height two and 42/44 owned pages, with cross-owner global
+bitmap-byte overlap. A Unicode Memo/OLE sentinel remains inert and protected.
+Expressions are disabled and link resolution throws.
+
+The originals below reside under
+`.cache/batch-delete-originals-next-20261026/`. These are newly generated
+identities, not restored historical files. Exact generation/getter command
+receipts and tool hashes are retained in the
+[compact evidence record](results/ace16-batch-delete-originals-2026-10-26.json).
+Generation uses the following public recipe, with V2019 as the other profile:
+
+```sh
+java -Dstdout.encoding=UTF-8 -cp JAR docs/testing/BatchDeleteFixture.java \
+  generate FRESH_PATH V2016
+```
+
+Use fresh paths: timestamps can change newly generated identities, and the replay
+refuses bytes that differ from its registered originals.
+
+| Profile | Original file | Bytes | SHA-256 |
+| --- | --- | ---: | --- |
+| V2016 | Batch-V2016-before.accdb | 987,136 | `ebb1f05f264dddf5e8195633a0bd5077f5ea6bb1211da0943086a1dbf713ff80` |
+| V2019 | Batch-V2019-before.accdb | 1,056,768 | `eb29beb6a77359ac517233e95f375642a03a4a1623540958d85bef161fad995b` |
+
+The following separate reference files reside under
+`.cache/batch-delete-original-replay-20261026/`. They were made by copying an
+original, deleting selected children before parents through public Jackcess calls,
+and reopening read-only. Input files and stored flags were never patched to gain
+admission. Both original and reference byte hashes remain immutable.
+
+| Profile | Reference state | SHA-256 |
+| --- | --- | --- |
+| V2016 | boundary-maxima | `f5eedeb454442b2597a7a14894f59771aa81fbebffc6c19bac06393ed1199dff` |
+| V2016 | two-original-subtrees | `a40f5e057ec7fa04cb386bc768d8c2b9040a3ebeebb8b5d4acfb885fc6044295` |
+| V2016 | retain-one | `18e3611fd9cee8cfeaa8b81531ee5db3c8fa4d6f99fd3047ebcc74ab4dba5c6a` |
+| V2016 | delete-all | `ff211d3e35497907ef75cce0e6e19d519844a63e622918cef5bf0f8f0eb1d3bb` |
+| V2019 | boundary-maxima | `f92d23be3d5fa8c6b7bf665b3b5061f2a1fc5a6530385f6f70bc1e1926093944` |
+| V2019 | two-original-subtrees | `5942ea7651c2f657fcb4de725d1815136a21f8013700cfd671f44454c06c1f3c` |
+| V2019 | retain-one | `0cec5fcaf31af3184d8aed0de49aaffed1b3bb4518afa72a0045e7725e525c8d` |
+| V2019 | delete-all | `aff8c941e2c66f60b9687d303d63632d3fd083bfe7f496220bc7fa798beaec28` |
+
+[The observations](BATCH_DELETE_OBSERVATIONS.md) record 28/28 controls against
+one frozen engineering candidate tool: 16 successful explicit batch outputs in
+both group orders and 12 typed refusals. Every original record body, sentinel,
+long-value payload and byte outside exact slot/count/index/map spans is protected.
+Full original leaf partitions, encoded key/row maxima, per-height chains and exact
+shared global-bit unions are independently checked. Public receipts retain exact
+command associations, counts, hashes and order-pair byte identity; expanded raw
+arrays and transcripts stay ignored with immutable hashes.
+
+This is public-reader final-state engineering evidence, not native Access SQL
+RESTRICT timing, automatic cascades, SET NULL, data-macro eligibility or normal
+save qualification. The producer and runner are byte-identical to the accepted
+run. The model has only one extra EOF blank line removed, with an identical AST;
+exact executed bytes are archived and mapped in the receipt. No accepted report
+or replay was changed. The initial geometry map-key authoring error
+is preserved separately; there was no candidate or expected-data correction.

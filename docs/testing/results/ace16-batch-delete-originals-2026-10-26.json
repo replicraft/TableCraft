@@ -1,0 +1,5181 @@
+{
+  "date": "2026-10-26",
+  "scope": "Original public-builder two-owner final-state batch deletion comparison; not native Access or SQL action-timing qualification.",
+  "controls": 28,
+  "positive_controls": 16,
+  "typed_refusal_controls": 12,
+  "disagreements": 0,
+  "fatal_error": null,
+  "replay_session": 8004,
+  "exit_code": 0,
+  "command_count": 88,
+  "command": "python3 docs/testing/compare_batch_deletes.py --example .cache/tablecraft-bin/ace16-batch-delete-20261026 --example-sha256 e451a6ca7a41df6e226831f41f1111f42741dd2f0803749427860cca653692d9 --compiled-revision eae88945eb59b3cb84e1fc2d6c1b3327e356c839 --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar --workdir .cache/batch-delete-original-replay-20261026 --report .cache/batch-delete-original-replay-20261026-summary.json",
+  "replay_log": {
+    "path": ".cache/batch-delete-original-replay-20261026.log",
+    "bytes": 159,
+    "sha256": "232af74fea3872ff8be4f47836819ced39a639addcd9163cec75b90bb445ce38"
+  },
+  "compiled_revision": "eae88945eb59b3cb84e1fc2d6c1b3327e356c839",
+  "compiled_build_receipt": {
+    "path": "docs/testing/results/ace16-batch-delete-example-build-2026-10-26.json",
+    "bytes": 9122,
+    "sha256": "76942d05f6ed1df8302729664ce260d1447fe1f2267f13d08761b7fe987f6c0c"
+  },
+  "compiled_source_objects_independently_rehashed": 42,
+  "source_pin_scope": "Historical raw git-show objects at the compiled revision. Concurrent French engine work is not part of this frozen tool. The build receipt contains all 42 explicit source pins.",
+  "executed_and_promoted_tools": [
+    {
+      "executed": {
+        "path": "docs/testing/BatchDeleteFixture.java",
+        "bytes": 15343,
+        "sha256": "5e670dfef8058350c5d6851bfb819d27653cdc1058c0b98bcc2a27ea65d740ea"
+      },
+      "promoted": {
+        "path": "docs/testing/BatchDeleteFixture.java",
+        "bytes": 15343,
+        "sha256": "5e670dfef8058350c5d6851bfb819d27653cdc1058c0b98bcc2a27ea65d740ea"
+      },
+      "byte_identical": true
+    },
+    {
+      "executed": {
+        "path": "docs/testing/batch_delete_model.py",
+        "bytes": 6444,
+        "sha256": "1914b671e0905b560ad1230c17be225960fa9d2b20463e5ffc97da69424cf540"
+      },
+      "promoted": {
+        "path": "docs/testing/batch_delete_model.py",
+        "bytes": 6443,
+        "sha256": "8d959a5fda7dade5f73f752b054394afc641ac697a8b70c445883dec446e6492"
+      },
+      "byte_identical": false,
+      "executed_archive": {
+        "path": ".cache/batch-delete-original-replay-20261026/batch_delete_model-executed.py.txt",
+        "bytes": 6444,
+        "sha256": "1914b671e0905b560ad1230c17be225960fa9d2b20463e5ffc97da69424cf540"
+      },
+      "ast_identical": true,
+      "source_delta": "One extra EOF LF removed; executed_bytes == promoted_bytes + one LF."
+    },
+    {
+      "executed": {
+        "path": "docs/testing/compare_batch_deletes.py",
+        "bytes": 26366,
+        "sha256": "8e9827797cc9e46f9b82c763c2c1eb2564558a323c6289a8e5d3d4e0a38b7d67"
+      },
+      "promoted": {
+        "path": "docs/testing/compare_batch_deletes.py",
+        "bytes": 26366,
+        "sha256": "8e9827797cc9e46f9b82c763c2c1eb2564558a323c6289a8e5d3d4e0a38b7d67"
+      },
+      "byte_identical": true
+    }
+  ],
+  "immutable_inputs_and_tools": [
+    {
+      "path": ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+      "bytes": 987136,
+      "sha256": "ebb1f05f264dddf5e8195633a0bd5077f5ea6bb1211da0943086a1dbf713ff80"
+    },
+    {
+      "path": ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+      "bytes": 1056768,
+      "sha256": "eb29beb6a77359ac517233e95f375642a03a4a1623540958d85bef161fad995b"
+    },
+    {
+      "path": ".cache/tablecraft-bin/ace16-batch-delete-20261026",
+      "bytes": 18370296,
+      "sha256": "e451a6ca7a41df6e226831f41f1111f42741dd2f0803749427860cca653692d9"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+      "bytes": 1407244,
+      "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+    },
+    {
+      "path": "docs/testing/BatchDeleteFixture.java",
+      "bytes": 15343,
+      "sha256": "5e670dfef8058350c5d6851bfb819d27653cdc1058c0b98bcc2a27ea65d740ea"
+    },
+    {
+      "path": "docs/testing/compare_batch_deletes.py",
+      "bytes": 26366,
+      "sha256": "8e9827797cc9e46f9b82c763c2c1eb2564558a323c6289a8e5d3d4e0a38b7d67"
+    },
+    {
+      "path": "docs/testing/batch_delete_model.py",
+      "bytes": 6444,
+      "sha256": "1914b671e0905b560ad1230c17be225960fa9d2b20463e5ffc97da69424cf540"
+    },
+    {
+      "path": "docs/testing/compare_delete_contraction.py",
+      "bytes": 25466,
+      "sha256": "87a6689e932c3fa4d32e480cf49ebe677c35c89ab335ae8ec52de463ebc53e81"
+    },
+    {
+      "path": "docs/testing/compare_delete_candidates.py",
+      "bytes": 25508,
+      "sha256": "221f1046b12675801ea98565634bb623fa681fbc0693083f4d8e698aa79a1b3c"
+    },
+    {
+      "path": "docs/testing/capture_delete_trees.py",
+      "bytes": 20353,
+      "sha256": "05f15179d1b4c689e1dd045617335f66b98189fbd12259838cc0ab5da4ebfdb1"
+    },
+    {
+      "path": "docs/testing/capture_delete_contraction.py",
+      "bytes": 15387,
+      "sha256": "85bd9def676fbaa1ee94590e7dfc5fbef361b26023f17ce715969d2d38f8a619"
+    },
+    {
+      "path": "docs/testing/delete_reference_maps.py",
+      "bytes": 8635,
+      "sha256": "9fca51758e0f26e37dab2e27ff2c41c0e8a7a8110e9a047eda1ccb2a91eadda8"
+    },
+    {
+      "path": "docs/testing/results/ace16-batch-delete-example-build-2026-10-26.json",
+      "bytes": 9122,
+      "sha256": "76942d05f6ed1df8302729664ce260d1447fe1f2267f13d08761b7fe987f6c0c"
+    },
+    {
+      "path": ".cache/batch-delete-originals-next-20261026/initial-commands.json",
+      "bytes": 5493,
+      "sha256": "e230838bccd9e77bc55bfcff95487417766d62e56982d8f069d3e42541c93dfa"
+    },
+    {
+      "path": ".cache/batch-delete-originals-next-20261026/original-geometry.json",
+      "bytes": 149589,
+      "sha256": "5188bb5df053dedff76570edec7d81997790e0f9365e9694640e7fe18149d461"
+    },
+    {
+      "path": ".cache/batch-delete-originals-next-20261026/selection-model-before-actions.json",
+      "bytes": 64411,
+      "sha256": "3accdc5fd6e8040ec15a04d31e08d279015222278ba544ba92cc43d0d9652262"
+    }
+  ],
+  "all_16_input_tool_pins_equal_after": true,
+  "request_files": [
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2016-00-Children.tsv",
+      "bytes": 696,
+      "sha256": "af9969b4413002828abaed675be66c78ab5cfdd88edae189ea7fc86c0eeeae9f"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2016-00-Parents.tsv",
+      "bytes": 680,
+      "sha256": "aca66551258b5221f95d30ee2d10ecb1e821d7b26f62bc5003c60b5211cbc893"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2016-01-Children.tsv",
+      "bytes": 696,
+      "sha256": "af9969b4413002828abaed675be66c78ab5cfdd88edae189ea7fc86c0eeeae9f"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2016-01-Parents.tsv",
+      "bytes": 680,
+      "sha256": "aca66551258b5221f95d30ee2d10ecb1e821d7b26f62bc5003c60b5211cbc893"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2016-02-Children.tsv",
+      "bytes": 121717,
+      "sha256": "136fbb71950e6600713c6b056c656d3e1cc42fae37268f7d17675f33f2a9c600"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2016-02-Parents.tsv",
+      "bytes": 118925,
+      "sha256": "1158bc059d1bca6437e5497de3b60e9021d71795ef9d9dc1ad8dc6a27bd2405f"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2016-03-Children.tsv",
+      "bytes": 121717,
+      "sha256": "136fbb71950e6600713c6b056c656d3e1cc42fae37268f7d17675f33f2a9c600"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2016-03-Parents.tsv",
+      "bytes": 118925,
+      "sha256": "1158bc059d1bca6437e5497de3b60e9021d71795ef9d9dc1ad8dc6a27bd2405f"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2016-04-Children.tsv",
+      "bytes": 174043,
+      "sha256": "a00d4aa1fd04ebec71c90a34eab1ceb9a49d04c7adf9c28231c9e69f5321f732"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2016-04-Parents.tsv",
+      "bytes": 170051,
+      "sha256": "aa14006a20fe8d655f2c44256be10971f4b71535ddefd6516fea103ae1aff666"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2016-05-Children.tsv",
+      "bytes": 174043,
+      "sha256": "a00d4aa1fd04ebec71c90a34eab1ceb9a49d04c7adf9c28231c9e69f5321f732"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2016-05-Parents.tsv",
+      "bytes": 170051,
+      "sha256": "aa14006a20fe8d655f2c44256be10971f4b71535ddefd6516fea103ae1aff666"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2016-06-Children.tsv",
+      "bytes": 174390,
+      "sha256": "d7f571175e04dcae3f9a13d8e13cd65a67233c300e4b0bcef76246ddfb7252ac"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2016-06-Parents.tsv",
+      "bytes": 170390,
+      "sha256": "6967b70ef91e93b3d91c5493f35f4336bf5d728468be64fb558d8a7cf784a3e6"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2016-07-Children.tsv",
+      "bytes": 174390,
+      "sha256": "d7f571175e04dcae3f9a13d8e13cd65a67233c300e4b0bcef76246ddfb7252ac"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2016-07-Parents.tsv",
+      "bytes": 170390,
+      "sha256": "6967b70ef91e93b3d91c5493f35f4336bf5d728468be64fb558d8a7cf784a3e6"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2016-08-Children.tsv",
+      "bytes": 347,
+      "sha256": "c61201ad4d1d3b0b72342c4ad4aba81f22ba9a445afefff49d16fe52ea40cd7d"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2016-08-Parents.tsv",
+      "bytes": 339,
+      "sha256": "2d625e9842bb1627a24bbdb738cc959aa43171244cb526369a878852997f943f"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2016-09-Children.tsv",
+      "bytes": 349,
+      "sha256": "8722ef25afc74c66522c4747ca16fae9173401f9ce204c1ec7b845a74973a64d"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2016-09-Parents.tsv",
+      "bytes": 339,
+      "sha256": "2d625e9842bb1627a24bbdb738cc959aa43171244cb526369a878852997f943f"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2016-10-Children.tsv",
+      "bytes": 347,
+      "sha256": "7d433a6f4f16f44c9cd1be2796458bc8f35cb017361d3083a227ef32fc3d7007"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2016-10-Parents.tsv",
+      "bytes": 339,
+      "sha256": "2d625e9842bb1627a24bbdb738cc959aa43171244cb526369a878852997f943f"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2016-11-Children.tsv",
+      "bytes": 347,
+      "sha256": "c61201ad4d1d3b0b72342c4ad4aba81f22ba9a445afefff49d16fe52ea40cd7d"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2016-11-Parents.tsv",
+      "bytes": 339,
+      "sha256": "2d625e9842bb1627a24bbdb738cc959aa43171244cb526369a878852997f943f"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2016-12-Children.tsv",
+      "bytes": 694,
+      "sha256": "7f38db7ab1d9915adb211065c85e66eb5442aeb9e78fe37e4527eaf86934f989"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2016-12-Parents.tsv",
+      "bytes": 339,
+      "sha256": "2d625e9842bb1627a24bbdb738cc959aa43171244cb526369a878852997f943f"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2016-13-Children.tsv",
+      "bytes": 347,
+      "sha256": "c61201ad4d1d3b0b72342c4ad4aba81f22ba9a445afefff49d16fe52ea40cd7d"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2016-13-Parents.tsv",
+      "bytes": 339,
+      "sha256": "2d625e9842bb1627a24bbdb738cc959aa43171244cb526369a878852997f943f"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2019-00-Children.tsv",
+      "bytes": 696,
+      "sha256": "af9969b4413002828abaed675be66c78ab5cfdd88edae189ea7fc86c0eeeae9f"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2019-00-Parents.tsv",
+      "bytes": 680,
+      "sha256": "aca66551258b5221f95d30ee2d10ecb1e821d7b26f62bc5003c60b5211cbc893"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2019-01-Children.tsv",
+      "bytes": 696,
+      "sha256": "af9969b4413002828abaed675be66c78ab5cfdd88edae189ea7fc86c0eeeae9f"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2019-01-Parents.tsv",
+      "bytes": 680,
+      "sha256": "aca66551258b5221f95d30ee2d10ecb1e821d7b26f62bc5003c60b5211cbc893"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2019-02-Children.tsv",
+      "bytes": 121717,
+      "sha256": "136fbb71950e6600713c6b056c656d3e1cc42fae37268f7d17675f33f2a9c600"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2019-02-Parents.tsv",
+      "bytes": 118925,
+      "sha256": "1158bc059d1bca6437e5497de3b60e9021d71795ef9d9dc1ad8dc6a27bd2405f"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2019-03-Children.tsv",
+      "bytes": 121717,
+      "sha256": "136fbb71950e6600713c6b056c656d3e1cc42fae37268f7d17675f33f2a9c600"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2019-03-Parents.tsv",
+      "bytes": 118925,
+      "sha256": "1158bc059d1bca6437e5497de3b60e9021d71795ef9d9dc1ad8dc6a27bd2405f"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2019-04-Children.tsv",
+      "bytes": 174043,
+      "sha256": "a00d4aa1fd04ebec71c90a34eab1ceb9a49d04c7adf9c28231c9e69f5321f732"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2019-04-Parents.tsv",
+      "bytes": 170051,
+      "sha256": "aa14006a20fe8d655f2c44256be10971f4b71535ddefd6516fea103ae1aff666"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2019-05-Children.tsv",
+      "bytes": 174043,
+      "sha256": "a00d4aa1fd04ebec71c90a34eab1ceb9a49d04c7adf9c28231c9e69f5321f732"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2019-05-Parents.tsv",
+      "bytes": 170051,
+      "sha256": "aa14006a20fe8d655f2c44256be10971f4b71535ddefd6516fea103ae1aff666"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2019-06-Children.tsv",
+      "bytes": 174390,
+      "sha256": "d7f571175e04dcae3f9a13d8e13cd65a67233c300e4b0bcef76246ddfb7252ac"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2019-06-Parents.tsv",
+      "bytes": 170390,
+      "sha256": "6967b70ef91e93b3d91c5493f35f4336bf5d728468be64fb558d8a7cf784a3e6"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2019-07-Children.tsv",
+      "bytes": 174390,
+      "sha256": "d7f571175e04dcae3f9a13d8e13cd65a67233c300e4b0bcef76246ddfb7252ac"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2019-07-Parents.tsv",
+      "bytes": 170390,
+      "sha256": "6967b70ef91e93b3d91c5493f35f4336bf5d728468be64fb558d8a7cf784a3e6"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2019-08-Children.tsv",
+      "bytes": 347,
+      "sha256": "c61201ad4d1d3b0b72342c4ad4aba81f22ba9a445afefff49d16fe52ea40cd7d"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2019-08-Parents.tsv",
+      "bytes": 339,
+      "sha256": "2d625e9842bb1627a24bbdb738cc959aa43171244cb526369a878852997f943f"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2019-09-Children.tsv",
+      "bytes": 349,
+      "sha256": "8722ef25afc74c66522c4747ca16fae9173401f9ce204c1ec7b845a74973a64d"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2019-09-Parents.tsv",
+      "bytes": 339,
+      "sha256": "2d625e9842bb1627a24bbdb738cc959aa43171244cb526369a878852997f943f"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2019-10-Children.tsv",
+      "bytes": 347,
+      "sha256": "7d433a6f4f16f44c9cd1be2796458bc8f35cb017361d3083a227ef32fc3d7007"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2019-10-Parents.tsv",
+      "bytes": 339,
+      "sha256": "2d625e9842bb1627a24bbdb738cc959aa43171244cb526369a878852997f943f"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2019-11-Children.tsv",
+      "bytes": 347,
+      "sha256": "c61201ad4d1d3b0b72342c4ad4aba81f22ba9a445afefff49d16fe52ea40cd7d"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2019-11-Parents.tsv",
+      "bytes": 339,
+      "sha256": "2d625e9842bb1627a24bbdb738cc959aa43171244cb526369a878852997f943f"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2019-12-Children.tsv",
+      "bytes": 694,
+      "sha256": "7f38db7ab1d9915adb211065c85e66eb5442aeb9e78fe37e4527eaf86934f989"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2019-12-Parents.tsv",
+      "bytes": 339,
+      "sha256": "2d625e9842bb1627a24bbdb738cc959aa43171244cb526369a878852997f943f"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2019-13-Children.tsv",
+      "bytes": 347,
+      "sha256": "c61201ad4d1d3b0b72342c4ad4aba81f22ba9a445afefff49d16fe52ea40cd7d"
+    },
+    {
+      "path": ".cache/batch-delete-original-replay-20261026/V2019-13-Parents.tsv",
+      "bytes": 339,
+      "sha256": "2d625e9842bb1627a24bbdb738cc959aa43171244cb526369a878852997f943f"
+    }
+  ],
+  "all_56_request_files_equal_after": true,
+  "original_preparation_commands": [
+    {
+      "argv": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "generate",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        "V2016"
+      ],
+      "status": 0,
+      "stdout": {
+        "path": ".cache/batch-delete-originals-next-20261026/V2016-generate.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": ".cache/batch-delete-originals-next-20261026/V2016-generate.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "oracle",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb"
+      ],
+      "status": 0,
+      "stdout": {
+        "path": ".cache/batch-delete-originals-next-20261026/V2016-oracle.stdout",
+        "bytes": 577708,
+        "sha256": "b7b4dc8161f1a5d820182e9746eb4513ff9ac52a6e4075b58cbf9cbab9b3078b"
+      },
+      "stderr": {
+        "path": ".cache/batch-delete-originals-next-20261026/V2016-oracle.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "maps",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb"
+      ],
+      "status": 0,
+      "stdout": {
+        "path": ".cache/batch-delete-originals-next-20261026/V2016-maps.stdout",
+        "bytes": 4803,
+        "sha256": "59432bab1803637549004a314f3ab27ba58581eed0195a615237ab0c9d782562"
+      },
+      "stderr": {
+        "path": ".cache/batch-delete-originals-next-20261026/V2016-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "generate",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        "V2019"
+      ],
+      "status": 0,
+      "stdout": {
+        "path": ".cache/batch-delete-originals-next-20261026/V2019-generate.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": ".cache/batch-delete-originals-next-20261026/V2019-generate.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "oracle",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb"
+      ],
+      "status": 0,
+      "stdout": {
+        "path": ".cache/batch-delete-originals-next-20261026/V2019-oracle.stdout",
+        "bytes": 577734,
+        "sha256": "dac44884e8c10118cd445e1efe75295dd946ddf8f3dad4914062193d55b97f9f"
+      },
+      "stderr": {
+        "path": ".cache/batch-delete-originals-next-20261026/V2019-oracle.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "maps",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb"
+      ],
+      "status": 0,
+      "stdout": {
+        "path": ".cache/batch-delete-originals-next-20261026/V2019-maps.stdout",
+        "bytes": 5070,
+        "sha256": "ba68504a43d0322d08bf4fa9976bf34e761ae5846cde3cc85fe3b3b756803f0f"
+      },
+      "stderr": {
+        "path": ".cache/batch-delete-originals-next-20261026/V2019-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "geometry": [
+    {
+      "profile": "V2016",
+      "owners": {
+        "Parents": {
+          "definition": 89,
+          "trees": [
+            {
+              "logical_names": [
+                "PrimaryID",
+                ".rB"
+              ],
+              "root": 91,
+              "height": 0,
+              "pages": 1,
+              "leaves": 1,
+              "entries": 500,
+              "full_key_order_sha256": "7a4ee7568e111bdc687b7329de98d6ed1df2d11649e41c4fd5fc81b3a9bc9d9b"
+            },
+            {
+              "logical_names": [
+                "Wide",
+                "WideAlias"
+              ],
+              "root": 92,
+              "height": 2,
+              "pages": 42,
+              "leaves": 38,
+              "entries": 500,
+              "full_key_order_sha256": "304626ab2c0d70ed2d16c418fc5b98aa6cf29c4262d703092d089c88fa7d01cb"
+            }
+          ]
+        },
+        "Children": {
+          "definition": 93,
+          "trees": [
+            {
+              "logical_names": [
+                "PrimaryID"
+              ],
+              "root": 95,
+              "height": 0,
+              "pages": 1,
+              "leaves": 1,
+              "entries": 500,
+              "full_key_order_sha256": "aa60ae0839f120b3057f7136529eb42da60e69196db7e81fec8b6fde54bc4470"
+            },
+            {
+              "logical_names": [
+                "ParentAsc",
+                "ParentAlias",
+                "Parents_Children"
+              ],
+              "root": 96,
+              "height": 0,
+              "pages": 1,
+              "leaves": 1,
+              "entries": 500,
+              "full_key_order_sha256": "aa60ae0839f120b3057f7136529eb42da60e69196db7e81fec8b6fde54bc4470"
+            },
+            {
+              "logical_names": [
+                "Wide",
+                "WideAlias"
+              ],
+              "root": 97,
+              "height": 2,
+              "pages": 44,
+              "leaves": 40,
+              "entries": 500,
+              "full_key_order_sha256": "a4323b037fd6ba6bae7230e905f94996774667c3f2b2d3fbaaba1dfca33e9299"
+            }
+          ]
+        }
+      },
+      "original_shared_global_bitmap_byte_count": 15,
+      "full_geometry": {
+        "path": ".cache/batch-delete-originals-next-20261026/original-geometry.json",
+        "bytes": 149589,
+        "sha256": "5188bb5df053dedff76570edec7d81997790e0f9365e9694640e7fe18149d461"
+      }
+    },
+    {
+      "profile": "V2019",
+      "owners": {
+        "Parents": {
+          "definition": 106,
+          "trees": [
+            {
+              "logical_names": [
+                "PrimaryID",
+                ".rB"
+              ],
+              "root": 108,
+              "height": 0,
+              "pages": 1,
+              "leaves": 1,
+              "entries": 500,
+              "full_key_order_sha256": "95742314df407ca66a7de86af827dd94666a42bc83f137c77ff1c1fe90776574"
+            },
+            {
+              "logical_names": [
+                "Wide",
+                "WideAlias"
+              ],
+              "root": 109,
+              "height": 2,
+              "pages": 42,
+              "leaves": 38,
+              "entries": 500,
+              "full_key_order_sha256": "7ebbad72dac7fd5fbbc4811898bd7da15718ca7b69527bdf09426d63a23d9726"
+            }
+          ]
+        },
+        "Children": {
+          "definition": 110,
+          "trees": [
+            {
+              "logical_names": [
+                "PrimaryID"
+              ],
+              "root": 112,
+              "height": 0,
+              "pages": 1,
+              "leaves": 1,
+              "entries": 500,
+              "full_key_order_sha256": "912bf9226b8dd90e2a9be48e8f7690ee5a079c7151652bd06019d675bde9ee37"
+            },
+            {
+              "logical_names": [
+                "ParentAsc",
+                "ParentAlias",
+                "Parents_Children"
+              ],
+              "root": 113,
+              "height": 0,
+              "pages": 1,
+              "leaves": 1,
+              "entries": 500,
+              "full_key_order_sha256": "912bf9226b8dd90e2a9be48e8f7690ee5a079c7151652bd06019d675bde9ee37"
+            },
+            {
+              "logical_names": [
+                "Wide",
+                "WideAlias"
+              ],
+              "root": 114,
+              "height": 2,
+              "pages": 44,
+              "leaves": 40,
+              "entries": 500,
+              "full_key_order_sha256": "8868cb7a94e0353e6b9a843078a2e67e3a6ca1354ea30f8f949bc5ea2efd058a"
+            }
+          ]
+        }
+      },
+      "original_shared_global_bitmap_byte_count": 14,
+      "full_geometry": {
+        "path": ".cache/batch-delete-originals-next-20261026/original-geometry.json",
+        "bytes": 149589,
+        "sha256": "5188bb5df053dedff76570edec7d81997790e0f9365e9694640e7fe18149d461"
+      }
+    }
+  ],
+  "public_child_before_parent_references": [
+    {
+      "profile": "V2016",
+      "state": "boundary-maxima",
+      "command": 2,
+      "path": ".cache/batch-delete-original-replay-20261026/V2016-boundary-maxima-reference.accdb",
+      "file": {
+        "path": ".cache/batch-delete-original-replay-20261026/V2016-boundary-maxima-reference.accdb",
+        "bytes": 987136,
+        "sha256": "f5eedeb454442b2597a7a14894f59771aa81fbebffc6c19bac06393ed1199dff"
+      },
+      "final_values_and_index_orders_match": true,
+      "selected_count": 2,
+      "selected_ids_sha256": "0b885cdaf02e30d4f5a150b6a03bde8fb7de4e94fbaeb104e4fade2dc21034f6",
+      "selected_boundary_ids": [
+        56,
+        258,
+        56,
+        258
+      ],
+      "selection_proofs": {
+        "Parents": {
+          "root": 92,
+          "child": 161,
+          "subtree_maximum_id": 258,
+          "subtree_count": 230,
+          "subtree_ids_sha256": "7b710a74a0d938b0a8e8c9d8e59832aac5ab69324289bd4b64413ecf840cdcd1"
+        },
+        "Children": {
+          "root": 97,
+          "child": 167,
+          "subtree_maximum_id": 56,
+          "subtree_count": 216,
+          "subtree_ids_sha256": "b7116de83166b144dab645d5c9ebcb26ca6e782ced3be218ec1c9d596da12b9c"
+        }
+      }
+    },
+    {
+      "profile": "V2016",
+      "state": "two-original-subtrees",
+      "command": 5,
+      "path": ".cache/batch-delete-original-replay-20261026/V2016-two-original-subtrees-reference.accdb",
+      "file": {
+        "path": ".cache/batch-delete-original-replay-20261026/V2016-two-original-subtrees-reference.accdb",
+        "bytes": 987136,
+        "sha256": "a40f5e057ec7fa04cb386bc768d8c2b9040a3ebeebb8b5d4acfb885fc6044295"
+      },
+      "final_values_and_index_orders_match": true,
+      "selected_count": 349,
+      "selected_ids_sha256": "d6db54366b756f327ff4c93834cf0a4892d73a32b90687f5f30d97144b27e755",
+      "selected_boundary_ids": [
+        2,
+        4,
+        5,
+        495,
+        497,
+        499
+      ],
+      "selection_proofs": {
+        "Parents": {
+          "root": 92,
+          "child": 161,
+          "subtree_maximum_id": 258,
+          "subtree_count": 230,
+          "subtree_ids_sha256": "7b710a74a0d938b0a8e8c9d8e59832aac5ab69324289bd4b64413ecf840cdcd1"
+        },
+        "Children": {
+          "root": 97,
+          "child": 167,
+          "subtree_maximum_id": 56,
+          "subtree_count": 216,
+          "subtree_ids_sha256": "b7116de83166b144dab645d5c9ebcb26ca6e782ced3be218ec1c9d596da12b9c"
+        }
+      }
+    },
+    {
+      "profile": "V2016",
+      "state": "retain-one",
+      "command": 8,
+      "path": ".cache/batch-delete-original-replay-20261026/V2016-retain-one-reference.accdb",
+      "file": {
+        "path": ".cache/batch-delete-original-replay-20261026/V2016-retain-one-reference.accdb",
+        "bytes": 987136,
+        "sha256": "18e3611fd9cee8cfeaa8b81531ee5db3c8fa4d6f99fd3047ebcc74ab4dba5c6a"
+      },
+      "final_values_and_index_orders_match": true,
+      "selected_count": 499,
+      "selected_ids_sha256": "ce2488b339d88f4439ef55ac199857079b3f0e6a7e449680dd7e4df627d360cd",
+      "selected_boundary_ids": [
+        2,
+        3,
+        4,
+        498,
+        499,
+        500
+      ],
+      "selection_proofs": {
+        "Parents": {
+          "root": 92,
+          "child": 161,
+          "subtree_maximum_id": 258,
+          "subtree_count": 230,
+          "subtree_ids_sha256": "7b710a74a0d938b0a8e8c9d8e59832aac5ab69324289bd4b64413ecf840cdcd1"
+        },
+        "Children": {
+          "root": 97,
+          "child": 167,
+          "subtree_maximum_id": 56,
+          "subtree_count": 216,
+          "subtree_ids_sha256": "b7116de83166b144dab645d5c9ebcb26ca6e782ced3be218ec1c9d596da12b9c"
+        }
+      }
+    },
+    {
+      "profile": "V2016",
+      "state": "delete-all",
+      "command": 11,
+      "path": ".cache/batch-delete-original-replay-20261026/V2016-delete-all-reference.accdb",
+      "file": {
+        "path": ".cache/batch-delete-original-replay-20261026/V2016-delete-all-reference.accdb",
+        "bytes": 987136,
+        "sha256": "ff211d3e35497907ef75cce0e6e19d519844a63e622918cef5bf0f8f0eb1d3bb"
+      },
+      "final_values_and_index_orders_match": true,
+      "selected_count": 500,
+      "selected_ids_sha256": "ade394ba169334578731be1e8848f1f10d5514c40fe23cc24e06bfcc75a5a97c",
+      "selected_boundary_ids": [
+        1,
+        2,
+        3,
+        498,
+        499,
+        500
+      ],
+      "selection_proofs": {
+        "Parents": {
+          "root": 92,
+          "child": 161,
+          "subtree_maximum_id": 258,
+          "subtree_count": 230,
+          "subtree_ids_sha256": "7b710a74a0d938b0a8e8c9d8e59832aac5ab69324289bd4b64413ecf840cdcd1"
+        },
+        "Children": {
+          "root": 97,
+          "child": 167,
+          "subtree_maximum_id": 56,
+          "subtree_count": 216,
+          "subtree_ids_sha256": "b7116de83166b144dab645d5c9ebcb26ca6e782ced3be218ec1c9d596da12b9c"
+        }
+      }
+    },
+    {
+      "profile": "V2019",
+      "state": "boundary-maxima",
+      "command": 46,
+      "path": ".cache/batch-delete-original-replay-20261026/V2019-boundary-maxima-reference.accdb",
+      "file": {
+        "path": ".cache/batch-delete-original-replay-20261026/V2019-boundary-maxima-reference.accdb",
+        "bytes": 1056768,
+        "sha256": "f92d23be3d5fa8c6b7bf665b3b5061f2a1fc5a6530385f6f70bc1e1926093944"
+      },
+      "final_values_and_index_orders_match": true,
+      "selected_count": 2,
+      "selected_ids_sha256": "0b885cdaf02e30d4f5a150b6a03bde8fb7de4e94fbaeb104e4fade2dc21034f6",
+      "selected_boundary_ids": [
+        56,
+        258,
+        56,
+        258
+      ],
+      "selection_proofs": {
+        "Parents": {
+          "root": 109,
+          "child": 178,
+          "subtree_maximum_id": 258,
+          "subtree_count": 230,
+          "subtree_ids_sha256": "7b710a74a0d938b0a8e8c9d8e59832aac5ab69324289bd4b64413ecf840cdcd1"
+        },
+        "Children": {
+          "root": 114,
+          "child": 184,
+          "subtree_maximum_id": 56,
+          "subtree_count": 216,
+          "subtree_ids_sha256": "b7116de83166b144dab645d5c9ebcb26ca6e782ced3be218ec1c9d596da12b9c"
+        }
+      }
+    },
+    {
+      "profile": "V2019",
+      "state": "two-original-subtrees",
+      "command": 49,
+      "path": ".cache/batch-delete-original-replay-20261026/V2019-two-original-subtrees-reference.accdb",
+      "file": {
+        "path": ".cache/batch-delete-original-replay-20261026/V2019-two-original-subtrees-reference.accdb",
+        "bytes": 1056768,
+        "sha256": "5942ea7651c2f657fcb4de725d1815136a21f8013700cfd671f44454c06c1f3c"
+      },
+      "final_values_and_index_orders_match": true,
+      "selected_count": 349,
+      "selected_ids_sha256": "d6db54366b756f327ff4c93834cf0a4892d73a32b90687f5f30d97144b27e755",
+      "selected_boundary_ids": [
+        2,
+        4,
+        5,
+        495,
+        497,
+        499
+      ],
+      "selection_proofs": {
+        "Parents": {
+          "root": 109,
+          "child": 178,
+          "subtree_maximum_id": 258,
+          "subtree_count": 230,
+          "subtree_ids_sha256": "7b710a74a0d938b0a8e8c9d8e59832aac5ab69324289bd4b64413ecf840cdcd1"
+        },
+        "Children": {
+          "root": 114,
+          "child": 184,
+          "subtree_maximum_id": 56,
+          "subtree_count": 216,
+          "subtree_ids_sha256": "b7116de83166b144dab645d5c9ebcb26ca6e782ced3be218ec1c9d596da12b9c"
+        }
+      }
+    },
+    {
+      "profile": "V2019",
+      "state": "retain-one",
+      "command": 52,
+      "path": ".cache/batch-delete-original-replay-20261026/V2019-retain-one-reference.accdb",
+      "file": {
+        "path": ".cache/batch-delete-original-replay-20261026/V2019-retain-one-reference.accdb",
+        "bytes": 1056768,
+        "sha256": "0cec5fcaf31af3184d8aed0de49aaffed1b3bb4518afa72a0045e7725e525c8d"
+      },
+      "final_values_and_index_orders_match": true,
+      "selected_count": 499,
+      "selected_ids_sha256": "ce2488b339d88f4439ef55ac199857079b3f0e6a7e449680dd7e4df627d360cd",
+      "selected_boundary_ids": [
+        2,
+        3,
+        4,
+        498,
+        499,
+        500
+      ],
+      "selection_proofs": {
+        "Parents": {
+          "root": 109,
+          "child": 178,
+          "subtree_maximum_id": 258,
+          "subtree_count": 230,
+          "subtree_ids_sha256": "7b710a74a0d938b0a8e8c9d8e59832aac5ab69324289bd4b64413ecf840cdcd1"
+        },
+        "Children": {
+          "root": 114,
+          "child": 184,
+          "subtree_maximum_id": 56,
+          "subtree_count": 216,
+          "subtree_ids_sha256": "b7116de83166b144dab645d5c9ebcb26ca6e782ced3be218ec1c9d596da12b9c"
+        }
+      }
+    },
+    {
+      "profile": "V2019",
+      "state": "delete-all",
+      "command": 55,
+      "path": ".cache/batch-delete-original-replay-20261026/V2019-delete-all-reference.accdb",
+      "file": {
+        "path": ".cache/batch-delete-original-replay-20261026/V2019-delete-all-reference.accdb",
+        "bytes": 1056768,
+        "sha256": "aff8c941e2c66f60b9687d303d63632d3fd083bfe7f496220bc7fa798beaec28"
+      },
+      "final_values_and_index_orders_match": true,
+      "selected_count": 500,
+      "selected_ids_sha256": "ade394ba169334578731be1e8848f1f10d5514c40fe23cc24e06bfcc75a5a97c",
+      "selected_boundary_ids": [
+        1,
+        2,
+        3,
+        498,
+        499,
+        500
+      ],
+      "selection_proofs": {
+        "Parents": {
+          "root": 109,
+          "child": 178,
+          "subtree_maximum_id": 258,
+          "subtree_count": 230,
+          "subtree_ids_sha256": "7b710a74a0d938b0a8e8c9d8e59832aac5ab69324289bd4b64413ecf840cdcd1"
+        },
+        "Children": {
+          "root": 114,
+          "child": 184,
+          "subtree_maximum_id": 56,
+          "subtree_count": 216,
+          "subtree_ids_sha256": "b7116de83166b144dab645d5c9ebcb26ca6e782ced3be218ec1c9d596da12b9c"
+        }
+      }
+    }
+  ],
+  "candidate_pairs": [
+    {
+      "profile": "V2016",
+      "state": "boundary-maxima",
+      "selected_roots_per_table": 2,
+      "selected_ids_sha256": "0b885cdaf02e30d4f5a150b6a03bde8fb7de4e94fbaeb104e4fade2dc21034f6",
+      "selected_boundary_ids": [
+        56,
+        258,
+        56,
+        258
+      ],
+      "forward_command": 14,
+      "reverse_command": 17,
+      "forward_candidate": {
+        "path": ".cache/batch-delete-original-replay-20261026/V2016-00-boundary-maxima.accdb",
+        "bytes": 987136,
+        "sha256": "5296e3c0eceba3aec3f3b03de7ae5926bf0cae3a38b23655319325e41790c0ce"
+      },
+      "reverse_candidate": {
+        "path": ".cache/batch-delete-original-replay-20261026/V2016-01-boundary-maxima.accdb",
+        "bytes": 987136,
+        "sha256": "5296e3c0eceba3aec3f3b03de7ae5926bf0cae3a38b23655319325e41790c0ce"
+      },
+      "group_order_bytes_identical": true,
+      "both_command_outputs_checked": true,
+      "proof_for_identical_candidate_bytes": {
+        "changed_bytes": 5629,
+        "owners": {
+          "Parents": {
+            "retired_pages": [],
+            "retained_pages": 43
+          },
+          "Children": {
+            "retired_pages": [],
+            "retained_pages": 46
+          }
+        },
+        "maps": {
+          "map_count": 12,
+          "complete_payload_or_bitmap_spans_checked": 12,
+          "map_representation_and_pointer_rows_unchanged": true,
+          "only_exact_membership_bits_changed": true,
+          "global_in_file_additions_equal_retired_index_pages": true,
+          "retired_index_pages": []
+        },
+        "shared_global_bytes": [],
+        "outside_allowed_spans": 0,
+        "all_original_record_bodies_preserved": true,
+        "original_leaf_partitions_full_key_row_maxima_and_height_chains_checked": true
+      }
+    },
+    {
+      "profile": "V2016",
+      "state": "two-original-subtrees",
+      "selected_roots_per_table": 349,
+      "selected_ids_sha256": "d6db54366b756f327ff4c93834cf0a4892d73a32b90687f5f30d97144b27e755",
+      "selected_boundary_ids": [
+        2,
+        4,
+        5,
+        495,
+        497,
+        499
+      ],
+      "forward_command": 20,
+      "reverse_command": 23,
+      "forward_candidate": {
+        "path": ".cache/batch-delete-original-replay-20261026/V2016-02-two-original-subtrees.accdb",
+        "bytes": 987136,
+        "sha256": "62ae2cac2fb3645d7641a38162070307e435d35e128c681d8e40500d5a406edd"
+      },
+      "reverse_candidate": {
+        "path": ".cache/batch-delete-original-replay-20261026/V2016-03-two-original-subtrees.accdb",
+        "bytes": 987136,
+        "sha256": "62ae2cac2fb3645d7641a38162070307e435d35e128c681d8e40500d5a406edd"
+      },
+      "group_order_bytes_identical": true,
+      "both_command_outputs_checked": true,
+      "proof_for_identical_candidate_bytes": {
+        "changed_bytes": 46910,
+        "owners": {
+          "Parents": {
+            "retired_pages": [
+              110,
+              115,
+              122,
+              127,
+              134,
+              135,
+              144,
+              154,
+              158,
+              159,
+              161,
+              183,
+              184,
+              192,
+              198,
+              200,
+              203,
+              216,
+              222
+            ],
+            "retained_pages": 24
+          },
+          "Children": {
+            "retired_pages": [
+              106,
+              109,
+              119,
+              120,
+              131,
+              138,
+              147,
+              150,
+              163,
+              165,
+              167,
+              173,
+              178,
+              181,
+              195,
+              207,
+              215,
+              217
+            ],
+            "retained_pages": 28
+          }
+        },
+        "maps": {
+          "map_count": 12,
+          "complete_payload_or_bitmap_spans_checked": 12,
+          "map_representation_and_pointer_rows_unchanged": true,
+          "only_exact_membership_bits_changed": true,
+          "global_in_file_additions_equal_retired_index_pages": true,
+          "retired_index_pages": [
+            106,
+            109,
+            110,
+            115,
+            119,
+            120,
+            122,
+            127,
+            131,
+            134,
+            135,
+            138,
+            144,
+            147,
+            150,
+            154,
+            158,
+            159,
+            161,
+            163,
+            165,
+            167,
+            173,
+            178,
+            181,
+            183,
+            184,
+            192,
+            195,
+            198,
+            200,
+            203,
+            207,
+            215,
+            216,
+            217,
+            222
+          ]
+        },
+        "shared_global_bytes": [
+          {
+            "offset": 8141,
+            "before": 0,
+            "after": 100,
+            "owners": {
+              "Parents": [
+                110
+              ],
+              "Children": [
+                106,
+                109
+              ]
+            }
+          },
+          {
+            "offset": 8142,
+            "before": 0,
+            "after": 136,
+            "owners": {
+              "Parents": [
+                115
+              ],
+              "Children": [
+                119
+              ]
+            }
+          },
+          {
+            "offset": 8143,
+            "before": 0,
+            "after": 133,
+            "owners": {
+              "Parents": [
+                122,
+                127
+              ],
+              "Children": [
+                120
+              ]
+            }
+          },
+          {
+            "offset": 8144,
+            "before": 0,
+            "after": 200,
+            "owners": {
+              "Parents": [
+                134,
+                135
+              ],
+              "Children": [
+                131
+              ]
+            }
+          },
+          {
+            "offset": 8146,
+            "before": 0,
+            "after": 73,
+            "owners": {
+              "Parents": [
+                144
+              ],
+              "Children": [
+                147,
+                150
+              ]
+            }
+          },
+          {
+            "offset": 8148,
+            "before": 0,
+            "after": 170,
+            "owners": {
+              "Parents": [
+                161
+              ],
+              "Children": [
+                163,
+                165,
+                167
+              ]
+            }
+          },
+          {
+            "offset": 8150,
+            "before": 0,
+            "after": 164,
+            "owners": {
+              "Parents": [
+                183
+              ],
+              "Children": [
+                178,
+                181
+              ]
+            }
+          },
+          {
+            "offset": 8152,
+            "before": 0,
+            "after": 73,
+            "owners": {
+              "Parents": [
+                192,
+                198
+              ],
+              "Children": [
+                195
+              ]
+            }
+          },
+          {
+            "offset": 8153,
+            "before": 0,
+            "after": 137,
+            "owners": {
+              "Parents": [
+                200,
+                203
+              ],
+              "Children": [
+                207
+              ]
+            }
+          },
+          {
+            "offset": 8155,
+            "before": 0,
+            "after": 67,
+            "owners": {
+              "Parents": [
+                216,
+                222
+              ],
+              "Children": [
+                217
+              ]
+            }
+          }
+        ],
+        "outside_allowed_spans": 0,
+        "all_original_record_bodies_preserved": true,
+        "original_leaf_partitions_full_key_row_maxima_and_height_chains_checked": true
+      }
+    },
+    {
+      "profile": "V2016",
+      "state": "retain-one",
+      "selected_roots_per_table": 499,
+      "selected_ids_sha256": "ce2488b339d88f4439ef55ac199857079b3f0e6a7e449680dd7e4df627d360cd",
+      "selected_boundary_ids": [
+        2,
+        3,
+        4,
+        498,
+        499,
+        500
+      ],
+      "forward_command": 26,
+      "reverse_command": 29,
+      "forward_candidate": {
+        "path": ".cache/batch-delete-original-replay-20261026/V2016-04-retain-one.accdb",
+        "bytes": 987136,
+        "sha256": "4a4dd6552203de27e7244618d5e5fc69aa1fa8547ccb19e98f00a3386b121e8b"
+      },
+      "reverse_candidate": {
+        "path": ".cache/batch-delete-original-replay-20261026/V2016-05-retain-one.accdb",
+        "bytes": 987136,
+        "sha256": "4a4dd6552203de27e7244618d5e5fc69aa1fa8547ccb19e98f00a3386b121e8b"
+      },
+      "group_order_bytes_identical": true,
+      "both_command_outputs_checked": true,
+      "proof_for_identical_candidate_bytes": {
+        "changed_bytes": 3201,
+        "owners": {
+          "Parents": {
+            "retired_pages": [
+              103,
+              104,
+              110,
+              111,
+              115,
+              121,
+              122,
+              126,
+              127,
+              133,
+              134,
+              135,
+              139,
+              140,
+              144,
+              151,
+              154,
+              156,
+              158,
+              159,
+              161,
+              164,
+              171,
+              172,
+              183,
+              184,
+              185,
+              189,
+              190,
+              192,
+              198,
+              200,
+              203,
+              209,
+              214,
+              216,
+              218,
+              219,
+              222
+            ],
+            "retained_pages": 4
+          },
+          "Children": {
+            "retired_pages": [
+              105,
+              106,
+              109,
+              112,
+              117,
+              119,
+              120,
+              123,
+              128,
+              131,
+              132,
+              138,
+              142,
+              145,
+              146,
+              147,
+              150,
+              153,
+              163,
+              165,
+              167,
+              173,
+              175,
+              176,
+              178,
+              179,
+              180,
+              181,
+              186,
+              188,
+              194,
+              195,
+              205,
+              207,
+              210,
+              211,
+              215,
+              217,
+              220,
+              224,
+              227
+            ],
+            "retained_pages": 5
+          }
+        },
+        "maps": {
+          "map_count": 12,
+          "complete_payload_or_bitmap_spans_checked": 12,
+          "map_representation_and_pointer_rows_unchanged": true,
+          "only_exact_membership_bits_changed": true,
+          "global_in_file_additions_equal_retired_index_pages": true,
+          "retired_index_pages": [
+            103,
+            104,
+            105,
+            106,
+            109,
+            110,
+            111,
+            112,
+            115,
+            117,
+            119,
+            120,
+            121,
+            122,
+            123,
+            126,
+            127,
+            128,
+            131,
+            132,
+            133,
+            134,
+            135,
+            138,
+            139,
+            140,
+            142,
+            144,
+            145,
+            146,
+            147,
+            150,
+            151,
+            153,
+            154,
+            156,
+            158,
+            159,
+            161,
+            163,
+            164,
+            165,
+            167,
+            171,
+            172,
+            173,
+            175,
+            176,
+            178,
+            179,
+            180,
+            181,
+            183,
+            184,
+            185,
+            186,
+            188,
+            189,
+            190,
+            192,
+            194,
+            195,
+            198,
+            200,
+            203,
+            205,
+            207,
+            209,
+            210,
+            211,
+            214,
+            215,
+            216,
+            217,
+            218,
+            219,
+            220,
+            222,
+            224,
+            227
+          ]
+        },
+        "shared_global_bytes": [
+          {
+            "offset": 8141,
+            "before": 0,
+            "after": 231,
+            "owners": {
+              "Parents": [
+                104,
+                110,
+                111
+              ],
+              "Children": [
+                105,
+                106,
+                109
+              ]
+            }
+          },
+          {
+            "offset": 8142,
+            "before": 0,
+            "after": 169,
+            "owners": {
+              "Parents": [
+                115
+              ],
+              "Children": [
+                112,
+                117,
+                119
+              ]
+            }
+          },
+          {
+            "offset": 8143,
+            "before": 0,
+            "after": 207,
+            "owners": {
+              "Parents": [
+                121,
+                122,
+                126,
+                127
+              ],
+              "Children": [
+                120,
+                123
+              ]
+            }
+          },
+          {
+            "offset": 8144,
+            "before": 0,
+            "after": 249,
+            "owners": {
+              "Parents": [
+                133,
+                134,
+                135
+              ],
+              "Children": [
+                128,
+                131,
+                132
+              ]
+            }
+          },
+          {
+            "offset": 8145,
+            "before": 0,
+            "after": 92,
+            "owners": {
+              "Parents": [
+                139,
+                140
+              ],
+              "Children": [
+                138,
+                142
+              ]
+            }
+          },
+          {
+            "offset": 8146,
+            "before": 0,
+            "after": 207,
+            "owners": {
+              "Parents": [
+                144,
+                151
+              ],
+              "Children": [
+                145,
+                146,
+                147,
+                150
+              ]
+            }
+          },
+          {
+            "offset": 8147,
+            "before": 0,
+            "after": 214,
+            "owners": {
+              "Parents": [
+                154,
+                156,
+                158,
+                159
+              ],
+              "Children": [
+                153
+              ]
+            }
+          },
+          {
+            "offset": 8148,
+            "before": 0,
+            "after": 186,
+            "owners": {
+              "Parents": [
+                161,
+                164
+              ],
+              "Children": [
+                163,
+                165,
+                167
+              ]
+            }
+          },
+          {
+            "offset": 8149,
+            "before": 0,
+            "after": 184,
+            "owners": {
+              "Parents": [
+                171,
+                172
+              ],
+              "Children": [
+                173,
+                175
+              ]
+            }
+          },
+          {
+            "offset": 8150,
+            "before": 0,
+            "after": 189,
+            "owners": {
+              "Parents": [
+                183
+              ],
+              "Children": [
+                176,
+                178,
+                179,
+                180,
+                181
+              ]
+            }
+          },
+          {
+            "offset": 8151,
+            "before": 0,
+            "after": 119,
+            "owners": {
+              "Parents": [
+                184,
+                185,
+                189,
+                190
+              ],
+              "Children": [
+                186,
+                188
+              ]
+            }
+          },
+          {
+            "offset": 8152,
+            "before": 0,
+            "after": 77,
+            "owners": {
+              "Parents": [
+                192,
+                198
+              ],
+              "Children": [
+                194,
+                195
+              ]
+            }
+          },
+          {
+            "offset": 8153,
+            "before": 0,
+            "after": 169,
+            "owners": {
+              "Parents": [
+                200,
+                203
+              ],
+              "Children": [
+                205,
+                207
+              ]
+            }
+          },
+          {
+            "offset": 8154,
+            "before": 0,
+            "after": 206,
+            "owners": {
+              "Parents": [
+                209,
+                214
+              ],
+              "Children": [
+                210,
+                211,
+                215
+              ]
+            }
+          },
+          {
+            "offset": 8155,
+            "before": 0,
+            "after": 95,
+            "owners": {
+              "Parents": [
+                216,
+                218,
+                219,
+                222
+              ],
+              "Children": [
+                217,
+                220
+              ]
+            }
+          }
+        ],
+        "outside_allowed_spans": 0,
+        "all_original_record_bodies_preserved": true,
+        "original_leaf_partitions_full_key_row_maxima_and_height_chains_checked": true
+      }
+    },
+    {
+      "profile": "V2016",
+      "state": "delete-all",
+      "selected_roots_per_table": 500,
+      "selected_ids_sha256": "ade394ba169334578731be1e8848f1f10d5514c40fe23cc24e06bfcc75a5a97c",
+      "selected_boundary_ids": [
+        1,
+        2,
+        3,
+        498,
+        499,
+        500
+      ],
+      "forward_command": 32,
+      "reverse_command": 35,
+      "forward_candidate": {
+        "path": ".cache/batch-delete-original-replay-20261026/V2016-06-delete-all.accdb",
+        "bytes": 987136,
+        "sha256": "faf20531a94b741996b13949d339c8c42889d3ac2caaf5c5ce22aabc00dea2d8"
+      },
+      "reverse_candidate": {
+        "path": ".cache/batch-delete-original-replay-20261026/V2016-07-delete-all.accdb",
+        "bytes": 987136,
+        "sha256": "faf20531a94b741996b13949d339c8c42889d3ac2caaf5c5ce22aabc00dea2d8"
+      },
+      "group_order_bytes_identical": true,
+      "both_command_outputs_checked": true,
+      "proof_for_identical_candidate_bytes": {
+        "changed_bytes": 2522,
+        "owners": {
+          "Parents": {
+            "retired_pages": [
+              103,
+              104,
+              110,
+              111,
+              115,
+              121,
+              122,
+              126,
+              127,
+              133,
+              134,
+              135,
+              139,
+              140,
+              144,
+              151,
+              154,
+              156,
+              158,
+              159,
+              160,
+              161,
+              164,
+              171,
+              172,
+              183,
+              184,
+              185,
+              189,
+              190,
+              192,
+              198,
+              200,
+              203,
+              208,
+              209,
+              214,
+              216,
+              218,
+              219,
+              222
+            ],
+            "retained_pages": 2
+          },
+          "Children": {
+            "retired_pages": [
+              105,
+              106,
+              109,
+              112,
+              117,
+              119,
+              120,
+              123,
+              128,
+              131,
+              132,
+              138,
+              142,
+              145,
+              146,
+              147,
+              150,
+              153,
+              163,
+              165,
+              166,
+              167,
+              173,
+              175,
+              176,
+              178,
+              179,
+              180,
+              181,
+              186,
+              188,
+              194,
+              195,
+              197,
+              205,
+              207,
+              210,
+              211,
+              215,
+              217,
+              220,
+              224,
+              227
+            ],
+            "retained_pages": 3
+          }
+        },
+        "maps": {
+          "map_count": 12,
+          "complete_payload_or_bitmap_spans_checked": 12,
+          "map_representation_and_pointer_rows_unchanged": true,
+          "only_exact_membership_bits_changed": true,
+          "global_in_file_additions_equal_retired_index_pages": true,
+          "retired_index_pages": [
+            103,
+            104,
+            105,
+            106,
+            109,
+            110,
+            111,
+            112,
+            115,
+            117,
+            119,
+            120,
+            121,
+            122,
+            123,
+            126,
+            127,
+            128,
+            131,
+            132,
+            133,
+            134,
+            135,
+            138,
+            139,
+            140,
+            142,
+            144,
+            145,
+            146,
+            147,
+            150,
+            151,
+            153,
+            154,
+            156,
+            158,
+            159,
+            160,
+            161,
+            163,
+            164,
+            165,
+            166,
+            167,
+            171,
+            172,
+            173,
+            175,
+            176,
+            178,
+            179,
+            180,
+            181,
+            183,
+            184,
+            185,
+            186,
+            188,
+            189,
+            190,
+            192,
+            194,
+            195,
+            197,
+            198,
+            200,
+            203,
+            205,
+            207,
+            208,
+            209,
+            210,
+            211,
+            214,
+            215,
+            216,
+            217,
+            218,
+            219,
+            220,
+            222,
+            224,
+            227
+          ]
+        },
+        "shared_global_bytes": [
+          {
+            "offset": 8141,
+            "before": 0,
+            "after": 231,
+            "owners": {
+              "Parents": [
+                104,
+                110,
+                111
+              ],
+              "Children": [
+                105,
+                106,
+                109
+              ]
+            }
+          },
+          {
+            "offset": 8142,
+            "before": 0,
+            "after": 169,
+            "owners": {
+              "Parents": [
+                115
+              ],
+              "Children": [
+                112,
+                117,
+                119
+              ]
+            }
+          },
+          {
+            "offset": 8143,
+            "before": 0,
+            "after": 207,
+            "owners": {
+              "Parents": [
+                121,
+                122,
+                126,
+                127
+              ],
+              "Children": [
+                120,
+                123
+              ]
+            }
+          },
+          {
+            "offset": 8144,
+            "before": 0,
+            "after": 249,
+            "owners": {
+              "Parents": [
+                133,
+                134,
+                135
+              ],
+              "Children": [
+                128,
+                131,
+                132
+              ]
+            }
+          },
+          {
+            "offset": 8145,
+            "before": 0,
+            "after": 92,
+            "owners": {
+              "Parents": [
+                139,
+                140
+              ],
+              "Children": [
+                138,
+                142
+              ]
+            }
+          },
+          {
+            "offset": 8146,
+            "before": 0,
+            "after": 207,
+            "owners": {
+              "Parents": [
+                144,
+                151
+              ],
+              "Children": [
+                145,
+                146,
+                147,
+                150
+              ]
+            }
+          },
+          {
+            "offset": 8147,
+            "before": 0,
+            "after": 214,
+            "owners": {
+              "Parents": [
+                154,
+                156,
+                158,
+                159
+              ],
+              "Children": [
+                153
+              ]
+            }
+          },
+          {
+            "offset": 8148,
+            "before": 0,
+            "after": 251,
+            "owners": {
+              "Parents": [
+                160,
+                161,
+                164
+              ],
+              "Children": [
+                163,
+                165,
+                166,
+                167
+              ]
+            }
+          },
+          {
+            "offset": 8149,
+            "before": 0,
+            "after": 184,
+            "owners": {
+              "Parents": [
+                171,
+                172
+              ],
+              "Children": [
+                173,
+                175
+              ]
+            }
+          },
+          {
+            "offset": 8150,
+            "before": 0,
+            "after": 189,
+            "owners": {
+              "Parents": [
+                183
+              ],
+              "Children": [
+                176,
+                178,
+                179,
+                180,
+                181
+              ]
+            }
+          },
+          {
+            "offset": 8151,
+            "before": 0,
+            "after": 119,
+            "owners": {
+              "Parents": [
+                184,
+                185,
+                189,
+                190
+              ],
+              "Children": [
+                186,
+                188
+              ]
+            }
+          },
+          {
+            "offset": 8152,
+            "before": 0,
+            "after": 109,
+            "owners": {
+              "Parents": [
+                192,
+                198
+              ],
+              "Children": [
+                194,
+                195,
+                197
+              ]
+            }
+          },
+          {
+            "offset": 8153,
+            "before": 0,
+            "after": 169,
+            "owners": {
+              "Parents": [
+                200,
+                203
+              ],
+              "Children": [
+                205,
+                207
+              ]
+            }
+          },
+          {
+            "offset": 8154,
+            "before": 0,
+            "after": 207,
+            "owners": {
+              "Parents": [
+                208,
+                209,
+                214
+              ],
+              "Children": [
+                210,
+                211,
+                215
+              ]
+            }
+          },
+          {
+            "offset": 8155,
+            "before": 0,
+            "after": 95,
+            "owners": {
+              "Parents": [
+                216,
+                218,
+                219,
+                222
+              ],
+              "Children": [
+                217,
+                220
+              ]
+            }
+          }
+        ],
+        "outside_allowed_spans": 0,
+        "all_original_record_bodies_preserved": true,
+        "original_leaf_partitions_full_key_row_maxima_and_height_chains_checked": true
+      }
+    },
+    {
+      "profile": "V2019",
+      "state": "boundary-maxima",
+      "selected_roots_per_table": 2,
+      "selected_ids_sha256": "0b885cdaf02e30d4f5a150b6a03bde8fb7de4e94fbaeb104e4fade2dc21034f6",
+      "selected_boundary_ids": [
+        56,
+        258,
+        56,
+        258
+      ],
+      "forward_command": 58,
+      "reverse_command": 61,
+      "forward_candidate": {
+        "path": ".cache/batch-delete-original-replay-20261026/V2019-00-boundary-maxima.accdb",
+        "bytes": 1056768,
+        "sha256": "3f7257baf3949c2daf601b9f6610554c902f2880e9440a4c74c39d9c24369e24"
+      },
+      "reverse_candidate": {
+        "path": ".cache/batch-delete-original-replay-20261026/V2019-01-boundary-maxima.accdb",
+        "bytes": 1056768,
+        "sha256": "3f7257baf3949c2daf601b9f6610554c902f2880e9440a4c74c39d9c24369e24"
+      },
+      "group_order_bytes_identical": true,
+      "both_command_outputs_checked": true,
+      "proof_for_identical_candidate_bytes": {
+        "changed_bytes": 5629,
+        "owners": {
+          "Parents": {
+            "retired_pages": [],
+            "retained_pages": 43
+          },
+          "Children": {
+            "retired_pages": [],
+            "retained_pages": 46
+          }
+        },
+        "maps": {
+          "map_count": 12,
+          "complete_payload_or_bitmap_spans_checked": 12,
+          "map_representation_and_pointer_rows_unchanged": true,
+          "only_exact_membership_bits_changed": true,
+          "global_in_file_additions_equal_retired_index_pages": true,
+          "retired_index_pages": []
+        },
+        "shared_global_bytes": [],
+        "outside_allowed_spans": 0,
+        "all_original_record_bodies_preserved": true,
+        "original_leaf_partitions_full_key_row_maxima_and_height_chains_checked": true
+      }
+    },
+    {
+      "profile": "V2019",
+      "state": "two-original-subtrees",
+      "selected_roots_per_table": 349,
+      "selected_ids_sha256": "d6db54366b756f327ff4c93834cf0a4892d73a32b90687f5f30d97144b27e755",
+      "selected_boundary_ids": [
+        2,
+        4,
+        5,
+        495,
+        497,
+        499
+      ],
+      "forward_command": 64,
+      "reverse_command": 67,
+      "forward_candidate": {
+        "path": ".cache/batch-delete-original-replay-20261026/V2019-02-two-original-subtrees.accdb",
+        "bytes": 1056768,
+        "sha256": "bf4351ae3bf801f2939d2c3f4f7c3c14e51ca26bddbb2119db82ed49d44e7170"
+      },
+      "reverse_candidate": {
+        "path": ".cache/batch-delete-original-replay-20261026/V2019-03-two-original-subtrees.accdb",
+        "bytes": 1056768,
+        "sha256": "bf4351ae3bf801f2939d2c3f4f7c3c14e51ca26bddbb2119db82ed49d44e7170"
+      },
+      "group_order_bytes_identical": true,
+      "both_command_outputs_checked": true,
+      "proof_for_identical_candidate_bytes": {
+        "changed_bytes": 46910,
+        "owners": {
+          "Parents": {
+            "retired_pages": [
+              127,
+              132,
+              139,
+              144,
+              151,
+              152,
+              161,
+              171,
+              175,
+              176,
+              178,
+              200,
+              201,
+              209,
+              215,
+              217,
+              220,
+              233,
+              239
+            ],
+            "retained_pages": 24
+          },
+          "Children": {
+            "retired_pages": [
+              123,
+              126,
+              136,
+              137,
+              148,
+              155,
+              164,
+              167,
+              180,
+              182,
+              184,
+              190,
+              195,
+              198,
+              212,
+              224,
+              232,
+              234
+            ],
+            "retained_pages": 28
+          }
+        },
+        "maps": {
+          "map_count": 12,
+          "complete_payload_or_bitmap_spans_checked": 12,
+          "map_representation_and_pointer_rows_unchanged": true,
+          "only_exact_membership_bits_changed": true,
+          "global_in_file_additions_equal_retired_index_pages": true,
+          "retired_index_pages": [
+            123,
+            126,
+            127,
+            132,
+            136,
+            137,
+            139,
+            144,
+            148,
+            151,
+            152,
+            155,
+            161,
+            164,
+            167,
+            171,
+            175,
+            176,
+            178,
+            180,
+            182,
+            184,
+            190,
+            195,
+            198,
+            200,
+            201,
+            209,
+            212,
+            215,
+            217,
+            220,
+            224,
+            232,
+            233,
+            234,
+            239
+          ]
+        },
+        "shared_global_bytes": [
+          {
+            "offset": 8143,
+            "before": 0,
+            "after": 200,
+            "owners": {
+              "Parents": [
+                127
+              ],
+              "Children": [
+                123,
+                126
+              ]
+            }
+          },
+          {
+            "offset": 8145,
+            "before": 0,
+            "after": 11,
+            "owners": {
+              "Parents": [
+                139
+              ],
+              "Children": [
+                136,
+                137
+              ]
+            }
+          },
+          {
+            "offset": 8146,
+            "before": 0,
+            "after": 145,
+            "owners": {
+              "Parents": [
+                144,
+                151
+              ],
+              "Children": [
+                148
+              ]
+            }
+          },
+          {
+            "offset": 8147,
+            "before": 0,
+            "after": 9,
+            "owners": {
+              "Parents": [
+                152
+              ],
+              "Children": [
+                155
+              ]
+            }
+          },
+          {
+            "offset": 8148,
+            "before": 0,
+            "after": 146,
+            "owners": {
+              "Parents": [
+                161
+              ],
+              "Children": [
+                164,
+                167
+              ]
+            }
+          },
+          {
+            "offset": 8150,
+            "before": 0,
+            "after": 85,
+            "owners": {
+              "Parents": [
+                176,
+                178
+              ],
+              "Children": [
+                180,
+                182
+              ]
+            }
+          },
+          {
+            "offset": 8154,
+            "before": 0,
+            "after": 146,
+            "owners": {
+              "Parents": [
+                209,
+                215
+              ],
+              "Children": [
+                212
+              ]
+            }
+          },
+          {
+            "offset": 8157,
+            "before": 0,
+            "after": 135,
+            "owners": {
+              "Parents": [
+                233,
+                239
+              ],
+              "Children": [
+                232,
+                234
+              ]
+            }
+          }
+        ],
+        "outside_allowed_spans": 0,
+        "all_original_record_bodies_preserved": true,
+        "original_leaf_partitions_full_key_row_maxima_and_height_chains_checked": true
+      }
+    },
+    {
+      "profile": "V2019",
+      "state": "retain-one",
+      "selected_roots_per_table": 499,
+      "selected_ids_sha256": "ce2488b339d88f4439ef55ac199857079b3f0e6a7e449680dd7e4df627d360cd",
+      "selected_boundary_ids": [
+        2,
+        3,
+        4,
+        498,
+        499,
+        500
+      ],
+      "forward_command": 70,
+      "reverse_command": 73,
+      "forward_candidate": {
+        "path": ".cache/batch-delete-original-replay-20261026/V2019-04-retain-one.accdb",
+        "bytes": 1056768,
+        "sha256": "9276bb5b7eb1bb24d11dc9dfc0eb9a8c90cbb31ab62817325ad5c5ad96ee8fc3"
+      },
+      "reverse_candidate": {
+        "path": ".cache/batch-delete-original-replay-20261026/V2019-05-retain-one.accdb",
+        "bytes": 1056768,
+        "sha256": "9276bb5b7eb1bb24d11dc9dfc0eb9a8c90cbb31ab62817325ad5c5ad96ee8fc3"
+      },
+      "group_order_bytes_identical": true,
+      "both_command_outputs_checked": true,
+      "proof_for_identical_candidate_bytes": {
+        "changed_bytes": 3200,
+        "owners": {
+          "Parents": {
+            "retired_pages": [
+              120,
+              121,
+              127,
+              128,
+              132,
+              138,
+              139,
+              143,
+              144,
+              150,
+              151,
+              152,
+              156,
+              157,
+              161,
+              168,
+              171,
+              173,
+              175,
+              176,
+              178,
+              181,
+              188,
+              189,
+              200,
+              201,
+              202,
+              206,
+              207,
+              209,
+              215,
+              217,
+              220,
+              226,
+              231,
+              233,
+              235,
+              236,
+              239
+            ],
+            "retained_pages": 4
+          },
+          "Children": {
+            "retired_pages": [
+              122,
+              123,
+              126,
+              129,
+              134,
+              136,
+              137,
+              140,
+              145,
+              148,
+              149,
+              155,
+              159,
+              162,
+              163,
+              164,
+              167,
+              170,
+              180,
+              182,
+              184,
+              190,
+              192,
+              193,
+              195,
+              196,
+              197,
+              198,
+              203,
+              205,
+              211,
+              212,
+              222,
+              224,
+              227,
+              228,
+              232,
+              234,
+              237,
+              241,
+              244
+            ],
+            "retained_pages": 5
+          }
+        },
+        "maps": {
+          "map_count": 12,
+          "complete_payload_or_bitmap_spans_checked": 12,
+          "map_representation_and_pointer_rows_unchanged": true,
+          "only_exact_membership_bits_changed": true,
+          "global_in_file_additions_equal_retired_index_pages": true,
+          "retired_index_pages": [
+            120,
+            121,
+            122,
+            123,
+            126,
+            127,
+            128,
+            129,
+            132,
+            134,
+            136,
+            137,
+            138,
+            139,
+            140,
+            143,
+            144,
+            145,
+            148,
+            149,
+            150,
+            151,
+            152,
+            155,
+            156,
+            157,
+            159,
+            161,
+            162,
+            163,
+            164,
+            167,
+            168,
+            170,
+            171,
+            173,
+            175,
+            176,
+            178,
+            180,
+            181,
+            182,
+            184,
+            188,
+            189,
+            190,
+            192,
+            193,
+            195,
+            196,
+            197,
+            198,
+            200,
+            201,
+            202,
+            203,
+            205,
+            206,
+            207,
+            209,
+            211,
+            212,
+            215,
+            217,
+            220,
+            222,
+            224,
+            226,
+            227,
+            228,
+            231,
+            232,
+            233,
+            234,
+            235,
+            236,
+            237,
+            239,
+            241,
+            244
+          ]
+        },
+        "shared_global_bytes": [
+          {
+            "offset": 8143,
+            "before": 0,
+            "after": 207,
+            "owners": {
+              "Parents": [
+                120,
+                121,
+                127
+              ],
+              "Children": [
+                122,
+                123,
+                126
+              ]
+            }
+          },
+          {
+            "offset": 8144,
+            "before": 0,
+            "after": 83,
+            "owners": {
+              "Parents": [
+                128,
+                132
+              ],
+              "Children": [
+                129,
+                134
+              ]
+            }
+          },
+          {
+            "offset": 8145,
+            "before": 0,
+            "after": 159,
+            "owners": {
+              "Parents": [
+                138,
+                139,
+                143
+              ],
+              "Children": [
+                136,
+                137,
+                140
+              ]
+            }
+          },
+          {
+            "offset": 8146,
+            "before": 0,
+            "after": 243,
+            "owners": {
+              "Parents": [
+                144,
+                150,
+                151
+              ],
+              "Children": [
+                145,
+                148,
+                149
+              ]
+            }
+          },
+          {
+            "offset": 8147,
+            "before": 0,
+            "after": 185,
+            "owners": {
+              "Parents": [
+                152,
+                156,
+                157
+              ],
+              "Children": [
+                155,
+                159
+              ]
+            }
+          },
+          {
+            "offset": 8148,
+            "before": 0,
+            "after": 158,
+            "owners": {
+              "Parents": [
+                161
+              ],
+              "Children": [
+                162,
+                163,
+                164,
+                167
+              ]
+            }
+          },
+          {
+            "offset": 8149,
+            "before": 0,
+            "after": 173,
+            "owners": {
+              "Parents": [
+                168,
+                171,
+                173,
+                175
+              ],
+              "Children": [
+                170
+              ]
+            }
+          },
+          {
+            "offset": 8150,
+            "before": 0,
+            "after": 117,
+            "owners": {
+              "Parents": [
+                176,
+                178,
+                181
+              ],
+              "Children": [
+                180,
+                182
+              ]
+            }
+          },
+          {
+            "offset": 8151,
+            "before": 0,
+            "after": 113,
+            "owners": {
+              "Parents": [
+                188,
+                189
+              ],
+              "Children": [
+                184,
+                190
+              ]
+            }
+          },
+          {
+            "offset": 8153,
+            "before": 0,
+            "after": 239,
+            "owners": {
+              "Parents": [
+                200,
+                201,
+                202,
+                206,
+                207
+              ],
+              "Children": [
+                203,
+                205
+              ]
+            }
+          },
+          {
+            "offset": 8154,
+            "before": 0,
+            "after": 154,
+            "owners": {
+              "Parents": [
+                209,
+                215
+              ],
+              "Children": [
+                211,
+                212
+              ]
+            }
+          },
+          {
+            "offset": 8155,
+            "before": 0,
+            "after": 82,
+            "owners": {
+              "Parents": [
+                217,
+                220
+              ],
+              "Children": [
+                222
+              ]
+            }
+          },
+          {
+            "offset": 8156,
+            "before": 0,
+            "after": 157,
+            "owners": {
+              "Parents": [
+                226,
+                231
+              ],
+              "Children": [
+                224,
+                227,
+                228
+              ]
+            }
+          },
+          {
+            "offset": 8157,
+            "before": 0,
+            "after": 191,
+            "owners": {
+              "Parents": [
+                233,
+                235,
+                236,
+                239
+              ],
+              "Children": [
+                232,
+                234,
+                237
+              ]
+            }
+          }
+        ],
+        "outside_allowed_spans": 0,
+        "all_original_record_bodies_preserved": true,
+        "original_leaf_partitions_full_key_row_maxima_and_height_chains_checked": true
+      }
+    },
+    {
+      "profile": "V2019",
+      "state": "delete-all",
+      "selected_roots_per_table": 500,
+      "selected_ids_sha256": "ade394ba169334578731be1e8848f1f10d5514c40fe23cc24e06bfcc75a5a97c",
+      "selected_boundary_ids": [
+        1,
+        2,
+        3,
+        498,
+        499,
+        500
+      ],
+      "forward_command": 76,
+      "reverse_command": 79,
+      "forward_candidate": {
+        "path": ".cache/batch-delete-original-replay-20261026/V2019-06-delete-all.accdb",
+        "bytes": 1056768,
+        "sha256": "d2443ab99f248df427915f76a7607a151b7d47b08a77d4637418b39f1faa35d8"
+      },
+      "reverse_candidate": {
+        "path": ".cache/batch-delete-original-replay-20261026/V2019-07-delete-all.accdb",
+        "bytes": 1056768,
+        "sha256": "d2443ab99f248df427915f76a7607a151b7d47b08a77d4637418b39f1faa35d8"
+      },
+      "group_order_bytes_identical": true,
+      "both_command_outputs_checked": true,
+      "proof_for_identical_candidate_bytes": {
+        "changed_bytes": 2521,
+        "owners": {
+          "Parents": {
+            "retired_pages": [
+              120,
+              121,
+              127,
+              128,
+              132,
+              138,
+              139,
+              143,
+              144,
+              150,
+              151,
+              152,
+              156,
+              157,
+              161,
+              168,
+              171,
+              173,
+              175,
+              176,
+              177,
+              178,
+              181,
+              188,
+              189,
+              200,
+              201,
+              202,
+              206,
+              207,
+              209,
+              215,
+              217,
+              220,
+              225,
+              226,
+              231,
+              233,
+              235,
+              236,
+              239
+            ],
+            "retained_pages": 2
+          },
+          "Children": {
+            "retired_pages": [
+              122,
+              123,
+              126,
+              129,
+              134,
+              136,
+              137,
+              140,
+              145,
+              148,
+              149,
+              155,
+              159,
+              162,
+              163,
+              164,
+              167,
+              170,
+              180,
+              182,
+              183,
+              184,
+              190,
+              192,
+              193,
+              195,
+              196,
+              197,
+              198,
+              203,
+              205,
+              211,
+              212,
+              214,
+              222,
+              224,
+              227,
+              228,
+              232,
+              234,
+              237,
+              241,
+              244
+            ],
+            "retained_pages": 3
+          }
+        },
+        "maps": {
+          "map_count": 12,
+          "complete_payload_or_bitmap_spans_checked": 12,
+          "map_representation_and_pointer_rows_unchanged": true,
+          "only_exact_membership_bits_changed": true,
+          "global_in_file_additions_equal_retired_index_pages": true,
+          "retired_index_pages": [
+            120,
+            121,
+            122,
+            123,
+            126,
+            127,
+            128,
+            129,
+            132,
+            134,
+            136,
+            137,
+            138,
+            139,
+            140,
+            143,
+            144,
+            145,
+            148,
+            149,
+            150,
+            151,
+            152,
+            155,
+            156,
+            157,
+            159,
+            161,
+            162,
+            163,
+            164,
+            167,
+            168,
+            170,
+            171,
+            173,
+            175,
+            176,
+            177,
+            178,
+            180,
+            181,
+            182,
+            183,
+            184,
+            188,
+            189,
+            190,
+            192,
+            193,
+            195,
+            196,
+            197,
+            198,
+            200,
+            201,
+            202,
+            203,
+            205,
+            206,
+            207,
+            209,
+            211,
+            212,
+            214,
+            215,
+            217,
+            220,
+            222,
+            224,
+            225,
+            226,
+            227,
+            228,
+            231,
+            232,
+            233,
+            234,
+            235,
+            236,
+            237,
+            239,
+            241,
+            244
+          ]
+        },
+        "shared_global_bytes": [
+          {
+            "offset": 8143,
+            "before": 0,
+            "after": 207,
+            "owners": {
+              "Parents": [
+                120,
+                121,
+                127
+              ],
+              "Children": [
+                122,
+                123,
+                126
+              ]
+            }
+          },
+          {
+            "offset": 8144,
+            "before": 0,
+            "after": 83,
+            "owners": {
+              "Parents": [
+                128,
+                132
+              ],
+              "Children": [
+                129,
+                134
+              ]
+            }
+          },
+          {
+            "offset": 8145,
+            "before": 0,
+            "after": 159,
+            "owners": {
+              "Parents": [
+                138,
+                139,
+                143
+              ],
+              "Children": [
+                136,
+                137,
+                140
+              ]
+            }
+          },
+          {
+            "offset": 8146,
+            "before": 0,
+            "after": 243,
+            "owners": {
+              "Parents": [
+                144,
+                150,
+                151
+              ],
+              "Children": [
+                145,
+                148,
+                149
+              ]
+            }
+          },
+          {
+            "offset": 8147,
+            "before": 0,
+            "after": 185,
+            "owners": {
+              "Parents": [
+                152,
+                156,
+                157
+              ],
+              "Children": [
+                155,
+                159
+              ]
+            }
+          },
+          {
+            "offset": 8148,
+            "before": 0,
+            "after": 158,
+            "owners": {
+              "Parents": [
+                161
+              ],
+              "Children": [
+                162,
+                163,
+                164,
+                167
+              ]
+            }
+          },
+          {
+            "offset": 8149,
+            "before": 0,
+            "after": 173,
+            "owners": {
+              "Parents": [
+                168,
+                171,
+                173,
+                175
+              ],
+              "Children": [
+                170
+              ]
+            }
+          },
+          {
+            "offset": 8150,
+            "before": 0,
+            "after": 247,
+            "owners": {
+              "Parents": [
+                176,
+                177,
+                178,
+                181
+              ],
+              "Children": [
+                180,
+                182,
+                183
+              ]
+            }
+          },
+          {
+            "offset": 8151,
+            "before": 0,
+            "after": 113,
+            "owners": {
+              "Parents": [
+                188,
+                189
+              ],
+              "Children": [
+                184,
+                190
+              ]
+            }
+          },
+          {
+            "offset": 8153,
+            "before": 0,
+            "after": 239,
+            "owners": {
+              "Parents": [
+                200,
+                201,
+                202,
+                206,
+                207
+              ],
+              "Children": [
+                203,
+                205
+              ]
+            }
+          },
+          {
+            "offset": 8154,
+            "before": 0,
+            "after": 218,
+            "owners": {
+              "Parents": [
+                209,
+                215
+              ],
+              "Children": [
+                211,
+                212,
+                214
+              ]
+            }
+          },
+          {
+            "offset": 8155,
+            "before": 0,
+            "after": 82,
+            "owners": {
+              "Parents": [
+                217,
+                220
+              ],
+              "Children": [
+                222
+              ]
+            }
+          },
+          {
+            "offset": 8156,
+            "before": 0,
+            "after": 159,
+            "owners": {
+              "Parents": [
+                225,
+                226,
+                231
+              ],
+              "Children": [
+                224,
+                227,
+                228
+              ]
+            }
+          },
+          {
+            "offset": 8157,
+            "before": 0,
+            "after": 191,
+            "owners": {
+              "Parents": [
+                233,
+                235,
+                236,
+                239
+              ],
+              "Children": [
+                232,
+                234,
+                237
+              ]
+            }
+          }
+        ],
+        "outside_allowed_spans": 0,
+        "all_original_record_bodies_preserved": true,
+        "original_leaf_partitions_full_key_row_maxima_and_height_chains_checked": true
+      }
+    }
+  ],
+  "typed_refusals": [
+    {
+      "profile": "V2016",
+      "state": "parent-only",
+      "reverse_groups": false,
+      "expected": "refusal",
+      "command": 38,
+      "agrees": true,
+      "actual_stderr": "Error: Inspect(Constraint(MissingParent))\n"
+    },
+    {
+      "profile": "V2016",
+      "state": "surviving-child",
+      "reverse_groups": false,
+      "expected": "refusal",
+      "command": 39,
+      "agrees": true,
+      "actual_stderr": "Error: Inspect(Constraint(MissingParent))\n"
+    },
+    {
+      "profile": "V2016",
+      "state": "stale",
+      "reverse_groups": false,
+      "expected": "refusal",
+      "command": 40,
+      "agrees": true,
+      "actual_stderr": "Error: Conflict\n"
+    },
+    {
+      "profile": "V2016",
+      "state": "duplicate-group",
+      "reverse_groups": false,
+      "expected": "refusal",
+      "command": 41,
+      "agrees": true,
+      "actual_stderr": "Error: \"Repeated table groups are not allowed\"\n"
+    },
+    {
+      "profile": "V2016",
+      "state": "duplicate-request",
+      "reverse_groups": false,
+      "expected": "refusal",
+      "command": 42,
+      "agrees": true,
+      "actual_stderr": "Error: Conflict\n"
+    },
+    {
+      "profile": "V2016",
+      "state": "existing-output",
+      "reverse_groups": false,
+      "expected": "refusal",
+      "command": 43,
+      "agrees": true,
+      "output": {
+        "path": ".cache/batch-delete-original-replay-20261026/V2016-13-existing-output.accdb",
+        "bytes": 33,
+        "sha256": "45f299dfc38bc3a8e9ec9f93dd6b9388ea2f4abd141044a7a6d146f486f97dfc"
+      },
+      "actual_stderr": "Error: Os { code: 17, kind: AlreadyExists, message: \"File exists\" }\n"
+    },
+    {
+      "profile": "V2019",
+      "state": "parent-only",
+      "reverse_groups": false,
+      "expected": "refusal",
+      "command": 82,
+      "agrees": true,
+      "actual_stderr": "Error: Inspect(Constraint(MissingParent))\n"
+    },
+    {
+      "profile": "V2019",
+      "state": "surviving-child",
+      "reverse_groups": false,
+      "expected": "refusal",
+      "command": 83,
+      "agrees": true,
+      "actual_stderr": "Error: Inspect(Constraint(MissingParent))\n"
+    },
+    {
+      "profile": "V2019",
+      "state": "stale",
+      "reverse_groups": false,
+      "expected": "refusal",
+      "command": 84,
+      "agrees": true,
+      "actual_stderr": "Error: Conflict\n"
+    },
+    {
+      "profile": "V2019",
+      "state": "duplicate-group",
+      "reverse_groups": false,
+      "expected": "refusal",
+      "command": 85,
+      "agrees": true,
+      "actual_stderr": "Error: \"Repeated table groups are not allowed\"\n"
+    },
+    {
+      "profile": "V2019",
+      "state": "duplicate-request",
+      "reverse_groups": false,
+      "expected": "refusal",
+      "command": 86,
+      "agrees": true,
+      "actual_stderr": "Error: Conflict\n"
+    },
+    {
+      "profile": "V2019",
+      "state": "existing-output",
+      "reverse_groups": false,
+      "expected": "refusal",
+      "command": 87,
+      "agrees": true,
+      "output": {
+        "path": ".cache/batch-delete-original-replay-20261026/V2019-13-existing-output.accdb",
+        "bytes": 33,
+        "sha256": "45f299dfc38bc3a8e9ec9f93dd6b9388ea2f4abd141044a7a6d146f486f97dfc"
+      },
+      "actual_stderr": "Error: Os { code: 17, kind: AlreadyExists, message: \"File exists\" }\n"
+    }
+  ],
+  "command_receipts": [
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "oracle",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 577708,
+      "stdout_sha256": "b7b4dc8161f1a5d820182e9746eb4513ff9ac52a6e4075b58cbf9cbab9b3078b",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "maps",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 4803,
+      "stdout_sha256": "59432bab1803637549004a314f3ab27ba58581eed0195a615237ab0c9d782562",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "delete",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2016-boundary-maxima-reference.accdb",
+        "56,258"
+      ],
+      "status": 0,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "oracle",
+        ".cache/batch-delete-original-replay-20261026/V2016-boundary-maxima-reference.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 575418,
+      "stdout_sha256": "5c5c89f1564dbd73f377cf3cc112750e7902be32c69241e68311d1428530d446",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "maps",
+        ".cache/batch-delete-original-replay-20261026/V2016-boundary-maxima-reference.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 4803,
+      "stdout_sha256": "467dcf1e381ccfb704f614faa20e883f76c92662e35a2585e685901e835edd38",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "delete",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2016-two-original-subtrees-reference.accdb",
+        "2,4,5,7,8,9,10,11,13,14,16,17,18,20,21,22,24,26,27,28,29,30,33,35,38,39,40,42,43,45,46,47,48,49,50,51,53,54,56,57,59,60,61,63,65,66,69,70,71,72,73,74,75,76,77,78,79,81,82,85,86,87,88,90,91,93,94,95,100,102,104,105,106,107,108,110,112,113,116,117,118,119,122,123,124,125,129,132,134,136,137,138,139,140,142,143,144,145,146,148,149,150,152,153,154,155,157,159,160,161,162,163,164,165,166,167,168,169,172,173,175,177,178,179,180,181,182,183,184,185,186,188,189,190,191,192,195,196,197,198,199,202,203,204,206,207,209,212,213,214,215,216,218,219,220,221,223,224,225,226,228,229,231,232,233,234,236,237,238,239,240,241,242,243,244,246,247,248,249,250,251,252,253,254,255,256,258,259,260,261,263,264,265,268,269,270,271,273,274,275,276,277,278,279,280,282,283,284,285,287,288,289,290,291,294,295,296,299,300,302,307,309,310,312,313,315,316,319,320,323,325,326,327,329,331,332,333,334,339,340,342,343,344,345,347,349,352,354,355,356,358,360,361,363,364,366,369,370,371,372,373,375,376,377,379,380,381,383,386,387,388,391,392,393,394,398,399,402,403,404,405,407,408,409,410,411,412,414,415,420,421,422,423,425,426,427,428,430,431,432,433,434,435,437,438,439,440,441,442,443,444,445,447,449,450,452,453,455,456,460,461,462,463,465,466,467,470,471,472,475,476,477,478,479,480,481,482,483,485,486,487,489,490,491,493,494,495,497,499"
+      ],
+      "status": 0,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "oracle",
+        ".cache/batch-delete-original-replay-20261026/V2016-two-original-subtrees-reference.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 176740,
+      "stdout_sha256": "a7df32560c5ba975f112a81d7184e145391cf9ad73b55ea97f1097561aa0185d",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "maps",
+        ".cache/batch-delete-original-replay-20261026/V2016-two-original-subtrees-reference.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 4785,
+      "stdout_sha256": "4ffd9159d789127e30f7f1c1a19e08107f38aec706daa62002d6ffcd8ca9a780",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "delete",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2016-retain-one-reference.accdb",
+        "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255,256,257,258,259,260,261,262,263,264,265,266,267,268,269,270,271,272,273,274,275,276,277,278,279,280,281,282,283,284,285,286,287,288,289,290,291,292,293,294,295,296,297,298,299,300,301,302,303,304,305,306,307,308,309,310,311,312,313,314,315,316,317,318,319,320,321,322,323,324,325,326,327,328,329,330,331,332,333,334,335,336,337,338,339,340,341,342,343,344,345,346,347,348,349,350,351,352,353,354,355,356,357,358,359,360,361,362,363,364,365,366,367,368,369,370,371,372,373,374,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391,392,393,394,395,396,397,398,399,400,401,402,403,404,405,406,407,408,409,410,411,412,413,414,415,416,417,418,419,420,421,422,423,424,425,426,427,428,429,430,431,432,433,434,435,436,437,438,439,440,441,442,443,444,445,446,447,448,449,450,451,452,453,454,455,456,457,458,459,460,461,462,463,464,465,466,467,468,469,470,471,472,473,474,475,476,477,478,479,480,481,482,483,484,485,486,487,488,489,490,491,492,493,494,495,496,497,498,499,500"
+      ],
+      "status": 0,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "oracle",
+        ".cache/batch-delete-original-replay-20261026/V2016-retain-one-reference.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 4374,
+      "stdout_sha256": "67d3416a1afb97a7b3dab75f643645608d0d359da6362082338d1f68f34292e1",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "maps",
+        ".cache/batch-delete-original-replay-20261026/V2016-retain-one-reference.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 4736,
+      "stdout_sha256": "77b92f36349aa04d8acad7a60799543e3db3aed1df53633036baa177d6d39917",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "delete",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2016-delete-all-reference.accdb",
+        "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255,256,257,258,259,260,261,262,263,264,265,266,267,268,269,270,271,272,273,274,275,276,277,278,279,280,281,282,283,284,285,286,287,288,289,290,291,292,293,294,295,296,297,298,299,300,301,302,303,304,305,306,307,308,309,310,311,312,313,314,315,316,317,318,319,320,321,322,323,324,325,326,327,328,329,330,331,332,333,334,335,336,337,338,339,340,341,342,343,344,345,346,347,348,349,350,351,352,353,354,355,356,357,358,359,360,361,362,363,364,365,366,367,368,369,370,371,372,373,374,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391,392,393,394,395,396,397,398,399,400,401,402,403,404,405,406,407,408,409,410,411,412,413,414,415,416,417,418,419,420,421,422,423,424,425,426,427,428,429,430,431,432,433,434,435,436,437,438,439,440,441,442,443,444,445,446,447,448,449,450,451,452,453,454,455,456,457,458,459,460,461,462,463,464,465,466,467,468,469,470,471,472,473,474,475,476,477,478,479,480,481,482,483,484,485,486,487,488,489,490,491,492,493,494,495,496,497,498,499,500"
+      ],
+      "status": 0,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "oracle",
+        ".cache/batch-delete-original-replay-20261026/V2016-delete-all-reference.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 3254,
+      "stdout_sha256": "cf2685afda0af5cbb11229e16c66dbfa16d1ea97d33039ca8e66772242ddc12f",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "maps",
+        ".cache/batch-delete-original-replay-20261026/V2016-delete-all-reference.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 4734,
+      "stdout_sha256": "e50e0d91517c3f3f941663b5a97597135f676ffb1614776ec3f43a4046e752ea",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/ace16-batch-delete-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2016-00-boundary-maxima.accdb",
+        "--group",
+        "Children",
+        ".cache/batch-delete-original-replay-20261026/V2016-00-Children.tsv",
+        "--group",
+        "Parents",
+        ".cache/batch-delete-original-replay-20261026/V2016-00-Parents.tsv"
+      ],
+      "status": 0,
+      "stdout_bytes": 25,
+      "stdout_sha256": "6cc925d0b9107ceb3da95cbd687ce63c84039de53d66ab1428f5c32102f3cd5f",
+      "stderr_bytes": 85,
+      "stderr_sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "oracle",
+        ".cache/batch-delete-original-replay-20261026/V2016-00-boundary-maxima.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 575418,
+      "stdout_sha256": "5c5c89f1564dbd73f377cf3cc112750e7902be32c69241e68311d1428530d446",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "maps",
+        ".cache/batch-delete-original-replay-20261026/V2016-00-boundary-maxima.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 4803,
+      "stdout_sha256": "467dcf1e381ccfb704f614faa20e883f76c92662e35a2585e685901e835edd38",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/ace16-batch-delete-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2016-01-boundary-maxima.accdb",
+        "--group",
+        "Parents",
+        ".cache/batch-delete-original-replay-20261026/V2016-01-Parents.tsv",
+        "--group",
+        "Children",
+        ".cache/batch-delete-original-replay-20261026/V2016-01-Children.tsv"
+      ],
+      "status": 0,
+      "stdout_bytes": 25,
+      "stdout_sha256": "6cc925d0b9107ceb3da95cbd687ce63c84039de53d66ab1428f5c32102f3cd5f",
+      "stderr_bytes": 85,
+      "stderr_sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "oracle",
+        ".cache/batch-delete-original-replay-20261026/V2016-01-boundary-maxima.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 575418,
+      "stdout_sha256": "5c5c89f1564dbd73f377cf3cc112750e7902be32c69241e68311d1428530d446",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "maps",
+        ".cache/batch-delete-original-replay-20261026/V2016-01-boundary-maxima.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 4803,
+      "stdout_sha256": "467dcf1e381ccfb704f614faa20e883f76c92662e35a2585e685901e835edd38",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/ace16-batch-delete-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2016-02-two-original-subtrees.accdb",
+        "--group",
+        "Children",
+        ".cache/batch-delete-original-replay-20261026/V2016-02-Children.tsv",
+        "--group",
+        "Parents",
+        ".cache/batch-delete-original-replay-20261026/V2016-02-Parents.tsv"
+      ],
+      "status": 0,
+      "stdout_bytes": 27,
+      "stdout_sha256": "2fc3c0e053f873f33e370b8d83b622f379f817c9e4e70941c0b2a3c7922342e4",
+      "stderr_bytes": 85,
+      "stderr_sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "oracle",
+        ".cache/batch-delete-original-replay-20261026/V2016-02-two-original-subtrees.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 176740,
+      "stdout_sha256": "a7df32560c5ba975f112a81d7184e145391cf9ad73b55ea97f1097561aa0185d",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "maps",
+        ".cache/batch-delete-original-replay-20261026/V2016-02-two-original-subtrees.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 4785,
+      "stdout_sha256": "4ffd9159d789127e30f7f1c1a19e08107f38aec706daa62002d6ffcd8ca9a780",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/ace16-batch-delete-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2016-03-two-original-subtrees.accdb",
+        "--group",
+        "Parents",
+        ".cache/batch-delete-original-replay-20261026/V2016-03-Parents.tsv",
+        "--group",
+        "Children",
+        ".cache/batch-delete-original-replay-20261026/V2016-03-Children.tsv"
+      ],
+      "status": 0,
+      "stdout_bytes": 27,
+      "stdout_sha256": "2fc3c0e053f873f33e370b8d83b622f379f817c9e4e70941c0b2a3c7922342e4",
+      "stderr_bytes": 85,
+      "stderr_sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "oracle",
+        ".cache/batch-delete-original-replay-20261026/V2016-03-two-original-subtrees.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 176740,
+      "stdout_sha256": "a7df32560c5ba975f112a81d7184e145391cf9ad73b55ea97f1097561aa0185d",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "maps",
+        ".cache/batch-delete-original-replay-20261026/V2016-03-two-original-subtrees.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 4785,
+      "stdout_sha256": "4ffd9159d789127e30f7f1c1a19e08107f38aec706daa62002d6ffcd8ca9a780",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/ace16-batch-delete-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2016-04-retain-one.accdb",
+        "--group",
+        "Children",
+        ".cache/batch-delete-original-replay-20261026/V2016-04-Children.tsv",
+        "--group",
+        "Parents",
+        ".cache/batch-delete-original-replay-20261026/V2016-04-Parents.tsv"
+      ],
+      "status": 0,
+      "stdout_bytes": 27,
+      "stdout_sha256": "d4cb4b496b40f229e2b29ef705a552f544bed9cbc6ae8bd80049aa732c1768cf",
+      "stderr_bytes": 85,
+      "stderr_sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "oracle",
+        ".cache/batch-delete-original-replay-20261026/V2016-04-retain-one.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 4374,
+      "stdout_sha256": "67d3416a1afb97a7b3dab75f643645608d0d359da6362082338d1f68f34292e1",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "maps",
+        ".cache/batch-delete-original-replay-20261026/V2016-04-retain-one.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 4736,
+      "stdout_sha256": "77b92f36349aa04d8acad7a60799543e3db3aed1df53633036baa177d6d39917",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/ace16-batch-delete-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2016-05-retain-one.accdb",
+        "--group",
+        "Parents",
+        ".cache/batch-delete-original-replay-20261026/V2016-05-Parents.tsv",
+        "--group",
+        "Children",
+        ".cache/batch-delete-original-replay-20261026/V2016-05-Children.tsv"
+      ],
+      "status": 0,
+      "stdout_bytes": 27,
+      "stdout_sha256": "d4cb4b496b40f229e2b29ef705a552f544bed9cbc6ae8bd80049aa732c1768cf",
+      "stderr_bytes": 85,
+      "stderr_sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "oracle",
+        ".cache/batch-delete-original-replay-20261026/V2016-05-retain-one.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 4374,
+      "stdout_sha256": "67d3416a1afb97a7b3dab75f643645608d0d359da6362082338d1f68f34292e1",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "maps",
+        ".cache/batch-delete-original-replay-20261026/V2016-05-retain-one.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 4736,
+      "stdout_sha256": "77b92f36349aa04d8acad7a60799543e3db3aed1df53633036baa177d6d39917",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/ace16-batch-delete-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2016-06-delete-all.accdb",
+        "--group",
+        "Children",
+        ".cache/batch-delete-original-replay-20261026/V2016-06-Children.tsv",
+        "--group",
+        "Parents",
+        ".cache/batch-delete-original-replay-20261026/V2016-06-Parents.tsv"
+      ],
+      "status": 0,
+      "stdout_bytes": 28,
+      "stdout_sha256": "0f1d40814d404b2de504a631a2733a02ef063eea1660345332f5a3f102e15b24",
+      "stderr_bytes": 85,
+      "stderr_sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "oracle",
+        ".cache/batch-delete-original-replay-20261026/V2016-06-delete-all.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 3254,
+      "stdout_sha256": "cf2685afda0af5cbb11229e16c66dbfa16d1ea97d33039ca8e66772242ddc12f",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "maps",
+        ".cache/batch-delete-original-replay-20261026/V2016-06-delete-all.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 4734,
+      "stdout_sha256": "e50e0d91517c3f3f941663b5a97597135f676ffb1614776ec3f43a4046e752ea",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/ace16-batch-delete-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2016-07-delete-all.accdb",
+        "--group",
+        "Parents",
+        ".cache/batch-delete-original-replay-20261026/V2016-07-Parents.tsv",
+        "--group",
+        "Children",
+        ".cache/batch-delete-original-replay-20261026/V2016-07-Children.tsv"
+      ],
+      "status": 0,
+      "stdout_bytes": 28,
+      "stdout_sha256": "0f1d40814d404b2de504a631a2733a02ef063eea1660345332f5a3f102e15b24",
+      "stderr_bytes": 85,
+      "stderr_sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "oracle",
+        ".cache/batch-delete-original-replay-20261026/V2016-07-delete-all.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 3254,
+      "stdout_sha256": "cf2685afda0af5cbb11229e16c66dbfa16d1ea97d33039ca8e66772242ddc12f",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "maps",
+        ".cache/batch-delete-original-replay-20261026/V2016-07-delete-all.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 4734,
+      "stdout_sha256": "e50e0d91517c3f3f941663b5a97597135f676ffb1614776ec3f43a4046e752ea",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/ace16-batch-delete-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2016-08-parent-only.accdb",
+        "--group",
+        "Parents",
+        ".cache/batch-delete-original-replay-20261026/V2016-08-Parents.tsv"
+      ],
+      "status": 1,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 42,
+      "stderr_sha256": "ba0726e6300567fdf626d51c0655d5f6841c675c4bad43659034c18decb6c927"
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/ace16-batch-delete-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2016-09-surviving-child.accdb",
+        "--group",
+        "Children",
+        ".cache/batch-delete-original-replay-20261026/V2016-09-Children.tsv",
+        "--group",
+        "Parents",
+        ".cache/batch-delete-original-replay-20261026/V2016-09-Parents.tsv"
+      ],
+      "status": 1,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 42,
+      "stderr_sha256": "ba0726e6300567fdf626d51c0655d5f6841c675c4bad43659034c18decb6c927"
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/ace16-batch-delete-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2016-10-stale.accdb",
+        "--group",
+        "Children",
+        ".cache/batch-delete-original-replay-20261026/V2016-10-Children.tsv",
+        "--group",
+        "Parents",
+        ".cache/batch-delete-original-replay-20261026/V2016-10-Parents.tsv"
+      ],
+      "status": 1,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 16,
+      "stderr_sha256": "0e0915a3809abe1d10fa28e1e822d968b1af781e296ddea8a29d3f0b9c75760e"
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/ace16-batch-delete-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2016-11-duplicate-group.accdb",
+        "--group",
+        "Children",
+        ".cache/batch-delete-original-replay-20261026/V2016-11-Children.tsv",
+        "--group",
+        "Children",
+        ".cache/batch-delete-original-replay-20261026/V2016-11-Children.tsv"
+      ],
+      "status": 1,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 47,
+      "stderr_sha256": "3ed80b16a2c579dc00a1bcde504aabad8631888fec58f3c65150433f42699e34"
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/ace16-batch-delete-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2016-12-duplicate-request.accdb",
+        "--group",
+        "Children",
+        ".cache/batch-delete-original-replay-20261026/V2016-12-Children.tsv",
+        "--group",
+        "Parents",
+        ".cache/batch-delete-original-replay-20261026/V2016-12-Parents.tsv"
+      ],
+      "status": 1,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 16,
+      "stderr_sha256": "0e0915a3809abe1d10fa28e1e822d968b1af781e296ddea8a29d3f0b9c75760e"
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/ace16-batch-delete-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2016-13-existing-output.accdb",
+        "--group",
+        "Children",
+        ".cache/batch-delete-original-replay-20261026/V2016-13-Children.tsv",
+        "--group",
+        "Parents",
+        ".cache/batch-delete-original-replay-20261026/V2016-13-Parents.tsv"
+      ],
+      "status": 1,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 68,
+      "stderr_sha256": "631b7b13872862622f2cf3e89c346da69c3045cb00f04bd13ddee48baa94e09c"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "oracle",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 577734,
+      "stdout_sha256": "dac44884e8c10118cd445e1efe75295dd946ddf8f3dad4914062193d55b97f9f",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "maps",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 5070,
+      "stdout_sha256": "ba68504a43d0322d08bf4fa9976bf34e761ae5846cde3cc85fe3b3b756803f0f",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "delete",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2019-boundary-maxima-reference.accdb",
+        "56,258"
+      ],
+      "status": 0,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "oracle",
+        ".cache/batch-delete-original-replay-20261026/V2019-boundary-maxima-reference.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 575443,
+      "stdout_sha256": "db0796585c459c708daa8662c79f6af800dcebd57485b8e011eb35edb8598fc0",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "maps",
+        ".cache/batch-delete-original-replay-20261026/V2019-boundary-maxima-reference.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 5070,
+      "stdout_sha256": "eb9b329c1785976f7bdb6ef9ae91df09e48830efb0c7ec7d584a20a5743b1865",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "delete",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2019-two-original-subtrees-reference.accdb",
+        "2,4,5,7,8,9,10,11,13,14,16,17,18,20,21,22,24,26,27,28,29,30,33,35,38,39,40,42,43,45,46,47,48,49,50,51,53,54,56,57,59,60,61,63,65,66,69,70,71,72,73,74,75,76,77,78,79,81,82,85,86,87,88,90,91,93,94,95,100,102,104,105,106,107,108,110,112,113,116,117,118,119,122,123,124,125,129,132,134,136,137,138,139,140,142,143,144,145,146,148,149,150,152,153,154,155,157,159,160,161,162,163,164,165,166,167,168,169,172,173,175,177,178,179,180,181,182,183,184,185,186,188,189,190,191,192,195,196,197,198,199,202,203,204,206,207,209,212,213,214,215,216,218,219,220,221,223,224,225,226,228,229,231,232,233,234,236,237,238,239,240,241,242,243,244,246,247,248,249,250,251,252,253,254,255,256,258,259,260,261,263,264,265,268,269,270,271,273,274,275,276,277,278,279,280,282,283,284,285,287,288,289,290,291,294,295,296,299,300,302,307,309,310,312,313,315,316,319,320,323,325,326,327,329,331,332,333,334,339,340,342,343,344,345,347,349,352,354,355,356,358,360,361,363,364,366,369,370,371,372,373,375,376,377,379,380,381,383,386,387,388,391,392,393,394,398,399,402,403,404,405,407,408,409,410,411,412,414,415,420,421,422,423,425,426,427,428,430,431,432,433,434,435,437,438,439,440,441,442,443,444,445,447,449,450,452,453,455,456,460,461,462,463,465,466,467,470,471,472,475,476,477,478,479,480,481,482,483,485,486,487,489,490,491,493,494,495,497,499"
+      ],
+      "status": 0,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "oracle",
+        ".cache/batch-delete-original-replay-20261026/V2019-two-original-subtrees-reference.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 176746,
+      "stdout_sha256": "19509339eacea2d61d20d4351e4ccdb5e28a7f9c571a1157b7d1a921aa059bcd",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "maps",
+        ".cache/batch-delete-original-replay-20261026/V2019-two-original-subtrees-reference.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 5052,
+      "stdout_sha256": "423c210889498ea1bc2da8e2707d48e2e70717bc42a10b467b2df4e3f425e16a",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "delete",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2019-retain-one-reference.accdb",
+        "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255,256,257,258,259,260,261,262,263,264,265,266,267,268,269,270,271,272,273,274,275,276,277,278,279,280,281,282,283,284,285,286,287,288,289,290,291,292,293,294,295,296,297,298,299,300,301,302,303,304,305,306,307,308,309,310,311,312,313,314,315,316,317,318,319,320,321,322,323,324,325,326,327,328,329,330,331,332,333,334,335,336,337,338,339,340,341,342,343,344,345,346,347,348,349,350,351,352,353,354,355,356,357,358,359,360,361,362,363,364,365,366,367,368,369,370,371,372,373,374,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391,392,393,394,395,396,397,398,399,400,401,402,403,404,405,406,407,408,409,410,411,412,413,414,415,416,417,418,419,420,421,422,423,424,425,426,427,428,429,430,431,432,433,434,435,436,437,438,439,440,441,442,443,444,445,446,447,448,449,450,451,452,453,454,455,456,457,458,459,460,461,462,463,464,465,466,467,468,469,470,471,472,473,474,475,476,477,478,479,480,481,482,483,484,485,486,487,488,489,490,491,492,493,494,495,496,497,498,499,500"
+      ],
+      "status": 0,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "oracle",
+        ".cache/batch-delete-original-replay-20261026/V2019-retain-one-reference.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 4377,
+      "stdout_sha256": "e9fd953570e2f51277cabe89a8f01991884f2c2b898b4d29f6ea6e5c3d3e463f",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "maps",
+        ".cache/batch-delete-original-replay-20261026/V2019-retain-one-reference.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 5003,
+      "stdout_sha256": "e1299437c388fa98395c5f7f954ed0561fcccab530caf24e5072850c558fea5a",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "delete",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2019-delete-all-reference.accdb",
+        "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255,256,257,258,259,260,261,262,263,264,265,266,267,268,269,270,271,272,273,274,275,276,277,278,279,280,281,282,283,284,285,286,287,288,289,290,291,292,293,294,295,296,297,298,299,300,301,302,303,304,305,306,307,308,309,310,311,312,313,314,315,316,317,318,319,320,321,322,323,324,325,326,327,328,329,330,331,332,333,334,335,336,337,338,339,340,341,342,343,344,345,346,347,348,349,350,351,352,353,354,355,356,357,358,359,360,361,362,363,364,365,366,367,368,369,370,371,372,373,374,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391,392,393,394,395,396,397,398,399,400,401,402,403,404,405,406,407,408,409,410,411,412,413,414,415,416,417,418,419,420,421,422,423,424,425,426,427,428,429,430,431,432,433,434,435,436,437,438,439,440,441,442,443,444,445,446,447,448,449,450,451,452,453,454,455,456,457,458,459,460,461,462,463,464,465,466,467,468,469,470,471,472,473,474,475,476,477,478,479,480,481,482,483,484,485,486,487,488,489,490,491,492,493,494,495,496,497,498,499,500"
+      ],
+      "status": 0,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "oracle",
+        ".cache/batch-delete-original-replay-20261026/V2019-delete-all-reference.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 3256,
+      "stdout_sha256": "111752312d1e7ad9b1a13e9ce2cf7ac3656ca1cdf6fad8af92bb4d5b196bb1f3",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "maps",
+        ".cache/batch-delete-original-replay-20261026/V2019-delete-all-reference.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 5001,
+      "stdout_sha256": "ff7ea58783286f97c5de9dc2cb4156809e4930b96af6e01bb4a8f5353666e48a",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/ace16-batch-delete-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2019-00-boundary-maxima.accdb",
+        "--group",
+        "Children",
+        ".cache/batch-delete-original-replay-20261026/V2019-00-Children.tsv",
+        "--group",
+        "Parents",
+        ".cache/batch-delete-original-replay-20261026/V2019-00-Parents.tsv"
+      ],
+      "status": 0,
+      "stdout_bytes": 25,
+      "stdout_sha256": "6cc925d0b9107ceb3da95cbd687ce63c84039de53d66ab1428f5c32102f3cd5f",
+      "stderr_bytes": 85,
+      "stderr_sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "oracle",
+        ".cache/batch-delete-original-replay-20261026/V2019-00-boundary-maxima.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 575443,
+      "stdout_sha256": "db0796585c459c708daa8662c79f6af800dcebd57485b8e011eb35edb8598fc0",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "maps",
+        ".cache/batch-delete-original-replay-20261026/V2019-00-boundary-maxima.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 5070,
+      "stdout_sha256": "eb9b329c1785976f7bdb6ef9ae91df09e48830efb0c7ec7d584a20a5743b1865",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/ace16-batch-delete-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2019-01-boundary-maxima.accdb",
+        "--group",
+        "Parents",
+        ".cache/batch-delete-original-replay-20261026/V2019-01-Parents.tsv",
+        "--group",
+        "Children",
+        ".cache/batch-delete-original-replay-20261026/V2019-01-Children.tsv"
+      ],
+      "status": 0,
+      "stdout_bytes": 25,
+      "stdout_sha256": "6cc925d0b9107ceb3da95cbd687ce63c84039de53d66ab1428f5c32102f3cd5f",
+      "stderr_bytes": 85,
+      "stderr_sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "oracle",
+        ".cache/batch-delete-original-replay-20261026/V2019-01-boundary-maxima.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 575443,
+      "stdout_sha256": "db0796585c459c708daa8662c79f6af800dcebd57485b8e011eb35edb8598fc0",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "maps",
+        ".cache/batch-delete-original-replay-20261026/V2019-01-boundary-maxima.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 5070,
+      "stdout_sha256": "eb9b329c1785976f7bdb6ef9ae91df09e48830efb0c7ec7d584a20a5743b1865",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/ace16-batch-delete-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2019-02-two-original-subtrees.accdb",
+        "--group",
+        "Children",
+        ".cache/batch-delete-original-replay-20261026/V2019-02-Children.tsv",
+        "--group",
+        "Parents",
+        ".cache/batch-delete-original-replay-20261026/V2019-02-Parents.tsv"
+      ],
+      "status": 0,
+      "stdout_bytes": 27,
+      "stdout_sha256": "2fc3c0e053f873f33e370b8d83b622f379f817c9e4e70941c0b2a3c7922342e4",
+      "stderr_bytes": 85,
+      "stderr_sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "oracle",
+        ".cache/batch-delete-original-replay-20261026/V2019-02-two-original-subtrees.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 176746,
+      "stdout_sha256": "19509339eacea2d61d20d4351e4ccdb5e28a7f9c571a1157b7d1a921aa059bcd",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "maps",
+        ".cache/batch-delete-original-replay-20261026/V2019-02-two-original-subtrees.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 5052,
+      "stdout_sha256": "423c210889498ea1bc2da8e2707d48e2e70717bc42a10b467b2df4e3f425e16a",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/ace16-batch-delete-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2019-03-two-original-subtrees.accdb",
+        "--group",
+        "Parents",
+        ".cache/batch-delete-original-replay-20261026/V2019-03-Parents.tsv",
+        "--group",
+        "Children",
+        ".cache/batch-delete-original-replay-20261026/V2019-03-Children.tsv"
+      ],
+      "status": 0,
+      "stdout_bytes": 27,
+      "stdout_sha256": "2fc3c0e053f873f33e370b8d83b622f379f817c9e4e70941c0b2a3c7922342e4",
+      "stderr_bytes": 85,
+      "stderr_sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "oracle",
+        ".cache/batch-delete-original-replay-20261026/V2019-03-two-original-subtrees.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 176746,
+      "stdout_sha256": "19509339eacea2d61d20d4351e4ccdb5e28a7f9c571a1157b7d1a921aa059bcd",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "maps",
+        ".cache/batch-delete-original-replay-20261026/V2019-03-two-original-subtrees.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 5052,
+      "stdout_sha256": "423c210889498ea1bc2da8e2707d48e2e70717bc42a10b467b2df4e3f425e16a",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/ace16-batch-delete-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2019-04-retain-one.accdb",
+        "--group",
+        "Children",
+        ".cache/batch-delete-original-replay-20261026/V2019-04-Children.tsv",
+        "--group",
+        "Parents",
+        ".cache/batch-delete-original-replay-20261026/V2019-04-Parents.tsv"
+      ],
+      "status": 0,
+      "stdout_bytes": 27,
+      "stdout_sha256": "d4cb4b496b40f229e2b29ef705a552f544bed9cbc6ae8bd80049aa732c1768cf",
+      "stderr_bytes": 85,
+      "stderr_sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "oracle",
+        ".cache/batch-delete-original-replay-20261026/V2019-04-retain-one.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 4377,
+      "stdout_sha256": "e9fd953570e2f51277cabe89a8f01991884f2c2b898b4d29f6ea6e5c3d3e463f",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "maps",
+        ".cache/batch-delete-original-replay-20261026/V2019-04-retain-one.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 5003,
+      "stdout_sha256": "e1299437c388fa98395c5f7f954ed0561fcccab530caf24e5072850c558fea5a",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/ace16-batch-delete-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2019-05-retain-one.accdb",
+        "--group",
+        "Parents",
+        ".cache/batch-delete-original-replay-20261026/V2019-05-Parents.tsv",
+        "--group",
+        "Children",
+        ".cache/batch-delete-original-replay-20261026/V2019-05-Children.tsv"
+      ],
+      "status": 0,
+      "stdout_bytes": 27,
+      "stdout_sha256": "d4cb4b496b40f229e2b29ef705a552f544bed9cbc6ae8bd80049aa732c1768cf",
+      "stderr_bytes": 85,
+      "stderr_sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "oracle",
+        ".cache/batch-delete-original-replay-20261026/V2019-05-retain-one.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 4377,
+      "stdout_sha256": "e9fd953570e2f51277cabe89a8f01991884f2c2b898b4d29f6ea6e5c3d3e463f",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "maps",
+        ".cache/batch-delete-original-replay-20261026/V2019-05-retain-one.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 5003,
+      "stdout_sha256": "e1299437c388fa98395c5f7f954ed0561fcccab530caf24e5072850c558fea5a",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/ace16-batch-delete-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2019-06-delete-all.accdb",
+        "--group",
+        "Children",
+        ".cache/batch-delete-original-replay-20261026/V2019-06-Children.tsv",
+        "--group",
+        "Parents",
+        ".cache/batch-delete-original-replay-20261026/V2019-06-Parents.tsv"
+      ],
+      "status": 0,
+      "stdout_bytes": 28,
+      "stdout_sha256": "0f1d40814d404b2de504a631a2733a02ef063eea1660345332f5a3f102e15b24",
+      "stderr_bytes": 85,
+      "stderr_sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "oracle",
+        ".cache/batch-delete-original-replay-20261026/V2019-06-delete-all.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 3256,
+      "stdout_sha256": "111752312d1e7ad9b1a13e9ce2cf7ac3656ca1cdf6fad8af92bb4d5b196bb1f3",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "maps",
+        ".cache/batch-delete-original-replay-20261026/V2019-06-delete-all.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 5001,
+      "stdout_sha256": "ff7ea58783286f97c5de9dc2cb4156809e4930b96af6e01bb4a8f5353666e48a",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/ace16-batch-delete-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2019-07-delete-all.accdb",
+        "--group",
+        "Parents",
+        ".cache/batch-delete-original-replay-20261026/V2019-07-Parents.tsv",
+        "--group",
+        "Children",
+        ".cache/batch-delete-original-replay-20261026/V2019-07-Children.tsv"
+      ],
+      "status": 0,
+      "stdout_bytes": 28,
+      "stdout_sha256": "0f1d40814d404b2de504a631a2733a02ef063eea1660345332f5a3f102e15b24",
+      "stderr_bytes": 85,
+      "stderr_sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "oracle",
+        ".cache/batch-delete-original-replay-20261026/V2019-07-delete-all.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 3256,
+      "stdout_sha256": "111752312d1e7ad9b1a13e9ce2cf7ac3656ca1cdf6fad8af92bb4d5b196bb1f3",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/BatchDeleteFixture.java",
+        "maps",
+        ".cache/batch-delete-original-replay-20261026/V2019-07-delete-all.accdb"
+      ],
+      "status": 0,
+      "stdout_bytes": 5001,
+      "stdout_sha256": "ff7ea58783286f97c5de9dc2cb4156809e4930b96af6e01bb4a8f5353666e48a",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/ace16-batch-delete-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2019-08-parent-only.accdb",
+        "--group",
+        "Parents",
+        ".cache/batch-delete-original-replay-20261026/V2019-08-Parents.tsv"
+      ],
+      "status": 1,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 42,
+      "stderr_sha256": "ba0726e6300567fdf626d51c0655d5f6841c675c4bad43659034c18decb6c927"
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/ace16-batch-delete-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2019-09-surviving-child.accdb",
+        "--group",
+        "Children",
+        ".cache/batch-delete-original-replay-20261026/V2019-09-Children.tsv",
+        "--group",
+        "Parents",
+        ".cache/batch-delete-original-replay-20261026/V2019-09-Parents.tsv"
+      ],
+      "status": 1,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 42,
+      "stderr_sha256": "ba0726e6300567fdf626d51c0655d5f6841c675c4bad43659034c18decb6c927"
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/ace16-batch-delete-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2019-10-stale.accdb",
+        "--group",
+        "Children",
+        ".cache/batch-delete-original-replay-20261026/V2019-10-Children.tsv",
+        "--group",
+        "Parents",
+        ".cache/batch-delete-original-replay-20261026/V2019-10-Parents.tsv"
+      ],
+      "status": 1,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 16,
+      "stderr_sha256": "0e0915a3809abe1d10fa28e1e822d968b1af781e296ddea8a29d3f0b9c75760e"
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/ace16-batch-delete-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2019-11-duplicate-group.accdb",
+        "--group",
+        "Children",
+        ".cache/batch-delete-original-replay-20261026/V2019-11-Children.tsv",
+        "--group",
+        "Children",
+        ".cache/batch-delete-original-replay-20261026/V2019-11-Children.tsv"
+      ],
+      "status": 1,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 47,
+      "stderr_sha256": "3ed80b16a2c579dc00a1bcde504aabad8631888fec58f3c65150433f42699e34"
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/ace16-batch-delete-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2019-12-duplicate-request.accdb",
+        "--group",
+        "Children",
+        ".cache/batch-delete-original-replay-20261026/V2019-12-Children.tsv",
+        "--group",
+        "Parents",
+        ".cache/batch-delete-original-replay-20261026/V2019-12-Parents.tsv"
+      ],
+      "status": 1,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 16,
+      "stderr_sha256": "0e0915a3809abe1d10fa28e1e822d968b1af781e296ddea8a29d3f0b9c75760e"
+    },
+    {
+      "command": [
+        ".cache/tablecraft-bin/ace16-batch-delete-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/batch-delete-original-replay-20261026/V2019-13-existing-output.accdb",
+        "--group",
+        "Children",
+        ".cache/batch-delete-original-replay-20261026/V2019-13-Children.tsv",
+        "--group",
+        "Parents",
+        ".cache/batch-delete-original-replay-20261026/V2019-13-Parents.tsv"
+      ],
+      "status": 1,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 68,
+      "stderr_sha256": "631b7b13872862622f2cf3e89c346da69c3045cb00f04bd13ddee48baa94e09c"
+    }
+  ],
+  "raw_evidence": {
+    "accepted_summary": {
+      "path": ".cache/batch-delete-original-replay-20261026-summary.json",
+      "bytes": 216875,
+      "sha256": "119b7709fadad5c12130f6883b87c7ac25142deabff3384a930763cbe3445fb8"
+    },
+    "full_report": {
+      "path": ".cache/batch-delete-original-replay-20261026/full-report.json",
+      "bytes": 6531174,
+      "sha256": "916f0182cb78b5e38ce9b7d98fe1514593b73e6e70a0ce75dc3b7223b39d8081"
+    },
+    "commands_jsonl": {
+      "path": ".cache/batch-delete-original-replay-20261026/commands.jsonl",
+      "bytes": 6289091,
+      "sha256": "bb25993c41cef87788aa76cc37d73a01274fe9ef0c7e7e5b4a6b1b4e9b7c9b40"
+    },
+    "snapshots_jsonl": {
+      "path": ".cache/batch-delete-original-replay-20261026/snapshots.jsonl",
+      "bytes": 12517283,
+      "sha256": "0ae2c1025fad317800be1af56a174954b9100221336556a072178552d74e8fde"
+    },
+    "original_generation_receipt": {
+      "path": ".cache/batch-delete-originals-next-20261026/initial-commands.json",
+      "bytes": 5493,
+      "sha256": "e230838bccd9e77bc55bfcff95487417766d62e56982d8f069d3e42541c93dfa"
+    },
+    "original_geometry": {
+      "path": ".cache/batch-delete-originals-next-20261026/original-geometry.json",
+      "bytes": 149589,
+      "sha256": "5188bb5df053dedff76570edec7d81997790e0f9365e9694640e7fe18149d461"
+    },
+    "selection_model_before_actions": {
+      "path": ".cache/batch-delete-originals-next-20261026/selection-model-before-actions.json",
+      "bytes": 64411,
+      "sha256": "3accdc5fd6e8040ec15a04d31e08d279015222278ba544ba92cc43d0d9652262"
+    },
+    "policy": "Expanded rows, encoded keys, original leaf partitions and command output remain ignored and byte-identical. Public proof arrays appear once per byte-identical group-order pair; both command associations and candidate digests remain explicit."
+  },
+  "preserved_authoring_failure": {
+    "scope": "Read-only pre-action geometry probe only, not a candidate or engine failure.",
+    "cause": "Probe used members instead of the maintained map decoder file_members key; corrected only the probe field name. Original/model expectations and all input bytes were unchanged.",
+    "source_before_correction": {
+      "path": ".cache/batch-delete-originals-next-20261026/inspect_geometry-before-map-key-fix.py",
+      "bytes": 9180,
+      "sha256": "3e85010c502fdc66c79d7bff7c255b74e61056ad4c7d181f164d10013335b5af"
+    },
+    "failed_probe_log": {
+      "path": ".cache/batch-delete-originals-next-20261026/geometry-map-key-authoring-failure.log",
+      "bytes": 897,
+      "sha256": "d3e0d8a73d3026043c904aa0821d3cf467bfad83051ca35e0352c3b6ecf01329"
+    }
+  },
+  "verification": {
+    "input_tool_pins": 16,
+    "request_files": 56,
+    "compiled_git_objects": 42,
+    "public_reference_files": 8,
+    "positive_candidate_files": 16,
+    "independently_rehashed_after_completion": true,
+    "original_rows": 1000,
+    "all_original_record_bodies_and_opaque_sentinel_preserved": true,
+    "every_byte_outside_exact_allowed_spans_preserved": true
+  },
+  "boundaries": [
+    "Fresh repository-owned public Jackcess builders and read-only getters, with the reviewed 5.0.4 JAR; no imported binary fixture or upstream source code is bundled.",
+    "References use successive child-before-parent public deleteRow calls. Candidates are explicit final-image batches in both group orders; agreement does not establish SQL RESTRICT timing.",
+    "Relationship keys are non-NULL Int32. The separately observed NULL-parent public action discrepancy is not exercised or reclassified here.",
+    "Preserved original partitions, full encoded key/row maxima, root identities, nonempty heights and exact per-height chains are checked. Valid original tail/bounded node forms are distinguished from reference byte identity.",
+    "No allocation, map growth, cascade, SET NULL, self-relation timing, data-macro qualification, normal save or native Microsoft Access execution is claimed.",
+    "No runtime kernel, expected data, selector, budget or frozen artifact was changed to obtain these outcomes."
+  ],
+  "source_promotion_cleanup": {
+    "scope": "Public model whitespace only, after accepted replay; no replay or raw evidence changed.",
+    "executed_archive": {
+      "path": ".cache/batch-delete-original-replay-20261026/batch_delete_model-executed.py.txt",
+      "bytes": 6444,
+      "sha256": "1914b671e0905b560ad1230c17be225960fa9d2b20463e5ffc97da69424cf540"
+    },
+    "promoted_model": {
+      "path": "docs/testing/batch_delete_model.py",
+      "bytes": 6443,
+      "sha256": "8d959a5fda7dade5f73f752b054394afc641ac697a8b70c445883dec446e6492"
+    },
+    "change": "Removed exactly one trailing LF to fix extra blank line at EOF.",
+    "ast_comparison": "ast.dump(ast.parse(source), include_attributes=False) equal for executed and promoted bytes.",
+    "python_version": "3.14.0",
+    "equal_ast_sha256": "d62a6e40ab8fd3afa7a7bb45944b1ac1720db5a0d07de1821fe0c86027204a1c",
+    "source_identity": "Producer and runner remain byte-identical to execution; model is AST-identical after EOF cleanup.",
+    "historical_pin_resolution": {
+      "executed_path": "docs/testing/batch_delete_model.py",
+      "executed_sha256": "1914b671e0905b560ad1230c17be225960fa9d2b20463e5ffc97da69424cf540",
+      "exact_archived_bytes": ".cache/batch-delete-original-replay-20261026/batch_delete_model-executed.py.txt",
+      "note": "Historical immutable-input/tool pins refer to the executed bytes at the time of the accepted run, resolved through this archive after public whitespace cleanup."
+    },
+    "rerun": false
+  }
+}
