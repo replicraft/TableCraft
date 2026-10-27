@@ -13,8 +13,12 @@ mod page_model;
 #[allow(dead_code)]
 #[path = "../../tests/support/mod.rs"]
 mod support;
+#[allow(dead_code)]
+#[path = "../../tests/ace16_variable_updates_contract/model.rs"]
+mod variable_model;
 
 use super::*;
+use page_model::capture;
 use std::{
     fs,
     io::Cursor,
@@ -70,7 +74,7 @@ fn arguments(source: &Path, output: &Path, requests: &Path) -> Args {
 }
 
 #[test]
-fn clap_requires_exact_sources_and_keeps_page_updates_explicit() {
+fn clap_requires_exact_sources_and_explicit_exclusive_modes() {
     for invalid in [
         vec!["slot", "before", "after", "Items", "Score"],
         vec![
@@ -86,6 +90,7 @@ fn clap_requires_exact_sources_and_keeps_page_updates_explicit() {
         Args::try_parse_from(["slot", "before", "after", "Items", "Score", "one.tsv"]).unwrap();
     assert_eq!(args.requests, PathBuf::from("one.tsv"));
     assert!(!args.page_updates);
+    assert!(!args.variable_updates);
 
     let args = Args::try_parse_from([
         "slot",
@@ -98,6 +103,33 @@ fn clap_requires_exact_sources_and_keeps_page_updates_explicit() {
     ])
     .unwrap();
     assert!(args.page_updates);
+    assert!(!args.variable_updates);
+
+    let args = Args::try_parse_from([
+        "slot",
+        "before",
+        "after",
+        "Items",
+        "Score",
+        "one.tsv",
+        "--variable-updates",
+    ])
+    .unwrap();
+    assert!(args.variable_updates);
+    assert!(!args.page_updates);
+    assert!(
+        Args::try_parse_from([
+            "slot",
+            "before",
+            "after",
+            "Items",
+            "Score",
+            "one.tsv",
+            "--page-updates",
+            "--variable-updates",
+        ])
+        .is_err()
+    );
 }
 
 #[test]
@@ -202,5 +234,38 @@ fn page_mode_expands_only_when_selected_and_preserves_fresh_output() {
         std::io::ErrorKind::AlreadyExists
     );
     assert_eq!(fs::read(&output).unwrap(), after);
+    assert_eq!(fs::read(&source).unwrap(), before);
+}
+
+#[test]
+fn variable_mode_allocates_only_when_explicitly_selected() {
+    let directory = Directory::new();
+    let before = variable_model::source(false, false);
+    let source = directory.file("before-variable.accdb", &before);
+    let replacement = vec![0x5b; 255];
+    let encoded = "5b".repeat(255);
+    let requests = directory.file(
+        "allocation.tsv",
+        format!("0\tbinary\t41\tbinary\t{encoded}\n").as_bytes(),
+    );
+    let output = directory.0.join("variable-candidate.accdb");
+
+    let mut args = arguments(&source, &output, &requests);
+    args.page_updates = true;
+    let error = run(args, &mut budget()).err().unwrap();
+    assert_eq!(
+        error.downcast_ref::<tablecraft_ace::EditError>(),
+        Some(&tablecraft_ace::EditError::Unsupported(
+            tablecraft_ace::WriteBlocker::RowLayout
+        ))
+    );
+    assert!(!output.exists());
+
+    let mut args = arguments(&source, &output, &requests);
+    args.variable_updates = true;
+    assert_eq!(run(args, &mut budget()).unwrap(), 1);
+    let after = fs::read(&output).unwrap();
+    assert_eq!(after.len(), before.len() + 4096);
+    assert_eq!(page_model::read(&after)[0][1], Value::Binary(replacement));
     assert_eq!(fs::read(&source).unwrap(), before);
 }

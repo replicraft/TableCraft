@@ -30,6 +30,18 @@ original exact-slot-span contract remains in effect.
 target/debug/examples/preview_ace16_slot --page-updates original.accdb candidate.accdb Items Score requests.tsv
 ```
 
+`--variable-updates` selects the separate
+`NativeImage::preview_ace16_variable_updates` service. It can use another owned
+candidate page or append data pages at EOF when the existing maps already
+represent the required addresses. It preserves original logical roots and
+refuses unsupported map growth or index splits. This flag and `--page-updates`
+are mutually exclusive; the default remains the exact-span slot API. See the
+[allocation contract](ACE16_VARIABLE_UPDATES.md) for placement and byte audits.
+
+```sh
+target/debug/examples/preview_ace16_slot --variable-updates original.accdb candidate.accdb Items Score requests.tsv
+```
+
 ## Request format
 
 The input is headerless UTF-8 TSV parsed with the existing `csv` dependency.
@@ -102,7 +114,11 @@ An additional engine-backed control verifies that growth requires the explicit
 page mode, the source stays unchanged and an existing candidate cannot be
 overwritten.
 
-On 26 October 2026, all ten example tests pass with `ace16-write-preview`;
+The allocation control also verifies that same-page mode refuses insufficient
+space, while explicit variable mode appends a readable data page and preserves
+the source. Argument tests reject selecting both modes.
+
+On 26 October 2026, all eleven example tests pass with `ace16-write-preview`;
 strict Clippy for this example and scoped formatting also pass. These checks
 cover the consumer boundary. The engine's independent preservation controls are
 recorded in the [page-update contract](ACE16_PAGE_UPDATES.md).
