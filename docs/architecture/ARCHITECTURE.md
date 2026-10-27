@@ -244,6 +244,13 @@ engine journaling remains separate from the CLI copy lifecycle.
 
 ## Native projects and execution direction
 
+Implementation of this retained direction is paused by
+[the Access behavioral-parity decision](../decisions/0003_ACCESS_BEHAVIORAL_PARITY.md).
+It is not an active backend/UI prerequisite. Shared Access services enforce
+native behavior across all hosts; future project modernization must not redefine
+that behavior. File capabilities, target Access version and database settings
+remain distinct application-policy inputs, not merely storage magic bytes.
+
 The [accepted decision](../decisions/0001_PROJECT_FORMAT_AND_EXECUTION.md) selects
 SQLite-backed `.tcraft`, equivalent unpacked `.tcraftproj/` workspaces and Python
 as the initial general-purpose scripting language. This supersedes the earlier

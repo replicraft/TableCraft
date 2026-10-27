@@ -3,6 +3,8 @@
 Start with the [compatibility matrix](COMPATIBILITY.md),
 [current implementation](IMPLEMENTATION.md) and [roadmap](ROADMAP.md).
 Subsystem documents distinguish working behavior, explicit limits and planned work.
+The current [product priority](decisions/0003_ACCESS_BEHAVIORAL_PARITY.md) is faithful
+native Access behavior; SQLite and native-project implementation are paused.
 
 | Area | Contents |
 | --- | --- |

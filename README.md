@@ -1,8 +1,9 @@
 # TableCraft
 
-A cross-platform Microsoft Access alternative, starting with a CLI for browsing
-and querying local databases. The desktop UI and general native database editing
-are still in development.
+A cross-platform Microsoft Access reimplementation in development, targeting
+faithful native MDB/ACCDB behavior and familiar Access workflows. The CLI supports
+bounded browsing and queries; the desktop UI and general native editing are
+still in development.
 
 ## Compatibility and planned tiers
 
@@ -15,7 +16,6 @@ are still in development.
 | ACE 15 `.accdb` · Access 2013 | Not separately qualified; support follows the actual stored profile | Tier 2 |
 | Jet 3 `.mdb` · Access 95/97 | Header recognition | **Tier 3 — legacy:** planned reads and queries |
 | Jet 1/2 `.mdb` · Access 1/2 | Not implemented | **Experimental:** optional read-only research |
-| SQLite | Read-only queries | Separate backend |
 
 Tiers describe planned priorities, not completed compatibility. ACE 16's long-term
 target is 100% compatibility; native Access qualification remains pending. VBA
@@ -44,7 +44,6 @@ tablecraft tables example.accdb --count
 tablecraft rows example.accdb Customers --limit 25
 tablecraft rows example.mdb --all --limit 5
 tablecraft query run --database example.accdb 'SELECT TOP 10 * FROM Customers'
-tablecraft query run --sqlite example.sqlite 'SELECT * FROM Customers'
 ```
 
 Tables display with borders in terminals and as TSV when redirected. Use

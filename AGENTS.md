@@ -2,6 +2,21 @@
 
 ## Primary compatibility target
 
+SQLite and `.tcraft`/`.tcraftproj/` implementation are paused until the user
+explicitly resumes them. Keep existing working functionality and retained plans;
+do not expand SQLite, native-project Python, conversion or project infrastructure
+as part of the active backend/pre-UI goal. Follow the
+[Access behavioral-parity decision](docs/decisions/0003_ACCESS_BEHAVIORAL_PARITY.md).
+
+Native Access behavior governs shared services and the eventual UI: preserve
+corresponding Access defaults, restrictions, workflows, validation, confirmations,
+events and documented quirks across GUI, CLI and future agent hosts. Improvements
+must preserve those observable semantics. Keep file capabilities, target Access
+application version and database settings distinct; file magic alone does not
+identify a UI release. Imported forms/reports retain native layout and behavior.
+This is working guidance, not authorization to scaffold application-profile/UI
+types or resume deferred VBA execution. Backend-first implementation continues.
+
 Focus implementation and compatibility testing on ACE 16. The long-term target
 is 100% ACE 16 compatibility, not a permanently limited subset. Prioritize ACE 16
 fixtures, native Access comparisons, reads, writes, constraints, preservation and
@@ -263,6 +278,11 @@ code, FFI and platform assumptions where they matter. Check cancellation and
 resource limits when introducing long-running operations.
 
 ## Native project and scripting direction
+
+This direction is retained future planning, currently paused by
+[the Access-only priority](docs/decisions/0003_ACCESS_BEHAVIORAL_PARITY.md).
+It is not an active backend or UI prerequisite. Do not begin these features
+automatically after a native milestone; wait for explicit reprioritization.
 
 Follow the [accepted project decision](docs/decisions/0001_PROJECT_FORMAT_AND_EXECUTION.md).
 Native `.tcraft` projects use SQLite, Python and visual actions; `.tcraftproj/`
