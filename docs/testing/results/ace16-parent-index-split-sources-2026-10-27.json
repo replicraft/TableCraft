@@ -478,16 +478,6 @@
           "sha256": "4e3daf140e8a38abaff9e3d017fedb0268d895d7beb80948ca590b0b6680b180"
         },
         "command": {
-          "argv": [
-            "java",
-            "-Xmx512m",
-            "-Dstdout.encoding=UTF-8",
-            "-cp",
-            "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/tablecraft-fixtures/jackcess-5.0.4.jar:/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-parent-split-reference-initial-20261027/classes",
-            "ParentSplitFixture",
-            "describe",
-            "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-parent-split-reference-initial-20261027/V2016-larger.accdb"
-          ],
           "status": 0,
           "timed_out": false,
           "timeout_seconds": 1200,
@@ -520,16 +510,6 @@
           "sha256": "aea68ef34d5dd0889586643b5e2aa88f898ca149c9b9c5a4917d1e25bcc9e750"
         },
         "command": {
-          "argv": [
-            "java",
-            "-Xmx512m",
-            "-Dstdout.encoding=UTF-8",
-            "-cp",
-            "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/tablecraft-fixtures/jackcess-5.0.4.jar:/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-parent-split-reference-initial-20261027/classes",
-            "ParentSplitFixture",
-            "describe",
-            "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-parent-split-reference-initial-20261027/V2016-sparse.accdb"
-          ],
           "status": 0,
           "timed_out": false,
           "timeout_seconds": 1200,
@@ -685,16 +665,6 @@
           "sha256": "0e17d59b55739dbec07f3329f7693d9c7729281e1d3fc5c8bcd4ff7a48bfe79d"
         },
         "command": {
-          "argv": [
-            "java",
-            "-Xmx512m",
-            "-Dstdout.encoding=UTF-8",
-            "-cp",
-            "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/tablecraft-fixtures/jackcess-5.0.4.jar:/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-parent-split-reference-initial-20261027/classes",
-            "ParentSplitFixture",
-            "describe",
-            "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-parent-split-reference-initial-20261027/V2019-larger.accdb"
-          ],
           "status": 0,
           "timed_out": false,
           "timeout_seconds": 1200,
@@ -727,16 +697,6 @@
           "sha256": "a32f9961a93084abf36c6e56ac80f537e8ebe344a3049c9c4628a2841a92ee1b"
         },
         "command": {
-          "argv": [
-            "java",
-            "-Xmx512m",
-            "-Dstdout.encoding=UTF-8",
-            "-cp",
-            "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/tablecraft-fixtures/jackcess-5.0.4.jar:/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-parent-split-reference-initial-20261027/classes",
-            "ParentSplitFixture",
-            "describe",
-            "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-parent-split-reference-initial-20261027/V2019-sparse.accdb"
-          ],
           "status": 0,
           "timed_out": false,
           "timeout_seconds": 1200,
@@ -860,5 +820,6 @@
       },
       "native_notice": "Engineering candidate: data-macro semantics and native Access qualification pending.\n"
     }
-  ]
+  ],
+  "command_rendering": "Embedded capture summaries omit machine-specific argv; exact executed commands remain in the pinned private raw report. Status, timeout and output associations are unchanged."
 }
