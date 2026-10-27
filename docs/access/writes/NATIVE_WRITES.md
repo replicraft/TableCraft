@@ -49,6 +49,11 @@ Its [eight original-file candidates](../../testing/VARIABLE_UPDATE_OBSERVATIONS.
 now pass exact image, map, value and index checks, with each shrink starting
 from the corresponding generated growth candidate. The earlier PAGE corpus
 retains its separate implementation and outcome counts.
+The same frozen variable consumer separately passes
+[eight Short Binary allocation candidates](../../testing/BINARY_VARIABLE_UPDATE_OBSERVATIONS.md),
+including new EOF pages, alternate-owned reuse and fitted shrinks from generated
+candidates. Its unindexed Binary field and retained primary index have complete
+byte/value/map/index proofs; public padding canonicalization remains distinct.
 Contraction now qualifies complete internal-node sibling chains by height and
 repairs retained neighbors. Entirely unlinked levels retain their existing
 profile; partial or malformed chains refuse. The

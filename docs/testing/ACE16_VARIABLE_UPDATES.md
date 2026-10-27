@@ -90,3 +90,11 @@ passes all eight candidates on its first run with 32 commands. Each shrink
 starts from the corresponding generated growth candidate. Full typed values,
 index orders and exact image/map/EOF/padding proofs agree. These later results
 remain separate from the original core test record and native Access qualification.
+
+The same committed consumer separately passes the
+[eight Binary allocation controls](BINARY_VARIABLE_UPDATE_OBSERVATIONS.md)
+against genuine space-exhaustion checkpoints. All eight preserve complete
+typed/index results and independently reconstructed image/map changes. Four
+shrinks consume their corresponding generated growth candidates and retain
+268-byte capacity and opaque padding; the public writer's zeroed padding is
+not substituted as an engineering golden.

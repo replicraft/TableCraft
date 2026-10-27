@@ -57,6 +57,9 @@ Delivered read/query and engineering foundations:
   free-page reuse and production saves remain unfinished. Its
   [eight original-file candidates](testing/VARIABLE_UPDATE_OBSERVATIONS.md) now
   pass complete byte/value/index proofs, separately from the earlier PAGE results.
+  A further [eight Binary allocation candidates](testing/BINARY_VARIABLE_UPDATE_OBSERVATIONS.md)
+  pass on independently constructed space-exhaustion sources with exact retained
+  target padding, maps and original primary references.
   A separate [48-control Text/Binary corpus](testing/ENCODED_DELETE_OBSERVATIONS.md)
   checks 36 candidates and twelve unsupported-profile refusals on the same
   committed tool, including the previously refused height-two delete-all cases.

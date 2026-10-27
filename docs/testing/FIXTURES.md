@@ -9411,3 +9411,13 @@ ancestors, with no observed ownership removals. The
 initial static-audit map assumption failure and its read-only correction; no
 actions were rerun. These facts support a working ownership checker and future
 writer, without qualifying current Memo/OLE editing or native Access saves.
+
+### Short Binary allocation candidates
+
+The [separate Binary candidate replay](BINARY_VARIABLE_UPDATE_OBSERVATIONS.md)
+passes eight controls on the four space-exhaustion sources above, using the
+unchanged committed variable consumer. Its 32 commands include four shrinks
+whose sources are generated growth candidates. Complete expected-image, map,
+value and primary/index proofs pass with 268-byte capacity and preserved opaque
+padding. Original public references, older Text/PAGE results and native Access
+qualification retain their separate scopes.
