@@ -160,11 +160,12 @@ once even when several seeds or diamond paths reach it. Explicit duplicate/stale
 requests still fail before this deduplication. Generated requests copy checked
 original raw records through the existing row walker. All captured rows must have
 qualified ordinary framing. No pointer into a temporary page or reconstructed
-scalar record becomes an expected payload. The current association service retains
-a complete second scalar snapshot after each full before-check, including
-unindexed Memo/OLE payloads. This bounded materialization is charged and can
-exhaust the allowance earlier than an explicit raw-row batch; matching is not
-payload-pruned.
+scalar record becomes an expected payload. The association service now retains
+[projected fixed-key facts](CASCADE_KEY_FACTS.md), with explicit dense-to-native
+column mapping and complete original row/root alignment. It avoids retaining
+unrelated Memo/OLE in this redundant pass. Full before/final validation still
+decodes those payloads and keeps the same limits; projection supplies no new
+write eligibility or malformed-payload bypass.
 
 The resulting complete groups enter the existing batch planner through a private
 validated action proof. The same table/row ceilings apply to the expanded set,

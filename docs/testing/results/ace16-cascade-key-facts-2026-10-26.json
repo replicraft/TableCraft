@@ -1,0 +1,440 @@
+{
+  "date": "2026-10-26",
+  "scope": "Projected association facts only; complete validation unchanged. No new write eligibility or native Access qualification.",
+  "base_revision": "0b3af2d7",
+  "engine_checks": {
+    "passed_functions": 208,
+    "existing_ignored_functions": 1,
+    "new_focused_functions": 4
+  },
+  "corpus_probe": {
+    "passed_functions": 2,
+    "profiles": 2,
+    "byte_identical_candidates": 6,
+    "corrupt_all_lval_owner_signature_controls": 2,
+    "command": "TABLECRAFT_FACTS_CORPUS=<absolute corpus path> cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test cascade_key_facts_metrics_probe -- --nocapture",
+    "exit_code": 0
+  },
+  "source_snapshot": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/cascade.rs",
+      "bytes": 4367,
+      "sha256": "73574b2de1e6143eab823dbab79e475c62316852f97ae292766f1f857894bb02"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/facts.rs",
+      "bytes": 3840,
+      "sha256": "dfc2201b25b250ad9276ae21a47152e9d67301865e641d07bfb221e32a0fb931"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/graph.rs",
+      "bytes": 8176,
+      "sha256": "8baf76f0613696c7be3e0749f1855eee5aaa458a2e17d4507fc1b2b23f10590d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/state.rs",
+      "bytes": 10608,
+      "sha256": "06d1303dc0374694dfc925f887a42b9232f8cef6dee3144a7b2ffb4240aeaee2"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_cascade_key_facts_contract.rs",
+      "bytes": 4084,
+      "sha256": "2ffe02b2e465ead168613485095b812886c4b035731c1f5c99d7cf703a8f6e1e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_cascade_key_facts_contract/tuple.rs",
+      "bytes": 4759,
+      "sha256": "6600ff393f60c2049e2ea64e2fda4e4a80c14be5cf2c8047d5172f8e70215c71"
+    },
+    {
+      "path": "docs/testing/CascadeKeyFactsFixture.java",
+      "bytes": 9824,
+      "sha256": "87ea5aa51ca24fff468fd14f730295ea4dc70cbe1eb73b82e97fe74b26388ea4"
+    },
+    {
+      "path": "docs/testing/probe_cascade_key_facts.rs",
+      "bytes": 7514,
+      "sha256": "f0411600535731ff86a9990177f8755139892c39c6c57fc0b755a24750fe94d2"
+    }
+  ],
+  "checks": [
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test ace16_cascade_key_facts_contract --test ace16_cascading_deletes --test ace16_cascading_delete_contract --test ace16_batch_delete_contract --lib",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-cascade-key-facts-next-20261026/final-regressions.log",
+        "bytes": 23796,
+        "sha256": "4c792d3a9f665ab88825a2208acee851744f2473fdd23dacbb06df0979779778"
+      }
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib --test ace16_cascade_key_facts_contract --test ace16_cascading_deletes --test ace16_cascading_delete_contract --test ace16_batch_delete_contract -- -D warnings",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-cascade-key-facts-next-20261026/final-clippy.log",
+        "bytes": 183,
+        "sha256": "74603af56e75129d5b49504ba67347362aaa4df9da9efba171ed6989b7eab08b"
+      }
+    },
+    {
+      "command": "cargo check --locked --offline -j2 -p tablecraft-ace --lib --no-default-features",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-cascade-key-facts-next-20261026/final-minimal.log",
+        "bytes": 72,
+        "sha256": "1f5852af1ed7025b5728e842e3c3c2f5d2f720d25557d84c38f1ffda99719c59"
+      }
+    },
+    {
+      "command": "rustfmt --edition 2024 --check --config skip_children=true crates/engines/tablecraft-ace/src/table/mutation/delete/cascade.rs crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/facts.rs crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/graph.rs crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/state.rs crates/engines/tablecraft-ace/tests/ace16_cascade_key_facts_contract.rs crates/engines/tablecraft-ace/tests/ace16_cascade_key_facts_contract/tuple.rs",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-cascade-key-facts-next-20261026/final-format.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "frozen_before_tool": {
+    "receipt": "docs/testing/results/ace16-cascading-delete-example-build-2026-10-26.json",
+    "compiled_revision": "b16c4ecef86b1ffcafc67a64a7bbb51387197871",
+    "frozen_example": {
+      "path": ".cache/tablecraft-bin/ace16-cascading-delete-20261026",
+      "bytes": 18611432,
+      "sha256": "074b97e2bc6588082c950fb87a4982c87f046a021e7423d697ae19b1713a1017"
+    },
+    "status": "Hash verified before projected facts edits; no candidate calls yet"
+  },
+  "before_tool_build_receipt": {
+    "path": "docs/testing/results/ace16-cascading-delete-example-build-2026-10-26.json",
+    "bytes": 11882,
+    "sha256": "1a422ae4d5a54649fa9a6174f23a648c4343b6098a9dc0cf3c1e23d0fe5b45f3"
+  },
+  "reviewed_jar": {
+    "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+    "bytes": 1407244,
+    "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+  },
+  "profiles": [
+    {
+      "profile": "V2016",
+      "original": {
+        "path": ".cache/ace16-cascade-key-facts-next-20261026/KeyFacts-V2016-before.accdb",
+        "bytes": 2039808,
+        "sha256": "c718b3c4a65817a9bdca5c18cb680eef211af6ee690456cae41e6bceaadef08b"
+      },
+      "rows": 9,
+      "cold_lval_pages": 396
+    },
+    {
+      "profile": "V2019",
+      "original": {
+        "path": ".cache/ace16-cascade-key-facts-next-20261026/KeyFacts-V2019-before.accdb",
+        "bytes": 2113536,
+        "sha256": "44b950b5948aa82fcfe04ced869e8f7c0ba6321106b539211d744dda2adb33ae"
+      },
+      "rows": 9,
+      "cold_lval_pages": 396
+    }
+  ],
+  "measurements": [
+    {
+      "profile": "V2016",
+      "case": "first-parent",
+      "before": {
+        "bytes": 25286793,
+        "rows": 3236,
+        "steps": 21636717
+      },
+      "after": {
+        "bytes": 21697470,
+        "rows": 3236,
+        "steps": 18482278
+      },
+      "candidate_bytes_identical": true
+    },
+    {
+      "profile": "V2016",
+      "case": "all-parents",
+      "before": {
+        "bytes": 19879713,
+        "rows": 3203,
+        "steps": 16903405
+      },
+      "after": {
+        "bytes": 16290390,
+        "rows": 3203,
+        "steps": 13748966
+      },
+      "candidate_bytes_identical": true
+    },
+    {
+      "profile": "V2016",
+      "case": "child-only",
+      "before": {
+        "bytes": 17031845,
+        "rows": 1707,
+        "steps": 15753348
+      },
+      "after": {
+        "bytes": 14638855,
+        "rows": 1707,
+        "steps": 13650391
+      },
+      "candidate_bytes_identical": true
+    },
+    {
+      "profile": "V2019",
+      "case": "first-parent",
+      "before": {
+        "bytes": 25807902,
+        "rows": 3594,
+        "steps": 21786184
+      },
+      "after": {
+        "bytes": 22218579,
+        "rows": 3594,
+        "steps": 18631749
+      },
+      "candidate_bytes_identical": true
+    },
+    {
+      "profile": "V2019",
+      "case": "all-parents",
+      "before": {
+        "bytes": 20400822,
+        "rows": 3561,
+        "steps": 17052872
+      },
+      "after": {
+        "bytes": 16811499,
+        "rows": 3561,
+        "steps": 13898437
+      },
+      "candidate_bytes_identical": true
+    },
+    {
+      "profile": "V2019",
+      "case": "child-only",
+      "before": {
+        "bytes": 17338428,
+        "rows": 1893,
+        "steps": 15901847
+      },
+      "after": {
+        "bytes": 14945438,
+        "rows": 1893,
+        "steps": 13798892
+      },
+      "candidate_bytes_identical": true
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/before-artifact.json",
+      "bytes": 442,
+      "sha256": "1d1667bb07fd2012564dc1bacedf9baeb4809de057890ab632747e09adbb31a2"
+    },
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/before-candidate-results.json",
+      "bytes": 8928,
+      "sha256": "cf0d607e71dad75fb0e665f891800820ab11ac7f42e2e8b16228916a8618623c"
+    },
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/before-getter-verification.json",
+      "bytes": 2313,
+      "sha256": "91955a5ec1a51df10bf67ab34cb0e4e263021125de6aacff03993abd21d8884c"
+    },
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/before_cases.py",
+      "bytes": 5925,
+      "sha256": "40bc7bbe6e29933266e7a9cd909536a046c490e584b0224f2344b6b77b4be722"
+    },
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/verify_before_getters.py",
+      "bytes": 2238,
+      "sha256": "87ce6a5d518a40b70bdbd677234364735213dbda8d11163ecd5f0436ef870964"
+    },
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/probe/cascade_key_facts_metrics_probe.rs",
+      "bytes": 5308,
+      "sha256": "c0b6284ae5df094ccaab5b7cbd0a3c4276d05eaffdcd3ee29e46f7ca50a8f737"
+    },
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/probe/root_metrics_and_corruption.rs",
+      "bytes": 7514,
+      "sha256": "f0411600535731ff86a9990177f8755139892c39c6c57fc0b755a24750fe94d2"
+    },
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/before-metrics-accepted.log",
+      "bytes": 1681,
+      "sha256": "3b7016c12446d109f9857032a49399573a21daf3aad5def2909b0518b92c7132"
+    },
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/after-metrics-initial.log",
+      "bytes": 1792,
+      "sha256": "fed28c71744546919cc5238f134d22bd555a240c039f939aabe8b09a13516099"
+    },
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/root-metrics-corruption.log",
+      "bytes": 2079,
+      "sha256": "51d3f6cbc2c687c99e0f31c9375d3f6ece13a85662a2e6bb6f86375e3ed55fa7"
+    },
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/classes/CascadeKeyFactsFixture.class",
+      "bytes": 13364,
+      "sha256": "3c564a1f59d440bad5d2fc7a1d7aef51a17be6c254d021734b317992d76d1cc7"
+    },
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/geometry-V2016.json",
+      "bytes": 7970,
+      "sha256": "694779281c2f3e1aeb0f22ad024a197315e0a58b22eddaece55d341969af46ef"
+    },
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/getters-V2016.tsv",
+      "bytes": 2949,
+      "sha256": "b9934c76f6f34a75946f658753bcc16348bd20cc999894ed551f291b3672b580"
+    },
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/cold-pages-V2016.txt",
+      "bytes": 1581,
+      "sha256": "64fafca9598574aec1e6ddeb4ed2b6c831c555a8a213a93835f27381a71614a3"
+    },
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/geometry-V2019.json",
+      "bytes": 7986,
+      "sha256": "8b2f67e2ff9f69c4893992f62f4481bff37d5fbc7833f9fe8899490704d53634"
+    },
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/getters-V2019.tsv",
+      "bytes": 2958,
+      "sha256": "5309e506f977bfb3f47b1f6f2947cc87657a14612c877eb18ba7a187a9a34eb2"
+    },
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/cold-pages-V2019.txt",
+      "bytes": 1584,
+      "sha256": "acfbfdc6f8ce0730adacd876edadcf43f99d0199518f0091b973f19f41093bdf"
+    },
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/before-candidates-v2/V2016-first-parent.tsv",
+      "bytes": 89,
+      "sha256": "78a7fb25f5ae6fdf01d3aad974dd1998c2e5f623f3ac0038905acb4e9b73f492"
+    },
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/before-candidates-v2/V2016-first-parent.accdb",
+      "bytes": 2039808,
+      "sha256": "c8e9ebd362f2144c890df3c022e1f02b79b53285217a1393a14c3a5415b2ef21"
+    },
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/before-candidates-v2/V2016-all-parents.tsv",
+      "bytes": 267,
+      "sha256": "9d0d498c921686da19d128945200c36cff5a536aa16a60244ff2ff4e27e2d7fe"
+    },
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/before-candidates-v2/V2016-all-parents.accdb",
+      "bytes": 2039808,
+      "sha256": "bafb493d4296ca2fd164801963edce82c1b9474078441c6d93b2c470e0c83210"
+    },
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/before-candidates-v2/V2016-child-only.tsv",
+      "bytes": 97,
+      "sha256": "7cf66d519d8cdc98129b7d24ca9d7854ed1386b8ba3f9b9c155b0b3e5eb2be32"
+    },
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/before-candidates-v2/V2016-child-only.accdb",
+      "bytes": 2039808,
+      "sha256": "1a77ec59a7251f3a46111c6f4fe044a27053fbbf3d007c243a142c02482ca312"
+    },
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/before-candidates-v2/V2019-first-parent.tsv",
+      "bytes": 89,
+      "sha256": "d655c943b92f8c4e1a5ac21b951c0104944eac9f2485ec8d1518a162addbf07e"
+    },
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/before-candidates-v2/V2019-first-parent.accdb",
+      "bytes": 2113536,
+      "sha256": "fac9d52ee7dbe86700b0a50a91c8ad999db5b581145d90ea246b6383a4804257"
+    },
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/before-candidates-v2/V2019-all-parents.tsv",
+      "bytes": 267,
+      "sha256": "30f671cd3a571512160db7989f6d6dfc7bba80bd6064c3f8a16341399bb56c0d"
+    },
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/before-candidates-v2/V2019-all-parents.accdb",
+      "bytes": 2113536,
+      "sha256": "b2b4944d9b0605a911be74b576881c394522e1ec6023dba3c09a8e61ca4fe96a"
+    },
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/before-candidates-v2/V2019-child-only.tsv",
+      "bytes": 97,
+      "sha256": "45a33c2999030b471b34c645c4f6ab2fa14af20f7045c1cc04991ac06b5dbbf8"
+    },
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/before-candidates-v2/V2019-child-only.accdb",
+      "bytes": 2113536,
+      "sha256": "63916ae36623f78f4aea4d9664c834dc1f9bf04d10c199c6f073eacab144f5ee"
+    },
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/before-getters/V2016-first-parent.tsv",
+      "bytes": 2155,
+      "sha256": "f9715128a49de62c818f9be271cc79384164a1917af6493bed35fd3a84d1f8bf"
+    },
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/before-getters/V2016-all-parents.tsv",
+      "bytes": 853,
+      "sha256": "59004049850f650254bc8324903c666b7d1521cef10309dd1f4877f04017fa89"
+    },
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/before-getters/V2016-child-only.tsv",
+      "bytes": 2681,
+      "sha256": "05cf7f4c75008fb58059d3a98e4d08312a94bddb1d51dc61859aad79a157b5d6"
+    },
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/before-getters/V2019-first-parent.tsv",
+      "bytes": 2164,
+      "sha256": "561a25d45a5cf988c7159d67b79290905a7cc596dab8f0f892df13578485d0e5"
+    },
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/before-getters/V2019-all-parents.tsv",
+      "bytes": 862,
+      "sha256": "1ed2116710f8a166e1f1a7c958c66321afbf9b301d62e34f15f3122de637bb5a"
+    },
+    {
+      "path": ".cache/ace16-cascade-key-facts-next-20261026/before-getters/V2019-child-only.tsv",
+      "bytes": 2690,
+      "sha256": "9e0f51fe9b39aeedf47fa7069dd5c7412796ff49ecccad4d9e6d7c31670d6956"
+    }
+  ],
+  "preserved_diagnostics": [
+    {
+      "reason": "Initial independent header-byte assumption rejected before candidate capture; initial and corrected source remain separate.",
+      "diagnostic": {
+        "path": ".cache/ace16-cascade-key-facts-next-20261026/header-assumption-diagnostic.json",
+        "bytes": 463,
+        "sha256": "c2cd8abab0891b8fd63ae5925029a5aa43396cbc2f528020bc9b75f59c6d4ccd"
+      },
+      "initial_source": {
+        "path": ".cache/ace16-cascade-key-facts-next-20261026/before_cases-initial-header-assumption.py.txt",
+        "bytes": 5743,
+        "sha256": "5eb32eb674363d12d5e2c0ee523dff6dd488942781bc3529722f10023895188d"
+      }
+    },
+    {
+      "reason": "Relative corpus path resolved under Cargo package cwd; no database opened. Same probe passed with absolute path.",
+      "exit_code": 101,
+      "log": {
+        "path": ".cache/ace16-cascade-key-facts-next-20261026/before-metrics-initial.log",
+        "bytes": 953,
+        "sha256": "bb53760c3936e9678dec1828ff553ec53b916208ddc0768b9a3d8bba5d363b50"
+      }
+    }
+  ],
+  "production_corrections": [],
+  "limits": [
+    "Charged bytes/work are not peak memory or elapsed time. No wall-clock or disk-I/O speedup claim.",
+    "Facts projection reads zero cold LVAL pages; full preflight/final validation still decode payloads under unchanged limits.",
+    "Corruption invalidates all known LVAL owner signatures, not OLE-only or late-tail corruption.",
+    "Scoped source/tests only; unrelated concurrent work is excluded. No native Microsoft Access SQL/action/save qualification."
+  ]
+}

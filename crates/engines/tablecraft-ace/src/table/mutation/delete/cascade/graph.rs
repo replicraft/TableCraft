@@ -50,10 +50,12 @@ pub(super) fn link(
             .map_err(InspectError::from)?;
         let p = column(&tables[parent], pair.parent().as_str())?;
         let c = column(&tables[child], pair.child().as_str())?;
+        let parent_native = native_position(&tables[parent], p)?;
+        let child_native = native_position(&tables[child], c)?;
         if tables[parent].snapshot.columns()[p].data_type()
             != tables[child].snapshot.columns()[c].data_type()
-            || tables[parent].snapshot.schema().columns()[p].decimal_parameters()
-                != tables[child].snapshot.schema().columns()[c].decimal_parameters()
+            || tables[parent].snapshot.schema().columns()[parent_native].decimal_parameters()
+                != tables[child].snapshot.schema().columns()[child_native].decimal_parameters()
         {
             return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
         }
@@ -75,7 +77,11 @@ pub(super) fn link(
                 .iter()
                 .zip(parents)
                 .all(|(indexed, &position)| {
-                    indexed.number() == tables[parent].before.schema().columns()[position].number()
+                    tables[parent]
+                        .native_positions
+                        .get(position)
+                        .and_then(|&native| tables[parent].before.schema().columns().get(native))
+                        .is_some_and(|column| indexed.number() == column.number())
                 })
         {
             primary = true;
@@ -123,6 +129,15 @@ pub(super) fn link(
         child,
         matches,
     })
+}
+
+fn native_position(table: &Table, projected: usize) -> Result<usize, EditError> {
+    table
+        .native_positions
+        .get(projected)
+        .copied()
+        .filter(|&native| native < table.before.schema().columns().len())
+        .ok_or_else(|| InspectError::Malformed.into())
 }
 
 fn column(table: &Table, name: &str) -> Result<usize, EditError> {

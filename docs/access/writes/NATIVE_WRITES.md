@@ -69,7 +69,8 @@ remain exempt. Explicit seeds validate before deduplication, RESTRICT edges reta
 final-image checks, and the common complete index/map preservation audits still
 apply. Self/cyclic cascades and SET NULL remain refused. This does not enable
 ordinary ACE saves or change the explicit RESTRICT-only batch API. Matching uses
-bounded full scalar snapshots, including unrelated Memo/OLE; see
+[projected fixed-key facts](../../testing/CASCADE_KEY_FACTS.md); full before/final
+validation still decodes unrelated Memo/OLE under unchanged limits. See
 [the closed cascade contract](../../testing/ACE16_DELETE_PREVIEWS.md#separate-acyclic-cascading-deletions).
 Its [original-file replay](../../testing/CASCADE_DELETE_OBSERVATIONS.md) now passes
 24 supported acyclic candidates and eight closed-profile refusals. Original

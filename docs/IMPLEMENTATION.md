@@ -24,9 +24,13 @@ pass. Independent two-owner contraction verifies exact shared free-bit unions,
 retained NULL children, raw payload preservation and original-seed validation.
 Initial test-only module/fixture assumptions and their corrections are preserved.
 
-Matching currently materializes a second complete scalar snapshot; unrelated
-Memo/OLE can consume allowance despite unchanged payloads. This is explicitly
-bounded engineering behavior. Independent public self-tree actions left dangling
+Matching now retains [projected fixed-key facts](testing/CASCADE_KEY_FACTS.md),
+with dense/native mapping and original row/root alignment. Six native candidates
+are byte-identical to the frozen preceding implementation, with lower cumulative
+byte/work charges. Full preflight and final payload validation remain mandatory;
+malformed unselected LVALs still refuse.
+
+Independent public self-tree actions left dangling
 children and loop/cycle actions overflowed their stack; none qualifies those
 profiles. The subsequent [original-file replay](testing/CASCADE_DELETE_OBSERVATIONS.md)
 passes 24 acyclic candidates and eight exact self/cycle refusals on a frozen

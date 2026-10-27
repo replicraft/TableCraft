@@ -1,5 +1,6 @@
 //! Frozen original-association expansion for the separate acyclic cascade service.
 mod capture;
+mod facts;
 mod graph;
 mod state;
 

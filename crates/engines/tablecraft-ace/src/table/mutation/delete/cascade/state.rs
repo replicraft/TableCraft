@@ -1,10 +1,10 @@
 //! Bounded table discovery, checked explicit seeds and monotone original-root closure.
-use super::{EditError, capture, graph, reserve};
+use super::{EditError, capture, facts, graph, reserve};
 use crate::{
     InspectError, NativeImage, NativeRelationship, TableCheck, TableSnapshot, WriteBlocker,
     format::{page::PAGE_BYTES, reader::Reader},
     header::check,
-    inspect_relationships, read_table,
+    inspect_relationships,
     table::mutation::{
         delete::{TableRowDeletes, patches},
         gates, rows,
@@ -16,6 +16,8 @@ use tablecraft_schema::ReferentialAction;
 pub(super) struct Table {
     pub before: TableCheck,
     pub snapshot: TableSnapshot,
+    /// Projected row position to the complete native schema's vector position.
+    pub native_positions: Vec<usize>,
     pub references: Vec<u32>,
     pub selected: Vec<bool>,
 }
@@ -37,15 +39,16 @@ impl State {
         if groups.len() > NativeImage::MAX_DELETE_BATCH_TABLES {
             return Err(InspectError::StructureLimit.into());
         }
+        let relationships = inspect_relationships(
+            &mut image.reader(),
+            image.catalog().catalog().scope(),
+            budget,
+            cancelled,
+        )?;
         let mut state = Self {
             tables: Vec::new(),
             links: Vec::new(),
-            relationships: inspect_relationships(
-                &mut image.reader(),
-                image.catalog().catalog().scope(),
-                budget,
-                cancelled,
-            )?,
+            relationships: Vec::new(),
             queue: Vec::new(),
         };
         let mut seeds = 0_usize;
@@ -64,7 +67,7 @@ impl State {
                 .checked_add(group.deletes().len())
                 .filter(|count| *count <= NativeImage::MAX_DELETE_BATCH_ROWS)
                 .ok_or(InspectError::StructureLimit)?;
-            let table = state.load(image, group.table(), budget, cancelled)?;
+            let table = state.load(image, group.table(), &relationships, budget, cancelled)?;
             rows::unique(group.deletes(), budget, cancelled)?;
             for request in group.deletes() {
                 check(budget, cancelled)?;
@@ -103,6 +106,7 @@ impl State {
                 state.select(table, row, budget)?;
             }
         }
+        state.relationships = relationships;
         Ok(state)
     }
 
@@ -110,6 +114,7 @@ impl State {
         &mut self,
         image: &NativeImage,
         name: &str,
+        relationships: &[NativeRelationship],
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<usize, EditError> {
@@ -134,13 +139,10 @@ impl State {
         }) {
             return Err(EditError::Conflict);
         }
-        let snapshot = read_table(
-            &mut image.reader(),
-            image.catalog().catalog().scope(),
-            name,
-            budget,
-            cancelled,
-        )?;
+        // Complete structural/field/relationship gates above remain mandatory.
+        // Only this redundant association-facts pass projects unrelated values.
+        let (snapshot, native_positions) =
+            facts::read(image, before.schema(), relationships, budget, cancelled)?;
         if before.schema().definition_page() != snapshot.schema().definition_page()
             || before.schema().object_id() != snapshot.schema().object_id()
             || before.rows() != snapshot.rows().len()
@@ -148,6 +150,9 @@ impl State {
             return Err(InspectError::Malformed.into());
         }
         let references = capture::references(image, before.schema(), budget, cancelled)?;
+        if references.len() != snapshot.rows().len() {
+            return Err(InspectError::Malformed.into());
+        }
         let mut selected = Vec::new();
         budget
             .charge_allocation(references.len() as u64, size_of::<bool>() as u64)
@@ -160,6 +165,7 @@ impl State {
         self.tables.push(Table {
             before,
             snapshot,
+            native_positions,
             references,
             selected,
         });
@@ -210,8 +216,13 @@ impl State {
                     return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
                 }
                 if outgoing && rules.on_delete == ReferentialAction::Cascade {
-                    let child =
-                        self.load(image, declaration.child_table().as_str(), budget, cancelled)?;
+                    let child = self.load(
+                        image,
+                        declaration.child_table().as_str(),
+                        &relationships,
+                        budget,
+                        cancelled,
+                    )?;
                     let link =
                         graph::link(&self.tables, parent, child, relationship, budget, cancelled)?;
                     reserve(&mut self.links, budget)?;
