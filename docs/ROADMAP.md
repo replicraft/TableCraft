@@ -79,8 +79,11 @@ Delivered read/query and engineering foundations:
   Separate [sparse Int32 sources](testing/PARENT_INDEX_SPLIT_SOURCE_OBSERVATIONS.md)
   now establish measured leaf-and-parent overflow with only 782 live target rows,
   plus a sentinel, and pass byte-identical no-op admission. Their larger generation
-  histories are not qualified mutation inputs; overflow-write qualification is
-  recorded separately.
+  histories are not qualified mutation inputs. The subsequent
+  [nine-process public-reference phase](testing/PARENT_INDEX_SPLIT_OBSERVATIONS.md)
+  now measures actual retained-root growth to height two and three EOF index
+  pages on both sources; the frozen kernel still refuses those two edits
+  atomically. Recursive implementation and candidate acceptance remain separate.
   A separate [ordinary Memo/OLE replacement service](testing/ACE16_LONG_VALUE_UPDATES.md)
   now composes qualified column-owned LVAL append/EOF allocation with parent
   descriptor forwarding and independently replays request/map/payload authority.

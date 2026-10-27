@@ -1,0 +1,133 @@
+{
+  "scope": "Fixed next two d8 current-service K99424-to-MAX attempts plus two fresh public UPDATEs; not yet executed",
+  "source_phase_report": {
+    "path": ".cache/ace16-parent-split-reference-initial-20261027/report.json",
+    "bytes": 445225,
+    "sha256": "11151766680c9c2f863f545de26ea680ac7b5c5f4cd4f0ac60ca54b1f82fd077"
+  },
+  "unchanged_ancestors_and_tools": [
+    {
+      "path": ".cache/ace16-parent-split-reference-initial-20261027/V2016-larger.accdb",
+      "bytes": 3350528,
+      "sha256": "3458e2d9e491ec9c7e31fd89290e85d0642ebe12db09c65a7ed8070ed4e890d6"
+    },
+    {
+      "path": ".cache/ace16-parent-split-reference-initial-20261027/V2016-selection.tsv",
+      "bytes": 17972,
+      "sha256": "e7de7e89f197d999b7ea4572dc2ee6959464a4e6062f17cd5460ac778170d6a0"
+    },
+    {
+      "path": ".cache/ace16-parent-split-reference-initial-20261027/V2016-admission-noop.accdb",
+      "bytes": 3350528,
+      "sha256": "ef126c188765dcb4bc8c83267b1ad73f3cd54d92ba1d9e0cf0fa185eced60635"
+    },
+    {
+      "path": ".cache/ace16-parent-split-reference-initial-20261027/V2016-sparse.accdb",
+      "bytes": 3350528,
+      "sha256": "ef126c188765dcb4bc8c83267b1ad73f3cd54d92ba1d9e0cf0fa185eced60635"
+    },
+    {
+      "path": ".cache/ace16-parent-split-reference-initial-20261027/V2019-larger.accdb",
+      "bytes": 3420160,
+      "sha256": "c8b3961e8105a2eabcb84db4f921e620f6acfdec83c751d1f0ed7cedaf943285"
+    },
+    {
+      "path": ".cache/ace16-parent-split-reference-initial-20261027/V2019-selection.tsv",
+      "bytes": 17974,
+      "sha256": "f4959779caa0ecfff7ac28da5cbd407a3814ea24d0cd1706be587ef66e446040"
+    },
+    {
+      "path": ".cache/ace16-parent-split-reference-initial-20261027/V2019-admission-noop.accdb",
+      "bytes": 3420160,
+      "sha256": "b35ed5dd3dfd40de478827309546aa2928ba912a582fbd29d1eb7dc1534c9840"
+    },
+    {
+      "path": ".cache/ace16-parent-split-reference-initial-20261027/V2019-sparse.accdb",
+      "bytes": 3420160,
+      "sha256": "b35ed5dd3dfd40de478827309546aa2928ba912a582fbd29d1eb7dc1534c9840"
+    },
+    {
+      "path": ".cache/ace16-parent-split-reference-initial-20261027/classes/BoundedFileChannel.class",
+      "bytes": 3080,
+      "sha256": "608c31190c2bcbc9582fd0332813b8697820604b208b9d17c7b1548791c3916b"
+    },
+    {
+      "path": ".cache/ace16-parent-split-reference-initial-20261027/classes/ParentSplitFixture$Entry.class",
+      "bytes": 1320,
+      "sha256": "cd09533b4d74eab647e6a9af1313fdfd66f616050e35ca57bf711f91e1052efc"
+    },
+    {
+      "path": ".cache/ace16-parent-split-reference-initial-20261027/classes/ParentSplitFixture$Gate.class",
+      "bytes": 2317,
+      "sha256": "00fbdaf0cc3a25dba3b5882b92e699de28259c302f0f4b840270e3e74e365e00"
+    },
+    {
+      "path": ".cache/ace16-parent-split-reference-initial-20261027/classes/ParentSplitFixture$Page.class",
+      "bytes": 1997,
+      "sha256": "4d6cad6e2b20a1b1802fa90df82bcca20f6d76207789976808ca295536e98b42"
+    },
+    {
+      "path": ".cache/ace16-parent-split-reference-initial-20261027/classes/ParentSplitFixture.class",
+      "bytes": 23840,
+      "sha256": "f6fee49e071e4d3aa68c3998336ee7e52b8a47423b1a2ac85fc664b4a7b9d68d"
+    }
+  ],
+  "cases": [
+    {
+      "profile": "V2016",
+      "source": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/V2016-sparse.accdb",
+        "bytes": 3350528,
+        "sha256": "ef126c188765dcb4bc8c83267b1ad73f3cd54d92ba1d9e0cf0fa185eced60635"
+      },
+      "table": "SparseInt32",
+      "column": "Key",
+      "ordinal": 781,
+      "expected": 99424,
+      "replacement": 2147483647,
+      "page": 816,
+      "slot": 228,
+      "root": 91,
+      "original_root_height": 1,
+      "source_live_rows": 782,
+      "target_leaf": 100,
+      "target_leaf_count": 454,
+      "parent_bounds": 328,
+      "measured_best_prefix_bytes": {
+        "unsplit_leaf_best_bytes": 3633,
+        "left_best_bytes": 1365,
+        "right_best_bytes": 1817,
+        "parent_best_bytes": 3621
+      },
+      "root_growth": "Predicted from capacity; actual public root ID/height/topology will be measured, not assumed."
+    },
+    {
+      "profile": "V2019",
+      "source": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/V2019-sparse.accdb",
+        "bytes": 3420160,
+        "sha256": "b35ed5dd3dfd40de478827309546aa2928ba912a582fbd29d1eb7dc1534c9840"
+      },
+      "table": "SparseInt32",
+      "column": "Key",
+      "ordinal": 781,
+      "expected": 99424,
+      "replacement": 2147483647,
+      "page": 833,
+      "slot": 228,
+      "root": 108,
+      "original_root_height": 1,
+      "source_live_rows": 782,
+      "target_leaf": 117,
+      "target_leaf_count": 454,
+      "parent_bounds": 328,
+      "measured_best_prefix_bytes": {
+        "unsplit_leaf_best_bytes": 3633,
+        "left_best_bytes": 1365,
+        "right_best_bytes": 1817,
+        "parent_best_bytes": 3621
+      },
+      "root_growth": "Predicted from capacity; actual public root ID/height/topology will be measured, not assumed."
+    }
+  ]
+}

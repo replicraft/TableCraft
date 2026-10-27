@@ -83,6 +83,25 @@ Memo/OLE values. Read-only diagnosis verifies their equal payloads and the actua
 new-left/retained-right leaf split. These are the preceding frozen consumer's
 results, not successful non-root TableCraft candidates.
 
+## Measured Int32 parent overflow and root growth
+
+The [separate public-reference action phase](testing/PARENT_INDEX_SPLIT_OBSERVATIONS.md)
+uses the unchanged 782-row sparse sources. All nine first-attempt fixture
+processes complete: the frozen existing consumer refuses both overflowing edits
+atomically, while both public Jackcess updates split the parent and grow the
+retained root from height one to two. The root has two bounded complete key/ROW
+maxima and no tail. Three EOF index pages are added: a new left leaf, then a new
+right internal node and a new left internal node. All row references, unrelated
+field bytes and historical counters remain unchanged.
+
+The [receipt](testing/results/ace16-parent-index-split-originals-2026-10-27.json)
+pins the actual sources, immutable input histories, commands and saved framing
+proofs. Read-only verification recomputes both actual tree/map outcomes without
+rerunning database actions. Public unused-byte rewrites are retained as
+observations, not engineering byte goldens. Recursive kernel splitting and its
+candidate acceptance remain unfinished; these results do not qualify normal
+saves or Microsoft Access behavior.
+
 ## Alternate-page placement and EOF allocation candidates
 
 The separate `preview_ace16_variable_updates` engineering API now places growing
