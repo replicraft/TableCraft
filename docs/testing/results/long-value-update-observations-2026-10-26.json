@@ -1,0 +1,339 @@
+{
+  "scope": "Sixty approved public-writer Memo/OLE UPDATE observations only; no TableCraft candidates, native Access execution or engine admission.",
+  "counts": {
+    "public_updates": 60,
+    "bounded_processes": 183,
+    "metadata_gates": 2,
+    "first_compile_status": 0,
+    "action_or_getter_failures": 0,
+    "immediate_old_chunk_body_checks": 444,
+    "cumulative_ancestor_body_checks": 592,
+    "changed_old_chunk_bodies": 0,
+    "changed_old_chunk_slot_words": 0,
+    "protected_original_td_index_pages_per_case": 94,
+    "exact_map_bit_edits": 96,
+    "column_owned_eof_additions": 32,
+    "owned_removals": 0,
+    "existing_lval_page_reuse_cases": 8
+  },
+  "transitions": {
+    "chain->NULL": 4,
+    "chain->inline": 20,
+    "chain->single": 8,
+    "chain->chain": 8,
+    "inline->single": 4,
+    "single->chain": 4,
+    "inline->inline": 4,
+    "inline->NULL": 4,
+    "NULL->inline": 4
+  },
+  "growth_histogram": {
+    "0": 44,
+    "4096": 4,
+    "8192": 8,
+    "12288": 4
+  },
+  "scope_notes": [
+    "LVAL owned/hint and global maps remain inline; ordinary TableOwned is existing indirect and unchanged. No indirect LVAL allocation transition claim.",
+    "No old LVAL chain retirement observed; unreachable/orphan bodies and their owned memberships persist across the tested histories.",
+    "Read-only initial byte-audit assumed inline maps too broadly; initial source/log retained, corrected existing indirect grammar passed with no database/action rerun.",
+    "Text inputs intentionally use raw UTF16 U+0100, not a new Unicode-compression/leading-FEFF authoring claim."
+  ],
+  "artifacts": [
+    {
+      "path": ".cache/ace16-long-update-observations-initial-20261026/actions-report.json",
+      "bytes": 30482489,
+      "sha256": "d75bee8c29a174dcbf2183a7560594aac4a15e2b07091ee3e0969ea8f3c827dc"
+    },
+    {
+      "path": ".cache/ace16-long-update-observations-initial-20261026/actions.log",
+      "bytes": 59,
+      "sha256": "a347f37d4509d6bcea772b0760108edc0a5e2042b394cd707febfd6bce81d7d7"
+    },
+    {
+      "path": ".cache/ace16-long-update-observations-initial-20261026/compile.json",
+      "bytes": 326,
+      "sha256": "4e3e6c25c079ffd4c06d54594f9fd482b3c49ce574a7623f566f0cfc4b4547be"
+    },
+    {
+      "path": ".cache/ace16-long-update-observations-initial-20261026/compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-long-update-observations-initial-20261026/compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-long-update-observations-initial-20261026/metadata-gate.json",
+      "bytes": 2327,
+      "sha256": "c54d99f6701ba0b745f0d36fd28b74806643da403f0e4fb77bf4fc76814b88cd"
+    },
+    {
+      "path": ".cache/ace16-long-update-observations-initial-20261026/metadata-gate.log",
+      "bytes": 30,
+      "sha256": "3991c1d80764c2f6b31202e6d4f7391bc1ef3e5eec2b5234579ea27f90b729f6"
+    },
+    {
+      "path": ".cache/ace16-long-update-observations-initial-20261026/saved-byte-audit.log",
+      "bytes": 495,
+      "sha256": "5c417c4d87d8a9b86bc8d997b25be6ba62de00686e85964069dbb3502ca28b0e"
+    },
+    {
+      "path": ".cache/ace16-long-update-observations-initial-20261026/saved-byte-audit-after-indirect.json",
+      "bytes": 16880,
+      "sha256": "e237d6ca21af726f7d70646a0ae741a5211af3ce365bac232334ff9e30621a9d"
+    },
+    {
+      "path": ".cache/ace16-long-update-observations-initial-20261026/saved-byte-audit-after-indirect.log",
+      "bytes": 132,
+      "sha256": "65640bdd2f8de6876f28825a3c7ee81584921e1c51b342a3c6d5a729a8c66b36"
+    }
+  ],
+  "sources": [
+    {
+      "path": ".cache/ace16-long-update-observations-plan-20261026/plan.json",
+      "bytes": 49880,
+      "sha256": "f164b932469621e3f952506570f72ed56dea41ff451fa1f1b506aceb193f19ed"
+    },
+    {
+      "path": ".cache/ace16-long-update-observations-plan-20261026/PLAN.md",
+      "bytes": 5898,
+      "sha256": "1d296caa34ec12c4ea636822df6f53ce01b652cabb8e2a033591544715da1b72"
+    },
+    {
+      "path": ".cache/ace16-long-update-observations-plan-20261026/frozen-pins.json",
+      "bytes": 973,
+      "sha256": "5c8ff37cd79714d583b41b1d40af2de02dfac2d74a969444862147ccfff3af20"
+    },
+    {
+      "path": ".cache/ace16-long-update-observations-plan-20261026/LongValueUpdateProbe.java",
+      "bytes": 7318,
+      "sha256": "3c1bc1ca8073b9ea08e30df64d2bd352e3198318c00649a8494fd455c7acf791"
+    },
+    {
+      "path": ".cache/ace16-long-update-observations-plan-20261026/freeze_plan.py",
+      "bytes": 9662,
+      "sha256": "7e5bd45c81cc19f90be1d6e36944d1f3f0c1aa99dac54fc15751a0171cbe04e8"
+    },
+    {
+      "path": ".cache/ace16-long-update-observations-plan-20261026/run_metadata_gate.py",
+      "bytes": 3837,
+      "sha256": "da055cf18efdf5cc6c0310d3a43ccad4f1174adfc4519e6ecb38df6c98e58a07"
+    },
+    {
+      "path": ".cache/ace16-long-update-observations-plan-20261026/run_updates.py",
+      "bytes": 16657,
+      "sha256": "07a6cc6a8f6c10026e5d1303a1bd837a5556dc7e9c19b1f0cb9efe8fc72358d7"
+    },
+    {
+      "path": ".cache/ace16-long-update-observations-plan-20261026/audit_saved_bytes-before-indirect.py",
+      "bytes": 6128,
+      "sha256": "90242e11eebdf3a086a7febde419e4943c9a0d36377aa9efbca07d34e966be9a"
+    },
+    {
+      "path": ".cache/ace16-long-update-observations-plan-20261026/audit_saved_bytes.py",
+      "bytes": 7194,
+      "sha256": "4c5b1c86d7d87133c1f200d0fdb4f5ff662f8e98037a64812a5dea6d4977a8fe"
+    },
+    {
+      "path": ".cache/ace16-long-update-observations-plan-20261026/source-getter-consistency.json",
+      "bytes": 865,
+      "sha256": "07c8b613a4f60d0ffa5c3fbe47841ef1748d0ffbff516b79e8fc2cebd7da7a42"
+    }
+  ],
+  "originals_after": [
+    {
+      "path": ".cache/ace16-slot-originals-next-20261026/Slot-V2016-before.accdb",
+      "bytes": 1044480,
+      "sha256": "feeeab8b1a5d51cd6d2366cdc54b895da9bd023c48c364896a9beffc7215dd46"
+    },
+    {
+      "path": ".cache/ace16-slot-originals-next-20261026/Slot-V2019-before.accdb",
+      "bytes": 1114112,
+      "sha256": "2994922c9fef5302e08bfc4db66b8cbfe01e8d47b025e1a4f9b6db10d2a66092"
+    }
+  ],
+  "helper_jar_classes_payloads_unchanged": true,
+  "promotion": {
+    "public_helper_exact_executed_source": true,
+    "public_capture_is_parameterized_derivative_not_action_rerun": true,
+    "public_readonly_proof_matches_private_bytes": true
+  },
+  "originals": [
+    {
+      "profile": "V2016",
+      "file": {
+        "path": ".cache/ace16-slot-originals-next-20261026/Slot-V2016-before.accdb",
+        "bytes": 1044480,
+        "sha256": "feeeab8b1a5d51cd6d2366cdc54b895da9bd023c48c364896a9beffc7215dd46"
+      },
+      "getter": {
+        "path": ".cache/ace16-slot-originals-next-20261026/V2016-oracle-initial.stdout",
+        "bytes": 733170,
+        "sha256": "dff348bcf05b38b817d3653adadf132c210c416b1b5b953b067d36386d515a4d"
+      },
+      "definition_page": 241,
+      "column_map_tail": [
+        274,
+        294
+      ],
+      "columns": {
+        "Memo": {
+          "native_type": 12,
+          "flags": 2,
+          "extended_flags": 0,
+          "declared_bytes": 0,
+          "map_declaration": {
+            "tail_offset": 274,
+            "owned_ref": 61955,
+            "hint_ref": 61956
+          },
+          "owned_pages": [
+            244,
+            245,
+            246,
+            247,
+            248
+          ],
+          "hint_pages": [
+            248
+          ],
+          "descriptor_hex": "904c000000f4000000000000",
+          "encoded_bytes": 19600,
+          "chunks": 5
+        },
+        "OLE": {
+          "native_type": 11,
+          "flags": 2,
+          "extended_flags": 0,
+          "declared_bytes": 0,
+          "map_declaration": {
+            "tail_offset": 284,
+            "owned_ref": 61957,
+            "hint_ref": 61958
+          },
+          "owned_pages": [
+            249,
+            250,
+            251,
+            252
+          ],
+          "hint_pages": [
+            252
+          ],
+          "descriptor_hex": "0030000000f9000000000000",
+          "encoded_bytes": 12288,
+          "chunks": 4
+        }
+      }
+    },
+    {
+      "profile": "V2019",
+      "file": {
+        "path": ".cache/ace16-slot-originals-next-20261026/Slot-V2019-before.accdb",
+        "bytes": 1114112,
+        "sha256": "2994922c9fef5302e08bfc4db66b8cbfe01e8d47b025e1a4f9b6db10d2a66092"
+      },
+      "getter": {
+        "path": ".cache/ace16-slot-originals-next-20261026/V2019-oracle-initial.stdout",
+        "bytes": 733209,
+        "sha256": "e05d38a5fee9c6b081de6b3c7ca1326514de8bb7a9cb9c740c998cf3e6f97854"
+      },
+      "definition_page": 258,
+      "column_map_tail": [
+        274,
+        294
+      ],
+      "columns": {
+        "Memo": {
+          "native_type": 12,
+          "flags": 2,
+          "extended_flags": 0,
+          "declared_bytes": 0,
+          "map_declaration": {
+            "tail_offset": 274,
+            "owned_ref": 66307,
+            "hint_ref": 66308
+          },
+          "owned_pages": [
+            261,
+            262,
+            263,
+            264,
+            265
+          ],
+          "hint_pages": [
+            265
+          ],
+          "descriptor_hex": "904c00000005010000000000",
+          "encoded_bytes": 19600,
+          "chunks": 5
+        },
+        "OLE": {
+          "native_type": 11,
+          "flags": 2,
+          "extended_flags": 0,
+          "declared_bytes": 0,
+          "map_declaration": {
+            "tail_offset": 284,
+            "owned_ref": 66309,
+            "hint_ref": 66310
+          },
+          "owned_pages": [
+            266,
+            267,
+            268,
+            269
+          ],
+          "hint_pages": [
+            269
+          ],
+          "descriptor_hex": "00300000000a010000000000",
+          "encoded_bytes": 12288,
+          "chunks": 4
+        }
+      }
+    }
+  ],
+  "public_sources": [
+    {
+      "path": "docs/testing/LongValueUpdateProbe.java",
+      "bytes": 7318,
+      "sha256": "3c1bc1ca8073b9ea08e30df64d2bd352e3198318c00649a8494fd455c7acf791"
+    },
+    {
+      "path": "docs/testing/capture_long_value_updates.py",
+      "bytes": 17702,
+      "sha256": "e0e2d181a38d7bb35a17a56a32bc3faeb8d8265e1886658e8c920bcd337903fa"
+    },
+    {
+      "path": "docs/testing/verify_long_value_update_bytes.py",
+      "bytes": 7337,
+      "sha256": "d191fa9d33b2b524bdfbb33766d1faad7099c5b2a86555b4d838862dbd464ca1"
+    },
+    {
+      "path": "docs/testing/LONG_VALUE_UPDATE_OBSERVATIONS.md",
+      "bytes": 6622,
+      "sha256": "aee1e0a1f6bf1f8b53b9a7aee7c3ecaf31f9d8aa8ac9ef757f3d3e97362ba42d"
+    }
+  ],
+  "promotion_checks": [
+    {
+      "path": ".cache/ace16-long-update-observations-initial-20261026/public-capture-help.log",
+      "bytes": 766,
+      "sha256": "78c3ae0dad44d7157cc3da1d017f59510da61f8d6be9158db83d19f2727b4703"
+    },
+    {
+      "path": ".cache/ace16-long-update-observations-initial-20261026/public-saved-byte-audit.json",
+      "bytes": 16880,
+      "sha256": "e237d6ca21af726f7d70646a0ae741a5211af3ce365bac232334ff9e30621a9d"
+    },
+    {
+      "path": ".cache/ace16-long-update-observations-initial-20261026/public-saved-byte-audit.log",
+      "bytes": 132,
+      "sha256": "65640bdd2f8de6876f28825a3c7ee81584921e1c51b342a3c6d5a729a8c66b36"
+    }
+  ]
+}
