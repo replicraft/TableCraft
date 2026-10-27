@@ -769,3 +769,7 @@ their candidate replay is not established by these synthetic tests.
 [Scoped slot-update verification](results/ace16-slot-updates-native-2026-10-26.json)
 records the author cases, unchanged writer/read regressions and preserved failed
 attempts separately from original-file candidate comparisons.
+
+The [bounded slot-preview consumer](SLOT_PREVIEW_CONSUMER.md) accepts a headerless
+five-field quoted TSV, captures every request before opening the database, and
+publishes only a complete candidate to a fresh output path.
