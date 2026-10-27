@@ -134,7 +134,7 @@ fn parse<R: NativeReadSource>(
 }
 
 pub(super) enum MapInspection {
-    Inline(RepresentedMap, RepresentedMap),
+    Qualified(RepresentedMap, RepresentedMap),
     Indirect,
     Unknown,
 }
@@ -159,8 +159,8 @@ pub(super) fn inspect<R: NativeReadSource>(
             Err(error) => return Err(error),
         };
     match (owned.kind(), candidate.kind()) {
-        (INLINE_MAP, INLINE_MAP) => Ok(MapInspection::Inline(owned, candidate)),
-        (INLINE_MAP | INDIRECT_MAP, INLINE_MAP | INDIRECT_MAP) => Ok(MapInspection::Indirect),
+        (INLINE_MAP | INDIRECT_MAP, INLINE_MAP) => Ok(MapInspection::Qualified(owned, candidate)),
+        (INLINE_MAP | INDIRECT_MAP, INDIRECT_MAP) => Ok(MapInspection::Indirect),
         _ => Ok(MapInspection::Unknown),
     }
 }

@@ -9678,3 +9678,23 @@ postcheck and the later saved-proof verifier. Compiler pins bind Git revision
 809c5e8d rather than concurrent working-tree bytes. Earlier public reference
 scratch, recursive literal controls, native Access qualification and normal saves
 remain separate evidence and scope.
+
+### Mixed indirect-map default checks and engineering literals
+
+The [mixed-map implementation record](results/ace16-indirect-lval-native-2026-10-27.json)
+adds default storage and engineering whole-image fixtures for an indirect owned
+map with an inline candidate map. All 112 distinct runtime functions pass; three
+default independent functions also run under the feature and count once. The
+twelve new functions cover allocated bitmap metadata, exact membership, fitted
+append/EOF single/chain placement, map storage aliases, absent represented cells,
+immutable finalizer authority and resource/error boundaries.
+
+An initial independent bitmap prefix was invalid; the strict four-byte signature
+was retained and the literal corrected. The old unsupported-map fixture already
+marked its bitmap globally free and now correctly reports malformed allocation.
+Exact initial sources/logs and the test-only helper deduplication are preserved.
+A separate working default checker reads both unchanged public-builder originals,
+matching four expected column reports with unchanged source hashes. Its executed
+source snapshot remains distinct from the later redundant match-arm cleanup.
+No native replacement, public writer action or JVM command is performed by that
+diagnostic; new frozen original-file candidate acceptance remains separate.

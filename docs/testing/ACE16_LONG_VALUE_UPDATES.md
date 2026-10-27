@@ -17,7 +17,8 @@ contracts.
 The profile is plain unencoded ACE 16, subversion zero, ordinary variable
 Memo/OLE with native flag 2 and zero declared length. Memo accepts exact extended
 flags 0 or 1; OLE requires extended flags 0. The
-selected field must have a complete qualified inline owned/candidate map pair,
+selected field must have a complete qualified owned/candidate map pair: either
+both inline, or indirect owned with an inline candidate map. It must have
 no stored field properties and no index. A readable nonunique Memo index still
 does not authorize replacement. Hyperlink, append-only/history,
 calculated/complex fields and unsupported metadata remain refused.
@@ -43,7 +44,8 @@ Empty maps still need exclusive edit authority: a shared packed reference,
 overlapping map row or shared bitmap can alter an unrelated declaration when a
 new page is allocated. Distinct rows sharing one metadata container and true
 physical index aliases remain valid. This proof repeats during immutable final
-certification; it does not admit indirect selected-column maps.
+certification. That identity-only correction did not expand map representations;
+the separately observed mixed-map profile retains the same authority proof.
 
 Before publication, an immutable original operation supplies the table, column
 and requests. The finalizer independently rebinds admission, ownership, logical
@@ -91,8 +93,19 @@ appends a fully initialized EOF page only after every eligible hint fails, using
 already represented column-owned/candidate/global cells. No map growth, arbitrary in-file free-page
 reuse or fixed free-byte threshold is inferred. LVAL chunks and an ordinary
 parent forwarding target share one EOF sequence and one aggregated byte ledger.
-An existing indirect ordinary-table map does not qualify indirect column-LVAL
-allocation.
+An existing indirect ordinary-table map alone does not qualify column-LVAL
+allocation. The [mixed-map source observations](INDIRECT_LONG_VALUE_MAP_OBSERVATIONS.md)
+establish actual indirect-owned/inline-candidate metadata. Existing bitmap
+pointers and both maps' represented cells are required for every edited page;
+missing pointers or candidate-window cells refuse without allocating metadata.
+Indirect candidate maps remain outside this profile. All old chunks, pointer
+rows, bitmap prefixes and unrelated bits retain their independent preservation
+checks. The source experiment itself contains no native candidate calls.
+The [scoped implementation checks](results/ace16-indirect-lval-native-2026-10-27.json)
+cover fitted reuse, exact represented bitmap edits through multiple EOF chunks,
+missing-pointer refusal and reader-valid finalizer forgeries. Original mixed-map
+replacement qualification still requires a separately frozen consumer and
+independent whole-image expectations.
 
 The [multiple-candidate checks](results/ace16-long-value-multiple-candidates-2026-10-27.json)
 include independent complete expected images for two fitting hints, a failed high

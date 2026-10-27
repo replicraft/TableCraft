@@ -1,18 +1,7 @@
 //! Final certification rebinds map authority to the immutable original catalog.
-use super::super::{Operation, admission, finish, stage};
-use crate as tablecraft_ace;
-use crate::{
-    Ace16WritePreview, EditError, InspectError, NativeImage, SlotScalarUpdate, WriteBlocker,
-    check_table, check_table_constraints, check_table_long_values, read_table,
-    test_support::{fixture, support},
-};
-use std::io::Cursor;
-use tablecraft_core::{limits::ResourceBudget, values::Value};
-use tablecraft_model::CatalogScope;
-
-#[allow(dead_code)]
-#[path = "../../../../../tests/ace16_long_value_updates_contract/model.rs"]
-mod model;
+use super::super::{Operation, admission, finish, stage, tests::model};
+use crate::{EditError, WriteBlocker, test_support::support};
+use tablecraft_core::values::Value;
 
 fn original(shared: bool) -> Vec<u8> {
     let mut bytes = model::source(6, 1);

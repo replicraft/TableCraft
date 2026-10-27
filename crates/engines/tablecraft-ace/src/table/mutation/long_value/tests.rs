@@ -1,5 +1,5 @@
 //! The final certificate must be bound to the original caller's operation.
-use super::{Operation, admission, finish, stage};
+use super::{Operation, admission, finish, maps::Edit as MapEdit, stage};
 use crate as tablecraft_ace;
 use crate::{
     Ace16WritePreview, EditError, InspectError, NativeImage, SlotScalarUpdate, check_table,
@@ -12,7 +12,7 @@ use tablecraft_model::CatalogScope;
 
 #[allow(dead_code)]
 #[path = "../../../../tests/ace16_long_value_updates_contract/model.rs"]
-mod model;
+pub(super) mod model;
 
 use model::*;
 
@@ -206,6 +206,99 @@ fn final_map_replay_requires_each_real_failed_hint_before_the_lower_destination(
             assert_eq!(staged.plan.maps.edits.len(), 1);
             staged.plan.maps.edits.clear();
         }
+        assert_eq!(
+            finish::finish(
+                capture(&before),
+                &operation,
+                &staged,
+                &mut budget(),
+                &|| false,
+            )
+            .err(),
+            Some(EditError::Preservation)
+        );
+    }
+}
+
+#[test]
+fn mixed_map_finalizer_rejects_unrequested_orphan_ownership_and_global_future_bits() {
+    for claim_orphan in [false, true] {
+        let mut before = source(6, 1);
+        let maps = page(
+            0,
+            &[
+                (0, map(&[ROOT])),
+                (0, map(&[ROOT])),
+                (0, vec![1, 19, 0, 0, 0]),
+                (0, map(&[MEMO])),
+                (0, map(&[OLE])),
+                (0, map(&[OLE])),
+            ],
+        );
+        install(&mut before, 11, &maps);
+        let mut bitmap = vec![0; PAGE];
+        bitmap[..4].copy_from_slice(&[5, 1, 0, 0]);
+        bitmap[4 + 13 / 8] = 1 << (13 % 8);
+        install(&mut before, 19, &bitmap);
+        install(&mut before, 15, &lval(&[(0, vec![0x92, 0x04, 0x7d])]));
+        check(&before);
+
+        let replacement = Value::Text("Ā".repeat(2039));
+        let updates = [memo_update(replacement.clone())];
+        let operation = Operation {
+            table: "Items",
+            column: "Memo",
+            updates: &updates,
+        };
+        let image = capture(&before);
+        let prepared =
+            admission::prepare(&image, "Items", "Memo", &mut budget(), &|| false).unwrap();
+        let mut staged =
+            stage::build(&image, &prepared, &updates, &mut budget(), &|| false).unwrap();
+        let healthy = finish::finish(
+            capture(&before),
+            &operation,
+            &staged,
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        assert_eq!(read(healthy.candidate_bytes())[0][1], replacement);
+
+        if claim_orphan {
+            // Claiming another allocated LVAL orphan remains reader-valid.
+            // No allocation event authorizes this existing page's owned bit.
+            let offset = 19 * PAGE + 4 + 15 / 8;
+            staged.plan.maps.edits.push(MapEdit {
+                offset,
+                before: before[offset],
+                after: before[offset] | (1 << (15 % 8)),
+            });
+        } else {
+            let row_start = usize::from(word(&before, 1, 0) & 0x1fff);
+            let offset = PAGE + row_start + 5 + 31 / 8;
+            let byte = staged
+                .plan
+                .maps
+                .edits
+                .iter_mut()
+                .find(|edit| edit.offset == offset)
+                .unwrap();
+            assert_ne!(byte.after & 0x80, 0);
+            byte.after &= !0x80;
+        }
+
+        let mut forged = before.clone();
+        forged.resize(staged.plan.length, 0);
+        for page in &staged.plan.pages {
+            let start = page.number as usize * PAGE;
+            forged[start..start + PAGE].copy_from_slice(&page.after);
+        }
+        for edit in &staged.plan.maps.edits {
+            forged[edit.offset] = edit.after;
+        }
+        assert_eq!(read(&forged)[0][1], replacement);
+        check(&forged);
         assert_eq!(
             finish::finish(
                 capture(&before),

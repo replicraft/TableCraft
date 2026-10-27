@@ -28,7 +28,7 @@ fn both_ace16_headers_count_all_forms_and_allow_owned_opaque_orphan_rows() {
 }
 
 #[test]
-fn absent_unknown_historical_and_indirect_profiles_remain_visible_without_narrowing_reads() {
+fn absent_unknown_historical_and_unallocated_map_profiles_preserve_read_boundaries() {
     let mut absent = model::database(6);
     support::put16(&mut absent, 10 * 4096 + model::TAIL, 65535);
     readable(&absent);
@@ -73,8 +73,12 @@ fn absent_unknown_historical_and_indirect_profiles_remain_visible_without_narrow
         indirect[21 * 4096 + 4 + number / 8] |= 1 << (number % 8);
     }
     readable(&indirect);
-    assert_eq!(
-        check(&indirect).unwrap().columns()[0].status(),
-        LongValueCheckStatus::IndirectMaps
+    // The original fixture marks bitmap page21 globally FREE. The newly
+    // qualified mixed-map check must now reject that allocation contradiction.
+    let start = u16::from_le_bytes(indirect[4096 + 14..4096 + 16].try_into().unwrap());
+    assert_ne!(
+        indirect[4096 + usize::from(start) + 5 + 21 / 8] & (1 << (21 % 8)),
+        0
     );
+    assert_eq!(check(&indirect).err(), Some(InspectError::Malformed));
 }

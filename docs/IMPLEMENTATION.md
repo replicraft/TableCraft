@@ -6,8 +6,8 @@ The default engine now exposes a separate bounded
 [`check_table_long_values` service](access/storage/LONG_VALUE_CHECKS.md). It checks
 qualified ACE 16 column maps, allocated LVAL pages and complete live descriptors,
 and reports orphan storage and sharing without treating them as corruption or
-write authority. Unknown, historical, indirect and unsupported profiles remain
-explicit. Ordinary Memo/OLE reads keep their existing behavior.
+write authority. Unknown, historical, indirect-candidate and unsupported profiles
+remain explicit. Ordinary Memo/OLE reads keep their existing behavior.
 
 The [scoped record](testing/results/long-value-storage-native-2026-10-26.json)
 records 148 distinct passing runtime functions and three compile-fail checks.
@@ -15,6 +15,28 @@ Two frozen read-only consumers each checked the same 60 saved independent-writer
 outputs, with all 120 column reports matching independently captured expectations.
 These are storage-check results, not new UPDATE actions or native Access
 qualification. General Memo/OLE replacement and normal ACE saves remain unfinished.
+
+## Mixed indirect long-value map support
+
+The default storage checker and existing engineering replacement API now admit
+qualified indirect-owned/inline-candidate column maps through the same strict
+represented-map grammar. Complete storage checks include bitmap allocation,
+owned/candidate membership and live descriptors. Replacement retains immutable
+request/map authority, existing represented EOF cells and independent final replay.
+No new map, bitmap pointer or candidate window is created.
+
+The [scoped record](testing/results/ace16-indirect-lval-native-2026-10-27.json)
+passes 112 distinct runtime functions, including twelve new functions, plus three
+compile-fail doc tests, strict/default lint, minimal compilation, rustdoc and
+formatting. A separate working default checker returns all four exact expected
+column reports on the two unchanged new originals. That diagnostic is read-only,
+not a candidate replay or a committed-consumer qualification.
+
+An initial independent fixture had an invalid bitmap signature and was corrected
+without relaxing the four-byte parser grammar. A previously unsupported-map test
+now correctly rejects its globally free bitmap. Initial failures remain recorded.
+Indirect candidate maps, map/pointer growth, arbitrary free-page reuse, reclamation,
+original-file replacement acceptance for this extension and normal saves remain open.
 
 ## Indirect long-value map source observations
 
@@ -45,7 +67,7 @@ functions, plus three compile-fail doc tests and strict/minimal checks. Separate
 read-only diagnostics admit both Memo columns on all 22 unchanged original-source
 files (44 probes); they do not stage, finalize or publish candidates. Earlier
 frozen-consumer acceptance remains historical evidence, not a replay of this
-correction. Indirect selected LVAL maps and normal native saves remain unfinished.
+correction. Indirect candidate maps and normal native saves remain unfinished.
 
 ## Ordinary Memo/OLE replacement candidates
 

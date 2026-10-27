@@ -1,18 +1,7 @@
 //! Reader-valid alternate encodings cannot replace exact request wire authority.
-use super::super::super::{admission, encode::Encoded, stage};
-use crate as tablecraft_ace;
-use crate::{
-    Ace16WritePreview, EditError, InspectError, NativeImage, SlotScalarUpdate, check_table,
-    check_table_constraints, check_table_long_values, read_table,
-    test_support::{fixture, support},
-};
-use std::io::Cursor;
-use tablecraft_core::{limits::ResourceBudget, values::Value};
-use tablecraft_model::CatalogScope;
-
-#[allow(dead_code)]
-#[path = "../../../../../../tests/ace16_long_value_updates_contract/model.rs"]
-mod model;
+use super::super::super::{admission, encode::Encoded, stage, tests::model};
+use crate::{EditError, SlotScalarUpdate};
+use tablecraft_core::values::Value;
 
 #[test]
 fn independently_valid_decoding_does_not_authorize_the_wrong_encoding_policy() {

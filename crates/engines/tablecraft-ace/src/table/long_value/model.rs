@@ -14,7 +14,7 @@ pub enum LongValueCheckStatus {
     HistoricalDeclaration,
     /// Field flags/type do not match the ordinary qualified Memo/OLE profile.
     UnsupportedColumn,
-    /// Existing indirect column maps have not received original-file qualification.
+    /// Indirect column candidate maps remain outside the qualified check profile.
     IndirectMaps,
     /// A column map uses an unsupported representation or reference profile.
     UnknownMap,
