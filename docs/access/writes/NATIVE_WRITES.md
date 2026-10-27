@@ -139,8 +139,11 @@ The [shared retained-key physical planner](../../testing/ACE16_RETAINED_SPLIT_PL
 now transports complete profile-owned keys through borrowed entries and checked
 arena maxima, retaining the numeric entrypoints. Fresh numeric leaves and fitting
 numeric roots require independently derived prefix/bitmap/free framing; two
-reader-valid alternative-prefix forgeries now refuse. This does not add a slot
-split consumer or qualify the existing-fit non-single/composite fallback.
+reader-valid alternative-prefix forgeries now refuse. The subsequent
+[composite fitting audit](../../testing/ACE16_COMPOSITE_FITTING_AUDIT.md) separately
+certifies admitted tuple keys and original topology, rejecting another
+reader-valid alternative-prefix forgery. Neither correction adds a slot split
+consumer, composite allocation or a production write path.
 
 A separate [index-owned map promotion service](../../testing/ACE16_INDEX_MAP_GROWTH.md)
 now extends the same engineering split APIs when an inline map's complete required
