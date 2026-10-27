@@ -1,5 +1,5 @@
 //! Construct new leaf pages and a retained-root node using existing key codecs.
-use super::super::{encoding, profile::SingleProfile, repack};
+use super::super::{repack, retained::RetainedProfile};
 use crate::{
     EditError, InspectError,
     format::page::PAGE_BYTES,
@@ -26,10 +26,10 @@ pub(super) struct NodeHeader {
     pub tail: u32,
 }
 
-pub(super) fn node(
+pub(super) fn node<P: RetainedProfile, const N: usize>(
     header: &NodeHeader,
-    entries: &[Entry],
-    profile: &SingleProfile,
+    entries: &[Entry<&P::Key>],
+    profile: &P,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, EditError> {
@@ -56,15 +56,15 @@ pub(super) fn node(
     initial[TAIL_OFFSET..TAIL_OFFSET + size_of::<u32>()]
         .copy_from_slice(&header.tail.to_le_bytes());
     initial[LEVEL_OFFSET] = header.height;
-    repack::page::<_, { encoding::MAX_ENTRY_BYTES }>(&initial, entries, profile, budget, cancelled)
+    repack::borrowed_page::<P, N>(&initial, entries, profile, budget, cancelled)
 }
 
-pub(super) fn leaf(
+pub(super) fn leaf<P: RetainedProfile, const N: usize>(
     owner: u32,
     previous: u32,
     next: u32,
-    entries: &[Entry],
-    profile: &SingleProfile,
+    entries: &[Entry<&P::Key>],
+    profile: &P,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, EditError> {
@@ -86,15 +86,15 @@ pub(super) fn leaf(
     initial[PREVIOUS_OFFSET..PREVIOUS_OFFSET + size_of::<u32>()]
         .copy_from_slice(&previous.to_le_bytes());
     initial[NEXT_OFFSET..NEXT_OFFSET + size_of::<u32>()].copy_from_slice(&next.to_le_bytes());
-    repack::page::<_, { encoding::MAX_ENTRY_BYTES }>(&initial, entries, profile, budget, cancelled)
+    repack::borrowed_page::<P, N>(&initial, entries, profile, budget, cancelled)
 }
 
-pub(super) fn root(
+pub(super) fn root<P: RetainedProfile, const N: usize>(
     original: &[u8],
     left: u32,
     right: u32,
-    maximum: KeyRef,
-    profile: &SingleProfile,
+    maximum: KeyRef<&P::Key>,
+    profile: &P,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, EditError> {
@@ -114,7 +114,7 @@ pub(super) fn root(
     initial[LEVEL_OFFSET] = 1;
     initial[TAIL_OFFSET..TAIL_OFFSET + size_of::<u32>()].copy_from_slice(&right.to_le_bytes());
     initial[PREFIX_OFFSET..PREFIX_OFFSET + size_of::<u16>()].fill(0);
-    repack::page::<_, { encoding::MAX_ENTRY_BYTES }>(
+    repack::borrowed_page::<P, N>(
         &initial,
         &[Entry {
             value: maximum,

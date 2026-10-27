@@ -1,4 +1,5 @@
 //! Recompute stable page passes from keys and origin seeds, never builder events.
+use super::super::super::super::super::retained::RetainedProfile;
 use super::{
     Branch, Candidate, Child, Payload, Progress, Replay, bounds, framing, leaf_entries, push,
 };
@@ -8,8 +9,8 @@ use crate::{
 };
 use std::io::Cursor;
 
-pub(super) fn finish(
-    replay: &mut Replay<'_, '_>,
+pub(super) fn finish<P: RetainedProfile, const N: usize>(
+    replay: &mut Replay<'_, '_, P, N>,
     mut candidate: Candidate<'_>,
     root: bool,
     actual: &mut Reader<'_, Cursor<&[u8]>>,
@@ -61,8 +62,8 @@ pub(super) fn finish(
     Ok(result)
 }
 
-fn run(
-    replay: &mut Replay<'_, '_>,
+fn run<P: RetainedProfile, const N: usize>(
+    replay: &mut Replay<'_, '_, P, N>,
     right: Candidate<'_>,
     left: Candidate<'_>,
     actual: &mut Reader<'_, Cursor<&[u8]>>,
@@ -113,14 +114,24 @@ fn run(
     Ok(children)
 }
 
-fn fits(
-    replay: &Replay<'_, '_>,
+fn fits<P: RetainedProfile, const N: usize>(
+    replay: &Replay<'_, '_, P, N>,
     candidate: &Candidate<'_>,
     actual: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<bool, EditError> {
     let entries = match &candidate.contents {
-        Payload::Leaf(keys) => leaf_entries(keys, actual.budget, actual.cancelled)?,
-        Payload::Branch { children, tail } => bounds(children, *tail, actual)?,
+        Payload::Leaf(range) => leaf_entries(
+            replay
+                .operation
+                .keys
+                .get(range.clone())
+                .ok_or(EditError::Preservation)?,
+            actual.budget,
+            actual.cancelled,
+        )?,
+        Payload::Branch { children, tail } => {
+            bounds(replay.operation.keys, children, *tail, actual)?
+        }
     };
     let seed = match candidate.source {
         framing::Source::Existing(original) => {
@@ -128,24 +139,28 @@ fn fits(
         }
         framing::Source::Fresh | framing::Source::GrownRoot(_) => 0,
     };
-    framing::fits(&entries, seed, replay.operation.profile, actual)
+    framing::fits::<P, N>(&entries, seed, replay.operation.profile, actual)
 }
 
-fn partition<'a>(
-    replay: &mut Replay<'_, '_>,
+fn partition<'a, P: RetainedProfile, const N: usize>(
+    replay: &mut Replay<'_, '_, P, N>,
     candidate: &Candidate<'a>,
     actual: &mut Reader<'_, Cursor<&[u8]>>,
     progress: &mut Progress<'_>,
 ) -> Result<(Candidate<'a>, Candidate<'a>), EditError> {
     let (left_contents, right_contents) = match &candidate.contents {
-        Payload::Leaf(keys) => {
-            if keys.len() < 2 {
+        Payload::Leaf(range) => {
+            let count = range
+                .end
+                .checked_sub(range.start)
+                .ok_or(EditError::Preservation)?;
+            if count < 2 {
                 return Err(EditError::Preservation);
             }
-            let middle = keys.len() / 2;
+            let middle = range.start + count / 2;
             (
-                Payload::Leaf(&keys[..middle]),
-                Payload::Leaf(&keys[middle..]),
+                Payload::Leaf(range.start..middle),
+                Payload::Leaf(middle..range.end),
             )
         }
         Payload::Branch { children, tail } => {
@@ -190,13 +205,15 @@ fn partition<'a>(
     Ok((left, right))
 }
 
-fn certify(
-    replay: &mut Replay<'_, '_>,
+fn certify<P: RetainedProfile, const N: usize>(
+    replay: &mut Replay<'_, '_, P, N>,
     candidate: &Candidate<'_>,
     actual: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<Child, EditError> {
     match &candidate.contents {
-        Payload::Leaf(keys) => replay.leaf_page(candidate.number, keys, candidate.source, actual),
+        Payload::Leaf(range) => {
+            replay.leaf_page(candidate.number, range.clone(), candidate.source, actual)
+        }
         Payload::Branch { children, tail } => replay.branch(
             &Branch {
                 number: candidate.number,

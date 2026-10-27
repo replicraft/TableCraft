@@ -1,5 +1,5 @@
 //! Independently measure active framing and protect old/fresh unused bytes.
-use super::super::super::super::{encoding, profile::SingleProfile};
+use super::super::super::super::{encoding, retained::RetainedProfile};
 use super::super::AUDIT_CHUNK_BYTES;
 use crate::{
     EditError, InspectError,
@@ -31,18 +31,18 @@ pub(super) enum Source<'a> {
     Fresh,
 }
 
-pub(super) struct Spec<'a> {
+pub(super) struct Spec<'a, P: RetainedProfile> {
     pub source: Source<'a>,
     pub after: &'a [u8],
-    pub entries: &'a [Entry],
-    pub profile: &'a SingleProfile,
+    pub entries: &'a [Entry<&'a P::Key>],
+    pub profile: &'a P,
     pub owner: u32,
     pub height: u8,
     pub tail: u32,
 }
 
-pub(super) fn prove(
-    spec: &Spec<'_>,
+pub(super) fn prove<P: RetainedProfile, const N: usize>(
+    spec: &Spec<'_, P>,
     actual: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<(), EditError> {
     let header = IndexHeader::read(spec.after)?;
@@ -82,7 +82,7 @@ pub(super) fn prove(
         }
         Source::Fresh => (None, 0, true, false),
     };
-    let end = layout(spec.entries, seed, spec.after, spec.profile, actual)?;
+    let end = layout::<P, N>(spec.entries, seed, spec.after, spec.profile, actual)?;
     actual.work(PAGE_BYTES)?;
     for position in 0..PAGE_BYTES {
         if position.is_multiple_of(AUDIT_CHUNK_BYTES) {
@@ -113,28 +113,28 @@ struct Measurement {
     bytes: usize,
 }
 
-pub(super) fn fits(
-    entries: &[Entry],
+pub(super) fn fits<P: RetainedProfile, const N: usize>(
+    entries: &[Entry<&P::Key>],
     seed: usize,
-    profile: &SingleProfile,
+    profile: &P,
     actual: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<bool, EditError> {
-    Ok(measure(entries, seed, profile, actual)?.bytes <= PAGE_BYTES - ENTRY_START)
+    Ok(measure::<P, N>(entries, seed, profile, actual)?.bytes <= PAGE_BYTES - ENTRY_START)
 }
 
-fn measure(
-    entries: &[Entry],
+fn measure<P: RetainedProfile, const N: usize>(
+    entries: &[Entry<&P::Key>],
     original_prefix: usize,
-    profile: &SingleProfile,
+    profile: &P,
     actual: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<Measurement, EditError> {
     let mut total = 0_usize;
     let mut common = 0_usize;
-    let mut first = [0; encoding::MAX_ENTRY_BYTES];
+    let mut first = [0; N];
     for (position, entry) in entries.iter().enumerate() {
         actual.tick()?;
-        actual.work(encoding::MAX_ENTRY_BYTES)?;
-        let wire = encoding::entry::<_, { encoding::MAX_ENTRY_BYTES }>(entry, profile)?;
+        actual.work(N)?;
+        let wire = encoding::borrowed_entry::<P, N>(entry, profile)?;
         total = total
             .checked_add(wire.length)
             .ok_or(EditError::Preservation)?;
@@ -168,14 +168,14 @@ fn measure(
     Ok(Measurement { prefix, bytes })
 }
 
-pub(super) fn layout(
-    entries: &[Entry],
+pub(super) fn layout<P: RetainedProfile, const N: usize>(
+    entries: &[Entry<&P::Key>],
     original_prefix: usize,
     raw: &[u8],
-    profile: &SingleProfile,
+    profile: &P,
     actual: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<usize, EditError> {
-    let measured = measure(entries, original_prefix, profile, actual)?;
+    let measured = measure::<P, N>(entries, original_prefix, profile, actual)?;
     let prefix = measured.prefix;
     if measured.bytes > PAGE_BYTES - ENTRY_START {
         return Err(EditError::Preservation);
@@ -188,8 +188,8 @@ pub(super) fn layout(
     let mut end = 0_usize;
     for (position, entry) in entries.iter().enumerate() {
         actual.tick()?;
-        actual.work(encoding::MAX_ENTRY_BYTES)?;
-        let wire = encoding::entry::<_, { encoding::MAX_ENTRY_BYTES }>(entry, profile)?;
+        actual.work(N)?;
+        let wire = encoding::borrowed_entry::<P, N>(entry, profile)?;
         end = end
             .checked_add(
                 wire.length

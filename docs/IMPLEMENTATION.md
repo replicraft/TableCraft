@@ -231,6 +231,23 @@ on unchanged Byte/Int16/Int64/Currency originals. All sixteen fixture commands
 pass without retries or regeneration, separately from prior public writer actions.
 Normal native saves and Microsoft Access qualification remain open.
 
+## Retained-key physical split planning
+
+The [physical split planner](testing/ACE16_RETAINED_SPLIT_PLANNER.md) now borrows
+complete keys from a retained-profile arena and tracks internal maxima by checked
+key positions. Numeric public consumers and their exact images remain unchanged;
+real General/Binary profiles have separate internal transport controls. This
+adds no Text/Binary mutation API or codec admission.
+
+Independent review also reproduced two older certification gaps: valid alternate
+prefixes in a fresh numeric leaf and a fitting retained numeric root could pass
+ordinary checks and the finalizer. The audit now derives the required layout
+from its own measurement and the original/fresh seed, rejecting both forgeries.
+The scoped batch passes 115 distinct runtime functions, including five new
+functions, plus three compile-fail checks, strict/default lint, minimal build and
+formatting. Existing-fit composite framing remains a separate unexecuted probe;
+this result does not claim broader composite or native Access qualification.
+
 ## Index-owned map promotion
 
 The optional engineering split services now support

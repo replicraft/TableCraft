@@ -43,6 +43,17 @@ pub(super) fn retained_entry<P: RetainedProfile, const N: usize>(
     })
 }
 
+/// Serialize a borrowed key without cloning an owned physical key payload.
+#[cfg(feature = "ace16-write-preview")]
+pub(super) fn borrowed_entry<P: RetainedProfile, const N: usize>(
+    entry: &Entry<&P::Key>,
+    profile: &P,
+) -> Result<Encoded<N>, InspectError> {
+    entry_with::<_, N>(entry, profile.max_key_bytes(), |key, bytes| {
+        profile.encode_retained(*key, bytes)
+    })
+}
+
 fn entry_with<K, const N: usize>(
     entry: &Entry<K>,
     maximum: usize,

@@ -9822,3 +9822,20 @@ succeed; all 48 reviewed input pins remain unchanged. Each image adds 12,288 byt
 The earlier 18-command reference history, two frozen old-consumer MAX refusals
 and two no-op admissions remain distinct evidence. This replay does not qualify
 other map transitions, arbitrary databases, native Access saves or normal editing.
+
+### Retained-key physical transport and prefix authority
+
+The [retained planner batch](ACE16_RETAINED_SPLIT_PLANNER.md) uses actual preserved
+General legacy/modern and Binary profiles with independently checked literal
+sources. Borrowed keys retain complete wire/ROW maxima through leaf, tail and
+bounded-node forms without granting new public codec mutation eligibility.
+
+Two causal controls first stage healthy real numeric operations and establish
+reader/index/constraint-valid alternate framing. The old finalizer accepted an
+unnecessary fresh prefix of one and a fitting retained prefix of seven instead
+of eight. Exact before sources/logs are preserved; the corrected audit's own
+layout calculation rejects both with `Preservation`. Existing emitted numeric
+images and source goldens remain unchanged. The 115-function batch includes five
+new controls; compile-fail checks and initial compilation diagnostics remain
+separate. The proposed composite fallback discriminator has not been executed
+or qualified by this record.

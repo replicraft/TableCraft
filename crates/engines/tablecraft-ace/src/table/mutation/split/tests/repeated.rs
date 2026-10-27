@@ -13,6 +13,8 @@ const PREVIOUS_OFFSET: usize = 12;
 const NEXT_OFFSET: usize = 16;
 const PREFIX_OFFSET: usize = 24;
 const ENTRY_START: usize = 480;
+const BITMAP_START: usize = 27;
+const FREE_OFFSET: usize = 2;
 const KEY_ROW_BYTES: usize = 13;
 const CHILD_BYTES: usize = size_of::<u32>();
 const NODE_ENTRY_BYTES: usize = KEY_ROW_BYTES + CHILD_BYTES;
@@ -243,6 +245,129 @@ fn correlated_value_and_leaf_changes_cannot_authorize_unnecessary_growth() {
         }
     }
     assert_eq!(replaced, 2);
+    checked_values(compose(&before, &staged), 400, 1);
+    assert_eq!(
+        finish::bound(image, &operation, &staged, &mut budget(), &|| false).err(),
+        Some(EditError::Preservation)
+    );
+}
+
+// Independent packets retain semantic keys while violating prefix policy.
+fn repack_with_prefix(initial: &[u8], entries: &[Vec<u8>], prefix: usize, fresh: bool) -> Vec<u8> {
+    let mut result = initial.to_vec();
+    result[BITMAP_START..ENTRY_START].fill(0);
+    if fresh {
+        result[ENTRY_START..].fill(0);
+    }
+    let mut length = 0;
+    for (position, entry) in entries.iter().enumerate() {
+        let shared = if position == 0 { 0 } else { prefix };
+        assert_eq!(entry[..shared], entries[0][..shared]);
+        let suffix = &entry[shared..];
+        result[ENTRY_START + length..ENTRY_START + length + suffix.len()].copy_from_slice(suffix);
+        length += suffix.len();
+        result[BITMAP_START + length / u8::BITS as usize] |= 1 << (length % u8::BITS as usize);
+    }
+    result[FREE_OFFSET..FREE_OFFSET + size_of::<u16>()]
+        .copy_from_slice(&((PAGE - ENTRY_START - length) as u16).to_le_bytes());
+    result[PREFIX_OFFSET..PREFIX_OFFSET + size_of::<u16>()]
+        .copy_from_slice(&(prefix as u16).to_le_bytes());
+    result
+}
+
+#[test]
+fn valid_unnecessary_fresh_prefix_does_not_replace_independent_seed_authority() {
+    let model = source(6, Kind::Int64, vec![400], false);
+    let before = model.bytes.clone();
+    let requests = [request(&model)];
+    let operation = FixedOperation {
+        table: "Items",
+        column: "Score",
+        requests: &requests,
+    };
+    let image = crate::test_support::split_model::capture(&before);
+    let structural = preflight(&image, &operation, &mut budget(), &|| false).unwrap();
+    let mut staged =
+        stage_checked::<8>(&image, &operation, structural, &mut budget(), &|| false).unwrap();
+    let valid = finish::bound(
+        crate::test_support::split_model::capture(&before),
+        &operation,
+        &staged,
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    checked_values(valid.candidate_bytes().to_vec(), 400, i64::MAX);
+    let mut values = model.values.clone();
+    values[0] = Some(i64::MAX);
+    let entries = model::ordered(&model, &values, false);
+    let right = staged
+        .plan
+        .added
+        .iter_mut()
+        .find(|page| page.number as usize == model.eof)
+        .unwrap();
+    assert_eq!(
+        &right.bytes[PREFIX_OFFSET..PREFIX_OFFSET + size_of::<u16>()],
+        &[0, 0]
+    );
+    assert_eq!(entries[200..].iter().map(Vec::len).sum::<usize>(), 2600);
+    right.bytes = repack_with_prefix(&right.bytes, &entries[200..], 1, true);
+    checked_values(compose(&before, &staged), 400, i64::MAX);
+    assert_eq!(
+        finish::bound(image, &operation, &staged, &mut budget(), &|| false).err(),
+        Some(EditError::Preservation)
+    );
+}
+
+#[test]
+fn valid_alternative_retained_prefix_does_not_replace_original_seed_authority() {
+    let mut model = source(6, Kind::Int64, vec![400], false);
+    model.replacement = 1;
+    let before = model.bytes.clone();
+    let requests = [request(&model)];
+    let operation = FixedOperation {
+        table: "Items",
+        column: "Score",
+        requests: &requests,
+    };
+    let image = crate::test_support::split_model::capture(&before);
+    let structural = preflight(&image, &operation, &mut budget(), &|| false).unwrap();
+    let mut staged =
+        stage_checked::<8>(&image, &operation, structural, &mut budget(), &|| false).unwrap();
+    let valid = finish::bound(
+        crate::test_support::split_model::capture(&before),
+        &operation,
+        &staged,
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    checked_values(valid.candidate_bytes().to_vec(), 400, 1);
+    assert!(staged.plan.added.is_empty());
+    let mut values = model.values.clone();
+    values[0] = Some(1);
+    let entries = model::ordered(&model, &values, false);
+    let start = ROOTS[0] * PAGE;
+    let current = compose(&before, &staged);
+    assert_eq!(
+        &current[start + PREFIX_OFFSET..start + PREFIX_OFFSET + size_of::<u16>()],
+        &[8, 0]
+    );
+    let original = &before[start..start + PAGE];
+    let after = repack_with_prefix(original, &entries, 7, false);
+    staged
+        .plan
+        .patches
+        .retain(|patch| patch.offset / PAGE != ROOTS[0]);
+    staged
+        .plan
+        .patches
+        .push(crate::table::indexes::IndexDataPatch {
+            offset: start,
+            before: original.to_vec(),
+            after,
+        });
     checked_values(compose(&before, &staged), 400, 1);
     assert_eq!(
         finish::bound(image, &operation, &staged, &mut budget(), &|| false).err(),

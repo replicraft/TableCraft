@@ -4,6 +4,8 @@ mod maps;
 mod nonroot;
 #[cfg(test)]
 mod purpose_tests;
+#[cfg(test)]
+mod retained_tests;
 
 use super::super::{encoding, plan::keys, profile::SingleProfile};
 use super::{Plan, leaf_entries};
@@ -166,7 +168,7 @@ pub(super) fn prove(
                 .ok_or(InspectError::Malformed)?;
             let recursive = if prepared.tree.is_leaf() {
                 let entries = leaf_entries(&prepared.entries, actual.budget, cancelled)?;
-                let overflowing = !nonroot::fits(
+                let overflowing = !nonroot::fits::<_, { encoding::MAX_ENTRY_BYTES }>(
                     &entries,
                     usize::from(IndexHeader::read(original_root)?.prefix.get()),
                     &profile,
@@ -177,8 +179,18 @@ pub(super) fn prove(
                         return Err(EditError::Preservation);
                     }
                     let middle = entries.len() / 2;
-                    let left_fits = nonroot::fits(&entries[..middle], 0, &profile, &mut actual)?;
-                    let right_fits = nonroot::fits(&entries[middle..], 0, &profile, &mut actual)?;
+                    let left_fits = nonroot::fits::<_, { encoding::MAX_ENTRY_BYTES }>(
+                        &entries[..middle],
+                        0,
+                        &profile,
+                        &mut actual,
+                    )?;
+                    let right_fits = nonroot::fits::<_, { encoding::MAX_ENTRY_BYTES }>(
+                        &entries[middle..],
+                        0,
+                        &profile,
+                        &mut actual,
+                    )?;
                     split = left_fits && right_fits;
                     !split
                 } else {
@@ -187,8 +199,19 @@ pub(super) fn prove(
             } else {
                 true
             };
+            if !recursive && !split {
+                let entries = leaf_entries(&prepared.entries, actual.budget, cancelled)?;
+                let current = actual.page(index.root_page())?;
+                nonroot::layout::<_, { encoding::MAX_ENTRY_BYTES }>(
+                    &entries,
+                    usize::from(IndexHeader::read(original_root)?.prefix.get()),
+                    &current,
+                    &profile,
+                    &mut actual,
+                )?;
+            }
             if recursive {
-                let added = nonroot::prove(
+                let added = nonroot::prove::<_, { encoding::MAX_ENTRY_BYTES }>(
                     &nonroot::Operation {
                         image,
                         tree: &prepared.tree,
@@ -291,34 +314,32 @@ pub(super) fn prove(
                     }
                 }
                 let root_raw = actual.page(fact.root)?;
-                framing::root(
+                framing::root::<_, { encoding::MAX_ENTRY_BYTES }>(
                     original_root,
                     &root_raw,
                     fact,
-                    prepared.entries[middle - 1],
+                    &prepared.entries[middle - 1],
                     &profile,
                     actual.budget,
                     cancelled,
                 )?;
                 let left_raw = actual.page(left)?;
-                framing::leaf(
+                framing::leaf::<_, { encoding::MAX_ENTRY_BYTES }>(
                     &left_raw,
                     schema.definition,
                     (0, right),
                     &prepared.entries[..middle],
                     &profile,
-                    actual.budget,
-                    cancelled,
+                    &mut actual,
                 )?;
                 let right_raw = actual.page(right)?;
-                framing::leaf(
+                framing::leaf::<_, { encoding::MAX_ENTRY_BYTES }>(
                     &right_raw,
                     schema.definition,
                     (left, 0),
                     &prepared.entries[middle..],
                     &profile,
-                    actual.budget,
-                    cancelled,
+                    &mut actual,
                 )?;
                 actual
                     .budget

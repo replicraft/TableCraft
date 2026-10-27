@@ -1,7 +1,10 @@
 //! Literal capacities distinguish full ROW compression and stable prefix seeds.
 use super::*;
 use crate::{
-    table::indexes::{mutation::NumericKey, page::KeyRef},
+    table::indexes::{
+        mutation::{NumericKey, profile::SingleProfile, split::borrowed_reference},
+        page::KeyRef,
+    },
     test_support::split_model,
 };
 use tablecraft_schema::ScalarType;
@@ -51,11 +54,21 @@ fn independent_capacity_uses_full_row_bytes_and_original_or_fresh_seed() {
         (450, true, 0, 1, 5401, false),
         (900, true, 9, 1, 10801, false),
     ] {
-        let entries = entries(count, maximum);
-        let measured = measure(&entries, seed, &profile, &mut reader).unwrap();
+        let owned = entries(count, maximum);
+        let entries: Vec<_> = owned
+            .iter()
+            .map(|entry| Entry {
+                value: borrowed_reference(&entry.value),
+                child: entry.child,
+            })
+            .collect();
+        let measured =
+            measure::<_, { encoding::MAX_ENTRY_BYTES }>(&entries, seed, &profile, &mut reader)
+                .unwrap();
         assert_eq!((measured.prefix, measured.bytes), (prefix, bytes));
         assert_eq!(
-            fits(&entries, seed, &profile, &mut reader).unwrap(),
+            fits::<_, { encoding::MAX_ENTRY_BYTES }>(&entries, seed, &profile, &mut reader)
+                .unwrap(),
             fits_page
         );
     }

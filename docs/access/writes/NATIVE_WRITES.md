@@ -135,6 +135,13 @@ sparse inputs, alongside two atomic refusals from the existing kernel. Its
 active tree/map geometry guides recursive implementation; public scratch bytes
 are not byte goldens or native Access qualification.
 
+The [shared retained-key physical planner](../../testing/ACE16_RETAINED_SPLIT_PLANNER.md)
+now transports complete profile-owned keys through borrowed entries and checked
+arena maxima, retaining the numeric entrypoints. Fresh numeric leaves and fitting
+numeric roots require independently derived prefix/bitmap/free framing; two
+reader-valid alternative-prefix forgeries now refuse. This does not add a slot
+split consumer or qualify the existing-fit non-single/composite fallback.
+
 A separate [index-owned map promotion service](../../testing/ACE16_INDEX_MAP_GROWTH.md)
 now extends the same engineering split APIs when an inline map's complete required
 span exceeds its qualified window. It preserves the original map-row extent,

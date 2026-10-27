@@ -47,6 +47,69 @@ pub(super) fn retained_page<P: RetainedProfile, const N: usize>(
     )
 }
 
+#[cfg(feature = "ace16-write-preview")]
+pub(super) fn borrowed_page<P: RetainedProfile, const N: usize>(
+    original: &[u8],
+    entries: &[Entry<&P::Key>],
+    profile: &P,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, EditError> {
+    page_with::<_, N>(
+        original,
+        entries,
+        |entry| encoding::borrowed_entry::<P, N>(entry, profile),
+        budget,
+        cancelled,
+    )
+}
+
+#[cfg(feature = "ace16-write-preview")]
+pub(super) fn borrowed_fits<P: RetainedProfile, const N: usize>(
+    original: &[u8],
+    entries: &[Entry<&P::Key>],
+    profile: &P,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<bool, EditError> {
+    let header = IndexHeader::read(original)?;
+    borrowed_fits_with_seed::<P, N>(
+        entries,
+        usize::from(header.prefix.get()),
+        profile,
+        budget,
+        cancelled,
+    )
+}
+
+#[cfg(feature = "ace16-write-preview")]
+pub(super) fn borrowed_fits_fresh<P: RetainedProfile, const N: usize>(
+    entries: &[Entry<&P::Key>],
+    profile: &P,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<bool, EditError> {
+    borrowed_fits_with_seed::<P, N>(entries, 0, profile, budget, cancelled)
+}
+
+#[cfg(feature = "ace16-write-preview")]
+fn borrowed_fits_with_seed<P: RetainedProfile, const N: usize>(
+    entries: &[Entry<&P::Key>],
+    seed: usize,
+    profile: &P,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<bool, EditError> {
+    let layout = measure(
+        entries,
+        seed,
+        &|entry| encoding::borrowed_entry::<P, N>(entry, profile),
+        budget,
+        cancelled,
+    )?;
+    Ok(layout.length <= PAGE_BYTES - ENTRY_START)
+}
+
 struct Layout {
     prefix: usize,
     length: usize,
@@ -95,42 +158,6 @@ fn measure<K, const N: usize>(
     }
     let length = total - prefix * saved;
     Ok(Layout { prefix, length })
-}
-
-#[cfg(feature = "ace16-write-preview")]
-pub(super) fn fits<P: WriteProfile, const N: usize>(
-    original: &[u8],
-    entries: &[Entry<P::Key>],
-    profile: &P,
-    budget: &mut ResourceBudget,
-    cancelled: &dyn Fn() -> bool,
-) -> Result<bool, EditError> {
-    let header = IndexHeader::read(original)?;
-    let layout = measure(
-        entries,
-        usize::from(header.prefix.get()),
-        &|entry| encoding::entry::<P, N>(entry, profile),
-        budget,
-        cancelled,
-    )?;
-    Ok(layout.length <= PAGE_BYTES - ENTRY_START)
-}
-
-#[cfg(feature = "ace16-write-preview")]
-pub(super) fn fits_fresh<P: WriteProfile, const N: usize>(
-    entries: &[Entry<P::Key>],
-    profile: &P,
-    budget: &mut ResourceBudget,
-    cancelled: &dyn Fn() -> bool,
-) -> Result<bool, EditError> {
-    let layout = measure(
-        entries,
-        0,
-        &|entry| encoding::entry::<P, N>(entry, profile),
-        budget,
-        cancelled,
-    )?;
-    Ok(layout.length <= PAGE_BYTES - ENTRY_START)
 }
 
 fn page_with<K, const N: usize>(

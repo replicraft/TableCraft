@@ -5,7 +5,10 @@ mod maps;
 mod nonroot;
 mod pages;
 
-use super::{IndexDataPatch, IndexKeyUpdate, encoding, plan::keys, profile::SingleProfile, repack};
+use super::{
+    IndexDataPatch, IndexKeyUpdate, encoding, plan::keys, profile::SingleProfile, repack,
+    retained::RetainedProfile, tree::Tree,
+};
 use crate::{
     EditError, IndexCheck, InspectError, NativeImage, NativeIndex, TableCheck, WriteBlocker,
     format::{page::PAGE_BYTES, reader::Reader},
@@ -96,34 +99,47 @@ pub(super) fn edit(
     let prepared = keys::prepare::<_, { encoding::MAX_ENTRY_BYTES }>(
         image, reader, index, owner, updates, profile,
     )?;
-    if !prepared.tree.is_leaf() {
-        return nonroot::edit(
-            &nonroot::Operation {
-                image,
-                index,
-                profile,
-                keys: &prepared.entries,
-            },
-            &prepared.tree,
-            plan,
-            reader,
-            patches,
-        );
+    edit_prepared(
+        &nonroot::Operation::<_, { encoding::MAX_ENTRY_BYTES }> {
+            image,
+            index,
+            profile,
+            keys: &prepared.entries,
+        },
+        &prepared.tree,
+        profile.column,
+        patches,
+        plan,
+        reader,
+    )
+}
+
+/// Physical construction consumes already qualified, immutable final keys.
+fn edit_prepared<P: RetainedProfile, const N: usize>(
+    operation: &nonroot::Operation<'_, P, N>,
+    tree: &Tree,
+    column: usize,
+    patches: &mut Vec<IndexDataPatch>,
+    plan: &mut Plan,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<(), EditError> {
+    let image = operation.image;
+    let index = operation.index;
+    let profile = operation.profile;
+    let owner = plan.owner;
+
+    if !tree.is_leaf() {
+        return nonroot::edit(operation, tree, plan, reader, patches);
     }
-    let entries = leaf_entries(&prepared.entries, reader.budget, reader.cancelled)?;
+    let entries = leaf_entries(operation.keys, reader.budget, reader.cancelled)?;
     let offset = index.root_page() as usize * PAGE_BYTES;
     let original = image
         .as_bytes()
         .get(offset..offset + PAGE_BYTES)
         .ok_or(InspectError::Malformed)?;
-    if repack::fits::<_, { encoding::MAX_ENTRY_BYTES }>(
-        original,
-        &entries,
-        profile,
-        reader.budget,
-        reader.cancelled,
-    )? {
-        let after = repack::page::<_, { encoding::MAX_ENTRY_BYTES }>(
+    if repack::borrowed_fits::<P, N>(original, &entries, profile, reader.budget, reader.cancelled)?
+    {
+        let after = repack::borrowed_page::<P, N>(
             original,
             &entries,
             profile,
@@ -143,31 +159,20 @@ pub(super) fn edit(
         return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
     }
     let middle = entries.len() / 2;
-    let left_fits = repack::fits_fresh::<_, { encoding::MAX_ENTRY_BYTES }>(
+    let left_fits = repack::borrowed_fits_fresh::<P, N>(
         &entries[..middle],
         profile,
         reader.budget,
         reader.cancelled,
     )?;
-    let right_fits = repack::fits_fresh::<_, { encoding::MAX_ENTRY_BYTES }>(
+    let right_fits = repack::borrowed_fits_fresh::<P, N>(
         &entries[middle..],
         profile,
         reader.budget,
         reader.cancelled,
     )?;
     if !left_fits || !right_fits {
-        return nonroot::edit(
-            &nonroot::Operation {
-                image,
-                index,
-                profile,
-                keys: &prepared.entries,
-            },
-            &prepared.tree,
-            plan,
-            reader,
-            patches,
-        );
+        return nonroot::edit(operation, tree, plan, reader, patches);
     }
     let right = allocation::reserve(image, index, plan, reader)?;
     let left = allocation::reserve(image, index, plan, reader)?;
@@ -175,13 +180,17 @@ pub(super) fn edit(
         physical: index.data_number(),
         root: index.root_page(),
         usage: index.usage_map(),
-        column: profile.column,
-        descending: profile.descending,
+        column,
+        descending: index
+            .columns()
+            .first()
+            .ok_or(InspectError::Malformed)?
+            .descending(),
         right,
         left,
         count: entries.len(),
     };
-    let left_page = pages::leaf(
+    let left_page = pages::leaf::<P, N>(
         owner,
         0,
         right,
@@ -190,7 +199,7 @@ pub(super) fn edit(
         reader.budget,
         reader.cancelled,
     )?;
-    let right_page = pages::leaf(
+    let right_page = pages::leaf::<P, N>(
         owner,
         left,
         0,
@@ -199,7 +208,7 @@ pub(super) fn edit(
         reader.budget,
         reader.cancelled,
     )?;
-    let root = pages::root(
+    let root = pages::root::<P, N>(
         original,
         left,
         right,
@@ -256,13 +265,20 @@ pub(super) fn edit(
     Ok(())
 }
 
-fn leaf_entries(
-    keys: &[KeyRef],
+fn borrowed_reference<K>(key: &KeyRef<K>) -> KeyRef<&K> {
+    KeyRef {
+        key: &key.key,
+        row: key.row,
+    }
+}
+
+fn leaf_entries<'a, K>(
+    keys: &'a [KeyRef<K>],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<Vec<Entry>, EditError> {
+) -> Result<Vec<Entry<&'a K>>, EditError> {
     budget
-        .charge_allocation(keys.len() as u64, size_of::<Entry>() as u64)
+        .charge_allocation(keys.len() as u64, size_of::<Entry<&K>>() as u64)
         .map_err(InspectError::from)?;
     let mut entries = Vec::new();
     entries
@@ -271,7 +287,7 @@ fn leaf_entries(
     for value in keys {
         check(budget, cancelled)?;
         entries.push(Entry {
-            value: *value,
+            value: borrowed_reference(value),
             child: 0,
         });
     }
