@@ -68,6 +68,7 @@ pub(in crate::table) fn splitting_patches(
         cancelled,
     )?;
     plan.patches = patches.indexes;
+    super::split::seal(image, indexes, &mut plan, budget, cancelled)?;
     Ok(plan)
 }
 

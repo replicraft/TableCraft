@@ -1,22 +1,49 @@
-//! Derive exact role bytes from source descriptors and certified new pages.
-use super::super::maps::Edit;
+//! Independently replay EOF purposes, role bytes and bitmap promotion.
+use super::super::Plan;
 use crate::{
-    EditError, InspectError,
+    EditError, IndexCheck, InspectError, NativeImage, WriteBlocker,
     format::{
-        allocation::{GLOBAL_FREE_REFERENCE, MapCell, MapRole, RepresentedMap},
+        allocation::{self, GLOBAL_FREE_REFERENCE, MapCell, MapRole, RepresentedMap},
+        page::{PAGE_BYTES, USAGE_SIGNATURE},
         reader::Reader,
+        row::{reference_page, reference_slot},
     },
+    table::mutation::map_authority::{self, Owner},
 };
 use std::io::Cursor;
 
-pub(super) struct Expected {
+const INLINE_TAG: u8 = 0;
+const INDIRECT_TAG: u8 = 1;
+const POINTER_BYTES: usize = size_of::<u32>();
+const PREFIX_BYTES: usize = 1 + POINTER_BYTES;
+const QUALIFIED_INLINE_BITMAP_BYTES: usize = 64;
+const QUALIFIED_ROW_BYTES: usize = PREFIX_BYTES + QUALIFIED_INLINE_BITMAP_BYTES;
+const USAGE_PREFIX_BYTES: usize = 4;
+const PAGES_IN_BITMAP: usize = (PAGE_BYTES - USAGE_PREFIX_BYTES) * u8::BITS as usize;
+
+struct Byte {
     offset: usize,
     before: u8,
     after: u8,
 }
 
+struct Promoted {
+    usage: u32,
+    bitmap_page: u32,
+    row_offset: usize,
+    original: Vec<u8>,
+    members: Vec<u32>,
+}
+
+#[derive(Default)]
+pub(super) struct Expected {
+    edits: Vec<Byte>,
+    promoted: Vec<Promoted>,
+    reservations: Vec<(u32, u32)>,
+}
+
 fn bit(
-    expected: &mut Vec<Expected>,
+    expected: &mut Vec<Byte>,
     cell: MapCell,
     set: bool,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
@@ -37,12 +64,12 @@ fn bit(
     } else {
         reader
             .budget
-            .charge_allocation(1, size_of::<Expected>() as u64)
+            .charge_allocation(1, size_of::<Byte>() as u64)
             .map_err(InspectError::from)?;
         expected
             .try_reserve(1)
             .map_err(|_| InspectError::Allocation)?;
-        expected.push(Expected {
+        expected.push(Byte {
             offset: cell.offset,
             before: cell.before,
             after: if set {
@@ -55,42 +82,153 @@ fn bit(
     Ok(())
 }
 
-pub(super) fn add<const N: usize>(
+pub(super) fn reserve(
     reader: &mut Reader<'_, Cursor<&[u8]>>,
     usage: u32,
-    numbers: [u32; N],
-    expected: &mut Vec<Expected>,
-) -> Result<(), EditError> {
+    next_eof: &mut u32,
+    expected: &mut Expected,
+) -> Result<u32, EditError> {
+    let number = *next_eof;
     let global = RepresentedMap::read(reader, GLOBAL_FREE_REFERENCE, MapRole::GlobalFree)?;
     global.require_allocated_storage(reader, &global)?;
     let owned = RepresentedMap::read(reader, usage, MapRole::Owned)?;
     owned.require_allocated_storage(reader, &global)?;
-    for number in numbers {
-        reader.tick()?;
-        let own = owned.future_cell(reader, number)?;
-        let free = global.future_cell(reader, number)?;
-        if own.before & own.mask != 0 || free.before & free.mask == 0 {
+    reader.work(expected.promoted.len())?;
+    if let Some(map) = expected.promoted.iter_mut().find(|map| map.usage == usage) {
+        if number as usize >= PAGES_IN_BITMAP || map.members.contains(&number) {
             return Err(EditError::Preservation);
         }
-        bit(expected, own, true, reader)?;
-        bit(expected, free, false, reader)?;
+        reader.work(map.members.len())?;
+        reader
+            .budget
+            .charge_allocation(1, size_of::<u32>() as u64)
+            .map_err(InspectError::from)?;
+        map.members
+            .try_reserve(1)
+            .map_err(|_| InspectError::Allocation)?;
+        map.members.push(number);
+    } else {
+        match owned.future_cell(reader, number) {
+            Ok(cell) => {
+                if cell.before & cell.mask != 0 {
+                    return Err(EditError::Preservation);
+                }
+                bit(&mut expected.edits, cell, true, reader)?;
+            }
+            Err(InspectError::Unsupported) if owned.kind() == INLINE_TAG => {
+                let page_number = reference_page(usage);
+                let slot = reference_slot(usage);
+                let container = reader.page(page_number)?;
+                let original = reader.row_location(page_number, slot, 0, &container)?;
+                if original.data.len() != QUALIFIED_ROW_BYTES || original.data[0] != INLINE_TAG {
+                    return Err(InspectError::Unsupported.into());
+                }
+                let mut members = allocation::pages(reader, usage)?;
+                for &(prior_usage, prior_number) in &expected.reservations {
+                    reader.tick()?;
+                    if prior_usage == usage {
+                        reader
+                            .budget
+                            .charge_allocation(1, size_of::<u32>() as u64)
+                            .map_err(InspectError::from)?;
+                        members
+                            .try_reserve(1)
+                            .map_err(|_| InspectError::Allocation)?;
+                        members.push(prior_number);
+                    }
+                }
+                reader.work(members.len())?;
+                let (mut low, mut high) = (number, number);
+                for &member in &members {
+                    low = low.min(member);
+                    high = high.max(member);
+                    if member < reader.header.page_count() {
+                        global.require_allocated(reader, member)?;
+                    }
+                }
+                let capacity = (original.data.len() - PREFIX_BYTES) * u8::BITS as usize;
+                if (u64::from(high) - u64::from(low) + 1) <= capacity as u64
+                    || high as usize >= PAGES_IN_BITMAP
+                {
+                    return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+                }
+                let metadata = number.checked_add(1).ok_or(EditError::Preservation)?;
+                let end = original
+                    .offset
+                    .checked_add(original.data.len())
+                    .ok_or(EditError::Preservation)?;
+                reader.work(expected.edits.len())?;
+                expected
+                    .edits
+                    .retain(|edit| edit.offset < original.offset || edit.offset >= end);
+
+                let cell = global.future_cell(reader, metadata)?;
+                if cell.before & cell.mask == 0 {
+                    return Err(EditError::Preservation);
+                }
+                bit(&mut expected.edits, cell, false, reader)?;
+                reader
+                    .budget
+                    .charge_allocation(1, size_of::<u32>() as u64)
+                    .map_err(InspectError::from)?;
+                members
+                    .try_reserve(1)
+                    .map_err(|_| InspectError::Allocation)?;
+                members.push(number);
+                reader
+                    .budget
+                    .charge_allocation(1, size_of::<Promoted>() as u64)
+                    .map_err(InspectError::from)?;
+                expected
+                    .promoted
+                    .try_reserve(1)
+                    .map_err(|_| InspectError::Allocation)?;
+                expected.promoted.push(Promoted {
+                    usage,
+                    bitmap_page: metadata,
+                    row_offset: original.offset,
+                    original: original.data,
+                    members,
+                });
+                *next_eof = metadata;
+            }
+            Err(error) => return Err(error.into()),
+        }
     }
-    Ok(())
+    let free = global.future_cell(reader, number)?;
+    if free.before & free.mask == 0 {
+        return Err(EditError::Preservation);
+    }
+    bit(&mut expected.edits, free, false, reader)?;
+    reader
+        .budget
+        .charge_allocation(1, size_of::<(u32, u32)>() as u64)
+        .map_err(InspectError::from)?;
+    expected
+        .reservations
+        .try_reserve(1)
+        .map_err(|_| InspectError::Allocation)?;
+    expected.reservations.push((usage, number));
+    *next_eof = next_eof.checked_add(1).ok_or(EditError::Preservation)?;
+    Ok(number)
 }
 
 pub(super) fn finish(
     reader: &mut Reader<'_, Cursor<&[u8]>>,
-    expected: &[Expected],
-    actual: &[Edit],
+    expected: &Expected,
+    plan: &Plan,
     after: &[u8],
 ) -> Result<(), EditError> {
-    if expected.len() != actual.len() {
+    if expected.edits.len() != plan.map_edits.len()
+        || expected.promoted.len() != plan.promotions.len()
+    {
         return Err(EditError::Preservation);
     }
-    for byte in expected {
+    for byte in &expected.edits {
         reader.tick()?;
-        reader.work(actual.len())?;
-        let matching = actual
+        reader.work(plan.map_edits.len())?;
+        let matching = plan
+            .map_edits
             .iter()
             .find(|edit| edit.offset == byte.offset)
             .ok_or(EditError::Preservation)?;
@@ -101,5 +239,108 @@ pub(super) fn finish(
             return Err(EditError::Preservation);
         }
     }
+    for map in &expected.promoted {
+        reader.tick()?;
+        reader.work(plan.promotions.len())?;
+        let actual = plan
+            .promotions
+            .iter()
+            .find(|actual| actual.usage == map.usage)
+            .ok_or(EditError::Preservation)?;
+        if actual.number != map.bitmap_page
+            || actual.offset != map.row_offset
+            || actual.before != map.original
+            || actual.after.len() != map.original.len()
+        {
+            return Err(EditError::Preservation);
+        }
+        let end = map
+            .row_offset
+            .checked_add(map.original.len())
+            .ok_or(EditError::Preservation)?;
+        let record = after
+            .get(map.row_offset..end)
+            .ok_or(EditError::Preservation)?;
+        for (position, &byte) in record.iter().enumerate() {
+            reader.tick()?;
+            let expected = match position {
+                0 => INDIRECT_TAG,
+                1..=POINTER_BYTES => map.bitmap_page.to_le_bytes()[position - 1],
+                _ => 0,
+            };
+            if byte != expected || actual.after[position] != expected {
+                return Err(EditError::Preservation);
+            }
+        }
+        let start = map.bitmap_page as usize * PAGE_BYTES;
+        let bitmap = after
+            .get(start..start + PAGE_BYTES)
+            .ok_or(EditError::Preservation)?;
+        // Independently derive every bitmap byte, including all unused bytes.
+        // Its usage tag cannot be an ordinary DATA or LVAL target.
+        for (position, &byte) in bitmap.iter().enumerate() {
+            reader.tick()?;
+            let mut expected = USAGE_SIGNATURE.get(position).copied().unwrap_or(0);
+            if position >= USAGE_PREFIX_BYTES {
+                reader.work(map.members.len())?;
+                expected = 0;
+                for &member in &map.members {
+                    if member as usize / u8::BITS as usize == position - USAGE_PREFIX_BYTES {
+                        expected |= 1 << (member % u8::BITS);
+                    }
+                }
+            }
+            if byte != expected || actual.bitmap.get(position) != Some(&expected) {
+                return Err(EditError::Preservation);
+            }
+        }
+    }
+    Ok(())
+}
+
+pub(super) fn authority(
+    image: &NativeImage,
+    definition: u32,
+    indexes: &[IndexCheck],
+    expected: &Expected,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<(), EditError> {
+    if expected.promoted.is_empty() {
+        return Ok(());
+    }
+    let census = map_authority::capture_catalog(
+        image,
+        reader.budget,
+        reader.cancelled,
+        |_, _, _, _| Ok(()),
+    )?;
+    let mut selected = Vec::new();
+    reader
+        .budget
+        .charge_allocation(
+            (expected.reservations.len() + 1) as u64,
+            size_of::<Owner>() as u64,
+        )
+        .map_err(InspectError::from)?;
+    selected
+        .try_reserve(expected.reservations.len() + 1)
+        .map_err(|_| InspectError::Allocation)?;
+    selected.push(Owner::GlobalFree);
+    for &(usage, _) in &expected.reservations {
+        reader.tick()?;
+        reader.work(indexes.len() + selected.len())?;
+        let index = indexes
+            .iter()
+            .find(|checked| checked.index().usage_map() == usage)
+            .ok_or(EditError::Preservation)?;
+        let owner = Owner::IndexOwned {
+            definition,
+            physical: index.index().data_number(),
+        };
+        if !selected.contains(&owner) {
+            selected.push(owner);
+        }
+    }
+    census.require_exclusive(&selected, reader.budget, reader.cancelled)?;
     Ok(())
 }

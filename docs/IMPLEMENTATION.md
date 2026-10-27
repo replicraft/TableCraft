@@ -231,6 +231,36 @@ on unchanged Byte/Int16/Int64/Currency originals. All sixteen fixture commands
 pass without retries or regeneration, separately from prior public writer actions.
 Normal native saves and Microsoft Access qualification remain open.
 
+## Index-owned map promotion
+
+The optional engineering split services now support
+[same-extent inline index-owned map promotion](testing/ACE16_INDEX_MAP_GROWTH.md).
+The existing map record becomes indirect when the complete required member span
+cannot fit an inline window. A separate EOF usage bitmap stores original members
+and actual new index pages; the bitmap is globally allocated without becoming
+an index member. Recursive/repeated allocation shares this planner and independent
+replay. No normal save or journalable edit path is added.
+
+Independent complete-image controls cover two physical owners and real logical
+aliases, shared global bytes, promotion after an earlier represented reservation,
+and a mixed promoted/represented peer. Promotion operations require original
+catalog exclusivity for every affected reserved owner, not just promoted maps.
+Earlier inline cell edits are absorbed into the new bitmap rather than applied
+to the rewritten pointer row. Every appended index/usage page is independently
+classified and checked; this prevents ordinary/LVAL target activation, without
+claiming global foreign-payload health or identical malformed-input errors.
+
+The scoped batch passes 92 distinct runtime functions, including fifteen new
+functions, plus three compile-fail checks, strict/default lint, minimal builds,
+rustdoc and formatting. One old unsupported-width regression exposed a changed
+handler error order; recognizing the supported shape before census restored the
+original refusal without changing its test or fixture.
+
+The source-only model for both unchanged public originals is frozen separately;
+new committed-consumer candidate acceptance remains pending. Candidate/ordinary
+map growth, shifted-inline windows, new map containers, global bootstrap, free-page
+reuse, reclamation and native Access saves remain unfinished.
+
 ## Shared native map authority
 
 The engineering [map-authority service](testing/ACE16_MAP_AUTHORITY.md) now
@@ -293,8 +323,8 @@ now passes all four unchanged 900-key original candidates on its first run. Ever
 complete image matches its pre-execution model; all eight native/getter commands
 pass, with complete typed rows, index/ROW streams, maps and protected bytes checked.
 Each candidate adds six pages. Fresh prefix and unused-byte expectations remain
-independent of the public writer's scratch choices. Other codecs, map growth,
-normal saves and native Access qualification remain unfinished.
+independent of the public writer's scratch choices. Other codecs, broader map
+growth, normal saves and native Access qualification remain unfinished.
 
 ## Repeated numeric split source and reference observations
 

@@ -1,5 +1,6 @@
 //! Causal after-audit forgeries start with real, fully qualified production staging.
 mod fixed;
+mod map_growth;
 mod nonroot;
 mod parent;
 mod repeated;

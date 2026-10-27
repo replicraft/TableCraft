@@ -1,4 +1,5 @@
 //! Separate, bounded recursive splitting; ordinary replacement paths stay closed.
+mod allocation;
 mod audit;
 mod maps;
 mod nonroot;
@@ -6,10 +7,9 @@ mod pages;
 
 use super::{IndexDataPatch, IndexKeyUpdate, encoding, plan::keys, profile::SingleProfile, repack};
 use crate::{
-    EditError, InspectError, NativeImage, NativeIndex, TableCheck, WriteBlocker,
+    EditError, IndexCheck, InspectError, NativeImage, NativeIndex, TableCheck, WriteBlocker,
     format::{page::PAGE_BYTES, reader::Reader},
     header::check,
-    limits::MAX_IMAGE_BYTES,
     table::indexes::page::{Entry, KeyRef},
 };
 use std::io::Cursor;
@@ -51,6 +51,8 @@ pub(in crate::table) struct Plan {
     pub map_edits: Vec<maps::Edit>,
     certificates: Vec<Certificate>,
     owner: u32,
+    pub(in crate::table) promotions: Vec<allocation::Promotion>,
+    reservations: Vec<(u32, u32)>,
 }
 
 impl Plan {
@@ -63,6 +65,8 @@ impl Plan {
             map_edits: Vec::new(),
             certificates: Vec::new(),
             owner,
+            promotions: Vec::new(),
+            reservations: Vec::new(),
         }
     }
 
@@ -165,14 +169,8 @@ pub(super) fn edit(
             patches,
         );
     }
-    let length = plan
-        .length
-        .checked_add(2 * PAGE_BYTES)
-        .filter(|&length| length as u64 <= MAX_IMAGE_BYTES)
-        .ok_or(InspectError::StructureLimit)?;
-    let right =
-        u32::try_from(plan.length / PAGE_BYTES).map_err(|_| InspectError::StructureLimit)?;
-    let left = right.checked_add(1).ok_or(InspectError::StructureLimit)?;
+    let right = allocation::reserve(image, index, plan, reader)?;
+    let left = allocation::reserve(image, index, plan, reader)?;
     let fact = Certificate {
         physical: index.data_number(),
         root: index.root_page(),
@@ -210,13 +208,6 @@ pub(super) fn edit(
         reader.budget,
         reader.cancelled,
     )?;
-    maps::allocate(
-        image,
-        &fact,
-        &mut plan.map_edits,
-        reader.budget,
-        reader.cancelled,
-    )?;
     reader
         .budget
         .charge_allocation(1, size_of::<Certificate>() as u64)
@@ -241,7 +232,6 @@ pub(super) fn edit(
         bytes: left_page,
     });
     plan.certificates.push(fact);
-    plan.length = length;
     reader
         .budget
         .charge_allocation(1, size_of::<IndexDataPatch>() as u64)
@@ -286,4 +276,26 @@ fn leaf_entries(
         });
     }
     Ok(entries)
+}
+
+pub(super) fn seal(
+    image: &NativeImage,
+    indexes: &[IndexCheck],
+    plan: &mut Plan,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    let mut source = image.reader();
+    allocation::seal(
+        image,
+        indexes,
+        plan,
+        &mut Reader {
+            source: &mut source,
+            header: image.catalog().header(),
+            budget,
+            cancelled,
+            reads: 0,
+        },
+    )
 }

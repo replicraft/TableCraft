@@ -9789,3 +9789,20 @@ separate temporary read-only admission harness checks 22 immutable originals
 with two Memo columns each; all 44 pass. Its initial relative-manifest setup
 failure occurred before opening sources and remains recorded. The hook is removed;
 these admissions perform no candidate stage, finish, publication or JVM calls.
+
+### Index-owned map promotion literals
+
+The [engineering promotion controls](ACE16_INDEX_MAP_GROWTH.md) use independent
+literal source and complete-image models. Both ACE 16 codes preserve 900 exact
+Int32 rows, logical aliases and shared global-bit composition while distinguishing
+index pages from newly allocated usage bitmaps. Late promotion proves that a
+previously represented bit edit is folded into the indirect row/bitmap result.
+A mixed represented peer also requires exclusive original map authority.
+
+The original seven-function attempt passed six functions; the remaining authored
+expectation overlooked the selected-table preflight's earlier `IndexedColumn`
+refusal. The exact initial source/log is preserved and only that expected error
+class was corrected. Two later controls add independent late/mixed whole images.
+The source and base byte oracle remain unchanged. Reader-purpose tests isolate
+non-activation by index/usage signatures and are not healthy native database
+fixtures. Whole-original candidate acceptance remains separate.

@@ -22,7 +22,7 @@ pub(super) struct Operation<'a> {
 
 pub(super) struct Progress<'a> {
     pub next_eof: &'a mut u32,
-    pub map_edits: &'a mut Vec<maps::Expected>,
+    pub map_edits: &'a mut maps::Expected,
 }
 
 pub(super) fn prove(

@@ -58,7 +58,7 @@ pub(super) fn bound<const WIDTH: usize>(
         .charge(Resource::Steps, (plan.length - after.len()) as u64)
         .map_err(InspectError::from)?;
     after.resize(plan.length, 0);
-    let count = fields.len() + plan.patches.len() + plan.map_edits.len();
+    let count = fields.len() + plan.patches.len() + plan.map_edits.len() + plan.promotions.len();
     budget
         .charge_allocation(count as u64, size_of::<Range<usize>>() as u64)
         .map_err(InspectError::from)?;
@@ -86,6 +86,18 @@ pub(super) fn bound<const WIDTH: usize>(
             patch.offset,
             &patch.before,
             &patch.after,
+            budget,
+            cancelled,
+        )?);
+    }
+    for promotion in &plan.promotions {
+        check(budget, cancelled)?;
+        spans.push(write(
+            &image,
+            &mut after,
+            promotion.offset,
+            &promotion.before,
+            &promotion.after,
             budget,
             cancelled,
         )?);
@@ -123,7 +135,20 @@ pub(super) fn bound<const WIDTH: usize>(
         budget,
         cancelled,
     )?;
-    plan.audit(&image, structural, &keys, &after, budget, cancelled)?;
+    if plan.promotions.is_empty() {
+        plan.audit(&image, structural, &keys, &after, budget, cancelled)?;
+    } else {
+        // Map metadata rewrite authority binds the immutable source operation,
+        // independently of the schema/index metadata carried by staging.
+        let original = check_table(
+            &mut Cursor::new(image.as_bytes()),
+            image.catalog().catalog().scope(),
+            table,
+            budget,
+            cancelled,
+        )?;
+        plan.audit(&image, &original, &keys, &after, budget, cancelled)?;
+    }
     let scope = image.catalog().catalog().scope();
     inspect_catalog(&mut Cursor::new(&after), scope, budget, cancelled)?;
     let checked = check_table(&mut Cursor::new(&after), scope, table, budget, cancelled)?;

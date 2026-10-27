@@ -2,6 +2,8 @@
 mod framing;
 mod maps;
 mod nonroot;
+#[cfg(test)]
+mod purpose_tests;
 
 use super::super::{encoding, plan::keys, profile::SingleProfile};
 use super::{Plan, leaf_entries};
@@ -72,7 +74,7 @@ pub(super) fn prove(
         cancelled,
         reads: 0,
     };
-    let mut expected_edits = Vec::new();
+    let mut expected_edits = maps::Expected::default();
     let mut next_eof = image.catalog().header().page_count();
     let mut split_position = 0;
     let mut affected_pages = Vec::new();
@@ -212,8 +214,28 @@ pub(super) fn prove(
                 verified_nonroot = true;
             }
             if split {
-                let right = next_eof;
-                let left = right.checked_add(1).ok_or(EditError::Preservation)?;
+                let (right, left) = {
+                    let mut reader = Reader {
+                        source: &mut source,
+                        header: image.catalog().header(),
+                        budget: actual.budget,
+                        cancelled,
+                        reads: 0,
+                    };
+                    let right = maps::reserve(
+                        &mut reader,
+                        index.usage_map(),
+                        &mut next_eof,
+                        &mut expected_edits,
+                    )?;
+                    let left = maps::reserve(
+                        &mut reader,
+                        index.usage_map(),
+                        &mut next_eof,
+                        &mut expected_edits,
+                    )?;
+                    (right, left)
+                };
                 let fact = plan
                     .certificates
                     .get(split_position)
@@ -298,18 +320,6 @@ pub(super) fn prove(
                     actual.budget,
                     cancelled,
                 )?;
-                maps::add(
-                    &mut Reader {
-                        source: &mut source,
-                        header: image.catalog().header(),
-                        budget: actual.budget,
-                        cancelled,
-                        reads: 0,
-                    },
-                    index.usage_map(),
-                    [right, left],
-                    &mut expected_edits,
-                )?;
                 actual
                     .budget
                     .charge_allocation(2, size_of::<u32>() as u64)
@@ -318,7 +328,6 @@ pub(super) fn prove(
                     .try_reserve(2)
                     .map_err(|_| InspectError::Allocation)?;
                 expected_pages.extend([right, left]);
-                next_eof = left.checked_add(1).ok_or(EditError::Preservation)?;
                 split_position += 1;
             }
         }
@@ -407,6 +416,19 @@ pub(super) fn prove(
             return Err(EditError::Preservation);
         }
     }
+    maps::authority(
+        image,
+        schema.definition,
+        indexes,
+        &expected_edits,
+        &mut Reader {
+            source: &mut source,
+            header: image.catalog().header(),
+            budget: actual.budget,
+            cancelled,
+            reads: 0,
+        },
+    )?;
     maps::finish(
         &mut Reader {
             source: &mut source,
@@ -416,7 +438,7 @@ pub(super) fn prove(
             reads: 0,
         },
         &expected_edits,
-        &plan.map_edits,
+        plan,
         after,
     )?;
     Ok(())

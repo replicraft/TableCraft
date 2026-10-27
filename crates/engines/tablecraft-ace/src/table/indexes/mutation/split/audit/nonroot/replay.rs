@@ -230,11 +230,8 @@ impl Replay<'_, '_> {
         actual: &mut Reader<'_, Cursor<&[u8]>>,
         progress: &mut Progress<'_>,
     ) -> Result<u32, EditError> {
-        let number = *progress.next_eof;
-        *progress.next_eof = number.checked_add(1).ok_or(EditError::Preservation)?;
-        push(&mut self.added, number, actual)?;
         let mut source = self.operation.image.reader();
-        super::super::maps::add(
+        let number = super::super::maps::reserve(
             &mut Reader {
                 source: &mut source,
                 header: self.operation.image.catalog().header(),
@@ -243,9 +240,10 @@ impl Replay<'_, '_> {
                 reads: 0,
             },
             self.operation.usage,
-            [number],
+            progress.next_eof,
             progress.map_edits,
         )?;
+        push(&mut self.added, number, actual)?;
         Ok(number)
     }
 }
