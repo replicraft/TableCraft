@@ -16,6 +16,22 @@ outputs, with all 120 column reports matching independently captured expectation
 These are storage-check results, not new UPDATE actions or native Access
 qualification. Memo/OLE replacement and normal ACE saves remain unfinished.
 
+## Fixed Int32 root-leaf split candidates
+
+The separate feature-gated `preview_ace16_split_int32_updates` service can turn a
+qualified overflowing single-Int32 root leaf into a height-one root and two EOF
+leaves. It preserves logical row references, complete key/row bounds, unrelated
+index bytes and counters, and updates only represented index-owned/global map
+cells. Deeper or other-codec overflows still refuse. Existing fixed, page and
+variable previews retain their previous admission and behavior.
+
+The [split contract](testing/ACE16_INDEX_SPLITS.md) describes request-derived row
+authority, independent page/map audits and non-journalable output. Scoped checks
+pass 173 distinct runtime functions, including 153 existing regressions, and three
+compile-fail checks. Strict lint, standalone minimal compilation and rustdoc pass.
+Original-file candidate comparison is a subsequent gate; native Access,
+data-macro semantics and normal saves remain unqualified.
+
 ## Alternate-page placement and EOF allocation candidates
 
 The separate `preview_ace16_variable_updates` engineering API now places growing

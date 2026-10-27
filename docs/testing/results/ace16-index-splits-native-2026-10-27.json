@@ -1,0 +1,554 @@
+{
+  "date": "2026-10-27",
+  "scope": "Working feature-gated Int32 root-leaf split service and engineering consumer; no normal save or new original-file candidate qualification",
+  "validation_counts": {
+    "runtime_distinct": 173,
+    "existing_regression_functions": 153,
+    "final_primary": 15,
+    "final_private": 5,
+    "new_functions": 19,
+    "retained_shared_publisher_test": 1,
+    "compile_fail_docs": 3,
+    "runtime_formula": "153 + 15 + 5; all repeated successful exploratory runs excluded from unique total"
+  },
+  "authorship": {
+    "production_and_author_tests": "query_composition",
+    "independent_contract": "value_semantics, six literal-model functions",
+    "independent_review": "parent and value_semantics reviewed source authority, map/framing/opaque bytes; no remaining concrete blocker reported"
+  },
+  "source_pin_scope": "Selected split-owned source/test/example/manifest files, not an exhaustive compiler inventory. Shared checker changes committed separately; later dirty page_update/record and LVAL visibility changes are excluded. No claim that the entire working compiler tree is unchanged. Frozen consumer build/original replay follow a committed isolated archive separately.",
+  "scope_files": [
+    {
+      "path": "crates/engines/tablecraft-ace/Cargo.toml",
+      "bytes": 2228,
+      "sha256": "ec2c39bfd74fb0fbcbea5781998bf7a2774a097f3911458188dea6f02e7c0d25"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mod.rs",
+      "bytes": 3332,
+      "sha256": "77996c739291de1dd6a24258944f73c420519e79b865ab139be919c022abbd21"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/mod.rs",
+      "bytes": 1794,
+      "sha256": "e54f95572dcac194c6fb90154e725c79f299227d34f124fe30a4f415e8772ce3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/plan.rs",
+      "bytes": 16391,
+      "sha256": "7e82402f892854207330227d5e56547d658598dfb4d443b77b77bcad3da3f656"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/repack.rs",
+      "bytes": 12759,
+      "sha256": "8d0d832179a68e908021d8a4b209f5dfc1ef991f0b46720b8e5f275aedafc573"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/tree.rs",
+      "bytes": 8967,
+      "sha256": "14d2a6065eb5fb0017aa5cae486870c3243aa40f1b011c0caf473a2d1c45dc5e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/plan/keys.rs",
+      "bytes": 2636,
+      "sha256": "65b837eb3436c9801104f209bd124dc586d717f4e8e73b7d1911e6a9136051f3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/framing.rs",
+      "bytes": 5139,
+      "sha256": "8793477b5b553cd71d24b2ede725ba71f78a821ec5d4e2eacaa4de5345a1260c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/maps.rs",
+      "bytes": 2995,
+      "sha256": "918e2ee4f8bca98aee934496e03ff69af16f5d40c4d787a77daf3d6e6ac516ec"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/mod.rs",
+      "bytes": 15756,
+      "sha256": "81c2fc4c7383f6fd4ed061360e5dd704c620ae2e8523cce5b1a4278bd07605e9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/maps.rs",
+      "bytes": 2795,
+      "sha256": "967991d16e786aaf17e196fd1562685b1aa7d0e44e85125bb70426a24be782cd"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/mod.rs",
+      "bytes": 6980,
+      "sha256": "4823e7f9b131266b3a67b67620373ed3d00a7058c522d3d7edfa6ec052c512c2"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/pages.rs",
+      "bytes": 2998,
+      "sha256": "31f7615a2679ba149de34567b7084151f6439bda14fb7fb6cefcfdf9b6cbc8f0"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/mod.rs",
+      "bytes": 920,
+      "sha256": "8842f436fd4e9e9cb6b7e16805dac5384ff219243e33599b08e9848d6b1bd5ca"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/split/authority.rs",
+      "bytes": 3239,
+      "sha256": "6a5679af211f1629098a4eddc78ae001e15570355d309900478f3b7b81bdbe7a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/split/finish.rs",
+      "bytes": 5508,
+      "sha256": "46ddfa0b83c7c32e231aceb596742d1490039f098d5965d2e662359ec9282c1c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/split/mod.rs",
+      "bytes": 4281,
+      "sha256": "46534c65042a114f36f1c4a884fede08ffc874c39e0f69c4a7cdad5fdfb79a00"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/split/tests.rs",
+      "bytes": 5857,
+      "sha256": "f03810dc89cb43893593d75b70b40f78ddc8a64a1be639e675c5f774e830fe5b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/test_support.rs",
+      "bytes": 650,
+      "sha256": "ff45444820c63eff1e3916b4373c215c49993d0fb34bb019a8826302ab8fdbe9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/examples/preview_ace16_split.rs",
+      "bytes": 2160,
+      "sha256": "2d0d261562f2035ccca720003f6cfac1ce7794042be5ce680592e2eebe034b93"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/examples/preview_ace16_split/tests.rs",
+      "bytes": 2620,
+      "sha256": "5f20b0e0caea25c6e4dc6aa2f9c9dea2cade4e301ca48604cd27a464ecf9f375"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_split_int32.rs",
+      "bytes": 514,
+      "sha256": "06e032a359306e786f0421110db35a48b38b1b244ba2a1fe39346a4dc87e8c42"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_split_int32/model.rs",
+      "bytes": 6511,
+      "sha256": "ec648b6d5890ff570ed2eeafd24d30bdcd1ad3fcea5581cf47f133d9eb33c2d5"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_split_int32/values.rs",
+      "bytes": 7595,
+      "sha256": "7053068c37617b24fd217e17bc8dae529c9a9988cd8af42af23f91a4e644923f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_split_int32_contract.rs",
+      "bytes": 643,
+      "sha256": "ca06fb11ea6a048e5017165a95914e0ae2ca30f729008f1446c769580bc176f4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_split_int32_contract/guards.rs",
+      "bytes": 6292,
+      "sha256": "ecf06a97bcb2ab4a55f235430185c3461ca08ca4600ef194cbbb458700333a3e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_split_int32_contract/model.rs",
+      "bytes": 12340,
+      "sha256": "e6bf138214c9213a23f559dca35be441179a6eb7b6c65ea1bff0d20662ac7c7a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_split_int32_contract/values.rs",
+      "bytes": 8464,
+      "sha256": "9fc463da5d77e4070f35e01d0d1df9d046d5050355dd3754dabcd3d4ff780c6f"
+    },
+    {
+      "path": "docs/testing/ACE16_INDEX_SPLITS.md",
+      "bytes": 7057,
+      "sha256": "37b26d653faeef1dec3f3e9d641b67cb530ff164898db4a855c237e72ba1a9be"
+    }
+  ],
+  "checks": [
+    {
+      "name": "primary-final",
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test ace16_split_int32 --test ace16_split_int32_contract --example preview_ace16_split",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-index-split-implementation-next-20261026/primary-final.log",
+        "bytes": 2165,
+        "sha256": "3ad4ecf9416287cce36cc236cc58cb06aa87bf93c7ab1e484da4d68e32f38047"
+      },
+      "passed_functions": 15,
+      "scope": "Final post-mechanical-cleanup source, author6 + independent6 + consumer3; publisher helper is retained existing coverage"
+    },
+    {
+      "name": "private-final",
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib table::mutation::split::tests",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-index-split-implementation-next-20261026/private-final.log",
+        "bytes": 938,
+        "sha256": "59307344cec262723854c31c349af9bed5da62c161a1b741b044a1359223acd5"
+      },
+      "passed_functions": 5
+    },
+    {
+      "name": "selected-regressions",
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test mutation --test ace16_write_preview --test ace16_fixed_updates --test scalar_index_updates --test integral_index_updates --test decimal_updates --test guid_updates --test composite_updates --test batch_updates --test mask_updates --test foreign_updates --test cascade_updates --test ace16_variable_updates --test ace16_variable_updates_contract --test ace16_page_updates --test ace16_page_updates_contract --test ace16_slot_updates --test ace16_encoded_delete_contract --test ace16_delete_tree_contract --test ace16_delete_contraction_contract",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-index-split-implementation-next-20261026/selected-regressions.log",
+        "bytes": 17600,
+        "sha256": "c5ec3cfa0bd9c76b113878c055a143d4788f7952c44070fb593292f0011f1f65"
+      },
+      "passed_functions": 153,
+      "scope": "20 existing targets on source before only offset/chunk naming cleanup; snapshots below preserve exact three pre-cleanup files; not rerun or double counted"
+    },
+    {
+      "name": "strict-final",
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib --test ace16_split_int32 --test ace16_split_int32_contract --example preview_ace16_split -- -D warnings",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-index-split-implementation-next-20261026/strict-final.log",
+        "bytes": 183,
+        "sha256": "491122188b2b2065ce088866081113343797475bb651a72f308b64e3620bfd1b"
+      },
+      "scope": "Explicit targets; intentionally excludes future unregistered Memo/OLE API targets"
+    },
+    {
+      "name": "minimal-final",
+      "command": "cargo check --locked --offline -j2 --manifest-path crates/engines/tablecraft-ace/Cargo.toml --no-default-features --lib",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-index-split-implementation-next-20261026/minimal-final.log",
+        "bytes": 183,
+        "sha256": "7234a5d92293ddb18c1ef0f6690e128d2fc81a1fa0166b6c25d73d42dde5f415"
+      }
+    },
+    {
+      "name": "compile-fail-docs",
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --doc",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-index-split-implementation-next-20261026/docs-tests-final.log",
+        "bytes": 627,
+        "sha256": "7be2936c40886d80254d3182390d0a3223dd2f6c2f67fe28e7a98877d16191ea"
+      },
+      "passed_functions": 3,
+      "scope": "Compile-fail documentation checks, separate from runtime total"
+    },
+    {
+      "name": "rustdoc-final",
+      "command": "RUSTDOCFLAGS='-D warnings' cargo doc --locked --offline -j2 -p tablecraft-ace --all-features --no-deps",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-index-split-implementation-next-20261026/rustdoc-final.log",
+        "bytes": 387,
+        "sha256": "adef4ddff3cbe6e5e2ee424a0e00087fa08fdf4553d1d7f591fd16c50299f31c"
+      }
+    },
+    {
+      "name": "format-final",
+      "command": "rustfmt --edition 2024 --check --config skip_children=true <the selected Rust source/test/example paths pinned in scope_files>",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-index-split-implementation-next-20261026/format-final.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "preserved_sources": [
+    {
+      "path": ".cache/ace16-index-split-implementation-next-20261026/initial-author-source/ace16_split_int32.rs",
+      "bytes": 484,
+      "sha256": "caca57c1f4edb6831c4773c4ca2b7dad523836899f0c495dab1158f43399ba8e"
+    },
+    {
+      "path": ".cache/ace16-index-split-implementation-next-20261026/initial-author-source/model-first-compiled.json",
+      "bytes": 297,
+      "sha256": "2a5a808473c95012d6fbfd3573968bcb537e9e2ef0e067b07751647e161e25f8"
+    },
+    {
+      "path": ".cache/ace16-index-split-implementation-next-20261026/initial-author-source/model-first-compiled.rs",
+      "bytes": 6511,
+      "sha256": "ef922ae417cbf62ba6dd293d0e9b5ba751ef00847b87114753e7fe340707d94c"
+    },
+    {
+      "path": ".cache/ace16-index-split-implementation-next-20261026/initial-author-source/model.rs",
+      "bytes": 6272,
+      "sha256": "8306b66e9cec925d07c8e8b1738b9ad7b2f5265284283d3dba98d099ab64e074"
+    },
+    {
+      "path": ".cache/ace16-index-split-implementation-next-20261026/initial-author-source/pins.json",
+      "bytes": 558,
+      "sha256": "929a15cc07d3a7fdb21455e5de0c5dfaca52485cb981c3909873ab789fa530b7"
+    },
+    {
+      "path": ".cache/ace16-index-split-implementation-next-20261026/initial-author-source/values.rs",
+      "bytes": 6708,
+      "sha256": "254683e13ad30469dcae7b055d7a88f1d2bd9429c72c3c292ee5d7886ca1921b"
+    },
+    {
+      "path": ".cache/ace16-index-split-implementation-next-20261026/combined-first-source/crates/engines/tablecraft-ace/examples/preview_ace16_split/tests.rs",
+      "bytes": 2204,
+      "sha256": "f2813c214c89d9af0c2e1562c2ae3b5bbebf12c138cd70a76d75ab65b42a1b5e"
+    },
+    {
+      "path": ".cache/ace16-index-split-implementation-next-20261026/combined-first-source/crates/engines/tablecraft-ace/examples/preview_ace16_split.rs",
+      "bytes": 2116,
+      "sha256": "dbe3338732aaf6f95de5ddf0db126cf72319a4284e8482dc50b9fd32ca63c4c6"
+    },
+    {
+      "path": ".cache/ace16-index-split-implementation-next-20261026/combined-first-source/crates/engines/tablecraft-ace/src/table/mutation/split/mod.rs",
+      "bytes": 4175,
+      "sha256": "628b95c93851dd146f7485985fb40b7508dad337bc6f4969a7389854177f29a8"
+    },
+    {
+      "path": ".cache/ace16-index-split-implementation-next-20261026/combined-first-source/crates/engines/tablecraft-ace/src/table/mutation/split/tests.rs",
+      "bytes": 4032,
+      "sha256": "dc30fd13cad9102c9a02bf1ab98d2ecd98da51cd9de6959006ba680a4cfa0ae2"
+    },
+    {
+      "path": ".cache/ace16-index-split-implementation-next-20261026/combined-first-source/crates/engines/tablecraft-ace/src/test_support.rs",
+      "bytes": 577,
+      "sha256": "b19a6a8b73446c1801a3a58dd7cc8a3e8c749c062b14603e5d224e772c3f7c91"
+    },
+    {
+      "path": ".cache/ace16-index-split-implementation-next-20261026/combined-first-source/crates/engines/tablecraft-ace/tests/ace16_split_int32/model.rs",
+      "bytes": 6511,
+      "sha256": "ef922ae417cbf62ba6dd293d0e9b5ba751ef00847b87114753e7fe340707d94c"
+    },
+    {
+      "path": ".cache/ace16-index-split-implementation-next-20261026/combined-first-source/crates/engines/tablecraft-ace/tests/ace16_split_int32/values.rs",
+      "bytes": 7595,
+      "sha256": "7053068c37617b24fd217e17bc8dae529c9a9988cd8af42af23f91a4e644923f"
+    },
+    {
+      "path": ".cache/ace16-index-split-implementation-next-20261026/combined-first-source/crates/engines/tablecraft-ace/tests/ace16_split_int32_contract/guards.rs",
+      "bytes": 6044,
+      "sha256": "1406699cc55ba21da6d63c2ea914f1728841144a2b4d029935c80ce13112e061"
+    },
+    {
+      "path": ".cache/ace16-index-split-implementation-next-20261026/combined-first-source/crates/engines/tablecraft-ace/tests/ace16_split_int32_contract/model.rs",
+      "bytes": 12340,
+      "sha256": "e6bf138214c9213a23f559dca35be441179a6eb7b6c65ea1bff0d20662ac7c7a"
+    },
+    {
+      "path": ".cache/ace16-index-split-implementation-next-20261026/combined-first-source/crates/engines/tablecraft-ace/tests/ace16_split_int32_contract/values.rs",
+      "bytes": 8464,
+      "sha256": "9fc463da5d77e4070f35e01d0d1df9d046d5050355dd3754dabcd3d4ff780c6f"
+    },
+    {
+      "path": ".cache/ace16-index-split-implementation-next-20261026/combined-first-source/crates/engines/tablecraft-ace/tests/ace16_split_int32_contract.rs",
+      "bytes": 660,
+      "sha256": "2ceab1e51a1bdd260d3d0e3e6e3530533cc61ebfd95709537f8117052b4a6a5a"
+    },
+    {
+      "path": ".cache/ace16-index-split-implementation-next-20261026/combined-first-source/manifest.json",
+      "bytes": 2083,
+      "sha256": "fe300bbfb1c1a4c571f24e645fd7e489e6f5fd4cb1c3f305d7b870db327c7272"
+    },
+    {
+      "path": ".cache/ace16-index-split-implementation-next-20261026/row-authority-before/finish.rs",
+      "bytes": 5612,
+      "sha256": "b98773f6052e16df4c7e508f82383b31ddf0c3e751e2f45aa8a052768cca34af"
+    },
+    {
+      "path": ".cache/ace16-index-split-implementation-next-20261026/row-authority-before/manifest.json",
+      "bytes": 711,
+      "sha256": "ed0af1583cfa939915f9146293308739c176311ab1a22d45702919f9f10a3289"
+    },
+    {
+      "path": ".cache/ace16-index-split-implementation-next-20261026/row-authority-before/mod.rs",
+      "bytes": 4175,
+      "sha256": "628b95c93851dd146f7485985fb40b7508dad337bc6f4969a7389854177f29a8"
+    },
+    {
+      "path": ".cache/ace16-index-split-implementation-next-20261026/row-authority-before/tests.rs",
+      "bytes": 5106,
+      "sha256": "fb83e0922f2f5a344f89cdda0cd7a58e9401a495a94265bba833ef3d0005b852"
+    },
+    {
+      "path": ".cache/ace16-index-split-implementation-next-20261026/before-framing-names/framing.rs",
+      "bytes": 5072,
+      "sha256": "af4c02981f35346f9728a0d4b2b1dc8cb27963755b042bf80eab8e5cb12ad642"
+    },
+    {
+      "path": ".cache/ace16-index-split-implementation-next-20261026/before-framing-names/manifest.json",
+      "bytes": 778,
+      "sha256": "67ecc496f8d3ffcc09b0c0b90cc22469f46ff4edcac3d39458e06556aca809cf"
+    },
+    {
+      "path": ".cache/ace16-index-split-implementation-next-20261026/before-framing-names/mod.rs",
+      "bytes": 14975,
+      "sha256": "498656c2a1e5b0fcaad7c5a7cfd4f7ccd840f9f58053b0db84b41167ad97ca61"
+    },
+    {
+      "path": ".cache/ace16-index-split-implementation-next-20261026/before-framing-names/pages.rs",
+      "bytes": 2932,
+      "sha256": "d083d7fb15d5be691b0855b70331f3e43d2246ff360fe9a480f3c46441e063bb"
+    },
+    {
+      "path": ".cache/ace16-index-split-implementation-next-20261026/guard-probe.rs",
+      "bytes": 2299,
+      "sha256": "61d4782f2f2e002c437eb7f53d9c97487d48b1ee9f51f05480d7967c22613ee8"
+    },
+    {
+      "path": ".cache/ace16-split-int32-independent-initial-20261026/pre-map-class-correction/ace16_split_int32_contract.rs",
+      "bytes": 643,
+      "sha256": "ca06fb11ea6a048e5017165a95914e0ae2ca30f729008f1446c769580bc176f4"
+    },
+    {
+      "path": ".cache/ace16-split-int32-independent-initial-20261026/pre-map-class-correction/guards.rs",
+      "bytes": 6044,
+      "sha256": "1406699cc55ba21da6d63c2ea914f1728841144a2b4d029935c80ce13112e061"
+    },
+    {
+      "path": ".cache/ace16-split-int32-independent-initial-20261026/pre-map-class-correction/manifest.json",
+      "bytes": 1154,
+      "sha256": "269f9b5b3fd9175a30e532eb7c45e0aef330b125d70d5de84452ea249f79dd0e"
+    },
+    {
+      "path": ".cache/ace16-split-int32-independent-initial-20261026/pre-map-class-correction/model.rs",
+      "bytes": 12340,
+      "sha256": "e6bf138214c9213a23f559dca35be441179a6eb7b6c65ea1bff0d20662ac7c7a"
+    },
+    {
+      "path": ".cache/ace16-split-int32-independent-initial-20261026/pre-map-class-correction/values.rs",
+      "bytes": 8464,
+      "sha256": "9fc463da5d77e4070f35e01d0d1df9d046d5050355dd3754dabcd3d4ff780c6f"
+    }
+  ],
+  "excluded_or_superseded_checks": [
+    {
+      "log": {
+        "path": ".cache/ace16-index-split-implementation-next-20261026/library-initial.log",
+        "bytes": 183,
+        "sha256": "f4bf7c0a757cd1fd317cc56cd0fcdb9693c21d8813efb3738e90f2e108bc852b"
+      },
+      "exit_code": 0,
+      "note": "First preview library compile, superseded by final source checks; no runtime count"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-index-split-implementation-next-20261026/author-initial.log",
+        "bytes": 804,
+        "sha256": "dc3e155c8d1eabceb5478b8e2a68020b1fddb35785b46230fc035ffe9dd9e9d2"
+      },
+      "exit_code": 0,
+      "note": "Initial author5 pass before later proof/refactor changes; subset not counted again"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-index-split-implementation-next-20261026/primary-initial.log",
+        "bytes": 1115,
+        "sha256": "4ad0a3992fe490b92b06f0971df8d08cd48bdcd04d9ed2b558de0386e995c07d"
+      },
+      "exit_code": 101,
+      "note": "Compile-only example test harness error: reused publisher expected crate::tests::Directory; no runtime evidence"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-index-split-implementation-next-20261026/primary-retry.log",
+        "bytes": 2317,
+        "sha256": "76499ddb2d287c8f098c7d5d0b61b091c806ad46f1d4473ca47f1806a936fe6e"
+      },
+      "exit_code": 101,
+      "note": "Author6 passed; independent5 passed/1 failed map error-class assertion; example not reached; not labeled a green whole command"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-index-split-implementation-next-20261026/row-authority-before.log",
+        "bytes": 616,
+        "sha256": "cadae11269ae5da1ccc5239014663c9e49818562e18223d36b13f9d732997df5"
+      },
+      "exit_code": 101,
+      "note": "Compile-only self-crate alias issue in reused unit-test fixture; no causal runtime assertion reached"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-index-split-implementation-next-20261026/row-authority-before-retry.log",
+        "bytes": 1016,
+        "sha256": "d0b47144040a111c1c44f039ffe14898152d80b12c4055ee03b5a0e0ebf0b451"
+      },
+      "exit_code": 101,
+      "note": "Intended private causal failure: healthy control passed, extra unindexed Id patch accepted; not a demonstrated public-input corruption"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-index-split-implementation-next-20261026/guard-probe.log",
+        "bytes": 655,
+        "sha256": "184c52570c1be7236e13ed7fcfaf98660769d12cad5b3de329b2c7d8c38438c3"
+      },
+      "exit_code": 0,
+      "note": "Isolated temporary diagnostic: missing cells Unsupported, represented nonfree EOF Malformed, all fitting controls succeed; excluded diagnostic target removed after preservation"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-index-split-implementation-next-20261026/private-after-row-proof.log",
+        "bytes": 938,
+        "sha256": "afe9f205538ce574f5a022d40f06e1b9bbd5675fc5fd4670c615d349d73b28ab"
+      },
+      "exit_code": 0,
+      "note": "Five private functions after request-bound fix; superseded by final repeated five, no double counting"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-index-split-implementation-next-20261026/primary-after-authority-cleanup.log",
+        "bytes": 2164,
+        "sha256": "2bbc858b4467fdbf0f41095b353f54e4e042f3e2653261061c164b5511bd4dd6"
+      },
+      "exit_code": 0,
+      "note": "15 passed before mechanical framing names; superseded by final primary15"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-index-split-implementation-next-20261026/private-after-cleanup.log",
+        "bytes": 938,
+        "sha256": "48781ab63def5b4578eec37c905c6f2c7ef0a2364828c49e892b0df23a2f88ca"
+      },
+      "exit_code": 0,
+      "note": "Five passed before mechanical framing names; superseded by final private5"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-index-split-implementation-next-20261026/strict-initial.log",
+        "bytes": 184,
+        "sha256": "fc710ecaf74df5bad20e71ea9197fb81dbe60a1956f705f5a24ca81f84fb1a5c"
+      },
+      "exit_code": 0,
+      "note": "Earlier full preview --lib --tests/example lint before mechanical cleanup and future unregistered API target; superseded scoped final lint"
+    },
+    {
+      "log": {
+        "path": ".cache/long-value-storage-preview-strict-final-20261027.log",
+        "bytes": 4443,
+        "sha256": "2b2c82cb6ce115877246f2a2d7b7d615e783f8a51f436f914462118db10c19aa"
+      },
+      "exit_code": 101,
+      "note": "Shared preview strict was blocked only by eight split argument counts, resolved without allowances using Operation/TableCheck/links grouping; checker scope had no warning"
+    }
+  ],
+  "causal_finding": {
+    "scope": "Private forged-stage certification gap, not observed public-input corruption",
+    "before": "Exact-before extra patch to unindexed Id was accepted after healthy complete staging/finalization",
+    "after": "Immutable Operation binds original table/column/requests; metadata rebind plus physical replay compares full patch inventory; expected keys derive from replay",
+    "controls": [
+      "extra/missing/wrong-row/wrong-value physical patches",
+      "row-inclusive separator/child bounds",
+      "original root residue and unrelated page bytes",
+      "EOF stamp/links/zero residue",
+      "unrequested future global bit",
+      "source identity/alignment/length/cap"
+    ]
+  },
+  "authoring_corrections": [
+    "Example reused publisher test required a local Directory fixture; no runtime/model change",
+    "Private unit fixture needed a caller-provided engine alias; no golden/source bytes changed",
+    "Independent mode1 represented-but-nonfree EOF expected exact Inspect(Malformed), while absent representation remains exact Inspect(Unsupported); diagnostic preserved; no payload/key/row model change"
+  ],
+  "boundaries": [
+    "Only original single-Int32 root-leaf overflow, at most two nonempty representable EOF index leaves; right then left; same root ID",
+    "Other overflowing codecs/composites/internal/non-root nodes remain explicit atomic refusals",
+    "Existing fixed/slot/page/variable APIs and ordinary write boundaries unchanged",
+    "Native Access/data macros/general native saves remain unqualified",
+    "No original-file new-service success claimed; old refusal/public reference observations committed separately"
+  ]
+}

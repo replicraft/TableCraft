@@ -63,6 +63,11 @@ Delivered read/query and engineering foundations:
   A further [eight Binary allocation candidates](testing/BINARY_VARIABLE_UPDATE_OBSERVATIONS.md)
   pass on independently constructed space-exhaustion sources with exact retained
   target padding, maps and original primary references.
+  A separate [Int32 root-leaf split service](testing/ACE16_INDEX_SPLITS.md) now
+  grows qualified overflowing single-field root leaves into a retained root and
+  two represented EOF leaves, with request-derived row authority and independent
+  map/framing audits. Deeper and other-codec splits remain unfinished; normal
+  saves and native Access qualification remain separate.
   A separate [48-control Text/Binary corpus](testing/ENCODED_DELETE_OBSERVATIONS.md)
   checks 36 candidates and twelve unsupported-profile refusals on the same
   committed tool, including the previously refused height-two delete-all cases.

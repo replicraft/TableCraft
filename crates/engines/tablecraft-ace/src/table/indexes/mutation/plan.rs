@@ -1,4 +1,6 @@
-use super::super::{IndexCheck, IndexCheckStatus, NativeIndex, composite, page::KeyRef};
+pub(super) mod keys;
+
+use super::super::{IndexCheck, IndexCheckStatus, NativeIndex, composite};
 use super::super::{
     composite::{DecimalColumns, DecimalValue, MixedValue},
     decimal::{self, DecimalIndexSelection, DecimalProfile, DecimalType},
@@ -12,9 +14,9 @@ use super::{
 use super::{
     IndexDataPatch, IndexKeyUpdate, NumericKey, PatchSet,
     composite::TupleProfile,
-    encoding::{self, Mode},
+    encoding,
     profile::{SingleProfile, WriteProfile},
-    tree::{Rewrite, Tree},
+    tree::Rewrite,
 };
 #[cfg(feature = "ace16-write-preview")]
 use crate::format::data_type::{SHORT_BINARY, SHORT_TEXT};
@@ -38,10 +40,35 @@ pub(in crate::table) fn patches(
         schema,
         indexes,
         Change::Update(updates),
+        #[cfg(feature = "ace16-write-preview")]
+        None,
         budget,
         cancelled,
     )
     .map(|patches| patches.indexes)
+}
+
+#[cfg(feature = "ace16-write-preview")]
+pub(in crate::table) fn splitting_patches(
+    image: &NativeImage,
+    schema: &TableSchema,
+    indexes: &[IndexCheck],
+    updates: &[IndexKeyUpdate],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<super::split::Plan, EditError> {
+    let mut plan = super::split::Plan::new(image, schema.definition);
+    let patches = patches_with(
+        image,
+        schema,
+        indexes,
+        Change::Update(updates),
+        Some(&mut plan),
+        budget,
+        cancelled,
+    )?;
+    plan.patches = patches.indexes;
+    Ok(plan)
 }
 
 #[cfg(feature = "ace16-write-preview")]
@@ -58,6 +85,7 @@ pub(in crate::table) fn delete_patches(
         schema,
         indexes,
         Change::Delete(references),
+        None,
         budget,
         cancelled,
     )
@@ -106,6 +134,7 @@ fn patches_with(
     schema: &TableSchema,
     indexes: &[IndexCheck],
     change: Change<'_>,
+    #[cfg(feature = "ace16-write-preview")] mut splitting: Option<&mut super::split::Plan>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<PatchSet, EditError> {
@@ -278,6 +307,22 @@ fn patches_with(
                     kind: NumericKey::new(kind)?,
                     descending: index.columns()[0].descending(),
                 };
+                #[cfg(feature = "ace16-write-preview")]
+                if kind == ScalarType::Int32
+                    && let Some(growth) = splitting.as_deref_mut()
+                    && let Change::Update(updates) = change
+                {
+                    super::split::edit(
+                        image,
+                        &mut reader,
+                        index,
+                        updates,
+                        &profile,
+                        &mut patches.indexes,
+                        growth,
+                    )?;
+                    continue;
+                }
                 edit::<_, { encoding::MAX_ENTRY_BYTES }>(
                     image,
                     &mut reader,
@@ -403,63 +448,11 @@ fn edit<P: WriteProfile, const N: usize>(
             );
         }
     };
-    let mut entries = Vec::new();
-    let tree = Tree::read::<_, N>(
-        image,
-        reader,
-        owner,
-        index.root_page(),
-        profile,
-        0,
-        &mut entries,
-    )?;
-    let mut matched = 0;
-    for key in &mut entries {
-        reader.tick()?;
-        reader.work(updates.len())?;
-        for update in updates
-            .iter()
-            .filter(|update| update.reference == key.row && profile.includes(update.column))
-        {
-            profile.update(&mut key.key, update.column, update.expected, update.value)?;
-            matched += 1;
-        }
-    }
-    reader.work(updates.len() * profile.components())?;
-    if matched
-        != updates
-            .iter()
-            .filter(|update| profile.includes(update.column))
-            .count()
-    {
-        return Err(EditError::Preservation);
-    }
-    let levels = entries.len().checked_ilog2().unwrap_or(0) as usize + 1;
-    reader.work(entries.len() * levels * size_of::<KeyRef<P::Key>>())?;
-    entries.sort_unstable_by(|a, b| a.compare_with(b, profile));
-    let constraints = index.constraints().ok_or(InspectError::Unsupported)?;
-    let mut previous = None;
-    for entry in &entries {
-        reader.tick()?;
-        let (all_null, any_null) = profile.constraint_nulls(&entry.key)?;
-        constraints
-            .check_tuple(
-                &mut previous,
-                if all_null { None } else { Some(entry.key) },
-                any_null,
-            )
-            .map_err(InspectError::from)?;
-    }
-    let mode = if profile.requires_repack()
-        || profile.components() > 1
-        || updates
-            .iter()
-            .any(|u| profile.includes(u.column) && (u.expected.is_none() || u.value.is_none()))
-    {
-        Mode::Repack
-    } else {
-        Mode::Fixed
-    };
+    let keys::Prepared {
+        tree,
+        entries,
+        mode,
+    } = keys::prepare::<_, N>(image, reader, index, owner, updates, profile)?;
     let mut remaining = entries.as_slice();
     tree.rewrite::<_, N>(
         image,

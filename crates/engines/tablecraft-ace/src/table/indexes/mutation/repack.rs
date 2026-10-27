@@ -47,17 +47,18 @@ pub(super) fn retained_page<P: RetainedProfile, const N: usize>(
     )
 }
 
-fn page_with<K, const N: usize>(
-    original: &[u8],
+struct Layout {
+    prefix: usize,
+    length: usize,
+}
+
+fn measure<K, const N: usize>(
     entries: &[Entry<K>],
-    encode: impl Fn(&Entry<K>) -> Result<encoding::Encoded<N>, InspectError>,
+    original_prefix: usize,
+    encode: &impl Fn(&Entry<K>) -> Result<encoding::Encoded<N>, InspectError>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<Vec<u8>, EditError> {
-    if original.len() != PAGE_BYTES {
-        return Err(EditError::Preservation);
-    }
-    let header = IndexHeader::read(original)?;
+) -> Result<Layout, EditError> {
     let mut first = [0; N];
     let mut common = 0;
     let mut total = 0_usize;
@@ -87,12 +88,53 @@ fn page_with<K, const N: usize>(
         }
     }
     let saved = entries.len().saturating_sub(1);
-    let mut prefix = usize::from(header.prefix.get()).min(common);
+    let mut prefix = original_prefix.min(common);
     let capacity = PAGE_BYTES - ENTRY_START;
     if total - prefix * saved > capacity {
         prefix = common;
     }
     let length = total - prefix * saved;
+    Ok(Layout { prefix, length })
+}
+
+#[cfg(feature = "ace16-write-preview")]
+pub(super) fn fits<P: WriteProfile, const N: usize>(
+    original: &[u8],
+    entries: &[Entry<P::Key>],
+    profile: &P,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<bool, EditError> {
+    let header = IndexHeader::read(original)?;
+    let layout = measure(
+        entries,
+        usize::from(header.prefix.get()),
+        &|entry| encoding::entry::<P, N>(entry, profile),
+        budget,
+        cancelled,
+    )?;
+    Ok(layout.length <= PAGE_BYTES - ENTRY_START)
+}
+
+fn page_with<K, const N: usize>(
+    original: &[u8],
+    entries: &[Entry<K>],
+    encode: impl Fn(&Entry<K>) -> Result<encoding::Encoded<N>, InspectError>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, EditError> {
+    if original.len() != PAGE_BYTES {
+        return Err(EditError::Preservation);
+    }
+    let header = IndexHeader::read(original)?;
+    let Layout { prefix, length } = measure(
+        entries,
+        usize::from(header.prefix.get()),
+        &encode,
+        budget,
+        cancelled,
+    )?;
+    let capacity = PAGE_BYTES - ENTRY_START;
     if length > capacity {
         return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
     }
