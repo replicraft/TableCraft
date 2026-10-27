@@ -63,3 +63,60 @@ python3 docs/testing/capture_french_comparison.py \
   --classes .cache/french-comparison-reproduction/classes \
   --report .cache/french-comparison-reproduction/fields.json
 ```
+
+## Frozen native-field comparison replay
+
+The subsequent [112-control receipt](results/french-comparison-fields-replay-2026-10-26.json)
+uses frozen CLI `596d40ea41a4bafefbd5b34af4ef35a8a4e2cde4`, SHA-256
+`bcff00ad245c7a70582db222fa48e5eb2f796bd944d5ccbeefe759fbd010a576`.
+All 52 compiled source objects were verified against immutable Git objects,
+independently of later source work. The [build receipt](results/french-comparison-cli-build-2026-10-26.json)
+and raw commands/results are hash-pinned. Ordinary and declared arithmetic modes
+run separately on both unchanged originals: 96 successes and 16 intended refusals,
+zero disagreements, 1,204 rows and 1,548 cells compared.
+
+Expected Short results use 42 independent complete keys for 21 distinct actual
+non-NULL values under exact French and General Legacy reference encoders.
+[ShortKeysOracle.java](ShortKeysOracle.java) is an original bounded caller of the
+reviewed JAR, not copied encoding logic. Every French physical key/reference in
+the originals is additionally checked by independent raw framing. No Short value
+here needs prefix truncation or overflow digestion. Long Memo expectations use
+the pinned [Latin model](french_comparison_latin_model.py), restricted to measured
+e/a/b/é/è primitive streams. Matched General Legacy Memo siblings use the forward
+secondary stream separately. These model results do not qualify arbitrary long
+Unicode or native Access SQL/NLS comparison; serialized unprintable positions
+are outside this long oracle.
+
+The 28 cases per profile/mode cover Short sort/group/distinct/extrema/equality
+join, retained aliases through two derived layers, explicit ordinal override,
+Memo sort and later primary/accent differences at 256/1,024/20,000 units,
+NULL/empty/ignored-key classes, full Len results, policy conflict, LIKE refusal,
+missing LCID registration, operation-default and explicit Binary search controls,
+and a comparison-byte quota failure. The originals have no saved query definitions;
+a positive native named-source control is not claimed by this corpus. Existing
+named-source coverage elsewhere is unchanged.
+
+Actual read-only header defaults differ: V2016 is General2010 `1033/0/1`, V2019
+General Legacy `1033/0/0`; field descriptors are unchanged. InStr's explicit
+Database mode uses that operation/default provider, so the ASCII `cote`/`ot`
+control returns 2 even when its argument is a French field. French argument policy
+is not mistaken for an operation-wide French matcher. An unregistered explicit
+LCID 1036 still refuses; French field LIKE also refuses. General constructor/API
+recognition remains distinct from the separate French comparison provider.
+
+The first 112 attempts retained 60 native Step refusals before modeled long results;
+these were neither value passes nor wrong value/order answers. An identical
+Len-only query, which performs no text comparison, succeeded after changing only
+native steps to 10 million. The accepted retry kept all SQL, data, selectors,
+expected values and comparison allowances unchanged. Native bytes 64 MiB and
+native steps 10 million are explicit; comparison bytes 64 MiB and comparison
+steps 10 million form a separate pool. The quota-negative changes only comparison
+bytes to 1 MiB and reports the intended Bytes refusal after native materialization.
+No defaults were changed. The complete initial report, executed source snapshots
+and causal probe remain pinned.
+
+[compare_french_comparison_fields.py](compare_french_comparison_fields.py) and its
+[expected model](french_field_comparison/model.py) are import-safe. They use fresh
+output/report paths and preserve every command/stdout/stderr and initial failure.
+These are headless engineering model comparisons over actual native field data,
+not Windows/native Access execution or save qualification.

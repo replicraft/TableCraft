@@ -1,0 +1,266 @@
+{
+  "date": "2026-10-26",
+  "scope": "Actual native field policy composition with independent short keys and bounded Latin long model; not native SQL/NLS qualification",
+  "compiled_revision": "596d40ea41a4bafefbd5b34af4ef35a8a4e2cde4",
+  "counts": {
+    "controls": 112,
+    "successes": 96,
+    "refusals": 16,
+    "disagreements": 0,
+    "rows_compared": 1204,
+    "cells_compared": 1548
+  },
+  "matrix": {
+    "profiles": [
+      "V2016",
+      "V2019"
+    ],
+    "arithmetic_profiles": [
+      "ordinary",
+      "declared"
+    ],
+    "cases_per_profile": 28,
+    "positive_cases_per_profile": 24,
+    "refusal_cases_per_profile": 4,
+    "case_inventory": [
+      "FrenchShort-sort",
+      "GeneralShort-sort",
+      "short-groups",
+      "short-distinct",
+      "short-extrema",
+      "short-join",
+      "derived-policy",
+      "explicit-ordinal",
+      "FrenchMemo-256-sort",
+      "GeneralMemo-256-sort",
+      "memo-256-primary",
+      "memo-256-accent",
+      "FrenchMemo-1024-sort",
+      "GeneralMemo-1024-sort",
+      "memo-1024-primary",
+      "memo-1024-accent",
+      "FrenchMemo-20000-sort",
+      "GeneralMemo-20000-sort",
+      "memo-20000-primary",
+      "memo-20000-accent",
+      "memo-null-empty",
+      "memo-full-length",
+      "policy-conflict",
+      "like-refusal",
+      "operation-default-search",
+      "unregistered-lcid",
+      "binary-search",
+      "comparison-quota"
+    ]
+  },
+  "allowances": {
+    "native_bytes": 67108864,
+    "native_steps": 10000000,
+    "comparison_positive_bytes": 67108864,
+    "comparison_steps": 10000000,
+    "comparison_quota_negative_bytes": 1048576,
+    "defaults_changed": false,
+    "query_pools": "unchanged CLI defaults"
+  },
+  "expected_models": [
+    "Actual UTF16 field getters and raw descriptors from immutable public-writer originals",
+    "42 independent Short keys (21 actual distinct nonNULL values \u00d7exactFrench/GeneralLegacy) with all 76 French physical entries cross-checked against raw framing and actual cursor order",
+    "Pinned 82-handler clean-Latin model for long Memo e/a/b/\u00e9/\u00e8, forward secondary only for matched GeneralLegacy sibling; no truncated/digested long-key comparisons",
+    "NULL/first payload/tie/encounter semantics and ID tiebreakers modeled independently",
+    "Actual operation defaults differ: V2016 General2010, V2019 GeneralLegacy; InStr ASCII Database-mode success uses that default, not French argument policy"
+  ],
+  "boundaries": [
+    "No native Access SQL/NLS/save/reopen or ordinary write qualification",
+    "Long unprintable positional behavior and arbitrary Unicode full-string equivalence remain outside the Latin oracle",
+    "Native field types/data/policy forwarding are observed separately from the provisional comparison model",
+    "Positive derived aliases are covered; originals contain no saved definitions, so native named-source positive is not claimed",
+    "French LIKE and unregistered LCID search refuse; operation-default General and explicit Binary search controls are separate successes",
+    "All refusal cases exit 2 with empty stdout; arithmetic modes are separately captured"
+  ],
+  "accepted_attempt": {
+    "session": 83937,
+    "exit_code": 0,
+    "raw_report": {
+      "path": ".cache/french-comparison-fields-replay-native-work-20261026.json",
+      "bytes": 41024,
+      "sha256": "e56369f7855113a672ffbb7ce9836f1bc3b6d52a354fcf8c8208c1f8bb9ccdf8"
+    }
+  },
+  "initial_attempt": {
+    "session": 43728,
+    "exit_code": 1,
+    "raw_report": {
+      "path": ".cache/french-comparison-fields-replay-initial-20261026.json",
+      "bytes": 40551,
+      "sha256": "5ca94c575f897f9f88233801d889717ee1259ef2a3b4b41ba2a374f8bd27cb04"
+    },
+    "counts": {
+      "controls": 112,
+      "successes": 40,
+      "refusals": 12,
+      "disagreements": 60,
+      "rows_compared": 872,
+      "cells_compared": 1064
+    },
+    "finding": "60 native Steps refusals before modeled long results. These are not wrong value/order answers or value passes. A Len-only causal probe changed only native steps to 10m and succeeded; approved retry kept all SQL/data/selectors/goldens/comparison allowances unchanged and explicitly raised only the native work allowance. Expected Bytes comparison-quota negative is separate.",
+    "executed_sources": [
+      {
+        "path": ".cache/french-comparison-replay-next-20261026/initial-compare_french_comparison_fields.py",
+        "bytes": 8780,
+        "sha256": "237dfe4283deeafbab0bec5b82b9f1db91ed422fa2641687a68ad74e6ab8f889"
+      },
+      {
+        "path": ".cache/french-comparison-replay-next-20261026/initial-model.py",
+        "bytes": 6828,
+        "sha256": "9a63f9f729b2da489884cc1a77f3e44cd9665ec6fc13b74d32a4066b78ce644c"
+      }
+    ],
+    "causal_probe": {
+      "path": ".cache/french-comparison-replay-next-20261026/native-steps-causal-probe.json",
+      "bytes": 1118,
+      "sha256": "95862b23ae313c025d69e1979c0a0991ef0119db240154be3521a1120c7714a7"
+    }
+  },
+  "build_receipt": {
+    "path": "docs/testing/results/french-comparison-cli-build-2026-10-26.json",
+    "bytes": 10497,
+    "sha256": "7f257600ffba329cd6a7cc68311c7961cf94992c93689628590662cc93f0a9b1"
+  },
+  "field_receipt": {
+    "path": "docs/testing/results/french-comparison-fields-2026-10-26.json",
+    "bytes": 9120,
+    "sha256": "df59bfedfb44d56478cc9baee19414084e2978f7946b760f9637e71afaf798c9"
+  },
+  "primitive_model_receipt": {
+    "path": "docs/testing/results/french-full-comparison-2026-10-26.json",
+    "bytes": 24167,
+    "sha256": "25318f6cdc8a53b074290cc36b95225eb9efd5907745d81bb6f135978639c023"
+  },
+  "compiled_object_count": 52,
+  "input_and_tool_pins": [
+    {
+      "path": ".cache/tablecraft-bin/tablecraft-french-comparison-20261026",
+      "bytes": 43416632,
+      "sha256": "bcff00ad245c7a70582db222fa48e5eb2f796bd944d5ccbeefe759fbd010a576"
+    },
+    {
+      "path": "docs/testing/results/french-comparison-cli-build-2026-10-26.json",
+      "bytes": 10497,
+      "sha256": "7f257600ffba329cd6a7cc68311c7961cf94992c93689628590662cc93f0a9b1"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/french-comparison-20261026/fields-initial.json",
+      "bytes": 81072,
+      "sha256": "c3869a91b168e4a40fa1942bde2f1d78bb942ce05ac045688293649428726031"
+    },
+    {
+      "path": ".cache/french-comparison-replay-next-20261026/short-keys.tsv",
+      "bytes": 1428,
+      "sha256": "c56d52429bf5177b2f194fb81aab8c5ba8660bde25ad791d2484f96f49602e4b"
+    },
+    {
+      "path": ".cache/french-full-comparison-next-20261026/oracle.tsv",
+      "bytes": 136677,
+      "sha256": "51db37d7b0746f4b4f9141cbd6cda5785f52b50030d5ace94372c249139fcb84"
+    },
+    {
+      "path": ".cache/french-comparison-replay-next-20261026/database-defaults.json",
+      "bytes": 1051,
+      "sha256": "fd8ecd1d83d18d3a4d0295055234789fd2807291a27d8179f61f3e3cc12c0895"
+    },
+    {
+      "path": "docs/testing/compare_french_comparison_fields.py",
+      "bytes": 8909,
+      "sha256": "6a66702da6ef2c2212e8f4333ee4843b86eb7be10dcf78052ddbe2752d361b08"
+    },
+    {
+      "path": "docs/testing/capture_french_comparison.py",
+      "bytes": 9525,
+      "sha256": "58815c4a6ff78411ba3e29e582d96ee2d1bb7348a9ced377893841ef990ced20"
+    },
+    {
+      "path": "docs/testing/compare_french_physical_reads.py",
+      "bytes": 11747,
+      "sha256": "b05a856c5dda696eb7c1da028c93bb22d94dafe89e7fd9ef105edcc6b6e94310"
+    },
+    {
+      "path": "docs/testing/french_field_comparison/model.py",
+      "bytes": 6828,
+      "sha256": "9a63f9f729b2da489884cc1a77f3e44cd9665ec6fc13b74d32a4066b78ce644c"
+    },
+    {
+      "path": "docs/testing/french_comparison_latin_model.py",
+      "bytes": 4061,
+      "sha256": "65b95a6fd9dcd0f92f30d463fd2f5bcb855ecc562365e30b6fe1ac5d9b69f0d1"
+    },
+    {
+      "path": "docs/testing/encoded_delete_originals/wire.py",
+      "bytes": 6423,
+      "sha256": "c75e98152710d6957c212d66da0c8c7f62fc5c6d0b159fdbb823d72bb22662a5"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/french-comparison-20261026/Comparison-V2016.accdb",
+      "bytes": 937984,
+      "sha256": "ca64a8f518214f5ea889f1bc56922e2269cc120929e4c42b9f60a11d37b54b61"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/french-comparison-20261026/V2016-getter.json",
+      "bytes": 701624,
+      "sha256": "f7c85544b47522dfb8bc562aaf49749f819ea74e54838586bf02eece44d73515"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/french-comparison-20261026/Comparison-V2019.accdb",
+      "bytes": 1007616,
+      "sha256": "abc1aa1977057c4d55bc69b86be70972d6759859e1e6611a81ae276805bb5443"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/french-comparison-20261026/V2019-getter.json",
+      "bytes": 701666,
+      "sha256": "fecc4321af310049b5549b436baadc3fb9e011bc39db035fa6e6afd8d65dbfb3"
+    }
+  ],
+  "short_oracle_pins": [
+    {
+      "path": ".cache/french-comparison-replay-next-20261026/ShortKeysOracle.java",
+      "bytes": 1808,
+      "sha256": "3cc9e9c82177a32ed28656c18d9345a66a9c13c4f1ca40b77786dcf09eeafcf5"
+    },
+    {
+      "path": "docs/testing/ShortKeysOracle.java",
+      "bytes": 1808,
+      "sha256": "3cc9e9c82177a32ed28656c18d9345a66a9c13c4f1ca40b77786dcf09eeafcf5"
+    },
+    {
+      "path": ".cache/french-comparison-replay-next-20261026/short-classes/com/healthmarketscience/jackcess/impl/ShortKeysOracle.class",
+      "bytes": 2929,
+      "sha256": "cfb8eb130310c61bc71bba4dc94056d77f144784f97d26115e8d8839604881fb"
+    },
+    {
+      "path": ".cache/french-comparison-replay-next-20261026/short-input.hex",
+      "bytes": 297,
+      "sha256": "aa2b0d7b6cd7fe0c284d8b5bbbfffa08af83cb4f7f5b6fd53748f2f644f0ed78"
+    },
+    {
+      "path": ".cache/french-comparison-replay-next-20261026/short-keys.tsv",
+      "bytes": 1428,
+      "sha256": "c56d52429bf5177b2f194fb81aab8c5ba8660bde25ad791d2484f96f49602e4b"
+    }
+  ],
+  "default_getter_pins": [
+    {
+      "path": "docs/testing/TextSortOrderOracle.java",
+      "bytes": 949,
+      "sha256": "5bf0d76873b5f6f5b8deee3ab6cdd684417db5c77ed567baf72e390b3a52c3b4"
+    },
+    {
+      "path": ".cache/french-comparison-replay-next-20261026/metadata-classes/TextSortOrderOracle.class",
+      "bytes": 2736,
+      "sha256": "255281a257217341fed8dd4fcee0b11e89ef0a443c608f12b46beb3df2abfb32"
+    }
+  ],
+  "short_oracle_commands": [
+    "javac -cp .cache/tablecraft-fixtures/jackcess-5.0.4.jar -d .cache/french-comparison-replay-next-20261026/short-classes .cache/french-comparison-replay-next-20261026/ShortKeysOracle.java",
+    "java -cp .cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/french-comparison-replay-next-20261026/short-classes com.healthmarketscience.jackcess.impl.ShortKeysOracle .cache/french-comparison-replay-next-20261026/short-input.hex > .cache/french-comparison-replay-next-20261026/short-keys.tsv"
+  ],
+  "python_compile_exit_code": 0
+}

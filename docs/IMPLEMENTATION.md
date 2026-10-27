@@ -1,5 +1,27 @@
 # Implementation status
 
+## Native French field query replay
+
+The [frozen comparison CLI replay](testing/results/french-comparison-fields-replay-2026-10-26.json)
+passes all 112 controls over unchanged ACE16 Short Text/Memo originals: 96
+successful queries and sixteen intended buffered refusals, comparing 1,204 rows
+and 1,548 cells. Ordinary/declared arithmetic modes, actual field-policy routing,
+short sorting/grouping/sets/extrema/joins, derived projections and 256/1024/20,000-
+unit Memo discriminators retain their separate expected models.
+
+Short expectations use independent exact keys; clean-Latin long expectations use
+the measured-handler model. Actual General database defaults drive built-ins,
+separately from French field predicates/keys. The replay does not claim native
+Access/NLS equivalence, arbitrary long-Unicode positional proof or a saved-query
+fixture absent from these originals.
+
+The initial 112-control run retained sixty native-work refusals before comparison
+results. A same-query Len probe changing only the native-step allowance isolated
+that pool; the accepted retry keeps all sizes, selectors and expected values,
+with explicit separate native/comparison allowances and a comparison-byte negative.
+No production defaults or answers were changed. See
+[the field observations](testing/FRENCH_COMPARISON_FIELD_OBSERVATIONS.md).
+
 ## Comparison-only French database query policy
 
 Exact French legacy `1036/0/0` now has separate full-String and raw-UTF16
