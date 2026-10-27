@@ -28,6 +28,8 @@ mod preservation;
 mod properties;
 mod relationships;
 mod table;
+#[cfg(test)]
+mod test_support;
 mod transaction;
 pub use catalog::{
     CatalogInspection, NativeAccessLinkTarget, NativeLinkText, NativeLinkedTableDefinition,
