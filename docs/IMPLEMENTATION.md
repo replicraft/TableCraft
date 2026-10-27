@@ -14,7 +14,27 @@ records 148 distinct passing runtime functions and three compile-fail checks.
 Two frozen read-only consumers each checked the same 60 saved independent-writer
 outputs, with all 120 column reports matching independently captured expectations.
 These are storage-check results, not new UPDATE actions or native Access
-qualification. Memo/OLE replacement and normal ACE saves remain unfinished.
+qualification. General Memo/OLE replacement and normal ACE saves remain unfinished.
+
+## Ordinary Memo/OLE replacement candidates
+
+The separate `preview_ace16_long_value_updates` engineering API now replaces
+qualified raw Memo/opaque OLE values through NULL, inline, single and chained
+storage. Column-specific append/EOF allocation and ordinary parent forwarding
+share one map ledger. Old chunks and orphan storage remain unchanged and allocated.
+
+An immutable original operation supplies final row/value authority; independent
+map, page and payload audits protect the actual candidate. Cross-catalog ownership
+must qualify, including historical declarations and live references without map
+pairs. Unknown ownership, sharing, compressed/extended fields, selected properties
+and indexes remain explicit blockers. See the
+[storage contract](testing/ACE16_LONG_VALUE_UPDATES.md).
+
+The [scoped record](testing/results/ace16-long-value-updates-native-2026-10-27.json)
+passes 99 distinct core runtime functions, three compile-fail checks, strict lint,
+minimal compilation and formatting. Working-tree consumer checks are recorded
+separately. Original-file candidate qualification requires a frozen committed
+consumer; the prior public transition corpus is not candidate evidence.
 
 ## Fixed Int32 leaf split candidates
 

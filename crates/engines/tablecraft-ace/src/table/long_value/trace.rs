@@ -5,27 +5,27 @@ use super::{
 use crate::{InspectError, NativeReadSource, format::reader::Reader};
 
 #[derive(Clone, Copy)]
-pub(super) struct Chunk {
+pub(in crate::table) struct Chunk {
     pub reference: u32,
     pub offset: usize,
     pub bytes: usize,
 }
 
 #[derive(Clone, Copy)]
-pub(super) enum Kind {
+pub(in crate::table) enum Kind {
     Null,
     Inline,
     Single,
     Chained,
 }
 
-pub(super) struct Traced {
+pub(in crate::table) struct Traced {
     pub value: Option<Vec<u8>>,
     pub kind: Kind,
     pub chunks: Vec<Chunk>,
 }
 
-pub(super) fn read<R: NativeReadSource>(
+pub(in crate::table) fn read<R: NativeReadSource>(
     reader: &mut Reader<'_, R>,
     descriptor: &[u8],
 ) -> Result<Traced, InspectError> {

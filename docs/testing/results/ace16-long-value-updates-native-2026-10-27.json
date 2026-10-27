@@ -1,0 +1,487 @@
+{
+  "schema_version": 1,
+  "scope": "Working feature-gated non-journalable ordinary raw Memo/OLE replacement preview; no normal save, macro execution or Microsoft Access qualification.",
+  "api": "NativeImage::preview_ace16_long_value_updates(table,column,&[SlotScalarUpdate],budget,cancelled) -> Ace16WritePreview",
+  "source_state": "Exact working-tree source pins; no clean committed-revision or original-file candidate acceptance claim.",
+  "base_revision_at_record": "d8bdf6c3ec015afdb70ffa4668ac10974cf7dbb6",
+  "core_source_files": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/admission.rs",
+      "bytes": 2722,
+      "sha256": "ebdc417e932f57c598deea92a50dfb62ff00f39d7f5103b95921a6406aebce6f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/audit/chunks.rs",
+      "bytes": 8975,
+      "sha256": "1dc136024fc158f3c322ba572bf43d621b78876f27dd2fc2260c4409e74c43ed"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/audit/mod.rs",
+      "bytes": 760,
+      "sha256": "efb2b0c2a1b5497e61676f2b36f41032ffed21255e83e21e582328f4f71e224e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/audit/pages.rs",
+      "bytes": 10301,
+      "sha256": "e60fab3e25c80fdbc4c489bb4af7af79c57e0c53930eb1c40be363da205d8a36"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/authority.rs",
+      "bytes": 4164,
+      "sha256": "323c55c95cebce630b40da300b8825663142bef79079c54b9a40dcdecaec9511"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/encode/tests.rs",
+      "bytes": 3353,
+      "sha256": "582f643c8f22ee9ffde1d116c06d957567cabeb2c50d39066999e65952066318"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/encode.rs",
+      "bytes": 9615,
+      "sha256": "26e10581aea5ad958f3b48c860f8b2163076e54ff634981106b6b4a33ec08199"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/finish.rs",
+      "bytes": 5620,
+      "sha256": "4a21a9abe1ebc22dcbc1d27a859b70326daedd2eed331c68ee40947f4148f1f8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/map_audit.rs",
+      "bytes": 10543,
+      "sha256": "fe60dee5534ef298d771722a77f0986feff8cbf363185044a74732fb45b3e2b4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/maps.rs",
+      "bytes": 10745,
+      "sha256": "02139568e621270a8d90e1a77ee51715ee5fb22bedb6e91b26f2560e9b4703e0"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/mod.rs",
+      "bytes": 2115,
+      "sha256": "f6c645d4025ebbfae039365939a12a65e90b065ed6587b3ca964470d4c6d261a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/ownership.rs",
+      "bytes": 9745,
+      "sha256": "5741562971bd5f401ea1a4244e01eaecbe9ac3f7e57ffacc8c722d71d272cb26"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/placement.rs",
+      "bytes": 13633,
+      "sha256": "29a20875324a8b2f53404ef7128c6e73c1f70378f10ab0c360973f836c958b80"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/stage.rs",
+      "bytes": 7332,
+      "sha256": "b99da019eb4ffa040918aca699f6b655c281b8636f1d72c4c0c90abd17ab29bc"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/tests.rs",
+      "bytes": 5205,
+      "sha256": "a6936af79ba51a7411026c2f3cbb099c91dd7068e9d8b3895d77e72be92d0773"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/value.rs",
+      "bytes": 1156,
+      "sha256": "769ab9cb82ac30ee75a7291353f245ae5a7ae4358c7ee8bb6ed0d3c722c45001"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/mod.rs",
+      "bytes": 976,
+      "sha256": "29ea3577db6807ebcd002322fe8219a18c78eb6015db196af736e5cd3ecf3984"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/page_update/record.rs",
+      "bytes": 8344,
+      "sha256": "8bff9f032cdca3fb8d1b694d112dfe1a14eea22b62acdedb2dba48082c18ce8b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/long_value.rs",
+      "bytes": 6043,
+      "sha256": "2e4fa61f998d03165fb541a3b479900e76f5e22ccc4eb14c3eada649c6c60bed"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/long_value/maps.rs",
+      "bytes": 8745,
+      "sha256": "4fa1666cb601bcfc8ab015d6570eaa2318349e08af0b56055993221d877368f5"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/long_value/trace.rs",
+      "bytes": 1274,
+      "sha256": "b5d8bf6d4343eb5df232d74b00306efa4b18fce5740070898f0e40286e51384d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_long_value_updates.rs",
+      "bytes": 3202,
+      "sha256": "012bfced69e09da075f0b68e892ae46e4fdeb4724a368b59610ec525b288071f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_long_value_updates_contract.rs",
+      "bytes": 696,
+      "sha256": "2631dcceb284125c3d19152109fc638686d607dd087c4a833841f09be714caf8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_long_value_updates_contract/guards.rs",
+      "bytes": 5909,
+      "sha256": "d303d9b4deb41f3dbb08c5e7bef73e4f3fe8754328c754594884a64c985eaa30"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_long_value_updates_contract/model.rs",
+      "bytes": 13895,
+      "sha256": "50f19e8503bb80f3f57deb135d91fab072e27aab80606b090387561c8e91624b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_long_value_updates_contract/values.rs",
+      "bytes": 10754,
+      "sha256": "784fb385246fec9088c8d38a607c20abe9a9f0776276ce681ba2687b7c48374d"
+    },
+    {
+      "path": "docs/testing/ACE16_LONG_VALUE_UPDATES.md",
+      "bytes": 6963,
+      "sha256": "48f258db6cc58a9bf1b93dcfbd501dcfabfadc0a22263c81fcc2bbc111955eb4"
+    }
+  ],
+  "core_inventory": {
+    "rust_files": 26,
+    "contract_files": 1,
+    "this_result_file": 1,
+    "total_commit_paths": 28
+  },
+  "shared_file_note": "mutation/mod.rs checker owns only the feature-gated long_value registration; preserve other split registrations. page_update/record.rs has the working two-consumer framing extraction; read-side maps/trace changes are internal visibility only.",
+  "admission": {
+    "format": "plain unencoded ACE16 codes5/6 subversion0",
+    "selected_field": "ordinary variable Memo12/OLE11 flag2/ext0/length0; no selected field properties or index",
+    "maps": "complete qualified inline column owned/candidate maps, candidate population0/1; existing indirect ordinary maps retain prior qualification",
+    "ownership": "paid complete catalog declaration/live-reference census; unknown tails, shared selected references and cross-column/table ownership refuse. Complete empty declarations do not hide live external references.",
+    "retention": "old chunk/orphan bodies and words preserved; no retirement, map growth or in-file free-page reuse",
+    "unchanged_gates": "all existing structural, active-content, index, constraint, relationship and unsupported property gates"
+  },
+  "implementation": [
+    "Raw UTF16LE Memo roundtrip and opaque OLE; NULL/empty distinct; explicit inline/single/chained choice and small-value external fallback based on completed ordinary record capacity.",
+    "LVAL append owner marker distinct from ordinary table owner/hidden target; one EOF sequence and aggregated role-map bytes compose chunks and parent forwarding.",
+    "Final authority rebinds immutable original table/column/requests, actual original root frames, expected and new values, and writable ownership independently of staged Roots/metadata.",
+    "Independent original-state map replay derives exact failed-fit clears/EOF bits; page/value/descriptor/chunk audits protect old bodies, masks, gaps, padding and zero new-page initialization.",
+    "Append-aware finalizer returns owned preview directly and retains equal-length normal apply/journal paths."
+  ],
+  "test_authorship": "Author3 literal serializer tests, author1 genuine empty native Memo-index admission test, independent peer8 literal integration functions, author3 private request/forged-after certification functions. Author public/private tests reuse the peer-owned fixture where stated; this is not independent fixture generation by each assertion author.",
+  "counts": {
+    "core_distinct_runtime_functions": 99,
+    "core_new_runtime_functions": 15,
+    "core_existing_runtime_functions": 84,
+    "distinct_consumer_functions": 14,
+    "consumer_function_executions_per_final_batch": 20,
+    "consumer_shared_functions_counted_once": 6,
+    "consumer_new_meaningful_functions": 3,
+    "combined_distinct_runtime_functions": 113,
+    "compile_fail_documentation_functions": 3,
+    "default_storage_repeat_functions_not_added": 10
+  },
+  "final_checks": [
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib table::mutation::long_value",
+      "exit_status": 0,
+      "passed_functions": 6,
+      "log": {
+        "path": ".cache/ace16-long-value-writer-initial-20261027/private-final.log",
+        "bytes": 1112,
+        "sha256": "2e12dacd1a9e1917b7c355ccb9805872b583d676f2e5afc0a1ba38ea3858d7d4"
+      }
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test ace16_slot_updates --test ace16_page_updates --test ace16_page_updates_contract --test ace16_variable_updates --test ace16_variable_updates_contract --test mutation --test ace16_write_preview --test long_value_storage --test long_value_storage_contract --test ace16_long_value_updates --test ace16_long_value_updates_contract --example preview_ace16_long_value --example preview_ace16_slot",
+      "exit_status": 0,
+      "passed_function_executions": 101,
+      "log": {
+        "path": ".cache/ace16-long-value-writer-initial-20261027/regressions-final.log",
+        "bytes": 11903,
+        "sha256": "c372fb1f38f83859c0f5da5dc10732998f5e838a748197d97aee11dd576a5ea5"
+      }
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib --test ace16_long_value_updates --test ace16_long_value_updates_contract --test ace16_slot_updates --test ace16_page_updates --test ace16_page_updates_contract --test ace16_variable_updates --test ace16_variable_updates_contract --test mutation --test ace16_write_preview --test long_value_storage --test long_value_storage_contract --example preview_ace16_long_value --example preview_ace16_slot -- -D warnings",
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/ace16-long-value-writer-initial-20261027/strict-initial.log",
+        "bytes": 183,
+        "sha256": "f98c86467ac5c40c168c1dfef4e4f2aa48d4b950d30eb8f79cc6d3249ecdbc1e"
+      }
+    },
+    {
+      "name": "default-storage-final",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--test",
+        "long_value_storage",
+        "--test",
+        "long_value_storage_contract"
+      ],
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/ace16-long-value-writer-initial-20261027/default-storage-final.log",
+        "bytes": 1534,
+        "sha256": "dd167367603b36ec00bae80ed7c48d401535ca6416915e71dff05fb040a829f8"
+      }
+    },
+    {
+      "name": "decoders-final",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "table::long_"
+      ],
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/ace16-long-value-writer-initial-20261027/decoders-final.log",
+        "bytes": 1634,
+        "sha256": "4f70d5bbe0d986b76b7b592812d1dcd5ba451c26995a42b0b90e0a8af239fe46"
+      }
+    },
+    {
+      "name": "minimal-final",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--no-default-features"
+      ],
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/ace16-long-value-writer-initial-20261027/minimal-final.log",
+        "bytes": 72,
+        "sha256": "a41051563a4cb5fc1b1bcdd9aa0ba28ca80f7736d629d90cc138218756e8e3a9"
+      }
+    },
+    {
+      "name": "docs-final",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--features",
+        "ace16-write-preview",
+        "--doc"
+      ],
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/ace16-long-value-writer-initial-20261027/docs-final.log",
+        "bytes": 627,
+        "sha256": "4c2f84ea8325ed0596f1b94bb0368fb9aa60ffeb6bcfc831e883c48195ed8dc4"
+      }
+    },
+    {
+      "name": "default-strict-final",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--test",
+        "long_value_storage",
+        "--test",
+        "long_value_storage_contract",
+        "--example",
+        "check_long_values",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/ace16-long-value-writer-initial-20261027/default-strict-final.log",
+        "bytes": 183,
+        "sha256": "1bd19962b6e4653977ef52b2f77aa84011b93b28a87fcb7b4e48261ec4497e51"
+      }
+    },
+    {
+      "command_manifest": {
+        "path": ".cache/ace16-long-value-writer-initial-20261027/fmt-final-command.json",
+        "bytes": 2148,
+        "sha256": "4fcf81d34bd20e78d9a0204691c34d94ca6309c750e99ced65121ff3c4939638"
+      },
+      "exit_status": 0,
+      "rust_paths": 26,
+      "log": {
+        "path": ".cache/ace16-long-value-writer-initial-20261027/fmt-final.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "preserved_attempts": [
+    {
+      "name": "initial library",
+      "exit_status": 0,
+      "observation": "First attempt, no warnings.",
+      "log": {
+        "path": ".cache/ace16-long-value-writer-initial-20261027/library-initial.log",
+        "bytes": 183,
+        "sha256": "8bc8bc4eec32d29cbad6e5c122422775e138a6bd8bcf25c813ed00f844135075"
+      },
+      "source_manifest": {
+        "path": ".cache/ace16-long-value-writer-initial-20261027/source.json",
+        "bytes": 6148,
+        "sha256": "1ecd8e742458c8369a498e4d6408ce85c52589e225516967e2a3bf47202590d9"
+      }
+    },
+    {
+      "name": "initial authored serialization",
+      "exit_status": 0,
+      "passed_functions": 3,
+      "log": {
+        "path": ".cache/ace16-long-value-writer-initial-20261027/encoder-initial.log",
+        "bytes": 759,
+        "sha256": "bcb488ddf9b8d30f323bf8e2fc84e36634dc9ed12b01e136b557331498f44283"
+      }
+    },
+    {
+      "name": "initial independent integration compile",
+      "exit_status": 101,
+      "observation": "E0618 local record Vec shadowed record helper; no runtime. Minimal test binding rename only.",
+      "log": {
+        "path": ".cache/ace16-long-value-writer-initial-20261027/primary-initial.log",
+        "bytes": 1469,
+        "sha256": "54d02342e1506827e5513e9ba545666e08926b441660740c501a5d5e0205bf6c"
+      },
+      "source_manifest": {
+        "path": ".cache/ace16-long-value-writer-initial-20261027/primary-source/source.json",
+        "bytes": 6005,
+        "sha256": "743dccc7c4dea8e4e44ac35806e7af52068dd8acb0321ae6030758a673849e77"
+      }
+    },
+    {
+      "name": "first independent integration runtime",
+      "exit_status": 0,
+      "passed_functions": 8,
+      "observation": "All eight first runtime pass after test-only binding correction; no golden correction.",
+      "log": {
+        "path": ".cache/ace16-long-value-writer-initial-20261027/primary-compile-retry.log",
+        "bytes": 1121,
+        "sha256": "7acde4b63655be3b86bfd57059aff89db96451d989eeecb7480f27541792c5fc"
+      }
+    },
+    {
+      "name": "initial genuine selected Memo-index guard",
+      "exit_status": 0,
+      "passed_functions": 1,
+      "log": {
+        "path": ".cache/ace16-long-value-writer-initial-20261027/author-index-initial.log",
+        "bytes": 490,
+        "sha256": "ec640b84c207a29ef5b9d77594a1e51d2218fefe059b01a583d2bbf7a8c325fb"
+      }
+    },
+    {
+      "name": "initial combined integration/consumer",
+      "exit_status": 0,
+      "passed_function_executions": 29,
+      "log": {
+        "path": ".cache/ace16-long-value-writer-initial-20261027/primary-consumers-initial.log",
+        "bytes": 3697,
+        "sha256": "0406e4099f5b95097bf1ce2dc7cd1e234e658593355a181f4e7468be905b8cbe"
+      }
+    },
+    {
+      "name": "request-authority causal before",
+      "exit_status": 101,
+      "observation": "Healthy original A-to-B control passed; fully correlated unrequested A-to-C stage was certified (.err()==None), causing expected Preservation assertion failure. Private certification seam, not a claimed public-input exploit.",
+      "log": {
+        "path": ".cache/ace16-long-value-writer-authority-causal-20261027/before.log",
+        "bytes": 1232,
+        "sha256": "b23be5656f8adcc3f1394bd2e8c6cf8b120fb8dd9348c7f3c97a1d98a3751550"
+      },
+      "source_manifest": {
+        "path": ".cache/ace16-long-value-writer-authority-causal-20261027/before-source.json",
+        "bytes": 4914,
+        "sha256": "0260dde4b93779ae5b88baa227bcc9fc8e10db178e5c9b79483548247d252528"
+      }
+    },
+    {
+      "name": "request-authority causal after",
+      "exit_status": 0,
+      "passed_functions": 1,
+      "observation": "Immutable original Operation plus independently rebound admission/ownership/roots/values rejects the same unrequested replacement; requested control still succeeds.",
+      "log": {
+        "path": ".cache/ace16-long-value-writer-authority-causal-20261027/after.log",
+        "bytes": 512,
+        "sha256": "5d24b5ff22f648b31f9eb114a778c69b6771d3b280444379d07fa61b2e49d5ce"
+      }
+    }
+  ],
+  "independent_fixture_preconditions": {
+    "observation": "Inherited synthetic system definitions had unknown zero suffixes. Before first runtime, peer truthfully installed explicit complete-empty declarations at independently asserted MSysObjects398/MSysRelationships449. Unknown ownership refusal was retained; selected values/goldens unchanged.",
+    "archives": [
+      {
+        "path": ".cache/ace16-long-value-writer-independent-initial-20261027/complete-system-declarations/manifest.json",
+        "bytes": 1649,
+        "sha256": "5e4a80e3d938539dcfbc027c1b9a61f658eb16b1e45239858bd781483171b00b"
+      }
+    ]
+  },
+  "forged_after_controls": "Healthy finalized control plus ordinary read/checker acceptance precede exact Preservation for old former-live chunk body, original opaque orphan body, nonzero fresh-page padding and unrelated represented future global bit. These four variants are grouped into two private functions, separate from the preserved request-authority causal function.",
+  "consumer_checks": {
+    "owner": "root, separate source/commit scope",
+    "scope": "New larger input profile keeps old1024-byte slot profile unchanged; shared five parser and one publisher functions counted once. New consumer first9 and old11 both green; no frozen-original replay inferred.",
+    "source_files": [
+      {
+        "path": "crates/engines/tablecraft-ace/Cargo.toml",
+        "bytes": 2319,
+        "sha256": "9c5831de80b984da684df96b8955387d38c51c53e6f09ba3d8ee66e1cbec5dbc"
+      },
+      {
+        "path": "crates/engines/tablecraft-ace/examples/preview_ace16_long_value.rs",
+        "bytes": 1991,
+        "sha256": "bab80ed22fc5c7b30dd4e6d8e1ff1745fc52ef54c9f0668bc89c228d2dd9be47"
+      },
+      {
+        "path": "crates/engines/tablecraft-ace/examples/preview_ace16_long_value/tests.rs",
+        "bytes": 4470,
+        "sha256": "80ebf1a5372c4945a97136fdd8ce0c3002e104efc9fe662440b62981c521aa7a"
+      },
+      {
+        "path": "crates/engines/tablecraft-ace/examples/preview_ace16_slot.rs",
+        "bytes": 2631,
+        "sha256": "f28b36833efdf3d7d6d4b4d42776ac9ed57f4e1d17f888a518a85dff7f423b90"
+      },
+      {
+        "path": "crates/engines/tablecraft-ace/examples/preview_ace16_slot/input.rs",
+        "bytes": 5749,
+        "sha256": "8c4dfc5e118de8254a522dd797ef35050e3e7b56f665d76c985074e36cd9f315"
+      },
+      {
+        "path": "crates/engines/tablecraft-ace/examples/preview_ace16_slot/input/tests.rs",
+        "bytes": 3569,
+        "sha256": "289e35a6153504402f96897946c2be1d7ad27797d08412cb8b3ccc25f1bc711e"
+      },
+      {
+        "path": "crates/engines/tablecraft-ace/examples/preview_ace16_slot/output.rs",
+        "bytes": 1041,
+        "sha256": "bed6bffa99fb59dafa5eb106236bc57948a7b6fb0d548f5bf7e7c9aa2f1b6d00"
+      }
+    ]
+  },
+  "not_run": "No original-file candidate replay, native Microsoft Access execution/save/reopen, map growth, indirect column-map mutation, indexed Memo replacement, retirement, SQLite or .tcraft work."
+}

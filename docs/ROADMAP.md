@@ -73,6 +73,12 @@ Delivered read/query and engineering foundations:
   Its [two unchanged-original candidates](testing/ROOT_SPLIT_UPDATE_OBSERVATIONS.md)
   now pass their first complete-image, typed-value and index/reference proofs
   through a frozen committed consumer.
+  A separate [ordinary Memo/OLE replacement service](testing/ACE16_LONG_VALUE_UPDATES.md)
+  now composes qualified column-owned LVAL append/EOF allocation with parent
+  descriptor forwarding and independently replays request/map/payload authority.
+  Old chunks remain allocated. Broader field/map profiles, reclamation and
+  production saves remain unfinished; committed-consumer original replay is a
+  separate qualification gate.
   A separate [48-control Text/Binary corpus](testing/ENCODED_DELETE_OBSERVATIONS.md)
   checks 36 candidates and twelve unsupported-profile refusals on the same
   committed tool, including the previously refused height-two delete-all cases.

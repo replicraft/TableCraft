@@ -54,6 +54,14 @@ The same frozen variable consumer separately passes
 including new EOF pages, alternate-owned reuse and fitted shrinks from generated
 candidates. Its unindexed Binary field and retained primary index have complete
 byte/value/map/index proofs; public padding canonicalization remains distinct.
+
+The separate [Memo/OLE service](../../testing/ACE16_LONG_VALUE_UPDATES.md) now
+replaces ordinary uncompressed, unindexed long fields using qualified column maps.
+LVAL chunks and ordinary parent forwarding share one EOF/map sequence, with
+immutable request authority and independent final audits. Old chunks remain
+allocated; unknown ownership, broader field/map profiles and normal saves remain
+unqualified. Its original-file candidate replay follows a frozen consumer build.
+
 Contraction now qualifies complete internal-node sibling chains by height and
 repairs retained neighbors. Entirely unlinked levels retain their existing
 profile; partial or malformed chains refuse. The

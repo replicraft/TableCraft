@@ -1,9 +1,9 @@
 //! Bounded native long-value storage shared by MEMO and opaque OLE bytes.
 mod check;
 mod definition;
-mod maps;
+pub(in crate::table) mod maps;
 mod model;
-mod trace;
+pub(in crate::table) mod trace;
 pub use check::check_table_long_values;
 pub use model::{
     LongValueCheck, LongValueCheckStatus, LongValueCounts, LongValueMapReferences,
