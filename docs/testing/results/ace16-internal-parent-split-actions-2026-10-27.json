@@ -1,0 +1,565 @@
+{
+  "date": "2026-10-27",
+  "scope": "Measured public non-root internal-parent split plus prior-service atomic refusal; not current-kernel candidate acceptance/native Access qualification",
+  "actual": {
+    "session": 74237,
+    "terminal_status": 0,
+    "processes": 9,
+    "compile": 1,
+    "native_prior_service_attempts": 2,
+    "public_updates": 2,
+    "read_only_descriptions": 4,
+    "completed_profiles": 2,
+    "atomic_prior_refusals": 2,
+    "root_growths": 0,
+    "sources_and_tools_unchanged": true
+  },
+  "source_phase": "docs/testing/results/ace16-internal-parent-split-sources-2026-10-27.json",
+  "raw_report": {
+    "path": ".cache/ace16-internal-parent-actions-first-20261027/report.json",
+    "bytes": 5101249,
+    "sha256": "a7a9b561a28a6f3086d96073299ad25e64122e9332c89bc640a71a9c061ed371"
+  },
+  "terminal_log": {
+    "path": ".cache/ace16-internal-parent-actions-next-20261027/first-execution.log",
+    "bytes": 263,
+    "sha256": "dc21e7e88bbc86b996505d87bc6897d529d65d8dcac1f40b4d61c583f28dc082"
+  },
+  "precall": {
+    "path": ".cache/ace16-internal-parent-actions-first-20261027/before-first-command.json",
+    "bytes": 2946,
+    "sha256": "27c44e93305835021d3f01fd531fe8ff786b2921a7a23080347ebd35c5fb4961"
+  },
+  "executed_freeze": {
+    "path": ".cache/ace16-internal-parent-actions-next-20261027/freeze.json",
+    "bytes": 2837,
+    "sha256": "caed3dd9f7405391cf03562a22150b6a90cb5fff35af2fb877b30cf32539a656"
+  },
+  "actual_private_sources": [
+    {
+      "path": ".cache/ace16-internal-parent-actions-next-20261027/run.py",
+      "bytes": 11078,
+      "sha256": "d75c0892580c13bf165666fa31e58c2633a169892f1c5a9c557403f34d6e612d"
+    },
+    {
+      "path": ".cache/ace16-internal-parent-actions-next-20261027/model.py",
+      "bytes": 6134,
+      "sha256": "eea60bb86cad31c779572231182361f2ab5c46603d36a16341312129a631f80c"
+    },
+    {
+      "path": ".cache/ace16-internal-parent-actions-next-20261027/InternalParentUpdateReference.java",
+      "bytes": 5178,
+      "sha256": "4092ffd890748e95f320fe5fe39a551d1418ddd0bfed0a5d442db0766d278f40"
+    },
+    {
+      "path": ".cache/ace16-internal-parent-actions-next-20261027/plan.json",
+      "bytes": 5540,
+      "sha256": "ef14553e6d0e207d0d3a402a037b90e9478e1de172965d6b8be8989295314031"
+    }
+  ],
+  "public_tools": [
+    {
+      "path": "docs/testing/internal_parent_split_originals/action_model.py",
+      "bytes": 6134,
+      "sha256": "eea60bb86cad31c779572231182361f2ab5c46603d36a16341312129a631f80c"
+    },
+    {
+      "path": "docs/testing/internal_parent_split_originals/InternalParentUpdateReference.java",
+      "bytes": 5178,
+      "sha256": "4092ffd890748e95f320fe5fe39a551d1418ddd0bfed0a5d442db0766d278f40"
+    },
+    {
+      "path": "docs/testing/internal_parent_split_originals/verify_actions.py",
+      "bytes": 3333,
+      "sha256": "4d19efa8cbaa3fedfeba2140b6e132d681be1183970e3249d795a24d58cab5d1"
+    }
+  ],
+  "public_source_identity": "Java/action model byte-identical to actual private execution; read-only verifier new. No claim public verifier was historical runner. Raw commands/tracebacks stay private; public status receipts portable.",
+  "public_read_only_verification": {
+    "path": ".cache/ace16-internal-parent-actions-first-20261027/public-read-only-verification.json",
+    "bytes": 242,
+    "sha256": "9f3dd9c2b4460c86b40c5988398a3271220b9bdd5831227bdd223c4db3604d82"
+  },
+  "cases": [
+    {
+      "profile": "V2016",
+      "source": {
+        "path": ".cache/ace16-internal-parent-source-first-20261027/V2016-sparse.accdb",
+        "bytes": 4837376,
+        "sha256": "2b0d90ac6db86314a8ef5298f7fa871bfda43cecda8aa45121a840ae6c02bbb2"
+      },
+      "public_reference": {
+        "path": ".cache/ace16-internal-parent-actions-first-20261027/V2016-public-reference.accdb",
+        "bytes": 4845568,
+        "sha256": "37dd34c79a1eb733cb3a875ff240086159048d4bc7bfdf3bbf77f2a71d7672e3"
+      },
+      "selector": {
+        "profile": "V2016",
+        "source": {
+          "path": ".cache/ace16-internal-parent-source-first-20261027/V2016-sparse.accdb",
+          "bytes": 4837376,
+          "sha256": "2b0d90ac6db86314a8ef5298f7fa871bfda43cecda8aa45121a840ae6c02bbb2"
+        },
+        "table": "SparseInt32",
+        "column": "Key",
+        "ordinal": 962,
+        "expected": 149184,
+        "replacement": 2147483647,
+        "page": 1180,
+        "slot": 8,
+        "root": 91,
+        "original_root_height": 2,
+        "parent": 820,
+        "target_leaf": 100,
+        "source_live_rows": 963,
+        "sentinel_rows": 1,
+        "sizes": {
+          "unsplit_leaf_best_bytes": 3761,
+          "left_best_bytes": 1413,
+          "right_best_bytes": 1881,
+          "parent_best_bytes": 3621
+        },
+        "qualification": "Parent!=root proven; actual public retainedparent/nodeallocation/rootheight/siblings measured after action, not inferred from prior leaf/root history"
+      },
+      "prior_service": {
+        "error": "Error: Unsupported(IndexedColumn)\n",
+        "atomic_no_output": true
+      },
+      "before_getter": {
+        "path": ".cache/ace16-internal-parent-actions-first-20261027/V2016-before.stdout",
+        "bytes": 98837,
+        "sha256": "62cd70fa4b6aeb0e4ab0950a5ac50086d321fbd3ff317fea77188f0716fdc354"
+      },
+      "after_getter": {
+        "path": ".cache/ace16-internal-parent-actions-first-20261027/V2016-after.stdout",
+        "bytes": 98891,
+        "sha256": "18efc4b26503ee9e682b6d097ff25b8db33e8315e88db2f11208c5f67092c441"
+      },
+      "retained_root": 91,
+      "height_before_after": [
+        2,
+        2
+      ],
+      "root_bound_count_before_after": [
+        2,
+        3
+      ],
+      "root_tail": 0,
+      "original_internal_parent": 820,
+      "original_parent_retained_as": "RIGHT",
+      "new_leaf_left": 1181,
+      "new_internal_left": 1182,
+      "original_right_leaf": 100,
+      "leaf_split_counts": [
+        235,
+        235
+      ],
+      "internal_child_split_counts": [
+        165,
+        165
+      ],
+      "old_parent_tail": 100,
+      "new_parent_tail": 823,
+      "new_parent_previous": 821,
+      "new_parent_next": 820,
+      "historical_counts": [
+        149184,
+        149184
+      ],
+      "all963_root_references_stable": true,
+      "all963_record_bodies_exact_fixed_patch_or_unchanged": true,
+      "added_index_pages": [
+        1181,
+        1182
+      ],
+      "removed_index_pages": [],
+      "file_bytes_before_after": [
+        4837376,
+        4845568
+      ],
+      "map_changes": {
+        "JackcessGlobalFree": {
+          "added_members": [],
+          "removed_members": [],
+          "existing_bytes": [
+            {
+              "offset": 2101399,
+              "before": 224,
+              "after": 128
+            }
+          ]
+        },
+        "TableOwned": {
+          "added_members": [],
+          "removed_members": [],
+          "existing_bytes": []
+        },
+        "TableFreeSpace": {
+          "added_members": [],
+          "removed_members": [],
+          "existing_bytes": []
+        },
+        "IndexOwned": {
+          "added_members": [
+            1181,
+            1182
+          ],
+          "removed_members": [],
+          "existing_bytes": [
+            {
+              "offset": 2478231,
+              "before": 10,
+              "after": 106
+            }
+          ]
+        }
+      },
+      "raw_comparison_sha256": "5b52ea7843999295cfec56b425ac7377161b6c7c8cfb9de19d6c9834f0cddc76"
+    },
+    {
+      "profile": "V2019",
+      "source": {
+        "path": ".cache/ace16-internal-parent-source-first-20261027/V2019-sparse.accdb",
+        "bytes": 4907008,
+        "sha256": "40b998b125a515de9856f26b1138fc211d840b8844cae5780587a4d8361ab53e"
+      },
+      "public_reference": {
+        "path": ".cache/ace16-internal-parent-actions-first-20261027/V2019-public-reference.accdb",
+        "bytes": 4915200,
+        "sha256": "5aac214e57187bae437e6ed939041269ae19676bde5716c169913914c45ec510"
+      },
+      "selector": {
+        "profile": "V2019",
+        "source": {
+          "path": ".cache/ace16-internal-parent-source-first-20261027/V2019-sparse.accdb",
+          "bytes": 4907008,
+          "sha256": "40b998b125a515de9856f26b1138fc211d840b8844cae5780587a4d8361ab53e"
+        },
+        "table": "SparseInt32",
+        "column": "Key",
+        "ordinal": 962,
+        "expected": 149184,
+        "replacement": 2147483647,
+        "page": 1197,
+        "slot": 8,
+        "root": 108,
+        "original_root_height": 2,
+        "parent": 837,
+        "target_leaf": 117,
+        "source_live_rows": 963,
+        "sentinel_rows": 1,
+        "sizes": {
+          "unsplit_leaf_best_bytes": 3761,
+          "left_best_bytes": 1413,
+          "right_best_bytes": 1881,
+          "parent_best_bytes": 3621
+        },
+        "qualification": "Parent!=root proven; actual public retainedparent/nodeallocation/rootheight/siblings measured after action, not inferred from prior leaf/root history"
+      },
+      "prior_service": {
+        "error": "Error: Unsupported(IndexedColumn)\n",
+        "atomic_no_output": true
+      },
+      "before_getter": {
+        "path": ".cache/ace16-internal-parent-actions-first-20261027/V2019-before.stdout",
+        "bytes": 98875,
+        "sha256": "ad4e8d633f641f6e2cc88c6c95a921c694866aef065afc1b5ab914533d27a758"
+      },
+      "after_getter": {
+        "path": ".cache/ace16-internal-parent-actions-first-20261027/V2019-after.stdout",
+        "bytes": 98929,
+        "sha256": "da28181c9f593bb2961ded6db900e80dbe2e0de73d6094bd8be7ab2a3ea35ae1"
+      },
+      "retained_root": 108,
+      "height_before_after": [
+        2,
+        2
+      ],
+      "root_bound_count_before_after": [
+        2,
+        3
+      ],
+      "root_tail": 0,
+      "original_internal_parent": 837,
+      "original_parent_retained_as": "RIGHT",
+      "new_leaf_left": 1198,
+      "new_internal_left": 1199,
+      "original_right_leaf": 117,
+      "leaf_split_counts": [
+        235,
+        235
+      ],
+      "internal_child_split_counts": [
+        165,
+        165
+      ],
+      "old_parent_tail": 117,
+      "new_parent_tail": 840,
+      "new_parent_previous": 838,
+      "new_parent_next": 837,
+      "historical_counts": [
+        149184,
+        149184
+      ],
+      "all963_root_references_stable": true,
+      "all963_record_bodies_exact_fixed_patch_or_unchanged": true,
+      "added_index_pages": [
+        1198,
+        1199
+      ],
+      "removed_index_pages": [],
+      "file_bytes_before_after": [
+        4907008,
+        4915200
+      ],
+      "map_changes": {
+        "JackcessGlobalFree": {
+          "added_members": [],
+          "removed_members": [],
+          "existing_bytes": [
+            {
+              "offset": 2101401,
+              "before": 192,
+              "after": 0
+            }
+          ]
+        },
+        "TableOwned": {
+          "added_members": [],
+          "removed_members": [],
+          "existing_bytes": []
+        },
+        "TableFreeSpace": {
+          "added_members": [],
+          "removed_members": [],
+          "existing_bytes": []
+        },
+        "IndexOwned": {
+          "added_members": [
+            1198,
+            1199
+          ],
+          "removed_members": [],
+          "existing_bytes": [
+            {
+              "offset": 2547865,
+              "before": 21,
+              "after": 213
+            }
+          ]
+        }
+      },
+      "raw_comparison_sha256": "f09b42c029c37d36e7854b8ba0a61d0bbadb45a14ee8352bb320de9b465973f0"
+    }
+  ],
+  "process_receipts": [
+    {
+      "index": 0,
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-internal-parent-actions-first-20261027/compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": ".cache/ace16-internal-parent-actions-first-20261027/compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 1,
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-internal-parent-actions-first-20261027/V2016-before.stdout",
+        "bytes": 98837,
+        "sha256": "62cd70fa4b6aeb0e4ab0950a5ac50086d321fbd3ff317fea77188f0716fdc354"
+      },
+      "stderr": {
+        "path": ".cache/ace16-internal-parent-actions-first-20261027/V2016-before.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 2,
+      "status": 1,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-internal-parent-actions-first-20261027/V2016-current-service-attempt.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": ".cache/ace16-internal-parent-actions-first-20261027/V2016-current-service-attempt.stderr",
+        "bytes": 34,
+        "sha256": "b80b69309bc87efee1407a8c14ee150ccac38caf6cc701f833a5607af85d0d51"
+      }
+    },
+    {
+      "index": 3,
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-internal-parent-actions-first-20261027/V2016-public-update.stdout",
+        "bytes": 61,
+        "sha256": "7d1355d6920cd98447f3e0f9f16ee58c02bc9290ea0d9eaad7a3346507641344"
+      },
+      "stderr": {
+        "path": ".cache/ace16-internal-parent-actions-first-20261027/V2016-public-update.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 4,
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-internal-parent-actions-first-20261027/V2016-after.stdout",
+        "bytes": 98891,
+        "sha256": "18efc4b26503ee9e682b6d097ff25b8db33e8315e88db2f11208c5f67092c441"
+      },
+      "stderr": {
+        "path": ".cache/ace16-internal-parent-actions-first-20261027/V2016-after.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 5,
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-internal-parent-actions-first-20261027/V2019-before.stdout",
+        "bytes": 98875,
+        "sha256": "ad4e8d633f641f6e2cc88c6c95a921c694866aef065afc1b5ab914533d27a758"
+      },
+      "stderr": {
+        "path": ".cache/ace16-internal-parent-actions-first-20261027/V2019-before.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 6,
+      "status": 1,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-internal-parent-actions-first-20261027/V2019-current-service-attempt.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": ".cache/ace16-internal-parent-actions-first-20261027/V2019-current-service-attempt.stderr",
+        "bytes": 34,
+        "sha256": "b80b69309bc87efee1407a8c14ee150ccac38caf6cc701f833a5607af85d0d51"
+      }
+    },
+    {
+      "index": 7,
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-internal-parent-actions-first-20261027/V2019-public-update.stdout",
+        "bytes": 61,
+        "sha256": "7d1355d6920cd98447f3e0f9f16ee58c02bc9290ea0d9eaad7a3346507641344"
+      },
+      "stderr": {
+        "path": ".cache/ace16-internal-parent-actions-first-20261027/V2019-public-update.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "index": 8,
+      "status": 0,
+      "timed_out": false,
+      "stdout": {
+        "path": ".cache/ace16-internal-parent-actions-first-20261027/V2019-after.stdout",
+        "bytes": 98929,
+        "sha256": "da28181c9f593bb2961ded6db900e80dbe2e0de73d6094bd8be7ab2a3ea35ae1"
+      },
+      "stderr": {
+        "path": ".cache/ace16-internal-parent-actions-first-20261027/V2019-after.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "classes": [
+    {
+      "path": ".cache/ace16-internal-parent-actions-first-20261027/classes/BoundedFileChannel.class",
+      "bytes": 3080,
+      "sha256": "608c31190c2bcbc9582fd0332813b8697820604b208b9d17c7b1548791c3916b"
+    },
+    {
+      "path": ".cache/ace16-internal-parent-actions-first-20261027/classes/InternalParentUpdateReference.class",
+      "bytes": 7363,
+      "sha256": "6fa81d0da91760c9dd65ccbd354d0fbb68d7b37c9e04acd23aa60d1d8ed331cc"
+    }
+  ],
+  "historical_consumer": {
+    "receipt": {
+      "path": "docs/testing/results/ace16-nonroot-split-example-build-2026-10-27.json",
+      "bytes": 32618,
+      "sha256": "fb0391d2bd05fcf69b12b2267e697b13c8ddc6b578d6165a5fa8702e7f8398ca"
+    },
+    "artifact": {
+      "path": ".cache/tablecraft-bin/ace16-nonroot-split-20261027",
+      "bytes": 18501560,
+      "sha256": "d9facf656f8cb51e5e235223b5532ee64624695e0f1a165fee3b8c6a4ec614c3"
+    },
+    "compiled_revision": "d8bdf6c3ec015afdb70ffa4668ac10974cf7dbb6",
+    "historical_selected_git_objects": 153
+  },
+  "executed_source_archives": [
+    {
+      "path": ".cache/ace16-internal-parent-actions-first-20261027/precall-sources/0-run.py",
+      "bytes": 11078,
+      "sha256": "d75c0892580c13bf165666fa31e58c2633a169892f1c5a9c557403f34d6e612d"
+    },
+    {
+      "path": ".cache/ace16-internal-parent-actions-first-20261027/precall-sources/1-model.py",
+      "bytes": 6134,
+      "sha256": "eea60bb86cad31c779572231182361f2ab5c46603d36a16341312129a631f80c"
+    },
+    {
+      "path": ".cache/ace16-internal-parent-actions-first-20261027/precall-sources/2-InternalParentUpdateReference.java",
+      "bytes": 5178,
+      "sha256": "4092ffd890748e95f320fe5fe39a551d1418ddd0bfed0a5d442db0766d278f40"
+    },
+    {
+      "path": ".cache/ace16-internal-parent-actions-first-20261027/precall-sources/3-plan.json",
+      "bytes": 5540,
+      "sha256": "ef14553e6d0e207d0d3a402a037b90e9478e1de172965d6b8be8989295314031"
+    },
+    {
+      "path": ".cache/ace16-internal-parent-actions-first-20261027/precall-sources/4-BoundedFileChannel.java",
+      "bytes": 3952,
+      "sha256": "2191d11f88f3158e83929591acee803553c703e06127839caa7143340f8afd7e"
+    },
+    {
+      "path": ".cache/ace16-internal-parent-actions-first-20261027/precall-sources/5-capture.py",
+      "bytes": 16743,
+      "sha256": "2a8cfec9779c034e600a100c9ce5764e8188ceb864557835b5e38a53a2f2ead2"
+    },
+    {
+      "path": ".cache/ace16-internal-parent-actions-first-20261027/precall-sources/6-wire.py",
+      "bytes": 15798,
+      "sha256": "556e6663c9fe6fec52e4d0a9f76b171629a29559fd21e85a74d4a6adde5b91f9"
+    },
+    {
+      "path": ".cache/ace16-internal-parent-actions-first-20261027/precall-sources/7-common.py",
+      "bytes": 2697,
+      "sha256": "4d6e13158e1c039f1a75bb12828cfa7eaf811e58e06e5e4de0f4c605e1519f8c"
+    },
+    {
+      "path": ".cache/ace16-internal-parent-actions-first-20261027/precall-sources/8-delete_reference_maps.py",
+      "bytes": 8635,
+      "sha256": "9fca51758e0f26e37dab2e27ff2c41c0e8a7a8110e9a047eda1ccb2a91eadda8"
+    }
+  ]
+}
