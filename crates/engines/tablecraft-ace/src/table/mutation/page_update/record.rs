@@ -27,22 +27,96 @@ pub(in crate::table::mutation) fn build(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, EditError> {
-    let field = &schema.columns[column];
-    let layout = record_layout::parse(before, schema, budget)?;
-    if layout.count != schema.layout.max_columns {
-        return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+    let frame = Frame::read(schema, column, before, budget)?;
+    let payload = preferred(&schema.columns[column], value, budget, cancelled)?;
+    replace(
+        frame,
+        &payload,
+        !matches!(value, Value::Null),
+        budget,
+        cancelled,
+    )
+}
+
+/// Replace an already qualified variable-field payload without changing its
+/// type-specific serialization policy. Both working callers retain their own
+/// field/value admission and independent final semantic checks.
+pub(in crate::table::mutation) fn replace_payload(
+    schema: &TableSchema,
+    column: usize,
+    before: &[u8],
+    payload: &[u8],
+    present: bool,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, EditError> {
+    let frame = Frame::read(schema, column, before, budget)?;
+    replace(frame, payload, present, budget, cancelled)
+}
+
+struct Frame<'a> {
+    schema: &'a TableSchema,
+    column: usize,
+    before: &'a [u8],
+    layout: record_layout::RecordLayout,
+    start: usize,
+    end: usize,
+    payload_end: usize,
+}
+
+impl<'a> Frame<'a> {
+    fn read(
+        schema: &'a TableSchema,
+        column: usize,
+        before: &'a [u8],
+        budget: &mut ResourceBudget,
+    ) -> Result<Self, EditError> {
+        let field = schema.columns.get(column).ok_or(InspectError::Malformed)?;
+        let layout = record_layout::parse(before, schema, budget)?;
+        if layout.count != schema.layout.max_columns {
+            return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+        }
+        let variable = field.field.variable;
+        let start = *layout
+            .offsets
+            .get(variable)
+            .ok_or(InspectError::Malformed)?;
+        let end = *layout
+            .offsets
+            .get(variable + 1)
+            .ok_or(InspectError::Malformed)?;
+        let payload_end = *layout.offsets.last().ok_or(InspectError::Malformed)?;
+
+        Ok(Self {
+            schema,
+            column,
+            before,
+            layout,
+            start,
+            end,
+            payload_end,
+        })
     }
+}
+
+fn replace(
+    frame: Frame<'_>,
+    payload: &[u8],
+    present: bool,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, EditError> {
+    let Frame {
+        schema,
+        column,
+        before,
+        layout,
+        start,
+        end,
+        payload_end,
+    } = frame;
+    let field = &schema.columns[column];
     let variable = field.field.variable;
-    let start = *layout
-        .offsets
-        .get(variable)
-        .ok_or(InspectError::Malformed)?;
-    let end = *layout
-        .offsets
-        .get(variable + 1)
-        .ok_or(InspectError::Malformed)?;
-    let payload_end = *layout.offsets.last().ok_or(InspectError::Malformed)?;
-    let payload = preferred(field, value, budget, cancelled)?;
     let following = payload_end
         .checked_sub(end)
         .ok_or(InspectError::Malformed)?;
@@ -74,7 +148,7 @@ pub(in crate::table::mutation) fn build(
 
     // Immutable source bytes make overlapping growth/shrink safe. Other field
     // payloads are copied exactly; unconsumed original padding stays intact.
-    after[start..start + payload.len()].copy_from_slice(&payload);
+    after[start..start + payload.len()].copy_from_slice(payload);
     after[start + payload.len()..logical_end].copy_from_slice(&before[end..payload_end]);
     let mask_bytes = layout.count.div_ceil(MASK_BITS);
     let mask = length
@@ -83,8 +157,7 @@ pub(in crate::table::mutation) fn build(
     after[mask..].copy_from_slice(&before[layout.mask_start..]);
     let bit = 1_u8 << (field.number() % MASK_BITS);
     let mask_position = mask + field.number() / MASK_BITS;
-    after[mask_position] =
-        (after[mask_position] & !bit) | if matches!(value, Value::Null) { 0 } else { bit };
+    after[mask_position] = (after[mask_position] & !bit) | if present { bit } else { 0 };
     let count_position = mask
         .checked_sub(VARIABLE_COUNT_BYTES)
         .ok_or(InspectError::Malformed)?;

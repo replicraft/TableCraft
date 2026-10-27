@@ -32,17 +32,17 @@ struct Pair {
     candidate: U32,
 }
 
-pub(super) struct Declaration {
+pub(in crate::table) struct Declaration {
     pub number: usize,
     pub references: LongValueMapReferences,
 }
 
-pub(super) struct Declarations {
+pub(in crate::table) struct Declarations {
     pub entries: Vec<Declaration>,
     pub complete: bool,
 }
 
-pub(super) fn declarations<R: NativeReadSource>(
+pub(in crate::table) fn declarations<R: NativeReadSource>(
     reader: &mut Reader<'_, R>,
     schema: &TableSchema,
 ) -> Result<Declarations, InspectError> {
