@@ -146,8 +146,10 @@ Delivered read/query and engineering foundations:
   now admits qualified indirect-owned/inline-candidate pairs in the default
   storage checker and engineering replacement, with 112 distinct runtime checks.
   A working read-only checker matches all four reports on the unchanged originals.
-  Committed replacement replay, candidate-indirect maps, metadata growth and
-  production saves remain separate work.
+  Its [twelve committed-consumer candidates](testing/MIXED_LONG_VALUE_UPDATE_OBSERVATIONS.md)
+  now match complete independently frozen images and fresh getter/maps on both
+  unchanged originals, through twenty-five successful first-attempt fixture commands.
+  Candidate-indirect maps, metadata growth and production saves remain separate work.
   A separate [48-control Text/Binary corpus](testing/ENCODED_DELETE_OBSERVATIONS.md)
   checks 36 candidates and twelve unsupported-profile refusals on the same
   committed tool, including the previously refused height-two delete-all cases.
