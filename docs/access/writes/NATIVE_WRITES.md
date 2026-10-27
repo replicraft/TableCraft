@@ -173,6 +173,12 @@ getters, on unchanged General/Binary sources. All twelve fixture commands pass
 first attempt; independent-engine observations and native Access save
 qualification remain separate.
 
+The next [combined pressure sources](../../testing/VARIABLE_ENCODED_SPLIT_SOURCE_OBSERVATIONS.md)
+now have measured full DATA pages and overflowing maximum-width General/Binary
+keys, including independently confirmed Modern digest output. Source construction
+and read-only encoder inspection do not qualify a combined DATA/index allocator,
+complete metadata census, persisted changed keys or normal saves.
+
 A separate [index-owned map promotion service](../../testing/ACE16_INDEX_MAP_GROWTH.md)
 now extends the same engineering split APIs when an inline map's complete required
 span exceeds its qualified window. It preserves the original map-row extent,
