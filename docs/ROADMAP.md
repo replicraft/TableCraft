@@ -84,6 +84,10 @@ Delivered read/query and engineering foundations:
   now measures actual retained-root growth to height two and three EOF index
   pages on both sources; the frozen kernel still refuses those two edits
   atomically. Recursive implementation and candidate acceptance remain separate.
+  A distinct [below-root internal-parent source](testing/INTERNAL_PARENT_INDEX_SPLIT_SOURCE_OBSERVATIONS.md)
+  now retains 963 live target rows under a height-two root after bounded public
+  pruning, with all 497 index pages and three sibling levels preserved. Its
+  source phase contains no MAX update or native candidate qualification.
   A separate [ordinary Memo/OLE replacement service](testing/ACE16_LONG_VALUE_UPDATES.md)
   now composes qualified column-owned LVAL append/EOF allocation with parent
   descriptor forwarding and independently replays request/map/payload authority.
