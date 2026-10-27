@@ -1,0 +1,206 @@
+{
+  "date": "2026-10-27",
+  "scope": "Existing-slot admission and overflow refusal on unchanged General legacy/modern Short Text and Binary ACE 16 split sources.",
+  "status": "Twelve first-attempt native baseline controls pass their exact expected outcomes; no split candidates or public writer updates.",
+  "consumer": {
+    "compiled_revision": "59c87310ad4d25fa182336640a85477f5075455c",
+    "artifact": {
+      "path": ".cache/tablecraft-bin/ace16-slot-20261026",
+      "bytes": 17017616,
+      "sha256": "ba3b1f5f80c0274d0145006e22ae60a1fc8b7b051576ae651e7a853da36e285b"
+    },
+    "build_receipt": {
+      "path": "docs/testing/results/ace16-slot-example-build-2026-10-26.json",
+      "bytes": 16124,
+      "sha256": "d9127b823db620dd2ac9d71ca9a589695a93c20cdb0a134d28fb9ac02e1296ff"
+    },
+    "selected_historical_source_objects_verified_before_execution": 75,
+    "source_inventory_scope": "Selected source pins, not an exhaustive compiler-input closure; committed revision identifies the source tree."
+  },
+  "counts": {
+    "native_baseline_calls": 12,
+    "byte_identical_noops": 6,
+    "indexed_column_refusals_without_output": 6,
+    "command_retries": 0,
+    "frozen_inputs": 25,
+    "input_and_freeze_checks": 26,
+    "public_updates": 0,
+    "new_compilations": 0,
+    "jvm_calls": 0
+  },
+  "requests": {
+    "row": 0,
+    "column": "KeyValue",
+    "carrier": "Headerless five-field quoted TSV through the genuine slot parser.",
+    "text_expected": "aaa",
+    "text_changed": "zzz",
+    "binary_expected_hex": "00",
+    "binary_changed_hex": "ff",
+    "noop": "Replacement equals expected; all six full files are byte-identical.",
+    "ordering": "All six no-ops precede all six changed requests, across V2016/V2019 and TextLegacy/TextModern/BinaryOne."
+  },
+  "limits": {
+    "child_seconds": 30,
+    "captured_bytes_per_stream": 16777216,
+    "compiled_native_byte_allowance": 268435456,
+    "compiled_native_row_allowance": 100000,
+    "compiled_native_step_allowance": 100000000,
+    "compiled_input_value_bytes": 1024
+  },
+  "originals": [
+    {
+      "path": ".cache/ace16-encoded-index-source-corrected-first-20261027/V2016-original.accdb",
+      "bytes": 557056,
+      "sha256": "362a2f603036f836489f87cd24d58c7c4383329dddd065349b48452bd5f480c8"
+    },
+    {
+      "path": ".cache/ace16-encoded-index-source-corrected-first-20261027/V2019-original.accdb",
+      "bytes": 630784,
+      "sha256": "bbe12b91fa29b78032eb1485b801350d309e31d58680630686046716a442bd1b"
+    }
+  ],
+  "outcomes": [
+    {
+      "label": "V2016-TextLegacy-noop",
+      "result": "byte-identical noop",
+      "output": {
+        "path": ".cache/ace16-encoded-old-slot-baseline-first-20261027/V2016-TextLegacy-noop.accdb",
+        "bytes": 557056,
+        "sha256": "362a2f603036f836489f87cd24d58c7c4383329dddd065349b48452bd5f480c8"
+      }
+    },
+    {
+      "label": "V2016-TextModern-noop",
+      "result": "byte-identical noop",
+      "output": {
+        "path": ".cache/ace16-encoded-old-slot-baseline-first-20261027/V2016-TextModern-noop.accdb",
+        "bytes": 557056,
+        "sha256": "362a2f603036f836489f87cd24d58c7c4383329dddd065349b48452bd5f480c8"
+      }
+    },
+    {
+      "label": "V2016-BinaryOne-noop",
+      "result": "byte-identical noop",
+      "output": {
+        "path": ".cache/ace16-encoded-old-slot-baseline-first-20261027/V2016-BinaryOne-noop.accdb",
+        "bytes": 557056,
+        "sha256": "362a2f603036f836489f87cd24d58c7c4383329dddd065349b48452bd5f480c8"
+      }
+    },
+    {
+      "label": "V2019-TextLegacy-noop",
+      "result": "byte-identical noop",
+      "output": {
+        "path": ".cache/ace16-encoded-old-slot-baseline-first-20261027/V2019-TextLegacy-noop.accdb",
+        "bytes": 630784,
+        "sha256": "bbe12b91fa29b78032eb1485b801350d309e31d58680630686046716a442bd1b"
+      }
+    },
+    {
+      "label": "V2019-TextModern-noop",
+      "result": "byte-identical noop",
+      "output": {
+        "path": ".cache/ace16-encoded-old-slot-baseline-first-20261027/V2019-TextModern-noop.accdb",
+        "bytes": 630784,
+        "sha256": "bbe12b91fa29b78032eb1485b801350d309e31d58680630686046716a442bd1b"
+      }
+    },
+    {
+      "label": "V2019-BinaryOne-noop",
+      "result": "byte-identical noop",
+      "output": {
+        "path": ".cache/ace16-encoded-old-slot-baseline-first-20261027/V2019-BinaryOne-noop.accdb",
+        "bytes": 630784,
+        "sha256": "bbe12b91fa29b78032eb1485b801350d309e31d58680630686046716a442bd1b"
+      }
+    },
+    {
+      "label": "V2016-TextLegacy-changed",
+      "result": "IndexedColumn; no output"
+    },
+    {
+      "label": "V2016-TextModern-changed",
+      "result": "IndexedColumn; no output"
+    },
+    {
+      "label": "V2016-BinaryOne-changed",
+      "result": "IndexedColumn; no output"
+    },
+    {
+      "label": "V2019-TextLegacy-changed",
+      "result": "IndexedColumn; no output"
+    },
+    {
+      "label": "V2019-TextModern-changed",
+      "result": "IndexedColumn; no output"
+    },
+    {
+      "label": "V2019-BinaryOne-changed",
+      "result": "IndexedColumn; no output"
+    }
+  ],
+  "preservation": {
+    "all_inputs_and_freeze_unchanged": true,
+    "inventory_errors": [],
+    "failure": null
+  },
+  "saved_verification": {
+    "verified": true,
+    "fixture_processes": 0,
+    "saved_identities": 57,
+    "native_baseline_commands": 12,
+    "byte_identical_noops": 6,
+    "indexed_column_refusals_without_output": 6,
+    "frozen_input_checks": 26,
+    "public_update_commands": 0
+  },
+  "source_history": "The earlier failed javac and corrected five successful source commands remain separate historical source evidence. These twelve native controls are not part of that source command count or the future public reference phase.",
+  "not_claimed": [
+    "Working Text/Binary split candidates",
+    "NULL/empty or unique/compound overflow qualification",
+    "Broader collation admission",
+    "Native Access comparisons or production saves"
+  ],
+  "pins": [
+    {
+      "path": ".cache/ace16-encoded-old-slot-baseline-next-20261027/freeze.json",
+      "bytes": 15857,
+      "sha256": "d319283f299365f9603882a3e6f9e6a0044d9925e8f0f4e804d632769c5488fb"
+    },
+    {
+      "path": ".cache/ace16-encoded-old-slot-baseline-next-20261027/run.py",
+      "bytes": 6260,
+      "sha256": "84ff5bb53ce8ce17d773f036093906a588f1f82e194489497edacc488081f911"
+    },
+    {
+      "path": ".cache/ace16-encoded-old-slot-baseline-next-20261027/bounded.py",
+      "bytes": 5401,
+      "sha256": "6bf97834287fe48d0c8f911cb708a687829f48701d47a3858958255fbc28325c"
+    },
+    {
+      "path": ".cache/ace16-encoded-old-slot-baseline-next-20261027/artifact-binding.json",
+      "bytes": 15592,
+      "sha256": "aa5c0f8a42c1a8f19d546e0b93033fed67dcb483e1695a4d93c16d3e876cba6c"
+    },
+    {
+      "path": ".cache/ace16-encoded-old-slot-baseline-first-20261027/report.json",
+      "bytes": 36057,
+      "sha256": "dcff599d28222e75fb9cc281f40cd3698068a2fd25cbb024320f2b1ba0937f1b"
+    },
+    {
+      "path": ".cache/ace16-encoded-old-slot-baseline-first-20261027/saved-verifier.json",
+      "bytes": 245,
+      "sha256": "fccef47dc090fd224b4df1d17932ea37b45e72bfa60eafea369d775684a60069"
+    },
+    {
+      "path": "docs/testing/ENCODED_INDEX_SPLIT_BASELINES.md",
+      "bytes": 3677,
+      "sha256": "7947b761586a619f3aa152b28b9b28b4fa7d930e902d4864bfc524d287ce6b65"
+    },
+    {
+      "path": "docs/testing/encoded_index_split_sources/verify_baseline.py",
+      "bytes": 4892,
+      "sha256": "d0f0bc186c1fac43352bdcc65dd4f3dd9e88e2794ddafdaf15ccfc614436b4c2"
+    }
+  ]
+}

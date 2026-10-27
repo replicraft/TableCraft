@@ -9871,3 +9871,14 @@ corrected helper and function-equivalent saved model are tracked with a later
 read-only verifier. It rechecks 48 saved identities, 5,402 typed rows, 5,400 slots
 and 21,602 logical index entries, including aliases. No UPDATE/reference action,
 native baseline call or split candidate acceptance belongs to this source phase.
+
+### Encoded split sources through the frozen old-slot consumer
+
+The [separate native baseline](ENCODED_INDEX_SPLIT_BASELINES.md) now passes twelve
+first-attempt controls through the committed existing-slot example: six complete
+byte-identical no-ops, then six exact IndexedColumn refusals with no output.
+The quoted TSV parser receives genuine Text or Binary carriers; a numeric-parser
+rejection is not used as admission evidence. Both unchanged originals and all
+25 inputs plus the freeze retain their exact hashes. The later saved verifier
+rechecks 57 identities without starting a child process. Source construction,
+public writer actions and successful new split candidates remain distinct.
