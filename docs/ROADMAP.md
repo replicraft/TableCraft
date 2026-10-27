@@ -10,7 +10,7 @@ and future architecture plans are retained. The
 [behavioral-parity decision](decisions/0003_ACCESS_BEHAVIORAL_PARITY.md) governs
 shared services and future UI workflows, defaults, restrictions and quirks.
 
-## Delivery snapshot — 26 October 2026
+## Delivery snapshot — 27 October 2026
 
 The numbered milestones below are broad epics, rather than individual tasks.
 Recent delivery has primarily advanced local reads, query composition and scale;
@@ -76,6 +76,11 @@ Delivered read/query and engineering foundations:
   Its [two non-root original-file candidates](testing/NONROOT_SPLIT_UPDATE_OBSERVATIONS.md)
   also pass first-attempt complete-image proofs, allocating one index page and
   retaining the source's unchanged Memo/OLE storage.
+  Separate [sparse Int32 sources](testing/PARENT_INDEX_SPLIT_SOURCE_OBSERVATIONS.md)
+  now establish measured leaf-and-parent overflow with only 782 live target rows,
+  plus a sentinel, and pass byte-identical no-op admission. Their larger generation
+  histories are not qualified mutation inputs; overflow-write qualification is
+  recorded separately.
   A separate [ordinary Memo/OLE replacement service](testing/ACE16_LONG_VALUE_UPDATES.md)
   now composes qualified column-owned LVAL append/EOF allocation with parent
   descriptor forwarding and independently replays request/map/payload authority.

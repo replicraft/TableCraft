@@ -9462,3 +9462,15 @@ all original long-value descriptors/pages remain unchanged and each image grows
 by one index page. The [candidate receipt](results/ace16-nonroot-split-originals-2026-10-27.json)
 pins six commands, outputs and exact executed sources. The preceding public
 reference capture and its verifier failure remain separate evidence.
+
+### Sparse Int32 parent-overflow sources
+
+The [bounded source history](PARENT_INDEX_SPLIT_SOURCE_OBSERVATIONS.md) creates
+fresh V2016/V2019 larger intermediates, then prunes copies to 782 target rows
+and one sentinel while retaining every index leaf and maximum. The first eleven
+processes all succeed, including byte-identical frozen-consumer no-op copies.
+The [receipt](results/ace16-parent-index-split-sources-2026-10-27.json) pins source,
+intermediate, selection, class, map/getter and complete tree identities. Measured
+leaf and parent capacity both overflow for the separately planned MAX update.
+The larger 99,424-row targets are generation artifacts, not qualified mutation
+inputs, and no overflowing UPDATE is part of this source-phase qualification.

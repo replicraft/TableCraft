@@ -1,0 +1,864 @@
+{
+  "date": "2026-10-27",
+  "scope": "Successful new source generation/sparse histories and K-to-K engineering admission only; no K-to-MAX/public UPDATE, parent split or root growth executed; no native Access qualification.",
+  "actual": {
+    "session": 23797,
+    "terminal_status": 0,
+    "first_attempt": true,
+    "fixture_processes": 11,
+    "java_compilations": 1,
+    "public_generations": 2,
+    "public_prune_histories": 2,
+    "readonly_descriptions": 4,
+    "native_noop_calls": 2,
+    "overflowing_native_calls": 0,
+    "public_update_calls": 0,
+    "completed_profiles": 2
+  },
+  "limits": {
+    "generation_rows_per_profile": 150000,
+    "hard_file_ceiling_bytes": 67108864,
+    "final_live_hard_ceiling": 16384,
+    "final_live_goal": 1536,
+    "checkpoint_inserts": 32,
+    "path_depth": 16,
+    "whole_tree_scans": "once at first gate plus bounded describe/proof scans; no full tree per inserted row",
+    "java_heap": "512MiB",
+    "per_process_deadline_seconds": 1200,
+    "profiles": [
+      "V2016",
+      "V2019"
+    ],
+    "generation_target_rows_per_profile": 149999,
+    "sentinel_rows_per_profile": 1
+  },
+  "owning_document": {
+    "path": "docs/testing/PARENT_INDEX_SPLIT_SOURCE_OBSERVATIONS.md",
+    "bytes": 6785,
+    "sha256": "fd71e033c5e185d5a672ce6f905b737e4678df8a6b45d9ccf7947c9a3991ff46"
+  },
+  "executed_phase": {
+    "manifest": {
+      "path": ".cache/ace16-parent-split-reference-next-20261027/freeze.json",
+      "bytes": 10629,
+      "sha256": "d43b660d72e5d1eb601d046e87594960bc12ecaa39051ee5f271de376b57f377"
+    },
+    "actual_sources": [
+      {
+        "path": ".cache/ace16-parent-split-reference-next-20261027/BoundedFileChannel.java",
+        "bytes": 3952,
+        "sha256": "2191d11f88f3158e83929591acee803553c703e06127839caa7143340f8afd7e"
+      },
+      {
+        "path": ".cache/ace16-parent-split-reference-next-20261027/ParentSplitFixture.java",
+        "bytes": 24719,
+        "sha256": "09501194b3b3a0364f7515e4afc67446ba2577af9a86212d65b0860c3e1e6f11"
+      },
+      {
+        "path": ".cache/ace16-parent-split-reference-next-20261027/wire.py",
+        "bytes": 15798,
+        "sha256": "556e6663c9fe6fec52e4d0a9f76b171629a29559fd21e85a74d4a6adde5b91f9"
+      },
+      {
+        "path": ".cache/ace16-parent-split-reference-next-20261027/capture.py",
+        "bytes": 15345,
+        "sha256": "9ab728c5ede335a19fb349b9438b6fc856021fd2a374ecf2c46c977432065c18"
+      },
+      {
+        "path": ".cache/ace16-parent-split-reference-next-20261027/selfcheck.py",
+        "bytes": 1292,
+        "sha256": "7689fe502e78a325d118e2be472dd57e1f81d171f786b1f4709eeda1a81e2d3a"
+      },
+      {
+        "path": ".cache/ace16-parent-split-reference-next-20261027/DESIGN.md",
+        "bytes": 9289,
+        "sha256": "372527cd63a002d3aa3b31e7141836615807b7449b996b977dd4d604af6115de"
+      },
+      {
+        "path": "docs/testing/slot_preview_originals/common.py",
+        "bytes": 2697,
+        "sha256": "4d6e13158e1c039f1a75bb12828cfa7eaf811e58e06e5e4de0f4c605e1519f8c"
+      },
+      {
+        "path": "docs/testing/delete_reference_maps.py",
+        "bytes": 8635,
+        "sha256": "9fca51758e0f26e37dab2e27ff2c41c0e8a7a8110e9a047eda1ccb2a91eadda8"
+      }
+    ],
+    "source_archives": [
+      {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/precall-sources/0-BoundedFileChannel.java",
+        "bytes": 3952,
+        "sha256": "2191d11f88f3158e83929591acee803553c703e06127839caa7143340f8afd7e"
+      },
+      {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/precall-sources/1-ParentSplitFixture.java",
+        "bytes": 24719,
+        "sha256": "09501194b3b3a0364f7515e4afc67446ba2577af9a86212d65b0860c3e1e6f11"
+      },
+      {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/precall-sources/2-wire.py",
+        "bytes": 15798,
+        "sha256": "556e6663c9fe6fec52e4d0a9f76b171629a29559fd21e85a74d4a6adde5b91f9"
+      },
+      {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/precall-sources/3-capture.py",
+        "bytes": 15345,
+        "sha256": "9ab728c5ede335a19fb349b9438b6fc856021fd2a374ecf2c46c977432065c18"
+      },
+      {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/precall-sources/4-selfcheck.py",
+        "bytes": 1292,
+        "sha256": "7689fe502e78a325d118e2be472dd57e1f81d171f786b1f4709eeda1a81e2d3a"
+      },
+      {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/precall-sources/5-DESIGN.md",
+        "bytes": 9289,
+        "sha256": "372527cd63a002d3aa3b31e7141836615807b7449b996b977dd4d604af6115de"
+      },
+      {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/precall-sources/6-common.py",
+        "bytes": 2697,
+        "sha256": "4d6e13158e1c039f1a75bb12828cfa7eaf811e58e06e5e4de0f4c605e1519f8c"
+      },
+      {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/precall-sources/7-delete_reference_maps.py",
+        "bytes": 8635,
+        "sha256": "9fca51758e0f26e37dab2e27ff2c41c0e8a7a8110e9a047eda1ccb2a91eadda8"
+      }
+    ],
+    "before_first_command": {
+      "path": ".cache/ace16-parent-split-reference-initial-20261027/before-first-command.json",
+      "bytes": 2533,
+      "sha256": "57dd880913039b6f500c4d7965929a8f555e7630180846fa1845f513c5d8572d"
+    },
+    "raw_report": {
+      "path": ".cache/ace16-parent-split-reference-initial-20261027/report.json",
+      "bytes": 445225,
+      "sha256": "11151766680c9c2f863f545de26ea680ac7b5c5f4cd4f0ac60ca54b1f82fd077"
+    },
+    "execution_log": {
+      "path": ".cache/ace16-parent-split-reference-next-20261027/initial-execution.log",
+      "bytes": 208,
+      "sha256": "8532151be08bc631ff3b59c6933cece01204fa3a4caadaf0576bef4bc5aa3407"
+    },
+    "measured_handoff": {
+      "path": ".cache/ace16-parent-split-reference-next-20261027/measured-handoff.json",
+      "bytes": 4094,
+      "sha256": "47f9a247a6710f69b32edaa7ea406558e671676a325d6d339eda58ed5c97f770"
+    },
+    "class_files": [
+      {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/classes/BoundedFileChannel.class",
+        "bytes": 3080,
+        "sha256": "608c31190c2bcbc9582fd0332813b8697820604b208b9d17c7b1548791c3916b"
+      },
+      {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/classes/ParentSplitFixture$Entry.class",
+        "bytes": 1320,
+        "sha256": "cd09533b4d74eab647e6a9af1313fdfd66f616050e35ca57bf711f91e1052efc"
+      },
+      {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/classes/ParentSplitFixture$Gate.class",
+        "bytes": 2317,
+        "sha256": "00fbdaf0cc3a25dba3b5882b92e699de28259c302f0f4b840270e3e74e365e00"
+      },
+      {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/classes/ParentSplitFixture$Page.class",
+        "bytes": 1997,
+        "sha256": "4d6cad6e2b20a1b1802fa90df82bcca20f6d76207789976808ca295536e98b42"
+      },
+      {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/classes/ParentSplitFixture.class",
+        "bytes": 23840,
+        "sha256": "f6fee49e071e4d3aa68c3998336ee7e52b8a47423b1a2ac85fc664b4a7b9d68d"
+      }
+    ]
+  },
+  "historical_admission_consumer": {
+    "receipt": {
+      "path": "docs/testing/results/ace16-root-split-example-build-2026-10-27.json",
+      "bytes": 31424,
+      "sha256": "8bb38f2d27cab021e051facd370dc3fbcf4328893a4336d57bfe376aeab33c23"
+    },
+    "artifact": {
+      "path": ".cache/tablecraft-bin/ace16-root-split-20261027",
+      "bytes": 18402984,
+      "sha256": "8245c35b6b533dbdc8f6dec5fed74aab0c0fdaf0da73e5df529dd3053eae4709"
+    },
+    "compiled_revision": "0c0dc6d904bd112236a383c74b04192ee6c5f90f",
+    "historical_git_source_count": 143
+  },
+  "public_current_sources": [
+    {
+      "path": "docs/testing/parent_index_split_originals/BoundedFileChannel.java",
+      "bytes": 3952,
+      "sha256": "2191d11f88f3158e83929591acee803553c703e06127839caa7143340f8afd7e"
+    },
+    {
+      "path": "docs/testing/parent_index_split_originals/ParentSplitFixture.java",
+      "bytes": 24719,
+      "sha256": "09501194b3b3a0364f7515e4afc67446ba2577af9a86212d65b0860c3e1e6f11"
+    },
+    {
+      "path": "docs/testing/parent_index_split_originals/capture.py",
+      "bytes": 16743,
+      "sha256": "2a8cfec9779c034e600a100c9ce5764e8188ceb864557835b5e38a53a2f2ead2"
+    },
+    {
+      "path": "docs/testing/parent_index_split_originals/selfcheck.py",
+      "bytes": 1292,
+      "sha256": "7689fe502e78a325d118e2be472dd57e1f81d171f786b1f4709eeda1a81e2d3a"
+    },
+    {
+      "path": "docs/testing/parent_index_split_originals/verify_existing.py",
+      "bytes": 3751,
+      "sha256": "21687b19a8e1a5cd3ba34e85476cc50d6ca7088b2e2058e3a7f0562a27a181ba"
+    },
+    {
+      "path": "docs/testing/parent_index_split_originals/wire.py",
+      "bytes": 15798,
+      "sha256": "556e6663c9fe6fec52e4d0a9f76b171629a29559fd21e85a74d4a6adde5b91f9"
+    }
+  ],
+  "public_source_identity": "Java pair, wire.py and selfcheck.py byte-identical; capture.py is a maintained repository-root/current-manifest wrapper, verify_existing.py new. Actual initial execution used archived ignored sources, not these new public paths.",
+  "public_readonly_checks": [
+    {
+      "name": "existing proofs",
+      "exit": 0,
+      "log": {
+        "path": ".cache/ace16-parent-split-reference-next-20261027/public-verify-final.log",
+        "bytes": 116,
+        "sha256": "246fadfeb0432ebdddf26877a8659ae8578135983a74d11d17d9321fe5054161"
+      }
+    },
+    {
+      "name": "arithmetic selfcheck",
+      "exit": 0,
+      "log": {
+        "path": ".cache/ace16-parent-split-reference-next-20261027/public-selfcheck.log",
+        "bytes": 118,
+        "sha256": "11d3698f5f5fdcc4e35771dff44ec9e27c8eed888f73595e7d76dee92e6cec6f"
+      }
+    },
+    {
+      "name": "historical source/artifact gate only",
+      "exit": 0,
+      "log": {
+        "path": ".cache/ace16-parent-split-reference-next-20261027/public-dry-check.log",
+        "bytes": 96,
+        "sha256": "36034fdd48c6d807b7329e6bad5e758d5e05960d496cb4dcfaf8c07667fe722c"
+      }
+    },
+    {
+      "name": "fresh current-wrapper manifest branch, no generation",
+      "exit": 0,
+      "log": {
+        "path": ".cache/ace16-parent-split-reference-next-20261027/public-freeze-check.log",
+        "bytes": 188,
+        "sha256": "37f88438a5d67be2c940e1cc2f6f0462a9b90e4c7b4a5ed0cf15195d0a578d97"
+      },
+      "current_manifest": {
+        "path": ".cache/ace16-parent-split-reference-next-20261027/public-wrapper-freeze-check.json",
+        "bytes": 1731,
+        "sha256": "8ebb867eb22ca3735a9c61058744d1a97efc173128e89dcaafb6a50cfd9af59e"
+      }
+    }
+  ],
+  "public_wrapper_diagnostic": {
+    "initial_verifier_source": {
+      "path": ".cache/ace16-parent-split-reference-next-20261027/public-verifier-initial/verify_existing.py",
+      "bytes": 3552,
+      "sha256": "080f5b82f1e4b995a305666e30107adfb42849084be6fbf5b6f1bc390819ce93"
+    },
+    "recorded_failure": {
+      "path": ".cache/ace16-parent-split-reference-next-20261027/public-verifier-initial/source.json",
+      "bytes": 384,
+      "sha256": "56db3540902f16c80bd558387e7c7a37e2d735239ba581554b5bf3b3c7356a0d"
+    },
+    "cause": "Current map dictionary integer keys become strings in saved JSON. Direct byte/model facts already matched; normalized representation comparison fixed only the public verifier. No JVM/native rerun."
+  },
+  "process_associations": [
+    {
+      "index": 0,
+      "stdout": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "status": 0,
+      "timed_out": false
+    },
+    {
+      "index": 1,
+      "stdout": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/V2016-generate.stdout",
+        "bytes": 82563,
+        "sha256": "465afdac88e1caa3c12b5f70040b602892cee070e63992a296bd739c5793c892"
+      },
+      "stderr": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/V2016-generate.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "status": 0,
+      "timed_out": false
+    },
+    {
+      "index": 2,
+      "stdout": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/V2016-larger-description.stdout",
+        "bytes": 7657414,
+        "sha256": "0bbdc19db9e7b61377fd6468d66e5b3f825248dc1ff0d8046c6ee498e49541a3"
+      },
+      "stderr": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/V2016-larger-description.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "status": 0,
+      "timed_out": false
+    },
+    {
+      "index": 3,
+      "stdout": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/V2016-prune.stdout",
+        "bytes": 17,
+        "sha256": "1a3eb9efc2524039b635d8d3001df0b00a22e98b90ce07916264af38de353c5d"
+      },
+      "stderr": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/V2016-prune.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "status": 0,
+      "timed_out": false
+    },
+    {
+      "index": 4,
+      "stdout": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/V2016-sparse-description.stdout",
+        "bytes": 75164,
+        "sha256": "a7a373420d536aa67725e21b89c550740aeb931c9357baa9c9001485591390d5"
+      },
+      "stderr": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/V2016-sparse-description.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "status": 0,
+      "timed_out": false
+    },
+    {
+      "index": 5,
+      "stdout": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/V2016-native-admission-noop.stdout",
+        "bytes": 25,
+        "sha256": "4488bd9e667e5af69d5eddc238e52ce4c26a3c72bb5d8463250182c4cba04f59"
+      },
+      "stderr": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/V2016-native-admission-noop.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      },
+      "status": 0,
+      "timed_out": false
+    },
+    {
+      "index": 6,
+      "stdout": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/V2019-generate.stdout",
+        "bytes": 82563,
+        "sha256": "5932924b226dd96ac5b4963b26e9715376f0bc835b70d5bcb80dbb7da8f1f372"
+      },
+      "stderr": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/V2019-generate.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "status": 0,
+      "timed_out": false
+    },
+    {
+      "index": 7,
+      "stdout": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/V2019-larger-description.stdout",
+        "bytes": 7658190,
+        "sha256": "0221c827c4058d1953755ea16e7f05766d91cfd99052717bd209528909a3b7fd"
+      },
+      "stderr": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/V2019-larger-description.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "status": 0,
+      "timed_out": false
+    },
+    {
+      "index": 8,
+      "stdout": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/V2019-prune.stdout",
+        "bytes": 17,
+        "sha256": "1a3eb9efc2524039b635d8d3001df0b00a22e98b90ce07916264af38de353c5d"
+      },
+      "stderr": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/V2019-prune.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "status": 0,
+      "timed_out": false
+    },
+    {
+      "index": 9,
+      "stdout": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/V2019-sparse-description.stdout",
+        "bytes": 75177,
+        "sha256": "a376561f146102e92858e09acfe51690f12ff973e1852ae27a123ae6efd65fd1"
+      },
+      "stderr": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/V2019-sparse-description.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "status": 0,
+      "timed_out": false
+    },
+    {
+      "index": 10,
+      "stdout": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/V2019-native-admission-noop.stdout",
+        "bytes": 25,
+        "sha256": "4488bd9e667e5af69d5eddc238e52ce4c26a3c72bb5d8463250182c4cba04f59"
+      },
+      "stderr": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/V2019-native-admission-noop.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      },
+      "status": 0,
+      "timed_out": false
+    }
+  ],
+  "cases": [
+    {
+      "profile": "V2016",
+      "larger_generation": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/V2016-larger.accdb",
+        "bytes": 3350528,
+        "sha256": "3458e2d9e491ec9c7e31fd89290e85d0642ebe12db09c65a7ed8070ed4e890d6"
+      },
+      "larger_live_rows": 99424,
+      "larger_engine_qualification": "Not attempted; deliberately exceeds the current live-row mutation ceiling.",
+      "selection": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/V2016-selection.tsv",
+        "bytes": 17972,
+        "sha256": "e7de7e89f197d999b7ea4572dc2ee6959464a4e6062f17cd5460ac778170d6a0"
+      },
+      "before_pruning": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/V2016-before-pruning.json",
+        "bytes": 712,
+        "sha256": "9a3b379aec485550b08f38a0fb585c048ea78277b1d18ac7c6bcbb519d2fc789"
+      },
+      "sparse_original": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/V2016-sparse.accdb",
+        "bytes": 3350528,
+        "sha256": "ef126c188765dcb4bc8c83267b1ad73f3cd54d92ba1d9e0cf0fa185eced60635"
+      },
+      "final_live_rows": 782,
+      "larger_capture": {
+        "proof": {
+          "path": ".cache/ace16-parent-split-reference-initial-20261027/V2016-larger-description.proof.json",
+          "bytes": 411215,
+          "sha256": "4e3daf140e8a38abaff9e3d017fedb0268d895d7beb80948ca590b0b6680b180"
+        },
+        "command": {
+          "argv": [
+            "java",
+            "-Xmx512m",
+            "-Dstdout.encoding=UTF-8",
+            "-cp",
+            "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/tablecraft-fixtures/jackcess-5.0.4.jar:/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-parent-split-reference-initial-20261027/classes",
+            "ParentSplitFixture",
+            "describe",
+            "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-parent-split-reference-initial-20261027/V2016-larger.accdb"
+          ],
+          "status": 0,
+          "timed_out": false,
+          "timeout_seconds": 1200,
+          "stdout": {
+            "path": ".cache/ace16-parent-split-reference-initial-20261027/V2016-larger-description.stdout",
+            "bytes": 7657414,
+            "sha256": "0bbdc19db9e7b61377fd6468d66e5b3f825248dc1ff0d8046c6ee498e49541a3"
+          },
+          "stderr": {
+            "path": ".cache/ace16-parent-split-reference-initial-20261027/V2016-larger-description.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "file": {
+          "path": ".cache/ace16-parent-split-reference-initial-20261027/V2016-larger.accdb",
+          "bytes": 3350528,
+          "sha256": "3458e2d9e491ec9c7e31fd89290e85d0642ebe12db09c65a7ed8070ed4e890d6"
+        },
+        "observation": {
+          "path": ".cache/ace16-parent-split-reference-initial-20261027/V2016-larger-description.observation.json",
+          "bytes": 12632,
+          "sha256": "5662349f831dd8e835c5ce7d0827ce2c0a2fd31cd6061a1b6c1c7c453dee5f95"
+        }
+      },
+      "sparse_capture": {
+        "proof": {
+          "path": ".cache/ace16-parent-split-reference-initial-20261027/V2016-sparse-description.proof.json",
+          "bytes": 410874,
+          "sha256": "aea68ef34d5dd0889586643b5e2aa88f898ca149c9b9c5a4917d1e25bcc9e750"
+        },
+        "command": {
+          "argv": [
+            "java",
+            "-Xmx512m",
+            "-Dstdout.encoding=UTF-8",
+            "-cp",
+            "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/tablecraft-fixtures/jackcess-5.0.4.jar:/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-parent-split-reference-initial-20261027/classes",
+            "ParentSplitFixture",
+            "describe",
+            "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-parent-split-reference-initial-20261027/V2016-sparse.accdb"
+          ],
+          "status": 0,
+          "timed_out": false,
+          "timeout_seconds": 1200,
+          "stdout": {
+            "path": ".cache/ace16-parent-split-reference-initial-20261027/V2016-sparse-description.stdout",
+            "bytes": 75164,
+            "sha256": "a7a373420d536aa67725e21b89c550740aeb931c9357baa9c9001485591390d5"
+          },
+          "stderr": {
+            "path": ".cache/ace16-parent-split-reference-initial-20261027/V2016-sparse-description.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "file": {
+          "path": ".cache/ace16-parent-split-reference-initial-20261027/V2016-sparse.accdb",
+          "bytes": 3350528,
+          "sha256": "ef126c188765dcb4bc8c83267b1ad73f3cd54d92ba1d9e0cf0fa185eced60635"
+        },
+        "observation": {
+          "path": ".cache/ace16-parent-split-reference-initial-20261027/V2016-sparse-description.observation.json",
+          "bytes": 11972,
+          "sha256": "7ba47c8b7a49e014246df016ed6c5caef27f405135f50933c628a2f109514f7f"
+        }
+      },
+      "retention": {
+        "same_all_original_tree_pages": true,
+        "same_heights_child_tail_siblings": true,
+        "all_subtree_maxima_retained": true,
+        "actual_pruning_or_merge": false,
+        "parent_bytes_before": 3621,
+        "parent_bytes_after": 3621
+      },
+      "metadata_goals": {
+        "live_1536": true,
+        "data_owned_768": true,
+        "index_owned_640": true,
+        "file_64MiB": true
+      },
+      "root": 91,
+      "root_height": 1,
+      "parent": 91,
+      "bounded_entries": 328,
+      "parent_prefix": 2,
+      "parent_free": 6,
+      "leaf": 100,
+      "leaf_entries": 454,
+      "capacity_gate": {
+        "unsplit_leaf_best_bytes": 3633,
+        "left_best_bytes": 1365,
+        "right_best_bytes": 1817,
+        "parent_best_bytes": 3621
+      },
+      "selected_K": 99424,
+      "selected_original_row": {
+        "ordinal": 781,
+        "marker": 298272,
+        "page": 816,
+        "slot": 228,
+        "native_ordinal": 781,
+        "public_ordinal": 781
+      },
+      "predicted_root_growth_only": true,
+      "future_cells": {
+        "JackcessGlobalFree": [
+          {
+            "page": 818,
+            "offset": 2101354,
+            "mask": 4,
+            "before": 252,
+            "set": true
+          },
+          {
+            "page": 819,
+            "offset": 2101354,
+            "mask": 8,
+            "before": 252,
+            "set": true
+          },
+          {
+            "page": 820,
+            "offset": 2101354,
+            "mask": 16,
+            "before": 252,
+            "set": true
+          }
+        ],
+        "IndexOwned": [
+          {
+            "page": 818,
+            "offset": 2478186,
+            "mask": 4,
+            "before": 2,
+            "set": false
+          },
+          {
+            "page": 819,
+            "offset": 2478186,
+            "mask": 8,
+            "before": 2,
+            "set": false
+          },
+          {
+            "page": 820,
+            "offset": 2478186,
+            "mask": 16,
+            "before": 2,
+            "set": false
+          }
+        ]
+      },
+      "before_admission": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/V2016-before-admission.json",
+        "bytes": 591,
+        "sha256": "1bde166dbf06853af975bf922d7e767efc65423a778b8063b8745465b83423a3"
+      },
+      "byte_identical_noop": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/V2016-admission-noop.accdb",
+        "bytes": 3350528,
+        "sha256": "ef126c188765dcb4bc8c83267b1ad73f3cd54d92ba1d9e0cf0fa185eced60635"
+      },
+      "native_notice": "Engineering candidate: data-macro semantics and native Access qualification pending.\n"
+    },
+    {
+      "profile": "V2019",
+      "larger_generation": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/V2019-larger.accdb",
+        "bytes": 3420160,
+        "sha256": "c8b3961e8105a2eabcb84db4f921e620f6acfdec83c751d1f0ed7cedaf943285"
+      },
+      "larger_live_rows": 99424,
+      "larger_engine_qualification": "Not attempted; deliberately exceeds the current live-row mutation ceiling.",
+      "selection": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/V2019-selection.tsv",
+        "bytes": 17974,
+        "sha256": "f4959779caa0ecfff7ac28da5cbd407a3814ea24d0cd1706be587ef66e446040"
+      },
+      "before_pruning": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/V2019-before-pruning.json",
+        "bytes": 712,
+        "sha256": "ba8de79ec0bf42c33cd921bf41cee3a3b9db0a92a15aa006dc5f52a732d9b20b"
+      },
+      "sparse_original": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/V2019-sparse.accdb",
+        "bytes": 3420160,
+        "sha256": "b35ed5dd3dfd40de478827309546aa2928ba912a582fbd29d1eb7dc1534c9840"
+      },
+      "final_live_rows": 782,
+      "larger_capture": {
+        "proof": {
+          "path": ".cache/ace16-parent-split-reference-initial-20261027/V2019-larger-description.proof.json",
+          "bytes": 416476,
+          "sha256": "0e17d59b55739dbec07f3329f7693d9c7729281e1d3fc5c8bcd4ff7a48bfe79d"
+        },
+        "command": {
+          "argv": [
+            "java",
+            "-Xmx512m",
+            "-Dstdout.encoding=UTF-8",
+            "-cp",
+            "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/tablecraft-fixtures/jackcess-5.0.4.jar:/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-parent-split-reference-initial-20261027/classes",
+            "ParentSplitFixture",
+            "describe",
+            "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-parent-split-reference-initial-20261027/V2019-larger.accdb"
+          ],
+          "status": 0,
+          "timed_out": false,
+          "timeout_seconds": 1200,
+          "stdout": {
+            "path": ".cache/ace16-parent-split-reference-initial-20261027/V2019-larger-description.stdout",
+            "bytes": 7658190,
+            "sha256": "0221c827c4058d1953755ea16e7f05766d91cfd99052717bd209528909a3b7fd"
+          },
+          "stderr": {
+            "path": ".cache/ace16-parent-split-reference-initial-20261027/V2019-larger-description.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "file": {
+          "path": ".cache/ace16-parent-split-reference-initial-20261027/V2019-larger.accdb",
+          "bytes": 3420160,
+          "sha256": "c8b3961e8105a2eabcb84db4f921e620f6acfdec83c751d1f0ed7cedaf943285"
+        },
+        "observation": {
+          "path": ".cache/ace16-parent-split-reference-initial-20261027/V2019-larger-description.observation.json",
+          "bytes": 12634,
+          "sha256": "4476789ccd1f1fd61e238b56390110415b84e51ea071881036b2d78e86788b2d"
+        }
+      },
+      "sparse_capture": {
+        "proof": {
+          "path": ".cache/ace16-parent-split-reference-initial-20261027/V2019-sparse-description.proof.json",
+          "bytes": 416135,
+          "sha256": "a32f9961a93084abf36c6e56ac80f537e8ebe344a3049c9c4628a2841a92ee1b"
+        },
+        "command": {
+          "argv": [
+            "java",
+            "-Xmx512m",
+            "-Dstdout.encoding=UTF-8",
+            "-cp",
+            "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/tablecraft-fixtures/jackcess-5.0.4.jar:/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-parent-split-reference-initial-20261027/classes",
+            "ParentSplitFixture",
+            "describe",
+            "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-parent-split-reference-initial-20261027/V2019-sparse.accdb"
+          ],
+          "status": 0,
+          "timed_out": false,
+          "timeout_seconds": 1200,
+          "stdout": {
+            "path": ".cache/ace16-parent-split-reference-initial-20261027/V2019-sparse-description.stdout",
+            "bytes": 75177,
+            "sha256": "a376561f146102e92858e09acfe51690f12ff973e1852ae27a123ae6efd65fd1"
+          },
+          "stderr": {
+            "path": ".cache/ace16-parent-split-reference-initial-20261027/V2019-sparse-description.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "file": {
+          "path": ".cache/ace16-parent-split-reference-initial-20261027/V2019-sparse.accdb",
+          "bytes": 3420160,
+          "sha256": "b35ed5dd3dfd40de478827309546aa2928ba912a582fbd29d1eb7dc1534c9840"
+        },
+        "observation": {
+          "path": ".cache/ace16-parent-split-reference-initial-20261027/V2019-sparse-description.observation.json",
+          "bytes": 11974,
+          "sha256": "307a2a576b3fe571535f7c61b81f58251599959f47de682b5993af1314ad8d7a"
+        }
+      },
+      "retention": {
+        "same_all_original_tree_pages": true,
+        "same_heights_child_tail_siblings": true,
+        "all_subtree_maxima_retained": true,
+        "actual_pruning_or_merge": false,
+        "parent_bytes_before": 3621,
+        "parent_bytes_after": 3621
+      },
+      "metadata_goals": {
+        "live_1536": true,
+        "data_owned_768": true,
+        "index_owned_640": true,
+        "file_64MiB": true
+      },
+      "root": 108,
+      "root_height": 1,
+      "parent": 108,
+      "bounded_entries": 328,
+      "parent_prefix": 2,
+      "parent_free": 6,
+      "leaf": 117,
+      "leaf_entries": 454,
+      "capacity_gate": {
+        "unsplit_leaf_best_bytes": 3633,
+        "left_best_bytes": 1365,
+        "right_best_bytes": 1817,
+        "parent_best_bytes": 3621
+      },
+      "selected_K": 99424,
+      "selected_original_row": {
+        "ordinal": 781,
+        "marker": 298272,
+        "page": 833,
+        "slot": 228,
+        "native_ordinal": 781,
+        "public_ordinal": 781
+      },
+      "predicted_root_growth_only": true,
+      "future_cells": {
+        "JackcessGlobalFree": [
+          {
+            "page": 835,
+            "offset": 2101356,
+            "mask": 8,
+            "before": 248,
+            "set": true
+          },
+          {
+            "page": 836,
+            "offset": 2101356,
+            "mask": 16,
+            "before": 248,
+            "set": true
+          },
+          {
+            "page": 837,
+            "offset": 2101356,
+            "mask": 32,
+            "before": 248,
+            "set": true
+          }
+        ],
+        "IndexOwned": [
+          {
+            "page": 835,
+            "offset": 2547820,
+            "mask": 8,
+            "before": 5,
+            "set": false
+          },
+          {
+            "page": 836,
+            "offset": 2547820,
+            "mask": 16,
+            "before": 5,
+            "set": false
+          },
+          {
+            "page": 837,
+            "offset": 2547820,
+            "mask": 32,
+            "before": 5,
+            "set": false
+          }
+        ]
+      },
+      "before_admission": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/V2019-before-admission.json",
+        "bytes": 591,
+        "sha256": "fdbbbe337d8e7b321c630c9a02c0a4b2f9da0aa4535d639fdf53e0a45325444e"
+      },
+      "byte_identical_noop": {
+        "path": ".cache/ace16-parent-split-reference-initial-20261027/V2019-admission-noop.accdb",
+        "bytes": 3420160,
+        "sha256": "b35ed5dd3dfd40de478827309546aa2928ba912a582fbd29d1eb7dc1534c9840"
+      },
+      "native_notice": "Engineering candidate: data-macro semantics and native Access qualification pending.\n"
+    }
+  ]
+}
