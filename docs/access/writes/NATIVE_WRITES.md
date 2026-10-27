@@ -60,7 +60,10 @@ replaces ordinary uncompressed, unindexed long fields using qualified column map
 LVAL chunks and ordinary parent forwarding share one EOF/map sequence, with
 immutable request authority and independent final audits. Old chunks remain
 allocated; unknown ownership, broader field/map profiles and normal saves remain
-unqualified. Its original-file candidate replay follows a frozen consumer build.
+unqualified. Its [revised frozen-consumer replay](../../testing/LONG_VALUE_UPDATE_ACCEPTANCE_OBSERVATIONS.md)
+now passes all 60 unchanged raw Memo/OLE controls with complete independent image,
+getter and map proofs. The initial zero-of-60 atomic census refusals and subsequent
+narrow correction remain separately recorded; normal saves stay unavailable.
 
 The separate [Int32 leaf-split service](../../testing/ACE16_INDEX_SPLITS.md) now
 supports root-leaf and non-root leaf growth through represented EOF index pages.

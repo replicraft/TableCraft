@@ -44,8 +44,14 @@ separates that outcome from the subsequent diagnosis: the census rejected a
 known opaque system backing field and interpreted a valid empty deleted slot
 before checking its flags. The [correction](testing/results/ace16-long-value-census-correction-2026-10-27.json)
 passes 152 distinct runtime functions and three compile-fail checks; both complete
-original catalog censuses now pass read-only. Replacement acceptance remains
-unmet pending a separate revised frozen-artifact replay.
+original catalog censuses now pass read-only. The separate
+[revised-artifact acceptance](testing/LONG_VALUE_UPDATE_ACCEPTANCE_OBSERVATIONS.md)
+now matches all 60 unchanged controls through the committed corrected consumer:
+60 complete expected images and 120 read-only getter/map captures pass. Eight
+NULL, 28 inline, twelve single and twelve chained values retain original chunks
+and sibling/index identities; twelve parent records forward to new hidden rows.
+The original zero-of-60 failure remains a separate immutable result. This does
+not qualify compressed/extended fields, normal saves or native Access behavior.
 
 ## Fixed Int32 leaf split candidates
 

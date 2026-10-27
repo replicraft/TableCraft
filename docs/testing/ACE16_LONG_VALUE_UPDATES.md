@@ -106,9 +106,10 @@ new owners, chain links, payload fragments and initialized unused bytes.
 Focused authored serialization tests and independent literal integration tests
 exercise these contracts. A private causal test preserved the initial finalizer's
 acceptance of a correlated unrequested replacement; immutable operation rebinding
-now rejects it while the requested control still succeeds. Original-file writer
-comparisons remain separate from these tests and must use a subsequently frozen
-consumer; the prior 60 observations are not passing candidate evidence.
+now rejects it while the requested control still succeeds. The separate
+[revised 60-case candidate replay](LONG_VALUE_UPDATE_ACCEPTANCE_OBSERVATIONS.md)
+uses a committed frozen consumer. The prior public-writer observations remain
+distinct from that candidate evidence.
 
 ## Explicit engineering consumer
 
@@ -160,5 +161,7 @@ Ordinary logical-root enumeration now checks the raw deleted/hidden flag before
 requiring a body range. A zero-length deleted/relocated slot is skipped; a live
 empty or malformed range still fails. Explicit LVAL/forwarding target access
 retains its separate physical checks. Both actual original catalog censuses
-complete under read-only diagnosis, but that is not replacement acceptance.
-The unchanged 60 controls require a revised committed, frozen consumer replay.
+complete under read-only diagnosis; those checks alone are not replacement
+acceptance. The subsequent [revised-artifact replay](LONG_VALUE_UPDATE_ACCEPTANCE_OBSERVATIONS.md)
+matched all 60 unchanged controls, including whole-image and cached getter/map
+proofs. The initial 0/60 outcome remains preserved separately.
