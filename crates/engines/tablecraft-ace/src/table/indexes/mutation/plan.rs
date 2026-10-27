@@ -308,7 +308,7 @@ fn patches_with(
                     descending: index.columns()[0].descending(),
                 };
                 #[cfg(feature = "ace16-write-preview")]
-                if kind == ScalarType::Int32
+                if super::split::supported_scalar(kind)
                     && let Some(growth) = splitting.as_deref_mut()
                     && let Change::Update(updates) = change
                 {

@@ -23,7 +23,6 @@ use crate::{
 };
 use std::io::Cursor;
 use tablecraft_core::limits::{Resource, ResourceBudget};
-use tablecraft_schema::ScalarType;
 
 const FREE_OFFSET: usize = std::mem::offset_of!(IndexHeader, free);
 const OWNER_OFFSET: usize = std::mem::offset_of!(IndexHeader, owner);
@@ -118,15 +117,16 @@ pub(super) fn prove(
                 .map_err(|_| InspectError::Allocation)?;
             affected_pages.extend_from_slice(&expected_pages);
         }
-        let single_i32 = index.columns().len() == 1
+        let single_integral = index.columns().len() == 1
             && schema
                 .columns
                 .iter()
                 .find(|column| column.number() == index.columns()[0].number())
-                .is_some_and(|column| column.scalar_type() == Some(ScalarType::Int32));
+                .and_then(|column| column.scalar_type())
+                .is_some_and(super::supported_scalar);
         let mut split = false;
         let mut verified_nonroot = false;
-        if affected && single_i32 {
+        if affected && single_integral {
             let column = schema
                 .columns
                 .iter()
@@ -134,7 +134,11 @@ pub(super) fn prove(
                 .ok_or(InspectError::Malformed)?;
             let profile = SingleProfile {
                 column,
-                kind: NumericKey::new(ScalarType::Int32)?,
+                kind: NumericKey::new(
+                    schema.columns[column]
+                        .scalar_type()
+                        .ok_or(InspectError::Unsupported)?,
+                )?,
                 descending: index.columns()[0].descending(),
             };
             let prepared = keys::prepare::<_, { encoding::MAX_ENTRY_BYTES }>(

@@ -179,6 +179,29 @@ images, fresh getters, row identities and maps. Their eight native/JVM fixture
 commands remain separate from the reference writer actions. Normal saves,
 other-codec splits and native Access qualification remain unfinished.
 
+## Exact fixed-scalar index split previews
+
+The separate [typed split facade](testing/ACE16_FIXED_INDEX_SPLITS.md) now accepts
+non-NULL Byte, Int16, Int32, Int64 and Currency requests, binding actual metadata
+and exact carrier bytes through the shared recursive split planner and independent
+final audit. The original Int32 API retains borrowed requests and preflight order.
+Stored NULL peers, aliases and unaffected bytes remain preserved. Boolean,
+float/date, GUID, Decimal and composite allocation remain outside this service.
+
+The scoped batch passes 124 distinct runtime functions, including twelve new
+functions, plus three compile-fail doc tests, strict/default lint, minimal build,
+rustdoc and formatting. Independent whole-image controls cover root, non-root and
+parent-only growth. An authored wide descending parent case exceeded balanced-half
+capacity; that exact source/request remains an atomic refusal, with a separate
+same-source value-1 positive. No production change was needed for that diagnostic.
+Repeated splitting of an oversized half remains unfinished.
+
+A working clap-based engineering consumer uses exact integer/scaled Currency
+arguments, validates carriers before source I/O and publishes only fresh synced
+candidate files. A committed frozen-consumer original-file replay is still
+required; prior public source/reference observations do not qualify this new
+candidate path. Normal native saves and Microsoft Access qualification remain open.
+
 ## Other fixed numeric split sources
 
 The [finite Byte/Int16/Int64/Currency source phase](testing/INTEGRAL_INDEX_SPLIT_SOURCE_OBSERVATIONS.md)
@@ -198,8 +221,8 @@ public updates and eight fresh read-only descriptions after one compile. All
 sixteen physical roots grow to height one with four EOF pages per edited copy;
 complete typed rows, key/ROW streams, maps and counters match expectations.
 All 32 public fresh leaves retain nonzero unused scratch, separate from kernel
-padding contracts. The new typed split implementation and candidate acceptance
-remain separate work; these are independent-reader/writer observations, not
+padding contracts. The new typed split candidate acceptance
+remains separate work; these are independent-reader/writer observations, not
 native Access qualification.
 
 ## Measured Int32 parent overflow and root growth

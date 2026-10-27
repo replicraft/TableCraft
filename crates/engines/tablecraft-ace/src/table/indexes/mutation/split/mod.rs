@@ -14,6 +14,18 @@ use crate::{
 };
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
+use tablecraft_schema::ScalarType;
+
+pub(in crate::table) fn supported_scalar(kind: ScalarType) -> bool {
+    matches!(
+        kind,
+        ScalarType::Byte
+            | ScalarType::Int16
+            | ScalarType::Int32
+            | ScalarType::Int64
+            | ScalarType::Currency
+    )
+}
 
 pub(in crate::table) struct AddedPage {
     pub number: u32,

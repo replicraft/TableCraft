@@ -1,7 +1,7 @@
 //! Original requests and selected metadata, never staged patches, grant row scope.
+use super::super::EditError;
 use super::super::physical::Patch;
-use super::super::{EditError, field, physical};
-use super::Operation;
+use super::binding::{self, Binding};
 use crate::{
     InspectError, NativeImage, TableCheck,
     format::reader::Reader,
@@ -10,19 +10,17 @@ use crate::{
     table::indexes::{IndexKeyUpdate, MutationKey},
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
-use tablecraft_schema::ScalarType;
 
-pub(super) fn prove(
+pub(super) fn prove<const WIDTH: usize>(
     image: &NativeImage,
-    operation: &Operation<'_>,
+    operation: &impl Binding<WIDTH>,
     checked: &TableCheck,
-    actual: &[Patch<{ size_of::<i32>() }>],
+    actual: &[Patch<WIDTH>],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<IndexKeyUpdate>, EditError> {
-    let table = operation.table;
-    let column = operation.column;
-    let requests = operation.requests;
+    let table = operation.table();
+
     check(budget, cancelled)?;
     // Rebind metadata to the immutable operation table/column rather than a
     // mutable staged position or a supplied key-update vector.
@@ -38,8 +36,8 @@ pub(super) fn prove(
     {
         return Err(EditError::Preservation);
     }
-    let position = field::fixed_column(&schema, column, ScalarType::Int32, size_of::<i32>())?;
-    let expected = physical::patches(
+    let (position, selected_kind) = binding::position(operation, &schema)?;
+    let expected = operation.patches(
         &mut Reader {
             source: &mut image.reader(),
             header: image.catalog().header(),
@@ -49,7 +47,6 @@ pub(super) fn prove(
         },
         &schema,
         position,
-        requests,
     )?;
     if expected.len() != actual.len() {
         return Err(EditError::Preservation);
@@ -57,7 +54,7 @@ pub(super) fn prove(
     for (original, supplied) in expected.iter().zip(actual) {
         check(budget, cancelled)?;
         budget
-            .charge(Resource::Steps, (2 * size_of::<i32>()) as u64)
+            .charge(Resource::Steps, (2 * WIDTH) as u64)
             .map_err(InspectError::from)?;
         if original.reference != supplied.reference
             || original.offset != supplied.offset
@@ -76,7 +73,7 @@ pub(super) fn prove(
     });
     let mut keys = Vec::new();
     if indexed {
-        let kind = MutationKey::new(ScalarType::Int32)?;
+        let kind = MutationKey::new(selected_kind)?;
         budget
             .charge_allocation(expected.len() as u64, size_of::<IndexKeyUpdate>() as u64)
             .map_err(InspectError::from)?;
