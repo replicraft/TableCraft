@@ -78,7 +78,7 @@ The tracked Java helper is byte-identical to the executed source; later Python
 capture wrappers are explicitly separate. Raw Memo/OLE candidate acceptance and
 its unchanged inputs remain independent of these observations.
 
-## Fixed Int32 leaf split candidates
+## Fixed Int32 recursive split candidates
 
 The separate feature-gated `preview_ace16_split_int32_updates` service can turn a
 qualified overflowing single-Int32 root leaf into a height-one root and two EOF
@@ -102,7 +102,7 @@ fits. A new left leaf precedes the retained right page; neighbor links and full
 key/row parent bounds are repaired without changing the root ID or height.
 The [non-root scoped record](testing/results/ace16-nonroot-index-splits-native-2026-10-27.json)
 passes 100 distinct runtime functions, including retained root-leaf regressions,
-and three compile-fail checks. Internal-node overflow remains an atomic refusal.
+and three compile-fail checks. That stage refused internal-node overflow.
 The [two original-file candidates](testing/NONROOT_SPLIT_UPDATE_OBSERVATIONS.md)
 now pass on their first run, with complete independent image proofs. Each adds
 one EOF leaf while preserving original Memo/OLE descriptors and chunk pages.
@@ -114,11 +114,24 @@ Memo/OLE values. Read-only diagnosis verifies their equal payloads and the actua
 new-left/retained-right leaf split. These are the preceding frozen consumer's
 results, not successful non-root TableCraft candidates.
 
+The subsequent recursive implementation now propagates full child maxima through
+internal-parent splits. Non-root splits insert a new left sibling and retain the
+original right page; root growth retains the root ID and adds right/left internal
+pages beneath two bounded maxima. All sibling levels are rebuilt from final
+child order, original unused bytes remain intact and fresh unused bytes are zero.
+The independent auditor replays original counts, capacities, EOF allocation,
+framing and maps without trusting the builder's arena. The
+[new scoped record](testing/results/ace16-parent-index-splits-native-2026-10-27.json)
+passes 108 distinct runtime functions, including eight new controls, and three
+compile-fail checks, plus strict lint, minimal compilation, rustdoc and formatting.
+Original-file candidate acceptance for this recursive stage remains a separate
+frozen-consumer gate; normal saves and other-codec splits remain unfinished.
+
 ## Measured Int32 parent overflow and root growth
 
 The [separate public-reference action phase](testing/PARENT_INDEX_SPLIT_OBSERVATIONS.md)
 uses the unchanged 782-row sparse sources. All nine first-attempt fixture
-processes complete: the frozen existing consumer refuses both overflowing edits
+processes complete: the frozen prior consumer refuses both overflowing edits
 atomically, while both public Jackcess updates split the parent and grow the
 retained root from height one to two. The root has two bounded complete key/ROW
 maxima and no tail. Three EOF index pages are added: a new left leaf, then a new

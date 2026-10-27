@@ -69,8 +69,12 @@ The separate [Int32 leaf-split service](../../testing/ACE16_INDEX_SPLITS.md) now
 supports root-leaf and non-root leaf growth through represented EOF index pages.
 Its [root](../../testing/ROOT_SPLIT_UPDATE_OBSERVATIONS.md) and
 [non-root](../../testing/NONROOT_SPLIT_UPDATE_OBSERVATIONS.md) two-file candidate
-comparisons pass complete independent image proofs. Internal-node overflow,
-other codecs, map growth and production saves retain their separate gaps.
+comparisons pass complete independent image proofs. The subsequent
+[recursive implementation](../../testing/ACE16_INDEX_SPLITS.md) now propagates
+internal-parent overflow and retained-root growth with independent full key/ROW,
+capacity, framing, sibling and map audits. Its 108 scoped runtime checks pass;
+original-file recursive candidate acceptance remains a separate frozen-consumer
+gate. Other codecs, map growth and production saves retain their separate gaps.
 The [parent-overflow reference](../../testing/PARENT_INDEX_SPLIT_OBSERVATIONS.md)
 now measures two successful public-writer root-growth histories on unchanged
 sparse inputs, alongside two atomic refusals from the existing kernel. Its

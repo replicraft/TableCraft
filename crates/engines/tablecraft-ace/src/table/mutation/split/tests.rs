@@ -1,5 +1,6 @@
 //! Causal after-audit forgeries start with real, fully qualified production staging.
 mod nonroot;
+mod parent;
 
 use super::super::physical::Patch;
 use super::{Operation, Staged, finish, stage};

@@ -1,7 +1,7 @@
 use super::*;
 
 #[test]
-fn parent_capacity_overflow_is_an_atomic_refusal_after_a_healthy_before_image() {
+fn parent_capacity_overflow_grows_the_retained_root_after_a_healthy_before_image() {
     let mut scores = (1..=600)
         .map(|offset| Some(i32::MIN + offset))
         .collect::<Vec<_>>();
@@ -21,11 +21,23 @@ fn parent_capacity_overflow_is_an_atomic_refusal_after_a_healthy_before_image() 
     assert_eq!(root_model::get16(&model.bytes, root + PREFIX), 1);
     assert_eq!(root_model::get16(&model.bytes, root + FREE), 3);
     // One more full13-byte key/ROW/child bound, with only one common key byte,
-    // needs3625 bytes. Recompressing cannot fit it in3616; no node split exists.
+    // needs3625 bytes. Recompressing cannot fit it in3616, so the root grows.
     assert_eq!(302 * 13 - 301, 3625);
     let original = model.bytes.clone();
-    let result = run(&model, Int32Update::new(0, i32::MIN + 1, i32::MAX));
-    assert!(matches!(result, Err(EditError::Unsupported(_))));
+    let result = run(&model, Int32Update::new(0, i32::MIN + 1, i32::MAX)).unwrap();
+    assert_eq!(result.candidate_bytes().len(), original.len() + 3 * PAGE);
+    assert_eq!(result.candidate_bytes()[root + HEIGHT], 2);
+    assert_eq!(decoded(result.candidate_bytes(), ROOTS[0]).len(), 2);
+    assert_eq!(root_model::get32(result.candidate_bytes(), root + TAIL), 0);
+    verify_values(&model, result.candidate_bytes(), 0, i32::MAX);
+    check_table(
+        &mut Cursor::new(result.candidate_bytes()),
+        CatalogScope::new(1),
+        "Items",
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
     assert_eq!(model.bytes, original);
     let noop = run(&model, Int32Update::new(0, i32::MIN + 1, i32::MIN + 1)).unwrap();
     assert_eq!(noop.candidate_bytes(), original);

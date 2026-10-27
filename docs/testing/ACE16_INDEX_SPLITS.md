@@ -1,4 +1,4 @@
-# ACE 16 fixed Int32 leaf split previews
+# ACE 16 fixed Int32 index split previews
 
 The optional `ace16-write-preview` feature supplies
 `NativeImage::preview_ace16_split_int32_updates(table, column, updates, budget, cancelled)`.
@@ -8,9 +8,8 @@ plan, execute required cascades or enable normal CLI/backend saves.
 
 This is a working bounded allocation service, not general index splitting or
 Microsoft Access/data-macro qualification. Existing fixed, nullable, slot, page
-and variable preview APIs retain their contracts. ACE 16 compatibility remains
-the overall target; overflowing internal-node propagation remains implementation
-work, not a permanent exclusion.
+and variable preview APIs retain their contracts. ACE 16 compatibility remains the overall target; this exact codec and allocation
+profile does not qualify every index split.
 
 ## Admission and exact operation
 
@@ -43,14 +42,30 @@ is divided at the middle entry count: one new **left** leaf is allocated at EOF,
 and the original page retains the right half. This preserves the observed
 new-left/retained-right geometry. Neighbor links are repaired across parent
 boundaries; every parent separator uses the complete resulting subtree maximum
-key and row reference. Existing bounded-child versus right-tail node forms,
-root ID and tree height remain unchanged. Every resulting leaf and parent must
-fit. Multiple leaf allocations follow source leaf traversal and physical-index
-order; logical aliases do not duplicate physical work.
+key and row reference. Existing bounded-child versus right-tail node forms remain unchanged when the
+node fits. Multiple leaf allocations follow source leaf traversal and
+physical-index order; logical aliases do not duplicate physical work.
+
+If complete updated child maxima cannot fit an internal node even with its best
+valid prefix, its final child sequence is divided at the middle child count.
+For a non-root node, one new left node is allocated and the original node retains
+the right half and its original bounded/tail form. The new left node uses a right
+tail. The separate [below-root observations](INTERNAL_PARENT_INDEX_SPLIT_OBSERVATIONS.md)
+retain the public writer's matching new-left/retained-right geometry at height
+one below a height-two root. That reference behavior and the literal engineering
+model remain distinct from a candidate replay or Microsoft Access qualification.
+
+For an overflowing internal root, the service allocates the right node and then
+the left node, after descendant allocations. Both new lower nodes use right
+tails. The original root ID remains fixed at height plus one, with **two bounded
+maxima and no tail**. Child maxima include full row references, even when numeric
+keys tie. Reciprocal sibling chains are rederived for every final height.
+The unchanged root-leaf split described above still uses its original single
+bound/right-tail form. An empty non-root leaf, depth beyond the existing index
+ceiling, or a half that still cannot fit refuses atomically.
 
 Other nonoverflowing qualified indexes use existing replacement machinery.
-An overflowing internal node, other codec/composite, or half that
-still requires another split refuses atomically. UPDATE ignore-NULL blockers are
+An unqualified codec/composite refuses atomically. UPDATE ignore-NULL blockers are
 unchanged. Physical read support does not grant new mutation-codec authority.
 
 ## Source authority and preservation
@@ -64,10 +79,11 @@ Audit keys derive solely from this replay, not a supplied mutable key vector.
 
 Physical split logic belongs to the index subsystem. Its independent audit
 reconstructs required splits from original keys and actual replacement capacity,
-then checks the exact root/leaf key streams, row-inclusive bounds, order, links,
-height, endpoint bitmap and free bytes. Non-root allocation authority is rederived
-from original leaf counts and actual replacement capacity, independently of
-planner-supplied page patches. Newly appended pages have initialized
+then checks the exact root/node/leaf key streams, row-inclusive bounds, order,
+per-height links, height, endpoint bitmap and free bytes. Recursive allocation
+authority is rederived from original leaf counts, final child counts and actual
+replacement capacity, independently of the builder arena and planner-supplied
+page patches. Newly appended pages have initialized
 headers and zero unused residue. The original root keeps opaque bytes outside
 its explicitly authorized header/bitmap/new entry regions.
 
@@ -99,6 +115,15 @@ exited 1 because the public writer also rewrote unchanged Memo/OLE references;
 read-only diagnosis verifies the complete values and actual split geometry.
 The engineering service preserves those original descriptors/chains and adds
 only the required index page. Public reserialization is not its byte golden.
+
+The [parent source observations](PARENT_INDEX_SPLIT_SOURCE_OBSERVATIONS.md)
+separate bounded large generation from the sparse, fully qualified 782-row
+source. The [parent update observations](PARENT_INDEX_SPLIT_OBSERVATIONS.md)
+retain two old-service refusals and two public root-growth successes. Their
+new-left leaf and right-then-left internal allocation, two-bound root and complete
+subtree maxima inform this profile. Public scratch rewrites remain observations;
+the engineering candidate preserves original residue and zeroes fresh padding.
+No parent-growth candidate comparison is established by those public actions.
 
 ## Engineering consumer
 
@@ -156,3 +181,31 @@ intentionally excludes those header fields. The independent after-audit caught
 the missing emitted changes. Explicit paid four-byte link patches fixed the
 production draft; source/log evidence is retained. This was not an oracle
 correction or a published corrupt candidate.
+
+
+The [recursive implementation record](results/ace16-parent-index-splits-native-2026-10-27.json)
+reports 108 distinct runtime functions: 70 existing regressions, 29 primary
+functions and nine private controls. Eight functions are newly added. Three
+compile-fail docs, scoped strict lint, standalone minimal compilation,
+warnings-denied all-feature rustdoc and formatting also pass. Earlier result
+records remain unchanged; the exact old parent-capacity refusal now has a
+positive retained-root growth control without changing its source image.
+
+Independent whole-image cases cover both ACE codes and index directions,
+retained bounded/tail forms, full row-tie bounds, every final sibling height,
+NULL peers, alias deduplication, exact future-map refusal, original opaque
+residue, fresh zero padding, stale/duplicate requests, cumulative limits and
+late cancellation/retry. Separate author cases check root growth and complete
+images for both headers. Private healthy-stage/forgery controls additionally
+exercise parent-only overflow without a leaf split and reject supplied changes
+to root bounds, height, tail, old residue, fresh internal links/padding and
+unused future-free bits.
+
+The first independent tie case passed its full-image assertion but its intended
+equal-key boundary was not actually paired: the input produced 150/151. The
+fixture owner corrected only that input pairing to produce 150/150 and retained
+the original source and failing log. A subsequent test-only clone lint was also
+preserved and corrected. Neither diagnostic required a production or candidate
+byte-golden change. Actual original-file candidate comparison requires its own
+committed build and separate replay receipt; these implementation tests do not
+claim one.
