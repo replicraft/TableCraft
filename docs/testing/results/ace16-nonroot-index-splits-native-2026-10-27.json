@@ -395,12 +395,20 @@
   ],
   "public_reference_receipt": {
     "path": "docs/testing/results/ace16-nonroot-index-split-originals-2026-10-27.json",
-    "bytes": 20420,
-    "sha256": "d10f918fd99f7a4acadb15718e28a5acb4099a8d29fecb6e102bbb47be36f26c"
+    "bytes": 21689,
+    "sha256": "6f1ba028c6e32d925f661d63da6214ba8f36f3d28a9bcef93c4e67418236117f"
   },
   "retained_root_leaf_record": {
     "path": "docs/testing/results/ace16-index-splits-native-2026-10-27.json",
     "bytes": 25833,
     "sha256": "d890d85d4034307add9186799f77d83f839d3f729af4b7aca850c9db507a79e8"
+  },
+  "privacy_provenance_correction": {
+    "prior_public_receipt": {
+      "path": ".cache/root-split-receipt-provenance-20261027/ace16-nonroot-index-splits-native-2026-10-27.json",
+      "bytes": 17782,
+      "sha256": "aad738ec609e8f58ce6c1099abae0ae83d00d93c99c735904109730ebf4fdf7e"
+    },
+    "scope": "Refresh only the reference-receipt pin after its exact historical build receipt moved to an archive; source/test/log/semantic claims unchanged"
   }
 }
