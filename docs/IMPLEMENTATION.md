@@ -226,6 +226,23 @@ on unchanged Byte/Int16/Int64/Currency originals. All sixteen fixture commands
 pass without retries or regeneration, separately from prior public writer actions.
 Normal native saves and Microsoft Access qualification remain open.
 
+## Repeated numeric split source and reference observations
+
+A [separate bounded witness](testing/REPEATED_INDEX_SPLIT_OBSERVATIONS.md) now
+captures two new originals with 900 zero keys in each Int64/Currency target and
+one preservation row (1,801 user rows per file). All nine source commands pass,
+including four byte-identical typed-facade no-ops. The inherited raw source
+API-count label is inaccurate; actual command records establish those four calls.
+
+All thirteen subsequent reference commands also pass: four frozen prior-consumer
+MAX attempts refuse atomically, and four fresh public updates produce three
+leaves per physical index with six EOF pages per copy. Retained roots have two
+bounds and a right tail. Ascending and descending exceptional halves split on
+opposite sides, with actual allocation order, complete key/ROW streams, map cells,
+unchanged counters and fresh-page scratch captured independently. No source was
+regenerated or adjusted to obtain that result. These observations do not implement
+repeated splitting or qualify new TableCraft candidates or native Access saves.
+
 ## Other fixed numeric split sources
 
 The [finite Byte/Int16/Int64/Currency source phase](testing/INTEGRAL_INDEX_SPLIT_SOURCE_OBSERVATIONS.md)

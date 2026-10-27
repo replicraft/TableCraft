@@ -108,6 +108,12 @@ Delivered read/query and engineering foundations:
   now match independent complete images and fresh getter/index/map checks on the
   unchanged sources, through a committed frozen consumer and sixteen successful
   fixture commands. Recursive typed originals and native Access remain separate.
+  A [repeated-overflow witness](testing/REPEATED_INDEX_SPLIT_OBSERVATIONS.md)
+  now passes nine source commands and thirteen separate reference commands:
+  four facade no-ops preserve complete originals, four prior MAX attempts refuse
+  atomically and four public updates split the remaining oversized halves. Their
+  six-EOF-page topology is measured; repeated-split implementation and candidate
+  qualification remain unfinished.
   Their [separate MAX reference actions](testing/INTEGRAL_INDEX_SPLIT_OBSERVATIONS.md)
   now record eight successful public updates and eight old-consumer atomic
   refusals on unchanged originals. All sixteen physical roots split; new typed

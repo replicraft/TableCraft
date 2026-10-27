@@ -109,6 +109,11 @@ invalid page. Its [eight original-file candidates](../../testing/FIXED_INDEX_SPL
 now pass exact complete-image and fresh getter/index/map checks through the
 committed consumer, without retries or changed inputs. Repeated splitting,
 broader codecs, map growth and production saves retain their separate gaps.
+The [repeated-overflow observations](../../testing/REPEATED_INDEX_SPLIT_OBSERVATIONS.md)
+now measure a concrete case behind that refusal: the first wide-key split still
+leaves a half oversized. Four public MAX updates split again, with three leaves
+per physical index; the current frozen consumer refuses all four atomically.
+Source/reference execution and saved proofs remain distinct from implementation.
 A separate [fixed numeric reference phase](../../testing/INTEGRAL_INDEX_SPLIT_OBSERVATIONS.md)
 now measures Byte, Int16, Int64 and Currency root-leaf splits on both unchanged
 originals. Its eight successful Jackcess updates and eight frozen old-consumer
