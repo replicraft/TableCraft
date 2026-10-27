@@ -102,7 +102,10 @@ Delivered read/query and engineering foundations:
   [revised committed-consumer replay](testing/LONG_VALUE_UPDATE_ACCEPTANCE_OBSERVATIONS.md)
   now passes all 60 unchanged raw Memo/OLE controls with complete image/getter/map
   proofs, following the preserved initial zero-of-60 census refusals and narrow
-  ownership/deleted-slot correction. Compressed fields remain separate work.
+  ownership/deleted-slot correction. Exact ordinary compressed Memo now shares
+  this preview under its measured narrow/raw encoding rule and independent byte
+  audit, with 68 scoped runtime checks. Compressed original-file candidates remain
+  a separate frozen-consumer gate; other extended/history/map profiles stay open.
   A separate [48-control Text/Binary corpus](testing/ENCODED_DELETE_OBSERVATIONS.md)
   checks 36 candidates and twelve unsupported-profile refusals on the same
   committed tool, including the previously refused height-two delete-all cases.

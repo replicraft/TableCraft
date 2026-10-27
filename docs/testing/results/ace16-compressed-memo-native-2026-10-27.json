@@ -1,0 +1,508 @@
+{
+  "scope": "Exact ordinary compressedMemo engineering replacement and default storage checking. No normal writer, native Access save qualification or new original-file candidate replay.",
+  "base_revision_context": "ca914803542187c8a5320c0f0b7b47ec8c3ecdc3",
+  "source_context": "Scoped owned files pinned below; tests ran the shared working library while separate recursive-index work was frozen. This is not an immutable compiled-original replay receipt.",
+  "api": "Existing NativeImage::preview_ace16_long_value_updates returning separate non-journalable Ace16WritePreview; no new public API/type.",
+  "admission": {
+    "memo_native_type": 12,
+    "native_flags": 2,
+    "memo_extended_flags": [
+      0,
+      1
+    ],
+    "ole_native_type": 11,
+    "ole_extended_flags": [
+      0
+    ],
+    "declared_length": 0,
+    "fixed": false,
+    "properties_indexes_history_calculated_macros": "Existing selected-field/fulltable/constraint/ownership refusals remain required; no metadata masking."
+  },
+  "encoding": {
+    "units": "UTF16",
+    "compact_minimum_units": 3,
+    "compact_maximum_units": 1024,
+    "compact_unit_min": 1,
+    "compact_unit_max": 255,
+    "requires_field_compression": true,
+    "compact_header_hex": "fffe",
+    "fallback": "RawUTF16LE",
+    "roundtrip": "Mandatory existing bounded decoder equality; FEFF ambiguity refuses, FFFE exact.",
+    "noops": "Original raw/compressed representation remains byte-exact for unchanged decoded values."
+  },
+  "independent_authority": "Separate payload auditor derives canonical length/mode/bytes from request and field metadata without calling encoder. Existing immutable-operation rebinding, chunk/page audits and allocation-map replay remain mandatory; map modules not modified.",
+  "counts": {
+    "distinct_runtime_functions": 68,
+    "new_runtime_functions": 8,
+    "existing_runtime_functions": 60,
+    "final_primary_executions": 22,
+    "existing_regression_executions": 26,
+    "private_executions": 8,
+    "default_checker_executions": 12,
+    "decoder_executions": 12,
+    "final_runtime_executions_including_default_repeats": 80,
+    "compile_fail_doc_tests": 3,
+    "default_repeat_explanation": "Default2new +10existing run again without preview; these12 functions were already counted under explicit feature targets. Repeated earlier diagnostic/accepted runs are not new distinct checks."
+  },
+  "new_tests": {
+    "feature_target": "ace16_compressed_memo_updates:5functions",
+    "default_target": "compressed_memo_storage:2functions",
+    "private": "payload::tests:1function,3 independently decoder-valid forged encodings",
+    "authorship": "New assertions are author-owned; fixtures reuse existing independent literal models. The separately committed148 public-writer observations supply storage evidence, not new engine candidate acceptance."
+  },
+  "guard_migration": "Preserved actual ext1-negative failure, replaced with explicit empty/nonempty Memoext1 positives and original flag preservation; OLEext1 remains scalar-before Unsupported and default UnsupportedColumn. Unknown ext3/calculated/property/allocation guards retained.",
+  "completed_reference_evidence": {
+    "path": "docs/testing/results/compressed-memo-update-observations-2026-10-27.json",
+    "bytes": 15301,
+    "sha256": "6201f27b79478b641a81afb8ac4de1d62729e91464be1445254427e9dddb9735"
+  },
+  "current_original_candidate_boundary": "New compressed profile has not been called against a committed frozen consumer. Existing raw60 acceptance and the initial0/60 census correction history remain separate.",
+  "final_checks": [
+    {
+      "name": "primary-final-snapshot",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--features",
+        "ace16-write-preview",
+        "--test",
+        "ace16_compressed_memo_updates",
+        "--test",
+        "compressed_memo_storage",
+        "--test",
+        "ace16_long_value_updates_contract"
+      ],
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/ace16-compressed-memo-implementation-next-20261027/primary-final-snapshot.log",
+        "bytes": 2800,
+        "sha256": "f96c092151a7a932d09e7c1655bbc6fda8db4f8d12d0979d44f8cdcebae30b4a"
+      },
+      "passed_function_executions": 22
+    },
+    {
+      "name": "regressions-final",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--features",
+        "ace16-write-preview",
+        "--test",
+        "ace16_long_value_updates",
+        "--test",
+        "long_value_storage",
+        "--test",
+        "long_value_storage_contract",
+        "--test",
+        "long_value_source",
+        "--test",
+        "compressed_text",
+        "--test",
+        "ace16_slot_updates"
+      ],
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/ace16-compressed-memo-implementation-next-20261027/regressions-final.log",
+        "bytes": 3776,
+        "sha256": "bd7fc83a3afe18c910d43939515f08a142a718da7a5023e0378c26be54257c9d"
+      },
+      "passed_function_executions": 26
+    },
+    {
+      "name": "private-final",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--features",
+        "ace16-write-preview",
+        "--lib",
+        "table::mutation::long_value"
+      ],
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/ace16-compressed-memo-implementation-next-20261027/private-final.log",
+        "bytes": 1375,
+        "sha256": "ada452f9ca9006c876909a8cf9abd6fe97a9bfdad4260278d8b8c3d5c737b2b9"
+      },
+      "passed_function_executions": 8
+    },
+    {
+      "name": "default-final",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--test",
+        "compressed_memo_storage",
+        "--test",
+        "long_value_storage",
+        "--test",
+        "long_value_storage_contract"
+      ],
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/ace16-compressed-memo-implementation-next-20261027/default-final.log",
+        "bytes": 1925,
+        "sha256": "f2aa504963c35c7b1ee83a72a4bc0ab243ea3eb856eac501ce1fc5502d37208c"
+      },
+      "passed_function_executions": 12
+    },
+    {
+      "name": "decoders-final",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "table::long_"
+      ],
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/ace16-compressed-memo-implementation-next-20261027/decoders-final.log",
+        "bytes": 1634,
+        "sha256": "154640ea597b05c3f18884a4924a611e5b45bf81b9de22f01d4a3de272b2a13b"
+      },
+      "passed_function_executions": 12
+    },
+    {
+      "name": "strict-final",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--features",
+        "ace16-write-preview",
+        "--lib",
+        "--test",
+        "ace16_compressed_memo_updates",
+        "--test",
+        "compressed_memo_storage",
+        "--test",
+        "ace16_long_value_updates_contract",
+        "--test",
+        "ace16_long_value_updates",
+        "--test",
+        "long_value_storage",
+        "--test",
+        "long_value_storage_contract",
+        "--test",
+        "long_value_source",
+        "--test",
+        "compressed_text",
+        "--test",
+        "ace16_slot_updates",
+        "--example",
+        "preview_ace16_long_value",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/ace16-compressed-memo-implementation-next-20261027/strict-final.log",
+        "bytes": 183,
+        "sha256": "216ed027b297b0e83ec4e173f29c0c00b4ed3ec712ac89d0808ee5fb8b9fdc1d"
+      },
+      "passed_function_executions": 0
+    },
+    {
+      "name": "default-strict-final",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--test",
+        "compressed_memo_storage",
+        "--test",
+        "long_value_storage",
+        "--test",
+        "long_value_storage_contract",
+        "--test",
+        "compressed_text",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/ace16-compressed-memo-implementation-next-20261027/default-strict-final.log",
+        "bytes": 183,
+        "sha256": "fe92de6d79dbe9aaea07e76e4af6cd2ea084f14195283f795c74c3c810be980a"
+      },
+      "passed_function_executions": 0
+    },
+    {
+      "name": "minimal-final",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--no-default-features"
+      ],
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/ace16-compressed-memo-implementation-next-20261027/minimal-final.log",
+        "bytes": 72,
+        "sha256": "22e0df986057b9ba5be07526ac5fb348862a3dedef42108383cc3e088acbb889"
+      },
+      "passed_function_executions": 0
+    },
+    {
+      "name": "docs-final",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--features",
+        "ace16-write-preview",
+        "--doc"
+      ],
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/ace16-compressed-memo-implementation-next-20261027/docs-final.log",
+        "bytes": 627,
+        "sha256": "92d04c8920f5f12bf5238960bfdb7b69cd4ae1402307b7f7f75de9b214a51074"
+      },
+      "passed_function_executions": 3
+    },
+    {
+      "name": "fmt-final",
+      "command_manifest": {
+        "path": ".cache/ace16-compressed-memo-implementation-next-20261027/fmt-command.json",
+        "bytes": 1127,
+        "sha256": "8701aa3e7902b8ba4e9461b97d9dd75d66bccc2f061a343537b6f7ba306c4586"
+      },
+      "exit_status": 0,
+      "rust_files": 13,
+      "log": {
+        "path": ".cache/ace16-compressed-memo-implementation-next-20261027/fmt-final.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "attempts": [
+    {
+      "log": {
+        "path": ".cache/ace16-compressed-memo-implementation-next-20261027/primary-initial.log",
+        "bytes": 1360,
+        "sha256": "1b856441025eb08628e96e84ad56aac66b24d64952dceacda2a02b6f4221b072"
+      },
+      "exit_status": 101,
+      "observation": "Compilation succeeded. New author target3pass/1 authored OLE refusal spelling failure; actual existing before-check returned InspectUnsupported, not Column. Other targets did not run."
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-compressed-memo-implementation-next-20261027/old-guard-initial.log",
+        "bytes": 1082,
+        "sha256": "bf5a94351d0fc48ba3cbf0c0ef59d3f1c4427dc1e93e791ad6c797772c7e2287"
+      },
+      "exit_status": 101,
+      "observation": "Intentional stale ext1 negative failed after exactMemoext1 became supported. Its source and actual outcome preserved before migration."
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-compressed-memo-implementation-next-20261027/primary-after.log",
+        "bytes": 1325,
+        "sha256": "85a4eb3219653f1d6be3f68020da2334dccf3b1c58212142fd64681d653813fd"
+      },
+      "exit_status": 101,
+      "observation": "New author target3pass/1: broad fixture check helper demanded successful scalar check for deliberately unsupported OLEext1. Corrected only to direct storage-check status access."
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-compressed-memo-implementation-next-20261027/primary-corrected.log",
+        "bytes": 3027,
+        "sha256": "0153ec80c31ed92903af9859fdf2ae15bfa244d233360e4e6e2f93e7a8aa1f60"
+      },
+      "exit_status": 101,
+      "observation": "New author5 passed. Existing target14pass/1: replacement unknown-ext3 control incorrectly retained scalar-readable assertion. It now preserves unknown-profile refusal without claiming scalar readability."
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-compressed-memo-implementation-next-20261027/primary-final.log",
+        "bytes": 2800,
+        "sha256": "d83c2f3e9440ef5a125ff5aeaa79f499f75dadd793140719020ab2a8ba2cbe1f"
+      },
+      "exit_status": 0,
+      "observation": "All22 primary functions passed after authored corrections and deliberate guard migration; final snapshot repeats all22."
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-compressed-memo-implementation-next-20261027/default-primary.log",
+        "bytes": 575,
+        "sha256": "424beff9d2934a563af2523b9ea76252601e11a91db7a49a7bb1f9977fccde95"
+      },
+      "exit_status": 0,
+      "observation": "New default-build2 passed first attempt; final default batch repeats them."
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-compressed-memo-implementation-next-20261027/private-initial.log",
+        "bytes": 522,
+        "sha256": "bc39d0ffd45e8b27186fad94616cd771a80be9d9b17a1340936da795885653d5"
+      },
+      "exit_status": 0,
+      "observation": "New private reader-valid forged-wire certificate control passed first attempt; final private batch repeats it."
+    }
+  ],
+  "shared_initial_strict": {
+    "log": {
+      "path": ".cache/ace16-parent-split-clippy-initial-20261027.log",
+      "bytes": 666,
+      "sha256": "6d601cc0fdf93db8ac9703cdf580c2893b6a27dc985cb4586022266c958227ee"
+    },
+    "exit_status": 101,
+    "observation": "Two stale unused imports after extracting payload verifier, corrected without semantic change. Exact runtime initial snapshot was taken after that import correction; no claim of a complete pre-strict source snapshot."
+  },
+  "preserved_source_archives": [
+    {
+      "path": ".cache/ace16-compressed-memo-implementation-next-20261027/initial-source/manifest.json",
+      "bytes": 2132,
+      "sha256": "8bdc1de51d8ad922a14122c9498ad97fe3d06a96dfa9f799eb00583fa7cbf3c4"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-implementation-next-20261027/after-typed-fix-source/ace16_compressed_memo_updates.rs",
+      "bytes": 7544,
+      "sha256": "6235c1a1d9eb0d18072fbdf265f544afc2bd121affe33800ad69c4f08a547c21"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-implementation-next-20261027/after-typed-fix-source/ace16_long_value_updates_contract/guards.rs",
+      "bytes": 6713,
+      "sha256": "5b1aac4624d4d119ccafbf9ddde6b8a150633ca0514e167cdc6727e007371f92"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-implementation-next-20261027/after-direct-checker-fix-source/guards.rs",
+      "bytes": 6917,
+      "sha256": "b85f55c32999f07326d95e367223f919b9cd5c298a5cae895ae4e1b79e24b271"
+    }
+  ],
+  "scoped_sources": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/long_value.rs",
+      "bytes": 6077,
+      "sha256": "7c50816beba0fa4d874998fa468d003ce651a94e1c272b4ff24de0ae08c51a78"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/long_value/check.rs",
+      "bytes": 12978,
+      "sha256": "c0bb700dd7f7e17d88b58e5e4c0e1a58bf71a120487f8c5d8264c22016cfc0e6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/long_value/profile.rs",
+      "bytes": 561,
+      "sha256": "75b163890c4806b9c27cbf6e6ac7ca6b9cdb9e54576d1a0b8d99e497aca5cde8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/mod.rs",
+      "bytes": 2111,
+      "sha256": "51a9d7993ccda2d858f0e1f6447d3a5cf42247b4106b8ab9b960e99b9ad572de"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/encode.rs",
+      "bytes": 10298,
+      "sha256": "435beb366e9f6fcc91cb645ca4773bcbe4e23fe71b2421adf78cce79314f90bd"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/ownership/profile.rs",
+      "bytes": 1200,
+      "sha256": "e7f22d7ba9ea466779bb0ee22595098e6697781e6dd3e69d841823538606a440"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/audit/mod.rs",
+      "bytes": 773,
+      "sha256": "6ceede418704bec3f58c7c78b11018d64a04913065cf15549fbcc092478ca5cb"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/audit/chunks.rs",
+      "bytes": 7092,
+      "sha256": "351da140ee0937f9935969aaaee0faa752db7f32cecf353d6c51960531a8e7aa"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/audit/payload.rs",
+      "bytes": 3951,
+      "sha256": "faab800b5873fc244f962452ce9638620b5bf47c33edfe6d72d64243b1b2ce50"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/audit/payload/tests.rs",
+      "bytes": 2270,
+      "sha256": "8c6f566f1f7214802473bd470e1e7f2cc2d15c4556acde11bc90e59b5cbc75cf"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_compressed_memo_updates.rs",
+      "bytes": 9108,
+      "sha256": "3a6c6c14ab4e70927f651e94d1af3391358cc512f76ee1c18985973e636f8783"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/compressed_memo_storage.rs",
+      "bytes": 2154,
+      "sha256": "3fedd569805ff2fcccc019570c412a656c3b0b9729f5a429e2e605ab534b6846"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_long_value_updates_contract/guards.rs",
+      "bytes": 6927,
+      "sha256": "eafc1fe1a967b68662854e97dfa410edee7d1a5d3f2215edfe2ae28f6d37e626"
+    },
+    {
+      "path": "docs/testing/ACE16_LONG_VALUE_UPDATES.md",
+      "bytes": 12703,
+      "sha256": "6422557e00e71f98168788f340ac4f196548d326972d9d37c0330db980f22407"
+    },
+    {
+      "path": "docs/access/storage/LONG_VALUE_CHECKS.md",
+      "bytes": 5855,
+      "sha256": "18f177b169e0f6417ca3902b0a2d4a4a77de9c5c86af6d6d30d22a3b80ef9def"
+    }
+  ],
+  "inventory": {
+    "path": ".cache/ace16-compressed-memo-implementation-next-20261027/final-inventory.txt",
+    "bytes": 1063,
+    "sha256": "45b9d1ac6cd7394e4915dc8c7b63d39d3aeb751049ce1cec7509d82e53d88ac4"
+  },
+  "compiler_job_summary": {
+    "path": ".cache/ace16-compressed-memo-implementation-next-20261027/final-checks.json",
+    "bytes": 5871,
+    "sha256": "4056d599faaeb72a10127f4b70dc129cbab9fe5a68c391a792c7d31928d31a62"
+  }
+}

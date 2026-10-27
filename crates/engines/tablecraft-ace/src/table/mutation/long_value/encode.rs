@@ -1,14 +1,14 @@
-//! Raw Memo/OLE payloads and exact qualified descriptor/chunk framing.
+//! Qualified Memo/OLE payloads and exact descriptor/chunk framing.
 use super::super::{EditError, WriteBlocker};
 use crate::{
     InspectError, NativeColumn,
     format::{
         data_type::{LONG_TEXT, OLE},
-        layout::UPDATABLE_FLAG,
         text,
     },
     header::check,
     limits::{MAX_LONG_TEXT_BYTES, MAX_LONG_VALUE_BYTES, MAX_LONG_VALUE_CHUNKS},
+    table::long_value::profile,
 };
 use std::ops::Range;
 use tablecraft_core::{
@@ -25,6 +25,9 @@ const DESCRIPTOR_BYTES: usize = DESCRIPTOR_WORDS * size_of::<u32>();
 const INLINE_TAG: u32 = 0x8000_0000;
 const SINGLE_TAG: u32 = 0x4000_0000;
 const ENCODING_CHECK_UNITS: usize = 256;
+const COMPRESSED_MEMO_MAX_UNITS: usize = 1024;
+const COMPRESSED_UNICODE_FLAG: u8 = 1;
+const COMPRESSION_MARKER: [u8; 2] = [0xff, 0xfe];
 
 #[cfg(test)]
 mod tests;
@@ -47,12 +50,7 @@ pub(super) struct Chunk {
 }
 
 pub(super) fn qualify(field: &NativeColumn) -> Result<(), EditError> {
-    if field.fixed()
-        || !matches!(field.native_type(), LONG_TEXT | OLE)
-        || field.storage_length() != 0
-        || field.field.flags != UPDATABLE_FLAG
-        || field.field.extended_flags != 0
-    {
+    if !profile::ordinary(field) {
         return Err(EditError::Unsupported(WriteBlocker::Column));
     }
 
@@ -68,6 +66,7 @@ pub(super) fn encode(
     check(budget, cancelled)?;
     qualify(field)?;
 
+    let mut compact = false;
     let length = match value {
         Value::Null => return Ok(Encoded::Null),
         Value::Binary(bytes) if field.native_type() == OLE => bytes.len(),
@@ -79,15 +78,27 @@ pub(super) fn encode(
                 .charge(Resource::Steps, value.len() as u64)
                 .map_err(InspectError::from)?;
             let mut units = 0_usize;
-            for _ in value.encode_utf16() {
+            let mut narrow = true;
+            for unit in value.encode_utf16() {
                 if units.is_multiple_of(ENCODING_CHECK_UNITS) {
                     check(budget, cancelled)?;
                 }
                 units += 1;
+                narrow &= (1..=u16::from(u8::MAX)).contains(&unit);
             }
-            units
-                .checked_mul(size_of::<u16>())
-                .ok_or(InspectError::StructureLimit)?
+
+            compact = field.extended_flags() == COMPRESSED_UNICODE_FLAG
+                && units > COMPRESSION_MARKER.len()
+                && units <= COMPRESSED_MEMO_MAX_UNITS
+                && narrow;
+
+            if compact {
+                units + COMPRESSION_MARKER.len()
+            } else {
+                units
+                    .checked_mul(size_of::<u16>())
+                    .ok_or(InspectError::StructureLimit)?
+            }
         }
         _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
     };
@@ -114,11 +125,19 @@ pub(super) fn encode(
             }
         }
         Value::Text(value) => {
+            if compact {
+                bytes.extend_from_slice(&COMPRESSION_MARKER);
+            }
+
             for (position, unit) in value.encode_utf16().enumerate() {
                 if position.is_multiple_of(ENCODING_CHECK_UNITS) {
                     check(budget, cancelled)?;
                 }
-                bytes.extend_from_slice(&unit.to_le_bytes());
+                if compact {
+                    bytes.push(u8::try_from(unit).map_err(|_| EditError::Preservation)?);
+                } else {
+                    bytes.extend_from_slice(&unit.to_le_bytes());
+                }
             }
             let decoded = text::decode_long_with_limits(
                 &bytes,

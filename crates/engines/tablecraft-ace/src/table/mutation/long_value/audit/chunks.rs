@@ -3,18 +3,16 @@ use super::super::super::{EditError, page_update};
 use super::super::{
     encode::{Encoded, StorageChoice},
     maps::Family,
-    stage::{Change, Staged},
+    stage::Staged,
 };
+use super::payload;
 use crate::{
     InspectError, NativeImage, TableSchema,
     format::{bytes::u32_at, page::PAGE_BYTES, row::slot_offset},
     header::check,
     table::record_layout,
 };
-use tablecraft_core::{
-    limits::{Resource, ResourceBudget},
-    values::Value,
-};
+use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const DESCRIPTOR_BYTES: usize = 3 * size_of::<u32>();
 const REFERENCE_OFFSET: usize = size_of::<u32>();
@@ -24,62 +22,6 @@ const SINGLE_TAG: u32 = 0x4000_0000;
 const INLINE_BYTES: usize = 64;
 const SINGLE_BYTES: usize = 4076;
 const CHAIN_BYTES: usize = SINGLE_BYTES - size_of::<u32>();
-const COMPARE_BYTES: usize = 256;
-
-fn payload<'a>(
-    change: &'a Change<'_>,
-    budget: &mut ResourceBudget,
-    cancelled: &dyn Fn() -> bool,
-) -> Result<&'a [u8], EditError> {
-    let bytes = match &change.encoded {
-        Encoded::Null => {
-            if !matches!(change.root.update.value(), Value::Null) {
-                return Err(EditError::Preservation);
-            }
-            return Ok(&[]);
-        }
-        Encoded::Present(bytes) => bytes.as_slice(),
-    };
-    budget
-        .charge(Resource::Steps, bytes.len() as u64)
-        .map_err(InspectError::from)?;
-    match change.root.update.value() {
-        Value::Binary(expected) => {
-            if bytes.len() != expected.len() {
-                return Err(EditError::Preservation);
-            }
-            for (actual, expected) in bytes
-                .chunks(COMPARE_BYTES)
-                .zip(expected.chunks(COMPARE_BYTES))
-            {
-                check(budget, cancelled)?;
-                if actual != expected {
-                    return Err(EditError::Preservation);
-                }
-            }
-        }
-        Value::Text(expected) => {
-            if !bytes.len().is_multiple_of(size_of::<u16>()) {
-                return Err(EditError::Preservation);
-            }
-            let mut units = expected.encode_utf16();
-            for (position, pair) in bytes.as_chunks::<2>().0.iter().enumerate() {
-                if position.is_multiple_of(COMPARE_BYTES) {
-                    check(budget, cancelled)?;
-                }
-                if units.next() != Some(u16::from_le_bytes(*pair)) {
-                    return Err(EditError::Preservation);
-                }
-            }
-            if units.next().is_some() {
-                return Err(EditError::Preservation);
-            }
-        }
-        _ => return Err(EditError::Preservation),
-    }
-
-    Ok(bytes)
-}
 
 pub(super) fn prove(
     image: &NativeImage,
@@ -119,7 +61,7 @@ pub(super) fn prove(
         if descriptor != change.descriptor {
             return Err(EditError::Preservation);
         }
-        let encoded = payload(change, budget, cancelled)?;
+        let encoded = payload::prove(field, change, budget, cancelled)?;
         if matches!(change.encoded, Encoded::Null) {
             if !descriptor.is_empty() || !change.chunks.is_empty() {
                 return Err(EditError::Preservation);

@@ -19,14 +19,14 @@ qualification. General Memo/OLE replacement and normal ACE saves remain unfinish
 ## Ordinary Memo/OLE replacement candidates
 
 The separate `preview_ace16_long_value_updates` engineering API now replaces
-qualified raw Memo/opaque OLE values through NULL, inline, single and chained
+qualified Memo/opaque OLE values through NULL, inline, single and chained
 storage. Column-specific append/EOF allocation and ordinary parent forwarding
 share one map ledger. Old chunks and orphan storage remain unchanged and allocated.
 
 An immutable original operation supplies final row/value authority; independent
 map, page and payload audits protect the actual candidate. Cross-catalog ownership
 must qualify, including historical declarations and live references without map
-pairs. Unknown ownership, sharing, compressed/extended fields, selected properties
+pairs. Unknown ownership, sharing, unqualified extended fields, selected properties
 and indexes remain explicit blockers. See the
 [storage contract](testing/ACE16_LONG_VALUE_UPDATES.md).
 
@@ -61,6 +61,19 @@ map audit derives every attempt from original capacity. The
 passes 34 distinct runtime functions, including six new controls for complete
 images, slot ceilings, no-ops, unowned hints and correlated attempt/map forgeries.
 Original-file multiple-hint behavior remains unqualified.
+
+Exact ordinary Memo type 12, flag 2, extended flag 1 now has the same storage
+checks and engineering replacement path. The writer emits compact narrow bytes
+only for three through 1,024 eligible UTF-16 units; NUL/wide/supplementary or longer
+text stays raw. Exact decoder roundtrip rejects leading-FEFF ambiguity instead
+of silently changing requested text. A separate request-derived payload verifier
+checks mode and every byte without calling the encoder. OLE ext1 and unknown
+extended shapes remain refused. The
+[compressed implementation record](testing/results/ace16-compressed-memo-native-2026-10-27.json)
+passes 68 distinct runtime functions, including eight new functions, three
+compile-fail checks, scoped feature/default strict checks, minimal compilation
+and formatting. Actual original-file compressed candidate acceptance remains a
+separate committed-consumer gate.
 
 ## Compressed Memo reference observations
 

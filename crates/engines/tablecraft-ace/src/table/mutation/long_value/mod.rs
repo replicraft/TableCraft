@@ -24,7 +24,7 @@ struct Operation<'a> {
 }
 
 impl NativeImage {
-    /// Preview ordinary raw Memo/OLE replacements with qualified column-owned
+    /// Preview ordinary Memo/OLE replacements with qualified column-owned
     /// LVAL appends and represented EOF allocation. Old chunk rows, including
     /// newly orphaned chains, remain unchanged and allocated. Parent descriptor
     /// growth uses stable-root ordinary forwarding through the same EOF ledger.

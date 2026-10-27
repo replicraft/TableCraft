@@ -1,6 +1,7 @@
 //! Separate physical framing and semantic descriptor/chunk proofs.
 mod chunks;
 mod pages;
+mod payload;
 
 use super::super::EditError;
 use super::{admission::Prepared, stage::Staged};

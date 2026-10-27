@@ -9,11 +9,18 @@ qualification.
 
 ## Qualified profile and visible limitations
 
-The initial checked profile is ordinary unencoded ACE 16, subversion zero,
-variable Memo/OLE fields with native flag 2, extended flags 0 and zero declared
-length. These metadata facts identify the observed read-check profile, not write
+The checked profile is ordinary unencoded ACE 16, subversion zero,
+variable Memo/OLE fields with native flag 2 and zero declared length. Memo accepts
+exact extended flags 0 or 1; OLE requires extended flags 0. These metadata facts
+identify the observed read-check profile, not write
 permission. The [60 public UPDATE observations](../../testing/LONG_VALUE_UPDATE_OBSERVATIONS.md)
 provide original declaration, descriptor, allocation and orphan evidence.
+The separate [compressed Memo observations](../../testing/COMPRESSED_MEMO_UPDATE_OBSERVATIONS.md)
+establish actual flag1 field declarations, physical streams and the finite
+independent-writer compression profile. The existing decoder handles both raw
+and compressed streams; a compression flag does not require every stored stream
+to be compressed. Unknown extra bits, history/calculated declarations and OLE
+with the compression bit remain `UnsupportedColumn` here.
 
 The checker reads the actual trailing column-map list after validated native
 index names. Each qualified ten-byte little-endian record contains a logical
