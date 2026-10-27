@@ -37,6 +37,14 @@ that unknown orphan ownership is absent. Unknown declaration ownership, selected
 shared references or overlapping column/catalog ownership refuse this first
 writer profile. Owned orphan rows with arbitrary bodies remain valid storage.
 
+The [map-authority correction](LONG_VALUE_MAP_AUTHORITY.md) additionally records
+canonical map roles and exact row/bitmap footprints throughout the local catalog.
+Empty maps still need exclusive edit authority: a shared packed reference,
+overlapping map row or shared bitmap can alter an unrelated declaration when a
+new page is allocated. Distinct rows sharing one metadata container and true
+physical index aliases remain valid. This proof repeats during immutable final
+certification; it does not admit indirect selected-column maps.
+
 Before publication, an immutable original operation supplies the table, column
 and requests. The finalizer independently rebinds admission, ownership, logical
 roots and exact old/new values from the original image. Staged `Root` references

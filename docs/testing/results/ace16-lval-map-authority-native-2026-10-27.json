@@ -1,0 +1,581 @@
+{
+  "scope": "Closed long-value engineering map edit authority, including empty cross-catalog identities and shared storage. No indirect selected-LVAL admission, normal backend write expansion or original-file candidate rerun.",
+  "base_revision_context": "358ca2e889f969f5a873452f2540fb6f4c7a6946",
+  "source_context": "Final owned files pinned below; scoped Cargo checks used frozen registered inputs. Peer typed-index work was separate and is not part of this correction.",
+  "actual_before": {
+    "session": 67338,
+    "exit_status": 101,
+    "synthetic_controls": "Disjoint control accepted; Items and Other read/table/constraint/storage checks pass. Exact shared empty column references then still accepted EOF allocation.",
+    "selected_owned_pages": [
+      0,
+      1
+    ],
+    "unrelated_other_owned_pages": [
+      0,
+      1
+    ],
+    "unsafe_candidate_preserved": true,
+    "native_jvm_originalfile_calls": 0
+  },
+  "fix": {
+    "canonical_roles": [
+      "GlobalFree",
+      "OrdinaryOwned",
+      "OrdinaryCandidate",
+      "IndexOwned(physicalDataNumber)",
+      "ColumnOwned(logicalNumber)",
+      "ColumnCandidate(logicalNumber)"
+    ],
+    "prospective_mutable_roles": 5,
+    "identity": "Exact packed map-row reference and absolute row byte range; different owners cannot alias even when data member lists empty.",
+    "physical_index_alias": "Dedup canonical definition+physicaldata number; real logical aliases retain one owner.",
+    "storage": "Map row/container and indirect bitmap footprint only. Cross-role row-range/bitmap/container overlap refuses; disjoint rows sharing containers remain valid.",
+    "read_storage_boundary": "Read-only foreign owner grammar returns footprint only, no membership or writable map/cells. Strict RepresentedMap::read and all selected writable provenance unchanged. Global free role remains distinct.",
+    "classes": "Unknown flags/kinds unsupported, malformed/truncated read prefixes preserve read-owned classes, resource/cancel errors propagate.",
+    "recensus": "Both staging and immutable-original final authority use role/storage proof before selected existing page iteration."
+  },
+  "counts": {
+    "distinct_runtime_functions": 85,
+    "new_runtime_functions": 8,
+    "existing_runtime_functions": 77,
+    "primary_executions": 26,
+    "selected_regression_executions": 49,
+    "private_long_value_executions": 10,
+    "default_build_repeated_executions": 12,
+    "runtime_executions_in_final_batch": 97,
+    "compile_fail_doc_tests": 3,
+    "distinct_count_note": "Twelve default-build checks repeat functions already in explicit feature regression targets. Temporary diagnostic/probe functions are not shipping-function totals."
+  },
+  "independent_contracts": {
+    "new_integration_functions": 6,
+    "first_compile_runtime_status": 0,
+    "fixture_corrections": 0,
+    "coverage": "Owned/candidate/paired/cross-role empty aliases; history99; ordinary roles; existing global indirect bitmap sharing versus disjoint; true logical index aliases/sharedcontainers; resources/cancel/retry.",
+    "negative_index_role_boundary": "A healthy active index cannot simply use an empty LVAL-owned map without incompatible root ownership. No unreadable key relabel is claimed as a valid fixture; pure private role claims isolate index identity."
+  },
+  "private_contracts": {
+    "new_functions": 2,
+    "coverage": "Different packed refs overlapping map-row ranges refuse, same-container disjoint ranges pass; index/historical identity claims refuse; valid staged plan from disjoint catalog cannot certify against aliased immutable original."
+  },
+  "original_read_only_admission": {
+    "files": 22,
+    "memo_column_probes": 44,
+    "accepted": 44,
+    "source_hash_changes": 0,
+    "budget": {
+      "bytes": 268435456,
+      "rows": 100000,
+      "steps": 100000000
+    },
+    "stage_finish_publication_calls": 0,
+    "native_jvm_calls": 0,
+    "scope": "Known compressed/raw original/public-history sources, both Memo columns. These diagnostics do not rerun frozen132candidate/16refusal acceptance."
+  },
+  "temporary_source_context": "Explicit environment-driven diagnostic and failing integration probe were copied with executed registrations to ignored archives, then removed before final snapshot. Final library/tests have no dependency on ignored fixture manifests.",
+  "attempts": [
+    {
+      "log": {
+        "path": ".cache/ace16-lval-map-identity-causal-20261027/library-after.log",
+        "bytes": 816,
+        "sha256": "79d25c3258bec055a35f019d0729757ce06e28777f5787cc3ac30a4b24f0d5bb"
+      },
+      "exit_status": 101,
+      "observation": "Initial implementation named nonexistent storage_pages; corrected to existing protect_storage API, source retained."
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-lval-map-identity-causal-20261027/causal-after.log",
+        "bytes": 1019,
+        "sha256": "4255a5f8f75d9bc67daf47aff8e85f0d3e5a3175a3b7ff5c02c72cf4c07bf4b7"
+      },
+      "exit_status": 101,
+      "observation": "Broad strict-role read rejected healthy unrelated owner1 system-map disjoint control; no fixture normalization. Root-approved read-storage-only extraction preserves owner and never grants writable cells."
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-lval-map-identity-causal-20261027/causal-after-read-storage.log",
+        "bytes": 542,
+        "sha256": "cbffb5e6e148a68e95ab867871fe6c5456c803204727c71c9555ef7afa6803a5"
+      },
+      "exit_status": 0,
+      "observation": "Disjoint positive retained; shared empty rows now exact Unsupported(RowLayout). Original unsafe image remains unchanged."
+    }
+  ],
+  "final_checks": [
+    {
+      "name": "primary-snapshot",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--features",
+        "ace16-write-preview",
+        "--test",
+        "ace16_long_value_map_authority_contract",
+        "--test",
+        "ace16_long_value_updates_contract",
+        "--test",
+        "ace16_compressed_memo_updates"
+      ],
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/ace16-lval-map-identity-causal-20261027/primary-snapshot.log",
+        "bytes": 3213,
+        "sha256": "a8ca81292e5beddd6b514799dfeb4b157d3a03175366f06613fd5602439d154c"
+      },
+      "passed_function_executions": 26
+    },
+    {
+      "name": "regressions-final",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--features",
+        "ace16-write-preview",
+        "--test",
+        "ace16_long_value_updates",
+        "--test",
+        "long_value_storage",
+        "--test",
+        "long_value_storage_contract",
+        "--test",
+        "long_value_source",
+        "--test",
+        "compressed_text",
+        "--test",
+        "compressed_memo_storage",
+        "--test",
+        "ace16_slot_updates",
+        "--test",
+        "ace16_variable_updates_contract",
+        "--test",
+        "ace16_delete_contraction_contract",
+        "--test",
+        "ace16_split_int32_contract"
+      ],
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/ace16-lval-map-identity-causal-20261027/regressions-final.log",
+        "bytes": 6781,
+        "sha256": "382da4ab0fbfa401f8836eaadce6feadd1aa82a543b34a648d2673799cea29df"
+      },
+      "passed_function_executions": 49
+    },
+    {
+      "name": "private-final",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--features",
+        "ace16-write-preview",
+        "--lib",
+        "table::mutation::long_value"
+      ],
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/ace16-lval-map-identity-causal-20261027/private-final.log",
+        "bytes": 1635,
+        "sha256": "9c62c80e72530faeaa33cf827a1fb17d35e6a36045cf50faf4ea40094aac0801"
+      },
+      "passed_function_executions": 10
+    },
+    {
+      "name": "default-final",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--test",
+        "long_value_storage",
+        "--test",
+        "long_value_storage_contract",
+        "--test",
+        "compressed_memo_storage"
+      ],
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/ace16-lval-map-identity-causal-20261027/default-final.log",
+        "bytes": 1925,
+        "sha256": "8fa5ec176edf363353026933faf4e2cb74642c90e1f4ea6e83d37df68bc2cfad"
+      },
+      "passed_function_executions": 12
+    },
+    {
+      "name": "strict-final",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--features",
+        "ace16-write-preview",
+        "--lib",
+        "--test",
+        "ace16_long_value_map_authority_contract",
+        "--test",
+        "ace16_long_value_updates_contract",
+        "--test",
+        "ace16_compressed_memo_updates",
+        "--test",
+        "ace16_long_value_updates",
+        "--test",
+        "long_value_storage",
+        "--test",
+        "long_value_storage_contract",
+        "--test",
+        "long_value_source",
+        "--test",
+        "compressed_text",
+        "--test",
+        "compressed_memo_storage",
+        "--test",
+        "ace16_slot_updates",
+        "--test",
+        "ace16_variable_updates_contract",
+        "--test",
+        "ace16_delete_contraction_contract",
+        "--test",
+        "ace16_split_int32_contract",
+        "--example",
+        "preview_ace16_long_value",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/ace16-lval-map-identity-causal-20261027/strict-final.log",
+        "bytes": 183,
+        "sha256": "39c23d5fbfdfea93e3ec5b20dbb5f7818386e85fe69ea9f3a1dd6956433041dc"
+      },
+      "passed_function_executions": 0
+    },
+    {
+      "name": "default-strict-final",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--test",
+        "long_value_storage",
+        "--test",
+        "long_value_storage_contract",
+        "--test",
+        "compressed_memo_storage",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/ace16-lval-map-identity-causal-20261027/default-strict-final.log",
+        "bytes": 183,
+        "sha256": "64ddfbfac6fc4a2c9b6dc9b48a43804cb624a3030a62033e35dc84bbe627cb5c"
+      },
+      "passed_function_executions": 0
+    },
+    {
+      "name": "minimal-final",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--no-default-features"
+      ],
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/ace16-lval-map-identity-causal-20261027/minimal-final.log",
+        "bytes": 183,
+        "sha256": "825c755cb5420b3271d232d037821484315abee251ef8e30feb403b0cb165eb4"
+      },
+      "passed_function_executions": 0
+    },
+    {
+      "name": "docs-final",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--features",
+        "ace16-write-preview",
+        "--doc"
+      ],
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/ace16-lval-map-identity-causal-20261027/docs-final.log",
+        "bytes": 627,
+        "sha256": "61a0ec3f4fecb4bfa4cd5c9a54c130af3308208df186d36126f1eb1cf3451825"
+      },
+      "passed_function_executions": 3
+    },
+    {
+      "name": "fmt-final",
+      "exit_status": 0,
+      "rust_files": 9,
+      "command_manifest": {
+        "path": ".cache/ace16-lval-map-identity-causal-20261027/fmt-command.json",
+        "bytes": 869,
+        "sha256": "786bd6f2533bef4b3c3b8f6a8fc5adfc4ce8095da6bcb2936ef1ee67b7f26b19"
+      },
+      "log": {
+        "path": ".cache/ace16-lval-map-identity-causal-20261027/fmt-final.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "diagnostic_runs": [
+    {
+      "log": {
+        "path": ".cache/ace16-lval-map-identity-causal-20261027/private-and-original-admission.log",
+        "bytes": 6482,
+        "sha256": "38be3d28fa702d2126c932ff3b4bb3eb503021df2fbd7e7198a837e24a2e53f2"
+      },
+      "exit_status": 0,
+      "private_functions": 2,
+      "temporary_diagnostic_functions": 1,
+      "readonly_admission_probes": 44
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-lval-map-identity-causal-20261027/private-and-original-admission-final.log",
+        "bytes": 6482,
+        "sha256": "92bb88ee9fb2582b23c997a392722bb9724d94c9571545755ac0d907943fec5c"
+      },
+      "exit_status": 0,
+      "private_functions": 2,
+      "temporary_diagnostic_functions": 1,
+      "readonly_admission_probes": 44,
+      "note": "After exact malformed-prefix class alignment; source22 rehashed unchanged."
+    }
+  ],
+  "preceding_candidate_acceptance": {
+    "path": "docs/testing/results/ace16-compressed-memo-originals-2026-10-27.json",
+    "bytes": 9791,
+    "sha256": "02e0932f8af3f7db95603c0eed80272f0320fd32a4eb9beffbfd11b9c65d5e42"
+  },
+  "artifacts": [
+    {
+      "path": ".cache/ace16-lval-map-identity-causal-20261027/before-observation.json",
+      "bytes": 2059,
+      "sha256": "34cef1ffb2527c07c6883ddf61142babd33d1cca6677482a31240d137b9e855a"
+    },
+    {
+      "path": ".cache/ace16-lval-map-identity-causal-20261027/probe-initial.rs",
+      "bytes": 3885,
+      "sha256": "b23f7db4026b74085046b8fe2b82b0959ac47ccb20485a9d78f4745a83f4ac52"
+    },
+    {
+      "path": ".cache/ace16-lval-map-identity-causal-20261027/initial.log",
+      "bytes": 1129,
+      "sha256": "713208b26097a6c2d4771a1d3d0689cec0556a67e23b1a4d8dad627c753fc626"
+    },
+    {
+      "path": ".cache/ace16-lval-map-identity-causal-20261027/shared-before.accdb",
+      "bytes": 98304,
+      "sha256": "370671badfce793c7c8ed8ac7ef19c03daa680ab4c13a6b513fce87c715c99c0"
+    },
+    {
+      "path": ".cache/ace16-lval-map-identity-causal-20261027/accepted-before-fix.accdb",
+      "bytes": 102400,
+      "sha256": "d35cc6b568c8cd428b78227787fa6700ffdebc0cbb383fd4823c6f488125309c"
+    },
+    {
+      "path": ".cache/ace16-lval-map-identity-causal-20261027/production-before/ownership.rs",
+      "bytes": 9722,
+      "sha256": "6c5916dc39e4a29db69331e31e55dfe3f7fa84c9a426988635da1988710e49da"
+    },
+    {
+      "path": ".cache/ace16-lval-map-identity-causal-20261027/production-before/maps.rs",
+      "bytes": 10489,
+      "sha256": "fd3295ec544a6d6576f44b24414fccf2cd2ffacda721c9340546d9aa3109d1ef"
+    },
+    {
+      "path": ".cache/ace16-lval-map-identity-causal-20261027/production-before/authority.rs",
+      "bytes": 4164,
+      "sha256": "323c55c95cebce630b40da300b8825663142bef79079c54b9a40dcdecaec9511"
+    },
+    {
+      "path": ".cache/ace16-lval-map-identity-causal-20261027/production-before/stage.rs",
+      "bytes": 7332,
+      "sha256": "b99da019eb4ffa040918aca699f6b655c281b8636f1d72c4c0c90abd17ab29bc"
+    },
+    {
+      "path": ".cache/ace16-lval-map-identity-causal-20261027/map-claims-initial.rs",
+      "bytes": 5334,
+      "sha256": "587e757411ae2b48e72aee57cdbb5a8ee7c4affb5fbdfe0636ee7d79227adb21"
+    },
+    {
+      "path": ".cache/ace16-lval-map-identity-causal-20261027/library-after.log",
+      "bytes": 816,
+      "sha256": "79d25c3258bec055a35f019d0729757ce06e28777f5787cc3ac30a4b24f0d5bb"
+    },
+    {
+      "path": ".cache/ace16-lval-map-identity-causal-20261027/causal-after.log",
+      "bytes": 1019,
+      "sha256": "4255a5f8f75d9bc67daf47aff8e85f0d3e5a3175a3b7ff5c02c72cf4c07bf4b7"
+    },
+    {
+      "path": ".cache/ace16-lval-map-identity-causal-20261027/causal-after-read-storage.log",
+      "bytes": 542,
+      "sha256": "cbffb5e6e148a68e95ab867871fe6c5456c803204727c71c9555ef7afa6803a5"
+    },
+    {
+      "path": ".cache/ace16-lval-map-identity-causal-20261027/probe-after.rs",
+      "bytes": 3885,
+      "sha256": "b23f7db4026b74085046b8fe2b82b0959ac47ccb20485a9d78f4745a83f4ac52"
+    },
+    {
+      "path": ".cache/ace16-lval-map-identity-causal-20261027/independent-initial.log",
+      "bytes": 988,
+      "sha256": "4af8dab65eaad575377fb684c2c77d376c1b9174f04b1cd5d61b76695084606d"
+    },
+    {
+      "path": ".cache/ace16-lval-map-identity-causal-20261027/private-and-original-admission.log",
+      "bytes": 6482,
+      "sha256": "38be3d28fa702d2126c932ff3b4bb3eb503021df2fbd7e7198a837e24a2e53f2"
+    },
+    {
+      "path": ".cache/ace16-lval-map-identity-causal-20261027/private-and-original-admission-final.log",
+      "bytes": 6482,
+      "sha256": "92bb88ee9fb2582b23c997a392722bb9724d94c9571545755ac0d907943fec5c"
+    },
+    {
+      "path": ".cache/ace16-lval-map-identity-causal-20261027/diagnostic-executed.rs",
+      "bytes": 2272,
+      "sha256": "901f9c3ad1657a21e4b20dd4b49bc892a757c93f885040b915599417b66740e9"
+    },
+    {
+      "path": ".cache/ace16-lval-map-identity-causal-20261027/diagnostic-registration-executed.rs",
+      "bytes": 11247,
+      "sha256": "2158d001f527c0aade55008e25b7371005007fca037433cdb06bf8b6fdc6dd64"
+    },
+    {
+      "path": ".cache/ace16-lval-map-identity-causal-20261027/diagnostic-final-executed.rs",
+      "bytes": 2272,
+      "sha256": "901f9c3ad1657a21e4b20dd4b49bc892a757c93f885040b915599417b66740e9"
+    },
+    {
+      "path": ".cache/ace16-lval-map-identity-causal-20261027/diagnostic-final-registration.rs",
+      "bytes": 11247,
+      "sha256": "2158d001f527c0aade55008e25b7371005007fca037433cdb06bf8b6fdc6dd64"
+    },
+    {
+      "path": ".cache/ace16-lval-map-identity-causal-20261027/admission-manifest.tsv",
+      "bytes": 4520,
+      "sha256": "830b2ef9fcf0f65781da765fedf1c6ffc65add419faeca54c69a5b6053d7b5d1"
+    },
+    {
+      "path": ".cache/ace16-lval-map-identity-causal-20261027/admission-before-pins.json",
+      "bytes": 4815,
+      "sha256": "e43a5c79315fb2b30edb408faa8d0418cffdc5148e1a98b62a771a63585e950f"
+    },
+    {
+      "path": ".cache/ace16-lval-map-identity-causal-20261027/admission-after.json",
+      "bytes": 5214,
+      "sha256": "8d960f4aa360e0c7b395f85620a6061087feb0a8c914a48ccb4c86cbcef3997e"
+    },
+    {
+      "path": ".cache/ace16-long-value-map-authority-independent-initial-20261027/source-pins.json",
+      "bytes": 941,
+      "sha256": "a70a8986d169839e68eba19b7b573b37474608b99b7fb0b9c4ffb92958b23834"
+    }
+  ],
+  "scoped_sources": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/allocation.rs",
+      "bytes": 4402,
+      "sha256": "17884378c256fdf2742c56e27248529d0aaaf359c05f7c75f22eb1c027ead14f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/allocation/represented.rs",
+      "bytes": 12782,
+      "sha256": "071043e057e5037cf33aa4d985b727cda92af1bac4684b463c6dd1d0283b1b20"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/ownership.rs",
+      "bytes": 11218,
+      "sha256": "1710be25c39f60e445a098bffc43ffd9f60535ad845f5c2c974659a7da4a4628"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/ownership/maps.rs",
+      "bytes": 5771,
+      "sha256": "69496e9138ed0fd4ee3363842b370afea977677507a8a7755a04098204e1d2f4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/ownership/maps/tests.rs",
+      "bytes": 2005,
+      "sha256": "e2dd12cd3b5b7dc9b20097793afb73d5eca1dd2888d8f9a2219c567e58f59921"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/ownership/tests.rs",
+      "bytes": 2609,
+      "sha256": "3e261413ee8825f729fbe771595a2a3c1f67199f29d640c8dd2061276af4eb1f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_long_value_map_authority_contract.rs",
+      "bytes": 762,
+      "sha256": "99a299fd6a8c4d3941b64102071db8d1a237d5f3a19307b2d102ec58813de4d7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_long_value_map_authority_contract/model.rs",
+      "bytes": 7420,
+      "sha256": "6b165f54e353ad8a936f5d8874d14c74ce03640f308eff678dfd2c3ce870db38"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_long_value_map_authority_contract/values.rs",
+      "bytes": 7195,
+      "sha256": "86fa8809bd075d28a43eeefee436680f5a6536b6832952dbf9af762a01533706"
+    },
+    {
+      "path": "docs/testing/LONG_VALUE_MAP_AUTHORITY.md",
+      "bytes": 6465,
+      "sha256": "842f8bea9efbdd15b3b81fe1b04d719d4a45f3d31ba4f1b1bdbc9e8b6e299edb"
+    },
+    {
+      "path": "docs/testing/ACE16_LONG_VALUE_UPDATES.md",
+      "bytes": 13346,
+      "sha256": "066d1d2f8cd8ae953fd89207575219ee4f8282c278c6436be8c20765041c2b35"
+    }
+  ],
+  "inventory": {
+    "path": ".cache/ace16-lval-map-identity-causal-20261027/final-inventory.txt",
+    "bytes": 837,
+    "sha256": "23af1544e50bf6677b220daed9348f84bd3642f99553c7f54cbe33e9d7012870"
+  }
+}

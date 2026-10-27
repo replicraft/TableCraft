@@ -16,6 +16,22 @@ outputs, with all 120 column reports matching independently captured expectation
 These are storage-check results, not new UPDATE actions or native Access
 qualification. General Memo/OLE replacement and normal ACE saves remain unfinished.
 
+## Memo/OLE map edit authority correction
+
+The engineering preview now proves exclusive map identity and storage authority
+before changing membership, including empty maps. An adversarial literal fixture
+previously let one table acquire another table's new LVAL page through shared
+empty map rows. The [correction](testing/LONG_VALUE_MAP_AUTHORITY.md) rejects that
+case and independently repeats the census against the immutable original during
+final certification. Distinct map rows sharing a container remain supported.
+
+The scoped batch passes 85 distinct runtime functions, including eight new
+functions, plus three compile-fail doc tests and strict/minimal checks. Separate
+read-only diagnostics admit both Memo columns on all 22 unchanged original-source
+files (44 probes); they do not stage, finalize or publish candidates. Earlier
+frozen-consumer acceptance remains historical evidence, not a replay of this
+correction. Indirect selected LVAL maps and normal native saves remain unfinished.
+
 ## Ordinary Memo/OLE replacement candidates
 
 The separate `preview_ace16_long_value_updates` engineering API now replaces

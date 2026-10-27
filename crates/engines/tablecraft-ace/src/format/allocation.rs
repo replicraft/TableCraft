@@ -9,6 +9,8 @@ use crate::limits::MAX_MAPPED_PAGES;
 mod cursor;
 mod represented;
 pub(crate) use cursor::{PageCursor, PageMembership};
+#[cfg(feature = "ace16-write-preview")]
+pub(crate) use represented::MapStorage;
 pub(crate) use represented::{GLOBAL_FREE_REFERENCE, MapCell, MapRole, RepresentedMap};
 
 const INLINE_MAP: u8 = 0;
