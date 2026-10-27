@@ -223,6 +223,16 @@ impl<'a> IndexProfile<'a> {
             crate::format::data_type::SHORT_TEXT | crate::format::data_type::LONG_TEXT
         ) && schema.columns[column].scalar_type() == Some(ScalarType::Text)
         {
+            if schema.columns[column]
+                .text_sort_order()
+                .is_some_and(|order| order.is_french_legacy())
+                && index
+                    .constraints()
+                    .is_some_and(|constraints| constraints.ignore_nulls())
+            {
+                return Err(InspectError::Unsupported);
+            }
+
             return super::text::TextProfile::new(
                 column,
                 &schema.columns[column],

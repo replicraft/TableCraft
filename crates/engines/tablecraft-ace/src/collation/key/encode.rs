@@ -3,7 +3,7 @@
 //! Bounded primary/secondary/kana streams and native overflow-tail behavior.
 use super::{
     buffer::{Buffer, Secondary, Work},
-    tail,
+    french, tail,
     weights::{self, Weight},
 };
 use crate::{GeneralSortFamily, InspectError};
@@ -40,7 +40,23 @@ pub(super) fn encode(
     descending: bool,
     work: &mut Work<'_>,
 ) -> Result<Vec<u8>, InspectError> {
-    Ok(encode_with_positions(family, units, descending, false, work)?.bytes)
+    Ok(encode_with_positions(family, units, descending, false, false, work)?.bytes)
+}
+
+pub(super) fn encode_french(
+    units: &[u16],
+    descending: bool,
+    work: &mut Work<'_>,
+) -> Result<Vec<u8>, InspectError> {
+    Ok(encode_with_positions(
+        GeneralSortFamily::Legacy,
+        units,
+        descending,
+        false,
+        true,
+        work,
+    )?
+    .bytes)
 }
 
 pub(crate) fn encode_full(
@@ -48,7 +64,7 @@ pub(crate) fn encode_full(
     units: &[u16],
     work: &mut Work<'_>,
 ) -> Result<ComparisonKey, InspectError> {
-    encode_with_positions(family, units, false, true, work)
+    encode_with_positions(family, units, false, true, false, work)
 }
 
 fn encode_with_positions(
@@ -56,6 +72,7 @@ fn encode_with_positions(
     units: &[u16],
     descending: bool,
     full: bool,
+    reverse_secondary: bool,
     work: &mut Work<'_>,
 ) -> Result<ComparisonKey, InspectError> {
     let count = units.len();
@@ -219,6 +236,9 @@ fn encode_with_positions(
         entries,
         count,
     )?;
+    if reverse_secondary {
+        french::reverse_secondary(&mut secondary, characters, work)?;
+    }
     let primary_length = primary.len();
     tail::finish(
         &mut primary,

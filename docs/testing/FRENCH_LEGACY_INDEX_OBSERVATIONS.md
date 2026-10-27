@@ -83,3 +83,51 @@ python3 docs/testing/capture_french_legacy_indexes.py \
   --directory .cache/french-legacy-reproduction/originals \
   --report .cache/french-legacy-reproduction/oracle.json
 ```
+
+## Local physical-read implementation checks
+
+The subsequent engine slice admits only exact French `1036/0/0` single Short Text
+physical encoding, complete reads/checks, NULL selection and explicit ranges.
+It reuses the existing Legacy weight data, pads the complete secondary character
+span and reverses that paid stream before existing neutral trimming. Other streams
+and General recognition remain unchanged. No upstream implementation or new weight
+table was copied for this transformation.
+
+[FrenchKeysOracle.java](FrenchKeysOracle.java) independently resolves the exact
+descriptor against the pinned JAR. Its 349 vectors cover neutral spans, combining
+marks, expansions, kana, unprintable positions, arbitrary raw surrogates,
+truncation and overrun inputs, including 128 deterministic random sequences.
+Another mode hashes every BMP unit in both directions, grouped into 256 blocks.
+All 349 vectors and all 65,536 units in both directions match the engine's raw
+physical encoder; these are index payloads, not unrestricted string comparisons.
+
+Literal stored-key fixtures reuse repository-owned catalog/page mechanics while
+supplying independent French wire goldens from the original getter. Both ACE16
+headers, directions, aliases, tied keys, root leaves, bounded/tail node forms,
+NULL/ranges/projection and full key checks run locally. Read checks also run in
+the default build without the engineering-write feature. Separate feature-enabled
+guards preserve mutation refusal; a French indexed field stays blocked while an
+unrelated unindexed French field does not change numeric write eligibility.
+General comparison/LIKE/search and General equality hints still refuse French.
+Memo, tuples, ignore-NULL physical checks, unsupported descriptors and unique
+overflow retain explicit limits. A causal flag/membership control preserves the
+existing checked General ignore-NULL profile while refusing French.
+
+The initial native test exposed a real admission coupling: new read qualification
+could let an existing numeric UPDATE no-op pass on a French-indexed table.
+A central indexed-French write guard restores the prior ConstraintCoverage
+refusal for both UPDATE and DELETE. Another failed initial assertion attempted
+to rewrite a zero byte to zero; its corrected corruption changes an actual NULL
+marker and first proves the original fixture reads. Subsequent fixture-isolation
+compile mistakes, initial logs and exact old probe expressions are retained
+separately. No complete initial untracked Rust-file snapshot is claimed.
+
+No query comparison policy, LIKE/search capability, ordinary write API or native
+Access compatibility is established by these local physical-read checks.
+
+The scoped [implementation receipt](results/french-legacy-read-native-2026-10-26.json)
+records 108 distinct runtime test functions (11 new), three passing compile-fail
+doc checks, strict lint, standalone minimal compilation and formatting. Repeated
+default/feature executions are counted once; the existing ignored exhaustive
+LIKE test is excluded. Original-file engine/CLI replay remains separate from
+these literal-fixture and encoder checks.

@@ -1,5 +1,30 @@
 # Implementation status
 
+## Exact French legacy physical index reads
+
+Native Short Text indexes with exact descriptor `1036/0/0` now use the existing
+Legacy weights with a paid French secondary-stream transformation. Independent
+vectors and full BMP-unit digest blocks match both directions. Qualified ordinary
+single-field indexes now support physical All/NULL/range reads and complete checks,
+including aliases, bounded node forms, ties and original row/key agreement.
+
+General recognition and comparison APIs remain unchanged. French Memo, tuples,
+ignore-NULL indexes, equality-prefix hints, SQL comparison, LIKE/search and the
+Access General resolver remain outside this extension. A separate central guard
+preserves the previous UPDATE/DELETE refusal for French-indexed tables, including
+no-op requests; newly Checked read status does not grant mutation authority.
+An unindexed French field does not acquire a new unrelated write prohibition.
+
+The [implementation record](testing/results/french-legacy-read-native-2026-10-26.json)
+records 108 passing distinct runtime functions, including eleven new controls,
+and three compile-fail checks. Feature/default test repetition is counted
+separately. Strict lint, minimal compilation and formatting pass. Initial authored
+fixture failures and the discovered read-to-write admission coupling remain
+recorded with their corrections; an ineffective corruption probe was replaced by
+an actual marker mutation. This is engineering evidence, not native Access SQL
+or NLS qualification. See [the physical-key contract](access/indexes/NATIVE_TEXT.md)
+and [independent French oracle](testing/FRENCH_LEGACY_INDEX_OBSERVATIONS.md).
+
 ## Independent RESTRICT deletion action comparisons
 
 The [committed-tool comparison](testing/RESTRICT_DELETE_OBSERVATIONS.md) now

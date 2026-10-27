@@ -38,6 +38,13 @@ impl<'a> Component<'a> {
                     data_type::SHORT_TEXT | data_type::LONG_TEXT
                 ) =>
             {
+                if field
+                    .text_sort_order()
+                    .and_then(|order| order.general_family())
+                    .is_none()
+                {
+                    return Err(InspectError::Unsupported);
+                }
                 TextProfile::new(column, field, descending)?;
                 Kind::Text(field)
             }

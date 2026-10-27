@@ -9036,8 +9036,17 @@ remain unchanged. Two tables per profile each contain 38 rows, three logical
 indexes and two physical indexes: 456 logical memberships / 304 physical entries.
 The nonunique keys include NULL/empty/case/ties/punctuation/expansions and
 510-byte overflow; unique overflow is not qualified. Raw captures/database bytes
-stay ignored. This is independent stored-index evidence, not implemented French
-engine support, native Access/NLS/SQL comparison, LIKE/search or write qualification.
+stay ignored. This original oracle establishes stored-index facts; the owning
+observations separately record subsequent physical engine implementation checks.
+Native Access/NLS/SQL comparison, LIKE/search and write qualification remain
+separate.
+
+Repository-owned [FrenchKeysOracle.java](FrenchKeysOracle.java) adds 349 complete
+UTF-16 sequence vectors and per-block digests for all 65,536 BMP units in both
+index directions, using only the pinned reference encoder API. The implementation
+receipt pins the exact producer/class/output hashes. No new upstream weights or
+code were copied; generated keys are test observations, not a full-string SQL or
+native NLS oracle.
 
 ## New cross-table RESTRICT DELETE comparison originals
 

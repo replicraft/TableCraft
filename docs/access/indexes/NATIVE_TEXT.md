@@ -2,7 +2,9 @@
 
 The current implementation identifies stored database/column sort descriptors,
 encodes General legacy/General 2010 text-index payloads and reads qualified
-single-column Short/Long Text indexes and text-bearing compound indexes. Single
+single-column Short/Long Text indexes and text-bearing compound indexes. Exact
+French legacy `1036/0/0` also supports single Short Text physical reads/checks;
+its scope is separate from full-string comparison, LIKE and search. Single
 text indexes also support explicit physical cursor intervals. A standalone
 provisional full-string General weight comparer now works under explicit limits.
 It does **not** yet
@@ -37,6 +39,36 @@ metadata. `inspect PATH --table NAME` adds a separate text-column descriptor
 table after the existing scalar metadata table. Terminal tables and escaped TSV
 use the existing presentation boundary. ACCDC contained databases use the same
 APIs. Inspecting any of these fields activates no application/provider content.
+
+## Exact French legacy physical reads
+
+Descriptor `1036/0/0`, native bytes `0c040000`, has an explicit Short Text
+physical-key path. It reuses the existing General Legacy weights while padding
+and reversing the paid secondary stream before neutral suffix trimming. Primary,
+kana and unprintable streams retain their existing meaning. General recognition
+and output are unchanged; related LCIDs, other variants and versions are refused.
+
+Single nonunique/qualified unique Short Text indexes support checked complete
+reads, NULL selections and explicit physical ranges in either direction, including
+projection with hidden key validation. Existing complete population/owner/slot/key
+checks, cumulative allowances, cancellation and corruption refusals remain.
+Overflow-digest membership does not prove exact unique full-value equality;
+unique overflow remains unsupported. Physical aliases and both existing node
+forms use the same checked traversal.
+
+French Memo, text-bearing tuples and ignore-NULL physical membership checks
+remain unsupported. Public selected reads retain their existing ignore-NULL
+refusal. An indexed French field
+still blocks every mutation admission, including no-op/empty DELETE and UPDATE;
+an unrelated unindexed French field does not create a new blocker. These are
+read capabilities, not an expansion of engineering or ordinary writes.
+`GeneralEqualityPrefix`, automatic General equality hints, adapter General
+comparison, full-string General comparison, LIKE and search remain General-only.
+No truncated index key is substituted for SQL comparison or native NLS behavior.
+
+The [original oracle and engineering observations](../../testing/FRENCH_LEGACY_INDEX_OBSERVATIONS.md)
+keep stored descriptor/key evidence distinct from these local implementation
+checks and from native Access qualification.
 
 ## Qualification and next implementation
 

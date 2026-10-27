@@ -1,0 +1,394 @@
+{
+  "date": "2026-10-26",
+  "scope": "Exact French Legacy 1036/0/0 single Short Text physical encoding/read/check/All/NULL/range; local engineering, not SQL/NLS/native Access qualification",
+  "source_state": "Uncommitted feature working-tree snapshots; source hashes below identify tested code. Frozen original oracles are separate from a compiled CLI receipt.",
+  "counts": {
+    "distinct_runtime_functions": 108,
+    "new_runtime_functions": 11,
+    "primary_integration_functions": 10,
+    "related_functions": 79,
+    "collation_unit_functions": 12,
+    "text_profile_unit_functions": 7,
+    "compile_fail_doc_checks": 3,
+    "existing_ignored_unit_excluded": 1,
+    "encoder_vectors": 349,
+    "encoder_bmp_units": 65536,
+    "encoder_directions": 2
+  },
+  "boundaries": [
+    "General family recognition/byte output unchanged; no related French LCID/version/variant aliases",
+    "Existing Legacy weights reused; secondary span padded/reversed before existing trim and direction assembly, with cumulative work/cancellation",
+    "No new upstream implementation or static weights copied",
+    "French Memo, tuples and ignore-NULL physical checks refuse; existing General profiles preserved",
+    "All indexed French UPDATE/DELETE/no-op admissions return prior ConstraintCoverage; unrelated unindexed French fields do not create a blocker",
+    "General equality prefixes, full comparison, LIKE/search and adapter General/ICU policy unchanged and French still refused",
+    "Unique overflow remains unsupported; physical entry digest does not prove full-value equality",
+    "Literal key fixtures reuse existing repository page/catalog mechanics; French key/order/payload expectations come from the independent pinned original",
+    "No production CLI/backend writes, original-file engine replay or native Access save/SQL qualification claimed"
+  ],
+  "checks": [
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test french_legacy_keys --test french_legacy_reads",
+      "session": 62479,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/french-legacy-accepted-feature-20261026.log",
+        "bytes": 1513,
+        "sha256": "6c9bf09827b60c92b8ab9b7a87b07253b59b9133178462cb659c717a67163d75"
+      },
+      "passed": 10
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --test french_legacy_keys --test french_legacy_reads",
+      "session": 23278,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/french-legacy-accepted-default-20261026.log",
+        "bytes": 1417,
+        "sha256": "9861d1273bef147e311e50b7f9bea5bbd2a29f8aeaf3769f986bb0aabcebec1b"
+      },
+      "passed": 9,
+      "excluded_from_distinct_count": "Repeated validation of already counted functions"
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test indexes --test index_nodes --test index_projection --test constraints --test general_comparison --test general_search --test ace16_encoded_delete_contract --test ace16_delete_ignored --test ace16_batch_delete_contract --test ace16_write_preview --test ace16_fixed_updates",
+      "session": 93900,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/french-legacy-related-20261026.log",
+        "bytes": 9048,
+        "sha256": "795d9e03217486380852f0a6ff4ac45ad96b3256c7d054ef1941ffe34dffe136"
+      },
+      "passed": 79
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib collation::",
+      "session": 37218,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/french-legacy-collation-units-20261026.log",
+        "bytes": 1877,
+        "sha256": "e595d0c0298e21cdb2c9bd4e015234f5ddfbe4b0c3765fad0c103be3f84ce471"
+      },
+      "passed": 12
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib table::indexes::text::tests",
+      "session": null,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/french-legacy-text-units-20261026.log",
+        "bytes": 1049,
+        "sha256": "b92ea7c0453578b58271b4d7a69c25e55d49e34ce0145edb2e3bcf0653e5c997"
+      },
+      "passed": 7
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib --test french_legacy_keys --test french_legacy_reads -- -D warnings",
+      "session": 65845,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/french-legacy-accepted-clippy-20261026.log",
+        "bytes": 183,
+        "sha256": "f4bf7c0a757cd1fd317cc56cd0fcdb9693c21d8813efb3738e90f2e108bc852b"
+      }
+    },
+    {
+      "command": "cargo check --locked --offline -j2 -p tablecraft-ace --lib --no-default-features",
+      "session": 77910,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/french-legacy-accepted-minimal-20261026.log",
+        "bytes": 184,
+        "sha256": "64a8f53815daa28d9f2f285ba75e1521980cd640d2a7af6cf269149f9ce9a25e"
+      }
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --doc --features ace16-write-preview",
+      "session": 31944,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/french-legacy-accepted-doc-20261026.log",
+        "bytes": 739,
+        "sha256": "6f42ed00dc3af1f60dd02153df9f671326606edc90a55173436a44bf47731f8c"
+      },
+      "passed": 3
+    },
+    {
+      "command": "rustfmt --edition 2024 --check --config skip_children=true crates/engines/tablecraft-ace/src/collation/sort_order.rs crates/engines/tablecraft-ace/src/collation/key/mod.rs crates/engines/tablecraft-ace/src/collation/key/encode.rs crates/engines/tablecraft-ace/src/collation/key/french.rs crates/engines/tablecraft-ace/src/table/indexes/text.rs crates/engines/tablecraft-ace/src/table/indexes/text/tests.rs crates/engines/tablecraft-ace/src/table/indexes/encoded_tuple/component.rs crates/engines/tablecraft-ace/src/table/indexes/profile.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/plan.rs crates/engines/tablecraft-ace/src/table/mutation/gates.rs crates/engines/tablecraft-ace/tests/french_legacy_keys.rs crates/engines/tablecraft-ace/tests/french_legacy_reads.rs crates/engines/tablecraft-ace/tests/french_legacy_reads/model.rs crates/engines/tablecraft-ace/tests/french_legacy_reads/values.rs crates/engines/tablecraft-ace/tests/french_legacy_reads/boundaries.rs",
+      "session": null,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/french-legacy-accepted-fmt-20261026.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "verification_order": "The final payload/ordinary-flag assertions and profile guard were followed by focused feature/default/strict/minimal/docs/fmt. Earlier 79 related and 19 private functions passed before that narrowly scoped final admission guard; they were not broadly repeated. Final root-requested changes only rewrapped rustdoc and adjusted a comment/blank line; final source snapshots and formatting include those cosmetic edits. No runtime statements changed after final compiler checks.",
+  "earlier_accepted_repeats_excluded": [
+    {
+      "path": ".cache/french-legacy-initial-keys-20261026.log",
+      "bytes": 558,
+      "sha256": "e195a92a45802f3c4940cd67630ad50faa7b7e0282991d8254ef3d2a2e2690f5"
+    },
+    {
+      "path": ".cache/french-legacy-primary-final-20261026.log",
+      "bytes": 1327,
+      "sha256": "2803fe748a6140b6083373cd2af0d727dfafaeadd747b4fc069e5d8b255a7144"
+    },
+    {
+      "path": ".cache/french-legacy-default-final-20261026.log",
+      "bytes": 1327,
+      "sha256": "fde5e82da25d9962a3bf3ac3b4d214f9c39ff24be01d46e95ebc7d9df1bf0e46"
+    },
+    {
+      "path": ".cache/french-legacy-final-primary-20261026.log",
+      "bytes": 1423,
+      "sha256": "736c902c3bcbaff0af8d8ab150c4045aeb544babf11895cd65c119026111e18b"
+    },
+    {
+      "path": ".cache/french-legacy-final-default-20261026.log",
+      "bytes": 1327,
+      "sha256": "6f4196313d97f945b5703a8ba1f1688dbfd4e77af475e9cb80ed3f458ab6a5a1"
+    },
+    {
+      "path": ".cache/french-legacy-final-feature-20261026.log",
+      "bytes": 1423,
+      "sha256": "53ee741a34244a4d04c3659d0c01bda7d2ad0e1d880fc5d0701a5fef58452bc7"
+    },
+    {
+      "path": ".cache/french-legacy-clippy-20261026.log",
+      "bytes": 183,
+      "sha256": "87d56515604b1e97cf1032d68bdca29e924d39ce81e71a251d48fc4c75f453ed"
+    },
+    {
+      "path": ".cache/french-legacy-minimal-20261026.log",
+      "bytes": 183,
+      "sha256": "39a093a7f3f4a97203170d04f717c133730258416f837ddc684f23be173cf960"
+    },
+    {
+      "path": ".cache/french-legacy-doc-20261026.log",
+      "bytes": 738,
+      "sha256": "7b423bf76d72a71f41e5933aa844fc908b8993061bf4145f0a8fc83ed9871388"
+    },
+    {
+      "path": ".cache/french-legacy-fmt-20261026.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "failed_attempts": [
+    {
+      "session": 86062,
+      "exit_code": 101,
+      "log": {
+        "path": ".cache/french-legacy-primary-20261026.log",
+        "bytes": 3082,
+        "sha256": "9346be9d30bd7e1af79cde3e61a75ea928f3400a86ffec5788480bd47fa554ab"
+      },
+      "finding": "Encoder2 pass; native4/6 pass. Real unindexed-ID UPDATE admission coupling fixed by central indexed-French guard; authored corruption rewrote zero to zero and was corrected to actual null marker0->127 after positive read proof."
+    },
+    {
+      "session": 5187,
+      "exit_code": 101,
+      "log": {
+        "path": ".cache/french-legacy-primary-retry-20261026.log",
+        "bytes": 5515,
+        "sha256": "00f8f43b518461a7e47c5480cb4390bf55f450cd0d82facb0270221bc9681b42"
+      },
+      "finding": "Authoring-only default fixture isolation: duplicate imports and two distinct fixture Model types in one vector. Corrected imports and byte-image vector, no key/order/data golden changes."
+    },
+    {
+      "session": 96498,
+      "exit_code": 101,
+      "log": {
+        "path": ".cache/french-legacy-default-20261026.log",
+        "bytes": 589,
+        "sha256": "680bac6fb9574c9694870c9579f2678966b70359477fe04fe9767bb975826742"
+      },
+      "finding": "Authoring-only cfg isolation: fixture local used by default equality refusal was incorrectly feature-gated. Made local unconditional; mutation assertions remain feature-gated."
+    }
+  ],
+  "initial_source_limit": {
+    "path": ".cache/french-legacy-attempts-20261026/INITIAL_FINDINGS.md",
+    "bytes": 2074,
+    "sha256": "d278811128922ff95ecc5ad152e42c164d40a32aa74d580d76c7b10851585a08"
+  },
+  "owned_file_snapshots": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/collation/sort_order.rs",
+      "bytes": 3459,
+      "sha256": "e33d6e7e181c253285d38fd648f0c7d5038f718ae451fca0cbd0ad5aaa178e2d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/collation/key/mod.rs",
+      "bytes": 2864,
+      "sha256": "175885fad56935cc54ec90be868f07a7ff1a4636011277b3e2fec4d7388aceb9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/collation/key/encode.rs",
+      "bytes": 9534,
+      "sha256": "0c84580e536311330c9ec408e13830c60caf97601bef8a5c864ff8a955de3b28"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/collation/key/french.rs",
+      "bytes": 642,
+      "sha256": "4fde9ba6edb7475f0719d8af8044a4f2a7bce2c2bd119391df08ce79906597f4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/text.rs",
+      "bytes": 8465,
+      "sha256": "81bcc7231cefc3e78a38791a5233f1c331b33a1cba4537b6b9c93af900457ccd"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/text/tests.rs",
+      "bytes": 8454,
+      "sha256": "76373828bcd6640a98bdb8d39a0eaea139acb845864d5152838902650e4140d7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/encoded_tuple/component.rs",
+      "bytes": 3657,
+      "sha256": "f2dcdf73798fd2fa1f1c1ab994e40c4ce0b5e3e9953726052e66fb19cf2c6cad"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/profile.rs",
+      "bytes": 10498,
+      "sha256": "93016c3e5a9b5c9bd5cb3f6acc96265a79a0e5270c025a3453d0a890bed79690"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/plan.rs",
+      "bytes": 16594,
+      "sha256": "98c339b34fb197df4740a2712187ac3bb8d8839c48d475927d1b2513310611bb"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/gates.rs",
+      "bytes": 8453,
+      "sha256": "9f67d0b985d0b2c790141c8e6a9782c47fa0f4b5d91ff8c7c8ee056a9464b2f8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/french_legacy_keys.rs",
+      "bytes": 2565,
+      "sha256": "eeb0a5ad0fb90aaebff7ea751185c5a5cd02fbea3780dc72b04888c266de5b4b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/french_legacy_keys/vectors.tsv",
+      "bytes": 396498,
+      "sha256": "38a420d3457d687a3534cd3defaf43cc47e6247b53d710b585a226e1e098c507"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/french_legacy_keys/bmp.sha256",
+      "bytes": 17408,
+      "sha256": "f4eb391311fd91f5a8b1f12859b3542c66f9594a7c61707d94e46ee6a92e6efe"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/french_legacy_reads.rs",
+      "bytes": 454,
+      "sha256": "a3fa604d74a4ecd5f2592c609bb0d6b55e9a6f492168c1ae5a694c87a51e700c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/french_legacy_reads/model.rs",
+      "bytes": 6658,
+      "sha256": "69f65bbf0cf39932fa60d089d9597d5f111dbaab6609561941a26524f020bc44"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/french_legacy_reads/values.rs",
+      "bytes": 4998,
+      "sha256": "456ea796974f7a3d41248d0e2df65146fe73a467e37996af614570493422c6cf"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/french_legacy_reads/boundaries.rs",
+      "bytes": 9922,
+      "sha256": "758c03621faeb13ebf6d5c64dfa7c411d6e0ba5cbc9f3f85d6dc85cb5c5964db"
+    },
+    {
+      "path": "docs/testing/FrenchKeysOracle.java",
+      "bytes": 5433,
+      "sha256": "4ec72e1b8680d327db3c6a07d552dde35d9eea6e5997a71250a15f61abcbf96b"
+    },
+    {
+      "path": "docs/access/indexes/NATIVE_TEXT.md",
+      "bytes": 66107,
+      "sha256": "42cbd2ff75da2ea296a0cfa6f0e7c1afe3555140b620760e613ef6cb543605bb"
+    },
+    {
+      "path": "docs/testing/FRENCH_LEGACY_INDEX_OBSERVATIONS.md",
+      "bytes": 8070,
+      "sha256": "d32a49b68e6f1addd5c021128d031e0378eb07e8cd61d22b03fd7237c00ab68f"
+    },
+    {
+      "path": "docs/testing/FIXTURES.md",
+      "bytes": 556111,
+      "sha256": "613ce3f71a2235313e85385b2c73bde2d013707a3ac0ef1a31388ea8326c1145"
+    }
+  ],
+  "unchanged_reused_test_mechanics": [
+    {
+      "path": "crates/engines/tablecraft-ace/tests/mutation/fixture.rs",
+      "bytes": 5609,
+      "sha256": "9d66669d6fce171118e39d07afe54f6f3298f8168f5d088befbc8649baf6bae3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/mutation/index_fixture.rs",
+      "bytes": 5589,
+      "sha256": "7a30a999ed52000012dfc0f8fe8f49be8994e74d60e80608cede7453ad1e74cf"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/support/mod.rs",
+      "bytes": 3496,
+      "sha256": "395145db02a7fc23388bd6ba065ee62992e823df0306bff205a2ae2304438c99"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/support/page_reads.rs",
+      "bytes": 784,
+      "sha256": "2a6af42d06dd270e31f7f5565f67b631ec473cd40aa7cc5fa086e0f7c5eab373"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/support/agile.rs",
+      "bytes": 3787,
+      "sha256": "919c7523bdbf7a6c3d548edacf30993436cc7341e839a53c4ed1acdabba64854"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_encoded_delete_contract/model.rs",
+      "bytes": 14227,
+      "sha256": "a5b4f2cdf7d3617703d055800e8ec247681b8b01d740bfaee5447e823b2f1177"
+    }
+  ],
+  "independent_oracle_artifacts": [
+    {
+      "path": ".cache/french-legacy-next-20261026/FrenchKeysOracle.java",
+      "bytes": 5433,
+      "sha256": "4ec72e1b8680d327db3c6a07d552dde35d9eea6e5997a71250a15f61abcbf96b"
+    },
+    {
+      "path": ".cache/french-legacy-next-20261026/classes/com/healthmarketscience/jackcess/impl/FrenchKeysOracle.class",
+      "bytes": 6680,
+      "sha256": "a975bf4e7508791a9fac2f6e8ea0e476b7662792d56fc13288d1a1b1a0b47057"
+    },
+    {
+      "path": ".cache/french-legacy-next-20261026/vectors.tsv",
+      "bytes": 396498,
+      "sha256": "38a420d3457d687a3534cd3defaf43cc47e6247b53d710b585a226e1e098c507"
+    },
+    {
+      "path": ".cache/french-legacy-next-20261026/bmp.sha256",
+      "bytes": 17408,
+      "sha256": "f4eb391311fd91f5a8b1f12859b3542c66f9594a7c61707d94e46ee6a92e6efe"
+    },
+    {
+      "path": ".cache/french-legacy-next-20261026/expanded-oracle.json",
+      "bytes": 1078,
+      "sha256": "8b5a81558b1b7cdfa728f301976b7ed5a6d4d4b4b42219684f2a91066753a9e1"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+      "bytes": 1407244,
+      "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+    },
+    {
+      "path": "docs/testing/results/french-legacy-index-oracle-2026-10-26.json",
+      "bytes": 9474,
+      "sha256": "1e6171d87c2c62a2291f27fb7e919bcfc70806a24eadbafe4c397d11826ebe0f"
+    }
+  ]
+}

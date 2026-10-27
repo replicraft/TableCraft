@@ -187,6 +187,13 @@ fn patches_with(
             if let Change::Delete(references) = change {
                 let metadata = &schema.columns[column];
                 if metadata.native_type() == SHORT_TEXT && kind == ScalarType::Text {
+                    if metadata
+                        .text_sort_order()
+                        .and_then(|order| order.general_family())
+                        .is_none()
+                    {
+                        return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+                    }
                     let profile = Preserved(text::TextProfile::new(
                         column,
                         metadata,
