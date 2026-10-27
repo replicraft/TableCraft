@@ -1,0 +1,136 @@
+{
+  "scope": "READ-ONLY frozen future action plan; no public/native candidate actions executed or authorized yet",
+  "input_identity": "unchanged registered BatchDelete originals; no regeneration or flag mutation",
+  "wire_budget": {
+    "path": ".cache/ace16-index-split-next-20261026/rootleaf-wire-budget.json",
+    "bytes": 2037,
+    "sha256": "b88429ae3ca7508bbcd84ab7bc1fe10364ea1eb3d191638da10b39f637b72166"
+  },
+  "future_cells": {
+    "path": ".cache/ace16-index-split-next-20261026/original-future-map-cells.json",
+    "bytes": 1936,
+    "sha256": "9d64ba602f64b317cbe16129336a9528c7b6500d3a01b723ed0ef9f0bb685208"
+  },
+  "public_producer": {
+    "path": "docs/testing/BatchDeleteFixture.java",
+    "bytes": 15343,
+    "sha256": "5e670dfef8058350c5d6851bfb819d27653cdc1058c0b98bcc2a27ea65d740ea"
+  },
+  "original_geometry": {
+    "path": ".cache/batch-delete-originals-next-20261026/original-geometry.json",
+    "bytes": 149589,
+    "sha256": "5188bb5df053dedff76570edec7d81997790e0f9365e9694640e7fe18149d461"
+  },
+  "cases": [
+    {
+      "profile": "V2016",
+      "original": {
+        "path": ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        "bytes": 987136,
+        "sha256": "ebb1f05f264dddf5e8195633a0bd5077f5ea6bb1211da0943086a1dbf713ff80"
+      },
+      "table": "Children",
+      "column": "ID",
+      "original_ordinal": 0,
+      "expected": 1,
+      "replacement": 2147483647,
+      "primary_root": 95,
+      "original_record_row_reference_hex": "00006500",
+      "expected_primary_original_entries": 500,
+      "expected_final_primary_values": {
+        "first": 2,
+        "last": 2147483647,
+        "count": 500
+      },
+      "unchanged_relationship_key": "Children.ParentID",
+      "outgoing_edges": [],
+      "incoming_reference_edges": [],
+      "child_side_edges": [
+        {
+          "parent": "Parents",
+          "parent_columns": [
+            "ID"
+          ],
+          "child_columns": [
+            "ParentID"
+          ],
+          "enforced": true,
+          "update": "Restrict",
+          "delete": "Restrict",
+          "association_effect": "none; ParentID and all parent rows unchanged"
+        }
+      ],
+      "changed_index_physical": [
+        0
+      ],
+      "unchanged_physical_indexes": [
+        "ParentAsc/ParentAlias physical1",
+        "Wide/WideAlias physical2"
+      ],
+      "property_admission": "No rules/defaults/macros requested by registered public builder; actual origin/payload/property/constraint gates NOT yet executed for this UPDATE. Must preserve and classify exact gate result first. Historical DELETE checks are not sufficient UPDATE admission evidence."
+    },
+    {
+      "profile": "V2019",
+      "original": {
+        "path": ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        "bytes": 1056768,
+        "sha256": "eb29beb6a77359ac517233e95f375642a03a4a1623540958d85bef161fad995b"
+      },
+      "table": "Children",
+      "column": "ID",
+      "original_ordinal": 0,
+      "expected": 1,
+      "replacement": 2147483647,
+      "primary_root": 112,
+      "original_record_row_reference_hex": "00007600",
+      "expected_primary_original_entries": 500,
+      "expected_final_primary_values": {
+        "first": 2,
+        "last": 2147483647,
+        "count": 500
+      },
+      "unchanged_relationship_key": "Children.ParentID",
+      "outgoing_edges": [],
+      "incoming_reference_edges": [],
+      "child_side_edges": [
+        {
+          "parent": "Parents",
+          "parent_columns": [
+            "ID"
+          ],
+          "child_columns": [
+            "ParentID"
+          ],
+          "enforced": true,
+          "update": "Restrict",
+          "delete": "Restrict",
+          "association_effect": "none; ParentID and all parent rows unchanged"
+        }
+      ],
+      "changed_index_physical": [
+        0
+      ],
+      "unchanged_physical_indexes": [
+        "ParentAsc/ParentAlias physical1",
+        "Wide/WideAlias physical2"
+      ],
+      "property_admission": "No rules/defaults/macros requested by registered public builder; actual origin/payload/property/constraint gates NOT yet executed for this UPDATE. Must preserve and classify exact gate result first. Historical DELETE checks are not sufficient UPDATE admission evidence."
+    }
+  ],
+  "before_action_requirements": [
+    "Review and authorize this action plan only after variable8 execution starts",
+    "Committed frozen preview_ace16_update consumer artifact+revision+source pins; current variable/slot consumer cannot accept Int32 replacements",
+    "Read actual complete before structural/field/property/macro/relationship coverage; keep unexpected refusals, do not widen eligibility to reach capacity",
+    "Use fresh public reference copies with inert settings and enforceForeignKeys(true); source SHA unchanged",
+    "No public SQL/per-row timing/native Access claim"
+  ],
+  "observations_required": [
+    "Old-service candidate original remains unchanged; exact error and no output preserved, not assumed IndexedColumn until measured",
+    "Reference action outcome/bytes+actual full getters/index physical references captured independently",
+    "If split implemented later, stable oldroot ID becomes height1 with two appended nonempty leaves; exact fullkey+row maxima and links",
+    "No table-data-owned/hint map changes; exact original globalfree/index-owned future cell masks only; distinct physical aliases dedup",
+    "All500 original rowrefs preserved; unchanged keys on physical1/2 exact even though getter labels selectedID1 become2147483647",
+    "No counter/historical metadata delta, all unrelated raw bytes preserved under explicit root-kind/height/data transform policy"
+  ],
+  "no_source_edits_or_actions": true
+}
