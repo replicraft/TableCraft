@@ -47,6 +47,20 @@ fn before_with(
     let scope = image.catalog().catalog().scope();
     let structural = check_table(&mut image.reader(), scope, table, budget, cancelled)?;
     let schema = structural.schema();
+    // French physical read qualification does not authorize mutation profiles.
+    if structural.indexes().iter().any(|index| {
+        index.index().columns().iter().any(|key| {
+            schema.columns().iter().any(|column| {
+                column.number() == key.number()
+                    && column
+                        .text_sort_order()
+                        .is_some_and(|order| order.is_french_legacy())
+            })
+        })
+    }) {
+        return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
+    }
+
     if matches!(admission, Admission::Update)
         && structural.indexes().iter().any(|index| {
             index.index().columns().iter().any(|key| {

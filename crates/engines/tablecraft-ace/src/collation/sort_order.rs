@@ -3,6 +3,7 @@ use crate::InspectError;
 const ORDER_BYTES: usize = size_of::<u32>();
 const LCID_BYTES: usize = size_of::<u16>();
 const GENERAL_LCID: u16 = 1033;
+const FRENCH_LCID: u16 = 1036;
 const LEGACY_VERSION: u8 = 0;
 const GENERAL_VERSION: u8 = 1;
 
@@ -48,6 +49,12 @@ impl NativeSortOrder {
     pub const fn variant(self) -> u8 {
         self.bytes[LCID_BYTES]
     }
+
+    /// Exact additional physical-key profile; no General or SQL policy alias.
+    pub(crate) fn is_french_legacy(self) -> bool {
+        self.lcid() == FRENCH_LCID && self.variant() == 0 && self.version() == LEGACY_VERSION
+    }
+
     /// Recognize known General descriptors. This does not activate SQL comparison,
     /// LIKE or index traversal. Unspecified/unknown descriptors return None.
     pub fn general_family(self) -> Option<GeneralSortFamily> {

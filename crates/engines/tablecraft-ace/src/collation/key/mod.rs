@@ -1,6 +1,8 @@
-//! Physical General text keys, using reviewed static weights. Not SQL equality.
+//! General and exact French Legacy physical keys, using reviewed static weights.
+//! These physical encodings do not supply SQL equality.
 mod buffer;
 mod encode;
+mod french;
 mod tail;
 #[cfg(test)]
 mod tests;
@@ -27,9 +29,9 @@ impl NativeTextKey {
     }
 }
 
-/// Encode a General legacy/General 2010 text index payload under explicit work
-/// limits. Indexing retains at most 255 UTF-16 units, then removes trailing ASCII
-/// spaces. This truncation is unsuitable for comparing arbitrary SQL strings.
+/// Encode a General or exact French Legacy (1036/0/0) physical index payload under
+/// explicit work limits. Indexing retains at most 255 UTF-16 units, then removes
+/// trailing ASCII spaces. This truncation cannot compare arbitrary SQL strings.
 pub fn encode_text_index_key(
     order: NativeSortOrder,
     text: &str,
@@ -59,18 +61,20 @@ pub fn encode_utf16_text_index_key(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<NativeTextKey, InspectError> {
     check(budget, cancelled)?;
-    let family = order.general_family().ok_or(InspectError::Unsupported)?;
+    if order.general_family().is_none() && !order.is_french_legacy() {
+        return Err(InspectError::Unsupported);
+    }
     let mut units = &units[..units.len().min(MAX_UNITS)];
     while units.last() == Some(&SPACE_UNIT) {
         check(budget, cancelled)?;
         units = &units[..units.len() - 1];
     }
-    let bytes = encode::encode(
-        family,
-        units,
-        descending,
-        &mut buffer::Work { budget, cancelled },
-    )?;
+    let mut work = buffer::Work { budget, cancelled };
+    let bytes = if let Some(family) = order.general_family() {
+        encode::encode(family, units, descending, &mut work)?
+    } else {
+        encode::encode_french(units, descending, &mut work)?
+    };
     check(budget, cancelled)?;
     Ok(NativeTextKey { bytes })
 }

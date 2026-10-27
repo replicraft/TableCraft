@@ -236,3 +236,19 @@ fn memo_index_prefix_does_not_truncate_returned_values_or_prove_uniqueness() {
     expected.extend([1, 0]);
     assert_eq!(trimmed.0, expected);
 }
+
+#[test]
+fn french_overflow_membership_does_not_qualify_unique_full_value_equality() {
+    for descending in [false, true] {
+        let mut policy = profile(0, descending);
+        policy.order = NativeSortOrder::from_native_bytes([12, 4, 0, 0]);
+        let overflow = policy
+            .row_key_test(&[Value::Text("à".repeat(255))])
+            .unwrap();
+        assert_eq!(overflow.0.len(), 510);
+        assert!(!policy.unique_key_is_exact(&overflow));
+        assert!(policy.decode_test(&overflow.0).unwrap().0 == overflow);
+        let short = policy.row_key_test(&[Value::Text("côte".into())]).unwrap();
+        assert!(policy.unique_key_is_exact(&short));
+    }
+}

@@ -48,7 +48,9 @@ impl TextProfile {
             .text_sort_order()
             .ok_or(InspectError::Unsupported)?;
         let long_text = metadata.native_type() == LONG_TEXT;
-        if order.general_family().is_none()
+        let supported =
+            order.general_family().is_some() || (!long_text && order.is_french_legacy());
+        if !supported
             || (!long_text
                 && (!metadata.storage_length().is_multiple_of(UNIT_BYTES)
                     || metadata.storage_length() / UNIT_BYTES > MAX_SHORT_TEXT_UNITS))
