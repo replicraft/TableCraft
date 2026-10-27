@@ -1,0 +1,184 @@
+{
+  "scope": "Immutable FIRST raw60 candidate refusal evidence and later read-only diagnosis; not acceptance",
+  "first_run": {
+    "session": 59027,
+    "terminal": 1,
+    "attempted": 60,
+    "matched_candidates": 0,
+    "unmet_controls": 60,
+    "native_commands": 60,
+    "jvm_commands": 0,
+    "candidate_files": 0,
+    "fatal": null,
+    "inputs_unchanged": true
+  },
+  "build": {
+    "revision": "d1e6d4c77523c80594584e8b9143d564cd41a56b",
+    "artifact_sha256": "3c829ba49adb25146e000ce1d1ce431919b91ac8d5b81c261950d7ec0d92e808"
+  },
+  "errors": [
+    {
+      "profile": "V2016",
+      "column_counts": {
+        "Memo": 15,
+        "OLE": 15
+      },
+      "error": "Unsupported(Column)"
+    },
+    {
+      "profile": "V2019",
+      "column_counts": {
+        "Memo": 15,
+        "OLE": 15
+      },
+      "error": "Inspect(Malformed)"
+    }
+  ],
+  "diagnosis": [
+    {
+      "profile": "V2016",
+      "phase": "whole-catalog live external descriptor census",
+      "fact": "Unrelated attachment backing FileData native OLE11 flags2 extended_flags16 length0 at page80 slot0 lacks ordinary scalar_type; selected Memo/OLE admission and selected maps passed"
+    },
+    {
+      "profile": "V2019",
+      "phase": "whole-catalog slot census",
+      "fact": "MSysObjects page17 slot32 raw0xc3d4 is a deleted relocated zero-length tombstone; row_range before raw DELETED skip failed"
+    }
+  ],
+  "causal_regressions": {
+    "before_session": 17881,
+    "before_terminal": 101,
+    "new_functions": 2,
+    "expected_failures": 2,
+    "after_session": 70085,
+    "after_terminal": 0,
+    "independent_functions": 10,
+    "goldens_unchanged": true
+  },
+  "boundaries": [
+    "Selected writer flags/extended-flags admission remains strict; backing field census is not write authorization",
+    "Backing field default checker remains UnsupportedColumn; live external alias remains RowLayout refusal",
+    "Malformed LIVE empty ranges remain Malformed",
+    "Later read-only censuses covered 38/41 local tables; no revised candidate calls are included",
+    "A revised committed artifact requires a separate fresh run; eventual acceptance cannot be labeled first-attempt"
+  ],
+  "pins": [
+    {
+      "path": ".cache/ace16-long-value-acceptance-first-20261027/report.json",
+      "bytes": 473929,
+      "sha256": "fe315833bf2c09f01d343c872d64ca6f9ec0443fbd6eed54bb34099a150ca56b"
+    },
+    {
+      "path": ".cache/ace16-long-value-acceptance-next-20261027/replay-first.log",
+      "bytes": 281,
+      "sha256": "9fb8623094ef3bdfd1664eb20a2b9e3b90320bc995d1bdafd00c8c19e9899a86"
+    },
+    {
+      "path": ".cache/ace16-long-value-acceptance-first-20261027/read-only-error-classification.json",
+      "bytes": 203307,
+      "sha256": "256b4414fe1f0be9640ae3c8fc9565e3b95f4acebf2a5a68e5bc0261e885d5e2"
+    },
+    {
+      "path": ".cache/ace16-long-value-acceptance-next-20261027/plan.json",
+      "bytes": 326893,
+      "sha256": "bbcd7ad0a543b51a02f3e3ef4406eb5e1a6770a5578e8cc0a4d26e68db68fd08"
+    },
+    {
+      "path": ".cache/ace16-long-value-acceptance-next-20261027/model.py",
+      "bytes": 9420,
+      "sha256": "b35b1aa9febd62a10e752a4826b415c1984bbd027e1e44581ba520bb5a5aa3ca"
+    },
+    {
+      "path": ".cache/ace16-long-value-acceptance-next-20261027/replay.py",
+      "bytes": 11427,
+      "sha256": "e938b2f2a57010d9a6a19cb64dfc3312e8aa31bb91f7b4988c215fa652eac38e"
+    },
+    {
+      "path": ".cache/ace16-long-value-original-diagnostic-20261027/initial.log",
+      "bytes": 4702,
+      "sha256": "0821254c7655f51b4f8c058140721bae6aabeb6f257d0e8852a7a291f1b41d44"
+    },
+    {
+      "path": ".cache/ace16-long-value-original-diagnostic-20261027/after.log",
+      "bytes": 3542,
+      "sha256": "7d0d460e0e3981a6ccaf8b02874a3c16c5e1f659e5110e73466b0a98e82a7c9d"
+    },
+    {
+      "path": ".cache/ace16-long-value-original-diagnostic-20261027/originals-after-read-only.json",
+      "bytes": 451,
+      "sha256": "9d62daaadb3973bbe43ecc65ac59a5fcab860869dd45f0b63cce0cee3ad5c87b"
+    },
+    {
+      "path": ".cache/ace16-long-value-original-diagnostic-20261027/independent-before.log",
+      "bytes": 1501,
+      "sha256": "6604d7d430c35ca50af150be0481f99cacae19041e628f0f9b7964c6385ff72e"
+    },
+    {
+      "path": ".cache/ace16-long-value-original-diagnostic-20261027/independent-after.log",
+      "bytes": 1612,
+      "sha256": "7f6d6a380d95101cb75a665ff98a1036c2877776fd95963b17bec806b90e5807"
+    },
+    {
+      "path": ".cache/ace16-long-value-first-refusal-20261027/verify_existing.py",
+      "bytes": 3739,
+      "sha256": "ca906f104378e7da2656a9ef12ba4ca42e5b642545af4aee96385c438995d602"
+    },
+    {
+      "path": ".cache/ace16-long-value-first-refusal-20261027/read-only-verification.json",
+      "bytes": 1113,
+      "sha256": "5ba2bf966fceddfe5879bcc46abc8df62ba890ac4a8399c84babf852dd38f6d8"
+    },
+    {
+      "path": "docs/testing/long_value_preview_originals/verify_first_refusals.py",
+      "bytes": 4226,
+      "sha256": "32d2db3d1ce12c013b112fe94004506e18caa09b41ffe3170a6c6e1c3ebff7c1"
+    },
+    {
+      "path": ".cache/ace16-long-value-first-refusal-20261027/public-read-only-verification.json",
+      "bytes": 1113,
+      "sha256": "5ba2bf966fceddfe5879bcc46abc8df62ba890ac4a8399c84babf852dd38f6d8"
+    },
+    {
+      "path": ".cache/ace16-long-value-original-diagnostic-20261027/diagnostics.rs",
+      "bytes": 9987,
+      "sha256": "ce60aed65c6ef646bfb6238469bbaf0022d104b84a5a721cdf7d59db26c08b39"
+    },
+    {
+      "path": ".cache/ace16-long-value-original-diagnostic-20261027/diagnostics-after-executed.rs",
+      "bytes": 10165,
+      "sha256": "3546f0e8bf4bd286f1d4adf4bbb94d779c646a27dc457f2a895c22ec24dac445"
+    },
+    {
+      "path": ".cache/ace16-long-value-census-independent-initial-20261027/initial-source-pins.json",
+      "bytes": 624,
+      "sha256": "6322557bc8c179f43f7e2e7fb4642aa1ed1e1d111e7e1c5cf21c4cd1e613b5ad"
+    }
+  ],
+  "reproduce_read_only": [
+    "python3",
+    "docs/testing/long_value_preview_originals/verify_first_refusals.py",
+    "--output",
+    "FRESH_OUTPUT.json"
+  ],
+  "status": "Initial candidate refusal boundary; all60 unmet",
+  "source_identity": {
+    "executed_candidate_runner": "Frozen private replay.py e938b2f2; never rewritten",
+    "public_verifier": "New read-only implementation, not the executed candidate runner",
+    "raw_report": "Exact raw tracebacks and command receipts remain private and pinned; public commands below are portable renderings"
+  },
+  "read_only_validation": {
+    "session_exit": 0,
+    "unique_precall_pins": 339,
+    "compiled_git_objects": 176,
+    "native_calls": 0,
+    "jvm_calls": 0,
+    "all60_candidate_paths_absent": true,
+    "receipt": {
+      "path": ".cache/ace16-long-value-first-refusal-20261027/public-read-only-verification.json",
+      "bytes": 1113,
+      "sha256": "5ba2bf966fceddfe5879bcc46abc8df62ba890ac4a8399c84babf852dd38f6d8"
+    }
+  },
+  "correction_record": "docs/testing/results/ace16-long-value-census-correction-2026-10-27.json"
+}

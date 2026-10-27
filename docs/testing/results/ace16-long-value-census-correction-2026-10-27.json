@@ -1,0 +1,485 @@
+{
+  "schema_version": 1,
+  "scope": "Correct physical ownership census and ordinary logical-root enumeration exposed by first raw60 original refusals; no selected write-profile expansion or original candidate replay.",
+  "source_files": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/reader.rs",
+      "bytes": 6561,
+      "sha256": "5eae33e0139b497fbf6cae3d354a25ff628811305cb50bf295339183a0b0b9b3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/reader/live_tests.rs",
+      "bytes": 1072,
+      "sha256": "f1a545e7b7621f531ab0d75e326c134878f254dc586c2764a96829956c3d2a30"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/long_value/check.rs",
+      "bytes": 13126,
+      "sha256": "cab193d8482d5dae290df64e862fde0bdade24f8c2862209e9909d5f6bf6bdf7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/page_update/roots.rs",
+      "bytes": 5600,
+      "sha256": "8b88d582b477320796a5a8e4f909e6f2ffd04f347d54b469f6f3d2db1572d86b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/rows.rs",
+      "bytes": 4611,
+      "sha256": "1a4cc583d82d907e9b7d272dddb246dccb32035102fd0aea343334f6867cc556"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/ownership.rs",
+      "bytes": 9722,
+      "sha256": "6c5916dc39e4a29db69331e31e55dfe3f7fa84c9a426988635da1988710e49da"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/ownership/profile.rs",
+      "bytes": 1114,
+      "sha256": "c83a20e0cf1658d306df865d4661c8ef657270497e27ed2eca2357c5733141c4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_long_value_updates.rs",
+      "bytes": 4637,
+      "sha256": "a24f3c5813713f786b8c05002c2304eb6ba5d7b42f08131feb2ccf36bc46012d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_long_value_updates_contract.rs",
+      "bytes": 764,
+      "sha256": "38c81f9129b48737483553661e67a4b7078c8d3d1c98d2fadda39002545be76b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_long_value_updates_contract/census.rs",
+      "bytes": 5121,
+      "sha256": "0e7541a20ff23ecb6a37877937be2693c6cee150a64a28c5de875e1e8f03eba3"
+    },
+    {
+      "path": "docs/testing/ACE16_LONG_VALUE_UPDATES.md",
+      "bytes": 9825,
+      "sha256": "a4f6a4c02cb5ae87a4686792fdeb427034cc7dd2d806d6e379269088512337dc"
+    },
+    {
+      "path": "docs/access/storage/LONG_VALUE_CHECKS.md",
+      "bytes": 5341,
+      "sha256": "23190ba3fa0c10938e2e9b839594bd110a98069cb202dcd46cc4d24438b9f423"
+    }
+  ],
+  "inventory": {
+    "rust_files": 10,
+    "owning_docs": 2,
+    "this_result": 1,
+    "total_paths": 13
+  },
+  "first_original_outcome": {
+    "attempted": 60,
+    "accepted": 0,
+    "atomic_no_output_refusals": 60,
+    "partition": "V2016 bothselectedfields30Unsupported(Column);V2019 bothselectedfields30Inspect(Malformed)",
+    "report": {
+      "path": ".cache/ace16-long-value-acceptance-first-20261027/report.json",
+      "bytes": 473929,
+      "sha256": "fe315833bf2c09f01d343c872d64ca6f9ec0443fbd6eed54bb34099a150ca56b"
+    },
+    "raw_field_classification": {
+      "path": ".cache/ace16-long-value-acceptance-first-20261027/read-only-error-classification.json",
+      "bytes": 203307,
+      "sha256": "256b4414fe1f0be9640ae3c8fc9565e3b95f4acebf2a5a68e5bc0261e885d5e2"
+    },
+    "immutable_note": "All original sources/history files, requests, selectors, models and budgets remain unchanged. The first run is not replaced by diagnostic results."
+  },
+  "diagnosed_paths": [
+    {
+      "profile": "V2016",
+      "stage": "selected admission/maps passed; catalog ownership trace rejected an unrelated system attachment backing FileData field",
+      "structural_metadata": {
+        "definition_page": 41,
+        "data_page": 80,
+        "slot": 0,
+        "native_type": 11,
+        "flags": 2,
+        "extended_flags": 16,
+        "length": 0,
+        "fixed": false
+      },
+      "cause": "The census required scalar_type even though only existing physical outer-LVAL references were needed. Semantic projection eligibility is separate from physical occupancy."
+    },
+    {
+      "profile": "V2019",
+      "stage": "selected admission/maps passed; MSysObjects ordinary enumeration",
+      "structural_metadata": {
+        "page": 17,
+        "slot": 32,
+        "word_hex": "c3d4",
+        "start": 980,
+        "end": 980
+      },
+      "cause": "row_range was called before skipping a deleted/hidden slot. Empty DELETED|RELOCATED tombstones are skipped by the existing catalog reader; live empty ranges remain malformed."
+    }
+  ],
+  "correction": [
+    "One bounded native live_row_range helper reads raw DELETED/HIDDEN flags before body range validation; consumed by ownership census, default LVAL checker, selected-root census and existing mutation row visitor.",
+    "Explicit physical LVAL/forwarding-target access remains unchanged. The helper is logical-root enumeration, not a universal liveness predicate.",
+    "Closed physical profile retains existing scalar long types, reuses already-supported calculated Memo outer-LVAL dispatch, and admits variable OLE11/length0/flag2/ext0x10 opaque backing storage for tracing only.",
+    "Opaque backing scalar projection/default checker UnsupportedColumn and selected mutation ext0/property/index/macro restrictions remain unchanged. No flags/type masking or attachment wrapper decoding.",
+    "Unknown physical profiles, unknown declaration/orphan ownership and active external aliases remain explicit refusal paths."
+  ],
+  "read_only_diagnostics": {
+    "before": {
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/ace16-long-value-original-diagnostic-20261027/initial.log",
+        "bytes": 4702,
+        "sha256": "0821254c7655f51b4f8c058140721bae6aabeb6f257d0e8852a7a291f1b41d44"
+      },
+      "source_manifest": {
+        "path": ".cache/ace16-long-value-original-diagnostic-20261027/source-before.json",
+        "bytes": 1118,
+        "sha256": "330c4e83c6eef0d7df78f0c05cdedd39b5b22ee3b40d5159df6fb26d717e8ae1"
+      }
+    },
+    "after": {
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/ace16-long-value-original-diagnostic-20261027/after.log",
+        "bytes": 3542,
+        "sha256": "7d0d460e0e3981a6ccaf8b02874a3c16c5e1f659e5110e73466b0a98e82a7c9d"
+      },
+      "source_manifest": {
+        "path": ".cache/ace16-long-value-original-diagnostic-20261027/after-correction/source.json",
+        "bytes": 921,
+        "sha256": "e66bdc0826117f888936cb0581613f498e47c30e4885e6d65d551e90423e8780"
+      },
+      "executed_source": {
+        "path": ".cache/ace16-long-value-original-diagnostic-20261027/diagnostics-after-executed.rs",
+        "bytes": 10165,
+        "sha256": "3546f0e8bf4bd286f1d4adf4bbb94d779c646a27dc457f2a895c22ec24dac445"
+      },
+      "completed_local_tables": {
+        "V2016": 38,
+        "V2019": 41
+      }
+    },
+    "original_hashes_after": {
+      "path": ".cache/ace16-long-value-original-diagnostic-20261027/originals-after-read-only.json",
+      "bytes": 451,
+      "sha256": "9d62daaadb3973bbe43ecc65ac59a5fcab860869dd45f0b63cce0cee3ad5c87b"
+    },
+    "scope": "Direct read-only admission/map/census probes; no finish, candidate bytes, original write, JVM or native Access call. Temporary diagnostic source/hook removed from production after archiving."
+  },
+  "causal_independent_tests": {
+    "before": {
+      "exit_status": 101,
+      "log": {
+        "path": ".cache/ace16-long-value-original-diagnostic-20261027/independent-before.log",
+        "bytes": 1501,
+        "sha256": "6604d7d430c35ca50af150be0481f99cacae19041e628f0f9b7964c6385ff72e"
+      },
+      "observation": "Both new functions fail at the exact original classes: disjoint opaque OLE backing Unsupported(Column), valid empty deleted/relocated default checker Malformed. No expectation/fixture correction."
+    },
+    "before_source_manifest": {
+      "path": ".cache/ace16-long-value-original-diagnostic-20261027/before-correction/source.json",
+      "bytes": 2429,
+      "sha256": "45fd039028d7ebf7302c006de764f7c1565cb357fc391460717ec54642f7b1ae"
+    },
+    "after": {
+      "exit_status": 0,
+      "passed_functions": 11,
+      "log": {
+        "path": ".cache/ace16-long-value-original-diagnostic-20261027/independent-after.log",
+        "bytes": 1612,
+        "sha256": "7f6d6a380d95101cb75a665ff98a1036c2877776fd95963b17bec806b90e5807"
+      },
+      "scope": "Independent10 (old8+new2) and existing genuine Memo-index guard1."
+    },
+    "author_control": {
+      "exit_status": 0,
+      "passed_functions": 12,
+      "log": {
+        "path": ".cache/ace16-long-value-original-diagnostic-20261027/primary-final.log",
+        "bytes": 1701,
+        "sha256": "e4a0bd83b7327464860e961b600b671739381a409e2c1032a5d91f611d9ab67d"
+      },
+      "scope": "Author2 plus independent10; new author assertion covers selected-root replacement and existing fixed Int32 row visitor while preserving adjacent opaque hidden body."
+    }
+  },
+  "final_checks": [
+    {
+      "name": "regressions-final",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--features",
+        "ace16-write-preview",
+        "--test",
+        "ace16_slot_updates",
+        "--test",
+        "ace16_page_updates",
+        "--test",
+        "ace16_page_updates_contract",
+        "--test",
+        "ace16_variable_updates",
+        "--test",
+        "ace16_variable_updates_contract",
+        "--test",
+        "mutation",
+        "--test",
+        "ace16_write_preview",
+        "--test",
+        "long_value_storage",
+        "--test",
+        "long_value_storage_contract",
+        "--test",
+        "ace16_scalars",
+        "--test",
+        "ace16_fixed_updates",
+        "--test",
+        "ace16_split_int32",
+        "--test",
+        "ace16_split_int32_contract",
+        "--test",
+        "ace16_nonroot_split_int32",
+        "--test",
+        "ace16_nonroot_split_int32_contract",
+        "--test",
+        "ace16_long_value_updates",
+        "--test",
+        "ace16_long_value_updates_contract",
+        "--example",
+        "preview_ace16_long_value",
+        "--example",
+        "preview_ace16_slot"
+      ],
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/ace16-long-value-original-diagnostic-20261027/regressions-final.log",
+        "bytes": 16514,
+        "sha256": "96cc0e48b6ead98e472eb7c15c588e00022effe12d5f94731d2b6981505a0477"
+      },
+      "passed_function_executions": 139
+    },
+    {
+      "name": "helper-default-final",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "format::reader::live_tests"
+      ],
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/ace16-long-value-original-diagnostic-20261027/helper-default-final.log",
+        "bytes": 500,
+        "sha256": "e3468cd49913448252b2c1b4a23d119621c81811e86008deeaf0fb2d6cb9b9d8"
+      },
+      "passed_function_executions": 1
+    },
+    {
+      "name": "private-final",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--features",
+        "ace16-write-preview",
+        "--lib",
+        "table::mutation::long_value"
+      ],
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/ace16-long-value-original-diagnostic-20261027/private-final.log",
+        "bytes": 1112,
+        "sha256": "a6cba201b272e3339cfa364ee274e28b4b3a8173f472afd87c05eab198cc4c1a"
+      },
+      "passed_function_executions": 6
+    },
+    {
+      "name": "default-checker-final",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--test",
+        "long_value_storage",
+        "--test",
+        "long_value_storage_contract"
+      ],
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/ace16-long-value-original-diagnostic-20261027/default-checker-final.log",
+        "bytes": 1534,
+        "sha256": "6ff6bf084c7970bcdab530830163876eada6caf0af959eb066235fbd359a2ab5"
+      },
+      "passed_function_executions": 10
+    },
+    {
+      "name": "decoders-final",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "table::long_"
+      ],
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/ace16-long-value-original-diagnostic-20261027/decoders-final.log",
+        "bytes": 1523,
+        "sha256": "af0e4f6d3cc001d56bd25d4fa427f6053c56e08bd776d367ad77ce16070e9d9f"
+      },
+      "passed_function_executions": 12
+    },
+    {
+      "name": "strict-final",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--features",
+        "ace16-write-preview",
+        "--lib",
+        "--test",
+        "ace16_slot_updates",
+        "--test",
+        "ace16_page_updates",
+        "--test",
+        "ace16_page_updates_contract",
+        "--test",
+        "ace16_variable_updates",
+        "--test",
+        "ace16_variable_updates_contract",
+        "--test",
+        "mutation",
+        "--test",
+        "ace16_write_preview",
+        "--test",
+        "long_value_storage",
+        "--test",
+        "long_value_storage_contract",
+        "--test",
+        "ace16_scalars",
+        "--test",
+        "ace16_fixed_updates",
+        "--test",
+        "ace16_split_int32",
+        "--test",
+        "ace16_split_int32_contract",
+        "--test",
+        "ace16_nonroot_split_int32",
+        "--test",
+        "ace16_nonroot_split_int32_contract",
+        "--test",
+        "ace16_long_value_updates",
+        "--test",
+        "ace16_long_value_updates_contract",
+        "--example",
+        "preview_ace16_long_value",
+        "--example",
+        "preview_ace16_slot",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/ace16-long-value-original-diagnostic-20261027/strict-final.log",
+        "bytes": 183,
+        "sha256": "8c8fedeba273f6f9472efcd1c8ef960b580a88a55cb74f1c391ad7ce46ea8494"
+      }
+    },
+    {
+      "name": "minimal-final",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--no-default-features"
+      ],
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/ace16-long-value-original-diagnostic-20261027/minimal-final.log",
+        "bytes": 183,
+        "sha256": "a6bbcb7d7304ac62986bcf70c072d6b6b186ad844397179a70292060702c06b2"
+      }
+    },
+    {
+      "name": "docs-final",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--features",
+        "ace16-write-preview",
+        "--doc"
+      ],
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/ace16-long-value-original-diagnostic-20261027/docs-final.log",
+        "bytes": 627,
+        "sha256": "4c88eba7f4894599788316efa5b40ed9287a42a068de58fac53f838bbc2bf705"
+      },
+      "passed_function_executions": 3
+    },
+    {
+      "exit_status": 0,
+      "log": {
+        "path": ".cache/ace16-long-value-original-diagnostic-20261027/fmt-final.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "command_manifest": {
+        "path": ".cache/ace16-long-value-original-diagnostic-20261027/fmt-command.json",
+        "bytes": 884,
+        "sha256": "d0fb8c388475664d73faa4c0d0ffa4a035090560dc3ebef5f601cd9122bd1a6c"
+      },
+      "rust_files": 10
+    }
+  ],
+  "counts": {
+    "regression_function_executions": 139,
+    "distinct_runtime_functions": 152,
+    "new_correction_functions": 4,
+    "existing_runtime_functions": 148,
+    "consumer_executions": 20,
+    "distinct_consumer_functions": 14,
+    "shared_consumer_functions_counted_once": 6,
+    "default_checker_repeat_not_added": 10,
+    "diagnostic_functions_not_added_to_compatibility_counts": 1,
+    "compile_fail_docs": 3,
+    "note": "Counts use actual Cargo output, including9 generated scalar functions; repeated primary/default/diagnostic executions are not accumulated as distinct functions."
+  },
+  "not_run": "No original-file candidate retries or revised-artifact acceptance; no new compressed Memo producer/JVM/database actions; no native Microsoft Access run/save; no writable OLE/ext0x10 or calculated/history/unknown profile expansion."
+}

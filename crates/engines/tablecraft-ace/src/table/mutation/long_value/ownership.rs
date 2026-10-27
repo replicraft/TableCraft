@@ -9,8 +9,8 @@ use crate::{
         definition,
         layout::TABLE_FREE_MAP_OFFSET,
         page::{DATA_SIGNATURE, OWNER_OFFSET},
-        reader::{Reader, row_count, row_range},
-        row::{DELETED_MASK, MASK_BITS, reference_page},
+        reader::{Reader, live_row_range, row_count},
+        row::{MASK_BITS, reference_page},
     },
     header::check,
     inspect_table_schema,
@@ -22,6 +22,8 @@ use crate::{
 };
 use std::io::Cursor;
 use tablecraft_core::limits::{Resource, ResourceBudget};
+
+mod profile;
 
 struct Claim {
     page: u32,
@@ -200,7 +202,7 @@ impl Inventory {
             }
             for slot in 0..row_count(&page)? {
                 reader.tick()?;
-                if row_range(&page, slot)?.0 & DELETED_MASK != 0 {
+                if live_row_range(&page, slot)?.is_none() {
                     continue;
                 }
                 reader
@@ -226,7 +228,7 @@ impl Inventory {
                     if mask & (1 << (field.number() % MASK_BITS)) == 0 {
                         continue;
                     }
-                    if field.fixed() || field.scalar_type().is_none() {
+                    if !profile::readable(field) {
                         return Err(EditError::Unsupported(WriteBlocker::Column));
                     }
                     let start = *layout

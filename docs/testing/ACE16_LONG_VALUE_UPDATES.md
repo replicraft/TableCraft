@@ -140,3 +140,25 @@ input without publication. These checks do not replace original-file replay.
 The [scoped implementation record](results/ace16-long-value-updates-native-2026-10-27.json)
 pins the actual source, preserved attempts and selected final checks. Shared
 consumer functions and repeated default/preview executions are counted explicitly.
+
+## Original-input census correction
+
+The first frozen consumer attempted all 60 raw-source controls and accepted none:
+V2016 refused an unrelated opaque backing field, while V2019 encountered an empty
+deleted catalog slot. The [first-refusal evidence](LONG_VALUE_UPDATE_REFUSALS.md)
+preserves every request, source, error and no-output result.
+
+The [census correction record](results/ace16-long-value-census-correction-2026-10-27.json)
+separates physical reference inspection from scalar projection. Existing scalar
+long-value profiles, supported calculated Memo outer storage and the observed
+variable OLE/flag2/ext0x10 backing profile can be traced without decoding their
+opaque value wrappers. This grants neither scalar support nor selected mutation
+authority; the selected writer still requires ext0. Unknown physical profiles
+and incomplete ownership declarations remain refused.
+
+Ordinary logical-root enumeration now checks the raw deleted/hidden flag before
+requiring a body range. A zero-length deleted/relocated slot is skipped; a live
+empty or malformed range still fails. Explicit LVAL/forwarding target access
+retains its separate physical checks. Both actual original catalog censuses
+complete under read-only diagnosis, but that is not replacement acceptance.
+The unchanged 60 controls require a revised committed, frozen consumer replay.

@@ -12,8 +12,8 @@ use crate::{
         data_type::{LONG_TEXT, OLE},
         layout::UPDATABLE_FLAG,
         page::{DATA_SIGNATURE, OWNER_OFFSET, PAGE_BYTES},
-        reader::{Reader, row_count, row_range},
-        row::{DELETED_MASK, MASK_BITS, reference_page},
+        reader::{Reader, live_row_range, row_count},
+        row::{MASK_BITS, reference_page},
     },
     limits::MAX_LIVE_ROWS,
     table::{long_text, record_layout, schema::inspect_table_schema},
@@ -204,8 +204,7 @@ pub fn check_table_long_values<R: NativeReadSource>(
         }
         for slot in 0..row_count(&page)? {
             reader.tick()?;
-            let (word, _, _) = row_range(&page, slot)?;
-            if word & DELETED_MASK != 0 {
+            if live_row_range(&page, slot)?.is_none() {
                 continue;
             }
             if rows >= schema.declared_rows() as usize {

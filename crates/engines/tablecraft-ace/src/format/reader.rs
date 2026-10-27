@@ -166,3 +166,24 @@ pub(crate) fn row_range(page: &[u8], slot: usize) -> Result<(u16, usize, usize),
     }
     Ok((raw, start, end))
 }
+
+/// Ordinary logical-root enumeration skips deleted/hidden slots before
+/// interpreting their former body. The deleted bit also marks forwarding
+/// targets: explicit target/LVAL references retain separate physical validation.
+pub(crate) fn live_row_range(
+    page: &[u8],
+    slot: usize,
+) -> Result<Option<(u16, usize, usize)>, InspectError> {
+    if slot >= row_count(page)? {
+        return Err(InspectError::Malformed);
+    }
+    let word = u16_at(page, slot_offset(slot))?;
+    if word & DELETED_MASK != 0 {
+        return Ok(None);
+    }
+
+    row_range(page, slot).map(Some)
+}
+
+#[cfg(test)]
+mod live_tests;
