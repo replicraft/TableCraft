@@ -6,6 +6,8 @@ mod fixture;
 #[allow(dead_code)]
 mod support;
 
+#[path = "ace16_long_value_updates_contract/candidates.rs"]
+mod candidates;
 #[path = "ace16_long_value_updates_contract/census.rs"]
 mod census;
 #[path = "ace16_long_value_updates_contract/guards.rs"]

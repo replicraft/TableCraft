@@ -68,7 +68,6 @@ pub(super) fn prepare(
     if selected.status() != LongValueCheckStatus::Checked
         || selected.shared_references() != 0
         || selected.shared_owned_pages() != 0
-        || selected.candidate_pages() > 1
     {
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }

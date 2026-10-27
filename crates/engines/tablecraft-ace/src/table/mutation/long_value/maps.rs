@@ -239,7 +239,6 @@ impl Maps {
             reads: 0,
         };
         let scope = self.scope(family);
-        let mut result = None;
         for &number in scope.pages.iter().rev() {
             reader.tick()?;
             let cell = match self.cell(&scope.hint, number, &mut reader) {
@@ -248,16 +247,11 @@ impl Maps {
                 Err(error) => return Err(error),
             };
             if self.current(&cell, &mut reader)? {
-                if family == Family::Ordinary {
-                    return Ok(Some(number));
-                }
-                if result.replace(number).is_some() {
-                    return Err(EditError::Unsupported(WriteBlocker::RowLayout));
-                }
+                return Ok(Some(number));
             }
         }
 
-        Ok(result)
+        Ok(None)
     }
 
     pub fn failed_fit(

@@ -53,6 +53,15 @@ and sibling/index identities; twelve parent records forward to new hidden rows.
 The original zero-of-60 failure remains a separate immutable result. This does
 not qualify compressed/extended fields, normal saves or native Access behavior.
 
+Multiple represented candidate hints now use an explicit highest-first engineering
+policy for LVAL chunks and ordinary parent forwarding. Each real failed fit clears
+only its hint, lower hints are tried before EOF allocation, and the independent
+map audit derives every attempt from original capacity. The
+[focused record](testing/results/ace16-long-value-multiple-candidates-2026-10-27.json)
+passes 34 distinct runtime functions, including six new controls for complete
+images, slot ceilings, no-ops, unowned hints and correlated attempt/map forgeries.
+Original-file multiple-hint behavior remains unqualified.
+
 ## Fixed Int32 leaf split candidates
 
 The separate feature-gated `preview_ace16_split_int32_updates` service can turn a

@@ -181,21 +181,22 @@ pub(super) fn prove(
             Family::Ordinary => &original.ordinary,
             Family::LongValue => &original.long_value,
         };
-        reader.work(states.len())?;
-        let mut candidate = None;
-        for (position, state) in states.iter().enumerate() {
-            reader.tick()?;
-            if state.family == event.family && state.hinted {
-                if event.family == Family::LongValue && candidate.is_some() {
-                    return Err(EditError::Preservation);
-                }
-                if candidate.is_none_or(|previous: usize| states[previous].page < state.page) {
+        let mut destination = None;
+        loop {
+            reader.work(states.len())?;
+            let mut candidate = None;
+            for (position, state) in states.iter().enumerate() {
+                reader.tick()?;
+                if state.family == event.family
+                    && state.hinted
+                    && candidate.is_none_or(|previous: usize| states[previous].page < state.page)
+                {
                     candidate = Some(position);
                 }
             }
-        }
-        let mut destination = None;
-        if let Some(position) = candidate {
+            let Some(position) = candidate else {
+                break;
+            };
             let state = &mut states[position];
             let free = state
                 .end
@@ -216,11 +217,12 @@ pub(super) fn prove(
             attempts += 1;
             if fitted {
                 destination = Some(position);
-            } else {
-                state.hinted = false;
-                let hint = cell(&scope.hint, state.page, &mut reader)?;
-                expect(&mut expected, hint, false, &mut reader)?;
+                break;
             }
+
+            state.hinted = false;
+            let hint = cell(&scope.hint, state.page, &mut reader)?;
+            expect(&mut expected, hint, false, &mut reader)?;
         }
         let position = if let Some(position) = destination {
             position
