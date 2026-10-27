@@ -371,8 +371,10 @@ work and does not reopen the native language decision.
 The current native read/query priorities below remain in force. Resuming native
 projects requires explicit user reprioritization. The retained future plan is to
 prove a minimal project
-identity/version gate and recoverable internal migration before broad Python/UI
-work. Then prove a SQLite/form/Python/report workflow across qualified platforms,
+identity/version gate and recoverable internal migration before native-project
+Python and UI work. None of these deferred steps gates the Access UI. After an
+explicit resumption, prove a SQLite/form/Python/report workflow across qualified
+platforms,
 real native Access save/reopen plus separately mixed-client writes, and a full
 supported Access-to-native application conversion. Peer evolution follows its
 own convergence/upgrade proofs. [Qualification requirements](testing/PROJECT_COMPATIBILITY.md)
@@ -1054,7 +1056,7 @@ Native saves still require the relevant preservation/constraint/recovery evidenc
 | 3 | Access query engine | Native tables, Access SQL, relationships, expression semantics and editable results |
 | 4 | Custom Office-style desktop UI | Ribbon, navigation pane, datasheets and visual query builder; accessibility from the first custom controls |
 | 5 | Forms and reports | Designers, binding, headless layout/rendering and native object interoperability |
-| 6 | P2P / CRDT collaboration | Offline-first replication, conflict handling, deterministic merges and constrained relational apply |
+| Deferred | Native-project P2P / CRDT collaboration | Paused with `.tcraft`; offline-first replication, conflict handling, deterministic merges and constrained relational apply remain future plans |
 | 7 | Broader tooling | CLI expansion, web frontend, plugins, MCP, migrations and diagnostics with real consumers |
 
 The current CLI and diagnostics continue supporting engine work. Preserve useful
@@ -1107,7 +1109,9 @@ and non-VBA actions. No empty crates or speculative dependencies are added.
 
 ## Collaboration and browser boundaries
 
-For TableCraft-native P2P projects, show invite authorization, peer/device identity,
+The following native-project P2P requirements are deferred with `.tcraft` and do
+not gate native Access work or its UI. If explicitly resumed, show invite
+authorization, peer/device identity,
 revocation, connection/offline state, sync progress, concurrent values, resolution
 history and backup/restore state. Define which changes peers acknowledged; a
 disconnected peer cannot justify a global "all synchronized" claim. Preserve
