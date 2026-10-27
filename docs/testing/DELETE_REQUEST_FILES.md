@@ -38,15 +38,31 @@ failures. Original-file comparison evidence remains separate from parser tests.
 ## Explicit multi-table comparison example
 
 The separate `preview_ace16_batch_delete` example accepts repeated exact
-`--group TABLE DELETE_TSV_PATH` pairs. It calls the
-[explicit final-image batch API](ACE16_DELETE_PREVIEWS.md#explicit-multi-table-deletion-batches);
-it does not infer a cascade or enable ordinary saves.
+`--group TABLE DELETE_TSV_PATH` pairs. By default it calls the
+[explicit final-image batch API](ACE16_DELETE_PREVIEWS.md#explicit-multi-table-deletion-batches),
+which retains RESTRICT-only admission. The explicit `--cascade` flag instead calls
+the [separate acyclic cascade API](ACE16_DELETE_PREVIEWS.md#separate-acyclic-cascading-deletions)
+after the same complete file capture. Neither mode enables ordinary saves.
 
 ```sh
 cargo run --locked -p tablecraft-ace --features ace16-write-preview \
   --example preview_ace16_batch_delete -- original.accdb candidate.accdb \
   --group Children children.tsv --group Parents parents.tsv
 ```
+
+To expand qualified original parent/child associations from seed requests:
+
+```sh
+cargo run --locked -p tablecraft-ace --features ace16-write-preview \
+  --example preview_ace16_batch_delete -- original.accdb candidate.accdb \
+  --cascade --group Parents parent-seeds.tsv
+```
+
+This mode keeps the closed outgoing primary-key, action, acyclic-graph and
+preservation gates of the separate API. Expanded roots share the engine's table
+and row ceilings and the same operation budget as explicit seeds. It does not
+claim native SQL or mixed per-row action timing; self and cyclic cascades remain
+refused.
 
 Every file uses the same quoted, headerless ROW/HEX format and the unchanged
 32 MiB/4096-request/4096-byte-per-record ceilings. Empty files refuse. Table names
@@ -69,3 +85,13 @@ The [consumer verification record](results/ace16-batch-delete-example-2026-10-26
 separates six new tests from four shared request-parser tests that execute in both
 example targets. These checks are example/input evidence, not additional engine
 compatibility tests or native Access action/save qualification.
+
+The explicit cascade extension has a separate
+[consumer verification record](results/ace16-cascading-delete-example-2026-10-26.json):
+17 executions cover 13 distinct test definitions, including three new example
+functions. The four shared request-parser definitions execute once in each example
+target and are counted once as definitions. Tests pin default RESTRICT refusal,
+explicit parent-seed expansion, retained NULL children, fresh-output protection,
+clap pair admission and malformed later-file failure before database opening.
+Scoped strict lint and formatting pass. These are consumer checks, not additional
+engine tests or original-file/native Access qualification.

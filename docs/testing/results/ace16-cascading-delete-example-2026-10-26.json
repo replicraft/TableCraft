@@ -1,0 +1,118 @@
+{
+  "date": "2026-10-26",
+  "scope": "Explicit --cascade dispatch in the engineering batch-delete example; unchanged default RESTRICT API and complete pre-open input capture.",
+  "passing_test_executions": 17,
+  "distinct_test_definitions": 13,
+  "new_example_test_definitions": 3,
+  "existing_example_test_definitions": 10,
+  "shared_parser_definitions_executed_in_both_examples": 4,
+  "new_engine_tests": 0,
+  "counting": "Batch13 plus single4 is17 executions. Four parser definitions are shared and counted once, so13 distinct definitions:10 existing plus3 new. Engine and original-file comparison checks are separate.",
+  "source_snapshot": [
+    {
+      "path": "crates/engines/tablecraft-ace/examples/preview_ace16_batch_delete.rs",
+      "bytes": 3057,
+      "sha256": "69012fc29f822e97f37797048d49b8a1afd584cc70d1a002756c192d53ec02d1"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/examples/preview_ace16_batch_delete/tests.rs",
+      "bytes": 8692,
+      "sha256": "b077e3541bd6cd69c52c71cb49542ae36ea45d6c0860fc66b1f0b4075998ed1c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/examples/preview_ace16_batch_delete/tests/cascades.rs",
+      "bytes": 4930,
+      "sha256": "3c08bf325fbe88e7e3d35af7a2976a0f0c7a2a423df8ef60a6fb1c7edd6ccee4"
+    },
+    {
+      "path": "docs/testing/DELETE_REQUEST_FILES.md",
+      "bytes": 5624,
+      "sha256": "f14995401852f96428a1f9a3e72c278b893be23da90b9a38a6a49ed208ef0ba0"
+    }
+  ],
+  "scope_files": [
+    "crates/engines/tablecraft-ace/examples/preview_ace16_batch_delete.rs",
+    "crates/engines/tablecraft-ace/examples/preview_ace16_batch_delete/tests.rs",
+    "crates/engines/tablecraft-ace/examples/preview_ace16_batch_delete/tests/cascades.rs",
+    "docs/testing/DELETE_REQUEST_FILES.md",
+    "docs/testing/results/ace16-cascading-delete-example-2026-10-26.json"
+  ],
+  "shared_read_only_sources": [
+    {
+      "path": "crates/engines/tablecraft-ace/examples/preview_ace16_batch_delete/input.rs",
+      "bytes": 2008,
+      "sha256": "355c2161ea1b4eae7ef757b5ad30298edea8dc7804af1fc491ec34516dee2644"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/examples/preview_ace16_delete/requests.rs",
+      "bytes": 7180,
+      "sha256": "10a128b323b1e127774ebeb842ff0dfc4733e319c95e1da4d35b19c852a66d87"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_restrict_delete_contract/model.rs",
+      "bytes": 14711,
+      "sha256": "37f0afacb060df7f571aa0927b32bda617c82a8aa0e74762b37524a02f3853b8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/mutation/fixture.rs",
+      "bytes": 5609,
+      "sha256": "9d66669d6fce171118e39d07afe54f6f3298f8168f5d088befbc8649baf6bae3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/support/mod.rs",
+      "bytes": 3496,
+      "sha256": "395145db02a7fc23388bd6ba065ee62992e823df0306bff205a2ae2304438c99"
+    }
+  ],
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-ace --features ace16-write-preview --example preview_ace16_batch_delete --example preview_ace16_delete -j2 --locked --offline",
+      "session": 30749,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-cascading-delete-consumer-tests-20261026.log",
+        "bytes": 2200,
+        "sha256": "70fe16781093923bf65af1965624de26bd64bd16f3529ae45f76e3e5241d0cd0"
+      },
+      "batch_example_passed_executions": 13,
+      "single_example_passed_executions": 4
+    },
+    {
+      "command": "cargo clippy -p tablecraft-ace --features ace16-write-preview --example preview_ace16_batch_delete --example preview_ace16_delete -j2 --locked --offline -- -D warnings",
+      "session": 52175,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-cascading-delete-consumer-clippy-20261026.log",
+        "bytes": 183,
+        "sha256": "b0227280caecaa1b203b477638fd9d499548d25a1fe85ff55427db68caefcd38"
+      }
+    },
+    {
+      "command": "rustfmt --edition 2024 --check --config skip_children=true crates/engines/tablecraft-ace/examples/preview_ace16_batch_delete.rs crates/engines/tablecraft-ace/examples/preview_ace16_batch_delete/tests.rs crates/engines/tablecraft-ace/examples/preview_ace16_batch_delete/tests/cascades.rs",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-cascading-delete-consumer-format-20261026.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "failed_attempts": [],
+  "draft_receipt": {
+    "path": ".cache/ace16-cascade-consumer-next-20261026/draft-manifest.json",
+    "bytes": 2863,
+    "sha256": "81d64b569e193d01298f3d40d7c3ba3faf04f84843db3917a3a45011b7c0f5f8"
+  },
+  "acceptance": [
+    "The absent flag calls preview_ace16_batch_deletes and refuses a declared Cascade parent seed with ConstraintCoverage.",
+    "Explicit --cascade calls preview_ace16_cascading_deletes after all exact table/path request pairs are captured under the same operation allowance.",
+    "A valid parent seed removes itself and its two original dependents, retains nullable child sentinels, and leaves the source immutable.",
+    "An existing output is untouched with exact AlreadyExists; malformed later TSV refuses before a missing database can be opened or output created.",
+    "Existing repeated-pair, native path, bounded-file, cumulative-resource, raw request and fresh-publication logic is unchanged."
+  ],
+  "boundaries": [
+    "No new dependency, manifest, engine admission boolean, normal CLI/backend save or DELETE path.",
+    "Same separate non-journalable candidate type and feature gate; no self/cycle, SET_NULL, data-macro or native SQL timing/save qualification.",
+    "No frozen build or original-file replay is claimed by these example tests."
+  ]
+}

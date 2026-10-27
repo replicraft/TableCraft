@@ -262,3 +262,6 @@ fn complete_candidate_publication_is_fresh_and_preserves_the_original_source() {
     assert_eq!(fs::read(&output).unwrap(), after);
     assert_eq!(fs::read(&source).unwrap(), model.bytes);
 }
+
+#[path = "tests/cascades.rs"]
+mod cascades;

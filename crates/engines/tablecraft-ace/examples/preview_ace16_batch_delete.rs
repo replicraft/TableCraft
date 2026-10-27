@@ -1,4 +1,4 @@
-//! Explicit disposable multi-table deletion candidates; never a qualified save.
+//! Disposable multi-table deletion candidates; never a qualified save.
 #[path = "preview_ace16_batch_delete/input.rs"]
 mod input;
 #[path = "preview_ace16_delete/requests.rs"]
@@ -21,10 +21,13 @@ const ROW_BUDGET: u64 = 100_000;
 const STEP_BUDGET: u64 = 100_000_000;
 
 #[derive(Parser)]
-#[command(about = "Create an unqualified explicit multi-table ACE 16 deletion candidate")]
+#[command(about = "Create an unqualified multi-table ACE 16 deletion candidate")]
 struct Args {
     source: PathBuf,
     output: PathBuf,
+    /// Expand qualified acyclic cross-table Cascade actions from the original seeds.
+    #[arg(long)]
+    cascade: bool,
     /// Exact table selector and headerless ROW/HEX TSV, repeatable for distinct tables.
     #[arg(long = "group", required = true, num_args = 2, action = clap::ArgAction::Append,
         value_names = ["TABLE", "DELETE_TSV_PATH"])]
@@ -42,7 +45,11 @@ fn run(args: Args, budget: &mut ResourceBudget) -> Result<usize, Box<dyn Error>>
     }
     let mut source = File::open(&args.source)?;
     let image = NativeImage::capture(&mut source, CatalogScope::new(1), budget, &|| false)?;
-    let candidate = image.preview_ace16_batch_deletes(&borrowed, budget, &|| false)?;
+    let candidate = if args.cascade {
+        image.preview_ace16_cascading_deletes(&borrowed, budget, &|| false)?
+    } else {
+        image.preview_ace16_batch_deletes(&borrowed, budget, &|| false)?
+    };
     publish(&args.output, candidate.candidate_bytes())?;
     Ok(candidate.deleted_rows())
 }
