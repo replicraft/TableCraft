@@ -1,0 +1,305 @@
+{
+  "date": "2026-10-26",
+  "scope": "Actual native field-data preparation only; no SQL/comparator/NLS/native Access qualification",
+  "counts": {
+    "originals": 2,
+    "rows": 76,
+    "text_memo_cells": 304,
+    "input_storage_differences": 0
+  },
+  "construction": {
+    "table": "Comparisons",
+    "base_rows": 20,
+    "long_memo_rows": 18,
+    "memo_utf16_lengths": [
+      256,
+      1024,
+      20000
+    ],
+    "long_cases_per_length": [
+      "same255prefix, late primary a",
+      "same255prefix, late primary b",
+      "same e-primary, first acute",
+      "same e-primary, last acute",
+      "same e-primary, first grave+last acute",
+      "same e-primary, first acute+last grave"
+    ],
+    "fields": [
+      "ID",
+      "FrenchShort",
+      "FrenchMemo",
+      "GeneralShort",
+      "GeneralMemo"
+    ],
+    "no_stored_calculations_or_history_or_properties": true,
+    "no_memo_index": true
+  },
+  "profiles": [
+    {
+      "profile": "V2016",
+      "original": {
+        "path": ".cache/tablecraft-fixtures/french-comparison-20261026/Comparison-V2016.accdb",
+        "bytes": 937984,
+        "sha256": "ca64a8f518214f5ea889f1bc56922e2269cc120929e4c42b9f60a11d37b54b61"
+      },
+      "getter": {
+        "path": ".cache/tablecraft-fixtures/french-comparison-20261026/V2016-getter.json",
+        "bytes": 701624,
+        "sha256": "f7c85544b47522dfb8bc562aaf49749f819ea74e54838586bf02eece44d73515"
+      },
+      "columns": {
+        "ID": {
+          "type": "LONG",
+          "native_type": 4,
+          "storage": 4,
+          "flags": 3,
+          "extended_flags": 0,
+          "autonumber": "false"
+        },
+        "FrenchShort": {
+          "type": "TEXT",
+          "native_type": 10,
+          "storage": 510,
+          "flags": 2,
+          "extended_flags": 0,
+          "autonumber": "false"
+        },
+        "FrenchMemo": {
+          "type": "MEMO",
+          "native_type": 12,
+          "storage": 0,
+          "flags": 2,
+          "extended_flags": 0,
+          "autonumber": "false"
+        },
+        "GeneralShort": {
+          "type": "TEXT",
+          "native_type": 10,
+          "storage": 510,
+          "flags": 2,
+          "extended_flags": 0,
+          "autonumber": "false"
+        },
+        "GeneralMemo": {
+          "type": "MEMO",
+          "native_type": 12,
+          "storage": 0,
+          "flags": 2,
+          "extended_flags": 0,
+          "autonumber": "false"
+        }
+      },
+      "sort": {
+        "FrenchShort": {
+          "lcid": 1036,
+          "variant": 0,
+          "version": 0,
+          "offset": 364667,
+          "raw": "0c040000"
+        },
+        "FrenchMemo": {
+          "lcid": 1036,
+          "variant": 0,
+          "version": 0,
+          "offset": 364692,
+          "raw": "0c040000"
+        },
+        "GeneralShort": {
+          "lcid": 1033,
+          "variant": 0,
+          "version": 0,
+          "offset": 364717,
+          "raw": "09040000"
+        },
+        "GeneralMemo": {
+          "lcid": 1033,
+          "variant": 0,
+          "version": 0,
+          "offset": 364742,
+          "raw": "09040000"
+        }
+      },
+      "indexes": {
+        "Primary": {
+          "physical": 0,
+          "root": 91,
+          "entries": 38,
+          "owned_pages": 1
+        },
+        "FrenchShortAsc": {
+          "physical": 1,
+          "root": 92,
+          "entries": 38,
+          "owned_pages": 1
+        }
+      },
+      "properties": [],
+      "input_storage_differences": []
+    },
+    {
+      "profile": "V2019",
+      "original": {
+        "path": ".cache/tablecraft-fixtures/french-comparison-20261026/Comparison-V2019.accdb",
+        "bytes": 1007616,
+        "sha256": "abc1aa1977057c4d55bc69b86be70972d6759859e1e6611a81ae276805bb5443"
+      },
+      "getter": {
+        "path": ".cache/tablecraft-fixtures/french-comparison-20261026/V2019-getter.json",
+        "bytes": 701666,
+        "sha256": "fecc4321af310049b5549b436baadc3fb9e011bc39db035fa6e6afd8d65dbfb3"
+      },
+      "columns": {
+        "ID": {
+          "type": "LONG",
+          "native_type": 4,
+          "storage": 4,
+          "flags": 3,
+          "extended_flags": 0,
+          "autonumber": "false"
+        },
+        "FrenchShort": {
+          "type": "TEXT",
+          "native_type": 10,
+          "storage": 510,
+          "flags": 2,
+          "extended_flags": 0,
+          "autonumber": "false"
+        },
+        "FrenchMemo": {
+          "type": "MEMO",
+          "native_type": 12,
+          "storage": 0,
+          "flags": 2,
+          "extended_flags": 0,
+          "autonumber": "false"
+        },
+        "GeneralShort": {
+          "type": "TEXT",
+          "native_type": 10,
+          "storage": 510,
+          "flags": 2,
+          "extended_flags": 0,
+          "autonumber": "false"
+        },
+        "GeneralMemo": {
+          "type": "MEMO",
+          "native_type": 12,
+          "storage": 0,
+          "flags": 2,
+          "extended_flags": 0,
+          "autonumber": "false"
+        }
+      },
+      "sort": {
+        "FrenchShort": {
+          "lcid": 1036,
+          "variant": 0,
+          "version": 0,
+          "offset": 434299,
+          "raw": "0c040000"
+        },
+        "FrenchMemo": {
+          "lcid": 1036,
+          "variant": 0,
+          "version": 0,
+          "offset": 434324,
+          "raw": "0c040000"
+        },
+        "GeneralShort": {
+          "lcid": 1033,
+          "variant": 0,
+          "version": 0,
+          "offset": 434349,
+          "raw": "09040000"
+        },
+        "GeneralMemo": {
+          "lcid": 1033,
+          "variant": 0,
+          "version": 0,
+          "offset": 434374,
+          "raw": "09040000"
+        }
+      },
+      "indexes": {
+        "Primary": {
+          "physical": 0,
+          "root": 108,
+          "entries": 38,
+          "owned_pages": 1
+        },
+        "FrenchShortAsc": {
+          "physical": 1,
+          "root": 109,
+          "entries": 38,
+          "owned_pages": 1
+        }
+      },
+      "properties": [],
+      "input_storage_differences": []
+    }
+  ],
+  "raw_complete_values": {
+    "path": ".cache/tablecraft-fixtures/french-comparison-20261026/fields-initial.json",
+    "bytes": 81072,
+    "sha256": "c3869a91b168e4a40fa1942bde2f1d78bb942ce05ac045688293649428726031"
+  },
+  "recipe_and_tool_pins": [
+    {
+      "path": "docs/testing/capture_french_comparison.py",
+      "bytes": 9525,
+      "sha256": "58815c4a6ff78411ba3e29e582d96ee2d1bb7348a9ced377893841ef990ced20"
+    },
+    {
+      "path": "docs/testing/FrenchComparisonFixture.java",
+      "bytes": 9791,
+      "sha256": "a0fc88ea2b0599f63b8cce7de619af0727629c9f4444234fd24c51049e77210b"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+      "bytes": 1407244,
+      "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/french-comparison-20261026/classes/com/healthmarketscience/jackcess/impl/FrenchComparisonFixture.class",
+      "bytes": 14073,
+      "sha256": "4df18e3d325d8b7d097ba5f1fe09d1497e2724350d35b952f5d76e9692e21e67"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/french-comparison-20261026/V2016-getter.json",
+      "bytes": 701624,
+      "sha256": "f7c85544b47522dfb8bc562aaf49749f819ea74e54838586bf02eece44d73515"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/french-comparison-20261026/V2019-generate.json",
+      "bytes": 392,
+      "sha256": "cfd82668d5d3024b2d7df6a9bdf4f58c2f8384e5572b7b10c83f58bdb4142fa5"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/french-comparison-20261026/V2019-getter.json",
+      "bytes": 701666,
+      "sha256": "fecc4321af310049b5549b436baadc3fb9e011bc39db035fa6e6afd8d65dbfb3"
+    }
+  ],
+  "observations": [
+    "Both actual French Short Text and Memo descriptors are 1036/0/0, raw 0c040000; General matches 1033/0/0 raw 09040000",
+    "Complete values retain their actual UTF16 code units including nonBMP and composed/decomposed accents; no source/storage differences observed",
+    "Every French/General matched field pair stores identical actual code units",
+    "Native TEXT 10/storage 510 and MEMO 12/storage 0 use flags 2/ext 0; ID LONG 4/storage 4 flags 3/ext 0; all AutoNumber false and no table/column properties",
+    "Read-only getters and before/after original hashes match; all experiments use new identities and no descriptor/header/flag patches",
+    "Long Memo values are stored-data engineering controls, not an independent native SQL comparison oracle"
+  ],
+  "checks": {
+    "javac_exit_code": 0,
+    "first_profile_generate_session": 3254,
+    "first_profile_generate_exit_code": 0,
+    "capture_exit_code": 0,
+    "python_py_compile_exit_code": 0,
+    "failures": []
+  },
+  "limitations": [
+    "No TableCraft query execution or string comparator was invoked for this receipt",
+    "No native Access/NLS/SQL ordering semantics or Memo index support inferred",
+    "No third-party code or database bytes copied; pinned Jackcess builder/getter API only",
+    "Generation is not claimed byte-reproducible; original identities and hashes remain fixed"
+  ]
+}
