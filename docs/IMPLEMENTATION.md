@@ -1,5 +1,21 @@
 # Implementation status
 
+## Independent RESTRICT deletion action comparisons
+
+The [committed-tool comparison](testing/RESTRICT_DELETE_OBSERVATIONS.md) now
+records 84 original-file controls across two new ACE16 inputs: 64 candidate
+images and twenty typed missing-parent refusals satisfy the explicit final-image
+model. The public per-row writer instead succeeds in 58 cases and refuses 26;
+all rejected copies remain byte-identical to their input.
+
+The six action disagreements are retained, not counted as full compatibility.
+They involve deleting NULL parent keys while all-NULL child keys remain. The
+independent writer's action lookup matches those NULL keys; the current engineering
+membership contract exempts entirely NULL child tuples. No native Access SQL
+result or action timing rule is inferred from that difference. Initial incomplete
+captures, exact selectors, histories and both metrics remain separately recorded.
+Original-file batch comparisons and native qualification remain separate work.
+
 ## Explicit multi-table deletion candidates
 
 The optional ACE16 preview now accepts `TableRowDeletes` groups through
