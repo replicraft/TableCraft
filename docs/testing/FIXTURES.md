@@ -9577,3 +9577,19 @@ outputs and separate saved-proof verifier. Its 884 before-live-chunk comparisons
 The public writer's sixteen normalized values remain separate observations.
 No-op behavior, multiple-hint ordering, broader map/encoding profiles, normal
 saves and native Access qualification are not established by this corpus.
+
+### Other fixed numeric split sources
+
+The [finite source phase](INTEGRAL_INDEX_SPLIT_SOURCE_OBSERVATIONS.md) creates
+new V2016/V2019 originals with Byte, Int16, Int64 and Currency target tables,
+small unique controls and a separate Memo/OLE preservation table. All thirteen
+native/JVM fixture commands succeed on their first execution; eight existing
+typed fixed-preview no-ops preserve complete original images. Actual Required
+properties, both index directions, physical alias sharing, exact unsigned/scaled
+carriers and complete ROW/map/capacity facts are captured. Each file contains
+2,729 rows under the unchanged 4,096-row/64 MiB limits. The
+[receipt](results/ace16-integral-index-split-sources-2026-10-27.json) pins exact
+executed helpers, source hashes, old baseline artifact/Git objects, no-op copies
+and separate unchanged-input postcheck. Pre-execution header-XOR/heap/carrier
+proof corrections remain preserved. This phase includes no non-noop UPDATE,
+split candidate, native Access comparison or new typed split API.

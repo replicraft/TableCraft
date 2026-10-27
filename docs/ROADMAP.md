@@ -73,7 +73,10 @@ Delivered read/query and engineering foundations:
   runtime checks. Its [four recursive original-file candidates](testing/RECURSIVE_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
   now pass first-run complete-image/getter/map proofs across retained-root growth
   and below-root internal splits. Other-codec splits, normal saves and native
-  Access qualification remain separate.
+  Access qualification remain separate. Separate
+  [Byte/Int16/Int64/Currency sources](testing/INTEGRAL_INDEX_SPLIT_SOURCE_OBSERVATIONS.md)
+  now pass measured root-leaf overflow gates and eight byte-identical typed no-ops
+  in both ACE 16 formats; non-noop actions and typed split admission remain open.
   Its [two unchanged-original candidates](testing/ROOT_SPLIT_UPDATE_OBSERVATIONS.md)
   now pass their first complete-image, typed-value and index/reference proofs
   through a frozen committed consumer.
