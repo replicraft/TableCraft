@@ -184,8 +184,10 @@ now establish measured root overflow and repeated demand for both General text
 families and Short Binary on two unchanged 2,701-row sources. The corrected five
 source commands pass after an earlier compile failure. The subsequent
 [old-slot baseline](testing/ENCODED_INDEX_SPLIT_BASELINES.md) passes six
-byte-identical no-ops and six exact IndexedColumn refusals with no output. Public
-update references and new split candidate qualification remain separate work.
+byte-identical no-ops and six exact IndexedColumn refusals with no output. The
+subsequent [public references](testing/ENCODED_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
+pass six replacements and six getters, each retaining row identities while adding
+six index pages. Committed-consumer candidate comparisons remain separate.
 
 - [x] A separate [exact-slot Text/Binary split preview](testing/ACE16_ENCODED_INDEX_SPLITS.md)
   now supplies a working General legacy/modern and Binary consumer of retained

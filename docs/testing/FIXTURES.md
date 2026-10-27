@@ -9902,3 +9902,16 @@ sources and six-byte difference; production code did not change to make those
 cases pass. Private finalizer controls separately reject correlated slot/key,
 patch, equal-length wire and EOF forgeries. Original-file candidate acceptance
 and native Access qualification remain separate from these literal images.
+
+### Public encoded split update observations
+
+The [separate public-writer phase](ENCODED_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
+passes six fresh-copy replacements and six read-only getters on the unchanged
+General/Binary originals, without generation or retries. Each output appends six
+index pages and retains both roots, full row references, aliases, unaffected
+records/indexes, counters and LVAL storage. The saved verifier rechecks 86
+identities, 16,206 after rows, 64,806 logical index entries and 3,563,520 original
+prefix bytes without starting a child process. The exact executed action model
+and byte-proof function bodies are preserved in maintained tools. Public
+key-only prefixes and scratch bytes do not define engineering candidate goldens
+or native Access save compatibility.

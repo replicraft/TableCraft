@@ -154,6 +154,10 @@ The separate [old-slot baseline](../../testing/ENCODED_INDEX_SPLIT_BASELINES.md)
 now confirms six byte-identical no-ops and six IndexedColumn growth refusals on
 those unchanged sources. These twelve native calls establish existing admission
 and refusal behavior, not the new split consumer or production-save eligibility.
+The [six public split references](../../testing/ENCODED_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
+also pass complete fresh getters and preservation checks, with six new index
+pages per output. Their measured key-only prefixes remain independent reference
+evidence, not the engineering planner's full-key/ROW byte expectations.
 
 The new [exact-slot encoded split service](../../testing/ACE16_ENCODED_INDEX_SPLITS.md)
 now provides a distinct working consumer for admitted single Short Text/Binary
