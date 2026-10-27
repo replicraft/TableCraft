@@ -1,0 +1,232 @@
+{
+  "scope": "Exact148 compressed/raw ordinary Memo native-format engineering controls on unchanged public original/history inputs, using frozen committed consumer. No Microsoft Access execution or normal backend save qualification.",
+  "actual": {
+    "first_attempt_exit_status": 0,
+    "native_candidate_calls": 148,
+    "complete_model_and_getter_candidates": 132,
+    "typed_atomic_refusals": 16,
+    "unmet_controls": 0,
+    "native_jvm_fixture_commands": 280,
+    "native_commands": 148,
+    "read_only_jvm_inspections": 132,
+    "git_source_preflight_processes_separate": 197,
+    "jvm_heap_mib": 512,
+    "per_fixture_command_timeout_seconds": 30,
+    "retries": 0,
+    "public_updates_creates_compiles": 0
+  },
+  "compiled_revision": "452f2bde94a2580bd0a64e166cc11384f1ff8a4a",
+  "build_receipt": {
+    "path": "docs/testing/results/ace16-compressed-memo-example-build-2026-10-27.json",
+    "bytes": 41948,
+    "sha256": "c9b7de6c4bbb8991754a17652cc56153f3a3c3b537c08639bc8858abd2091b70"
+  },
+  "artifact": {
+    "path": ".cache/tablecraft-bin/ace16-compressed-memo-20261027",
+    "bytes": 13814432,
+    "sha256": "db7cc70113f2ac6b19dcc1357d93642b94b50f16694d93f23a17fd1ef7f1ae8a"
+  },
+  "compiled_git_source_objects": 197,
+  "source_inputs": {
+    "actual_database_paths": 22,
+    "fixed_tsv_requests": 148,
+    "fields": 4,
+    "variable_slots": 3,
+    "footer_bytes": 11,
+    "fixed_prefix_bytes": 6,
+    "selected_ID": 91,
+    "selected_live_ordinal": 0,
+    "untouched_ID": 92,
+    "memo_extended_flags": [
+      0,
+      1
+    ],
+    "native_flags": 2,
+    "memo_native_type": 12
+  },
+  "outcomes": {
+    "storage": {
+      "NULL": 8,
+      "inline": 36,
+      "single": 70,
+      "chain": 18
+    },
+    "parent": {
+      "fitted": 104,
+      "forwarded": 28
+    },
+    "current_noops": 0,
+    "old_live_chunk_body_and_slot_comparisons": 884,
+    "exact_stable_map_wire_proofs": 1188,
+    "new_owned_eof_pages_equal_global_free_clears": 60,
+    "retired_old_owned_pages": 0
+  },
+  "refusal_contract": {
+    "error": "Unsupported(Column)",
+    "exit_status": 1,
+    "stdout_bytes": 0,
+    "output_file": false,
+    "getter_calls": 0,
+    "inputs": "Leading FEFF/FEFFAB and long FEFF-prefixed1024/1025 controls; both field policies/profiles. FFFE remains exact."
+  },
+  "budgets": {
+    "bytes": 268435456,
+    "rows": 100000,
+    "steps": 100000000,
+    "encoded_value_bytes": 65536,
+    "request_file_bytes": 16777216,
+    "request_count": 4096,
+    "changes_or_waivers": false
+  },
+  "independence": {
+    "model": "Existing independently authored raw60 image model adapted to actual4field/3variable schema and measured compression. Separate reviewer recomputed132hashes/16roundtrip refusals and all148TSVs beforeGO.",
+    "source": "Originals/public history descendants only; never earlier kernel candidates. No source regeneration or public update reruns.",
+    "proof_order": "Complete independently modeled byte image before combined read-only getter. Every long field/index order/metadata/map/counter then checked.",
+    "compiled_identity": "197 historical Git objects at compiled revision, not working-tree source hashes.",
+    "command_count": "280fixture commands excludes197Git source-pin preflight processes.",
+    "public_writer_distinction": "Earlier148 public updates allcompleted with16normalization observations. This native-format candidate replay instead accepts132exactvalues and refuses16withoutpublishing."
+  },
+  "read_only_verifier": {
+    "summary": {
+      "path": ".cache/ace16-compressed-memo-acceptance-next-20261027/public-verify-first.json",
+      "bytes": 883,
+      "sha256": "857d73c80ee8875f7ab836708aabc1101682158df9fc0869348a5405133f0478"
+    },
+    "live_recursive_artifact_pins": 1111,
+    "historical_git_objects_reverified_separately": 197,
+    "native_jvm_database_write_calls": 0,
+    "model_hashes_recomputed": 132,
+    "refusals_rederived": 16
+  },
+  "verification_history": {
+    "native_first_run": "75459 terminal0; no native/JVM retry, repair, selection or budget change.",
+    "saved_verifier_initial": "96113 read-only KeyError(request); exact source/failure retained. Runner used native.argv[5] for copiedTSV. Corrected only lookup plus frozen/copy byte equality.",
+    "saved_verifier_accepted": "91547 terminal0, no native/JVMcalls.",
+    "runner_pre_go": "Scope label and bothmanifest selfpins corrected; explicit-Xmx512m restored beforeGO, prior sources/freeze retained. Model/selectors/goldens unchanged."
+  },
+  "limits": [
+    "No semantic no-op among current132candidates; unit no-op coverage remains separate.",
+    "Allsourcefamilies have0or1hint; this corpus does not discriminate ordering among multiple hints.",
+    "Old-chain retirement,map growth,in-filefree reuse,indexed/history Memo,mode-switch authoring,active-content eligibility andnativeAccess save/reopen notqualified here.",
+    "Preceding raw60 acceptance and its first-refusal/census correction history remain separate."
+  ],
+  "preceding_public_observations": {
+    "path": "docs/testing/results/compressed-memo-update-observations-2026-10-27.json",
+    "bytes": 15301,
+    "sha256": "6201f27b79478b641a81afb8ac4de1d62729e91464be1445254427e9dddb9735"
+  },
+  "artifacts": [
+    {
+      "path": ".cache/ace16-compressed-memo-acceptance-first-20261027/report.json",
+      "bytes": 30154852,
+      "sha256": "e8acfdf58bbe9dc2e5dbe9cabb10c6b9f3223224111759b07c0c0c18fe886151"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-acceptance-next-20261027/first-execution.log",
+      "bytes": 315,
+      "sha256": "224f894764cf3cddbde04207a4feac76aaa22b66398053345b2bce7314207784"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-acceptance-first-20261027/before-first-call.json",
+      "bytes": 139557,
+      "sha256": "82887dfbc0324762d38a6e7d8902d6dd48ce05c01234d7d1be9c347db85c84a0"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-acceptance-next-20261027/model.py",
+      "bytes": 10321,
+      "sha256": "499025d5304606b6c3177ba40865b64863dd5aa74bb65c4e62423f97a8960aeb"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-acceptance-next-20261027/model-origin.json",
+      "bytes": 391,
+      "sha256": "7cd5df627ef89518ba85f1bdb486165ec76301cc78bc19c325897b59c5228916"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-acceptance-next-20261027/prepare.py",
+      "bytes": 9394,
+      "sha256": "6f2cef29c84b7158e89ceccff2ecdaaba66bb299494952683920485ddc01d1af"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-acceptance-next-20261027/plan.json",
+      "bytes": 311009,
+      "sha256": "17489d244b7d0487135afa7bd33e6357867cb3b3989805deb0d8dbcd04e866c2"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-acceptance-next-20261027/before-facts.json",
+      "bytes": 4187884,
+      "sha256": "6a5c8d54598309cacbdf6265e587cc7a754dbe651a82486e77b11897d19d2d67"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-acceptance-next-20261027/freeze.json",
+      "bytes": 58272,
+      "sha256": "7a3c7a373d84fbd5249355350e733d2587617b59623a48fb849ecccda23b7ff2"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-acceptance-next-20261027/replay.py",
+      "bytes": 12586,
+      "sha256": "78ed2abe0fb0e02ef1ca271411e5c1ea9238d45588325d0f4a2f75342cc8314f"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-acceptance-next-20261027/runner-freeze.json",
+      "bytes": 2912,
+      "sha256": "9f5ccda47345c9368d32564508dee56b3bfe1db3fc9bc17bdaaf9080347decef"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-acceptance-next-20261027/artifact-binding.json",
+      "bytes": 40510,
+      "sha256": "52d2aa920ebaea2aed87c2e47efa2212f6a7b46a2b834b6dd4813359a0a706b8"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-acceptance-next-20261027/handoff.json",
+      "bytes": 3673,
+      "sha256": "2b6932367d7f0632b214a277ec0cf908cb43279560d1d8b886431f9c0d6b666c"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-independent-review-20261027.json",
+      "bytes": 2908,
+      "sha256": "b7538201dc23c7bcf5f56f6ab911891625b0b6bd820ef7f7b28aa31ac162a49c"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-acceptance-next-20261027/public-verify-first.json",
+      "bytes": 883,
+      "sha256": "857d73c80ee8875f7ab836708aabc1101682158df9fc0869348a5405133f0478"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-acceptance-next-20261027/public-verifier-initial/verify_acceptance.py",
+      "bytes": 9341,
+      "sha256": "1344953da9ffb8692313f394706c7b8b249f5a5e8a5136e5701795b4883d2b4d"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-acceptance-next-20261027/public-verifier-initial/failure.txt",
+      "bytes": 298,
+      "sha256": "94c024aeb82e87c4293034ba32767cfa99559573c6ffcd39f2dbdde8efa43429"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-acceptance-next-20261027/before-java-heap-cap/replay.py",
+      "bytes": 12574,
+      "sha256": "c306cd5850eb7ab7587a41894bc36ba6909450d066166fdc02a5eef530bc534a"
+    },
+    {
+      "path": ".cache/ace16-compressed-memo-acceptance-next-20261027/before-java-heap-cap/runner-freeze.json",
+      "bytes": 2883,
+      "sha256": "d344d0974067b616d1def0808e3de28f163b60e5e7ae72ed05e80e25a3020c6f"
+    }
+  ],
+  "current_promotion_sources": [
+    {
+      "path": "docs/testing/compressed_memo_observations/verify_acceptance.py",
+      "bytes": 9427,
+      "sha256": "7403f234e6dbb1783479fd36f49bdc5d2f291925de9ef82828fe6c1d2b4fdf89"
+    },
+    {
+      "path": "docs/testing/COMPRESSED_MEMO_ACCEPTANCE_OBSERVATIONS.md",
+      "bytes": 7133,
+      "sha256": "77621d4a87712a8f1a30e4e7e282f487c571623a27ca6387c4f098d1545a9f47"
+    },
+    {
+      "path": "docs/testing/ACE16_LONG_VALUE_UPDATES.md",
+      "bytes": 12808,
+      "sha256": "b831187899c9798c0305a5d0400b2d9390b8840ca92314f614ab07cdd82e8739"
+    }
+  ]
+}
