@@ -1,0 +1,280 @@
+{
+  "date": "2026-10-26",
+  "compiled_revision": "596d40ea41a4bafefbd5b34af4ef35a8a4e2cde4",
+  "command": "cargo build --locked --offline -j2 -p tablecraft-cli",
+  "exit_code": 0,
+  "build_log": {
+    "path": ".cache/french-comparison-cli-build-20261026.log",
+    "bytes": 402,
+    "sha256": "e39946fd01ffc6b58e6accca9cde392a2578744b8553c81677ddad5b5173037d"
+  },
+  "frozen_cli": {
+    "path": ".cache/tablecraft-bin/tablecraft-french-comparison-20261026",
+    "bytes": 43416632,
+    "sha256": "bcff00ad245c7a70582db222fa48e5eb2f796bd944d5ccbeefe759fbd010a576"
+  },
+  "source_pins": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/collation/sort_order.rs",
+      "bytes": 3459,
+      "sha256": "e33d6e7e181c253285d38fd648f0c7d5038f718ae451fca0cbd0ad5aaa178e2d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/collation/key/mod.rs",
+      "bytes": 2884,
+      "sha256": "17fad95a5985c8aadf12b31362ac45974c5d09aa9685453db9b6692bd624a0da"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/collation/key/encode.rs",
+      "bytes": 9743,
+      "sha256": "9385e2ca661c86ac513072b5dedab43267fb4adb3a9c3d4c5236dd890381fa26"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/collation/key/french.rs",
+      "bytes": 642,
+      "sha256": "4fde9ba6edb7475f0719d8af8044a4f2a7bce2c2bd119391df08ce79906597f4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/text.rs",
+      "bytes": 8465,
+      "sha256": "81bcc7231cefc3e78a38791a5233f1c331b33a1cba4537b6b9c93af900457ccd"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/text/tests.rs",
+      "bytes": 8454,
+      "sha256": "76373828bcd6640a98bdb8d39a0eaea139acb845864d5152838902650e4140d7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/encoded_tuple/component.rs",
+      "bytes": 3657,
+      "sha256": "f2dcdf73798fd2fa1f1c1ab994e40c4ce0b5e3e9953726052e66fb19cf2c6cad"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/profile.rs",
+      "bytes": 10498,
+      "sha256": "93016c3e5a9b5c9bd5cb3f6acc96265a79a0e5270c025a3453d0a890bed79690"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/plan.rs",
+      "bytes": 16681,
+      "sha256": "3d1e635a6cb4d5546e1ae7d82b02e3536dda6326c316d0f535f8c4190289fb45"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/gates.rs",
+      "bytes": 8453,
+      "sha256": "9f67d0b985d0b2c790141c8e6a9782c47fa0f4b5d91ff8c7c8ee056a9464b2f8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/french_legacy_keys.rs",
+      "bytes": 2565,
+      "sha256": "eeb0a5ad0fb90aaebff7ea751185c5a5cd02fbea3780dc72b04888c266de5b4b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/french_legacy_keys/vectors.tsv",
+      "bytes": 396498,
+      "sha256": "38a420d3457d687a3534cd3defaf43cc47e6247b53d710b585a226e1e098c507"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/french_legacy_keys/bmp.sha256",
+      "bytes": 17408,
+      "sha256": "f4eb391311fd91f5a8b1f12859b3542c66f9594a7c61707d94e46ee6a92e6efe"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/french_legacy_reads.rs",
+      "bytes": 454,
+      "sha256": "a3fa604d74a4ecd5f2592c609bb0d6b55e9a6f492168c1ae5a694c87a51e700c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/french_legacy_reads/model.rs",
+      "bytes": 6658,
+      "sha256": "69f65bbf0cf39932fa60d089d9597d5f111dbaab6609561941a26524f020bc44"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/french_legacy_reads/values.rs",
+      "bytes": 4998,
+      "sha256": "456ea796974f7a3d41248d0e2df65146fe73a467e37996af614570493422c6cf"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/french_legacy_reads/boundaries.rs",
+      "bytes": 9922,
+      "sha256": "758c03621faeb13ebf6d5c64dfa7c411d6e0ba5cbc9f3f85d6dc85cb5c5964db"
+    },
+    {
+      "path": "docs/testing/FrenchKeysOracle.java",
+      "bytes": 5433,
+      "sha256": "4ec72e1b8680d327db3c6a07d552dde35d9eea6e5997a71250a15f61abcbf96b"
+    },
+    {
+      "path": "docs/access/indexes/NATIVE_TEXT.md",
+      "bytes": 69014,
+      "sha256": "940461af012b2f8ffd25f60746473f5899017e637f2686eba379ac21d09fb481"
+    },
+    {
+      "path": "docs/testing/FRENCH_LEGACY_INDEX_OBSERVATIONS.md",
+      "bytes": 11554,
+      "sha256": "bb05d60d3e111abb4aaacca8343ec1d8127473de31cc642f03288f0bd6ddae6a"
+    },
+    {
+      "path": "docs/testing/FIXTURES.md",
+      "bytes": 562616,
+      "sha256": "80adee5316ba4599a3ff9e178f026f8ce98c12b9e4a3e0c1aec2a74f415778f4"
+    },
+    {
+      "path": "Cargo.toml",
+      "bytes": 6943,
+      "sha256": "714849d1ee46102f9e708ff6346c988688bfc6ea2cd5d40ca12e3a0a5c558b03"
+    },
+    {
+      "path": "Cargo.lock",
+      "bytes": 54179,
+      "sha256": "e9b5e8378cfd444ceac716d9e8598e24d0b336c44ce6d97e71706b75e4937725"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/Cargo.toml",
+      "bytes": 2057,
+      "sha256": "53c4d69671efa7dd8fcfd065dd4a5a8ba1652fcaa696be943e1efeec71c71f03"
+    },
+    {
+      "path": "apps/tablecraft-cli/Cargo.toml",
+      "bytes": 1202,
+      "sha256": "0423ed1762dd85df975528a675e6a37a910477d358135d437802a644c6b4649b"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/main.rs",
+      "bytes": 3373,
+      "sha256": "e0b047760c99b22153b8fc17f63ce0d743a6370db2f1efdbd41367e674b04397"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/retrieval.rs",
+      "bytes": 12967,
+      "sha256": "61e687c9018689054b6a796b0f8b1489352be8482df4768810d6d5e5a072abf5"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/collation.rs",
+      "bytes": 6959,
+      "sha256": "2113b64076b5e44bf60e4dde5463f26e9b39f501dc73dc32acf52682d4a627ea"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/args.rs",
+      "bytes": 11091,
+      "sha256": "2657b163004b2e8aaac4738887435d32e0ce81235a60616e0828a280a9360119"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/run_args.rs",
+      "bytes": 10909,
+      "sha256": "6d9a1b79b9826d39c6162d72d757ef5090a2583160b317e39ded6d821fbd7387"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/collation.rs",
+      "bytes": 5689,
+      "sha256": "38fb1f418f1051954cc453048c93479e80109d7271816d238778623c99d6ae30"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/collation/resolver.rs",
+      "bytes": 6367,
+      "sha256": "cf8173564827891dc55be53bc3c2e81c99a1154a2fb3314275d530fa4c8ba1e4"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/collation/french.rs",
+      "bytes": 4196,
+      "sha256": "7e248df82486d7ceced7f9cb0ac00308c7aa8de523e47147996bd27a208bee90"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/lib.rs",
+      "bytes": 1513,
+      "sha256": "9a7984219b2281654deac32c6591b3aeb02698b1506f085ce040b38f9684645c"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/source/collation.rs",
+      "bytes": 5984,
+      "sha256": "f3d1d21d686d2e92875a4453bda1acfad32daeea14b6b0659a4a29dd175212ed"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/french_provider.rs",
+      "bytes": 6758,
+      "sha256": "2c50b1ddae36d2714dfb24c5865ae1948d7272145d05249460d1e98c7518365a"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/french_query_contract.rs",
+      "bytes": 11219,
+      "sha256": "ea7f893e0767e25ad1f91ef2657b282f380a0d82f7ff12f346d231c1d4b29beb"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/collation/comparison.rs",
+      "bytes": 6728,
+      "sha256": "ed94591ea0f8a5b4d5e4945ca45e23571a373c2c073c0492ffbff2797e4bc6e5"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/collation/french.rs",
+      "bytes": 2581,
+      "sha256": "37df90522ffc1af72b070b4851c269444bc4d383a0007a2d1eefcf7b7961edcf"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/collation/mod.rs",
+      "bytes": 1965,
+      "sha256": "15551f5f95570e25a07bac874c2b009841362b0b17b14ad35cd92af11ceca8a6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/lib.rs",
+      "bytes": 5793,
+      "sha256": "1b94d6e80cb119591e02f67ec946bdf8906ed295168e542e56a68967476118c4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/french_comparison.rs",
+      "bytes": 6194,
+      "sha256": "aa3ffdbd05f04d6b46ebc9c5f295d0b093ec453a908811a30c93e14f852562c1"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/comparison/like.rs",
+      "bytes": 820,
+      "sha256": "d31f3adfc3edbebcc51e8aa62696267e160710b4732956675a0adad402f40ee7"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/like.rs",
+      "bytes": 4441,
+      "sha256": "fd59f77ef088c2eee3d653396d7a75a8891517cb544c1499fa970394cf693225"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/like/unsupported_tests.rs",
+      "bytes": 2935,
+      "sha256": "4a031b548a9ee2fb36fefd0046a1e5b2fa0453c3bf22749960f2ff634f9cd164"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/predicates/like/mod.rs",
+      "bytes": 6464,
+      "sha256": "df9ed27d88484b2e3bfecf98cd8eefbf240717ec609d3643d522a5141d4ad3e5"
+    },
+    {
+      "path": "docs/expressions/text/PATTERN_MATCHING.md",
+      "bytes": 16929,
+      "sha256": "85c75cdc05d8dd15f2bc333240e5e1ce0602e89697fa18d3830c87dcaaa79ecc"
+    },
+    {
+      "path": "docs/testing/FrenchComparisonOracle.java",
+      "bytes": 3435,
+      "sha256": "297ca1a24926f34e9a8707f0c54e1d0919d038f7d4911ca9db7f33d879176076"
+    },
+    {
+      "path": "docs/testing/french_comparison_latin_model.py",
+      "bytes": 4061,
+      "sha256": "65b95a6fd9dcd0f92f30d463fd2f5bcb855ecc562365e30b6fe1ac5d9b69f0d1"
+    },
+    {
+      "path": "docs/testing/FRENCH_COMPARISON_OBSERVATIONS.md",
+      "bytes": 4608,
+      "sha256": "918efca9fb5c47a8627dac3fb71bb83a4225439e42a38447051c76944a2bd88c"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/Cargo.toml",
+      "bytes": 1031,
+      "sha256": "497f5e8c196eaa0cbc2b6a8b14c01e1e9bcff75d61d268aada68ec593e90c93d"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/Cargo.toml",
+      "bytes": 1273,
+      "sha256": "914acd09d3001f58fa08775b55364ca6c5dd3b79eb41c768052923d0cc6edc2b"
+    }
+  ],
+  "compiler_inputs_clean_before_and_after_build": true,
+  "scope": "Committed CLI with exact French comparison-only provider; independent native-field SQL replay and native Access/NLS qualification remain separate."
+}
