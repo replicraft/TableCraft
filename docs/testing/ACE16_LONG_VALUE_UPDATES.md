@@ -110,6 +110,33 @@ now rejects it while the requested control still succeeds. Original-file writer
 comparisons remain separate from these tests and must use a subsequently frozen
 consumer; the prior 60 observations are not passing candidate evidence.
 
+## Explicit engineering consumer
+
+The feature-gated [example](../../crates/engines/tablecraft-ace/examples/preview_ace16_long_value.rs)
+buffers a complete candidate before creating a fresh output. It shares the
+existing quoted TSV reader and synchronized fresh-file publisher. Its separate
+input profile allows 64 KiB per encoded value; the Short Text/Binary example
+retains its 1,024-byte value ceiling. Both retain the 16 MiB file and 4,096-request
+limits under a shared 256 MiB/100,000-row/100-million-step operation budget.
+
+Each headerless TSV row has five fields: original live ordinal, expected kind,
+expected data, replacement kind and replacement data. Kinds are `null`, `text`
+and `binary`; NULL data is empty, Text is UTF-8, and Binary is hexadecimal. The
+limit applies to encoded data, so 64 KiB of hex represents 32 KiB of Binary.
+The entire request file validates before the database or output opens.
+
+```sh
+cargo run --locked --offline -p tablecraft-ace --features ace16-write-preview \
+  --example preview_ace16_long_value -- \
+  before.accdb fresh-candidate.accdb Sentinel Memo requests.tsv
+```
+
+The new consumer passes nine functions and the retained slot consumer passes
+eleven; six shared parser/publisher functions count once in the fourteen distinct
+consumer total. Checks include a real chained Memo candidate, exact source/old
+chunk preservation, fresh output, explicit width profiles and late malformed
+input without publication. These checks do not replace original-file replay.
+
 The [scoped implementation record](results/ace16-long-value-updates-native-2026-10-27.json)
 pins the actual source, preserved attempts and selected final checks. Shared
 consumer functions and repeated default/preview executions are counted explicitly.

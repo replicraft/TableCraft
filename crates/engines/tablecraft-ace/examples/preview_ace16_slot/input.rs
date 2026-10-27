@@ -9,7 +9,6 @@ use tablecraft_core::{
 
 const MAX_INPUT_BYTES: u64 = 16 * 1024 * 1024;
 const MAX_REQUESTS: usize = 4096;
-const MAX_VALUE_BYTES: usize = 1024;
 const READ_BUFFER_BYTES: usize = 8192;
 const FIELD_COUNT: usize = 5;
 const CSV_RETAINED_RECORDS: usize = 3;
@@ -18,6 +17,7 @@ const HEX_DIGITS_PER_BYTE: usize = 2;
 pub(super) fn load(
     path: &Path,
     budget: &mut ResourceBudget,
+    max_value_bytes: usize,
 ) -> Result<Vec<SlotScalarUpdate>, Box<dyn Error>> {
     let mut file = File::open(path)?;
     let length = tablecraft_io::seek_to_end(&mut file, budget, &|| false)?;
@@ -34,12 +34,13 @@ pub(super) fn load(
         return Err("Slot-request file length changed during capture".into());
     }
 
-    parse(&encoded, budget)
+    parse(&encoded, budget, max_value_bytes)
 }
 
 fn parse(
     encoded: &[u8],
     budget: &mut ResourceBudget,
+    max_value_bytes: usize,
 ) -> Result<Vec<SlotScalarUpdate>, Box<dyn Error>> {
     if encoded.is_empty() {
         return Err("Slot-request file is empty".into());
@@ -81,8 +82,8 @@ fn parse(
             .ok()
             .and_then(|text| text.parse::<usize>().ok())
             .ok_or_else(|| format!("Invalid slot request {number}: invalid row ordinal"))?;
-        let expected = value(&record[1], &record[2], number, budget)?;
-        let replacement = value(&record[3], &record[4], number, budget)?;
+        let expected = value(&record[1], &record[2], number, budget, max_value_bytes)?;
+        let replacement = value(&record[3], &record[4], number, budget, max_value_bytes)?;
         requests.push(SlotScalarUpdate::new(row, expected, replacement));
     }
     if requests.is_empty() {
@@ -96,8 +97,9 @@ fn value(
     data: &[u8],
     number: usize,
     budget: &mut ResourceBudget,
+    max_value_bytes: usize,
 ) -> Result<Value, Box<dyn Error>> {
-    if data.len() > MAX_VALUE_BYTES {
+    if data.len() > max_value_bytes {
         return Err(format!("Invalid slot request {number}: value exceeds input ceiling").into());
     }
     match kind {

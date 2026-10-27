@@ -13,6 +13,7 @@ use tablecraft_model::CatalogScope;
 const BYTE_BUDGET: u64 = 256 * 1024 * 1024;
 const ROW_BUDGET: u64 = 100_000;
 const STEP_BUDGET: u64 = 100_000_000;
+const REQUEST_VALUE_BYTES: usize = 1024;
 
 #[derive(Parser)]
 #[command(about = "Create an unqualified ACE 16 Text/Binary candidate")]
@@ -35,7 +36,7 @@ struct Args {
 
 fn run(args: Args, budget: &mut ResourceBudget) -> Result<usize, Box<dyn Error>> {
     // Capture and validate every assignment before opening the database or output.
-    let requests = input::load(&args.requests, budget)?;
+    let requests = input::load(&args.requests, budget, REQUEST_VALUE_BYTES)?;
     let mut source = File::open(&args.source)?;
     let image = NativeImage::capture(&mut source, CatalogScope::new(1), budget, &|| false)?;
     let candidate = if args.variable_updates {

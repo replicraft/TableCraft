@@ -32,8 +32,9 @@ and indexes remain explicit blockers. See the
 
 The [scoped record](testing/results/ace16-long-value-updates-native-2026-10-27.json)
 passes 99 distinct core runtime functions, three compile-fail checks, strict lint,
-minimal compilation and formatting. Working-tree consumer checks are recorded
-separately. Original-file candidate qualification requires a frozen committed
+minimal compilation and formatting. A separate engineering consumer supports
+quoted TSV requests with an explicit larger value profile, with fourteen distinct
+consumer tests recorded separately. Original-file candidate qualification requires a frozen committed
 consumer; the prior public transition corpus is not candidate evidence.
 
 ## Fixed Int32 leaf split candidates
