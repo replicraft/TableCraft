@@ -1,4 +1,4 @@
-//! Fresh, non-journalable Int32 root-leaf split candidate; never a native save.
+//! Fresh, non-journalable Int32 leaf split candidate; never a native save.
 #[path = "preview_ace16_slot/output.rs"]
 mod output;
 
@@ -13,7 +13,7 @@ const ROW_BUDGET: u64 = 100_000;
 const STEP_BUDGET: u64 = 100_000_000;
 
 #[derive(Parser)]
-#[command(about = "Create an unqualified ACE 16 Int32 root-leaf split candidate")]
+#[command(about = "Create an unqualified ACE 16 Int32 leaf split candidate")]
 struct Args {
     source: PathBuf,
     output: PathBuf,

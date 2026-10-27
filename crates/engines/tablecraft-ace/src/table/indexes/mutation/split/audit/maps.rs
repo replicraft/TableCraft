@@ -55,10 +55,10 @@ fn bit(
     Ok(())
 }
 
-pub(super) fn add(
+pub(super) fn add<const N: usize>(
     reader: &mut Reader<'_, Cursor<&[u8]>>,
     usage: u32,
-    numbers: [u32; 2],
+    numbers: [u32; N],
     expected: &mut Vec<Expected>,
 ) -> Result<(), EditError> {
     let global = RepresentedMap::read(reader, GLOBAL_FREE_REFERENCE, MapRole::GlobalFree)?;

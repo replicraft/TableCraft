@@ -21,4 +21,12 @@ pub(crate) mod index_fixture;
 pub(crate) mod split_model;
 
 #[cfg(feature = "ace16-write-preview")]
+pub(crate) use split_model as base_model;
+
+#[cfg(feature = "ace16-write-preview")]
+#[allow(dead_code)]
+#[path = "../tests/ace16_nonroot_split_int32/model.rs"]
+pub(crate) mod nonroot_model;
+
+#[cfg(feature = "ace16-write-preview")]
 pub(crate) use crate as engine;
