@@ -1,0 +1,376 @@
+{
+  "date": "2026-10-27",
+  "scope": "First actual six-case maximum variable DATA and General Legacy/Modern Text/Binary index split engineering candidate acceptance on two unchanged original ACCDB files. No Microsoft Access or normal-save qualification.",
+  "first_actual": {
+    "terminal_session": 29355,
+    "exit_code": 0,
+    "raw_report": {
+      "path": ".cache/ace16-variable-encoded-acceptance-first-20261027/report.json",
+      "bytes": 161225,
+      "sha256": "0d5e5d814c6b67cf334aab35898af36ccc0d38553f607dc6f7ae01a22f8763b6"
+    },
+    "execution_log": {
+      "path": ".cache/ace16-variable-encoded-acceptance-next-20261027/first-execution.log",
+      "bytes": 1405,
+      "sha256": "824bf8ee54d68f199ec2f78999a945c582c5a8b642380e338618ae8536cf2cb6"
+    },
+    "terminal_receipt": {
+      "path": ".cache/ace16-variable-encoded-acceptance-next-20261027/first-terminal.json",
+      "bytes": 1764,
+      "sha256": "e17f93a88d6a593f8e6a83c149295d662e9ee1c4c4aca5b16f47b82980135e2f"
+    }
+  },
+  "compiled_revision": "abc9fd370f71a692a2b17774c7cba04df54e5c5d",
+  "artifact": {
+    "path": ".cache/tablecraft-bin/ace16-variable-split-20261027",
+    "bytes": 16019520,
+    "sha256": "e14be944e6b209800a6292ae6060a0deff2c2a92e433b72357a74fe6af990290"
+  },
+  "build_receipt": {
+    "path": "docs/testing/results/ace16-variable-split-example-build-2026-10-27.json",
+    "bytes": 61110,
+    "sha256": "a307bc0017ebed268e313d29f7f15c7b57390482abd16c72fba42ec730ed68ed"
+  },
+  "build_receipt_revision": "704137ca7f93c9e381041da1bfe2d1de23d0c091",
+  "historical_implementation_record": "ace16-variable-index-splits-native-2026-10-27.json",
+  "counts": {
+    "attempted": 6,
+    "complete_image_matches_before_getter": 6,
+    "fresh_readonly_getter_matches": 6,
+    "unmet": 0,
+    "fixture_commands": 12,
+    "native_candidates": 6,
+    "JVM_readonly_inspections": 6,
+    "public_updates": 0,
+    "generation_or_compile_calls": 0,
+    "retries": 0,
+    "before_and_after_input_pins": 76,
+    "created_artifact_pins": 112,
+    "input_or_inventory_errors": 0,
+    "compiled_Git_source_objects": 285,
+    "receipt_Git_objects": 1,
+    "exported_source_files_in_build_manifest": 4194,
+    "unique_original_user_records": 5402,
+    "original_record_instance_checks": 16206,
+    "physical_tree_instances_checked": 60,
+    "affected_physical_trees": 12,
+    "new_DATA_pages": 6,
+    "new_index_pages": 36,
+    "new_bitmap_pages": 0,
+    "growth_bytes_per_candidate": 28672,
+    "fresh_getter_row_instance_checks": 16206,
+    "fresh_getter_logical_entries_including_aliases": 64806,
+    "original_prefix_bytes_rechecked": 3883008
+  },
+  "limits": {
+    "native_shared_budget": {
+      "bytes": 268435456,
+      "rows": 100000,
+      "steps": 100000000
+    },
+    "request_caps": {
+      "file_bytes": 16777216,
+      "rows": 4096,
+      "encoded_value_bytes": 1024,
+      "actual_rows_per_case": 1
+    },
+    "database_bytes": 8388608,
+    "child_deadline_seconds": 30,
+    "stream_bytes_each": 16777216,
+    "JVM_heap_MiB": 512
+  },
+  "originals": [
+    {
+      "path": ".cache/ace16-variable-encoded-source-first-20261027/V2016-original.accdb",
+      "bytes": 610304,
+      "sha256": "2e7ca607356bf41af05d3fad6f94db9d8c78673478f64e24e941ac666114e994"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-source-first-20261027/V2019-original.accdb",
+      "bytes": 684032,
+      "sha256": "c5959e39bda1828d53891542210eba9b40422e0bd6b7f4023114ecc1b0dd6484"
+    }
+  ],
+  "inspection_inputs": [
+    {
+      "path": ".cache/ace16-compressed-memo-source-review-20261027/jackcess-5.0.4-sources.jar",
+      "bytes": 878581,
+      "sha256": "4de1bc2f1663b0946ce39057dd90eace355f4f74b8f818c0fe167f0c65815428"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-source-first-20261027/classes/BoundedFileChannel.class",
+      "bytes": 3080,
+      "sha256": "608c31190c2bcbc9582fd0332813b8697820604b208b9d17c7b1548791c3916b"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-source-first-20261027/classes/VariableEncodedProbe.class",
+      "bytes": 21819,
+      "sha256": "0e445fdf5259ab3bdbfeb41b46f41ae31ab2729a748f9fc3a84508f798195df5"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-source-next-20261027/VariableEncodedProbe.java",
+      "bytes": 20618,
+      "sha256": "b502f3faffa61c0df905f82102a650690eb48399598f08b38db31f3fd1aa54a4"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+      "bytes": 1407244,
+      "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+    }
+  ],
+  "executed_private_sources_and_protocol": [
+    {
+      "path": ".cache/ace16-variable-encoded-independent-next-20261027/combined_model.py",
+      "bytes": 13758,
+      "sha256": "05cae9946b1e34f0992b3a15bb3854e4b9b3f47affbec757a379723146b464af"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-independent-next-20261027/source_weights.py",
+      "bytes": 1758,
+      "sha256": "5f313c1afee0c49710e2ff53fb0941e6c7b07006ade2addb48291b068c0d46e2"
+    },
+    {
+      "path": ".cache/ace16-data-record-proof-next-20261027/oracle.py",
+      "bytes": 6343,
+      "sha256": "d752cdc6f8738d8d7338eb356857a8fdc5abd29c03bfdc35be3d8aa7924990b3"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-independent-next-20261027/prepare_combined.py",
+      "bytes": 4781,
+      "sha256": "c25a6e93476658b25719f175239b36444843b00fe9d50e1071bc52ec354755e2"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-independent-next-20261027/combined-plan.json",
+      "bytes": 39802,
+      "sha256": "ef2d02b8c0c2ee4805baa9da20160f95938ccc6e7aede6d7ebeec37abf690116"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-independent-next-20261027/combined-freeze.json",
+      "bytes": 11166,
+      "sha256": "d6406f095969aa7b369521c18ec2ae58d9847e6d4618736bcb901edc67fc49ab"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-acceptance-next-20261027/replay.py",
+      "bytes": 15614,
+      "sha256": "d59f8bc0d1a8244adbc5d1f4a6acc1a183addbfc7e88ca3a94a610704c806cdd"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-acceptance-next-20261027/protocol.json",
+      "bytes": 15235,
+      "sha256": "e4b2517c325043be9f501638ada49ff294ce22423855141ff907491eb617213e"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-acceptance-next-20261027/runner-freeze.json",
+      "bytes": 15352,
+      "sha256": "8063406904176dee38980dc2fa771f7cd0aa4f39f02335bfc39cf705e2805f05"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-acceptance-next-20261027/binding.json",
+      "bytes": 7133,
+      "sha256": "288f9dd78c92bd3368d1eed66e8b006e5a306e47a77cc4e896359501a9bfc75a"
+    }
+  ],
+  "executed_source_archive": "The raw report pins all112 created artifacts, including exact executed-input copies; no refactored public tool is relabeled historical execution.",
+  "candidates": [
+    {
+      "id": "V2016-TextLegacy",
+      "candidate": {
+        "path": ".cache/ace16-variable-encoded-acceptance-first-20261027/V2016-TextLegacy-candidate.accdb",
+        "bytes": 638976,
+        "sha256": "1f97bfb8a019d26cd95e9ca06a5c47153afffabbbcc3bc78f41a11a0988e14b5"
+      },
+      "getter_facts": {
+        "path": ".cache/ace16-variable-encoded-acceptance-first-20261027/V2016-TextLegacy-fresh-facts.json",
+        "bytes": 5216581,
+        "sha256": "41f95a3ea4f8f44ec813cd35a954709dd820fcb534b72b6f4f9facde1e2ced4f"
+      }
+    },
+    {
+      "id": "V2016-TextModern",
+      "candidate": {
+        "path": ".cache/ace16-variable-encoded-acceptance-first-20261027/V2016-TextModern-candidate.accdb",
+        "bytes": 638976,
+        "sha256": "b2b33742c393d2214f4d228a660136f008ad4ad74dd7530599379b3fda8accd6"
+      },
+      "getter_facts": {
+        "path": ".cache/ace16-variable-encoded-acceptance-first-20261027/V2016-TextModern-fresh-facts.json",
+        "bytes": 5216582,
+        "sha256": "927b4a3e59d124f71efabeb909a2f80e9cd458f4a6166db809c28ea59b5c95fc"
+      }
+    },
+    {
+      "id": "V2016-BinaryOne",
+      "candidate": {
+        "path": ".cache/ace16-variable-encoded-acceptance-first-20261027/V2016-BinaryOne-candidate.accdb",
+        "bytes": 638976,
+        "sha256": "03cb90f2582b9b5d6141d8096226526900761a43c5169a83e12d5b25e30fb470"
+      },
+      "getter_facts": {
+        "path": ".cache/ace16-variable-encoded-acceptance-first-20261027/V2016-BinaryOne-fresh-facts.json",
+        "bytes": 5215079,
+        "sha256": "8420a5319e6b887d6748111eae45a306a218b42469a9b370a6dfa7d04b796f98"
+      }
+    },
+    {
+      "id": "V2019-TextLegacy",
+      "candidate": {
+        "path": ".cache/ace16-variable-encoded-acceptance-first-20261027/V2019-TextLegacy-candidate.accdb",
+        "bytes": 712704,
+        "sha256": "cabf83afc1a5b83835ab6954151a42a9f65dad402be5870f3771e05d137dfeb5"
+      },
+      "getter_facts": {
+        "path": ".cache/ace16-variable-encoded-acceptance-first-20261027/V2019-TextLegacy-fresh-facts.json",
+        "bytes": 5217183,
+        "sha256": "ee5b9da8cb95a4997e5637c5987da4582909a7bc076162648e62800e0cd412d0"
+      }
+    },
+    {
+      "id": "V2019-TextModern",
+      "candidate": {
+        "path": ".cache/ace16-variable-encoded-acceptance-first-20261027/V2019-TextModern-candidate.accdb",
+        "bytes": 712704,
+        "sha256": "2ca48df04163f4a82aa40c55cdc48772c979f3d017ae2deaa06c5d1171109710"
+      },
+      "getter_facts": {
+        "path": ".cache/ace16-variable-encoded-acceptance-first-20261027/V2019-TextModern-fresh-facts.json",
+        "bytes": 5217183,
+        "sha256": "19dfb6e923b3c5d9f8652a56bbff9a0fda6df888726a058e43052fbd1ff5e29b"
+      }
+    },
+    {
+      "id": "V2019-BinaryOne",
+      "candidate": {
+        "path": ".cache/ace16-variable-encoded-acceptance-first-20261027/V2019-BinaryOne-candidate.accdb",
+        "bytes": 712704,
+        "sha256": "8148518c6a24ea50b5e6c89ab30c92942882361f87c0eeabc27c658fd8afe031"
+      },
+      "getter_facts": {
+        "path": ".cache/ace16-variable-encoded-acceptance-first-20261027/V2019-BinaryOne-fresh-facts.json",
+        "bytes": 5215680,
+        "sha256": "0d5ed064b741bdb71a9ed135736bc75ed1ec97e2f020b4da2f8dfe58e23e95ff"
+      }
+    }
+  ],
+  "whole_image_policy": [
+    "Immutable original field offsets/footer/mask and exact requested value determine DATA record bytes/capacity.",
+    "DATA at original EOF; original43-byte logical root range retained and pointer+39zero; hidden slot0 body547Text/297Binary.",
+    "Complete original logical key+ROW stream and independently replayed repeated allocation determine index images.",
+    "Fresh leaf unused bytes zero; original index root suffix residue preserved; public scratch is not the golden.",
+    "Exact ordinary-owned/hint/index-owned/global effects aggregated from original inline/indirect map cells.",
+    "Every suffix page has one DATA orINDEX purpose; this original profile has no bitmap allocation/promotion."
+  ],
+  "public_tools": [
+    {
+      "path": "docs/testing/VARIABLE_INDEX_SPLIT_CANDIDATE_OBSERVATIONS.md",
+      "bytes": 8826,
+      "sha256": "612b27b95df516e1988ee0bf69c4084cad889eabc20ecaaed248bc0646da8656"
+    },
+    {
+      "path": "docs/testing/variable_index_split_originals/candidate_model.py",
+      "bytes": 13759,
+      "sha256": "e074ac2aa1b901d77403ac9108eeb35f76fabdb34b944db0fce7c7291f0bba32"
+    },
+    {
+      "path": "docs/testing/variable_index_split_originals/record_model.py",
+      "bytes": 6343,
+      "sha256": "d752cdc6f8738d8d7338eb356857a8fdc5abd29c03bfdc35be3d8aa7924990b3"
+    },
+    {
+      "path": "docs/testing/variable_index_split_originals/source_weights.py",
+      "bytes": 1758,
+      "sha256": "5f313c1afee0c49710e2ff53fb0941e6c7b07006ade2addb48291b068c0d46e2"
+    },
+    {
+      "path": "docs/testing/variable_index_split_originals/verify_candidates.py",
+      "bytes": 11127,
+      "sha256": "25d9da6ad83c0afcc8ced375c162b39f4ad8ddc95ef10788196dd591c9d8b3f1"
+    }
+  ],
+  "source_function_identity": {
+    "policy": "Function and class AST equality to exact executed private sources; public candidate_model only changes repository root/import composition. record_model/source_weights exact bytes. Existing public source parser/protection function ASTs likewise match.",
+    "index_wire_model": {
+      "path": "docs/testing/encoded_index_split_originals/candidate_model.py",
+      "bytes": 12480,
+      "sha256": "39476ef54c2437ff80f20626ce78b3a9d206d294340dd95cab51e05d1e3d0089"
+    },
+    "fresh_snapshot_model": {
+      "path": "docs/testing/variable_encoded_split_sources/action_model.py",
+      "bytes": 24639,
+      "sha256": "549d39089c82329a9ffb06d6c5adb3c25593d706a74c37a29f1b8a9d75906fbd"
+    },
+    "fresh_protection_proof": {
+      "path": "docs/testing/variable_encoded_split_sources/reference_proof.py",
+      "bytes": 8011,
+      "sha256": "687b45a546da59c35c338b9a21afc3971a796397faa946bbb5c079fab93d6572"
+    }
+  },
+  "saved_only_validation": {
+    "exit_code": 0,
+    "result": {
+      "path": ".cache/ace16-variable-encoded-acceptance-next-20261027/public-postcheck-first.json",
+      "bytes": 3057,
+      "sha256": "d4ccaac98dd25117c2ed5cd29876da619d2e121e12e190ed05cf8cf494230654"
+    },
+    "run": {
+      "path": ".cache/ace16-variable-encoded-acceptance-next-20261027/public-postcheck-first-run.json",
+      "bytes": 884,
+      "sha256": "93738f1263580740eb090166bc55ebe88051ddcddf2a0b42aa5f4443d5964a6a"
+    },
+    "live_pin_occurrences": 348,
+    "compiled_Git_objects": 285,
+    "receipt_Git_objects": 1,
+    "readonly_Git_metadata_child_processes": 286,
+    "native_fixture_calls": 0,
+    "JVM_fixture_calls": 0,
+    "full_expected_images_before_cached_getter_parse": 6,
+    "first_maintained_verifier_attempt_passed": true
+  },
+  "preserved_pre_execution_history": {
+    "pure_model_lookup_error": {
+      "scope": "Before any image construction or fixture call: authored unchanged key corrected to actual matches. Source/model request/image bytes unchanged.",
+      "source": {
+        "path": ".cache/ace16-variable-encoded-independent-next-20261027/before-prepare-report-key-correction/prepare_combined.py",
+        "bytes": 4783,
+        "sha256": "4530812c5225c7380869be87219ef7e3b9912f8cbb883af14f61b2ec00c25cf7"
+      },
+      "diagnostic": {
+        "path": ".cache/ace16-variable-encoded-independent-next-20261027/before-prepare-report-key-correction/failure.txt",
+        "bytes": 202,
+        "sha256": "bb556d46b7f97221b6bc0bec67482b41df451d7e8ea818935c07d4ca8e540d21"
+      }
+    },
+    "unbound_controller_refinements": [
+      {
+        "path": ".cache/ace16-variable-encoded-acceptance-next-20261027/before-future-path-qualification/replay.py",
+        "bytes": 15015,
+        "sha256": "4572a531812974cc6f208477de6693c88b1e1ba55fbb782bd0689b2c657b9bbe"
+      },
+      {
+        "path": ".cache/ace16-variable-encoded-acceptance-next-20261027/before-future-path-qualification/protocol.json",
+        "bytes": 15048,
+        "sha256": "067bb35c103eb3670e9461762a4282525c606b287455492b2cb9cc09319b7b82"
+      },
+      {
+        "path": ".cache/ace16-variable-encoded-acceptance-next-20261027/before-future-path-qualification/runner-freeze.json",
+        "bytes": 15151,
+        "sha256": "2f01a499da181e43a7be590baffa5db9668e0781938f51301b22997e50e5675b"
+      },
+      {
+        "path": ".cache/ace16-variable-encoded-acceptance-next-20261027/before-output-recheck/replay.py",
+        "bytes": 15201,
+        "sha256": "586a18adc211a345a541489ec1fc55ffed8cbbe673bf7ec7c842e9045392a963"
+      },
+      {
+        "path": ".cache/ace16-variable-encoded-acceptance-next-20261027/before-output-recheck/runner-freeze.json",
+        "bytes": 15352,
+        "sha256": "22fb147f714e0494cb96a2c760236547cd9fa3edb6ef1bb039ef9e424a14dc51"
+      }
+    ],
+    "fixture_attempts_failed": 0
+  },
+  "scope_limits": [
+    "Only six non-NULL single-column nonunique maximum replacements are original-file observations.",
+    "NULL/empty, unique, multiple requests, already-forwarded history and promotion controls retain separate literal engineering evidence.",
+    "No native Access behavior, normal save, native SQL action timing, general mutation, data-macro semantics, reclamation or universal profile qualification follows."
+  ]
+}

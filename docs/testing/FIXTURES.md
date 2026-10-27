@@ -9964,3 +9964,13 @@ commands pass, with one DATA page and six index leaves per output. Its saved
 proof checks 84 identities, complete original-prefix preservation and all
 record/key/map effects. Original inputs, selected values and oracle expectations
 remain unchanged; no TableCraft combined candidate runs in this phase.
+
+The [first combined candidate replay](VARIABLE_INDEX_SPLIT_CANDIDATE_OBSERVATIONS.md)
+now uses a separately built committed consumer on those unchanged originals.
+All six complete images match expectations frozen before the consumer existed,
+then pass six fresh read-only row/key/tree/map proofs. The twelve first-attempt
+commands preserve all 76 input pins; no source, maximum-width request, expected
+image or budget changes. Every output adds one DATA page and six index leaves,
+preserving logical ROW references, fixed companions, Memo/OLE sentinel storage
+and original prefix bytes outside exact authorized changes. Independent image
+models and saved verification tools are tracked without adding database binaries.

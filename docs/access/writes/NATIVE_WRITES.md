@@ -209,7 +209,11 @@ Its finalizer re-proves original requests and metadata, derives DATA effects,
 then independently continues index allocation and verifies the complete typed
 suffix. Shared global bytes compose once; index-owned promotion never acquires
 DATA or bitmap pages as index members. Literal Binary-255 complete-image controls
-pass. Original-file replay is separate, and ordinary native saves remain closed.
+pass. Its [first six original-file candidates](../../testing/VARIABLE_INDEX_SPLIT_CANDIDATE_OBSERVATIONS.md)
+now match independently frozen complete images before fresh getter/map/key proofs.
+All twelve first-attempt commands pass on unchanged maximum-width inputs, with
+one DATA page and six index leaves per candidate. Promotion remains separate
+literal evidence; ordinary native saves remain closed.
 
 A separate [index-owned map promotion service](../../testing/ACE16_INDEX_MAP_GROWTH.md)
 now extends the same engineering split APIs when an inline map's complete required

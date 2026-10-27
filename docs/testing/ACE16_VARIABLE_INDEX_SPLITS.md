@@ -86,8 +86,13 @@ failed partial output.
 Authentic [source preparation](VARIABLE_ENCODED_SPLIT_SOURCE_OBSERVATIONS.md),
 [old-variable baselines](VARIABLE_ENCODED_SPLIT_BASELINES.md) and
 [public update references](VARIABLE_ENCODED_SPLIT_UPDATE_OBSERVATIONS.md) are
-separate evidence. Six original-file max255 candidate comparisons remain pending
-a committed frozen consumer; the implementation result makes no such claim.
+separate evidence. The [first six original-file max255 candidates](VARIABLE_INDEX_SPLIT_CANDIDATE_OBSERVATIONS.md)
+now match the complete images frozen before this consumer existed, then pass six
+fresh independent getter/root/map/tree proofs. All twelve first-attempt commands
+succeed with original inputs, requests and budgets unchanged. Each adds one DATA
+page and six index leaves; these originals do not exercise map promotion. The
+implementation result above remains its earlier compiled-commit snapshot; the
+original-file receipt records this separate replay.
 Public scratch bytes are not engineering goldens. Additional proof work/storage
 can tighten resource and cancellation boundaries. This is neither a performance
 claim, global database-health certification nor native Access save qualification.
