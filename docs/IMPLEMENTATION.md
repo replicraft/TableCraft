@@ -53,6 +53,13 @@ with explicit separate native/comparison allowances and a comparison-byte negati
 No production defaults or answers were changed. See
 [the field observations](testing/FRENCH_COMPARISON_FIELD_OBSERVATIONS.md).
 
+Two separate [saved-source companions](testing/FRENCH_SAVED_COMPANION_OBSERVATIONS.md)
+now preserve all original field values and 285 protected pages while adding one
+inert SELECT each. Their frozen-CLI replay passes four syntax controls, 24
+saved/named/derived executions and four buffered LIKE refusals, comparing 568 rows
+and 936 cells. This verifies existing named-source policy propagation without
+rewriting the original corpus or claiming native Access SQL qualification.
+
 ## Comparison-only French database query policy
 
 Exact French legacy `1036/0/0` now has separate full-String and raw-UTF16

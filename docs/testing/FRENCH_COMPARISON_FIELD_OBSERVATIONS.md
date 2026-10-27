@@ -120,3 +120,12 @@ and causal probe remain pinned.
 output/report paths and preserve every command/stdout/stderr and initial failure.
 These are headless engineering model comparisons over actual native field data,
 not Windows/native Access execution or save qualification.
+
+## Separate saved-source follow-up
+
+The original 112-control corpus remains unchanged and contains no saved query
+definitions. Two separate [saved-source companions](FRENCH_SAVED_COMPANION_OBSERVATIONS.md)
+add one inert passthrough SELECT each through the reviewed public metadata recipe.
+Their metadata/preservation proof and 32-control reconstruction/execution receipt
+are separate evidence: four syntax controls, 24 successful saved/named/derived
+executions and four buffered refusals, not 32 query successes.
