@@ -4,7 +4,7 @@ use proptest::prelude::*;
 use std::{cell::Cell, io::Cursor};
 use tablecraft_core::limits::ResourceBudget;
 
-pub(super) fn header(pages: u32) -> Header {
+pub(crate) fn header(pages: u32) -> Header {
     let mut bytes = [0; 66];
     bytes[..4].copy_from_slice(&[0, 1, 0, 0]);
     bytes[4..20].copy_from_slice(b"Standard ACE DB\0");

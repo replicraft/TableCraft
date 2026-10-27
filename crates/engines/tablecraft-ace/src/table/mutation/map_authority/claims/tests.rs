@@ -1,6 +1,13 @@
 //! Isolate footprint authority; these claims do not pretend to be native pages.
-use super::{Census, Claim, Owner};
-use crate::{EditError, WriteBlocker, format::allocation::MapStorage};
+use super::{Census, Claim, Owner, RecordIdentity};
+use crate::{
+    EditError, InspectError, WriteBlocker,
+    format::{
+        allocation::{MapStorage, QualifiedInlineRecord, test_header as header},
+        reader::Reader,
+    },
+};
+use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
 
 fn claim(owner: Owner, reference: u32, start: usize) -> Claim {
@@ -173,8 +180,6 @@ fn bitmap_storage_cannot_alias_another_container_or_bitmap() {
 
 #[test]
 fn owner_selection_checks_cancellation_and_its_work_allowance() {
-    use crate::InspectError;
-
     let census = Census {
         claims: vec![claim(Owner::GlobalFree, 1 << 8, 4096 + 3900)],
     };
@@ -202,4 +207,97 @@ fn owner_selection_checks_cancellation_and_its_work_allowance() {
             &|| false,
         )
         .unwrap();
+}
+
+#[test]
+fn record_rewrite_binds_selected_owner_reference_and_the_complete_original_range() {
+    let owner = Owner::IndexOwned {
+        definition: 10,
+        physical: 2,
+    };
+    let other = Owner::OrdinaryCandidate { definition: 10 };
+    let mut file = vec![0; 3 * 4096];
+    file[4096..4098].copy_from_slice(&[1, 1]);
+    file[4096 + 12..4096 + 14].copy_from_slice(&1_u16.to_le_bytes());
+    file[4096 + 14..4096 + 16].copy_from_slice(&4027_u16.to_le_bytes());
+    let mut source = Cursor::new(file);
+    let mut budget = ResourceBudget::new(1_000_000, 100, 1_000_000);
+    let record = QualifiedInlineRecord::capture(
+        &mut Reader {
+            source: &mut source,
+            header: header(3),
+            budget: &mut budget,
+            cancelled: &|| false,
+            reads: 0,
+        },
+        1 << 8,
+    )
+    .unwrap();
+    let mut census = Census {
+        claims: vec![claim(owner, 1 << 8, 8123), claim(other, (1 << 8) | 2, 8000)],
+    };
+    let selected = [owner, other];
+    let run = |census: &Census, selected: &[Owner], owner| {
+        census.require_record_rewrite(
+            selected,
+            RecordIdentity {
+                owner,
+                reference: record.reference(),
+                range: record.range(),
+            },
+            &mut ResourceBudget::new(10000, 100, 10000),
+            &|| false,
+        )
+    };
+    run(&census, &selected, owner).unwrap();
+    for (selection, requested) in [(&selected[..1], other), (&selected[..], other)] {
+        assert_eq!(
+            run(&census, selection, requested).err(),
+            Some(EditError::Unsupported(WriteBlocker::RowLayout))
+        );
+    }
+
+    census.claims[0].reference = (1 << 8) | 1;
+    assert_eq!(
+        run(&census, &selected, owner).err(),
+        Some(EditError::Unsupported(WriteBlocker::RowLayout))
+    );
+    census.claims[0].reference = 1 << 8;
+    for range in [8124..8192, 8123..8191, 8122..8192, 8123..8193] {
+        census.claims[0].storage.record = range;
+        assert_eq!(
+            run(&census, &selected, owner).err(),
+            Some(EditError::Unsupported(WriteBlocker::RowLayout))
+        );
+    }
+    census.claims[0].storage.record = 8123..8192;
+    run(&census, &selected, owner).unwrap();
+    assert_eq!(
+        census
+            .require_record_rewrite(
+                &selected,
+                RecordIdentity {
+                    owner,
+                    reference: record.reference(),
+                    range: record.range(),
+                },
+                &mut ResourceBudget::new(10000, 100, 10000),
+                &|| true,
+            )
+            .err(),
+        Some(EditError::Inspect(InspectError::Cancelled))
+    );
+    assert!(matches!(
+        census.require_record_rewrite(
+            &selected,
+            RecordIdentity {
+                owner,
+                reference: record.reference(),
+                range: record.range(),
+            },
+            &mut ResourceBudget::new(10000, 100, 0),
+            &|| false,
+        ),
+        Err(EditError::Inspect(InspectError::Limit(_)))
+    ));
 }

@@ -154,6 +154,8 @@ impl Plan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
         let mut plan = Self::capture(image, schema, budget, cancelled)?;
+        plan.maps
+            .enable_hint_growth(image, schema, &metadata, budget, cancelled)?;
         plan.metadata = Some(metadata);
         Ok(plan)
     }
@@ -279,7 +281,6 @@ impl Plan {
         initial[OWNER_OFFSET..OWNER_OFFSET + size_of::<u32>()]
             .copy_from_slice(&self.append.owner.to_le_bytes());
         self.push_page(number, &[], &initial, budget)?;
-        self.append.reserve_data(number, budget, cancelled)?;
         Ok(self.pages.len() - 1)
     }
 }

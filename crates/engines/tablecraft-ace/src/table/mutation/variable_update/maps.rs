@@ -1,12 +1,15 @@
 //! Represented owned/candidate/global cells composed against one frozen image.
+mod hint;
+
 use super::super::{
     EditError, WriteBlocker,
     append::{self, State},
+    variable_split::metadata::Metadata,
 };
 use crate::{
     InspectError, NativeImage, TableSchema,
     format::{
-        allocation::{self, GLOBAL_FREE_REFERENCE, MapRole, RepresentedMap},
+        allocation::{self, GLOBAL_FREE_REFERENCE, MapRole, QualifiedInlineRecord, RepresentedMap},
         bytes::u32_at,
         definition,
         layout::TABLE_FREE_MAP_OFFSET,
@@ -17,10 +20,15 @@ use crate::{
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
 
+const INLINE_KIND: u8 = 0;
+const INLINE_PREFIX_BYTES: usize = 1 + size_of::<u32>();
+
 pub(in crate::table::mutation) struct Maps {
     pub owned_pages: Vec<u32>,
     owned: RepresentedMap,
     hint: RepresentedMap,
+    hint_reference: u32,
+    hint_growth: Option<hint::Hint>,
     global: RepresentedMap,
     eof: u32,
 }
@@ -60,9 +68,68 @@ impl Maps {
             owned_pages,
             owned,
             hint,
+            hint_reference,
+            hint_growth: None,
             global,
             eof: reader.header.page_count(),
         })
+    }
+
+    pub(super) fn enable_hint_growth(
+        &mut self,
+        image: &NativeImage,
+        schema: &TableSchema,
+        metadata: &Metadata,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        // Other already represented grammars keep their existing profile.
+        // They receive no permission to rewrite a record of unknown framing.
+        if self.hint.kind() != INLINE_KIND {
+            return Ok(());
+        }
+        let mut source = image.reader();
+        let mut reader = Reader {
+            source: &mut source,
+            header: image.catalog().header(),
+            budget,
+            cancelled,
+            reads: 0,
+        };
+        let storage = RepresentedMap::read_storage(
+            &mut reader,
+            self.hint_reference,
+            MapRole::TableFreeSpace,
+        )?;
+        let qualified =
+            INLINE_PREFIX_BYTES + QualifiedInlineRecord::PAGE_CAPACITY / u8::BITS as usize;
+        if storage.record.len() != qualified {
+            return Ok(());
+        }
+
+        let growth = hint::Hint::capture(
+            schema.definition,
+            self.hint_reference,
+            metadata,
+            &mut reader,
+        )?;
+        let levels = self.owned_pages.len().checked_ilog2().unwrap_or(0) as usize + 1;
+        for &number in growth.members() {
+            reader.work(levels)?;
+            if self.owned_pages.binary_search(&number).is_err() {
+                return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+            }
+        }
+        self.hint_growth = Some(growth);
+        Ok(())
+    }
+
+    pub(in crate::table::mutation) fn metadata_pages(
+        &self,
+    ) -> impl Iterator<Item = (u32, u32, &[u8])> + '_ {
+        self.hint_growth
+            .iter()
+            .filter_map(hint::Hint::metadata_page)
     }
 
     /// Highest hinted owned page, including already staged EOF pages.
@@ -81,6 +148,9 @@ impl Maps {
             cancelled,
             reads: 0,
         };
+        if let Some(growth) = &self.hint_growth {
+            return growth.highest(&mut reader);
+        }
         for &number in self.owned_pages.iter().rev() {
             reader.tick()?;
             let cell = if number < self.eof {
@@ -115,6 +185,9 @@ impl Maps {
             cancelled,
             reads: 0,
         };
+        if let Some(growth) = &mut self.hint_growth {
+            return growth.remove(number, append, &mut reader);
+        }
         let cell = if number < self.eof {
             self.hint.cell(&mut reader, number)?
         } else {
@@ -136,15 +209,7 @@ impl Maps {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
         check(budget, cancelled)?;
-        let expected = self
-            .owned_pages
-            .iter()
-            .filter(|&&page| page >= self.eof)
-            .count();
-        let relative = number
-            .checked_sub(self.eof)
-            .ok_or(EditError::Preservation)?;
-        if usize::try_from(relative).map_err(|_| InspectError::Malformed)? != expected {
+        if number < self.eof || append.next()? != number {
             return Err(EditError::Preservation);
         }
         let mut source = image.reader();
@@ -156,16 +221,26 @@ impl Maps {
             reads: 0,
         };
         let owned = self.owned.future_cell(&mut reader, number)?;
-        let hint = self.hint.future_cell(&mut reader, number)?;
+        let hint = if self.hint_growth.is_none() {
+            Some(self.hint.future_cell(&mut reader, number)?)
+        } else {
+            None
+        };
         let global = self.global.future_cell(&mut reader, number)?;
         if append::current(&append.map_edits, &owned, &mut reader)?
-            || append::current(&append.map_edits, &hint, &mut reader)?
             || !append::current(&append.map_edits, &global, &mut reader)?
         {
             return Err(InspectError::Malformed.into());
         }
+        if let Some(hint) = &hint
+            && append::current(&append.map_edits, hint, &mut reader)?
+        {
+            return Err(InspectError::Malformed.into());
+        }
         append::claim(&mut append.map_edits, owned, true, &mut reader)?;
-        append::claim(&mut append.map_edits, hint, true, &mut reader)?;
+        if let Some(hint) = hint {
+            append::claim(&mut append.map_edits, hint, true, &mut reader)?;
+        }
         append::claim(&mut append.map_edits, global, false, &mut reader)?;
         reader
             .budget
@@ -174,6 +249,10 @@ impl Maps {
         self.owned_pages
             .try_reserve(1)
             .map_err(|_| InspectError::Allocation)?;
+        append.reserve_data(number, reader.budget, reader.cancelled)?;
+        if let Some(growth) = &mut self.hint_growth {
+            growth.add(number, &self.global, append, &mut reader)?;
+        }
         self.owned_pages.push(number);
         Ok(())
     }

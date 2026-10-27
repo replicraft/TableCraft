@@ -1,7 +1,7 @@
 //! Original-before/current-after bytes; role-specific admission stays at callers.
 use crate::{
     EditError, InspectError,
-    format::{allocation::MapCell, reader::Reader},
+    format::{allocation::MapCell, page::PAGE_BYTES, reader::Reader},
     header::check,
 };
 use std::io::Cursor;
@@ -48,6 +48,57 @@ pub(in crate::table) fn merge(
 enum Collision {
     Untouched,
     Existing,
+}
+
+/// Replace one caller-authorized original record, absorbing its earlier cells.
+/// The caller owns the canonical role/range proof and complete after framing.
+pub(in crate::table) fn rewrite_record(
+    edits: &mut Vec<Edit>,
+    offset: usize,
+    before: &[u8],
+    after: &[u8],
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<(), EditError> {
+    reader.tick()?;
+    if before.is_empty() || before.len() > PAGE_BYTES || before.len() != after.len() {
+        return Err(EditError::Preservation);
+    }
+    let end = offset
+        .checked_add(before.len())
+        .ok_or(EditError::Preservation)?;
+
+    reader.work(edits.len())?;
+    for edit in edits.iter() {
+        reader.tick()?;
+        if (offset..end).contains(&edit.offset) && before[edit.offset - offset] != edit.before {
+            return Err(EditError::Preservation);
+        }
+    }
+
+    reader
+        .budget
+        .charge_allocation(before.len() as u64, size_of::<Edit>() as u64)
+        .map_err(InspectError::from)?;
+    edits
+        .try_reserve(before.len())
+        .map_err(|_| InspectError::Allocation)?;
+    reader.work(before.len().saturating_mul(2))?;
+    for _ in before {
+        // No fallible work remains once any prior cell is retired.
+        reader.tick()?;
+    }
+
+    edits.retain(|edit| !(offset..end).contains(&edit.offset));
+    for (position, (&before, &after)) in before.iter().zip(after).enumerate() {
+        edits.push(Edit {
+            offset: offset + position,
+            before,
+            after,
+            touched: u8::MAX,
+        });
+    }
+
+    Ok(())
 }
 
 fn change(

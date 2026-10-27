@@ -4,7 +4,7 @@ mod claims;
 
 use crate::format::allocation::MapRole;
 pub(in crate::table) use catalog::capture_catalog;
-pub(in crate::table) use claims::Census;
+pub(in crate::table) use claims::{Census, RecordIdentity};
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub(in crate::table) enum Owner {

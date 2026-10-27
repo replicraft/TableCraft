@@ -8,7 +8,7 @@ use crate::{
     InspectError,
     format::{
         bytes::u16_at,
-        page::{DATA_SIGNATURE, OWNER_OFFSET, PAGE_BYTES},
+        page::{DATA_SIGNATURE, OWNER_OFFSET, PAGE_BYTES, USAGE_SIGNATURE},
         reader::{row_count, row_range},
         row::{
             DELETED_MASK, RELOCATED_MASK, ROW_COUNT_OFFSET, reference, reference_page,
@@ -183,7 +183,24 @@ pub(in crate::table::mutation) fn pages(
             }
         }
     }
-    if plan.length != plan.append.original_length + added * PAGE_BYTES {
+    let metadata_count = plan.maps.metadata_pages().count();
+    for (number, reference, bytes) in plan.maps.metadata_pages() {
+        check(budget, cancelled)?;
+        plan.append.require_candidate_bitmap(
+            number,
+            plan.append.owner,
+            reference,
+            budget,
+            cancelled,
+        )?;
+        if number as usize * PAGE_BYTES < plan.append.original_length
+            || bytes.len() != PAGE_BYTES
+            || bytes.get(..USAGE_SIGNATURE.len()) != Some(USAGE_SIGNATURE.as_slice())
+        {
+            return Err(EditError::Preservation);
+        }
+    }
+    if plan.length != plan.append.original_length + (added + metadata_count) * PAGE_BYTES {
         return Err(EditError::Preservation);
     }
     Ok(())

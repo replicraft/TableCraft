@@ -445,6 +445,7 @@ fn prove_with(
         image,
         schema.definition,
         indexes,
+        plan,
         &expected_edits,
         &mut Reader {
             source: &mut source,
