@@ -250,9 +250,13 @@ checks but fails operation certification. A temporary causal builder fault first
 exposed the shared-capacity audit gap; audit-owned measurement now rejects it.
 Exact initial failures and removed fault sources remain recorded separately.
 
-These are literal engineering results. The four new 900-key originals still need
-a new committed consumer and independent candidate replay. Other codecs, map
-growth, normal saves and native Access qualification remain unfinished.
+A [frozen committed consumer](testing/REPEATED_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
+now passes all four unchanged 900-key original candidates on its first run. Every
+complete image matches its pre-execution model; all eight native/getter commands
+pass, with complete typed rows, index/ROW streams, maps and protected bytes checked.
+Each candidate adds six pages. Fresh prefix and unused-byte expectations remain
+independent of the public writer's scratch choices. Other codecs, map growth,
+normal saves and native Access qualification remain unfinished.
 
 ## Repeated numeric split source and reference observations
 

@@ -9740,3 +9740,18 @@ saved verification. Draft parser assumptions were corrected before any fixture
 call, with all twelve expected images checked purely. A later verifier import
 failure is preserved separately; neither correction changed native inputs or
 expected images. Normal saves and Microsoft Access qualification remain open.
+
+### Repeated numeric original-file candidate acceptance
+
+The [four-candidate replay](REPEATED_INDEX_SPLIT_UPDATE_OBSERVATIONS.md) uses the
+same two unchanged 900-key Int64/Currency originals. Before any candidate call,
+a separate literal model froze exact complete images, source row references,
+selected field spans, root bounds, allocation IDs, links and map cells. Its pure
+selfcheck covers 7,204 complete original record bodies and 24 physical trees.
+
+The first actual replay passes all four candidates and eight native/getter
+commands through the consumer compiled from `ddaffcf4`. Every image equals its
+pre-execution expectation and adds six pages. All source/input pins remain
+unchanged. A later saved verifier reruns byte/getter analysis without launching
+fixture processes. This does not qualify broader codecs, map growth, native
+Access behavior or ordinary saves.

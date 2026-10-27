@@ -1,0 +1,1070 @@
+{
+  "date": "2026-10-27",
+  "scope": "First actual four-original repeated Int64/Currency split engineering acceptance; no native Access or normal save qualification.",
+  "counts": {
+    "candidate_calls": 4,
+    "fresh_read_only_getter_calls": 4,
+    "fixture_commands": 8,
+    "accepted": 4,
+    "unmet": 0,
+    "source_database_files": 2,
+    "source_rows_per_database": 1801,
+    "selected_rows_checked": 3600,
+    "all_original_row_body_selfchecks": 7204,
+    "complete_physical_tree_selfchecks": 24,
+    "changed_tree_roundtrips": 8,
+    "file_growth_per_candidate": 24576,
+    "source_pin_occurrences_before": 128,
+    "source_pin_occurrences_after": 128,
+    "new_public_updates": 0,
+    "new_generation_calls": 0
+  },
+  "first_terminal": {
+    "path": ".cache/ace16-repeated-split-acceptance-next-20261027/first-terminal.json",
+    "bytes": 550,
+    "sha256": "8417c78da5025bc3423201a8d24a3ad32c22819396ad0542bfd254c30f87b8a6"
+  },
+  "raw_report": {
+    "path": ".cache/ace16-repeated-split-acceptance-first-20261027/report.json",
+    "bytes": 4453320,
+    "sha256": "f20b275538a9f78c4c2408e7ede8edf13605da964410f99833b20ea9b6d40ecd"
+  },
+  "raw_report_scope": "Expanded whole-image/key/row/getter/map arrays remain ignored. All four candidates and every command are retained.",
+  "outer_log": {
+    "path": ".cache/ace16-repeated-split-acceptance-next-20261027/first-execution.log",
+    "bytes": 904,
+    "sha256": "f1054b2c7bd1f7e33434a2cae1db5eaa9c6447bb74d5b0ea335b0c1b5bdaa1e5"
+  },
+  "build_receipt": {
+    "path": "docs/testing/results/ace16-repeated-split-example-build-2026-10-27.json",
+    "bytes": 48596,
+    "sha256": "8317bbb7faddd08624c3add8ad5756be09ab647d65eee81265f6722374b58422"
+  },
+  "compiled_revision": "ddaffcf453fc3887a0a383d40f4e0efa1dd39917",
+  "artifact": {
+    "path": ".cache/tablecraft-bin/ace16-repeated-split-20261027",
+    "bytes": 16275232,
+    "sha256": "46e4abed6ba3d57f12f21cae9ccc16d0880d2aced3d8b2b13dd0170041e667f3"
+  },
+  "compiled_source_objects": 229,
+  "compiled_source_boundary": "Build receipt pins historical Git objects; mutable later sources are not compared as compiler inputs.",
+  "frozen_plan": {
+    "path": ".cache/ace16-repeated-split-acceptance-next-20261027/plan.json",
+    "bytes": 640389,
+    "sha256": "bfc804c74c2d492c4ef71b26e9dbf8f6c6f9f1647886ea87da32cacbdbb620ed"
+  },
+  "frozen_proof": {
+    "path": ".cache/ace16-repeated-split-acceptance-next-20261027/proof.py",
+    "bytes": 10765,
+    "sha256": "96ef7b9532a6ea35acf67c2a4fdeadb3c7409466afaa0d3339bf8900501eace9"
+  },
+  "frozen_selectors": {
+    "path": ".cache/ace16-repeated-split-acceptance-next-20261027/selectors.json",
+    "bytes": 1131,
+    "sha256": "18efad64139f7fbebd8bd54335eee81e7a510da5f4d80059f0ea70b09f617fb9"
+  },
+  "input_freeze": {
+    "path": ".cache/ace16-repeated-split-acceptance-next-20261027/freeze.json",
+    "bytes": 20924,
+    "sha256": "b6b3a40d96a5046f13d9bde88038ca09c715f470dd96a192de2746df7ee9d434"
+  },
+  "input_closure_count": 94,
+  "runner_manifest": {
+    "path": ".cache/ace16-repeated-split-acceptance-next-20261027/runner-source-freeze.json",
+    "bytes": 2421,
+    "sha256": "744fe0ea3f679cf2dd7a902512b17054005554940ce504b51c456e216bf3a647"
+  },
+  "artifact_binding": {
+    "path": ".cache/ace16-repeated-split-acceptance-next-20261027/artifact-binding.json",
+    "bytes": 1509,
+    "sha256": "afb5849e547e6241788ee8437c47a41f51b27c52313ce01375a27b74f6014b87"
+  },
+  "executed_private_runner": {
+    "path": ".cache/ace16-repeated-split-acceptance-next-20261027/replay.py",
+    "bytes": 10639,
+    "sha256": "789a96a9e273aa41f4ad004b32ac0adaefbbe136a213caa71d76142a572f2328"
+  },
+  "executed_source_archives": [
+    {
+      "path": ".cache/ace16-repeated-split-acceptance-first-20261027/executed-sources/00-replay.py",
+      "bytes": 10639,
+      "sha256": "789a96a9e273aa41f4ad004b32ac0adaefbbe136a213caa71d76142a572f2328"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-acceptance-first-20261027/executed-sources/01-proof.py",
+      "bytes": 10765,
+      "sha256": "96ef7b9532a6ea35acf67c2a4fdeadb3c7409466afaa0d3339bf8900501eace9"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-acceptance-first-20261027/executed-sources/02-action_model.py",
+      "bytes": 13987,
+      "sha256": "ec1dfe87def9091b87aa648063e42a7ffc3d23b71cdd2373eeb7a0dbdb544a37"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-acceptance-first-20261027/executed-sources/03-model.py",
+      "bytes": 15313,
+      "sha256": "90fa32cdadc67baee98a791bec9bf0d0d6413cd1087b09a017dab3c80f2fa9d7"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-acceptance-first-20261027/executed-sources/04-capture_sources.py",
+      "bytes": 8788,
+      "sha256": "a109520403eb80d2459c736ea193dd7b1a8f0c18760fe79970cd01e0eec5add2"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-acceptance-first-20261027/executed-sources/05-delete_reference_maps.py",
+      "bytes": 8635,
+      "sha256": "9fca51758e0f26e37dab2e27ff2c41c0e8a7a8110e9a047eda1ccb2a91eadda8"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-acceptance-first-20261027/executed-sources/06-facts.py",
+      "bytes": 8072,
+      "sha256": "1e6b085db3335f29ef5b9bf299cde2a62e863e09698d6efb4c93b76db00dd687"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-acceptance-first-20261027/executed-sources/07-common.py",
+      "bytes": 2697,
+      "sha256": "4d6e13158e1c039f1a75bb12828cfa7eaf811e58e06e5e4de0f4c605e1519f8c"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-acceptance-first-20261027/executed-sources/08-capture_delete_trees.py",
+      "bytes": 20353,
+      "sha256": "05f15179d1b4c689e1dd045617335f66b98189fbd12259838cc0ab5da4ebfdb1"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-acceptance-first-20261027/executed-sources/09-wire.py",
+      "bytes": 15798,
+      "sha256": "556e6663c9fe6fec52e4d0a9f76b171629a29559fd21e85a74d4a6adde5b91f9"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-acceptance-first-20261027/executed-sources/10-runner-source-freeze.json",
+      "bytes": 2421,
+      "sha256": "744fe0ea3f679cf2dd7a902512b17054005554940ce504b51c456e216bf3a647"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-acceptance-first-20261027/executed-sources/11-artifact-binding.json",
+      "bytes": 1509,
+      "sha256": "afb5849e547e6241788ee8437c47a41f51b27c52313ce01375a27b74f6014b87"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-acceptance-first-20261027/executed-sources/12-plan.json",
+      "bytes": 640389,
+      "sha256": "bfc804c74c2d492c4ef71b26e9dbf8f6c6f9f1647886ea87da32cacbdbb620ed"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-acceptance-first-20261027/executed-sources/13-selectors.json",
+      "bytes": 1131,
+      "sha256": "18efad64139f7fbebd8bd54335eee81e7a510da5f4d80059f0ea70b09f617fb9"
+    }
+  ],
+  "static_selfcheck": {
+    "path": ".cache/ace16-repeated-split-acceptance-next-20261027/selfcheck.json",
+    "bytes": 1135,
+    "sha256": "58f4d96cd5d1b4338ae7ac5c0fcd6747023bffa45995e84e62aec21b64bf6e1e"
+  },
+  "saved_private_verifier": {
+    "path": ".cache/ace16-repeated-split-acceptance-next-20261027/verify_saved.py",
+    "bytes": 4212,
+    "sha256": "0fef9b55926d419fdd27eda6b2da9a73b346fcc11719c63311c820dc802631fd"
+  },
+  "saved_postcheck": {
+    "path": ".cache/ace16-repeated-split-acceptance-next-20261027/postcheck.json",
+    "bytes": 457,
+    "sha256": "bb03125c06a58b8c84ee2d33a9733cf8aba516e3bf523926b88b30ece8beeca5"
+  },
+  "public_saved_verification": {
+    "path": ".cache/ace16-repeated-split-acceptance-next-20261027/public-postcheck.json",
+    "bytes": 457,
+    "sha256": "bb03125c06a58b8c84ee2d33a9733cf8aba516e3bf523926b88b30ece8beeca5"
+  },
+  "public_files": [
+    {
+      "path": "docs/testing/repeated_split_originals/candidate_model.py",
+      "bytes": 10765,
+      "sha256": "96ef7b9532a6ea35acf67c2a4fdeadb3c7409466afaa0d3339bf8900501eace9"
+    },
+    {
+      "path": "docs/testing/repeated_split_originals/candidate_selectors.json",
+      "bytes": 1131,
+      "sha256": "18efad64139f7fbebd8bd54335eee81e7a510da5f4d80059f0ea70b09f617fb9"
+    },
+    {
+      "path": "docs/testing/repeated_split_originals/verify_candidates.py",
+      "bytes": 4212,
+      "sha256": "ba18daab3d762a22274c6847061ed27cc4bdbcb414e5fddbb05cb03c048150b5"
+    },
+    {
+      "path": "docs/testing/REPEATED_INDEX_SPLIT_UPDATE_OBSERVATIONS.md",
+      "bytes": 4367,
+      "sha256": "3bb0f2eebfa300d66a69cf7b460a457445223722607cfc12fa1fc6bf7ab1efcc"
+    }
+  ],
+  "public_source_identity": {
+    "model": "Byte-identical to actual executed private proof96ef7b95; source and request data unchanged.",
+    "selectors": "Byte-identical to frozen private selectors18efad64.",
+    "verifier": "Later saved-only verifier; private source preserved, only repository-root parents[2] to parents[3] differs. Not the historical native runner."
+  },
+  "reference_context": {
+    "source_receipt": {
+      "path": "docs/testing/results/ace16-repeated-index-split-sources-2026-10-27.json",
+      "bytes": 40087,
+      "sha256": "9a0b7b5f0fded324c101e79d6293cd5565ab3e778a3eb10f86a8f0a84ced72d1"
+    },
+    "reference_receipt": {
+      "path": "docs/testing/results/ace16-repeated-index-split-reference-2026-10-27.json",
+      "bytes": 66070,
+      "sha256": "72494eab96851d4e60d9e78d87749a0fcde81a025ac80388e5a4c11047bacef5"
+    },
+    "boundary": "Public source9/reference13, earlier four noops and four refusals remain separate. Public large-leaf prefix9/nonzero scratch is not native candidate byte golden."
+  },
+  "cases": [
+    {
+      "id": "V2016-Int64Keys",
+      "source": {
+        "path": ".cache/ace16-repeated-split-sources-first-20261027/V2016-before.accdb",
+        "bytes": 573440,
+        "sha256": "c8b1feaa3acc119dd3d867398785217ae62735088b46d5cb9f309ee3d6e6ac4d"
+      },
+      "candidate": {
+        "path": ".cache/ace16-repeated-split-acceptance-first-20261027/V2016-Int64Keys-candidate.accdb",
+        "bytes": 598016,
+        "sha256": "ce526bbec749b2fd94c6ad479dea5d447a9e02ec0990bb587b7f9a3ba6434643"
+      },
+      "agrees": true,
+      "selected_reference": 24064,
+      "selected_field_offset": 389107,
+      "request_kind": "int64",
+      "expected_units": 0,
+      "replacement_units": 9223372036854775807,
+      "whole_image_sha256": "ce526bbec749b2fd94c6ad479dea5d447a9e02ec0990bb587b7f9a3ba6434643",
+      "file_growth": 24576,
+      "map_edits": [
+        {
+          "offset": 372471,
+          "before": 0,
+          "after": 7
+        },
+        {
+          "offset": 8145,
+          "before": 240,
+          "after": 0
+        },
+        {
+          "offset": 372402,
+          "before": 0,
+          "after": 28
+        },
+        {
+          "offset": 8146,
+          "before": 255,
+          "after": 252
+        }
+      ],
+      "trees": [
+        {
+          "physical": 1,
+          "root": 92,
+          "first_allocation": 140,
+          "allocated_pages": 3,
+          "logical_leaves": [
+            {
+              "page": 141,
+              "count": 450,
+              "prefix": 11,
+              "free": 2705,
+              "previous": 0,
+              "next": 142,
+              "maximum_full_key_row": "7f80000000000000000000613e"
+            },
+            {
+              "page": 142,
+              "count": 225,
+              "prefix": 0,
+              "free": 691,
+              "previous": 141,
+              "next": 140,
+              "maximum_full_key_row": "7f80000000000000000000625d"
+            },
+            {
+              "page": 140,
+              "count": 225,
+              "prefix": 0,
+              "free": 691,
+              "previous": 142,
+              "next": 0,
+              "maximum_full_key_row": "7fffffffffffffffff00005e00"
+            }
+          ],
+          "root_bounds": [
+            "7f80000000000000000000613e0000008d",
+            "7f80000000000000000000625d0000008e"
+          ],
+          "root_tail": 140,
+          "events": [
+            {
+              "pass": 1,
+              "right": 140,
+              "left": 142
+            }
+          ]
+        },
+        {
+          "physical": 2,
+          "root": 93,
+          "first_allocation": 143,
+          "allocated_pages": 3,
+          "logical_leaves": [
+            {
+              "page": 145,
+              "count": 225,
+              "prefix": 0,
+              "free": 691,
+              "previous": 0,
+              "next": 144,
+              "maximum_full_key_row": "807fffffffffffffff0000601e"
+            },
+            {
+              "page": 144,
+              "count": 225,
+              "prefix": 0,
+              "free": 691,
+              "previous": 145,
+              "next": 143,
+              "maximum_full_key_row": "807fffffffffffffff0000613d"
+            },
+            {
+              "page": 143,
+              "count": 450,
+              "prefix": 11,
+              "free": 2705,
+              "previous": 144,
+              "next": 0,
+              "maximum_full_key_row": "807fffffffffffffff0000657b"
+            }
+          ],
+          "root_bounds": [
+            "807fffffffffffffff0000601e00000091",
+            "807fffffffffffffff0000613d00000090"
+          ],
+          "root_tail": 143,
+          "events": [
+            {
+              "pass": 1,
+              "right": 144,
+              "left": 145
+            }
+          ]
+        }
+      ],
+      "getters": {
+        "stdout": {
+          "path": ".cache/ace16-repeated-split-acceptance-first-20261027/V2016-Int64Keys-describe.stdout",
+          "bytes": 448880,
+          "sha256": "4f5f77e9413d7a0de6ef9673897eb98e0c081921a44ae5a3913a901f0fe28586"
+        },
+        "stderr": {
+          "path": ".cache/ace16-repeated-split-acceptance-first-20261027/V2016-Int64Keys-describe.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "id": "V2016-CurrencyKeys",
+      "source": {
+        "path": ".cache/ace16-repeated-split-sources-first-20261027/V2016-before.accdb",
+        "bytes": 573440,
+        "sha256": "c8b1feaa3acc119dd3d867398785217ae62735088b46d5cb9f309ee3d6e6ac4d"
+      },
+      "candidate": {
+        "path": ".cache/ace16-repeated-split-acceptance-first-20261027/V2016-CurrencyKeys-candidate.accdb",
+        "bytes": 598016,
+        "sha256": "0db0b7955bfa4555085d546c0f666efa619d22235d898d644a3db5efe3ffc3bb"
+      },
+      "agrees": true,
+      "selected_reference": 27392,
+      "selected_field_offset": 442355,
+      "request_kind": "currency-scaled",
+      "expected_units": 0,
+      "replacement_units": 9223372036854775807,
+      "whole_image_sha256": "0db0b7955bfa4555085d546c0f666efa619d22235d898d644a3db5efe3ffc3bb",
+      "file_growth": 24576,
+      "map_edits": [
+        {
+          "offset": 425717,
+          "before": 0,
+          "after": 56
+        },
+        {
+          "offset": 8145,
+          "before": 240,
+          "after": 0
+        },
+        {
+          "offset": 425648,
+          "before": 0,
+          "after": 224
+        },
+        {
+          "offset": 8146,
+          "before": 255,
+          "after": 252
+        }
+      ],
+      "trees": [
+        {
+          "physical": 1,
+          "root": 105,
+          "first_allocation": 140,
+          "allocated_pages": 3,
+          "logical_leaves": [
+            {
+              "page": 141,
+              "count": 450,
+              "prefix": 11,
+              "free": 2705,
+              "previous": 0,
+              "next": 142,
+              "maximum_full_key_row": "7f800000000000000000006e3e"
+            },
+            {
+              "page": 142,
+              "count": 225,
+              "prefix": 0,
+              "free": 691,
+              "previous": 141,
+              "next": 140,
+              "maximum_full_key_row": "7f800000000000000000006f5d"
+            },
+            {
+              "page": 140,
+              "count": 225,
+              "prefix": 0,
+              "free": 691,
+              "previous": 142,
+              "next": 0,
+              "maximum_full_key_row": "7fffffffffffffffff00006b00"
+            }
+          ],
+          "root_bounds": [
+            "7f800000000000000000006e3e0000008d",
+            "7f800000000000000000006f5d0000008e"
+          ],
+          "root_tail": 140,
+          "events": [
+            {
+              "pass": 1,
+              "right": 140,
+              "left": 142
+            }
+          ]
+        },
+        {
+          "physical": 2,
+          "root": 106,
+          "first_allocation": 143,
+          "allocated_pages": 3,
+          "logical_leaves": [
+            {
+              "page": 145,
+              "count": 225,
+              "prefix": 0,
+              "free": 691,
+              "previous": 0,
+              "next": 144,
+              "maximum_full_key_row": "807fffffffffffffff00006d1e"
+            },
+            {
+              "page": 144,
+              "count": 225,
+              "prefix": 0,
+              "free": 691,
+              "previous": 145,
+              "next": 143,
+              "maximum_full_key_row": "807fffffffffffffff00006e3d"
+            },
+            {
+              "page": 143,
+              "count": 450,
+              "prefix": 11,
+              "free": 2705,
+              "previous": 144,
+              "next": 0,
+              "maximum_full_key_row": "807fffffffffffffff0000727b"
+            }
+          ],
+          "root_bounds": [
+            "807fffffffffffffff00006d1e00000091",
+            "807fffffffffffffff00006e3d00000090"
+          ],
+          "root_tail": 143,
+          "events": [
+            {
+              "pass": 1,
+              "right": 144,
+              "left": 145
+            }
+          ]
+        }
+      ],
+      "getters": {
+        "stdout": {
+          "path": ".cache/ace16-repeated-split-acceptance-first-20261027/V2016-CurrencyKeys-describe.stdout",
+          "bytes": 448876,
+          "sha256": "1dc399e24d9dfebfa466b92645868230b034e1c802255a06c67f73b5a2fee672"
+        },
+        "stderr": {
+          "path": ".cache/ace16-repeated-split-acceptance-first-20261027/V2016-CurrencyKeys-describe.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "id": "V2019-Int64Keys",
+      "source": {
+        "path": ".cache/ace16-repeated-split-sources-first-20261027/V2019-before.accdb",
+        "bytes": 647168,
+        "sha256": "aeb73b84f68288eb763523948273a82e1e0ff0112b5815fa61c041ee2359652f"
+      },
+      "candidate": {
+        "path": ".cache/ace16-repeated-split-acceptance-first-20261027/V2019-Int64Keys-candidate.accdb",
+        "bytes": 671744,
+        "sha256": "12e41bdbebfffc88c928764bf55cad199f86fa58fa473fc307105156fcf1869a"
+      },
+      "agrees": true,
+      "selected_reference": 28416,
+      "selected_field_offset": 458739,
+      "request_kind": "int64",
+      "expected_units": 0,
+      "replacement_units": 9223372036854775807,
+      "whole_image_sha256": "12e41bdbebfffc88c928764bf55cad199f86fa58fa473fc307105156fcf1869a",
+      "file_growth": 24576,
+      "map_edits": [
+        {
+          "offset": 442103,
+          "before": 0,
+          "after": 14
+        },
+        {
+          "offset": 8147,
+          "before": 192,
+          "after": 0
+        },
+        {
+          "offset": 8148,
+          "before": 255,
+          "after": 240
+        },
+        {
+          "offset": 442034,
+          "before": 0,
+          "after": 56
+        }
+      ],
+      "trees": [
+        {
+          "physical": 1,
+          "root": 109,
+          "first_allocation": 158,
+          "allocated_pages": 3,
+          "logical_leaves": [
+            {
+              "page": 159,
+              "count": 450,
+              "prefix": 11,
+              "free": 2705,
+              "previous": 0,
+              "next": 160,
+              "maximum_full_key_row": "7f80000000000000000000723e"
+            },
+            {
+              "page": 160,
+              "count": 225,
+              "prefix": 0,
+              "free": 691,
+              "previous": 159,
+              "next": 158,
+              "maximum_full_key_row": "7f80000000000000000000735d"
+            },
+            {
+              "page": 158,
+              "count": 225,
+              "prefix": 0,
+              "free": 691,
+              "previous": 160,
+              "next": 0,
+              "maximum_full_key_row": "7fffffffffffffffff00006f00"
+            }
+          ],
+          "root_bounds": [
+            "7f80000000000000000000723e0000009f",
+            "7f80000000000000000000735d000000a0"
+          ],
+          "root_tail": 158,
+          "events": [
+            {
+              "pass": 1,
+              "right": 158,
+              "left": 160
+            }
+          ]
+        },
+        {
+          "physical": 2,
+          "root": 110,
+          "first_allocation": 161,
+          "allocated_pages": 3,
+          "logical_leaves": [
+            {
+              "page": 163,
+              "count": 225,
+              "prefix": 0,
+              "free": 691,
+              "previous": 0,
+              "next": 162,
+              "maximum_full_key_row": "807fffffffffffffff0000711e"
+            },
+            {
+              "page": 162,
+              "count": 225,
+              "prefix": 0,
+              "free": 691,
+              "previous": 163,
+              "next": 161,
+              "maximum_full_key_row": "807fffffffffffffff0000723d"
+            },
+            {
+              "page": 161,
+              "count": 450,
+              "prefix": 11,
+              "free": 2705,
+              "previous": 162,
+              "next": 0,
+              "maximum_full_key_row": "807fffffffffffffff0000767b"
+            }
+          ],
+          "root_bounds": [
+            "807fffffffffffffff0000711e000000a3",
+            "807fffffffffffffff0000723d000000a2"
+          ],
+          "root_tail": 161,
+          "events": [
+            {
+              "pass": 1,
+              "right": 162,
+              "left": 163
+            }
+          ]
+        }
+      ],
+      "getters": {
+        "stdout": {
+          "path": ".cache/ace16-repeated-split-acceptance-first-20261027/V2019-Int64Keys-describe.stdout",
+          "bytes": 450143,
+          "sha256": "7b39859af686a6f2e5c8c545d75b6867b98fab3cd45415fc2ab4ccba6168ca05"
+        },
+        "stderr": {
+          "path": ".cache/ace16-repeated-split-acceptance-first-20261027/V2019-Int64Keys-describe.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "id": "V2019-CurrencyKeys",
+      "source": {
+        "path": ".cache/ace16-repeated-split-sources-first-20261027/V2019-before.accdb",
+        "bytes": 647168,
+        "sha256": "aeb73b84f68288eb763523948273a82e1e0ff0112b5815fa61c041ee2359652f"
+      },
+      "candidate": {
+        "path": ".cache/ace16-repeated-split-acceptance-first-20261027/V2019-CurrencyKeys-candidate.accdb",
+        "bytes": 671744,
+        "sha256": "51b2e5afe9efc6cf6339059f5937e0e79f99c03a414027e11195f840758b51b7"
+      },
+      "agrees": true,
+      "selected_reference": 32000,
+      "selected_field_offset": 516083,
+      "request_kind": "currency-scaled",
+      "expected_units": 0,
+      "replacement_units": 9223372036854775807,
+      "whole_image_sha256": "51b2e5afe9efc6cf6339059f5937e0e79f99c03a414027e11195f840758b51b7",
+      "file_growth": 24576,
+      "map_edits": [
+        {
+          "offset": 495349,
+          "before": 0,
+          "after": 112
+        },
+        {
+          "offset": 8147,
+          "before": 192,
+          "after": 0
+        },
+        {
+          "offset": 8148,
+          "before": 255,
+          "after": 240
+        },
+        {
+          "offset": 495280,
+          "before": 0,
+          "after": 192
+        },
+        {
+          "offset": 495281,
+          "before": 0,
+          "after": 1
+        }
+      ],
+      "trees": [
+        {
+          "physical": 1,
+          "root": 122,
+          "first_allocation": 158,
+          "allocated_pages": 3,
+          "logical_leaves": [
+            {
+              "page": 159,
+              "count": 450,
+              "prefix": 11,
+              "free": 2705,
+              "previous": 0,
+              "next": 160,
+              "maximum_full_key_row": "7f80000000000000000000803e"
+            },
+            {
+              "page": 160,
+              "count": 225,
+              "prefix": 0,
+              "free": 691,
+              "previous": 159,
+              "next": 158,
+              "maximum_full_key_row": "7f80000000000000000000815d"
+            },
+            {
+              "page": 158,
+              "count": 225,
+              "prefix": 0,
+              "free": 691,
+              "previous": 160,
+              "next": 0,
+              "maximum_full_key_row": "7fffffffffffffffff00007d00"
+            }
+          ],
+          "root_bounds": [
+            "7f80000000000000000000803e0000009f",
+            "7f80000000000000000000815d000000a0"
+          ],
+          "root_tail": 158,
+          "events": [
+            {
+              "pass": 1,
+              "right": 158,
+              "left": 160
+            }
+          ]
+        },
+        {
+          "physical": 2,
+          "root": 123,
+          "first_allocation": 161,
+          "allocated_pages": 3,
+          "logical_leaves": [
+            {
+              "page": 163,
+              "count": 225,
+              "prefix": 0,
+              "free": 691,
+              "previous": 0,
+              "next": 162,
+              "maximum_full_key_row": "807fffffffffffffff00007f1e"
+            },
+            {
+              "page": 162,
+              "count": 225,
+              "prefix": 0,
+              "free": 691,
+              "previous": 163,
+              "next": 161,
+              "maximum_full_key_row": "807fffffffffffffff0000803d"
+            },
+            {
+              "page": 161,
+              "count": 450,
+              "prefix": 11,
+              "free": 2705,
+              "previous": 162,
+              "next": 0,
+              "maximum_full_key_row": "807fffffffffffffff0000847b"
+            }
+          ],
+          "root_bounds": [
+            "807fffffffffffffff00007f1e000000a3",
+            "807fffffffffffffff0000803d000000a2"
+          ],
+          "root_tail": 161,
+          "events": [
+            {
+              "pass": 1,
+              "right": 162,
+              "left": 163
+            }
+          ]
+        }
+      ],
+      "getters": {
+        "stdout": {
+          "path": ".cache/ace16-repeated-split-acceptance-first-20261027/V2019-CurrencyKeys-describe.stdout",
+          "bytes": 450139,
+          "sha256": "44747481154d7ca7a8cde773b976498e1eacec73442612fbee2065fc2e31b5e7"
+        },
+        "stderr": {
+          "path": ".cache/ace16-repeated-split-acceptance-first-20261027/V2019-CurrencyKeys-describe.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "commands": [
+    {
+      "label": "V2016-Int64Keys-native",
+      "argv": [
+        ".cache/tablecraft-bin/ace16-repeated-split-20261027",
+        ".cache/ace16-repeated-split-sources-first-20261027/V2016-before.accdb",
+        ".cache/ace16-repeated-split-acceptance-first-20261027/V2016-Int64Keys-candidate.accdb",
+        "Int64Keys",
+        "KeyValue",
+        "0",
+        "int64",
+        "0",
+        "9223372036854775807"
+      ],
+      "status": 0,
+      "stopped_for": null,
+      "stdout": {
+        "path": ".cache/ace16-repeated-split-acceptance-first-20261027/V2016-Int64Keys-native.stdout",
+        "bytes": 25,
+        "sha256": "6c0d0787710c780f70f807198b638d69620d3c1a5340c100a3bcf81240fec7b8"
+      },
+      "stderr": {
+        "path": ".cache/ace16-repeated-split-acceptance-first-20261027/V2016-Int64Keys-native.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "label": "V2016-Int64Keys-describe",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-repeated-split-sources-first-20261027/classes",
+        "RepeatedSplitFixture",
+        "describe",
+        ".cache/ace16-repeated-split-acceptance-first-20261027/V2016-Int64Keys-candidate.accdb"
+      ],
+      "status": 0,
+      "stopped_for": null,
+      "stdout": {
+        "path": ".cache/ace16-repeated-split-acceptance-first-20261027/V2016-Int64Keys-describe.stdout",
+        "bytes": 448880,
+        "sha256": "4f5f77e9413d7a0de6ef9673897eb98e0c081921a44ae5a3913a901f0fe28586"
+      },
+      "stderr": {
+        "path": ".cache/ace16-repeated-split-acceptance-first-20261027/V2016-Int64Keys-describe.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "V2016-CurrencyKeys-native",
+      "argv": [
+        ".cache/tablecraft-bin/ace16-repeated-split-20261027",
+        ".cache/ace16-repeated-split-sources-first-20261027/V2016-before.accdb",
+        ".cache/ace16-repeated-split-acceptance-first-20261027/V2016-CurrencyKeys-candidate.accdb",
+        "CurrencyKeys",
+        "KeyValue",
+        "0",
+        "currency-scaled",
+        "0",
+        "9223372036854775807"
+      ],
+      "status": 0,
+      "stopped_for": null,
+      "stdout": {
+        "path": ".cache/ace16-repeated-split-acceptance-first-20261027/V2016-CurrencyKeys-native.stdout",
+        "bytes": 25,
+        "sha256": "6c0d0787710c780f70f807198b638d69620d3c1a5340c100a3bcf81240fec7b8"
+      },
+      "stderr": {
+        "path": ".cache/ace16-repeated-split-acceptance-first-20261027/V2016-CurrencyKeys-native.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "label": "V2016-CurrencyKeys-describe",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-repeated-split-sources-first-20261027/classes",
+        "RepeatedSplitFixture",
+        "describe",
+        ".cache/ace16-repeated-split-acceptance-first-20261027/V2016-CurrencyKeys-candidate.accdb"
+      ],
+      "status": 0,
+      "stopped_for": null,
+      "stdout": {
+        "path": ".cache/ace16-repeated-split-acceptance-first-20261027/V2016-CurrencyKeys-describe.stdout",
+        "bytes": 448876,
+        "sha256": "1dc399e24d9dfebfa466b92645868230b034e1c802255a06c67f73b5a2fee672"
+      },
+      "stderr": {
+        "path": ".cache/ace16-repeated-split-acceptance-first-20261027/V2016-CurrencyKeys-describe.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "V2019-Int64Keys-native",
+      "argv": [
+        ".cache/tablecraft-bin/ace16-repeated-split-20261027",
+        ".cache/ace16-repeated-split-sources-first-20261027/V2019-before.accdb",
+        ".cache/ace16-repeated-split-acceptance-first-20261027/V2019-Int64Keys-candidate.accdb",
+        "Int64Keys",
+        "KeyValue",
+        "0",
+        "int64",
+        "0",
+        "9223372036854775807"
+      ],
+      "status": 0,
+      "stopped_for": null,
+      "stdout": {
+        "path": ".cache/ace16-repeated-split-acceptance-first-20261027/V2019-Int64Keys-native.stdout",
+        "bytes": 25,
+        "sha256": "6c0d0787710c780f70f807198b638d69620d3c1a5340c100a3bcf81240fec7b8"
+      },
+      "stderr": {
+        "path": ".cache/ace16-repeated-split-acceptance-first-20261027/V2019-Int64Keys-native.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "label": "V2019-Int64Keys-describe",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-repeated-split-sources-first-20261027/classes",
+        "RepeatedSplitFixture",
+        "describe",
+        ".cache/ace16-repeated-split-acceptance-first-20261027/V2019-Int64Keys-candidate.accdb"
+      ],
+      "status": 0,
+      "stopped_for": null,
+      "stdout": {
+        "path": ".cache/ace16-repeated-split-acceptance-first-20261027/V2019-Int64Keys-describe.stdout",
+        "bytes": 450143,
+        "sha256": "7b39859af686a6f2e5c8c545d75b6867b98fab3cd45415fc2ab4ccba6168ca05"
+      },
+      "stderr": {
+        "path": ".cache/ace16-repeated-split-acceptance-first-20261027/V2019-Int64Keys-describe.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "V2019-CurrencyKeys-native",
+      "argv": [
+        ".cache/tablecraft-bin/ace16-repeated-split-20261027",
+        ".cache/ace16-repeated-split-sources-first-20261027/V2019-before.accdb",
+        ".cache/ace16-repeated-split-acceptance-first-20261027/V2019-CurrencyKeys-candidate.accdb",
+        "CurrencyKeys",
+        "KeyValue",
+        "0",
+        "currency-scaled",
+        "0",
+        "9223372036854775807"
+      ],
+      "status": 0,
+      "stopped_for": null,
+      "stdout": {
+        "path": ".cache/ace16-repeated-split-acceptance-first-20261027/V2019-CurrencyKeys-native.stdout",
+        "bytes": 25,
+        "sha256": "6c0d0787710c780f70f807198b638d69620d3c1a5340c100a3bcf81240fec7b8"
+      },
+      "stderr": {
+        "path": ".cache/ace16-repeated-split-acceptance-first-20261027/V2019-CurrencyKeys-native.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "label": "V2019-CurrencyKeys-describe",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-repeated-split-sources-first-20261027/classes",
+        "RepeatedSplitFixture",
+        "describe",
+        ".cache/ace16-repeated-split-acceptance-first-20261027/V2019-CurrencyKeys-candidate.accdb"
+      ],
+      "status": 0,
+      "stopped_for": null,
+      "stdout": {
+        "path": ".cache/ace16-repeated-split-acceptance-first-20261027/V2019-CurrencyKeys-describe.stdout",
+        "bytes": 450139,
+        "sha256": "44747481154d7ca7a8cde773b976498e1eacec73442612fbee2065fc2e31b5e7"
+      },
+      "stderr": {
+        "path": ".cache/ace16-repeated-split-acceptance-first-20261027/V2019-CurrencyKeys-describe.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "precall_pure_authoring_failure": {
+    "scope": "Before candidate calls only. Final selfcheck expected28 trees; source sentinel is unindexed so correct total24. No model/plan/request changes.",
+    "source": {
+      "path": ".cache/ace16-repeated-split-acceptance-next-20261027/before-selfcheck-count-correction/selfcheck.py",
+      "bytes": 4012,
+      "sha256": "f0c143082daaa86dcd2154d62f1ccc8a101828e3c4eab6d218ebdeb734d8e6e3"
+    },
+    "failure": {
+      "path": ".cache/ace16-repeated-split-acceptance-next-20261027/before-selfcheck-count-correction/failure.json",
+      "bytes": 369,
+      "sha256": "2215b3394d1065dc3eaf19ac0aa81849b3fa955a1ff14b0934d145996d0e16c5"
+    }
+  },
+  "saved_verification_results": {
+    "scope": "Saved bytes/getters only; zero native/JVM fixture calls",
+    "report": {
+      "path": ".cache/ace16-repeated-split-acceptance-first-20261027/report.json",
+      "bytes": 4453320,
+      "sha256": "f20b275538a9f78c4c2408e7ede8edf13605da964410f99833b20ea9b6d40ecd"
+    },
+    "cases": 4,
+    "saved_commands": 8,
+    "recursive_live_pin_occurrences": 341,
+    "historical_git_objects": 229,
+    "complete_images": 4,
+    "cached_complete_getters": 4,
+    "unmet": 0
+  },
+  "remaining_limits": [
+    "No unchanged NULL KeyValue peers in these original requests; literal tests cover that separately.",
+    "Even900/450 public source geometry does not qualify odd split pivots or all deeper internal cases.",
+    "No map representation growth, new bitmap allocation or out-of-file map extension in these candidates.",
+    "No native Access, data-macro, ordinary-save, locking or recovery qualification."
+  ]
+}

@@ -1,0 +1,42 @@
+[
+  {
+    "id": "V2016-Int64Keys",
+    "source": ".cache/ace16-repeated-split-sources-first-20261027/V2016-before.accdb",
+    "table": "Int64Keys",
+    "column": "KeyValue",
+    "row": 0,
+    "kind": "int64",
+    "expected": "0",
+    "replacement": "9223372036854775807"
+  },
+  {
+    "id": "V2016-CurrencyKeys",
+    "source": ".cache/ace16-repeated-split-sources-first-20261027/V2016-before.accdb",
+    "table": "CurrencyKeys",
+    "column": "KeyValue",
+    "row": 0,
+    "kind": "currency-scaled",
+    "expected": "0",
+    "replacement": "9223372036854775807"
+  },
+  {
+    "id": "V2019-Int64Keys",
+    "source": ".cache/ace16-repeated-split-sources-first-20261027/V2019-before.accdb",
+    "table": "Int64Keys",
+    "column": "KeyValue",
+    "row": 0,
+    "kind": "int64",
+    "expected": "0",
+    "replacement": "9223372036854775807"
+  },
+  {
+    "id": "V2019-CurrencyKeys",
+    "source": ".cache/ace16-repeated-split-sources-first-20261027/V2019-before.accdb",
+    "table": "CurrencyKeys",
+    "column": "KeyValue",
+    "row": 0,
+    "kind": "currency-scaled",
+    "expected": "0",
+    "replacement": "9223372036854775807"
+  }
+]

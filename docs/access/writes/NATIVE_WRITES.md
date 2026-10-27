@@ -119,6 +119,11 @@ now measure a concrete case behind that refusal: the first wide-key split still
 leaves a half oversized. Four public MAX updates split again, with three leaves
 per physical index; the prior frozen consumer refuses all four atomically.
 Source/reference execution and saved proofs remain distinct from implementation.
+A new [committed-consumer replay](../../testing/REPEATED_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
+now passes all four repeated-split candidates on those unchanged originals, with
+pre-frozen complete images and fresh typed/index/map inspections. Eight first-run
+commands succeed; each candidate adds six pages. Map growth and production/native
+save qualification remain unfinished.
 A separate [fixed numeric reference phase](../../testing/INTEGRAL_INDEX_SPLIT_OBSERVATIONS.md)
 now measures Byte, Int16, Int64 and Currency root-leaf splits on both unchanged
 originals. Its eight successful Jackcess updates and eight frozen old-consumer
