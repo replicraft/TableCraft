@@ -13,6 +13,10 @@ use crate::{
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
+mod directory;
+
+use directory::Directory;
+
 pub(super) trait RowAssignment {
     fn row(&self) -> usize;
 }
@@ -25,19 +29,11 @@ pub(super) fn unique<U: RowAssignment>(
     if updates.len() > MAX_LIVE_ROWS {
         return Err(InspectError::StructureLimit.into());
     }
-    for (position, update) in updates.iter().enumerate() {
-        check(budget, cancelled)?;
-        budget
-            .charge(Resource::Steps, position as u64)
-            .map_err(InspectError::from)?;
-        if updates[..position]
-            .iter()
-            .any(|prior| prior.row() == update.row())
-        {
-            return Err(EditError::Conflict);
-        }
+    match updates.len() {
+        0 => Ok(()),
+        1 => check(budget, cancelled).map_err(EditError::from),
+        _ => Directory::new(updates, budget, cancelled)?.require_unique(budget, cancelled),
     }
-    Ok(())
 }
 
 pub(super) struct Row<'a> {
@@ -51,23 +47,28 @@ pub(super) struct Row<'a> {
     pub slot_word: u16,
 }
 
-pub(super) fn visit<R: crate::NativeReadSource, U: RowAssignment>(
+pub(super) fn visit<'u, R: crate::NativeReadSource, U: RowAssignment>(
     reader: &mut Reader<'_, R>,
     schema: &TableSchema,
-    updates: &[U],
-    mut visitor: impl FnMut(Row<'_>, &U) -> Result<(), EditError>,
+    updates: &'u [U],
+    mut visitor: impl FnMut(Row<'_>, &'u U) -> Result<(), EditError>,
 ) -> Result<(), EditError> {
     visit_with_budget(reader, schema, updates, |_, row, update| {
         visitor(row, update)
     })
 }
 
-pub(super) fn visit_with_budget<R: crate::NativeReadSource, U: RowAssignment>(
+pub(super) fn visit_with_budget<'u, R: crate::NativeReadSource, U: RowAssignment>(
     reader: &mut Reader<'_, R>,
     schema: &TableSchema,
-    updates: &[U],
-    mut visitor: impl FnMut(&mut ResourceBudget, Row<'_>, &U) -> Result<(), EditError>,
+    updates: &'u [U],
+    mut visitor: impl FnMut(&mut ResourceBudget, Row<'_>, &'u U) -> Result<(), EditError>,
 ) -> Result<(), EditError> {
+    let mut directory = if updates.len() > 1 {
+        Some(Directory::new(updates, reader.budget, reader.cancelled)?)
+    } else {
+        None
+    };
     let pages = allocation::pages(reader, schema.layout.usage)?;
     let mut ordinal = 0;
     let mut matched = 0;
@@ -88,8 +89,17 @@ pub(super) fn visit_with_budget<R: crate::NativeReadSource, U: RowAssignment>(
                 .budget
                 .charge(Resource::Rows, 1)
                 .map_err(InspectError::from)?;
-            reader.work(updates.len())?;
-            if let Some(update) = updates.iter().find(|u| u.row() == ordinal) {
+            let request = if let Some(directory) = &mut directory {
+                directory.at(ordinal, reader.budget, reader.cancelled)?
+            } else {
+                reader.work(updates.len())?;
+                updates
+                    .first()
+                    .filter(|update| update.row() == ordinal)
+                    .map(|_| 0)
+            };
+            if let Some(request) = request {
+                let update = &updates[request];
                 if flags & !OFFSET_MASK != 0
                     || usize::from(u16_at(&page[start..end], 0)?) != schema.layout.max_columns
                 {

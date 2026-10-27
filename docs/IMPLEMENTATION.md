@@ -1,5 +1,17 @@
 # Implementation status
 
+## Bounded original-row request matching
+
+The shared mutation walker now uses a paid original-position directory for
+multiple requests, retaining full physical traversal and exact callback order.
+Ordered captures skip sorting; empty/single requests avoid directory allocation.
+Six private controls and 150 existing update/delete functions pass, and both
+isolated builds reproduce sixteen accepted original-file candidate images.
+The [balanced Hyperfine record](testing/ROW_REQUEST_DIRECTORY_OBSERVATIONS.md)
+retains every sample: 500-row end-to-end timings are mixed/tied, so no uniform
+speedup is claimed. Finite 16,384-request work bounds are established separately;
+upfront allocation can change insufficient-resource error precedence.
+
 ## Acyclic declared cascading deletion candidates
 
 The separate `preview_ace16_cascading_deletes` service now expands declared
