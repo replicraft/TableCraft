@@ -9,6 +9,19 @@ current layout below is implemented. The target map is an explicit direction for
 future extraction, not a list of implemented features or packages to scaffold.
 The private architecture pack remains under ignored `docs/temp/`.
 
+## Active product scope
+
+The [Access behavioral-parity decision](../decisions/0003_ACCESS_BEHAVIORAL_PARITY.md)
+sets the current direction: native Access compatibility, with ACE 16 primary.
+SQLite and native `.tcraft` projects are paused, including Python, conversion and
+native-project P2P infrastructure. Their existing packages and future architecture
+plans remain documented without becoming prerequisites for the backend or UI.
+
+Shared services enforce Access behavior across CLI, future GUI and agent hosts.
+Future UI policies must distinguish stored file capabilities, target Access
+application version and database settings. Do not introduce generalized project
+infrastructure or placeholder profile packages for the paused plans.
+
 ## Current workspace
 
 ```text

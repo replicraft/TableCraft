@@ -1,5 +1,17 @@
 # Implementation status
 
+## Active scope
+
+Current implementation work targets native Microsoft Access compatibility, with
+ACE 16 primary. SQLite, `.tcraft`/`.tcraftproj/`, native-project Python, conversion
+and P2P work are paused until explicitly resumed. Existing code and historical
+results below are retained; they do not make those areas active roadmap items.
+
+The [Access behavioral-parity decision](decisions/0003_ACCESS_BEHAVIORAL_PARITY.md)
+governs backend services and the eventual UI. Access workflows, defaults,
+restrictions and documented quirks remain compatibility requirements. Current
+engineering previews and independent comparisons do not establish full parity.
+
 ## Explicit Memo/OLE storage checks
 
 The default engine now exposes a separate bounded
