@@ -9164,3 +9164,30 @@ run. The model has only one extra EOF blank line removed, with an identical AST;
 exact executed bytes are archived and mapped in the receipt. No accepted report
 or replay was changed. The initial geometry map-key authoring error
 is preserved separately; there was no candidate or expected-data correction.
+
+## French Short Text and Memo comparison field inputs
+
+Repository-owned [FrenchComparisonFixture.java](FrenchComparisonFixture.java)
+uses the reviewed Jackcess 5.0.4 JAR, SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+Public builders create new plain ACE16 identities with one 38-row Comparisons
+table, matched French/General Short Text and Memo fields, an ID primary and a
+nonunique FrenchShort index. No Memo index, calculation/history, AutoNumber or
+stored table/column property is present. Expressions are disabled, UTC is explicit
+and linked targets throw. No third-party source/database bytes were copied, and
+no header/descriptor/flag was patched.
+
+| Original | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Comparison-V2016.accdb | 937,984 | `ca64a8f518214f5ea889f1bc56922e2269cc120929e4c42b9f60a11d37b54b61` |
+| Comparison-V2019.accdb | 1,007,616 | `abc1aa1977057c4d55bc69b86be70972d6759859e1e6611a81ae276805bb5443` |
+
+[The field-data observations](FRENCH_COMPARISON_FIELD_OBSERVATIONS.md) and
+[compact receipt](results/french-comparison-fields-2026-10-26.json) retain exact
+raw/getter descriptors and full value/hash captures: 76 rows and 304 Text/Memo
+cells, zero input/storage differences. French Short/Memo store exact 1036/0/0,
+General Short/Memo exact 1033/0/0. Eighteen Memo controls per profile retain
+256/1,024/20,000 UTF-16 units with later primary or first/last accent differences.
+Read-only inspection leaves originals unchanged; raw values remain ignored.
+This field-data receipt invokes no query/comparator and establishes no native
+Access SQL/NLS order, Memo index support or ordinary write qualification.
