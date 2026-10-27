@@ -1,0 +1,706 @@
+{
+  "date": "2026-10-27",
+  "scope": "Four copied-source observations only. No public UPDATE, native preview or Microsoft Access mutation qualification.",
+  "history": {
+    "original_phase": {
+      "session": 71982,
+      "exit_code": 1,
+      "successful_fixture_commands": 3,
+      "completed": false,
+      "failure": "Python table equality compared integer row keys with string keys from saved JSON.",
+      "raw_report": {
+        "path": ".cache/ace16-ordinary-hint-growth-sources-first-20261027/report.json",
+        "bytes": 24166,
+        "sha256": "d0155f5384342df984c50059348b5b62a401ec7e376d5e779ab95c7ae6ccdbd1"
+      },
+      "freeze": {
+        "path": ".cache/ace16-ordinary-hint-growth-next-20261027/freeze.json",
+        "bytes": 14171,
+        "sha256": "5a31ea2ab0d5a8077a656330b08e64aa1b2a97336d3b10ed0b9865d3e959e839"
+      },
+      "execution_log": {
+        "path": ".cache/ace16-ordinary-hint-growth-next-20261027/source-first.log",
+        "bytes": 346,
+        "sha256": "4558cd48065fdc5809c643204cd58da11548e61175a36dc6b4f74fbe699dbb0e"
+      },
+      "postcheck": {
+        "path": ".cache/ace16-ordinary-hint-growth-next-20261027/source-terminal-postcheck.json",
+        "bytes": 13026,
+        "sha256": "7a438b979d09b2de52612e5553bd2ff80132f9a04814b22fdad90305c22c0fa5"
+      }
+    },
+    "saved_only_correction": {
+      "change": "Exactly JSON-normalize the current table dictionary at equality boundary; original already imports json.",
+      "corrected_measure": {
+        "path": ".cache/ace16-ordinary-hint-growth-next-20261027/measure_json.py",
+        "bytes": 12628,
+        "sha256": "31eb349edb4ed8735110dbc4e00ffc0e24374644be3183c3662c59094e3052d8"
+      },
+      "checker": {
+        "path": ".cache/ace16-ordinary-hint-growth-continuation-next-20261027/check_saved_first.py",
+        "bytes": 4870,
+        "sha256": "5b8db4602cba50ff9c75de969948288ae614305cb2229739292939eae015396e"
+      },
+      "check_result": {
+        "path": ".cache/ace16-ordinary-hint-growth-continuation-next-20261027/saved-first-check.json",
+        "bytes": 27523,
+        "sha256": "b2ab43dd3b3179b1cedc7ca8d48fc386fd9ccfe731a5d32af5b8a539e42e0aa0"
+      },
+      "facts": {
+        "path": ".cache/ace16-ordinary-hint-growth-continuation-next-20261027/saved-first-facts.json",
+        "bytes": 11510907,
+        "sha256": "e7cc8c70109c3747b0a16e5ccad272dd349d6d5c53759056663af42fc9c467ca"
+      },
+      "fixture_processes": 0,
+      "first_source_regenerated": false,
+      "first_source_inspected_again": false
+    },
+    "continuation": {
+      "session": 32406,
+      "exit_code": 0,
+      "successful_unique_fixture_commands": 6,
+      "completed": true,
+      "freeze": {
+        "path": ".cache/ace16-ordinary-hint-growth-continuation-next-20261027/freeze.json",
+        "bytes": 23548,
+        "sha256": "d7e8cfa3575b523bbd5813536cfb7872e002a76df54c11bfcd93f6f7d5a4526f"
+      },
+      "controller": {
+        "path": ".cache/ace16-ordinary-hint-growth-continuation-next-20261027/capture.py",
+        "bytes": 10267,
+        "sha256": "42f8388d0fef0383b76097ea43e67bc2e82e28a591778948571e85a1a1bb4901"
+      },
+      "raw_report": {
+        "path": ".cache/ace16-ordinary-hint-growth-continuation-first-20261027/report.json",
+        "bytes": 63508,
+        "sha256": "2c8a13c604630f2a3c6fb9ded650cb63f7dc4aabb771b19f9227507c758ff2c6"
+      },
+      "execution_log": {
+        "path": ".cache/ace16-ordinary-hint-growth-continuation-next-20261027/first-execution.log",
+        "bytes": 715,
+        "sha256": "300726faa7386b66ea4cdbaacfa5e94215f80ee582f77c96628e0ce98462d7ce"
+      },
+      "postcheck": {
+        "path": ".cache/ace16-ordinary-hint-growth-continuation-next-20261027/post-terminal-check.json",
+        "bytes": 92126,
+        "sha256": "ebe1be8405e1b117e6b10e29c77eec1014bcfd9d0db2bdbe5464b2b436b08d72"
+      }
+    },
+    "interpretation": "Three initial fixture commands succeeded, then Python proof assembly failed. A saved-only transport correction qualified the completed source. Six remaining unique commands subsequently passed. This is not an uninterrupted first-attempt phase pass."
+  },
+  "counts": {
+    "unique_fixture_commands": 9,
+    "javac": 1,
+    "copied_source_preparations": 4,
+    "inert_inspections": 4,
+    "original_databases": 2,
+    "enlarged_copies": 4,
+    "padding_rows_across_copies": 2168,
+    "public_updates": 0,
+    "native_calls": 0,
+    "source_regenerations": 0,
+    "command_retries": 0,
+    "controlled_low_hint_additions": 8,
+    "user_row_instance_checks": 12972,
+    "target_record_instance_checks": 10800,
+    "logical_index_entries_including_aliases": 43204,
+    "user_global_map_role_instances": 112,
+    "original_complete_page_comparisons": 144,
+    "original_complete_bytes_compared": 589824,
+    "continuation_input_checks": 76,
+    "post_terminal_unique_identity_checks": 173
+  },
+  "limits": {
+    "commands": 9,
+    "timeout_seconds": 30,
+    "heap_mib": 512,
+    "database_bytes": 8388608,
+    "stream_bytes": 16777216,
+    "rows_per_database": 4096
+  },
+  "inert_settings": {
+    "evaluate_expressions": false,
+    "enforce_foreign_keys": true,
+    "reuse_free_pages": false,
+    "time_zone": "UTC",
+    "linked_opens": "refused"
+  },
+  "originals": [
+    {
+      "path": ".cache/ace16-variable-encoded-source-first-20261027/V2016-original.accdb",
+      "bytes": 610304,
+      "sha256": "2e7ca607356bf41af05d3fad6f94db9d8c78673478f64e24e941ac666114e994"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-source-first-20261027/V2019-original.accdb",
+      "bytes": 684032,
+      "sha256": "c5959e39bda1828d53891542210eba9b40422e0bd6b7f4023114ecc1b0dd6484"
+    }
+  ],
+  "sources": [
+    {
+      "case": "V2016-padding384",
+      "profile": "V2016",
+      "padding_rows": 384,
+      "database": {
+        "path": ".cache/ace16-ordinary-hint-growth-sources-first-20261027/V2016-padding384.accdb",
+        "bytes": 2199552,
+        "sha256": "f827703094960ea70f6c03c03c1fcd936b049b50b8488ca04f5cb49a7fe5baac"
+      },
+      "pages": 537,
+      "user_rows": 3085,
+      "user_global_map_roles": 28,
+      "logical_indexes": 13,
+      "physical_indexes": 10,
+      "facts": {
+        "path": ".cache/ace16-ordinary-hint-growth-continuation-next-20261027/saved-first-facts.json",
+        "bytes": 11510907,
+        "sha256": "e7cc8c70109c3747b0a16e5ccad272dd349d6d5c53759056663af42fc9c467ca"
+      },
+      "original_complete_pages_checked": 36,
+      "original_complete_bytes_checked": 147456,
+      "source_only_predictions": {
+        "TextLegacy": {
+          "mode": "natural-highest-only",
+          "source_hint_members": [
+            106
+          ],
+          "hypothetical_hint_transition": {
+            "kind": "inline-rebase",
+            "base": 536,
+            "span": 2,
+            "rule": "outside-current-window then aligned strict-span<512"
+          },
+          "hypothetical_index_first_transitions": {
+            "Ascending": {
+              "kind": "represented-inline",
+              "base": 92
+            },
+            "Descending": {
+              "kind": "represented-inline",
+              "base": 93
+            }
+          }
+        },
+        "TextModern": {
+          "mode": "controlled-public-usage-map-lower",
+          "source_hint_members": [
+            112,
+            124
+          ],
+          "hypothetical_hint_transition": {
+            "kind": "inline-rebase",
+            "base": 112,
+            "span": 426,
+            "rule": "outside-current-window then aligned strict-span<512"
+          },
+          "hypothetical_index_first_transitions": {
+            "Ascending": {
+              "kind": "represented-inline",
+              "base": 110
+            },
+            "Descending": {
+              "kind": "represented-inline",
+              "base": 111
+            }
+          }
+        },
+        "BinaryOne": {
+          "mode": "controlled-public-usage-map-lower",
+          "source_hint_members": [
+            130,
+            142
+          ],
+          "hypothetical_hint_transition": {
+            "kind": "inline-rebase",
+            "base": 128,
+            "span": 410,
+            "rule": "outside-current-window then aligned strict-span<512"
+          },
+          "hypothetical_index_first_transitions": {
+            "Ascending": {
+              "kind": "represented-inline",
+              "base": 128
+            },
+            "Descending": {
+              "kind": "represented-inline",
+              "base": 129
+            }
+          }
+        }
+      }
+    },
+    {
+      "case": "V2016-padding700",
+      "profile": "V2016",
+      "padding_rows": 700,
+      "database": {
+        "path": ".cache/ace16-ordinary-hint-growth-sources-first-20261027/V2016-padding700.accdb",
+        "bytes": 3493888,
+        "sha256": "239c6987531a878f2c0ed6ddc5f50403070c24ee5a297197407e7d792ce662a6"
+      },
+      "pages": 853,
+      "user_rows": 3401,
+      "user_global_map_roles": 28,
+      "logical_indexes": 13,
+      "physical_indexes": 10,
+      "facts": {
+        "path": ".cache/ace16-ordinary-hint-growth-continuation-first-20261027/V2016-padding700-facts.json",
+        "bytes": 16231237,
+        "sha256": "9923e667d7a6e4f6178e9d735eaf7b59af75de5f6294a042884394934f807bba"
+      },
+      "original_complete_pages_checked": 36,
+      "original_complete_bytes_checked": 147456,
+      "source_only_predictions": {
+        "TextLegacy": {
+          "mode": "natural-highest-only",
+          "source_hint_members": [
+            106
+          ],
+          "hypothetical_hint_transition": {
+            "kind": "inline-rebase",
+            "base": 848,
+            "span": 6,
+            "rule": "outside-current-window then aligned strict-span<512"
+          },
+          "hypothetical_index_first_transitions": {
+            "Ascending": {
+              "kind": "inline-to-indirect",
+              "base": 88,
+              "span": 767,
+              "rule": "outside-current-window then aligned strict-span<512"
+            },
+            "Descending": {
+              "kind": "inline-to-indirect",
+              "base": 88,
+              "span": 771,
+              "rule": "outside-current-window then aligned strict-span<512"
+            }
+          }
+        },
+        "TextModern": {
+          "mode": "controlled-public-usage-map-lower",
+          "source_hint_members": [
+            112,
+            124
+          ],
+          "hypothetical_hint_transition": {
+            "kind": "inline-to-indirect",
+            "base": 112,
+            "span": 742,
+            "rule": "outside-current-window then aligned strict-span<512"
+          },
+          "hypothetical_index_first_transitions": {
+            "Ascending": {
+              "kind": "inline-to-indirect",
+              "base": 104,
+              "span": 752,
+              "rule": "outside-current-window then aligned strict-span<512"
+            },
+            "Descending": {
+              "kind": "inline-to-indirect",
+              "base": 104,
+              "span": 756,
+              "rule": "outside-current-window then aligned strict-span<512"
+            }
+          }
+        },
+        "BinaryOne": {
+          "mode": "controlled-public-usage-map-lower",
+          "source_hint_members": [
+            130,
+            142
+          ],
+          "hypothetical_hint_transition": {
+            "kind": "inline-to-indirect",
+            "base": 128,
+            "span": 726,
+            "rule": "outside-current-window then aligned strict-span<512"
+          },
+          "hypothetical_index_first_transitions": {
+            "Ascending": {
+              "kind": "inline-to-indirect",
+              "base": 128,
+              "span": 728,
+              "rule": "outside-current-window then aligned strict-span<512"
+            },
+            "Descending": {
+              "kind": "inline-to-indirect",
+              "base": 128,
+              "span": 732,
+              "rule": "outside-current-window then aligned strict-span<512"
+            }
+          }
+        }
+      }
+    },
+    {
+      "case": "V2019-padding384",
+      "profile": "V2019",
+      "padding_rows": 384,
+      "database": {
+        "path": ".cache/ace16-ordinary-hint-growth-sources-first-20261027/V2019-padding384.accdb",
+        "bytes": 2273280,
+        "sha256": "c2c05bdd1918690df58fa29a861e8c41269c02e280ee7cf65e410354d9b54eeb"
+      },
+      "pages": 555,
+      "user_rows": 3085,
+      "user_global_map_roles": 28,
+      "logical_indexes": 13,
+      "physical_indexes": 10,
+      "facts": {
+        "path": ".cache/ace16-ordinary-hint-growth-continuation-first-20261027/V2019-padding384-facts.json",
+        "bytes": 11511153,
+        "sha256": "3e03596a395d65197281c0d1eaa897cf851a62b11e1809256a87b90455948c73"
+      },
+      "original_complete_pages_checked": 36,
+      "original_complete_bytes_checked": 147456,
+      "source_only_predictions": {
+        "TextLegacy": {
+          "mode": "natural-highest-only",
+          "source_hint_members": [
+            123
+          ],
+          "hypothetical_hint_transition": {
+            "kind": "inline-rebase",
+            "base": 552,
+            "span": 4,
+            "rule": "outside-current-window then aligned strict-span<512"
+          },
+          "hypothetical_index_first_transitions": {
+            "Ascending": {
+              "kind": "represented-inline",
+              "base": 109
+            },
+            "Descending": {
+              "kind": "represented-inline",
+              "base": 110
+            }
+          }
+        },
+        "TextModern": {
+          "mode": "controlled-public-usage-map-lower",
+          "source_hint_members": [
+            129,
+            141
+          ],
+          "hypothetical_hint_transition": {
+            "kind": "inline-rebase",
+            "base": 128,
+            "span": 428,
+            "rule": "outside-current-window then aligned strict-span<512"
+          },
+          "hypothetical_index_first_transitions": {
+            "Ascending": {
+              "kind": "represented-inline",
+              "base": 127
+            },
+            "Descending": {
+              "kind": "represented-inline",
+              "base": 128
+            }
+          }
+        },
+        "BinaryOne": {
+          "mode": "controlled-public-usage-map-lower",
+          "source_hint_members": [
+            148,
+            160
+          ],
+          "hypothetical_hint_transition": {
+            "kind": "inline-rebase",
+            "base": 144,
+            "span": 412,
+            "rule": "outside-current-window then aligned strict-span<512"
+          },
+          "hypothetical_index_first_transitions": {
+            "Ascending": {
+              "kind": "represented-inline",
+              "base": 145
+            },
+            "Descending": {
+              "kind": "represented-inline",
+              "base": 146
+            }
+          }
+        }
+      }
+    },
+    {
+      "case": "V2019-padding700",
+      "profile": "V2019",
+      "padding_rows": 700,
+      "database": {
+        "path": ".cache/ace16-ordinary-hint-growth-sources-first-20261027/V2019-padding700.accdb",
+        "bytes": 3567616,
+        "sha256": "457870f9f628fb6a5ef5c305f6d50298d7dfe2276d73f6999b7f02b12e0285a1"
+      },
+      "pages": 871,
+      "user_rows": 3401,
+      "user_global_map_roles": 28,
+      "logical_indexes": 13,
+      "physical_indexes": 10,
+      "facts": {
+        "path": ".cache/ace16-ordinary-hint-growth-continuation-first-20261027/V2019-padding700-facts.json",
+        "bytes": 16231479,
+        "sha256": "8570e85894d702d8be0f119f24ad267fe551fc9a8caf191e000af05d88a6b423"
+      },
+      "original_complete_pages_checked": 36,
+      "original_complete_bytes_checked": 147456,
+      "source_only_predictions": {
+        "TextLegacy": {
+          "mode": "natural-highest-only",
+          "source_hint_members": [
+            123
+          ],
+          "hypothetical_hint_transition": {
+            "kind": "inline-rebase",
+            "base": 864,
+            "span": 8,
+            "rule": "outside-current-window then aligned strict-span<512"
+          },
+          "hypothetical_index_first_transitions": {
+            "Ascending": {
+              "kind": "inline-to-indirect",
+              "base": 104,
+              "span": 769,
+              "rule": "outside-current-window then aligned strict-span<512"
+            },
+            "Descending": {
+              "kind": "inline-to-indirect",
+              "base": 104,
+              "span": 773,
+              "rule": "outside-current-window then aligned strict-span<512"
+            }
+          }
+        },
+        "TextModern": {
+          "mode": "controlled-public-usage-map-lower",
+          "source_hint_members": [
+            129,
+            141
+          ],
+          "hypothetical_hint_transition": {
+            "kind": "inline-to-indirect",
+            "base": 128,
+            "span": 744,
+            "rule": "outside-current-window then aligned strict-span<512"
+          },
+          "hypothetical_index_first_transitions": {
+            "Ascending": {
+              "kind": "inline-to-indirect",
+              "base": 120,
+              "span": 754,
+              "rule": "outside-current-window then aligned strict-span<512"
+            },
+            "Descending": {
+              "kind": "inline-to-indirect",
+              "base": 128,
+              "span": 750,
+              "rule": "outside-current-window then aligned strict-span<512"
+            }
+          }
+        },
+        "BinaryOne": {
+          "mode": "controlled-public-usage-map-lower",
+          "source_hint_members": [
+            148,
+            160
+          ],
+          "hypothetical_hint_transition": {
+            "kind": "inline-to-indirect",
+            "base": 144,
+            "span": 728,
+            "rule": "outside-current-window then aligned strict-span<512"
+          },
+          "hypothetical_index_first_transitions": {
+            "Ascending": {
+              "kind": "inline-to-indirect",
+              "base": 144,
+              "span": 730,
+              "rule": "outside-current-window then aligned strict-span<512"
+            },
+            "Descending": {
+              "kind": "inline-to-indirect",
+              "base": 144,
+              "span": 734,
+              "rule": "outside-current-window then aligned strict-span<512"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "measured_layout": {
+    "padding_columns": 8,
+    "padding_variable_columns": 7,
+    "padding_record_bytes": 3595,
+    "padding_rows_per_DATA_page": 1,
+    "padding_page_free_bytes": 485,
+    "padding_slot_start": 501,
+    "target_record_bytes": 43,
+    "target_rows_per_DATA_page": 90,
+    "target_page_free_bytes": 32,
+    "target_logical_roots_equal_final_locations": true
+  },
+  "preservation": {
+    "scope": "All original user ordinary/LVAL-owned member pages and non-global indirect bitmap pages, deduplicated; complete original TD/index pages and exact map rows with only controlled hint-bit additions.",
+    "pages_per_copy": 36,
+    "bytes_per_copy": 147456,
+    "containers": "Per-row comparisons permit distinct new padding map rows.",
+    "global_free": "Actual allocation changes permitted; no future mutation byte oracle."
+  },
+  "prediction_scope": {
+    "basis": "Source capacities and pinned UsageMap code; no UPDATE or native candidate executed.",
+    "gap384": "All hints predict aligned inline rebase; considered index children remain represented.",
+    "gap700": "Natural Legacy hint predicts inline rebase; controlled Modern/Binary hints and both affected physical index maps predict indirect promotion.",
+    "boundary": "Existing represented bits retain current base. Only outside-window additions use aligned inclusive span strictly less than 512 for shifting.",
+    "no_full_catalog_authority_claim": true
+  },
+  "executed_sources": [
+    {
+      "path": ".cache/ace16-ordinary-hint-growth-next-20261027/OrdinaryHintProbe.java",
+      "bytes": 20398,
+      "sha256": "eeb4ce3e0189cde56aa88780a65a2f640a341065cc3b79924d7dfceded32a5d3"
+    },
+    {
+      "path": ".cache/ace16-ordinary-hint-growth-next-20261027/model.py",
+      "bytes": 23900,
+      "sha256": "aa8b4ecd0da3d368b0b91bddd4042db20b5b531796fd1b13e497fa8f442383e3"
+    },
+    {
+      "path": ".cache/ace16-ordinary-hint-growth-next-20261027/measure.py",
+      "bytes": 12604,
+      "sha256": "6ea6e8dc4e940f0b3525cb7a30da416371c7bb30bfa60cee7691cfedb9ecbadb"
+    },
+    {
+      "path": ".cache/ace16-ordinary-hint-growth-next-20261027/capture.py",
+      "bytes": 9680,
+      "sha256": "d1f430e338fb95c1981a2ce5080e57ec01325b37fbbc43d37f017ffdd852656f"
+    },
+    {
+      "path": ".cache/ace16-ordinary-hint-growth-next-20261027/bounded.py",
+      "bytes": 5367,
+      "sha256": "580d57a3c16ce06806f765b9d724c09b6c61b6a8d91b5eb87e3b6971966179f9"
+    },
+    {
+      "path": ".cache/ace16-ordinary-hint-growth-next-20261027/PROTOCOL.md",
+      "bytes": 4921,
+      "sha256": "d1686ed2852bb96bf72bf4840bc2a7928005723069a93cc0cb48a978be01dd84"
+    }
+  ],
+  "compiled_classes": [
+    {
+      "path": ".cache/ace16-ordinary-hint-growth-sources-first-20261027/classes/BoundedFileChannel.class",
+      "bytes": 3080,
+      "sha256": "608c31190c2bcbc9582fd0332813b8697820604b208b9d17c7b1548791c3916b"
+    },
+    {
+      "path": ".cache/ace16-ordinary-hint-growth-sources-first-20261027/classes/OrdinaryHintProbe.class",
+      "bytes": 21275,
+      "sha256": "5263379cdc5c825fdc7a6f2160ea4096b9967f24fb560d0b6b968a897b97422e"
+    }
+  ],
+  "provenance": {
+    "jar": {
+      "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+      "bytes": 1407244,
+      "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+    },
+    "source_jar": {
+      "path": ".cache/ace16-compressed-memo-source-review-20261027/jackcess-5.0.4-sources.jar",
+      "bytes": 878581,
+      "sha256": "4de1bc2f1663b0946ce39057dd90eace355f4f74b8f818c0fe167f0c65815428"
+    },
+    "channel_helper": {
+      "path": "docs/testing/parent_index_split_originals/BoundedFileChannel.java",
+      "bytes": 3952,
+      "sha256": "2191d11f88f3158e83929591acee803553c703e06127839caa7143340f8afd7e"
+    },
+    "helper": "Repository-authored; maintained Java bytes equal executed Java source."
+  },
+  "pre_execution_preparation": {
+    "full_page_coverage": {
+      "archive_manifest": {
+        "path": ".cache/ace16-ordinary-hint-growth-next-20261027/before-full-page-coverage/source-pins.json",
+        "bytes": 1647,
+        "sha256": "cd473dcaefea35b7e94fe010cb46ba76053ea82faa3f5832565c3c0ac17d401f"
+      },
+      "unexecuted_freeze": {
+        "path": ".cache/ace16-ordinary-hint-growth-next-20261027/before-full-page-coverage/freeze.json",
+        "bytes": 14170,
+        "sha256": "b4f538c3c62d9b863063b5a88f9a10afc0805948c8304f8dc971cd962c7ff384"
+      },
+      "review": {
+        "path": ".cache/ace16-ordinary-hint-growth-next-20261027/full-page-coverage-review.json",
+        "bytes": 1448,
+        "sha256": "052f80564c4cad35e85476e400920777e3af3e3fdd56291220b2200ea4dcb789"
+      },
+      "scope": "Before any fixture calls, strengthen full-page checks; same helper/model/9 argv/populations/limits."
+    },
+    "continuation_scope_count": {
+      "unexecuted_freeze": {
+        "path": ".cache/ace16-ordinary-hint-growth-continuation-next-20261027/before-final-scope-count/freeze.json",
+        "bytes": 23548,
+        "sha256": "5535af110e16d7566a366859da920f91a6ff65e870a3e5484c4ff5051132fd4e"
+      },
+      "scope": "Separate completed proof prefixes from whole-continuation qualification; no fixture calls in this refinement."
+    }
+  },
+  "public_tools": [
+    {
+      "path": "docs/testing/ordinary_hint_growth_sources/OrdinaryHintProbe.java",
+      "bytes": 20398,
+      "sha256": "eeb4ce3e0189cde56aa88780a65a2f640a341065cc3b79924d7dfceded32a5d3"
+    },
+    {
+      "path": "docs/testing/ordinary_hint_growth_sources/measure.py",
+      "bytes": 12628,
+      "sha256": "3d40ea7d5a3e91da747f30b5936684978fba4380e027146cb59a6d6c20473a45"
+    },
+    {
+      "path": "docs/testing/ordinary_hint_growth_sources/model.py",
+      "bytes": 23900,
+      "sha256": "aedb5851aee22d186a89a064ab49cee691316c1de7f985ae4c7c5a120cd15df7"
+    },
+    {
+      "path": "docs/testing/ordinary_hint_growth_sources/verify.py",
+      "bytes": 11038,
+      "sha256": "2648460e95212a99dc430d5f86501a15be638efa87145bc77a73c0656b582e89"
+    }
+  ],
+  "public_document": {
+    "path": "docs/testing/ORDINARY_HINT_GROWTH_SOURCE_OBSERVATIONS.md",
+    "bytes": 10388,
+    "sha256": "e1d5fda22998ec6693aaaad473a39dc8baffcb38ded7a33b5debc090493345e6"
+  },
+  "saved_only_verification": {
+    "first_exit_code": 0,
+    "result": {
+      "path": ".cache/ace16-ordinary-hint-growth-continuation-next-20261027/public-saved-verification-first.json",
+      "bytes": 31053,
+      "sha256": "eab72fe16823cdef9166e06380907d9a096ca74c69d941aa992301f038763078"
+    },
+    "stdout": {
+      "path": ".cache/ace16-ordinary-hint-growth-continuation-next-20261027/public-saved-verification-first.stdout",
+      "bytes": 31053,
+      "sha256": "eab72fe16823cdef9166e06380907d9a096ca74c69d941aa992301f038763078"
+    },
+    "stderr": {
+      "path": ".cache/ace16-ordinary-hint-growth-continuation-next-20261027/public-saved-verification-first.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "fixture_processes": 0,
+    "saved_pin_occurrences": 450,
+    "unique_saved_pins": 182,
+    "typed_rows_rechecked": 12972,
+    "source_identity": "Exact helper; maintained source model and corrected measure change repository-root composition only."
+  },
+  "scope_limits": [
+    "No observed target UPDATE, changed persisted key or native preview on these enlarged sources.",
+    "The 28 user/global roles do not establish a complete catalog/current/historical mutation census.",
+    "Predicted reservations do not choose observed partitions, EOF order or engineering complete images.",
+    "No map-growth, arbitrary reuse, macros, normal saves or Microsoft Access parity qualification."
+  ]
+}
