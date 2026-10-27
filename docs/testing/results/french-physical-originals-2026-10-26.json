@@ -1,0 +1,190 @@
+{
+  "date": "2026-10-26",
+  "scope": "Frozen CLI physical French/General index reads under explicit ordinal query policy, not French SQL comparison or range pushdown",
+  "compiled_revision": "978435fa08c6d92577b031929d8abdeb3bd4b247",
+  "counts": {
+    "controls": 58,
+    "successes": 52,
+    "refusals": 6,
+    "disagreements": 0,
+    "query_rows": 1076,
+    "query_cells": 1684
+  },
+  "control_matrix": {
+    "profiles": [
+      "V2016",
+      "V2019"
+    ],
+    "tables": [
+      "French",
+      "GeneralLegacy"
+    ],
+    "per_table": [
+      "exact stored descriptor/schema inspector",
+      "logical/physical index metadata inspector",
+      "complete table/index consistency inspector",
+      "sequential ID+Word values"
+    ],
+    "per_required_index": [
+      "ID projection in recorded index encounter order",
+      "ID projection with Word IS NULL filter",
+      "complete ID+Word values"
+    ],
+    "required_indexes": [
+      "Asc",
+      "Twin",
+      "Desc"
+    ],
+    "damaged_queries_per_profile": [
+      "wrong-key",
+      "wrong-row",
+      "unknown-sort"
+    ]
+  },
+  "boundaries": [
+    "Every SQL query explicitly selects ordinal policy; no French SQL comparison, ORDER BY, LIKE, search or physical range-pushdown qualification",
+    "The NULL-filter controls apply a query filter to an explicitly required index snapshot; no native NULL seek is inferred from these CLI results",
+    "French schema inspection still reports General family Unqualified; exact descriptor remains 1036/0/0, no General alias",
+    "All malformed/unknown-sort required-source queries exit existing INVALID_INPUT_STATUS = 2 with empty stdout; no fallback or partial output",
+    "Malformed native key/row failures are redacted by the established adapter to query source failed; unknown descriptor is query feature is not implemented",
+    "Source objects are read from immutable Git revision 978435fa, independent of newer comparison-provider work",
+    "Originals, oracle, executable and runner before/after hashes match; damaged copies are fresh and exact-spanned"
+  ],
+  "raw_accepted_capture": {
+    "path": ".cache/french-physical-original-replay-final-20261026.json",
+    "bytes": 23768,
+    "sha256": "1728df9acb445c201dd924df87c0af3a04ce81b4b480e1a365bcfcf8bcfc2765"
+  },
+  "build_receipt": {
+    "path": "docs/testing/results/french-physical-cli-build-2026-10-26.json",
+    "bytes": 5986,
+    "sha256": "e14bd63dda66f8264c8c5e43ea6a405a7ee7197b2e928bffa7fcffb9aa2bded2"
+  },
+  "input_and_runner_pins": [
+    {
+      "path": ".cache/tablecraft-bin/tablecraft-french-physical-20261026",
+      "bytes": 43407944,
+      "sha256": "fc11c14e3bb34119888deaeef6ee5e4c6ee785679bba9ace84aaacde195c672b"
+    },
+    {
+      "path": "docs/testing/results/french-physical-cli-build-2026-10-26.json",
+      "bytes": 5986,
+      "sha256": "e14bd63dda66f8264c8c5e43ea6a405a7ee7197b2e928bffa7fcffb9aa2bded2"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/french-legacy-index-20261026/oracle-initial.json",
+      "bytes": 134366,
+      "sha256": "58160ad21430082967b528f613919546eee7437237cca6db511d34f0619d7014"
+    },
+    {
+      "path": "docs/testing/compare_french_physical_reads.py",
+      "bytes": 11747,
+      "sha256": "b05a856c5dda696eb7c1da028c93bb22d94dafe89e7fd9ef105edcc6b6e94310"
+    },
+    {
+      "path": "docs/testing/encoded_delete_originals/wire.py",
+      "bytes": 6423,
+      "sha256": "c75e98152710d6957c212d66da0c8c7f62fc5c6d0b159fdbb823d72bb22662a5"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/french-legacy-index-20261026/French-V2016.accdb",
+      "bytes": 413696,
+      "sha256": "8dd327f872cb50e20c3bfee09731300cdb22bc392f25ad5217b372cad3a6b6d2"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/french-legacy-index-20261026/French-V2019.accdb",
+      "bytes": 483328,
+      "sha256": "62dc9a90aa3d5aa11bc962c07ba2ab4cc9f996f8c26ad9f71eeb38652c897bba"
+    }
+  ],
+  "additional_compiled_sources": {
+    "apps/tablecraft-cli/src/output.rs": {
+      "path": "apps/tablecraft-cli/src/output.rs",
+      "bytes": 7200,
+      "sha256": "adcaab8850c50f62781ca3aafec79ce50e033c10b21c149f26e514698f5cab1a"
+    },
+    "apps/tablecraft-cli/src/commands/inspect/text_order.rs": {
+      "path": "apps/tablecraft-cli/src/commands/inspect/text_order.rs",
+      "bytes": 2169,
+      "sha256": "9c8e40ad1bf0ff1b7a992b010b3f03e425408dea26a7693c8a901f2ad4b9c372"
+    },
+    "crates/engines/tablecraft-ace/src/error.rs": {
+      "path": "crates/engines/tablecraft-ace/src/error.rs",
+      "bytes": 7618,
+      "sha256": "3ee713ecc112677a2509dc4b792b4a34c2d5dd3b70c35ee0d6cb6474204b6d56"
+    },
+    "crates/backends/tablecraft-access/src/source.rs": {
+      "path": "crates/backends/tablecraft-access/src/source.rs",
+      "bytes": 17141,
+      "sha256": "b2ac2c841cd81b741fff9da1b138881379cc3df213f5ad3e12cb0bd69f5b58d1"
+    },
+    "crates/query/tablecraft-query/src/error.rs": {
+      "path": "crates/query/tablecraft-query/src/error.rs",
+      "bytes": 2365,
+      "sha256": "328d6c71470cf0fdf169ce4d57c8079480ed8b7aa6742d70cc16fdc0a02194ee"
+    }
+  },
+  "damaged_copy_pins": [
+    {
+      "path": ".cache/french-physical-original-replay-final-20261026/French-V2016-unknown-sort.accdb",
+      "bytes": 413696,
+      "sha256": "94a58656d3e6926374272660f0826a00aa4c90c3cc3172f8bc1b9db903a7ee47"
+    },
+    {
+      "path": ".cache/french-physical-original-replay-final-20261026/French-V2016-wrong-key.accdb",
+      "bytes": 413696,
+      "sha256": "838e94be9bd99a43bcfcf55b32f4dd2f2e386d573d75d22364a26c7a39bba40e"
+    },
+    {
+      "path": ".cache/french-physical-original-replay-final-20261026/French-V2016-wrong-row.accdb",
+      "bytes": 413696,
+      "sha256": "36601ce0646195886713d7857618fa1d37f38a2c419c4f913b5ef6cccb49adbb"
+    },
+    {
+      "path": ".cache/french-physical-original-replay-final-20261026/French-V2019-unknown-sort.accdb",
+      "bytes": 483328,
+      "sha256": "eaf2f4c8108d9945c6c7854a35ea596db8dce0f2ed4be2a93f5e83b86d1c64ec"
+    },
+    {
+      "path": ".cache/french-physical-original-replay-final-20261026/French-V2019-wrong-key.accdb",
+      "bytes": 483328,
+      "sha256": "867f31849d64001a78f4e2b0003f0197a61c75f5145a30a3ada24e335b65d11c"
+    },
+    {
+      "path": ".cache/french-physical-original-replay-final-20261026/French-V2019-wrong-row.accdb",
+      "bytes": 483328,
+      "sha256": "80f51b3f11648cafef9ac7b1fb82bcaf1e98c14c5fc434274ef7c84cab50756c"
+    }
+  ],
+  "first_attempt": {
+    "exit_code": 1,
+    "counts": {
+      "controls": 58,
+      "successes": 52,
+      "refusals": 2,
+      "disagreements": 4,
+      "query_rows": 1076,
+      "query_cells": 1684
+    },
+    "raw_report": {
+      "path": ".cache/french-physical-original-replay-20261026.json",
+      "bytes": 22927,
+      "sha256": "c374d0f1bbaebaeab311baa1c10b256240925a2bd6c01e197fbd43d14b1f4d42"
+    },
+    "executed_source_snapshot": {
+      "path": ".cache/french-physical-runner-before-source-class-20261026.py",
+      "bytes": 11642,
+      "sha256": "86c8627e92a882c92761a87c4c148fc89a3b0fe0090c39f56f7f25d49adcf41b"
+    },
+    "diagnosis": "Four wrong-key/row queries had already exited 2 with empty stdout. Driver incorrectly expected raw malformed/corrupt wording instead of adapter QueryError::Source. Corrected only host error classification and added immutable adapter/query error source pins; copies, values and selectors unchanged."
+  },
+  "accepted_attempt": {
+    "session": 88254,
+    "exit_code": 0
+  },
+  "limitations": [
+    "No native Access execution, save/reopen, NLS, French SQL comparison or ordinary write qualification",
+    "No physical range command was exposed by the selected CLI host; library range tests remain separate",
+    "All full strings compared using existing CLI escaped display; raw UTF16 surrogate-only carriers are covered by encoder tests, not this scalar fixture"
+  ]
+}

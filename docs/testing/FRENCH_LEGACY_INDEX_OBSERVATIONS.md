@@ -131,3 +131,59 @@ doc checks, strict lint, standalone minimal compilation and formatting. Repeated
 default/feature executions are counted once; the existing ignored exhaustive
 LIKE test is excluded. Original-file engine/CLI replay remains separate from
 these literal-fixture and encoder checks.
+
+## Original-file frozen CLI physical replay
+
+The [original-file receipt](results/french-physical-originals-2026-10-26.json)
+records 58 matching controls: 52 successful inspector/query results and six
+buffered refusals, with 1,076 query rows and 1,684 cells compared. It uses the
+unchanged originals above and the frozen CLI from
+`978435fa08c6d92577b031929d8abdeb3bd4b247`, SHA-256
+`fc11c14e3bb34119888deaeef6ee5e4c6ee785679bba9ace84aaacde195c672b`.
+The [build receipt](results/french-physical-cli-build-2026-10-26.json) and additional
+error/output source objects are verified against that immutable Git revision,
+independently of later comparison-provider edits.
+
+For both profiles and both matched tables, the replay checks exact schema/sort
+descriptors, logical/physical index metadata, complete table/index consistency
+and sequential ID/Text values. Each explicit Asc/Twin/Desc required index is
+compared with the getter's full encounter order for ID projection, ID/Text values
+and an ID query with `Word IS NULL`. Empty Text, NULL, accents, spelling/case,
+long values and escaped control characters retain their actual getter values.
+The NULL query is a filter on a required-index snapshot; it does not prove a
+native NULL seek. The schema inspector's General-family label remains
+`Unqualified` for French, as expected without a General-family alias.
+
+Every query explicitly chooses ordinal collation. Its encounter order comes
+from the required native index, not an SQL `ORDER BY` or French comparison
+provider. The selected CLI host exposes no explicit physical Text range command;
+no ordinal SQL range is presented as a French physical-range oracle. The library
+range tests above remain a separate acceptance layer.
+
+Six fresh copies have exact logged mutations: an empty-key terminator, an index
+row reference or the sort variant. All selected-source queries exit the CLI's
+existing invalid-input status 2 with empty stdout, without sequential fallback.
+Wrong key/row errors use the adapter's established redacted `query source failed`
+classification; the unknown descriptor reports `query feature is not implemented`.
+The original runner expected raw engine malformed wording for four cases, causing
+four initial classification disagreements even though status/output refusal was
+already correct. That first complete report and executed source snapshot remain
+pinned. Only the expected host classification and immutable error-source pins
+changed; no values, damaged bytes or selectors were changed.
+
+[compare_french_physical_reads.py](compare_french_physical_reads.py) is import-safe,
+uses bounded subprocesses and requires explicit frozen binary/hash, build receipt,
+original oracle and fresh output/report paths. Raw commands/stdout/stderr and
+mutated copies remain ignored and hash-pinned. Both originals, oracle and tool
+hashes are checked before and after. No native Access execution/save/reopen,
+French SQL comparison, LIKE/search, native NLS or write qualification is claimed.
+
+```sh
+python3 docs/testing/compare_french_physical_reads.py \
+  --cli .cache/tablecraft-bin/tablecraft-french-physical-20261026 \
+  --cli-sha256 fc11c14e3bb34119888deaeef6ee5e4c6ee785679bba9ace84aaacde195c672b \
+  --build-receipt docs/testing/results/french-physical-cli-build-2026-10-26.json \
+  --oracle .cache/tablecraft-fixtures/french-legacy-index-20261026/oracle-initial.json \
+  --output .cache/french-physical-reproduction \
+  --report .cache/french-physical-reproduction.json
+```

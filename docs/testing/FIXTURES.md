@@ -9048,6 +9048,16 @@ receipt pins the exact producer/class/output hashes. No new upstream weights or
 code were copied; generated keys are test observations, not a full-string SQL or
 native NLS oracle.
 
+The separate [frozen physical CLI replay](results/french-physical-originals-2026-10-26.json)
+reuses these unchanged originals: 58 controls agree, comprising 52 successful
+inspections/queries and six buffered refusals, with 1,076 query rows and 1,684
+cells checked. Explicit Asc/Twin/Desc snapshots retain getter encounter order and
+full values; every query explicitly uses ordinal collation. Six damaged copies
+are separately hash-pinned. This does not qualify French SQL comparison, native
+NULL seeks or host-unexposed physical ranges. The first four error-wording-only
+runner disagreements and the executed source snapshot remain preserved; actual
+status 2 and empty stdout already held. See the owning observations for scope.
+
 ## New cross-table RESTRICT DELETE comparison originals
 
 Original Apache-2.0 [RestrictDeleteFixture.java](RestrictDeleteFixture.java),

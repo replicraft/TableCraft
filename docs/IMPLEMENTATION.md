@@ -1,5 +1,22 @@
 # Implementation status
 
+## Original French physical index CLI replay
+
+The [frozen CLI comparison](testing/results/french-physical-originals-2026-10-26.json)
+passes 58 controls over the two unchanged French/General originals: 52 successful
+inspections/queries and six expected buffered refusals. Selected Asc/Twin/Desc
+reads preserve independent cursor encounter order and full stored values across
+1,076 query rows and 1,684 cells. Wrong-key, wrong-row and unknown-sort experiments
+use separately captured damaged copies; original hashes remain unchanged.
+
+Queries explicitly select ordinal collation. These results qualify physical
+snapshot retrieval, not French SQL comparison or native Access ordering. NULL
+filters do not establish native NULL seeks, and the CLI does not expose explicit
+physical Text ranges. Initial error-classification disagreements are retained:
+corrupt copies already returned status 2 and empty stdout, while the adapter
+correctly exposed its established source-error class. No engine correction was
+needed. See [the observations](testing/FRENCH_LEGACY_INDEX_OBSERVATIONS.md).
+
 ## Original-file multi-table deletion qualification
 
 The [batch comparison](testing/BATCH_DELETE_OBSERVATIONS.md) passes all 28
