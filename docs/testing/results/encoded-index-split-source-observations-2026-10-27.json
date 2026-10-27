@@ -1,0 +1,307 @@
+{
+  "date": "2026-10-27",
+  "status": "source_observations_only; updates_and_native_baselines_not_run",
+  "scope": "Fresh public-builder V2016/V2019 General Legacy/2010 Short Text and Binary same-width key-growth sources; no new engine mutation or native Access qualification.",
+  "history": {
+    "failed_compile": {
+      "commands": 1,
+      "status": 1,
+      "database_commands_reached": 0,
+      "cause": "getIndexData lookup on Index interface; exact source and partial classes retained"
+    },
+    "corrected_source": {
+      "session": 8201,
+      "commands": 5,
+      "status": 0,
+      "phase": "one javac, followed by create and inert inspect for each of two profiles",
+      "correction": "Only IndexImpl import and cast at getIndexData; fresh directory, unchanged recipe/model/bounds/runner"
+    },
+    "total_fixture_commands_observed": 6,
+    "public_updates": 0,
+    "native_baseline_calls": 0,
+    "later_planned_reference_commands": 12,
+    "note": "Original five-command plan did not complete. One failed compile remains separate from the corrected five successes; no source regeneration or reference actions occurred."
+  },
+  "limits": {
+    "child_deadline_seconds": 30,
+    "java_heap_mib": 512,
+    "database_bytes": 8388608,
+    "captured_stream_bytes_each": 16777216,
+    "corrected_source_command_limit": 5
+  },
+  "inert_policy": {
+    "evaluate_expressions": false,
+    "enforce_foreign_keys": true,
+    "reuse_free_pages": false,
+    "timezone": "UTC",
+    "linked_opens": "refuse"
+  },
+  "observations": [
+    {
+      "profile": "V2016",
+      "original": {
+        "path": ".cache/ace16-encoded-index-source-corrected-first-20261027/V2016-original.accdb",
+        "bytes": 557056,
+        "sha256": "362a2f603036f836489f87cd24d58c7c4383329dddd065349b48452bd5f480c8"
+      },
+      "rows": 2701,
+      "map_roles": 26,
+      "logical_indexes": 13,
+      "physical_indexes": 10,
+      "affected_physical_roots": 6,
+      "affected_root_height": 0,
+      "file_pages": 136,
+      "selected_flags_extended": [
+        2,
+        0
+      ],
+      "selected_spans": {
+        "TextLegacy": 6,
+        "TextModern": 6,
+        "BinaryOne": 1
+      }
+    },
+    {
+      "profile": "V2019",
+      "original": {
+        "path": ".cache/ace16-encoded-index-source-corrected-first-20261027/V2019-original.accdb",
+        "bytes": 630784,
+        "sha256": "bbe12b91fa29b78032eb1485b801350d309e31d58680630686046716a442bd1b"
+      },
+      "rows": 2701,
+      "map_roles": 26,
+      "logical_indexes": 13,
+      "physical_indexes": 10,
+      "affected_physical_roots": 6,
+      "affected_root_height": 0,
+      "file_pages": 154,
+      "selected_flags_extended": [
+        2,
+        0
+      ],
+      "selected_spans": {
+        "TextLegacy": 6,
+        "TextModern": 6,
+        "BinaryOne": 1
+      }
+    }
+  ],
+  "actual_key_capacity": [
+    {
+      "family": "Legacy",
+      "direction": "ASC",
+      "old": "7f4a4a4a0100",
+      "requested": "7f7878780100",
+      "source_bytes": 3606,
+      "changed_bytes": 8101,
+      "mixed_half_bytes": 4051
+    },
+    {
+      "family": "Legacy",
+      "direction": "DESC",
+      "old": "80b5b5b5feff00",
+      "requested": "80878787feff00",
+      "source_bytes": 3607,
+      "changed_bytes": 9001,
+      "mixed_half_bytes": 4501
+    },
+    {
+      "family": "Modern",
+      "direction": "ASC",
+      "old": "7f0e020e020e020100",
+      "requested": "7f0ea90ea90ea90100",
+      "source_bytes": 3609,
+      "changed_bytes": 9902,
+      "mixed_half_bytes": 4952
+    },
+    {
+      "family": "Modern",
+      "direction": "DESC",
+      "old": "80f1fdf1fdf1fdfeff00",
+      "requested": "80f156f156f156feff00",
+      "source_bytes": 3610,
+      "changed_bytes": 10802,
+      "mixed_half_bytes": 5402
+    },
+    {
+      "family": "Binary",
+      "direction": "ASC",
+      "old": "7f000000000000000001",
+      "requested": "7fff0000000000000001",
+      "source_bytes": 3610,
+      "changed_bytes": 11701,
+      "mixed_half_bytes": 5851
+    },
+    {
+      "family": "Binary",
+      "direction": "DESC",
+      "old": "80fffffffffffffffffe",
+      "requested": "8000fffffffffffffffe",
+      "source_bytes": 3610,
+      "changed_bytes": 11701,
+      "mixed_half_bytes": 5851
+    }
+  ],
+  "capacity_scope": "Actual source serialized length equals pinned public key-only prefix framing; ROW remains in every entry. Capacity is 3,616 bytes. This is not an engineering full-key/ROW packing oracle or a predicted public UPDATE topology.",
+  "preservation": {
+    "corrected_inputs_and_freeze_unchanged": true,
+    "originals_unchanged_through_getters_and_postcheck": true,
+    "separate_postcheck_pins": 48,
+    "first_failure_and_partial_classes_unchanged": true
+  },
+  "saved_verification": {
+    "verified": true,
+    "fixture_processes": 0,
+    "unique_saved_pins": 48,
+    "typed_rows_rechecked": 5402,
+    "selected_variable_slots_rechecked": 5400,
+    "logical_index_entries_rechecked_including_aliases": 21602,
+    "helper_byte_identity": true,
+    "model_function_ast_identity": true
+  },
+  "verification_history": "First saved verifier comparison failed because serialized JSON row keys are strings and recomputed row keys are integers. Exact first verifier and repeated read-only failure log retained; JSON roundtrip normalization changes only comparison shape. No fixture rerun, data or golden change. Root independently repeated saved verification successfully.",
+  "source_identity": {
+    "public_helper": "byte-identical to corrected executed helper",
+    "public_model": "Only ROOT path composition and terminal whitespace differ; all six function ASTs identical to executed hardened source model",
+    "public_verifier": "Maintained saved-proof consumer; no compiler, JVM or native invocation"
+  },
+  "provenance": {
+    "jar": {
+      "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+      "bytes": 1407244,
+      "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+    },
+    "source_jar": {
+      "path": ".cache/ace16-compressed-memo-source-review-20261027/jackcess-5.0.4-sources.jar",
+      "bytes": 878581,
+      "sha256": "4de1bc2f1663b0946ce39057dd90eace355f4f74b8f818c0fe167f0c65815428"
+    },
+    "license": "Previously reviewed Apache-2.0 Jackcess 5.0.4 artifacts; original helper/model, no copied upstream implementation or weight tables"
+  },
+  "not_claimed": [
+    "Engine source admission/noop behavior",
+    "Successful public replacements",
+    "New Short Text/Binary split API",
+    "Microsoft Access SQL/NLS or normal save compatibility",
+    "NULL/empty, unique overflow, compound/French/unknown-sort mutation qualification"
+  ],
+  "public_source_pins": [
+    {
+      "path": "docs/testing/ENCODED_INDEX_SPLIT_SOURCE_OBSERVATIONS.md",
+      "bytes": 6047,
+      "sha256": "4b23c2f45ab6b7d8a2b3351b67b0fd768eb3d036a9aefed4e5744bf5609879b2"
+    },
+    {
+      "path": "docs/testing/encoded_index_split_sources/EncodedSplitProbe.java",
+      "bytes": 18451,
+      "sha256": "465c5786e078782908c8978fc2ce0f2520cba504bbf547b2067456a6a364e92c"
+    },
+    {
+      "path": "docs/testing/encoded_index_split_sources/model.py",
+      "bytes": 16970,
+      "sha256": "1ac40a36c4755b8b07e196f74e9108a1f3818e222f307a8df8b979bf54523a4f"
+    },
+    {
+      "path": "docs/testing/encoded_index_split_sources/verify.py",
+      "bytes": 5747,
+      "sha256": "9f682828fac0e47df25783ecfeab1e6f1fa64bf2bd16ed093bb816d8c4a32b0b"
+    }
+  ],
+  "artifact_pins": [
+    {
+      "path": ".cache/ace16-encoded-index-source-first-20261027/report.json",
+      "bytes": 11522,
+      "sha256": "ab67dab37ca26303c68e819bb9aed93fab4f0f3051f9f07b8b24a9c0c9a7df10"
+    },
+    {
+      "path": ".cache/ace16-encoded-index-source-first-20261027/postcheck.json",
+      "bytes": 2943,
+      "sha256": "30d7c385f47a8a9f293af5157db96bb99401ae805b7b879af10db565c137a8e3"
+    },
+    {
+      "path": ".cache/ace16-encoded-index-source-first-20261027/compile.stderr",
+      "bytes": 263,
+      "sha256": "357c5a9c84eaa48e1bcd3c451f5fb56e059810d3a0d4fc660b6b5faf573ce02e"
+    },
+    {
+      "path": ".cache/ace16-encoded-index-split-next-20261027/freeze.json",
+      "bytes": 6441,
+      "sha256": "0f93c8da9d23399aa0270fe603d27f8a807258ee83fd4d1fa8da4af561ab3125"
+    },
+    {
+      "path": ".cache/ace16-encoded-index-split-next-20261027/EncodedSplitProbe.java",
+      "bytes": 18381,
+      "sha256": "f385329dd72c0d9fe35801a2f3865ed78d38c17ee5ddb48ff719a37c053dc144"
+    },
+    {
+      "path": ".cache/ace16-encoded-index-split-next-20261027/model.py",
+      "bytes": 16971,
+      "sha256": "de19c1ae8b034b3c104d0264f96fd733ee499f2295c9560a72c62bc0ae60a457"
+    },
+    {
+      "path": ".cache/ace16-encoded-index-split-next-20261027/source_capture.py",
+      "bytes": 7542,
+      "sha256": "ad3cfd86e00fe4c00b54a1acf7134a06295280e5c706b7f00d1177709f4dd717"
+    },
+    {
+      "path": ".cache/ace16-encoded-index-split-next-20261027/bounded.py",
+      "bytes": 5367,
+      "sha256": "58737fa3fcdd45b86d0ed2483fef4c8327823d980c7fb02cddfccd9aa2859b13"
+    },
+    {
+      "path": ".cache/ace16-encoded-index-source-corrected-next-20261027/freeze.json",
+      "bytes": 9751,
+      "sha256": "e3c1a7c12b541ff64d319b53ddd36973497050b0ceeb0f37b907f68544d42e62"
+    },
+    {
+      "path": ".cache/ace16-encoded-index-source-corrected-next-20261027/helper.diff",
+      "bytes": 1002,
+      "sha256": "c522bd7b96e4c47b010fc780c4089696bca5c133f753af360d7669f6819bf086"
+    },
+    {
+      "path": ".cache/ace16-encoded-index-source-corrected-next-20261027/EncodedSplitProbe.java",
+      "bytes": 18451,
+      "sha256": "465c5786e078782908c8978fc2ce0f2520cba504bbf547b2067456a6a364e92c"
+    },
+    {
+      "path": ".cache/ace16-encoded-index-source-corrected-first-20261027/report.json",
+      "bytes": 22260,
+      "sha256": "0d2f3eb32dfc720a75d736f73e03063980bffba742c69564311de676b068553e"
+    },
+    {
+      "path": ".cache/ace16-encoded-index-source-corrected-first-20261027/postcheck.json",
+      "bytes": 19099,
+      "sha256": "4628d2a82b5d8972a1c187b794544c3764f20d1fde79cff420574beb87fcd663"
+    },
+    {
+      "path": ".cache/ace16-encoded-index-source-corrected-first-20261027/public-verifier-before-json-normalization.py",
+      "bytes": 5695,
+      "sha256": "26dd369880b45ea1609b12db7d0ac0ae911b9c776ea91132b22a955a97f07c06"
+    },
+    {
+      "path": ".cache/ace16-encoded-index-source-corrected-first-20261027/public-verify-before-normalization.stderr",
+      "bytes": 694,
+      "sha256": "bd9262754270bfbbd4a27b721f0e52d87698d48b7ea1ceb2e097cfa3a5733569"
+    },
+    {
+      "path": ".cache/ace16-encoded-index-source-corrected-first-20261027/public-saved-verify-final.json",
+      "bytes": 6753,
+      "sha256": "11bb78b7b16fd50045d95a8d8f949c01cadd3ea6ff32964ab9251fa7e32be564"
+    },
+    {
+      "path": ".cache/ace16-encoded-index-source-corrected-first-20261027/root-public-verifier.json",
+      "bytes": 6753,
+      "sha256": "11bb78b7b16fd50045d95a8d8f949c01cadd3ea6ff32964ab9251fa7e32be564"
+    },
+    {
+      "path": ".cache/ace16-encoded-index-source-corrected-first-20261027/V2016-source-gates.json",
+      "bytes": 2017050,
+      "sha256": "14c9d6707320791f8247be5f294bcf6044a725c22ea33ce9e7827c5ac96ebeef"
+    },
+    {
+      "path": ".cache/ace16-encoded-index-source-corrected-first-20261027/V2019-source-gates.json",
+      "bytes": 2017837,
+      "sha256": "0eb59b2e43253b579b2712d065d3ced931be8c7b40d5b32982d8e7d52291f389"
+    }
+  ]
+}

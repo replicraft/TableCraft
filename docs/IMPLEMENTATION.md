@@ -264,6 +264,19 @@ checks, minimal compilation and formatting. This adds no composite allocation,
 new mutation eligibility or production save path. Native Access qualification
 remains pending.
 
+## General Text/Binary split source observations
+
+Two independently constructed [ACE 16 sources](testing/ENCODED_INDEX_SPLIT_SOURCE_OBSERVATIONS.md)
+now establish root-leaf overflow and repeated split demand for General legacy
+text, General modern text and Short Binary keys. Each unchanged source has 2,701
+rows, checked physical aliases, complete typed/key streams and protected Memo/OLE
+sentinels. A saved verifier rechecks 5,402 rows and 21,602 logical index entries.
+
+The first compile failed before database creation; a separate corrected five-command
+source phase passes. No public UPDATE or native baseline call has run in this
+source phase. These observations do not add Text/Binary split admission or qualify
+candidate images, normal saves or native Access compatibility.
+
 ## Index-owned map promotion
 
 The optional engineering split services now support
