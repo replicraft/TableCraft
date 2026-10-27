@@ -1,9 +1,14 @@
 //! Writable ownership additionally checks other catalog declarations and live refs.
+mod maps;
+mod profile;
+#[cfg(test)]
+mod tests;
+
 use super::super::{EditError, WriteBlocker};
 use crate::{
     InspectError, NativeImage, NativeTableStorage, TableSchema,
     format::{
-        allocation,
+        allocation::{self, GLOBAL_FREE_REFERENCE},
         bytes::u32_at,
         data_type::{LONG_TEXT, OLE},
         definition,
@@ -16,14 +21,16 @@ use crate::{
     inspect_table_schema,
     table::{
         indexes,
-        long_value::{maps, trace},
+        long_value::{maps as storage_maps, trace},
         record_layout,
     },
 };
+use maps::{Census, Role};
 use std::io::Cursor;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
-mod profile;
+// The global allocator has no owning table-definition page.
+const GLOBAL_MAP_OWNER: u32 = 0;
 
 struct Claim {
     page: u32,
@@ -35,6 +42,7 @@ pub(super) struct Inventory {
     claims: Vec<Claim>,
     live: Vec<Claim>,
     protected: Vec<u32>,
+    maps: Census,
 }
 
 fn append_claim(
@@ -91,9 +99,27 @@ impl Inventory {
             claims: Vec::new(),
             live: Vec::new(),
             protected: Vec::new(),
+            maps: Census::new(),
         };
         let catalog = image.catalog();
         let scope = catalog.catalog().scope();
+        {
+            let mut source = image.reader();
+            let mut reader = Reader {
+                source: &mut source,
+                header: catalog.header(),
+                budget,
+                cancelled,
+                reads: 0,
+            };
+            result.claim_map(
+                GLOBAL_MAP_OWNER,
+                Role::GlobalFree,
+                GLOBAL_FREE_REFERENCE,
+                &mut reader,
+            )?;
+        }
+
         for origin in catalog.origins() {
             check(budget, cancelled)?;
             if origin.table_storage() != Some(NativeTableStorage::Local) {
@@ -129,15 +155,31 @@ impl Inventory {
         Ok(result)
     }
 
+    fn claim_map(
+        &mut self,
+        definition: u32,
+        role: Role,
+        reference: u32,
+        reader: &mut Reader<'_, Cursor<&[u8]>>,
+    ) -> Result<(), EditError> {
+        let storage = self.maps.capture(definition, role, reference, reader)?;
+        for &page in storage {
+            protect(&mut self.protected, page, reader)?;
+        }
+
+        Ok(())
+    }
+
     fn table(
         &mut self,
         schema: &TableSchema,
         reader: &mut Reader<'_, Cursor<&[u8]>>,
     ) -> Result<(), EditError> {
         protect(&mut self.protected, schema.definition_page(), reader)?;
-        protect(
-            &mut self.protected,
-            reference_page(schema.layout.usage),
+        self.claim_map(
+            schema.definition_page(),
+            Role::OrdinaryOwned,
+            schema.layout.usage,
             reader,
         )?;
         let ordinary = allocation::pages(reader, schema.layout.usage)?;
@@ -147,14 +189,20 @@ impl Inventory {
         let metadata = definition::read(reader, schema.definition_page())?;
         let hint_reference = u32_at(&metadata, TABLE_FREE_MAP_OFFSET)?;
         if hint_reference != 0 {
-            protect(&mut self.protected, reference_page(hint_reference), reader)?;
+            self.claim_map(
+                schema.definition_page(),
+                Role::OrdinaryCandidate,
+                hint_reference,
+                reader,
+            )?;
         }
         let indexes = indexes::definitions_with_tail(reader, schema)?;
         for index in indexes.indexes {
             reader.tick()?;
-            protect(
-                &mut self.protected,
-                reference_page(index.usage_map()),
+            self.claim_map(
+                schema.definition_page(),
+                Role::IndexOwned(index.data_number()),
+                index.usage_map(),
                 reader,
             )?;
             for page in allocation::pages(reader, index.usage_map())? {
@@ -168,20 +216,22 @@ impl Inventory {
             .any(|field| matches!(field.native_type(), LONG_TEXT | OLE));
         // A table without surviving long fields can still retain historical
         // column-owned orphan storage. Its declaration tail is not inferred.
-        let declarations = maps::declarations(reader, schema)?;
+        let declarations = storage_maps::declarations(reader, schema)?;
         if !declarations.complete {
             return Err(EditError::Unsupported(WriteBlocker::RowLayout));
         }
         for declaration in declarations.entries {
             reader.tick()?;
-            protect(
-                &mut self.protected,
-                reference_page(declaration.references.owned()),
+            self.claim_map(
+                schema.definition_page(),
+                Role::ColumnOwned(declaration.number),
+                declaration.references.owned(),
                 reader,
             )?;
-            protect(
-                &mut self.protected,
-                reference_page(declaration.references.candidate()),
+            self.claim_map(
+                schema.definition_page(),
+                Role::ColumnCandidate(declaration.number),
+                declaration.references.candidate(),
                 reader,
             )?;
             for page in allocation::pages(reader, declaration.references.owned())? {
@@ -269,6 +319,9 @@ impl Inventory {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
+        self.maps
+            .require_exclusive(schema.definition_page(), column, budget, cancelled)?;
+
         for &page in pages {
             check(budget, cancelled)?;
             budget

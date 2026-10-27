@@ -73,6 +73,13 @@ now passes 132 complete candidate images/getters and sixteen exact typed atomic
 refusals for lossy leading-FEFF inputs, without changing selectors or budgets.
 Broader encoding and normal native saves remain unqualified.
 
+The subsequent [map-authority correction](../../testing/LONG_VALUE_MAP_AUTHORITY.md)
+adds exact role, record-range and bitmap-storage exclusivity even for empty maps.
+It closes a reproduced cross-table ownership change while retaining disjoint map
+rows in shared containers and strict writable provenance. Its scoped checks and
+44 read-only source admissions do not rerun preceding candidate acceptance or
+admit indirect selected LVAL maps.
+
 The separate [Int32 leaf-split service](../../testing/ACE16_INDEX_SPLITS.md) now
 supports root-leaf and non-root leaf growth through represented EOF index pages.
 Its [root](../../testing/ROOT_SPLIT_UPDATE_OBSERVATIONS.md) and

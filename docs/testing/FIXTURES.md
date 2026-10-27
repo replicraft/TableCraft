@@ -9593,3 +9593,21 @@ executed helpers, source hashes, old baseline artifact/Git objects, no-op copies
 and separate unchanged-input postcheck. Pre-execution header-XOR/heap/carrier
 proof corrections remain preserved. This phase includes no non-noop UPDATE,
 split candidate, native Access comparison or new typed split API.
+
+### Empty long-value map authority regression
+
+The [map-authority correction](LONG_VALUE_MAP_AUTHORITY.md) uses independent
+literal ACE 16 fixtures with initially empty column maps. Exact shared references
+previously admitted an EOF candidate that changed both selected and unrelated
+table ownership; the initial failing probe and unsafe image are preserved in the
+[scoped receipt](results/ace16-lval-map-authority-native-2026-10-27.json).
+Six new integration functions and two private functions cover map roles, exact
+row ranges, bitmap/container storage, legitimate physical aliases and immutable
+finalizer authority. Fixtures do not normalize owner bytes or reuse unreadable
+index roots as healthy controls. All 85 distinct runtime functions pass.
+
+A separate read-only diagnostic admits both Memo columns on 22 unchanged sources
+from the preceding compressed/raw histories, with all source hashes unchanged.
+Those 44 probes perform no stage, finish, publication or JVM action. The temporary
+probe/diagnostic sources are archived outside registered inputs. They do not
+replace frozen original-file candidate evidence or qualify native Access saves.

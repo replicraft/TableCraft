@@ -12,6 +12,8 @@ use crate::{
         row::{OFFSET_MASK, reference, reference_page, reference_slot},
     },
 };
+#[cfg(feature = "ace16-write-preview")]
+use std::ops::Range;
 
 const GLOBAL_MAP_PAGE: u32 = 1;
 const GLOBAL_MAP_SLOT: u8 = 0;
@@ -33,6 +35,20 @@ pub(crate) struct MapCell {
     pub offset: usize,
     pub before: u8,
     pub mask: u8,
+}
+
+#[cfg(feature = "ace16-write-preview")]
+pub(crate) struct MapStorage {
+    pub record: Range<usize>,
+    // A fresh footprint always starts with its ordinary metadata container.
+    pub pages: Vec<u32>,
+}
+
+#[derive(Clone, Copy)]
+enum Provenance {
+    QualifiedRole,
+    #[cfg(feature = "ace16-write-preview")]
+    ReadOnlyStorage,
 }
 
 pub(crate) struct RepresentedMap {
@@ -85,6 +101,43 @@ impl RepresentedMap {
         reference: u32,
         role: MapRole,
     ) -> Result<Self, InspectError> {
+        Self::read_with_provenance(reader, reference, role, Provenance::QualifiedRole)
+    }
+
+    /// Capture only map-record and bitmap identities using the existing read
+    /// grammar. This grants no membership or writable-cell authority. Global
+    /// free metadata retains its distinct fixed-container qualification.
+    #[cfg(feature = "ace16-write-preview")]
+    pub(crate) fn read_storage<R: NativeReadSource>(
+        reader: &mut Reader<'_, R>,
+        reference: u32,
+        role: MapRole,
+    ) -> Result<MapStorage, InspectError> {
+        let provenance = if matches!(role, MapRole::GlobalFree) {
+            Provenance::QualifiedRole
+        } else {
+            Provenance::ReadOnlyStorage
+        };
+        let map = Self::read_with_provenance(reader, reference, role, provenance)?;
+        let end = map
+            .offset
+            .checked_add(map.payload.len())
+            .ok_or(InspectError::StructureLimit)?;
+        let mut pages = Vec::new();
+        map.protect_storage(reader, &mut pages)?;
+
+        Ok(MapStorage {
+            record: map.offset..end,
+            pages,
+        })
+    }
+
+    fn read_with_provenance<R: NativeReadSource>(
+        reader: &mut Reader<'_, R>,
+        reference: u32,
+        role: MapRole,
+        provenance: Provenance,
+    ) -> Result<Self, InspectError> {
         let number = reference_page(reference);
         let slot = reference_slot(reference);
         let page = reader.page(number)?;
@@ -95,16 +148,20 @@ impl RepresentedMap {
         // These containers are reserved metadata, not arbitrary table records.
         // Public producer/getter bytes establish owner0 for owned usage rows
         // and self-owner1 for the fixed global page1,row0 container.
-        let owner = match role {
-            MapRole::Owned | MapRole::LongValueCandidate => OWNED_CONTAINER_OWNER,
-            #[cfg(feature = "ace16-write-preview")]
-            MapRole::TableFreeSpace => OWNED_CONTAINER_OWNER,
-            MapRole::GlobalFree => {
-                if reference != GLOBAL_FREE_REFERENCE {
-                    return Err(InspectError::Unsupported);
+        let owner = match provenance {
+            Provenance::QualifiedRole => match role {
+                MapRole::Owned | MapRole::LongValueCandidate => OWNED_CONTAINER_OWNER,
+                #[cfg(feature = "ace16-write-preview")]
+                MapRole::TableFreeSpace => OWNED_CONTAINER_OWNER,
+                MapRole::GlobalFree => {
+                    if reference != GLOBAL_FREE_REFERENCE {
+                        return Err(InspectError::Unsupported);
+                    }
+                    GLOBAL_MAP_PAGE
                 }
-                GLOBAL_MAP_PAGE
-            }
+            },
+            #[cfg(feature = "ace16-write-preview")]
+            Provenance::ReadOnlyStorage => u32_at(&page, OWNER_OFFSET)?,
         };
         if u32_at(&page, OWNER_OFFSET)? != owner {
             return Err(InspectError::Malformed);
@@ -116,6 +173,23 @@ impl RepresentedMap {
             container: number,
             role,
         };
+        // Storage-only claims retain the existing read-owned malformed-prefix
+        // classes. Qualified role admission below keeps its previous behavior.
+        #[cfg(feature = "ace16-write-preview")]
+        if matches!(provenance, Provenance::ReadOnlyStorage) {
+            match result.payload.first().copied() {
+                Some(INLINE_MAP) if result.payload.len() < INLINE_BITMAP_OFFSET => {
+                    return Err(InspectError::Truncated);
+                }
+                Some(INDIRECT_MAP)
+                    if !(result.payload.len() - 1).is_multiple_of(PAGE_POINTER_BYTES) =>
+                {
+                    return Err(InspectError::Malformed);
+                }
+                _ => {}
+            }
+        }
+
         match result.payload.first().copied() {
             Some(INLINE_MAP) if result.payload.len() >= INLINE_BITMAP_OFFSET => {}
             Some(INDIRECT_MAP) if (result.payload.len() - 1).is_multiple_of(PAGE_POINTER_BYTES) => {
@@ -148,7 +222,7 @@ impl RepresentedMap {
             }
             _ => return Err(InspectError::Unsupported),
         }
-        if !matches!(role, MapRole::GlobalFree) {
+        if matches!(provenance, Provenance::QualifiedRole) && !matches!(role, MapRole::GlobalFree) {
             // Owned addresses and qualified table candidate addresses are in
             // file. This shares only bitmap grammar/address validation; their
             // membership meanings remain distinct. Global FREE bits may name

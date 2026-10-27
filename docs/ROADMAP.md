@@ -114,6 +114,11 @@ Delivered read/query and engineering foundations:
   now passes 132 exact candidate images/getters and sixteen typed atomic refusals
   under unchanged inputs/budgets. Other extended/history/map profiles, broader
   encoding, reclamation and normal saves stay open.
+  A subsequent [map-authority correction](testing/LONG_VALUE_MAP_AUTHORITY.md)
+  now rejects empty cross-owner map aliases and overlapping metadata footprints
+  before allocation, with immutable-original final recensus. Its 85 scoped runtime
+  functions pass; 44 read-only source-admission probes are distinct from candidate
+  replay. Selected indirect LVAL maps and production saves remain open.
   A separate [48-control Text/Binary corpus](testing/ENCODED_DELETE_OBSERVATIONS.md)
   checks 36 candidates and twelve unsupported-profile refusals on the same
   committed tool, including the previously refused height-two delete-all cases.
