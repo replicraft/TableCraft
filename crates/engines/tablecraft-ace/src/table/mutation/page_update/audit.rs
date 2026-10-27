@@ -23,7 +23,7 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const AUDIT_CHUNK_BYTES: usize = 256;
 
-pub(super) fn record(
+pub(in crate::table::mutation) fn record(
     image: &NativeImage,
     schema: &TableSchema,
     column: usize,

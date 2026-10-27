@@ -20,24 +20,38 @@ const SUPPORTED_PREVIEW_SUBVERSION: u8 = 0;
 /// }
 /// ```
 pub struct Ace16WritePreview {
-    plan: NativeEditPlan,
+    before: Vec<u8>,
+    after: Vec<u8>,
+    changed_rows: usize,
 }
 
 impl Ace16WritePreview {
     pub(super) fn from_plan(plan: NativeEditPlan) -> Self {
-        Self { plan }
+        Self {
+            before: plan.before,
+            after: plan.after,
+            changed_rows: plan.changed_rows,
+        }
     }
+    pub(super) fn from_candidate(before: Vec<u8>, after: Vec<u8>, changed_rows: usize) -> Self {
+        Self {
+            before,
+            after,
+            changed_rows,
+        }
+    }
+
     /// Original complete captured image, unchanged by preview creation.
     pub fn before_bytes(&self) -> &[u8] {
-        self.plan.before_bytes()
+        &self.before
     }
     /// Unqualified candidate bytes, for explicit fresh-copy comparison only.
     pub fn candidate_bytes(&self) -> &[u8] {
-        self.plan.after_bytes()
+        &self.after
     }
     /// Number of actual field changes, excluding no-op assignments.
     pub fn changed_rows(&self) -> usize {
-        self.plan.changed_rows()
+        self.changed_rows
     }
 }
 

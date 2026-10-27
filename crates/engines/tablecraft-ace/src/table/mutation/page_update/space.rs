@@ -14,7 +14,7 @@ use crate::{
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
-pub(super) struct Space {
+pub(in crate::table::mutation) struct Space {
     definition: u32,
     hint: RepresentedMap,
     global: RepresentedMap,
@@ -22,7 +22,7 @@ pub(super) struct Space {
 }
 
 impl Space {
-    pub(super) fn capture(
+    pub(in crate::table::mutation) fn capture(
         image: &NativeImage,
         schema: &TableSchema,
         owned: &[u32],
@@ -77,11 +77,11 @@ impl Space {
         })
     }
 
-    pub(super) fn definition(&self) -> u32 {
+    pub(in crate::table::mutation) fn definition(&self) -> u32 {
         self.definition
     }
 
-    pub(super) fn audit(
+    pub(in crate::table::mutation) fn audit(
         &self,
         before: &[u8],
         after: &[u8],
@@ -107,7 +107,7 @@ impl Space {
         Ok(())
     }
 
-    pub(super) fn require_page(
+    pub(in crate::table::mutation) fn require_page(
         &self,
         image: &NativeImage,
         number: u32,
