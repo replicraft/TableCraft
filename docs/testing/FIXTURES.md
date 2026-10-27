@@ -9529,4 +9529,20 @@ processes pass; there is no native admission or MAX action in this phase.
 The [receipt](results/ace16-internal-parent-split-sources-2026-10-27.json) pins
 originals, intermediate/pruned hashes, selections, raw captures, exact executed
 helpers and later public read-only tools. Existing root-growth sources remain
-unchanged. Internal retention/allocation behavior awaits a separate action phase.
+unchanged. Internal retention/allocation behavior is measured in the separate
+action phase below.
+
+### Non-root internal-parent split actions
+
+The [separate MAX action phase](INTERNAL_PARENT_INDEX_SPLIT_OBSERVATIONS.md)
+uses the unchanged 963-row sources and original selected references. Its first
+nine processes complete with two atomic prior-consumer refusals and two
+successful public updates. Both roots retain height two, increasing from two to
+three bounded children. Allocation adds a new left leaf and a new left internal
+page, preserving the original right leaf/parent and repairing sibling links.
+All 1,926 original record bodies match the selected four-byte patch or unchanged
+body, with complete key/ROW/map proofs and historical counters retained. The
+[receipt](results/ace16-internal-parent-split-actions-2026-10-27.json) pins actual
+first-run sources, commands, outputs and separate read-only verification. Public
+scratch rewrites are observations, not engineering byte goldens. No new-kernel
+candidate or native Microsoft Access qualification is claimed.

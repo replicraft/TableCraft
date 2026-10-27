@@ -150,6 +150,15 @@ proofs. Larger intermediates are not mutation inputs. No native admission,
 MAX action, internal-page retention rule or native Access qualification follows
 from these source-generation results.
 
+The [subsequent first action phase](testing/INTERNAL_PARENT_INDEX_SPLIT_OBSERVATIONS.md)
+now records two successful public updates and two atomic prior-consumer refusals
+in nine processes. Both roots retain height two and grow from two to three
+bounded children. Each operation adds a left leaf and left internal page while
+retaining the original right leaf/parent, complete physical row references and
+historical counter. Read-only replay verifies all 1,926 original record bodies,
+full key/ROW streams and maps. These are observed reference actions; recursive
+TableCraft candidate acceptance remains separate.
+
 ## Alternate-page placement and EOF allocation candidates
 
 The separate `preview_ace16_variable_updates` engineering API now places growing

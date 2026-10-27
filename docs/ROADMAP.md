@@ -88,6 +88,10 @@ Delivered read/query and engineering foundations:
   now retains 963 live target rows under a height-two root after bounded public
   pruning, with all 497 index pages and three sibling levels preserved. Its
   source phase contains no MAX update or native candidate qualification.
+  Its [separate public MAX actions](testing/INTERNAL_PARENT_INDEX_SPLIT_OBSERVATIONS.md)
+  now establish new-left/retained-right internal splitting on both originals,
+  with a retained height-two root and two EOF pages. The old consumer still
+  refuses those edits; new-kernel candidate acceptance remains separate.
   A separate [ordinary Memo/OLE replacement service](testing/ACE16_LONG_VALUE_UPDATES.md)
   now composes qualified column-owned LVAL append/EOF allocation with parent
   descriptor forwarding and independently replays request/map/payload authority.
