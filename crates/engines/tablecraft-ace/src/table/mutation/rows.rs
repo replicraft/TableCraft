@@ -57,6 +57,17 @@ pub(super) fn visit<R: crate::NativeReadSource, U: RowAssignment>(
     updates: &[U],
     mut visitor: impl FnMut(Row<'_>, &U) -> Result<(), EditError>,
 ) -> Result<(), EditError> {
+    visit_with_budget(reader, schema, updates, |_, row, update| {
+        visitor(row, update)
+    })
+}
+
+pub(super) fn visit_with_budget<R: crate::NativeReadSource, U: RowAssignment>(
+    reader: &mut Reader<'_, R>,
+    schema: &TableSchema,
+    updates: &[U],
+    mut visitor: impl FnMut(&mut ResourceBudget, Row<'_>, &U) -> Result<(), EditError>,
+) -> Result<(), EditError> {
     let pages = allocation::pages(reader, schema.layout.usage)?;
     let mut ordinal = 0;
     let mut matched = 0;
@@ -90,6 +101,7 @@ pub(super) fn visit<R: crate::NativeReadSource, U: RowAssignment>(
                     .checked_sub(schema.layout.max_columns.div_ceil(MASK_BITS))
                     .ok_or(InspectError::Malformed)?;
                 visitor(
+                    reader.budget,
                     Row {
                         data,
                         reference: reference(number, slot as u8),

@@ -62,6 +62,16 @@ passes 28 controls, including height-two trees on both owners and exact shared
 bitmap-byte retirement unions. All eight table-order pairs are byte-identical;
 this remains separate from native Access action/save qualification.
 
+The separate `preview_ace16_cascading_deletes` engineering API now expands
+qualified acyclic cross-table Cascade associations using original physical roots.
+Outgoing lookups require required-primary parent keys; nullable all-NULL children
+remain exempt. Explicit seeds validate before deduplication, RESTRICT edges retain
+final-image checks, and the common complete index/map preservation audits still
+apply. Self/cyclic cascades and SET NULL remain refused. This does not enable
+ordinary ACE saves or change the explicit RESTRICT-only batch API. Matching uses
+bounded full scalar snapshots, including unrelated Memo/OLE; see
+[the closed cascade contract](../../testing/ACE16_DELETE_PREVIEWS.md#separate-acyclic-cascading-deletions).
+
 Existing LONG AutoNumber deletion now has an
 [original-file preservation comparison](../../testing/AUTONUMBER_DELETE_OBSERVATIONS.md):
 sixteen candidates retain counter 260, including highest/all-row deletion, and

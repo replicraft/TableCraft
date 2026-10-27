@@ -1,5 +1,36 @@
 # Implementation status
 
+## Acyclic declared cascading deletion candidates
+
+The separate `preview_ace16_cascading_deletes` service now expands declared
+cross-table Cascade relationships over frozen original row associations. Explicit
+raw seeds validate before overlap/diamond deduplication. Outgoing lookups require
+genuine required non-NULL primary parent keys and the existing exact mutation
+carriers; incoming-only child deletion retains valid UNIQUE-parent membership
+without inventing an unused parent lookup. RESTRICT edges keep complete final-
+image validation, rather than acquiring an unobserved per-row timing rule.
+
+A private admission proof carries checked tables into the existing batch planner.
+Shared index/map composition, complete before/post constraints and independent
+global/per-table ownership/sibling audits remain mandatory. Source rows never
+become post-delete ordinals. Self/cyclic cascades, SET NULL and unsupported actions
+remain refused; unrelated components stay inactive. Ordinary ACE saves and the
+existing RESTRICT-only APIs are unchanged.
+
+The [scoped record](testing/results/ace16-cascading-delete-native-2026-10-26.json)
+records 255 distinct passing engine functions, including sixteen new controls,
+and three compile-fail checks. Strict lint, minimal compilation and formatting
+pass. Independent two-owner contraction verifies exact shared free-bit unions,
+retained NULL children, raw payload preservation and original-seed validation.
+Initial test-only module/fixture assumptions and their corrections are preserved.
+
+Matching currently materializes a second complete scalar snapshot; unrelated
+Memo/OLE can consume allowance despite unchanged payloads. This is explicitly
+bounded engineering behavior. Independent public self-tree actions left dangling
+children and loop/cycle actions overflowed their stack; none qualifies those
+profiles. Original-file candidate replay, native SQL action timing, macros and
+Access save/reopen remain separate acceptance work.
+
 ## Native French field query replay
 
 The [frozen comparison CLI replay](testing/results/french-comparison-fields-replay-2026-10-26.json)

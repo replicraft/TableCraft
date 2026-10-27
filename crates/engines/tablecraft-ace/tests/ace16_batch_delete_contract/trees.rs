@@ -17,6 +17,9 @@ const MAP_HEADER: usize = 5;
 const ROW_COUNT: usize = 16;
 const CHILDREN: [[usize; 2]; 2] = [[25, 26], [27, 28]];
 
+#[path = "trees/cascades.rs"]
+mod cascades;
+
 fn map_start(bytes: &[u8], page: usize) -> usize {
     let at = page * PAGE_BYTES + SLOT_START;
     let word = u16::from_le_bytes(bytes[at..at + 2].try_into().unwrap());

@@ -22,8 +22,9 @@ is introduced.
 
 The preview admits only plain subversion-zero ACE2016/2019 images and keeps the
 existing structural, property, active-content, schema-history, constraint and
-preservation gates. Touching relationships require the closed cross-table enforced
-RESTRICT profile below; unsupported actions are never silently skipped, even for
+preservation gates. The single-table and explicit batch services require the closed
+cross-table enforced RESTRICT profile below. The separate acyclic cascade service
+has its own action proof; unsupported actions are never silently skipped, even for
 empty requests. Ignored-NULL indexes remain UPDATE blockers;
 DELETE uses the separately qualified physical-membership subset described below.
 
@@ -128,6 +129,77 @@ checks reject missing/extra/already-free retirement bits and changed retired pag
 headers or residuals. Lint, minimal compilation and scoped formatting pass.
 Original-file multi-table comparisons and native Access action/save qualification
 remain separate evidence work.
+
+## Separate acyclic cascading deletions
+
+`NativeImage::preview_ace16_cascading_deletes` accepts the same borrowed
+`TableRowDeletes` groups and returns the same non-journalable `Ace16DeletePreview`.
+It is a separate action-expanding service. The existing single-table and explicit
+batch entrypoints retain their RESTRICT-only admission, including empty requests.
+No normal CLI/backend DELETE or native save is enabled.
+
+The new service checks every explicit seed against its original ordinary root and
+complete expected record before closure deduplication. It follows only enforced,
+known cross-table Cascade edges reachable from the explicitly named tables; every
+reached table passes the existing complete before-image gates even when no row
+matches. For every outgoing Cascade lookup that is expanded, parent columns must be
+exactly a checked genuine primary key in its declared order, with requiredness
+and uniqueness. Those parent components must all be non-NULL. Deleting only child
+rows through an incoming Cascade edge fires no parent lookup; existing full FK
+and final-membership checks apply without imposing this additional primary-key
+requirement on the unmodified parent. Corresponding lookup columns use matching
+existing Byte, Int16, Int32, Int64, Currency, GUID or Decimal declarations;
+Decimal precision and scale must agree. Matching is exact, without floating conversion or key re-encoding.
+All-NULL child tuples have no parent association. Unsupported actions, unknown or
+unenforced rules, self references and reachable directed Cascade cycles refuse;
+unrelated relationship components are not activated.
+
+Associations and ordinary physical root references are captured from the original
+image. A bounded iterative queue expands selected rows, processing a physical root
+once even when several seeds or diamond paths reach it. Explicit duplicate/stale
+requests still fail before this deduplication. Generated requests copy checked
+original raw records through the existing row walker. All captured rows must have
+qualified ordinary framing. No pointer into a temporary page or reconstructed
+scalar record becomes an expected payload. The current association service retains
+a complete second scalar snapshot after each full before-check, including
+unindexed Memo/OLE payloads. This bounded materialization is charged and can
+exhaust the allowance earlier than an explicit raw-row batch; matching is not
+payload-pruned.
+
+The resulting complete groups enter the existing batch planner through a private
+validated action proof. The same table/row ceilings apply to the expanded set,
+not just explicit seeds, and all capture, association, queue, key comparison,
+allocation and replay work shares one resource budget and cancellation callback.
+Restriction edges are validated against the complete final image, just as in the
+explicit batch service. This is an engineering final-image model; it does not
+claim the order or error behavior of SQL or successive mixed-action DELETE calls.
+All index, typed map-composition, global union and per-table root/ownership/sibling
+proofs remain required before candidate publication.
+
+Separate fresh public-builder and read-only getter captures cover both ACE16
+profiles, a chain, a diamond, overlapping/reversed seeds and all seven declared
+carrier families; their source and original-file receipts remain a separate
+evidence promotion. Twenty-four acyclic public Jackcess actions matched frozen
+original-association models, complete typed rows and logical index orders; NULL
+child sentinels remained. These are independent-reader observations, not native
+Microsoft Access qualification. Separate bounded self probes are contrary evidence:
+both self-tree actions returned success while leaving a dangling child; all six
+loop/cycle actions raised `StackOverflowError` under a 1 MiB JVM stack. Their
+partial copies were preserved and reopened; the cyclic failures left the original
+bytes unchanged. These cases remain refused rather than being qualified merely
+because the engineering work queue could terminate.
+
+The [implementation verification record](results/ace16-cascading-delete-native-2026-10-26.json)
+records 255 distinct passing unit/integration functions, including 16 new controls,
+and three compile-fail documentation checks. Independent tests cover frozen
+association expansion, NULL exemption, explicit/generated overlap, valid stored
+cycle refusal, directional primary qualification, final-image Restrict semantics,
+shared-byte two-owner contraction, exact record/page preservation, stale inputs,
+unsupported rules and typed budget/cancellation failures. The prior source and
+logs for two test-construction compile errors and an incorrect unknown-rule read
+coverage assertion remain preserved. No production failure or row-answer change
+was needed. Strict lint, minimal compilation and scoped formatting pass. These
+checks do not qualify a native Access action or save.
 
 ## Evidence boundaries
 
