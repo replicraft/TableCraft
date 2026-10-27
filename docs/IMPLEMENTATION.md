@@ -350,14 +350,15 @@ attempt. Each output adds one DATA page and six index leaves. Complete proofs
 verify root forwarding, fixed companions, all typed rows, persisted maximum-width
 keys, map effects and protected bytes. Modern DESC's mixed leaf needs a two-byte
 prefix; maximum-width inputs remain unchanged. These independent-writer results
-do not qualify TableCraft's future combined candidate or native Access saves.
+remain separate from TableCraft's candidate proofs below and native Access saves.
 
 ## Shared append state for engineering writers
 
 Existing variable-record and index-split previews now use the same
 [typed append cursor and map-byte ledger](testing/ACE16_SHARED_APPEND_STATE.md).
 DATA, index and bitmap reservations retain distinct purposes. This removes
-duplicate allocation state without adding a combined update API or normal save.
+duplicate allocation state. That extraction preceded the combined API below and
+did not add a normal save path.
 The recorded 123-function batch precedes a narrow hint-clear consistency fix;
 the causal control and 17 focused append/DATA functions pass after that fix.
 
@@ -369,8 +370,8 @@ The [record and placement proof](testing/ACE16_VARIABLE_DATA_PROOF.md) checks ex
 preferred Text/Binary bytes, original capacity, stored historical offsets/masks,
 expected values and logical-root identity. Map replay derives record lengths from
 those certified bytes rather than staged target ranges. Semantic no-ops remain
-byte-identical. This strengthens the working standalone service; combined
-DATA/index allocation and production saves remain unfinished.
+byte-identical. This strengthens the working standalone service and supplies the
+record authority for the combined API below. Production saves remain unfinished.
 
 ## Combined variable DATA and encoded-index growth
 
@@ -386,7 +387,11 @@ Complete metadata discovery protects all definition chains and map storage,
 including historical column roles. A protected highest candidate refuses before
 any failed-fit hint clear. Literal Binary-255 complete images cover shared global
 bytes, immediate and late index-map promotion and original logical ROW identity.
-Actual maximum-width Text/Binary originals await the committed-consumer replay.
+Its [first six original-file candidates](testing/VARIABLE_INDEX_SPLIT_CANDIDATE_OBSERVATIONS.md)
+now match every independently frozen image and pass six fresh getter/key/map
+proofs. All twelve first-attempt commands succeed without changing original
+inputs, maximum-width requests or budgets. Every candidate adds one DATA page
+and six index leaves; promotion remains separate literal evidence.
 This remains an explicit non-journalable engineering preview, with no normal
 save, macro or native Access qualification claim.
 
