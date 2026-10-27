@@ -9487,3 +9487,16 @@ sibling and map geometry is verified independently of public scratch rewrites.
 The [action receipt](results/ace16-parent-index-split-originals-2026-10-27.json)
 pins exact first-run sources, inputs, outputs and later saved-byte analyses.
 No recursive kernel success or native Microsoft Access qualification is claimed.
+
+### Revised raw Memo/OLE replacement acceptance
+
+The [revised frozen-consumer replay](LONG_VALUE_UPDATE_ACCEPTANCE_OBSERVATIONS.md)
+uses every unchanged input, request, expected image and budget from the initial
+zero-of-60 attempt. The corrected committed consumer matches all 60 complete
+independent images and 120 read-only getter/metadata captures. Results comprise
+eight NULL, 28 inline, twelve single and twelve chained replacements, including
+twelve forwarded parent records. Old chunks, sibling values, logical/index row
+identities and historical counters remain unchanged. The
+[receipt](results/ace16-long-value-originals-2026-10-27.json) pins exact first/revised
+lineage, historical compiled Git objects, outputs and saved read-only proofs.
+No public UPDATE was repeated and no native Access qualification is claimed.
