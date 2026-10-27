@@ -1,19 +1,16 @@
 #[allow(dead_code)]
-#[path = "../../../../tests/mutation/fixture.rs"]
-mod base;
-#[allow(dead_code)]
 #[path = "../../../../tests/decimal_composite_indexes/fixture.rs"]
 mod decimal_fixture;
 #[allow(dead_code)]
 #[path = "../../../../tests/composite_indexes/fixture.rs"]
 mod numeric_fixture;
-#[allow(dead_code)]
-#[path = "../../../../tests/support/mod.rs"]
-mod support;
 
 use super::{Coverage, IndexProfile, NativeIndex};
-use crate::table::indexes::composite::{Columns, DecimalColumns};
-use crate::{IndexInspection, InspectError, inspect_table_indexes};
+use crate::{
+    IndexInspection, InspectError, inspect_table_indexes,
+    table::indexes::composite::{Columns, DecimalColumns},
+    test_support::{base, support},
+};
 use decimal_fixture::Cell;
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;

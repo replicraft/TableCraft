@@ -1,15 +1,9 @@
 //! Causal tests of the extracted global proof; table/sibling proofs remain separate.
-#[allow(dead_code)]
-#[path = "../../../../../../tests/mutation/fixture.rs"]
-mod fixture;
-#[allow(dead_code)]
-#[path = "../../../../../../tests/support/mod.rs"]
-mod support;
-
 use super::audit_global;
 use crate::{
     EditError,
     table::indexes::mutation::{RetiredPage, RetirementTable},
+    test_support::{base as fixture, support},
 };
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
