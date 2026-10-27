@@ -62,9 +62,11 @@ refusal. An indexed French field
 still blocks every mutation admission, including no-op/empty DELETE and UPDATE;
 an unrelated unindexed French field does not create a new blocker. These are
 read capabilities, not an expansion of engineering or ordinary writes.
-`GeneralEqualityPrefix`, automatic General equality hints, adapter General
-comparison, full-string General comparison, LIKE and search remain General-only.
-No truncated index key is substituted for SQL comparison or native NLS behavior.
+`GeneralEqualityPrefix`, automatic General equality hints, General constructors,
+LIKE and search retain their General-only scope. The separate
+[complete French comparison provider](#provisional-complete-french-legacy-comparison)
+supplies SQL comparison without reusing truncated physical keys or claiming
+native NLS behavior.
 
 The [original oracle and engineering observations](../../testing/FRENCH_LEGACY_INDEX_OBSERVATIONS.md)
 keep stored descriptor/key evidence distinct from these local implementation

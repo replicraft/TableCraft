@@ -560,11 +560,11 @@ and 176 buffered failures, retaining all 34 immutable hashes. Other cultures and
 native Access/NLS qualification remain open. See the
 [contract and scoped evidence](../expressions/text/STRCONV.md#japanese-proper-case-word-boundaries).
 
-### P0 implementation boundaries reviewed 24 October 2026
+### P0 implementation boundaries reviewed 26 October 2026
 
 | Boundary | Current implementation | Remaining work |
 | --- | --- | --- |
-| Database text providers | Native General recognition requires LCID 1033, variant zero and version 0 or 1; raw predicates, keys and database StrComp use explicit providers | Additional database orders and native function-specific padding/weight qualification |
+| Database text providers | General recognition requires `1033/0/0` or `1033/0/1`; a separate exact French Legacy `1036/0/0` provider now supplies complete comparisons and qualified single Short Text physical reads | French LIKE/search, additional database orders, arbitrary long French Unicode/unprintable behavior and native function-specific padding/weight qualification |
 | System text / explicit LCID | Nineteen opt-in ICU host profiles implement decoded text comparison/search and exact registered LCID dispatch; General database comparison remains separate | Windows NLS/ACE function-specific qualification and broader locale providers; explicit registration does not establish native LCID equivalence |
 | Mixed field policies | Runtime policies survive retained cells; distinct required IDs conservatively merge to Conflict | Native precedence rules before relaxing conflicts |
 | Value categories | Explicit declaration-sensitive arithmetic now captures decimal integer literal carriers; default preparation is unchanged and unknown provenance is retained | Qualify literal subtypes and complete Variant promotion, Error and result-type matrices before enabling broader defaults |
@@ -572,6 +572,16 @@ native Access/NLS qualification remain open. See the
 The [explicit ICU profile](../expressions/text/ICU_TEXT_PROFILE.md) has bounded callbacks and 14,498
 independent ICU4C controls across nineteen host profiles. It supplies working host functionality while retaining
 the native NLS/ACE gaps above; no system locale or numeric LCID alias is inferred.
+
+The [French field replay](FRENCH_COMPARISON_FIELD_OBSERVATIONS.md#frozen-native-field-comparison-replay)
+now checks exact stored French/General policies through the committed CLI on both
+ACE 16-family originals: 96 successful executions and sixteen intended refusals,
+with zero disagreements. Independent Short keys and a restricted long Latin
+model supply separate expectations, including 20,000-unit Memo comparisons.
+This closes a concrete database-provider gap without establishing arbitrary
+French Unicode, Windows NLS or native Access SQL equivalence. French field LIKE
+remains refused; string built-ins still use their operation/default provider.
+The physical French index path does not authorize mutation or equality hints.
 
 These are implementation gaps as well as later qualification tasks. Completing
 raw String consumers does not complete P0. Windows comparisons remain deferred;
