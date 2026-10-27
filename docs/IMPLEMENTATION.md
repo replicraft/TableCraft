@@ -16,6 +16,21 @@ outputs, with all 120 column reports matching independently captured expectation
 These are storage-check results, not new UPDATE actions or native Access
 qualification. General Memo/OLE replacement and normal ACE saves remain unfinished.
 
+## Indirect long-value map source observations
+
+A separate [public-builder source phase](testing/INDIRECT_LONG_VALUE_MAP_OBSERVATIONS.md)
+now captures two unchanged ACE 16 originals with indirect Memo owned maps and
+inline candidate maps. All thirteen first-attempt construction/getter commands
+pass. Each original has 702 user rows; 700 padding pages separate the two Memo
+chains, giving a 716-page owned span. Both use one existing owned bitmap; candidate
+windows shift and remain inline. No map bits, field flags or headers were patched.
+
+A saved read-only verifier rebuilds all six checkpoints and compares complete
+record bodies, live chunks, map roles and prospective mutable-map storage claims.
+These observations do not expand engine admission or qualify indirect candidate
+maps, map growth, replacement candidates or native Access saves. The default
+storage checker and engineering preview retain their documented restrictions.
+
 ## Memo/OLE map edit authority correction
 
 The engineering preview now proves exclusive map identity and storage authority

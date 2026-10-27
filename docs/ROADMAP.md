@@ -123,6 +123,10 @@ Delivered read/query and engineering foundations:
   before allocation, with immutable-original final recensus. Its 85 scoped runtime
   functions pass; 44 read-only source-admission probes are distinct from candidate
   replay. Selected indirect LVAL maps and production saves remain open.
+  A [separate indirect-map source phase](testing/INDIRECT_LONG_VALUE_MAP_OBSERVATIONS.md)
+  now records mixed indirect-owned/inline-candidate Memo maps on both originals,
+  with thirteen successful fixture commands and complete saved storage proofs.
+  No map admission, growth or replacement qualification follows from that phase.
   A separate [48-control Text/Binary corpus](testing/ENCODED_DELETE_OBSERVATIONS.md)
   checks 36 candidates and twelve unsupported-profile refusals on the same
   committed tool, including the previously refused height-two delete-all cases.

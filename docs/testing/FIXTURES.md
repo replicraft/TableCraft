@@ -9627,3 +9627,20 @@ saved-proof verifier. Exact Java/Python observation sources are published beside
 that verifier. All 32 public fresh leaves have nonzero unused scratch; those
 bytes are not candidate goldens. These actions do not invoke the new typed split
 facade, regenerate sources, rerun earlier actions or establish native Access saves.
+
+### Indirect-owned long-value map sources
+
+The [mixed-map source phase](INDIRECT_LONG_VALUE_MAP_OBSERVATIONS.md) creates
+fresh V2016/V2019 originals through one fixed thirteen-command recipe, without
+native candidates, retries or metadata patching. Each file retains two selected
+rows and 700 separate padding rows. Actual Memo owned maps become indirect with
+one bitmap and a 716-page span; candidate maps shift and remain inline. Their
+ordinary table-owned maps are also indirect despite one ordinary data member.
+All six immutable checkpoints retain complete getter/raw row, descriptor, chunk,
+map and catalog-role evidence. The
+[receipt](results/indirect-long-value-map-observations-2026-10-27.json) pins exact
+executed Java/Python sources and the separately identified public wrapper.
+The saved verifier rebuilds six snapshots with 2,808 repeated record-body and 48
+live-chunk comparisons; these are comparison counts, not distinct stored objects.
+No selected-map admission, indirect candidate layout, map growth, reclamation or
+native Access save qualification is established.
