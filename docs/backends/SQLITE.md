@@ -1,5 +1,9 @@
 # Read-only SQLite backend
 
+Development is paused under the [Access-only priority](../decisions/0003_ACCESS_BEHAVIORAL_PARITY.md).
+The existing implementation below is retained; further SQLite work is outside the
+active backend and pre-UI roadmap.
+
 `tablecraft-sqlite` is a working synchronous `tablecraft-query::Source` adapter.
 The CLI opens an existing SQLite file with `query run --sqlite PATH`; `--database`
 continues selecting MDB/ACCDB, and the two options conflict. Native `--index`

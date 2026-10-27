@@ -1,5 +1,15 @@
 # Compatibility-driven roadmap
 
+## Current product priority
+
+As of 26 October 2026, the active goal is faithful Microsoft Access behavior on
+native files, with ACE 16 primary. SQLite and `.tcraft`/`.tcraftproj/` implementation,
+native-project Python, conversion and modernization are paused until explicitly
+resumed. They do not gate the backend-first path to the UI. Existing functionality
+and future architecture plans are retained. The
+[behavioral-parity decision](decisions/0003_ACCESS_BEHAVIORAL_PARITY.md) governs
+shared services and future UI workflows, defaults, restrictions and quirks.
+
 ## Delivery snapshot — 26 October 2026
 
 The numbered milestones below are broad epics, rather than individual tasks.
@@ -77,18 +87,19 @@ Major gates still open before the full backend is complete:
   and production saves remain unfinished.
 - [ ] Production transaction/recovery qualification, native shared-file
   coordination and mixed-client behavior.
-- [ ] Remaining backend contracts, application session/cursor lifecycle, object lifecycle, background
-  work and change notifications; further SQLite work retains the native-first order.
+- [ ] Remaining Access backend contracts, application session/cursor lifecycle,
+  object lifecycle, background work and change notifications. SQLite and native
+  projects remain outside this active scope while paused.
 
 Windows Access comparisons are deferred by the user. Their evidence status is
 separate from implemented engineering functionality; independent fixtures do not
 establish native conformance. The detailed milestone and acceptance tables below
 remain authoritative and are not replaced by this delivery snapshot.
 
-Priority decision updated 18 October 2026. The native Jet/ACE engine, Access
-interoperability, visual application builder and SQLite lead implementation.
-This orders work without imposing a strict sequence; UI and compatibility testing
-can progress alongside storage. [IMPLEMENTATION.md](IMPLEMENTATION.md) records
+Priority decision updated 26 October 2026. The native Jet/ACE engine and faithful
+Access interoperability lead implementation. The eventual application builder
+must preserve Access workflows; UI implementation follows the backend-first goal.
+Compatibility research can progress alongside storage. [IMPLEMENTATION.md](IMPLEMENTATION.md) records
 working behavior: bounded native metadata/scalar/indexed reads, owned Access SQL,
 read-only retrieval, exact values, generic I/O and a headless CLI. Read-only [SQLite snapshots](backends/SQLITE.md) feed the same query evaluator. Bounded
 offline Jet 4 edits now work; native shared-file coordination, forms/reports and UI
@@ -178,14 +189,16 @@ Existing VBA execution, editor/debugger and Windows/COM/Wine deferrals remain in
 force. They are explicit compatibility gaps under their owning documents; the
 100% goal does not label them implemented or quietly waive them.
 
-## Accepted native application direction
+## Deferred native project direction
 
-[The project decision](decisions/0001_PROJECT_FORMAT_AND_EXECUTION.md) records two
-first-class application paths: native SQLite-backed `.tcraft`/`.tcraftproj/` with
+[The retained project decision](decisions/0001_PROJECT_FORMAT_AND_EXECUTION.md)
+records future native SQLite-backed `.tcraft`/`.tcraftproj/` with
 Python/visual actions, and native MDB/ACCDB interoperability with Access objects,
 macros and preserved VBA. Python supersedes the earlier TypeScript-default idea.
-These are accepted targets, not implemented features. Shared designers will use
-backend-independent models with explicit format capabilities.
+The native-project implementation is paused by the
+[current priority](decisions/0003_ACCESS_BEHAVIORAL_PARITY.md). It must not change
+Access-compatible behavior or introduce generalized project requirements into
+the active backend. Retained contracts are future plans, not implemented features.
 
 Required contracts now cover [versioning](formats/SCHEMA_VERSIONING.md),
 [project lifecycle](architecture/PROJECT_LIFECYCLE.md),
@@ -198,8 +211,9 @@ ACCDB-to-`.tcraft` conversion precedes export back to Access; native Python does
 not become Access-executable automation. Web/PHP/TypeScript generation is later
 work and does not reopen the native language decision.
 
-The current native read/query priorities below remain in force; this does not restart broad
-SQLite expansion. Once the native priority permits, prove a minimal project
+The current native read/query priorities below remain in force. Resuming native
+projects requires explicit user reprioritization. The retained future plan is to
+prove a minimal project
 identity/version gate and recoverable internal migration before broad Python/UI
 work. Then prove a SQLite/form/Python/report workflow across qualified platforms,
 real native Access save/reopen plus separately mixed-client writes, and a full
@@ -760,8 +774,9 @@ research remain secondary format expansion, rather than prerequisites for the
 current Jet 4/ACE 2007/ACE 16 target. VBA/UDF execution remains explicitly deferred;
 queries depending on it must report that limitation. Writes, allocation/mutation,
 write transactions/recovery, schema editing, data-macro write safety, UI, forms/
-reports and SQLite expansion are outside this read/query checklist. They remain
-in the broader backend roadmap; this list does not mark them completed or waived.
+reports are outside this read/query checklist and remain in the broader Access
+roadmap. SQLite/native projects are paused, rather than remaining active backend
+milestones. This checklist does not mark unfinished Access work completed or waived.
 
 ## Stored GUID inspection
 
@@ -851,22 +866,25 @@ Apply each unfinished native milestone below to ACE 16 first. Existing Jet 4 and
 ACE 12 implementations are reusable foundations, not substitutes for ACE 16
 qualification. The SQLite read-only
 foundation was implemented early; that does not complete the preceding milestones
-or change the next native task. Further SQLite expansion follows this sequence.
+or change the next native task. Further SQLite/native-project work requires
+explicit user reprioritization and is excluded from the active sequence.
 
 | Step | Milestone | Completion work remaining |
 | --- | --- | --- |
 | 1 | Native schema metadata | Bounded ACE 16-family metadata, inert saved-query fragments and owned local SELECT reconstruction, scoped complex links/child scalars, bounded typed multivalue/attachment/stored-history collections and mixed read-only browsing pages, explicit stored scalar calculations and original attachment decoding work; remaining collection/query semantics, advanced types and native Access evidence remain |
 | 2 | Constraint validation | Qualified complete native index checks (including ACE 16 Decimal tuples) and one-to-ten-column Boolean/integer/Currency/GUID plus same-precision/scale ACE 16 Decimal FK tuple audits implemented (Boolean membership remains read-only) alongside bounded field/pure-rule audits, including statically Text/NULL Len and explicit binary StrComp; broader FK/expression profiles, collations, other carriers and native Access evidence remain |
 | 3 | Preservation | Complete images, unchanged-byte patch proofs and bounded direct catalog-child inspection implemented; owned children block edits; actual ACE/VBA application save/reopen and full dependency discovery remain unqualified |
-| 4 | Native physical mutation | Fixed Int32 replacements and ordinary/unique existing-tree maintenance work on offline Jet 4 copies; ACE 16 previews extend this to integral tuples, NULL transitions, checked foreign indexes and explicit multi-column/table batches within existing pages. Bounded integral/Currency/GUID and same-precision/scale Decimal update cascades now expand original associations across chains/cycles. Existing-width Decimal slot/index previews and ordinary deletion candidates with qualified existing-page contraction and single Short Text/Binary preserved keys are implemented. Explicit multi-table RESTRICT-only deletion batches compose shared retirement bits and validate final membership. A separate engineering service now expands qualified acyclic cross-table Cascade associations over original rows; self/cyclic actions and native SQL timing remain unqualified. A separate existing-width Short Text/Binary UPDATE service now re-encodes single/mixed tuple keys with full final constraints. Broader Text/Binary UPDATE and composite deletion, broader relationship actions, self/cyclic cascades, SET NULL, record resizing, allocation, splits/merges, INSERT and production DELETE remain unimplemented |
+| 4 | Native physical mutation | Fixed Int32 replacements and ordinary/unique existing-tree maintenance work on offline Jet 4 copies; ACE 16 previews extend this to integral tuples, NULL transitions, checked foreign indexes and explicit multi-column/table batches within existing pages. Bounded integral/Currency/GUID and same-precision/scale Decimal update cascades now expand original associations across chains/cycles. Existing-width Decimal slot/index previews and ordinary deletion candidates with qualified existing-page contraction and single Short Text/Binary preserved keys are implemented. Explicit multi-table RESTRICT-only deletion batches compose shared retirement bits and validate final membership. A separate engineering service now expands qualified acyclic cross-table Cascade associations over original rows; self/cyclic actions and native SQL timing remain unqualified. A separate existing-width Short Text/Binary UPDATE service now re-encodes single/mixed tuple keys with full final constraints. A separate variable-record service now supports fitted Short Text/Binary changes, hidden-target forwarding, alternate owned-page placement and represented EOF data-page allocation. General allocation/map growth, Memo/OLE replacement, index splits/merges, composite deletion, broader relationship actions, self/cyclic cascades, SET NULL, INSERT and production ACE saves remain unfinished |
 | 5 | Native transactions and recovery | Optional validated image journal integration and local fault/reopen tests implemented; native Access/power-loss/network-filesystem qualification remains |
 | 6 | Backend-neutral database contracts | Shared snapshots and consuming edits implemented with an Access consumer; connection/cursor/runtime APIs remain separate |
 | 7 | Query completion for editing | Bounded single-table/column UPDATE planning and CLI copies implemented; broader expressions, collations, actions and result-set updateability remain explicit gaps |
-| 8 | Additional backend/collaboration work | SQLite type/write policies beyond its current read-only source; native Access shared-file coordination and mixed-client recovery testing |
+| 8 | Native collaboration | Native Access shared-file coordination and mixed-client recovery testing; SQLite and native projects are paused |
 | 9 | Application runtime | Sessions, cursors, object lifecycle, bounded background work, cancellation and change notifications |
 | 10 | Desktop UI | Accessible shell/navigation/ribbon using the selected [Selawik UI font](architecture/TECH_STACK.md#desktop-typography-decision), read-only datasheets and SQL editor, then qualified editing and visual builders |
 
-Compatibility experiments and UI prototypes can progress alongside this work.
+Compatibility experiments and behavioral trace planning can progress alongside
+this work. UI implementation follows the backend-first goal; its conformance
+tests begin with the first UI components.
 Jet 1/2 research and complete historical-format coverage do not gate the UI.
 Native saves still require the relevant preservation/constraint/recovery evidence.
 
@@ -876,7 +894,7 @@ Native saves still require the relevant preservation/constraint/recovery evidenc
 | --- | --- | --- |
 | 1 | Native ACE 16 compatibility | Primary 100% target: reading, writing, indexes, transactions, unknown-object and existing VBA preservation; other Jet/ACE formats secondary |
 | 2 | Microsoft Access collaboration | Native shared-file locking, concurrent writes, durability and recovery; actual mixed-client tests |
-| 3 | SQLite and query engine | Tables, Access SQL, relationships, expression semantics and explicitly qualified translation |
+| 3 | Access query engine | Native tables, Access SQL, relationships, expression semantics and editable results |
 | 4 | Custom Office-style desktop UI | Ribbon, navigation pane, datasheets and visual query builder; accessibility from the first custom controls |
 | 5 | Forms and reports | Designers, binding, headless layout/rendering and native object interoperability |
 | 6 | P2P / CRDT collaboration | Offline-first replication, conflict handling, deterministic merges and constrained relational apply |
@@ -1005,8 +1023,8 @@ and native Access rounding/aggregate qualification remain required.
 ### Immediate sequencing
 
 After checked Decimal arithmetic, prioritize native reader
-reliability and remaining read/query gaps. Broader function-catalog expansion and
-SQLite expression work follow those priorities. Private reference packs remain
+reliability and remaining read/query gaps. Broader Access query-function work
+follows those priorities; SQLite expression work remains paused. Private reference packs remain
 research inputs; their planned scenarios are not implemented acceptance evidence.
 
 

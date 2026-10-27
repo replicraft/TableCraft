@@ -7,6 +7,11 @@ Exact adopted versions and reviews are recorded in
 Domain groups, current packages and progressive extraction rules are recorded in
 [ARCHITECTURE.md](ARCHITECTURE.md).
 
+The [current product decision](../decisions/0003_ACCESS_BEHAVIORAL_PARITY.md)
+prioritizes faithful Access behavior. SQLite, native projects and project Python
+are paused. Rendering/toolkit choices must preserve Access controls and workflows;
+application policies belong in shared services as well as the future UI.
+
 ## Implemented foundation
 
 | Component | Current implementation |
@@ -126,6 +131,10 @@ working implementations and tests. Record exact Access/DAO builds for oracle
 results, and report unavailable oracle environments as skipped.
 
 ## Native project and scripting decisions
+
+Implementation is paused until explicitly resumed under
+[the current product priority](../decisions/0003_ACCESS_BEHAVIORAL_PARITY.md).
+The following choices are retained future plans and do not gate Access work.
 
 The [accepted decision](../decisions/0001_PROJECT_FORMAT_AND_EXECUTION.md) selects a
 SQLite-backed `.tcraft` container and equivalent `.tcraftproj/` workspace. Internal

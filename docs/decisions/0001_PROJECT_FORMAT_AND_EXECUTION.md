@@ -1,5 +1,11 @@
 # Native projects, scripting and transaction ownership
 
+Implementation paused, 26 October 2026, by the
+[Access behavioral-parity decision](0003_ACCESS_BEHAVIORAL_PARITY.md).
+The project/Python/conversion direction below is retained future planning, not
+an active requirement before UI. Existing backend-owned transaction boundaries
+continue to apply to current Access work.
+
 Accepted direction, 18 October 2026. This records product and ownership decisions;
 the native project format, Python host and migration system are not implemented.
 

@@ -3,6 +3,11 @@
 Accepted direction, 18 October 2026; future application functionality, not a
 released API. This extends the [native-project decision](0001_PROJECT_FORMAT_AND_EXECUTION.md).
 
+The [Access behavioral-parity decision](0003_ACCESS_BEHAVIORAL_PARITY.md) now
+governs current native-file commands across all hosts. Shared editing services
+must preserve Access restrictions and observable operation behavior. Native-project
+implementation remains paused; these contracts do not resume it.
+
 All hosts use common semantic operations with discover/design/preview/validate/
 apply support. Stage multi-object changes against explicit revisions; bind
 applicable authorization to the exact diff/digest and scope. Recheck permissions,
