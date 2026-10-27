@@ -9855,3 +9855,19 @@ cancellation controls. The 62 distinct runtime checks and three compile-fail
 doctests remain separate from earlier retained-planner counts. The scoped record
 preserves causal before/after logs and authoring diagnostics. This is defensive
 engineering certification, not composite allocation or native Access evidence.
+
+### General Text/Binary split source observations
+
+The [source-only record](ENCODED_INDEX_SPLIT_SOURCE_OBSERVATIONS.md) describes two
+new unchanged Jackcess ACE 16 originals with 900 rows each in General legacy text,
+General modern text and Short Binary targets, plus one Memo/OLE sentinel. Actual
+source fields, raw variable slots, full ROW/key streams, physical aliases, maps
+and measured capacities are independently checked. No third-party fixture bytes
+are committed.
+
+The initial javac failure produced no database; its partial artifacts and logs
+remain distinct from the corrected five successful source commands. The exact
+corrected helper and function-equivalent saved model are tracked with a later
+read-only verifier. It rechecks 48 saved identities, 5,402 typed rows, 5,400 slots
+and 21,602 logical index entries, including aliases. No UPDATE/reference action,
+native baseline call or split candidate acceptance belongs to this source phase.

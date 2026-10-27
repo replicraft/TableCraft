@@ -145,6 +145,12 @@ certifies admitted tuple keys and original topology, rejecting another
 reader-valid alternative-prefix forgery. Neither correction adds a slot split
 consumer, composite allocation or a production write path.
 
+The separate [Text/Binary source phase](../../testing/ENCODED_INDEX_SPLIT_SOURCE_OBSERVATIONS.md)
+now measures overflow and repeated split demand in both General text families and
+Short Binary on two unchanged ACE 16 sources. Complete typed/index/map observations
+and raw slot geometry are checked. Source construction does not grant new split
+eligibility or establish a working candidate/save path.
+
 A separate [index-owned map promotion service](../../testing/ACE16_INDEX_MAP_GROWTH.md)
 now extends the same engineering split APIs when an inline map's complete required
 span exceeds its qualified window. It preserves the original map-row extent,
