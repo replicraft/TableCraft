@@ -15,7 +15,7 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 
 mod directory;
 
-use directory::Directory;
+pub(super) use directory::Directory;
 
 pub(super) trait RowAssignment {
     fn row(&self) -> usize;

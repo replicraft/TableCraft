@@ -22,6 +22,8 @@ pub(crate) const GLOBAL_FREE_REFERENCE: u32 = reference(GLOBAL_MAP_PAGE, GLOBAL_
 pub(crate) enum MapRole {
     Owned,
     GlobalFree,
+    // Candidate data pages, not a complete free-byte or ownership inventory.
+    TableFreeSpace,
 }
 
 pub(crate) struct MapCell {
@@ -38,6 +40,38 @@ pub(crate) struct RepresentedMap {
 }
 
 impl RepresentedMap {
+    /// Retain physical metadata identities for an independent unchanged-page audit.
+    pub(crate) fn protect_storage<R: NativeReadSource>(
+        &self,
+        reader: &mut Reader<'_, R>,
+        protected: &mut Vec<u32>,
+    ) -> Result<(), InspectError> {
+        let mut append = |number: u32, reader: &mut Reader<'_, R>| {
+            reader.work(protected.len())?;
+            if !protected.contains(&number) {
+                reader
+                    .budget
+                    .charge_allocation(1, size_of::<u32>() as u64)?;
+                protected
+                    .try_reserve(1)
+                    .map_err(|_| InspectError::Allocation)?;
+                protected.push(number);
+            }
+            Ok::<(), InspectError>(())
+        };
+        append(self.container, reader)?;
+        if self.payload[0] == INDIRECT_MAP {
+            for bytes in self.payload[1..].as_chunks::<PAGE_POINTER_BYTES>().0 {
+                reader.tick()?;
+                let number = u32_at(bytes, 0)?;
+                if number != 0 {
+                    append(number, reader)?;
+                }
+            }
+        }
+        Ok(())
+    }
+
     pub(crate) fn read<R: NativeReadSource>(
         reader: &mut Reader<'_, R>,
         reference: u32,
@@ -54,7 +88,7 @@ impl RepresentedMap {
         // Public producer/getter bytes establish owner0 for owned usage rows
         // and self-owner1 for the fixed global page1,row0 container.
         let owner = match role {
-            MapRole::Owned => OWNED_CONTAINER_OWNER,
+            MapRole::Owned | MapRole::TableFreeSpace => OWNED_CONTAINER_OWNER,
             MapRole::GlobalFree => {
                 if reference != GLOBAL_FREE_REFERENCE {
                     return Err(InspectError::Unsupported);
@@ -104,9 +138,11 @@ impl RepresentedMap {
             }
             _ => return Err(InspectError::Unsupported),
         }
-        if matches!(role, MapRole::Owned) {
-            // Owned addresses must all be in-file. Global FREE bits may describe
-            // future pages and deliberately do not pass through this validator.
+        if matches!(role, MapRole::Owned | MapRole::TableFreeSpace) {
+            // Owned addresses and qualified table candidate addresses are in
+            // file. This shares only bitmap grammar/address validation; their
+            // membership meanings remain distinct. Global FREE bits may name
+            // future pages and deliberately do not use this validator.
             PageCursor::new(reader, reference)?;
         }
         reader.work(result.payload.len())?;

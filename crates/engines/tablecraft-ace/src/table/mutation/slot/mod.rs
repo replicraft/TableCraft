@@ -1,6 +1,6 @@
 //! Existing-slot Text/Binary changes with mandatory index and constraint proof.
 mod stage;
-mod storage;
+pub(super) mod storage;
 mod update;
 
 use super::{Ace16WritePreview, EditError, WriteBlocker, gates, preview};

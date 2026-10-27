@@ -26,7 +26,10 @@ allocated page sets and file length do not change. Eligible mask changes are exp
 limited to the selected bit. Eligible indexed Byte, Int16/32/64 and Currency NULL
 transitions use the page repacking profiles below. Qualified GUID, Boolean/IEEE/DATE
 indexes, existing-width Decimal slots and same-width Short Text/Binary slots have
-their own profiles below. Memo/OLE changes, record resizing, INSERT, schema changes,
+their own profiles below. A separate [same-page update API](ACE16_PAGE_UPDATES.md)
+admits fitted Text/Binary records and hidden-target forwarding on the original
+root page. These fixed-field APIs do not resize records. Memo/OLE changes,
+page allocation, INSERT, schema changes,
 AutoNumber assignment and broader UPDATE index topology changes remain unsupported. Ordinary-root deletion has a separate
 [existing-page candidate API](ACE16_DELETE_PREVIEWS.md), with its own request and return
 types; it does not turn these fixed-field APIs into a general writer.

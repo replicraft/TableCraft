@@ -1,7 +1,8 @@
 # Bounded offline native edits
 
 An opt-in [ACE 16 engineering preview](../../testing/ACE16_WRITE_PREVIEWS.md) now creates
-physical fixed scalar and existing-width Text/Binary candidates for disposable-copy comparisons. It returns a separate,
+physical fixed scalar and qualified Text/Binary candidates for disposable-copy
+comparisons. It returns a separate,
 non-journalable type and does not enable the normal ACE save/commit path. Data-macro
 semantics and actual native Access qualification remain pending. The optional [declared update-cascade planner](../../testing/ACE16_WRITE_PREVIEWS.md#declared-update-cascade-batches)
 expands bounded integral/Currency/GUID actions inside that engineering boundary. The qualified
@@ -27,6 +28,13 @@ passes 124 complete candidates and 38 atomic refusals on the frozen committed
 consumer, with exact retained keys, ancestor bounds and unchanged-byte proofs.
 These results retain their distinction from public-writer canonicalization and
 native Access save semantics.
+The separate [same-page update service](../../testing/ACE16_PAGE_UPDATES.md)
+can also reuse fitted record capacity or append a hidden target on the original
+logical root's page. It retains logical row/index references, exclusive final
+target ownership and independent opaque-byte/map audits. Slot, physical-space
+and candidate-hint limits refuse without allocating another page. This remains
+an engineering candidate, with ordinary ACE saves and data-macro qualification
+still unavailable.
 Contraction now qualifies complete internal-node sibling chains by height and
 repairs retained neighbors. Entirely unlinked levels retain their existing
 profile; partial or malformed chains refuse. The

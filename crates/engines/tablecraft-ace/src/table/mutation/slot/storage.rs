@@ -17,7 +17,10 @@ use tablecraft_core::{
 const COMPRESSED_MARKER: [u8; 2] = [0xff, 0xfe];
 const UTF16_BYTES: usize = size_of::<u16>();
 
-pub(super) fn validate(column: &NativeColumn, value: &Value) -> Result<(), EditError> {
+pub(in crate::table::mutation) fn validate(
+    column: &NativeColumn,
+    value: &Value,
+) -> Result<(), EditError> {
     let valid = match value {
         Value::Null => true,
         Value::Text(text) if column.native_type() == SHORT_TEXT => {
@@ -38,7 +41,7 @@ pub(super) fn validate(column: &NativeColumn, value: &Value) -> Result<(), EditE
     }
 }
 
-pub(super) fn qualify(column: &NativeColumn) -> Result<(), EditError> {
+pub(in crate::table::mutation) fn qualify(column: &NativeColumn) -> Result<(), EditError> {
     let supported = !column.fixed()
         && match column.native_type() {
             SHORT_TEXT => {
@@ -63,7 +66,7 @@ pub(super) fn qualify(column: &NativeColumn) -> Result<(), EditError> {
 
 /// Select a proven native representation which fits this existing slot. The
 /// compression flag expresses the preferred form, never extra slot capacity.
-pub(super) fn encode_for_span(
+pub(in crate::table::mutation) fn encode_for_span(
     column: &NativeColumn,
     value: &Value,
     span: usize,
