@@ -73,6 +73,9 @@ Delivered read/query and engineering foundations:
   Its [two unchanged-original candidates](testing/ROOT_SPLIT_UPDATE_OBSERVATIONS.md)
   now pass their first complete-image, typed-value and index/reference proofs
   through a frozen committed consumer.
+  Its [two non-root original-file candidates](testing/NONROOT_SPLIT_UPDATE_OBSERVATIONS.md)
+  also pass first-attempt complete-image proofs, allocating one index page and
+  retaining the source's unchanged Memo/OLE storage.
   A separate [ordinary Memo/OLE replacement service](testing/ACE16_LONG_VALUE_UPDATES.md)
   now composes qualified column-owned LVAL append/EOF allocation with parent
   descriptor forwarding and independently replays request/map/payload authority.

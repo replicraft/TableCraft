@@ -36,6 +36,11 @@ minimal compilation and formatting. A separate engineering consumer supports
 quoted TSV requests with an explicit larger value profile, with fourteen distinct
 consumer tests recorded separately. Original-file candidate qualification requires a frozen committed
 consumer; the prior public transition corpus is not candidate evidence.
+The first frozen 60-case original-file attempt refused all cases atomically,
+without output: V2016 returned unsupported-column errors and V2019 returned
+malformed-structure errors. Selected field metadata matches the intended raw
+profile; diagnosis of the complete original-image admission remains in progress.
+These cases are unmet, not passing candidate evidence.
 
 ## Fixed Int32 leaf split candidates
 
@@ -62,7 +67,9 @@ key/row parent bounds are repaired without changing the root ID or height.
 The [non-root scoped record](testing/results/ace16-nonroot-index-splits-native-2026-10-27.json)
 passes 100 distinct runtime functions, including retained root-leaf regressions,
 and three compile-fail checks. Internal-node overflow remains an atomic refusal.
-New-kernel original-file comparison remains a separate next gate.
+The [two original-file candidates](testing/NONROOT_SPLIT_UPDATE_OBSERVATIONS.md)
+now pass on their first run, with complete independent image proofs. Each adds
+one EOF leaf while preserving original Memo/OLE descriptors and chunk pages.
 
 The [non-root reference capture](testing/NONROOT_INDEX_SPLIT_OBSERVATIONS.md)
 records two current-service refusals and two successful public updates. Its first

@@ -1,0 +1,717 @@
+{
+  "date": "2026-10-27",
+  "scope": "Two original ACE16 non-root Int32 leaf split engineering candidates; no normal save/data-macro/native Access qualification",
+  "actual": {
+    "session": 73881,
+    "terminal_status": 0,
+    "first_attempt": true,
+    "matched_candidates": 2,
+    "disagreements": 0,
+    "commands": 6,
+    "native_calls": 2,
+    "getter_map_calls": 4,
+    "public_update_calls": 0,
+    "action_retries": 0,
+    "immutable_inputs_unchanged": true
+  },
+  "build": {
+    "receipt": {
+      "path": "docs/testing/results/ace16-nonroot-split-example-build-2026-10-27.json",
+      "bytes": 32618,
+      "sha256": "fb0391d2bd05fcf69b12b2267e697b13c8ddc6b578d6165a5fa8702e7f8398ca"
+    },
+    "artifact": {
+      "path": ".cache/tablecraft-bin/ace16-nonroot-split-20261027",
+      "bytes": 18501560,
+      "sha256": "d9facf656f8cb51e5e235223b5532ee64624695e0f1a165fee3b8c6a4ec614c3"
+    },
+    "compiled_revision": "d8bdf6c3ec015afdb70ffa4668ac10974cf7dbb6",
+    "selected_Git_objects": 153
+  },
+  "frozen_plan": {
+    "path": ".cache/ace16-nonroot-split-acceptance-next-20261027/plan.json",
+    "bytes": 35100,
+    "sha256": "fc30b8f73ef5d26502b9d13c68d9bbf8591b571a7faf31315fe4914ce4eea87f"
+  },
+  "executed_private_sources": [
+    {
+      "path": ".cache/ace16-nonroot-split-acceptance-next-20261027/prepare.py",
+      "bytes": 5993,
+      "sha256": "63d8765418bff1f44d3b2629331d167d21817463e3bd6240fb00b42a4b85240a"
+    },
+    {
+      "path": ".cache/ace16-nonroot-split-acceptance-next-20261027/proof.py",
+      "bytes": 4541,
+      "sha256": "ca0d81e7fe99729ed87be03eb4e160f758754373ea6bc7def0ea11d40424648e"
+    },
+    {
+      "path": ".cache/ace16-nonroot-split-acceptance-next-20261027/replay.py",
+      "bytes": 9483,
+      "sha256": "bcf47c18b6886b61b5ee3f88cfb264687f1f4602a1b399ee95a4f88bdd9e0732"
+    }
+  ],
+  "source_archives": [
+    {
+      "source": {
+        "path": ".cache/ace16-nonroot-split-acceptance-next-20261027/replay.py",
+        "bytes": 9483,
+        "sha256": "bcf47c18b6886b61b5ee3f88cfb264687f1f4602a1b399ee95a4f88bdd9e0732"
+      },
+      "archive": {
+        "path": ".cache/ace16-nonroot-split-acceptance-first-20261027/executed-sources/replay.py",
+        "bytes": 9483,
+        "sha256": "bcf47c18b6886b61b5ee3f88cfb264687f1f4602a1b399ee95a4f88bdd9e0732"
+      }
+    },
+    {
+      "source": {
+        "path": ".cache/ace16-nonroot-split-acceptance-next-20261027/proof.py",
+        "bytes": 4541,
+        "sha256": "ca0d81e7fe99729ed87be03eb4e160f758754373ea6bc7def0ea11d40424648e"
+      },
+      "archive": {
+        "path": ".cache/ace16-nonroot-split-acceptance-first-20261027/executed-sources/proof.py",
+        "bytes": 4541,
+        "sha256": "ca0d81e7fe99729ed87be03eb4e160f758754373ea6bc7def0ea11d40424648e"
+      }
+    },
+    {
+      "source": {
+        "path": ".cache/ace16-nonroot-split-acceptance-next-20261027/plan.json",
+        "bytes": 35100,
+        "sha256": "fc30b8f73ef5d26502b9d13c68d9bbf8591b571a7faf31315fe4914ce4eea87f"
+      },
+      "archive": {
+        "path": ".cache/ace16-nonroot-split-acceptance-first-20261027/executed-sources/plan.json",
+        "bytes": 35100,
+        "sha256": "fc30b8f73ef5d26502b9d13c68d9bbf8591b571a7faf31315fe4914ce4eea87f"
+      }
+    }
+  ],
+  "precall_snapshot": {
+    "path": ".cache/ace16-nonroot-split-acceptance-first-20261027/before-first-call.json",
+    "bytes": 41976,
+    "sha256": "eec3ac6dda875cc402dd2537f7fd320736e652c5ae4e376eff89e25fab6b5353"
+  },
+  "raw_report": {
+    "path": ".cache/ace16-nonroot-split-acceptance-first-20261027/report.json",
+    "bytes": 3294652,
+    "sha256": "e523b302f4b0655e97774817112e63a2cee2e1f5e4d390d0c2052dc339bdd260"
+  },
+  "first_log": {
+    "path": ".cache/ace16-nonroot-split-acceptance-next-20261027/replay-first.log",
+    "bytes": 231,
+    "sha256": "87ae2992801333f6b77e498b414dddd01fdd338270414f4b2e32b613b100e89d"
+  },
+  "immutable_runtime_inputs": [
+    {
+      "path": ".cache/ace16-nonroot-split-acceptance-next-20261027/replay.py",
+      "bytes": 9483,
+      "sha256": "bcf47c18b6886b61b5ee3f88cfb264687f1f4602a1b399ee95a4f88bdd9e0732"
+    },
+    {
+      "path": ".cache/ace16-nonroot-split-acceptance-next-20261027/proof.py",
+      "bytes": 4541,
+      "sha256": "ca0d81e7fe99729ed87be03eb4e160f758754373ea6bc7def0ea11d40424648e"
+    },
+    {
+      "path": ".cache/ace16-nonroot-split-acceptance-next-20261027/plan.json",
+      "bytes": 35100,
+      "sha256": "fc30b8f73ef5d26502b9d13c68d9bbf8591b571a7faf31315fe4914ce4eea87f"
+    },
+    {
+      "path": "docs/testing/nonroot_index_split_originals/capture.py",
+      "bytes": 16330,
+      "sha256": "af59ff62cab153ecea22077712f1ee02f8faaeb9ecbfaba420a91498621aee8b"
+    },
+    {
+      "path": "docs/testing/DeleteTreeFixture.java",
+      "bytes": 9873,
+      "sha256": "6ba828bafb185fc27c8b0ea05fa6fe5d63c6a2050317f624d5be08556368a5bb"
+    },
+    {
+      "path": "docs/testing/nonroot_index_split_originals/NonrootSplitReference.java",
+      "bytes": 7679,
+      "sha256": "cfde35e00bd7230df54ce54975ba10ae8de98eba6a0a646049083c511228c951"
+    },
+    {
+      "path": "docs/testing/capture_delete_trees.py",
+      "bytes": 20353,
+      "sha256": "05f15179d1b4c689e1dd045617335f66b98189fbd12259838cc0ab5da4ebfdb1"
+    },
+    {
+      "path": "docs/testing/delete_reference_maps.py",
+      "bytes": 8635,
+      "sha256": "9fca51758e0f26e37dab2e27ff2c41c0e8a7a8110e9a047eda1ccb2a91eadda8"
+    },
+    {
+      "path": "docs/testing/index_split_originals/capture.py",
+      "bytes": 18394,
+      "sha256": "52662e335fe5df269d9553be034f1efeeb313c82e642b3c2fca10a24a32dfdac"
+    },
+    {
+      "path": "docs/testing/slot_preview_originals/common.py",
+      "bytes": 2697,
+      "sha256": "4d6e13158e1c039f1a75bb12828cfa7eaf811e58e06e5e4de0f4c605e1519f8c"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+      "bytes": 1407244,
+      "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+    },
+    {
+      "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/report.json",
+      "bytes": 6435161,
+      "sha256": "36f22c7426f5e569b4f7c8a1adf8d42f002cc488034f2bda9201948b0f192bc3"
+    },
+    {
+      "path": ".cache/ace16-nonroot-split-next-20261027/handoff.json",
+      "bytes": 3117,
+      "sha256": "a28ba71690aced70665edf24b6628a296ce013679e2816036898f8a7e6621d49"
+    },
+    {
+      "path": "docs/testing/results/ace16-nonroot-split-example-build-2026-10-27.json",
+      "bytes": 32618,
+      "sha256": "fb0391d2bd05fcf69b12b2267e697b13c8ddc6b578d6165a5fa8702e7f8398ca"
+    },
+    {
+      "path": ".cache/tablecraft-bin/ace16-nonroot-split-20261027",
+      "bytes": 18501560,
+      "sha256": "d9facf656f8cb51e5e235223b5532ee64624695e0f1a165fee3b8c6a4ec614c3"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before.accdb",
+      "bytes": 679936,
+      "sha256": "1f9f1cf80830ccda64d3b025ecbc5e648184665530ed301e9ad3ffddfe553400"
+    },
+    {
+      "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2016-public-reference.accdb",
+      "bytes": 720896,
+      "sha256": "1fdc81ddf1a8a9328502eab35ed0a26e2528fb8c6595a75944457ca9d502a3d7"
+    },
+    {
+      "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2016-before-getter.stdout",
+      "bytes": 334030,
+      "sha256": "9a7ae83838b4bb130747e20173b23a0ad23514018c3290aeacd3c9cc88812488"
+    },
+    {
+      "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2016-before-getter.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2016-before-maps.stdout",
+      "bytes": 1814,
+      "sha256": "ff727f8f5f9246fc4d45619de64573b8b22b1d7fd3f1a32e256b9cc6ab1acf53"
+    },
+    {
+      "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2016-before-maps.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2016-after-getter.stdout",
+      "bytes": 334078,
+      "sha256": "2557511c10f978784847acc018af9d86390caf2fcaee933b99e62f9b0ee0da4c"
+    },
+    {
+      "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2016-after-getter.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2016-after-maps.stdout",
+      "bytes": 1841,
+      "sha256": "4217e5940793472eb831d88ab77495fba7334d6655b9012e960dd6d6d846b547"
+    },
+    {
+      "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2016-after-maps.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before.accdb",
+      "bytes": 753664,
+      "sha256": "90a04486c3c7e01061bb8c68718c8442c4fdc712559d7006fe7ca3dc1c463dc2"
+    },
+    {
+      "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2019-public-reference.accdb",
+      "bytes": 794624,
+      "sha256": "c44a436994402fc32bb9db90b065789076d05d5fe2d1fd06620f49cc48105db8"
+    },
+    {
+      "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2019-before-getter.stdout",
+      "bytes": 334031,
+      "sha256": "463833710a647a16602d6d22f12c1156c098fe2c3ae58021053d153154145f5f"
+    },
+    {
+      "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2019-before-getter.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2019-before-maps.stdout",
+      "bytes": 2074,
+      "sha256": "31bfac2d513b9949454380adc0a5f692aed2d76f653b8e76c3be109289bd9fc0"
+    },
+    {
+      "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2019-before-maps.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2019-after-getter.stdout",
+      "bytes": 334079,
+      "sha256": "ffc5dc7a3a4f80533beaf3af2f97f525bd14d1eb29a8eafa9d99a419ccbf229e"
+    },
+    {
+      "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2019-after-getter.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2019-after-maps.stdout",
+      "bytes": 2101,
+      "sha256": "9811fb69247064a62b9ee1f06de99e31b6dac1e84fb2e1955401b40d4bd74aa5"
+    },
+    {
+      "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2019-after-maps.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-nonroot-split-acceptance-first-20261027/V2016-request.json",
+      "bytes": 301,
+      "sha256": "a663a49fb8409491ca79bd676320bab70911f66aeedc397ebd8b5cc39ea02505"
+    },
+    {
+      "path": ".cache/ace16-nonroot-split-acceptance-first-20261027/V2019-request.json",
+      "bytes": 301,
+      "sha256": "0cf4ecd71b3cd81840b3401969a3408645aa526684c9d646b41c41b99e9b209c"
+    }
+  ],
+  "cases": [
+    {
+      "profile": "V2016",
+      "source": {
+        "path": ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before.accdb",
+        "bytes": 679936,
+        "sha256": "1f9f1cf80830ccda64d3b025ecbc5e648184665530ed301e9ad3ffddfe553400"
+      },
+      "public_reference": {
+        "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2016-public-reference.accdb",
+        "bytes": 720896,
+        "sha256": "1fdc81ddf1a8a9328502eab35ed0a26e2528fb8c6595a75944457ca9d502a3d7"
+      },
+      "request": {
+        "path": ".cache/ace16-nonroot-split-acceptance-first-20261027/V2016-request.json",
+        "bytes": 301,
+        "sha256": "a663a49fb8409491ca79bd676320bab70911f66aeedc397ebd8b5cc39ea02505"
+      },
+      "candidate": {
+        "path": ".cache/ace16-nonroot-split-acceptance-first-20261027/V2016-candidate.accdb",
+        "bytes": 684032,
+        "sha256": "edb08a0883984d4c01a9144e39856a3fae755b0ff0ffeb0103fe417c0dd11ab0"
+      },
+      "whole_image_proof": {
+        "retained_root": 91,
+        "root_height": 1,
+        "retained_right": 143,
+        "new_left_eof": 166,
+        "previous_leaf": 144,
+        "left_entries": 248,
+        "right_entries": 248,
+        "left_maximum_full_key_row": "7f800002f000009516",
+        "right_maximum_full_key_row": "7fffffffff0000691b",
+        "existing_root_entries": 2,
+        "root_residual_start": 373242,
+        "right_residual_start": 588193,
+        "whole_expected_image_sha256": "edb08a0883984d4c01a9144e39856a3fae755b0ff0ffeb0103fe417c0dd11ab0",
+        "file_growth": 4096,
+        "original_LVAL_descriptors_and_pages_preserved": true
+      },
+      "exact_map_edits": [
+        {
+          "offset": 372543,
+          "before": 0,
+          "after": 8,
+          "mask": 8,
+          "role": "IndexTree0Owned"
+        },
+        {
+          "offset": 8148,
+          "before": 192,
+          "after": 128,
+          "mask": 64,
+          "role": "JackcessGlobalFree"
+        }
+      ],
+      "typed_and_index_agreement": true,
+      "getter_stdout": {
+        "path": ".cache/ace16-nonroot-split-acceptance-first-20261027/V2016-candidate-getter.stdout",
+        "bytes": 334078,
+        "sha256": "2557511c10f978784847acc018af9d86390caf2fcaee933b99e62f9b0ee0da4c"
+      },
+      "map_probe_stdout": {
+        "path": ".cache/ace16-nonroot-split-acceptance-first-20261027/V2016-candidate-maps.stdout",
+        "bytes": 1841,
+        "sha256": "3baada0ea5d3c20fd8b555fd8b4fee898850ff29a1815978f076f846b5b45ae6"
+      },
+      "historical_counters": [
+        {
+          "table": "Tree",
+          "index": "PrimaryKey",
+          "before": 1000,
+          "after": 1000
+        },
+        {
+          "table": "Tree",
+          "index": "GroupAsc",
+          "before": 12,
+          "after": 12
+        },
+        {
+          "table": "Tree",
+          "index": "GroupTwin",
+          "before": 12,
+          "after": 12
+        },
+        {
+          "table": "Tree",
+          "index": "GroupDesc",
+          "before": 12,
+          "after": 12
+        },
+        {
+          "table": "Tree",
+          "index": "Compound",
+          "before": 60,
+          "after": 60
+        },
+        {
+          "table": "Tree",
+          "index": "UniqueScore",
+          "before": 1000,
+          "after": 1000
+        }
+      ]
+    },
+    {
+      "profile": "V2019",
+      "source": {
+        "path": ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before.accdb",
+        "bytes": 753664,
+        "sha256": "90a04486c3c7e01061bb8c68718c8442c4fdc712559d7006fe7ca3dc1c463dc2"
+      },
+      "public_reference": {
+        "path": ".cache/ace16-nonroot-split-original-actions-initial-20261027/V2019-public-reference.accdb",
+        "bytes": 794624,
+        "sha256": "c44a436994402fc32bb9db90b065789076d05d5fe2d1fd06620f49cc48105db8"
+      },
+      "request": {
+        "path": ".cache/ace16-nonroot-split-acceptance-first-20261027/V2019-request.json",
+        "bytes": 301,
+        "sha256": "0cf4ecd71b3cd81840b3401969a3408645aa526684c9d646b41c41b99e9b209c"
+      },
+      "candidate": {
+        "path": ".cache/ace16-nonroot-split-acceptance-first-20261027/V2019-candidate.accdb",
+        "bytes": 757760,
+        "sha256": "797016160beae16e29f4349c165870d551853c9033586c2a79fd7421a39938f1"
+      },
+      "whole_image_proof": {
+        "retained_root": 108,
+        "root_height": 1,
+        "retained_right": 160,
+        "new_left_eof": 184,
+        "previous_leaf": 161,
+        "left_entries": 248,
+        "right_entries": 248,
+        "left_maximum_full_key_row": "7f800002f00000a616",
+        "right_maximum_full_key_row": "7fffffffff00007a1b",
+        "existing_root_entries": 2,
+        "root_residual_start": 442874,
+        "right_residual_start": 657825,
+        "whole_expected_image_sha256": "797016160beae16e29f4349c165870d551853c9033586c2a79fd7421a39938f1",
+        "file_growth": 4096,
+        "original_LVAL_descriptors_and_pages_preserved": true
+      },
+      "exact_map_edits": [
+        {
+          "offset": 442175,
+          "before": 0,
+          "after": 16,
+          "mask": 16,
+          "role": "IndexTree0Owned"
+        },
+        {
+          "offset": 8151,
+          "before": 255,
+          "after": 254,
+          "mask": 1,
+          "role": "JackcessGlobalFree"
+        }
+      ],
+      "typed_and_index_agreement": true,
+      "getter_stdout": {
+        "path": ".cache/ace16-nonroot-split-acceptance-first-20261027/V2019-candidate-getter.stdout",
+        "bytes": 334079,
+        "sha256": "ffc5dc7a3a4f80533beaf3af2f97f525bd14d1eb29a8eafa9d99a419ccbf229e"
+      },
+      "map_probe_stdout": {
+        "path": ".cache/ace16-nonroot-split-acceptance-first-20261027/V2019-candidate-maps.stdout",
+        "bytes": 2101,
+        "sha256": "caa2bc00c17c33ce40838f482d1e2752d7037d20fb2d9c566b37c88efd2a9f28"
+      },
+      "historical_counters": [
+        {
+          "table": "Tree",
+          "index": "PrimaryKey",
+          "before": 1000,
+          "after": 1000
+        },
+        {
+          "table": "Tree",
+          "index": "GroupAsc",
+          "before": 12,
+          "after": 12
+        },
+        {
+          "table": "Tree",
+          "index": "GroupTwin",
+          "before": 12,
+          "after": 12
+        },
+        {
+          "table": "Tree",
+          "index": "GroupDesc",
+          "before": 12,
+          "after": 12
+        },
+        {
+          "table": "Tree",
+          "index": "Compound",
+          "before": 60,
+          "after": 60
+        },
+        {
+          "table": "Tree",
+          "index": "UniqueScore",
+          "before": 1000,
+          "after": 1000
+        }
+      ]
+    }
+  ],
+  "command_receipts": [
+    {
+      "raw_report_command_index": 0,
+      "argv_portable_rendering": [
+        ".cache/tablecraft-bin/ace16-nonroot-split-20261027",
+        ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2016-before.accdb",
+        ".cache/ace16-nonroot-split-acceptance-first-20261027/V2016-candidate.accdb",
+        "Tree",
+        "ID",
+        "27",
+        "1000",
+        "2147483647"
+      ],
+      "rendering_scope": "Only repository-root path prefixes are omitted; exact argv is in the immutable raw report",
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-nonroot-split-acceptance-first-20261027/V2016-candidate.stdout",
+        "bytes": 25,
+        "sha256": "6c0d0787710c780f70f807198b638d69620d3c1a5340c100a3bcf81240fec7b8"
+      },
+      "stderr": {
+        "path": ".cache/ace16-nonroot-split-acceptance-first-20261027/V2016-candidate.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "raw_report_command_index": 1,
+      "argv_portable_rendering": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/DeleteTreeFixture.java",
+        "oracle",
+        ".cache/ace16-nonroot-split-acceptance-first-20261027/V2016-candidate.accdb"
+      ],
+      "rendering_scope": "Only repository-root path prefixes are omitted; exact argv is in the immutable raw report",
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-nonroot-split-acceptance-first-20261027/V2016-candidate-getter.stdout",
+        "bytes": 334078,
+        "sha256": "2557511c10f978784847acc018af9d86390caf2fcaee933b99e62f9b0ee0da4c"
+      },
+      "stderr": {
+        "path": ".cache/ace16-nonroot-split-acceptance-first-20261027/V2016-candidate-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "raw_report_command_index": 2,
+      "argv_portable_rendering": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/nonroot_index_split_originals/NonrootSplitReference.java",
+        "maps",
+        ".cache/ace16-nonroot-split-acceptance-first-20261027/V2016-candidate.accdb"
+      ],
+      "rendering_scope": "Only repository-root path prefixes are omitted; exact argv is in the immutable raw report",
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-nonroot-split-acceptance-first-20261027/V2016-candidate-maps.stdout",
+        "bytes": 1841,
+        "sha256": "3baada0ea5d3c20fd8b555fd8b4fee898850ff29a1815978f076f846b5b45ae6"
+      },
+      "stderr": {
+        "path": ".cache/ace16-nonroot-split-acceptance-first-20261027/V2016-candidate-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "raw_report_command_index": 3,
+      "argv_portable_rendering": [
+        ".cache/tablecraft-bin/ace16-nonroot-split-20261027",
+        ".cache/tablecraft-fixtures/delete-trees-20261026/Tree-V2019-before.accdb",
+        ".cache/ace16-nonroot-split-acceptance-first-20261027/V2019-candidate.accdb",
+        "Tree",
+        "ID",
+        "27",
+        "1000",
+        "2147483647"
+      ],
+      "rendering_scope": "Only repository-root path prefixes are omitted; exact argv is in the immutable raw report",
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-nonroot-split-acceptance-first-20261027/V2019-candidate.stdout",
+        "bytes": 25,
+        "sha256": "6c0d0787710c780f70f807198b638d69620d3c1a5340c100a3bcf81240fec7b8"
+      },
+      "stderr": {
+        "path": ".cache/ace16-nonroot-split-acceptance-first-20261027/V2019-candidate.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "raw_report_command_index": 4,
+      "argv_portable_rendering": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/DeleteTreeFixture.java",
+        "oracle",
+        ".cache/ace16-nonroot-split-acceptance-first-20261027/V2019-candidate.accdb"
+      ],
+      "rendering_scope": "Only repository-root path prefixes are omitted; exact argv is in the immutable raw report",
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-nonroot-split-acceptance-first-20261027/V2019-candidate-getter.stdout",
+        "bytes": 334079,
+        "sha256": "ffc5dc7a3a4f80533beaf3af2f97f525bd14d1eb29a8eafa9d99a419ccbf229e"
+      },
+      "stderr": {
+        "path": ".cache/ace16-nonroot-split-acceptance-first-20261027/V2019-candidate-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "raw_report_command_index": 5,
+      "argv_portable_rendering": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "docs/testing/nonroot_index_split_originals/NonrootSplitReference.java",
+        "maps",
+        ".cache/ace16-nonroot-split-acceptance-first-20261027/V2019-candidate.accdb"
+      ],
+      "rendering_scope": "Only repository-root path prefixes are omitted; exact argv is in the immutable raw report",
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-nonroot-split-acceptance-first-20261027/V2019-candidate-maps.stdout",
+        "bytes": 2101,
+        "sha256": "caa2bc00c17c33ce40838f482d1e2752d7037d20fb2d9c566b37c88efd2a9f28"
+      },
+      "stderr": {
+        "path": ".cache/ace16-nonroot-split-acceptance-first-20261027/V2019-candidate-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "public_reference_observations": {
+    "path": "docs/testing/results/ace16-nonroot-index-split-originals-2026-10-27.json",
+    "bytes": 21689,
+    "sha256": "6f1ba028c6e32d925f661d63da6214ba8f36f3d28a9bcef93c4e67418236117f"
+  },
+  "public_helpers": [
+    {
+      "path": "docs/testing/compare_nonroot_split_updates.py",
+      "bytes": 195,
+      "sha256": "a67fffb265ab3965f2c24309a3a7cecf654405f9e50fd9d4460457f7518b9261"
+    },
+    {
+      "path": "docs/testing/nonroot_split_preview_originals/proof.py",
+      "bytes": 4541,
+      "sha256": "ca0d81e7fe99729ed87be03eb4e160f758754373ea6bc7def0ea11d40424648e"
+    },
+    {
+      "path": "docs/testing/nonroot_split_preview_originals/replay.py",
+      "bytes": 9897,
+      "sha256": "58e5d9610579e16dce0e62ef3082723fa147e05ad1f302311a651ea0d9992c5e"
+    },
+    {
+      "path": "docs/testing/nonroot_split_preview_originals/verify_existing.py",
+      "bytes": 5027,
+      "sha256": "6c63d928cdd3b94e3b8c80bf2edc0089399d20046b77a4db31f5d64021f817f0"
+    }
+  ],
+  "promotion_identity": {
+    "proof_byte_identical_to_private": true,
+    "public_replay": "Parameterized maintenance derivative, not historical executed private source",
+    "public_verification": "Read-only cached image/getter/map/Git validation; no native/JVM calls"
+  },
+  "read_only_verification": {
+    "path": ".cache/ace16-nonroot-split-acceptance-first-20261027/public-read-only-verification.json",
+    "bytes": 979,
+    "sha256": "6fa80497c87229ee412384e4c93193fa431ea6f19c9692bfe4a06296a0301261"
+  },
+  "verification_command": [
+    "python3",
+    "docs/testing/compare_nonroot_split_updates.py",
+    "--verify-existing",
+    ".cache/ace16-nonroot-split-acceptance-first-20261027/report.json",
+    "--output",
+    ".cache/ace16-nonroot-split-acceptance-first-20261027/public-read-only-verification.json"
+  ],
+  "verification_terminal_status": 0,
+  "boundaries": [
+    "All1000 original refs; exact balanced248/248, fullROWbounds, reciprocalsiblings, preservedrootheight/tail/residual andnewpagezero-padding",
+    "Onlyone new index page; all original Memo/OLEdescriptors andoldpages unchanged; public nine-page long-value rewrite is not golden",
+    "Earlier public-action initial-exit1 and read-only correction remain separate evidence",
+    "Internal-node splitting/map expansion/normal saves/native Access remain unqualified"
+  ]
+}
