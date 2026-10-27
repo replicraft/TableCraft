@@ -99,8 +99,10 @@ now reuses this planner/auditor for non-NULL Byte, Int16, Int32, Int64 and Curre
 updates. Actual field kind/width and original request bytes are rebound during
 final authority; the old Int32 preflight remains unchanged. Its 124 distinct
 runtime checks pass. Oversized balanced halves refuse rather than creating an
-invalid page; repeated splitting, broader codecs, map growth, original typed
-candidate acceptance and production saves retain their separate gaps.
+invalid page. Its [eight original-file candidates](../../testing/FIXED_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
+now pass exact complete-image and fresh getter/index/map checks through the
+committed consumer, without retries or changed inputs. Repeated splitting,
+broader codecs, map growth and production saves retain their separate gaps.
 A separate [fixed numeric reference phase](../../testing/INTEGRAL_INDEX_SPLIT_OBSERVATIONS.md)
 now measures Byte, Int16, Int64 and Currency root-leaf splits on both unchanged
 originals. Its eight successful Jackcess updates and eight frozen old-consumer

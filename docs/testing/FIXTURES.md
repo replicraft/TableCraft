@@ -9662,3 +9662,19 @@ working clap consumer tests and the final 124 distinct runtime checks. The
 original eight-case expected-image model remains separate and unchanged;
 these literals and consumer checks do not establish a committed original-file
 candidate replay, Microsoft Access compatibility or normal save qualification.
+
+### Exact fixed numeric original-file split acceptance
+
+The [first committed-consumer replay](FIXED_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
+passes all eight unchanged Byte/Int16/Int64/Currency MAX cases on V2016/V2019.
+All sixteen native/getter commands succeed without regeneration, public UPDATE,
+retry or selector/budget change. The independently frozen plan matches every
+candidate byte, including original residuals, zero fresh padding and composed
+map cells. All 5,200 selected-table rows and sixteen affected physical trees are
+checked independently; fresh getters also check other tables and typed values.
+The [receipt](results/ace16-fixed-index-split-originals-2026-10-27.json) retains
+compiled Git/source/artifact identities, raw first output, separate unchanged-input
+postcheck and the later saved-proof verifier. Compiler pins bind Git revision
+809c5e8d rather than concurrent working-tree bytes. Earlier public reference
+scratch, recursive literal controls, native Access qualification and normal saves
+remain separate evidence and scope.
