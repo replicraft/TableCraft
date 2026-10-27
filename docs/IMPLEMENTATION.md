@@ -338,6 +338,12 @@ digests against a separate model before any UPDATE. Saved verification checks
 keys, combined candidates and the complete native metadata-role census remain
 separate qualifications. These source observations add no normal save path.
 
+The [frozen old variable writer](testing/VARIABLE_ENCODED_SPLIT_BASELINES.md)
+passes twelve first-attempt controls on these unchanged sources: six byte-identical
+no-ops and six maximum-width growth refusals with `IndexedColumn` and no output.
+Every call explicitly selects the variable-update service. This establishes its
+existing admission boundary, not a combined record/index writer.
+
 ## Index-owned map promotion
 
 The optional engineering split services now support

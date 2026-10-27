@@ -9949,3 +9949,10 @@ those archived inputs, without starting a child process. No source byte, request
 layout or oracle was adjusted after execution. The 26 observed user/global map
 roles do not establish the complete catalog/historical census or native write
 admission of the future combined service.
+
+The [old variable-service baseline](VARIABLE_ENCODED_SPLIT_BASELINES.md) uses the
+unchanged originals and an existing frozen committed consumer. All twelve actual
+calls pass first attempt: six exact no-op copies and six maximum-width
+`IndexedColumn` refusals without output. The historical binary, selected source
+objects, requests, ordinal bindings and captured streams are pinned separately.
+No new source generation or public-writer action occurs in that baseline.
