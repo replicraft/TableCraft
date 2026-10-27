@@ -205,6 +205,10 @@ maximum-width encoded keys. All five construction/inspection commands pass first
 attempt. They do not establish a combined writer, persisted new-key behavior or
 complete native metadata authority.
 
+The [old variable-service baseline](testing/VARIABLE_ENCODED_SPLIT_BASELINES.md)
+now passes six exact no-ops and six `IndexedColumn` growth refusals without output
+on these unchanged inputs. Combined allocation remains unfinished.
+
 - [x] Qualified [index-owned map promotion](testing/ACE16_INDEX_MAP_GROWTH.md)
   now composes same-extent pointer-row rewrites and distinct bitmap metadata with
   recursive/repeated splits. Independent images cover late promotion and mixed

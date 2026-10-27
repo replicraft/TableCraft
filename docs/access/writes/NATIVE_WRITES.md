@@ -179,6 +179,11 @@ keys, including independently confirmed Modern digest output. Source constructio
 and read-only encoder inspection do not qualify a combined DATA/index allocator,
 complete metadata census, persisted changed keys or normal saves.
 
+The [old variable writer baseline](../../testing/VARIABLE_ENCODED_SPLIT_BASELINES.md)
+now confirms six exact no-ops and six `IndexedColumn` growth refusals without
+output on those sources. It explicitly selects the historical variable service;
+it does not exercise a new combined allocator.
+
 A separate [index-owned map promotion service](../../testing/ACE16_INDEX_MAP_GROWTH.md)
 now extends the same engineering split APIs when an inline map's complete required
 span exceeds its qualified window. It preserves the original map-row extent,

@@ -1,0 +1,273 @@
+{
+  "date": "2026-10-27",
+  "scope": "Genuine old variable-record service admission and index-growth refusal on unchanged maximum-width combined-pressure sources.",
+  "counts": {
+    "native_baseline_calls": 12,
+    "byte_identical_noops": 6,
+    "indexed_column_refusals_without_output": 6,
+    "retries": 0,
+    "frozen_inputs": 29,
+    "input_and_freeze_checks": 30,
+    "public_updates": 0,
+    "JVM_calls": 0,
+    "new_compilations": 0,
+    "source_generation_calls": 0
+  },
+  "consumer": {
+    "compiled_revision": "87c35d435450251d69f305cb247741ccbf7be7e2",
+    "mandatory_flag": "--variable-updates",
+    "artifact": {
+      "path": ".cache/tablecraft-bin/ace16-variable-20261026",
+      "bytes": 17512496,
+      "sha256": "2d2b173617e115a3bca3b10018086dab1c5d8f3d72b536fe3825d21e19cb4a5f"
+    },
+    "build_receipt": {
+      "path": "docs/testing/results/ace16-variable-example-build-2026-10-26.json",
+      "bytes": 23502,
+      "sha256": "6096b0a06152bc9ea802617cee6ed200ba1480ca74c78a9a2aed4944c81ef604"
+    },
+    "selected_historical_git_objects_checked_before_execution": 107,
+    "inventory_scope": "Selected receipt source objects, not an exhaustive compiler-input closure."
+  },
+  "requests": {
+    "row_ordinal": 0,
+    "id": 1,
+    "column": "KeyValue",
+    "text_expected": "aaa",
+    "text_changed": "z repeated 255 times",
+    "binary_expected_hex": "00",
+    "binary_changed_hex": "ff repeated 255 times",
+    "transport": "Headerless five-field quoted TSV through the actual variable-mode consumer."
+  },
+  "ordinal_bindings": [
+    {
+      "profile": "V2016",
+      "table": "TextLegacy",
+      "row_ordinal": 0,
+      "identity": 1,
+      "physical_page": 94,
+      "physical_slot": 0,
+      "complete_physical_order_matches_ids": true
+    },
+    {
+      "profile": "V2016",
+      "table": "TextModern",
+      "row_ordinal": 0,
+      "identity": 1,
+      "physical_page": 112,
+      "physical_slot": 0,
+      "complete_physical_order_matches_ids": true
+    },
+    {
+      "profile": "V2016",
+      "table": "BinaryOne",
+      "row_ordinal": 0,
+      "identity": 1,
+      "physical_page": 130,
+      "physical_slot": 0,
+      "complete_physical_order_matches_ids": true
+    },
+    {
+      "profile": "V2019",
+      "table": "TextLegacy",
+      "row_ordinal": 0,
+      "identity": 1,
+      "physical_page": 111,
+      "physical_slot": 0,
+      "complete_physical_order_matches_ids": true
+    },
+    {
+      "profile": "V2019",
+      "table": "TextModern",
+      "row_ordinal": 0,
+      "identity": 1,
+      "physical_page": 129,
+      "physical_slot": 0,
+      "complete_physical_order_matches_ids": true
+    },
+    {
+      "profile": "V2019",
+      "table": "BinaryOne",
+      "row_ordinal": 0,
+      "identity": 1,
+      "physical_page": 148,
+      "physical_slot": 0,
+      "complete_physical_order_matches_ids": true
+    }
+  ],
+  "limits": {
+    "native_bytes": 268435456,
+    "native_rows": 100000,
+    "native_steps": 100000000,
+    "TSV_bytes": 16777216,
+    "assignments": 4096,
+    "encoded_value_bytes": 1024,
+    "child_seconds": 30,
+    "stream_bytes_each": 16777216
+  },
+  "originals": [
+    {
+      "path": ".cache/ace16-variable-encoded-source-first-20261027/V2016-original.accdb",
+      "bytes": 610304,
+      "sha256": "2e7ca607356bf41af05d3fad6f94db9d8c78673478f64e24e941ac666114e994"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-source-first-20261027/V2019-original.accdb",
+      "bytes": 684032,
+      "sha256": "c5959e39bda1828d53891542210eba9b40422e0bd6b7f4023114ecc1b0dd6484"
+    }
+  ],
+  "outcomes": [
+    {
+      "label": "V2016-TextLegacy-noop",
+      "result": "byte-identical noop",
+      "output": {
+        "path": ".cache/ace16-variable-encoded-old-variable-baseline-first-20261027/V2016-TextLegacy-noop.accdb",
+        "bytes": 610304,
+        "sha256": "2e7ca607356bf41af05d3fad6f94db9d8c78673478f64e24e941ac666114e994"
+      }
+    },
+    {
+      "label": "V2016-TextModern-noop",
+      "result": "byte-identical noop",
+      "output": {
+        "path": ".cache/ace16-variable-encoded-old-variable-baseline-first-20261027/V2016-TextModern-noop.accdb",
+        "bytes": 610304,
+        "sha256": "2e7ca607356bf41af05d3fad6f94db9d8c78673478f64e24e941ac666114e994"
+      }
+    },
+    {
+      "label": "V2016-BinaryOne-noop",
+      "result": "byte-identical noop",
+      "output": {
+        "path": ".cache/ace16-variable-encoded-old-variable-baseline-first-20261027/V2016-BinaryOne-noop.accdb",
+        "bytes": 610304,
+        "sha256": "2e7ca607356bf41af05d3fad6f94db9d8c78673478f64e24e941ac666114e994"
+      }
+    },
+    {
+      "label": "V2019-TextLegacy-noop",
+      "result": "byte-identical noop",
+      "output": {
+        "path": ".cache/ace16-variable-encoded-old-variable-baseline-first-20261027/V2019-TextLegacy-noop.accdb",
+        "bytes": 684032,
+        "sha256": "c5959e39bda1828d53891542210eba9b40422e0bd6b7f4023114ecc1b0dd6484"
+      }
+    },
+    {
+      "label": "V2019-TextModern-noop",
+      "result": "byte-identical noop",
+      "output": {
+        "path": ".cache/ace16-variable-encoded-old-variable-baseline-first-20261027/V2019-TextModern-noop.accdb",
+        "bytes": 684032,
+        "sha256": "c5959e39bda1828d53891542210eba9b40422e0bd6b7f4023114ecc1b0dd6484"
+      }
+    },
+    {
+      "label": "V2019-BinaryOne-noop",
+      "result": "byte-identical noop",
+      "output": {
+        "path": ".cache/ace16-variable-encoded-old-variable-baseline-first-20261027/V2019-BinaryOne-noop.accdb",
+        "bytes": 684032,
+        "sha256": "c5959e39bda1828d53891542210eba9b40422e0bd6b7f4023114ecc1b0dd6484"
+      }
+    },
+    {
+      "label": "V2016-TextLegacy-changed",
+      "result": "IndexedColumn; no output"
+    },
+    {
+      "label": "V2016-TextModern-changed",
+      "result": "IndexedColumn; no output"
+    },
+    {
+      "label": "V2016-BinaryOne-changed",
+      "result": "IndexedColumn; no output"
+    },
+    {
+      "label": "V2019-TextLegacy-changed",
+      "result": "IndexedColumn; no output"
+    },
+    {
+      "label": "V2019-TextModern-changed",
+      "result": "IndexedColumn; no output"
+    },
+    {
+      "label": "V2019-BinaryOne-changed",
+      "result": "IndexedColumn; no output"
+    }
+  ],
+  "preservation": {
+    "inputs_and_freeze_unchanged": true,
+    "inventory_errors": [],
+    "failure": null
+  },
+  "saved_verification": {
+    "verified": true,
+    "fixture_processes": 0,
+    "saved_identities": 61,
+    "native_baseline_commands": 12,
+    "byte_identical_noops": 6,
+    "indexed_column_refusals_without_output": 6,
+    "frozen_input_checks": 30,
+    "public_update_commands": 0
+  },
+  "saved_verifier_history": "The initial saved-only invocation failed with FileNotFoundError from an incorrect copied default directory. Exact source and structured tool diagnostic were archived. Only defaults changed; no native calls, inputs or outcomes were rerun.",
+  "boundaries": [
+    "Legacy native admission is separate from complete-catalog/historical metadata authority.",
+    "No combined candidate or public UPDATE belongs to this baseline.",
+    "No native Access, macro, journal or normal-save qualification."
+  ],
+  "pins": [
+    {
+      "path": ".cache/ace16-variable-encoded-old-variable-baseline-next-20261027/freeze.json",
+      "bytes": 19069,
+      "sha256": "fdb19cf9b31c3cb94d26226468fd4beef8c9985c5b4203216efc10d9e750f796"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-old-variable-baseline-next-20261027/run.py",
+      "bytes": 6304,
+      "sha256": "2547822cdd9f6ceb79722ae44bdc6603a12f8ab76fa78a22bae4fc383421df9e"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-old-variable-baseline-next-20261027/bounded.py",
+      "bytes": 5401,
+      "sha256": "6bf97834287fe48d0c8f911cb708a687829f48701d47a3858958255fbc28325c"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-old-variable-baseline-next-20261027/artifact-binding.json",
+      "bytes": 44562,
+      "sha256": "fbf2f8f19dc0dffd9718dc1ace821685c9e4b67b20ce73d4ad36e7b182cf624e"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-old-variable-baseline-next-20261027/before-saved-default-path-correction/verify_baseline.py",
+      "bytes": 5769,
+      "sha256": "cadad6cec801b8119e181e267f3dac26493448c5e041eeb1410bd4b6f26e2621"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-old-variable-baseline-next-20261027/before-saved-default-path-correction/first-failure.json",
+      "bytes": 468,
+      "sha256": "fd4eb15e2b7da1dce1fbc281ce51dc4b4ca930bf8624ee7e961df9927cffd148"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-old-variable-baseline-first-20261027/report.json",
+      "bytes": 39973,
+      "sha256": "9dfe48e34bb30a03e5c103b99013d5c59228f50bae707feaae76842ea3eb5786"
+    },
+    {
+      "path": ".cache/ace16-variable-encoded-old-variable-baseline-first-20261027/saved-verifier.json",
+      "bytes": 245,
+      "sha256": "eff766c3e2044fc77cbc1318d08147fc2894cb85b03b976e96afed8e0f5172df"
+    },
+    {
+      "path": "docs/testing/VARIABLE_ENCODED_SPLIT_BASELINES.md",
+      "bytes": 4059,
+      "sha256": "df062caeb53665b2158faa4a3fd302c472f8ad57fc788e9280a647aabbe09cff"
+    },
+    {
+      "path": "docs/testing/variable_encoded_split_sources/verify_baseline.py",
+      "bytes": 5787,
+      "sha256": "fafd39d35b8be55df137a082d51adaaeeb054052781768ddd9601a30d50a758e"
+    }
+  ]
+}
