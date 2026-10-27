@@ -9500,3 +9500,18 @@ identities and historical counters remain unchanged. The
 [receipt](results/ace16-long-value-originals-2026-10-27.json) pins exact first/revised
 lineage, historical compiled Git objects, outputs and saved read-only proofs.
 No public UPDATE was repeated and no native Access qualification is claimed.
+
+### Compressed Memo replacement references
+
+The [two finite public-writer experiments](COMPRESSED_MEMO_UPDATE_OBSERVATIONS.md)
+use new inert V2016/V2019 originals with separate compressed/raw Memo fields,
+untouched OLE/second-row values and aliased ID indexes. Both original metadata
+prerequisites pass before updates. The first 92 actions and separate 56-action
+1,024-unit boundary series complete in 456 bounded processes. Of 148 requested
+values, 132 reopen exactly and sixteen leading-FEFF inputs normalize; those
+sixteen are preserved as mismatches. All old chunks remain unchanged, including
+1,302 cumulative ancestor comparisons. No native candidate calls are part of
+these experiments. The [receipt](results/compressed-memo-update-observations-2026-10-27.json)
+pins exact first-run helpers, plans, originals, outputs, decoder and source-review
+artifacts, and separate later public verification wrappers. Native Access
+qualification, broader map transitions and mode-switch authoring remain open.
