@@ -1,0 +1,1576 @@
+{
+  "date": "2026-10-26",
+  "scope": "Eight separately frozen ShortBinary variable-row engineering candidates, not native Access save qualification.",
+  "session": 64956,
+  "exit_code": 0,
+  "first_attempt": true,
+  "controls": 8,
+  "candidates": 8,
+  "disagreements": 0,
+  "commands": 32,
+  "native_candidate_calls": 8,
+  "read_only_getters": 12,
+  "read_only_map_probes": 12,
+  "compiled_revision": "87c35d435450251d69f305cb247741ccbf7be7e2",
+  "frozen_artifact": {
+    "path": ".cache/tablecraft-bin/ace16-variable-20261026",
+    "bytes": 17512496,
+    "sha256": "2d2b173617e115a3bca3b10018086dab1c5d8f3d72b536fe3825d21e19cb4a5f"
+  },
+  "build_receipt": {
+    "path": "docs/testing/results/ace16-variable-example-build-2026-10-26.json",
+    "bytes": 23502,
+    "sha256": "6096b0a06152bc9ea802617cee6ed200ba1480ca74c78a9a2aed4944c81ef604"
+  },
+  "compiled_git_source_objects": 107,
+  "compiled_scope": "Only the frozen87c35d43/2d2b1736 artifact; current working allocator changes are outside this evidence.",
+  "raw_report": {
+    "path": ".cache/ace16-binary-variable-candidates-initial-20261026/report.json",
+    "bytes": 790621,
+    "sha256": "4810a112a6bde3ec25e15e3005146cf96b61b58517b45000df29f37ea9930fd6"
+  },
+  "raw_commands": {
+    "path": ".cache/ace16-binary-variable-candidates-initial-20261026/commands.jsonl",
+    "bytes": 27508,
+    "sha256": "30c8dc7d24655515d2d02c5e11551a455c573181ca7dd8fe887f33eca97deefa"
+  },
+  "replay_log": {
+    "path": ".cache/ace16-binary-variable-originals-next-20261026/replay-initial.log",
+    "bytes": 224,
+    "sha256": "c420be9506f3a745307bb6c6fd3ab1e730b082faee585e9f978443a086477dd3"
+  },
+  "precall_freeze": {
+    "path": ".cache/ace16-binary-variable-candidates-initial-20261026/before-first-call.json",
+    "bytes": 35364,
+    "sha256": "0a94e0f12b77c179b07cfded86ca3702ee0f9b0a0be33d1051671c8d31f0a292"
+  },
+  "frozen_plan": {
+    "path": ".cache/ace16-binary-variable-originals-next-20261026/plan.json",
+    "bytes": 32965,
+    "sha256": "95ce3a6b064be0cc815fba5d59e8ef2cb6e36ef902dc62e82faab1596f602fb2"
+  },
+  "executed_source_archive": [
+    {
+      "path": ".cache/ace16-binary-variable-candidates-initial-20261026/precall-source/0-replay.py",
+      "bytes": 9771,
+      "sha256": "0160c17127fc9355ead1b29d8218212233aa2b8726c6b6dd44d7d5cca9a61636"
+    },
+    {
+      "path": ".cache/ace16-binary-variable-candidates-initial-20261026/precall-source/1-proof.py",
+      "bytes": 5709,
+      "sha256": "f46f2f9d6c902c699d9f42fa19393c53ec51c0806fa77b8c50e8232b6f5a7273"
+    },
+    {
+      "path": ".cache/ace16-binary-variable-candidates-initial-20261026/precall-source/2-capture_cross_page_updates.py",
+      "bytes": 13030,
+      "sha256": "2627fa020ca8b29df398d62504b731f519e2c7b52095ca31b15d9c340688ac1b"
+    },
+    {
+      "path": ".cache/ace16-binary-variable-candidates-initial-20261026/precall-source/3-common.py",
+      "bytes": 2697,
+      "sha256": "4d6e13158e1c039f1a75bb12828cfa7eaf811e58e06e5e4de0f4c605e1519f8c"
+    },
+    {
+      "path": ".cache/ace16-binary-variable-candidates-initial-20261026/precall-source/4-facts.py",
+      "bytes": 8072,
+      "sha256": "1e6b085db3335f29ef5b9bf299cde2a62e863e09698d6efb4c93b76db00dd687"
+    },
+    {
+      "path": ".cache/ace16-binary-variable-candidates-initial-20261026/precall-source/5-delete_reference_maps.py",
+      "bytes": 8635,
+      "sha256": "9fca51758e0f26e37dab2e27ff2c41c0e8a7a8110e9a047eda1ccb2a91eadda8"
+    },
+    {
+      "path": ".cache/ace16-binary-variable-candidates-initial-20261026/precall-source/plan.json",
+      "bytes": 32965,
+      "sha256": "95ce3a6b064be0cc815fba5d59e8ef2cb6e36ef902dc62e82faab1596f602fb2"
+    }
+  ],
+  "historical_tools": [
+    {
+      "path": ".cache/ace16-binary-variable-originals-next-20261026/replay.py",
+      "bytes": 9771,
+      "sha256": "0160c17127fc9355ead1b29d8218212233aa2b8726c6b6dd44d7d5cca9a61636"
+    },
+    {
+      "path": ".cache/ace16-binary-variable-originals-next-20261026/proof.py",
+      "bytes": 5709,
+      "sha256": "f46f2f9d6c902c699d9f42fa19393c53ec51c0806fa77b8c50e8232b6f5a7273"
+    },
+    {
+      "path": "docs/testing/capture_cross_page_updates.py",
+      "bytes": 13030,
+      "sha256": "2627fa020ca8b29df398d62504b731f519e2c7b52095ca31b15d9c340688ac1b"
+    },
+    {
+      "path": "docs/testing/slot_preview_originals/common.py",
+      "bytes": 2697,
+      "sha256": "4d6e13158e1c039f1a75bb12828cfa7eaf811e58e06e5e4de0f4c605e1519f8c"
+    },
+    {
+      "path": "docs/testing/slot_preview_originals/facts.py",
+      "bytes": 8072,
+      "sha256": "1e6b085db3335f29ef5b9bf299cde2a62e863e09698d6efb4c93b76db00dd687"
+    },
+    {
+      "path": "docs/testing/delete_reference_maps.py",
+      "bytes": 8635,
+      "sha256": "9fca51758e0f26e37dab2e27ff2c41c0e8a7a8110e9a047eda1ccb2a91eadda8"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+      "bytes": 1407244,
+      "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+    },
+    {
+      "path": ".cache/ace16-binary-allocation-next-20261026/classes/SlotUpdateFixture.class",
+      "bytes": 19746,
+      "sha256": "4b9a9f7a4f13ba1d237bfeabebbd3609db1c5db3e27aef21a1e4fc11e81a5fcf"
+    },
+    {
+      "path": ".cache/ace16-binary-allocation-next-20261026/classes/SlotMapProbe.class",
+      "bytes": 6843,
+      "sha256": "b6a05af31fa3aff81874378721adbef3397d080da114882f20706d328e7c854b"
+    }
+  ],
+  "inputs_tools_requests_unchanged": true,
+  "request_inventory": [
+    {
+      "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-grow.tsv",
+      "bytes": 526,
+      "sha256": "f0f978fdb52dc7ee0613190f7f4331d11b6b103e803b4f85c2a9f6c8f85aff3f"
+    },
+    {
+      "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-shrink.tsv",
+      "bytes": 542,
+      "sha256": "74ab3b5d77524b6dc3cbf88b82f887cd79c54b999f356dd07c73ce1831d19fb1"
+    },
+    {
+      "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-grow.tsv",
+      "bytes": 526,
+      "sha256": "f0f978fdb52dc7ee0613190f7f4331d11b6b103e803b4f85c2a9f6c8f85aff3f"
+    },
+    {
+      "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-shrink.tsv",
+      "bytes": 542,
+      "sha256": "74ab3b5d77524b6dc3cbf88b82f887cd79c54b999f356dd07c73ce1831d19fb1"
+    },
+    {
+      "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-grow.tsv",
+      "bytes": 526,
+      "sha256": "f0f978fdb52dc7ee0613190f7f4331d11b6b103e803b4f85c2a9f6c8f85aff3f"
+    },
+    {
+      "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-shrink.tsv",
+      "bytes": 542,
+      "sha256": "74ab3b5d77524b6dc3cbf88b82f887cd79c54b999f356dd07c73ce1831d19fb1"
+    },
+    {
+      "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-grow.tsv",
+      "bytes": 526,
+      "sha256": "f0f978fdb52dc7ee0613190f7f4331d11b6b103e803b4f85c2a9f6c8f85aff3f"
+    },
+    {
+      "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-shrink.tsv",
+      "bytes": 542,
+      "sha256": "74ab3b5d77524b6dc3cbf88b82f887cd79c54b999f356dd07c73ce1831d19fb1"
+    }
+  ],
+  "outcomes": [
+    {
+      "id": "V2016-checkpoint-12-grow",
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-append-12.accdb",
+        "bytes": 1044480,
+        "sha256": "96536a4fabcd0aa53a0f931200755611e0f7cd08e1b14748d8e786c1440c4f3a"
+      },
+      "candidate": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-grow-candidate.accdb",
+        "bytes": 1048576,
+        "sha256": "7c0fcb0a7763953861b2113e2b00443c4275091d0e1462ee797501dcef376112"
+      },
+      "request": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-grow.tsv",
+        "bytes": 526,
+        "sha256": "f0f978fdb52dc7ee0613190f7f4331d11b6b103e803b4f85c2a9f6c8f85aff3f"
+      },
+      "public_reference": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-checkpoint-12-grown.accdb",
+        "bytes": 1048576,
+        "sha256": "7c0fcb0a7763953861b2113e2b00443c4275091d0e1462ee797501dcef376112"
+      },
+      "action": "grow",
+      "checkpoint": 12,
+      "target_page": 255,
+      "target_slot": 0,
+      "capacity_bytes": 268,
+      "file_growth_bytes": 4096,
+      "same_bytes_as_public_reference": true,
+      "full_typed_reference_and_index_orders_match": true,
+      "whole_image_allowed_bytes_exact": true,
+      "map_changes": {
+        "JackcessGlobalFree": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": [
+            {
+              "offset": 8159,
+              "before": 128,
+              "after": 0
+            }
+          ]
+        },
+        "TableOwned": {
+          "added_file_members": [
+            255
+          ],
+          "removed_file_members": [],
+          "changed_existing_bytes": [
+            {
+              "offset": 823331,
+              "before": 0,
+              "after": 128
+            }
+          ]
+        },
+        "TableFreeSpace": {
+          "added_file_members": [
+            255
+          ],
+          "removed_file_members": [
+            200
+          ],
+          "changed_existing_bytes": [
+            {
+              "offset": 814996,
+              "before": 1,
+              "after": 0
+            },
+            {
+              "offset": 815002,
+              "before": 0,
+              "after": 128
+            }
+          ]
+        }
+      },
+      "getter": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-grow-after-getter.stdout",
+        "bytes": 748149,
+        "sha256": "9f7cb2469409b8f06a2973878cd304ccbc18d2d6301d2c888be973fc31adb48b"
+      },
+      "map_probe": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-grow-after-maps.stdout",
+        "bytes": 275,
+        "sha256": "7cfcf24358648b67bbbe1505c8320f72b0f748175ed57e7983d6358fd3acab53"
+      }
+    },
+    {
+      "id": "V2016-checkpoint-12-shrink",
+      "source": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-grow-candidate.accdb",
+        "bytes": 1048576,
+        "sha256": "7c0fcb0a7763953861b2113e2b00443c4275091d0e1462ee797501dcef376112"
+      },
+      "candidate": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-shrink-candidate.accdb",
+        "bytes": 1048576,
+        "sha256": "1957cd8219816b4c863b1732590e2715e508a3c9661487b081525403ac8e6aaa"
+      },
+      "request": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-shrink.tsv",
+        "bytes": 542,
+        "sha256": "74ab3b5d77524b6dc3cbf88b82f887cd79c54b999f356dd07c73ce1831d19fb1"
+      },
+      "public_reference": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-checkpoint-12-shrunk.accdb",
+        "bytes": 1048576,
+        "sha256": "89d51a87b72573a732a1e1ff9fe1bb9c33c57255b3e46c03986914c39cf8d9b2"
+      },
+      "action": "shrink",
+      "checkpoint": 12,
+      "target_page": 255,
+      "target_slot": 0,
+      "capacity_bytes": 268,
+      "file_growth_bytes": 0,
+      "same_bytes_as_public_reference": false,
+      "full_typed_reference_and_index_orders_match": true,
+      "whole_image_allowed_bytes_exact": true,
+      "map_changes": {
+        "JackcessGlobalFree": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableOwned": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableFreeSpace": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        }
+      },
+      "getter": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-shrink-after-getter.stdout",
+        "bytes": 747653,
+        "sha256": "4f2570f1a231f5523c320b33c31a5c603e9cf14ede649177c82cc4f09dc809c9"
+      },
+      "map_probe": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-shrink-after-maps.stdout",
+        "bytes": 275,
+        "sha256": "7cfcf24358648b67bbbe1505c8320f72b0f748175ed57e7983d6358fd3acab53"
+      }
+    },
+    {
+      "id": "V2016-checkpoint-13-grow",
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-append-13.accdb",
+        "bytes": 1048576,
+        "sha256": "abbd0100ec8c72c9693e08b8ee5285f067e956cc9802f7c781d5e46dda2d0055"
+      },
+      "candidate": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-grow-candidate.accdb",
+        "bytes": 1048576,
+        "sha256": "bfef5c357285221db6597734d392fe0956ede71d1d88490367ee1c7763c1937a"
+      },
+      "request": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-grow.tsv",
+        "bytes": 526,
+        "sha256": "f0f978fdb52dc7ee0613190f7f4331d11b6b103e803b4f85c2a9f6c8f85aff3f"
+      },
+      "public_reference": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-checkpoint-13-grown.accdb",
+        "bytes": 1048576,
+        "sha256": "bfef5c357285221db6597734d392fe0956ede71d1d88490367ee1c7763c1937a"
+      },
+      "action": "grow",
+      "checkpoint": 13,
+      "target_page": 255,
+      "target_slot": 1,
+      "capacity_bytes": 268,
+      "file_growth_bytes": 0,
+      "same_bytes_as_public_reference": true,
+      "full_typed_reference_and_index_orders_match": true,
+      "whole_image_allowed_bytes_exact": true,
+      "map_changes": {
+        "JackcessGlobalFree": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableOwned": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableFreeSpace": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        }
+      },
+      "getter": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-grow-after-getter.stdout",
+        "bytes": 749311,
+        "sha256": "6bd2d6bdd7b48f1288830daef8fd2c999cebfad6239a208961df76dd0e147e63"
+      },
+      "map_probe": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-grow-after-maps.stdout",
+        "bytes": 275,
+        "sha256": "66798501c49d3206a716efed6f1ff678c5c936a7ff96bb95975ecb1e89a99487"
+      }
+    },
+    {
+      "id": "V2016-checkpoint-13-shrink",
+      "source": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-grow-candidate.accdb",
+        "bytes": 1048576,
+        "sha256": "bfef5c357285221db6597734d392fe0956ede71d1d88490367ee1c7763c1937a"
+      },
+      "candidate": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-shrink-candidate.accdb",
+        "bytes": 1048576,
+        "sha256": "f04c2deefeb883f8cf9153c384a60e15a7b2539b281ac2296ec6cbd39712af84"
+      },
+      "request": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-shrink.tsv",
+        "bytes": 542,
+        "sha256": "74ab3b5d77524b6dc3cbf88b82f887cd79c54b999f356dd07c73ce1831d19fb1"
+      },
+      "public_reference": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2016-checkpoint-13-shrunk.accdb",
+        "bytes": 1048576,
+        "sha256": "e19be9d5fa618fea79d90261416074db9f9a240924894a3c7aad83fa4b8c6fd6"
+      },
+      "action": "shrink",
+      "checkpoint": 13,
+      "target_page": 255,
+      "target_slot": 1,
+      "capacity_bytes": 268,
+      "file_growth_bytes": 0,
+      "same_bytes_as_public_reference": false,
+      "full_typed_reference_and_index_orders_match": true,
+      "whole_image_allowed_bytes_exact": true,
+      "map_changes": {
+        "JackcessGlobalFree": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableOwned": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableFreeSpace": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        }
+      },
+      "getter": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-shrink-after-getter.stdout",
+        "bytes": 748815,
+        "sha256": "e88beb8da3f33395b8153f5ea17fe5f677b3823d1788d236cd1d2af749b25590"
+      },
+      "map_probe": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-shrink-after-maps.stdout",
+        "bytes": 275,
+        "sha256": "66798501c49d3206a716efed6f1ff678c5c936a7ff96bb95975ecb1e89a99487"
+      }
+    },
+    {
+      "id": "V2019-checkpoint-12-grow",
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-append-12.accdb",
+        "bytes": 1114112,
+        "sha256": "49b27f73cbe5b32f19b57b16c9c2c88335a266ed0e0324f64c7cd923ff5ea2f2"
+      },
+      "candidate": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-grow-candidate.accdb",
+        "bytes": 1118208,
+        "sha256": "4b91b7969ee65548ff384a788ecb396c2962e082886ae1bf7b7c80007640991e"
+      },
+      "request": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-grow.tsv",
+        "bytes": 526,
+        "sha256": "f0f978fdb52dc7ee0613190f7f4331d11b6b103e803b4f85c2a9f6c8f85aff3f"
+      },
+      "public_reference": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-checkpoint-12-grown.accdb",
+        "bytes": 1118208,
+        "sha256": "4b91b7969ee65548ff384a788ecb396c2962e082886ae1bf7b7c80007640991e"
+      },
+      "action": "grow",
+      "checkpoint": 12,
+      "target_page": 272,
+      "target_slot": 0,
+      "capacity_bytes": 268,
+      "file_growth_bytes": 4096,
+      "same_bytes_as_public_reference": true,
+      "full_typed_reference_and_index_orders_match": true,
+      "whole_image_allowed_bytes_exact": true,
+      "map_changes": {
+        "JackcessGlobalFree": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": [
+            {
+              "offset": 8162,
+              "before": 255,
+              "after": 254
+            }
+          ]
+        },
+        "TableOwned": {
+          "added_file_members": [
+            272
+          ],
+          "removed_file_members": [],
+          "changed_existing_bytes": [
+            {
+              "offset": 892966,
+              "before": 0,
+              "after": 1
+            }
+          ]
+        },
+        "TableFreeSpace": {
+          "added_file_members": [
+            272
+          ],
+          "removed_file_members": [
+            217
+          ],
+          "changed_existing_bytes": [
+            {
+              "offset": 884630,
+              "before": 2,
+              "after": 0
+            },
+            {
+              "offset": 884637,
+              "before": 0,
+              "after": 1
+            }
+          ]
+        }
+      },
+      "getter": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-grow-after-getter.stdout",
+        "bytes": 748188,
+        "sha256": "b2d08f6f3d1794534f253ea468298c31113bb7515765648178cdb61aca2ac8f1"
+      },
+      "map_probe": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-grow-after-maps.stdout",
+        "bytes": 512,
+        "sha256": "890ac9271e2e82171177ff8fae9cafad0f5cd8d67897fa379bcc32d6faa641d1"
+      }
+    },
+    {
+      "id": "V2019-checkpoint-12-shrink",
+      "source": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-grow-candidate.accdb",
+        "bytes": 1118208,
+        "sha256": "4b91b7969ee65548ff384a788ecb396c2962e082886ae1bf7b7c80007640991e"
+      },
+      "candidate": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-shrink-candidate.accdb",
+        "bytes": 1118208,
+        "sha256": "3c4b161b8a92b35152cb76e7ee70487c822ac1087f46c6dc01deddaaa32557dc"
+      },
+      "request": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-shrink.tsv",
+        "bytes": 542,
+        "sha256": "74ab3b5d77524b6dc3cbf88b82f887cd79c54b999f356dd07c73ce1831d19fb1"
+      },
+      "public_reference": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-checkpoint-12-shrunk.accdb",
+        "bytes": 1118208,
+        "sha256": "aa30126f3dfe4ba67a866dc5720a689ac5ae3fcc20a6b4e337b128ccd7180cc1"
+      },
+      "action": "shrink",
+      "checkpoint": 12,
+      "target_page": 272,
+      "target_slot": 0,
+      "capacity_bytes": 268,
+      "file_growth_bytes": 0,
+      "same_bytes_as_public_reference": false,
+      "full_typed_reference_and_index_orders_match": true,
+      "whole_image_allowed_bytes_exact": true,
+      "map_changes": {
+        "JackcessGlobalFree": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableOwned": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableFreeSpace": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        }
+      },
+      "getter": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-shrink-after-getter.stdout",
+        "bytes": 747692,
+        "sha256": "063e7d095bb7b9111ce51b6ef2d5420c143ae52e09405d387b50514733234de7"
+      },
+      "map_probe": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-shrink-after-maps.stdout",
+        "bytes": 512,
+        "sha256": "890ac9271e2e82171177ff8fae9cafad0f5cd8d67897fa379bcc32d6faa641d1"
+      }
+    },
+    {
+      "id": "V2019-checkpoint-13-grow",
+      "source": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-append-13.accdb",
+        "bytes": 1118208,
+        "sha256": "783be19c3cf5047507c15014d79e15467df22fbcc9ec99f972b56a9016ec0b31"
+      },
+      "candidate": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-grow-candidate.accdb",
+        "bytes": 1118208,
+        "sha256": "12ad41b5cca6c2ff0bd71dba4bed281618060ad3edc816e5f1a06fbacd75c226"
+      },
+      "request": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-grow.tsv",
+        "bytes": 526,
+        "sha256": "f0f978fdb52dc7ee0613190f7f4331d11b6b103e803b4f85c2a9f6c8f85aff3f"
+      },
+      "public_reference": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-checkpoint-13-grown.accdb",
+        "bytes": 1118208,
+        "sha256": "12ad41b5cca6c2ff0bd71dba4bed281618060ad3edc816e5f1a06fbacd75c226"
+      },
+      "action": "grow",
+      "checkpoint": 13,
+      "target_page": 272,
+      "target_slot": 1,
+      "capacity_bytes": 268,
+      "file_growth_bytes": 0,
+      "same_bytes_as_public_reference": true,
+      "full_typed_reference_and_index_orders_match": true,
+      "whole_image_allowed_bytes_exact": true,
+      "map_changes": {
+        "JackcessGlobalFree": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableOwned": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableFreeSpace": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        }
+      },
+      "getter": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-grow-after-getter.stdout",
+        "bytes": 749350,
+        "sha256": "c6d46ff48c1c1465f19a8f70b442f67c90225bd0ac118bba3f7f97a69bcb8fc2"
+      },
+      "map_probe": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-grow-after-maps.stdout",
+        "bytes": 512,
+        "sha256": "58f64b14d61052c8ebd495daff4e9de6dcae3a2303ec3150572630673c41c7ee"
+      }
+    },
+    {
+      "id": "V2019-checkpoint-13-shrink",
+      "source": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-grow-candidate.accdb",
+        "bytes": 1118208,
+        "sha256": "12ad41b5cca6c2ff0bd71dba4bed281618060ad3edc816e5f1a06fbacd75c226"
+      },
+      "candidate": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-shrink-candidate.accdb",
+        "bytes": 1118208,
+        "sha256": "f7883c89d579866c8f8da9338a57677b857dfdffb32e752115bb7545ac4daea0"
+      },
+      "request": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-shrink.tsv",
+        "bytes": 542,
+        "sha256": "74ab3b5d77524b6dc3cbf88b82f887cd79c54b999f356dd07c73ce1831d19fb1"
+      },
+      "public_reference": {
+        "path": ".cache/ace16-binary-allocation-next-20261026/V2019-checkpoint-13-shrunk.accdb",
+        "bytes": 1118208,
+        "sha256": "0e3ca032d3486cc72b61080c31ea79469ba73aacc4e8785b572d5083dcf532fc"
+      },
+      "action": "shrink",
+      "checkpoint": 13,
+      "target_page": 272,
+      "target_slot": 1,
+      "capacity_bytes": 268,
+      "file_growth_bytes": 0,
+      "same_bytes_as_public_reference": false,
+      "full_typed_reference_and_index_orders_match": true,
+      "whole_image_allowed_bytes_exact": true,
+      "map_changes": {
+        "JackcessGlobalFree": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableOwned": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        },
+        "TableFreeSpace": {
+          "added_file_members": [],
+          "removed_file_members": [],
+          "changed_existing_bytes": []
+        }
+      },
+      "getter": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-shrink-after-getter.stdout",
+        "bytes": 748854,
+        "sha256": "9a40417a1b4ef0c809a40d0775964091cb4137f978573ef6827812d790436702"
+      },
+      "map_probe": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-shrink-after-maps.stdout",
+        "bytes": 512,
+        "sha256": "58f64b14d61052c8ebd495daff4e9de6dcae3a2303ec3150572630673c41c7ee"
+      }
+    }
+  ],
+  "command_receipts": [
+    {
+      "argv": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "SlotUpdateFixture",
+        "oracle",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-append-12.accdb"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-grow-before-getter.stdout",
+        "bytes": 747126,
+        "sha256": "fb85b0babdb989c685836ca3d82b0bc590faff415e1c5231547a6326c03b0908"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-grow-before-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "SlotMapProbe",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-append-12.accdb",
+        "BinaryStorage",
+        "1"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-grow-before-maps.stdout",
+        "bytes": 253,
+        "sha256": "1ce09ffe8e2f0add89fe68af928fd43efb543598430dd72bc39b8abdfd89e9ca"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-grow-before-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-variable-20261026",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-append-12.accdb",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-grow-candidate.accdb",
+        "BinaryStorage",
+        "Bytes",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-grow.tsv",
+        "--variable-updates"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-grow-native.stdout",
+        "bytes": 25,
+        "sha256": "6c0d0787710c780f70f807198b638d69620d3c1a5340c100a3bcf81240fec7b8"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-grow-native.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "SlotUpdateFixture",
+        "oracle",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-grow-candidate.accdb"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-grow-after-getter.stdout",
+        "bytes": 748149,
+        "sha256": "9f7cb2469409b8f06a2973878cd304ccbc18d2d6301d2c888be973fc31adb48b"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-grow-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "SlotMapProbe",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-grow-candidate.accdb",
+        "BinaryStorage",
+        "1"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-grow-after-maps.stdout",
+        "bytes": 275,
+        "sha256": "7cfcf24358648b67bbbe1505c8320f72b0f748175ed57e7983d6358fd3acab53"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-grow-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-variable-20261026",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-grow-candidate.accdb",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-shrink-candidate.accdb",
+        "BinaryStorage",
+        "Bytes",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-shrink.tsv",
+        "--variable-updates"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-shrink-native.stdout",
+        "bytes": 25,
+        "sha256": "6c0d0787710c780f70f807198b638d69620d3c1a5340c100a3bcf81240fec7b8"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-shrink-native.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "SlotUpdateFixture",
+        "oracle",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-shrink-candidate.accdb"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-shrink-after-getter.stdout",
+        "bytes": 747653,
+        "sha256": "4f2570f1a231f5523c320b33c31a5c603e9cf14ede649177c82cc4f09dc809c9"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-shrink-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "SlotMapProbe",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-shrink-candidate.accdb",
+        "BinaryStorage",
+        "1"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-shrink-after-maps.stdout",
+        "bytes": 275,
+        "sha256": "7cfcf24358648b67bbbe1505c8320f72b0f748175ed57e7983d6358fd3acab53"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-12-shrink-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "SlotUpdateFixture",
+        "oracle",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-append-13.accdb"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-grow-before-getter.stdout",
+        "bytes": 748288,
+        "sha256": "5e2cee84e0d7230176a5d9dea70fecc32b8615717d119fc7eb091173f97998a3"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-grow-before-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "SlotMapProbe",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-append-13.accdb",
+        "BinaryStorage",
+        "1"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-grow-before-maps.stdout",
+        "bytes": 275,
+        "sha256": "003b5304089a0d62da308c84704caddbb23033e14d4772565b42f9e37a84a9ec"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-grow-before-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-variable-20261026",
+        ".cache/ace16-binary-allocation-next-20261026/V2016-append-13.accdb",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-grow-candidate.accdb",
+        "BinaryStorage",
+        "Bytes",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-grow.tsv",
+        "--variable-updates"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-grow-native.stdout",
+        "bytes": 25,
+        "sha256": "6c0d0787710c780f70f807198b638d69620d3c1a5340c100a3bcf81240fec7b8"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-grow-native.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "SlotUpdateFixture",
+        "oracle",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-grow-candidate.accdb"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-grow-after-getter.stdout",
+        "bytes": 749311,
+        "sha256": "6bd2d6bdd7b48f1288830daef8fd2c999cebfad6239a208961df76dd0e147e63"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-grow-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "SlotMapProbe",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-grow-candidate.accdb",
+        "BinaryStorage",
+        "1"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-grow-after-maps.stdout",
+        "bytes": 275,
+        "sha256": "66798501c49d3206a716efed6f1ff678c5c936a7ff96bb95975ecb1e89a99487"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-grow-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-variable-20261026",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-grow-candidate.accdb",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-shrink-candidate.accdb",
+        "BinaryStorage",
+        "Bytes",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-shrink.tsv",
+        "--variable-updates"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-shrink-native.stdout",
+        "bytes": 25,
+        "sha256": "6c0d0787710c780f70f807198b638d69620d3c1a5340c100a3bcf81240fec7b8"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-shrink-native.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "SlotUpdateFixture",
+        "oracle",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-shrink-candidate.accdb"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-shrink-after-getter.stdout",
+        "bytes": 748815,
+        "sha256": "e88beb8da3f33395b8153f5ea17fe5f677b3823d1788d236cd1d2af749b25590"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-shrink-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "SlotMapProbe",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-shrink-candidate.accdb",
+        "BinaryStorage",
+        "1"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-shrink-after-maps.stdout",
+        "bytes": 275,
+        "sha256": "66798501c49d3206a716efed6f1ff678c5c936a7ff96bb95975ecb1e89a99487"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2016-checkpoint-13-shrink-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "SlotUpdateFixture",
+        "oracle",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-append-12.accdb"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-grow-before-getter.stdout",
+        "bytes": 747165,
+        "sha256": "e1cd36fc62958da802b157d50cb1d0379909853beb162a5164fc83acdf5d4ea9"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-grow-before-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "SlotMapProbe",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-append-12.accdb",
+        "BinaryStorage",
+        "1"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-grow-before-maps.stdout",
+        "bytes": 490,
+        "sha256": "c1b72d7196f5da93211003823a66b234c27f5f504e433b182698a143c24ac572"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-grow-before-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-variable-20261026",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-append-12.accdb",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-grow-candidate.accdb",
+        "BinaryStorage",
+        "Bytes",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-grow.tsv",
+        "--variable-updates"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-grow-native.stdout",
+        "bytes": 25,
+        "sha256": "6c0d0787710c780f70f807198b638d69620d3c1a5340c100a3bcf81240fec7b8"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-grow-native.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "SlotUpdateFixture",
+        "oracle",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-grow-candidate.accdb"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-grow-after-getter.stdout",
+        "bytes": 748188,
+        "sha256": "b2d08f6f3d1794534f253ea468298c31113bb7515765648178cdb61aca2ac8f1"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-grow-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "SlotMapProbe",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-grow-candidate.accdb",
+        "BinaryStorage",
+        "1"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-grow-after-maps.stdout",
+        "bytes": 512,
+        "sha256": "890ac9271e2e82171177ff8fae9cafad0f5cd8d67897fa379bcc32d6faa641d1"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-grow-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-variable-20261026",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-grow-candidate.accdb",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-shrink-candidate.accdb",
+        "BinaryStorage",
+        "Bytes",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-shrink.tsv",
+        "--variable-updates"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-shrink-native.stdout",
+        "bytes": 25,
+        "sha256": "6c0d0787710c780f70f807198b638d69620d3c1a5340c100a3bcf81240fec7b8"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-shrink-native.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "SlotUpdateFixture",
+        "oracle",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-shrink-candidate.accdb"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-shrink-after-getter.stdout",
+        "bytes": 747692,
+        "sha256": "063e7d095bb7b9111ce51b6ef2d5420c143ae52e09405d387b50514733234de7"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-shrink-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "SlotMapProbe",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-shrink-candidate.accdb",
+        "BinaryStorage",
+        "1"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-shrink-after-maps.stdout",
+        "bytes": 512,
+        "sha256": "890ac9271e2e82171177ff8fae9cafad0f5cd8d67897fa379bcc32d6faa641d1"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-12-shrink-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "SlotUpdateFixture",
+        "oracle",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-append-13.accdb"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-grow-before-getter.stdout",
+        "bytes": 748327,
+        "sha256": "7029802d2b8daa67aa0d1e497e2ad3f6632dc42ac315e831e8dbecec5d64bf18"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-grow-before-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "SlotMapProbe",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-append-13.accdb",
+        "BinaryStorage",
+        "1"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-grow-before-maps.stdout",
+        "bytes": 512,
+        "sha256": "ec155f4186e5c5b50465650c0bdc2c9427ac5ef9a147fedb360619dca243c508"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-grow-before-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-variable-20261026",
+        ".cache/ace16-binary-allocation-next-20261026/V2019-append-13.accdb",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-grow-candidate.accdb",
+        "BinaryStorage",
+        "Bytes",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-grow.tsv",
+        "--variable-updates"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-grow-native.stdout",
+        "bytes": 25,
+        "sha256": "6c0d0787710c780f70f807198b638d69620d3c1a5340c100a3bcf81240fec7b8"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-grow-native.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "SlotUpdateFixture",
+        "oracle",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-grow-candidate.accdb"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-grow-after-getter.stdout",
+        "bytes": 749350,
+        "sha256": "c6d46ff48c1c1465f19a8f70b442f67c90225bd0ac118bba3f7f97a69bcb8fc2"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-grow-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "SlotMapProbe",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-grow-candidate.accdb",
+        "BinaryStorage",
+        "1"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-grow-after-maps.stdout",
+        "bytes": 512,
+        "sha256": "58f64b14d61052c8ebd495daff4e9de6dcae3a2303ec3150572630673c41c7ee"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-grow-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        ".cache/tablecraft-bin/ace16-variable-20261026",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-grow-candidate.accdb",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-shrink-candidate.accdb",
+        "BinaryStorage",
+        "Bytes",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-shrink.tsv",
+        "--variable-updates"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-shrink-native.stdout",
+        "bytes": 25,
+        "sha256": "6c0d0787710c780f70f807198b638d69620d3c1a5340c100a3bcf81240fec7b8"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-shrink-native.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "SlotUpdateFixture",
+        "oracle",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-shrink-candidate.accdb"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-shrink-after-getter.stdout",
+        "bytes": 748854,
+        "sha256": "9a40417a1b4ef0c809a40d0775964091cb4137f978573ef6827812d790436702"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-shrink-after-getter.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "java",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-binary-allocation-next-20261026/classes",
+        "SlotMapProbe",
+        ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-shrink-candidate.accdb",
+        "BinaryStorage",
+        "1"
+      ],
+      "status": 0,
+      "timed_out": false,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-shrink-after-maps.stdout",
+        "bytes": 512,
+        "sha256": "58f64b14d61052c8ebd495daff4e9de6dcae3a2303ec3150572630673c41c7ee"
+      },
+      "stderr": {
+        "path": ".cache/ace16-binary-variable-candidates-initial-20261026/V2019-checkpoint-13-shrink-after-maps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "public_reference_record": {
+    "path": "docs/testing/results/ace16-binary-allocation-originals-2026-10-26.json",
+    "bytes": 181849,
+    "sha256": "15a7cb51b87d2ccaa31de1687ced64285e9eb15dff6b98358299525235582908"
+  },
+  "current_public_sources": [
+    {
+      "path": "docs/testing/compare_binary_variable_updates.py",
+      "bytes": 209,
+      "sha256": "7e639b500152d31e2ab97afcdce07481907645640cc4db2e9760844f1ef31f4a"
+    },
+    {
+      "path": "docs/testing/binary_preview_originals/plan.py",
+      "bytes": 5099,
+      "sha256": "f0c4c05f2848d4548f3291f4e9fac52fc34e3b421765a311d3a17eacfcea8d6d"
+    },
+    {
+      "path": "docs/testing/binary_preview_originals/proof.py",
+      "bytes": 5709,
+      "sha256": "f46f2f9d6c902c699d9f42fa19393c53ec51c0806fa77b8c50e8232b6f5a7273"
+    },
+    {
+      "path": "docs/testing/binary_preview_originals/replay.py",
+      "bytes": 15533,
+      "sha256": "76444d4a2f4e23fb5d3341311c39eb4e53120d139aaea5dd55021cfebe3ac540"
+    }
+  ],
+  "current_public_validation": {
+    "plan_byte_identical": {
+      "path": ".cache/ace16-binary-public-validation-20261026/rebuilt-plan.json",
+      "bytes": 32965,
+      "sha256": "95ce3a6b064be0cc815fba5d59e8ef2cb6e36ef902dc62e82faab1596f602fb2"
+    },
+    "plan_log": {
+      "path": ".cache/ace16-binary-public-validation-20261026/plan.log",
+      "bytes": 216,
+      "sha256": "faaf1508e62d9c3e30130ddccb66e0bd277d36482549261ee20a6f7828cbdbee"
+    },
+    "read_only_verification": {
+      "path": ".cache/ace16-binary-public-validation-20261026/verify-accepted/verification.json",
+      "bytes": 1527,
+      "sha256": "3867e00b57c45c6e667e82f25ad95edf96a2d66de203bafebfd96397337c8626"
+    },
+    "verification_log": {
+      "path": ".cache/ace16-binary-public-validation-20261026/verify-accepted.log",
+      "bytes": 248,
+      "sha256": "a447d5a37f0ca8700507d2cd0bad2306607b49dec5d8de2d3bc1545673b7f139"
+    },
+    "native_calls": 0,
+    "JVM_calls": 0,
+    "initial_import_error_log": {
+      "path": ".cache/ace16-binary-public-validation-20261026/verify-initial.log",
+      "bytes": 395,
+      "sha256": "3bafccb329e6f86b1109dcf66ea63dc8c7cc49131a464fad3204df94f9956e45"
+    },
+    "initial_import_source_archive": {
+      "path": ".cache/ace16-binary-public-validation-20261026/initial-public-source/manifest.json",
+      "bytes": 1098,
+      "sha256": "82c0bf2d3883dc5644f97a20a9719f053678360c08bf39ec13a408ee96289ae1"
+    },
+    "initial_JSON_key_adapter_log": {
+      "path": ".cache/ace16-binary-public-validation-20261026/verify-final.log",
+      "bytes": 627,
+      "sha256": "75c8c05e9e36ce92f9f4c5c0c2d068f461e2b4912c55a0e57d282fdf7ff3097d"
+    },
+    "JSON_key_adapter_source_archive": {
+      "path": ".cache/ace16-binary-public-validation-20261026/pre-key-normalization-source/manifest.json",
+      "bytes": 162,
+      "sha256": "d63941504b4aae501af356069b2fa5d8a2a056ffa07333c10b04b77c575c9a7b"
+    },
+    "correction_scope": "Public wrapper only: import spelling and integer decoded page keys versus JSON string keys. No native rerun or outcome/model change."
+  },
+  "independent_growth_selfcheck": {
+    "path": ".cache/ace16-binary-variable-originals-next-20261026/public-growth-selfcheck.json",
+    "bytes": 9023,
+    "sha256": "742e2f6dbba0e39b4a3a22baf28ced839dd21fd7b9178c116a7a64d69ac423ba"
+  },
+  "qualification": [
+    "Two EOF growths, two alternate-owned growths and four fitted shrinks; every shrink source is its actual native growth candidate.",
+    "Four growth images equal public bytes; four shrink images preserve old padding and have semantic/index agreement only.",
+    "Public34 INSERT/UPDATE observations remain distinct and unchanged.",
+    "No native Access/macro/save, arbitrary free-page reuse, new map allocation or general variable-row qualification."
+  ]
+}

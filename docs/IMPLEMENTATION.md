@@ -17,6 +17,11 @@ minimal compilation and formatting. Its subsequent
 [eight original-file candidates](testing/VARIABLE_UPDATE_OBSERVATIONS.md) all
 pass on their first run, including candidate growth-to-shrink chains, exact EOF
 pages and represented map changes. The earlier PAGE comparison remains separate.
+The same frozen consumer also passes the
+[eight Short Binary allocation controls](testing/BINARY_VARIABLE_UPDATE_OBSERVATIONS.md)
+on actual space-exhaustion sources. Their complete image/value/index proofs
+retain 268-byte target capacity and distinguish preserved shrink padding from
+public-writer canonicalization.
 See the [allocation contract](testing/ACE16_VARIABLE_UPDATES.md).
 
 ## Same-page Text and Binary UPDATE candidates
