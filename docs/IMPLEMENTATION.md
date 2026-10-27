@@ -231,6 +231,23 @@ on unchanged Byte/Int16/Int64/Currency originals. All sixteen fixture commands
 pass without retries or regeneration, separately from prior public writer actions.
 Normal native saves and Microsoft Access qualification remain open.
 
+## Usage-map growth reference evidence
+
+A [separate independent-writer experiment](testing/USAGE_MAP_GROWTH_OBSERVATIONS.md)
+now captures inline index-owned map promotion on both unchanged ACE 16-family
+originals. Each transition retains the map record's 69-byte extent and root ID,
+allocates right/bitmap/left pages, and adds only the two index children to index
+ownership while allocating all three pages globally. Complete existing-prefix,
+map-role, row and tree checks distinguish metadata from index membership.
+
+The eighteen recorded fixture commands comprise thirteen source successes, one
+V2016 reference failure after mutation, one successful read-only classification
+of that partial output, and three successful corrected V2019 phase commands.
+The immutable-map helper error remains recorded; V2016 was not retried. The
+read-only classification establishes its saved physical transition, not a
+successful original action. These observations guide allocation engineering;
+they do not implement engine map growth or qualify native Access saves.
+
 ## Repeated-overflow numeric split previews
 
 The [existing engineering split services](testing/ACE16_REPEATED_INDEX_SPLITS.md)

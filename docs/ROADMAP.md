@@ -170,6 +170,13 @@ Delivered read/query and engineering foundations:
   retaining independent association, index-entry and unchanged-byte checks.
   General ACE 16 saves are still unavailable.
 
+- [x] Independent [usage-map growth observations](testing/USAGE_MAP_GROWTH_OBSERVATIONS.md)
+  distinguish selected index children from newly allocated bitmap metadata and
+  preserve the original map extent, root identity and unrelated bytes. The
+  eighteen-command history explicitly retains one failed reference action with
+  separately validated partial output. Engine promotion, generic allocation and
+  production saves remain unfinished.
+
 - [x] [Stateful streaming composition](query/PROGRESSIVE_QUERIES.md#stateful-retained-stages)
   for static saved/named/derived SELECT chains, with retained intermediate values,
   independent TOP/HAVING phases and successful logical EOF before outer totals.
