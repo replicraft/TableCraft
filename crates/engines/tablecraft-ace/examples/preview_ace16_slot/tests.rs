@@ -8,6 +8,9 @@ mod index_fixture;
 #[path = "../../tests/ace16_encoded_delete_contract/model.rs"]
 mod model;
 #[allow(dead_code)]
+#[path = "../../tests/ace16_page_updates_contract/model.rs"]
+mod page_model;
+#[allow(dead_code)]
 #[path = "../../tests/support/mod.rs"]
 mod support;
 
@@ -67,7 +70,7 @@ fn arguments(source: &Path, output: &Path, requests: &Path) -> Args {
 }
 
 #[test]
-fn clap_requires_exact_positional_sources_without_write_mode_switches() {
+fn clap_requires_exact_sources_and_keeps_page_updates_explicit() {
     for invalid in [
         vec!["slot", "before", "after", "Items", "Score"],
         vec![
@@ -82,6 +85,19 @@ fn clap_requires_exact_positional_sources_without_write_mode_switches() {
     let args =
         Args::try_parse_from(["slot", "before", "after", "Items", "Score", "one.tsv"]).unwrap();
     assert_eq!(args.requests, PathBuf::from("one.tsv"));
+    assert!(!args.page_updates);
+
+    let args = Args::try_parse_from([
+        "slot",
+        "before",
+        "after",
+        "Items",
+        "Score",
+        "one.tsv",
+        "--page-updates",
+    ])
+    .unwrap();
+    assert!(args.page_updates);
 }
 
 #[test]
@@ -144,4 +160,47 @@ fn real_api_candidate_is_fresh_readable_and_never_overwrites_original_or_existin
     assert_eq!(fs::read(&output).unwrap(), after);
     assert!(run(arguments(&source, &source, &requests), &mut budget()).is_err());
     assert_eq!(fs::read(&source).unwrap(), model.bytes);
+}
+
+#[test]
+fn page_mode_expands_only_when_selected_and_preserves_fresh_output() {
+    let directory = Directory::new();
+    let before = page_model::image(&[(0, page_model::record(b"A"))], 1, true);
+    assert_eq!(page_model::read(&before).len(), 1);
+    let source = directory.file("before-page.accdb", &before);
+    let requests = directory.file("growth.tsv", b"0\tbinary\t41\tbinary\t4142434445\n");
+    let output = directory.0.join("page-candidate.accdb");
+
+    let error = run(arguments(&source, &output, &requests), &mut budget())
+        .err()
+        .unwrap();
+    assert_eq!(
+        error.downcast_ref::<tablecraft_ace::EditError>(),
+        Some(&tablecraft_ace::EditError::Unsupported(
+            tablecraft_ace::WriteBlocker::RowLayout
+        ))
+    );
+    assert!(!output.exists());
+
+    let mut args = arguments(&source, &output, &requests);
+    args.page_updates = true;
+    assert_eq!(run(args, &mut budget()).unwrap(), 1);
+    let after = fs::read(&output).unwrap();
+    assert_eq!(after.len(), before.len());
+    assert_eq!(
+        page_model::read(&after)[0][1],
+        Value::Binary(b"ABCDE".to_vec())
+    );
+    assert_eq!(page_model::count(&after), 2);
+    assert_eq!(fs::read(&source).unwrap(), before);
+
+    let mut args = arguments(&source, &output, &requests);
+    args.page_updates = true;
+    let error = run(args, &mut budget()).err().unwrap();
+    assert_eq!(
+        error.downcast_ref::<std::io::Error>().unwrap().kind(),
+        std::io::ErrorKind::AlreadyExists
+    );
+    assert_eq!(fs::read(&output).unwrap(), after);
+    assert_eq!(fs::read(&source).unwrap(), before);
 }

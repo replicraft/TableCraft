@@ -1,10 +1,10 @@
-# Existing-slot Text/Binary engineering consumer
+# Text/Binary engineering consumer
 
 `preview_ace16_slot` is an opt-in example for
 [qualified existing-slot previews](ACE16_WRITE_PREVIEWS.md#existing-width-short-text-and-binary-slots).
 It returns a disposable candidate through the engine's separate
 `NativeImage::preview_ace16_slot_updates` API. It does not enable normal CLI or
-backend writes, journals, arbitrary record resizing or native Access save/reopen
+backend writes, journals, arbitrary page allocation or native Access save/reopen
 compatibility.
 
 Build and invoke it explicitly:
@@ -18,6 +18,17 @@ The five positional arguments are `SOURCE OUTPUT TABLE COLUMN TSV`. Every reques
 addresses the same exact table/column and a zero-based live-row ordinal in the
 original captured image. The output must be a fresh path. Engine field, index,
 constraint, expected-value, width and profile gates remain unchanged.
+
+An explicit `--page-updates` flag selects the separate
+`NativeImage::preview_ace16_page_updates` API. It can reuse an existing record's
+capacity or append a hidden forwarding target on the original logical root's
+page, subject to its space, slot-count, ownership and free-space-hint checks. It never
+allocates another page or moves neighboring records. Without this flag, the
+original exact-slot-span contract remains in effect.
+
+```sh
+target/debug/examples/preview_ace16_slot --page-updates original.accdb candidate.accdb Items Score requests.tsv
+```
 
 ## Request format
 
@@ -87,6 +98,14 @@ byte/row/work exhaustion, hostile field counts, positional arguments, fresh
 publication, injected partial-write cleanup and a real engine-backed filesystem
 candidate. The latter reopens the result through the ordinary reader/checker and
 verifies that existing output and source bytes survive overwrite attempts.
+An additional engine-backed control verifies that growth requires the explicit
+page mode, the source stays unchanged and an existing candidate cannot be
+overwritten.
+
+On 26 October 2026, all ten example tests pass with `ace16-write-preview`;
+strict Clippy for this example and scoped formatting also pass. These checks
+cover the consumer boundary. The engine's independent preservation controls are
+recorded in the [page-update contract](ACE16_PAGE_UPDATES.md).
 
 These authored tests do not establish native Access behavior. Fresh original
 fixture comparisons and any frozen consumer receipts remain separate evidence.

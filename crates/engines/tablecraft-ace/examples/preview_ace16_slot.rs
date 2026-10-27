@@ -1,4 +1,4 @@
-//! Disposable existing-slot Text/Binary candidate; never a qualified save.
+//! Disposable Text/Binary candidate; never a qualified save.
 #[path = "preview_ace16_slot/input.rs"]
 mod input;
 #[path = "preview_ace16_slot/output.rs"]
@@ -15,7 +15,7 @@ const ROW_BUDGET: u64 = 100_000;
 const STEP_BUDGET: u64 = 100_000_000;
 
 #[derive(Parser)]
-#[command(about = "Create an unqualified existing-slot ACE 16 Text/Binary candidate")]
+#[command(about = "Create an unqualified ACE 16 Text/Binary candidate")]
 struct Args {
     source: PathBuf,
     output: PathBuf,
@@ -25,6 +25,9 @@ struct Args {
     /// (16 MiB, 4096 rows; subject to the shared operation allowance).
     #[arg(value_name = "TSV")]
     requests: PathBuf,
+    /// Use fitted records and same-page hidden-target forwarding, without page allocation.
+    #[arg(long)]
+    page_updates: bool,
 }
 
 fn run(args: Args, budget: &mut ResourceBudget) -> Result<usize, Box<dyn Error>> {
@@ -32,9 +35,11 @@ fn run(args: Args, budget: &mut ResourceBudget) -> Result<usize, Box<dyn Error>>
     let requests = input::load(&args.requests, budget)?;
     let mut source = File::open(&args.source)?;
     let image = NativeImage::capture(&mut source, CatalogScope::new(1), budget, &|| false)?;
-    let candidate =
-        image
-            .preview_ace16_slot_updates(&args.table, &args.column, &requests, budget, &|| false)?;
+    let candidate = if args.page_updates {
+        image.preview_ace16_page_updates(&args.table, &args.column, &requests, budget, &|| false)?
+    } else {
+        image.preview_ace16_slot_updates(&args.table, &args.column, &requests, budget, &|| false)?
+    };
     output::publish(&args.output, candidate.candidate_bytes())?;
     Ok(candidate.changed_rows())
 }
