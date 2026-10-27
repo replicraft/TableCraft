@@ -19,7 +19,7 @@ use tablecraft_core::{
 const UTF16_BYTES: usize = size_of::<u16>();
 const COMPRESSION_MARKER_BYTES: usize = 2;
 
-pub(super) fn build(
+pub(in crate::table::mutation) fn build(
     schema: &TableSchema,
     column: usize,
     before: &[u8],

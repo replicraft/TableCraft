@@ -26,19 +26,19 @@ struct Change<'u> {
     target: Range<usize>,
 }
 
-pub(super) struct Staged<'u> {
-    pub plan: Plan,
+pub(in crate::table::mutation) struct Staged<'u, P> {
+    pub plan: P,
     pub space: Space,
     columns: Vec<usize>,
     changes: Vec<Change<'u>>,
 }
 
-impl Staged<'_> {
-    pub(super) fn changed_rows(&self) -> usize {
+impl<P: Placement> Staged<'_, P> {
+    pub(in crate::table::mutation) fn changed_rows(&self) -> usize {
         self.changes.len()
     }
 
-    pub(super) fn keys(
+    pub(in crate::table::mutation) fn keys(
         &self,
         column: usize,
         budget: &mut ResourceBudget,
@@ -68,7 +68,7 @@ impl Staged<'_> {
         Ok(result)
     }
 
-    pub(super) fn audit(
+    pub(in crate::table::mutation) fn audit(
         &self,
         image: &NativeImage,
         structural: &TableCheck,
@@ -76,29 +76,10 @@ impl Staged<'_> {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
-        audit::pages(&self.plan, budget, cancelled)?;
-        let levels = self.plan.pages.len().checked_ilog2().unwrap_or(0) as usize + 1;
+        self.plan.audit(budget, cancelled)?;
         for change in &self.changes {
             check(budget, cancelled)?;
-            budget
-                .charge(
-                    Resource::Steps,
-                    self.plan.pages.len() as u64 + levels as u64,
-                )
-                .map_err(InspectError::from)?;
-            let number = u32::try_from(change.target.start / PAGE_BYTES)
-                .map_err(|_| InspectError::Malformed)?;
-            let page = self
-                .plan
-                .pages
-                .iter()
-                .find(|page| page.number == number)
-                .ok_or(EditError::Preservation)?;
-            let base = number as usize * PAGE_BYTES;
-            let after = page
-                .after
-                .get(change.target.start - base..change.target.end - base)
-                .ok_or(EditError::Preservation)?;
+            let after = self.plan.target(change.target.clone(), budget, cancelled)?;
             if after != change.record {
                 return Err(EditError::Preservation);
             }
@@ -123,7 +104,27 @@ pub(super) fn build<'u>(
     updates: &'u [SlotScalarUpdate],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<Staged<'u>, EditError> {
+) -> Result<Staged<'u, Plan>, EditError> {
+    build_with(
+        image,
+        structural,
+        column,
+        updates,
+        Plan::new(),
+        budget,
+        cancelled,
+    )
+}
+
+pub(in crate::table::mutation) fn build_with<'u, P: Placement>(
+    image: &NativeImage,
+    structural: &TableCheck,
+    column: usize,
+    updates: &'u [SlotScalarUpdate],
+    mut plan: P,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Staged<'u, P>, EditError> {
     let schema = structural.schema();
     let captured = roots::capture(image, schema, updates, budget, cancelled)?;
     let space = Space::capture(image, schema, &captured.owned, budget, cancelled)?;
@@ -165,7 +166,6 @@ pub(super) fn build<'u>(
     changes
         .try_reserve_exact(updates.len())
         .map_err(|_| InspectError::Allocation)?;
-    let mut plan = Plan::new();
     let mut source = image.reader();
     let mut reader = Reader {
         source: &mut source,
@@ -233,4 +233,74 @@ pub(super) fn build<'u>(
         columns,
         changes,
     })
+}
+
+/// Real placement consumers share checked roots, record serialization and keys.
+pub(in crate::table::mutation) trait Placement {
+    fn apply(
+        &mut self,
+        image: &NativeImage,
+        root: &Root<'_>,
+        record: &[u8],
+        space: &Space,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Range<usize>, EditError>;
+
+    fn audit(
+        &self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError>;
+
+    fn target(
+        &self,
+        range: Range<usize>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<&[u8], EditError>;
+}
+
+impl Placement for Plan {
+    fn apply(
+        &mut self,
+        image: &NativeImage,
+        root: &Root<'_>,
+        record: &[u8],
+        space: &Space,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Range<usize>, EditError> {
+        Plan::apply(self, image, root, record, space, budget, cancelled)
+    }
+
+    fn audit(
+        &self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        audit::pages(self, budget, cancelled)
+    }
+
+    fn target(
+        &self,
+        range: Range<usize>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<&[u8], EditError> {
+        check(budget, cancelled)?;
+        budget
+            .charge(Resource::Steps, self.pages.len() as u64)
+            .map_err(InspectError::from)?;
+        let number = range.start / PAGE_BYTES;
+        let page = self
+            .pages
+            .iter()
+            .find(|page| page.number as usize == number)
+            .ok_or(EditError::Preservation)?;
+        let base = number * PAGE_BYTES;
+        page.after
+            .get(range.start - base..range.end - base)
+            .ok_or(EditError::Preservation)
+    }
 }

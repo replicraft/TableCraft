@@ -195,6 +195,29 @@ impl RepresentedMap {
         if target >= reader.header.page_count() {
             return Err(InspectError::Malformed);
         }
+        self.represented_cell(reader, target)
+    }
+
+    /// Locate an already represented cell for a page appended at/after the
+    /// captured EOF. This does not allocate bitmap storage or expand a window.
+    #[cfg(feature = "ace16-write-preview")]
+    pub(crate) fn future_cell<R: NativeReadSource>(
+        &self,
+        reader: &mut Reader<'_, R>,
+        target: u32,
+    ) -> Result<MapCell, InspectError> {
+        reader.tick()?;
+        if target < reader.header.page_count() {
+            return Err(InspectError::Malformed);
+        }
+        self.represented_cell(reader, target)
+    }
+
+    fn represented_cell<R: NativeReadSource>(
+        &self,
+        reader: &mut Reader<'_, R>,
+        target: u32,
+    ) -> Result<MapCell, InspectError> {
         let (offset, before, bit) = match self.payload[0] {
             INLINE_MAP => {
                 let base = u32_at(&self.payload, 1)?;

@@ -18,6 +18,8 @@ mod rows;
 #[cfg(feature = "ace16-write-preview")]
 mod slot;
 #[cfg(feature = "ace16-write-preview")]
+mod variable_update;
+#[cfg(feature = "ace16-write-preview")]
 pub use slot::SlotScalarUpdate;
 
 #[cfg(feature = "ace16-write-preview")]

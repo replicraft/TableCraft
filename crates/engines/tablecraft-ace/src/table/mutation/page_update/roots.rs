@@ -15,7 +15,7 @@ use crate::{
 use std::ops::Range;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
-pub(super) struct Root<'u> {
+pub(in crate::table::mutation) struct Root<'u> {
     pub reference: u32,
     pub word: u16,
     pub range: Range<usize>,
@@ -29,12 +29,12 @@ struct TargetOwner {
     root: u32,
 }
 
-pub(super) struct Roots<'u> {
+pub(in crate::table::mutation) struct Roots<'u> {
     pub selected: Vec<Root<'u>>,
     pub owned: Vec<u32>,
 }
 
-pub(super) fn capture<'u>(
+pub(in crate::table::mutation) fn capture<'u>(
     image: &NativeImage,
     schema: &TableSchema,
     updates: &'u [SlotScalarUpdate],

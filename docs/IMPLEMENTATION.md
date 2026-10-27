@@ -1,5 +1,22 @@
 # Implementation status
 
+## Alternate-page placement and EOF allocation candidates
+
+The separate `preview_ace16_variable_updates` engineering API now places growing
+Short Text/Binary records on an owned candidate page or newly appended EOF pages.
+Existing map representation must cover every allocation; map growth and arbitrary
+in-file free-page reuse remain unsupported. Original logical roots, index row
+references, unrelated records and counters stay intact.
+
+An independent event replay derives exact map-bit authority from original
+geometry and actual placement failures. A separate finalizer validates the grown
+header/catalog, complete constraints and protected bytes without creating a
+journalable edit plan. The [scoped record](testing/results/ace16-variable-updates-native-2026-10-26.json)
+passes 233 runtime functions and three compile-fail checks, plus strict lint,
+minimal compilation and formatting. Original-file acceptance is a separate next
+step; the earlier PAGE comparison does not qualify this new implementation.
+See the [allocation contract](testing/ACE16_VARIABLE_UPDATES.md).
+
 ## Same-page Text and Binary UPDATE candidates
 
 The separate `preview_ace16_page_updates` engineering API now reuses fitted

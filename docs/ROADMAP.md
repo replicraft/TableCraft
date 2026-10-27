@@ -36,11 +36,16 @@ Delivered read/query and engineering foundations:
   constraints and no record growth or ordinary save capability.
   A separate [same-page Text/Binary service](testing/ACE16_PAGE_UPDATES.md) now
   fits records within retained capacity or appends hidden forwarding targets
-  while preserving original logical roots. Page allocation, index splitting and
+  while preserving original logical roots. General allocation, index splitting and
   ordinary saves remain unfinished.
   Its [separate original-file replay](testing/PAGE_UPDATE_OBSERVATIONS.md) now
   passes 180 controls: 156 candidates and 24 typed refusals, with complete
   record/index/map and protected-byte proofs.
+  A further [variable-update service](testing/ACE16_VARIABLE_UPDATES.md) now adds
+  alternate owned destinations and EOF data-page allocation through existing map
+  representation, with independent placement/map replay. Map growth, arbitrary
+  free-page reuse and production saves remain unfinished; its original-file
+  acceptance remains separate from the earlier PAGE results.
   A separate [48-control Text/Binary corpus](testing/ENCODED_DELETE_OBSERVATIONS.md)
   checks 36 candidates and twelve unsupported-profile refusals on the same
   committed tool, including the previously refused height-two delete-all cases.
@@ -66,8 +71,9 @@ Major gates still open before the full backend is complete:
 - [ ] Broader ACE 16 validation/preservation and required data-macro safety.
 - [ ] General physical mutation: record growth/allocation, index splits/merges,
   general INSERT/DELETE and wider relationship/write-query actions. Deletion
-  candidates now support qualified existing-page contraction; allocation and
-  production saves remain unfinished.
+  candidates now support qualified existing-page contraction and variable updates
+  support represented EOF data-page allocation. General allocation/map growth
+  and production saves remain unfinished.
 - [ ] Production transaction/recovery qualification, native shared-file
   coordination and mixed-client behavior.
 - [ ] Remaining backend contracts, application session/cursor lifecycle, object lifecycle, background

@@ -1,10 +1,10 @@
 //! Bounded existing-page forwarding with stable logical roots and full checks.
-mod audit;
+pub(super) mod audit;
 mod forward;
-mod record;
-mod roots;
-mod space;
-mod stage;
+pub(super) mod record;
+pub(super) mod roots;
+pub(super) mod space;
+pub(super) mod stage;
 #[cfg(test)]
 mod tests;
 

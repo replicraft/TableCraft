@@ -28,8 +28,10 @@ transitions use the page repacking profiles below. Qualified GUID, Boolean/IEEE/
 indexes, existing-width Decimal slots and same-width Short Text/Binary slots have
 their own profiles below. A separate [same-page update API](ACE16_PAGE_UPDATES.md)
 admits fitted Text/Binary records and hidden-target forwarding on the original
-root page. These fixed-field APIs do not resize records. Memo/OLE changes,
-page allocation, INSERT, schema changes,
+root page. A further [variable-update service](ACE16_VARIABLE_UPDATES.md)
+admits alternate owned-page placement and EOF allocation using existing map
+representation. These fixed-field APIs do not resize records. Memo/OLE changes,
+general allocation/map growth, INSERT, schema changes,
 AutoNumber assignment and broader UPDATE index topology changes remain unsupported. Ordinary-root deletion has a separate
 [existing-page candidate API](ACE16_DELETE_PREVIEWS.md), with its own request and return
 types; it does not turn these fixed-field APIs into a general writer.
