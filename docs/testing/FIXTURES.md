@@ -9974,3 +9974,20 @@ image or budget changes. Every output adds one DATA page and six index leaves,
 preserving logical ROW references, fixed companions, Memo/OLE sentinel storage
 and original prefix bytes outside exact authorized changes. Independent image
 models and saved verification tools are tracked without adding database binaries.
+
+### Enlarged ordinary hint-map sources
+
+The [ordinary-hint source phase](ORDINARY_HINT_GROWTH_SOURCE_OBSERVATIONS.md)
+retains four enlarged copies of the two originals above, with exactly 384 or
+700 passive padding rows. Original target records, keys, definitions and complete
+original DATA/LVAL/bitmap pages remain checked. Two targets per copy receive an
+explicit lower hint through the independent writer's public map API; this is a
+controlled preparation, not ordinary row-update or Microsoft Access behavior.
+
+All nine unique source commands succeed. The first proof assembly failed on
+Python integer-versus-JSON-string dictionary keys after three successful commands;
+saved-only transport correction qualifies that retained first source, and six
+new commands complete the remaining copies without regeneration or retries.
+The saved verifier checks all four copies, 12,972 user rows and 144 complete
+original pages. Predicted inline rebases and bitmap promotions are source geometry
+only; no target UPDATE or native candidate is qualified by this phase.
