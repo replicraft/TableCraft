@@ -9397,3 +9397,17 @@ processes succeed with original sources unchanged. The
 [receipt](results/ace16-binary-allocation-originals-2026-10-26.json) pins every
 checkpoint, tool, selector and output. These public-writer facts remain separate
 from engineering candidate acceptance and native Access qualification.
+
+### Memo/OLE storage-transition references
+
+The [long-value observations](LONG_VALUE_UPDATE_OBSERVATIONS.md) use the original
+Sentinel row through 60 fixed fresh-copy public updates and 183 bounded processes.
+Both actual metadata gates match the frozen descriptors and column maps before
+mutation. NULL, empty, inline, single and chained values retain exact getters;
+32 EOF column-owned additions and eight existing-page reuse cases are observed.
+Saved-byte checks preserve 592 cumulative old chunks, including unreachable
+ancestors, with no observed ownership removals. The
+[receipt](results/long-value-update-observations-2026-10-26.json) retains the
+initial static-audit map assumption failure and its read-only correction; no
+actions were rerun. These facts support a working ownership checker and future
+writer, without qualifying current Memo/OLE editing or native Access saves.
