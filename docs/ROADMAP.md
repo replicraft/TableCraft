@@ -187,6 +187,12 @@ source commands pass after an earlier compile failure. The subsequent
 byte-identical no-ops and six exact IndexedColumn refusals with no output. Public
 update references and new split candidate qualification remain separate work.
 
+- [x] A separate [exact-slot Text/Binary split preview](testing/ACE16_ENCODED_INDEX_SPLITS.md)
+  now supplies a working General legacy/modern and Binary consumer of retained
+  keys, with independent complete-image, request-authority, alias and map checks.
+  It preserves field widths and original row locations. Original-file candidate
+  replay, tuple allocation, broader profiles and normal saves remain unfinished.
+
 - [x] Qualified [index-owned map promotion](testing/ACE16_INDEX_MAP_GROWTH.md)
   now composes same-extent pointer-row rewrites and distinct bitmap metadata with
   recursive/repeated splits. Independent images cover late promotion and mixed

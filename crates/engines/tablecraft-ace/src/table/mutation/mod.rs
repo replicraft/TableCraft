@@ -7,6 +7,8 @@ mod field;
 mod fixed;
 mod gates;
 #[cfg(feature = "ace16-write-preview")]
+mod index_append;
+#[cfg(feature = "ace16-write-preview")]
 mod long_value;
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) mod map_authority;
@@ -23,6 +25,8 @@ mod rows;
 mod slot;
 #[cfg(feature = "ace16-write-preview")]
 mod split;
+#[cfg(feature = "ace16-write-preview")]
+mod split_slot;
 #[cfg(feature = "ace16-write-preview")]
 mod variable_update;
 #[cfg(feature = "ace16-write-preview")]

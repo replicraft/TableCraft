@@ -155,6 +155,15 @@ now confirms six byte-identical no-ops and six IndexedColumn growth refusals on
 those unchanged sources. These twelve native calls establish existing admission
 and refusal behavior, not the new split consumer or production-save eligibility.
 
+The new [exact-slot encoded split service](../../testing/ACE16_ENCODED_INDEX_SPLITS.md)
+now provides a distinct working consumer for admitted single Short Text/Binary
+indexes. It reuses genuine preserved/re-encoded keys and the retained physical
+planner; immutable original slot requests separately authorize field patches and
+final key replay. Fixed and slot candidates share only exact-before append
+composition, without producing a journalable edit plan. Independent literal
+images cover recursive/repeated growth and multiple map owners. This does not
+resize data records, admit tuple allocation or change normal backend saves.
+
 A separate [index-owned map promotion service](../../testing/ACE16_INDEX_MAP_GROWTH.md)
 now extends the same engineering split APIs when an inline map's complete required
 span exceeds its qualified window. It preserves the original map-row extent,

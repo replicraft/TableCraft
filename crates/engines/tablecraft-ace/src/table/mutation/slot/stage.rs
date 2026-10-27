@@ -14,7 +14,7 @@ use tablecraft_core::{
 
 const MAX_PATCHES_PER_ROW: usize = 2;
 
-pub(super) struct Patch {
+pub(in crate::table::mutation) struct Patch {
     offset: usize,
     before: Vec<u8>,
     after: Vec<u8>,
@@ -41,13 +41,17 @@ pub(super) struct Changed<'a> {
     value: &'a Value,
 }
 
-pub(super) struct Staged<'a> {
+pub(in crate::table::mutation) struct Staged<'a> {
     pub patches: Vec<Patch>,
-    pub changed: Vec<Changed<'a>>,
+    pub(super) changed: Vec<Changed<'a>>,
     columns: Vec<usize>,
 }
 
 impl Staged<'_> {
+    pub fn changed_rows(&self) -> usize {
+        self.changed.len()
+    }
+
     pub fn keys(
         &self,
         column: usize,
@@ -77,7 +81,7 @@ impl Staged<'_> {
     }
 }
 
-pub(super) fn stage<'a>(
+pub(in crate::table::mutation) fn stage<'a>(
     image: &NativeImage,
     structural: &TableCheck,
     column: usize,

@@ -1,11 +1,11 @@
 //! Existing-slot Text/Binary changes with mandatory index and constraint proof.
-mod stage;
+pub(super) mod stage;
 pub(super) mod storage;
 mod update;
 
 use super::{Ace16WritePreview, EditError, WriteBlocker, gates, preview};
 use crate::{
-    InspectError, NativeImage,
+    InspectError, NativeImage, TableSchema,
     header::check,
     limits::MAX_LIVE_ROWS,
     table::indexes::{index_slot_patches, qualify_slot_indexes},
@@ -38,20 +38,7 @@ impl NativeImage {
         }
         let structural = gates::before_slot(&self, table, budget, cancelled)?;
         let schema = structural.schema();
-        let position = schema
-            .columns
-            .iter()
-            .position(|field| field.name().eq_ignore_ascii_case(column))
-            .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
-        let field = &schema.columns[position];
-        storage::qualify(field)?;
-        if schema.columns.iter().enumerate().any(|(other, candidate)| {
-            other != position
-                && !candidate.fixed()
-                && candidate.field.variable == field.field.variable
-        }) {
-            return Err(EditError::Unsupported(WriteBlocker::Column));
-        }
+        let position = selected(schema, column)?;
 
         qualify_slot_indexes(schema, structural.indexes(), position, budget, cancelled)?;
         let staged = stage::stage(&self, &structural, position, updates, budget, cancelled)?;
@@ -75,4 +62,21 @@ impl NativeImage {
         )
         .map(Ace16WritePreview::from_plan)
     }
+}
+
+pub(super) fn selected(schema: &TableSchema, column: &str) -> Result<usize, EditError> {
+    let position = schema
+        .columns
+        .iter()
+        .position(|field| field.name().eq_ignore_ascii_case(column))
+        .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
+    let field = &schema.columns[position];
+    storage::qualify(field)?;
+    if schema.columns.iter().enumerate().any(|(other, candidate)| {
+        other != position && !candidate.fixed() && candidate.field.variable == field.field.variable
+    }) {
+        return Err(EditError::Unsupported(WriteBlocker::Column));
+    }
+
+    Ok(position)
 }

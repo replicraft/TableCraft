@@ -76,7 +76,7 @@ pub(super) use mutation::{
 };
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) use mutation::{
-    SlotKeyUpdate, qualify_slot_indexes, slot_patches as index_slot_patches,
+    SlotKeyChanges, SlotKeyUpdate, qualify_slot_indexes, slot_patches as index_slot_patches,
 };
 mod read;
 mod selection;
@@ -95,5 +95,6 @@ pub use read::{
 
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) use mutation::{
-    SplitIndexPlan, split_scalar_supported, splitting_patches as index_split_patches,
+    SplitIndexPlan, qualify_split_slot_indexes, split_scalar_supported,
+    split_slot_patches as index_split_slot_patches, splitting_patches as index_split_patches,
 };

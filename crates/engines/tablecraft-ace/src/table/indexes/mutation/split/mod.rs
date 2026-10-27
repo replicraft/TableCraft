@@ -4,10 +4,13 @@ mod audit;
 mod maps;
 mod nonroot;
 mod pages;
+mod slot;
+
+pub(in crate::table) use slot::{patches as slot_patches, qualify as qualify_slot};
 
 use super::{
     IndexDataPatch, IndexKeyUpdate, encoding, plan::keys, profile::SingleProfile, repack,
-    retained::RetainedProfile, tree::Tree,
+    replacement::SlotKeyChanges, retained::RetainedProfile, tree::Tree,
 };
 use crate::{
     EditError, IndexCheck, InspectError, NativeImage, NativeIndex, TableCheck, WriteBlocker,
@@ -83,6 +86,18 @@ impl Plan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
         audit::prove(image, checked, updates, self, after, budget, cancelled)
+    }
+
+    pub(in crate::table) fn audit_slot(
+        &self,
+        image: &NativeImage,
+        checked: &TableCheck,
+        changes: &SlotKeyChanges<'_>,
+        after: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        audit::prove_slot(image, checked, changes, self, after, budget, cancelled)
     }
 }
 

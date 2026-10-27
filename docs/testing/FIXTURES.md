@@ -9882,3 +9882,23 @@ rejection is not used as admission evidence. Both unchanged originals and all
 25 inputs plus the freeze retain their exact hashes. The later saved verifier
 rechecks 57 identities without starting a child process. Source construction,
 public writer actions and successful new split candidates remain distinct.
+
+### Independent exact-slot encoded split images
+
+The [encoded split contract](ACE16_ENCODED_INDEX_SPLITS.md) adds independently
+modeled complete images for real General legacy/modern and Binary key profiles.
+Source reads, complete index/constraint checks and expected images are checked
+before invoking the new service. Six original literal root cases retain their
+prior bytes; further controls cover NULL/empty values, ROW ties, Binary segment
+boundaries, preserved maximum-length digest wires, internal/root growth and
+multiple physical owners sharing map bytes. Changed non-NULL maximum-length
+digest generation is not claimed as an independent new golden.
+
+The first nine-function run passed seven functions and preserved two authored
+control mistakes: an inappropriate All indexed-read assertion on an ignore-NULL
+index and a bounded fresh RIGHT node where the established root-growth contract
+requires a tail. Their narrowly corrected tests/models preserve the first logs,
+sources and six-byte difference; production code did not change to make those
+cases pass. Private finalizer controls separately reject correlated slot/key,
+patch, equal-length wire and EOF forgeries. Original-file candidate acceptance
+and native Access qualification remain separate from these literal images.

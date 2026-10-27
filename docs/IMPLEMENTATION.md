@@ -284,6 +284,36 @@ native calls are separate from source construction and public writer actions.
 All sources and frozen inputs remain unchanged. New split candidates and normal
 saves remain unfinished.
 
+## Exact-slot General Text/Binary index splits
+
+A separate [engineering split service](testing/ACE16_ENCODED_INDEX_SPLITS.md)
+now stages Short Text/Binary changes within their exact existing slots while
+allowing qualified single-key General legacy/modern and Binary indexes to split.
+The retained planner handles root, non-root, internal and repeated growth; owned
+key wires, ROW ties, aliases and map authority remain explicit. Records do not
+resize, move or gain new data pages through this service.
+
+Final certification restages the immutable original requests, compares exact
+field/mask patches and changed counts, and derives index keys only from that
+replay. Complete expected keys and ROWs are checked even when the original root
+still fits. Fixed and slot candidates share only exact-before byte composition;
+each keeps its own typed authority and independent index audit.
+
+Independent complete-image tests cover both General families, Binary, NULL/empty
+values, ties, long unchanged digest wires, internal growth, multiple physical
+owners and map promotion. The original-file baseline remains separate; no new
+committed-consumer original-file split replay or native Access comparison is
+claimed here. Tuple allocation, unsupported sorts, ignore-NULL mutation and
+normal saves remain outside this service. Its dedicated clap consumer uses the
+existing bounded TSV parser and publishes only fresh engineering candidates.
+
+The scoped batch passes 142 distinct runtime functions, including fifteen new
+functions, plus three compile-fail doctests, feature/default strict checks,
+minimal compilation, warnings-denied rustdoc and consumer build/help. Shared
+publication tests are counted once. The first independent run's two authored
+assumptions and later mechanical compile/lint corrections remain in the result;
+no failed attempt or expected-byte change is hidden.
+
 ## Index-owned map promotion
 
 The optional engineering split services now support

@@ -5,13 +5,15 @@ mod maps;
 mod nonroot;
 #[cfg(test)]
 mod purpose_tests;
+mod retained;
 #[cfg(test)]
 mod retained_tests;
+mod slot;
 
-use super::super::{encoding, plan::keys, profile::SingleProfile};
-use super::{Plan, leaf_entries};
+use super::super::{encoding, plan::keys, profile::SingleProfile, replacement::SlotKeyChanges};
+use super::Plan;
 use crate::{
-    EditError, IndexCheck, InspectError, NativeImage, TableCheck, TableSchema,
+    EditError, IndexCheck, InspectError, NativeImage, NativeIndex, TableCheck, TableSchema,
     format::{
         allocation::{self, GLOBAL_FREE_REFERENCE, MapRole, RepresentedMap},
         page::PAGE_BYTES,
@@ -23,7 +25,7 @@ use crate::{
     table::indexes::{
         header::{IndexHeader, LEVEL_OFFSET},
         mutation::{IndexKeyUpdate, NumericKey},
-        page::{self, ENTRY_START},
+        page::ENTRY_START,
     },
 };
 use std::io::Cursor;
@@ -39,6 +41,83 @@ pub(super) fn prove(
     image: &NativeImage,
     checked: &TableCheck,
     updates: &[IndexKeyUpdate],
+    plan: &Plan,
+    after: &[u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    prove_with(
+        image,
+        checked,
+        Updates::Fixed(updates),
+        plan,
+        after,
+        budget,
+        cancelled,
+    )
+}
+
+pub(super) fn prove_slot(
+    image: &NativeImage,
+    checked: &TableCheck,
+    changes: &SlotKeyChanges<'_>,
+    plan: &Plan,
+    after: &[u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    prove_with(
+        image,
+        checked,
+        Updates::Slot(changes),
+        plan,
+        after,
+        budget,
+        cancelled,
+    )
+}
+
+#[derive(Clone, Copy)]
+enum Updates<'a> {
+    Fixed(&'a [IndexKeyUpdate]),
+    Slot(&'a SlotKeyChanges<'a>),
+}
+
+impl Updates<'_> {
+    fn len(self) -> usize {
+        match self {
+            Self::Fixed(updates) => updates.len(),
+            Self::Slot(changes) => changes.updates.len(),
+        }
+    }
+
+    fn affects(self, schema: &TableSchema, index: &NativeIndex) -> bool {
+        match self {
+            Self::Fixed(updates) => updates.iter().any(|update| {
+                schema.columns.get(update.column).is_some_and(|column| {
+                    index
+                        .columns()
+                        .iter()
+                        .any(|key| key.number() == column.number())
+                })
+            }),
+            Self::Slot(changes) => {
+                !changes.updates.is_empty()
+                    && schema.columns.get(changes.column).is_some_and(|column| {
+                        index
+                            .columns()
+                            .iter()
+                            .any(|key| key.number() == column.number())
+                    })
+            }
+        }
+    }
+}
+
+fn prove_with(
+    image: &NativeImage,
+    checked: &TableCheck,
+    updates: Updates<'_>,
     plan: &Plan,
     after: &[u8],
     budget: &mut ResourceBudget,
@@ -102,14 +181,7 @@ pub(super) fn prove(
             },
             index.usage_map(),
         )?;
-        let affected = updates.iter().any(|update| {
-            schema.columns.get(update.column).is_some_and(|column| {
-                index
-                    .columns()
-                    .iter()
-                    .any(|key| key.number() == column.number())
-            })
-        });
+        let affected = updates.affects(schema, index);
         actual.work(updates.len().saturating_mul(index.columns().len()))?;
         let mut expected_pages = source_pages;
         if affected {
@@ -131,7 +203,10 @@ pub(super) fn prove(
                 .is_some_and(super::supported_scalar);
         let mut split = false;
         let mut verified_nonroot = false;
-        if affected && single_integral {
+        if affected
+            && single_integral
+            && let Updates::Fixed(updates) = updates
+        {
             let column = schema
                 .columns
                 .iter()
@@ -160,200 +235,52 @@ pub(super) fn prove(
                 updates,
                 &profile,
             )?;
-            let original_root = image
-                .as_bytes()
-                .get(
-                    index.root_page() as usize * PAGE_BYTES
-                        ..(index.root_page() as usize + 1) * PAGE_BYTES,
-                )
-                .ok_or(InspectError::Malformed)?;
-            let recursive = if prepared.tree.is_leaf() {
-                let entries = leaf_entries(&prepared.entries, actual.budget, cancelled)?;
-                let overflowing = !nonroot::fits::<_, { encoding::MAX_ENTRY_BYTES }>(
-                    &entries,
-                    usize::from(IndexHeader::read(original_root)?.prefix.get()),
-                    &profile,
-                    &mut actual,
-                )?;
-                if overflowing {
-                    if entries.len() < 2 {
-                        return Err(EditError::Preservation);
-                    }
-                    let middle = entries.len() / 2;
-                    let left_fits = nonroot::fits::<_, { encoding::MAX_ENTRY_BYTES }>(
-                        &entries[..middle],
-                        0,
-                        &profile,
-                        &mut actual,
-                    )?;
-                    let right_fits = nonroot::fits::<_, { encoding::MAX_ENTRY_BYTES }>(
-                        &entries[middle..],
-                        0,
-                        &profile,
-                        &mut actual,
-                    )?;
-                    split = left_fits && right_fits;
-                    !split
-                } else {
-                    false
-                }
-            } else {
-                true
-            };
-            if !recursive && !split {
-                let entries = leaf_entries(&prepared.entries, actual.budget, cancelled)?;
-                let current = actual.page(index.root_page())?;
-                nonroot::layout::<_, { encoding::MAX_ENTRY_BYTES }>(
-                    &entries,
-                    usize::from(IndexHeader::read(original_root)?.prefix.get()),
-                    &current,
-                    &profile,
-                    &mut actual,
-                )?;
-            }
-            if recursive {
-                let added = nonroot::prove::<_, { encoding::MAX_ENTRY_BYTES }>(
-                    &nonroot::Operation {
-                        image,
-                        tree: &prepared.tree,
-                        keys: &prepared.entries,
-                        profile: &profile,
-                        owner: schema.definition,
-                        usage: index.usage_map(),
-                    },
-                    &mut actual,
-                    &mut nonroot::Progress {
-                        next_eof: &mut next_eof,
-                        map_edits: &mut expected_edits,
-                    },
-                )?;
-                actual
-                    .budget
-                    .charge_allocation(added.len() as u64, size_of::<u32>() as u64)
-                    .map_err(InspectError::from)?;
-                expected_pages
-                    .try_reserve(added.len())
-                    .map_err(|_| InspectError::Allocation)?;
-                expected_pages.extend(added);
-                verified_nonroot = true;
-            }
-            if split {
-                let (right, left) = {
-                    let mut reader = Reader {
-                        source: &mut source,
-                        header: image.catalog().header(),
-                        budget: actual.budget,
-                        cancelled,
-                        reads: 0,
-                    };
-                    let right = maps::reserve(
-                        &mut reader,
-                        index.usage_map(),
-                        &mut next_eof,
-                        &mut expected_edits,
-                    )?;
-                    let left = maps::reserve(
-                        &mut reader,
-                        index.usage_map(),
-                        &mut next_eof,
-                        &mut expected_edits,
-                    )?;
-                    (right, left)
-                };
-                let fact = plan
-                    .certificates
-                    .get(split_position)
-                    .ok_or(EditError::Preservation)?;
-                if fact.physical != index.data_number()
-                    || fact.root != index.root_page()
-                    || fact.usage != index.usage_map()
-                    || fact.column != column
-                    || fact.descending != profile.descending
-                    || fact.right != right
-                    || fact.left != left
-                    || fact.count != prepared.entries.len()
-                    || fact.count < 2
-                    || expected_pages != [fact.root]
-                {
-                    return Err(EditError::Preservation);
-                }
-                let middle = prepared.entries.len() / 2;
-                let root = page::read_profile::<_, _, { encoding::MAX_ENTRY_BYTES }>(
-                    &mut actual,
-                    fact.root,
-                    schema.definition,
-                    &profile,
-                )?;
-                let l = page::read_profile::<_, _, { encoding::MAX_ENTRY_BYTES }>(
-                    &mut actual,
-                    left,
-                    schema.definition,
-                    &profile,
-                )?;
-                let r = page::read_profile::<_, _, { encoding::MAX_ENTRY_BYTES }>(
-                    &mut actual,
-                    right,
-                    schema.definition,
-                    &profile,
-                )?;
-                if root.leaf
-                    || root.entries.len() != 1
-                    || root.entries[0].child != left
-                    || root.entries[0].value != prepared.entries[middle - 1]
-                    || root.tail != right
-                    || !l.leaf
-                    || !r.leaf
-                    || l.entries.len() != middle
-                    || r.entries.len() != prepared.entries.len() - middle
-                {
-                    return Err(EditError::Preservation);
-                }
-                for (entry, expected) in l.entries.iter().chain(&r.entries).zip(&prepared.entries) {
-                    actual.tick()?;
-                    if entry.child != 0 || entry.value != *expected {
-                        return Err(EditError::Preservation);
-                    }
-                }
-                let root_raw = actual.page(fact.root)?;
-                framing::root::<_, { encoding::MAX_ENTRY_BYTES }>(
-                    original_root,
-                    &root_raw,
-                    fact,
-                    &prepared.entries[middle - 1],
-                    &profile,
-                    actual.budget,
-                    cancelled,
-                )?;
-                let left_raw = actual.page(left)?;
-                framing::leaf::<_, { encoding::MAX_ENTRY_BYTES }>(
-                    &left_raw,
-                    schema.definition,
-                    (0, right),
-                    &prepared.entries[..middle],
-                    &profile,
-                    &mut actual,
-                )?;
-                let right_raw = actual.page(right)?;
-                framing::leaf::<_, { encoding::MAX_ENTRY_BYTES }>(
-                    &right_raw,
-                    schema.definition,
-                    (left, 0),
-                    &prepared.entries[middle..],
-                    &profile,
-                    &mut actual,
-                )?;
-                actual
-                    .budget
-                    .charge_allocation(2, size_of::<u32>() as u64)
-                    .map_err(InspectError::from)?;
-                expected_pages
-                    .try_reserve(2)
-                    .map_err(|_| InspectError::Allocation)?;
-                expected_pages.extend([right, left]);
-                split_position += 1;
-            }
+            let disposition = retained::prove::<_, { encoding::MAX_ENTRY_BYTES }>(
+                &retained::Operation {
+                    image,
+                    index,
+                    owner: schema.definition,
+                    column,
+                    profile: &profile,
+                    tree: &prepared.tree,
+                    keys: &prepared.entries,
+                },
+                plan,
+                &mut actual,
+                &mut retained::Progress {
+                    next_eof: &mut next_eof,
+                    map_edits: &mut expected_edits,
+                    pages: &mut expected_pages,
+                    split_position: &mut split_position,
+                },
+            )?;
+            split = disposition.split_root;
+            verified_nonroot = disposition.recursive;
         }
-        if affected && index.columns().len() > 1 {
+        if affected && let Updates::Slot(changes) = updates {
+            let disposition = slot::prove(
+                &slot::Operation {
+                    image,
+                    schema,
+                    index,
+                    changes,
+                },
+                plan,
+                &mut actual,
+                &mut retained::Progress {
+                    next_eof: &mut next_eof,
+                    map_edits: &mut expected_edits,
+                    pages: &mut expected_pages,
+                    split_position: &mut split_position,
+                },
+            )?;
+            split = disposition.split_root;
+            verified_nonroot = disposition.recursive;
+        }
+        if affected
+            && index.columns().len() > 1
+            && let Updates::Fixed(updates) = updates
+        {
             fitting::prove(
                 &fitting::Operation {
                     image,
