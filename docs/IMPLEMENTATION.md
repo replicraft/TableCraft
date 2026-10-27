@@ -35,8 +35,11 @@ not a candidate replay or a committed-consumer qualification.
 An initial independent fixture had an invalid bitmap signature and was corrected
 without relaxing the four-byte parser grammar. A previously unsupported-map test
 now correctly rejects its globally free bitmap. Initial failures remain recorded.
-Indirect candidate maps, map/pointer growth, arbitrary free-page reuse, reclamation,
-original-file replacement acceptance for this extension and normal saves remain open.
+The [first committed-consumer original-file replay](testing/MIXED_LONG_VALUE_UPDATE_OBSERVATIONS.md)
+now passes twelve exact images and fresh getter/map inspections on unchanged
+sources. All twenty-five fixture commands succeed, including explicit NULL and
+forwarded-parent cases. Indirect candidate maps, map/pointer growth, arbitrary
+free-page reuse, reclamation and normal saves remain open.
 
 ## Indirect long-value map source observations
 

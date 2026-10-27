@@ -86,8 +86,10 @@ prerequisites, rather than candidate qualification. The subsequent
 [mixed-map implementation](../../testing/results/ace16-indirect-lval-native-2026-10-27.json)
 now admits the qualified indirect-owned/inline-candidate pair through existing
 represented cells and complete final audits. Its 112 distinct runtime checks
-pass; separate working read-only reports match both originals. Original-file
-replacement replay, indirect candidates, metadata growth and normal saves remain
+pass; separate working read-only reports match both originals. The
+[first committed-consumer replacement replay](../../testing/MIXED_LONG_VALUE_UPDATE_OBSERVATIONS.md)
+now passes all twelve independent complete images and fresh getter/maps on those
+unchanged originals. Indirect candidates, metadata growth and normal saves remain
 unfinished.
 
 The separate [Int32 leaf-split service](../../testing/ACE16_INDEX_SPLITS.md) now

@@ -9717,3 +9717,20 @@ than used as a candidate golden. The two compact receipts retain exact executed
 private helpers and separately identified maintained public wrappers. A saved
 verifier repeats no fixture calls. Repeated kernel splitting, odd partition
 policy, deeper repeated parents and native Access qualification remain separate.
+
+### Mixed indirect-map original-file replacement acceptance
+
+The [first twelve-case replay](MIXED_LONG_VALUE_UPDATE_OBSERVATIONS.md) uses both
+unchanged mixed-map originals and a committed frozen Memo consumer. All twenty-five
+fixture commands pass: one read-only probe compilation, twelve native attempts and
+twelve fresh combined getter/map inspections. Exact complete-image predictions
+cover no-op, NULL, forwarded inline, fitted single, EOF single and EOF chain cases.
+No source regeneration, public UPDATE, retry or selector/budget change occurs.
+Across repeated cases, 8,412 protected original body/slot, 144 old LVAL body/slot
+and 312 original index-page comparisons match; total growth is 32,768 bytes.
+The [receipt](results/ace16-mixed-long-value-originals-2026-10-27.json) separates
+immutable plan/model/source/Git/artifact identity, actual first replay and later
+saved verification. Draft parser assumptions were corrected before any fixture
+call, with all twelve expected images checked purely. A later verifier import
+failure is preserved separately; neither correction changed native inputs or
+expected images. Normal saves and Microsoft Access qualification remain open.
