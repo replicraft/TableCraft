@@ -17,7 +17,7 @@
   },
   "compiled_revision": "0c0dc6d904bd112236a383c74b04192ee6c5f90f",
   "build_receipt": {
-    "path": "docs/testing/results/ace16-root-split-example-build-2026-10-27.json",
+    "path": ".cache/root-split-receipt-provenance-20261027/ace16-root-split-example-build-2026-10-27.json",
     "bytes": 30596,
     "sha256": "a9d4fb2ae812b7351e88381ed35f28e216beafb5f4fc3c00330891f37b339b3d"
   },
@@ -265,7 +265,8 @@
       "initial_verifier_failure": {
         "class": "AssertionError",
         "message": "",
-        "traceback": "Traceback (most recent call last):\n  File \"/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-nonroot-split-next-20261027/run.py\", line 260, in execute\n    item['comparison'] = compare(case, before, after)\n                         ~~~~~~~^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-nonroot-split-next-20261027/run.py\", line 121, in compare\n    assert bytes.fromhex(actual['hex']) == expected_body\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+        "traceback": "Traceback (most recent call last):\n  File \".cache/ace16-nonroot-split-next-20261027/run.py\", line 260, in execute\n    item['comparison'] = compare(case, before, after)\n                         ~~~~~~~^^^^^^^^^^^^^^^^^^^^^\n  File \".cache/ace16-nonroot-split-next-20261027/run.py\", line 121, in compare\n    assert bytes.fromhex(actual['hex']) == expected_body\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+        "traceback_representation": "Portable repository-relative rendering; exact original traceback remains in pinned immutable raw report, prior receipt archive and Git201ae775"
       },
       "command_associations": [
         {
@@ -385,7 +386,8 @@
       "initial_verifier_failure": {
         "class": "AssertionError",
         "message": "",
-        "traceback": "Traceback (most recent call last):\n  File \"/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-nonroot-split-next-20261027/run.py\", line 260, in execute\n    item['comparison'] = compare(case, before, after)\n                         ~~~~~~~^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-nonroot-split-next-20261027/run.py\", line 121, in compare\n    assert bytes.fromhex(actual['hex']) == expected_body\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+        "traceback": "Traceback (most recent call last):\n  File \".cache/ace16-nonroot-split-next-20261027/run.py\", line 260, in execute\n    item['comparison'] = compare(case, before, after)\n                         ~~~~~~~^^^^^^^^^^^^^^^^^^^^^\n  File \".cache/ace16-nonroot-split-next-20261027/run.py\", line 121, in compare\n    assert bytes.fromhex(actual['hex']) == expected_body\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+        "traceback_representation": "Portable repository-relative rendering; exact original traceback remains in pinned immutable raw report, prior receipt archive and Git201ae775"
       },
       "command_associations": [
         {
@@ -480,5 +482,25 @@
         }
       ]
     }
-  ]
+  ],
+  "build_receipt_original_path": "docs/testing/results/ace16-root-split-example-build-2026-10-27.json",
+  "current_portable_build_receipt": {
+    "path": "docs/testing/results/ace16-root-split-example-build-2026-10-27.json",
+    "bytes": 31424,
+    "sha256": "8bb38f2d27cab021e051facd370dc3fbcf4328893a4336d57bfe376aeab33c23"
+  },
+  "privacy_provenance_correction": {
+    "prior_public_receipt": {
+      "path": ".cache/root-split-receipt-provenance-20261027/ace16-nonroot-index-split-originals-2026-10-27.json",
+      "bytes": 20420,
+      "sha256": "d10f918fd99f7a4acadb15718e28a5acb4099a8d29fecb6e102bbb47be36f26c"
+    },
+    "scope": "Historical compiled receipt exact bytes archived; normalized current public command is explicitly a portable rendering; no action/model/input change",
+    "traceback_renderings": 2,
+    "fresh_read_only_checks": {
+      "path": ".cache/root-split-receipt-provenance-20261027/final-checks/checks.json",
+      "bytes": 3239,
+      "sha256": "26639725cf1e1e85fe832c004b8e3d56b060faae99c9b5b7177e8bba8482d1e0"
+    }
+  }
 }

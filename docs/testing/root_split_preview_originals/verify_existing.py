@@ -7,6 +7,11 @@ import subprocess
 from index_split_originals import capture
 from root_split_preview_originals import proof
 
+HISTORICAL_RECEIPT_PATH = 'docs/testing/results/ace16-root-split-example-build-2026-10-27.json'
+HISTORICAL_RECEIPT_BYTES = 30596
+HISTORICAL_RECEIPT_SHA256 = 'a9d4fb2ae812b7351e88381ed35f28e216beafb5f4fc3c00330891f37b339b3d'
+HISTORICAL_RECEIPT_ARCHIVE = '.cache/root-split-receipt-provenance-20261027/ace16-root-split-example-build-2026-10-27.json'
+
 
 def pins(value, location=()):
     if location == ('build', 'source_pins'):
@@ -21,7 +26,17 @@ def pins(value, location=()):
             yield from pins(item, location)
 
 
+
 def verify_pin(expected):
+    # One exact historical identity was archived when its public command gained
+    # a portable rendering. No other path/hash mismatch receives a fallback.
+    identity = (expected['path'], expected['bytes'], expected['sha256'])
+    historical = (HISTORICAL_RECEIPT_PATH, HISTORICAL_RECEIPT_BYTES, HISTORICAL_RECEIPT_SHA256)
+    if identity == historical:
+        archived = capture.pin(HISTORICAL_RECEIPT_ARCHIVE)
+        assert archived['bytes'] == HISTORICAL_RECEIPT_BYTES
+        assert archived['sha256'] == HISTORICAL_RECEIPT_SHA256
+        return
     assert capture.pin(expected['path']) == expected
 
 

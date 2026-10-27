@@ -14,7 +14,7 @@
     "--example",
     "preview_ace16_split",
     "--target-dir",
-    "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-root-split-consumer-20261027/target"
+    "../target"
   ],
   "exit_code": 0,
   "build_driver": {
@@ -759,5 +759,20 @@
   "all_exported_files_match_git_objects": true,
   "archive_sources_unchanged_after_build": true,
   "separate_target_directory": ".cache/ace16-root-split-consumer-20261027/target",
-  "qualification": "Non-journalable engineering split consumer. This build is not an original-file candidate run, Microsoft Access comparison or normal save qualification."
+  "qualification": "Non-journalable engineering split consumer. This build is not an original-file candidate run, Microsoft Access comparison or normal save qualification.",
+  "command_representation": {
+    "kind": "Portable equivalent rendering; not the literal executed argv",
+    "working_directory": ".cache/ace16-root-split-consumer-20261027/source",
+    "exact_executed_receipt": {
+      "path": ".cache/root-split-receipt-provenance-20261027/ace16-root-split-example-build-2026-10-27.json",
+      "bytes": 30596,
+      "sha256": "a9d4fb2ae812b7351e88381ed35f28e216beafb5f4fc3c00330891f37b339b3d"
+    },
+    "historical_public_path": "docs/testing/results/ace16-root-split-example-build-2026-10-27.json",
+    "exact_Git_receipt": {
+      "revision": "3895df2b8507f308acd6b68b484253da2000c300",
+      "path": "docs/testing/results/ace16-root-split-example-build-2026-10-27.json"
+    },
+    "reason": "Only the absolute target-directory argument is rendered relative to the original archive working directory; executed driver/log/artifact/source identities remain unchanged"
+  }
 }

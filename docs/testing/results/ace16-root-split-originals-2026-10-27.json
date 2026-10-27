@@ -16,7 +16,7 @@
   },
   "build": {
     "receipt": {
-      "path": "docs/testing/results/ace16-root-split-example-build-2026-10-27.json",
+      "path": ".cache/root-split-receipt-provenance-20261027/ace16-root-split-example-build-2026-10-27.json",
       "bytes": 30596,
       "sha256": "a9d4fb2ae812b7351e88381ed35f28e216beafb5f4fc3c00330891f37b339b3d"
     },
@@ -26,7 +26,13 @@
       "sha256": "8245c35b6b533dbdc8f6dec5fed74aab0c0fdaf0da73e5df529dd3053eae4709"
     },
     "compiled_revision": "0c0dc6d904bd112236a383c74b04192ee6c5f90f",
-    "immutable_selected_Git_objects": 143
+    "immutable_selected_Git_objects": 143,
+    "receipt_original_path": "docs/testing/results/ace16-root-split-example-build-2026-10-27.json",
+    "current_portable_receipt": {
+      "path": "docs/testing/results/ace16-root-split-example-build-2026-10-27.json",
+      "bytes": 31424,
+      "sha256": "8bb38f2d27cab021e051facd370dc3fbcf4328893a4336d57bfe376aeab33c23"
+    }
   },
   "frozen_plan": {
     "path": ".cache/ace16-index-split-acceptance-next-20261027/plan.json",
@@ -211,7 +217,7 @@
       "sha256": "5f2d044799c6a24408b0e62cb0081eb5225fc3be3f488ba232918baf494d4af4"
     },
     {
-      "path": "docs/testing/results/ace16-root-split-example-build-2026-10-27.json",
+      "path": ".cache/root-split-receipt-provenance-20261027/ace16-root-split-example-build-2026-10-27.json",
       "bytes": 30596,
       "sha256": "a9d4fb2ae812b7351e88381ed35f28e216beafb5f4fc3c00330891f37b339b3d"
     },
@@ -840,8 +846,8 @@
     },
     {
       "path": "docs/testing/root_split_preview_originals/verify_existing.py",
-      "bytes": 6143,
-      "sha256": "e8eee88de37911ae767feec4275113d88021b18f11a3e2621db0c1cb7a6d36d3"
+      "bytes": 7048,
+      "sha256": "93ea8e0b96bd48f2300de48f8af7452c380be92fbeb065a659907cd6baeee170"
     }
   ],
   "promotion_identity": {
@@ -868,5 +874,38 @@
     "Public Wide redistribution compared semantically; candidate untouched Wide bytes are the independent preservation golden",
     "Non-root/internal propagation, map expansion, general native saves and data macros remain outside this evidence",
     "All raw expanded transcripts/key arrays stay ignored and pinned"
-  ]
+  ],
+  "immutable_runtime_input_original_paths": {
+    "20": "docs/testing/results/ace16-root-split-example-build-2026-10-27.json"
+  },
+  "privacy_provenance_correction": {
+    "prior_public_compact_receipt": {
+      "path": ".cache/root-split-receipt-provenance-20261027/ace16-root-split-originals-2026-10-27.json",
+      "bytes": 28929,
+      "sha256": "efeacaa466cfc4ff3e7f57ff8de06dbd8ebb0ddd8ca0220c88b160684b9ccbed"
+    },
+    "prior_public_verifier": {
+      "path": ".cache/root-split-receipt-provenance-20261027/verify_existing.py",
+      "bytes": 6143,
+      "sha256": "e8eee88de37911ae767feec4275113d88021b18f11a3e2621db0c1cb7a6d36d3"
+    },
+    "change": "Only portable command rendering and exact historical receipt resolution; raw reports, requests, candidates and executed sources unchanged",
+    "fresh_read_only_verification": {
+      "path": ".cache/root-split-receipt-provenance-20261027/reverification.json",
+      "bytes": 1020,
+      "sha256": "1e9726b9471ae8176744aef416c4dd0572fec1127dad7bb0a0514d21f35ae075"
+    },
+    "native_or_jvm_calls": 0,
+    "resolution": "Only the exact original public path/30596/a9d4fb2a identity resolves to its exact archive; all other pins remain strict",
+    "fresh_read_only_checks": {
+      "path": ".cache/root-split-receipt-provenance-20261027/final-checks/checks.json",
+      "bytes": 3239,
+      "sha256": "26639725cf1e1e85fe832c004b8e3d56b060faae99c9b5b7177e8bba8482d1e0"
+    },
+    "focused_audit": {
+      "path": ".cache/root-split-receipt-provenance-20261027/audit.json",
+      "bytes": 551,
+      "sha256": "973d5c816d5af41f69bda988b2d9288c4f74f6853dfcab3fe0b7c87f0f795733"
+    }
+  }
 }
