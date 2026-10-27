@@ -1,0 +1,681 @@
+{
+  "scope": "Fresh repository-owned public Jackcess builder and read-only getter/raw-page evidence. No native Access execution or engine compatibility claim.",
+  "conclusion": "The proposed 256-row hypothesis was not supported: the reviewed writer exposes a 255-row page limit and all four originals contain page counts 255,255,90 with maximum slot 254. No reader ceiling change is justified by these observations.",
+  "schema": "Slots(N LONG), ordinary scalar, no indexes, no AutoNumber, 600 rows with values 0 through 599.",
+  "inert_controls": {
+    "expressions_disabled": true,
+    "linked_targets_rejected": true,
+    "getters_readonly": true,
+    "fresh_generation_paths": true
+  },
+  "format": {
+    "page_bytes": 4096,
+    "row_count_offset": 12,
+    "slot_directory_offset": 14,
+    "slot_word_bytes": 2,
+    "jar_max_rows_on_data_page": 255,
+    "jar_max_row_size": 4060
+  },
+  "commands": {
+    "count": 9,
+    "all_terminal_status_zero": true,
+    "timeout_seconds_each": 30,
+    "compile": {
+      "argv": [
+        "javac",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "-d",
+        ".cache/row-slot-boundary-20261026/classes",
+        "docs/testing/RowSlotBoundaryFixture.java"
+      ],
+      "status": 0,
+      "timeout_seconds": 30,
+      "stdout": {
+        "path": ".cache/row-slot-boundary-20261026/compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": ".cache/row-slot-boundary-20261026/compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  "tools": [
+    {
+      "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+      "bytes": 1407244,
+      "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+    },
+    {
+      "path": "docs/testing/RowSlotBoundaryFixture.java",
+      "bytes": 4407,
+      "sha256": "6bdf47579def24f740fd89030ba9b4112f2fcf4782f354c357498d77b6d21a19"
+    },
+    {
+      "path": ".cache/row-slot-boundary-20261026/classes/RowSlotBoundaryFixture.class",
+      "bytes": 6835,
+      "sha256": "46c57aaf2ed860c1ff773fc08605755da594ef349bf09b91a38dc7268a853d08"
+    }
+  ],
+  "profiles": [
+    {
+      "profile": "V2016",
+      "original": {
+        "path": ".cache/row-slot-boundary-20261026/Rows-V2016.accdb",
+        "bytes": 389120,
+        "sha256": "e462024bd067a88f04cc62c97ba3d654ab218312f44ee4a9d500f355aae18b92"
+      },
+      "table": "Slots",
+      "column": {
+        "name": "N",
+        "type": "LONG",
+        "ordinary": true
+      },
+      "table_definition_page": 89,
+      "indexes": 0,
+      "row_values": {
+        "first": 0,
+        "last": 599,
+        "count": 600,
+        "all_once": true
+      },
+      "data_pages": [
+        {
+          "page": 91,
+          "raw_slot_count": 255,
+          "owner": 89,
+          "first_slot": 0,
+          "last_slot": 254
+        },
+        {
+          "page": 93,
+          "raw_slot_count": 255,
+          "owner": 89,
+          "first_slot": 0,
+          "last_slot": 254
+        },
+        {
+          "page": 94,
+          "raw_slot_count": 90,
+          "owner": 89,
+          "first_slot": 0,
+          "last_slot": 89
+        }
+      ],
+      "maximum_observed_slot": 254,
+      "getter": {
+        "argv": [
+          "java",
+          "-cp",
+          ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/row-slot-boundary-20261026/classes",
+          "RowSlotBoundaryFixture",
+          "oracle",
+          ".cache/row-slot-boundary-20261026/Rows-V2016.accdb"
+        ],
+        "status": 0,
+        "timeout_seconds": 30,
+        "stdout": {
+          "path": ".cache/row-slot-boundary-20261026/V2016-oracle.stdout",
+          "bytes": 13992,
+          "sha256": "2fa7cf9e295113ed6aee62d3936abfd40ec02510e9d22defd3b5a8e6523189f3"
+        },
+        "stderr": {
+          "path": ".cache/row-slot-boundary-20261026/V2016-oracle.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "generation": {
+        "argv": [
+          "java",
+          "-cp",
+          ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/row-slot-boundary-20261026/classes",
+          "RowSlotBoundaryFixture",
+          "generate",
+          ".cache/row-slot-boundary-20261026/Rows-V2016.accdb",
+          "V2016"
+        ],
+        "status": 0,
+        "timeout_seconds": 30,
+        "stdout": {
+          "path": ".cache/row-slot-boundary-20261026/V2016-generate.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": ".cache/row-slot-boundary-20261026/V2016-generate.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "readonly_original_unchanged": true
+    },
+    {
+      "profile": "V2019",
+      "original": {
+        "path": ".cache/row-slot-boundary-20261026/Rows-V2019.accdb",
+        "bytes": 458752,
+        "sha256": "737d32b715fbe123eda601a063074be154de4f861bf1e0046cb1179b97bc0597"
+      },
+      "table": "Slots",
+      "column": {
+        "name": "N",
+        "type": "LONG",
+        "ordinary": true
+      },
+      "table_definition_page": 106,
+      "indexes": 0,
+      "row_values": {
+        "first": 0,
+        "last": 599,
+        "count": 600,
+        "all_once": true
+      },
+      "data_pages": [
+        {
+          "page": 108,
+          "raw_slot_count": 255,
+          "owner": 106,
+          "first_slot": 0,
+          "last_slot": 254
+        },
+        {
+          "page": 110,
+          "raw_slot_count": 255,
+          "owner": 106,
+          "first_slot": 0,
+          "last_slot": 254
+        },
+        {
+          "page": 111,
+          "raw_slot_count": 90,
+          "owner": 106,
+          "first_slot": 0,
+          "last_slot": 89
+        }
+      ],
+      "maximum_observed_slot": 254,
+      "getter": {
+        "argv": [
+          "java",
+          "-cp",
+          ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/row-slot-boundary-20261026/classes",
+          "RowSlotBoundaryFixture",
+          "oracle",
+          ".cache/row-slot-boundary-20261026/Rows-V2019.accdb"
+        ],
+        "status": 0,
+        "timeout_seconds": 30,
+        "stdout": {
+          "path": ".cache/row-slot-boundary-20261026/V2019-oracle.stdout",
+          "bytes": 14599,
+          "sha256": "a514cf6a6b010242043a4b7c65eb31b5603b82d0392cb24c5dd43b79fe024824"
+        },
+        "stderr": {
+          "path": ".cache/row-slot-boundary-20261026/V2019-oracle.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "generation": {
+        "argv": [
+          "java",
+          "-cp",
+          ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/row-slot-boundary-20261026/classes",
+          "RowSlotBoundaryFixture",
+          "generate",
+          ".cache/row-slot-boundary-20261026/Rows-V2019.accdb",
+          "V2019"
+        ],
+        "status": 0,
+        "timeout_seconds": 30,
+        "stdout": {
+          "path": ".cache/row-slot-boundary-20261026/V2019-generate.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": ".cache/row-slot-boundary-20261026/V2019-generate.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "readonly_original_unchanged": true
+    },
+    {
+      "profile": "V2000",
+      "original": {
+        "path": ".cache/row-slot-boundary-20261026/Rows-V2000.mdb",
+        "bytes": 122880,
+        "sha256": "e7953d7b84f12819cab1cffbe765c77b38d47ed56716c18f6d547afc870010b2"
+      },
+      "table": "Slots",
+      "column": {
+        "name": "N",
+        "type": "LONG",
+        "ordinary": true
+      },
+      "table_definition_page": 24,
+      "indexes": 0,
+      "row_values": {
+        "first": 0,
+        "last": 599,
+        "count": 600,
+        "all_once": true
+      },
+      "data_pages": [
+        {
+          "page": 26,
+          "raw_slot_count": 255,
+          "owner": 24,
+          "first_slot": 0,
+          "last_slot": 254
+        },
+        {
+          "page": 28,
+          "raw_slot_count": 255,
+          "owner": 24,
+          "first_slot": 0,
+          "last_slot": 254
+        },
+        {
+          "page": 29,
+          "raw_slot_count": 90,
+          "owner": 24,
+          "first_slot": 0,
+          "last_slot": 89
+        }
+      ],
+      "maximum_observed_slot": 254,
+      "getter": {
+        "argv": [
+          "java",
+          "-cp",
+          ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/row-slot-boundary-20261026/classes",
+          "RowSlotBoundaryFixture",
+          "oracle",
+          ".cache/row-slot-boundary-20261026/Rows-V2000.mdb"
+        ],
+        "status": 0,
+        "timeout_seconds": 30,
+        "stdout": {
+          "path": ".cache/row-slot-boundary-20261026/V2000-oracle.stdout",
+          "bytes": 13992,
+          "sha256": "ae4736579ef929cd676c3f80218b50b98ea4c589851affa0ece71de17323ee2c"
+        },
+        "stderr": {
+          "path": ".cache/row-slot-boundary-20261026/V2000-oracle.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "generation": {
+        "argv": [
+          "java",
+          "-cp",
+          ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/row-slot-boundary-20261026/classes",
+          "RowSlotBoundaryFixture",
+          "generate",
+          ".cache/row-slot-boundary-20261026/Rows-V2000.mdb",
+          "V2000"
+        ],
+        "status": 0,
+        "timeout_seconds": 30,
+        "stdout": {
+          "path": ".cache/row-slot-boundary-20261026/V2000-generate.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": ".cache/row-slot-boundary-20261026/V2000-generate.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "readonly_original_unchanged": true
+    },
+    {
+      "profile": "V2007",
+      "original": {
+        "path": ".cache/row-slot-boundary-20261026/Rows-V2007.accdb",
+        "bytes": 352256,
+        "sha256": "22fef07786dfe3b8d6445d9d3ff9a22f7a3d906aac761664e21117fdbaa2e48f"
+      },
+      "table": "Slots",
+      "column": {
+        "name": "N",
+        "type": "LONG",
+        "ordinary": true
+      },
+      "table_definition_page": 80,
+      "indexes": 0,
+      "row_values": {
+        "first": 0,
+        "last": 599,
+        "count": 600,
+        "all_once": true
+      },
+      "data_pages": [
+        {
+          "page": 82,
+          "raw_slot_count": 255,
+          "owner": 80,
+          "first_slot": 0,
+          "last_slot": 254
+        },
+        {
+          "page": 84,
+          "raw_slot_count": 255,
+          "owner": 80,
+          "first_slot": 0,
+          "last_slot": 254
+        },
+        {
+          "page": 85,
+          "raw_slot_count": 90,
+          "owner": 80,
+          "first_slot": 0,
+          "last_slot": 89
+        }
+      ],
+      "maximum_observed_slot": 254,
+      "getter": {
+        "argv": [
+          "java",
+          "-cp",
+          ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/row-slot-boundary-20261026/classes",
+          "RowSlotBoundaryFixture",
+          "oracle",
+          ".cache/row-slot-boundary-20261026/Rows-V2007.accdb"
+        ],
+        "status": 0,
+        "timeout_seconds": 30,
+        "stdout": {
+          "path": ".cache/row-slot-boundary-20261026/V2007-oracle.stdout",
+          "bytes": 13992,
+          "sha256": "400c94d4ed79a734ff16401ef30544fe8c715822134c4de0228eece0add7e0cc"
+        },
+        "stderr": {
+          "path": ".cache/row-slot-boundary-20261026/V2007-oracle.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "generation": {
+        "argv": [
+          "java",
+          "-cp",
+          ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/row-slot-boundary-20261026/classes",
+          "RowSlotBoundaryFixture",
+          "generate",
+          ".cache/row-slot-boundary-20261026/Rows-V2007.accdb",
+          "V2007"
+        ],
+        "status": 0,
+        "timeout_seconds": 30,
+        "stdout": {
+          "path": ".cache/row-slot-boundary-20261026/V2007-generate.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": ".cache/row-slot-boundary-20261026/V2007-generate.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "readonly_original_unchanged": true
+    }
+  ],
+  "raw_capture": {
+    "path": ".cache/row-slot-boundary-20261026/report.json",
+    "bytes": 15016,
+    "sha256": "960ed7eb24d0facaa732240aa9b6895fd796ff27178f565e992e07a0cd8ae4f7"
+  },
+  "capture_script": {
+    "path": ".cache/row-slot-boundary-20261026/capture.py",
+    "bytes": 2516,
+    "sha256": "837dadbbb8d885ad59f80830cf381d4e69b7719319489a3fffa3b33e3701e70b"
+  },
+  "limitations": [
+    "No page with raw slot count 256 or getter slot 255 was produced.",
+    "No format header or writer limit was altered to force a boundary.",
+    "This is public independent-reader/writer evidence, not native Microsoft Access qualification."
+  ],
+  "cli_read_acceptance": {
+    "controls": 8,
+    "disagreements": 0,
+    "compiled_revision": "596d40ea41a4bafefbd5b34af4ef35a8a4e2cde4",
+    "cli": {
+      "path": ".cache/tablecraft-bin/tablecraft-french-comparison-20261026",
+      "bytes": 43416632,
+      "sha256": "bcff00ad245c7a70582db222fa48e5eb2f796bd944d5ccbeefe759fbd010a576"
+    },
+    "build_receipt": {
+      "path": "docs/testing/results/french-comparison-cli-build-2026-10-26.json",
+      "bytes": 10497,
+      "sha256": "7f257600ffba329cd6a7cc68311c7961cf94992c93689628590662cc93f0a9b1"
+    },
+    "raw_capture": {
+      "path": ".cache/row-slot-boundary-cli-20261026/report.json",
+      "bytes": 17490,
+      "sha256": "6a2aa374392d0a5cdd96b04f34830d5b9fd3d1bb1864a58b8457476799764f70"
+    },
+    "source_git_pins_checked": 52,
+    "originals_unchanged": true,
+    "cases": [
+      {
+        "profile": "V2016",
+        "case": "rows",
+        "command": [
+          ".cache/tablecraft-bin/tablecraft-french-comparison-20261026",
+          "--format",
+          "tsv",
+          "rows",
+          ".cache/row-slot-boundary-20261026/Rows-V2016.accdb",
+          "Slots",
+          "--limit",
+          "600"
+        ],
+        "exit_code": 0,
+        "stdout_bytes": 2292,
+        "stdout_sha256": "278e4b845b09d562953961a73dcf352d3419f97fe150da01323d883227a57072",
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exact_expected_output": true,
+        "expected_rows": 600,
+        "source": {
+          "path": ".cache/row-slot-boundary-20261026/Rows-V2016.accdb",
+          "bytes": 389120,
+          "sha256": "e462024bd067a88f04cc62c97ba3d654ab218312f44ee4a9d500f355aae18b92"
+        }
+      },
+      {
+        "profile": "V2016",
+        "case": "count",
+        "command": [
+          ".cache/tablecraft-bin/tablecraft-french-comparison-20261026",
+          "--format",
+          "tsv",
+          "query",
+          "run",
+          "--database",
+          ".cache/row-slot-boundary-20261026/Rows-V2016.accdb",
+          "SELECT Count(*) AS N FROM Slots"
+        ],
+        "exit_code": 0,
+        "stdout_bytes": 6,
+        "stdout_sha256": "f065ed2e76794cb562572f43d3a3d28ca83cb3e3285a4a1d16eaa76259f97dec",
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exact_expected_output": true,
+        "expected_rows": 1,
+        "source": {
+          "path": ".cache/row-slot-boundary-20261026/Rows-V2016.accdb",
+          "bytes": 389120,
+          "sha256": "e462024bd067a88f04cc62c97ba3d654ab218312f44ee4a9d500f355aae18b92"
+        }
+      },
+      {
+        "profile": "V2019",
+        "case": "rows",
+        "command": [
+          ".cache/tablecraft-bin/tablecraft-french-comparison-20261026",
+          "--format",
+          "tsv",
+          "rows",
+          ".cache/row-slot-boundary-20261026/Rows-V2019.accdb",
+          "Slots",
+          "--limit",
+          "600"
+        ],
+        "exit_code": 0,
+        "stdout_bytes": 2292,
+        "stdout_sha256": "278e4b845b09d562953961a73dcf352d3419f97fe150da01323d883227a57072",
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exact_expected_output": true,
+        "expected_rows": 600,
+        "source": {
+          "path": ".cache/row-slot-boundary-20261026/Rows-V2019.accdb",
+          "bytes": 458752,
+          "sha256": "737d32b715fbe123eda601a063074be154de4f861bf1e0046cb1179b97bc0597"
+        }
+      },
+      {
+        "profile": "V2019",
+        "case": "count",
+        "command": [
+          ".cache/tablecraft-bin/tablecraft-french-comparison-20261026",
+          "--format",
+          "tsv",
+          "query",
+          "run",
+          "--database",
+          ".cache/row-slot-boundary-20261026/Rows-V2019.accdb",
+          "SELECT Count(*) AS N FROM Slots"
+        ],
+        "exit_code": 0,
+        "stdout_bytes": 6,
+        "stdout_sha256": "f065ed2e76794cb562572f43d3a3d28ca83cb3e3285a4a1d16eaa76259f97dec",
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exact_expected_output": true,
+        "expected_rows": 1,
+        "source": {
+          "path": ".cache/row-slot-boundary-20261026/Rows-V2019.accdb",
+          "bytes": 458752,
+          "sha256": "737d32b715fbe123eda601a063074be154de4f861bf1e0046cb1179b97bc0597"
+        }
+      },
+      {
+        "profile": "V2000",
+        "case": "rows",
+        "command": [
+          ".cache/tablecraft-bin/tablecraft-french-comparison-20261026",
+          "--format",
+          "tsv",
+          "rows",
+          ".cache/row-slot-boundary-20261026/Rows-V2000.mdb",
+          "Slots",
+          "--limit",
+          "600"
+        ],
+        "exit_code": 0,
+        "stdout_bytes": 2292,
+        "stdout_sha256": "278e4b845b09d562953961a73dcf352d3419f97fe150da01323d883227a57072",
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exact_expected_output": true,
+        "expected_rows": 600,
+        "source": {
+          "path": ".cache/row-slot-boundary-20261026/Rows-V2000.mdb",
+          "bytes": 122880,
+          "sha256": "e7953d7b84f12819cab1cffbe765c77b38d47ed56716c18f6d547afc870010b2"
+        }
+      },
+      {
+        "profile": "V2000",
+        "case": "count",
+        "command": [
+          ".cache/tablecraft-bin/tablecraft-french-comparison-20261026",
+          "--format",
+          "tsv",
+          "query",
+          "run",
+          "--database",
+          ".cache/row-slot-boundary-20261026/Rows-V2000.mdb",
+          "SELECT Count(*) AS N FROM Slots"
+        ],
+        "exit_code": 0,
+        "stdout_bytes": 6,
+        "stdout_sha256": "f065ed2e76794cb562572f43d3a3d28ca83cb3e3285a4a1d16eaa76259f97dec",
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exact_expected_output": true,
+        "expected_rows": 1,
+        "source": {
+          "path": ".cache/row-slot-boundary-20261026/Rows-V2000.mdb",
+          "bytes": 122880,
+          "sha256": "e7953d7b84f12819cab1cffbe765c77b38d47ed56716c18f6d547afc870010b2"
+        }
+      },
+      {
+        "profile": "V2007",
+        "case": "rows",
+        "command": [
+          ".cache/tablecraft-bin/tablecraft-french-comparison-20261026",
+          "--format",
+          "tsv",
+          "rows",
+          ".cache/row-slot-boundary-20261026/Rows-V2007.accdb",
+          "Slots",
+          "--limit",
+          "600"
+        ],
+        "exit_code": 0,
+        "stdout_bytes": 2292,
+        "stdout_sha256": "278e4b845b09d562953961a73dcf352d3419f97fe150da01323d883227a57072",
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exact_expected_output": true,
+        "expected_rows": 600,
+        "source": {
+          "path": ".cache/row-slot-boundary-20261026/Rows-V2007.accdb",
+          "bytes": 352256,
+          "sha256": "22fef07786dfe3b8d6445d9d3ff9a22f7a3d906aac761664e21117fdbaa2e48f"
+        }
+      },
+      {
+        "profile": "V2007",
+        "case": "count",
+        "command": [
+          ".cache/tablecraft-bin/tablecraft-french-comparison-20261026",
+          "--format",
+          "tsv",
+          "query",
+          "run",
+          "--database",
+          ".cache/row-slot-boundary-20261026/Rows-V2007.accdb",
+          "SELECT Count(*) AS N FROM Slots"
+        ],
+        "exit_code": 0,
+        "stdout_bytes": 6,
+        "stdout_sha256": "f065ed2e76794cb562572f43d3a3d28ca83cb3e3285a4a1d16eaa76259f97dec",
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exact_expected_output": true,
+        "expected_rows": 1,
+        "source": {
+          "path": ".cache/row-slot-boundary-20261026/Rows-V2007.accdb",
+          "bytes": 352256,
+          "sha256": "22fef07786dfe3b8d6445d9d3ff9a22f7a3d906aac761664e21117fdbaa2e48f"
+        }
+      }
+    ],
+    "scope": "Four exact 600-row TSV outputs and four Count(*)=600 outputs on the existing frozen CLI; no engine change or native Access claim."
+  }
+}

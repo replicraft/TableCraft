@@ -24,6 +24,10 @@ qualification recorded separately.
   order across all four priority families. A further
   [96-control wide-key replay](IGNORED_NULL_WIDE_INDEXES.md) checks exact
   Currency/Int64 endpoints and node trees without binary floating conversion.
+  A [narrow-row page-boundary corpus](ROW_SLOT_BOUNDARY_OBSERVATIONS.md) also
+  passes eight frozen CLI controls across Jet 4, ACE 2007 and both ACE 16-family
+  profiles: exact 600-row output and `Count(*)=600`. Public page counts are
+  255/255/90; this verifies existing reads without changing their slot ceiling.
 - SELECT, joins, grouping/HAVING, subqueries, UNION, top-level crosstabs and
   qualified saved/named queries execute under shared resource/cancellation limits.
   Contextual named schemas use explicit execution-stage discovery; binding does
