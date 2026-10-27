@@ -3,6 +3,7 @@ mod check;
 mod definition;
 pub(in crate::table) mod maps;
 mod model;
+pub(in crate::table) mod profile;
 pub(in crate::table) mod trace;
 pub use check::check_table_long_values;
 pub use model::{

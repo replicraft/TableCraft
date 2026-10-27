@@ -14,11 +14,12 @@ contracts.
 
 ## Admission and source authority
 
-The initial profile is plain unencoded ACE 16, subversion zero, ordinary variable
-Memo/OLE with native flag 2, extended flags 0 and zero declared length. The
+The profile is plain unencoded ACE 16, subversion zero, ordinary variable
+Memo/OLE with native flag 2 and zero declared length. Memo accepts exact extended
+flags 0 or 1; OLE requires extended flags 0. The
 selected field must have a complete qualified inline owned/candidate map pair,
 no stored field properties and no index. A readable nonunique Memo index still
-does not authorize replacement. Hyperlink, compressed Memo, append-only/history,
+does not authorize replacement. Hyperlink, append-only/history,
 calculated/complex fields and unsupported metadata remain refused.
 
 All existing table/index/property/relationship/constraint gates apply before
@@ -44,7 +45,14 @@ public requests fail before a candidate is returned.
 
 ## Actual storage transitions
 
-Memo is encoded as raw UTF-16LE with an exact existing-decoder roundtrip. It has
+Memo with extended flags 0 is encoded as raw UTF-16LE. Memo with exact extended
+flags 1 uses the measured compact form only for more than two and at most 1,024
+UTF-16 units, with every unit in 1..255: marker `FF FE`, followed by one byte per
+unit. Other values use raw UTF-16LE. This is the qualified independent-writer
+policy from the [148 public observations](COMPRESSED_MEMO_UPDATE_OBSERVATIONS.md),
+not native Access save/reopen qualification or mode-switch authoring.
+
+Every new Memo stream must roundtrip through the existing bounded decoder. It has
 no Short Text 255-unit limit. Ambiguous leading-marker values which do not roundtrip
 are refused rather than normalized or silently truncated. OLE bytes remain opaque.
 Existing long-value/text ceilings and caller budgets still bound both carriers.
@@ -165,7 +173,8 @@ separates physical reference inspection from scalar projection. Existing scalar
 long-value profiles, supported calculated Memo outer storage and the observed
 variable OLE/flag2/ext0x10 backing profile can be traced without decoding their
 opaque value wrappers. This grants neither scalar support nor selected mutation
-authority; the selected writer still requires ext0. Unknown physical profiles
+authority; that correction kept the selected writer at ext0. The current exact
+ordinary Memo extension is described above. Unknown physical profiles
 and incomplete ownership declarations remain refused.
 
 Ordinary logical-root enumeration now checks the raw deleted/hidden flag before
@@ -176,3 +185,22 @@ complete under read-only diagnosis; those checks alone are not replacement
 acceptance. The subsequent [revised-artifact replay](LONG_VALUE_UPDATE_ACCEPTANCE_OBSERVATIONS.md)
 matched all 60 unchanged controls, including whole-image and cached getter/map
 proofs. The initial 0/60 outcome remains preserved separately.
+
+## Compressed Memo implementation checks
+
+The [scoped implementation record](results/ace16-compressed-memo-native-2026-10-27.json)
+separates the engineering code checks from the public-reference observations.
+Default-build tests read and storage-check a physically compressed source while
+retaining explicit unsupported flags/OLE statuses. Preview tests compare literal
+wire, 1,023/1,024/1,025-unit boundaries, raw sibling policy, marker refusal,
+semantic no-op preservation, final logical Len constraints and resource guards.
+
+A separate payload certificate derives encoding eligibility, length and every
+byte from the immutable requested value and actual field metadata. It does not
+call the encoder. Private controls first pass the existing decoder, then prove
+that raw bytes for a compression-eligible request, compressed bytes for a raw
+field, and compression above 1,024 units fail with `Preservation`. Allocation/map
+replay remains independently derived from actual appended lengths and placement
+history. Existing property/index/history, ownership, old-chain and macro gates
+remain required. Original-file candidate qualification for this new compressed
+profile is still pending; the completed raw 60-case acceptance remains separate.

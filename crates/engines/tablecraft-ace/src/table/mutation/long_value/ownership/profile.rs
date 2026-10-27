@@ -5,7 +5,7 @@ use crate::{
         data_type::{LONG_TEXT, OLE},
         layout::UPDATABLE_FLAG,
     },
-    table::calculated,
+    table::{calculated, long_value::profile},
 };
 
 // Observed on the live system attachment FileData backing field. Its value
@@ -16,6 +16,10 @@ pub(super) fn readable(column: &NativeColumn) -> bool {
     if column.fixed() || !matches!(column.native_type(), LONG_TEXT | OLE) {
         return false;
     }
+    if profile::ordinary(column) {
+        return true;
+    }
+
     if column.scalar_type().is_some() {
         return true;
     }

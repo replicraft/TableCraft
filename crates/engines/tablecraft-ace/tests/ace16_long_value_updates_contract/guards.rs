@@ -6,19 +6,65 @@ fn metadata_and_allocation_guards_remain_closed_for_empty_requests() {
         let mut bytes = source(6, 1);
         match mode {
             0 => bytes[10 * PAGE + MEMO_FLAGS] |= 0x80,
-            1 => bytes[10 * PAGE + MEMO_EXTENDED_FLAGS] = 1,
+            1 => bytes[10 * PAGE + MEMO_EXTENDED_FLAGS] = 3,
             2 => bytes[10 * PAGE + MEMO_EXTENDED_FLAGS] = 0xc0,
             3 => selected_property(&mut bytes, "Caption"),
             _ => support::put32(&mut bytes, 10 * PAGE + DECLARATIONS + 2, 0),
         }
-        // Calculated metadata changes the normal scalar admission. Every other
-        // source remains independently readable, including unknown map leads.
-        if mode != 2 {
+        // Unknown extended bits and calculated metadata remain outside scalar
+        // admission. Other sources still read, including unknown map leads.
+        if !matches!(mode, 1 | 2) {
             assert_eq!(read(&bytes)[0][1], Value::Text("A".into()));
         }
         refused(run(&bytes, "Memo", &[]));
         refused(run(&bytes, "Memo", &[memo_update(Value::Null)]));
     }
+
+    let mut compressed = source(6, 1);
+    compressed[10 * PAGE + MEMO_EXTENDED_FLAGS] = 1;
+    assert_eq!(
+        check(&compressed).columns()[0].status(),
+        LongValueCheckStatus::Checked
+    );
+    assert_eq!(
+        run(&compressed, "Memo", &[]).unwrap().candidate_bytes(),
+        compressed
+    );
+    let candidate = run(
+        &compressed,
+        "Memo",
+        &[memo_update(Value::Text("ééé".into()))],
+    )
+    .unwrap();
+    assert_eq!(
+        read(candidate.candidate_bytes())[0][1],
+        Value::Text("ééé".into())
+    );
+    assert_eq!(
+        candidate.candidate_bytes()[10 * PAGE + MEMO_EXTENDED_FLAGS],
+        1
+    );
+
+    let mut ole = source(6, 1);
+    ole[10 * PAGE + 129] = 1;
+    assert_eq!(
+        check_table_long_values(
+            &mut Cursor::new(&ole),
+            CatalogScope::new(1),
+            "Items",
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap()
+        .columns()[1]
+            .status(),
+        LongValueCheckStatus::UnsupportedColumn
+    );
+    assert_eq!(
+        run(&ole, "Ole", &[]).err(),
+        Some(EditError::Inspect(InspectError::Unsupported))
+    );
+
     let mut malformed = source(6, 1);
     malformed[MEMO * PAGE + 4..MEMO * PAGE + 8].copy_from_slice(b"BAD!");
     assert!(

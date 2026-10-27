@@ -56,7 +56,9 @@ candidates. Its unindexed Binary field and retained primary index have complete
 byte/value/map/index proofs; public padding canonicalization remains distinct.
 
 The separate [Memo/OLE service](../../testing/ACE16_LONG_VALUE_UPDATES.md) now
-replaces ordinary uncompressed, unindexed long fields using qualified column maps.
+replaces qualified ordinary Memo/OLE fields using column maps. Memo Unicode
+compression (exact type 12, flag 2, extended flag 1) now has a measured encoding
+rule and independent request-byte audit; unknown extended fields stay refused.
 LVAL chunks and ordinary parent forwarding share one EOF/map sequence, with
 immutable request authority and independent final audits. Old chunks remain
 allocated; unknown ownership, broader field/map profiles and normal saves remain
@@ -64,6 +66,9 @@ unqualified. Its [revised frozen-consumer replay](../../testing/LONG_VALUE_UPDAT
 now passes all 60 unchanged raw Memo/OLE controls with complete independent image,
 getter and map proofs. The initial zero-of-60 atomic census refusals and subsequent
 narrow correction remain separately recorded; normal saves stay unavailable.
+The compressed extension's 68 scoped runtime checks pass, including default
+storage checks and reader-valid alternate-encoding forgeries. Its original-file
+candidate acceptance remains a separate committed-consumer qualification.
 
 The separate [Int32 leaf-split service](../../testing/ACE16_INDEX_SPLITS.md) now
 supports root-leaf and non-root leaf growth through represented EOF index pages.

@@ -2,6 +2,7 @@
 use super::{
     maps::{self, MapInspection, Storage},
     model::{LongValueCheck, LongValueCheckStatus, LongValueCounts, TableLongValueCheck},
+    profile,
     trace::{self, Kind},
 };
 use crate::{
@@ -10,7 +11,6 @@ use crate::{
         allocation::{GLOBAL_FREE_REFERENCE, MapRole, PageCursor, RepresentedMap},
         bytes::u32_at,
         data_type::{LONG_TEXT, OLE},
-        layout::UPDATABLE_FLAG,
         page::{DATA_SIGNATURE, OWNER_OFFSET, PAGE_BYTES},
         reader::{Reader, live_row_range, row_count},
         row::{MASK_BITS, reference_page},
@@ -122,11 +122,7 @@ pub fn check_table_long_values<R: NativeReadSource>(
             result.status = LongValueCheckStatus::UnsupportedFormat;
         } else if !declarations.complete {
             result.status = LongValueCheckStatus::UnknownDeclaration;
-        } else if field.fixed()
-            || field.storage_length() != 0
-            || field.flags() != UPDATABLE_FLAG
-            || field.extended_flags() != 0
-        {
+        } else if !profile::ordinary(field) {
             result.status = LongValueCheckStatus::UnsupportedColumn;
         } else if let Some(references) = result.maps {
             if references.owned == 0 || references.candidate == 0 {
