@@ -10,6 +10,12 @@ mod plan;
 mod profile;
 mod repack;
 #[cfg(feature = "ace16-write-preview")]
+mod replacement;
+#[cfg(feature = "ace16-write-preview")]
+pub(in crate::table) use replacement::{
+    SlotKeyUpdate, patches as slot_patches, qualify as qualify_slot_indexes,
+};
+#[cfg(feature = "ace16-write-preview")]
 mod retained;
 #[cfg(feature = "ace16-write-preview")]
 mod retirement;

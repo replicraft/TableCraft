@@ -25,9 +25,9 @@ reordering and an independent unchanged-byte proof. Field lengths, record placem
 allocated page sets and file length do not change. Eligible mask changes are explicitly
 limited to the selected bit. Eligible indexed Byte, Int16/32/64 and Currency NULL
 transitions use the page repacking profiles below. Qualified GUID, Boolean/IEEE/DATE
-indexes and existing-width Decimal slots have their own profiles below. Other
-variable carriers, INSERT, schema changes, AutoNumber and broader index topology
-changes remain unsupported. Ordinary-root deletion has a separate
+indexes, existing-width Decimal slots and same-width Short Text/Binary slots have
+their own profiles below. Memo/OLE changes, record resizing, INSERT, schema changes,
+AutoNumber assignment and broader UPDATE index topology changes remain unsupported. Ordinary-root deletion has a separate
 [existing-page candidate API](ACE16_DELETE_PREVIEWS.md), with its own request and return
 types; it does not turn these fixed-field APIs into a general writer.
 
@@ -711,3 +711,61 @@ spans agree. Earlier 21 numeric ACE/Jet 4, 24 GUID and 46 Boolean/IEEE/DATE cand
 retain their frozen manifests. [Observed fixture hashes](FIXTURES.md#decimal-slot-and-index-update-inputs)
 record original/candidate identities. Native Access comparisons, data-macro gates
 and production-save qualification remain unfinished.
+
+## Existing-width Short Text and Binary slots
+
+`NativeImage::preview_ace16_slot_updates` accepts a table, a column and owned
+`SlotScalarUpdate::new(row, expected, value)` assignments. The selected ordinary
+variable field must be native Short Text or Short Binary, with the observed
+writable flag `2` and qualified extension flags. Flag-zero read/DELETE fixtures
+do not establish this new write admission. Values use the existing Text, Binary
+and NULL carriers; exact representational expected-value checks retain case and
+normalization distinctions. This is a separate non-journalable `Ace16WritePreview`
+API; existing numeric/fixed entry points retain their previous gates.
+
+The planner consumes the existing checked record-offset directory and the actual
+selected slot span. It chooses a valid UTF-16 or compressed Latin-1 representation
+which fits that span, then proves its exact value through the existing decoder.
+The observed marker-only `FF FE` representation can retain empty Text in a
+two-byte slot. An ambiguous leading U+FEFF is refused when its emitted bytes would
+decode differently. Compression metadata never grants extra slot capacity.
+A compressed form may fit a field whose metadata prefers uncompressed storage;
+this bounded representation choice does not claim native-writer policy parity.
+Binary replacements retain their exact bytes and actual width. Changing record
+lengths, shifting offsets, borrowing neighboring padding or allocating pages is
+unsupported.
+
+A semantic no-op preserves the entire original image, including noncanonical
+empty Text encodings. Assigning NULL changes only its presence bit and preserves
+the original slot bytes. Present empty and stored NULL remain distinct, including
+zero-width slots. Public-writer updates may instead repack or clear these bytes;
+this preview's preservation contract does not claim identical intermediate or
+canonical writer output.
+
+Affected General-family single Text, single Binary and supported mixed tuple
+indexes use their real existing row encoders. Physical aliases are maintained
+once. Unchanged keys keep their checked encoded bytes; replacements are sorted
+with the actual profile, then repacked within the original leaf populations.
+Complete key/row maxima update ancestor separators while page identity, topology,
+links, allocation and historical counters stay fixed. Capacity requiring a split
+rejects the whole candidate. Memo components, unknown orders, indexed French,
+ignore-NULL indexes and unqualified relationship profiles remain refused.
+Unindexed Text storage does not require a collation provider.
+
+Complete before/after index membership and native constraint checks precede
+publication. Same physical width does not imply equal logical `Len`: Required,
+AllowZeroLength, qualified validation expressions, uniqueness and relationship
+checks still apply to final values. Unsupported rules and field properties remain
+blockers even for empty requests. Macro qualification, native Access save/reopen,
+ordinary backend writes and arbitrary record resizing remain unfinished.
+
+The focused author target covers actual-width replacements, single and mixed
+index keys, both admitted node forms, aliases, exact no-ops, NULL/empty residues,
+stale/duplicate/growth/carrier failures, resource pools, cancellation and retry.
+It reuses existing literal fixture mechanics with a separate writable-metadata
+wrapper. Fresh public-builder originals/reference updates are separate evidence;
+their candidate replay is not established by these synthetic tests.
+
+[Scoped slot-update verification](results/ace16-slot-updates-native-2026-10-26.json)
+records the author cases, unchanged writer/read regressions and preserved failed
+attempts separately from original-file candidate comparisons.

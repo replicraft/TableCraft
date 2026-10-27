@@ -1,0 +1,353 @@
+{
+  "date": "2026-10-26",
+  "scope": "Opt-in same-existing-span Short Text/Binary slot assignments with genuine affected single/mixed-tuple key replacement, unchanged tree topology and mandatory complete before/after constraints. Separate non-journalable Ace16WritePreview; normal writes and macros remain unqualified.",
+  "validation_counts": {
+    "unique_runtime_tests": 159,
+    "new_author_tests": 9,
+    "existing_writer_tests": 98,
+    "existing_read_and_delete_guard_tests": 52,
+    "compile_fail_doc_tests": 3,
+    "total_checks_including_docs": 162
+  },
+  "authorship": "New assertions and writable metadata wrapper reuse prior repository-authored literal read/DELETE fixture mechanics and key goldens. This is not a claim that the new fixture was independently generated; public-builder storage/reference and candidate evidence are separate.",
+  "scope_files": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/lib.rs",
+      "bytes": 5842,
+      "sha256": "44d696e80bfc83c7ac7e74d733ef408bf49a50ef64298313fb283c0a59ac9968"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mod.rs",
+      "bytes": 3933,
+      "sha256": "c52321a64b8e75f5a4da9758764420bcb143351b8909b4214bda5dc5d4d29bf5"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/mod.rs",
+      "bytes": 751,
+      "sha256": "76f670e9511753a20c4c8a2fb42d8aa236959289bdfe36c4b9bf027b33ed945b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/gates.rs",
+      "bytes": 8975,
+      "sha256": "f965685e5463c0bbde60d9cbaa9d7159ec9ed7de426adcb45cf6d2817a73bba6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mod.rs",
+      "bytes": 3118,
+      "sha256": "ed92f2b3afd0455dfe8ddbc3f1b52531fb6b373931af565136af0338da9f8b62"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/text.rs",
+      "bytes": 8592,
+      "sha256": "54ff3c71cbda987ece2ae29d683ff50a16568054fd9d52f44f71e4c0faad0c1b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/encoded_tuple/mod.rs",
+      "bytes": 6297,
+      "sha256": "089eb9f51bcf91acf3ff2c5a89f91d4cf7fd2d33d858ea9cde92127d5fb201bb"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/mod.rs",
+      "bytes": 1557,
+      "sha256": "041b7e7ff87c6213a69a71aaf4f1051144ca912cbb516257acbbad5774744405"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/tree.rs",
+      "bytes": 8820,
+      "sha256": "b28e9d07e12060a9b5a72d04c019a03a2cf26c211d6bd08fb914de5590e8c4bc"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/tree/replacement.rs",
+      "bytes": 2892,
+      "sha256": "855a33fabafaa8fb2226f138265ae41e3ced49d5d959f0d90b818249c5b56db6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/replacement.rs",
+      "bytes": 7932,
+      "sha256": "9a833cea77c69863b289a422f55a594dbb462cc7c2d8762c8709c05f4ec8bf3f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/replacement/qualification.rs",
+      "bytes": 2879,
+      "sha256": "60aa7c66a455881a4ffec19e4a8d3472cdefddeb5dce4e5ecd1d115d6fa4cb3d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/slot/mod.rs",
+      "bytes": 2884,
+      "sha256": "61cd73547f38342933ca2257ff0b63285b06298d4f11aef56a90b8c5e3bffefd"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/slot/stage.rs",
+      "bytes": 8414,
+      "sha256": "25aa41fd1f599145040921e6a4e88eb37f8ec791f4411bae92328a700c975d86"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/slot/storage.rs",
+      "bytes": 4877,
+      "sha256": "a4adb555473b8b9118bc8f04eebe1e58f164bf44a7cd26006e70dd10ccd26159"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/slot/update.rs",
+      "bytes": 1155,
+      "sha256": "9425f948b70150deb7799391058e458450029c498a04a18cd10b37e5f5e23513"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_slot_updates.rs",
+      "bytes": 3190,
+      "sha256": "1b0d287e05e56a7ca7e6f8be90ef339d563c6c0533fc0c9c9c36de2932238755"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_slot_updates/values.rs",
+      "bytes": 6763,
+      "sha256": "a4e0e443b0059e5e008d1ee08eebf0e840c5a9307d27a7a9832e1d94f8af83b8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_slot_updates/boundaries.rs",
+      "bytes": 4746,
+      "sha256": "b0c06c55f38e6f8f35567c4d21b690f221a09c7f71b45ff6e9e3e79fc694d775"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_slot_updates/properties.rs",
+      "bytes": 5666,
+      "sha256": "2df330457969e4bf9cef85aadb591cb8777322c6ac4843fb1d380e62dcd1f099"
+    },
+    {
+      "path": "docs/testing/ACE16_WRITE_PREVIEWS.md",
+      "bytes": 50509,
+      "sha256": "e3a3322b95be9bd98d02d5982a5aeb414dc6dcf15e500dcbf68bea25b0708e7f"
+    }
+  ],
+  "shared_visitor_dependencies": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/rows.rs",
+      "bytes": 4634,
+      "sha256": "f738363c4e1144d4612c34bbdd3d696b496bc15a542ef226cfaf92a7e15ca83c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/rows/directory.rs",
+      "bytes": 3346,
+      "sha256": "e5329be3cfb47f1ba9004c97a7d02188a0afc58068e3ea911ac662c57782a5f1"
+    }
+  ],
+  "reused_fixture_files": [
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_encoded_delete_contract/model.rs",
+      "bytes": 14227,
+      "sha256": "a5b4f2cdf7d3617703d055800e8ec247681b8b01d740bfaee5447e823b2f1177"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/mutation/fixture.rs",
+      "bytes": 5609,
+      "sha256": "9d66669d6fce171118e39d07afe54f6f3298f8168f5d088befbc8649baf6bae3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/mutation/index_fixture.rs",
+      "bytes": 5589,
+      "sha256": "7a30a999ed52000012dfc0f8fe8f49be8994e74d60e80608cede7453ad1e74cf"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/support/mod.rs",
+      "bytes": 3496,
+      "sha256": "395145db02a7fc23388bd6ba065ee62992e823df0306bff205a2ae2304438c99"
+    }
+  ],
+  "checks": [
+    {
+      "command": "cargo check --locked -p tablecraft-ace --features ace16-write-preview --lib",
+      "session": 61798,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-slot-check-after-lifetime-20261026.log",
+        "bytes": 183,
+        "sha256": "99d12e52e9396464de34d824cbae15890692db765844d0705488a41f8b59cf99"
+      }
+    },
+    {
+      "command": "cargo test --locked -p tablecraft-ace --features ace16-write-preview --test ace16_slot_updates",
+      "session": 66232,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-slot-author-properties-20261026.log",
+        "bytes": 1209,
+        "sha256": "368e9297a82b1b0da976d57cf36a4b7a57c1c23d746e85d88cf5be06bcebcde3"
+      },
+      "unique_tests": 9
+    },
+    {
+      "command": "cargo test --locked -p tablecraft-ace --features ace16-write-preview --test ace16_write_preview --test mutation --test ace16_fixed_updates --test scalar_index_updates --test integral_index_updates --test decimal_updates --test guid_updates --test composite_updates --test batch_updates --test mask_updates --test foreign_updates --test cascade_updates",
+      "session": 2319,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-slot-writer-regressions-20261026.log",
+        "bytes": 10779,
+        "sha256": "e5199fbbca63def67e711369df94521d10cb72ebb837a8cdd6191bf24d7f2f77"
+      },
+      "unique_tests": 98
+    },
+    {
+      "command": "cargo test --locked -p tablecraft-ace --features ace16-write-preview --test indexes --test binary_indexes --test ace16_encoded_delete_contract --test ace16_ignored_delete_contract --test ace16_restrict_delete_contract",
+      "session": 88925,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-slot-index-and-delete-regressions-20261026.log",
+        "bytes": 5757,
+        "sha256": "786b345eb686965eb2aa4cf14c326b08955a0b6811d654cb1370c53261052562"
+      },
+      "unique_tests": 52
+    },
+    {
+      "command": "cargo clippy --locked -p tablecraft-ace --features ace16-write-preview --lib --test ace16_slot_updates -- -D warnings",
+      "session": 63251,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-slot-strict-20261026.log",
+        "bytes": 183,
+        "sha256": "aa963bc1abc03a52113c682ad3fb5002d0b2a4123842f48ecd29cb05287dfbb7"
+      }
+    },
+    {
+      "command": "cargo check --locked -p tablecraft-ace --lib --no-default-features",
+      "session": 57025,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-slot-minimal-20261026.log",
+        "bytes": 183,
+        "sha256": "ab5f7398df8fdfe29da09a6641352497dbdb79280160bc92cdd3dfacba51f851"
+      }
+    },
+    {
+      "command": "cargo test --locked -p tablecraft-ace --features ace16-write-preview --doc",
+      "session": 20243,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-slot-doc-tests-20261026.log",
+        "bytes": 627,
+        "sha256": "e5b918805516c18ec90c8f08cf031edd3a3c2a908f0ff6292ca35562747ba1e5"
+      },
+      "unique_tests": 3
+    }
+  ],
+  "format": {
+    "command": "rustfmt --edition 2024 --check crates/engines/tablecraft-ace/src/lib.rs crates/engines/tablecraft-ace/src/table/mod.rs crates/engines/tablecraft-ace/src/table/mutation/mod.rs crates/engines/tablecraft-ace/src/table/mutation/gates.rs crates/engines/tablecraft-ace/src/table/indexes/mod.rs crates/engines/tablecraft-ace/src/table/indexes/text.rs crates/engines/tablecraft-ace/src/table/indexes/encoded_tuple/mod.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/mod.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/tree.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/tree/replacement.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/replacement.rs crates/engines/tablecraft-ace/src/table/indexes/mutation/replacement/qualification.rs crates/engines/tablecraft-ace/src/table/mutation/slot/mod.rs crates/engines/tablecraft-ace/src/table/mutation/slot/stage.rs crates/engines/tablecraft-ace/src/table/mutation/slot/storage.rs crates/engines/tablecraft-ace/src/table/mutation/slot/update.rs crates/engines/tablecraft-ace/tests/ace16_slot_updates.rs crates/engines/tablecraft-ace/tests/ace16_slot_updates/values.rs crates/engines/tablecraft-ace/tests/ace16_slot_updates/boundaries.rs crates/engines/tablecraft-ace/tests/ace16_slot_updates/properties.rs",
+    "exit_code": 0,
+    "source_files": 20,
+    "log": {
+      "path": ".cache/ace16-slot-format-20261026.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "preserved_excluded_attempts": [
+    {
+      "session": 41830,
+      "exit_code": 101,
+      "log": {
+        "path": ".cache/ace16-slot-initial-check-20261026.log",
+        "bytes": 1183,
+        "sha256": "0b5bdf444a72724736ff72b44a86ef003996033f3df92248b3f482c4a9242892"
+      },
+      "classification": "Initial authored E0521: transient visitor request borrow escaped into staged input references. Fixed by the shared visitor explicit input lifetime, consumed directly without an extra request lookup. Full initial source was not snapshotted; retained reconstruction is explicitly causal rather than byte-identical."
+    },
+    {
+      "session": 25230,
+      "exit_code": 101,
+      "log": {
+        "path": ".cache/row-request-directory-next-20261026/directory-initial.log",
+        "bytes": 1231,
+        "sha256": "64b9a0d13807f5bb8d9c236b40fed7ef83d15f8571cbaaa697682a6408b9ebb4"
+      },
+      "classification": "Peer directory compile encountered four missing_docs diagnostics in new SlotScalarUpdate methods; added only accessor/constructor rustdocs."
+    },
+    {
+      "session": 98817,
+      "exit_code": 101,
+      "log": {
+        "path": ".cache/ace16-slot-author-initial-20261026.log",
+        "bytes": 3937,
+        "sha256": "bc7fe818aa685efc7d425b63d95b77e67f52bc1f9c21135e6059baae2cec5753"
+      },
+      "runtime_passed": 2,
+      "runtime_failed": 6,
+      "classification": "Shared read/DELETE Text fixture flag0 lacked new slot-write admission. Owned fixture wrapper now sets and verifies actual writable flag2; selected Text/Binary flag0 remains explicitly refused. Stored values and expected wire goldens unchanged."
+    },
+    {
+      "session": 86479,
+      "exit_code": 101,
+      "log": {
+        "path": ".cache/ace16-slot-author-after-writable-flags-20261026.log",
+        "bytes": 6140,
+        "sha256": "cd9a29752cd89625e4ec8957640a98c3c41f0f97208ccdb8307ffbfae64a2540"
+      },
+      "classification": "Consumer compilation reused an archived old ACE library from a shared target directory: API absent despite present main source. Preserved depinfo/fingerprint lacked slot paths. Touching only main lib.rs mtime with unchanged SHA forced correct rebuild; no source/value/golden change."
+    }
+  ],
+  "superseded_green_runs": [
+    {
+      "session": 97672,
+      "exit_code": 0,
+      "unique_tests": 8,
+      "log": {
+        "path": ".cache/ace16-slot-author-main-library-rebuilt-20261026.log",
+        "bytes": 1111,
+        "sha256": "ec6ad007cfca254031bc92bcc025d1b0523275c0beee9997eb0337b6a39737b9"
+      },
+      "classification": "Eight-author target before the ninth causal Required/EmptyText/Len test. These repeated tests are not added to unique totals."
+    }
+  ],
+  "diagnostic_source_pins": [
+    {
+      "path": ".cache/ace16-slot-next-20261026/author-before-writable-flags/ace16_slot_updates.rs",
+      "bytes": 1837,
+      "sha256": "a32342316d25b4914d0b5d6f309ec9643919b7a613a0055ec45364080347ffb7"
+    },
+    {
+      "path": ".cache/ace16-slot-next-20261026/author-before-writable-flags/boundaries.rs",
+      "bytes": 3897,
+      "sha256": "651d01534035a57e49e0dad32af87baf958cd9123b1b033099da4cb85f0ad82e"
+    },
+    {
+      "path": ".cache/ace16-slot-next-20261026/author-before-writable-flags/values.rs",
+      "bytes": 6763,
+      "sha256": "a4e0e443b0059e5e008d1ee08eebf0e840c5a9307d27a7a9832e1d94f8af83b8"
+    },
+    {
+      "path": ".cache/ace16-slot-next-20261026/stale-library-artifact/lib-tablecraft_ace.json",
+      "bytes": 2064,
+      "sha256": "d500c1de6863a027a31b0f1c9c096d908e2beb23a731a496da2f86e8a283d451"
+    },
+    {
+      "path": ".cache/ace16-slot-next-20261026/stale-library-artifact/receipt.json",
+      "bytes": 574,
+      "sha256": "e1d6f747d581c05275f7f330e10dc92a25000a46d2e4ee7748dd4f15469a7759"
+    },
+    {
+      "path": ".cache/ace16-slot-next-20261026/stale-library-artifact/tablecraft_ace-aad62c6672b4cc96.d",
+      "bytes": 70102,
+      "sha256": "30813480f965a937398f01b691e4e7d36f6628bafc8aef2c933bf7dbe96173e7"
+    },
+    {
+      "path": ".cache/ace16-slot-next-20261026/stage-e0521-causal-reconstruction.rs",
+      "bytes": 8064,
+      "sha256": "b84f1a52486e56ff582d7221e7e922bb39878a20ae434cdc2479ede2c0fbce9f"
+    },
+    {
+      "path": ".cache/ace16-slot-next-20261026/stage-after-interim-lookup.rs",
+      "bytes": 8514,
+      "sha256": "ee9a603e188b321da7920b7d031cd739e0a9d9884a58ec206eb46e004df38247"
+    },
+    {
+      "path": ".cache/ace16-slot-next-20261026/SOURCE_NOTE.md",
+      "bytes": 703,
+      "sha256": "b027956276adce480fef4db96aa7ed9d85ea88b7e8c85a74ad01b1a54596e6f2"
+    }
+  ],
+  "boundaries": [
+    "Selected ordinary variable Short Text/Binary requires exact writable flag2, qualified extension flags, actual complete offset-directory span and exact expected representational value. Invalid carriers, stale/duplicate ordinals and unavailable spans fail atomically.",
+    "Span-fitting raw UTF16/compact nonzero Latin1/observed marker-only empty encodings use the existing decoder for exact roundtrip proof. Compression preference never grants capacity. Ambiguous leading FEFF refuses; unchanged noncanonical values do not canonicalize. A span-fitting compressed form in uncompressed-preference metadata is bounded representation engineering, not native writer policy parity.",
+    "NULL changes only presence and retains original payload; empty values are distinct. No record offsets, table counts, historical counters, allocation, topology or links change. Required split/capacity or resizing refuses.",
+    "General single Text/Binary and supported mixed tuples use actual row key encoders and semantic comparators. Untouched entries retain paid checked wire; replacements recompute complete ancestor key/row maxima. Final full membership/uniqueness/required/validation/relationship checks precede publication.",
+    "Causal new test proves raw six-byte three-unit text to compressed six-byte four-unit text is rejected by Len<=3, plus exact Required and EmptyText violations. Disabled-expression public writer success cannot waive engine validation.",
+    "Existing fixed/numeric APIs stay closed to indexed Binary; indexed French, ignore-NULL, Memo affected components and unqualified Text/Binary FK/rules/properties stay refused even empty requests. No update-cascade widening.",
+    "No original candidate replay, native Microsoft Access SQL/save/reopen qualification, data-macro qualification, ordinary backend/CLI write capability, journaling, INSERT or arbitrary row growth is established by this record."
+  ]
+}
