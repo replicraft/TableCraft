@@ -1,0 +1,1994 @@
+{
+  "date": "2026-10-26",
+  "scope": "Private original-row request directory; no mutation profile or save expansion. End-to-end timing is mixed/tied, not a uniform speedup.",
+  "selected_runtime_functions": 156,
+  "new_private_functions": 6,
+  "original_candidate_controls": 16,
+  "before_and_after_executions": 32,
+  "native_access_qualification": false,
+  "source_snapshot": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/rows.rs",
+      "bytes": 4634,
+      "sha256": "f738363c4e1144d4612c34bbdd3d696b496bc15a542ef226cfaf92a7e15ca83c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/rows/directory.rs",
+      "bytes": 3346,
+      "sha256": "e5329be3cfb47f1ba9004c97a7d02188a0afc58068e3ea911ac662c57782a5f1"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/rows/directory/tests.rs",
+      "bytes": 4435,
+      "sha256": "c84d08374a2552a5397d087ce40ce90e748d1df25d34a941c773a90fa8ad3697"
+    }
+  ],
+  "builds": {
+    "baseline_revision": "660dae5a790c06c008be552138ed22a99cee7c18",
+    "baseline_artifact": {
+      "path": ".cache/tablecraft-bin/ace16-ordinal-before-660dae5a-20261026",
+      "bytes": 18693912,
+      "sha256": "580ef97df8a3a5766e712f1498eb0f01e8a6b6e59373a51a4fd0bf40f791854f"
+    },
+    "contender_base_revision": "660dae5a790c06c008be552138ed22a99cee7c18",
+    "contender_overlay": [
+      {
+        "path": "crates/engines/tablecraft-ace/src/table/mutation/rows.rs",
+        "bytes": 4634,
+        "sha256": "f738363c4e1144d4612c34bbdd3d696b496bc15a542ef226cfaf92a7e15ca83c"
+      },
+      {
+        "path": "crates/engines/tablecraft-ace/src/table/mutation/rows/directory.rs",
+        "bytes": 3346,
+        "sha256": "e5329be3cfb47f1ba9004c97a7d02188a0afc58068e3ea911ac662c57782a5f1"
+      },
+      {
+        "path": "crates/engines/tablecraft-ace/src/table/mutation/rows/directory/tests.rs",
+        "bytes": 4435,
+        "sha256": "c84d08374a2552a5397d087ce40ce90e748d1df25d34a941c773a90fa8ad3697"
+      }
+    ],
+    "contender_artifact": {
+      "path": ".cache/tablecraft-bin/ace16-ordinal-contender-660dae5a-20261026",
+      "bytes": 18785304,
+      "sha256": "435ecc59c679ae6b0880004c74cf290fc73ca5d46348cbd9a7369035bc24f9d6"
+    },
+    "scope": "Both artifacts built from isolated archive source; contender adds only the three owned files. Unrelated main-tree slot work excluded. Same dev unoptimized flags.",
+    "baseline_git_source_verification": {
+      "path": ".cache/row-request-directory-next-20261026/baseline-git-verification.json",
+      "bytes": 347,
+      "sha256": "9d2f5ab99c7720d6ab142a4246b10e4708478baf00bfbc7ae98175aa8a9f62c1"
+    },
+    "cache_limitation": "Explicit shared target reuse exposed stale archived API when returning to main. Slot owner preserved the failed compile and rebuilt main library with unchanged bytes; causal frozen artifacts remain distinct. Use separate target directories for future isolated builds."
+  },
+  "originals": [
+    {
+      "path": ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+      "bytes": 987136,
+      "sha256": "ebb1f05f264dddf5e8195633a0bd5077f5ea6bb1211da0943086a1dbf713ff80"
+    },
+    {
+      "path": ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+      "bytes": 1056768,
+      "sha256": "eb29beb6a77359ac517233e95f375642a03a4a1623540958d85bef161fad995b"
+    }
+  ],
+  "prior_independent_model_record": {
+    "path": "docs/testing/results/ace16-batch-delete-originals-2026-10-26.json",
+    "bytes": 166123,
+    "sha256": "9d8aac67d9a7596c5569e413027619a7805626757320ae5360b33a69e1f5233e"
+  },
+  "candidate_comparisons": [
+    {
+      "phase": "before",
+      "profile": "V2016",
+      "selection": "boundary-maxima",
+      "reverse_groups": false,
+      "exit_code": 0,
+      "command_labels": [
+        ".cache/tablecraft-bin/ace16-ordinal-before-660dae5a-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2016-00-boundary-maxima.accdb",
+        "--group",
+        "Children",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2016-00-Children.tsv",
+        "--group",
+        "Parents",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2016-00-Parents.tsv"
+      ],
+      "output": {
+        "path": ".cache/row-request-directory-next-20261026/before-candidates/V2016-00-boundary-maxima.accdb",
+        "bytes": 987136,
+        "sha256": "5296e3c0eceba3aec3f3b03de7ae5926bf0cae3a38b23655319325e41790c0ce"
+      },
+      "requests": [
+        {
+          "path": ".cache/row-request-directory-next-20261026/before-candidates/V2016-00-Children.tsv",
+          "bytes": 696,
+          "sha256": "af9969b4413002828abaed675be66c78ab5cfdd88edae189ea7fc86c0eeeae9f"
+        },
+        {
+          "path": ".cache/row-request-directory-next-20261026/before-candidates/V2016-00-Parents.tsv",
+          "bytes": 680,
+          "sha256": "aca66551258b5221f95d30ee2d10ecb1e821d7b26f62bc5003c60b5211cbc893"
+        }
+      ],
+      "matches_accepted_original_candidate_bytes": true
+    },
+    {
+      "phase": "before",
+      "profile": "V2016",
+      "selection": "boundary-maxima",
+      "reverse_groups": true,
+      "exit_code": 0,
+      "command_labels": [
+        ".cache/tablecraft-bin/ace16-ordinal-before-660dae5a-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2016-01-boundary-maxima.accdb",
+        "--group",
+        "Parents",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2016-01-Parents.tsv",
+        "--group",
+        "Children",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2016-01-Children.tsv"
+      ],
+      "output": {
+        "path": ".cache/row-request-directory-next-20261026/before-candidates/V2016-01-boundary-maxima.accdb",
+        "bytes": 987136,
+        "sha256": "5296e3c0eceba3aec3f3b03de7ae5926bf0cae3a38b23655319325e41790c0ce"
+      },
+      "requests": [
+        {
+          "path": ".cache/row-request-directory-next-20261026/before-candidates/V2016-01-Parents.tsv",
+          "bytes": 680,
+          "sha256": "aca66551258b5221f95d30ee2d10ecb1e821d7b26f62bc5003c60b5211cbc893"
+        },
+        {
+          "path": ".cache/row-request-directory-next-20261026/before-candidates/V2016-01-Children.tsv",
+          "bytes": 696,
+          "sha256": "af9969b4413002828abaed675be66c78ab5cfdd88edae189ea7fc86c0eeeae9f"
+        }
+      ],
+      "matches_accepted_original_candidate_bytes": true
+    },
+    {
+      "phase": "before",
+      "profile": "V2016",
+      "selection": "two-original-subtrees",
+      "reverse_groups": false,
+      "exit_code": 0,
+      "command_labels": [
+        ".cache/tablecraft-bin/ace16-ordinal-before-660dae5a-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2016-02-two-original-subtrees.accdb",
+        "--group",
+        "Children",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2016-02-Children.tsv",
+        "--group",
+        "Parents",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2016-02-Parents.tsv"
+      ],
+      "output": {
+        "path": ".cache/row-request-directory-next-20261026/before-candidates/V2016-02-two-original-subtrees.accdb",
+        "bytes": 987136,
+        "sha256": "62ae2cac2fb3645d7641a38162070307e435d35e128c681d8e40500d5a406edd"
+      },
+      "requests": [
+        {
+          "path": ".cache/row-request-directory-next-20261026/before-candidates/V2016-02-Children.tsv",
+          "bytes": 121717,
+          "sha256": "136fbb71950e6600713c6b056c656d3e1cc42fae37268f7d17675f33f2a9c600"
+        },
+        {
+          "path": ".cache/row-request-directory-next-20261026/before-candidates/V2016-02-Parents.tsv",
+          "bytes": 118925,
+          "sha256": "1158bc059d1bca6437e5497de3b60e9021d71795ef9d9dc1ad8dc6a27bd2405f"
+        }
+      ],
+      "matches_accepted_original_candidate_bytes": true
+    },
+    {
+      "phase": "before",
+      "profile": "V2016",
+      "selection": "two-original-subtrees",
+      "reverse_groups": true,
+      "exit_code": 0,
+      "command_labels": [
+        ".cache/tablecraft-bin/ace16-ordinal-before-660dae5a-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2016-03-two-original-subtrees.accdb",
+        "--group",
+        "Parents",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2016-03-Parents.tsv",
+        "--group",
+        "Children",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2016-03-Children.tsv"
+      ],
+      "output": {
+        "path": ".cache/row-request-directory-next-20261026/before-candidates/V2016-03-two-original-subtrees.accdb",
+        "bytes": 987136,
+        "sha256": "62ae2cac2fb3645d7641a38162070307e435d35e128c681d8e40500d5a406edd"
+      },
+      "requests": [
+        {
+          "path": ".cache/row-request-directory-next-20261026/before-candidates/V2016-03-Parents.tsv",
+          "bytes": 118925,
+          "sha256": "1158bc059d1bca6437e5497de3b60e9021d71795ef9d9dc1ad8dc6a27bd2405f"
+        },
+        {
+          "path": ".cache/row-request-directory-next-20261026/before-candidates/V2016-03-Children.tsv",
+          "bytes": 121717,
+          "sha256": "136fbb71950e6600713c6b056c656d3e1cc42fae37268f7d17675f33f2a9c600"
+        }
+      ],
+      "matches_accepted_original_candidate_bytes": true
+    },
+    {
+      "phase": "before",
+      "profile": "V2016",
+      "selection": "retain-one",
+      "reverse_groups": false,
+      "exit_code": 0,
+      "command_labels": [
+        ".cache/tablecraft-bin/ace16-ordinal-before-660dae5a-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2016-04-retain-one.accdb",
+        "--group",
+        "Children",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2016-04-Children.tsv",
+        "--group",
+        "Parents",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2016-04-Parents.tsv"
+      ],
+      "output": {
+        "path": ".cache/row-request-directory-next-20261026/before-candidates/V2016-04-retain-one.accdb",
+        "bytes": 987136,
+        "sha256": "4a4dd6552203de27e7244618d5e5fc69aa1fa8547ccb19e98f00a3386b121e8b"
+      },
+      "requests": [
+        {
+          "path": ".cache/row-request-directory-next-20261026/before-candidates/V2016-04-Children.tsv",
+          "bytes": 174043,
+          "sha256": "a00d4aa1fd04ebec71c90a34eab1ceb9a49d04c7adf9c28231c9e69f5321f732"
+        },
+        {
+          "path": ".cache/row-request-directory-next-20261026/before-candidates/V2016-04-Parents.tsv",
+          "bytes": 170051,
+          "sha256": "aa14006a20fe8d655f2c44256be10971f4b71535ddefd6516fea103ae1aff666"
+        }
+      ],
+      "matches_accepted_original_candidate_bytes": true
+    },
+    {
+      "phase": "before",
+      "profile": "V2016",
+      "selection": "retain-one",
+      "reverse_groups": true,
+      "exit_code": 0,
+      "command_labels": [
+        ".cache/tablecraft-bin/ace16-ordinal-before-660dae5a-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2016-05-retain-one.accdb",
+        "--group",
+        "Parents",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2016-05-Parents.tsv",
+        "--group",
+        "Children",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2016-05-Children.tsv"
+      ],
+      "output": {
+        "path": ".cache/row-request-directory-next-20261026/before-candidates/V2016-05-retain-one.accdb",
+        "bytes": 987136,
+        "sha256": "4a4dd6552203de27e7244618d5e5fc69aa1fa8547ccb19e98f00a3386b121e8b"
+      },
+      "requests": [
+        {
+          "path": ".cache/row-request-directory-next-20261026/before-candidates/V2016-05-Parents.tsv",
+          "bytes": 170051,
+          "sha256": "aa14006a20fe8d655f2c44256be10971f4b71535ddefd6516fea103ae1aff666"
+        },
+        {
+          "path": ".cache/row-request-directory-next-20261026/before-candidates/V2016-05-Children.tsv",
+          "bytes": 174043,
+          "sha256": "a00d4aa1fd04ebec71c90a34eab1ceb9a49d04c7adf9c28231c9e69f5321f732"
+        }
+      ],
+      "matches_accepted_original_candidate_bytes": true
+    },
+    {
+      "phase": "before",
+      "profile": "V2016",
+      "selection": "delete-all",
+      "reverse_groups": false,
+      "exit_code": 0,
+      "command_labels": [
+        ".cache/tablecraft-bin/ace16-ordinal-before-660dae5a-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2016-06-delete-all.accdb",
+        "--group",
+        "Children",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2016-06-Children.tsv",
+        "--group",
+        "Parents",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2016-06-Parents.tsv"
+      ],
+      "output": {
+        "path": ".cache/row-request-directory-next-20261026/before-candidates/V2016-06-delete-all.accdb",
+        "bytes": 987136,
+        "sha256": "faf20531a94b741996b13949d339c8c42889d3ac2caaf5c5ce22aabc00dea2d8"
+      },
+      "requests": [
+        {
+          "path": ".cache/row-request-directory-next-20261026/before-candidates/V2016-06-Children.tsv",
+          "bytes": 174390,
+          "sha256": "d7f571175e04dcae3f9a13d8e13cd65a67233c300e4b0bcef76246ddfb7252ac"
+        },
+        {
+          "path": ".cache/row-request-directory-next-20261026/before-candidates/V2016-06-Parents.tsv",
+          "bytes": 170390,
+          "sha256": "6967b70ef91e93b3d91c5493f35f4336bf5d728468be64fb558d8a7cf784a3e6"
+        }
+      ],
+      "matches_accepted_original_candidate_bytes": true
+    },
+    {
+      "phase": "before",
+      "profile": "V2016",
+      "selection": "delete-all",
+      "reverse_groups": true,
+      "exit_code": 0,
+      "command_labels": [
+        ".cache/tablecraft-bin/ace16-ordinal-before-660dae5a-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2016-07-delete-all.accdb",
+        "--group",
+        "Parents",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2016-07-Parents.tsv",
+        "--group",
+        "Children",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2016-07-Children.tsv"
+      ],
+      "output": {
+        "path": ".cache/row-request-directory-next-20261026/before-candidates/V2016-07-delete-all.accdb",
+        "bytes": 987136,
+        "sha256": "faf20531a94b741996b13949d339c8c42889d3ac2caaf5c5ce22aabc00dea2d8"
+      },
+      "requests": [
+        {
+          "path": ".cache/row-request-directory-next-20261026/before-candidates/V2016-07-Parents.tsv",
+          "bytes": 170390,
+          "sha256": "6967b70ef91e93b3d91c5493f35f4336bf5d728468be64fb558d8a7cf784a3e6"
+        },
+        {
+          "path": ".cache/row-request-directory-next-20261026/before-candidates/V2016-07-Children.tsv",
+          "bytes": 174390,
+          "sha256": "d7f571175e04dcae3f9a13d8e13cd65a67233c300e4b0bcef76246ddfb7252ac"
+        }
+      ],
+      "matches_accepted_original_candidate_bytes": true
+    },
+    {
+      "phase": "before",
+      "profile": "V2019",
+      "selection": "boundary-maxima",
+      "reverse_groups": false,
+      "exit_code": 0,
+      "command_labels": [
+        ".cache/tablecraft-bin/ace16-ordinal-before-660dae5a-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2019-00-boundary-maxima.accdb",
+        "--group",
+        "Children",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2019-00-Children.tsv",
+        "--group",
+        "Parents",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2019-00-Parents.tsv"
+      ],
+      "output": {
+        "path": ".cache/row-request-directory-next-20261026/before-candidates/V2019-00-boundary-maxima.accdb",
+        "bytes": 1056768,
+        "sha256": "3f7257baf3949c2daf601b9f6610554c902f2880e9440a4c74c39d9c24369e24"
+      },
+      "requests": [
+        {
+          "path": ".cache/row-request-directory-next-20261026/before-candidates/V2019-00-Children.tsv",
+          "bytes": 696,
+          "sha256": "af9969b4413002828abaed675be66c78ab5cfdd88edae189ea7fc86c0eeeae9f"
+        },
+        {
+          "path": ".cache/row-request-directory-next-20261026/before-candidates/V2019-00-Parents.tsv",
+          "bytes": 680,
+          "sha256": "aca66551258b5221f95d30ee2d10ecb1e821d7b26f62bc5003c60b5211cbc893"
+        }
+      ],
+      "matches_accepted_original_candidate_bytes": true
+    },
+    {
+      "phase": "before",
+      "profile": "V2019",
+      "selection": "boundary-maxima",
+      "reverse_groups": true,
+      "exit_code": 0,
+      "command_labels": [
+        ".cache/tablecraft-bin/ace16-ordinal-before-660dae5a-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2019-01-boundary-maxima.accdb",
+        "--group",
+        "Parents",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2019-01-Parents.tsv",
+        "--group",
+        "Children",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2019-01-Children.tsv"
+      ],
+      "output": {
+        "path": ".cache/row-request-directory-next-20261026/before-candidates/V2019-01-boundary-maxima.accdb",
+        "bytes": 1056768,
+        "sha256": "3f7257baf3949c2daf601b9f6610554c902f2880e9440a4c74c39d9c24369e24"
+      },
+      "requests": [
+        {
+          "path": ".cache/row-request-directory-next-20261026/before-candidates/V2019-01-Parents.tsv",
+          "bytes": 680,
+          "sha256": "aca66551258b5221f95d30ee2d10ecb1e821d7b26f62bc5003c60b5211cbc893"
+        },
+        {
+          "path": ".cache/row-request-directory-next-20261026/before-candidates/V2019-01-Children.tsv",
+          "bytes": 696,
+          "sha256": "af9969b4413002828abaed675be66c78ab5cfdd88edae189ea7fc86c0eeeae9f"
+        }
+      ],
+      "matches_accepted_original_candidate_bytes": true
+    },
+    {
+      "phase": "before",
+      "profile": "V2019",
+      "selection": "two-original-subtrees",
+      "reverse_groups": false,
+      "exit_code": 0,
+      "command_labels": [
+        ".cache/tablecraft-bin/ace16-ordinal-before-660dae5a-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2019-02-two-original-subtrees.accdb",
+        "--group",
+        "Children",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2019-02-Children.tsv",
+        "--group",
+        "Parents",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2019-02-Parents.tsv"
+      ],
+      "output": {
+        "path": ".cache/row-request-directory-next-20261026/before-candidates/V2019-02-two-original-subtrees.accdb",
+        "bytes": 1056768,
+        "sha256": "bf4351ae3bf801f2939d2c3f4f7c3c14e51ca26bddbb2119db82ed49d44e7170"
+      },
+      "requests": [
+        {
+          "path": ".cache/row-request-directory-next-20261026/before-candidates/V2019-02-Children.tsv",
+          "bytes": 121717,
+          "sha256": "136fbb71950e6600713c6b056c656d3e1cc42fae37268f7d17675f33f2a9c600"
+        },
+        {
+          "path": ".cache/row-request-directory-next-20261026/before-candidates/V2019-02-Parents.tsv",
+          "bytes": 118925,
+          "sha256": "1158bc059d1bca6437e5497de3b60e9021d71795ef9d9dc1ad8dc6a27bd2405f"
+        }
+      ],
+      "matches_accepted_original_candidate_bytes": true
+    },
+    {
+      "phase": "before",
+      "profile": "V2019",
+      "selection": "two-original-subtrees",
+      "reverse_groups": true,
+      "exit_code": 0,
+      "command_labels": [
+        ".cache/tablecraft-bin/ace16-ordinal-before-660dae5a-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2019-03-two-original-subtrees.accdb",
+        "--group",
+        "Parents",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2019-03-Parents.tsv",
+        "--group",
+        "Children",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2019-03-Children.tsv"
+      ],
+      "output": {
+        "path": ".cache/row-request-directory-next-20261026/before-candidates/V2019-03-two-original-subtrees.accdb",
+        "bytes": 1056768,
+        "sha256": "bf4351ae3bf801f2939d2c3f4f7c3c14e51ca26bddbb2119db82ed49d44e7170"
+      },
+      "requests": [
+        {
+          "path": ".cache/row-request-directory-next-20261026/before-candidates/V2019-03-Parents.tsv",
+          "bytes": 118925,
+          "sha256": "1158bc059d1bca6437e5497de3b60e9021d71795ef9d9dc1ad8dc6a27bd2405f"
+        },
+        {
+          "path": ".cache/row-request-directory-next-20261026/before-candidates/V2019-03-Children.tsv",
+          "bytes": 121717,
+          "sha256": "136fbb71950e6600713c6b056c656d3e1cc42fae37268f7d17675f33f2a9c600"
+        }
+      ],
+      "matches_accepted_original_candidate_bytes": true
+    },
+    {
+      "phase": "before",
+      "profile": "V2019",
+      "selection": "retain-one",
+      "reverse_groups": false,
+      "exit_code": 0,
+      "command_labels": [
+        ".cache/tablecraft-bin/ace16-ordinal-before-660dae5a-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2019-04-retain-one.accdb",
+        "--group",
+        "Children",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2019-04-Children.tsv",
+        "--group",
+        "Parents",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2019-04-Parents.tsv"
+      ],
+      "output": {
+        "path": ".cache/row-request-directory-next-20261026/before-candidates/V2019-04-retain-one.accdb",
+        "bytes": 1056768,
+        "sha256": "9276bb5b7eb1bb24d11dc9dfc0eb9a8c90cbb31ab62817325ad5c5ad96ee8fc3"
+      },
+      "requests": [
+        {
+          "path": ".cache/row-request-directory-next-20261026/before-candidates/V2019-04-Children.tsv",
+          "bytes": 174043,
+          "sha256": "a00d4aa1fd04ebec71c90a34eab1ceb9a49d04c7adf9c28231c9e69f5321f732"
+        },
+        {
+          "path": ".cache/row-request-directory-next-20261026/before-candidates/V2019-04-Parents.tsv",
+          "bytes": 170051,
+          "sha256": "aa14006a20fe8d655f2c44256be10971f4b71535ddefd6516fea103ae1aff666"
+        }
+      ],
+      "matches_accepted_original_candidate_bytes": true
+    },
+    {
+      "phase": "before",
+      "profile": "V2019",
+      "selection": "retain-one",
+      "reverse_groups": true,
+      "exit_code": 0,
+      "command_labels": [
+        ".cache/tablecraft-bin/ace16-ordinal-before-660dae5a-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2019-05-retain-one.accdb",
+        "--group",
+        "Parents",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2019-05-Parents.tsv",
+        "--group",
+        "Children",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2019-05-Children.tsv"
+      ],
+      "output": {
+        "path": ".cache/row-request-directory-next-20261026/before-candidates/V2019-05-retain-one.accdb",
+        "bytes": 1056768,
+        "sha256": "9276bb5b7eb1bb24d11dc9dfc0eb9a8c90cbb31ab62817325ad5c5ad96ee8fc3"
+      },
+      "requests": [
+        {
+          "path": ".cache/row-request-directory-next-20261026/before-candidates/V2019-05-Parents.tsv",
+          "bytes": 170051,
+          "sha256": "aa14006a20fe8d655f2c44256be10971f4b71535ddefd6516fea103ae1aff666"
+        },
+        {
+          "path": ".cache/row-request-directory-next-20261026/before-candidates/V2019-05-Children.tsv",
+          "bytes": 174043,
+          "sha256": "a00d4aa1fd04ebec71c90a34eab1ceb9a49d04c7adf9c28231c9e69f5321f732"
+        }
+      ],
+      "matches_accepted_original_candidate_bytes": true
+    },
+    {
+      "phase": "before",
+      "profile": "V2019",
+      "selection": "delete-all",
+      "reverse_groups": false,
+      "exit_code": 0,
+      "command_labels": [
+        ".cache/tablecraft-bin/ace16-ordinal-before-660dae5a-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2019-06-delete-all.accdb",
+        "--group",
+        "Children",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2019-06-Children.tsv",
+        "--group",
+        "Parents",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2019-06-Parents.tsv"
+      ],
+      "output": {
+        "path": ".cache/row-request-directory-next-20261026/before-candidates/V2019-06-delete-all.accdb",
+        "bytes": 1056768,
+        "sha256": "d2443ab99f248df427915f76a7607a151b7d47b08a77d4637418b39f1faa35d8"
+      },
+      "requests": [
+        {
+          "path": ".cache/row-request-directory-next-20261026/before-candidates/V2019-06-Children.tsv",
+          "bytes": 174390,
+          "sha256": "d7f571175e04dcae3f9a13d8e13cd65a67233c300e4b0bcef76246ddfb7252ac"
+        },
+        {
+          "path": ".cache/row-request-directory-next-20261026/before-candidates/V2019-06-Parents.tsv",
+          "bytes": 170390,
+          "sha256": "6967b70ef91e93b3d91c5493f35f4336bf5d728468be64fb558d8a7cf784a3e6"
+        }
+      ],
+      "matches_accepted_original_candidate_bytes": true
+    },
+    {
+      "phase": "before",
+      "profile": "V2019",
+      "selection": "delete-all",
+      "reverse_groups": true,
+      "exit_code": 0,
+      "command_labels": [
+        ".cache/tablecraft-bin/ace16-ordinal-before-660dae5a-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2019-07-delete-all.accdb",
+        "--group",
+        "Parents",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2019-07-Parents.tsv",
+        "--group",
+        "Children",
+        ".cache/row-request-directory-next-20261026/before-candidates/V2019-07-Children.tsv"
+      ],
+      "output": {
+        "path": ".cache/row-request-directory-next-20261026/before-candidates/V2019-07-delete-all.accdb",
+        "bytes": 1056768,
+        "sha256": "d2443ab99f248df427915f76a7607a151b7d47b08a77d4637418b39f1faa35d8"
+      },
+      "requests": [
+        {
+          "path": ".cache/row-request-directory-next-20261026/before-candidates/V2019-07-Parents.tsv",
+          "bytes": 170390,
+          "sha256": "6967b70ef91e93b3d91c5493f35f4336bf5d728468be64fb558d8a7cf784a3e6"
+        },
+        {
+          "path": ".cache/row-request-directory-next-20261026/before-candidates/V2019-07-Children.tsv",
+          "bytes": 174390,
+          "sha256": "d7f571175e04dcae3f9a13d8e13cd65a67233c300e4b0bcef76246ddfb7252ac"
+        }
+      ],
+      "matches_accepted_original_candidate_bytes": true
+    },
+    {
+      "phase": "after",
+      "profile": "V2016",
+      "selection": "boundary-maxima",
+      "reverse_groups": false,
+      "exit_code": 0,
+      "command_labels": [
+        ".cache/tablecraft-bin/ace16-ordinal-contender-660dae5a-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2016-00-boundary-maxima.accdb",
+        "--group",
+        "Children",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2016-00-Children.tsv",
+        "--group",
+        "Parents",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2016-00-Parents.tsv"
+      ],
+      "output": {
+        "path": ".cache/row-request-directory-next-20261026/after-candidates/V2016-00-boundary-maxima.accdb",
+        "bytes": 987136,
+        "sha256": "5296e3c0eceba3aec3f3b03de7ae5926bf0cae3a38b23655319325e41790c0ce"
+      },
+      "requests": [
+        {
+          "path": ".cache/row-request-directory-next-20261026/after-candidates/V2016-00-Children.tsv",
+          "bytes": 696,
+          "sha256": "af9969b4413002828abaed675be66c78ab5cfdd88edae189ea7fc86c0eeeae9f"
+        },
+        {
+          "path": ".cache/row-request-directory-next-20261026/after-candidates/V2016-00-Parents.tsv",
+          "bytes": 680,
+          "sha256": "aca66551258b5221f95d30ee2d10ecb1e821d7b26f62bc5003c60b5211cbc893"
+        }
+      ],
+      "matches_accepted_original_candidate_bytes": true
+    },
+    {
+      "phase": "after",
+      "profile": "V2016",
+      "selection": "boundary-maxima",
+      "reverse_groups": true,
+      "exit_code": 0,
+      "command_labels": [
+        ".cache/tablecraft-bin/ace16-ordinal-contender-660dae5a-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2016-01-boundary-maxima.accdb",
+        "--group",
+        "Parents",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2016-01-Parents.tsv",
+        "--group",
+        "Children",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2016-01-Children.tsv"
+      ],
+      "output": {
+        "path": ".cache/row-request-directory-next-20261026/after-candidates/V2016-01-boundary-maxima.accdb",
+        "bytes": 987136,
+        "sha256": "5296e3c0eceba3aec3f3b03de7ae5926bf0cae3a38b23655319325e41790c0ce"
+      },
+      "requests": [
+        {
+          "path": ".cache/row-request-directory-next-20261026/after-candidates/V2016-01-Parents.tsv",
+          "bytes": 680,
+          "sha256": "aca66551258b5221f95d30ee2d10ecb1e821d7b26f62bc5003c60b5211cbc893"
+        },
+        {
+          "path": ".cache/row-request-directory-next-20261026/after-candidates/V2016-01-Children.tsv",
+          "bytes": 696,
+          "sha256": "af9969b4413002828abaed675be66c78ab5cfdd88edae189ea7fc86c0eeeae9f"
+        }
+      ],
+      "matches_accepted_original_candidate_bytes": true
+    },
+    {
+      "phase": "after",
+      "profile": "V2016",
+      "selection": "two-original-subtrees",
+      "reverse_groups": false,
+      "exit_code": 0,
+      "command_labels": [
+        ".cache/tablecraft-bin/ace16-ordinal-contender-660dae5a-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2016-02-two-original-subtrees.accdb",
+        "--group",
+        "Children",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2016-02-Children.tsv",
+        "--group",
+        "Parents",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2016-02-Parents.tsv"
+      ],
+      "output": {
+        "path": ".cache/row-request-directory-next-20261026/after-candidates/V2016-02-two-original-subtrees.accdb",
+        "bytes": 987136,
+        "sha256": "62ae2cac2fb3645d7641a38162070307e435d35e128c681d8e40500d5a406edd"
+      },
+      "requests": [
+        {
+          "path": ".cache/row-request-directory-next-20261026/after-candidates/V2016-02-Children.tsv",
+          "bytes": 121717,
+          "sha256": "136fbb71950e6600713c6b056c656d3e1cc42fae37268f7d17675f33f2a9c600"
+        },
+        {
+          "path": ".cache/row-request-directory-next-20261026/after-candidates/V2016-02-Parents.tsv",
+          "bytes": 118925,
+          "sha256": "1158bc059d1bca6437e5497de3b60e9021d71795ef9d9dc1ad8dc6a27bd2405f"
+        }
+      ],
+      "matches_accepted_original_candidate_bytes": true
+    },
+    {
+      "phase": "after",
+      "profile": "V2016",
+      "selection": "two-original-subtrees",
+      "reverse_groups": true,
+      "exit_code": 0,
+      "command_labels": [
+        ".cache/tablecraft-bin/ace16-ordinal-contender-660dae5a-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2016-03-two-original-subtrees.accdb",
+        "--group",
+        "Parents",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2016-03-Parents.tsv",
+        "--group",
+        "Children",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2016-03-Children.tsv"
+      ],
+      "output": {
+        "path": ".cache/row-request-directory-next-20261026/after-candidates/V2016-03-two-original-subtrees.accdb",
+        "bytes": 987136,
+        "sha256": "62ae2cac2fb3645d7641a38162070307e435d35e128c681d8e40500d5a406edd"
+      },
+      "requests": [
+        {
+          "path": ".cache/row-request-directory-next-20261026/after-candidates/V2016-03-Parents.tsv",
+          "bytes": 118925,
+          "sha256": "1158bc059d1bca6437e5497de3b60e9021d71795ef9d9dc1ad8dc6a27bd2405f"
+        },
+        {
+          "path": ".cache/row-request-directory-next-20261026/after-candidates/V2016-03-Children.tsv",
+          "bytes": 121717,
+          "sha256": "136fbb71950e6600713c6b056c656d3e1cc42fae37268f7d17675f33f2a9c600"
+        }
+      ],
+      "matches_accepted_original_candidate_bytes": true
+    },
+    {
+      "phase": "after",
+      "profile": "V2016",
+      "selection": "retain-one",
+      "reverse_groups": false,
+      "exit_code": 0,
+      "command_labels": [
+        ".cache/tablecraft-bin/ace16-ordinal-contender-660dae5a-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2016-04-retain-one.accdb",
+        "--group",
+        "Children",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2016-04-Children.tsv",
+        "--group",
+        "Parents",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2016-04-Parents.tsv"
+      ],
+      "output": {
+        "path": ".cache/row-request-directory-next-20261026/after-candidates/V2016-04-retain-one.accdb",
+        "bytes": 987136,
+        "sha256": "4a4dd6552203de27e7244618d5e5fc69aa1fa8547ccb19e98f00a3386b121e8b"
+      },
+      "requests": [
+        {
+          "path": ".cache/row-request-directory-next-20261026/after-candidates/V2016-04-Children.tsv",
+          "bytes": 174043,
+          "sha256": "a00d4aa1fd04ebec71c90a34eab1ceb9a49d04c7adf9c28231c9e69f5321f732"
+        },
+        {
+          "path": ".cache/row-request-directory-next-20261026/after-candidates/V2016-04-Parents.tsv",
+          "bytes": 170051,
+          "sha256": "aa14006a20fe8d655f2c44256be10971f4b71535ddefd6516fea103ae1aff666"
+        }
+      ],
+      "matches_accepted_original_candidate_bytes": true
+    },
+    {
+      "phase": "after",
+      "profile": "V2016",
+      "selection": "retain-one",
+      "reverse_groups": true,
+      "exit_code": 0,
+      "command_labels": [
+        ".cache/tablecraft-bin/ace16-ordinal-contender-660dae5a-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2016-05-retain-one.accdb",
+        "--group",
+        "Parents",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2016-05-Parents.tsv",
+        "--group",
+        "Children",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2016-05-Children.tsv"
+      ],
+      "output": {
+        "path": ".cache/row-request-directory-next-20261026/after-candidates/V2016-05-retain-one.accdb",
+        "bytes": 987136,
+        "sha256": "4a4dd6552203de27e7244618d5e5fc69aa1fa8547ccb19e98f00a3386b121e8b"
+      },
+      "requests": [
+        {
+          "path": ".cache/row-request-directory-next-20261026/after-candidates/V2016-05-Parents.tsv",
+          "bytes": 170051,
+          "sha256": "aa14006a20fe8d655f2c44256be10971f4b71535ddefd6516fea103ae1aff666"
+        },
+        {
+          "path": ".cache/row-request-directory-next-20261026/after-candidates/V2016-05-Children.tsv",
+          "bytes": 174043,
+          "sha256": "a00d4aa1fd04ebec71c90a34eab1ceb9a49d04c7adf9c28231c9e69f5321f732"
+        }
+      ],
+      "matches_accepted_original_candidate_bytes": true
+    },
+    {
+      "phase": "after",
+      "profile": "V2016",
+      "selection": "delete-all",
+      "reverse_groups": false,
+      "exit_code": 0,
+      "command_labels": [
+        ".cache/tablecraft-bin/ace16-ordinal-contender-660dae5a-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2016-06-delete-all.accdb",
+        "--group",
+        "Children",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2016-06-Children.tsv",
+        "--group",
+        "Parents",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2016-06-Parents.tsv"
+      ],
+      "output": {
+        "path": ".cache/row-request-directory-next-20261026/after-candidates/V2016-06-delete-all.accdb",
+        "bytes": 987136,
+        "sha256": "faf20531a94b741996b13949d339c8c42889d3ac2caaf5c5ce22aabc00dea2d8"
+      },
+      "requests": [
+        {
+          "path": ".cache/row-request-directory-next-20261026/after-candidates/V2016-06-Children.tsv",
+          "bytes": 174390,
+          "sha256": "d7f571175e04dcae3f9a13d8e13cd65a67233c300e4b0bcef76246ddfb7252ac"
+        },
+        {
+          "path": ".cache/row-request-directory-next-20261026/after-candidates/V2016-06-Parents.tsv",
+          "bytes": 170390,
+          "sha256": "6967b70ef91e93b3d91c5493f35f4336bf5d728468be64fb558d8a7cf784a3e6"
+        }
+      ],
+      "matches_accepted_original_candidate_bytes": true
+    },
+    {
+      "phase": "after",
+      "profile": "V2016",
+      "selection": "delete-all",
+      "reverse_groups": true,
+      "exit_code": 0,
+      "command_labels": [
+        ".cache/tablecraft-bin/ace16-ordinal-contender-660dae5a-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2016-07-delete-all.accdb",
+        "--group",
+        "Parents",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2016-07-Parents.tsv",
+        "--group",
+        "Children",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2016-07-Children.tsv"
+      ],
+      "output": {
+        "path": ".cache/row-request-directory-next-20261026/after-candidates/V2016-07-delete-all.accdb",
+        "bytes": 987136,
+        "sha256": "faf20531a94b741996b13949d339c8c42889d3ac2caaf5c5ce22aabc00dea2d8"
+      },
+      "requests": [
+        {
+          "path": ".cache/row-request-directory-next-20261026/after-candidates/V2016-07-Parents.tsv",
+          "bytes": 170390,
+          "sha256": "6967b70ef91e93b3d91c5493f35f4336bf5d728468be64fb558d8a7cf784a3e6"
+        },
+        {
+          "path": ".cache/row-request-directory-next-20261026/after-candidates/V2016-07-Children.tsv",
+          "bytes": 174390,
+          "sha256": "d7f571175e04dcae3f9a13d8e13cd65a67233c300e4b0bcef76246ddfb7252ac"
+        }
+      ],
+      "matches_accepted_original_candidate_bytes": true
+    },
+    {
+      "phase": "after",
+      "profile": "V2019",
+      "selection": "boundary-maxima",
+      "reverse_groups": false,
+      "exit_code": 0,
+      "command_labels": [
+        ".cache/tablecraft-bin/ace16-ordinal-contender-660dae5a-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2019-00-boundary-maxima.accdb",
+        "--group",
+        "Children",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2019-00-Children.tsv",
+        "--group",
+        "Parents",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2019-00-Parents.tsv"
+      ],
+      "output": {
+        "path": ".cache/row-request-directory-next-20261026/after-candidates/V2019-00-boundary-maxima.accdb",
+        "bytes": 1056768,
+        "sha256": "3f7257baf3949c2daf601b9f6610554c902f2880e9440a4c74c39d9c24369e24"
+      },
+      "requests": [
+        {
+          "path": ".cache/row-request-directory-next-20261026/after-candidates/V2019-00-Children.tsv",
+          "bytes": 696,
+          "sha256": "af9969b4413002828abaed675be66c78ab5cfdd88edae189ea7fc86c0eeeae9f"
+        },
+        {
+          "path": ".cache/row-request-directory-next-20261026/after-candidates/V2019-00-Parents.tsv",
+          "bytes": 680,
+          "sha256": "aca66551258b5221f95d30ee2d10ecb1e821d7b26f62bc5003c60b5211cbc893"
+        }
+      ],
+      "matches_accepted_original_candidate_bytes": true
+    },
+    {
+      "phase": "after",
+      "profile": "V2019",
+      "selection": "boundary-maxima",
+      "reverse_groups": true,
+      "exit_code": 0,
+      "command_labels": [
+        ".cache/tablecraft-bin/ace16-ordinal-contender-660dae5a-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2019-01-boundary-maxima.accdb",
+        "--group",
+        "Parents",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2019-01-Parents.tsv",
+        "--group",
+        "Children",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2019-01-Children.tsv"
+      ],
+      "output": {
+        "path": ".cache/row-request-directory-next-20261026/after-candidates/V2019-01-boundary-maxima.accdb",
+        "bytes": 1056768,
+        "sha256": "3f7257baf3949c2daf601b9f6610554c902f2880e9440a4c74c39d9c24369e24"
+      },
+      "requests": [
+        {
+          "path": ".cache/row-request-directory-next-20261026/after-candidates/V2019-01-Parents.tsv",
+          "bytes": 680,
+          "sha256": "aca66551258b5221f95d30ee2d10ecb1e821d7b26f62bc5003c60b5211cbc893"
+        },
+        {
+          "path": ".cache/row-request-directory-next-20261026/after-candidates/V2019-01-Children.tsv",
+          "bytes": 696,
+          "sha256": "af9969b4413002828abaed675be66c78ab5cfdd88edae189ea7fc86c0eeeae9f"
+        }
+      ],
+      "matches_accepted_original_candidate_bytes": true
+    },
+    {
+      "phase": "after",
+      "profile": "V2019",
+      "selection": "two-original-subtrees",
+      "reverse_groups": false,
+      "exit_code": 0,
+      "command_labels": [
+        ".cache/tablecraft-bin/ace16-ordinal-contender-660dae5a-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2019-02-two-original-subtrees.accdb",
+        "--group",
+        "Children",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2019-02-Children.tsv",
+        "--group",
+        "Parents",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2019-02-Parents.tsv"
+      ],
+      "output": {
+        "path": ".cache/row-request-directory-next-20261026/after-candidates/V2019-02-two-original-subtrees.accdb",
+        "bytes": 1056768,
+        "sha256": "bf4351ae3bf801f2939d2c3f4f7c3c14e51ca26bddbb2119db82ed49d44e7170"
+      },
+      "requests": [
+        {
+          "path": ".cache/row-request-directory-next-20261026/after-candidates/V2019-02-Children.tsv",
+          "bytes": 121717,
+          "sha256": "136fbb71950e6600713c6b056c656d3e1cc42fae37268f7d17675f33f2a9c600"
+        },
+        {
+          "path": ".cache/row-request-directory-next-20261026/after-candidates/V2019-02-Parents.tsv",
+          "bytes": 118925,
+          "sha256": "1158bc059d1bca6437e5497de3b60e9021d71795ef9d9dc1ad8dc6a27bd2405f"
+        }
+      ],
+      "matches_accepted_original_candidate_bytes": true
+    },
+    {
+      "phase": "after",
+      "profile": "V2019",
+      "selection": "two-original-subtrees",
+      "reverse_groups": true,
+      "exit_code": 0,
+      "command_labels": [
+        ".cache/tablecraft-bin/ace16-ordinal-contender-660dae5a-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2019-03-two-original-subtrees.accdb",
+        "--group",
+        "Parents",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2019-03-Parents.tsv",
+        "--group",
+        "Children",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2019-03-Children.tsv"
+      ],
+      "output": {
+        "path": ".cache/row-request-directory-next-20261026/after-candidates/V2019-03-two-original-subtrees.accdb",
+        "bytes": 1056768,
+        "sha256": "bf4351ae3bf801f2939d2c3f4f7c3c14e51ca26bddbb2119db82ed49d44e7170"
+      },
+      "requests": [
+        {
+          "path": ".cache/row-request-directory-next-20261026/after-candidates/V2019-03-Parents.tsv",
+          "bytes": 118925,
+          "sha256": "1158bc059d1bca6437e5497de3b60e9021d71795ef9d9dc1ad8dc6a27bd2405f"
+        },
+        {
+          "path": ".cache/row-request-directory-next-20261026/after-candidates/V2019-03-Children.tsv",
+          "bytes": 121717,
+          "sha256": "136fbb71950e6600713c6b056c656d3e1cc42fae37268f7d17675f33f2a9c600"
+        }
+      ],
+      "matches_accepted_original_candidate_bytes": true
+    },
+    {
+      "phase": "after",
+      "profile": "V2019",
+      "selection": "retain-one",
+      "reverse_groups": false,
+      "exit_code": 0,
+      "command_labels": [
+        ".cache/tablecraft-bin/ace16-ordinal-contender-660dae5a-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2019-04-retain-one.accdb",
+        "--group",
+        "Children",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2019-04-Children.tsv",
+        "--group",
+        "Parents",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2019-04-Parents.tsv"
+      ],
+      "output": {
+        "path": ".cache/row-request-directory-next-20261026/after-candidates/V2019-04-retain-one.accdb",
+        "bytes": 1056768,
+        "sha256": "9276bb5b7eb1bb24d11dc9dfc0eb9a8c90cbb31ab62817325ad5c5ad96ee8fc3"
+      },
+      "requests": [
+        {
+          "path": ".cache/row-request-directory-next-20261026/after-candidates/V2019-04-Children.tsv",
+          "bytes": 174043,
+          "sha256": "a00d4aa1fd04ebec71c90a34eab1ceb9a49d04c7adf9c28231c9e69f5321f732"
+        },
+        {
+          "path": ".cache/row-request-directory-next-20261026/after-candidates/V2019-04-Parents.tsv",
+          "bytes": 170051,
+          "sha256": "aa14006a20fe8d655f2c44256be10971f4b71535ddefd6516fea103ae1aff666"
+        }
+      ],
+      "matches_accepted_original_candidate_bytes": true
+    },
+    {
+      "phase": "after",
+      "profile": "V2019",
+      "selection": "retain-one",
+      "reverse_groups": true,
+      "exit_code": 0,
+      "command_labels": [
+        ".cache/tablecraft-bin/ace16-ordinal-contender-660dae5a-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2019-05-retain-one.accdb",
+        "--group",
+        "Parents",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2019-05-Parents.tsv",
+        "--group",
+        "Children",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2019-05-Children.tsv"
+      ],
+      "output": {
+        "path": ".cache/row-request-directory-next-20261026/after-candidates/V2019-05-retain-one.accdb",
+        "bytes": 1056768,
+        "sha256": "9276bb5b7eb1bb24d11dc9dfc0eb9a8c90cbb31ab62817325ad5c5ad96ee8fc3"
+      },
+      "requests": [
+        {
+          "path": ".cache/row-request-directory-next-20261026/after-candidates/V2019-05-Parents.tsv",
+          "bytes": 170051,
+          "sha256": "aa14006a20fe8d655f2c44256be10971f4b71535ddefd6516fea103ae1aff666"
+        },
+        {
+          "path": ".cache/row-request-directory-next-20261026/after-candidates/V2019-05-Children.tsv",
+          "bytes": 174043,
+          "sha256": "a00d4aa1fd04ebec71c90a34eab1ceb9a49d04c7adf9c28231c9e69f5321f732"
+        }
+      ],
+      "matches_accepted_original_candidate_bytes": true
+    },
+    {
+      "phase": "after",
+      "profile": "V2019",
+      "selection": "delete-all",
+      "reverse_groups": false,
+      "exit_code": 0,
+      "command_labels": [
+        ".cache/tablecraft-bin/ace16-ordinal-contender-660dae5a-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2019-06-delete-all.accdb",
+        "--group",
+        "Children",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2019-06-Children.tsv",
+        "--group",
+        "Parents",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2019-06-Parents.tsv"
+      ],
+      "output": {
+        "path": ".cache/row-request-directory-next-20261026/after-candidates/V2019-06-delete-all.accdb",
+        "bytes": 1056768,
+        "sha256": "d2443ab99f248df427915f76a7607a151b7d47b08a77d4637418b39f1faa35d8"
+      },
+      "requests": [
+        {
+          "path": ".cache/row-request-directory-next-20261026/after-candidates/V2019-06-Children.tsv",
+          "bytes": 174390,
+          "sha256": "d7f571175e04dcae3f9a13d8e13cd65a67233c300e4b0bcef76246ddfb7252ac"
+        },
+        {
+          "path": ".cache/row-request-directory-next-20261026/after-candidates/V2019-06-Parents.tsv",
+          "bytes": 170390,
+          "sha256": "6967b70ef91e93b3d91c5493f35f4336bf5d728468be64fb558d8a7cf784a3e6"
+        }
+      ],
+      "matches_accepted_original_candidate_bytes": true
+    },
+    {
+      "phase": "after",
+      "profile": "V2019",
+      "selection": "delete-all",
+      "reverse_groups": true,
+      "exit_code": 0,
+      "command_labels": [
+        ".cache/tablecraft-bin/ace16-ordinal-contender-660dae5a-20261026",
+        ".cache/batch-delete-originals-next-20261026/Batch-V2019-before.accdb",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2019-07-delete-all.accdb",
+        "--group",
+        "Parents",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2019-07-Parents.tsv",
+        "--group",
+        "Children",
+        ".cache/row-request-directory-next-20261026/after-candidates/V2019-07-Children.tsv"
+      ],
+      "output": {
+        "path": ".cache/row-request-directory-next-20261026/after-candidates/V2019-07-delete-all.accdb",
+        "bytes": 1056768,
+        "sha256": "d2443ab99f248df427915f76a7607a151b7d47b08a77d4637418b39f1faa35d8"
+      },
+      "requests": [
+        {
+          "path": ".cache/row-request-directory-next-20261026/after-candidates/V2019-07-Parents.tsv",
+          "bytes": 170390,
+          "sha256": "6967b70ef91e93b3d91c5493f35f4336bf5d728468be64fb558d8a7cf784a3e6"
+        },
+        {
+          "path": ".cache/row-request-directory-next-20261026/after-candidates/V2019-07-Children.tsv",
+          "bytes": 174390,
+          "sha256": "d7f571175e04dcae3f9a13d8e13cd65a67233c300e4b0bcef76246ddfb7252ac"
+        }
+      ],
+      "matches_accepted_original_candidate_bytes": true
+    }
+  ],
+  "timings": {
+    "hyperfine_version": "2.0.0",
+    "platform": "Darwin arm64",
+    "profile": "dev unoptimized + debuginfo",
+    "measured_invocations": 384,
+    "warmup_invocations": 64,
+    "all_measured_exit_codes_zero": true,
+    "discarded_samples": 0,
+    "no_cargo_during_timing": true,
+    "results": [
+      {
+        "profile": "V2016",
+        "case": "boundary-maxima",
+        "rounds": [
+          {
+            "baseline_seconds": 0.13026932641666666,
+            "contender_seconds": 0.12909277091666668,
+            "speedup": 1.0091140308759774
+          },
+          {
+            "baseline_seconds": 0.12806180541666667,
+            "contender_seconds": 0.12691787833333334,
+            "speedup": 1.009013128003361
+          }
+        ],
+        "baseline_ms": 129.16556591666668,
+        "contender_ms": 128.005324625,
+        "speedup": 1.0090640080408038,
+        "time_cpu": {
+          "baseline": {
+            "mean": 0.12058037499999999,
+            "median": 0.1202915,
+            "min": 0.118099,
+            "max": 0.126681
+          },
+          "contender": {
+            "mean": 0.11963920833333333,
+            "median": 0.11953799999999999,
+            "min": 0.117268,
+            "max": 0.12182199999999999
+          }
+        },
+        "instructions": {
+          "baseline": {
+            "mean": 1285844061.8333333,
+            "median": 1285850503.5,
+            "min": 1284993492,
+            "max": 1286719956
+          },
+          "contender": {
+            "mean": 1285815324.9166667,
+            "median": 1285842547.0,
+            "min": 1284948032,
+            "max": 1286383654
+          }
+        }
+      },
+      {
+        "profile": "V2016",
+        "case": "two-subtrees",
+        "rounds": [
+          {
+            "baseline_seconds": 0.11383964600000002,
+            "contender_seconds": 0.11178635758333334,
+            "speedup": 1.0183679695899923
+          },
+          {
+            "baseline_seconds": 0.11163736108333333,
+            "contender_seconds": 0.11133629508333334,
+            "speedup": 1.0027041136924364
+          }
+        ],
+        "baseline_ms": 112.73850354166667,
+        "contender_ms": 111.56132633333334,
+        "speedup": 1.010551839486168,
+        "time_cpu": {
+          "baseline": {
+            "mean": 0.10378333333333332,
+            "median": 0.1035845,
+            "min": 0.102002,
+            "max": 0.10571799999999999
+          },
+          "contender": {
+            "mean": 0.102586625,
+            "median": 0.102684,
+            "min": 0.098382,
+            "max": 0.10604499999999999
+          }
+        },
+        "instructions": {
+          "baseline": {
+            "mean": 1107997396.5416667,
+            "median": 1107989332.0,
+            "min": 1107345213,
+            "max": 1109273504
+          },
+          "contender": {
+            "mean": 1088813060.125,
+            "median": 1088793143.5,
+            "min": 1087558764,
+            "max": 1090437310
+          }
+        }
+      },
+      {
+        "profile": "V2016",
+        "case": "retain-one",
+        "rounds": [
+          {
+            "baseline_seconds": 0.09737200708333334,
+            "contender_seconds": 0.09522544441666668,
+            "speedup": 1.0225419023226
+          },
+          {
+            "baseline_seconds": 0.09632791308333334,
+            "contender_seconds": 0.09405842033333334,
+            "speedup": 1.024128544174537
+          }
+        ],
+        "baseline_ms": 96.84996008333334,
+        "contender_ms": 94.641932375,
+        "speedup": 1.0233303320518063,
+        "time_cpu": {
+          "baseline": {
+            "mean": 0.08892708333333332,
+            "median": 0.08852499999999999,
+            "min": 0.087099,
+            "max": 0.092571
+          },
+          "contender": {
+            "mean": 0.086655,
+            "median": 0.08629799999999999,
+            "min": 0.085408,
+            "max": 0.089514
+          }
+        },
+        "instructions": {
+          "baseline": {
+            "mean": 1012675164.625,
+            "median": 1012641816.5,
+            "min": 1012121192,
+            "max": 1013559942
+          },
+          "contender": {
+            "mean": 983997606.3333334,
+            "median": 983893873.5,
+            "min": 983558679,
+            "max": 984932369
+          }
+        }
+      },
+      {
+        "profile": "V2016",
+        "case": "delete-all",
+        "rounds": [
+          {
+            "baseline_seconds": 0.10531850008333334,
+            "contender_seconds": 0.09444880925,
+            "speedup": 1.1150855253723946
+          },
+          {
+            "baseline_seconds": 0.10298475008333334,
+            "contender_seconds": 0.09911794791666667,
+            "speedup": 1.039012128962937
+          }
+        ],
+        "baseline_ms": 104.15162508333334,
+        "contender_ms": 96.78337858333335,
+        "speedup": 1.0761313213885761,
+        "time_cpu": {
+          "baseline": {
+            "mean": 0.09154808333333332,
+            "median": 0.0925165,
+            "min": 0.08700899999999999,
+            "max": 0.09809499999999999
+          },
+          "contender": {
+            "mean": 0.088177125,
+            "median": 0.0885145,
+            "min": 0.085274,
+            "max": 0.09142499999999999
+          }
+        },
+        "instructions": {
+          "baseline": {
+            "mean": 1012082724.1666666,
+            "median": 1011988459.0,
+            "min": 1011172018,
+            "max": 1013271416
+          },
+          "contender": {
+            "mean": 983193565.5833334,
+            "median": 982987701.5,
+            "min": 982427735,
+            "max": 985010261
+          }
+        }
+      },
+      {
+        "profile": "V2019",
+        "case": "boundary-maxima",
+        "rounds": [
+          {
+            "baseline_seconds": 0.136791632,
+            "contender_seconds": 0.13003055916666667,
+            "speedup": 1.0519960298307056
+          },
+          {
+            "baseline_seconds": 0.13072535766666668,
+            "contender_seconds": 0.13094129175000002,
+            "speedup": 0.9983509091712215
+          }
+        ],
+        "baseline_ms": 133.75849483333334,
+        "contender_ms": 130.48592545833336,
+        "speedup": 1.0250798648475308,
+        "time_cpu": {
+          "baseline": {
+            "mean": 0.12510229166666667,
+            "median": 0.12595,
+            "min": 0.12029999999999999,
+            "max": 0.131204
+          },
+          "contender": {
+            "mean": 0.12215383333333332,
+            "median": 0.12149949999999998,
+            "min": 0.120105,
+            "max": 0.126741
+          }
+        },
+        "instructions": {
+          "baseline": {
+            "mean": 1312724925.4583333,
+            "median": 1312745642.5,
+            "min": 1311892126,
+            "max": 1313454942
+          },
+          "contender": {
+            "mean": 1312479383,
+            "median": 1312446240.5,
+            "min": 1311929451,
+            "max": 1313402367
+          }
+        }
+      },
+      {
+        "profile": "V2019",
+        "case": "two-subtrees",
+        "rounds": [
+          {
+            "baseline_seconds": 0.10974490608333334,
+            "contender_seconds": 0.10807485425,
+            "speedup": 1.015452732690901
+          },
+          {
+            "baseline_seconds": 0.11214742708333333,
+            "contender_seconds": 0.10878852433333334,
+            "speedup": 1.0308755245149586
+          }
+        ],
+        "baseline_ms": 110.94616658333334,
+        "contender_ms": 108.43168929166667,
+        "speedup": 1.0231895058362788,
+        "time_cpu": {
+          "baseline": {
+            "mean": 0.10232833333333333,
+            "median": 0.1014785,
+            "min": 0.09988999999999999,
+            "max": 0.111389
+          },
+          "contender": {
+            "mean": 0.09999579166666667,
+            "median": 0.099864,
+            "min": 0.098642,
+            "max": 0.10307399999999999
+          }
+        },
+        "instructions": {
+          "baseline": {
+            "mean": 1134980029.0416667,
+            "median": 1134928053.5,
+            "min": 1134254389,
+            "max": 1135626865
+          },
+          "contender": {
+            "mean": 1115342027.1666667,
+            "median": 1115308944.5,
+            "min": 1114838429,
+            "max": 1116096164
+          }
+        }
+      },
+      {
+        "profile": "V2019",
+        "case": "retain-one",
+        "rounds": [
+          {
+            "baseline_seconds": 0.1001170385,
+            "contender_seconds": 0.10031329166666667,
+            "speedup": 0.9980435975790846
+          },
+          {
+            "baseline_seconds": 0.09932884358333334,
+            "contender_seconds": 0.09714205925000001,
+            "speedup": 1.0225112000941377
+          }
+        ],
+        "baseline_ms": 99.72294104166667,
+        "contender_ms": 98.72767545833335,
+        "speedup": 1.010080917824844,
+        "time_cpu": {
+          "baseline": {
+            "mean": 0.09158804166666666,
+            "median": 0.09153149999999999,
+            "min": 0.089989,
+            "max": 0.09399
+          },
+          "contender": {
+            "mean": 0.090222875,
+            "median": 0.089847,
+            "min": 0.088138,
+            "max": 0.094358
+          }
+        },
+        "instructions": {
+          "baseline": {
+            "mean": 1040489624.1666666,
+            "median": 1040372631.0,
+            "min": 1039980883,
+            "max": 1041521379
+          },
+          "contender": {
+            "mean": 1011890447.6666666,
+            "median": 1011760342.5,
+            "min": 1011327479,
+            "max": 1013390742
+          }
+        }
+      },
+      {
+        "profile": "V2019",
+        "case": "delete-all",
+        "rounds": [
+          {
+            "baseline_seconds": 0.09845098258333335,
+            "contender_seconds": 0.11412733333333334,
+            "speedup": 0.8626415750535952
+          },
+          {
+            "baseline_seconds": 0.10032741658333334,
+            "contender_seconds": 0.099037736,
+            "speedup": 1.013022112938177
+          }
+        ],
+        "baseline_ms": 99.38919958333334,
+        "contender_ms": 106.58253466666667,
+        "speedup": 0.9325092511091967,
+        "time_cpu": {
+          "baseline": {
+            "mean": 0.09114791666666666,
+            "median": 0.09112200000000001,
+            "min": 0.089618,
+            "max": 0.093745
+          },
+          "contender": {
+            "mean": 0.09219329166666666,
+            "median": 0.08987999999999999,
+            "min": 0.087724,
+            "max": 0.104694
+          }
+        },
+        "instructions": {
+          "baseline": {
+            "mean": 1039414834.7916666,
+            "median": 1039354620.5,
+            "min": 1038756742,
+            "max": 1040573598
+          },
+          "contender": {
+            "mean": 1011874515.125,
+            "median": 1010775541.5,
+            "min": 1010109855,
+            "max": 1020995476
+          }
+        }
+      }
+    ],
+    "interpretation": "Small mixed end-to-end differences; 0.933 to 1.076 before/after mean ratios. Retain V2019 delete-all regression/outliers. Larger selections show about 1.73 to 2.87 percent fewer median retired instructions; no release/native/disk/peak-memory conclusion."
+  },
+  "checks": [
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib table::mutation::rows::directory",
+      "session": 28336,
+      "exit_code": 0,
+      "passed_functions": 6,
+      "log": {
+        "path": ".cache/row-request-directory-next-20261026/directory-accepted-attempt.log",
+        "bytes": 1084,
+        "sha256": "64b4a11febfabf73277c1ccb9a06a9eb9397c901e096a5c26b7996d89b8749ce"
+      }
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test ace16_write_preview --test mutation --test ace16_fixed_updates --test scalar_index_updates --test integral_index_updates --test decimal_updates --test guid_updates --test composite_updates --test batch_updates --test mask_updates --test foreign_updates --test cascade_updates --test ace16_deletes --test ace16_delete_contract --test ace16_batch_deletes --test ace16_batch_delete_contract --test ace16_cascading_deletes --test ace16_cascading_delete_contract --test ace16_cascade_key_facts_contract --test ace16_encoded_delete_contract --test ace16_ignored_delete_contract",
+      "session": 23165,
+      "exit_code": 0,
+      "passed_functions": 150,
+      "target_count": 21,
+      "log": {
+        "path": ".cache/row-request-directory-next-20261026/regressions.log",
+        "bytes": 17592,
+        "sha256": "f3aee8ca6f7355ab4879fc326fd3872cc8f27a0024cb78d1fbb9e2f8a2d6d0d4"
+      }
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-ace --lib -- -D warnings",
+      "session": 62308,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/row-request-directory-next-20261026/clippy-default.log",
+        "bytes": 536,
+        "sha256": "6ea7d7558510a1ac9ce5ed8472d3253aa28d87ba94783a0ccd400d5611561170"
+      }
+    },
+    {
+      "command": "cargo check --locked --offline -j2 -p tablecraft-ace --no-default-features --features ace16-write-preview --lib",
+      "session": 93308,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/row-request-directory-next-20261026/minimal.log",
+        "bytes": 183,
+        "sha256": "af5ac4f33f109422a4ca82f69979ef81d16687d63c71837b211c02404253961d"
+      }
+    },
+    {
+      "command": "rustfmt --edition 2024 --check crates/engines/tablecraft-ace/src/table/mutation/rows.rs crates/engines/tablecraft-ace/src/table/mutation/rows/directory.rs crates/engines/tablecraft-ace/src/table/mutation/rows/directory/tests.rs",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/row-request-directory-next-20261026/format.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "preview_cfg_test_strict": {
+    "command": "cargo clippy --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib --tests -- -D warnings",
+    "session": 40824,
+    "exit_code": 0,
+    "source_fix_commit": "a273eb45bf52500f37a6f692b3326c414f6573f7",
+    "scope": "Coordinator ran final strict after separately committed private fixture reuse repair; directory files unchanged. Separate fixture tests are not added to this feature count.",
+    "log": {
+      "path": ".cache/private-test-support-strict-20261026.log",
+      "bytes": 184,
+      "sha256": "d5e65763fb66b92c1946009d8af4bbbc6d877cdbf1bacef730b1b90af793efe0"
+    }
+  },
+  "preserved_excluded_attempts": [
+    {
+      "session": 25230,
+      "exit_code": 101,
+      "reason": "Unrelated slot accessor missing_docs compilation; no directory tests ran.",
+      "log": {
+        "path": ".cache/row-request-directory-next-20261026/directory-initial.log",
+        "bytes": 1231,
+        "sha256": "64b9a0d13807f5bb8d9c236b40fed7ef83d15f8571cbaaa697682a6408b9ebb4"
+      }
+    },
+    {
+      "session": 74234,
+      "exit_code": 101,
+      "reason": "Existing duplicate private fixture module imports in profile/global_audit tests; no directory lint finding.",
+      "log": {
+        "path": ".cache/row-request-directory-next-20261026/clippy-preview.log",
+        "bytes": 1966,
+        "sha256": "cc726e6899da2a3a3ccc3bdb4877e67086cdaf1cb77322cc52428731db4494f7"
+      }
+    }
+  ],
+  "format_diagnostic": {
+    "exit_code": 1,
+    "reason": "Initial formatter check caught import order from direct rustfmt without the workspace edition; reformatted using edition 2024 before accepted tests/artifact builds.",
+    "log": {
+      "path": ".cache/row-request-directory-next-20261026/initial-format.log",
+      "bytes": 1380,
+      "sha256": "ccb691d88089dcb53f804565484298507a353de324636974be91e760eb8134fa"
+    }
+  },
+  "separate_slot_cache_diagnostics": {
+    "archived_api_reused": {
+      "path": ".cache/ace16-slot-author-after-writable-flags-20261026.log",
+      "bytes": 6140,
+      "sha256": "cd9a29752cd89625e4ec8957640a98c3c41f0f97208ccdb8307ffbfae64a2540"
+    },
+    "main_library_rebuilt_without_byte_changes": {
+      "path": ".cache/ace16-slot-author-main-library-rebuilt-20261026.log",
+      "bytes": 1111,
+      "sha256": "ec6ad007cfca254031bc92bcc025d1b0523275c0beee9997eb0337b6a39737b9"
+    },
+    "scope": "Compile cache issue only; slot test functions are not counted in directory runtime totals."
+  },
+  "raw_artifacts": [
+    {
+      "path": ".cache/row-request-directory-next-20261026/baseline-build-receipt.json",
+      "bytes": 163094,
+      "sha256": "0aea754694c5a201037f6a7eec639f2034ec671e822b74408a6b181dda7792f7"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/baseline-git-verification.json",
+      "bytes": 347,
+      "sha256": "9d2f5ab99c7720d6ab142a4246b10e4708478baf00bfbc7ae98175aa8a9f62c1"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/archive-receipt.json",
+      "bytes": 458,
+      "sha256": "33c8034f85620688ae1889886ddbb6f5a636db1da89969ae12f058cf91be6c11"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/contender-build-receipt.json",
+      "bytes": 1692,
+      "sha256": "37c8e6878b47d939f8468eec58a1b469e5a693bacbf271470b0942091f892605"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/contender-overlay.json",
+      "bytes": 806,
+      "sha256": "8fe691a97ce75925616931a41888478f2a1d5272205f2723b6f429dc83434c4c"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/before-candidates/results.json",
+      "bytes": 29731,
+      "sha256": "3416eb297d1b6d9bbfe2b0bbb51ee6e964f5eedd4fc9a03b63a36a0093a2174c"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/after-candidates/results.json",
+      "bytes": 29686,
+      "sha256": "da8011753f14375d101953b3236d549186afd9dab7d2855bf12e6050841589f2"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/hyperfine-summary.json",
+      "bytes": 10276,
+      "sha256": "b09f4e03ebee1821547c7b2e3fc42cf33171d0ba828198cf0f0ff5cc497c6184"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/hyperfine/commands.json",
+      "bytes": 31103,
+      "sha256": "d1696ef891dbdcce4ccd02a8f4840f257f4a2e4a18477b04f4b8295c98651dad"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/candidates.py",
+      "bytes": 3161,
+      "sha256": "9b3b56d80d47919106efc8c50066e0123269e9cc1dd71d29a7df4f8f65374ffe"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/benchmark.py",
+      "bytes": 2473,
+      "sha256": "1508af77f3a4fb88a7da942b48dc01e4be3c5ed6e4ce043713d229bed067ffe0"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/directory-initial.log",
+      "bytes": 1231,
+      "sha256": "64b9a0d13807f5bb8d9c236b40fed7ef83d15f8571cbaaa697682a6408b9ebb4"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/directory-accepted-attempt.log",
+      "bytes": 1084,
+      "sha256": "64b4a11febfabf73277c1ccb9a06a9eb9397c901e096a5c26b7996d89b8749ce"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/regressions.log",
+      "bytes": 17592,
+      "sha256": "f3aee8ca6f7355ab4879fc326fd3872cc8f27a0024cb78d1fbb9e2f8a2d6d0d4"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/clippy-default.log",
+      "bytes": 536,
+      "sha256": "6ea7d7558510a1ac9ce5ed8472d3253aa28d87ba94783a0ccd400d5611561170"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/clippy-preview.log",
+      "bytes": 1966,
+      "sha256": "cc726e6899da2a3a3ccc3bdb4877e67086cdaf1cb77322cc52428731db4494f7"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/minimal.log",
+      "bytes": 183,
+      "sha256": "af5ac4f33f109422a4ca82f69979ef81d16687d63c71837b211c02404253961d"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/format.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/hyperfine/V2016-boundary-maxima-round0.json",
+      "bytes": 22526,
+      "sha256": "4f29b5b62044c1a4331adb22ef312682b5b02855a61ee84aa6a7bbacce6090af"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/hyperfine/V2016-boundary-maxima-round1.json",
+      "bytes": 22370,
+      "sha256": "b16e10fca0437a717a4128d1b73c687e509eb715eb2b3ce66f3346d6befa3644"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/hyperfine/V2016-delete-all-round0.json",
+      "bytes": 22388,
+      "sha256": "b3e09273e6423ecd50f93d1dac925e0ef314bd04c51971f1d058f03af73ea9e8"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/hyperfine/V2016-delete-all-round1.json",
+      "bytes": 22480,
+      "sha256": "c17b20e7d0fc1a198dab527c4f710039b8b9d0b3d766bfe998c1ca7749572d11"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/hyperfine/V2016-retain-one-round0.json",
+      "bytes": 22369,
+      "sha256": "aad3acd02106d65f16ea76b8a8b37eef445de999ea07d4c1839003bd79bcdf1f"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/hyperfine/V2016-retain-one-round1.json",
+      "bytes": 22332,
+      "sha256": "70fd58e69e542bc6e06806fa7afc77cf23ce33f5a868f541a5987b2c9a67dc7b"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/hyperfine/V2016-two-subtrees-round0.json",
+      "bytes": 22611,
+      "sha256": "4d3a7e8f35d6363d6165c478912d296d15cf6a0bf315f684190571e906754dd2"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/hyperfine/V2016-two-subtrees-round1.json",
+      "bytes": 22524,
+      "sha256": "b7a0f41f8f2cd81f5fbb9e0030b0a0190c4d32998511279942d657c97757239c"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/hyperfine/V2019-boundary-maxima-round0.json",
+      "bytes": 22478,
+      "sha256": "5c63d610cf2d8023f277d56d6cceb81ee2be01bbba984132b3a5cece9b05172b"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/hyperfine/V2019-boundary-maxima-round1.json",
+      "bytes": 22614,
+      "sha256": "d7760b621a80b4fbe801f4cf975884d96da31f31762f684d7b192fb7b15fc4de"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/hyperfine/V2019-delete-all-round0.json",
+      "bytes": 22433,
+      "sha256": "775c0e3cf00860d99d318334943632ba97616fd934cab7ddebfe74219ff2c289"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/hyperfine/V2019-delete-all-round1.json",
+      "bytes": 22470,
+      "sha256": "1bcce04b484520fa6f4f2214d507b4b93c5122fc39a9a99c8395936f215c680f"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/hyperfine/V2019-retain-one-round0.json",
+      "bytes": 22446,
+      "sha256": "f27360ca8649b1f30ae3fa612aa63cc30e80e31012d00566042bb10fe402fea8"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/hyperfine/V2019-retain-one-round1.json",
+      "bytes": 22384,
+      "sha256": "16ada307122102029df244dc80870f5dacda3bda8c07fabaabf5ad1cff8ac538"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/hyperfine/V2019-two-subtrees-round0.json",
+      "bytes": 22475,
+      "sha256": "edcba3b890186ff9b8c1170a6938c3c60b7697e3bf29f790a484a6dff872eba6"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/hyperfine/V2019-two-subtrees-round1.json",
+      "bytes": 22308,
+      "sha256": "92bda2e991c37808fa50b80a42fdeb3bfc6316e16a4e5e44442f4f306144df03"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/hyperfine/V2016-boundary-maxima-round0.log",
+      "bytes": 833,
+      "sha256": "df8867730511461def471994196fd5f5d2e21ed9ca605a119ddf4fd5d5a3e84c"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/hyperfine/V2016-boundary-maxima-round1.log",
+      "bytes": 833,
+      "sha256": "bab851031b6b8016a721200a1557669f6abdacadc2d77d1bb8aa20e95f88f975"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/hyperfine/V2016-delete-all-round0.log",
+      "bytes": 833,
+      "sha256": "576c9e6a84a7ab9539f8b59699eb8ee5068ad83bad0363994b5f67e193d2b4e9"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/hyperfine/V2016-delete-all-round1.log",
+      "bytes": 833,
+      "sha256": "1d1e9f1801cc21ed1d6202c50ba1620bdfbeba646ea5b4c82ea5c8fa5476369d"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/hyperfine/V2016-retain-one-round0.log",
+      "bytes": 833,
+      "sha256": "3bad84d53564ae878698d76cedee1aef62c1e5cbf1358ad98f4c8db205a9e514"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/hyperfine/V2016-retain-one-round1.log",
+      "bytes": 833,
+      "sha256": "45c18b9054987521f5468398e5597e17e9beaaf16cd1f63c9ecb06935bbbf080"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/hyperfine/V2016-two-subtrees-round0.log",
+      "bytes": 833,
+      "sha256": "fc7dddae503f66d3f1fd78f209ac0cc6e81c383311686ccf6f892401786922da"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/hyperfine/V2016-two-subtrees-round1.log",
+      "bytes": 833,
+      "sha256": "e8a36af7e0344ad59b8e83ac6f3d227c9f4e513d7738af85940efacce2b11186"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/hyperfine/V2019-boundary-maxima-round0.log",
+      "bytes": 833,
+      "sha256": "8c3f682ee17358732bb1dc1a45284ffccc32944e39006ae8a859de141b199e5d"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/hyperfine/V2019-boundary-maxima-round1.log",
+      "bytes": 833,
+      "sha256": "19fb4cc313103ff51f4c60bf73c7996339350524809b4f761c21eb6e533d3cbe"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/hyperfine/V2019-delete-all-round0.log",
+      "bytes": 848,
+      "sha256": "789c539a8e0182fbbfc4c882b8ffc1023fdb9f573b890b5a812939437878a0f9"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/hyperfine/V2019-delete-all-round1.log",
+      "bytes": 833,
+      "sha256": "d4c7194862bb730493b6ad5cafa0595b7709fb6a5c953efe49d207177fd42e76"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/hyperfine/V2019-retain-one-round0.log",
+      "bytes": 833,
+      "sha256": "27e85d714815c77733d19f4063bcd4752fbd1b153f259317695e2e9b412d4a9c"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/hyperfine/V2019-retain-one-round1.log",
+      "bytes": 833,
+      "sha256": "c5855ddbad4630f4822f352deab8e452abafc566b6305a3b7c6820adc50ee5d6"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/hyperfine/V2019-two-subtrees-round0.log",
+      "bytes": 833,
+      "sha256": "e5ecd4f279f90521302c9e777ab7bc8121e167aa5b0cc724b65bb750481349f9"
+    },
+    {
+      "path": ".cache/row-request-directory-next-20261026/hyperfine/V2019-two-subtrees-round1.log",
+      "bytes": 833,
+      "sha256": "ce6ee72084174090024ce7d2b63a28772fc0197be6d6a96ab792b4e8cb54e381"
+    }
+  ],
+  "boundaries": [
+    "Empty/single requests keep direct paths; every physical stream still completes and checks its declared population.",
+    "First original duplicate request and physical callback order preserved; final matched count refuses duplicate or absent requests.",
+    "Multiple-request allocations and setup alter exhausted-resource/cancellation/error timing; no identical-budget-boundary claim.",
+    "Main selected regression/lint commands include unrelated slot WIP; isolated artifact comparison excludes it.",
+    "Public command labels normalize the repository prefix only; ignored raw actual argv/reports stay unchanged.",
+    "No original database, accepted request, accepted candidate or third-party source was regenerated or edited."
+  ]
+}
