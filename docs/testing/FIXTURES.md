@@ -9755,3 +9755,21 @@ pre-execution expectation and adds six pages. All source/input pins remain
 unchanged. A later saved verifier reruns byte/getter analysis without launching
 fixture processes. This does not qualify broader codecs, map growth, native
 Access behavior or ordinary saves.
+
+### Usage-map growth source and reference evidence
+
+The [usage-map experiment](USAGE_MAP_GROWTH_OBSERVATIONS.md) constructs two
+independent ACE 16-family originals with 900 indexed Int32 rows and 700 padding
+rows. Empty/filled/padded checkpoints separate ordinary first-bitmap creation
+from selected inline index-owned map promotion. The latter retains its 69-byte
+record and allocates right child, bitmap metadata and left child at consecutive
+EOF IDs. Full typed rows, key/ROW streams, map roles and protected bytes are checked.
+
+The immutable execution history has eighteen commands: thirteen successful
+source commands; a V2016 action that failed after mutation; its one successful
+read-only classification; and three successful corrected V2019 phase commands.
+The original failure, partial output, exact helper correction and all sources
+remain separately pinned. V2016 was not retried or regenerated. A later saved
+verifier performs no fixture calls. This is independent reference evidence,
+not engine map growth, an atomicity guarantee for the failed helper, or native
+Access qualification.

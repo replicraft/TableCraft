@@ -1,0 +1,241 @@
+{
+  "scope": "Independent public-builder usage-map storage growth observations only; no engine map-growth implementation/native Access qualification",
+  "phases": {
+    "total_fixture_commands": 18,
+    "successful_source_commands": 13,
+    "failed_but_mutating_V2016_reference": 1,
+    "successful_readonly_partial_classification": 1,
+    "successful_corrected_V2019_commands": 3,
+    "native_candidate_commands_in_this_reference_history": 0,
+    "V2016_action_reruns": 0,
+    "source_regenerations": 0
+  },
+  "original_plan": "The 17-command plan stopped after command 14. A separate read-only classification and three-command V2019 phase are retained independently; the original plan did not complete successfully.",
+  "geometry": {
+    "profiles": [
+      "V2016",
+      "V2019"
+    ],
+    "target_rows_per_profile": 900,
+    "padding_rows_per_profile": 700,
+    "padding_fields": 7,
+    "padding_units": 255,
+    "selected_expected": 0,
+    "selected_replacement": 2147483647,
+    "old_packed_bytes": 3605,
+    "prospective_packed_bytes": 7201,
+    "halves_packed_bytes": [
+      1805,
+      3601
+    ]
+  },
+  "limits": {
+    "file_bytes": 8388608,
+    "heap_mib": 512,
+    "compiler_heap_mib": 512,
+    "timeout_seconds": 30
+  },
+  "observed": {
+    "scope": "Saved artifact/raw proof verification only; no fixture commands repeated",
+    "fixture_commands_repeated": 0,
+    "unique_live_pins": 88,
+    "actual_fixture_commands": 18,
+    "source_successes": 13,
+    "failed_mutating_V2016_action": 1,
+    "successful_readonly_partial_classification": 1,
+    "corrected_V2019_commands": 3,
+    "source_snapshots": 6,
+    "source_raw_row_comparisons": 5000,
+    "post_update_raw_row_comparisons": 3200,
+    "ordinary_pointer_creations": {
+      "V2016": {
+        "bitmap": 96,
+        "data_pages": [
+          95,
+          97,
+          98,
+          101
+        ]
+      },
+      "V2019": {
+        "bitmap": 114,
+        "data_pages": [
+          113,
+          115,
+          116,
+          119
+        ]
+      }
+    },
+    "V2016_validated_partial_mutation": {
+      "existing_prefix_exact_outside_fixed_value_root_map_and_global_cells": true,
+      "source_eof": 804,
+      "appended_index_pages": [
+        804,
+        806
+      ],
+      "appended_bitmap_page": 805,
+      "owned_added": [
+        804,
+        806
+      ],
+      "global_allocated": [
+        804,
+        805,
+        806
+      ],
+      "old_root_retained": 92
+    },
+    "V2019_successful_reference": {
+      "existing_prefix_exact_outside_fixed_value_root_map_and_global_cells": true,
+      "source_eof": 822,
+      "appended_index_pages": [
+        822,
+        824
+      ],
+      "appended_bitmap_page": 823,
+      "owned_added": [
+        822,
+        824
+      ],
+      "global_allocated": [
+        822,
+        823,
+        824
+      ],
+      "old_root_retained": 109
+    }
+  },
+  "source_identity": {
+    "initial_producer_getter": "exact original UsageMapGrowthProbe fe7cbee6 preserved; source/first failed update/read-only classification",
+    "corrected_helper": "public V2 byte-identical to executed corrected helper; only class rename and mutable HashMap argument",
+    "public_model": "exact frozen proof function bodies, no private runtime imports; composition/import location changed",
+    "first_failure": "immutable Map.of in/out API error after storage mutation; retained exit1 and partial file, never claimed atomic/no-write or action success"
+  },
+  "limitations": [
+    "No engine map-growth admission/normal saves",
+    "No native Microsoft Access qualification",
+    "No second bitmap span, selected global bootstrap, in-file reuse or reclamation",
+    "Existing kind1 first-pointer source creation is separate from inline index-owned promotion",
+    "Canonical role/ref/range/bitmap exclusivity must be proven by any future writer",
+    "Frozen-consumer baseline calls are separate and not folded into18 reference commands"
+  ],
+  "pins": [
+    {
+      "path": "docs/testing/USAGE_MAP_GROWTH_OBSERVATIONS.md",
+      "bytes": 7909,
+      "sha256": "62db4ac7abc253293a44187fe6e7b13de46f59b6d6a416726f5ad3b48e63ffd2"
+    },
+    {
+      "path": "docs/testing/usage_map_growth/UsageMapGrowthProbeV2.java",
+      "bytes": 17614,
+      "sha256": "74ee41dd5dc0163c6c5bfb9d5ffc8930e57693478362cae9342a383010f77fca"
+    },
+    {
+      "path": "docs/testing/usage_map_growth/model.py",
+      "bytes": 13057,
+      "sha256": "d5f43e9a07f53a3f05389e39e2dbe8f62b092e19913a3e9af1aabc8030226ef4"
+    },
+    {
+      "path": "docs/testing/usage_map_growth/verify.py",
+      "bytes": 6272,
+      "sha256": "c4592cf7070a3fda986b1ba827e971d7e92f5e2af96ad54c412471c5bde869f2"
+    },
+    {
+      "path": ".cache/ace16-usage-map-growth-next-20261027/freeze.json",
+      "bytes": 7976,
+      "sha256": "bfba00216be111667aa195107671cc3cc6a2cea8269e403b5086a9fb9fb14b18"
+    },
+    {
+      "path": ".cache/ace16-usage-map-growth-next-20261027/UsageMapGrowthProbe.java",
+      "bytes": 17473,
+      "sha256": "fe7cbee6698d53e305bf1547deacee7f06ee1ebdce63e06278ddf7017414a64a"
+    },
+    {
+      "path": ".cache/ace16-usage-map-growth-next-20261027/capture.py",
+      "bytes": 19693,
+      "sha256": "56d16d9bb754a54b8300ac1ab71abff0e25bf2e4a9582006cb4e135deb12ab50"
+    },
+    {
+      "path": ".cache/ace16-usage-map-growth-next-20261027/recipe.json",
+      "bytes": 3007,
+      "sha256": "f6c5266b076dbd1c76a4c104e4d9394b89b4fa1d4b24eb223bdc7760ed9e097d"
+    },
+    {
+      "path": ".cache/ace16-usage-map-growth-next-20261027/DESIGN.md",
+      "bytes": 11031,
+      "sha256": "05ca20fc21defbb95f10e0649a1bf0a0b4162fab5925a0adc5ebf53b5348b310"
+    },
+    {
+      "path": ".cache/ace16-usage-map-growth-next-20261027/classify_partial.py",
+      "bytes": 4153,
+      "sha256": "600a037f15011aa4c2b7360fe1cf981471c7fc0a15522e24fa49e83651fd37e7"
+    },
+    {
+      "path": ".cache/ace16-usage-map-growth-first-20261027/report.json",
+      "bytes": 20107352,
+      "sha256": "86b4515be7ad4f55167130771d5e02c842caddd3375b6b733728a0eed014d97c"
+    },
+    {
+      "path": ".cache/ace16-usage-map-growth-first-20261027/postcheck.json",
+      "bytes": 2292,
+      "sha256": "cb48c886c7516055cab6ab6b4feb42bccc58eaf3868c0be55eee59a196a0664c"
+    },
+    {
+      "path": ".cache/ace16-usage-map-growth-partial-classification-20261027/report.json",
+      "bytes": 4277,
+      "sha256": "d29213f3ac22568f411df840d37c5597e87bd472d7cd0e4d426bb68c0155076a"
+    },
+    {
+      "path": ".cache/ace16-usage-map-growth-v2019-next-20261027/freeze.json",
+      "bytes": 17020,
+      "sha256": "0be91d1a37a27168bd4d69963ea5c84a6df494929e698b5e554bb232f18ac162"
+    },
+    {
+      "path": ".cache/ace16-usage-map-growth-v2019-next-20261027/UsageMapGrowthProbeV2.java",
+      "bytes": 17614,
+      "sha256": "74ee41dd5dc0163c6c5bfb9d5ffc8930e57693478362cae9342a383010f77fca"
+    },
+    {
+      "path": ".cache/ace16-usage-map-growth-v2019-next-20261027/helper.diff",
+      "bytes": 1276,
+      "sha256": "e1198c36af5ca8af473c299b7a03e10a581e917fc3eb63bdfb7047f36f85c836"
+    },
+    {
+      "path": ".cache/ace16-usage-map-growth-v2019-next-20261027/capture.py",
+      "bytes": 5576,
+      "sha256": "143d5201ab569b42d0a293f7c2247b44402494b4ee37c82ae488f2946d53e2ec"
+    },
+    {
+      "path": ".cache/ace16-usage-map-growth-v2019-next-20261027/plan.json",
+      "bytes": 2069,
+      "sha256": "e37a466a79e4a0fbf9d85a1650e993886e7da57f61139e9f8a8658af1b07fdd3"
+    },
+    {
+      "path": ".cache/ace16-usage-map-growth-v2019-first-20261027/report.json",
+      "bytes": 6733,
+      "sha256": "d88dcde98018c97446898501d1f344242bc300a90647b41fb3fa1a1d54f093bd"
+    },
+    {
+      "path": ".cache/ace16-usage-map-growth-v2019-first-20261027/public-verify-initial.json",
+      "bytes": 1477,
+      "sha256": "265286b9dd1f8ab9011e338818bab0cb3985c7b8914ba198abbafd23add44792"
+    },
+    {
+      "path": "docs/testing/parent_index_split_originals/BoundedFileChannel.java",
+      "bytes": 3952,
+      "sha256": "2191d11f88f3158e83929591acee803553c703e06127839caa7143340f8afd7e"
+    },
+    {
+      "path": ".cache/ace16-usage-map-growth-v2019-first-20261027/public-verifier-initial-exact.py",
+      "bytes": 6133,
+      "sha256": "aa5bd19900c4a8ba42dfd935449a58a1e7bda94479a68c6a337fece3275d1132"
+    },
+    {
+      "path": ".cache/ace16-usage-map-growth-v2019-first-20261027/public-verify-final.json",
+      "bytes": 1477,
+      "sha256": "265286b9dd1f8ab9011e338818bab0cb3985c7b8914ba198abbafd23add44792"
+    }
+  ],
+  "saved_verifier_history": "The final saved-only run adds an explicit 700-distinct-padding-pages assertion per profile. Initial source is reconstructed from this exact two-line difference and matches its previously pinned hash; the archived bytes retain the initial/root verification identity. No fixture commands were repeated."
+}

@@ -135,6 +135,13 @@ sparse inputs, alongside two atomic refusals from the existing kernel. Its
 active tree/map geometry guides recursive implementation; public scratch bytes
 are not byte goldens or native Access qualification.
 
+Separate [usage-map growth observations](../../testing/USAGE_MAP_GROWTH_OBSERVATIONS.md)
+now establish same-extent inline index-owned promotion and first bitmap allocation
+on two immutable originals. The bitmap is metadata, not an index-owned child;
+all three appended pages are globally allocated. One failed-but-mutating reference
+action remains distinguished from its later read-only classification and the
+other profile's successful action. Engine map-growth admission remains separate.
+
 Contraction now qualifies complete internal-node sibling chains by height and
 repairs retained neighbors. Entirely unlinked levels retain their existing
 profile; partial or malformed chains refuse. The
