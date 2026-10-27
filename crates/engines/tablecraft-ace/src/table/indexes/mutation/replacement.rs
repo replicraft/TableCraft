@@ -1,4 +1,5 @@
 //! Genuine owned-key replacements for variable-slot UPDATE previews.
+pub(super) mod keys;
 mod qualification;
 use super::super::{
     IndexCheck, NativeIndex, binary, encoded_tuple,
@@ -6,7 +7,7 @@ use super::super::{
     profile::Coverage,
     text,
 };
-use super::{IndexDataPatch, retained::Preserved, tree::Tree};
+use super::IndexDataPatch;
 use crate::{
     EditError, InspectError, NativeImage, TableSchema, WriteBlocker,
     format::{
@@ -16,7 +17,6 @@ use crate::{
     header::check,
 };
 pub(in crate::table) use qualification::qualify;
-use std::cmp::Ordering;
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -28,6 +28,11 @@ pub(in crate::table) struct SlotKeyUpdate<'a> {
     pub before: &'a [Value],
     pub column: usize,
     pub value: &'a Value,
+}
+
+pub(in crate::table) struct SlotKeyChanges<'a> {
+    pub column: usize,
+    pub updates: &'a [SlotKeyUpdate<'a>],
 }
 
 impl KeyRow for SlotKeyUpdate<'_> {
@@ -55,7 +60,7 @@ impl KeyRow for Original<'_> {
     }
 }
 
-trait ReplacementProfile: KeyProfile {
+pub(super) trait ReplacementProfile: KeyProfile {
     fn encoded_row(
         &self,
         row: &(impl KeyRow + ?Sized),
@@ -200,46 +205,15 @@ fn edit<P: ReplacementProfile, const N: usize>(
     updates: &[SlotKeyUpdate<'_>],
     patches: &mut Vec<IndexDataPatch>,
 ) -> Result<(), EditError> {
-    let profile = Preserved(original);
-    let mut entries = Vec::new();
-    let tree = Tree::read::<_, N>(
-        image,
-        reader,
-        owner,
-        index.root_page(),
-        &profile,
-        0,
-        &mut entries,
-    )?;
-    let mut matched = 0;
-    for entry in &mut entries {
-        reader.tick()?;
-        reader.work(updates.len())?;
-        if let Some(update) = updates.iter().find(|update| update.reference == entry.row) {
-            reader.work(2 * profile.components() * update.columns.len())?;
-            let mut work = KeyWork {
-                budget: reader.budget,
-                cancelled: reader.cancelled,
-            };
-            let before = profile.row_key(&Original(update), &mut work)?;
-            if profile.compare(&entry.key, &before) != Ordering::Equal {
-                return Err(EditError::Conflict);
-            }
-            let wire = profile.0.encoded_row(update, &mut work)?;
-            entry.key = profile.decode(&wire, &mut work)?.0;
-            matched += 1;
-        }
-    }
-    if matched != updates.len() {
-        return Err(EditError::Preservation);
-    }
+    let keys::Prepared {
+        tree,
+        entries,
+        profile,
+    } = keys::prepare::<P, N>(image, reader, owner, index, original, updates)?;
     if updates.is_empty() {
         return Ok(());
     }
 
-    let levels = entries.len().checked_ilog2().unwrap_or(0) as usize + 1;
-    reader.work(entries.len() * levels * profile.max_key_bytes())?;
-    entries.sort_unstable_by(|left, right| left.compare_with(right, &profile));
     let mut remaining = entries.as_slice();
     tree.replace::<_, N>(
         image,

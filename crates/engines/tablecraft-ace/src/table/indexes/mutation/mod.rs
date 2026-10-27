@@ -13,7 +13,8 @@ mod split;
 pub(in crate::table) use plan::splitting_patches;
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) use split::{
-    Plan as SplitIndexPlan, supported_scalar as split_scalar_supported,
+    Plan as SplitIndexPlan, qualify_slot as qualify_split_slot_indexes,
+    slot_patches as split_slot_patches, supported_scalar as split_scalar_supported,
 };
 mod profile;
 mod repack;
@@ -21,7 +22,7 @@ mod repack;
 mod replacement;
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) use replacement::{
-    SlotKeyUpdate, patches as slot_patches, qualify as qualify_slot_indexes,
+    SlotKeyChanges, SlotKeyUpdate, patches as slot_patches, qualify as qualify_slot_indexes,
 };
 #[cfg(feature = "ace16-write-preview")]
 mod retained;
