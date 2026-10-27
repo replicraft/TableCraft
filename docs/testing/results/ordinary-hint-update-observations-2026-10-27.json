@@ -1,0 +1,2280 @@
+{
+  "date": "2026-10-27",
+  "status": "public_Jackcess_reference_observations_only",
+  "scope": "Twelve maximum-width General Short Text/Binary fresh-copy UPDATEs on four unchanged enlarged ACE16 sources, followed by complete inert getter/raw proofs; no native candidate, Microsoft Access or normal-save qualification.",
+  "counts": {
+    "javac_commands": 1,
+    "public_update_commands": 12,
+    "readonly_getter_commands": 12,
+    "total_fixture_commands": 25,
+    "first_attempt": true,
+    "failed_fixture_commands": 0,
+    "fixture_retries": 0,
+    "native_preview_calls": 0,
+    "Cargo_calls": 0,
+    "source_regeneration_calls": 0,
+    "new_DATA_pages": 12,
+    "new_index_leaves": 72,
+    "new_index_bitmap_pages": 12,
+    "new_ordinary_hint_bitmap_pages": 4,
+    "total_new_pages": 100,
+    "source_databases": 4,
+    "fresh_output_copies": 12
+  },
+  "history": {
+    "updates_session": 2537,
+    "updates_exit_code": 0,
+    "getters_session": 18893,
+    "getters_exit_code": 0,
+    "frozen_controller_scope": "Phase A: one javac and twelve updates, then separately authorized Phase B: twelve read-only getters. Actual Phase A report, classes and output identities were bound before Phase B.",
+    "executed_sources_or_expected_values_corrected": false,
+    "source_phase_separate": "The antecedent source phase retains its first three successful commands, Python JSON-key comparison failure, saved-only correction and six distinct continuation commands; none is counted as this 25-command reference phase.",
+    "native_baseline_and_acceptance": "Existing native controls and future strong combined candidate acceptance remain separate.",
+    "saved_verifier": "New maintained saved-only verifier passed first invocation; no fixture processes."
+  },
+  "limits": {
+    "child_seconds": 30,
+    "JVM_and_javac_heap_MiB": 512,
+    "database_bytes": 8388608,
+    "stream_bytes_each": 16777216,
+    "rows_per_database_ceiling": 4096
+  },
+  "source_observations": {
+    "path": "docs/testing/results/ordinary-hint-growth-source-observations-2026-10-27.json",
+    "bytes": 26088,
+    "sha256": "68d6f709b54e631e71f0e8b5f104fde1d0a42d1d227d361ed2c620e8db3fd881"
+  },
+  "executed": {
+    "freeze": {
+      "path": ".cache/ace16-ordinary-hint-reference-next-20261027/freeze.json",
+      "bytes": 25880,
+      "sha256": "be7063ee7d2ea0a2aaa1448a77f6aa0a483d8c5feb8d716b0843fe5c63a67c94"
+    },
+    "updates_raw_report": {
+      "path": ".cache/ace16-ordinary-hint-reference-first-20261027/updates/report.json",
+      "bytes": 111249,
+      "sha256": "9feb967e798c7595e00846e9fee691ffdd2abf0da8f7853ee25b93cd5bc1b4ab"
+    },
+    "getters_raw_report": {
+      "path": ".cache/ace16-ordinary-hint-reference-first-20261027/inspect/report.json",
+      "bytes": 109673,
+      "sha256": "b1a5a1e021d0677bfdaa7b7f6b1a44217fda0f4064c1dec90587b253fd7234e9"
+    },
+    "classes": [
+      {
+        "path": ".cache/ace16-ordinary-hint-reference-first-20261027/classes/BoundedFileChannel.class",
+        "bytes": 3080,
+        "sha256": "608c31190c2bcbc9582fd0332813b8697820604b208b9d17c7b1548791c3916b"
+      },
+      {
+        "path": ".cache/ace16-ordinary-hint-reference-first-20261027/classes/OrdinaryHintReferenceProbe.class",
+        "bytes": 19831,
+        "sha256": "05c0c978ff936eaa83895a82e6bc251ff3cf0467c56529fd973b64e200166435"
+      }
+    ],
+    "phase_a_postcheck_identities": 131,
+    "phase_b_postcheck_identities": 168,
+    "all_postcheck_identities_unchanged": true,
+    "source_and_tool_pins_in_freeze": 115
+  },
+  "observed_policy": {
+    "384_padding": "All cases add seven pages: one DATA and six INDEX leaves. Hints rebase; index-owned additions remain represented.",
+    "700_padding_Legacy": "Adds nine pages: one DATA, six INDEX leaves and two index-owned bitmap pages. The emptied ordinary hint rebases.",
+    "700_padding_Modern_and_Binary": "Adds ten pages: one DATA, one ordinary-hint bitmap, six INDEX leaves and two index-owned bitmaps. The lower hint is retained.",
+    "inline_rules": "Already represented additions retain their current base. Outside the current window, align the minimum down to eight and shift only if the inclusive span is less than 512; otherwise promote to indirect.",
+    "not_observed": "No index-owned inline rebase, second bitmap window, global-map growth, INSERT or arbitrary old free-page reuse.",
+    "bitmap_membership": "All 16 new bitmap pages are globally allocated but belong to no ordinary or physical-index owned map.",
+    "counter_contract": "All 120 physical 12-byte counter blocks, known historical count fields and all table row counts remain exactly unchanged. Unexpected deltas would fail proof rather than extend permission.",
+    "membership_scope": "28 inventoried user/global roles per case; no complete foreign/historical semantic census or global database-health certification.",
+    "index_image_boundary": "Public KEY-prefix choices/scratch and actual allocation order are observations, not native candidate full-key/ROW/residue goldens."
+  },
+  "verification": {
+    "verified": true,
+    "fixture_processes": 0,
+    "actual_fixture_commands": 25,
+    "public_updates": 12,
+    "readonly_getters": 12,
+    "javac_commands": 1,
+    "saved_pin_occurrences": 1418,
+    "unique_saved_pins": 449,
+    "typed_after_rows_rechecked": 38916,
+    "padding_rows_preserved": 6504,
+    "map_role_instances": 336,
+    "logical_index_entries_including_aliases": 129612,
+    "original_prefix_bytes_rechecked": 34603008,
+    "new_DATA_pages": 12,
+    "new_index_leaves": 72,
+    "new_map_bitmap_pages": 16,
+    "unchanged_physical_counter_blocks": 120,
+    "maintained_derivatives": "ROOT/import composition only; helper/map proof byte-identical"
+  },
+  "maintained_tool_boundary": {
+    "helper_and_map_proof": "byte-identical to exact executed private sources",
+    "action_model": "Only repository ROOT composition: parents[2] to parents[3].",
+    "reference_proof": "Only repository ROOT composition: parents[2] to parents[3], and an explicit package import for map_proof.",
+    "saved_verifier": "New maintained code rehashing all saved artifacts and replaying all twelve complete proofs; it is neither historical execution nor a fixture/controller rerun."
+  },
+  "observations": [
+    {
+      "id": "V2016-padding384-TextLegacy",
+      "profile": "V2016",
+      "padding_rows": 384,
+      "selected_table": "TextLegacy",
+      "selected_ID": 1,
+      "source": {
+        "path": ".cache/ace16-ordinary-hint-growth-sources-first-20261027/V2016-padding384.accdb",
+        "bytes": 2199552,
+        "sha256": "f827703094960ea70f6c03c03c1fcd936b049b50b8488ca04f5cb49a7fe5baac"
+      },
+      "output": {
+        "path": ".cache/ace16-ordinary-hint-reference-first-20261027/V2016-padding384-TextLegacy.accdb",
+        "bytes": 2228224,
+        "sha256": "cd9b8b9e7edd0deeaf4976c4498d50dcc02b9b86b9e02241ae3bae2f6047eddf"
+      },
+      "saved_facts": {
+        "path": ".cache/ace16-ordinary-hint-reference-first-20261027/inspect/V2016-padding384-TextLegacy-facts.json",
+        "bytes": 11498608,
+        "sha256": "fab6dd680ddbfb00d57203ea6120f9cedb5221451eb2f1665603748f1638e4e4"
+      },
+      "source_pages": 537,
+      "after_pages": 544,
+      "added_pages": 7,
+      "data_page": 537,
+      "hidden_record_bytes": 547,
+      "hint_members_before": [
+        106
+      ],
+      "hint_members_after": [
+        537
+      ],
+      "hint_transition": {
+        "events": [
+          {
+            "member": 537,
+            "transition": "inline-rebase",
+            "base_after": 536
+          }
+        ],
+        "kind_before": 0,
+        "kind_after": 0,
+        "base_before": 0,
+        "base_after": 536,
+        "fresh_bitmap_pages": [],
+        "old_bitmap_changed_bytes": 0
+      },
+      "physical_trees": [
+        {
+          "label": "Ascending",
+          "physical": 1,
+          "root": 92,
+          "height": 1,
+          "leaves": [
+            {
+              "page": 539,
+              "entries": 450,
+              "prefix": 6,
+              "free": 1810
+            },
+            {
+              "page": 540,
+              "entries": 225,
+              "prefix": 0,
+              "free": 1366
+            },
+            {
+              "page": 538,
+              "entries": 225,
+              "prefix": 0,
+              "free": 1114
+            }
+          ]
+        },
+        {
+          "label": "Descending",
+          "physical": 2,
+          "root": 93,
+          "height": 1,
+          "leaves": [
+            {
+              "page": 543,
+              "entries": 225,
+              "prefix": 0,
+              "free": 889
+            },
+            {
+              "page": 542,
+              "entries": 225,
+              "prefix": 0,
+              "free": 1141
+            },
+            {
+              "page": 541,
+              "entries": 450,
+              "prefix": 7,
+              "free": 1809
+            }
+          ]
+        }
+      ],
+      "suffix_in_actual_order": [
+        {
+          "page": 537,
+          "kind": "DATA",
+          "definition": 89,
+          "hidden_slot": 0
+        },
+        {
+          "page": 538,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 539,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 540,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 541,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        },
+        {
+          "page": 542,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        },
+        {
+          "page": 543,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        }
+      ],
+      "all_padding_values_and_raw_records_preserved": true,
+      "physical_counter_blocks_unchanged": true
+    },
+    {
+      "id": "V2016-padding384-TextModern",
+      "profile": "V2016",
+      "padding_rows": 384,
+      "selected_table": "TextModern",
+      "selected_ID": 1,
+      "source": {
+        "path": ".cache/ace16-ordinary-hint-growth-sources-first-20261027/V2016-padding384.accdb",
+        "bytes": 2199552,
+        "sha256": "f827703094960ea70f6c03c03c1fcd936b049b50b8488ca04f5cb49a7fe5baac"
+      },
+      "output": {
+        "path": ".cache/ace16-ordinary-hint-reference-first-20261027/V2016-padding384-TextModern.accdb",
+        "bytes": 2228224,
+        "sha256": "0d2d2403d0945c31ec4a70c7f3e14f8b838a65798ad20475073b5c39f33399a7"
+      },
+      "saved_facts": {
+        "path": ".cache/ace16-ordinary-hint-reference-first-20261027/inspect/V2016-padding384-TextModern-facts.json",
+        "bytes": 11498624,
+        "sha256": "7daaee2e01b409a963ce9081a471ff675393dabeebdcc77b7bc42140942b27a7"
+      },
+      "source_pages": 537,
+      "after_pages": 544,
+      "added_pages": 7,
+      "data_page": 537,
+      "hidden_record_bytes": 547,
+      "hint_members_before": [
+        112,
+        124
+      ],
+      "hint_members_after": [
+        112,
+        537
+      ],
+      "hint_transition": {
+        "events": [
+          {
+            "member": 537,
+            "transition": "inline-rebase",
+            "base_after": 112
+          }
+        ],
+        "kind_before": 0,
+        "kind_after": 0,
+        "base_before": 0,
+        "base_after": 112,
+        "fresh_bitmap_pages": [],
+        "old_bitmap_changed_bytes": 0
+      },
+      "physical_trees": [
+        {
+          "label": "Ascending",
+          "physical": 1,
+          "root": 110,
+          "height": 1,
+          "leaves": [
+            {
+              "page": 539,
+              "entries": 450,
+              "prefix": 9,
+              "free": 1807
+            },
+            {
+              "page": 540,
+              "entries": 225,
+              "prefix": 0,
+              "free": 691
+            },
+            {
+              "page": 538,
+              "entries": 225,
+              "prefix": 0,
+              "free": 190
+            }
+          ]
+        },
+        {
+          "label": "Descending",
+          "physical": 2,
+          "root": 111,
+          "height": 1,
+          "leaves": [
+            {
+              "page": 543,
+              "entries": 225,
+              "prefix": 2,
+              "free": 414
+            },
+            {
+              "page": 542,
+              "entries": 225,
+              "prefix": 0,
+              "free": 466
+            },
+            {
+              "page": 541,
+              "entries": 450,
+              "prefix": 10,
+              "free": 1806
+            }
+          ]
+        }
+      ],
+      "suffix_in_actual_order": [
+        {
+          "page": 537,
+          "kind": "DATA",
+          "definition": 107,
+          "hidden_slot": 0
+        },
+        {
+          "page": 538,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 539,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 540,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 541,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        },
+        {
+          "page": 542,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        },
+        {
+          "page": 543,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        }
+      ],
+      "all_padding_values_and_raw_records_preserved": true,
+      "physical_counter_blocks_unchanged": true
+    },
+    {
+      "id": "V2016-padding384-BinaryOne",
+      "profile": "V2016",
+      "padding_rows": 384,
+      "selected_table": "BinaryOne",
+      "selected_ID": 1,
+      "source": {
+        "path": ".cache/ace16-ordinary-hint-growth-sources-first-20261027/V2016-padding384.accdb",
+        "bytes": 2199552,
+        "sha256": "f827703094960ea70f6c03c03c1fcd936b049b50b8488ca04f5cb49a7fe5baac"
+      },
+      "output": {
+        "path": ".cache/ace16-ordinary-hint-reference-first-20261027/V2016-padding384-BinaryOne.accdb",
+        "bytes": 2228224,
+        "sha256": "671e5b0161106b78cb8f54a1a5ecb37ad9976f754c5744b74751126fffba2173"
+      },
+      "saved_facts": {
+        "path": ".cache/ace16-ordinary-hint-reference-first-20261027/inspect/V2016-padding384-BinaryOne-facts.json",
+        "bytes": 11497116,
+        "sha256": "622a51e579d4fe7086c530b940fc0e1e4e68152467da7a66b33f436e992f902b"
+      },
+      "source_pages": 537,
+      "after_pages": 544,
+      "added_pages": 7,
+      "data_page": 537,
+      "hidden_record_bytes": 297,
+      "hint_members_before": [
+        130,
+        142
+      ],
+      "hint_members_after": [
+        130,
+        537
+      ],
+      "hint_transition": {
+        "events": [
+          {
+            "member": 537,
+            "transition": "inline-rebase",
+            "base_after": 128
+          }
+        ],
+        "kind_before": 0,
+        "kind_after": 0,
+        "base_before": 0,
+        "base_after": 128,
+        "fresh_bitmap_pages": [],
+        "old_bitmap_changed_bytes": 0
+      },
+      "physical_trees": [
+        {
+          "label": "Ascending",
+          "physical": 1,
+          "root": 128,
+          "height": 1,
+          "leaves": [
+            {
+              "page": 539,
+              "entries": 450,
+              "prefix": 10,
+              "free": 1806
+            },
+            {
+              "page": 540,
+              "entries": 225,
+              "prefix": 0,
+              "free": 466
+            },
+            {
+              "page": 538,
+              "entries": 225,
+              "prefix": 0,
+              "free": 187
+            }
+          ]
+        },
+        {
+          "label": "Descending",
+          "physical": 2,
+          "root": 129,
+          "height": 1,
+          "leaves": [
+            {
+              "page": 543,
+              "entries": 225,
+              "prefix": 0,
+              "free": 187
+            },
+            {
+              "page": 542,
+              "entries": 225,
+              "prefix": 0,
+              "free": 466
+            },
+            {
+              "page": 541,
+              "entries": 450,
+              "prefix": 10,
+              "free": 1806
+            }
+          ]
+        }
+      ],
+      "suffix_in_actual_order": [
+        {
+          "page": 537,
+          "kind": "DATA",
+          "definition": 125,
+          "hidden_slot": 0
+        },
+        {
+          "page": 538,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 539,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 540,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 541,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        },
+        {
+          "page": 542,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        },
+        {
+          "page": 543,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        }
+      ],
+      "all_padding_values_and_raw_records_preserved": true,
+      "physical_counter_blocks_unchanged": true
+    },
+    {
+      "id": "V2016-padding700-TextLegacy",
+      "profile": "V2016",
+      "padding_rows": 700,
+      "selected_table": "TextLegacy",
+      "selected_ID": 1,
+      "source": {
+        "path": ".cache/ace16-ordinary-hint-growth-sources-first-20261027/V2016-padding700.accdb",
+        "bytes": 3493888,
+        "sha256": "239c6987531a878f2c0ed6ddc5f50403070c24ee5a297197407e7d792ce662a6"
+      },
+      "output": {
+        "path": ".cache/ace16-ordinary-hint-reference-first-20261027/V2016-padding700-TextLegacy.accdb",
+        "bytes": 3530752,
+        "sha256": "d39b9d661769a5136f1b4b34fb434cbf4f6ef163544f88e12edb6fb1b43ef6e1"
+      },
+      "saved_facts": {
+        "path": ".cache/ace16-ordinary-hint-reference-first-20261027/inspect/V2016-padding700-TextLegacy-facts.json",
+        "bytes": 16219092,
+        "sha256": "d968286d33753285340cd7bef2b46127bea7c9e771dba6698789c80955a2d32e"
+      },
+      "source_pages": 853,
+      "after_pages": 862,
+      "added_pages": 9,
+      "data_page": 853,
+      "hidden_record_bytes": 547,
+      "hint_members_before": [
+        106
+      ],
+      "hint_members_after": [
+        853
+      ],
+      "hint_transition": {
+        "events": [
+          {
+            "member": 853,
+            "transition": "inline-rebase",
+            "base_after": 848
+          }
+        ],
+        "kind_before": 0,
+        "kind_after": 0,
+        "base_before": 0,
+        "base_after": 848,
+        "fresh_bitmap_pages": [],
+        "old_bitmap_changed_bytes": 0
+      },
+      "physical_trees": [
+        {
+          "label": "Ascending",
+          "physical": 1,
+          "root": 92,
+          "height": 1,
+          "leaves": [
+            {
+              "page": 856,
+              "entries": 450,
+              "prefix": 6,
+              "free": 1810
+            },
+            {
+              "page": 857,
+              "entries": 225,
+              "prefix": 0,
+              "free": 1366
+            },
+            {
+              "page": 854,
+              "entries": 225,
+              "prefix": 0,
+              "free": 1114
+            }
+          ]
+        },
+        {
+          "label": "Descending",
+          "physical": 2,
+          "root": 93,
+          "height": 1,
+          "leaves": [
+            {
+              "page": 861,
+              "entries": 225,
+              "prefix": 0,
+              "free": 889
+            },
+            {
+              "page": 860,
+              "entries": 225,
+              "prefix": 0,
+              "free": 1141
+            },
+            {
+              "page": 858,
+              "entries": 450,
+              "prefix": 7,
+              "free": 1809
+            }
+          ]
+        }
+      ],
+      "suffix_in_actual_order": [
+        {
+          "page": 853,
+          "kind": "DATA",
+          "definition": 89,
+          "hidden_slot": 0
+        },
+        {
+          "page": 854,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 855,
+          "kind": "MAP_BITMAP",
+          "role": "TextLegacy:Index:Ascending",
+          "row_identity": [
+            90,
+            3820
+          ],
+          "membership": "GlobalFree allocation only"
+        },
+        {
+          "page": 856,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 857,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 858,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        },
+        {
+          "page": 859,
+          "kind": "MAP_BITMAP",
+          "role": "TextLegacy:Index:Descending",
+          "row_identity": [
+            90,
+            3751
+          ],
+          "membership": "GlobalFree allocation only"
+        },
+        {
+          "page": 860,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        },
+        {
+          "page": 861,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        }
+      ],
+      "all_padding_values_and_raw_records_preserved": true,
+      "physical_counter_blocks_unchanged": true
+    },
+    {
+      "id": "V2016-padding700-TextModern",
+      "profile": "V2016",
+      "padding_rows": 700,
+      "selected_table": "TextModern",
+      "selected_ID": 1,
+      "source": {
+        "path": ".cache/ace16-ordinary-hint-growth-sources-first-20261027/V2016-padding700.accdb",
+        "bytes": 3493888,
+        "sha256": "239c6987531a878f2c0ed6ddc5f50403070c24ee5a297197407e7d792ce662a6"
+      },
+      "output": {
+        "path": ".cache/ace16-ordinary-hint-reference-first-20261027/V2016-padding700-TextModern.accdb",
+        "bytes": 3534848,
+        "sha256": "e6820e496f05070616b059efa21fba3e50eff6df4af13f274338bb2d77b4c81d"
+      },
+      "saved_facts": {
+        "path": ".cache/ace16-ordinary-hint-reference-first-20261027/inspect/V2016-padding700-TextModern-facts.json",
+        "bytes": 16219372,
+        "sha256": "a61e108f0b7ae31a7270b59ada496d9be9eb9697652e46ff508e91e96e77e225"
+      },
+      "source_pages": 853,
+      "after_pages": 863,
+      "added_pages": 10,
+      "data_page": 853,
+      "hidden_record_bytes": 547,
+      "hint_members_before": [
+        112,
+        124
+      ],
+      "hint_members_after": [
+        112,
+        853
+      ],
+      "hint_transition": {
+        "events": [
+          {
+            "member": 853,
+            "transition": "indirect-promotion",
+            "base_after": null
+          }
+        ],
+        "kind_before": 0,
+        "kind_after": 1,
+        "base_before": 0,
+        "base_after": null,
+        "fresh_bitmap_pages": [
+          854
+        ],
+        "old_bitmap_changed_bytes": 0
+      },
+      "physical_trees": [
+        {
+          "label": "Ascending",
+          "physical": 1,
+          "root": 110,
+          "height": 1,
+          "leaves": [
+            {
+              "page": 857,
+              "entries": 450,
+              "prefix": 9,
+              "free": 1807
+            },
+            {
+              "page": 858,
+              "entries": 225,
+              "prefix": 0,
+              "free": 691
+            },
+            {
+              "page": 855,
+              "entries": 225,
+              "prefix": 0,
+              "free": 190
+            }
+          ]
+        },
+        {
+          "label": "Descending",
+          "physical": 2,
+          "root": 111,
+          "height": 1,
+          "leaves": [
+            {
+              "page": 862,
+              "entries": 225,
+              "prefix": 2,
+              "free": 414
+            },
+            {
+              "page": 861,
+              "entries": 225,
+              "prefix": 0,
+              "free": 466
+            },
+            {
+              "page": 859,
+              "entries": 450,
+              "prefix": 10,
+              "free": 1806
+            }
+          ]
+        }
+      ],
+      "suffix_in_actual_order": [
+        {
+          "page": 853,
+          "kind": "DATA",
+          "definition": 107,
+          "hidden_slot": 0
+        },
+        {
+          "page": 854,
+          "kind": "MAP_BITMAP",
+          "role": "TextModern:Hint",
+          "row_identity": [
+            108,
+            3958
+          ],
+          "membership": "GlobalFree allocation only"
+        },
+        {
+          "page": 855,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 856,
+          "kind": "MAP_BITMAP",
+          "role": "TextModern:Index:Ascending",
+          "row_identity": [
+            108,
+            3820
+          ],
+          "membership": "GlobalFree allocation only"
+        },
+        {
+          "page": 857,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 858,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 859,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        },
+        {
+          "page": 860,
+          "kind": "MAP_BITMAP",
+          "role": "TextModern:Index:Descending",
+          "row_identity": [
+            108,
+            3751
+          ],
+          "membership": "GlobalFree allocation only"
+        },
+        {
+          "page": 861,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        },
+        {
+          "page": 862,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        }
+      ],
+      "all_padding_values_and_raw_records_preserved": true,
+      "physical_counter_blocks_unchanged": true
+    },
+    {
+      "id": "V2016-padding700-BinaryOne",
+      "profile": "V2016",
+      "padding_rows": 700,
+      "selected_table": "BinaryOne",
+      "selected_ID": 1,
+      "source": {
+        "path": ".cache/ace16-ordinary-hint-growth-sources-first-20261027/V2016-padding700.accdb",
+        "bytes": 3493888,
+        "sha256": "239c6987531a878f2c0ed6ddc5f50403070c24ee5a297197407e7d792ce662a6"
+      },
+      "output": {
+        "path": ".cache/ace16-ordinary-hint-reference-first-20261027/V2016-padding700-BinaryOne.accdb",
+        "bytes": 3534848,
+        "sha256": "e18cfb2cb7d8dc5ce2a36eb146317873d3012863c41855b71fd4d85bc26d94eb"
+      },
+      "saved_facts": {
+        "path": ".cache/ace16-ordinary-hint-reference-first-20261027/inspect/V2016-padding700-BinaryOne-facts.json",
+        "bytes": 16217861,
+        "sha256": "6b97f63fadaef0e6beadae85d3ddb5fd7fcd862a827625b44fefd995586bbe82"
+      },
+      "source_pages": 853,
+      "after_pages": 863,
+      "added_pages": 10,
+      "data_page": 853,
+      "hidden_record_bytes": 297,
+      "hint_members_before": [
+        130,
+        142
+      ],
+      "hint_members_after": [
+        130,
+        853
+      ],
+      "hint_transition": {
+        "events": [
+          {
+            "member": 853,
+            "transition": "indirect-promotion",
+            "base_after": null
+          }
+        ],
+        "kind_before": 0,
+        "kind_after": 1,
+        "base_before": 0,
+        "base_after": null,
+        "fresh_bitmap_pages": [
+          854
+        ],
+        "old_bitmap_changed_bytes": 0
+      },
+      "physical_trees": [
+        {
+          "label": "Ascending",
+          "physical": 1,
+          "root": 128,
+          "height": 1,
+          "leaves": [
+            {
+              "page": 857,
+              "entries": 450,
+              "prefix": 10,
+              "free": 1806
+            },
+            {
+              "page": 858,
+              "entries": 225,
+              "prefix": 0,
+              "free": 466
+            },
+            {
+              "page": 855,
+              "entries": 225,
+              "prefix": 0,
+              "free": 187
+            }
+          ]
+        },
+        {
+          "label": "Descending",
+          "physical": 2,
+          "root": 129,
+          "height": 1,
+          "leaves": [
+            {
+              "page": 862,
+              "entries": 225,
+              "prefix": 0,
+              "free": 187
+            },
+            {
+              "page": 861,
+              "entries": 225,
+              "prefix": 0,
+              "free": 466
+            },
+            {
+              "page": 859,
+              "entries": 450,
+              "prefix": 10,
+              "free": 1806
+            }
+          ]
+        }
+      ],
+      "suffix_in_actual_order": [
+        {
+          "page": 853,
+          "kind": "DATA",
+          "definition": 125,
+          "hidden_slot": 0
+        },
+        {
+          "page": 854,
+          "kind": "MAP_BITMAP",
+          "role": "BinaryOne:Hint",
+          "row_identity": [
+            126,
+            3958
+          ],
+          "membership": "GlobalFree allocation only"
+        },
+        {
+          "page": 855,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 856,
+          "kind": "MAP_BITMAP",
+          "role": "BinaryOne:Index:Ascending",
+          "row_identity": [
+            126,
+            3820
+          ],
+          "membership": "GlobalFree allocation only"
+        },
+        {
+          "page": 857,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 858,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 859,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        },
+        {
+          "page": 860,
+          "kind": "MAP_BITMAP",
+          "role": "BinaryOne:Index:Descending",
+          "row_identity": [
+            126,
+            3751
+          ],
+          "membership": "GlobalFree allocation only"
+        },
+        {
+          "page": 861,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        },
+        {
+          "page": 862,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        }
+      ],
+      "all_padding_values_and_raw_records_preserved": true,
+      "physical_counter_blocks_unchanged": true
+    },
+    {
+      "id": "V2019-padding384-TextLegacy",
+      "profile": "V2019",
+      "padding_rows": 384,
+      "selected_table": "TextLegacy",
+      "selected_ID": 1,
+      "source": {
+        "path": ".cache/ace16-ordinary-hint-growth-sources-first-20261027/V2019-padding384.accdb",
+        "bytes": 2273280,
+        "sha256": "c2c05bdd1918690df58fa29a861e8c41269c02e280ee7cf65e410354d9b54eeb"
+      },
+      "output": {
+        "path": ".cache/ace16-ordinary-hint-reference-first-20261027/V2019-padding384-TextLegacy.accdb",
+        "bytes": 2301952,
+        "sha256": "01c557cf05fc86334d5d72001ffb9752f1566571e198d770bf84028b87607e48"
+      },
+      "saved_facts": {
+        "path": ".cache/ace16-ordinary-hint-reference-first-20261027/inspect/V2019-padding384-TextLegacy-facts.json",
+        "bytes": 11498858,
+        "sha256": "0f9da2319d37ad3baf1302770da74b6970522dcbaf1326429a6f148ea7458e48"
+      },
+      "source_pages": 555,
+      "after_pages": 562,
+      "added_pages": 7,
+      "data_page": 555,
+      "hidden_record_bytes": 547,
+      "hint_members_before": [
+        123
+      ],
+      "hint_members_after": [
+        555
+      ],
+      "hint_transition": {
+        "events": [
+          {
+            "member": 555,
+            "transition": "inline-rebase",
+            "base_after": 552
+          }
+        ],
+        "kind_before": 0,
+        "kind_after": 0,
+        "base_before": 0,
+        "base_after": 552,
+        "fresh_bitmap_pages": [],
+        "old_bitmap_changed_bytes": 0
+      },
+      "physical_trees": [
+        {
+          "label": "Ascending",
+          "physical": 1,
+          "root": 109,
+          "height": 1,
+          "leaves": [
+            {
+              "page": 557,
+              "entries": 450,
+              "prefix": 6,
+              "free": 1810
+            },
+            {
+              "page": 558,
+              "entries": 225,
+              "prefix": 0,
+              "free": 1366
+            },
+            {
+              "page": 556,
+              "entries": 225,
+              "prefix": 0,
+              "free": 1114
+            }
+          ]
+        },
+        {
+          "label": "Descending",
+          "physical": 2,
+          "root": 110,
+          "height": 1,
+          "leaves": [
+            {
+              "page": 561,
+              "entries": 225,
+              "prefix": 0,
+              "free": 889
+            },
+            {
+              "page": 560,
+              "entries": 225,
+              "prefix": 0,
+              "free": 1141
+            },
+            {
+              "page": 559,
+              "entries": 450,
+              "prefix": 7,
+              "free": 1809
+            }
+          ]
+        }
+      ],
+      "suffix_in_actual_order": [
+        {
+          "page": 555,
+          "kind": "DATA",
+          "definition": 106,
+          "hidden_slot": 0
+        },
+        {
+          "page": 556,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 557,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 558,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 559,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        },
+        {
+          "page": 560,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        },
+        {
+          "page": 561,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        }
+      ],
+      "all_padding_values_and_raw_records_preserved": true,
+      "physical_counter_blocks_unchanged": true
+    },
+    {
+      "id": "V2019-padding384-TextModern",
+      "profile": "V2019",
+      "padding_rows": 384,
+      "selected_table": "TextModern",
+      "selected_ID": 1,
+      "source": {
+        "path": ".cache/ace16-ordinary-hint-growth-sources-first-20261027/V2019-padding384.accdb",
+        "bytes": 2273280,
+        "sha256": "c2c05bdd1918690df58fa29a861e8c41269c02e280ee7cf65e410354d9b54eeb"
+      },
+      "output": {
+        "path": ".cache/ace16-ordinary-hint-reference-first-20261027/V2019-padding384-TextModern.accdb",
+        "bytes": 2301952,
+        "sha256": "22e85148351cbd3b1cfb84b05db59318504e3b02fe2c137ce9af6c1c3c3a67e9"
+      },
+      "saved_facts": {
+        "path": ".cache/ace16-ordinary-hint-reference-first-20261027/inspect/V2019-padding384-TextModern-facts.json",
+        "bytes": 11498858,
+        "sha256": "2b0aeb7125f4aaa8b4e2cc034418ec794248f4356b378968f9516993328664d6"
+      },
+      "source_pages": 555,
+      "after_pages": 562,
+      "added_pages": 7,
+      "data_page": 555,
+      "hidden_record_bytes": 547,
+      "hint_members_before": [
+        129,
+        141
+      ],
+      "hint_members_after": [
+        129,
+        555
+      ],
+      "hint_transition": {
+        "events": [
+          {
+            "member": 555,
+            "transition": "inline-rebase",
+            "base_after": 128
+          }
+        ],
+        "kind_before": 0,
+        "kind_after": 0,
+        "base_before": 0,
+        "base_after": 128,
+        "fresh_bitmap_pages": [],
+        "old_bitmap_changed_bytes": 0
+      },
+      "physical_trees": [
+        {
+          "label": "Ascending",
+          "physical": 1,
+          "root": 127,
+          "height": 1,
+          "leaves": [
+            {
+              "page": 557,
+              "entries": 450,
+              "prefix": 9,
+              "free": 1807
+            },
+            {
+              "page": 558,
+              "entries": 225,
+              "prefix": 0,
+              "free": 691
+            },
+            {
+              "page": 556,
+              "entries": 225,
+              "prefix": 0,
+              "free": 190
+            }
+          ]
+        },
+        {
+          "label": "Descending",
+          "physical": 2,
+          "root": 128,
+          "height": 1,
+          "leaves": [
+            {
+              "page": 561,
+              "entries": 225,
+              "prefix": 2,
+              "free": 414
+            },
+            {
+              "page": 560,
+              "entries": 225,
+              "prefix": 0,
+              "free": 466
+            },
+            {
+              "page": 559,
+              "entries": 450,
+              "prefix": 10,
+              "free": 1806
+            }
+          ]
+        }
+      ],
+      "suffix_in_actual_order": [
+        {
+          "page": 555,
+          "kind": "DATA",
+          "definition": 124,
+          "hidden_slot": 0
+        },
+        {
+          "page": 556,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 557,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 558,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 559,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        },
+        {
+          "page": 560,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        },
+        {
+          "page": 561,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        }
+      ],
+      "all_padding_values_and_raw_records_preserved": true,
+      "physical_counter_blocks_unchanged": true
+    },
+    {
+      "id": "V2019-padding384-BinaryOne",
+      "profile": "V2019",
+      "padding_rows": 384,
+      "selected_table": "BinaryOne",
+      "selected_ID": 1,
+      "source": {
+        "path": ".cache/ace16-ordinary-hint-growth-sources-first-20261027/V2019-padding384.accdb",
+        "bytes": 2273280,
+        "sha256": "c2c05bdd1918690df58fa29a861e8c41269c02e280ee7cf65e410354d9b54eeb"
+      },
+      "output": {
+        "path": ".cache/ace16-ordinary-hint-reference-first-20261027/V2019-padding384-BinaryOne.accdb",
+        "bytes": 2301952,
+        "sha256": "b620a6d4e7768fe649690e514a42e761a3162593399a68f85ffcc44ccef3ad8a"
+      },
+      "saved_facts": {
+        "path": ".cache/ace16-ordinary-hint-reference-first-20261027/inspect/V2019-padding384-BinaryOne-facts.json",
+        "bytes": 11497350,
+        "sha256": "de7c3289583688eeb4b1defe5725701c3e739591afb0a42e1241c5fdef5555d8"
+      },
+      "source_pages": 555,
+      "after_pages": 562,
+      "added_pages": 7,
+      "data_page": 555,
+      "hidden_record_bytes": 297,
+      "hint_members_before": [
+        148,
+        160
+      ],
+      "hint_members_after": [
+        148,
+        555
+      ],
+      "hint_transition": {
+        "events": [
+          {
+            "member": 555,
+            "transition": "inline-rebase",
+            "base_after": 144
+          }
+        ],
+        "kind_before": 0,
+        "kind_after": 0,
+        "base_before": 0,
+        "base_after": 144,
+        "fresh_bitmap_pages": [],
+        "old_bitmap_changed_bytes": 0
+      },
+      "physical_trees": [
+        {
+          "label": "Ascending",
+          "physical": 1,
+          "root": 145,
+          "height": 1,
+          "leaves": [
+            {
+              "page": 557,
+              "entries": 450,
+              "prefix": 10,
+              "free": 1806
+            },
+            {
+              "page": 558,
+              "entries": 225,
+              "prefix": 0,
+              "free": 466
+            },
+            {
+              "page": 556,
+              "entries": 225,
+              "prefix": 0,
+              "free": 187
+            }
+          ]
+        },
+        {
+          "label": "Descending",
+          "physical": 2,
+          "root": 146,
+          "height": 1,
+          "leaves": [
+            {
+              "page": 561,
+              "entries": 225,
+              "prefix": 0,
+              "free": 187
+            },
+            {
+              "page": 560,
+              "entries": 225,
+              "prefix": 0,
+              "free": 466
+            },
+            {
+              "page": 559,
+              "entries": 450,
+              "prefix": 10,
+              "free": 1806
+            }
+          ]
+        }
+      ],
+      "suffix_in_actual_order": [
+        {
+          "page": 555,
+          "kind": "DATA",
+          "definition": 142,
+          "hidden_slot": 0
+        },
+        {
+          "page": 556,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 557,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 558,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 559,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        },
+        {
+          "page": 560,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        },
+        {
+          "page": 561,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        }
+      ],
+      "all_padding_values_and_raw_records_preserved": true,
+      "physical_counter_blocks_unchanged": true
+    },
+    {
+      "id": "V2019-padding700-TextLegacy",
+      "profile": "V2019",
+      "padding_rows": 700,
+      "selected_table": "TextLegacy",
+      "selected_ID": 1,
+      "source": {
+        "path": ".cache/ace16-ordinary-hint-growth-sources-first-20261027/V2019-padding700.accdb",
+        "bytes": 3567616,
+        "sha256": "457870f9f628fb6a5ef5c305f6d50298d7dfe2276d73f6999b7f02b12e0285a1"
+      },
+      "output": {
+        "path": ".cache/ace16-ordinary-hint-reference-first-20261027/V2019-padding700-TextLegacy.accdb",
+        "bytes": 3604480,
+        "sha256": "5ff0fec46dba68cadf038aa6f92d93bce76251527c38886229e1987d5544cce3"
+      },
+      "saved_facts": {
+        "path": ".cache/ace16-ordinary-hint-reference-first-20261027/inspect/V2019-padding700-TextLegacy-facts.json",
+        "bytes": 16219332,
+        "sha256": "9b86d45e69bd4ce864ca6d8148ea2d3ceedff7039470166f0717e1c5f96a6020"
+      },
+      "source_pages": 871,
+      "after_pages": 880,
+      "added_pages": 9,
+      "data_page": 871,
+      "hidden_record_bytes": 547,
+      "hint_members_before": [
+        123
+      ],
+      "hint_members_after": [
+        871
+      ],
+      "hint_transition": {
+        "events": [
+          {
+            "member": 871,
+            "transition": "inline-rebase",
+            "base_after": 864
+          }
+        ],
+        "kind_before": 0,
+        "kind_after": 0,
+        "base_before": 0,
+        "base_after": 864,
+        "fresh_bitmap_pages": [],
+        "old_bitmap_changed_bytes": 0
+      },
+      "physical_trees": [
+        {
+          "label": "Ascending",
+          "physical": 1,
+          "root": 109,
+          "height": 1,
+          "leaves": [
+            {
+              "page": 874,
+              "entries": 450,
+              "prefix": 6,
+              "free": 1810
+            },
+            {
+              "page": 875,
+              "entries": 225,
+              "prefix": 0,
+              "free": 1366
+            },
+            {
+              "page": 872,
+              "entries": 225,
+              "prefix": 0,
+              "free": 1114
+            }
+          ]
+        },
+        {
+          "label": "Descending",
+          "physical": 2,
+          "root": 110,
+          "height": 1,
+          "leaves": [
+            {
+              "page": 879,
+              "entries": 225,
+              "prefix": 0,
+              "free": 889
+            },
+            {
+              "page": 878,
+              "entries": 225,
+              "prefix": 0,
+              "free": 1141
+            },
+            {
+              "page": 876,
+              "entries": 450,
+              "prefix": 7,
+              "free": 1809
+            }
+          ]
+        }
+      ],
+      "suffix_in_actual_order": [
+        {
+          "page": 871,
+          "kind": "DATA",
+          "definition": 106,
+          "hidden_slot": 0
+        },
+        {
+          "page": 872,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 873,
+          "kind": "MAP_BITMAP",
+          "role": "TextLegacy:Index:Ascending",
+          "row_identity": [
+            107,
+            3820
+          ],
+          "membership": "GlobalFree allocation only"
+        },
+        {
+          "page": 874,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 875,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 876,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        },
+        {
+          "page": 877,
+          "kind": "MAP_BITMAP",
+          "role": "TextLegacy:Index:Descending",
+          "row_identity": [
+            107,
+            3751
+          ],
+          "membership": "GlobalFree allocation only"
+        },
+        {
+          "page": 878,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        },
+        {
+          "page": 879,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        }
+      ],
+      "all_padding_values_and_raw_records_preserved": true,
+      "physical_counter_blocks_unchanged": true
+    },
+    {
+      "id": "V2019-padding700-TextModern",
+      "profile": "V2019",
+      "padding_rows": 700,
+      "selected_table": "TextModern",
+      "selected_ID": 1,
+      "source": {
+        "path": ".cache/ace16-ordinary-hint-growth-sources-first-20261027/V2019-padding700.accdb",
+        "bytes": 3567616,
+        "sha256": "457870f9f628fb6a5ef5c305f6d50298d7dfe2276d73f6999b7f02b12e0285a1"
+      },
+      "output": {
+        "path": ".cache/ace16-ordinary-hint-reference-first-20261027/V2019-padding700-TextModern.accdb",
+        "bytes": 3608576,
+        "sha256": "4d0ec2e2c70d50fd24c153f17a2e60f3e3d442faf2701e5b1921392617dcac9f"
+      },
+      "saved_facts": {
+        "path": ".cache/ace16-ordinary-hint-reference-first-20261027/inspect/V2019-padding700-TextModern-facts.json",
+        "bytes": 16219606,
+        "sha256": "7d8b675d648b5d74a565094884f3c683a2798bda3ff2a5adeef98b4b1ebea2e2"
+      },
+      "source_pages": 871,
+      "after_pages": 881,
+      "added_pages": 10,
+      "data_page": 871,
+      "hidden_record_bytes": 547,
+      "hint_members_before": [
+        129,
+        141
+      ],
+      "hint_members_after": [
+        129,
+        871
+      ],
+      "hint_transition": {
+        "events": [
+          {
+            "member": 871,
+            "transition": "indirect-promotion",
+            "base_after": null
+          }
+        ],
+        "kind_before": 0,
+        "kind_after": 1,
+        "base_before": 0,
+        "base_after": null,
+        "fresh_bitmap_pages": [
+          872
+        ],
+        "old_bitmap_changed_bytes": 0
+      },
+      "physical_trees": [
+        {
+          "label": "Ascending",
+          "physical": 1,
+          "root": 127,
+          "height": 1,
+          "leaves": [
+            {
+              "page": 875,
+              "entries": 450,
+              "prefix": 9,
+              "free": 1807
+            },
+            {
+              "page": 876,
+              "entries": 225,
+              "prefix": 0,
+              "free": 691
+            },
+            {
+              "page": 873,
+              "entries": 225,
+              "prefix": 0,
+              "free": 190
+            }
+          ]
+        },
+        {
+          "label": "Descending",
+          "physical": 2,
+          "root": 128,
+          "height": 1,
+          "leaves": [
+            {
+              "page": 880,
+              "entries": 225,
+              "prefix": 2,
+              "free": 414
+            },
+            {
+              "page": 879,
+              "entries": 225,
+              "prefix": 0,
+              "free": 466
+            },
+            {
+              "page": 877,
+              "entries": 450,
+              "prefix": 10,
+              "free": 1806
+            }
+          ]
+        }
+      ],
+      "suffix_in_actual_order": [
+        {
+          "page": 871,
+          "kind": "DATA",
+          "definition": 124,
+          "hidden_slot": 0
+        },
+        {
+          "page": 872,
+          "kind": "MAP_BITMAP",
+          "role": "TextModern:Hint",
+          "row_identity": [
+            125,
+            3958
+          ],
+          "membership": "GlobalFree allocation only"
+        },
+        {
+          "page": 873,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 874,
+          "kind": "MAP_BITMAP",
+          "role": "TextModern:Index:Ascending",
+          "row_identity": [
+            125,
+            3820
+          ],
+          "membership": "GlobalFree allocation only"
+        },
+        {
+          "page": 875,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 876,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 877,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        },
+        {
+          "page": 878,
+          "kind": "MAP_BITMAP",
+          "role": "TextModern:Index:Descending",
+          "row_identity": [
+            125,
+            3751
+          ],
+          "membership": "GlobalFree allocation only"
+        },
+        {
+          "page": 879,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        },
+        {
+          "page": 880,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        }
+      ],
+      "all_padding_values_and_raw_records_preserved": true,
+      "physical_counter_blocks_unchanged": true
+    },
+    {
+      "id": "V2019-padding700-BinaryOne",
+      "profile": "V2019",
+      "padding_rows": 700,
+      "selected_table": "BinaryOne",
+      "selected_ID": 1,
+      "source": {
+        "path": ".cache/ace16-ordinary-hint-growth-sources-first-20261027/V2019-padding700.accdb",
+        "bytes": 3567616,
+        "sha256": "457870f9f628fb6a5ef5c305f6d50298d7dfe2276d73f6999b7f02b12e0285a1"
+      },
+      "output": {
+        "path": ".cache/ace16-ordinary-hint-reference-first-20261027/V2019-padding700-BinaryOne.accdb",
+        "bytes": 3608576,
+        "sha256": "7f79ad885e1372af7355da1fb6768087bb5bdedd4d6763ec5a5498504623fe12"
+      },
+      "saved_facts": {
+        "path": ".cache/ace16-ordinary-hint-reference-first-20261027/inspect/V2019-padding700-BinaryOne-facts.json",
+        "bytes": 16218095,
+        "sha256": "b633e772df7668b19b16d577e57e3750b65e8d542f322ec4a4afe85acf96c7e1"
+      },
+      "source_pages": 871,
+      "after_pages": 881,
+      "added_pages": 10,
+      "data_page": 871,
+      "hidden_record_bytes": 297,
+      "hint_members_before": [
+        148,
+        160
+      ],
+      "hint_members_after": [
+        148,
+        871
+      ],
+      "hint_transition": {
+        "events": [
+          {
+            "member": 871,
+            "transition": "indirect-promotion",
+            "base_after": null
+          }
+        ],
+        "kind_before": 0,
+        "kind_after": 1,
+        "base_before": 0,
+        "base_after": null,
+        "fresh_bitmap_pages": [
+          872
+        ],
+        "old_bitmap_changed_bytes": 0
+      },
+      "physical_trees": [
+        {
+          "label": "Ascending",
+          "physical": 1,
+          "root": 145,
+          "height": 1,
+          "leaves": [
+            {
+              "page": 875,
+              "entries": 450,
+              "prefix": 10,
+              "free": 1806
+            },
+            {
+              "page": 876,
+              "entries": 225,
+              "prefix": 0,
+              "free": 466
+            },
+            {
+              "page": 873,
+              "entries": 225,
+              "prefix": 0,
+              "free": 187
+            }
+          ]
+        },
+        {
+          "label": "Descending",
+          "physical": 2,
+          "root": 146,
+          "height": 1,
+          "leaves": [
+            {
+              "page": 880,
+              "entries": 225,
+              "prefix": 0,
+              "free": 187
+            },
+            {
+              "page": 879,
+              "entries": 225,
+              "prefix": 0,
+              "free": 466
+            },
+            {
+              "page": 877,
+              "entries": 450,
+              "prefix": 10,
+              "free": 1806
+            }
+          ]
+        }
+      ],
+      "suffix_in_actual_order": [
+        {
+          "page": 871,
+          "kind": "DATA",
+          "definition": 142,
+          "hidden_slot": 0
+        },
+        {
+          "page": 872,
+          "kind": "MAP_BITMAP",
+          "role": "BinaryOne:Hint",
+          "row_identity": [
+            143,
+            3958
+          ],
+          "membership": "GlobalFree allocation only"
+        },
+        {
+          "page": 873,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 874,
+          "kind": "MAP_BITMAP",
+          "role": "BinaryOne:Index:Ascending",
+          "row_identity": [
+            143,
+            3820
+          ],
+          "membership": "GlobalFree allocation only"
+        },
+        {
+          "page": 875,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 876,
+          "kind": "INDEX",
+          "physical": 1,
+          "label": "Ascending",
+          "tag": 4
+        },
+        {
+          "page": 877,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        },
+        {
+          "page": 878,
+          "kind": "MAP_BITMAP",
+          "role": "BinaryOne:Index:Descending",
+          "row_identity": [
+            143,
+            3751
+          ],
+          "membership": "GlobalFree allocation only"
+        },
+        {
+          "page": 879,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        },
+        {
+          "page": 880,
+          "kind": "INDEX",
+          "physical": 2,
+          "label": "Descending",
+          "tag": 4
+        }
+      ],
+      "all_padding_values_and_raw_records_preserved": true,
+      "physical_counter_blocks_unchanged": true
+    }
+  ],
+  "executed_private_and_verifier_artifacts": [
+    {
+      "path": ".cache/ace16-ordinary-hint-reference-next-20261027/freeze.json",
+      "bytes": 25880,
+      "sha256": "be7063ee7d2ea0a2aaa1448a77f6aa0a483d8c5feb8d716b0843fe5c63a67c94"
+    },
+    {
+      "path": ".cache/ace16-ordinary-hint-reference-next-20261027/proposed-argv.json",
+      "bytes": 28996,
+      "sha256": "311211b090df38b95f6fcc866f995ac4ef2a32935ac4c74b6f7cf64a8d824643"
+    },
+    {
+      "path": ".cache/ace16-ordinary-hint-reference-next-20261027/DERIVATION.json",
+      "bytes": 1338,
+      "sha256": "8e6d11601e229f651f0c9783193a8c17ebcd0fe420ffb9dc1b4f36d64e1bdc21"
+    },
+    {
+      "path": ".cache/ace16-ordinary-hint-reference-next-20261027/PROTOCOL.md",
+      "bytes": 8922,
+      "sha256": "6dd7353a28ecb3420274ffbe393066e1defbbe116fc77bbeb68329e996b9a481"
+    },
+    {
+      "path": ".cache/ace16-ordinary-hint-reference-next-20261027/OrdinaryHintReferenceProbe.java",
+      "bytes": 18986,
+      "sha256": "023230d33d196a81b3409abf98befdbece004859f0c696310525d15b21336fa4"
+    },
+    {
+      "path": ".cache/ace16-ordinary-hint-reference-next-20261027/capture.py",
+      "bytes": 10901,
+      "sha256": "fb04103a3cab939202a5fc4050048e5f165148f4be35e03d5b601888bca01f73"
+    },
+    {
+      "path": ".cache/ace16-ordinary-hint-reference-next-20261027/bounded.py",
+      "bytes": 5368,
+      "sha256": "a47b2ce30c995d72c1797ddd73c9037950ee6ee68e8453fa72cc0befc906eacb"
+    },
+    {
+      "path": ".cache/ace16-ordinary-hint-reference-next-20261027/action_model.py",
+      "bytes": 26635,
+      "sha256": "af12f0c17b61dae37aad98f02ab1dc3867eccd9b5bef944414c5ef4ca2e7937b"
+    },
+    {
+      "path": ".cache/ace16-ordinary-hint-reference-next-20261027/map_proof.py",
+      "bytes": 4298,
+      "sha256": "f31c1a9d4f78062fb635189c8dfcb1e849e1d2a53cd8b00e0d5f1bd0e37ab30a"
+    },
+    {
+      "path": ".cache/ace16-ordinary-hint-reference-next-20261027/reference_proof.py",
+      "bytes": 9552,
+      "sha256": "6f6cb5c73fe5b3da5aaea9dc4241eca56e8bd1ca89b3524a57f9740f6efca74c"
+    },
+    {
+      "path": ".cache/ace16-ordinary-hint-reference-next-20261027/selfcheck.py",
+      "bytes": 4118,
+      "sha256": "dcc28c3984bcc37a2f0f44bbc8a974d6a76850403fdf11633eb1385748803d2f"
+    },
+    {
+      "path": ".cache/ace16-ordinary-hint-reference-next-20261027/selfcheck.json",
+      "bytes": 20831,
+      "sha256": "ee0c6f57360025ab958bad267a47266661f08c5b7cd89f952c7f3cf06a27f131"
+    },
+    {
+      "path": ".cache/ace16-ordinary-hint-reference-next-20261027/phase-a-postcheck.json",
+      "bytes": 66701,
+      "sha256": "98c39717bbb4d6866925b97ee99a993078a65053dbbda9facd1a3316ebf15fda"
+    },
+    {
+      "path": ".cache/ace16-ordinary-hint-reference-next-20261027/phase-b-binding.json",
+      "bytes": 10381,
+      "sha256": "c712e29b0bebd48392fd9c9f0b52b28f7138cae2ffff49778f9ded5bbd9d5fcb"
+    },
+    {
+      "path": ".cache/ace16-ordinary-hint-reference-next-20261027/phase-b-postcheck.json",
+      "bytes": 83251,
+      "sha256": "f78baa93a00482192625916d6db367b56ec0538cff823117bc018919b699d081"
+    },
+    {
+      "path": ".cache/ace16-ordinary-hint-reference-next-20261027/observations.json",
+      "bytes": 65420,
+      "sha256": "5b187740b8160dedd60b41e871daaac8bcf05d68192b9841601d44bd6df9b86e"
+    },
+    {
+      "path": ".cache/ace16-ordinary-hint-reference-next-20261027/public-saved-verification-first.json",
+      "bytes": 29180,
+      "sha256": "c76289d4bd500a69848eb992d9efdcb0e6587d43f89d612f26ea212f2c69f42f"
+    },
+    {
+      "path": ".cache/ace16-ordinary-hint-reference-next-20261027/public-saved-verification-first.stdout",
+      "bytes": 29180,
+      "sha256": "c76289d4bd500a69848eb992d9efdcb0e6587d43f89d612f26ea212f2c69f42f"
+    },
+    {
+      "path": ".cache/ace16-ordinary-hint-reference-next-20261027/public-saved-verification-first.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "maintained_tools": [
+    {
+      "path": "docs/testing/ordinary_hint_growth_references/OrdinaryHintReferenceProbe.java",
+      "bytes": 18986,
+      "sha256": "023230d33d196a81b3409abf98befdbece004859f0c696310525d15b21336fa4"
+    },
+    {
+      "path": "docs/testing/ordinary_hint_growth_references/action_model.py",
+      "bytes": 26635,
+      "sha256": "cba172aaa8a00aaf51a64a83f1807f88e270afa552d2f0123676941d9db9090d"
+    },
+    {
+      "path": "docs/testing/ordinary_hint_growth_references/map_proof.py",
+      "bytes": 4298,
+      "sha256": "f31c1a9d4f78062fb635189c8dfcb1e849e1d2a53cd8b00e0d5f1bd0e37ab30a"
+    },
+    {
+      "path": "docs/testing/ordinary_hint_growth_references/reference_proof.py",
+      "bytes": 9589,
+      "sha256": "e13a418d2014a16a2a30b923ef37f69810bec42f0ce43897b022d9b89213d534"
+    },
+    {
+      "path": "docs/testing/ordinary_hint_growth_references/verify.py",
+      "bytes": 9643,
+      "sha256": "1603e2e248c2cdbc3d033753639b997e85dccef056c828cc0490bbc3f0be5c3d"
+    }
+  ],
+  "owning_document": {
+    "path": "docs/testing/ORDINARY_HINT_UPDATE_OBSERVATIONS.md",
+    "bytes": 9004,
+    "sha256": "d72e0f0961cd1c60ae9d95315cfaea36054e9ca8d2f9e12aee947e68dd129ca7"
+  }
+}
