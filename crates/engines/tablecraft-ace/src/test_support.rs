@@ -34,3 +34,7 @@ pub(crate) use crate as engine;
 #[cfg(feature = "ace16-write-preview")]
 #[path = "test_support/fixed_split.rs"]
 pub(crate) mod fixed_split;
+
+#[cfg(feature = "ace16-write-preview")]
+#[path = "test_support/map_growth.rs"]
+pub(crate) mod map_growth;

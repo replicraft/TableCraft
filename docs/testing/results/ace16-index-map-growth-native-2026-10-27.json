@@ -1,0 +1,763 @@
+{
+  "date": "2026-10-27",
+  "status": "passed_scoped_engineering_checks_original_candidate_replay_pending",
+  "working_tree_base": "8cd4b6fddff406d9995052795e9644146e40e9fa",
+  "scope": {
+    "service": "Existing ACE16 split fixed/Int32 engineering previews; no new public API",
+    "transition": "Exact 69-byte index-owned inline map to one first-span indirect bitmap when original members plus next child span exceeds 512 pages",
+    "placement": "Shared recursive/repeated index allocation; bitmap metadata separated from index membership and global effects composed per operation",
+    "authority": "On any promotion: original-catalog GlobalFree plus every reserved canonical IndexOwned owner, including represented peers; original metadata rebound at finish",
+    "purpose": "Every appended page independently certified as complete index node/leaf or USAGE bitmap; foreign DATA/LVAL references cannot activate through those purposes",
+    "unchanged": [
+      "Pure represented-only placement images and legacy role policy",
+      "Existing scalar/property/constraint/macro gates",
+      "Normal equal-length plans, saves and journaling"
+    ],
+    "refused": [
+      "Shiftable inline windows",
+      "Other inline widths retain Inspect(Unsupported)",
+      "Map-row growth and additional pointer allocation",
+      "Global bootstrap, in-file reuse and reclamation"
+    ],
+    "not_claimed": [
+      "Global health of unrelated foreign payloads",
+      "Normal save compatibility",
+      "Microsoft Access native qualification",
+      "New frozen original-file candidate acceptance"
+    ]
+  },
+  "counts": {
+    "distinct_passing_runtime_functions": 92,
+    "new_functions": 15,
+    "existing_functions": 77,
+    "accepted_selected_runtime_executions": {
+      "primary-final.log": 9,
+      "private-final.log": 22,
+      "consumer.log": 3,
+      "regressions-final.log": 58
+    },
+    "compile_fail_doc_tests": 3,
+    "new_breakdown": {
+      "independent_literal_contract": 9,
+      "author_finalizer_recursive_controls": 4,
+      "independent_reader_purpose_controls": 2
+    },
+    "repetition_note": "Earlier successful subsets and partial failed batches are preserved history and are not added to the 92 distinct functions. The combined-filtered command ran 21 private functions and ZERO integration functions; it does not establish nine integration passes."
+  },
+  "terminal_checks": [
+    {
+      "label": "primary-final",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--features",
+        "ace16-write-preview",
+        "--test",
+        "ace16_index_map_growth_contract"
+      ],
+      "exit_status": 0
+    },
+    {
+      "label": "private-final",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--features",
+        "ace16-write-preview",
+        "--lib",
+        "split::"
+      ],
+      "exit_status": 0
+    },
+    {
+      "label": "consumer",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--features",
+        "ace16-write-preview",
+        "--example",
+        "preview_ace16_split"
+      ],
+      "exit_status": 0
+    },
+    {
+      "label": "minimal",
+      "argv": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--lib"
+      ],
+      "exit_status": 0
+    },
+    {
+      "label": "default-strict",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--lib",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_status": 0
+    },
+    {
+      "label": "doctests",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--doc"
+      ],
+      "exit_status": 0
+    },
+    {
+      "label": "rustdoc",
+      "argv": [
+        "cargo",
+        "doc",
+        "--locked",
+        "--offline",
+        "-j2",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--no-deps"
+      ],
+      "exit_status": 0
+    }
+  ],
+  "additional_checks": {
+    "preview_strict": {
+      "session": 53724,
+      "exit_status": 0,
+      "scope": "clippy --lib --tests --example preview_ace16_split --features ace16-write-preview -- -D warnings"
+    },
+    "selected_regressions": {
+      "session": 48407,
+      "exit_status": 0,
+      "functions": 58,
+      "targets": 11
+    },
+    "format": {
+      "argv": [
+        "rustfmt",
+        "--edition",
+        "2024",
+        "--check",
+        "crates/engines/tablecraft-ace/src/table/indexes/mutation/plan.rs",
+        "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/allocation.rs",
+        "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/maps.rs",
+        "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/mod.rs",
+        "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/nonroot.rs",
+        "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/nonroot/replay.rs",
+        "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/purpose_tests.rs",
+        "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/maps.rs",
+        "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/mod.rs",
+        "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/nonroot/arena.rs",
+        "crates/engines/tablecraft-ace/src/table/mutation/split/finish.rs",
+        "crates/engines/tablecraft-ace/src/table/mutation/split/fixed.rs",
+        "crates/engines/tablecraft-ace/src/table/mutation/split/mod.rs",
+        "crates/engines/tablecraft-ace/src/table/mutation/split/tests.rs",
+        "crates/engines/tablecraft-ace/src/table/mutation/split/tests/map_growth.rs",
+        "crates/engines/tablecraft-ace/src/test_support.rs",
+        "crates/engines/tablecraft-ace/src/test_support/map_growth.rs",
+        "crates/engines/tablecraft-ace/tests/ace16_index_map_growth_contract.rs",
+        "crates/engines/tablecraft-ace/tests/ace16_index_map_growth_contract/authority.rs",
+        "crates/engines/tablecraft-ace/tests/ace16_index_map_growth_contract/late.rs",
+        "crates/engines/tablecraft-ace/tests/ace16_index_map_growth_contract/model.rs",
+        "crates/engines/tablecraft-ace/tests/ace16_index_map_growth_contract/proof.rs",
+        "crates/engines/tablecraft-ace/tests/ace16_index_map_growth_contract/values.rs"
+      ],
+      "exit_status": 0,
+      "files": 23
+    }
+  },
+  "preserved_history": [
+    {
+      "session": 35411,
+      "exit_status": 101,
+      "phase": "initial feature library",
+      "cause": "One missing signature borrow and six LimitError conversion errors; exact initial library source tree retained"
+    },
+    {
+      "session": 81328,
+      "exit_status": 0,
+      "phase": "corrected feature library"
+    },
+    {
+      "session": 95276,
+      "exit_status": 101,
+      "phase": "initial independent seven",
+      "result": "six passed and one failed; orphan physical-slot fixture reached existing IndexedColumn before expected RowLayout. Only this typed assertion changed; source/model/proof bytes remained frozen."
+    },
+    {
+      "session": 98030,
+      "exit_status": 101,
+      "phase": "initial independent reader-purpose controls",
+      "cause": "Synthetic two-page source violated minimum three-page header prerequisite before assertions"
+    },
+    {
+      "session": 45933,
+      "exit_status": 0,
+      "phase": "corrected independent reader-purpose controls",
+      "result": "Same reader expectations; valid three-page source with future page 3"
+    },
+    {
+      "session": 7225,
+      "exit_status": 101,
+      "phase": "author private initial compile",
+      "cause": "Two references to nonexistent fixed_model::capture; corrected to established shared capture helper"
+    },
+    {
+      "session": 16604,
+      "exit_status": 101,
+      "phase": "author private first runtime",
+      "result": "one passed and two failed typed expectations: malformed pointer/out-of-image bitmap membership can refuse before the final exact-byte proof"
+    },
+    {
+      "session": 36312,
+      "exit_status": 101,
+      "phase": "author private metadata expectation refinement",
+      "result": "two passed and one failed; an in-file metadata member reaches Preservation, while out-of-image member reaches Malformed"
+    },
+    {
+      "session": 55680,
+      "exit_status": 101,
+      "phase": "author private ineffective format-sensitive edit",
+      "result": "two passed and one failed; intended classification correction had not changed the actual assertion. Contextual patch corrected it."
+    },
+    {
+      "session": 20156,
+      "exit_status": 0,
+      "phase": "selected private split filter",
+      "result": "21 private functions pass; integration target filtered to zero"
+    },
+    {
+      "session": 79733,
+      "exit_status": 0,
+      "phase": "independent nine including late promotion and mixed owners"
+    },
+    {
+      "session": 14767,
+      "exit_status": 101,
+      "phase": "old regression handler-order compatibility failure",
+      "result": "First target had seven passing functions and one failure; broader census ran before recognizing an unqualified eight-byte inline-map shape. No wrong candidate emitted."
+    },
+    {
+      "session": 29936,
+      "exit_status": 0,
+      "phase": "unchanged old guard narrow retry",
+      "correction": "Recognize exact69-byte promotion shape/span before broader census; preserve original Inspect(Unsupported) for other inline widths. No old fixture/assertion changes."
+    },
+    {
+      "session": 45961,
+      "exit_status": 0,
+      "phase": "first real non-root plus root promotion author control",
+      "result": "Existing200/700-leaf height1 tree and separate root share5EOF pages: sibling600/bitmap601, then602/bitmap603/604"
+    },
+    {
+      "session": 96125,
+      "exit_status": 0,
+      "phase": "final selected primary/private/consumer/minimal/default-strict/doc/rustdoc batch"
+    }
+  ],
+  "snapshot_limit": "Exact initial library source tree, independent seven/nine source states, purpose prerequisite source and private author pre-correction sources are retained. Not every intermediate production edit was snapshotted as a complete tree; no reconstructed file is claimed to be an executed whole-source snapshot.",
+  "source_pins": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/plan.rs",
+      "bytes": 16473,
+      "sha256": "4158ed3953e92f5fc86663ec92c81ebec4a536fa37b94c3f3ac0e39e7a8cbf0b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/allocation.rs",
+      "bytes": 11377,
+      "sha256": "6f73d38183e7c3d2ea49982f750c05c3fcbcd4818e503bb083cf637674aa18a5"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/maps.rs",
+      "bytes": 12312,
+      "sha256": "3a348b924ad36bcdb19b48b23b1e841800eee9c30ac1b7c2845e412adb2b50c3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/mod.rs",
+      "bytes": 18219,
+      "sha256": "daac47a8b5872af4ba2e38bc4abafd6fe74fc598abad121807f1729d8fe55e96"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/nonroot.rs",
+      "bytes": 1059,
+      "sha256": "62c0f767f8af84f072ccde0507c057d80dffce1715718e00b11d91171ff9026b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/nonroot/replay.rs",
+      "bytes": 8360,
+      "sha256": "4361eb14aa98ffd202b43718e5a7b862b7ca8b2007c003025effaeee28697c0b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/purpose_tests.rs",
+      "bytes": 4599,
+      "sha256": "e06b5981182a069ea070954e2163b628eb69cba97c3dda3bec315adef4000e88"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/maps.rs",
+      "bytes": 2681,
+      "sha256": "8f180223755c30a61d46bdfb03f3cf7619e2c2e12d7ff248dfce5b802d545423"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/mod.rs",
+      "bytes": 8021,
+      "sha256": "943905acb31cbb58cdd1f74a4fbf4016688efc66c770e25e6cb75c7a5900d6cb"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/nonroot/arena.rs",
+      "bytes": 8485,
+      "sha256": "3ae51bf3d46d3d803799cbc745b3a6f965784fd67b385774b9117870b8459f0a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/split/finish.rs",
+      "bytes": 6641,
+      "sha256": "53d311536d4b101da198f0c3873fd6b8d7e56504c83b0a6b171fc3f45332f9e0"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/split/fixed.rs",
+      "bytes": 5485,
+      "sha256": "95e8431960c5e1f97a256f7d5321845edd6d390a9fdfd20cf409f55f55fe611f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/split/mod.rs",
+      "bytes": 5336,
+      "sha256": "470088aa9cb844127c1b9637e416bb8e84245f36f158605e5758cd2beadbf235"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/split/tests.rs",
+      "bytes": 5924,
+      "sha256": "211e8941a8184ad1f9066cc6d78d131636c12f0c98444a06db615d50a5fc9e96"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/split/tests/map_growth.rs",
+      "bytes": 8081,
+      "sha256": "237449867d8963591cd047d97240970d32545825ddc17448567ee0bda314c807"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/test_support.rs",
+      "bytes": 1096,
+      "sha256": "9ed7a88770d73386c61464ecc714793e96c613d5d77e5798edfabb8e8582f68a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/test_support/map_growth.rs",
+      "bytes": 266,
+      "sha256": "06d2f354c99590c97c345066715e33883f25b188f86d49fd48d8b53758a18a4e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_index_map_growth_contract.rs",
+      "bytes": 5297,
+      "sha256": "7dd84e76a5e39b35724de5cf193bd3e0045a442202d1642ef00b4cbc4fe4ab62"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_index_map_growth_contract/authority.rs",
+      "bytes": 4933,
+      "sha256": "fc140a14656210f78442c7f9b11add8d42a5736cf0e8095424f3fa30f4d7092e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_index_map_growth_contract/late.rs",
+      "bytes": 10004,
+      "sha256": "de870e7e4fca4fb772804e4bcde2432d9cb6d98ce821a95596e5b5a49bf03887"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_index_map_growth_contract/model.rs",
+      "bytes": 11181,
+      "sha256": "ad1df400ba92490e994c7379966c1da781926f7aed6c7075936ed663a1702bf8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_index_map_growth_contract/proof.rs",
+      "bytes": 6521,
+      "sha256": "a50bf6f57ee78792f3737bcedf3f53807e8ef4aa1827add7b07a4b1ba084b3a1"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_index_map_growth_contract/values.rs",
+      "bytes": 5764,
+      "sha256": "2215f0beca6c7922fac86114b8d7ac9d7a2fad57929cbde6ea59fa366915caed"
+    },
+    {
+      "path": "docs/testing/ACE16_INDEX_MAP_GROWTH.md",
+      "bytes": 5064,
+      "sha256": "39ff8bcc45a655473ebbc403d4be810b0f33e0b332a3f021f07b3963ccb903c2"
+    }
+  ],
+  "check_artifact_pins": [
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/library-initial.log",
+      "bytes": 8919,
+      "sha256": "42e17a35434506835768f0662c637a5df93d881f42338792366cc02b8f296c7e"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/library-retry.log",
+      "bytes": 183,
+      "sha256": "d9f8733994066fd53e79a88006e420de95ccf8dec3bc8fc4ad9e983ad0604a25"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/independent-initial.log",
+      "bytes": 1810,
+      "sha256": "9c91ab5ad7cea0abb151c9a19cfba3c64f31d968d4a4dabb3902e3c8ea040625"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/purpose-initial.log",
+      "bytes": 2032,
+      "sha256": "3ba33728ad30156273dfe2320964cceb56bb8c5d3d3dde242d2bd1a097004a65"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/purpose-retry.log",
+      "bytes": 670,
+      "sha256": "6d1636e234bf32c8eb7c1cb7b9cb1ec567b3311bf5658aa61183a2053ff1a9bd"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/private-growth-initial.log",
+      "bytes": 6185,
+      "sha256": "3b9c529585301dd498d2adefabfc97ea03475371dac01d9a119f6fe47cf529a5"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/private-growth-retry.log",
+      "bytes": 2164,
+      "sha256": "688603d4faa17d60ff7acf32c503280bb7c9a98e1267339e86fdc2039930cb86"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/private-growth-final.log",
+      "bytes": 1559,
+      "sha256": "005776102cca67231256117643a34d68728e7c27ba371b34c4f8282ea65b4cb9"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/private-growth-accepted.log",
+      "bytes": 1577,
+      "sha256": "8cf6f8d9844ebfd3a82a5c845eeecf61d41b666a6f094b54f08529f26bcbfe00"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/combined-filtered.log",
+      "bytes": 3198,
+      "sha256": "f427ef7646da2a5fba534dcd5cea2d86a3a6909b8a4133b93ae27a36a5a89aa1"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/independent-nine.log",
+      "bytes": 1286,
+      "sha256": "937efd4ea4ff19323dbd7acdf8f236e561a0aaa3ca81641f83ecf3bb2d150ce9"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/nonroot-promotion-initial.log",
+      "bytes": 521,
+      "sha256": "9b77e7923addbb5bbd3cd917105f38447601d2ee6452f5e972f963d881f6f1e8"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/regressions.log",
+      "bytes": 1906,
+      "sha256": "81ffc9e1b5f4140e5a6ca459aadc35e3bdfbfa769e302d8ef895a6b1d3dfd599"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/legacy-map-refusal-retry.log",
+      "bytes": 492,
+      "sha256": "e43beca467e1b1f1ecf4a2562ac81f89805ad62371d571a7acf0e682020878b5"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/regressions-final.log",
+      "bytes": 7960,
+      "sha256": "7551c396e4d80c5cbd30b1b94a5a5b08304dca056903d95fed6852fb31939f6a"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/strict-initial.log",
+      "bytes": 184,
+      "sha256": "bc737af53b8e925393efc5ceb758aa1e2ba88b94394ad61479ef634a21807f9f"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/primary-final.log",
+      "bytes": 1286,
+      "sha256": "0a65347700584209aa1b834f740bc14d224ad414e0a761dec7e805c96742ccce"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/private-final.log",
+      "bytes": 3099,
+      "sha256": "67c69d84680f1acdeede13e04bec18ac9a8446f8865a832dc41146a5d4fd0401"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/consumer.log",
+      "bytes": 699,
+      "sha256": "5b35294a4e3e28ce64d6f04ad52893d58b0c374e039c336a72fb278e0613bd65"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/minimal.log",
+      "bytes": 183,
+      "sha256": "434cfe0e9c2da62fe2b92a15948dd6ceeb78ffd1979582f43e851b9d25c3ffdd"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/default-strict.log",
+      "bytes": 183,
+      "sha256": "aad6f23c23815d5abe83376913904af612ae17f2dd16ea2712af874858536d63"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/doctests.log",
+      "bytes": 848,
+      "sha256": "06b1277718ba61c5120c3b69425a1cadb72a4c0ed9a76ed5a907fe274a9554db"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/rustdoc.log",
+      "bytes": 277,
+      "sha256": "1cd7b0c5d2c1d3d6e85a6f3c215ba52c6b91d3cec8714eb7fd1e475fa1aca68d"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/final-checks.json",
+      "bytes": 1849,
+      "sha256": "b3072a10d6a492240320e3413fea0bc5306c7215f9874643c6447f8f3409d9c2"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/final_checks.py",
+      "bytes": 1629,
+      "sha256": "605052a145a02192be285426f5c9e4661a723bda2757c455783ab755a4f380b8"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/format.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/format-result.json",
+      "bytes": 1944,
+      "sha256": "0f853b084a82477a226ec2f85138e64430c3004bae7a6ee6de56a24937559377"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/links-final.log",
+      "bytes": 53,
+      "sha256": "726b52964a81814079d35f5e286fe15b3a6401f3b5efa908c01dcc490f9e315b"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/whitespace.json",
+      "bytes": 84,
+      "sha256": "c3b8d974e73b73372bfeda0001af52a180365a9b8b6a1713ce129e8ce1d9c282"
+    }
+  ],
+  "historical_source_pins": [
+    {
+      "path": ".cache/ace16-append-purpose-next-20261027/before-minimum-image-correction.rs",
+      "bytes": 4585,
+      "sha256": "60345976d865fd3ba6993927a5dc129f572c4f8c5f3ab5b9abf59f1909918ba4"
+    },
+    {
+      "path": ".cache/ace16-index-map-growth-independent-next-20261027/nine-before-first/00-ace16_index_map_growth_contract.rs",
+      "bytes": 5297,
+      "sha256": "7dd84e76a5e39b35724de5cf193bd3e0045a442202d1642ef00b4cbc4fe4ab62"
+    },
+    {
+      "path": ".cache/ace16-index-map-growth-independent-next-20261027/nine-before-first/01-authority.rs",
+      "bytes": 4933,
+      "sha256": "fc140a14656210f78442c7f9b11add8d42a5736cf0e8095424f3fa30f4d7092e"
+    },
+    {
+      "path": ".cache/ace16-index-map-growth-independent-next-20261027/nine-before-first/02-late.rs",
+      "bytes": 10004,
+      "sha256": "de870e7e4fca4fb772804e4bcde2432d9cb6d98ce821a95596e5b5a49bf03887"
+    },
+    {
+      "path": ".cache/ace16-index-map-growth-independent-next-20261027/nine-before-first/03-model.rs",
+      "bytes": 11181,
+      "sha256": "ad1df400ba92490e994c7379966c1da781926f7aed6c7075936ed663a1702bf8"
+    },
+    {
+      "path": ".cache/ace16-index-map-growth-independent-next-20261027/nine-before-first/04-proof.rs",
+      "bytes": 6521,
+      "sha256": "a50bf6f57ee78792f3737bcedf3f53807e8ef4aa1827add7b07a4b1ba084b3a1"
+    },
+    {
+      "path": ".cache/ace16-index-map-growth-independent-next-20261027/nine-before-first/05-values.rs",
+      "bytes": 5764,
+      "sha256": "2215f0beca6c7922fac86114b8d7ac9d7a2fad57929cbde6ea59fa366915caed"
+    },
+    {
+      "path": ".cache/ace16-index-map-growth-independent-next-20261027/registered-seven-initial/00-ace16_index_map_growth_contract.rs",
+      "bytes": 5235,
+      "sha256": "0b5e8675d1ccf33fa49ffb6d0230f2087bc921676f7836d8d88932e616bb97b0"
+    },
+    {
+      "path": ".cache/ace16-index-map-growth-independent-next-20261027/registered-seven-initial/01-authority.rs",
+      "bytes": 4768,
+      "sha256": "00a39799609a73395756635709a4d3a748abcbffdc11dd3c6e23cd8035541264"
+    },
+    {
+      "path": ".cache/ace16-index-map-growth-independent-next-20261027/registered-seven-initial/02-model.rs",
+      "bytes": 11181,
+      "sha256": "ad1df400ba92490e994c7379966c1da781926f7aed6c7075936ed663a1702bf8"
+    },
+    {
+      "path": ".cache/ace16-index-map-growth-independent-next-20261027/registered-seven-initial/03-proof.rs",
+      "bytes": 6521,
+      "sha256": "a50bf6f57ee78792f3737bcedf3f53807e8ef4aa1827add7b07a4b1ba084b3a1"
+    },
+    {
+      "path": ".cache/ace16-index-map-growth-independent-next-20261027/registered-seven-initial/04-values.rs",
+      "bytes": 5764,
+      "sha256": "2215f0beca6c7922fac86114b8d7ac9d7a2fad57929cbde6ea59fa366915caed"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/initial-source/crates/engines/tablecraft-ace/src/table/indexes/mutation/plan.rs",
+      "bytes": 16464,
+      "sha256": "9712578465f5d57e709398d697e507243ca7ad41050aa32b4d17893c66bf938c"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/initial-source/crates/engines/tablecraft-ace/src/table/indexes/mutation/split/allocation.rs",
+      "bytes": 9453,
+      "sha256": "d65c1ff2d33d4f3355f1213e40396091ba621da0a7631b3501c505fd8d4a2c11"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/initial-source/crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/framing.rs",
+      "bytes": 5139,
+      "sha256": "8793477b5b553cd71d24b2ede725ba71f78a821ec5d4e2eacaa4de5345a1260c"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/initial-source/crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/maps.rs",
+      "bytes": 11242,
+      "sha256": "925bdcd0b9a2a8ddb353503b1f1373fa8f5cfa521ce9e6a14b667083952ecb37"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/initial-source/crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/mod.rs",
+      "bytes": 18187,
+      "sha256": "8b28c2ed42eaf7dade86e5ecbfc0b082bf341bb5d6b26a03e0d8de836249f0ec"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/initial-source/crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/nonroot/framing/tests.rs",
+      "bytes": 2096,
+      "sha256": "b6290cceb507e6155b2fa2146263953fd7688481edefe320ed8af23b728c11d0"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/initial-source/crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/nonroot/framing.rs",
+      "bytes": 7755,
+      "sha256": "6fe0578ebc29aba7553d91075ae9dde97703efb2173bf0543c8916454124c3e0"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/initial-source/crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/nonroot/replay/normalize.rs",
+      "bytes": 6958,
+      "sha256": "e20f1dd611a62c014d4a6c4ab6b00cd3fc9bc2d780e92eb8abef548091eb3ce9"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/initial-source/crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/nonroot/replay.rs",
+      "bytes": 8360,
+      "sha256": "4361eb14aa98ffd202b43718e5a7b862b7ca8b2007c003025effaeee28697c0b"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/initial-source/crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/nonroot.rs",
+      "bytes": 1059,
+      "sha256": "62c0f767f8af84f072ccde0507c057d80dffce1715718e00b11d91171ff9026b"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/initial-source/crates/engines/tablecraft-ace/src/table/indexes/mutation/split/maps.rs",
+      "bytes": 2681,
+      "sha256": "8f180223755c30a61d46bdfb03f3cf7619e2c2e12d7ff248dfce5b802d545423"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/initial-source/crates/engines/tablecraft-ace/src/table/indexes/mutation/split/mod.rs",
+      "bytes": 7949,
+      "sha256": "15bac54f0fb3ad0e29fd0d81a55c54bca0d0f87e2bd1ae3b373150a77554a529"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/initial-source/crates/engines/tablecraft-ace/src/table/indexes/mutation/split/nonroot/arena/normalize.rs",
+      "bytes": 4915,
+      "sha256": "8c1a09ef535dc065c9079e3fbe2cf1a65051c2949da1183c40aeb211cded5aaf"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/initial-source/crates/engines/tablecraft-ace/src/table/indexes/mutation/split/nonroot/arena.rs",
+      "bytes": 8485,
+      "sha256": "3ae51bf3d46d3d803799cbc745b3a6f965784fd67b385774b9117870b8459f0a"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/initial-source/crates/engines/tablecraft-ace/src/table/indexes/mutation/split/nonroot/write.rs",
+      "bytes": 7246,
+      "sha256": "b5df325ef659c12d871066f241b8cf224cf99c3a7f6991d6d7ff113f4ce984b5"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/initial-source/crates/engines/tablecraft-ace/src/table/indexes/mutation/split/nonroot.rs",
+      "bytes": 826,
+      "sha256": "b7d23f30e6f6225a64ffc3dbd7f77fe959a6a637cdfaa61dd3f6359fd4925fbb"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/initial-source/crates/engines/tablecraft-ace/src/table/indexes/mutation/split/pages.rs",
+      "bytes": 4468,
+      "sha256": "9fd1b1345cb7585c3c1e7ad1b0756dd7a31600370e4d68b637d7884aa2144e8d"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/initial-source/crates/engines/tablecraft-ace/src/table/mutation/split/finish.rs",
+      "bytes": 6641,
+      "sha256": "53d311536d4b101da198f0c3873fd6b8d7e56504c83b0a6b171fc3f45332f9e0"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/private-growth-before-capture-fix.rs",
+      "bytes": 3432,
+      "sha256": "445c6c86ec57f4072554ed1fa8bd1d23ee2b77c641f78fb516d18c28f8ab0c87"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/private-growth-before-error-precedence-refinement.rs",
+      "bytes": 3426,
+      "sha256": "eb5d15c0e3c435e9265c9f1020024d32b9de3dda522b1509e4ae5fb78d92d6a6"
+    },
+    {
+      "path": ".cache/ace16-map-growth-implementation-next-20261027/private-growth-before-metadata-classification.rs",
+      "bytes": 4084,
+      "sha256": "6c1575e1f14f5798af0331d0df4bd6da1e795ddc43512c6e3343ef0fde891a14"
+    }
+  ],
+  "unchanged_old_guard": {
+    "path": "crates/engines/tablecraft-ace/tests/ace16_fixed_split_contract/values.rs",
+    "bytes": 11355,
+    "sha256": "3e3fd165e663edbfa735d9b338458592be21345a7fa977e5a6b4171adc4d2f9c"
+  },
+  "reader_review": {
+    "result": {
+      "path": ".cache/ace16-append-purpose-next-20261027/review-result.json",
+      "bytes": 3220,
+      "sha256": "b85cf8990b195c983c9d622099db3a5b74172174126bb0a54b29e01f45e409e7"
+    },
+    "note": "Embedded audit_checkpoint entries in this review are historical review identities, not current live source pins; source_pins above bind final code."
+  },
+  "reference_lineage": {
+    "committed_reference": "1e858650",
+    "receipt": {
+      "path": "docs/testing/results/usage-map-growth-observations-2026-10-27.json",
+      "bytes": 8794,
+      "sha256": "7e4fd42e0c62adde54f333989d53abbf9be08cf1c71ec090a1e44ea1df052586"
+    },
+    "history": "18fixture commands:13source passes,1failed mutating V2016 helper,1read-only classification,3corrected V2019 commands. No reference action reruns in this implementation.",
+    "baseline": {
+      "path": ".cache/ace16-map-growth-baseline-first-20261027/report.json",
+      "bytes": 8924,
+      "sha256": "98c6d721f261fe03befa7e59a16096703d87a07a1ced4852cff15560b3f6bf98"
+    },
+    "baseline_note": "Two previous frozen-consumer MAX refusals, atomic no-output, are separate from18reference commands and this scoped Rust validation. Separate no-op admissions are not counted here."
+  }
+}

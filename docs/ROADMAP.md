@@ -170,6 +170,14 @@ Delivered read/query and engineering foundations:
   retaining independent association, index-entry and unchanged-byte checks.
   General ACE 16 saves are still unavailable.
 
+- [x] Qualified [index-owned map promotion](testing/ACE16_INDEX_MAP_GROWTH.md)
+  now composes same-extent pointer-row rewrites and distinct bitmap metadata with
+  recursive/repeated splits. Independent images cover late promotion and mixed
+  represented peers. Its 92 distinct runtime functions and scoped build/lint/doc
+  checks pass; exact original-file candidate replay remains pending. General
+  allocation, other map roles/windows, normal saves and native Access
+  qualification remain unfinished.
+
 - [x] Shared [native map authority](testing/ACE16_MAP_AUTHORITY.md) now serves the
   existing long-value engineering consumer, with explicit canonical mutable
   owners and complete catalog/current/historical footprint checks. Its 43 scoped

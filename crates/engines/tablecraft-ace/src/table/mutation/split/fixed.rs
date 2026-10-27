@@ -28,6 +28,9 @@ impl NativeImage {
     /// are not admitted. Qualified composite indexes may still be maintained when
     /// their existing pages fit. Oversized integral halves are split again in
     /// deterministic paid passes. All original gates and final constraints apply.
+    /// Qualified inline index-owned maps can promote to one indirect bitmap
+    /// under complete role authority and independent allocation replay. Missing
+    /// pointer creation and shifted inline windows remain unsupported.
     ///
     /// This feature-gated engineering candidate is non-journalable and does not
     /// widen ordinary saves or the existing fixed/page/variable preview methods.

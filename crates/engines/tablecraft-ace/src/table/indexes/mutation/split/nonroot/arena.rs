@@ -1,12 +1,12 @@
 //! Postorder decisions use original leaf counts and complete final child maxima.
 mod normalize;
 use super::super::super::{encoding, repack, tree::Tree};
-use super::super::{Plan, leaf_entries, maps};
+use super::super::{Plan, leaf_entries};
 use super::Operation;
 use crate::{
     EditError, InspectError, NativeImage, WriteBlocker,
     format::{page::PAGE_BYTES, reader::Reader},
-    limits::{MAX_IMAGE_BYTES, MAX_INDEX_DEPTH},
+    limits::MAX_INDEX_DEPTH,
     table::indexes::{
         header::IndexHeader,
         page::{Entry, KeyRef},
@@ -145,21 +145,7 @@ fn allocate(
     plan: &mut Plan,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<u32, EditError> {
-    let length = plan
-        .length
-        .checked_add(PAGE_BYTES)
-        .filter(|length| *length as u64 <= MAX_IMAGE_BYTES)
-        .ok_or(InspectError::StructureLimit)?;
-    let number =
-        u32::try_from(plan.length / PAGE_BYTES).map_err(|_| InspectError::StructureLimit)?;
-    maps::allocate_nonroot(
-        operation.image,
-        operation.index,
-        number,
-        &mut plan.map_edits,
-        reader.budget,
-        reader.cancelled,
-    )?;
+    let number = super::super::allocation::reserve(operation.image, operation.index, plan, reader)?;
     reader
         .budget
         .charge_allocation(1, size_of::<u32>() as u64)
@@ -169,7 +155,6 @@ fn allocate(
         .try_reserve(1)
         .map_err(|_| InspectError::Allocation)?;
     arena.added.push(number);
-    plan.length = length;
     Ok(number)
 }
 

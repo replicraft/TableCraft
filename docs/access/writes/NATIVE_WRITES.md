@@ -135,12 +135,23 @@ sparse inputs, alongside two atomic refusals from the existing kernel. Its
 active tree/map geometry guides recursive implementation; public scratch bytes
 are not byte goldens or native Access qualification.
 
+A separate [index-owned map promotion service](../../testing/ACE16_INDEX_MAP_GROWTH.md)
+now extends the same engineering split APIs when an inline map's complete required
+span exceeds its qualified window. It preserves the original map-row extent,
+allocates bitmap metadata separately from index children and independently replays
+all pointer/member/global effects. Earlier represented reservations compose into
+later promotion. Mixed operations bind all mutated reservation owners to the
+original catalog. Every appended page has a checked non-DATA purpose. Original-file
+candidate replay, other map transitions and normal saves remain separate work.
+
 The [shared map-authority service](../../testing/ACE16_MAP_AUTHORITY.md) now
 inventories every qualified local catalog owner before granting exclusivity to
 an explicit operation-selected set. The LVAL consumer retains separate payload
 membership and final original recensus. Unknown physical slots refuse rather
 than silently disappear from coverage; metadata footprints alone grant no
-writable cells or allocation permission. Actual map growth remains unfinished.
+writable cells or allocation permission. The separate index-owned promotion
+service supplies its own allocation and final replay proof; broader map growth
+remains unfinished.
 
 Separate [usage-map growth observations](../../testing/USAGE_MAP_GROWTH_OBSERVATIONS.md)
 now establish same-extent inline index-owned promotion and first bitmap allocation

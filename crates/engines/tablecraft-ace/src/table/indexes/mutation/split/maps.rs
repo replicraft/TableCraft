@@ -1,5 +1,4 @@
 //! Exact represented index-owned/global effects; table hints are never authority.
-use super::Certificate;
 use crate::{
     EditError, InspectError, NativeImage, NativeIndex,
     format::{
@@ -49,7 +48,7 @@ pub(super) fn allocate_nonroot(
     Ok(())
 }
 
-fn change(
+pub(super) fn change(
     edits: &mut Vec<Edit>,
     cell: MapCell,
     set: bool,
@@ -80,42 +79,6 @@ fn change(
                 cell.before & !cell.mask
             },
         });
-    }
-    Ok(())
-}
-
-pub(super) fn allocate(
-    image: &NativeImage,
-    fact: &Certificate,
-    edits: &mut Vec<Edit>,
-    budget: &mut ResourceBudget,
-    cancelled: &dyn Fn() -> bool,
-) -> Result<(), EditError> {
-    let mut source = image.reader();
-    let mut reader = Reader {
-        source: &mut source,
-        header: image.catalog().header(),
-        budget,
-        cancelled,
-        reads: 0,
-    };
-    let global = RepresentedMap::read(&mut reader, GLOBAL_FREE_REFERENCE, MapRole::GlobalFree)?;
-    global.require_allocated_storage(&mut reader, &global)?;
-    let owned = RepresentedMap::read(&mut reader, fact.usage, MapRole::Owned)?;
-    owned.require_allocated_storage(&mut reader, &global)?;
-    global.require_allocated(&mut reader, fact.root)?;
-    if allocation::pages(&mut reader, fact.usage)? != [fact.root] {
-        return Err(EditError::Preservation);
-    }
-    for number in [fact.right, fact.left] {
-        reader.tick()?;
-        let owned_cell = owned.future_cell(&mut reader, number)?;
-        let free_cell = global.future_cell(&mut reader, number)?;
-        if owned_cell.before & owned_cell.mask != 0 || free_cell.before & free_cell.mask == 0 {
-            return Err(InspectError::Malformed.into());
-        }
-        change(edits, owned_cell, true, &mut reader)?;
-        change(edits, free_cell, false, &mut reader)?;
     }
     Ok(())
 }

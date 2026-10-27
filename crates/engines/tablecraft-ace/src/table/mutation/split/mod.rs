@@ -28,6 +28,10 @@ impl NativeImage {
     /// its ID and grows one height. Oversized halves are split again in paid
     /// deterministic passes within the existing codec, depth and map limits.
     /// Every original gate, final constraint and physical row reference is retained.
+    /// Qualified 69-byte inline index-owned maps may promote to one indirect
+    /// bitmap when the original members and next child cannot fit an inline
+    /// window. Metadata allocation has separate membership and role audits;
+    /// shifted windows and other map growth remain refused.
     /// Unaffected index bytes remain unchanged; no required cascade executes.
     ///
     /// This feature-gated engineering candidate is non-journalable and does not
