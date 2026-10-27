@@ -1,0 +1,282 @@
+{
+  "scope": "Maintained fresh public source reproduction; distinct from the executed private752d49 source phase. Never regenerates or replaces accepted inputs.",
+  "work": ".cache/ace16-repeated-split-sources-reproduction-20261027",
+  "sources": [
+    {
+      "path": "docs/testing/REPEATED_INDEX_SPLIT_OBSERVATIONS.md",
+      "bytes": 9755,
+      "sha256": "d1537ab5d816ebc44d0db29f8f23fd6fb8d12d33cf13bbc3e009251094046259"
+    },
+    {
+      "path": "docs/testing/SlotMapProbe.java",
+      "bytes": 4799,
+      "sha256": "acb378dbad504d1152297ad80ecf45401b1c73f22779769dd51a6cf7027a40a3"
+    },
+    {
+      "path": "docs/testing/SlotUpdateFixture.java",
+      "bytes": 18037,
+      "sha256": "2d92ce90bd970c0d613ddc8a6bca3146a551c48f5aef3026c728dd69822493a6"
+    },
+    {
+      "path": "docs/testing/capture_delete_trees.py",
+      "bytes": 20353,
+      "sha256": "05f15179d1b4c689e1dd045617335f66b98189fbd12259838cc0ab5da4ebfdb1"
+    },
+    {
+      "path": "docs/testing/delete_reference_maps.py",
+      "bytes": 8635,
+      "sha256": "9fca51758e0f26e37dab2e27ff2c41c0e8a7a8110e9a047eda1ccb2a91eadda8"
+    },
+    {
+      "path": "docs/testing/integral_split_originals/capture_sources.py",
+      "bytes": 8192,
+      "sha256": "80df4b85d60c960593774a5faf0cb6e7cb444e3e5a566cd7751ca8b9a8ba48a1"
+    },
+    {
+      "path": "docs/testing/parent_index_split_originals/BoundedFileChannel.java",
+      "bytes": 3952,
+      "sha256": "2191d11f88f3158e83929591acee803553c703e06127839caa7143340f8afd7e"
+    },
+    {
+      "path": "docs/testing/parent_index_split_originals/wire.py",
+      "bytes": 15798,
+      "sha256": "556e6663c9fe6fec52e4d0a9f76b171629a29559fd21e85a74d4a6adde5b91f9"
+    },
+    {
+      "path": "docs/testing/repeated_split_originals/RepeatedSplitFixture.java",
+      "bytes": 6683,
+      "sha256": "06047f254b79030994b4e6beccc2bf52c8056e8d51a59b02583b74727a3865a9"
+    },
+    {
+      "path": "docs/testing/repeated_split_originals/RepeatedSplitUpdateReference.java",
+      "bytes": 6289,
+      "sha256": "b0ec0c94e34ddb4130dbde353fa5221af90972aa7962f4b331d7b767bf37bd87"
+    },
+    {
+      "path": "docs/testing/repeated_split_originals/action_model.py",
+      "bytes": 13987,
+      "sha256": "ec1dfe87def9091b87aa648063e42a7ffc3d23b71cdd2373eeb7a0dbdb544a37"
+    },
+    {
+      "path": "docs/testing/repeated_split_originals/bind_actions.py",
+      "bytes": 3562,
+      "sha256": "222aa38122ec5a48c2bcb2fa38523ef2614f85f74e991ad7dc64a2d31d74aafa"
+    },
+    {
+      "path": "docs/testing/repeated_split_originals/capture_actions.py",
+      "bytes": 9414,
+      "sha256": "6a82e9ce83c6c3fd14e39d0812c7cde7af7c62960b79b589559034754b0893c9"
+    },
+    {
+      "path": "docs/testing/repeated_split_originals/capture_sources.py",
+      "bytes": 8788,
+      "sha256": "a109520403eb80d2459c736ea193dd7b1a8f0c18760fe79970cd01e0eec5add2"
+    },
+    {
+      "path": "docs/testing/repeated_split_originals/framing.py",
+      "bytes": 3564,
+      "sha256": "1a258a066029d4ac54dc93fbbd60de94599661e35fc471d4e6232de3f19757d5"
+    },
+    {
+      "path": "docs/testing/repeated_split_originals/model.py",
+      "bytes": 15313,
+      "sha256": "90fa32cdadc67baee98a791bec9bf0d0d6413cd1087b09a017dab3c80f2fa9d7"
+    },
+    {
+      "path": "docs/testing/repeated_split_originals/postcheck.py",
+      "bytes": 1208,
+      "sha256": "97a6f63f4a2b999938051645af6cf83a2b6592e80549cf9de6b24ba0a3713490"
+    },
+    {
+      "path": "docs/testing/repeated_split_originals/verify.py",
+      "bytes": 4115,
+      "sha256": "e3dc82a94a6ca6686a522d9679a9cd1df3b4d539ee01d3e874a4564b15b67f14"
+    },
+    {
+      "path": "docs/testing/slot_preview_originals/common.py",
+      "bytes": 2697,
+      "sha256": "4d6e13158e1c039f1a75bb12828cfa7eaf811e58e06e5e4de0f4c605e1519f8c"
+    },
+    {
+      "path": "docs/testing/slot_preview_originals/facts.py",
+      "bytes": 8072,
+      "sha256": "1e6b085db3335f29ef5b9bf299cde2a62e863e09698d6efb4c93b76db00dd687"
+    }
+  ],
+  "java_sources": [
+    "docs/testing/repeated_split_originals/RepeatedSplitFixture.java",
+    "docs/testing/parent_index_split_originals/BoundedFileChannel.java",
+    "docs/testing/SlotUpdateFixture.java",
+    "docs/testing/SlotMapProbe.java"
+  ],
+  "jar": {
+    "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+    "bytes": 1407244,
+    "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+  },
+  "baseline": {
+    "path": ".cache/tablecraft-bin/ace16-fixed-split-20261027",
+    "bytes": 16221552,
+    "sha256": "ff4adf2f0a3699bdeefdc64cd95daed54dda183f0f871861a14fce6f9a324418"
+  },
+  "baseline_receipt": {
+    "path": "docs/testing/results/ace16-fixed-split-example-build-2026-10-27.json",
+    "bytes": 45593,
+    "sha256": "d007e08cd4fbcec932502117bc9b6e41d2899a059a70a4943ff8f5a67496ba53"
+  },
+  "compiled_revision": "809c5e8d72ed1afe698f565f8447005292739b05",
+  "prior_typed_acceptance": {
+    "path": ".cache/ace16-integral-split-acceptance-first-20261027/report.json",
+    "bytes": 12747335,
+    "sha256": "68c83866d903a3186510dc1406d581c6b71f0224d2512c863ff0baba63753760"
+  },
+  "limits": {
+    "max_rows_per_database": 4096,
+    "expected_user_rows": 1801,
+    "max_file_bytes": 67108864,
+    "java_heap_bytes": 536870912,
+    "javac_heap_bytes": 536870912,
+    "process_seconds": 120,
+    "stream_bytes": 16777216,
+    "native_budget_bytes": 268435456,
+    "native_budget_rows": 100000,
+    "native_budget_steps": 100000000
+  },
+  "no_regeneration_or_fallback": true,
+  "public_update_calls": 0,
+  "native_non_noop_calls": 0,
+  "process_inventory": [
+    {
+      "label": "compile",
+      "argv": [
+        "javac",
+        "-J-Xmx512m",
+        "-encoding",
+        "UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "-d",
+        ".cache/ace16-repeated-split-sources-reproduction-20261027/classes",
+        "docs/testing/repeated_split_originals/RepeatedSplitFixture.java",
+        "docs/testing/parent_index_split_originals/BoundedFileChannel.java",
+        "docs/testing/SlotUpdateFixture.java",
+        "docs/testing/SlotMapProbe.java"
+      ]
+    },
+    {
+      "label": "V2016-generate",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-repeated-split-sources-reproduction-20261027/classes",
+        "RepeatedSplitFixture",
+        "generate",
+        ".cache/ace16-repeated-split-sources-reproduction-20261027/V2016-before.accdb",
+        "V2016"
+      ]
+    },
+    {
+      "label": "V2016-describe",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-repeated-split-sources-reproduction-20261027/classes",
+        "RepeatedSplitFixture",
+        "describe",
+        ".cache/ace16-repeated-split-sources-reproduction-20261027/V2016-before.accdb"
+      ]
+    },
+    {
+      "label": "V2016-Int64Keys-noop",
+      "argv_template": [
+        ".cache/tablecraft-bin/ace16-fixed-split-20261027",
+        ".cache/ace16-repeated-split-sources-reproduction-20261027/V2016-before.accdb",
+        ".cache/ace16-repeated-split-sources-reproduction-20261027/V2016-Int64Keys-noop.accdb",
+        "Int64Keys",
+        "KeyValue",
+        "<measured original ID1 ordinal>",
+        "int64",
+        "0",
+        "0"
+      ]
+    },
+    {
+      "label": "V2016-CurrencyKeys-noop",
+      "argv_template": [
+        ".cache/tablecraft-bin/ace16-fixed-split-20261027",
+        ".cache/ace16-repeated-split-sources-reproduction-20261027/V2016-before.accdb",
+        ".cache/ace16-repeated-split-sources-reproduction-20261027/V2016-CurrencyKeys-noop.accdb",
+        "CurrencyKeys",
+        "KeyValue",
+        "<measured original ID1 ordinal>",
+        "currency-scaled",
+        "0",
+        "0"
+      ]
+    },
+    {
+      "label": "V2019-generate",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-repeated-split-sources-reproduction-20261027/classes",
+        "RepeatedSplitFixture",
+        "generate",
+        ".cache/ace16-repeated-split-sources-reproduction-20261027/V2019-before.accdb",
+        "V2019"
+      ]
+    },
+    {
+      "label": "V2019-describe",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-repeated-split-sources-reproduction-20261027/classes",
+        "RepeatedSplitFixture",
+        "describe",
+        ".cache/ace16-repeated-split-sources-reproduction-20261027/V2019-before.accdb"
+      ]
+    },
+    {
+      "label": "V2019-Int64Keys-noop",
+      "argv_template": [
+        ".cache/tablecraft-bin/ace16-fixed-split-20261027",
+        ".cache/ace16-repeated-split-sources-reproduction-20261027/V2019-before.accdb",
+        ".cache/ace16-repeated-split-sources-reproduction-20261027/V2019-Int64Keys-noop.accdb",
+        "Int64Keys",
+        "KeyValue",
+        "<measured original ID1 ordinal>",
+        "int64",
+        "0",
+        "0"
+      ]
+    },
+    {
+      "label": "V2019-CurrencyKeys-noop",
+      "argv_template": [
+        ".cache/tablecraft-bin/ace16-fixed-split-20261027",
+        ".cache/ace16-repeated-split-sources-reproduction-20261027/V2019-before.accdb",
+        ".cache/ace16-repeated-split-sources-reproduction-20261027/V2019-CurrencyKeys-noop.accdb",
+        "CurrencyKeys",
+        "KeyValue",
+        "<measured original ID1 ordinal>",
+        "currency-scaled",
+        "0",
+        "0"
+      ]
+    }
+  ],
+  "execution_driver": {
+    "path": "docs/testing/repeated_split_originals/capture_sources.py",
+    "bytes": 8788,
+    "sha256": "a109520403eb80d2459c736ea193dd7b1a8f0c18760fe79970cd01e0eec5add2"
+  }
+}

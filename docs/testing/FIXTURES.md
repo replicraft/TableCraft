@@ -9698,3 +9698,22 @@ matching four expected column reports with unchanged source hashes. Its executed
 source snapshot remains distinct from the later redundant match-arm cleanup.
 No native replacement, public writer action or JVM command is performed by that
 diagnostic; new frozen original-file candidate acceptance remains separate.
+
+### Repeated numeric split originals and public comparisons
+
+The [two-phase repeated-overflow corpus](REPEATED_INDEX_SPLIT_OBSERVATIONS.md)
+uses new V2016/V2019 originals with two 900-row zero-key targets and one separate
+Memo/OLE preservation row. All nine source processes succeed, including four
+byte-identical typed-facade no-ops. The immutable source report's inherited
+native_split_calls zero label is not an API count; the recorded argv/status/output
+inventory is authoritative. A maintained public wrapper counts those no-ops.
+
+The separate thirteen-command MAX phase records four old-service atomic refusals
+and four successful public-writer copies. Each adds six pages, yielding three
+leaves per affected physical index, retained root IDs, two complete bounds and
+right tails. All row references, typed values, complete key/ROW streams, alias
+sharing, maps and counters are checked; unused public scratch is measured rather
+than used as a candidate golden. The two compact receipts retain exact executed
+private helpers and separately identified maintained public wrappers. A saved
+verifier repeats no fixture calls. Repeated kernel splitting, odd partition
+policy, deeper repeated parents and native Access qualification remain separate.

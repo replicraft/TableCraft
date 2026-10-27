@@ -1,0 +1,1134 @@
+{
+  "date": "2026-10-27",
+  "scope": "First NEW public-builder I64/Currency repeated-overflow sources and four current-facade no-op admissions; no MAX/public UPDATE in this phase.",
+  "counts": {
+    "source_processes": 9,
+    "javac": 1,
+    "generations": 2,
+    "read_only_descriptions": 2,
+    "actual_prior_split_facade_noop_calls": 4,
+    "byte_identical_noops": 4,
+    "split_allocations": 0,
+    "native_non_noop_calls": 0,
+    "public_update_calls": 0,
+    "user_rows_per_original": 1801
+  },
+  "terminal": {
+    "session": 62726,
+    "exit_code": 0,
+    "status": "all source gates and four exact no-op admissions passed",
+    "receipt": {
+      "path": ".cache/ace16-repeated-split-sources-first-20261027/terminal-status.json",
+      "bytes": 801,
+      "sha256": "2d5081d9bfc1a015f7581c92b402b0df4a748c61c7f168f9641ec7892dd541b2"
+    },
+    "log": {
+      "path": ".cache/ace16-repeated-split-sources-first-20261027.log",
+      "bytes": 1048,
+      "sha256": "952c0f67ed100653a0026a8a236ddf9bf9b604db23c10d9a38e59039df782cad"
+    }
+  },
+  "executed_freeze": {
+    "path": ".cache/ace16-repeated-splits-next-20261027/source-freeze.json",
+    "bytes": 10368,
+    "sha256": "752d49e785633400c8f01ac4ddaeda37e755b96e9f8fd584ff15b0118938d70a"
+  },
+  "raw_report": {
+    "path": ".cache/ace16-repeated-split-sources-first-20261027/report.json",
+    "bytes": 3109365,
+    "sha256": "a8efaa1af109b247a31e8d969503f89a27e41820f7f64baf0185629f853f8a54"
+  },
+  "separate_postcheck": {
+    "path": ".cache/ace16-repeated-split-sources-first-20261027/post-execution-pins.json",
+    "bytes": 5573,
+    "sha256": "a15e9da906ec06f500736331ad56b615ef8328e6c369a841006089f641f86fa5"
+  },
+  "limits": {
+    "max_rows_per_database": 4096,
+    "expected_user_rows": 1801,
+    "max_file_bytes": 67108864,
+    "java_heap_bytes": 536870912,
+    "javac_heap_bytes": 536870912,
+    "process_seconds": 120,
+    "stream_bytes": 16777216,
+    "native_budget_bytes": 268435456,
+    "native_budget_rows": 100000,
+    "native_budget_steps": 100000000
+  },
+  "jar": {
+    "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+    "bytes": 1407244,
+    "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+  },
+  "compiled_revision": "809c5e8d72ed1afe698f565f8447005292739b05",
+  "prior_consumer": {
+    "path": ".cache/tablecraft-bin/ace16-fixed-split-20261027",
+    "bytes": 16221552,
+    "sha256": "ff4adf2f0a3699bdeefdc64cd95daed54dda183f0f871861a14fce6f9a324418"
+  },
+  "prior_consumer_receipt": {
+    "path": "docs/testing/results/ace16-fixed-split-example-build-2026-10-27.json",
+    "bytes": 45593,
+    "sha256": "d007e08cd4fbcec932502117bc9b6e41d2899a059a70a4943ff8f5a67496ba53"
+  },
+  "prior_typed_original8_acceptance": {
+    "path": ".cache/ace16-integral-split-acceptance-first-20261027/report.json",
+    "bytes": 12747335,
+    "sha256": "68c83866d903a3186510dc1406d581c6b71f0224d2512c863ff0baba63753760"
+  },
+  "exact_commands": [
+    {
+      "label": "compile",
+      "argv": [
+        "javac",
+        "-J-Xmx512m",
+        "-encoding",
+        "UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "-d",
+        ".cache/ace16-repeated-split-sources-first-20261027/classes",
+        ".cache/ace16-repeated-splits-next-20261027/RepeatedSplitFixture.java",
+        "docs/testing/parent_index_split_originals/BoundedFileChannel.java",
+        "docs/testing/SlotUpdateFixture.java",
+        "docs/testing/SlotMapProbe.java"
+      ],
+      "status": 0,
+      "stopped_for": null,
+      "stdout": {
+        "path": ".cache/ace16-repeated-split-sources-first-20261027/compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": ".cache/ace16-repeated-split-sources-first-20261027/compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "V2016-generate",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-repeated-split-sources-first-20261027/classes",
+        "RepeatedSplitFixture",
+        "generate",
+        ".cache/ace16-repeated-split-sources-first-20261027/V2016-before.accdb",
+        "V2016"
+      ],
+      "status": 0,
+      "stopped_for": null,
+      "stdout": {
+        "path": ".cache/ace16-repeated-split-sources-first-20261027/V2016-generate.stdout",
+        "bytes": 100,
+        "sha256": "66c247289249c3ef98ecdb66e3bd08d68bc238a79b424c121ca99161594c0708"
+      },
+      "stderr": {
+        "path": ".cache/ace16-repeated-split-sources-first-20261027/V2016-generate.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "V2016-describe",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-repeated-split-sources-first-20261027/classes",
+        "RepeatedSplitFixture",
+        "describe",
+        ".cache/ace16-repeated-split-sources-first-20261027/V2016-before.accdb"
+      ],
+      "status": 0,
+      "stopped_for": null,
+      "stdout": {
+        "path": ".cache/ace16-repeated-split-sources-first-20261027/V2016-describe.stdout",
+        "bytes": 448862,
+        "sha256": "3f46648050519bd017ecc5fda889146bf22da80fb71879554168458a948a66a3"
+      },
+      "stderr": {
+        "path": ".cache/ace16-repeated-split-sources-first-20261027/V2016-describe.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "V2016-Int64Keys-noop",
+      "argv": [
+        ".cache/tablecraft-bin/ace16-fixed-split-20261027",
+        ".cache/ace16-repeated-split-sources-first-20261027/V2016-before.accdb",
+        ".cache/ace16-repeated-split-sources-first-20261027/V2016-Int64Keys-noop.accdb",
+        "Int64Keys",
+        "KeyValue",
+        "0",
+        "int64",
+        "0",
+        "0"
+      ],
+      "status": 0,
+      "stopped_for": null,
+      "stdout": {
+        "path": ".cache/ace16-repeated-split-sources-first-20261027/V2016-Int64Keys-noop.stdout",
+        "bytes": 25,
+        "sha256": "4488bd9e667e5af69d5eddc238e52ce4c26a3c72bb5d8463250182c4cba04f59"
+      },
+      "stderr": {
+        "path": ".cache/ace16-repeated-split-sources-first-20261027/V2016-Int64Keys-noop.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "label": "V2016-CurrencyKeys-noop",
+      "argv": [
+        ".cache/tablecraft-bin/ace16-fixed-split-20261027",
+        ".cache/ace16-repeated-split-sources-first-20261027/V2016-before.accdb",
+        ".cache/ace16-repeated-split-sources-first-20261027/V2016-CurrencyKeys-noop.accdb",
+        "CurrencyKeys",
+        "KeyValue",
+        "0",
+        "currency-scaled",
+        "0",
+        "0"
+      ],
+      "status": 0,
+      "stopped_for": null,
+      "stdout": {
+        "path": ".cache/ace16-repeated-split-sources-first-20261027/V2016-CurrencyKeys-noop.stdout",
+        "bytes": 25,
+        "sha256": "4488bd9e667e5af69d5eddc238e52ce4c26a3c72bb5d8463250182c4cba04f59"
+      },
+      "stderr": {
+        "path": ".cache/ace16-repeated-split-sources-first-20261027/V2016-CurrencyKeys-noop.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "label": "V2019-generate",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-repeated-split-sources-first-20261027/classes",
+        "RepeatedSplitFixture",
+        "generate",
+        ".cache/ace16-repeated-split-sources-first-20261027/V2019-before.accdb",
+        "V2019"
+      ],
+      "status": 0,
+      "stopped_for": null,
+      "stdout": {
+        "path": ".cache/ace16-repeated-split-sources-first-20261027/V2019-generate.stdout",
+        "bytes": 100,
+        "sha256": "7b2a45faa0adc40aa89d8aacab8eae79693d59e464a468a15f9aafa4f260d58e"
+      },
+      "stderr": {
+        "path": ".cache/ace16-repeated-split-sources-first-20261027/V2019-generate.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "V2019-describe",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Dstdout.encoding=UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-repeated-split-sources-first-20261027/classes",
+        "RepeatedSplitFixture",
+        "describe",
+        ".cache/ace16-repeated-split-sources-first-20261027/V2019-before.accdb"
+      ],
+      "status": 0,
+      "stopped_for": null,
+      "stdout": {
+        "path": ".cache/ace16-repeated-split-sources-first-20261027/V2019-describe.stdout",
+        "bytes": 450125,
+        "sha256": "a0699410e0e85bb1315b9d4b4f2899f5f0c47a4ec2e82e41dbd2b530b286e9d4"
+      },
+      "stderr": {
+        "path": ".cache/ace16-repeated-split-sources-first-20261027/V2019-describe.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "V2019-Int64Keys-noop",
+      "argv": [
+        ".cache/tablecraft-bin/ace16-fixed-split-20261027",
+        ".cache/ace16-repeated-split-sources-first-20261027/V2019-before.accdb",
+        ".cache/ace16-repeated-split-sources-first-20261027/V2019-Int64Keys-noop.accdb",
+        "Int64Keys",
+        "KeyValue",
+        "0",
+        "int64",
+        "0",
+        "0"
+      ],
+      "status": 0,
+      "stopped_for": null,
+      "stdout": {
+        "path": ".cache/ace16-repeated-split-sources-first-20261027/V2019-Int64Keys-noop.stdout",
+        "bytes": 25,
+        "sha256": "4488bd9e667e5af69d5eddc238e52ce4c26a3c72bb5d8463250182c4cba04f59"
+      },
+      "stderr": {
+        "path": ".cache/ace16-repeated-split-sources-first-20261027/V2019-Int64Keys-noop.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    },
+    {
+      "label": "V2019-CurrencyKeys-noop",
+      "argv": [
+        ".cache/tablecraft-bin/ace16-fixed-split-20261027",
+        ".cache/ace16-repeated-split-sources-first-20261027/V2019-before.accdb",
+        ".cache/ace16-repeated-split-sources-first-20261027/V2019-CurrencyKeys-noop.accdb",
+        "CurrencyKeys",
+        "KeyValue",
+        "0",
+        "currency-scaled",
+        "0",
+        "0"
+      ],
+      "status": 0,
+      "stopped_for": null,
+      "stdout": {
+        "path": ".cache/ace16-repeated-split-sources-first-20261027/V2019-CurrencyKeys-noop.stdout",
+        "bytes": 25,
+        "sha256": "4488bd9e667e5af69d5eddc238e52ce4c26a3c72bb5d8463250182c4cba04f59"
+      },
+      "stderr": {
+        "path": ".cache/ace16-repeated-split-sources-first-20261027/V2019-CurrencyKeys-noop.stderr",
+        "bytes": 85,
+        "sha256": "d6a326ac8e1c2331c15b37624a902671278b3f54fbfc3d336d80605434d14ba8"
+      }
+    }
+  ],
+  "generated_classes": [
+    {
+      "path": ".cache/ace16-repeated-split-sources-first-20261027/classes/BoundedFileChannel.class",
+      "bytes": 3080,
+      "sha256": "608c31190c2bcbc9582fd0332813b8697820604b208b9d17c7b1548791c3916b"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-sources-first-20261027/classes/RepeatedSplitFixture$1.class",
+      "bytes": 821,
+      "sha256": "cb903cc67d8402175516f6ddf51a1b274668dff837c0f348d6e5baf138dbd67e"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-sources-first-20261027/classes/RepeatedSplitFixture.class",
+      "bytes": 9667,
+      "sha256": "e2e471a9fff8b70b098e9e361fc8e8cf4a2ce3327c9c9a9cdf6ce783976f3b08"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-sources-first-20261027/classes/SlotMapProbe.class",
+      "bytes": 6843,
+      "sha256": "b6a05af31fa3aff81874378721adbef3397d080da114882f20706d328e7c854b"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-sources-first-20261027/classes/SlotUpdateFixture.class",
+      "bytes": 19746,
+      "sha256": "4b9a9f7a4f13ba1d237bfeabebbd3609db1c5db3e27aef21a1e4fc11e81a5fcf"
+    }
+  ],
+  "profiles": [
+    {
+      "profile": "V2016",
+      "original": {
+        "path": ".cache/ace16-repeated-split-sources-first-20261027/V2016-before.accdb",
+        "bytes": 573440,
+        "sha256": "c8b1feaa3acc119dd3d867398785217ae62735088b46d5cb9f309ee3d6e6ac4d"
+      },
+      "tables": {
+        "Int64Keys": {
+          "count": 900,
+          "native_type": 19,
+          "width": 8,
+          "kind": "int64",
+          "selected_ordinal": 0,
+          "selected_reference": 24064,
+          "properties": [
+            [
+              "ID",
+              "Required",
+              "1",
+              "true",
+              "Boolean:true"
+            ],
+            [
+              "KeyValue",
+              "Required",
+              "1",
+              "true",
+              "Boolean:true"
+            ]
+          ],
+          "physical_affected_indexes": [
+            1,
+            2
+          ],
+          "indexes": {
+            "PrimaryID": {
+              "root": 91,
+              "pages": 3,
+              "complete_keys": 900,
+              "key_row_hex_lines_sha256": "1d3cbecb4e18d23c30848d21486d22518dfaaef5ebf2693bf87a279ef99099a8"
+            },
+            "Ascending": {
+              "root": 92,
+              "pages": 1,
+              "complete_keys": 900,
+              "key_row_hex_lines_sha256": "be964502e0434f25d39bf5c9daf0141f335aa0232b48049404a14b7e7d085fbc",
+              "height": 0,
+              "prefix": 9,
+              "free": 7,
+              "best_changed_bytes": 10801,
+              "first_half_key_only_bytes": [
+                1809,
+                5401
+              ],
+              "second_split_key_only_bytes": [
+                909,
+                2701
+              ]
+            },
+            "Descending": {
+              "root": 93,
+              "pages": 1,
+              "complete_keys": 900,
+              "key_row_hex_lines_sha256": "dedf201c2c3fe05db12b7f78f56f37a97bc07c98c90fcebdfd26d8e4acd76dcd",
+              "height": 0,
+              "prefix": 9,
+              "free": 7,
+              "best_changed_bytes": 10801,
+              "first_half_key_only_bytes": [
+                5401,
+                1809
+              ],
+              "second_split_key_only_bytes": [
+                2701,
+                909
+              ]
+            },
+            "Alias": {
+              "root": 92,
+              "pages": 1,
+              "complete_keys": 900,
+              "key_row_hex_lines_sha256": "be964502e0434f25d39bf5c9daf0141f335aa0232b48049404a14b7e7d085fbc",
+              "height": 0,
+              "prefix": 9,
+              "free": 7,
+              "best_changed_bytes": 10801,
+              "first_half_key_only_bytes": [
+                1809,
+                5401
+              ],
+              "second_split_key_only_bytes": [
+                909,
+                2701
+              ]
+            }
+          }
+        },
+        "CurrencyKeys": {
+          "count": 900,
+          "native_type": 5,
+          "width": 8,
+          "kind": "currency-scaled",
+          "selected_ordinal": 0,
+          "selected_reference": 27392,
+          "properties": [
+            [
+              "ID",
+              "Required",
+              "1",
+              "true",
+              "Boolean:true"
+            ],
+            [
+              "KeyValue",
+              "Required",
+              "1",
+              "true",
+              "Boolean:true"
+            ]
+          ],
+          "physical_affected_indexes": [
+            1,
+            2
+          ],
+          "indexes": {
+            "PrimaryID": {
+              "root": 104,
+              "pages": 3,
+              "complete_keys": 900,
+              "key_row_hex_lines_sha256": "2ddd434f323bb8c402fc772393967f5b142fa526b9afb39f69c414b24d9eeb6d"
+            },
+            "Ascending": {
+              "root": 105,
+              "pages": 1,
+              "complete_keys": 900,
+              "key_row_hex_lines_sha256": "26a91e7215bbba4898e5502afacf53e94a7bc99bf309e1f66e3f8e555038a988",
+              "height": 0,
+              "prefix": 9,
+              "free": 7,
+              "best_changed_bytes": 10801,
+              "first_half_key_only_bytes": [
+                1809,
+                5401
+              ],
+              "second_split_key_only_bytes": [
+                909,
+                2701
+              ]
+            },
+            "Descending": {
+              "root": 106,
+              "pages": 1,
+              "complete_keys": 900,
+              "key_row_hex_lines_sha256": "13adee995a1fbc5b4dc9eef0e277d5b54e85fb1dc90e525fba303423c5e7e3fc",
+              "height": 0,
+              "prefix": 9,
+              "free": 7,
+              "best_changed_bytes": 10801,
+              "first_half_key_only_bytes": [
+                5401,
+                1809
+              ],
+              "second_split_key_only_bytes": [
+                2701,
+                909
+              ]
+            },
+            "Alias": {
+              "root": 105,
+              "pages": 1,
+              "complete_keys": 900,
+              "key_row_hex_lines_sha256": "26a91e7215bbba4898e5502afacf53e94a7bc99bf309e1f66e3f8e555038a988",
+              "height": 0,
+              "prefix": 9,
+              "free": 7,
+              "best_changed_bytes": 10801,
+              "first_half_key_only_bytes": [
+                1809,
+                5401
+              ],
+              "second_split_key_only_bytes": [
+                909,
+                2701
+              ]
+            }
+          }
+        }
+      },
+      "byte_identical_noops": [
+        {
+          "command_label": "V2016-Int64Keys-noop",
+          "output": {
+            "path": ".cache/ace16-repeated-split-sources-first-20261027/V2016-Int64Keys-noop.accdb",
+            "bytes": 573440,
+            "sha256": "c8b1feaa3acc119dd3d867398785217ae62735088b46d5cb9f309ee3d6e6ac4d"
+          },
+          "byte_identical": true
+        },
+        {
+          "command_label": "V2016-CurrencyKeys-noop",
+          "output": {
+            "path": ".cache/ace16-repeated-split-sources-first-20261027/V2016-CurrencyKeys-noop.accdb",
+            "bytes": 573440,
+            "sha256": "c8b1feaa3acc119dd3d867398785217ae62735088b46d5cb9f309ee3d6e6ac4d"
+          },
+          "byte_identical": true
+        }
+      ]
+    },
+    {
+      "profile": "V2019",
+      "original": {
+        "path": ".cache/ace16-repeated-split-sources-first-20261027/V2019-before.accdb",
+        "bytes": 647168,
+        "sha256": "aeb73b84f68288eb763523948273a82e1e0ff0112b5815fa61c041ee2359652f"
+      },
+      "tables": {
+        "Int64Keys": {
+          "count": 900,
+          "native_type": 19,
+          "width": 8,
+          "kind": "int64",
+          "selected_ordinal": 0,
+          "selected_reference": 28416,
+          "properties": [
+            [
+              "ID",
+              "Required",
+              "1",
+              "true",
+              "Boolean:true"
+            ],
+            [
+              "KeyValue",
+              "Required",
+              "1",
+              "true",
+              "Boolean:true"
+            ]
+          ],
+          "physical_affected_indexes": [
+            1,
+            2
+          ],
+          "indexes": {
+            "PrimaryID": {
+              "root": 108,
+              "pages": 3,
+              "complete_keys": 900,
+              "key_row_hex_lines_sha256": "592f8a5bf7afa735246582cc3dbefca86e288bcd2ca39c96edfd086bf0619891"
+            },
+            "Ascending": {
+              "root": 109,
+              "pages": 1,
+              "complete_keys": 900,
+              "key_row_hex_lines_sha256": "6a97146193664bc61f9710f5e2d74c854b1dd6d3ae832326ebcdf3f1ab7818ca",
+              "height": 0,
+              "prefix": 9,
+              "free": 7,
+              "best_changed_bytes": 10801,
+              "first_half_key_only_bytes": [
+                1809,
+                5401
+              ],
+              "second_split_key_only_bytes": [
+                909,
+                2701
+              ]
+            },
+            "Descending": {
+              "root": 110,
+              "pages": 1,
+              "complete_keys": 900,
+              "key_row_hex_lines_sha256": "63a5dfee2a6251f9ca606557afdcfe0959a366790b09aff552722590ddb1ea8e",
+              "height": 0,
+              "prefix": 9,
+              "free": 7,
+              "best_changed_bytes": 10801,
+              "first_half_key_only_bytes": [
+                5401,
+                1809
+              ],
+              "second_split_key_only_bytes": [
+                2701,
+                909
+              ]
+            },
+            "Alias": {
+              "root": 109,
+              "pages": 1,
+              "complete_keys": 900,
+              "key_row_hex_lines_sha256": "6a97146193664bc61f9710f5e2d74c854b1dd6d3ae832326ebcdf3f1ab7818ca",
+              "height": 0,
+              "prefix": 9,
+              "free": 7,
+              "best_changed_bytes": 10801,
+              "first_half_key_only_bytes": [
+                1809,
+                5401
+              ],
+              "second_split_key_only_bytes": [
+                909,
+                2701
+              ]
+            }
+          }
+        },
+        "CurrencyKeys": {
+          "count": 900,
+          "native_type": 5,
+          "width": 8,
+          "kind": "currency-scaled",
+          "selected_ordinal": 0,
+          "selected_reference": 32000,
+          "properties": [
+            [
+              "ID",
+              "Required",
+              "1",
+              "true",
+              "Boolean:true"
+            ],
+            [
+              "KeyValue",
+              "Required",
+              "1",
+              "true",
+              "Boolean:true"
+            ]
+          ],
+          "physical_affected_indexes": [
+            1,
+            2
+          ],
+          "indexes": {
+            "PrimaryID": {
+              "root": 121,
+              "pages": 3,
+              "complete_keys": 900,
+              "key_row_hex_lines_sha256": "e2f1967f080c4e8dad13ff9ddd983ff3c66a1457f08ea3b81b99fb0ecfd858f9"
+            },
+            "Ascending": {
+              "root": 122,
+              "pages": 1,
+              "complete_keys": 900,
+              "key_row_hex_lines_sha256": "b33856319ef695604e51b5d8bb76b626193a916a320043e19181cc6e349ccbf5",
+              "height": 0,
+              "prefix": 9,
+              "free": 7,
+              "best_changed_bytes": 10801,
+              "first_half_key_only_bytes": [
+                1809,
+                5401
+              ],
+              "second_split_key_only_bytes": [
+                909,
+                2701
+              ]
+            },
+            "Descending": {
+              "root": 123,
+              "pages": 1,
+              "complete_keys": 900,
+              "key_row_hex_lines_sha256": "200a55abee3dd64eebaeac3f5d4abb6f1ad2a12ad251f938fc885543e00b7d07",
+              "height": 0,
+              "prefix": 9,
+              "free": 7,
+              "best_changed_bytes": 10801,
+              "first_half_key_only_bytes": [
+                5401,
+                1809
+              ],
+              "second_split_key_only_bytes": [
+                2701,
+                909
+              ]
+            },
+            "Alias": {
+              "root": 122,
+              "pages": 1,
+              "complete_keys": 900,
+              "key_row_hex_lines_sha256": "b33856319ef695604e51b5d8bb76b626193a916a320043e19181cc6e349ccbf5",
+              "height": 0,
+              "prefix": 9,
+              "free": 7,
+              "best_changed_bytes": 10801,
+              "first_half_key_only_bytes": [
+                1809,
+                5401
+              ],
+              "second_split_key_only_bytes": [
+                909,
+                2701
+              ]
+            }
+          }
+        }
+      },
+      "byte_identical_noops": [
+        {
+          "command_label": "V2019-Int64Keys-noop",
+          "output": {
+            "path": ".cache/ace16-repeated-split-sources-first-20261027/V2019-Int64Keys-noop.accdb",
+            "bytes": 647168,
+            "sha256": "aeb73b84f68288eb763523948273a82e1e0ff0112b5815fa61c041ee2359652f"
+          },
+          "byte_identical": true
+        },
+        {
+          "command_label": "V2019-CurrencyKeys-noop",
+          "output": {
+            "path": ".cache/ace16-repeated-split-sources-first-20261027/V2019-CurrencyKeys-noop.accdb",
+            "bytes": 647168,
+            "sha256": "aeb73b84f68288eb763523948273a82e1e0ff0112b5815fa61c041ee2359652f"
+          },
+          "byte_identical": true
+        }
+      ]
+    }
+  ],
+  "metadata_correction": {
+    "raw_field": "native_split_calls: 0",
+    "classification": "Inaccurate API-count metadata in the executed private source runner; kept unchanged.",
+    "authoritative_facts": "Four actual split-fixed facade no-op commands, all fresh outputs byte-identical, zero split allocations/non-noop updates.",
+    "maintained_wrapper": "native_noop_attempts counts recorder entries; it did not execute the historical source phase."
+  },
+  "executed_source_pins": [
+    {
+      "path": ".cache/ace16-repeated-splits-next-20261027/DESIGN.md",
+      "bytes": 9113,
+      "sha256": "ce3195a41e574d21c1d530162a0f3363accbe2af8f310288e474299b24fe6719"
+    },
+    {
+      "path": ".cache/ace16-repeated-splits-next-20261027/RepeatedSplitFixture.java",
+      "bytes": 6683,
+      "sha256": "06047f254b79030994b4e6beccc2bf52c8056e8d51a59b02583b74727a3865a9"
+    },
+    {
+      "path": ".cache/ace16-repeated-splits-next-20261027/RepeatedSplitUpdateReference.java",
+      "bytes": 6289,
+      "sha256": "b0ec0c94e34ddb4130dbde353fa5221af90972aa7962f4b331d7b767bf37bd87"
+    },
+    {
+      "path": ".cache/ace16-repeated-splits-next-20261027/action-plan.template.json",
+      "bytes": 7120,
+      "sha256": "e2b2490bc6aa397b52867209d78fd1ba5aec79b9d96573e9ba4e2bdeb35daf3b"
+    },
+    {
+      "path": ".cache/ace16-repeated-splits-next-20261027/action_model.py",
+      "bytes": 13957,
+      "sha256": "30859c31913840c89f2538b1d3695ad8327fc83bbc12ce206581ad5e63e204d8"
+    },
+    {
+      "path": ".cache/ace16-repeated-splits-next-20261027/bind_actions.py",
+      "bytes": 3714,
+      "sha256": "013533940519f2c21a486a5c0455d66ca8e761d5db107fe4cd8ed32039ec4ce4"
+    },
+    {
+      "path": ".cache/ace16-repeated-splits-next-20261027/capacity.json",
+      "bytes": 2593,
+      "sha256": "6fba51be093f159cc571e5b4333ee270510b71b6e1e6bf1f373dc9184ef25a27"
+    },
+    {
+      "path": ".cache/ace16-repeated-splits-next-20261027/capacity.py",
+      "bytes": 2940,
+      "sha256": "43e71ee50eec497a1eaf53a2d73e7c62df77baa43d479d6f8dabf08c294e749a"
+    },
+    {
+      "path": ".cache/ace16-repeated-splits-next-20261027/capture_actions.py",
+      "bytes": 8638,
+      "sha256": "745959630917878594ca76a7e2e08ef6d8a316258f30bc6e8550642b9a95035c"
+    },
+    {
+      "path": ".cache/ace16-repeated-splits-next-20261027/capture_sources.py",
+      "bytes": 8411,
+      "sha256": "a8ea3e15e5eaeea753c07229bc0d82cfe6b919ab8bda30a2cd332f6880421bf1"
+    },
+    {
+      "path": ".cache/ace16-repeated-splits-next-20261027/model.py",
+      "bytes": 15313,
+      "sha256": "90fa32cdadc67baee98a791bec9bf0d0d6413cd1087b09a017dab3c80f2fa9d7"
+    },
+    {
+      "path": ".cache/ace16-repeated-splits-next-20261027/postcheck.py",
+      "bytes": 1208,
+      "sha256": "4ee66e432cb628812d3c3966cd16d5b1f802f438a4bac2571c977dae4419679a"
+    },
+    {
+      "path": ".cache/ace16-repeated-splits-next-20261027/reference-source.json",
+      "bytes": 632,
+      "sha256": "8f90c86bf1f5814c8abe570048289d89225f661f371ab82633e0c2e181e4b28f"
+    },
+    {
+      "path": ".cache/ace16-repeated-splits-next-20261027/selfcheck.json",
+      "bytes": 331,
+      "sha256": "ba068aea3470f6948b9f5ae2f1ab7fd03386bc2370f7a41a4ecb55b6207bfdad"
+    },
+    {
+      "path": ".cache/ace16-repeated-splits-next-20261027/selfcheck.py",
+      "bytes": 1963,
+      "sha256": "250763c6c0846caa9d5b634c9eb9971a878fc9f3337af8d87f46f3a44ea17059"
+    },
+    {
+      "path": "docs/testing/SlotMapProbe.java",
+      "bytes": 4799,
+      "sha256": "acb378dbad504d1152297ad80ecf45401b1c73f22779769dd51a6cf7027a40a3"
+    },
+    {
+      "path": "docs/testing/SlotUpdateFixture.java",
+      "bytes": 18037,
+      "sha256": "2d92ce90bd970c0d613ddc8a6bca3146a551c48f5aef3026c728dd69822493a6"
+    },
+    {
+      "path": "docs/testing/capture_delete_trees.py",
+      "bytes": 20353,
+      "sha256": "05f15179d1b4c689e1dd045617335f66b98189fbd12259838cc0ab5da4ebfdb1"
+    },
+    {
+      "path": "docs/testing/delete_reference_maps.py",
+      "bytes": 8635,
+      "sha256": "9fca51758e0f26e37dab2e27ff2c41c0e8a7a8110e9a047eda1ccb2a91eadda8"
+    },
+    {
+      "path": "docs/testing/integral_split_originals/capture_sources.py",
+      "bytes": 8192,
+      "sha256": "80df4b85d60c960593774a5faf0cb6e7cb444e3e5a566cd7751ca8b9a8ba48a1"
+    },
+    {
+      "path": "docs/testing/parent_index_split_originals/BoundedFileChannel.java",
+      "bytes": 3952,
+      "sha256": "2191d11f88f3158e83929591acee803553c703e06127839caa7143340f8afd7e"
+    },
+    {
+      "path": "docs/testing/parent_index_split_originals/wire.py",
+      "bytes": 15798,
+      "sha256": "556e6663c9fe6fec52e4d0a9f76b171629a29559fd21e85a74d4a6adde5b91f9"
+    },
+    {
+      "path": "docs/testing/slot_preview_originals/common.py",
+      "bytes": 2697,
+      "sha256": "4d6e13158e1c039f1a75bb12828cfa7eaf811e58e06e5e4de0f4c605e1519f8c"
+    },
+    {
+      "path": "docs/testing/slot_preview_originals/facts.py",
+      "bytes": 8072,
+      "sha256": "1e6b085db3335f29ef5b9bf299cde2a62e863e09698d6efb4c93b76db00dd687"
+    }
+  ],
+  "executed_source_archives": [
+    {
+      "path": ".cache/ace16-repeated-split-sources-first-20261027/precall-sources/00-DESIGN.md",
+      "bytes": 9113,
+      "sha256": "ce3195a41e574d21c1d530162a0f3363accbe2af8f310288e474299b24fe6719"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-sources-first-20261027/precall-sources/01-RepeatedSplitFixture.java",
+      "bytes": 6683,
+      "sha256": "06047f254b79030994b4e6beccc2bf52c8056e8d51a59b02583b74727a3865a9"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-sources-first-20261027/precall-sources/02-RepeatedSplitUpdateReference.java",
+      "bytes": 6289,
+      "sha256": "b0ec0c94e34ddb4130dbde353fa5221af90972aa7962f4b331d7b767bf37bd87"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-sources-first-20261027/precall-sources/03-action-plan.template.json",
+      "bytes": 7120,
+      "sha256": "e2b2490bc6aa397b52867209d78fd1ba5aec79b9d96573e9ba4e2bdeb35daf3b"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-sources-first-20261027/precall-sources/04-action_model.py",
+      "bytes": 13957,
+      "sha256": "30859c31913840c89f2538b1d3695ad8327fc83bbc12ce206581ad5e63e204d8"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-sources-first-20261027/precall-sources/05-bind_actions.py",
+      "bytes": 3714,
+      "sha256": "013533940519f2c21a486a5c0455d66ca8e761d5db107fe4cd8ed32039ec4ce4"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-sources-first-20261027/precall-sources/06-capacity.json",
+      "bytes": 2593,
+      "sha256": "6fba51be093f159cc571e5b4333ee270510b71b6e1e6bf1f373dc9184ef25a27"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-sources-first-20261027/precall-sources/07-capacity.py",
+      "bytes": 2940,
+      "sha256": "43e71ee50eec497a1eaf53a2d73e7c62df77baa43d479d6f8dabf08c294e749a"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-sources-first-20261027/precall-sources/08-capture_actions.py",
+      "bytes": 8638,
+      "sha256": "745959630917878594ca76a7e2e08ef6d8a316258f30bc6e8550642b9a95035c"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-sources-first-20261027/precall-sources/09-capture_sources.py",
+      "bytes": 8411,
+      "sha256": "a8ea3e15e5eaeea753c07229bc0d82cfe6b919ab8bda30a2cd332f6880421bf1"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-sources-first-20261027/precall-sources/10-model.py",
+      "bytes": 15313,
+      "sha256": "90fa32cdadc67baee98a791bec9bf0d0d6413cd1087b09a017dab3c80f2fa9d7"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-sources-first-20261027/precall-sources/11-postcheck.py",
+      "bytes": 1208,
+      "sha256": "4ee66e432cb628812d3c3966cd16d5b1f802f438a4bac2571c977dae4419679a"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-sources-first-20261027/precall-sources/12-reference-source.json",
+      "bytes": 632,
+      "sha256": "8f90c86bf1f5814c8abe570048289d89225f661f371ab82633e0c2e181e4b28f"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-sources-first-20261027/precall-sources/13-selfcheck.json",
+      "bytes": 331,
+      "sha256": "ba068aea3470f6948b9f5ae2f1ab7fd03386bc2370f7a41a4ecb55b6207bfdad"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-sources-first-20261027/precall-sources/14-selfcheck.py",
+      "bytes": 1963,
+      "sha256": "250763c6c0846caa9d5b634c9eb9971a878fc9f3337af8d87f46f3a44ea17059"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-sources-first-20261027/precall-sources/15-SlotMapProbe.java",
+      "bytes": 4799,
+      "sha256": "acb378dbad504d1152297ad80ecf45401b1c73f22779769dd51a6cf7027a40a3"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-sources-first-20261027/precall-sources/16-SlotUpdateFixture.java",
+      "bytes": 18037,
+      "sha256": "2d92ce90bd970c0d613ddc8a6bca3146a551c48f5aef3026c728dd69822493a6"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-sources-first-20261027/precall-sources/17-capture_delete_trees.py",
+      "bytes": 20353,
+      "sha256": "05f15179d1b4c689e1dd045617335f66b98189fbd12259838cc0ab5da4ebfdb1"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-sources-first-20261027/precall-sources/18-delete_reference_maps.py",
+      "bytes": 8635,
+      "sha256": "9fca51758e0f26e37dab2e27ff2c41c0e8a7a8110e9a047eda1ccb2a91eadda8"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-sources-first-20261027/precall-sources/19-capture_sources.py",
+      "bytes": 8192,
+      "sha256": "80df4b85d60c960593774a5faf0cb6e7cb444e3e5a566cd7751ca8b9a8ba48a1"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-sources-first-20261027/precall-sources/20-BoundedFileChannel.java",
+      "bytes": 3952,
+      "sha256": "2191d11f88f3158e83929591acee803553c703e06127839caa7143340f8afd7e"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-sources-first-20261027/precall-sources/21-wire.py",
+      "bytes": 15798,
+      "sha256": "556e6663c9fe6fec52e4d0a9f76b171629a29559fd21e85a74d4a6adde5b91f9"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-sources-first-20261027/precall-sources/22-common.py",
+      "bytes": 2697,
+      "sha256": "4d6e13158e1c039f1a75bb12828cfa7eaf811e58e06e5e4de0f4c605e1519f8c"
+    },
+    {
+      "path": ".cache/ace16-repeated-split-sources-first-20261027/precall-sources/23-facts.py",
+      "bytes": 8072,
+      "sha256": "1e6b085db3335f29ef5b9bf299cde2a62e863e09698d6efb4c93b76db00dd687"
+    }
+  ],
+  "maintained_public_sources": [
+    {
+      "path": "docs/testing/repeated_split_originals/RepeatedSplitFixture.java",
+      "bytes": 6683,
+      "sha256": "06047f254b79030994b4e6beccc2bf52c8056e8d51a59b02583b74727a3865a9"
+    },
+    {
+      "path": "docs/testing/repeated_split_originals/RepeatedSplitUpdateReference.java",
+      "bytes": 6289,
+      "sha256": "b0ec0c94e34ddb4130dbde353fa5221af90972aa7962f4b331d7b767bf37bd87"
+    },
+    {
+      "path": "docs/testing/repeated_split_originals/action_model.py",
+      "bytes": 13987,
+      "sha256": "ec1dfe87def9091b87aa648063e42a7ffc3d23b71cdd2373eeb7a0dbdb544a37"
+    },
+    {
+      "path": "docs/testing/repeated_split_originals/bind_actions.py",
+      "bytes": 3562,
+      "sha256": "222aa38122ec5a48c2bcb2fa38523ef2614f85f74e991ad7dc64a2d31d74aafa"
+    },
+    {
+      "path": "docs/testing/repeated_split_originals/capture_actions.py",
+      "bytes": 9414,
+      "sha256": "6a82e9ce83c6c3fd14e39d0812c7cde7af7c62960b79b589559034754b0893c9"
+    },
+    {
+      "path": "docs/testing/repeated_split_originals/capture_sources.py",
+      "bytes": 8788,
+      "sha256": "a109520403eb80d2459c736ea193dd7b1a8f0c18760fe79970cd01e0eec5add2"
+    },
+    {
+      "path": "docs/testing/repeated_split_originals/framing.py",
+      "bytes": 3564,
+      "sha256": "1a258a066029d4ac54dc93fbbd60de94599661e35fc471d4e6232de3f19757d5"
+    },
+    {
+      "path": "docs/testing/repeated_split_originals/model.py",
+      "bytes": 15313,
+      "sha256": "90fa32cdadc67baee98a791bec9bf0d0d6413cd1087b09a017dab3c80f2fa9d7"
+    },
+    {
+      "path": "docs/testing/repeated_split_originals/postcheck.py",
+      "bytes": 1208,
+      "sha256": "97a6f63f4a2b999938051645af6cf83a2b6592e80549cf9de6b24ba0a3713490"
+    },
+    {
+      "path": "docs/testing/repeated_split_originals/source-plan.json",
+      "bytes": 9855,
+      "sha256": "065c61a3e844c1b9dfeae8f26888ae0154db20d8ca01820825c9de63e409a351"
+    },
+    {
+      "path": "docs/testing/repeated_split_originals/verify.py",
+      "bytes": 4115,
+      "sha256": "e3dc82a94a6ca6686a522d9679a9cd1df3b4d539ee01d3e874a4564b15b67f14"
+    }
+  ],
+  "maintained_source_plan": {
+    "path": "docs/testing/repeated_split_originals/source-plan.json",
+    "bytes": 9855,
+    "sha256": "065c61a3e844c1b9dfeae8f26888ae0154db20d8ca01820825c9de63e409a351"
+  },
+  "promotion_identity": {
+    "byte_identical_from_executed_private": [
+      "RepeatedSplitFixture.java",
+      "RepeatedSplitUpdateReference.java",
+      "model.py"
+    ],
+    "maintained_derivatives": "Public capture/import/path/counter tools differ from private executed versions. Public source plan uses a distinct fresh reproduction workdir and current public source pins. No accepted originals regenerated.",
+    "private_executed_sources_preserved": true,
+    "fresh_reproduction_executed": false
+  },
+  "read_only_public_verification": {
+    "command": [
+      "python3",
+      "docs/testing/repeated_split_originals/verify.py",
+      "--source-report",
+      ".cache/ace16-repeated-split-sources-first-20261027/report.json",
+      "--action-report",
+      ".cache/ace16-repeated-split-actions-first-20261027/report.json",
+      "--framing",
+      ".cache/ace16-repeated-split-actions-first-20261027/framing.json",
+      "--source-postcheck",
+      ".cache/ace16-repeated-split-sources-first-20261027/post-execution-pins.json",
+      "--action-postcheck",
+      ".cache/ace16-repeated-split-actions-first-20261027/post-execution-pins.json"
+    ],
+    "exit_code": 0,
+    "log": {
+      "path": ".cache/ace16-repeated-split-public-verification-20261027.log",
+      "bytes": 390,
+      "sha256": "a0eeab5a9527a6ad1f152bb5aa605427f6e6ef1ebb1cae1fe9be43bba2bd472a"
+    },
+    "recursive_pin_occurrences": 269,
+    "fixture_processes_repeated": 0,
+    "boundary": "Current public proof tools re-evaluated saved bytes/descriptions only, not historical capture execution or fresh reproduction."
+  },
+  "public_source_static_validation": {
+    "command": [
+      "python3",
+      "docs/testing/repeated_split_originals/capture_sources.py",
+      "--freeze",
+      "docs/testing/repeated_split_originals/source-plan.json"
+    ],
+    "exit_code": 0,
+    "log": {
+      "path": ".cache/ace16-repeated-split-public-static-20261027.log",
+      "bytes": 88,
+      "sha256": "4f5d8ec1cfa8c27f3d6f07869ec9e3a2aa74420b566dbfef792e9142b600f515"
+    },
+    "historical_git_objects": 215,
+    "fixture_processes": 0
+  },
+  "owning_document": {
+    "path": "docs/testing/REPEATED_INDEX_SPLIT_OBSERVATIONS.md",
+    "bytes": 9755,
+    "sha256": "d1537ab5d816ebc44d0db29f8f23fd6fb8d12d33cf13bbc3e009251094046259"
+  },
+  "native_access_qualification": false
+}
