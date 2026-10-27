@@ -9289,3 +9289,30 @@ known LVAL owner signatures: key projections succeed, but complete reads and
 cascade preflight refuse. Original inputs remain unchanged. The source/metrics
 probes and initial preparation diagnostics are pinned; no native Access
 SQL/action/save or broader write profile is qualified.
+
+## Public-writer data-page row-slot boundary
+
+Repository-owned [RowSlotBoundaryFixture.java](RowSlotBoundaryFixture.java) uses
+the reviewed Jackcess 5.0.4 JAR, SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+Fresh ignored originals under `.cache/row-slot-boundary-20261026/` each contain
+`Slots(N LONG)`, 600 ordinary rows numbered 0 through 599, and no indexes or
+AutoNumber. Expressions are disabled, linked targets throw and getters are
+read-only. No upstream code or fixture bytes are copied.
+
+| Original | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Rows-V2016.accdb | 389,120 | `e462024bd067a88f04cc62c97ba3d654ab218312f44ee4a9d500f355aae18b92` |
+| Rows-V2019.accdb | 458,752 | `737d32b715fbe123eda601a063074be154de4f861bf1e0046cb1179b97bc0597` |
+| Rows-V2000.mdb | 122,880 | `e7953d7b84f12819cab1cffbe765c77b38d47ed56716c18f6d547afc870010b2` |
+| Rows-V2007.accdb | 352,256 | `22fef07786dfe3b8d6445d9d3ff9a22f7a3d906aac761664e21117fdbaa2e48f` |
+
+[Observations](ROW_SLOT_BOUNDARY_OBSERVATIONS.md) and the compact
+[receipt](results/row-slot-boundary-2026-10-26.json) pin all tools, original hashes
+and command transcripts. Nine commands pass. Each profile has actual raw page
+counts 255, 255, 90, maximum public getter slot 254 and a JAR format limit of 255.
+Every original remains unchanged. The proposed 256-row hypothesis was rejected;
+no reader ceiling change or new native Access compatibility claim follows.
+Eight frozen CLI controls also pass: exact 600-row TSV output and `Count(*)=600`
+for each profile, with empty stderr and unchanged original hashes. The receipt
+links the frozen artifact/build source pins and ignored raw capture.
