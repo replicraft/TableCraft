@@ -8,6 +8,7 @@ use tablecraft_core::limits::ResourceBudget;
 
 enum Purpose {
     Data,
+    OrdinaryCandidateBitmap { definition: u32, reference: u32 },
     Index { physical: u32, usage: u32 },
     IndexBitmap { physical: u32, usage: u32 },
 }
@@ -81,6 +82,24 @@ impl State {
         )
     }
 
+    pub(in crate::table) fn reserve_candidate_bitmap(
+        &mut self,
+        number: u32,
+        reference: u32,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        self.commit(
+            number,
+            &[Purpose::OrdinaryCandidateBitmap {
+                definition: self.owner,
+                reference,
+            }],
+            budget,
+            cancelled,
+        )
+    }
+
     pub(in crate::table) fn reserve_index_bitmap(
         &mut self,
         number: u32,
@@ -139,6 +158,13 @@ impl State {
         for (position, purpose) in purposes.iter().enumerate() {
             let purpose = match purpose {
                 Purpose::Data => Purpose::Data,
+                Purpose::OrdinaryCandidateBitmap {
+                    definition,
+                    reference,
+                } => Purpose::OrdinaryCandidateBitmap {
+                    definition: *definition,
+                    reference: *reference,
+                },
                 Purpose::Index { physical, usage } => Purpose::Index {
                     physical: *physical,
                     usage: *usage,
@@ -216,6 +242,23 @@ impl State {
                 physical: expected,
                 usage: reference,
             } if expected == physical && reference == usage => Ok(()),
+            _ => Err(EditError::Preservation),
+        }
+    }
+
+    pub(in crate::table) fn require_candidate_bitmap(
+        &self,
+        number: u32,
+        definition: u32,
+        reference: u32,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        match self.reservation(number, budget, cancelled)?.purpose {
+            Purpose::OrdinaryCandidateBitmap {
+                definition: actual_definition,
+                reference: actual_reference,
+            } if actual_definition == definition && actual_reference == reference => Ok(()),
             _ => Err(EditError::Preservation),
         }
     }

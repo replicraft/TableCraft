@@ -7,11 +7,17 @@ use crate::InspectError;
 use crate::limits::MAX_MAPPED_PAGES;
 
 mod cursor;
+#[cfg(feature = "ace16-write-preview")]
+mod qualified_inline;
 mod represented;
 pub(crate) use cursor::{PageCursor, PageMembership};
 #[cfg(feature = "ace16-write-preview")]
+pub(crate) use qualified_inline::QualifiedInlineRecord;
+#[cfg(feature = "ace16-write-preview")]
 pub(crate) use represented::MapStorage;
 pub(crate) use represented::{GLOBAL_FREE_REFERENCE, MapCell, MapRole, RepresentedMap};
+#[cfg(all(test, feature = "ace16-write-preview"))]
+pub(crate) use tests::header as test_header;
 
 const INLINE_MAP: u8 = 0;
 const INDIRECT_MAP: u8 = 1;

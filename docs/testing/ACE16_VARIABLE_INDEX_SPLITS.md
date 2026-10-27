@@ -30,6 +30,10 @@ root body and writes its pointer without reclaiming its allocated range.
 Already-forwarded stub remainders and retired hidden records remain preserved.
 Preferred record serialization, historical offsets, masks and stationary padding
 follow the [request-derived DATA proof](ACE16_VARIABLE_DATA_PROOF.md).
+The combined service additionally supports qualified
+[inline hint/index window transitions](ACE16_ALLOCATION_TRANSITIONS.md), including
+new ordinary candidate-map bitmaps. Ordinary owned/global allocation must still
+be represented; older variable wrappers keep their original limits.
 
 The new combined service also requires a complete original metadata census.
 Canonical mutable owners include global free space, selected ordinary ownership
@@ -50,7 +54,7 @@ reader boundary with unchanged default grammar.
 A shared composer checks original image length, exact-before patch overlap and
 contiguous EOF rules. It copies DATA pages before index pages and writes the
 composed map vector once. Ordinary ownership contains DATA only; index ownership
-contains index pages only; index-map bitmap metadata belongs to neither payload
+contains index pages only; candidate-map and index-map bitmap metadata belong to neither payload
 set. Existing represented allocation and qualified index-map promotion continue
 from the DATA phase boundary. Recursive index splitting retains its established
 logical ROW, prefix, sibling, root and original/fresh residue policies.

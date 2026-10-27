@@ -12,6 +12,22 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Combined allocation-map transitions
+
+The existing combined variable-record/index engineering service now supports
+qualified [inline hint/index window rebases and bitmap promotion](testing/ACE16_ALLOCATION_TRANSITIONS.md).
+Ordinary hint bitmap metadata has its own append purpose; complete original
+record authority and independent final replay protect all rewritten map bytes.
+Lower untried hints remain intact after a highest-candidate miss. Existing write
+wrappers retain their admission rules, and normal ACE saves remain closed.
+
+The scoped checks pass 290 engine unit functions (one existing ignored test),
+42 selected public write-preview contracts, three compile-fail doctests and
+strict feature/default lint. Fifteen new runtime functions cover authority,
+complete images, bitmaps and strict window boundaries. Original-file candidates
+for this extension remain pending; the separately qualified enlarged source
+copies are preparation evidence only.
+
 ## Explicit Memo/OLE storage checks
 
 The default engine now exposes a separate bounded

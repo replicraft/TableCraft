@@ -4,5 +4,7 @@ mod state;
 #[cfg(test)]
 mod tests;
 
-pub(in crate::table) use maps::{Edit, audit_bytes, claim, clear_hint, current, merge};
+pub(in crate::table) use maps::{
+    Edit, audit_bytes, claim, clear_hint, current, merge, rewrite_record,
+};
 pub(in crate::table) use state::State;

@@ -1,6 +1,6 @@
 //! Exact-slot replacements use genuine owned encoded keys for index splitting.
 use super::super::replacement::{self, ReplacementProfile, SlotKeyChanges, SlotKeyUpdate};
-use super::{Plan, edit_prepared, nonroot, seal};
+use super::{AllocationPolicy, Plan, edit_prepared, nonroot, seal};
 use crate::{
     EditError, IndexCheck, InspectError, NativeImage, NativeIndex, TableSchema, WriteBlocker,
     format::{
@@ -54,11 +54,14 @@ pub(in crate::table) fn patches(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Plan, EditError> {
-    continue_patches(
+    build(
         image,
         schema,
         indexes,
-        &SlotKeyChanges { column, updates },
+        Operation {
+            changes: SlotKeyChanges { column, updates },
+            policy: AllocationPolicy::Legacy,
+        },
         State::new(image, schema.definition),
         budget,
         cancelled,
@@ -74,8 +77,39 @@ pub(in crate::table) fn continue_patches(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Plan, EditError> {
-    let column = changes.column;
-    let updates = changes.updates;
+    build(
+        image,
+        schema,
+        indexes,
+        Operation {
+            changes: SlotKeyChanges {
+                column: changes.column,
+                updates: changes.updates,
+            },
+            policy: AllocationPolicy::Qualified,
+        },
+        append,
+        budget,
+        cancelled,
+    )
+}
+
+struct Operation<'a> {
+    changes: SlotKeyChanges<'a>,
+    policy: AllocationPolicy,
+}
+
+fn build(
+    image: &NativeImage,
+    schema: &TableSchema,
+    indexes: &[IndexCheck],
+    operation: Operation<'_>,
+    append: State,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Plan, EditError> {
+    let column = operation.changes.column;
+    let updates = operation.changes.updates;
     qualify(schema, indexes, column, budget, cancelled)?;
 
     if append.original_length != image.as_bytes().len()
@@ -87,7 +121,7 @@ pub(in crate::table) fn continue_patches(
     }
     append.preview(0)?;
 
-    let mut plan = Plan::with_append(append);
+    let mut plan = Plan::with_policy(append, operation.policy);
     let mut patches = Vec::new();
     let mut source = image.reader();
     let mut reader = Reader {
@@ -121,7 +155,7 @@ pub(in crate::table) fn continue_patches(
         let descending = index.columns()[0].descending();
         match metadata.native_type() {
             SHORT_TEXT => edit::<_, { text::MAX_ENTRY_BYTES }>(
-                Operation {
+                IndexOperation {
                     image,
                     index,
                     column,
@@ -133,7 +167,7 @@ pub(in crate::table) fn continue_patches(
                 &mut plan,
             )?,
             SHORT_BINARY => edit::<_, { binary::MAX_ENTRY_BYTES }>(
-                Operation {
+                IndexOperation {
                     image,
                     index,
                     column,
@@ -159,7 +193,7 @@ pub(in crate::table) fn continue_patches(
     Ok(plan)
 }
 
-struct Operation<'a, P> {
+struct IndexOperation<'a, P> {
     image: &'a NativeImage,
     index: &'a NativeIndex,
     column: usize,
@@ -168,7 +202,7 @@ struct Operation<'a, P> {
 }
 
 fn edit<P: ReplacementProfile, const N: usize>(
-    operation: Operation<'_, P>,
+    operation: IndexOperation<'_, P>,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
     patches: &mut Vec<IndexDataPatch>,
     plan: &mut Plan,

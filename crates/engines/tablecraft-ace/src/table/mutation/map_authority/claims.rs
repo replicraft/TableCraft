@@ -10,7 +10,7 @@ use crate::{
     header::check,
     table::mutation::{EditError, WriteBlocker},
 };
-use std::io::Cursor;
+use std::{io::Cursor, ops::Range};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 #[cfg(test)]
@@ -25,6 +25,13 @@ struct Claim {
 
 pub(in crate::table) struct Census {
     claims: Vec<Claim>,
+}
+
+/// Requested original storage identity; constructing it grants no authority.
+pub(in crate::table) struct RecordIdentity {
+    pub owner: Owner,
+    pub reference: u32,
+    pub range: Range<usize>,
 }
 
 impl Census {
@@ -155,6 +162,36 @@ impl Census {
                     }
                 }
             }
+        }
+
+        Ok(())
+    }
+
+    /// Bind a complete original record to its canonical mutable owner.
+    /// A requested identity alone does not prove role or storage exclusivity.
+    pub(in crate::table) fn require_record_rewrite(
+        &self,
+        selected: &[Owner],
+        record: RecordIdentity,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        check(budget, cancelled)?;
+        self.require_exclusive(selected, budget, cancelled)?;
+        budget
+            .charge(Resource::Steps, (selected.len() + self.claims.len()) as u64)
+            .map_err(InspectError::from)?;
+        if !selected.contains(&record.owner) {
+            return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+        }
+
+        let claim = self
+            .claims
+            .iter()
+            .find(|claim| claim.owner == record.owner)
+            .ok_or(EditError::Unsupported(WriteBlocker::RowLayout))?;
+        if claim.reference != record.reference || claim.storage.record != record.range {
+            return Err(EditError::Unsupported(WriteBlocker::RowLayout));
         }
 
         Ok(())

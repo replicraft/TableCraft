@@ -5,6 +5,7 @@ use crate::{
     format::{definition, reader::Reader},
     header::check,
 };
+use std::ops::Range;
 use tablecraft_core::limits::ResourceBudget;
 
 #[cfg(test)]
@@ -12,6 +13,8 @@ mod tests;
 
 pub(in crate::table::mutation) struct Metadata {
     protected_pages: Vec<u32>,
+    census: map_authority::Census,
+    mutable: Vec<map_authority::Owner>,
 }
 
 impl Metadata {
@@ -109,7 +112,11 @@ impl Metadata {
             reads: 0,
         };
         census.protect_storage(&mut protected_pages, &mut reader)?;
-        Ok(Self { protected_pages })
+        Ok(Self {
+            protected_pages,
+            census,
+            mutable,
+        })
     }
 
     /// Deny only original definition/map storage. This grants no DATA owner,
@@ -128,6 +135,27 @@ impl Metadata {
         }
         check(budget, cancelled)?;
         Ok(())
+    }
+
+    /// Bind a rewritten original map row to this operation's captured roles.
+    pub(in crate::table::mutation) fn require_record_rewrite(
+        &self,
+        owner: map_authority::Owner,
+        reference: u32,
+        range: Range<usize>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        self.census.require_record_rewrite(
+            &self.mutable,
+            map_authority::RecordIdentity {
+                owner,
+                reference,
+                range,
+            },
+            budget,
+            cancelled,
+        )
     }
 }
 

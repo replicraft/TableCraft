@@ -88,7 +88,7 @@ fn common(entries: &[Vec<u8>], node: bool) -> usize {
     prefix
 }
 
-fn index_page(
+pub(super) fn index_page(
     entries: &[Vec<u8>],
     previous: usize,
     next: usize,
@@ -130,7 +130,7 @@ fn index_page(
     bytes
 }
 
-fn source(code: u8, descending: bool, eof: usize, index_base: usize) -> Vec<u8> {
+pub(super) fn source(code: u8, descending: bool, eof: usize, index_base: usize) -> Vec<u8> {
     let seed = split_model::source(split_model::Family::Binary, descending, true);
     let mut bytes = seed.bytes;
     bytes.resize(eof * PAGE, 0);
@@ -352,7 +352,7 @@ fn case(code: u8, descending: bool, eof: usize, index_base: usize) -> Case {
     }
 }
 
-fn checked(bytes: &[u8]) {
+pub(super) fn checked(bytes: &[u8]) {
     let rows = read_table(
         &mut Cursor::new(bytes),
         CatalogScope::new(1),

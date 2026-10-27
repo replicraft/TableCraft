@@ -192,6 +192,45 @@ pub(in crate::table::mutation) fn certify<'a>(
         return Err(EditError::Preservation);
     }
 
+    let mut metadata_pages = data.maps.metadata_pages();
+    match (
+        &replay.metadata,
+        metadata_pages.next(),
+        metadata_pages.next(),
+    ) {
+        (None, None, None) => {}
+        (Some(expected), Some((number, reference, bytes)), None) => {
+            check(budget, cancelled)?;
+            budget
+                .charge(Resource::Steps, (seen.len() + 2 * PAGE_BYTES) as u64)
+                .map_err(InspectError::from)?;
+            if number != expected.number
+                || reference != expected.reference
+                || bytes != expected.bytes.as_slice()
+                || seen.contains(&number)
+            {
+                return Err(EditError::Preservation);
+            }
+            data.append.require_candidate_bitmap(
+                number,
+                original.schema().definition,
+                reference,
+                budget,
+                cancelled,
+            )?;
+            let start = (number as usize)
+                .checked_mul(PAGE_BYTES)
+                .ok_or(EditError::Preservation)?;
+            let end = start
+                .checked_add(PAGE_BYTES)
+                .ok_or(EditError::Preservation)?;
+            if after.get(start..end) != Some(expected.bytes.as_slice()) {
+                return Err(EditError::Preservation);
+            }
+        }
+        _ => return Err(EditError::Preservation),
+    }
+
     // This framing replay now sees exact original before-pages, certified
     // record identities/lengths, and the actual composed DATA bytes.
     audit::pages(data, budget, cancelled)?;
@@ -204,6 +243,6 @@ pub(in crate::table::mutation) fn certify<'a>(
         verified,
         end: replay.end,
         edits: replay.edits,
-        pages: replay.data_pages,
+        pages: replay.phase_pages,
     })
 }

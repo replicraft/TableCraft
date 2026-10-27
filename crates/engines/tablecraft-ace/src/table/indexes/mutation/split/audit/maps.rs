@@ -1,19 +1,20 @@
 //! Independently replay EOF purposes, role bytes and bitmap promotion.
 use super::super::Plan;
 use crate::{
-    EditError, IndexCheck, InspectError, NativeImage, WriteBlocker,
+    EditError, IndexCheck, InspectError, NativeImage,
     format::{
-        allocation::{self, GLOBAL_FREE_REFERENCE, MapCell, MapRole, RepresentedMap},
+        allocation::{GLOBAL_FREE_REFERENCE, MapCell, MapRole, RepresentedMap},
         page::{PAGE_BYTES, USAGE_SIGNATURE},
         reader::Reader,
-        row::{reference_page, reference_slot},
     },
     table::mutation::{
         CertifiedData,
-        map_authority::{self, Owner},
+        map_authority::{self, Owner, RecordIdentity},
     },
 };
 use std::io::Cursor;
+
+mod inline;
 
 const INLINE_TAG: u8 = 0;
 const INDIRECT_TAG: u8 = 1;
@@ -39,11 +40,27 @@ struct Promoted {
 }
 
 #[derive(Default)]
+enum ReplayPolicy {
+    #[default]
+    Legacy,
+    CertifiedContinuation,
+}
+
+struct Rebased {
+    usage: u32,
+    base: u32,
+    row_offset: usize,
+    original: Vec<u8>,
+}
+
+#[derive(Default)]
 pub(super) struct Expected {
     edits: Vec<Byte>,
     data_offsets: Vec<usize>,
     promoted: Vec<Promoted>,
     reservations: Vec<(u32, u32)>,
+    rebased: Vec<Rebased>,
+    policy: ReplayPolicy,
 }
 
 pub(super) fn seed(
@@ -52,7 +69,10 @@ pub(super) fn seed(
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<Expected, EditError> {
     data.require_source(image)?;
-    let mut expected = Expected::default();
+    let mut expected = Expected {
+        policy: ReplayPolicy::CertifiedContinuation,
+        ..Expected::default()
+    };
     for (offset, before, after) in data.edits() {
         reader.tick()?;
         reader.work(expected.edits.len())?;
@@ -153,99 +173,23 @@ pub(super) fn reserve(
             .map_err(|_| InspectError::Allocation)?;
         map.members.push(number);
     } else {
-        match owned.future_cell(reader, number) {
-            Ok(cell) => {
-                if cell.before & cell.mask != 0 {
-                    return Err(EditError::Preservation);
-                }
-                bit(&mut expected.edits, cell, true, reader)?;
-            }
-            Err(InspectError::Unsupported) if owned.kind() == INLINE_TAG => {
-                let page_number = reference_page(usage);
-                let slot = reference_slot(usage);
-                let container = reader.page(page_number)?;
-                let original = reader.row_location(page_number, slot, 0, &container)?;
-                if original.data.len() != QUALIFIED_ROW_BYTES || original.data[0] != INLINE_TAG {
-                    return Err(InspectError::Unsupported.into());
-                }
-                let mut members = allocation::pages(reader, usage)?;
-                for &(prior_usage, prior_number) in &expected.reservations {
-                    reader.tick()?;
-                    if prior_usage == usage {
-                        reader
-                            .budget
-                            .charge_allocation(1, size_of::<u32>() as u64)
-                            .map_err(InspectError::from)?;
-                        members
-                            .try_reserve(1)
-                            .map_err(|_| InspectError::Allocation)?;
-                        members.push(prior_number);
+        reader.work(expected.rebased.len())?;
+        let rewritten = expected.rebased.iter().any(|map| map.usage == usage);
+        if rewritten {
+            inline::reserve(reader, usage, number, next_eof, expected, &global)?;
+        } else {
+            match owned.future_cell(reader, number) {
+                Ok(cell) => {
+                    if cell.before & cell.mask != 0 {
+                        return Err(EditError::Preservation);
                     }
+                    bit(&mut expected.edits, cell, true, reader)?;
                 }
-                reader.work(members.len())?;
-                let (mut low, mut high) = (number, number);
-                for &member in &members {
-                    low = low.min(member);
-                    high = high.max(member);
-                    if member < reader.header.page_count() {
-                        global.require_allocated(reader, member)?;
-                    }
+                Err(InspectError::Unsupported) if owned.kind() == INLINE_TAG => {
+                    inline::reserve(reader, usage, number, next_eof, expected, &global)?;
                 }
-                let capacity = (original.data.len() - PREFIX_BYTES) * u8::BITS as usize;
-                if (u64::from(high) - u64::from(low) + 1) <= capacity as u64
-                    || high as usize >= PAGES_IN_BITMAP
-                {
-                    return Err(EditError::Unsupported(WriteBlocker::RowLayout));
-                }
-                let metadata = number.checked_add(1).ok_or(EditError::Preservation)?;
-                let end = original
-                    .offset
-                    .checked_add(original.data.len())
-                    .ok_or(EditError::Preservation)?;
-                reader.work(expected.data_offsets.len())?;
-                if expected
-                    .data_offsets
-                    .iter()
-                    .any(|offset| original.offset <= *offset && *offset < end)
-                {
-                    return Err(EditError::Preservation);
-                }
-                reader.work(expected.edits.len())?;
-                expected
-                    .edits
-                    .retain(|edit| edit.offset < original.offset || edit.offset >= end);
-
-                let cell = global.future_cell(reader, metadata)?;
-                if cell.before & cell.mask == 0 {
-                    return Err(EditError::Preservation);
-                }
-                bit(&mut expected.edits, cell, false, reader)?;
-                reader
-                    .budget
-                    .charge_allocation(1, size_of::<u32>() as u64)
-                    .map_err(InspectError::from)?;
-                members
-                    .try_reserve(1)
-                    .map_err(|_| InspectError::Allocation)?;
-                members.push(number);
-                reader
-                    .budget
-                    .charge_allocation(1, size_of::<Promoted>() as u64)
-                    .map_err(InspectError::from)?;
-                expected
-                    .promoted
-                    .try_reserve(1)
-                    .map_err(|_| InspectError::Allocation)?;
-                expected.promoted.push(Promoted {
-                    usage,
-                    bitmap_page: metadata,
-                    row_offset: original.offset,
-                    original: original.data,
-                    members,
-                });
-                *next_eof = metadata;
+                Err(error) => return Err(error.into()),
             }
-            Err(error) => return Err(error.into()),
         }
     }
     let free = global.future_cell(reader, number)?;
@@ -274,6 +218,7 @@ pub(super) fn finish(
 ) -> Result<(), EditError> {
     if expected.edits.len() != plan.append.map_edits.len()
         || expected.promoted.len() != plan.promotions.len()
+        || expected.rebased.len() != plan.rebases.len()
     {
         return Err(EditError::Preservation);
     }
@@ -293,6 +238,19 @@ pub(super) fn finish(
             return Err(EditError::Preservation);
         }
     }
+    for map in &expected.rebased {
+        reader.tick()?;
+        reader.work(plan.rebases.len())?;
+        let actual = plan
+            .rebases
+            .iter()
+            .find(|actual| actual.usage == map.usage)
+            .ok_or(EditError::Preservation)?;
+        if actual.base != map.base {
+            return Err(EditError::Preservation);
+        }
+    }
+
     for map in &expected.promoted {
         reader.tick()?;
         reader.work(plan.promotions.len())?;
@@ -411,10 +369,11 @@ pub(super) fn authority(
     image: &NativeImage,
     definition: u32,
     indexes: &[IndexCheck],
+    plan: &Plan,
     expected: &Expected,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<(), EditError> {
-    if expected.promoted.is_empty() {
+    if expected.promoted.is_empty() && expected.rebased.is_empty() {
         return Ok(());
     }
     let census = map_authority::capture_catalog(
@@ -451,5 +410,51 @@ pub(super) fn authority(
         }
     }
     census.require_exclusive(&selected, reader.budget, reader.cancelled)?;
+
+    for (usage, row_offset, original) in expected
+        .promoted
+        .iter()
+        .map(|map| (map.usage, map.row_offset, map.original.as_slice()))
+        .chain(
+            expected
+                .rebased
+                .iter()
+                .map(|map| (map.usage, map.row_offset, map.original.as_slice())),
+        )
+    {
+        reader.tick()?;
+        reader.work(indexes.len() + plan.rebases.len())?;
+        let index = indexes
+            .iter()
+            .find(|checked| checked.index().usage_map() == usage)
+            .ok_or(EditError::Preservation)?;
+        let physical = index.index().data_number();
+        if plan
+            .rebases
+            .iter()
+            .any(|map| map.usage == usage && map.physical != physical)
+        {
+            return Err(EditError::Preservation);
+        }
+
+        let owner = Owner::IndexOwned {
+            definition,
+            physical,
+        };
+        let end = row_offset
+            .checked_add(original.len())
+            .ok_or(EditError::Preservation)?;
+        census.require_record_rewrite(
+            &selected,
+            RecordIdentity {
+                owner,
+                reference: usage,
+                range: row_offset..end,
+            },
+            reader.budget,
+            reader.cancelled,
+        )?;
+    }
+
     Ok(())
 }

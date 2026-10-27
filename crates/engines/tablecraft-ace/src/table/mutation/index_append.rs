@@ -106,7 +106,6 @@ fn compose_parts<P: BytePatch>(
         )?);
     }
     if let Some(data) = data {
-        let mut next = image.as_bytes().len();
         for page in data.pages {
             check(budget, cancelled)?;
             let offset = page.number as usize * PAGE_BYTES;
@@ -114,29 +113,60 @@ fn compose_parts<P: BytePatch>(
                 return Err(EditError::Preservation);
             }
             if page.before.is_empty() {
-                if offset != next || next + PAGE_BYTES > index_begin {
-                    return Err(EditError::Preservation);
-                }
-                plan.append.require_data(page.number, budget, cancelled)?;
-                budget
-                    .charge(Resource::Steps, PAGE_BYTES as u64)
-                    .map_err(InspectError::from)?;
-                after[next..next + PAGE_BYTES].copy_from_slice(&page.after);
-                next += PAGE_BYTES;
-            } else {
-                spans.push(write(
-                    image,
-                    &mut after,
-                    offset,
-                    &page.before,
-                    &page.after,
-                    budget,
-                    cancelled,
-                )?);
+                continue;
             }
+            spans.push(write(
+                image,
+                &mut after,
+                offset,
+                &page.before,
+                &page.after,
+                budget,
+                cancelled,
+            )?);
         }
-        if next != index_begin {
-            return Err(EditError::Preservation);
+
+        // Ordinary metadata may occupy an EOF slot between DATA pages. One
+        // cursor still owns the entire phase; each slot has exactly one typed
+        // builder object before independent final certification.
+        for start in (image.as_bytes().len()..index_begin).step_by(PAGE_BYTES) {
+            check(budget, cancelled)?;
+            budget
+                .charge(
+                    Resource::Steps,
+                    (data.pages.len() + data.maps.metadata_pages().count() + PAGE_BYTES) as u64,
+                )
+                .map_err(InspectError::from)?;
+            let number = u32::try_from(start / PAGE_BYTES).map_err(|_| EditError::Preservation)?;
+            let mut matching = 0;
+            let mut bytes = None;
+            for page in data.pages {
+                if page.before.is_empty() && page.number == number {
+                    plan.append.require_data(number, budget, cancelled)?;
+                    matching += 1;
+                    bytes = Some(page.after.as_slice());
+                }
+            }
+            for (metadata, reference, body) in data.maps.metadata_pages() {
+                if metadata == number {
+                    plan.append.require_candidate_bitmap(
+                        number,
+                        plan.append.owner,
+                        reference,
+                        budget,
+                        cancelled,
+                    )?;
+                    matching += 1;
+                    bytes = Some(body);
+                }
+            }
+            let bytes = bytes
+                .filter(|bytes| matching == 1 && bytes.len() == PAGE_BYTES)
+                .ok_or(EditError::Preservation)?;
+            after
+                .get_mut(start..start + PAGE_BYTES)
+                .ok_or(EditError::Preservation)?
+                .copy_from_slice(bytes);
         }
     }
 

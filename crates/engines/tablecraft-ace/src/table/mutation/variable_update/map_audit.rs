@@ -1,5 +1,6 @@
 //! Independent placement replay derives map authority without planner masks.
 mod certified;
+mod hint;
 #[cfg(test)]
 mod tests;
 
@@ -45,6 +46,8 @@ struct Replay {
     end: u32,
     edits: Vec<ExpectedByte>,
     data_pages: Vec<u32>,
+    phase_pages: Vec<u32>,
+    metadata: Option<hint::ExpectedBitmap>,
 }
 
 fn expect(
@@ -146,6 +149,12 @@ fn replay(
         .map_err(|_| InspectError::Allocation)?;
     let mut expected = Vec::new();
     let mut data_pages = Vec::new();
+    let mut phase_pages = Vec::new();
+    let mut hint_replay = if let Some(metadata) = metadata {
+        hint::Hint::capture(schema.definition, hint_reference, metadata, &mut reader)?
+    } else {
+        None
+    };
 
     for number in original {
         reader.tick()?;
@@ -247,12 +256,16 @@ fn replay(
                 // can authorize a hint clear. A later forged failed_fit call
                 // cannot invent an event or consume an unrelated hint bit.
                 state.hinted = false;
-                expect(
-                    &mut expected,
-                    cell(&hint, state.number, &mut reader)?,
-                    false,
-                    &mut reader,
-                )?;
+                if let Some(replay) = &mut hint_replay {
+                    replay.remove(state.number, &mut expected, &mut reader)?;
+                } else {
+                    expect(
+                        &mut expected,
+                        cell(&hint, state.number, &mut reader)?,
+                        false,
+                        &mut reader,
+                    )?;
+                }
             }
         }
         let position = if let Some(position) = destination {
@@ -262,16 +275,26 @@ fn replay(
                 return Err(EditError::Preservation);
             }
             let owned_cell = owned.future_cell(&mut reader, number)?;
-            let hint_cell = hint.future_cell(&mut reader, number)?;
+            let hint_cell = if hint_replay.is_none() {
+                Some(hint.future_cell(&mut reader, number)?)
+            } else {
+                None
+            };
             let global_cell = global.future_cell(&mut reader, number)?;
             if owned_cell.before & owned_cell.mask != 0
-                || hint_cell.before & hint_cell.mask != 0
                 || global_cell.before & global_cell.mask == 0
             {
                 return Err(EditError::Preservation);
             }
+            if let Some(hint_cell) = &hint_cell
+                && hint_cell.before & hint_cell.mask != 0
+            {
+                return Err(EditError::Preservation);
+            }
             expect(&mut expected, owned_cell, true, &mut reader)?;
-            expect(&mut expected, hint_cell, true, &mut reader)?;
+            if let Some(hint_cell) = hint_cell {
+                expect(&mut expected, hint_cell, true, &mut reader)?;
+            }
             expect(&mut expected, global_cell, false, &mut reader)?;
             states.push(State {
                 number,
@@ -287,7 +310,28 @@ fn replay(
                 .try_reserve(1)
                 .map_err(|_| InspectError::Allocation)?;
             data_pages.push(number);
+            reader
+                .budget
+                .charge_allocation(1, size_of::<u32>() as u64)
+                .map_err(InspectError::from)?;
+            phase_pages
+                .try_reserve(1)
+                .map_err(|_| InspectError::Allocation)?;
+            phase_pages.push(number);
             next_eof = next_eof.checked_add(1).ok_or(EditError::Preservation)?;
+            if let Some(replay) = &mut hint_replay
+                && let Some(bitmap) =
+                    replay.add(number, &mut next_eof, &mut expected, &global, &mut reader)?
+            {
+                reader
+                    .budget
+                    .charge_allocation(1, size_of::<u32>() as u64)
+                    .map_err(InspectError::from)?;
+                phase_pages
+                    .try_reserve(1)
+                    .map_err(|_| InspectError::Allocation)?;
+                phase_pages.push(bitmap);
+            }
             states.len() - 1
         };
         let state = &mut states[position];
@@ -322,6 +366,8 @@ fn replay(
         end: next_eof,
         edits: expected,
         data_pages,
+        phase_pages,
+        metadata: hint_replay.and_then(hint::Hint::into_metadata),
     })
 }
 

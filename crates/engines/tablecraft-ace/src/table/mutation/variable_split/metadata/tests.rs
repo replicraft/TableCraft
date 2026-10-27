@@ -2,6 +2,7 @@
 use super::Metadata;
 use crate::{
     EditError, InspectError, NativeImage, TableCheck, WriteBlocker, check_table,
+    table::mutation::map_authority::Owner,
     test_support::{map_growth::model, support},
 };
 use std::io::Cursor;
@@ -69,6 +70,48 @@ fn metadata(image: &NativeImage, checked: &TableCheck, column: usize) -> Metadat
         &|| false,
     )
     .unwrap()
+}
+
+#[test]
+fn record_rewrites_are_bound_to_the_captured_operation_roles_and_original_storage() {
+    for code in [5, 6] {
+        let original = source(code);
+        let image = capture(&original.bytes);
+        let checked = checked_table(&image);
+        let column = checked
+            .schema()
+            .columns()
+            .iter()
+            .position(|field| field.name() == "Score")
+            .unwrap();
+        let protected = metadata(&image, &checked, column);
+        let owner = Owner::OrdinaryCandidate { definition: 10 };
+        let reference = (11 << 8) | 1;
+        let (start, end) = model::row_range(&original.bytes, 11, 1);
+        protected
+            .require_record_rewrite(owner, reference, start..end, &mut budget(), &|| false)
+            .unwrap();
+
+        for (owner, reference, range) in [
+            (Owner::GlobalFree, reference, start..end),
+            (
+                Owner::OrdinaryCandidate {
+                    definition: model::OTHER as u32,
+                },
+                reference,
+                start..end,
+            ),
+            (owner, 11 << 8, start..end),
+            (owner, reference, start + 1..end),
+        ] {
+            assert_eq!(
+                protected
+                    .require_record_rewrite(owner, reference, range, &mut budget(), &|| false)
+                    .err(),
+                Some(EditError::Unsupported(WriteBlocker::RowLayout))
+            );
+        }
+    }
 }
 
 #[test]

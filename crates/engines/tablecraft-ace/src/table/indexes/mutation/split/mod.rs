@@ -43,6 +43,12 @@ pub(in crate::table) struct AddedPage {
     pub bytes: Vec<u8>,
 }
 
+#[derive(Clone, Copy)]
+pub(super) enum AllocationPolicy {
+    Legacy,
+    Qualified,
+}
+
 pub(super) struct Certificate {
     pub physical: u32,
     pub root: u32,
@@ -60,6 +66,8 @@ pub(in crate::table) struct Plan {
     pub added: Vec<AddedPage>,
     certificates: Vec<Certificate>,
     pub(in crate::table) promotions: Vec<allocation::Promotion>,
+    pub(in crate::table) rebases: Vec<allocation::Rebase>,
+    allocation_policy: AllocationPolicy,
 }
 
 impl Plan {
@@ -68,12 +76,18 @@ impl Plan {
     }
 
     pub(super) fn with_append(append: State) -> Self {
+        Self::with_policy(append, AllocationPolicy::Legacy)
+    }
+
+    pub(super) fn with_policy(append: State, allocation_policy: AllocationPolicy) -> Self {
         Self {
             append,
             patches: Vec::new(),
             added: Vec::new(),
             certificates: Vec::new(),
             promotions: Vec::new(),
+            rebases: Vec::new(),
+            allocation_policy,
         }
     }
 
