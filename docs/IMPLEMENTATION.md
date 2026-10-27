@@ -198,9 +198,11 @@ Repeated splitting of an oversized half remains unfinished.
 
 A working clap-based engineering consumer uses exact integer/scaled Currency
 arguments, validates carriers before source I/O and publishes only fresh synced
-candidate files. A committed frozen-consumer original-file replay is still
-required; prior public source/reference observations do not qualify this new
-candidate path. Normal native saves and Microsoft Access qualification remain open.
+candidate files. The [first frozen-consumer original-file replay](testing/FIXED_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
+now passes all eight complete expected images and fresh getter/index/map checks
+on unchanged Byte/Int16/Int64/Currency originals. All sixteen fixture commands
+pass without retries or regeneration, separately from prior public writer actions.
+Normal native saves and Microsoft Access qualification remain open.
 
 ## Other fixed numeric split sources
 
@@ -222,7 +224,7 @@ sixteen physical roots grow to height one with four EOF pages per edited copy;
 complete typed rows, key/ROW streams, maps and counters match expectations.
 All 32 public fresh leaves retain nonzero unused scratch, separate from kernel
 padding contracts. The new typed split candidate acceptance
-remains separate work; these are independent-reader/writer observations, not
+is recorded separately above; these are independent-reader/writer observations, not
 native Access qualification.
 
 ## Measured Int32 parent overflow and root growth

@@ -103,8 +103,11 @@ Delivered read/query and engineering foundations:
   Byte/Int16/Int32/Int64/Currency recursive splits with request-derived final
   authority and a fresh-output engineering consumer; 124 distinct scoped runtime
   functions and strict/minimal/docs checks pass. Oversized balanced halves still
-  refuse; other codecs, general allocation, original typed candidate replay and
-  normal saves remain unfinished.
+  refuse; other codecs, general allocation and normal saves remain unfinished.
+  Its [eight first original-file candidates](testing/FIXED_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
+  now match independent complete images and fresh getter/index/map checks on the
+  unchanged sources, through a committed frozen consumer and sixteen successful
+  fixture commands. Recursive typed originals and native Access remain separate.
   Their [separate MAX reference actions](testing/INTEGRAL_INDEX_SPLIT_OBSERVATIONS.md)
   now record eight successful public updates and eight old-consumer atomic
   refusals on unchanged originals. All sixteen physical roots split; new typed
