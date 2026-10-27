@@ -69,6 +69,9 @@ pub fn like(
         return Err(EvalError::TypeMismatch);
     };
     let collation = collation.ok_or(EvalError::CollationRequired)?;
+    if collation.like_profile() == LikeProfile::Unsupported {
+        return Err(EvalError::UnsupportedExpression);
+    }
     if collation.like_profile() == LikeProfile::Utf16Weights {
         return utf16::matches(
             LikeString::Text(text),

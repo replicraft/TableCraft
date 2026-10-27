@@ -1,6 +1,8 @@
 /// Explicit wildcard-unit and literal-span semantics supplied by a host.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum LikeProfile {
+    /// Ordering is available, but this provider admits no wildcard matching.
+    Unsupported,
     /// Existing Unicode scalar matcher; literals/classes consume one scalar.
     UnicodeScalar,
     /// UTF-16 wildcards and complete weighted literal/element spans.

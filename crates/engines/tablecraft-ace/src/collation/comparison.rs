@@ -153,7 +153,7 @@ pub(super) fn full_key_utf16(
     key::encode_full(family, units, work)
 }
 
-fn trim_spaces<'a>(
+pub(super) fn trim_spaces<'a>(
     mut units: &'a [u16],
     work: &mut key::Work<'_>,
 ) -> Result<&'a [u16], InspectError> {

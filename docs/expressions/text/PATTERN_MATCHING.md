@@ -29,6 +29,14 @@ availability is documented by Microsoft's [Access LIKE operator](https://support
 These language and query contracts do not establish native Windows formatting,
 collation or error-order qualification.
 
+A host may select `LikeProfile::Unsupported` when it supplies ordering without
+matching. Non-NULL LIKE then returns `UnsupportedExpression`, including wildcard-only
+patterns that would otherwise need no ordering callback. Mode checks, NULL
+propagation and operand preparation/coercion retain their existing phases; the
+unsupported check precedes raw String publication and pattern execution. Existing
+UnicodeScalar and Utf16Weights providers retain their matching paths. The French
+legacy native comparison provider uses this explicit refusal boundary.
+
 `predicates::like_utf16` also accepts borrowed `LikeString::Text` and
 `LikeString::Utf16Le` inputs under an explicitly selected UTF-16 weight provider.
 Complete raw units, including isolated surrogates and ranges starting at odd byte

@@ -31,8 +31,9 @@ case requiring a semantic patch. Existing aggregate/UNION category ambiguity
 and native text uncertainty must not be relabeled as bugs to keep a queue full.
 Additional stored sort orders are a concrete missing implementation family.
 The exact French legacy descriptor now has an implemented closed physical-read
-profile and a stored-key/reference oracle. Full-string SQL comparison, LIKE/search
-and other sort families retain their separate evidence and implementation gates.
+profile and a stored-key/reference oracle. A separate provisional full-string SQL
+comparison provider is implemented; LIKE/search, Text/LCID modes, other sort
+families and native qualification retain separate gates.
 
 ## Value categories and declared arithmetic
 
@@ -83,7 +84,7 @@ unqualified; the finite audit did not establish a new Error aggregate bug.
 | --- | --- | --- | --- |
 | T1 | `SELECT LegacyText=ModernText FROM PolicyProbe` with the required field resolver and different retained identities | Conflict is explicit; an explicitly selected global override has its separate supported behavior. Runtime domain/aggregate/constructed String provenance is retained. **Working host policy; native mixed-policy precedence pending.** | Execute the same per-field originals in ACE16 for direct/reversed comparisons, derived aliases, NULLs, aggregates and explicit overrides. Record database and field descriptors separately. |
 | T2 | `LegacyText & IIf(True,2,ModernText)` subsequently compared or grouped | Converted numeric data does not contribute the unselected Text field's policy; actual String and conservatively retained NULL policies do. Completed construction is not overwritten by static fallback. **Working**, not a generic lost-policy TODO. | Keep the existing late-contributor/cohort and provider-activation controls. Add a bug only with a discriminator that violates this stated host contract. |
-| T3 | A stored Text field with an exact non-General descriptor, or a nonzero General variant/unknown table version, followed by comparison or selected text-index traversal | NativeSortOrder preserves the descriptor. General services and exact ordinary French legacy physical reads implement closed profiles; other stored orders and French SQL comparison remain unfinished. **Concrete missing provider/key families with conservative refusals**, not permission to substitute ICU/ordinal or ignore descriptor bytes. | French legacy `1036/0/0` now has unchanged stored-key and independent getter/order evidence; its closed ordinary single-field physical encoder/read profile is implemented. Qualify complete scalar comparison separately, including NULL, direction, ties, padding and overflow/digest boundaries. Other orders still need their exact descriptor/oracle gate. |
+| T3 | A stored Text field with an exact non-General descriptor, or a nonzero General variant/unknown table version, followed by comparison or selected text-index traversal | NativeSortOrder preserves the descriptor. General services and exact ordinary French legacy physical reads implement closed profiles; a separate French full-weight query provider is implemented, while other orders, French matching and native qualification remain unfinished. **Concrete missing provider/key families with conservative refusals**, not permission to substitute ICU/ordinal or ignore descriptor bytes. | French legacy `1036/0/0` now has unchanged stored-key and independent getter/order evidence; its closed ordinary single-field physical encoder/read profile is implemented. The full-string provider has separate short-key/long-Latin engineering evidence; native scalar comparison and broader matching remain unqualified. Other orders still need their exact descriptor/oracle gate. |
 | T4 | `StrComp('A','a',1)` or `InStr(1,'xI','ı',1055)` with explicit ICU locale/LCID registration | Nineteen explicit ICU host profiles and one exactly registered LCID per execution already work. **Working host implementation; NLS/ACE equivalence pending.** | Capture function-specific ACE16/NLS results with build, locale, flags, Option Compare and full LCID identity. Do not turn an LCID's structural validity into automatic provider support. |
 | T5 | Binary StrComp, General database comparison, LIKE and substring matching on trailing spaces/raw UTF-16 | Distinct current contracts already exist: binary units, General SQL padding, pattern spans and bounded search callbacks. **Working engineering profiles; native function-specific padding/matching pending.** | Compare each consumer independently using empty/NUL/trailing-space inputs, expansions, surrogate boundaries and consumed spans. Equality agreement alone does not qualify LIKE or search. |
 
@@ -120,8 +121,10 @@ now establishes exact descriptor `1036/0/0`, independent stored keys and distinc
 accent ordering on unchanged ACE16 V2016/V2019 originals. Both profiles pass
 456 logical index memberships, or 304 physical entries after alias deduplication.
 This satisfies the descriptor/oracle entry gate for that closed family; physical
-encoder/read support is now implemented under its [closed contract](../access/indexes/NATIVE_TEXT.md). It does not qualify
-full-string SQL comparison, equality-prefix hints, LIKE/search, Memo or mutations.
+encoder/read support is now implemented under its [closed contract](../access/indexes/NATIVE_TEXT.md). A [separate provisional full-string query provider](FRENCH_COMPARISON_OBSERVATIONS.md)
+now supplies SQL/default/Database ordering, including ordinary Memo values. This
+does not qualify native Access comparisons, equality-prefix hints, LIKE/search,
+Memo physical indexes or mutations.
 Other orders still need their own admissible oracle. Do not derive a stored order
 from an arbitrary locale library or relabel a host profile as native compatibility.
 

@@ -67,6 +67,13 @@ pub(crate) fn encode_full(
     encode_with_positions(family, units, false, true, false, work)
 }
 
+pub(crate) fn encode_full_french(
+    units: &[u16],
+    work: &mut Work<'_>,
+) -> Result<ComparisonKey, InspectError> {
+    encode_with_positions(GeneralSortFamily::Legacy, units, false, true, true, work)
+}
+
 fn encode_with_positions(
     family: GeneralSortFamily,
     units: &[u16],

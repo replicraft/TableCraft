@@ -1,5 +1,37 @@
 # Implementation status
 
+## Comparison-only French database query policy
+
+Exact French legacy `1036/0/0` now has separate full-String and raw-UTF16
+comparison entry points plus an Access resolver policy. Complete operands retain
+primary differences and reversed accent weights beyond 255 units; physical index
+truncation and digests are never SQL comparison keys. Existing General providers
+remain separate. Per-field identities drive predicates and relational keys;
+String built-ins retain their operation/default provider contract.
+
+French SQL/default and explicit Database comparisons use the provisional weight
+model. Text/LCID policies are not inferred from the stored locale. An explicit
+unsupported-LIKE capability prevents wildcard-only patterns from bypassing the
+matching boundary; actual French substring matching remains unavailable, while
+existing NULL/empty/out-of-range controls and Binary operations retain their rules.
+The resolver's default accessor now returns `&dyn Collation`, an intentional
+public source-compatibility change documented in the owning contract.
+
+The [scoped record](testing/results/french-full-comparison-2026-10-26.json) records
+119 distinct passing runtime functions, including eighteen new controls, plus
+three compile-fail checks. Strict checks cover the affected engine, expressions,
+Access and CLI scopes; standalone minimal builds and warnings-denied rustdoc pass.
+Independent mock-source tests cover named/derived lineage, grouping/sets/extrema,
+joins, policy conflicts, metadata revalidation and long values with explicit pools.
+A default-feature-only lint in an existing mutation dispatcher was corrected with
+an equivalent cfg-specific destructuring, retaining preview behavior.
+
+The independent oracle establishes 158 short keys and twenty long-Latin pairs.
+It does not establish arbitrary long-Unicode positional or native Access/NLS
+semantics. The new native Short Text/Memo corpus is separately registered;
+original-field SQL replay remains a subsequent acceptance step. See
+[the comparison observations](testing/FRENCH_COMPARISON_OBSERVATIONS.md).
+
 ## Original French physical index CLI replay
 
 The [frozen CLI comparison](testing/results/french-physical-originals-2026-10-26.json)

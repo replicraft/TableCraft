@@ -1,0 +1,540 @@
+{
+  "date": "2026-10-26",
+  "scope": "Exact French 1036/0/0 provisional complete-String comparison provider and resolver; not native Access SQL/NLS or French matching qualification",
+  "source_state": "Uncommitted feature working-tree snapshots identified by source pins. No clean compiled CLI revision is claimed here; native original-field replay requires its separate committed artifact receipt.",
+  "counts": {
+    "distinct_runtime_functions": 119,
+    "new_runtime_functions": 18,
+    "engine_distinct": 19,
+    "expression_like_functions": 31,
+    "access_distinct": 50,
+    "cli_existing_functions": 19,
+    "compile_fail_doc_checks_separate": 3,
+    "latin_measured_handlers": 82,
+    "independent_complete_short_keys": 158,
+    "independent_long_latin_pairs": 20
+  },
+  "new_functions": {
+    "engine_french_comparison": 4,
+    "expression_unsupported_like": 2,
+    "access_french_query_contract": 7,
+    "access_french_provider": 5
+  },
+  "boundaries": [
+    "Only exact 1036/0/0; General family recognition/constructors unchanged, no French alias into General/ICU/NLS.",
+    "Both complete operands encoded eagerly with no 255-unit prefix/digest comparison; trailing ASCII-space policy explicit; cumulative work/bytes/cancellation.",
+    "Long Latin oracle derives bounded primitive streams from measured independent metadata and short keys; long unprintable positions remain an engineering extension, not independently native-qualified.",
+    "Existing field/child/member identity capture reused; required mixed identities still CollationConflict, unknown required IDs CollationRequired and dormant projections remain inert.",
+    "FrenchLegacyCollation supplies SQL/default and explicit Database comparison. Text/LCID policy defaults remain unavailable; explicit Binary and policy-independent search controls retain existing behavior.",
+    "String built-ins use operation/default provider; a French argument field alone does not replace a General operation default. SQL predicates/relational keys retain field-policy routing.",
+    "LikeProfile::Unsupported rejects nonNULL wildcard-only patterns after mode/NULL/preparation/coercion/provider selection, before raw publication or matching.",
+    "default_collation public accessor returns &dyn Collation rather than &GeneralCollation; documented source-compatibility change. Homogeneous source builder stays General-only.",
+    "No French equality hint, automatic predicate selection expansion or mutation authority. Existing French read-to-write refusal controls pass.",
+    "Default-only infallible match lint fixed with cfg-only destructuring; preview Update/Delete bodies and gates unchanged."
+  ],
+  "checks": [
+    {
+      "command": "cargo check --locked --offline -j2 -p tablecraft-ace -p tablecraft-access -p tablecraft-expressions",
+      "session": 25934,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/french-full-comparison-next-20261026/libcheck-initial.log",
+        "bytes": 539,
+        "sha256": "c4df495eefbc78aae1762b39a2bc02b8b2315088e192ffcd337c4f463a67a398"
+      }
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --test french_comparison --test general_comparison",
+      "session": 93392,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/french-full-comparison-next-20261026/engine-primary-initial.log",
+        "bytes": 1451,
+        "sha256": "1d5f4adbd5fb7ece20d0788e149575fc52f9a7c98c26028eca0d5e958356c5f4"
+      },
+      "passed": 9,
+      "counting_note": "French 4 plus General 5; French 4 also have final strengthened-source proof below, counted once."
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test french_legacy_keys --test french_legacy_reads --test french_comparison",
+      "session": 72744,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/french-full-comparison-next-20261026/engine-physical-regressions.log",
+        "bytes": 2043,
+        "sha256": "065c1252b050274ed8326491a6c2caacbd5dc1e47cad17083f0f8613a1c58144"
+      },
+      "passed": 14,
+      "counting_note": "Ten distinct physical functions plus four repeated French comparison functions; those four are not counted again."
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --test french_comparison",
+      "session": 94233,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/french-full-comparison-next-20261026/engine-final-eager.log",
+        "bytes": 714,
+        "sha256": "ed1e230334d2c75a400fd669fbcea0e1eff9f803ef218895a592e934e1b426c5"
+      },
+      "passed": 4,
+      "counting_note": "Final strengthened quota assertion; repeats the four comparison functions already counted."
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-expressions --features sql --lib like",
+      "session": 39057,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/french-full-comparison-next-20261026/expression-like-initial.log",
+        "bytes": 3796,
+        "sha256": "7e41daf5d86fce4c9198a53449b8c93e043c9a0dd0f73277607b5872403adc7b"
+      },
+      "passed": 31
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-access --test native_collation_resolver --test database_collation --test general_collation --test general_like --test general_search --test collection_collation",
+      "session": 25676,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/french-full-comparison-next-20261026/access-regressions-initial.log",
+        "bytes": 4768,
+        "sha256": "369df5ca232541488191973673bb084b8b5cad4ee679b5c91683b82139a6f37a"
+      },
+      "passed": 38
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-access --test french_query_contract",
+      "session": 93992,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/french-query-contract-final-20261026.log",
+        "bytes": 1024,
+        "sha256": "634d98936eba63b97e0c4230dd9346b08821c240004470871ec1483267f16184"
+      },
+      "passed": 7
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-access --test french_provider",
+      "session": 77956,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/french-full-comparison-next-20261026/provider-initial.log",
+        "bytes": 786,
+        "sha256": "8ecd19211ebc890c5827949c079009ae96ea544e2f58685c4cc56b439ac59f90"
+      },
+      "passed": 5
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-cli --test database_collation --test general_collation --test general_like --test general_search",
+      "session": 55195,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/french-full-comparison-next-20261026/cli-regressions-initial.log",
+        "bytes": 3113,
+        "sha256": "079036d493f8d1559f5421c8e0dfea5c872cbe6b8340d2a309e874815e9ebd90"
+      },
+      "passed": 19
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib --test french_comparison --test general_comparison --test french_legacy_keys --test french_legacy_reads -- -D warnings",
+      "session": 4322,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/french-full-comparison-next-20261026/ace-clippy-final.log",
+        "bytes": 183,
+        "sha256": "8d7ac6e3302eb29563d1fb08085ef50fe9cfe621b34bce6b2cd642855989dfb8"
+      }
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-expressions --all-features --lib --tests -- -D warnings",
+      "session": 61712,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/french-full-comparison-next-20261026/expression-clippy-initial.log",
+        "bytes": 197,
+        "sha256": "5a9f444f12c316c0060c456464df47c330aa9cfdc76088bdfcdc0883bb56e6bc"
+      }
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-access --lib --test french_provider --test french_query_contract --test native_collation_resolver --test database_collation --test general_collation --test general_like --test general_search --test collection_collation -- -D warnings",
+      "session": 45351,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/french-full-comparison-next-20261026/access-clippy-final.log",
+        "bytes": 301,
+        "sha256": "63e75281e6fc528cd52b47a8b50c320bc1070c1d795c2ea287d74a27c7b32b36"
+      }
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-cli --bin tablecraft --test database_collation --test general_collation --test general_like --test general_search -- -D warnings",
+      "session": 74326,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/french-full-comparison-next-20261026/cli-clippy-final.log",
+        "bytes": 402,
+        "sha256": "40b879f09377a9e8107d57c1090f37aced1d73b59b5329bc7f8a8a4417c24534"
+      }
+    },
+    {
+      "command": "cargo check --locked --offline -j2 -p tablecraft-ace --lib --no-default-features",
+      "session": null,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/french-full-comparison-next-20261026/ace-minimal-final.log",
+        "bytes": 183,
+        "sha256": "b4e01da50e58c0b7637f28ba62ac814623984a7104bc6f16959e8ab7c26b89b8"
+      }
+    },
+    {
+      "command": "cargo check --locked --offline -j2 -p tablecraft-expressions --lib --no-default-features",
+      "session": 5817,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/french-full-comparison-next-20261026/expression-minimal.log",
+        "bytes": 197,
+        "sha256": "442cb463c3bc6c28ff96f1f257edf7da9e66156947135b5e5973e1e477164d96"
+      }
+    },
+    {
+      "command": "cargo check --locked --offline -j2 -p tablecraft-access --lib --no-default-features",
+      "session": 45520,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/french-full-comparison-next-20261026/access-minimal.log",
+        "bytes": 414,
+        "sha256": "cfc430188f41672221c537d890b323381cc60119598c88bedd288483b2f7d006"
+      }
+    },
+    {
+      "command": "cargo doc --locked --offline -j2 -p tablecraft-ace -p tablecraft-access -p tablecraft-expressions --all-features --no-deps",
+      "session": 19356,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/french-full-comparison-next-20261026/rustdoc.log",
+        "bytes": 1519,
+        "sha256": "3ce3cbcba0d29479e53a8cab09fa6dcf671c879f03882faf2f204b90a1f166d0"
+      },
+      "environment": {
+        "RUSTDOCFLAGS": "-D warnings"
+      }
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --doc --features ace16-write-preview",
+      "session": 3393,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/french-full-comparison-next-20261026/ace-doc-tests.log",
+        "bytes": 738,
+        "sha256": "dab6bc7d55dcba262db1ce7eb46040ba8da4ba6a5f875ef5c7833b10bdd37374"
+      },
+      "passed": 3,
+      "counting_note": "Compile-fail isolation checks, separate from 119 runtime functions."
+    },
+    {
+      "command": "python3 scripts/check_documentation_links.py",
+      "session": null,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/french-full-comparison-next-20261026/documentation-links-final.log",
+        "bytes": 53,
+        "sha256": "d4dc048661aa1067202eef589e4e2646bd6691058f60cb8a51053fb98f9d8586"
+      }
+    },
+    {
+      "scope": "Selective rustfmt22 Rust files; tracked and nine untracked-file whitespace checks; Python AST/source identity",
+      "exit_code": 0,
+      "details": {
+        "path": ".cache/french-full-comparison-next-20261026/local-checks.json",
+        "bytes": 4121,
+        "sha256": "62170b2284b3a2e49607f214f4753032b6a0c9bfced1cbac4548eef3cca44f39"
+      },
+      "format_log": {
+        "path": ".cache/french-full-comparison-next-20261026/format.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "whitespace_log": {
+        "path": ".cache/french-full-comparison-next-20261026/whitespace.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "excluded_or_superseded_attempts": [
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-access --test french_query_contract",
+      "session": 23569,
+      "exit_code": 101,
+      "passed": 4,
+      "failed": 2,
+      "log": {
+        "path": ".cache/french-full-comparison-next-20261026/query-contract-initial.log",
+        "bytes": 2081,
+        "sha256": "7ebf9d25abdd04ba9b6c424bf9091f95e84483c8568938c3438c2fa40c5eae11"
+      },
+      "source": {
+        "path": ".cache/french-query-contract-initial-20261026/french_query_contract.rs",
+        "bytes": 10369,
+        "sha256": "cbb88624fbf903cacc664d1d35d03780c1e2db36be63b78440e5a8fd0a316ee2"
+      },
+      "reason": "Authored mixed-policy expectation used CollationRequired instead of established CollationConflict. Long DISTINCT workload exhausted the shared 32 MiB comparison pool; no production change."
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-access --test french_query_contract full_string_comparison -- --nocapture",
+      "session": 54427,
+      "exit_code": 101,
+      "log": {
+        "path": ".cache/french-query-contract-budget-diagnostic-20261026.log",
+        "bytes": 1108,
+        "sha256": "d7d3a3d048f005cd2803878fc05550d8cd26cc54769052d3d0af5bd8dd4f32ce"
+      },
+      "source": {
+        "path": ".cache/french-query-contract-initial-20261026/budget-diagnostic.rs",
+        "bytes": 10595,
+        "sha256": "bf570eaa7e5bc8dcb268c060fb878b792a95e48e7b6ab79f1c1af01294a39af4"
+      },
+      "reason": "Diagnostic matched Bytes remaining 496732 to comparison pool. Final positive uses explicit 64 MiB; seventh final test retains typed 32 MiB refusal. No default ceiling change."
+    },
+    {
+      "session": 43811,
+      "exit_code": 101,
+      "log": {
+        "path": ".cache/french-full-comparison-next-20261026/access-clippy-initial.log",
+        "bytes": 1146,
+        "sha256": "194c9f90bfc5c51471f8402b191bd9335bee69467948758466ebf1497fb5659c"
+      },
+      "reason": "Default ACE cfg left an infallible Change::Update-only match. Approved cfg-only let/match split restores strict default/preview compilation; no mutation branch/gate semantics change."
+    },
+    {
+      "session": 53456,
+      "exit_code": 101,
+      "log": {
+        "path": ".cache/french-full-comparison-next-20261026/cli-clippy-initial.log",
+        "bytes": 1389,
+        "sha256": "bbaf7cd7194885c143deb93e3c192718e3a2100a14de7ee8fffd5f9939c1bc5d"
+      },
+      "reason": "Same existing default-feature infallible-destructuring lint; final default Access/CLI and preview ACE strict pass."
+    },
+    {
+      "session": 62927,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/french-full-comparison-next-20261026/ace-clippy-initial.log",
+        "bytes": 308,
+        "sha256": "8163fbddab85318bc21a48d6562515daf3f40b397a1f0d3e77b123ffa043e395"
+      },
+      "reason": "Superseded by final strict after strengthened eager-work test and cfg-only default-profile cleanup; no extra function count."
+    },
+    {
+      "session": 52636,
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/french-full-comparison-next-20261026/ace-minimal.log",
+        "bytes": 308,
+        "sha256": "451c8811331f06b3b32bb5fc3a92c2799adcd26d59bf05e2a4c46f82fd20f305"
+      },
+      "reason": "Superseded standalone ACE minimal before final cfg-only cleanup; final standalone ACE minimal is accepted above."
+    }
+  ],
+  "independent_oracle": {
+    "jar": {
+      "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+      "bytes": 1407244,
+      "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+    },
+    "private_executed_sources": [
+      {
+        "path": ".cache/french-full-comparison-next-20261026/FrenchComparisonOracle.java",
+        "bytes": 3315,
+        "sha256": "188db4d889793285cbf20d35eadeb95b8fca95f2a984743065108650bbcb75c7"
+      },
+      {
+        "path": ".cache/french-full-comparison-next-20261026/latin_model.py",
+        "bytes": 4061,
+        "sha256": "65b95a6fd9dcd0f92f30d463fd2f5bcb855ecc562365e30b6fe1ac5d9b69f0d1"
+      }
+    ],
+    "initial_raw": [
+      {
+        "path": ".cache/french-full-comparison-next-20261026/oracle.tsv",
+        "bytes": 136677,
+        "sha256": "51db37d7b0746f4b4f9141cbd6cda5785f52b50030d5ace94372c249139fcb84"
+      },
+      {
+        "path": ".cache/french-full-comparison-next-20261026/long-pairs.tsv",
+        "bytes": 862203,
+        "sha256": "02cfd9fd30ecf5004ea471a6411c0176e120a45e943ec64682fd2e1f4d0d1e9f"
+      },
+      {
+        "path": ".cache/french-full-comparison-next-20261026/oracle-report.json",
+        "bytes": 2983,
+        "sha256": "547a9ca92f44e2c25132852c8bdbea9212887d1c64ac010674c1d27c981485ad"
+      }
+    ],
+    "source_promotion": "Python public source byte-identical to executed private source. Java public caller names three descriptor constants after initial capture; immutable initial source remains pinned. Fresh current-public Java/Python outputs equal initial raw oracle/long-pair bytes.",
+    "public_reproduction_commands": [
+      "javac -encoding UTF-8 -cp .cache/tablecraft-fixtures/jackcess-5.0.4.jar -d .cache/french-full-comparison-next-20261026/public-named-constants/classes docs/testing/FrenchComparisonOracle.java",
+      "java -cp .cache/french-full-comparison-next-20261026/public-named-constants/classes:.cache/tablecraft-fixtures/jackcess-5.0.4.jar com.healthmarketscience.jackcess.impl.FrenchComparisonOracle > .cache/french-full-comparison-next-20261026/public-named-constants/oracle.tsv",
+      "python3 docs/testing/french_comparison_latin_model.py --oracle .cache/french-full-comparison-next-20261026/public-named-constants/oracle.tsv --vectors .cache/french-full-comparison-next-20261026/public-named-constants/long-pairs.tsv --report .cache/french-full-comparison-next-20261026/public-named-constants/report.json"
+    ],
+    "public_reproduction_exit_codes": [
+      0,
+      0,
+      0
+    ],
+    "public_reproduction_outputs": [
+      {
+        "path": ".cache/french-full-comparison-next-20261026/public-named-constants/oracle.tsv",
+        "bytes": 136677,
+        "sha256": "51db37d7b0746f4b4f9141cbd6cda5785f52b50030d5ace94372c249139fcb84"
+      },
+      {
+        "path": ".cache/french-full-comparison-next-20261026/public-named-constants/long-pairs.tsv",
+        "bytes": 862203,
+        "sha256": "02cfd9fd30ecf5004ea471a6411c0176e120a45e943ec64682fd2e1f4d0d1e9f"
+      },
+      {
+        "path": ".cache/french-full-comparison-next-20261026/public-named-constants/report.json",
+        "bytes": 2983,
+        "sha256": "547a9ca92f44e2c25132852c8bdbea9212887d1c64ac010674c1d27c981485ad"
+      }
+    ]
+  },
+  "source_pins": [
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/args.rs",
+      "bytes": 11091,
+      "sha256": "2657b163004b2e8aaac4738887435d32e0ce81235a60616e0828a280a9360119"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/collation.rs",
+      "bytes": 6959,
+      "sha256": "2113b64076b5e44bf60e4dde5463f26e9b39f501dc73dc32acf52682d4a627ea"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/run_args.rs",
+      "bytes": 10909,
+      "sha256": "6d9a1b79b9826d39c6162d72d757ef5090a2583160b317e39ded6d821fbd7387"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/collation.rs",
+      "bytes": 5689,
+      "sha256": "38fb1f418f1051954cc453048c93479e80109d7271816d238778623c99d6ae30"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/collation/resolver.rs",
+      "bytes": 6367,
+      "sha256": "cf8173564827891dc55be53bc3c2e81c99a1154a2fb3314275d530fa4c8ba1e4"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/collation/french.rs",
+      "bytes": 4196,
+      "sha256": "7e248df82486d7ceced7f9cb0ac00308c7aa8de523e47147996bd27a208bee90"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/lib.rs",
+      "bytes": 1513,
+      "sha256": "9a7984219b2281654deac32c6591b3aeb02698b1506f085ce040b38f9684645c"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/source/collation.rs",
+      "bytes": 5984,
+      "sha256": "f3d1d21d686d2e92875a4453bda1acfad32daeea14b6b0659a4a29dd175212ed"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/french_provider.rs",
+      "bytes": 6758,
+      "sha256": "2c50b1ddae36d2714dfb24c5865ae1948d7272145d05249460d1e98c7518365a"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/french_query_contract.rs",
+      "bytes": 11219,
+      "sha256": "ea7f893e0767e25ad1f91ef2657b282f380a0d82f7ff12f346d231c1d4b29beb"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/collation/comparison.rs",
+      "bytes": 6728,
+      "sha256": "ed94591ea0f8a5b4d5e4945ca45e23571a373c2c073c0492ffbff2797e4bc6e5"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/collation/french.rs",
+      "bytes": 2581,
+      "sha256": "37df90522ffc1af72b070b4851c269444bc4d383a0007a2d1eefcf7b7961edcf"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/collation/key/encode.rs",
+      "bytes": 9743,
+      "sha256": "9385e2ca661c86ac513072b5dedab43267fb4adb3a9c3d4c5236dd890381fa26"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/collation/key/mod.rs",
+      "bytes": 2884,
+      "sha256": "17fad95a5985c8aadf12b31362ac45974c5d09aa9685453db9b6692bd624a0da"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/collation/mod.rs",
+      "bytes": 1965,
+      "sha256": "15551f5f95570e25a07bac874c2b009841362b0b17b14ad35cd92af11ceca8a6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/lib.rs",
+      "bytes": 5793,
+      "sha256": "1b94d6e80cb119591e02f67ec946bdf8906ed295168e542e56a68967476118c4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/plan.rs",
+      "bytes": 16681,
+      "sha256": "3d1e635a6cb4d5546e1ae7d82b02e3536dda6326c316d0f535f8c4190289fb45"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/french_comparison.rs",
+      "bytes": 6194,
+      "sha256": "aa3ffdbd05f04d6b46ebc9c5f295d0b093ec453a908811a30c93e14f852562c1"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/comparison/like.rs",
+      "bytes": 820,
+      "sha256": "d31f3adfc3edbebcc51e8aa62696267e160710b4732956675a0adad402f40ee7"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/like.rs",
+      "bytes": 4441,
+      "sha256": "fd59f77ef088c2eee3d653396d7a75a8891517cb544c1499fa970394cf693225"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/like/unsupported_tests.rs",
+      "bytes": 2935,
+      "sha256": "4a031b548a9ee2fb36fefd0046a1e5b2fa0453c3bf22749960f2ff634f9cd164"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/predicates/like/mod.rs",
+      "bytes": 6464,
+      "sha256": "df9ed27d88484b2e3bfecf98cd8eefbf240717ec609d3643d522a5141d4ad3e5"
+    },
+    {
+      "path": "docs/access/indexes/NATIVE_TEXT.md",
+      "bytes": 69014,
+      "sha256": "940461af012b2f8ffd25f60746473f5899017e637f2686eba379ac21d09fb481"
+    },
+    {
+      "path": "docs/expressions/text/PATTERN_MATCHING.md",
+      "bytes": 16929,
+      "sha256": "85c75cdc05d8dd15f2bc333240e5e1ce0602e89697fa18d3830c87dcaaa79ecc"
+    },
+    {
+      "path": "docs/testing/FrenchComparisonOracle.java",
+      "bytes": 3435,
+      "sha256": "297ca1a24926f34e9a8707f0c54e1d0919d038f7d4911ca9db7f33d879176076"
+    },
+    {
+      "path": "docs/testing/french_comparison_latin_model.py",
+      "bytes": 4061,
+      "sha256": "65b95a6fd9dcd0f92f30d463fd2f5bcb855ecc562365e30b6fe1ac5d9b69f0d1"
+    },
+    {
+      "path": "docs/testing/FRENCH_COMPARISON_OBSERVATIONS.md",
+      "bytes": 4608,
+      "sha256": "918efca9fb5c47a8627dac3fb71bb83a4225439e42a38447051c76944a2bd88c"
+    }
+  ],
+  "limits": "No Windows Access, native SQL/NLS comparison, French LIKE/search implementation, automatic French prefix hint or write qualification claimed. Real original-field CLI proof is a separate subsequent scope."
+}

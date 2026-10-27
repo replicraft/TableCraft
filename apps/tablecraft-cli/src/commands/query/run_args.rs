@@ -82,7 +82,7 @@ pub(crate) struct RunArgs {
     /// Declared parameter: Floor=bigint:4, Price=currency:0.0001 or Label=text:hello.
     #[arg(long = "param", value_name = "NAME=TYPE:VALUE")]
     pub(crate) parameters: Vec<String>,
-    /// Explicit ordinal/General override, or stored database/per-field General policies.
+    /// Explicit ordinal/General override, or stored General/French comparison policies.
     #[arg(long, value_enum, requires_if("database", "database"))]
     pub(crate) collation: Option<TextCollation>,
     #[command(flatten)]

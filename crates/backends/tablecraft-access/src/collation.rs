@@ -1,5 +1,7 @@
 //! Explicit bridge from standalone General weights to supplied query comparison.
 mod budget;
+mod french;
+pub use french::FrenchLegacyCollation;
 mod resolver;
 pub use resolver::NativeCollationResolver;
 pub(crate) use resolver::identity;

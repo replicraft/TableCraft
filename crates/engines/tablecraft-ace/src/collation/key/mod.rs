@@ -11,7 +11,7 @@ use crate::{
     InspectError, NativeSortOrder, format::data_type::MAX_SHORT_TEXT_BYTES, header::check,
 };
 pub(super) use buffer::Work;
-pub(super) use encode::{ComparisonKey, encode_full, primary_byte_bound};
+pub(super) use encode::{ComparisonKey, encode_full, encode_full_french, primary_byte_bound};
 use tablecraft_core::limits::ResourceBudget;
 
 const MAX_UNITS: usize = MAX_SHORT_TEXT_BYTES / size_of::<u16>();

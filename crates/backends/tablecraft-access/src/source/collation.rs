@@ -38,7 +38,8 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
         self.text_policy_scope = TextPolicyScope::Homogeneous(order);
         Ok((self, policy))
     }
-    /// Enable explicit per-field General resolver routing before binding.
+    /// Enable exact per-field General/French comparison routing before binding.
+    /// French legacy supplies comparison only; it does not activate matching.
     /// The database supplies only the default descriptor; available scalar Text
     /// fields retain their exact identities. Unknown field policies fail only
     /// when a text comparison requires them; conflicting expressions fail in the

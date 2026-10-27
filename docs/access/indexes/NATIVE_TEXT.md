@@ -514,10 +514,44 @@ unknown descriptors, limits and every observed cancellation checkpoint. All
 applicable existing independent short-key vectors agree pairwise with the
 comparison model; generated Unicode triples satisfy reflexivity, reversal and
 transitivity checks. These checks establish a bounded full-string weight model,
-not native Access SQL semantics. Native LIKE, mixed column/database policy
-resolution and safe text predicate pushdown remain
-separate implementation work. Per the current user direction, Windows comparisons
+not native Access SQL semantics. Native LIKE qualification, exact native
+mixed-policy precedence and broader safe text predicate pushdown remain separate
+work; the explicit resolver and matching models below have their own boundaries. Per the current user direction, Windows comparisons
 are deferred and do not block this implementation work.
+
+## Provisional complete French legacy comparison
+
+`compare_french_legacy_text` and `compare_french_legacy_utf16` admit only exact
+French legacy descriptor `1036/0/0`. They encode both complete operands eagerly,
+apply the Legacy weights and reverse the complete secondary stream, including
+neutral positions, after primary-overrun handling. Trailing ASCII spaces are
+ignored. Comparison buffers retain every input unit beyond 255; physical index
+prefix truncation and entry digests never decide full-string equality or order.
+The checked 64-bit unprintable position extension remains an engineering model,
+not independently established native behavior for long French Strings.
+
+`FrenchLegacyCollation` supplies these complete comparisons with a cumulative
+caller-owned budget and cancellation callback. General constructors continue
+refusing French. SQL/default and explicit Database comparison use the supplied
+French model; stored French does not become Windows Text or LCID comparison.
+String built-ins retain the operation/default provider: a French argument field
+under a General database default does not select French InStr/StrComp behavior.
+SQL predicates and relational keys retain their separate field-policy routing.
+Existing Binary behavior is separate. `LikeProfile::Unsupported` rejects even
+wildcard-only non-NULL LIKE. No French substring matcher is supplied: actual
+Text/Database/LCID search callbacks remain unavailable, while existing
+policy-independent NULL/empty/out-of-range controls and Binary search retain
+their evaluator behavior. No equality-prefix hint, automatic selection expansion
+or mutation authority is introduced.
+
+[Independent short French keys and the Latin oracle](../../testing/FRENCH_COMPARISON_OBSERVATIONS.md)
+test complete comparison signs. A separate bounded
+Latin model reads measured one-character weight metadata, cross-checks 158 short
+complete keys, and supplies long suffix/accent/padding controls at
+256/257/1,024/20,000 units. These are distinct evidence: the independent native
+index encoder itself truncates at 255 and is not a long-string oracle. Arbitrary
+long Unicode/unprintable extensions, native Access SQL and Windows NLS remain
+unqualified; the Latin model does not establish them.
 
 ## General query policy
 
@@ -569,10 +603,10 @@ ordinal, rejecting General before source/destination I/O. General native SQL
 qualification, complete native expression-policy precedence, broader locales, native
 LIKE, broader native search semantics and safe text predicate pushdown remain open.
 
-## Stored database General policy
+## Stored database comparison policies
 
-`query run --database PATH --collation database` now selects the stored General
-legacy/2010 database default and routes scalar Text comparisons through each
+`query run --database PATH --collation database` selects a stored General
+legacy/2010 or French legacy default and routes scalar Text comparisons through each
 field's exact policy identity. No format-version or OS-locale default substitutes
 for a stored descriptor. Different supported families can coexist in a table/query;
 an expression combining distinct identities still fails as `CollationConflict`
@@ -587,13 +621,21 @@ tablecraft query run "SELECT TAG_GRP_NME FROM TAG_GRP_TB ORDER BY TAG_GRP_NME" \
 The adapter's `NativeSource::with_database_collation_resolver` configures this
 mode before schema discovery. It returns the source plus `NativeCollationResolver`,
 borrowing one caller-owned `RefCell<ResourceBudget>` and sharing source cancellation.
-Both General families, default comparisons, descriptor lookup, substring search
-and LIKE callbacks consume that single pool; changing families or reusing a plan
+General and French comparisons, default comparisons, descriptor lookup and the
+admitted General substring/LIKE callbacks consume that single pool; changing
+families or reusing a plan
 cannot reset it. The CLI keeps the same 16 MiB/1,000,000-step comparison defaults,
 with explicit [larger allowances](../../query/COMPARISON_BUDGETS.md) separate from
 I/O/query/output budgets. Providers use borrowed inline state, with
 no runtime, mutable dictionary, heap cache or registry construction per row.
 Borrow conflicts fail explicitly without panics or retries.
+
+`NativeCollationResolver::default_collation()` now returns `&dyn Collation`
+instead of `&GeneralCollation`, an intentional public source-compatibility change
+needed to retain a French default without a General fallback. Consumers requiring
+a concrete General reference must use the separate General constructor. The
+older homogeneous `with_database_collation` service remains General-only;
+per-field French routing uses `with_database_collation_resolver`.
 
 Unknown database defaults fail configuration. Unknown field descriptors remain
 visible and allow plain inert projection/numeric queries, but a required Text comparison
@@ -609,8 +651,9 @@ family flags remain explicit caller overrides.
 set a caller-selected string module/default mode. Their constructors infer none.
 The CLI explicitly selects Database, retaining its existing string-built-in
 behavior; a field's policy does not replace that default inside built-ins.
-Concrete text-mode/LCID providers are still unsupported; the expression layer
-now has a separate explicit LCID search dispatch contract for InStr. Collection opt-ins now
+These native providers do not supply Text/LCID policies; the separately selected
+[ICU text profile](../../expressions/text/ICU_TEXT_PROFILE.md) is an engineering
+alternative with its own explicit locale/LCID mapping, not native NLS equivalence. Collection opt-ins now
 retain the actual flat element/member descriptors in this mode. Both builder
 orders are supported; declarations are metadata-only and snapshots must match
 the captured identities before values are published. Required unknown child
