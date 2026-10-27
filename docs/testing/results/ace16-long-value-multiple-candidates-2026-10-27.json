@@ -1,0 +1,126 @@
+{
+  "date": "2026-10-27",
+  "scope": "Explicit non-journalable raw Memo/OLE preview; multiple represented candidate hints and ordinary parent placement. No native Access or normal save qualification.",
+  "policy": "Highest current hint first; independently prove each failed fit and clear it; retry remaining hints before represented EOF allocation. Unhinted ownership is not allocation authority.",
+  "first_regression": {
+    "session": 89251,
+    "terminal_status": 101,
+    "failed_functions": 3,
+    "error": "Unsupported(RowLayout)",
+    "source_archive": {
+      "path": ".cache/ace16-long-value-multiple-candidates-20261027/before/result.json",
+      "bytes": 2668,
+      "sha256": "44d833b0e4dd171663e10ed2a35542f61386df8da95c1ab3c8e6976aad257e5b"
+    },
+    "scope": "Three initial literal-image controls; all source/check gates passed before preview refusal. WIP recursive-index builder compiled; no committed-artifact oracle claim."
+  },
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-ace --features ace16-write-preview --test ace16_long_value_updates_contract --locked",
+      "session": 96295,
+      "terminal_status": 0,
+      "passed": 15
+    },
+    {
+      "command": "cargo test -p tablecraft-ace --features ace16-write-preview --lib table::mutation::long_value:: --locked",
+      "session": 22427,
+      "terminal_status": 0,
+      "passed": 7
+    },
+    {
+      "command": "cargo test -p tablecraft-ace --features ace16-write-preview --test ace16_long_value_updates --test long_value_storage_contract --test long_value_storage --locked",
+      "session": 65153,
+      "terminal_status": 0,
+      "passed_by_target": {
+        "ace16_long_value_updates": 2,
+        "long_value_storage": 4,
+        "long_value_storage_contract": 6
+      }
+    },
+    {
+      "command": "cargo clippy -p tablecraft-ace --all-targets --features ace16-write-preview --locked -- -D warnings",
+      "session": 48524,
+      "terminal_status": 0
+    },
+    {
+      "command": "cargo check -p tablecraft-ace --no-default-features --locked",
+      "session": 54244,
+      "terminal_status": 0
+    }
+  ],
+  "distinct_runtime_functions": 34,
+  "new_runtime_functions": 6,
+  "retained_runtime_functions": 28,
+  "new_controls": [
+    "highest fitting LVAL hint and lower reuse after failure on both ACE 16 header codes",
+    "all hints fail before one EOF allocation on both codes",
+    "slot-directory ceiling skips high page without reclaiming old chunks",
+    "ordinary parent destination reuses lower hint without consuming unrelated hint",
+    "multi-hint no-op identity and unowned-hint refusal",
+    "missing failed attempt and correlated removal of its map clear are both rejected"
+  ],
+  "captured_terminal_tool_results": {
+    "path": ".cache/ace16-long-value-multiple-candidates-20261027/tool-results.json",
+    "bytes": 3381,
+    "sha256": "76fe44570b34b6a2c76517f38b9d955191fffcb556864f936913de2700c106ea"
+  },
+  "source_pins": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/admission.rs",
+      "bytes": 2680,
+      "sha256": "c24d7cb0c9deb61de1cbd945de942cdb3552663cb463c1d4e71ab57fb2d3f742"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/maps.rs",
+      "bytes": 10489,
+      "sha256": "fd3295ec544a6d6576f44b24414fccf2cd2ffacda721c9340546d9aa3109d1ef"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/placement.rs",
+      "bytes": 13636,
+      "sha256": "800472bda4cc544dbb0a4b4d308b5143a467a65776bb8f5e2cfe0d3c6733de09"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/map_audit.rs",
+      "bytes": 10488,
+      "sha256": "35943c6be21086ec136463cce1e06862c9673afe571ed4aab4120c1b9e48eea8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/tests.rs",
+      "bytes": 7204,
+      "sha256": "913282c3eda1e50218c74931fc99fbfde981e4c3db1d33737c2d66b0f9214bb8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_long_value_updates_contract.rs",
+      "bytes": 840,
+      "sha256": "d887a47de6a07a49ac1a9c301494ee8353b5e5fab89da47a229375ac749e7309"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_long_value_updates_contract/candidates.rs",
+      "bytes": 7144,
+      "sha256": "a4dcec268bb341f6e09bd33cbdbf01a03df502d5f3c892e3d79a4a38824892e3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_long_value_updates_contract/guards.rs",
+      "bytes": 5754,
+      "sha256": "2aab7e750da29091739431dc6382427250062badc6fc8cc7c809fad041b3f6a2"
+    },
+    {
+      "path": "docs/testing/ACE16_LONG_VALUE_UPDATES.md",
+      "bytes": 10883,
+      "sha256": "038159a683211b8bf88356008f844b88f0327cdabc2109157c38a6e7303eb60b"
+    }
+  ],
+  "boundaries": [
+    "Existing inline column-map profile retained; no map growth or indirect column-map admission.",
+    "Default reads, selected field flags/properties/index guards and ownership census remain unchanged.",
+    "No first-60 original-file candidate or public-writer action rerun. Prior committed-consumer 0/1-hint evidence remains distinct.",
+    "Recursive index agent held registered sources for these checks; only the listed LVAL paths belong to this change. No index acceptance is inferred."
+  ],
+  "additional_checks": {
+    "scoped_rustfmt_check": 0,
+    "git_diff_check": 0,
+    "manual_logical_spacing_review": "passed",
+    "repository_documentation_links": "One missing result target in concurrently drafted compressed-Memo observation docs; unrelated to this slice. Final repository check follows its completed promotion."
+  }
+}

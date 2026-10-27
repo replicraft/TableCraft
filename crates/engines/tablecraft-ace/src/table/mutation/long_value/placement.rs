@@ -180,7 +180,7 @@ impl Plan {
         {
             return Err(EditError::Unsupported(WriteBlocker::RowLayout));
         }
-        if let Some(number) = self.maps.candidate(image, family, budget, cancelled)? {
+        while let Some(number) = self.maps.candidate(image, family, budget, cancelled)? {
             let position = self.page(image, family, number, budget, cancelled)?;
             let (count, end) = Self::geometry(&self.pages[position].after)?;
             let fitted = count < MAX_SLOTS && bytes + SLOT_BYTES <= end - slot_offset(count);

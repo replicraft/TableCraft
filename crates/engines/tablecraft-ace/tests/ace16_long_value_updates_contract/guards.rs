@@ -2,18 +2,14 @@ use super::*;
 
 #[test]
 fn metadata_and_allocation_guards_remain_closed_for_empty_requests() {
-    for mode in 0..6 {
+    for mode in 0..5 {
         let mut bytes = source(6, 1);
         match mode {
             0 => bytes[10 * PAGE + MEMO_FLAGS] |= 0x80,
             1 => bytes[10 * PAGE + MEMO_EXTENDED_FLAGS] = 1,
             2 => bytes[10 * PAGE + MEMO_EXTENDED_FLAGS] = 0xc0,
             3 => selected_property(&mut bytes, "Caption"),
-            4 => support::put32(&mut bytes, 10 * PAGE + DECLARATIONS + 2, 0),
-            _ => set_maps(&mut bytes, &[MEMO, 15], &[MEMO, 15], &[OLE]),
-        }
-        if mode == 5 {
-            install(&mut bytes, 15, &lval(&[]));
+            _ => support::put32(&mut bytes, 10 * PAGE + DECLARATIONS + 2, 0),
         }
         // Calculated metadata changes the normal scalar admission. Every other
         // source remains independently readable, including unknown map leads.

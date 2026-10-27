@@ -163,3 +163,59 @@ fn final_map_replay_rejects_an_unrelated_future_allocation_bit() {
         edit.after &= !0x80;
     });
 }
+
+#[test]
+fn final_map_replay_requires_each_real_failed_hint_before_the_lower_destination() {
+    for remove_hint_edit in [false, true] {
+        let mut before = source(6, 1);
+        set_maps(&mut before, &[MEMO, 15], &[MEMO, 15], &[OLE]);
+        install(&mut before, 15, &lval(&[(0, vec![0xa7; 4078])]));
+        check(&before);
+        let replacement = Value::Text("Ā".repeat(33));
+        let updates = [memo_update(replacement.clone())];
+        let operation = Operation {
+            table: "Items",
+            column: "Memo",
+            updates: &updates,
+        };
+        let image = capture(&before);
+        let prepared =
+            admission::prepare(&image, "Items", "Memo", &mut budget(), &|| false).unwrap();
+        let mut staged =
+            stage::build(&image, &prepared, &updates, &mut budget(), &|| false).unwrap();
+        assert_eq!(staged.plan.attempts.len(), 2);
+        assert_eq!(staged.plan.attempts[0].page, 15);
+        assert!(!staged.plan.attempts[0].fitted);
+        assert_eq!(staged.plan.attempts[1].page, MEMO as u32);
+        assert!(staged.plan.attempts[1].fitted);
+
+        let healthy = finish::finish(
+            capture(&before),
+            &operation,
+            &staged,
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        assert_eq!(read(healthy.candidate_bytes())[0][1], replacement);
+
+        staged.plan.attempts.remove(0);
+        if remove_hint_edit {
+            // Restoring a physically full page's hint is reader-valid. It
+            // cannot erase the failed attempt that chose the lower page.
+            assert_eq!(staged.plan.maps.edits.len(), 1);
+            staged.plan.maps.edits.clear();
+        }
+        assert_eq!(
+            finish::finish(
+                capture(&before),
+                &operation,
+                &staged,
+                &mut budget(),
+                &|| false,
+            )
+            .err(),
+            Some(EditError::Preservation)
+        );
+    }
+}

@@ -64,18 +64,29 @@ original descriptor, body, masks and noncanonical representation byte-for-byte.
 
 New LVAL rows append to qualified column-owned pages carrying the `LVAL` owner
 marker. They are ordinary LVAL slots, distinct from hidden ordinary-table
-forwarding targets. The first profile admits zero or one candidate page; it does
-not infer a multiple-candidate policy from the ordinary-table allocator. Actual
+forwarding targets. The engineering placement policy tries the highest currently
+hinted page first, then lower hinted pages after actual failed fits. This applies
+separately to column-owned LVAL pages and ordinary parent destinations. Actual
 free bytes, slot-directory cost and the 255-row ceiling determine whether an
-append fits. A false hint does not mean physically full.
+append fits. A false hint does not mean physically full or authorize reuse.
 
-After an actual failed candidate attempt, its hint can be cleared. Otherwise
-allocation appends a fully initialized EOF page using already represented
-column-owned/candidate/global cells. No map growth, arbitrary in-file free-page
+After each actual failed candidate attempt, its hint is cleared. Allocation
+appends a fully initialized EOF page only after every eligible hint fails, using
+already represented column-owned/candidate/global cells. No map growth, arbitrary in-file free-page
 reuse or fixed free-byte threshold is inferred. LVAL chunks and an ordinary
 parent forwarding target share one EOF sequence and one aggregated byte ledger.
 An existing indirect ordinary-table map does not qualify indirect column-LVAL
 allocation.
+
+The [multiple-candidate checks](results/ace16-long-value-multiple-candidates-2026-10-27.json)
+include independent complete expected images for two fitting hints, a failed high
+hint followed by lower-page reuse, complete exhaustion, the native slot ceiling
+and ordinary parent forwarding. Empty/no-op requests preserve both hints, while
+an unowned hint still fails admission. A private correlated-forgery check requires
+every actual failed attempt even when its map clear is also removed. All scans
+and retries retain cancellation and cumulative work/allocation controls. These
+are engineering controls; the earlier 60-case original-file corpus has at most
+one hinted LVAL page and does not establish native multiple-hint selection.
 
 Only the selected ordinary descriptor payload is reframed. Fitted records retain
 their original physical capacity and opaque padding. Growth can append a hidden
