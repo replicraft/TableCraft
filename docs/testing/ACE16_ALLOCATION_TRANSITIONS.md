@@ -77,8 +77,10 @@ partially rewritten ledger.
 The [four enlarged source copies](ORDINARY_HINT_GROWTH_SOURCE_OBSERVATIONS.md)
 are separate preparation evidence. They do not yet qualify this implementation
 on original files. Their public UPDATE references and committed-consumer replay
-remain subsequent work. Native Microsoft Access comparison, required data-macro
-qualification and production saves remain unfinished.
+are separate: the [twelve public-writer cases](ORDINARY_HINT_UPDATE_OBSERVATIONS.md)
+now pass, while native candidate replay remains pending. Native Microsoft Access
+comparison, required data-macro qualification and production saves remain
+unfinished.
 
 The [isolated consumer build](results/ace16-hint-transition-example-build-2026-10-27.json)
 compiles committed `69443c6a` into a separate frozen example. Its complete export

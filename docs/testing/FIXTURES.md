@@ -9991,3 +9991,12 @@ new commands complete the remaining copies without regeneration or retries.
 The saved verifier checks all four copies, 12,972 user rows and 144 complete
 original pages. Predicted inline rebases and bitmap promotions are source geometry
 only; no target UPDATE or native candidate is qualified by this phase.
+
+The [separate public UPDATE references](ORDINARY_HINT_UPDATE_OBSERVATIONS.md)
+now pass twelve fresh maximum-width updates and twelve complete getter proofs,
+plus one separately counted helper compilation. All 25 first-attempt commands
+succeed. Their 100 new pages have exact distinct purposes: twelve DATA, 72 INDEX
+and sixteen bitmap pages. Lower untried hints remain intact; all padding records,
+physical counter blocks and protected original bytes pass. These observations
+are independent-writer evidence; native candidates and Microsoft Access
+qualification remain separate.
