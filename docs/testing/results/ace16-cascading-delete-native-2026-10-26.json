@@ -1,0 +1,307 @@
+{
+  "date": "2026-10-26",
+  "scope": "Separate cross-table acyclic Cascade engineering DELETE API over frozen original associations; existing explicit RESTRICT APIs and normal saves unchanged.",
+  "unique_engine_unit_integration_tests": 255,
+  "new_engine_tests": 16,
+  "new_author_integration_tests": 2,
+  "new_independent_integration_tests": 11,
+  "new_private_graph_tests": 3,
+  "existing_engine_tests": 239,
+  "compile_fail_doc_tests": 3,
+  "total_engine_checks_including_docs": 258,
+  "counting": "Final primary18 + bounded read/delete133 - overlapping extended batch8 + writer98 + private retirement11 + private graph3 =255 distinct functions. The extended batch target contains five existing and three new root-owned functions. Initial/superseded runs and compile-only checks are not counted again.",
+  "source_snapshot": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete.rs",
+      "bytes": 4796,
+      "sha256": "103811432464e88d39bbcdbc79f7b7739310e692c3e1499a8182e0a443febbb6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/batch.rs",
+      "bytes": 8475,
+      "sha256": "4fa00a5f21a4fb6db42332f90fb1b8b4a50e2e591717548270ec5bb4d180e1e7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/rows.rs",
+      "bytes": 4263,
+      "sha256": "f987ce078883441ba4c7e08c5e94e7ae45461e8e5f1bd6546dcdba6acd4099dd"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/cascade.rs",
+      "bytes": 4356,
+      "sha256": "c4c8fbf0672f573fdb7652a72577c19858f5c70ffbceb1847fd192577a06371c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/capture.rs",
+      "bytes": 2771,
+      "sha256": "7ab2bb9969fe0416be368780a4e409d05a89d5f376368ed0d7c4f9ba87ef18b0"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/graph.rs",
+      "bytes": 7534,
+      "sha256": "d6e80f62b2f3df631a45b3a917c3ffc0e8675e21fe2bcdbf873133c6a1227572"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/state.rs",
+      "bytes": 9982,
+      "sha256": "71ff01f8920bc3cd04dbb2834d7b9c510723186d222836afba573086f48be7fe"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/graph/tests.rs",
+      "bytes": 1471,
+      "sha256": "8cc44a82539f605bdfaf19cd9147e2d552aafe79c0750a0c4c6a5c9c0cd3e81a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_cascading_deletes.rs",
+      "bytes": 3971,
+      "sha256": "3b6eafd080a75e1a76ba2cece7e5fba3fed76a43c0c0f0d88e141bda20508543"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_cascading_delete_contract.rs",
+      "bytes": 515,
+      "sha256": "923677d1f0f18a0ed967b0d999ae53b4cc80d3f6712ff4e4551d39fd4e2162d5"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_cascading_delete_contract/boundaries.rs",
+      "bytes": 10007,
+      "sha256": "efe190acd38a9738794456d08ae1bb50f4a062f865a35d1e02235bbb8e741615"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_cascading_delete_contract/model.rs",
+      "bytes": 12417,
+      "sha256": "cb133beb9db59308b158260310eaa33682e4fe9e63c8f5043baf28465d64a07f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_cascading_delete_contract/values.rs",
+      "bytes": 2876,
+      "sha256": "83958eb1b6ad4f219db8fac92b7b2f7182c2372a4c0ed3422ef6fa98c908cba7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_batch_delete_contract/trees.rs",
+      "bytes": 9268,
+      "sha256": "4e0009cc7defc85a54416f8c1bc57e6c9b67dd5e829674ce29a8d4438e7fee13"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_batch_delete_contract/trees/cascades.rs",
+      "bytes": 6665,
+      "sha256": "c594b2d1784348fe1e8cfe829bc026c7f125cd397d5f18aaae7f70bff6c852ef"
+    },
+    {
+      "path": "docs/testing/ACE16_DELETE_PREVIEWS.md",
+      "bytes": 38902,
+      "sha256": "9625b2e5154c874bb8eeecc61920af8a880f5b8598d16fbd6d1bec7ce512e65f"
+    }
+  ],
+  "scope_files": [
+    "crates/engines/tablecraft-ace/src/table/mutation/delete.rs",
+    "crates/engines/tablecraft-ace/src/table/mutation/delete/batch.rs",
+    "crates/engines/tablecraft-ace/src/table/mutation/rows.rs",
+    "crates/engines/tablecraft-ace/src/table/mutation/delete/cascade.rs",
+    "crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/capture.rs",
+    "crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/graph.rs",
+    "crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/state.rs",
+    "crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/graph/tests.rs",
+    "crates/engines/tablecraft-ace/tests/ace16_cascading_deletes.rs",
+    "crates/engines/tablecraft-ace/tests/ace16_cascading_delete_contract.rs",
+    "crates/engines/tablecraft-ace/tests/ace16_cascading_delete_contract/boundaries.rs",
+    "crates/engines/tablecraft-ace/tests/ace16_cascading_delete_contract/model.rs",
+    "crates/engines/tablecraft-ace/tests/ace16_cascading_delete_contract/values.rs",
+    "crates/engines/tablecraft-ace/tests/ace16_batch_delete_contract/trees.rs",
+    "crates/engines/tablecraft-ace/tests/ace16_batch_delete_contract/trees/cascades.rs",
+    "docs/testing/ACE16_DELETE_PREVIEWS.md",
+    "docs/testing/results/ace16-cascading-delete-native-2026-10-26.json"
+  ],
+  "read_only_shared_fixture_files": [
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_restrict_delete_contract/model.rs",
+      "bytes": 14711,
+      "sha256": "37f0afacb060df7f571aa0927b32bda617c82a8aa0e74762b37524a02f3853b8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_batch_delete_contract.rs",
+      "bytes": 4645,
+      "sha256": "9d3ac05b665b276e8e292624867ea3270ad0042abe5979a0a3c91498d125a607"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/foreign_updates/fixture.rs",
+      "bytes": 5254,
+      "sha256": "00fd74c6b724b9bff88f9343ada2e944522d162813d795be5af1097a87868a59"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/mutation/fixture.rs",
+      "bytes": 5609,
+      "sha256": "9d66669d6fce171118e39d07afe54f6f3298f8168f5d088befbc8649baf6bae3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/support/mod.rs",
+      "bytes": 3496,
+      "sha256": "395145db02a7fc23388bd6ba065ee62992e823df0306bff205a2ae2304438c99"
+    }
+  ],
+  "checks": [
+    {
+      "command": "cargo test -p tablecraft-ace --features ace16-write-preview --test ace16_cascading_deletes --test ace16_cascading_delete_contract --test ace16_batch_delete_contract -j2 --locked --offline",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-cascading-delete-primary-final-accepted-20261026.log",
+        "bytes": 2566,
+        "sha256": "9ea4dad4e3934b330a809380f0ca33f0c00b201756db7347ef7a45349835de92"
+      },
+      "session": 45800,
+      "passed_functions": 18
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test ace16_batch_deletes --test ace16_batch_delete_contract --test ace16_restrict_deletes --test ace16_restrict_delete_contract --test ace16_deletes --test ace16_delete_contract --test ace16_delete_trees --test ace16_delete_tree_contract --test ace16_delete_retirement --test ace16_delete_contraction_contract --test ace16_delete_internal_chains --test ace16_internal_chain_contract --test ace16_encoded_delete_contract --test ace16_delete_ignored --test ace16_ignored_delete_contract --test binary_indexes --test indexes --test ignored_index_checks --test ignored_null_indexes --test ignored_null_wide_indexes",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-cascading-delete-regressions-20261026.log",
+        "bytes": 16548,
+        "sha256": "0b9b35f3a05fa287e8bc92c7dbafce0e0dadd27f5b1778e210315bf08682cd97"
+      },
+      "session": 56931,
+      "passed_functions": 133
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --test ace16_write_preview --test mutation --test ace16_fixed_updates --test scalar_index_updates --test integral_index_updates --test decimal_updates --test guid_updates --test composite_updates --test batch_updates --test mask_updates --test foreign_updates --test cascade_updates",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-cascading-delete-writer-regressions-20261026.log",
+        "bytes": 10779,
+        "sha256": "02ad69fcfdc0f84576d97eb012ff68f9586168f6412ba63be024b1454e76bf51"
+      },
+      "session": 15714,
+      "passed_functions": 98
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib table::indexes::mutation",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-cascading-delete-retirement-private-20261026.log",
+        "bytes": 1807,
+        "sha256": "f817e558b847e7bec0d5b1f6cd236122a84c0d5b8f602638ee3bcdd93212d44f"
+      },
+      "session": 88612,
+      "passed_functions": 11
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib table::mutation::delete::cascade",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-cascading-delete-private-final-20261026.log",
+        "bytes": 655,
+        "sha256": "364958d18c0840dcaefa4b7ac775516ece1287770a1612d748f9f59d8fbb0bbf"
+      },
+      "passed_functions": 3
+    },
+    {
+      "command": "cargo clippy --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --lib --test ace16_cascading_deletes --test ace16_cascading_delete_contract --test ace16_batch_delete_contract -- -D warnings",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-cascading-delete-clippy-20261026.log",
+        "bytes": 183,
+        "sha256": "e5923af0a33d6208d82d42c5bfd54da9e1ed0d7a5ab3a1b952b4db45cf14d7a9"
+      },
+      "session": 34821
+    },
+    {
+      "command": "cargo check --locked --offline -j2 -p tablecraft-ace --lib --no-default-features",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-cascading-delete-minimal-20261026.log",
+        "bytes": 183,
+        "sha256": "7234a5d92293ddb18c1ef0f6690e128d2fc81a1fa0166b6c25d73d42dde5f415"
+      },
+      "session": 51471
+    },
+    {
+      "command": "cargo test --locked --offline -j2 -p tablecraft-ace --features ace16-write-preview --doc",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-cascading-delete-doc-tests-20261026.log",
+        "bytes": 627,
+        "sha256": "6c79178ed12c46586804d4159ed77b873606945e4fe2f0a41f9ddbdbb2e1b753"
+      },
+      "session": 42049,
+      "passed_functions": 3
+    },
+    {
+      "command": "rustfmt --edition 2024 --check --config skip_children=true crates/engines/tablecraft-ace/src/table/mutation/delete.rs crates/engines/tablecraft-ace/src/table/mutation/delete/batch.rs crates/engines/tablecraft-ace/src/table/mutation/rows.rs crates/engines/tablecraft-ace/src/table/mutation/delete/cascade.rs crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/capture.rs crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/graph.rs crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/state.rs crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/graph/tests.rs crates/engines/tablecraft-ace/tests/ace16_cascading_deletes.rs crates/engines/tablecraft-ace/tests/ace16_cascading_delete_contract.rs crates/engines/tablecraft-ace/tests/ace16_cascading_delete_contract/boundaries.rs crates/engines/tablecraft-ace/tests/ace16_cascading_delete_contract/model.rs crates/engines/tablecraft-ace/tests/ace16_cascading_delete_contract/values.rs crates/engines/tablecraft-ace/tests/ace16_batch_delete_contract/trees.rs crates/engines/tablecraft-ace/tests/ace16_batch_delete_contract/trees/cascades.rs",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-cascading-delete-format-20261026.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "preserved_failed_attempts": [
+    {
+      "exit_code": 101,
+      "command": "cargo test -p tablecraft-ace --features ace16-write-preview --test ace16_batch_delete_contract -j2 --locked --offline",
+      "log": {
+        "path": ".cache/ace16-cascading-delete-shared-map-initial-20261026.log",
+        "bytes": 797,
+        "sha256": "0df5eee5197cd6f79c5efc65c5d033be46ace7f8f8b5db2c0e9a0af3011fd1fb"
+      },
+      "reason": "E0583 before tests: parent-owned nested test module lacked its explicit trees/cascades.rs path. Only the module declaration changed; no fixture or expected bytes changed.",
+      "session": 87189
+    },
+    {
+      "exit_code": 101,
+      "command": "cargo test -p tablecraft-ace --features ace16-write-preview --test ace16_cascading_deletes --test ace16_cascading_delete_contract --test ace16_batch_delete_contract -j2 --locked --offline",
+      "log": {
+        "path": ".cache/ace16-cascading-delete-primary-final-20261026.log",
+        "bytes": 544,
+        "sha256": "2fc2b3ed6b390f4f721011eab4cb109da2937523ec26a4f539c4c3a66a8ece03"
+      },
+      "reason": "E0432 before tests: independent target reused foreign_updates fixture without its required base module alias. Only the owning target alias changed.",
+      "session": 94385
+    },
+    {
+      "exit_code": 101,
+      "command": "cargo test -p tablecraft-ace --features ace16-write-preview --test ace16_cascading_deletes --test ace16_cascading_delete_contract --test ace16_batch_delete_contract -j2 --locked --offline",
+      "log": {
+        "path": ".cache/ace16-cascading-delete-primary-accepted-20261026.log",
+        "bytes": 2859,
+        "sha256": "bf07121727190b4543d88c50646fafbcc5dd95fc68433cc233e595cc76594fc3"
+      },
+      "reason": "Runtime test-authoring failure: independent unknown-action source incorrectly required every foreign index to be Checked. Seven independent functions and eight batch functions passed; final accepted primary supersedes these executions. Corrected assertions retain Unsupported read/index/relationship coverage and exact API refusal. No source rows or production code changed.",
+      "session": 23164
+    },
+    {
+      "exit_code": 101,
+      "command": "RUST_BACKTRACE=1 cargo test -p tablecraft-ace --features ace16-write-preview --test ace16_cascading_delete_contract checked_source_corruption_and_primary_requiredness_are_not_bypassed -j2 --locked --offline",
+      "log": {
+        "path": ".cache/ace16-cascading-delete-contract-causal-backtrace-20261026.log",
+        "bytes": 2566,
+        "sha256": "6e04f44c4fac2d02678ca8cdb944b3af70a251a1a23db70813183037d87f2ccf"
+      },
+      "reason": "One diagnostic rerun with RUST_BACKTRACE=1 pins the failed helper call to boundaries.rs:250 before(&unknown), not the genuine-primary requiredness case. No runtime golden was changed."
+    }
+  ],
+  "preserved_independent_source_history": {
+    "path": ".cache/ace16-cascading-delete-contract-initial-20261026",
+    "accepted_source_pins": {
+      "path": ".cache/ace16-cascading-delete-contract-initial-20261026/accepted-source-pins.json",
+      "bytes": 1061,
+      "sha256": "1341ecf67e921ecd97c64c0f8dd04640d3e8300f03562898bb98b6c9329deeae"
+    },
+    "scope": "Initial compile source, actual seven-of-eight runtime source, pre-directional assertions and final source pins remain separate immutable captures."
+  },
+  "production_corrections": "No production defect or answer-golden correction was needed. A per-dequeued-root cancellation check was added before final accepted primary/regressions; final checks cover that source. All retirement causal assertions remain unchanged.",
+  "acceptance": [
+    "Every outgoing expanded Cascade lookup has an exact checked required/unique genuine primary parent key, nonNULL actual parent components and matching existing integral/Currency/GUID/Decimal declarations.",
+    "Known incoming-only Cascade edges can safely permit child deletion under existing full FK/final-membership checks without requiring an unmodified nullable UNIQUE parent to become primary; the same parent cannot initiate unqualified expansion.",
+    "Complete before-image gates, original physical root identities and raw explicit seed comparisons precede closure deduplication; diamonds/explicit descendants coalesce without hiding duplicate/stale explicit requests.",
+    "Known enforced Restrict edges retain existing final-image membership, including explicit complete child+parent groups; no per-row action timing is inferred.",
+    "Reachable self/cyclic Cascade components, SET_NULL, unknown/unenforced rules, active content and unsupported profiles refuse; unrelated components are not activated.",
+    "One bounded paid iterative queue expands original associations and copies generated raw records through the shared walker. Expanded rows/tables share existing batch ceilings, budget and cancellation.",
+    "Shared typed map composition/global union audit and per-table index/root/ownership/sibling proofs remain unchanged; two-owner shared-byte contraction and exact outside-span/raw payload preservation pass."
+  ],
+  "boundaries": [
+    "No native Microsoft Access SQL, data-macro, normal-save, journal or per-row mixed-action timing qualification.",
+    "No self/cycle action qualification: public self-tree observations left a dangling child, and six isolated loop/cycle actions raised StackOverflowError. These remain held, not engineering successes.",
+    "Current matching retains complete second scalar snapshots, including unindexed Memo/OLE, after full before-checks. This is bounded and paid but not payload-pruned; it can exhaust allowance earlier than direct raw deletion.",
+    "Fresh Java reference helpers and ignored action reports are separate pending evidence work, excluded from this implementation inventory and test count."
+  ]
+}
