@@ -209,6 +209,12 @@ The [old variable-service baseline](testing/VARIABLE_ENCODED_SPLIT_BASELINES.md)
 now passes six exact no-ops and six `IndexedColumn` growth refusals without output
 on these unchanged inputs. Combined allocation remains unfinished.
 
+Its [separate public-writer references](testing/VARIABLE_ENCODED_SPLIT_UPDATE_OBSERVATIONS.md)
+now pass six fresh-copy growth operations and six inspections with complete
+record/key/map preservation proofs. Each adds one DATA page and six index leaves;
+the maximum Modern DESC key requires a two-byte mixed-leaf prefix. TableCraft's
+combined candidate remains unfinished.
+
 The existing variable and index previews now share a
 [typed append state](testing/ACE16_SHARED_APPEND_STATE.md), including one EOF
 cursor and original-before/current-after map-byte ledger per operation.
