@@ -1,0 +1,503 @@
+{
+  "date": "2026-10-26",
+  "scope": "New inert saved SELECT companion metadata and explicit French saved/named/derived field-policy engineering execution; not native Access SQL/NLS qualification",
+  "counts": {
+    "new_companions": 2,
+    "saved_selects": 2,
+    "original_rows_unchanged": 76,
+    "original_text_memo_cells_unchanged": 304,
+    "protected_original_pages_unchanged": 285,
+    "controls": 32,
+    "syntax_controls": 4,
+    "successful_execution_controls": 24,
+    "refusal_controls": 4,
+    "disagreements": 0,
+    "rows_compared": 568,
+    "cells_compared": 936
+  },
+  "query_profile": {
+    "name": "FrenchFields",
+    "type": "SELECT",
+    "flags": 0,
+    "parameters": [],
+    "owner_access": "",
+    "query_properties": [],
+    "sql": "SELECT [src].[ID], [src].[FrenchShort], [src].[FrenchMemo]\nFROM Comparisons AS src;",
+    "fragments": 8,
+    "actions_udfs_remote_sources": false
+  },
+  "provenance": [
+    "Original repository code uses the reviewed SavedSelectFixture recipe: public system-table maps plus pinned QueryImpl.Row.toTableRow/QueryFormat metadata helper APIs, no copied upstream implementation",
+    "Copies use fresh paths and collision-checked query object ID; proven existing Tables/type 3 namespace; catalog explicit ID insertion via public allowAutoNumberInsert option only",
+    "No original bytes, headers, descriptors or accepted receipts patched; table fields and all full values/properties/locations/index metadata+order equal original getters",
+    "Protected pages include actual user definition/data/index roots plus every original page with the LVAL signature; this extra raw-signature protection is not a database-wide ownership claim",
+    "Each new companion adds one metadata page; observed changed old pages are disjoint from all protected original user payload pages",
+    "Metadata creation and JAR SQL reconstruction do not execute SQL. Later CLI executions are separately captured"
+  ],
+  "profiles": [
+    {
+      "profile": "V2016",
+      "source": {
+        "path": ".cache/tablecraft-fixtures/french-comparison-20261026/Comparison-V2016.accdb",
+        "bytes": 937984,
+        "sha256": "ca64a8f518214f5ea889f1bc56922e2269cc120929e4c42b9f60a11d37b54b61"
+      },
+      "companion": {
+        "path": ".cache/tablecraft-fixtures/french-saved-companions-20261026/Named-V2016.accdb",
+        "bytes": 942080,
+        "sha256": "6058f8a3db444a37f3994c606954070216152243285fde9d4d47b50370d054c1"
+      },
+      "saved": {
+        "queries": [
+          {
+            "name": "FrenchFields",
+            "type": "SELECT",
+            "object_id": -2147479648,
+            "flags": 0,
+            "owner_access": "",
+            "sql": "SELECT [src].[ID], [src].[FrenchShort], [src].[FrenchMemo]\nFROM Comparisons AS src;"
+          }
+        ],
+        "objects": [
+          [
+            -2147479648,
+            251658241,
+            5,
+            0
+          ]
+        ],
+        "fragments": [
+          [
+            "0",
+            "NULL",
+            "null",
+            "null",
+            "NULL",
+            "NULL",
+            "00000001"
+          ],
+          [
+            "1",
+            "NULL",
+            "1",
+            "null",
+            "NULL",
+            "NULL",
+            "00000001"
+          ],
+          [
+            "3",
+            "NULL",
+            "0",
+            "null",
+            "NULL",
+            "NULL",
+            "00000001"
+          ],
+          [
+            "5",
+            "NULL",
+            "null",
+            "null",
+            "Q29tcGFyaXNvbnM=",
+            "c3Jj",
+            "00000001"
+          ],
+          [
+            "6",
+            "W3NyY10uW0lEXQ==",
+            "null",
+            "null",
+            "NULL",
+            "NULL",
+            "00000001"
+          ],
+          [
+            "6",
+            "W3NyY10uW0ZyZW5jaFNob3J0XQ==",
+            "null",
+            "null",
+            "NULL",
+            "NULL",
+            "00000002"
+          ],
+          [
+            "6",
+            "W3NyY10uW0ZyZW5jaE1lbW9d",
+            "null",
+            "null",
+            "NULL",
+            "NULL",
+            "00000003"
+          ],
+          [
+            "-1",
+            "NULL",
+            "null",
+            "null",
+            "NULL",
+            "NULL",
+            "00000001"
+          ]
+        ],
+        "properties": []
+      },
+      "protected_page_count": 143,
+      "protected_roles": {
+        "original-LVAL-signature": 139,
+        "user-definition": 1,
+        "user-index": 2,
+        "user-data": 1
+      },
+      "changed_existing_pages": [
+        1,
+        2,
+        4,
+        7,
+        8,
+        11,
+        12,
+        17
+      ],
+      "additional_pages": 1
+    },
+    {
+      "profile": "V2019",
+      "source": {
+        "path": ".cache/tablecraft-fixtures/french-comparison-20261026/Comparison-V2019.accdb",
+        "bytes": 1007616,
+        "sha256": "abc1aa1977057c4d55bc69b86be70972d6759859e1e6611a81ae276805bb5443"
+      },
+      "companion": {
+        "path": ".cache/tablecraft-fixtures/french-saved-companions-20261026/Named-V2019.accdb",
+        "bytes": 1011712,
+        "sha256": "f0f3823633d9c999ed88b5147c01a07e746bb4e775011f26d6568a9346991d82"
+      },
+      "saved": {
+        "queries": [
+          {
+            "name": "FrenchFields",
+            "type": "SELECT",
+            "object_id": -2147479648,
+            "flags": 0,
+            "owner_access": "",
+            "sql": "SELECT [src].[ID], [src].[FrenchShort], [src].[FrenchMemo]\nFROM Comparisons AS src;"
+          }
+        ],
+        "objects": [
+          [
+            -2147479648,
+            251658241,
+            5,
+            0
+          ]
+        ],
+        "fragments": [
+          [
+            "0",
+            "NULL",
+            "null",
+            "null",
+            "NULL",
+            "NULL",
+            "00000001"
+          ],
+          [
+            "1",
+            "NULL",
+            "1",
+            "null",
+            "NULL",
+            "NULL",
+            "00000001"
+          ],
+          [
+            "3",
+            "NULL",
+            "0",
+            "null",
+            "NULL",
+            "NULL",
+            "00000001"
+          ],
+          [
+            "5",
+            "NULL",
+            "null",
+            "null",
+            "Q29tcGFyaXNvbnM=",
+            "c3Jj",
+            "00000001"
+          ],
+          [
+            "6",
+            "W3NyY10uW0lEXQ==",
+            "null",
+            "null",
+            "NULL",
+            "NULL",
+            "00000001"
+          ],
+          [
+            "6",
+            "W3NyY10uW0ZyZW5jaFNob3J0XQ==",
+            "null",
+            "null",
+            "NULL",
+            "NULL",
+            "00000002"
+          ],
+          [
+            "6",
+            "W3NyY10uW0ZyZW5jaE1lbW9d",
+            "null",
+            "null",
+            "NULL",
+            "NULL",
+            "00000003"
+          ],
+          [
+            "-1",
+            "NULL",
+            "null",
+            "null",
+            "NULL",
+            "NULL",
+            "00000001"
+          ]
+        ],
+        "properties": []
+      },
+      "protected_page_count": 142,
+      "protected_roles": {
+        "original-LVAL-signature": 138,
+        "user-definition": 1,
+        "user-index": 2,
+        "user-data": 1
+      },
+      "changed_existing_pages": [
+        1,
+        2,
+        4,
+        7,
+        8,
+        11,
+        12,
+        17
+      ],
+      "additional_pages": 1
+    }
+  ],
+  "compiled_revision": "596d40ea41a4bafefbd5b34af4ef35a8a4e2cde4",
+  "build_receipt": {
+    "path": "docs/testing/results/french-comparison-cli-build-2026-10-26.json",
+    "bytes": 10497,
+    "sha256": "7f257600ffba329cd6a7cc68311c7961cf94992c93689628590662cc93f0a9b1"
+  },
+  "compiled_object_count": 53,
+  "additional_compiled_sources": {
+    "apps/tablecraft-cli/src/commands/query/saved.rs": {
+      "path": "apps/tablecraft-cli/src/commands/query/saved.rs",
+      "bytes": 931,
+      "sha256": "be30212d11d38e9a347ff60e2f2e142dab7634f6ba2d828cd49ec973b13346f6"
+    }
+  },
+  "execution_profile": {
+    "arithmetic_modes": [
+      "ordinary",
+      "declared"
+    ],
+    "cases": [
+      "direct saved full ID/FrenchShort/FrenchMemo values",
+      "named Short sort",
+      "named 20k Memo sort",
+      "derived-over-named Short sort",
+      "derived-over-named 20k Memo sort",
+      "named Short GROUP/Count",
+      "named French LIKE buffered refusal"
+    ],
+    "native_bytes": 67108864,
+    "native_steps": 10000000,
+    "comparison_bytes": 67108864,
+    "comparison_steps": 10000000
+  },
+  "expected_models": [
+    "Original exact UTF16 getters; independent Short keys and pinned clean-Latin long Memo model reused from accepted 112 field replay",
+    "Independent JAR SQL is normalized through the existing syntax-only parser and compared with native saved reconstruction; this does not independently qualify the parser or assume execution",
+    "Named/derived 20k accent-order controls distinguish retained French policy from stored General operation defaults; LIKE refusal is also field-policy-specific"
+  ],
+  "raw_metadata_capture": {
+    "path": ".cache/tablecraft-fixtures/french-saved-companions-20261026/metadata-initial.json",
+    "bytes": 58360,
+    "sha256": "5ad58afd3cd330349714281398a5644362c8b76a7cf1016c35961cd430b159a0"
+  },
+  "raw_replay_capture": {
+    "path": ".cache/french-saved-companions-replay-initial-20261026.json",
+    "bytes": 24164,
+    "sha256": "64542e664191d2056abfde890edda0b912a2bb1ebfe89fb8b886d8c728ba6f78"
+  },
+  "field_data_receipt": {
+    "path": "docs/testing/results/french-comparison-fields-2026-10-26.json",
+    "bytes": 9120,
+    "sha256": "df59bfedfb44d56478cc9baee19414084e2978f7946b760f9637e71afaf798c9"
+  },
+  "comparison_model_receipt": {
+    "path": "docs/testing/results/french-comparison-fields-replay-2026-10-26.json",
+    "bytes": 10800,
+    "sha256": "48c88a5b7cc87740656923e1a3ad95b98328373829089070d71783bf269ca581"
+  },
+  "creation_getter_tool_pins": [
+    {
+      "path": "docs/testing/capture_french_saved_companions.py",
+      "bytes": 7512,
+      "sha256": "a457c39c237c0f37e7b7773adb299134a0ac68c3fc568359cebe017ea614e1db"
+    },
+    {
+      "path": "docs/testing/FrenchSavedCompanion.java",
+      "bytes": 10889,
+      "sha256": "0a3419ff2b89274568d3963c9a828b40b71ed83fce473c930b2f2dfe371572fb"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/french-comparison-20261026/fields-initial.json",
+      "bytes": 81072,
+      "sha256": "c3869a91b168e4a40fa1942bde2f1d78bb942ce05ac045688293649428726031"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+      "bytes": 1407244,
+      "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/french-saved-companions-20261026/classes/com/healthmarketscience/jackcess/impl/FrenchSavedCompanion.class",
+      "bytes": 13122,
+      "sha256": "e7786bdcdf7867e268d1183f46efd4ae71059222f9c9f0312266ee1ddb80e090"
+    },
+    {
+      "path": "docs/testing/SavedSelectFixture.java",
+      "bytes": 11420,
+      "sha256": "22c55b55412e525a26a9242370b75e7a14f92e78aa279e44a6a04154feb6c3d8"
+    },
+    {
+      "path": "docs/testing/SavedSelectOracle.java",
+      "bytes": 915,
+      "sha256": "d20b67c86d2d170ebf02e3b02b70d07ede2d93a304c1cb0b674de6058747aed9"
+    },
+    {
+      "path": "docs/testing/FrenchComparisonFixture.java",
+      "bytes": 9791,
+      "sha256": "a0fc88ea2b0599f63b8cce7de619af0727629c9f4444234fd24c51049e77210b"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/french-comparison-20261026/classes/com/healthmarketscience/jackcess/impl/FrenchComparisonFixture.class",
+      "bytes": 14073,
+      "sha256": "4df18e3d325d8b7d097ba5f1fe09d1497e2724350d35b952f5d76e9692e21e67"
+    }
+  ],
+  "replay_before_after_pins": [
+    {
+      "path": ".cache/tablecraft-bin/tablecraft-french-comparison-20261026",
+      "bytes": 43416632,
+      "sha256": "bcff00ad245c7a70582db222fa48e5eb2f796bd944d5ccbeefe759fbd010a576"
+    },
+    {
+      "path": "docs/testing/results/french-comparison-cli-build-2026-10-26.json",
+      "bytes": 10497,
+      "sha256": "7f257600ffba329cd6a7cc68311c7961cf94992c93689628590662cc93f0a9b1"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/french-saved-companions-20261026/metadata-initial.json",
+      "bytes": 58360,
+      "sha256": "5ad58afd3cd330349714281398a5644362c8b76a7cf1016c35961cd430b159a0"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/french-comparison-20261026/fields-initial.json",
+      "bytes": 81072,
+      "sha256": "c3869a91b168e4a40fa1942bde2f1d78bb942ce05ac045688293649428726031"
+    },
+    {
+      "path": ".cache/french-comparison-replay-next-20261026/short-keys.tsv",
+      "bytes": 1428,
+      "sha256": "c56d52429bf5177b2f194fb81aab8c5ba8660bde25ad791d2484f96f49602e4b"
+    },
+    {
+      "path": ".cache/french-full-comparison-next-20261026/oracle.tsv",
+      "bytes": 136677,
+      "sha256": "51db37d7b0746f4b4f9141cbd6cda5785f52b50030d5ace94372c249139fcb84"
+    },
+    {
+      "path": "docs/testing/compare_french_saved_companions.py",
+      "bytes": 9622,
+      "sha256": "b88fbae7918fefcb2e949953df609956254737e6174b39b6fb572d6f2e8d40f0"
+    },
+    {
+      "path": "docs/testing/capture_french_comparison.py",
+      "bytes": 9525,
+      "sha256": "58815c4a6ff78411ba3e29e582d96ee2d1bb7348a9ced377893841ef990ced20"
+    },
+    {
+      "path": "docs/testing/capture_french_saved_companions.py",
+      "bytes": 7512,
+      "sha256": "a457c39c237c0f37e7b7773adb299134a0ac68c3fc568359cebe017ea614e1db"
+    },
+    {
+      "path": "docs/testing/compare_french_comparison_fields.py",
+      "bytes": 8909,
+      "sha256": "6a66702da6ef2c2212e8f4333ee4843b86eb7be10dcf78052ddbe2752d361b08"
+    },
+    {
+      "path": "docs/testing/french_field_comparison/model.py",
+      "bytes": 6828,
+      "sha256": "9a63f9f729b2da489884cc1a77f3e44cd9665ec6fc13b74d32a4066b78ce644c"
+    },
+    {
+      "path": "docs/testing/french_comparison_latin_model.py",
+      "bytes": 4061,
+      "sha256": "65b95a6fd9dcd0f92f30d463fd2f5bcb855ecc562365e30b6fe1ac5d9b69f0d1"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/french-comparison-20261026/Comparison-V2016.accdb",
+      "bytes": 937984,
+      "sha256": "ca64a8f518214f5ea889f1bc56922e2269cc120929e4c42b9f60a11d37b54b61"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/french-saved-companions-20261026/Named-V2016.accdb",
+      "bytes": 942080,
+      "sha256": "6058f8a3db444a37f3994c606954070216152243285fde9d4d47b50370d054c1"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/french-comparison-20261026/Comparison-V2019.accdb",
+      "bytes": 1007616,
+      "sha256": "abc1aa1977057c4d55bc69b86be70972d6759859e1e6611a81ae276805bb5443"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/french-saved-companions-20261026/Named-V2019.accdb",
+      "bytes": 1011712,
+      "sha256": "f0f3823633d9c999ed88b5147c01a07e746bb4e775011f26d6568a9346991d82"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/french-comparison-20261026/V2016-getter.json",
+      "bytes": 701624,
+      "sha256": "f7c85544b47522dfb8bc562aaf49749f819ea74e54838586bf02eece44d73515"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/french-comparison-20261026/V2019-getter.json",
+      "bytes": 701666,
+      "sha256": "fecc4321af310049b5549b436baadc3fb9e011bc39db035fa6e6afd8d65dbfb3"
+    }
+  ],
+  "checks": {
+    "javac_exit_code": 0,
+    "metadata_session": 21364,
+    "metadata_exit_code": 0,
+    "replay_session": 39368,
+    "replay_exit_code": 0,
+    "python_compile_exit_code": 0,
+    "failures": []
+  },
+  "limitations": [
+    "No native Access execution/save/reopen, NLS equivalence, UDF availability, ordinary writer or macro qualification",
+    "Only the specific inert SELECT fragment profile and existing reviewed JAR API are exercised; no general query DDL API claimed",
+    "All 32 controls agree, but only 24 are successful query executions: 4 are syntax-only and 4 intentional refusals",
+    "Existing metadata/system pages and new metadata page may differ; no whole-file equality with source is asserted"
+  ]
+}

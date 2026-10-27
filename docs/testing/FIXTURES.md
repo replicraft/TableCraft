@@ -9202,3 +9202,35 @@ operation-default search is distinct from field-policy comparison. All original
 sizes/selectors remain, with explicit separate native/comparison allowances.
 The initial 60 native work refusals, sole-native-step Len probe and executed
 source snapshots remain preserved. See the owning field observations for limits.
+
+## Separate French saved-source companions
+
+Repository-owned [FrenchSavedCompanion.java](FrenchSavedCompanion.java) follows
+the existing SavedSelectFixture public system-table/QueryImpl.Row metadata recipe
+against the reviewed Jackcess 5.0.4 artifact (SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
+Fresh copies of the unchanged Comparison originals add exactly one inert
+FrenchFields SELECT exposing ID/FrenchShort/FrenchMemo from Comparisons. The
+source namespace and fresh ID are checked; no parameters, UDF/actions, remote
+source, query properties or owner-access option is introduced. Expressions are
+disabled and linked opens throw. No upstream code, header patch or accepted
+original/receipt mutation is involved.
+
+| New companion | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Named-V2016.accdb | 942,080 | `6058f8a3db444a37f3994c606954070216152243285fde9d4d47b50370d054c1` |
+| Named-V2019.accdb | 1,011,712 | `f0f3823633d9c999ed88b5147c01a07e746bb4e775011f26d6568a9346991d82` |
+
+[Owning observations](FRENCH_SAVED_COMPANION_OBSERVATIONS.md) and the compact
+[metadata/replay receipt](results/french-saved-companions-2026-10-26.json) separate
+inert creation/getter reconstruction from explicit execution. All 76 original
+rows, 304 Text/Memo values, field descriptors/properties/locations/index facts
+and 285 original user definition/data/index/LVAL-signature pages remain unchanged.
+Each companion adds one metadata page; full source-file equality is not claimed.
+Frozen CLI 596/bcff supplies four syntax controls, 24 successful saved/named/derived
+executions and four buffered LIKE refusals: 32 matching controls, 568 rows and 936
+cells. No selectors or columns were dropped and no failure/retry occurred.
+Originals/companions and source/model/oracle hashes are checked before/after;
+full page maps, getter values and commands stay ignored and hash-pinned.
+This adds no native Access/NLS/save, general query DDL, macro or ordinary write
+qualification and does not rewrite the older 112 corpus's named-source boundary.
