@@ -56,6 +56,11 @@ impl Tree {
     }
 
     #[cfg(feature = "ace16-write-preview")]
+    pub(super) fn height(&self) -> u8 {
+        self.height
+    }
+
+    #[cfg(feature = "ace16-write-preview")]
     pub(super) fn children(&self) -> &[Self] {
         &self.children
     }

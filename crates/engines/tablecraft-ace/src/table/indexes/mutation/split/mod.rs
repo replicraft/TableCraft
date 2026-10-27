@@ -1,4 +1,4 @@
-//! Separate, bounded root-leaf splitting; ordinary replacement paths stay closed.
+//! Separate, bounded recursive splitting; ordinary replacement paths stay closed.
 mod audit;
 mod maps;
 mod nonroot;
@@ -86,9 +86,9 @@ pub(super) fn edit(
                 image,
                 index,
                 profile,
+                keys: &prepared.entries,
             },
             &prepared.tree,
-            &prepared.entries,
             plan,
             reader,
             patches,

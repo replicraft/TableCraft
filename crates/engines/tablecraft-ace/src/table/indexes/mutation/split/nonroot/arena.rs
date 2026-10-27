@@ -1,0 +1,384 @@
+//! Postorder decisions use original leaf counts and complete final child maxima.
+use super::super::super::{encoding, repack, tree::Tree};
+use super::super::{Plan, leaf_entries, maps};
+use super::Operation;
+use crate::{
+    EditError, InspectError, NativeImage, WriteBlocker,
+    format::{page::PAGE_BYTES, reader::Reader},
+    limits::{MAX_IMAGE_BYTES, MAX_INDEX_DEPTH},
+    table::indexes::{
+        header::IndexHeader,
+        page::{Entry, KeyRef},
+    },
+};
+use std::{io::Cursor, ops::Range};
+
+pub(super) enum Contents {
+    Leaf(Range<usize>),
+    Branch { children: Vec<usize>, tail: bool },
+}
+
+pub(super) struct Node {
+    pub number: u32,
+    pub height: u8,
+    pub maximum: KeyRef,
+    pub contents: Contents,
+    pub grown_root: bool,
+    pub previous: u32,
+    pub next: u32,
+}
+
+pub(super) struct Arena {
+    pub nodes: Vec<Node>,
+    pub root: usize,
+    pub added: Vec<u32>,
+    position: usize,
+}
+
+struct ResultChild {
+    left: Option<usize>,
+    right: usize,
+}
+
+pub(super) fn prepare(
+    operation: &Operation<'_>,
+    tree: &Tree,
+    plan: &mut Plan,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<Arena, EditError> {
+    let mut arena = Arena {
+        nodes: Vec::new(),
+        root: 0,
+        added: Vec::new(),
+        position: 0,
+    };
+    let result = build(operation, tree, true, &mut arena, plan, reader)?;
+    if result.left.is_some() || arena.position != operation.keys.len() {
+        return Err(EditError::Preservation);
+    }
+    arena.root = result.right;
+    Ok(arena)
+}
+
+fn build(
+    operation: &Operation<'_>,
+    tree: &Tree,
+    root: bool,
+    arena: &mut Arena,
+    plan: &mut Plan,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<ResultChild, EditError> {
+    reader.tick()?;
+    let original = raw(operation.image, tree.number())?;
+    if tree.is_leaf() {
+        let start = arena.position;
+        let end = start
+            .checked_add(tree.count())
+            .filter(|end| *end <= operation.keys.len())
+            .ok_or(EditError::Preservation)?;
+        arena.position = end;
+        let entries = leaf_entries(&operation.keys[start..end], reader.budget, reader.cancelled)?;
+        if repack::fits::<_, { encoding::MAX_ENTRY_BYTES }>(
+            original,
+            &entries,
+            operation.profile,
+            reader.budget,
+            reader.cancelled,
+        )? {
+            let right = push_leaf(arena, tree.number(), start..end, operation, reader)?;
+            return Ok(ResultChild { left: None, right });
+        }
+        if root || end - start < 2 {
+            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+        }
+        let middle = start + (end - start) / 2;
+        let number = allocate(operation, arena, plan, reader)?;
+        let left = push_leaf(arena, number, start..middle, operation, reader)?;
+        let right = push_leaf(arena, tree.number(), middle..end, operation, reader)?;
+        return Ok(ResultChild {
+            left: Some(left),
+            right,
+        });
+    }
+    let mut children = Vec::new();
+    for child in tree.children() {
+        let result = build(operation, child, false, arena, plan, reader)?;
+        if let Some(left) = result.left {
+            push_child(&mut children, left, reader)?;
+        }
+        push_child(&mut children, result.right, reader)?;
+    }
+    let tail = IndexHeader::read(original)?.tail.get() != 0;
+    let entries = bounds(&arena.nodes, &children, tail, reader)?;
+    if repack::fits::<_, { encoding::MAX_ENTRY_BYTES }>(
+        original,
+        &entries,
+        operation.profile,
+        reader.budget,
+        reader.cancelled,
+    )? {
+        let right = push_branch(
+            arena,
+            tree.number(),
+            tree.height(),
+            children,
+            tail,
+            false,
+            reader,
+        )?;
+        return Ok(ResultChild { left: None, right });
+    }
+    if children.len() < 2 {
+        return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+    }
+    let middle = children.len() / 2;
+    let left_children = copy_children(&children[..middle], reader)?;
+    let right_children = copy_children(&children[middle..], reader)?;
+    if root {
+        let height = tree
+            .height()
+            .checked_add(1)
+            .filter(|height| usize::from(*height) < MAX_INDEX_DEPTH)
+            .ok_or(InspectError::StructureLimit)?;
+        // Root ID stays fixed; actual reference order is right, then left.
+        let right_number = allocate(operation, arena, plan, reader)?;
+        let left_number = allocate(operation, arena, plan, reader)?;
+        let right = push_branch(
+            arena,
+            right_number,
+            tree.height(),
+            right_children,
+            true,
+            false,
+            reader,
+        )?;
+        let left = push_branch(
+            arena,
+            left_number,
+            tree.height(),
+            left_children,
+            true,
+            false,
+            reader,
+        )?;
+        let mut root_children = Vec::new();
+        push_child(&mut root_children, left, reader)?;
+        push_child(&mut root_children, right, reader)?;
+        let root = push_branch(
+            arena,
+            tree.number(),
+            height,
+            root_children,
+            false,
+            true,
+            reader,
+        )?;
+        Ok(ResultChild {
+            left: None,
+            right: root,
+        })
+    } else {
+        let number = allocate(operation, arena, plan, reader)?;
+        let left = push_branch(
+            arena,
+            number,
+            tree.height(),
+            left_children,
+            true,
+            false,
+            reader,
+        )?;
+        let right = push_branch(
+            arena,
+            tree.number(),
+            tree.height(),
+            right_children,
+            tail,
+            false,
+            reader,
+        )?;
+        Ok(ResultChild {
+            left: Some(left),
+            right,
+        })
+    }
+}
+
+fn allocate(
+    operation: &Operation<'_>,
+    arena: &mut Arena,
+    plan: &mut Plan,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<u32, EditError> {
+    let length = plan
+        .length
+        .checked_add(PAGE_BYTES)
+        .filter(|length| *length as u64 <= MAX_IMAGE_BYTES)
+        .ok_or(InspectError::StructureLimit)?;
+    let number =
+        u32::try_from(plan.length / PAGE_BYTES).map_err(|_| InspectError::StructureLimit)?;
+    maps::allocate_nonroot(
+        operation.image,
+        operation.index,
+        number,
+        &mut plan.map_edits,
+        reader.budget,
+        reader.cancelled,
+    )?;
+    reader
+        .budget
+        .charge_allocation(1, size_of::<u32>() as u64)
+        .map_err(InspectError::from)?;
+    arena
+        .added
+        .try_reserve(1)
+        .map_err(|_| InspectError::Allocation)?;
+    arena.added.push(number);
+    plan.length = length;
+    Ok(number)
+}
+
+fn push_leaf(
+    arena: &mut Arena,
+    number: u32,
+    range: Range<usize>,
+    operation: &Operation<'_>,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<usize, EditError> {
+    if range.start >= range.end {
+        return Err(EditError::Preservation);
+    }
+    let maximum = *operation
+        .keys
+        .get(range.end.checked_sub(1).ok_or(EditError::Preservation)?)
+        .ok_or(EditError::Preservation)?;
+    push(
+        arena,
+        Node {
+            number,
+            height: 0,
+            maximum,
+            contents: Contents::Leaf(range),
+            grown_root: false,
+            previous: 0,
+            next: 0,
+        },
+        reader,
+    )
+}
+
+fn push_branch(
+    arena: &mut Arena,
+    number: u32,
+    height: u8,
+    children: Vec<usize>,
+    tail: bool,
+    grown_root: bool,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<usize, EditError> {
+    let last = *children.last().ok_or(EditError::Preservation)?;
+    let maximum = arena
+        .nodes
+        .get(last)
+        .ok_or(EditError::Preservation)?
+        .maximum;
+    push(
+        arena,
+        Node {
+            number,
+            height,
+            maximum,
+            contents: Contents::Branch { children, tail },
+            grown_root,
+            previous: 0,
+            next: 0,
+        },
+        reader,
+    )
+}
+
+fn push(
+    arena: &mut Arena,
+    node: Node,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<usize, EditError> {
+    reader
+        .budget
+        .charge_allocation(1, size_of::<Node>() as u64)
+        .map_err(InspectError::from)?;
+    arena
+        .nodes
+        .try_reserve(1)
+        .map_err(|_| InspectError::Allocation)?;
+    arena.nodes.push(node);
+    Ok(arena.nodes.len() - 1)
+}
+
+fn push_child(
+    children: &mut Vec<usize>,
+    child: usize,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<(), EditError> {
+    reader
+        .budget
+        .charge_allocation(1, size_of::<usize>() as u64)
+        .map_err(InspectError::from)?;
+    children
+        .try_reserve(1)
+        .map_err(|_| InspectError::Allocation)?;
+    children.push(child);
+    Ok(())
+}
+
+fn copy_children(
+    children: &[usize],
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<Vec<usize>, EditError> {
+    reader.work(children.len())?;
+    reader
+        .budget
+        .charge_allocation(children.len() as u64, size_of::<usize>() as u64)
+        .map_err(InspectError::from)?;
+    let mut copy = Vec::new();
+    copy.try_reserve_exact(children.len())
+        .map_err(|_| InspectError::Allocation)?;
+    copy.extend_from_slice(children);
+    Ok(copy)
+}
+
+pub(super) fn bounds(
+    nodes: &[Node],
+    children: &[usize],
+    tail: bool,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<Vec<Entry>, EditError> {
+    let count = children
+        .len()
+        .checked_sub(usize::from(tail))
+        .ok_or(EditError::Preservation)?;
+    reader
+        .budget
+        .charge_allocation(count as u64, size_of::<Entry>() as u64)
+        .map_err(InspectError::from)?;
+    let mut entries = Vec::new();
+    entries
+        .try_reserve_exact(count)
+        .map_err(|_| InspectError::Allocation)?;
+    for &child in &children[..count] {
+        reader.tick()?;
+        let node = nodes.get(child).ok_or(EditError::Preservation)?;
+        entries.push(Entry {
+            value: node.maximum,
+            child: node.number,
+        });
+    }
+    Ok(entries)
+}
+
+pub(super) fn raw(image: &NativeImage, number: u32) -> Result<&[u8], EditError> {
+    let start = number as usize * PAGE_BYTES;
+    image
+        .as_bytes()
+        .get(start..start + PAGE_BYTES)
+        .ok_or_else(|| InspectError::Malformed.into())
+}
