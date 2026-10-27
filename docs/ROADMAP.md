@@ -131,11 +131,17 @@ Delivered read/query and engineering foundations:
   now rejects empty cross-owner map aliases and overlapping metadata footprints
   before allocation, with immutable-original final recensus. Its 85 scoped runtime
   functions pass; 44 read-only source-admission probes are distinct from candidate
-  replay. Selected indirect LVAL maps and production saves remain open.
+  replay. Indirect candidate maps and production saves remain open.
   A [separate indirect-map source phase](testing/INDIRECT_LONG_VALUE_MAP_OBSERVATIONS.md)
   now records mixed indirect-owned/inline-candidate Memo maps on both originals,
   with thirteen successful fixture commands and complete saved storage proofs.
   No map admission, growth or replacement qualification follows from that phase.
+  The subsequent [mixed-map implementation](testing/results/ace16-indirect-lval-native-2026-10-27.json)
+  now admits qualified indirect-owned/inline-candidate pairs in the default
+  storage checker and engineering replacement, with 112 distinct runtime checks.
+  A working read-only checker matches all four reports on the unchanged originals.
+  Committed replacement replay, candidate-indirect maps, metadata growth and
+  production saves remain separate work.
   A separate [48-control Text/Binary corpus](testing/ENCODED_DELETE_OBSERVATIONS.md)
   checks 36 candidates and twelve unsupported-profile refusals on the same
   committed tool, including the previously refused height-two delete-all cases.

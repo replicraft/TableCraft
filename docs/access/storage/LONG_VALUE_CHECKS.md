@@ -29,9 +29,13 @@ list. A borrowed zerocopy view owns this exact record shape, with independent
 unaligned golden tests. Existing table-definition continuation parsing and index
 metadata cursor logic remain authoritative.
 
-Inline column maps receive complete checks. Indirect column maps remain
-`IndirectMaps`, despite structural support for their common bitmap grammar;
-ordinary table-owned indirect coverage does not qualify column-LVAL allocation.
+Inline owned/candidate pairs and indirect-owned/inline-candidate pairs receive
+complete checks. The latter shape has separate
+[original-file storage observations](../../testing/INDIRECT_LONG_VALUE_MAP_OBSERVATIONS.md).
+Its existing bitmap storage must pass the same allocation and complete member
+checks; the service does not create maps or shift windows. Indirect candidate
+maps remain `IndirectMaps`. Ordinary table-owned indirect coverage alone does
+not qualify column-LVAL storage or allocation.
 Absent pairs, unknown suffixes, declarations without a matching visible field,
 unsupported field flags and unsupported formats remain visible as separate
 statuses. Historical-declaration status identifies an unmatched native column
@@ -97,3 +101,11 @@ The final frozen consumer repeats the same 60 checks with the same 120 exact
 reports; the record preserves both binary/source identities and counts these as
 repeated controls. Every input and original remains unchanged. This is engine storage-check evidence,
 not another writer run or Microsoft Access qualification.
+
+The separate [mixed-map implementation record](../../testing/results/ace16-indirect-lval-native-2026-10-27.json)
+covers default and preview builds, independent literal map/descriptor cases and
+immutable finalizer forgeries. A working default example also checks both
+unchanged mixed-map originals: Memo reports ten owned/live chunks across two
+chained values, and OLE reports two single values on one owned page. Those two
+read-only diagnostics leave the sources unchanged; they stage no replacement
+and are separate from frozen-consumer original candidate acceptance.

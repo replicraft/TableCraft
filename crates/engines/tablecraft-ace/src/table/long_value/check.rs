@@ -131,7 +131,7 @@ pub fn check_table_long_values<R: NativeReadSource>(
                 match maps::inspect(&mut reader, references)? {
                     MapInspection::Unknown => result.status = LongValueCheckStatus::UnknownMap,
                     MapInspection::Indirect => result.status = LongValueCheckStatus::IndirectMaps,
-                    MapInspection::Inline(owned, candidate) => {
+                    MapInspection::Qualified(owned, candidate) => {
                         if global.is_none() {
                             let value = RepresentedMap::read(
                                 &mut reader,

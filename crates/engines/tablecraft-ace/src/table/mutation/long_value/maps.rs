@@ -15,6 +15,7 @@ use std::io::Cursor;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const INLINE_MAP: u8 = 0;
+const INDIRECT_MAP: u8 = 1;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub(super) enum Family {
@@ -120,7 +121,9 @@ impl Maps {
             MapRole::LongValueCandidate,
             &global,
         )?;
-        if long_value.owned.kind() != INLINE_MAP || long_value.hint.kind() != INLINE_MAP {
+        if !matches!(long_value.owned.kind(), INLINE_MAP | INDIRECT_MAP)
+            || long_value.hint.kind() != INLINE_MAP
+        {
             return Err(EditError::Unsupported(WriteBlocker::RowLayout));
         }
         for &number in &long_value.pages {

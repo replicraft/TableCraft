@@ -82,7 +82,13 @@ admit indirect selected LVAL maps.
 The [indirect-map source experiment](../../testing/INDIRECT_LONG_VALUE_MAP_OBSERVATIONS.md)
 now supplies two actual mixed indirect-owned/inline-candidate originals under a
 fixed construction recipe. Its complete saved storage/ownership observations are
-prerequisites for future admission; they do not enable replacement or map growth.
+prerequisites, rather than candidate qualification. The subsequent
+[mixed-map implementation](../../testing/results/ace16-indirect-lval-native-2026-10-27.json)
+now admits the qualified indirect-owned/inline-candidate pair through existing
+represented cells and complete final audits. Its 112 distinct runtime checks
+pass; separate working read-only reports match both originals. Original-file
+replacement replay, indirect candidates, metadata growth and normal saves remain
+unfinished.
 
 The separate [Int32 leaf-split service](../../testing/ACE16_INDEX_SPLITS.md) now
 supports root-leaf and non-root leaf growth through represented EOF index pages.
