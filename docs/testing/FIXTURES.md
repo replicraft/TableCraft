@@ -9546,3 +9546,18 @@ body, with complete key/ROW/map proofs and historical counters retained. The
 first-run sources, commands, outputs and separate read-only verification. Public
 scratch rewrites are observations, not engineering byte goldens. No new-kernel
 candidate or native Microsoft Access qualification is claimed.
+
+### Recursive Int32 split original-file acceptance
+
+The [separate committed-consumer replay](RECURSIVE_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
+passes all four unchanged originals on its first execution: two 782-row root-parent
+overflows and two 963-row below-root internal-parent overflows. Eight native/JVM
+fixture commands produce four complete expected-image matches and four fresh
+read-only getter/map proofs. Every original row reference, marker, counter,
+protected byte and map bit agrees with the frozen independent models; retained
+page residue stays unchanged and fresh unused bytes are zero. The
+[receipt](results/ace16-recursive-index-split-originals-2026-10-27.json) pins exact
+first-run sources, plans, compiled Git objects, outputs and read-only replay.
+Earlier public reference actions and prior-consumer refusals remain distinct;
+no fixture was regenerated and no actual candidate was retried. This remains an
+engineering Int32 preview, not native Access or normal-save qualification.
