@@ -88,6 +88,22 @@ Commit `Cargo.lock`. CI runs the Rust commands on Linux, macOS and Windows.
 Configuring those jobs does not establish that they passed. Local execution evidence is recorded in IMPLEMENTATION.md.
 CI has read-only repository permissions and does not retain checkout credentials.
 
+## Committed producer builds
+
+Build compatibility producers exported from a committed archive into an initially
+absent, dedicated Cargo target directory. Git archives retain commit timestamps;
+when an older archive shares a target directory, Cargo can consider a newer
+cached artifact fresh even though the archived source differs. A successful Cargo
+exit and a verified source export alone do not establish that the exported code
+was compiled.
+
+Record the commit, source archive and manifest hashes, initially absent target,
+actual engine compilation, toolchain, build log and resulting artifact hash.
+Keep the full source inventory in its pinned manifest rather than duplicating it
+in a public receipt. Preserve failed or unqualified build attempts and bind
+candidate runs only to the qualified artifact. Ordinary development builds keep
+their existing shared target and incremental compilation.
+
 ## Package and feature policy
 
 The workspace additionally contains `crates/foundation/tablecraft-schema` and
