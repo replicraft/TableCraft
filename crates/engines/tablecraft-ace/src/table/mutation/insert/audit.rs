@@ -87,7 +87,8 @@ pub(super) fn prove(
     records::qualify(schema, budget, cancelled)?;
     let id = primary_column::resolve(&checked, budget, cancelled)?;
     policies::require_text_declarations(image, schema, requests, budget, cancelled)?;
-    let metadata = Metadata::capture(image, schema, checked.indexes(), id, budget, cancelled)?;
+    let metadata =
+        Metadata::capture_for_insert(image, schema, checked.indexes(), budget, cancelled)?;
 
     let mut source = image.reader();
     let mut reader = Reader {

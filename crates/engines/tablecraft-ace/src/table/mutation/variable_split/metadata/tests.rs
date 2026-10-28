@@ -115,6 +115,68 @@ fn record_rewrites_are_bound_to_the_captured_operation_roles_and_original_storag
 }
 
 #[test]
+fn insert_captures_unrelated_index_roles_without_expanding_column_update_authority() {
+    for code in [5, 6] {
+        let original = source(code);
+        let image = capture(&original.bytes);
+        let checked = checked_table(&image);
+        let selected = metadata(&image, &checked, 0);
+        let insert = Metadata::capture_for_insert(
+            &image,
+            checked.schema(),
+            checked.indexes(),
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        for entry in checked.indexes() {
+            let index = entry.index();
+            assert!(index.columns().iter().all(|column| column.number() != 0));
+            let reference = index.usage_map();
+            let page = (reference >> 8) as usize;
+            let slot = (reference & 255) as usize;
+            let (start, end) = model::row_range(&original.bytes, page, slot);
+            let owner = Owner::IndexOwned {
+                definition: checked.schema().definition_page(),
+                physical: index.data_number(),
+            };
+            assert!(matches!(
+                selected.require_record_rewrite(
+                    owner,
+                    reference,
+                    start..end,
+                    &mut budget(),
+                    &|| false
+                ),
+                Err(EditError::Unsupported(WriteBlocker::RowLayout))
+            ));
+            insert
+                .require_record_rewrite(owner, reference, start..end, &mut budget(), &|| false)
+                .unwrap();
+            assert!(matches!(
+                insert.require_data_page(page as u32, &mut budget(), &|| false),
+                Err(EditError::Unsupported(WriteBlocker::RowLayout))
+            ));
+        }
+
+        let mut shared = source(code);
+        model::bind_historical_owned(&mut shared);
+        let image = capture(&shared.bytes);
+        let checked = checked_table(&image);
+        assert!(matches!(
+            Metadata::capture_for_insert(
+                &image,
+                checked.schema(),
+                checked.indexes(),
+                &mut budget(),
+                &|| false,
+            ),
+            Err(EditError::Unsupported(WriteBlocker::RowLayout))
+        ));
+    }
+}
+
+#[test]
 fn complete_definition_chains_and_all_map_roles_are_forbidden_data_storage() {
     for code in [5, 6] {
         let mut original = source(code);
