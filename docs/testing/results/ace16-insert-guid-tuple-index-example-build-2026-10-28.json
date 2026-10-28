@@ -1,0 +1,42 @@
+{
+  "operation": "Build the INSERT engineering example from an isolated committed-source archive",
+  "commit": "dc2804326292682fed3fba74e32bca2aa0534ab2",
+  "isolated_source": ".cache/ace16-insert-guid-tuple-index-build-20261028/source",
+  "source_archive": {
+    "path": ".cache/ace16-insert-guid-tuple-index-build-20261028/committed-source.tar",
+    "bytes": 89815040,
+    "sha256": "f77fc3e66654565156c052dc302834a2f2c2da93c548821158979c05f6129aea"
+  },
+  "expected_images_frozen_before_build": {
+    "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/freeze.json",
+    "bytes": 88373,
+    "sha256": "4a2ad33136da0fdab1cbc1f090850ed339f9d9154c9aae97dd779cb7a8047848"
+  },
+  "command": [
+    "cargo",
+    "build",
+    "-p",
+    "tablecraft-ace",
+    "--features",
+    "ace16-write-preview",
+    "--example",
+    "preview_ace16_insert",
+    "--locked",
+    "--offline",
+    "-j2",
+    "--target-dir",
+    "<repository>/target"
+  ],
+  "shared_cargo_cache": true,
+  "status": 0,
+  "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)",
+  "cargo": "cargo 1.99.0 (5f94df478 2026-08-27)",
+  "artifact": {
+    "path": ".cache/tablecraft-bin/ace16-insert-guid-tuple-index-20261028",
+    "bytes": 19712632,
+    "sha256": "126ddb700094fec96feb11e7cee754ce8df5ef597ce2c64b69170f9ad768a231"
+  },
+  "candidate_processes": 0,
+  "independent_reader_processes": 0,
+  "native_Access_qualification": false
+}
