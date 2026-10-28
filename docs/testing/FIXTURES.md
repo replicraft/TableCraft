@@ -10174,3 +10174,32 @@ first attempts. The [maintained replay](ace16_insert_guid_tuple_indexes/README.m
 starts no child process by default. Authentic evidence here covers single GUID
 and two-component GUID/Int32 profiles, not ten-component native compatibility or
 Microsoft Access save/reopen qualification.
+
+## Decimal secondary INSERT originals
+
+The repository-authored
+[DecimalIndexInsertReference.java](ace16_insert_decimal_indexes/DecimalIndexInsertReference.java)
+creates 48 V2016/V2019 originals with the reviewed Jackcess 5.0.4 JAR. Tables
+have manual required Int32 ID, Decimal Amount and GUID or independently declared
+Decimal Peer. Four logical index names share two physical owners. Cases cover
+single Decimal precision/scale boundaries and pressure, Decimal/GUID pressure in
+both orders/directions, and fitted two-domain ordinary/unique/unique-ignored
+keys. No third-party fixture or implementation code is copied; original databases,
+JARs, compiled classes and raw captures remain ignored private evidence.
+
+The [compact result](results/ace16-insert-decimal-index-native-2026-10-28.json)
+pins the exact protocol, source/reference reports, requests, independent expected
+images, isolated build and candidate/readback reports. All 48 source gates passed
+before any public append in the first successful 289-call experiment. Raw
+17-byte Decimal fields, their own precision/scale metadata, exact BigDecimal
+coefficients/scales and reflected OLD/NEW encoder outputs are distinct gates.
+Known omitted-all-NULL JUL warnings retain their reviewed exact grammar and count;
+partial-NULL tuples remain represented.
+
+Forty-eight SOURCE+REQUEST images froze before the committed producer build;
+48 full candidate comparisons and 96 fresh read-only calls passed first attempt.
+The initial pure getter static display-count correction is preserved separately,
+with actual 96-call inventory/caps unchanged. The
+[maintained saved proof](ace16_insert_decimal_indexes/README.md) starts no child
+process by default. These finite independent-reader observations do not qualify
+arbitrary native tuples, Microsoft Access saves or production write paths.

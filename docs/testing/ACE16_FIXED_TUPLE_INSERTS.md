@@ -147,6 +147,13 @@ audit functions check literal wire bytes and reject invalid signs, negative zero
 and out-of-precision values. All 183 INSERT regression functions pass, together
 with strict all-target/all-feature ACE Clippy, minimal ACE compilation, formatting
 and documentation/dependency guards. These are a later batch than the full
-468-function checkpoint above. Independent original-file Decimal INSERT
-comparisons are being prepared; native Access save/reopen and production write
+468-function checkpoint above. The [Decimal file corpus](ace16_insert_decimal_indexes/README.md)
+now matches all 48 source/request-only expected images against first-attempt
+committed-producer outputs before 96 fresh independent getter/map calls pass.
+It retains 2,252 old rows, adds 160 rows and contains 4,812 physical key/ROW pairs,
+with 40 new INDEX pages and no new DATA pages. The separate source/reference
+protocol passes all 289 calls. The [build receipt](results/ace16-insert-decimal-index-example-build-2026-10-28.json)
+and [result receipt](results/ace16-insert-decimal-index-native-2026-10-28.json)
+preserve the exact phases and pins. This qualifies the stated single, GUID-mixed
+and two-declaration Decimal cases; native Access save/reopen and production write
 admission remain unqualified.

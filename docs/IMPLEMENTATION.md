@@ -44,8 +44,11 @@ Eight complete-image functions and two independent wire functions cover both
 layouts, per-field declarations, GUID mixtures, NULL/unique/IgnoreNULL behavior,
 root growth, historical counters, quotas and terminal cancellation. All 183
 INSERT regressions, strict ACE all-target/all-feature Clippy, minimal compilation,
-formatting and documentation/dependency guards pass. Independent original-file
-Decimal comparisons remain preparation work; normal saves and native Access
+formatting and documentation/dependency guards pass. Forty-eight independent
+source/request-only expected images now match first-attempt committed-producer
+outputs before 96 fresh independent getter/map calls pass. The 289-call
+source/reference phase separately succeeds, preserving all 2,252 old rows and
+adding 160 with 4,812 physical key/ROW pairs. Normal saves and native Access
 qualification are unchanged. See the [exact Decimal index contract](testing/ACE16_FIXED_TUPLE_INSERTS.md#exact-decimal-index-continuation).
 
 ## Fixed GUID and tuple INSERT keys
