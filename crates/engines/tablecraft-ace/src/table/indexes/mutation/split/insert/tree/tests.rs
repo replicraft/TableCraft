@@ -10,6 +10,7 @@ use tablecraft_model::CatalogScope;
 
 mod model;
 mod normalization;
+mod owned;
 mod recursive;
 mod routing;
 

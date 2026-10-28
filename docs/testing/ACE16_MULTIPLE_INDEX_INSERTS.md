@@ -212,3 +212,13 @@ original-file candidates above qualify Int32 Ignore-NULL cases only. Fresh
 independent file comparisons for these additional scalar key families and native
 Access save/reopen qualification remain separate work. The new pressure goldens
 cover root growth; deeper scalar-specific reference observations are not claimed.
+
+
+## Broader key preparation
+
+The recursive tree kernel now uses generic retained keys and borrowed encoding.
+Its current numeric caller and exact allocation/image policy are unchanged.
+A non-Copy retained-key test brings the INSERT regression batch to 159 passing
+functions. This internal preparation does not admit GUID, composite or variable
+secondary keys; their full-row NULL rules, source membership and independent
+wire proof still need implementation.

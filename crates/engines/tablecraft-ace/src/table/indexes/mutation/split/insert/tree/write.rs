@@ -1,13 +1,13 @@
 //! Resolve the final tree into exact per-height links and existing Plan bytes.
 use super::layout::{Contents, Layout, Origin};
-use super::{ENTRY_BUFFER, Plan, leaf_entries, pages, patch, raw, source};
+use super::{Plan, leaf_entries, pages, patch, raw, source};
 use crate::{
     EditError, InspectError, NativeImage,
     format::{page::PAGE_BYTES, reader::Reader},
     limits::MAX_INDEX_DEPTH,
     table::indexes::{
         header::{IndexHeader, LEVEL_OFFSET},
-        mutation::{profile::SingleProfile, repack},
+        mutation::{repack, retained::RetainedProfile},
         page::{Entry, KeyRef, NODE},
     },
 };
@@ -19,16 +19,16 @@ const NEXT_OFFSET: usize = std::mem::offset_of!(IndexHeader, next);
 const TAIL_OFFSET: usize = std::mem::offset_of!(IndexHeader, tail);
 const PREFIX_OFFSET: usize = std::mem::offset_of!(IndexHeader, prefix);
 
-pub(super) struct Operation<'a> {
+pub(super) struct Operation<'a, P: RetainedProfile> {
     pub image: &'a NativeImage,
-    pub keys: &'a [KeyRef],
-    pub profile: &'a SingleProfile,
+    pub keys: &'a [KeyRef<P::Key>],
+    pub profile: &'a P,
     pub layout: &'a Layout,
     pub numbers: &'a [u32],
 }
 
-pub(super) fn emit(
-    operation: Operation<'_>,
+pub(super) fn emit<P: RetainedProfile, const N: usize>(
+    operation: Operation<'_, P>,
     plan: &mut Plan,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<(), EditError> {
@@ -65,12 +65,12 @@ pub(super) fn emit(
         reader.tick()?;
         let number = operation.numbers[node];
         let before = raw(operation.image, number)?;
-        let after = render(&operation, node, links[node], plan.append.owner, reader)?;
+        let after = render::<_, N>(&operation, node, links[node], plan.append.owner, reader)?;
         patch(number, before, after, plan, reader)?;
     }
     for &node in &layout.fresh {
         reader.tick()?;
-        let bytes = render(&operation, node, links[node], plan.append.owner, reader)?;
+        let bytes = render::<_, N>(&operation, node, links[node], plan.append.owner, reader)?;
         source::reserve(&mut plan.added, 1, reader)?;
         plan.added.push(super::super::super::AddedPage {
             number: operation.numbers[node],
@@ -107,8 +107,8 @@ fn collect(
     Ok(())
 }
 
-fn render(
-    operation: &Operation<'_>,
+fn render<P: RetainedProfile, const N: usize>(
+    operation: &Operation<'_, P>,
     index: usize,
     links: (u32, u32),
     owner: u32,
@@ -156,7 +156,7 @@ fn render(
     let before = match node.origin {
         Origin::Fresh => {
             if node.height == 0 {
-                return pages::leaf::<_, ENTRY_BUFFER>(
+                return pages::leaf::<_, N>(
                     owner,
                     links.0,
                     links.1,
@@ -166,7 +166,7 @@ fn render(
                     reader.cancelled,
                 );
             }
-            return pages::node::<_, ENTRY_BUFFER>(
+            return pages::node::<_, N>(
                 &pages::NodeHeader {
                     owner,
                     height: node.height,
@@ -187,7 +187,7 @@ fn render(
         reader.work(PAGE_BYTES)?;
         seed.extend_from_slice(before);
         seed[PREFIX_OFFSET..PREFIX_OFFSET + size_of::<u16>()].fill(0);
-        repack::borrowed_page::<_, ENTRY_BUFFER>(
+        repack::borrowed_page::<_, N>(
             &seed,
             &entries,
             operation.profile,
@@ -195,7 +195,7 @@ fn render(
             reader.cancelled,
         )?
     } else {
-        repack::borrowed_page::<_, ENTRY_BUFFER>(
+        repack::borrowed_page::<_, N>(
             before,
             &entries,
             operation.profile,

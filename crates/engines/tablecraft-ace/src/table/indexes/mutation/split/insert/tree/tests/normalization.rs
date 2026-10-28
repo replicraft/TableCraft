@@ -57,7 +57,7 @@ fn layout_for(additions: &[i32], source_prefix: bool) -> layout::Layout {
         cancelled: &|| false,
         reads: 0,
     };
-    let original = source::capture(
+    let original = source::capture::<_, ENTRY_BUFFER>(
         &image,
         checked.indexes()[0].index(),
         10,
@@ -65,7 +65,7 @@ fn layout_for(additions: &[i32], source_prefix: bool) -> layout::Layout {
         &mut reader,
     )
     .unwrap();
-    layout::prepare(&image, &original, &keys, &profile, &mut reader).unwrap()
+    layout::prepare::<_, ENTRY_BUFFER>(&image, &original, &keys, &profile, &mut reader).unwrap()
 }
 
 fn range(node: &layout::Node) -> std::ops::Range<usize> {

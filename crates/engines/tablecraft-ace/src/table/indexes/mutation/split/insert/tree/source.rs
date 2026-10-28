@@ -1,46 +1,46 @@
 //! Original index topology and bounds. Final INSERT ranges never use old counts.
-use super::{ENTRY_BUFFER, raw};
+use super::raw;
 use crate::{
     EditError, InspectError, NativeImage, NativeIndex, WriteBlocker,
     format::{page::PAGE_BYTES, reader::Reader},
     limits::{MAX_INDEX_DEPTH, MAX_LIVE_ROWS},
     table::indexes::{
         header::IndexHeader,
-        mutation::profile::SingleProfile,
+        key::KeyProfile,
         page::{self, KeyRef},
     },
 };
 use std::{io::Cursor, ops::Range};
 
-pub(super) struct Node {
+pub(super) struct Node<K> {
     pub number: u32,
     pub height: u8,
-    pub bounds: Vec<KeyRef>,
+    pub bounds: Vec<KeyRef<K>>,
     pub children: Vec<usize>,
     pub tail: bool,
     pub range: Range<usize>,
 }
 
-pub(super) struct Source {
-    pub nodes: Vec<Node>,
-    pub keys: Vec<KeyRef>,
+pub(super) struct Source<K> {
+    pub nodes: Vec<Node<K>>,
+    pub keys: Vec<KeyRef<K>>,
     pub root: usize,
 }
 
-struct Capture<'a> {
+struct Capture<'a, P> {
     image: &'a NativeImage,
     owner: u32,
-    profile: &'a SingleProfile,
+    profile: &'a P,
     visited: Vec<bool>,
 }
 
-pub(super) fn capture(
+pub(super) fn capture<P: KeyProfile, const N: usize>(
     image: &NativeImage,
     index: &NativeIndex,
     owner: u32,
-    profile: &SingleProfile,
+    profile: &P,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
-) -> Result<Source, EditError> {
+) -> Result<Source<P::Key>, EditError> {
     let mut capture = Capture {
         image,
         owner,
@@ -55,7 +55,7 @@ pub(super) fn capture(
         keys: Vec::new(),
         root: 0,
     };
-    source.root = visit(&mut capture, index.root_page(), 0, &mut source, reader)?;
+    source.root = visit::<_, N>(&mut capture, index.root_page(), 0, &mut source, reader)?;
     for pair in source.keys.windows(2) {
         reader.tick()?;
         if !pair[0].compare_with(&pair[1], profile).is_lt() {
@@ -67,7 +67,11 @@ pub(super) fn capture(
         for node in source.nodes.iter().filter(|node| node.height == height) {
             reader.tick()?;
             let header = IndexHeader::read(raw(image, node.number)?)?;
-            if header.previous.get() != previous.map(|prior: &Node| prior.number).unwrap_or(0) {
+            if header.previous.get()
+                != previous
+                    .map(|prior: &Node<P::Key>| prior.number)
+                    .unwrap_or(0)
+            {
                 return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
             }
             if let Some(prior) = previous
@@ -86,11 +90,11 @@ pub(super) fn capture(
     Ok(source)
 }
 
-fn visit(
-    capture: &mut Capture<'_>,
+fn visit<P: KeyProfile, const N: usize>(
+    capture: &mut Capture<'_, P>,
     number: u32,
     depth: usize,
-    source: &mut Source,
+    source: &mut Source<P::Key>,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<usize, EditError> {
     reader.tick()?;
@@ -105,8 +109,7 @@ fn visit(
         return Err(EditError::Preservation);
     }
     *visited = true;
-    let decoded =
-        page::read_profile::<_, _, ENTRY_BUFFER>(reader, number, capture.owner, capture.profile)?;
+    let decoded = page::read_profile::<_, _, N>(reader, number, capture.owner, capture.profile)?;
     let start = source.keys.len();
     let index = source.nodes.len();
     reserve(&mut source.nodes, 1, reader)?;
@@ -148,15 +151,25 @@ fn visit(
         )?;
         reserve(&mut bounds, decoded.entries.len(), reader)?;
         for entry in decoded.entries {
-            let child = visit(capture, entry.child, depth + 1, source, reader)?;
-            if source.keys.get(source.nodes[child].range.end - 1) != Some(&entry.value) {
+            let child = visit::<_, N>(capture, entry.child, depth + 1, source, reader)?;
+            let maximum = source
+                .keys
+                .get(source.nodes[child].range.end - 1)
+                .ok_or(EditError::Preservation)?;
+            if !maximum.compare_with(&entry.value, capture.profile).is_eq() {
                 return Err(EditError::Preservation);
             }
             children.push(child);
             bounds.push(entry.value);
         }
         if decoded.tail != 0 {
-            children.push(visit(capture, decoded.tail, depth + 1, source, reader)?);
+            children.push(visit::<_, N>(
+                capture,
+                decoded.tail,
+                depth + 1,
+                source,
+                reader,
+            )?);
         }
         let child_height = source.nodes[*children.first().ok_or(EditError::Preservation)?].height;
         for &child in &children {
