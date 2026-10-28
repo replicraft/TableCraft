@@ -1,13 +1,17 @@
 """Recheck saved reference25 evidence without database, getter or native calls."""
 import argparse
-import hashlib
 import json
 from pathlib import Path
 import sys
 
 ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT / 'scripts'))
+from compat_artifacts import ArtifactStore
+
 sys.path.insert(0, str(ROOT / 'docs/testing'))
 from ordinary_hint_growth_references import action_model, reference_proof
+
+STORE = ArtifactStore(ROOT)
 
 PRIVATE = '.cache/ace16-ordinary-hint-reference-next-20261027'
 WORK = '.cache/ace16-ordinary-hint-reference-first-20261027'
@@ -17,35 +21,15 @@ UPDATES_SHA = '9feb967e798c7595e00846e9fee691ffdd2abf0da8f7853ee25b93cd5bc1b4ab'
 GETTERS_SHA = 'b1a5a1e021d0677bfdaa7b7f6b1a44217fda0f4064c1dec90587b253fd7234e9'
 
 
-def path(value):
-    target = (ROOT / value).resolve()
-    target.relative_to(ROOT)
-    return target
-
-
-def pin(value):
-    target = path(value)
-    data = target.read_bytes()
-    return {
-        'path': target.relative_to(ROOT).as_posix(),
-        'bytes': len(data),
-        'sha256': hashlib.sha256(data).hexdigest(),
-    }
-
-
-def load(value):
-    return json.loads(path(value).read_text())
-
-
 def normalized(value):
     return json.loads(json.dumps(value))
 
 
 def maintained_identity():
     for name in ('OrdinaryHintReferenceProbe.java', 'map_proof.py'):
-        assert path(PUBLIC + '/' + name).read_bytes() == path(PRIVATE + '/' + name).read_bytes()
+        assert STORE.path(PUBLIC + '/' + name).read_bytes() == STORE.path(PRIVATE + '/' + name).read_bytes()
     for name in ('action_model.py', 'reference_proof.py'):
-        executed = path(PRIVATE + '/' + name).read_text()
+        executed = STORE.path(PRIVATE + '/' + name).read_text()
         assert executed.count('parents[2]') == 1
         maintained = executed.replace('parents[2]', 'parents[3]')
         if name == 'reference_proof.py':
@@ -54,7 +38,7 @@ def maintained_identity():
                 'import map_proof\n',
                 'from ordinary_hint_growth_references import map_proof\n',
             )
-        assert path(PUBLIC + '/' + name).read_text() == maintained
+        assert STORE.path(PUBLIC + '/' + name).read_text() == maintained
 
 
 def verify():
@@ -64,18 +48,18 @@ def verify():
     for value, digest in (
         (freeze_path, FREEZE_SHA), (updates_path, UPDATES_SHA), (getters_path, GETTERS_SHA),
     ):
-        assert pin(value)['sha256'] == digest
+        assert STORE.pin(value)['sha256'] == digest
     maintained_identity()
-    freeze = load(freeze_path)
-    proposal = load(freeze['proposal']['path'])
-    updates = load(updates_path)
-    getters = load(getters_path)
+    freeze = STORE.load(freeze_path)
+    proposal = STORE.load(freeze['proposal']['path'])
+    updates = STORE.load(updates_path)
+    getters = STORE.load(getters_path)
     assert len(freeze['inputs']) == 115
     assert updates['qualified_success'] and getters['qualified_success']
     assert updates['completed'] and getters['completed']
     assert updates['failure'] is getters['failure'] is None
-    assert updates['freeze'] == getters['freeze'] == pin(freeze_path)
-    assert getters['updates_report'] == pin(updates_path)
+    assert updates['freeze'] == getters['freeze'] == STORE.pin(freeze_path)
+    assert getters['updates_report'] == STORE.pin(updates_path)
     assert len(updates['commands']) == 13 and len(getters['commands']) == 12
     assert updates['public_update_attempts'] == 12
     assert updates['read_only_getter_attempts'] == 0
@@ -111,7 +95,7 @@ def verify():
                 previous = checked.setdefault(item['path'], item)
                 assert previous == item
                 if previous is item:
-                    assert pin(item['path']) == item
+                    assert STORE.pin(item['path']) == item
                 return
             for child in value.values():
                 visit(child)
@@ -126,9 +110,9 @@ def verify():
         PRIVATE + '/phase-a-postcheck.json', PRIVATE + '/phase-b-postcheck.json',
         PRIVATE + '/phase-b-binding.json', PRIVATE + '/observations.json',
     ):
-        visit(pin(value))
+        visit(STORE.pin(value))
     for value, count in (('phase-a-postcheck.json', 131), ('phase-b-postcheck.json', 168)):
-        postcheck = load(PRIVATE + '/' + value)
+        postcheck = STORE.load(PRIVATE + '/' + value)
         assert postcheck['all_unchanged'] and postcheck['fixture_processes'] == 0
         assert len(postcheck['checks']) == count
         for item in postcheck['checks']:
@@ -142,17 +126,17 @@ def verify():
     cases = []
     for planned, receipt in zip(proposal['cases'], getters['cases'], strict=True):
         assert receipt['completed']
-        saved = load(receipt['facts']['path'])
+        saved = STORE.load(receipt['facts']['path'])
         command = next(command for command in getters['commands'] if command['label'] == planned['id'] + '-inspect')
         before = action_model.snapshot(
-            path(planned['source']), path(planned['source_getter']),
+            STORE.path(planned['source']), STORE.path(planned['source_getter']),
             planned['profile'], planned['padding_rows'],
         )
         transported = normalized(before)
         transported['file'] = str(Path(transported['file']).resolve())
-        assert transported == load(planned['source_facts'])['snapshot']
+        assert transported == STORE.load(planned['source_facts'])['snapshot']
         after = action_model.snapshot(
-            path(planned['output']), path(command['stdout']['path']),
+            STORE.path(planned['output']), STORE.path(command['stdout']['path']),
             planned['profile'], planned['padding_rows'], changed=planned['table'],
         )
         assert normalized(after) == saved['snapshot']
@@ -173,7 +157,7 @@ def verify():
             'source_pages': before['bytes'] // 4096,
             'after_pages': after['bytes'] // 4096,
             'suffix_pages': (after['bytes'] - before['bytes']) // 4096,
-            'output': pin(planned['output']),
+            'output': STORE.pin(planned['output']),
             'facts': receipt['facts'],
             'hint_transition': proof['map_transitions'][planned['table'] + ':Hint'],
             'suffix': proof['suffix_purposes_in_actual_order'],

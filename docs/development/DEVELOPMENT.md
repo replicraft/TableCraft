@@ -1,5 +1,19 @@
 # Development baseline
 
+## Shared compatibility artifact helpers
+
+Maintained saved-evidence verifiers use
+[`ArtifactStore`](../../scripts/compat_artifacts.py) for repository-scoped paths,
+file pins and JSON loading. Callers retain protocol-specific checks and immutable
+expected hashes; the helper starts no database, Java, native or Git process.
+The ordinary-hint reference and candidate verifiers consume it directly.
+
+Executed runners, frozen inputs, independent image models and raw reports remain
+unchanged. Historical receipts retain their original maintained-tool hashes;
+the current verifier is a later implementation, not a replacement execution.
+Two helper tests and both saved twelve-case proof replays pass. The candidate
+verifier retains its explicit optional Git-object check.
+
 Original repository code uses the Apache-2.0 license in [LICENSE](../../LICENSE). Implemented behavior and its
 verification are recorded in [IMPLEMENTATION.md](../IMPLEMENTATION.md). Repository
 working guidance lives in [AGENTS.md](../../AGENTS.md). Private planning materials
