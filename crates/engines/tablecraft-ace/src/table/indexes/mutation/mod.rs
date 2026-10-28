@@ -31,6 +31,8 @@ mod retained;
 #[cfg(feature = "ace16-write-preview")]
 mod retirement;
 #[cfg(feature = "ace16-write-preview")]
+mod row_key;
+#[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) use retirement::{
     RetiredPage, RetirementTable, audit_global, audit_retirements, compose,
 };

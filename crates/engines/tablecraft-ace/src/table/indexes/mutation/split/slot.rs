@@ -1,5 +1,8 @@
 //! Exact-slot replacements use genuine owned encoded keys for index splitting.
-use super::super::replacement::{self, ReplacementProfile, SlotKeyChanges, SlotKeyUpdate};
+use super::super::{
+    replacement::{self, SlotKeyChanges, SlotKeyUpdate},
+    row_key::RowKeyProfile,
+};
 use super::{AllocationPolicy, Plan, edit_prepared, nonroot, seal};
 use crate::{
     EditError, IndexCheck, InspectError, NativeImage, NativeIndex, TableSchema, WriteBlocker,
@@ -201,7 +204,7 @@ struct IndexOperation<'a, P> {
     updates: &'a [SlotKeyUpdate<'a>],
 }
 
-fn edit<P: ReplacementProfile, const N: usize>(
+fn edit<P: RowKeyProfile, const N: usize>(
     operation: IndexOperation<'_, P>,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
     patches: &mut Vec<IndexDataPatch>,
