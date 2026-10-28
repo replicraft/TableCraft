@@ -18,6 +18,10 @@ than pushing a predicate into a partial parent selection.
 
 `read_table_index_with_references` returns an `IndexedTableSnapshot`: the checked
 scalar projection and one `NativeRowReference` per row, in actual index order.
+When selected scalars include opted-in stored calculation caches, the adapter
+uses `read_stored_table_index_with_references` instead. That reader qualifies
+stored ResultType/Expression declarations without executing formulas; physical
+index key validation still uses ordinary eligible fields.
 References identify original logical DATA roots before forwarding. Complete
 collection parent links retain those same logical references in sequential order,
 including parents with absent keys or assigned empty collections.
@@ -48,12 +52,18 @@ metadata, not row contents, property maps or an entire-file revision.
   values/pages. Selecting stored FileData explicitly loads encoded Binary;
   decoding remains a separate opt-in. A failed payload read cannot poison the
   completed metadata cache.
-- Selected cached-calculation scalars with a required index remain unsupported.
-  They need a separately qualified stored-cache indexed reader. Ordinary scalar
-  columns on the same table can still be selected beside stored collection members.
+- Selected cached-calculation scalars can accompany members through the explicit
+  [stored-index reader](../calculations/CACHED_CALCULATION_QUERIES.md). Complete
+  traversal, original evaluator filters and the same owner/reference bijection
+  remain required. No range or automatic indexed collection selection is added.
 - Automatic constrained scalar scans and their table-order requirements remain
   unchanged. These references do not make collection execution progressive or
   provide live Access shared-file coherence.
+
+Microsoft's [index guidance](https://support.microsoft.com/en-us/access/create-and-use-an-index-to-improve-performance)
+prohibits user indexes on Calculated, OLE Object and Attachment fields. The
+ordinary-key requirement follows that restriction; cached outputs and attachment
+members do not become physical index keys.
 
 ## Evidence
 

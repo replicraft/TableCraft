@@ -42,8 +42,10 @@ visiting rows; it never associates memberships by visible values or row position
 See [the indexed collection profile](access/queries/INDEXED_COLLECTION_QUERIES.md).
 
 Metadata-only attachment queries still omit FileData pages, and missing/corrupt
-required indexes never fall back to sequential scalar reads. Selected cached
-calculation scalars with indexes remain a separate unimplemented reader profile.
+required indexes never fall back to sequential scalar reads. Explicit stored
+calculation outputs now compose through ordinary index keys with complete `All`
+traversal. Their qualified stored values remain inert; physical keys retain
+ordinary validation, and collection membership uses the same logical references.
 Existing scalar caches, partial-selection rules and automatic scalar index
 selection retain their prior contracts.
 
@@ -51,6 +53,15 @@ Four new engine and eight independent adapter tests pass, alongside 19 engine an
 25 adapter collection regressions. Separate CLI tests verify that mixed-table
 audits explain the ordinary-scalar prerequisite while keeping malformed-data
 errors and empty failure output intact. Native write gates are unchanged.
+
+Five additional engine tests and six independent adapter tests cover indexed
+stored outputs, stale/NULL caches, forwarding, schema drift, hidden-key checks,
+corrupt selected values, pruning, complete caches, collection alignment, resource
+limits and cancellation. Seven ordinary index and sixteen cached/collection
+adapter regressions also pass. On the private sample, indexed and sequential
+cached scalar/attachment projections match, while plain omitted-table browsing
+still displays all sixteen fields. These are engineering checks, not native
+Access qualification.
 
 ## Shared ownership extraction
 

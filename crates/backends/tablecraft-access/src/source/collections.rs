@@ -263,11 +263,6 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
             return Err(QueryError::Unsupported);
         }
         validate_projection(indices, self.schema_columns(table)?.len())?;
-        let entry = self.entry(table)?;
-        let declared = entry.columns.get().ok_or(QueryError::Source)?;
-        if entry.index.is_some() && declared.has_cached(Some(indices)) {
-            return Err(QueryError::Unsupported);
-        }
         let selected = self.load_values(table, values)?;
         let mut fields = self.load_members(table, members)?;
         self.budget

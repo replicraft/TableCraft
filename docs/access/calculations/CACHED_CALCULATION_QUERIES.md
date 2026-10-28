@@ -36,13 +36,32 @@ values, while query snapshots retain their existing finite-number admission
 policy. A selected non-finite source value therefore refuses the whole query
 snapshot before output; this is separate from malformed cached storage.
 
-Required indexes refuse cached selections before reading a selected index.
-Automatic selection declines that path before traversal; it does not retry a
-failed selected index or replace a partial result with a sequential suffix.
-Ordinary-only projections retain their existing eligibility. Per-field text
+An explicitly required ordinary native index can now return selected cached
+outputs through `read_stored_table_index_with_request`, or through
+`read_stored_table_index_with_references` when collection alignment needs logical
+ROW identity. Both stored readers require complete `All` traversal. They bind
+fresh qualified ResultType/Expression declarations to the indexed table schema,
+decode stored results without executing formulas, and validate ordinary physical
+index keys against the corresponding records. Missing, unsupported or corrupt
+required indexes never fall back to sequential reads.
+
+Full and projected query snapshots retain their existing schema and complete-cache
+checks. WHERE remains in the evaluator even when it supplied a source constraint;
+this stored-index path reads all selected cached values before publishing or
+caching results. It does not add range reads, automatic index selection or
+progressive indexed execution. Automatic selection retains its existing cached
+read behavior, and ordinary-only projections retain their existing eligibility.
+Cached scalars may also accompany [stored collection members](../queries/INDEXED_COLLECTION_QUERIES.md)
+through checked logical parent references. Per-field text
 identities and explicit host comparers retain the existing comparison contract.
 Recomputed previews continue rejecting calculated dependencies even on this
 source, and remain separate from cached results.
+
+The selected index must use ordinary eligible key fields. Microsoft documents
+that users cannot index Calculated, OLE Object or Attachment fields in
+[Create and use an index to improve performance](https://support.microsoft.com/en-us/access/create-and-use-an-index-to-improve-performance).
+Refusing a calculated key follows that Access restriction; reading a cached
+output through an ordinary key does not create an index on the cached field.
 
 The focused synthetic checks cover metadata-only opening/binding, intentionally
 stale values, NULL, one-row batches and complete cache reuse, ordinary projection
