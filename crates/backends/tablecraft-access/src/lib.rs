@@ -8,7 +8,7 @@ mod input;
 pub use input::{AccessInput, AccessInputError};
 mod browsing;
 pub use browsing::{
-    AttachmentColumn, BrowserCursor, CollectionPageRequest, MultivaluePageCell,
+    AttachmentColumn, BrowsePage, BrowserCursor, CollectionPageRequest, MultivaluePageCell,
     MultivaluePageValue, MultivalueTablePage, NativeBrowser, NativeTableStorage, StoredAttachment,
     StoredCollectionColumn, StoredCollectionItem, StoredCollectionPageCell,
     StoredCollectionPageValue, StoredCollectionTablePage, StoredTablePage, StoredVersion,
