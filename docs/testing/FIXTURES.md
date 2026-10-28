@@ -10090,3 +10090,32 @@ reference/candidate copies and getter streams stay ignored private evidence; no 
 binary is bundled. These results cover the
 [ordinary engineering profile](ACE16_ORDINARY_INSERTS.md), with Windows/native
 Microsoft Access qualification and production saves still deferred.
+
+## Ignored-NULL secondary INSERT originals
+
+The repository-owned
+[IgnoredIndexInsertReference.java](ace16_insert_ignored_indexes/IgnoredIndexInsertReference.java)
+creates eight fresh V2016/V2019 originals using the reviewed, pinned Jackcess
+5.0.4 JAR. No third-party fixture or upstream implementation code is copied.
+Each source has manual required Int32 ID, nullable Int32 Group, Short Binary
+Score and four logical indexes sharing exactly two physical owners. Group's
+secondary index is nonunique ASC, IgnoreNULL and not Required; column Required
+and index Required are qualified separately. Generation disables expression
+execution and linked-target resolution and uses bounded file channels.
+
+The [saved evidence record](results/ace16-insert-ignored-index-native-2026-10-28.json)
+pins all original bytes and tools. Mixed, empty-secondary, existing secondary
+NODE and two-root pressure sources produce ten copy cases, because each empty
+original supplies separate all-NULL and first-non-NULL references. Originals,
+reference/candidate databases, JARs/classes and getter streams remain ignored
+private evidence, with no database binaries bundled. The first two-child
+controller warning failure and exact unattempted 53-command continuation remain
+separate. Pinned Jackcess IndexData.java lines 667–671 and 730–743 explain the
+omitted-NULL pending-change warning; no source or reference was repaired.
+
+Ten complete SOURCE+REQUEST images were frozen before the committed producer
+build, then ten native engineering candidates and twenty fresh read-only calls
+passed. The [maintained proof](ace16_insert_ignored_indexes/README.md) preserves
+this ordering and source/proof identities, with no default child process. These
+are independent-reader/engineering observations, not native Microsoft Access
+save/reopen or production-write qualification.

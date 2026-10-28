@@ -26,9 +26,12 @@ The ACE unit batch passes 443 functions with one existing ignored generator,
 including complete-image controls, both layouts/directions/widths, forwarding,
 shared growth and malformed/forged membership. Strict all-target/all-feature
 Clippy, minimal compilation, formatting and documentation/dependency guards pass.
-Independent candidate qualification remains separate from these checks. Primary
-or Required Ignore-NULL combinations, unsupported key families, data macros and
-normal saves retain their gates. See [the profile](testing/ACE16_MULTIPLE_INDEX_INSERTS.md#secondary-indexes-omitting-null-keys).
+Ten source/request-derived complete images match ten first-attempt candidates
+from an isolated committed producer before twenty fresh independent getter/map
+calls pass. All 1,818 old ROWs remain and 132 rows are added. The reference phase
+separately passes its remaining 53 calls after a preserved warning-policy stop;
+no completed calls are repeated. Primary or Required Ignore-NULL combinations,
+unsupported key families, data macros and normal saves retain their gates. See [the profile](testing/ACE16_MULTIPLE_INDEX_INSERTS.md#secondary-indexes-omitting-null-keys).
 
 ## Multiple physical indexes during INSERT
 
