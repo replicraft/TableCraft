@@ -9,6 +9,8 @@ use tablecraft_core::limits::Resource;
 use tablecraft_model::CatalogScope;
 
 mod model;
+mod normalization;
+mod routing;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(256 * 1024 * 1024, 100_000, 100_000_000)
@@ -213,7 +215,7 @@ fn distant_child_allocation_keeps_bitmap_metadata_outside_index_members() {
 }
 
 #[test]
-fn zero_overflow_changed_source_pairs_duplicate_rows_and_nonfree_eof_refuse() {
+fn fitted_continuation_preserves_cursor_and_invalid_pairs_or_nonfree_eof_refuse() {
     let source = model::source(5, true, false, false);
     let check = checked(&source.bytes, true);
     let image = capture(&source.bytes);
@@ -222,16 +224,16 @@ fn zero_overflow_changed_source_pairs_duplicate_rows_and_nonfree_eof_refuse() {
         key: Some(2),
         row: (15 << 8) | 197,
     });
-    assert_eq!(
-        continue_primary(
-            operation(&image, &check, &fitting),
-            State::new(&image, 10),
-            &mut budget(),
-            &|| false
-        )
-        .err(),
-        Some(EditError::Unsupported(WriteBlocker::IndexedColumn))
-    );
+    let fitted = continue_primary(
+        operation(&image, &check, &fitting),
+        State::new(&image, 10),
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert!(fitted.added.is_empty());
+    assert_eq!(fitted.append.length, image.as_bytes().len());
+    assert!(fitted.append.map_edits.is_empty());
     let mut changed = model::final_keys(&source, false, false);
     changed[0].row = (19 << 8) | 1;
     assert!(

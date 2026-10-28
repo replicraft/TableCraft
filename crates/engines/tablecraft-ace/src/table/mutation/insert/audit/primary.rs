@@ -53,8 +53,7 @@ pub(super) fn prove(
     let header = IndexHeader::read(original)?;
     let source_leaf =
         header.kind == LEAF && header.tail.get() == 0 && header.qualified_for_update(0);
-    let source_height_one =
-        header.kind == NODE && header.tail.get() != 0 && header.qualified_for_update(1);
+    let source_height_one = header.kind == NODE && header.qualified_for_update(1);
     if (!source_leaf && !source_height_one)
         || header.version != INDEX_VERSION
         || header.owner.get() != checked.schema().definition_page()
@@ -131,26 +130,26 @@ pub(super) fn prove(
         )?;
         change.compare(&staged.indexes, proof, reader)?;
         let mut reservations = staged.data.append.indexes();
-        if let Some(growth) = change.growth() {
+        for expected in change.index_pages() {
             let actual = reservations.next().ok_or(EditError::Preservation)?;
-            if actual.number != growth.new_left
+            if actual.number != *expected
                 || actual.physical != index.data_number()
                 || actual.usage != index.usage_map()
             {
                 return Err(EditError::Preservation);
             }
-            if let Some(promotion) = &growth.promoted {
-                staged.data.append.require_index_bitmap(
-                    promotion.number,
-                    index.data_number(),
-                    index.usage_map(),
-                    reader.budget,
-                    reader.cancelled,
-                )?;
-            }
         }
         if reservations.next().is_some() {
             return Err(EditError::Preservation);
+        }
+        if let Some(promotion) = change.promotion() {
+            staged.data.append.require_index_bitmap(
+                promotion.number,
+                index.data_number(),
+                index.usage_map(),
+                reader.budget,
+                reader.cancelled,
+            )?;
         }
     } else {
         let rendered = if rows.is_empty() {

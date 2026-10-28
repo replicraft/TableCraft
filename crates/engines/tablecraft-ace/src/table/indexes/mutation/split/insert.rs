@@ -1,5 +1,5 @@
 //! Cardinality-growing primary continuation; DATA authority stays with INSERT.
-pub(in crate::table::indexes) mod height_one;
+mod height_one;
 #[cfg(test)]
 mod tests;
 

@@ -1,315 +1,274 @@
-//! Raw one-child INSERT split replay; no builder partition or arena authority.
+//! Resolve independently normalized symbols, replay maps and frame exact pages.
 #[cfg(test)]
 mod tests;
 
-use super::super::super::{ImageProof, copied, reserve};
-use super::super::{
-    INDEX_VERSION, KEY_MARKER, WIRE_BYTES, page_range, render,
-    split::{PromotionExpected, maps::Allocation},
+use super::super::{WIRE_BYTES, page_range, split::maps::Allocation};
+use super::{
+    Change, ImageProof, frames,
+    normalize::{Normalized, Origin},
+    raw, reserve,
+    source::Source,
 };
-use super::{Source, membership, raw};
 use crate::{
     EditError, InspectError, NativeImage, NativeIndex,
     format::{page::PAGE_BYTES, reader::Reader},
-    table::indexes::{
-        header::IndexHeader,
-        mutation::insertion::PrimaryInsertion,
-        page::{ENTRY_START, LEAF},
-    },
+    table::indexes::mutation::insertion::PrimaryInsertion,
 };
-use std::{io::Cursor, mem::offset_of};
-
-const CHILD_BYTES: usize = size_of::<u32>();
-const BOUND_BYTES: usize = WIRE_BYTES + CHILD_BYTES;
-const MASK_START: usize = size_of::<IndexHeader>();
-const FREE: usize = offset_of!(IndexHeader, free);
-const PREFIX: usize = offset_of!(IndexHeader, prefix);
-const OWNER: usize = offset_of!(IndexHeader, owner);
-const PREVIOUS: usize = offset_of!(IndexHeader, previous);
-const NEXT: usize = offset_of!(IndexHeader, next);
-const BITS: usize = u8::BITS as usize;
-const CAPACITY: usize = PAGE_BYTES - ENTRY_START;
-const SOURCE_PAGES: usize = 3;
-
-pub(in crate::table::mutation::insert::audit::primary) struct Growth {
-    pub new_left: u32,
-    pub promoted: Option<PromotionExpected>,
-    pages: [u32; SOURCE_PAGES],
-    begin: u32,
-    physical: u32,
-    usage: u32,
-    rebased: Option<u32>,
-}
+use std::io::Cursor;
 
 pub(super) fn derive(
     image: &NativeImage,
     index: &NativeIndex,
-    source: Source,
+    source: &Source,
     entries: &[[u8; WIRE_BYTES]],
+    normalized: &Normalized,
     proof: &mut ImageProof<'_>,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
-) -> Result<Growth, EditError> {
-    reader.tick()?;
-    if !std::ptr::eq(proof.original, image.as_bytes())
-        || proof.bytes.len() < proof.original.len()
-        || !proof.bytes.len().is_multiple_of(PAGE_BYTES)
-    {
-        return Err(EditError::Preservation);
-    }
-    membership(&source.entries, entries, reader)?;
-    let mut boundary = 0;
-    for entry in entries {
+) -> Result<Change, EditError> {
+    let mut maxima = Vec::new();
+    reserve(&mut maxima, normalized.logical.len(), reader)?;
+    for position in &normalized.logical {
         reader.tick()?;
-        if entry <= &source.bound {
-            boundary += 1;
+        let node = normalized
+            .nodes
+            .get(*position)
+            .ok_or(EditError::Preservation)?;
+        if node.range.start >= node.range.end {
+            return Err(EditError::Preservation);
         }
+        maxima.push(
+            *entries
+                .get(node.range.end - 1)
+                .ok_or(EditError::Preservation)?,
+        );
     }
-    if boundary == 0 || boundary == entries.len() {
-        return Err(EditError::Preservation);
-    }
-    let partitions = [&entries[..boundary], &entries[boundary..]];
-    let left_number = source.leaves[0].number;
-    let right_number = source.leaves[1].number;
-    let root = raw(image, source.root)?;
-    let definition = IndexHeader::read(root)?.owner.get();
-
-    let mut rendered = Vec::new();
-    reserve(&mut rendered, 2, reader)?;
-    for (leaf, partition) in source.leaves.iter().zip(partitions) {
-        rendered.push(render(raw(image, leaf.number)?, partition, reader)?);
-    }
-    let target = match (rendered[0].is_none(), rendered[1].is_none()) {
-        (true, false) => 0,
-        (false, true) => 1,
-        _ => return Err(EditError::Preservation),
-    };
-    let middle = partitions[target].len() / 2;
-    if middle == 0 || middle == partitions[target].len() {
-        return Err(EditError::Preservation);
-    }
-    let (lower, upper) = partitions[target].split_at(middle);
-    let new_left =
-        u32::try_from(proof.bytes.len() / PAGE_BYTES).map_err(|_| InspectError::StructureLimit)?;
-    let retained_number = source.leaves[target].number;
-    let (previous, next) = if target == 0 {
-        (0, left_number)
-    } else {
-        (left_number, right_number)
-    };
-
-    // Every capacity and wire decision precedes map replay or page allocation.
-    let fresh = fresh(definition, previous, next, lower, reader)?;
-    let (mut retained, _) =
-        render(raw(image, retained_number)?, upper, reader)?.ok_or(EditError::Preservation)?;
-    retained[PREVIOUS..PREVIOUS + CHILD_BYTES].copy_from_slice(&new_left.to_le_bytes());
-    let peer = 1 - target;
-    let (mut peer_page, _) = rendered
-        .get_mut(peer)
-        .and_then(Option::take)
+    let bounds = maxima
+        .len()
+        .checked_sub(usize::from(source.tail))
         .ok_or(EditError::Preservation)?;
-    if target == 1 {
-        peer_page[NEXT..NEXT + CHILD_BYTES].copy_from_slice(&new_left.to_le_bytes());
+    if !frames::parent(&maxima[..bounds], source.prefix, reader)?.fits() {
+        return Err(EditError::Preservation);
     }
-    let maximum = lower.last().ok_or(EditError::Preservation)?;
-    let bounds = if target == 0 {
-        [(*maximum, new_left), (source.bound, left_number)]
-    } else {
-        [(source.bound, left_number), (*maximum, new_left)]
-    };
-    let root_page = branch(root, &bounds, reader)?;
-    let pages = [source.root, left_number, right_number];
-    for number in pages {
-        let range = page_range(number)?;
+
+    let mut pages = Vec::new();
+    reserve(&mut pages, source.children.len() + 1, reader)?;
+    pages.push(source.root);
+    pages.extend(source.children.iter().map(|child| child.number));
+    for number in &pages {
+        let range = page_range(*number)?;
         reader.work(PAGE_BYTES)?;
         if proof.bytes.get(range.clone()) != image.as_bytes().get(range) {
             return Err(EditError::Preservation);
         }
     }
+    let begin =
+        u32::try_from(proof.bytes.len() / PAGE_BYTES).map_err(|_| InspectError::StructureLimit)?;
+    let mut ids = Vec::new();
+    reserve(&mut ids, normalized.nodes.len(), reader)?;
+    ids.extend(normalized.nodes.iter().map(|node| match node.origin {
+        Origin::Existing { number, .. } => Some(number),
+        Origin::Fresh => None,
+    }));
+    let mut indexes = Vec::new();
+    reserve(&mut indexes, normalized.fresh.len(), reader)?;
+    let (promoted, rebased) = if normalized.fresh.is_empty() {
+        (None, None)
+    } else {
+        let mut allocation = Allocation::capture(image, index, source.definition, proof, reader)?;
+        for position in &normalized.fresh {
+            reader.tick()?;
+            let slot = ids.get_mut(*position).ok_or(EditError::Preservation)?;
+            if slot.is_some() {
+                return Err(EditError::Preservation);
+            }
+            let number = allocation.reserve(proof, reader)?;
+            *slot = Some(number);
+            indexes.push(number);
+        }
+        allocation.finish(proof, reader)?
+    };
 
-    let mut allocation = Allocation::capture(image, index, definition, proof, reader)?;
-    let actual_number = allocation.reserve(proof, reader)?;
-    if actual_number != new_left {
-        return Err(EditError::Preservation);
+    let mut logical_ids = Vec::new();
+    reserve(&mut logical_ids, normalized.logical.len(), reader)?;
+    for index in &normalized.logical {
+        reader.tick()?;
+        logical_ids.push(
+            ids.get(*index)
+                .and_then(|number| *number)
+                .ok_or(EditError::Preservation)?,
+        );
     }
-    let (promoted, rebased) = allocation.finish(proof, reader)?;
-    reader.work(4 * PAGE_BYTES)?;
-    proof.bytes[page_range(new_left)?].copy_from_slice(&fresh);
-    proof.bytes[page_range(source.root)?].copy_from_slice(&root_page);
-    proof.bytes[page_range(retained_number)?].copy_from_slice(&retained);
-    proof.bytes[page_range(source.leaves[peer].number)?].copy_from_slice(&peer_page);
+    let tail = if source.tail {
+        let actual = logical_ids.last().copied().ok_or(EditError::Preservation)?;
+        let original = source
+            .children
+            .last()
+            .ok_or(EditError::Preservation)?
+            .number;
+        if actual != original {
+            return Err(EditError::Preservation);
+        }
+        actual
+    } else {
+        0
+    };
+    let root = frames::root(
+        raw(image, source.root)?,
+        &maxima[..bounds],
+        &logical_ids[..bounds],
+        tail,
+        reader,
+    )?;
+    reader.work(PAGE_BYTES)?;
+    proof.bytes[page_range(source.root)?].copy_from_slice(&root);
+    for (position, index) in normalized.logical.iter().enumerate() {
+        let node = normalized
+            .nodes
+            .get(*index)
+            .ok_or(EditError::Preservation)?;
+        let number = logical_ids[position];
+        let previous = position
+            .checked_sub(1)
+            .map_or(0, |offset| logical_ids[offset]);
+        let next = logical_ids.get(position + 1).copied().unwrap_or(0);
+        let before = match node.origin {
+            Origin::Existing { number, .. } => Some(raw(image, number)?),
+            Origin::Fresh => None,
+        };
+        let after = frames::leaf(
+            before,
+            source.definition,
+            (previous, next),
+            &entries[node.range.clone()],
+            reader,
+        )?;
+        reader.work(PAGE_BYTES)?;
+        proof.bytes[page_range(number)?].copy_from_slice(&after);
+    }
 
-    Ok(Growth {
-        new_left,
-        promoted,
+    Ok(Change {
         pages,
-        begin: new_left,
+        indexes,
+        begin,
         physical: index.data_number(),
         usage: index.usage_map(),
+        promoted,
         rebased,
     })
 }
 
-impl Growth {
-    pub(in crate::table::mutation::insert::audit::primary) fn compare(
-        &self,
-        actual: &PrimaryInsertion,
-        proof: &ImageProof<'_>,
-        reader: &mut Reader<'_, Cursor<&[u8]>>,
-    ) -> Result<(), EditError> {
-        let extra = usize::from(self.promoted.is_some());
-        let end = self
-            .begin
-            .checked_add(1 + extra as u32)
+pub(super) fn compare(
+    change: &Change,
+    actual: &PrimaryInsertion,
+    proof: &ImageProof<'_>,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<(), EditError> {
+    let extra = usize::from(change.promoted.is_some());
+    let added = change
+        .indexes
+        .len()
+        .checked_add(extra)
+        .ok_or(EditError::Preservation)?;
+    let end = change
+        .begin
+        .checked_add(u32::try_from(added).map_err(|_| InspectError::StructureLimit)?)
+        .ok_or(EditError::Preservation)?;
+    if proof.bytes.len() / PAGE_BYTES != end as usize
+        || actual.added.len() != added
+        || actual.promotions.len() != extra
+    {
+        return Err(EditError::Preservation);
+    }
+    let mut next = change.begin;
+    for number in &change.indexes {
+        reader.tick()?;
+        if change
+            .promoted
+            .as_ref()
+            .is_some_and(|promotion| promotion.number == next)
+        {
+            next = next.checked_add(1).ok_or(EditError::Preservation)?;
+        }
+        if *number != next {
+            return Err(EditError::Preservation);
+        }
+        next = next.checked_add(1).ok_or(EditError::Preservation)?;
+    }
+    if let Some(promotion) = &change.promoted
+        && promotion.number == next
+    {
+        next = next.checked_add(1).ok_or(EditError::Preservation)?;
+    }
+    if next != end {
+        return Err(EditError::Preservation);
+    }
+
+    let mut position = 0;
+    for number in &change.pages {
+        let range = page_range(*number)?;
+        let before = proof
+            .original
+            .get(range.clone())
             .ok_or(EditError::Preservation)?;
-        if self.new_left != self.begin
-            || proof.bytes.len() / PAGE_BYTES != end as usize
-            || actual.added.len() != 1 + extra
-            || actual.promotions.len() != extra
+        let after = proof
+            .bytes
+            .get(range.clone())
+            .ok_or(EditError::Preservation)?;
+        reader.work(PAGE_BYTES)?;
+        if before == after {
+            continue;
+        }
+        let patch = actual
+            .patches
+            .get(position)
+            .ok_or(EditError::Preservation)?;
+        if patch.offset != range.start || patch.before != before || patch.after != after {
+            return Err(EditError::Preservation);
+        }
+        position += 1;
+    }
+    if position != actual.patches.len() {
+        return Err(EditError::Preservation);
+    }
+    for (offset, page) in actual.added.iter().enumerate() {
+        let number = change
+            .begin
+            .checked_add(u32::try_from(offset).map_err(|_| InspectError::StructureLimit)?)
+            .ok_or(EditError::Preservation)?;
+        reader.work(PAGE_BYTES)?;
+        if page.number != number || page.bytes != proof.bytes[page_range(number)?] {
+            return Err(EditError::Preservation);
+        }
+    }
+    if let Some(promotion) = &change.promoted {
+        let actual = &actual.promotions[0];
+        reader.work(PAGE_BYTES + 2 * promotion.before.len())?;
+        if actual.usage != change.usage
+            || actual.number != promotion.number
+            || actual.offset != promotion.offset
+            || actual.before != promotion.before
+            || actual.after != promotion.after
+            || actual.bitmap != promotion.bitmap
         {
             return Err(EditError::Preservation);
         }
-
-        let mut position = 0;
-        for number in self.pages {
-            let range = page_range(number)?;
-            let before = proof
-                .original
-                .get(range.clone())
-                .ok_or(EditError::Preservation)?;
-            let after = proof
-                .bytes
-                .get(range.clone())
-                .ok_or(EditError::Preservation)?;
-            reader.work(PAGE_BYTES)?;
-            if before == after {
-                continue;
-            }
-            let patch = actual
-                .patches
-                .get(position)
-                .ok_or(EditError::Preservation)?;
-            if patch.offset != range.start || patch.before != before || patch.after != after {
+    }
+    match change.rebased {
+        Some(base) => {
+            if actual.rebases.len() != 1 {
                 return Err(EditError::Preservation);
             }
-            position += 1;
-        }
-        if position != actual.patches.len() {
-            return Err(EditError::Preservation);
-        }
-        for (offset, page) in actual.added.iter().enumerate() {
-            let number = self
-                .begin
-                .checked_add(offset as u32)
-                .ok_or(EditError::Preservation)?;
-            reader.work(PAGE_BYTES)?;
-            if page.number != number || page.bytes != proof.bytes[page_range(number)?] {
-                return Err(EditError::Preservation);
-            }
-        }
-        if let Some(promotion) = &self.promoted {
-            if promotion.number != self.begin.checked_add(1).ok_or(EditError::Preservation)? {
-                return Err(EditError::Preservation);
-            }
-            let actual = &actual.promotions[0];
-            reader.work(PAGE_BYTES + 2 * promotion.before.len())?;
-            if actual.usage != self.usage
-                || actual.number != promotion.number
-                || actual.offset != promotion.offset
-                || actual.before != promotion.before
-                || actual.after != promotion.after
-                || actual.bitmap != promotion.bitmap
+            let actual = &actual.rebases[0];
+            if actual.usage != change.usage
+                || actual.physical != change.physical
+                || actual.base != base
             {
                 return Err(EditError::Preservation);
             }
         }
-        match self.rebased {
-            Some(base) => {
-                if actual.rebases.len() != 1 {
-                    return Err(EditError::Preservation);
-                }
-                let actual = &actual.rebases[0];
-                if actual.usage != self.usage
-                    || actual.physical != self.physical
-                    || actual.base != base
-                {
-                    return Err(EditError::Preservation);
-                }
-            }
-            None if !actual.rebases.is_empty() => return Err(EditError::Preservation),
-            None => {}
-        }
-
-        Ok(())
-    }
-}
-
-fn fresh(
-    definition: u32,
-    previous: u32,
-    next: u32,
-    entries: &[[u8; WIRE_BYTES]],
-    reader: &mut Reader<'_, Cursor<&[u8]>>,
-) -> Result<Vec<u8>, EditError> {
-    let mut seed = copied(&[0; PAGE_BYTES], reader)?;
-    seed[..2].copy_from_slice(&[LEAF, INDEX_VERSION]);
-    seed[OWNER..OWNER + CHILD_BYTES].copy_from_slice(&definition.to_le_bytes());
-    seed[PREVIOUS..PREVIOUS + CHILD_BYTES].copy_from_slice(&previous.to_le_bytes());
-    seed[NEXT..NEXT + CHILD_BYTES].copy_from_slice(&next.to_le_bytes());
-    render(&seed, entries, reader)?
-        .map(|(page, _)| page)
-        .ok_or(EditError::Preservation)
-}
-
-fn branch(
-    original: &[u8],
-    bounds: &[([u8; WIRE_BYTES], u32); 2],
-    reader: &mut Reader<'_, Cursor<&[u8]>>,
-) -> Result<Vec<u8>, EditError> {
-    let mut wires = [[0; BOUND_BYTES]; 2];
-    for (wire, (maximum, child)) in wires.iter_mut().zip(bounds) {
-        reader.work(BOUND_BYTES)?;
-        if maximum[0] != KEY_MARKER {
-            return Err(EditError::Preservation);
-        }
-        wire[..WIRE_BYTES].copy_from_slice(maximum);
-        wire[WIRE_BYTES..].copy_from_slice(&child.to_be_bytes());
-    }
-    if wires[0][..WIRE_BYTES] >= wires[1][..WIRE_BYTES] {
-        return Err(EditError::Preservation);
-    }
-    reader.work(BOUND_BYTES)?;
-    let common = wires[0]
-        .iter()
-        .zip(&wires[1])
-        .take_while(|(left, right)| left == right)
-        .count();
-    let seed = usize::from(IndexHeader::read(original)?.prefix.get());
-    let mut prefix = seed.min(common);
-    let total = BOUND_BYTES * wires.len();
-    if total - prefix > CAPACITY {
-        prefix = common;
-    }
-    let active = total - prefix;
-    if active > CAPACITY {
-        return Err(EditError::Preservation);
+        None if !actual.rebases.is_empty() => return Err(EditError::Preservation),
+        None => {}
     }
 
-    let mut after = copied(original, reader)?;
-    reader.work(ENTRY_START - MASK_START + active)?;
-    after[MASK_START..ENTRY_START].fill(0);
-    after[FREE..FREE + size_of::<u16>()]
-        .copy_from_slice(&((CAPACITY - active) as u16).to_le_bytes());
-    after[PREFIX..PREFIX + size_of::<u16>()].copy_from_slice(&(prefix as u16).to_le_bytes());
-    let mut end = 0;
-    for (position, wire) in wires.iter().enumerate() {
-        let suffix = &wire[if position == 0 { 0 } else { prefix }..];
-        after[ENTRY_START + end..ENTRY_START + end + suffix.len()].copy_from_slice(suffix);
-        end += suffix.len();
-        after[MASK_START + end / BITS] |= 1 << (end % BITS);
-    }
-    if end != active {
-        return Err(EditError::Preservation);
-    }
-
-    Ok(after)
+    Ok(())
 }

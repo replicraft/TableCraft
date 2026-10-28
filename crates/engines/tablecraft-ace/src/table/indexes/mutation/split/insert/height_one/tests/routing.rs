@@ -1,5 +1,8 @@
 use super::*;
-use crate::{IndexCheckStatus, check_table, check_table_constraints, test_support::index_fixture};
+use crate::{
+    IndexCheckStatus, TableCheck, check_table, check_table_constraints,
+    test_support::{index_fixture, map_growth},
+};
 use std::{cell::Cell, io::Cursor};
 use tablecraft_core::limits::Resource;
 use tablecraft_model::CatalogScope;
@@ -11,10 +14,10 @@ fn budget() -> ResourceBudget {
     ResourceBudget::new(256 * 1024 * 1024, 100_000, 100_000_000)
 }
 
-fn source(code: u8, aliases: bool) -> Vec<u8> {
+pub(super) fn source(code: u8, aliases: bool) -> Vec<u8> {
     let topology = index_fixture::node_database();
     let mut bytes = index_fixture::database(false, aliases, false);
-    bytes.resize(17 * PAGE, 0);
+    bytes.resize(19 * PAGE, 0);
     for page in [13, 14, 15, 16] {
         bytes[page * PAGE..(page + 1) * PAGE]
             .copy_from_slice(&topology[page * PAGE..(page + 1) * PAGE]);
@@ -23,6 +26,33 @@ fn source(code: u8, aliases: bool) -> Vec<u8> {
     bytes[20] = code;
     bytes[10 * PAGE + 189] = 0x89;
     bytes[10 * PAGE + 218] = 1;
+    // This fresh wrapper gives the strong consumer complete declarations and
+    // distinct writable map rows. The inherited fixture itself is unchanged.
+    let inline = |members: &[usize]| {
+        let mut row = vec![0; 69];
+        for &page in members {
+            row[5 + page / 8] |= 1 << (page % 8);
+        }
+        row
+    };
+    bytes[11 * PAGE..12 * PAGE].copy_from_slice(&support::data_page(
+        0,
+        &[(0, inline(&[12, 17, 18])), (0, inline(&[17, 18]))],
+    ));
+    support::put32(&mut bytes, 10 * PAGE + 59, (11 << 8) | 1);
+    bytes[14 * PAGE..15 * PAGE]
+        .copy_from_slice(&support::data_page(0, &[(0, inline(&[13, 15, 16]))]));
+    for page in [17, 18] {
+        let mut data = support::data_page(10, &[]);
+        support::put16(&mut data, 2, 4082);
+        bytes[page * PAGE..(page + 1) * PAGE].copy_from_slice(&data);
+    }
+    let future = (19..512).collect::<Vec<_>>();
+    bytes[PAGE..2 * PAGE].copy_from_slice(&support::data_page(1, &[(0, inline(&future))]));
+    for page in [2, 7, 10] {
+        let end = map_growth::model::declaration_end(&bytes, page);
+        support::put16(&mut bytes, end, 0xffff);
+    }
     // Retained opaque tails make residue preservation observable.
     bytes[13 * PAGE + 600..14 * PAGE].fill(0xb3);
     bytes[15 * PAGE + 600..16 * PAGE].fill(0xc4);
@@ -30,7 +60,7 @@ fn source(code: u8, aliases: bool) -> Vec<u8> {
     bytes
 }
 
-fn checked(bytes: &[u8]) -> TableCheck {
+pub(super) fn checked(bytes: &[u8]) -> TableCheck {
     let result = check_table(
         &mut Cursor::new(bytes),
         CatalogScope::new(1),
@@ -58,7 +88,7 @@ fn checked(bytes: &[u8]) -> TableCheck {
     result
 }
 
-fn capture(bytes: &[u8]) -> NativeImage {
+pub(super) fn capture(bytes: &[u8]) -> NativeImage {
     NativeImage::capture(
         &mut Cursor::new(bytes),
         CatalogScope::new(1),
@@ -80,14 +110,14 @@ fn keys(additions: &[i32]) -> Vec<KeyRef> {
     for (position, value) in additions.iter().enumerate() {
         result.push(KeyRef {
             key: Some(i64::from(*value)),
-            row: ((20 + position as u32 / 200) << 8) | (position as u32 % 200),
+            row: ((17 + position as u32 / 250) << 8) | (position as u32 % 250),
         });
     }
     result.sort_by_key(|entry| (entry.key, entry.row));
     result
 }
 
-fn leaf(before: &[u8], entries: &[KeyRef]) -> Vec<u8> {
+pub(super) fn leaf(before: &[u8], entries: &[KeyRef]) -> Vec<u8> {
     let wires = entries
         .iter()
         .map(|entry| {
@@ -161,8 +191,21 @@ fn assert_image(actual: &[u8], expected: &[u8]) {
     }
 }
 
+fn operation<'a>(
+    image: &'a NativeImage,
+    checked: &'a TableCheck,
+    keys: &'a [KeyRef],
+) -> Operation<'a> {
+    Operation {
+        image,
+        checked,
+        id: 1,
+        final_keys: keys,
+    }
+}
+
 #[test]
-fn original_bound_routes_left_right_and_both_without_changing_parent_or_maps() {
+fn original_bound_routes_left_right_both_and_noop_through_the_real_continuation() {
     for code in [5, 6] {
         for aliases in [false, true] {
             let before = source(code, aliases);
@@ -171,17 +214,19 @@ fn original_bound_routes_left_right_and_both_without_changing_parent_or_maps() {
             for additions in [vec![5], vec![25], vec![40], vec![5, 25, 40], vec![]] {
                 let final_keys = keys(&additions);
                 let golden = expected(&before, &final_keys);
-                let patches = prepare(&image, &check, 1, &final_keys, &mut budget(), &|| false)
-                    .unwrap()
-                    .unwrap();
-                let after = compose(&before, &patches);
+                let plan = continue_primary(
+                    operation(&image, &check, &final_keys),
+                    State::new(&image, 10),
+                    &mut budget(),
+                    &|| false,
+                )
+                .unwrap();
+                assert!(plan.added.is_empty());
+                assert_eq!(plan.append.length, before.len());
+                let after = compose(&before, &plan.patches);
                 assert_image(&after, &golden);
-                assert_eq!(&after[13 * PAGE..15 * PAGE], &before[13 * PAGE..15 * PAGE]);
-                if additions.iter().all(|value| *value > 20) {
-                    assert_eq!(&after[15 * PAGE..16 * PAGE], &before[15 * PAGE..16 * PAGE]);
-                }
                 if additions.is_empty() {
-                    assert!(patches.is_empty());
+                    assert!(plan.patches.is_empty());
                 }
             }
         }
@@ -189,70 +234,74 @@ fn original_bound_routes_left_right_and_both_without_changing_parent_or_maps() {
 }
 
 #[test]
-fn capacity_repair_is_leaf_local_and_overflow_requests_continuation() {
+fn source_seed_capacity_repair_remains_local_to_the_affected_leaf() {
     for code in [5, 6] {
         let before = source(code, true);
         let check = checked(&before);
         let image = capture(&before);
-        let additions = (-400..0).collect::<Vec<_>>();
-        let final_keys = keys(&additions);
+        let final_keys = keys(&(-400..0).collect::<Vec<_>>());
         let golden = expected(&before, &final_keys);
-        // More than 401 uncompressed nine-byte entries require prefix repair.
         assert_eq!(
             u16::from_le_bytes(golden[15 * PAGE + 24..15 * PAGE + 26].try_into().unwrap()),
             1
         );
-        let patches = prepare(&image, &check, 1, &final_keys, &mut budget(), &|| false)
-            .unwrap()
-            .unwrap();
-        assert_image(&compose(&before, &patches), &golden);
-        assert!(
-            prepare(
-                &image,
-                &check,
-                1,
-                &keys(&(-500..0).collect::<Vec<_>>()),
-                &mut budget(),
-                &|| false
-            )
-            .unwrap()
-            .is_none()
-        );
+        let plan = continue_primary(
+            operation(&image, &check, &final_keys),
+            State::new(&image, 10),
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        assert!(plan.added.is_empty());
+        assert_image(&compose(&before, &plan.patches), &golden);
     }
 }
 
 #[test]
-fn duplicate_boundary_changed_old_reference_and_unsupported_topologies_refuse() {
+fn duplicate_bounds_changed_original_rows_and_malformed_source_topology_refuse() {
     let before = source(5, false);
     let check = checked(&before);
     let image = capture(&before);
-    assert!(prepare(&image, &check, 1, &keys(&[20]), &mut budget(), &|| false).is_err());
-    let mut changed = keys(&[25]);
-    changed[0].row = 21 << 8;
-    assert_eq!(
-        prepare(&image, &check, 1, &changed, &mut budget(), &|| false).err(),
-        Some(EditError::Preservation)
+    assert!(
+        continue_primary(
+            operation(&image, &check, &keys(&[20])),
+            State::new(&image, 10),
+            &mut budget(),
+            &|| false
+        )
+        .is_err()
     );
-    for (offset, value) in [(13 * PAGE + 26, 2), (13 * PAGE + 20, 0)] {
+    let mut changed = keys(&[25]);
+    changed[0].row = (17 << 8) | 199;
+    assert_eq!(
+        continue_primary(
+            operation(&image, &check, &changed),
+            State::new(&image, 10),
+            &mut budget(),
+            &|| false
+        )
+        .err(),
+        Some(EditError::Conflict)
+    );
+    for (offset, value) in [(13 * PAGE + 26, 2), (15 * PAGE + 16, 0)] {
         let mut invalid = before.clone();
         invalid[offset] = value;
+        let image = capture(&invalid);
         assert_eq!(
-            prepare(
-                &capture(&invalid),
-                &check,
-                1,
-                &keys(&[25]),
+            continue_primary(
+                operation(&image, &check, &keys(&[25])),
+                State::new(&image, 10),
                 &mut budget(),
                 &|| false
             )
             .err(),
-            Some(EditError::Unsupported(WriteBlocker::IndexedColumn)),
+            Some(EditError::Unsupported(WriteBlocker::IndexedColumn))
         );
     }
 }
 
 #[test]
-fn quotas_late_cancellation_and_retry_do_not_change_original() {
+fn migrated_kernel_quotas_cancel_and_retry_keep_original_bytes() {
     let before = source(6, true);
     let check = checked(&before);
     let image = capture(&before);
@@ -260,19 +309,39 @@ fn quotas_late_cancellation_and_retry_do_not_change_original() {
     for resource in [Resource::Bytes, Resource::Steps] {
         let mut limits = budget();
         limits.charge(resource, limits.remaining(resource)).unwrap();
-        assert!(prepare(&image, &check, 1, &final_keys, &mut limits, &|| false).is_err());
+        assert!(
+            continue_primary(
+                operation(&image, &check, &final_keys),
+                State::new(&image, 10),
+                &mut limits,
+                &|| false
+            )
+            .is_err()
+        );
     }
     let calls = Cell::new(0);
     assert!(
-        prepare(&image, &check, 1, &final_keys, &mut budget(), &|| {
-            calls.set(calls.get() + 1);
-            calls.get() > 20
-        })
+        continue_primary(
+            operation(&image, &check, &final_keys),
+            State::new(&image, 10),
+            &mut budget(),
+            &|| {
+                calls.set(calls.get() + 1);
+                calls.get() > 20
+            }
+        )
         .is_err()
     );
+    let plan = continue_primary(
+        operation(&image, &check, &final_keys),
+        State::new(&image, 10),
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert_image(
+        &compose(&before, &plan.patches),
+        &expected(&before, &final_keys),
+    );
     assert_eq!(image.as_bytes(), before);
-    let patches = prepare(&image, &check, 1, &final_keys, &mut budget(), &|| false)
-        .unwrap()
-        .unwrap();
-    assert_image(&compose(&before, &patches), &expected(&before, &final_keys));
 }

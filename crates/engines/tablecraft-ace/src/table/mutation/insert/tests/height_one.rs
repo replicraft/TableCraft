@@ -1,8 +1,8 @@
 //! Public cardinality growth within existing height-one primary leaves.
 use super::model as base;
 use crate::{
-    EditError, IndexConstraintViolation, InspectError, RowInsert, WriteBlocker,
-    inspect_table_index_counter, read_table,
+    EditError, IndexConstraintViolation, InspectError, RowInsert, inspect_table_index_counter,
+    read_table,
 };
 use std::{cell::Cell, io::Cursor};
 use tablecraft_core::{limits::Resource, values::Value};
@@ -120,7 +120,7 @@ fn left_right_and_both_leaf_inserts_preserve_parent_links_maps_and_all_old_rows(
 }
 
 #[test]
-fn duplicate_original_boundary_and_two_overflowing_leaves_refuse_atomically() {
+fn duplicate_original_boundary_refuses_and_two_overflowing_leaves_are_maintained() {
     for code in [5, 6] {
         let (before, rows) = model::source(code, true);
         checked(&before, &rows, true);
@@ -153,13 +153,19 @@ fn duplicate_original_boundary_and_two_overflowing_leaves_refuse_atomically() {
             .into_iter()
             .chain(peer_overflow)
             .collect::<Vec<_>>();
-        let error = base::capture(&before)
+        let candidate = base::capture(&before)
             .preview_ace16_insert_rows("Items", &requests(&overflow), &mut base::budget(), &|| {
                 false
             })
-            .err()
             .unwrap();
-        assert_eq!(error, EditError::Unsupported(WriteBlocker::IndexedColumn));
+        let mut expected_rows = rows.clone();
+        expected_rows.extend(
+            overflow
+                .iter()
+                .map(|value| vec![Value::Int32(*value), Value::Binary(Vec::new())]),
+        );
+        assert_eq!(candidate.changed_rows(), overflow.len());
+        checked(candidate.candidate_bytes(), &expected_rows, true);
         checked(&before, &rows, true);
     }
 }
