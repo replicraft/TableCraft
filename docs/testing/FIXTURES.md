@@ -10203,3 +10203,36 @@ with actual 96-call inventory/caps unchanged. The
 [maintained saved proof](ace16_insert_decimal_indexes/README.md) starts no child
 process by default. These finite independent-reader observations do not qualify
 arbitrary native tuples, Microsoft Access saves or production write paths.
+
+## Variable-key secondary INSERT originals
+
+The repository-authored
+[VariableKeyIndexInsertReference.java](ace16_insert_variable_indexes/VariableKeyIndexInsertReference.java)
+creates 42 V2016/V2019 originals using reviewed Jackcess 5.0.4. Tables have
+manual required Int32 ID, nullable Int32 Group and Binary or Text Payload; four
+logical names share two physical owners. The finite corpus covers both General
+families, Binary single/mixed keys, NULL/empty/IgnoreNULL, pressure and Modern
+digests. Raw source qualification is distinct from the 38 positive native cases
+and four intentional unique-digest refusal cases.
+
+Two failed compilations precede generation, followed by a stopped Python
+whole-KEY+ROW ordering proof after 133 successful child calls. The corrected
+saved replay closes both existing references; only 120 unattempted calls ran in
+the continuation. All original reports, tools, models, partial classes and
+outcomes remain ignored private evidence. The linked public experiment completes
+253 distinct planned calls plus two failed compilation calls; it is not an
+overall first-pass result. Known omitted-NULL warnings are retained and checked.
+
+The [compact result](results/ace16-insert-variable-index-native-2026-10-28.json)
+pins the source/reference lineage, immutable requests, independent full images,
+committed producer and actual 38-positive/4-guard/76-reader phases. All positive
+images froze before the producer build. The four guards return exact native
+ConstraintCoverage errors and publish no candidate. Text255units/raw510bytes
+and Modern key digests do not qualify Binary510/577-byte keys: the public builder
+accepts Binary255 only, and no bypass/source patch is used.
+
+The [maintained replay](ace16_insert_variable_indexes/README.md) starts no child
+process by default. Java fixtures and finite key oracles are repository-authored;
+no third-party fixture or implementation source is copied. JARs, classes,
+databases and raw streams stay private/ignored. Native Microsoft Access saves
+and normal production writes remain unqualified by these observations.
