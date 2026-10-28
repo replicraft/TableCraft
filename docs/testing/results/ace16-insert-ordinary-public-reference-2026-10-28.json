@@ -1,0 +1,644 @@
+{
+  "date": "2026-10-28",
+  "scope": "Independent Jackcess public ordinary scalar INSERT observations; no Microsoft Access or normal-save claim",
+  "protocol_freeze": {
+    "path": ".cache/ace16-insert-ordinary-reference-next-20261028/freeze.json",
+    "bytes": 14868,
+    "sha256": "22bf0bfdec0aa2eea42ce67975a77a77ac299414f8b4fd271f7fcded5c361b0d"
+  },
+  "report": {
+    "path": ".cache/ace16-insert-ordinary-reference-first-20261028/report.json",
+    "bytes": 55669,
+    "sha256": "148b349f871f045e8018909dbe3a094bcb59974a6bcfa9985d466b8dc1c0e71f"
+  },
+  "completed": true,
+  "first_pass_exit_zero": 12,
+  "processes": {
+    "public_INSERT_copies": 4,
+    "fresh_read_only_inspectors": 8,
+    "source_generation_repeated": 0,
+    "native_candidate_calls": 0
+  },
+  "cases": [
+    {
+      "id": "V2016-FixedRows",
+      "source": {
+        "path": ".cache/ace16-insert-ordinary-source-first-20261028/V2016-source.accdb",
+        "bytes": 495616,
+        "sha256": "bbfd0711082b6870200e44e7147dd101a521236868aaba135edddf6e29a7e6b8"
+      },
+      "public_after": {
+        "path": ".cache/ace16-insert-ordinary-reference-first-20261028/V2016-FixedRows-reference.accdb",
+        "bytes": 503808,
+        "sha256": "ee2d69f121a6a35cfb45891d7daf54eec3302b705ed9af280898fd3e36054bc5"
+      },
+      "transition_proof": {
+        "path": ".cache/ace16-insert-ordinary-reference-first-20261028/V2016-FixedRows-transition.json",
+        "bytes": 1299,
+        "sha256": "110d2b13c0c8982d765b9d0bf6e8b007b2e84c1aa5aef650c4e2a6f8cd4b7538"
+      },
+      "getter": {
+        "path": ".cache/ace16-insert-ordinary-reference-first-20261028/V2016-FixedRows-getter.stdout",
+        "bytes": 584615,
+        "sha256": "309bd1ab8a2746f1e5b71c8c8d67b20532fc57b139e342b0c5750f8b0a85e392"
+      },
+      "maps": {
+        "path": ".cache/ace16-insert-ordinary-reference-first-20261028/V2016-FixedRows-maps.stdout",
+        "bytes": 399,
+        "sha256": "bd495883ddb702bfbc0fe232869f265a9fb2a35727b89026a30c6a147247d559"
+      },
+      "facts": {
+        "rows_before": 451,
+        "rows_after": 452,
+        "history_before": 451,
+        "history_after": 452,
+        "new_ROW": {
+          "page": 101,
+          "slot": 11,
+          "bytes": 71,
+          "placement": "ordinary appended slot on existing DATA page"
+        },
+        "suffix": [
+          {
+            "page": 121,
+            "purpose": "INDEX"
+          },
+          {
+            "page": 122,
+            "purpose": "INDEX"
+          }
+        ],
+        "root": {
+          "page": 91,
+          "height": 1,
+          "prefix": 0,
+          "free": 3603,
+          "tail": 121
+        },
+        "leaf_frames": [
+          {
+            "number": 122,
+            "prefix": 0,
+            "free": 1582,
+            "previous": 0,
+            "next": 121,
+            "tail": 0
+          },
+          {
+            "number": 121,
+            "prefix": 0,
+            "free": 1582,
+            "previous": 122,
+            "next": 0,
+            "tail": 0
+          }
+        ],
+        "map_changes": {
+          "global": [
+            {
+              "page": 121,
+              "offset": 8143,
+              "mask": 2,
+              "set": false
+            },
+            {
+              "page": 122,
+              "offset": 8143,
+              "mask": 4,
+              "set": false
+            }
+          ],
+          "owned": [],
+          "hint": [],
+          "index_owned": [
+            {
+              "page": 121,
+              "offset": 372537,
+              "mask": 64,
+              "set": true
+            },
+            {
+              "page": 122,
+              "offset": 372537,
+              "mask": 128,
+              "set": true
+            }
+          ]
+        },
+        "candidate_image_authority": false
+      },
+      "difference_from_engineering": {
+        "bytes": 1566,
+        "pages": [
+          121,
+          122
+        ],
+        "all_differences_in_two_fresh_LEAF_pages": true,
+        "all_DATA_root_counters_maps_and_other_bytes_equal": true,
+        "unused_suffix_checks": [
+          {
+            "page": 121,
+            "inactive_start": 2514,
+            "inactive_end": 4096,
+            "public_changed_unused_bytes": 783,
+            "header_bitmap_active_payload_identical": true,
+            "engineering_unused_bytes_zero": true
+          },
+          {
+            "page": 122,
+            "inactive_start": 2514,
+            "inactive_end": 4096,
+            "public_changed_unused_bytes": 783,
+            "header_bitmap_active_payload_identical": true,
+            "engineering_unused_bytes_zero": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "V2016-MixedRows",
+      "source": {
+        "path": ".cache/ace16-insert-ordinary-source-first-20261028/V2016-source.accdb",
+        "bytes": 495616,
+        "sha256": "bbfd0711082b6870200e44e7147dd101a521236868aaba135edddf6e29a7e6b8"
+      },
+      "public_after": {
+        "path": ".cache/ace16-insert-ordinary-reference-first-20261028/V2016-MixedRows-reference.accdb",
+        "bytes": 507904,
+        "sha256": "1efa2238af67ad91ae2029400017a6617993542f2f72cb77cb12f795d46da7bf"
+      },
+      "transition_proof": {
+        "path": ".cache/ace16-insert-ordinary-reference-first-20261028/V2016-MixedRows-transition.json",
+        "bytes": 1763,
+        "sha256": "86af0c9b4a66189ee35c062242e6b9e3b8a1e34e50ffead713a7c24eb3ebfdf1"
+      },
+      "getter": {
+        "path": ".cache/ace16-insert-ordinary-reference-first-20261028/V2016-MixedRows-getter.stdout",
+        "bytes": 589270,
+        "sha256": "d579bb93611884627b7a81881f560248bb246265d716da7d2e1cf4e6461c9ce8"
+      },
+      "maps": {
+        "path": ".cache/ace16-insert-ordinary-reference-first-20261028/V2016-MixedRows-maps.stdout",
+        "bytes": 475,
+        "sha256": "68d5fec9523029359b68ab898b3f80271af1b5ddc6002e44a55fc13bf1dcfb9a"
+      },
+      "facts": {
+        "rows_before": 451,
+        "rows_after": 452,
+        "history_before": 451,
+        "history_after": 452,
+        "new_ROW": {
+          "page": 121,
+          "slot": 0,
+          "bytes": 1106,
+          "placement": "fresh zero-initialized DATA page"
+        },
+        "suffix": [
+          {
+            "page": 121,
+            "purpose": "DATA"
+          },
+          {
+            "page": 122,
+            "purpose": "INDEX"
+          },
+          {
+            "page": 123,
+            "purpose": "INDEX"
+          }
+        ],
+        "root": {
+          "page": 104,
+          "height": 1,
+          "prefix": 0,
+          "free": 3603,
+          "tail": 122
+        },
+        "leaf_frames": [
+          {
+            "number": 123,
+            "prefix": 0,
+            "free": 1582,
+            "previous": 0,
+            "next": 122,
+            "tail": 0
+          },
+          {
+            "number": 122,
+            "prefix": 0,
+            "free": 1582,
+            "previous": 123,
+            "next": 0,
+            "tail": 0
+          }
+        ],
+        "map_changes": {
+          "global": [
+            {
+              "page": 121,
+              "offset": 8143,
+              "mask": 2,
+              "set": false
+            },
+            {
+              "page": 122,
+              "offset": 8143,
+              "mask": 4,
+              "set": false
+            },
+            {
+              "page": 123,
+              "offset": 8143,
+              "mask": 8,
+              "set": false
+            }
+          ],
+          "owned": [
+            {
+              "page": 121,
+              "offset": 434195,
+              "mask": 2,
+              "set": true
+            }
+          ],
+          "hint": [
+            {
+              "page": 116,
+              "offset": 425865,
+              "mask": 16,
+              "set": false
+            },
+            {
+              "page": 121,
+              "offset": 425866,
+              "mask": 2,
+              "set": true
+            }
+          ],
+          "index_owned": [
+            {
+              "page": 122,
+              "offset": 425784,
+              "mask": 4,
+              "set": true
+            },
+            {
+              "page": 123,
+              "offset": 425784,
+              "mask": 8,
+              "set": true
+            }
+          ]
+        },
+        "candidate_image_authority": false
+      },
+      "difference_from_engineering": {
+        "bytes": 1566,
+        "pages": [
+          122,
+          123
+        ],
+        "all_differences_in_two_fresh_LEAF_pages": true,
+        "all_DATA_root_counters_maps_and_other_bytes_equal": true,
+        "unused_suffix_checks": [
+          {
+            "page": 122,
+            "inactive_start": 2514,
+            "inactive_end": 4096,
+            "public_changed_unused_bytes": 783,
+            "header_bitmap_active_payload_identical": true,
+            "engineering_unused_bytes_zero": true
+          },
+          {
+            "page": 123,
+            "inactive_start": 2514,
+            "inactive_end": 4096,
+            "public_changed_unused_bytes": 783,
+            "header_bitmap_active_payload_identical": true,
+            "engineering_unused_bytes_zero": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "V2019-FixedRows",
+      "source": {
+        "path": ".cache/ace16-insert-ordinary-source-first-20261028/V2019-source.accdb",
+        "bytes": 569344,
+        "sha256": "6c3f299d71e397588d562d2ab161def669e3c12cf289c499e4ace51cb079e832"
+      },
+      "public_after": {
+        "path": ".cache/ace16-insert-ordinary-reference-first-20261028/V2019-FixedRows-reference.accdb",
+        "bytes": 577536,
+        "sha256": "8382daf54cb07df20a260988f4839ea2ced8640e50d3a6e573494d2b827b1dd0"
+      },
+      "transition_proof": {
+        "path": ".cache/ace16-insert-ordinary-reference-first-20261028/V2019-FixedRows-transition.json",
+        "bytes": 1300,
+        "sha256": "cb82a258dcf5eb2cf887952d14811c3cc574122ef1b203ad1d0a3b8347b9b228"
+      },
+      "getter": {
+        "path": ".cache/ace16-insert-ordinary-reference-first-20261028/V2019-FixedRows-getter.stdout",
+        "bytes": 585003,
+        "sha256": "80359377f7b9d232ac782a7d177dae26f31fedf483ec22222a069b6ea6c957e1"
+      },
+      "maps": {
+        "path": ".cache/ace16-insert-ordinary-reference-first-20261028/V2019-FixedRows-maps.stdout",
+        "bytes": 645,
+        "sha256": "7569eb2cbfdadc1c714c0d84ce836c5faf59c0670f95198907a6d1a635beb9f8"
+      },
+      "facts": {
+        "rows_before": 451,
+        "rows_after": 452,
+        "history_before": 451,
+        "history_after": 452,
+        "new_ROW": {
+          "page": 119,
+          "slot": 11,
+          "bytes": 71,
+          "placement": "ordinary appended slot on existing DATA page"
+        },
+        "suffix": [
+          {
+            "page": 139,
+            "purpose": "INDEX"
+          },
+          {
+            "page": 140,
+            "purpose": "INDEX"
+          }
+        ],
+        "root": {
+          "page": 108,
+          "height": 1,
+          "prefix": 0,
+          "free": 3603,
+          "tail": 139
+        },
+        "leaf_frames": [
+          {
+            "number": 140,
+            "prefix": 0,
+            "free": 1582,
+            "previous": 0,
+            "next": 139,
+            "tail": 0
+          },
+          {
+            "number": 139,
+            "prefix": 0,
+            "free": 1582,
+            "previous": 140,
+            "next": 0,
+            "tail": 0
+          }
+        ],
+        "map_changes": {
+          "global": [
+            {
+              "page": 139,
+              "offset": 8145,
+              "mask": 8,
+              "set": false
+            },
+            {
+              "page": 140,
+              "offset": 8145,
+              "mask": 16,
+              "set": false
+            }
+          ],
+          "owned": [],
+          "hint": [],
+          "index_owned": [
+            {
+              "page": 139,
+              "offset": 442169,
+              "mask": 128,
+              "set": true
+            },
+            {
+              "page": 140,
+              "offset": 442170,
+              "mask": 1,
+              "set": true
+            }
+          ]
+        },
+        "candidate_image_authority": false
+      },
+      "difference_from_engineering": {
+        "bytes": 1566,
+        "pages": [
+          139,
+          140
+        ],
+        "all_differences_in_two_fresh_LEAF_pages": true,
+        "all_DATA_root_counters_maps_and_other_bytes_equal": true,
+        "unused_suffix_checks": [
+          {
+            "page": 139,
+            "inactive_start": 2514,
+            "inactive_end": 4096,
+            "public_changed_unused_bytes": 783,
+            "header_bitmap_active_payload_identical": true,
+            "engineering_unused_bytes_zero": true
+          },
+          {
+            "page": 140,
+            "inactive_start": 2514,
+            "inactive_end": 4096,
+            "public_changed_unused_bytes": 783,
+            "header_bitmap_active_payload_identical": true,
+            "engineering_unused_bytes_zero": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "V2019-MixedRows",
+      "source": {
+        "path": ".cache/ace16-insert-ordinary-source-first-20261028/V2019-source.accdb",
+        "bytes": 569344,
+        "sha256": "6c3f299d71e397588d562d2ab161def669e3c12cf289c499e4ace51cb079e832"
+      },
+      "public_after": {
+        "path": ".cache/ace16-insert-ordinary-reference-first-20261028/V2019-MixedRows-reference.accdb",
+        "bytes": 581632,
+        "sha256": "17cfc7da6c026c0027ede49a0952d0f856aed718735a8334ae670ac18bca2595"
+      },
+      "transition_proof": {
+        "path": ".cache/ace16-insert-ordinary-reference-first-20261028/V2019-MixedRows-transition.json",
+        "bytes": 1765,
+        "sha256": "4650df084659be265981f6dc6985e53fc6d0659c95c9c7658e5e0b4c91adfb57"
+      },
+      "getter": {
+        "path": ".cache/ace16-insert-ordinary-reference-first-20261028/V2019-MixedRows-getter.stdout",
+        "bytes": 589658,
+        "sha256": "1e0bb0bd782c2f7aab595b742c014c79a5b149ec7a390e87bb9d7444f383613d"
+      },
+      "maps": {
+        "path": ".cache/ace16-insert-ordinary-reference-first-20261028/V2019-MixedRows-maps.stdout",
+        "bytes": 712,
+        "sha256": "aeb8830d53f08e7649c0dc804e7ae1bc15ebfc609418c93482577f4c3f2986de"
+      },
+      "facts": {
+        "rows_before": 451,
+        "rows_after": 452,
+        "history_before": 451,
+        "history_after": 452,
+        "new_ROW": {
+          "page": 139,
+          "slot": 0,
+          "bytes": 1106,
+          "placement": "fresh zero-initialized DATA page"
+        },
+        "suffix": [
+          {
+            "page": 139,
+            "purpose": "DATA"
+          },
+          {
+            "page": 140,
+            "purpose": "INDEX"
+          },
+          {
+            "page": 141,
+            "purpose": "INDEX"
+          }
+        ],
+        "root": {
+          "page": 122,
+          "height": 1,
+          "prefix": 0,
+          "free": 3603,
+          "tail": 140
+        },
+        "leaf_frames": [
+          {
+            "number": 141,
+            "prefix": 0,
+            "free": 1582,
+            "previous": 0,
+            "next": 140,
+            "tail": 0
+          },
+          {
+            "number": 140,
+            "prefix": 0,
+            "free": 1582,
+            "previous": 141,
+            "next": 0,
+            "tail": 0
+          }
+        ],
+        "map_changes": {
+          "global": [
+            {
+              "page": 139,
+              "offset": 8145,
+              "mask": 8,
+              "set": false
+            },
+            {
+              "page": 140,
+              "offset": 8145,
+              "mask": 16,
+              "set": false
+            },
+            {
+              "page": 141,
+              "offset": 8145,
+              "mask": 32,
+              "set": false
+            }
+          ],
+          "owned": [
+            {
+              "page": 139,
+              "offset": 507925,
+              "mask": 8,
+              "set": true
+            }
+          ],
+          "hint": [
+            {
+              "page": 134,
+              "offset": 499595,
+              "mask": 64,
+              "set": false
+            },
+            {
+              "page": 139,
+              "offset": 499596,
+              "mask": 8,
+              "set": true
+            }
+          ],
+          "index_owned": [
+            {
+              "page": 140,
+              "offset": 499512,
+              "mask": 4,
+              "set": true
+            },
+            {
+              "page": 141,
+              "offset": 499512,
+              "mask": 8,
+              "set": true
+            }
+          ]
+        },
+        "candidate_image_authority": false
+      },
+      "difference_from_engineering": {
+        "bytes": 1566,
+        "pages": [
+          140,
+          141
+        ],
+        "all_differences_in_two_fresh_LEAF_pages": true,
+        "all_DATA_root_counters_maps_and_other_bytes_equal": true,
+        "unused_suffix_checks": [
+          {
+            "page": 140,
+            "inactive_start": 2514,
+            "inactive_end": 4096,
+            "public_changed_unused_bytes": 783,
+            "header_bitmap_active_payload_identical": true,
+            "engineering_unused_bytes_zero": true
+          },
+          {
+            "page": 141,
+            "inactive_start": 2514,
+            "inactive_end": 4096,
+            "public_changed_unused_bytes": 783,
+            "header_bitmap_active_payload_identical": true,
+            "engineering_unused_bytes_zero": true
+          }
+        ]
+      }
+    }
+  ],
+  "preservation": [
+    "All old selected raw rows and ROWs unchanged",
+    "All unselected tables unchanged",
+    "Table and one physical historical counter each advance by one despite two logical aliases",
+    "All appended pages classified as actual DATA or INDEX; exact aggregate map effects",
+    "All other original prefix bytes protected except qualified working root and destination edits"
+  ],
+  "limits": {
+    "per_child_timeout_seconds": 30,
+    "per_stream_bytes": 16777216,
+    "JVM_heap_bytes": 536870912,
+    "per_database_bytes": 8388608
+  },
+  "limitations": [
+    "Public new row is independently decoded to requests; it need not use engine canonical padding or Text bytes",
+    "Public after bytes and ROWs never construct or replace engineering golden images",
+    "Actual new ROWs, purposes, DATA bytes, root and map effects agree in these four observations",
+    "Normal saves, required data macros and native Access save/reopen remain unqualified",
+    "Measured differences are public working scratch only: 783 unused bytes per new leaf; all leaf headers, bitmaps and active key/ROW bytes agree."
+  ]
+}

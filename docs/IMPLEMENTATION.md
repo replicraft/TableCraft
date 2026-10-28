@@ -60,8 +60,24 @@ library/example compilation and eight example functions pass. The full ACE unit
 batch passes 403 functions with one existing ignored test; the 108-function subset
 is included. Strict all-target/all-feature Clippy, four public preview contracts,
 three compile-fail doctests, minimal compilation, strict rustdoc and formatting
-pass. New authentic wider-schema source/reference and candidate qualification
-have not run; the historical two-field evidence below remains separate.
+pass. Nine actual source capture calls and four saved-only typed source gates
+now pass. Four independently frozen complete images then match four first-attempt
+[candidates](testing/results/ace16-insert-ordinary-native-2026-10-28.json), followed
+by eight first-attempt fresh getter/map calls. All 1,804 old selected ROWs remain;
+the four final snapshots contain 3,616 typed rows and 1,808 primary key/ROW pairs.
+FixedRows fits its DATA page; MixedRows adds one DATA page before two INDEX leaves.
+The total suffix is eight INDEX and two DATA pages, with no bitmap. A pre-build
+source-gate receipt metadata change is retained; the rebound 87-input bundle has
+identical source/request-derived images and details. Raw Boolean declaration
+length one already normalizes to zero payload bytes in the native reader; its
+Python oracle correction did not change Rust behavior. Four separate
+[public INSERT references](testing/results/ace16-insert-ordinary-public-reference-2026-10-28.json)
+and eight inert getter/map calls also pass on their first attempts. Their new
+ROWs and allocation purposes agree. Complete public/engineering comparisons
+differ only in 783 unused bytes per fresh INDEX leaf, 1,566 bytes per case;
+root, active frames, DATA, maps and counters agree. Public scratch is not used
+in the engineering byte goldens. Historical two-field evidence and Windows/native
+Access qualification remain separate.
 
 ## Recursive primary INSERT continuation
 
