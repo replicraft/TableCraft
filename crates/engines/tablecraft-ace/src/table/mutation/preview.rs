@@ -7,7 +7,7 @@ const SUPPORTED_PREVIEW_SUBVERSION: u8 = 0;
 
 /// An unqualified ACE 16 physical candidate for independent/native comparisons.
 ///
-/// This is not a database save or executable SQL update: unavailable data macros
+/// This is not a database save or executable SQL action: unavailable data macros
 /// are neither detected nor executed. Existing structural, property, constraint,
 /// direct-child/payload and unchanged-byte checks still apply. Passing them does
 /// not establish macro absence or Access compatibility. Only disposable offline
@@ -49,7 +49,8 @@ impl Ace16WritePreview {
     pub fn candidate_bytes(&self) -> &[u8] {
         &self.after
     }
-    /// Number of actual field changes, excluding no-op assignments.
+    /// Number of effective changes reported by this operation. INSERT and DELETE
+    /// count rows; UPDATE counts changed field assignments, excluding no-ops.
     pub fn changed_rows(&self) -> usize {
         self.changed_rows
     }

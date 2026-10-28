@@ -1,5 +1,7 @@
 use super::super::indexes::FOREIGN_INDEX;
 use super::{EditError, WriteBlocker};
+#[cfg(feature = "ace16-write-preview")]
+use crate::format::layout::{AUTO_NUMBER_FLAG, AUTO_NUMBER_GUID_FLAG, CALCULATED_EXT_MASK};
 use crate::{
     ConstraintReport, FileFormat, IndexCheckStatus, NativeImage, PayloadPresence,
     PropertyGroupKind, RelationshipCheckStatus, RuleCheckStatus, TableCheck, check_table,
@@ -41,12 +43,24 @@ pub(super) fn before_slot(
     before_with(image, table, Admission::SlotUpdate, budget, cancelled)
 }
 
+#[cfg(feature = "ace16-write-preview")]
+pub(super) fn before_insert(
+    image: &NativeImage,
+    table: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<TableCheck, EditError> {
+    before_with(image, table, Admission::Insert, budget, cancelled)
+}
+
 enum Admission {
     Update,
     #[cfg(feature = "ace16-write-preview")]
     Delete,
     #[cfg(feature = "ace16-write-preview")]
     SlotUpdate,
+    #[cfg(feature = "ace16-write-preview")]
+    Insert,
 }
 
 fn before_with(
@@ -94,6 +108,18 @@ fn before_with(
             .any(|(number, column)| column.number() != number)
     {
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+    }
+    #[cfg(feature = "ace16-write-preview")]
+    if matches!(admission, Admission::Insert) {
+        for column in schema.columns() {
+            check(budget, cancelled)?;
+            if column.flags() & (AUTO_NUMBER_FLAG | AUTO_NUMBER_GUID_FLAG) != 0
+                || column.extended_flags() & CALCULATED_EXT_MASK != 0
+                || column.complex_type_id().is_some()
+            {
+                return Err(EditError::Unsupported(WriteBlocker::Column));
+            }
+        }
     }
     let origin = image
         .catalog()
@@ -176,8 +202,15 @@ fn before_with(
         }
         for property in group.properties() {
             check(budget, cancelled)?;
-            // Existing records are updated, so DefaultValue is retained but not
-            // evaluated. Captions/descriptions and rejection text are passive.
+            // Full explicit INSERT rows do not qualify default evaluation or
+            // omission semantics. UPDATE keeps its existing passive treatment.
+            #[cfg(feature = "ace16-write-preview")]
+            if matches!(admission, Admission::Insert)
+                && property.name().eq_ignore_ascii_case("DefaultValue")
+            {
+                return Err(EditError::Unsupported(WriteBlocker::Properties));
+            }
+            // Captions/descriptions and rejection text are passive.
             if property.flags() & !SUPPORTED_PROPERTY_FLAG_MASK != 0
                 || ![
                     "Required",
