@@ -1,0 +1,83 @@
+{
+  "operation": "Corrective isolated-target committed INSERT example build",
+  "commit": "8374bad266ea9feebbf128c87fc2fec50ea36402",
+  "command": [
+    "cargo",
+    "build",
+    "-p",
+    "tablecraft-ace",
+    "--features",
+    "ace16-write-preview",
+    "--example",
+    "preview_ace16_insert",
+    "--locked",
+    "--offline",
+    "-j2",
+    "--target-dir",
+    "<repository>/.cache/ace16-insert-external-long-value-isolated-build-20261028/target"
+  ],
+  "isolated_source": ".cache/ace16-insert-external-long-value-build-20261028/source",
+  "target_directory": ".cache/ace16-insert-external-long-value-isolated-build-20261028/target",
+  "fresh_target_was_absent": true,
+  "owning_engine_compilation_observed": true,
+  "source_archive": {
+    "path": ".cache/ace16-insert-external-long-value-build-20261028/committed-source.tar",
+    "bytes": 90511360,
+    "sha256": "4da600032f7e3fe1b26122de171d7b7202d5653124e7051a34a715e3fb341227"
+  },
+  "source_manifest": {
+    "path": ".cache/ace16-insert-external-long-value-build-20261028/archive-source-manifest.json",
+    "bytes": 1041604,
+    "sha256": "8dfdc9188693203a127654b3ea4c65f691c5630fe5d4f1738d87a1bee2860ced"
+  },
+  "exported_file_count": 4526,
+  "all_exported_files_match_git_objects": true,
+  "source_inventory_unchanged_after_build": true,
+  "expected_images_frozen_before_build": {
+    "path": ".cache/ace16-insert-external-long-value-source-next-20261028/model-freeze.json",
+    "bytes": 11535,
+    "sha256": "c0f0ec8a00a32c0c75b234ff191c34bc9fb6adba860b5efc873a4c2b2b06f5e0"
+  },
+  "expected_report_frozen_before_build": {
+    "path": ".cache/ace16-insert-external-long-value-expected-first-20261028/report.json",
+    "bytes": 53059,
+    "sha256": "d7b0a3f86af739deb72e745e17bdf1bc46eebcbb8c74000df34af54230012f25"
+  },
+  "build_driver": {
+    "path": ".cache/ace16-insert-external-long-value-isolated-build-20261028/build.py",
+    "bytes": 8347,
+    "sha256": "d6102d77f76ca58a3ee720b584a080e8177bd8a00507594e0bf63d5270f34711"
+  },
+  "build_freeze": {
+    "path": ".cache/ace16-insert-external-long-value-isolated-build-20261028/freeze.json",
+    "bytes": 18961,
+    "sha256": "7c0179adbca09c56718dc203d4f44349b9a24f599dbfed07c3cbaba45f511cf5"
+  },
+  "build_log": {
+    "path": ".cache/ace16-insert-external-long-value-isolated-build-20261028/committed-build.log",
+    "bytes": 4865,
+    "sha256": "cca5b0dc9afb0d3095b2fc3c9744831fa22af6130c21244f748f6794eba2e6b5"
+  },
+  "superseded_shared_target_receipt": {
+    "path": ".cache/ace16-insert-external-long-value-build-20261028/unqualified-public-receipt.json",
+    "bytes": 728352,
+    "sha256": "5127b440769396e62cf703badca5d1464e4c3760c653c2c4381e60409d6c7067"
+  },
+  "superseded_receipt_relocation": {
+    "path": ".cache/ace16-insert-external-long-value-build-20261028/receipt-relocation.json",
+    "bytes": 594,
+    "sha256": "12a6a8c830043a1ab7a747b2601d3df88eb86f172b1819117386f17874cf95ae"
+  },
+  "correction": "Earlier Cargo success reused an older shared-target binary; that build was unqualified before any native candidate call. This build uses an initially absent target directory.",
+  "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)",
+  "cargo": "cargo 1.99.0 (5f94df478 2026-08-27)",
+  "status": 0,
+  "artifact": {
+    "path": ".cache/tablecraft-bin/ace16-insert-external-long-value-isolated-20261028",
+    "bytes": 22468920,
+    "sha256": "ab5ad59b4d149635f094e45c1334bdfd0590bc3d076514469333687f5f8d23c9"
+  },
+  "candidate_processes": 0,
+  "independent_reader_processes": 0,
+  "native_Access_qualification": false
+}
