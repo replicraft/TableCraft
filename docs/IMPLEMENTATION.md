@@ -12,6 +12,23 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Database file handlers
+
+The CLI now accepts `open [--wait] -- PATH` for inert header inspection. The
+optional pause follows output/error publication and flushing, and requires
+terminal stdin and stdout. Windows and Linux release archives include explicit
+per-user registration helpers; macOS archives include a native AppKit
+`TableCraft.app` receiver and a matching bundled CLI. These integrations advertise
+MDB/ACCDB viewing without selecting a default application. See
+[installation and removal](development/RELEASING.md#file-manager-integration).
+
+Local verification passes 37 targeted CLI tests, strict CLI Clippy, 15 packaging
+tests, eight registration-rendering/ownership tests and four native macOS request
+tests. The macOS app builds with warnings denied, and its real archive passes
+extracted CLI smoke checks. Native Explorer/Finder/Linux file-manager launches,
+Windows PowerShell execution and remote six-platform CI were not run locally;
+headless tests do not qualify those outcomes. No host handlers were registered.
+
 ## Shared ownership extraction
 
 The workspace now has fifteen packages. Working [cryptographic primitives](platform/CRYPTO.md),
