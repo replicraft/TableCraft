@@ -44,6 +44,29 @@ The decoded-file ceiling does not limit opaque stored values; the native encoded
 long-value and complete snapshot limits still do. No new mode, dependency or write
 path is introduced.
 
+## Access-generated attachment child layouts
+
+The contextual reader also supports the observed ACE 16 attachment layout with
+variable four-byte Int32 foreign-key and identity fields. Their native flags
+remain `0x02`/extended `0x08` and `0x06`/extended `0x04`, respectively; the six
+attachment payload fields retain extended flag `0x10`. The earlier fixed-key
+layout remains supported.
+
+Admission requires a complete resolved attachment mapping, the empty six-member
+conceptual template, exactly two distinct child reference fields, matching native
+types and lengths, and the qualified field flags. Ordinary scalar inspection
+continues to report these raw flagged fields as unsupported. The attachment
+reader supplies separately qualified carriers to the existing cursor; it does
+not clear flags or invent a different physical layout. Variable reference bytes,
+NULL masks, complete live counts and parent/child membership remain checked.
+
+Both attachment views expose `member_type()` for their certified declarations.
+The metadata-only view declares FileData as Binary while omitting its value;
+this does not validate or decode unread payload bytes. Adapter cache validation
+uses those certified member types and retained text-sort identities, rather than
+reinterpreting raw flags as an ordinary scalar declaration. Unrelated six-field
+complex templates retain their generic raw-link behavior.
+
 ## Evidence and limits
 
 Microsoft's [DAO attachment guide](https://learn.microsoft.com/en-us/office/vba/access/concepts/data-access-objects/work-with-attachments-in-dao)

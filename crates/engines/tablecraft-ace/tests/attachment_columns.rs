@@ -9,7 +9,8 @@ use std::{cell::Cell, io::Cursor};
 
 use tablecraft_ace::{
     AttachmentColumn, CollectionPageRequest, InspectError, TablePageRequest, TableSnapshotLimits,
-    read_attachment_column, read_attachment_metadata, read_multivalue_column,
+    inspect_attachment_members, read_attachment_column, read_attachment_metadata,
+    read_complex_column_links, read_multivalue_column,
     read_stored_collection_table_page_with_request,
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
@@ -450,5 +451,81 @@ fn signed_attachment_ids_preserve_full_and_metadata_only_values() {
                 .collect::<Vec<_>>();
             assert_eq!(observed, identities.map(Value::Int32));
         }
+    }
+}
+
+#[test]
+fn unrelated_six_field_complex_template_retains_generic_raw_links() {
+    let mut bytes = database();
+    let original: Vec<u8> = "FileURL"
+        .encode_utf16()
+        .flat_map(u16::to_le_bytes)
+        .collect();
+    let renamed: Vec<u8> = "PeerURL"
+        .encode_utf16()
+        .flat_map(u16::to_le_bytes)
+        .collect();
+    for page in [TEMPLATE_PAGE, FLAT_PAGE] {
+        let definition = &mut bytes[page * PAGE_BYTES..(page + 1) * PAGE_BYTES];
+        let matches: Vec<usize> = definition
+            .windows(original.len())
+            .enumerate()
+            .filter_map(|(at, value)| (value == original).then_some(at))
+            .collect();
+        assert_eq!(matches.len(), 1);
+        let start = matches[0];
+        definition[start..start + original.len()].copy_from_slice(&renamed);
+    }
+    let links = read_complex_column_links(
+        &mut Cursor::new(&bytes),
+        CatalogScope::new(1),
+        "Items",
+        "Score",
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(links.child_snapshot().rows().len(), 3);
+    assert_eq!(links.parents()[0].child_count(), 2);
+    assert_eq!(links.parents()[1].child_count(), 1);
+    assert!(matches!(inspect(&bytes), Err(InspectError::Unsupported)));
+}
+
+#[test]
+fn legacy_fixed_references_without_updatable_flag_remain_eligible() {
+    for profile in [2, 5, 6] {
+        let mut bytes = database();
+        bytes[20] = profile;
+        bytes[FLAT_PAGE * PAGE_BYTES + FIELD_START + 15] = 1;
+        bytes[FLAT_PAGE * PAGE_BYTES + FIELD_START + FIELD_BYTES + 15] = 5;
+        let declarations = inspect_attachment_members(
+            &mut Cursor::new(&bytes),
+            CatalogScope::new(1),
+            "Items",
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        assert_eq!(declarations.len(), 6);
+        let attachments = inspect(&bytes).unwrap();
+        assert_eq!(attachments.links().parents()[0].child_count(), 2);
+        let first = attachments.attachments(0).unwrap().next().unwrap().unwrap();
+        assert_eq!(first.identity(), 1);
+        assert_eq!(first.encoded_file_data(), Some(PAYLOAD));
+        let metadata = read_attachment_metadata(
+            &mut Cursor::new(&bytes),
+            CatalogScope::new(1),
+            "Items",
+            "Score",
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        assert_eq!(metadata.parents()[0].child_count(), 2);
+        assert_eq!(
+            metadata.metadata_value(0, 0, "FileName"),
+            attachments.metadata_value(0, 0, "FileName")
+        );
+        assert_eq!(metadata.metadata_value(0, 0, "FileData"), None);
     }
 }

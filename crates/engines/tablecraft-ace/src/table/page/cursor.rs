@@ -123,7 +123,7 @@ impl<'a, R: crate::NativeReadSource> TableCursor<'a, R> {
         Self::from_qualified(source, schema, selected, columns, budget, cancelled)
     }
 
-    fn from_qualified(
+    pub(in crate::table) fn from_qualified(
         source: &'a mut R,
         schema: TableSchema,
         selected: Option<Vec<usize>>,

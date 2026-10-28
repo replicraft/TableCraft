@@ -70,7 +70,7 @@ fn inspect_declarations<R: crate::NativeReadSource, T>(
         for (index, (name, _)) in schema::FIELDS.iter().enumerate() {
             check(budget, cancelled)?;
             let flat = &column.flat_table().columns()[positions.positions[index]];
-            let kind = flat.scalar_type().ok_or(InspectError::Unsupported)?;
+            let kind = positions.kind(positions.positions[index])?;
             budget.charge_allocation(1, size_of::<T>() as u64)?;
             members
                 .try_reserve_exact(1)

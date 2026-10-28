@@ -25,6 +25,7 @@ const FIELDS: [&str; 5] = [
 ];
 const LOCAL_TABLE: i16 = 1;
 const CHILD_SYSTEM_COLUMNS: usize = 2;
+const MODERN_IDENTITY_EXT_FLAG: u8 = 0x04;
 const CATALOG_LOOKUPS_PER_COLUMN: u64 = 2;
 
 /// Resolve bounded complex-field metadata on a stable/offline source.
@@ -145,14 +146,25 @@ pub fn inspect_complex_schema<R: crate::NativeReadSource>(
             return Err(InspectError::Malformed);
         }
         let (foreign_key, identity) = validate_shape(&type_table, &flat_table, budget, cancelled)?;
-        columns.push(ComplexColumnSchema {
+        let resolved = ComplexColumnSchema {
             number: column.number(),
             type_id,
             type_table,
             flat_table,
             foreign_key,
             identity,
-        });
+        };
+        if resolved.flat_table.columns().iter().any(|field| {
+            (field.number() == foreign_key || field.number() == identity) && !field.fixed()
+        }) {
+            super::attachments::schema::qualify(
+                &resolved,
+                &resolved.flat_table,
+                budget,
+                cancelled,
+            )?;
+        }
+        columns.push(resolved);
     }
     check(budget, cancelled)?;
     Ok(ComplexTableSchema { owner, columns })
@@ -201,7 +213,6 @@ fn validate_shape(
             continue;
         }
         if column.native_type() != data_type::INT32
-            || !column.fixed()
             || column.storage_length() != data_type::INT32_BYTES
         {
             return Err(InspectError::Unsupported);
@@ -211,7 +222,8 @@ fn validate_shape(
             && foreign_key.is_none()
         {
             foreign_key = Some(column.number());
-        } else if column.extended_flags() == 0
+        } else if (column.extended_flags() == 0 && column.fixed()
+            || column.extended_flags() == MODERN_IDENTITY_EXT_FLAG && !column.fixed())
             && column.flags() & AUTO_NUMBER_FLAG != 0
             && identity.is_none()
         {
