@@ -322,8 +322,24 @@ fn selected_indexes_budgets_and_execution_cancellation_keep_their_boundaries() {
     .unwrap();
     assert_eq!(
         execute(&source, "SELECT Score.FileData FROM Items").err(),
-        Some(QueryError::Unsupported)
+        Some(QueryError::UnknownName)
     );
+    let member = source
+        .collection_members("Items")
+        .unwrap()
+        .iter()
+        .position(|member| member.column().name() == "FileData")
+        .unwrap();
+    let mut callbacks = 0;
+    assert_eq!(
+        source.scan_collection_members("Items", &[], &[], &[member], &mut |_, _| {
+            callbacks += 1;
+            Ok(())
+        }),
+        Err(QueryError::UnknownName)
+    );
+    assert_eq!(callbacks, 0);
+
     // Find a bounded source that opens but cannot materialize the collection;
     // do not pin internal metadata allocation totals in the integration contract.
     let mut exhausted = false;

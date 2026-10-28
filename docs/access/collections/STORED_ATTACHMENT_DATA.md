@@ -44,6 +44,11 @@ The decoded-file ceiling does not limit opaque stored values; the native encoded
 long-value and complete snapshot limits still do. No new mode, dependency or write
 path is introduced.
 
+An explicit parent index can now be combined with stored attachment members.
+The [indexed collection contract](../queries/INDEXED_COLLECTION_QUERIES.md)
+validates logical root alignment before publication and retains metadata-only
+payload deferral, complete collection checks and required-index failures.
+
 ## Access-generated attachment child layouts
 
 The contextual reader also supports the observed ACE 16 attachment layout with

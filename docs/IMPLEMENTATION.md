@@ -32,6 +32,26 @@ all sixteen fields through plain omitted-table rows, byte-identically to its
 explicit-table/compatibility-flag output. Its originals remain unchanged. Native
 Access execution and mixed-schema integrity/write qualification remain separate.
 
+## Indexed stored collection queries
+
+Explicit required parent indexes now compose with qualified attachment, history
+and multivalue queries. Indexed snapshots and complete collection parents retain
+validated logical row references, including original roots for forwarded records.
+The adapter checks owner definitions and a complete reference bijection before
+visiting rows; it never associates memberships by visible values or row position.
+See [the indexed collection profile](access/queries/INDEXED_COLLECTION_QUERIES.md).
+
+Metadata-only attachment queries still omit FileData pages, and missing/corrupt
+required indexes never fall back to sequential scalar reads. Selected cached
+calculation scalars with indexes remain a separate unimplemented reader profile.
+Existing scalar caches, partial-selection rules and automatic scalar index
+selection retain their prior contracts.
+
+Four new engine and eight independent adapter tests pass, alongside 19 engine and
+25 adapter collection regressions. Separate CLI tests verify that mixed-table
+audits explain the ordinary-scalar prerequisite while keeping malformed-data
+errors and empty failure output intact. Native write gates are unchanged.
+
 ## Shared ownership extraction
 
 The workspace now has fifteen packages. Working [cryptographic primitives](platform/CRYPTO.md),

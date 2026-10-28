@@ -489,8 +489,11 @@ then carries private query-local list handles alongside scalar join rows. Handle
 never become core values, source identities or persistent row IDs. Scalar ON
 conditions retain ordinary join behavior; the complete membership predicate runs
 after the join, with scalar expressions evaluated against that joined row.
-Selected native indexes on collection-reading parents remain unsupported, and
-no membership or partial scalar filter is pushed down to hide later errors.
+Explicit required native parent indexes now use
+[checked logical row alignment](../../access/queries/INDEXED_COLLECTION_QUERIES.md).
+They retain complete parent/child validation; no membership or partial scalar
+filter is pushed down to hide later errors. Indexed cached-calculation scalar
+projections remain unsupported.
 
 The current explicit outer-join policy distinguishes three states: a present
 parent's empty collection folds to FALSE; stored NULL items retain the existing

@@ -102,6 +102,11 @@ Execution normally materializes all live rows before evaluating clauses. An
 explicit eligible index permits [safe integer/Currency/GUID filter pushdown](../../query/QUERY_EXECUTION.md#safe-source-constraints);
 opt-in [automatic selection](../indexes/AUTOMATIC_INDEXES.md) now chooses matching qualified
 single-key indexes. TOP pushdown and cost-based optimization remain unimplemented.
+Explicit required indexes also compose with
+[qualified stored collection members](INDEXED_COLLECTION_QUERIES.md), using
+logical row references rather than ordinal/value matching. That path validates a
+complete parent traversal; selected cached-calculation scalar projections with
+an index remain unsupported.
 Explicit Binary index ranges are available to library hosts through
 `read_table_binary_index_range` and projected Binary selections. The query adapter
 still applies Binary predicates after complete snapshots; it does not automatically
@@ -527,8 +532,9 @@ queries over valid files beyond the existing encoded/decoded payload limits.
 `--collections` option; see [stored attachment data](../collections/STORED_ATTACHMENT_DATA.md).
 It retains the encoded envelope without implicit decoding. Bare attachment
 fields and matching wildcards remain unsupported. Ordinary scalar queries and
-counts do not load attachment records. Selected indexes on a collection-reading
-parent are rejected, with no sequential fallback. All native/query/output budgets
+counts do not load attachment records. Explicit required parent indexes now use
+[logical row references](INDEXED_COLLECTION_QUERIES.md) to retain correct member
+alignment without sequential fallback. All native/query/output budgets
 and unchanged/offline-source requirements continue to apply.
 
 The [independent comparison](../../testing/compare_attachment_queries.py) uses the
