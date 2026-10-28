@@ -26,7 +26,11 @@ cover both layouts/directions, aliases, nullable/ignored/unique rules, secondary
 root growth, resource failures and cancellation. All 158 INSERT regression
 functions and strict all-target/all-feature ACE Clippy pass. The prior 443-function
 full ACE batch predates this extension; no new full-workspace run is claimed.
-Fresh independent file comparisons and native Access qualification remain
+Sixteen source/request images now match sixteen first-attempt candidates before
+thirty-two fresh independent getter/map calls pass. All 3,840 old ROWs remain
+and 24 are added; the sixteen source/reference cases separately pass 97 calls.
+The initial pure-static encoder API correction is preserved, without changing
+source recipes or repeating actual calls. Native Access qualification remains
 separate. See [the scalar key scope](testing/ACE16_MULTIPLE_INDEX_INSERTS.md#boolean-ieee-and-legacy-date-secondary-keys).
 
 ## Secondary Ignore-NULL INSERT indexes

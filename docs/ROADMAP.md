@@ -382,7 +382,10 @@ qualification remain unfinished.
   LVAL/extended dates, required data macros and normal saves remain unfinished.
   Boolean/IEEE/legacy DATE secondary INSERT keys now have eight complete-image
   and four independent audit functions; all 158 INSERT regressions pass. Their
-  fresh original-file comparisons remain separate from the earlier Int32 corpus.
+  sixteen frozen source/request images now match sixteen first-attempt candidates
+  before thirty-two fresh independent getter/map calls pass. The sixteen
+  source/reference cases separately pass 97 calls; native Access qualification
+  remains unrun.
 
 Major gates still open before the full backend is complete:
 
