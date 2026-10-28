@@ -2,9 +2,9 @@
 mod criteria;
 use std::cell::Cell;
 use tablecraft_core::values::Value;
+use tablecraft_db::{MultivalueList, ProjectedRow};
 use tablecraft_query::{
-    ExecutionOptions, QueryError, QueryResult, Source, prepare,
-    source::{MultivalueList, MultivalueVisitor, ProjectedRow},
+    ExecutionOptions, QueryError, QueryResult, Source, prepare, source::MultivalueVisitor,
 };
 use tablecraft_schema::{CollectionMember, Column, ScalarType, SchemaName};
 use tablecraft_sql::{ParseLimits, parse_query};

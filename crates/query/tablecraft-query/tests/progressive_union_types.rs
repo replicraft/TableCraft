@@ -1,8 +1,9 @@
 //! Independent checks of publication after whole-UNION carrier promotion.
 use std::cell::{Cell, RefCell};
 use tablecraft_core::values::{Decimal, Double, Value};
+use tablecraft_db::ProjectedRow;
 use tablecraft_expressions::{EvalError, functions::conversions::text::NumberFormat};
-use tablecraft_query::source::{MemorySource, MemoryTable, ProjectedRow, Source, TextCollationId};
+use tablecraft_query::source::{MemorySource, MemoryTable, Source, TextCollationId};
 use tablecraft_query::{ExecutionOptions, QueryError, QueryLimits, StreamError, prepare};
 use tablecraft_schema::{Column, ScalarType};
 use tablecraft_sql::parse_query;

@@ -6,6 +6,7 @@ mod provenance;
 
 use std::{cell::Cell, cmp::Ordering, rc::Rc};
 use tablecraft_core::values::Value;
+use tablecraft_db::ProjectedRow;
 use tablecraft_expressions::{
     EvalError, comparison::Collation, functions::conversions::text::NumberFormat,
 };
@@ -13,8 +14,8 @@ use tablecraft_query::{
     ExecutionOptions, PreparationOptions, QueryError, QueryLimits, StreamError, prepare,
     prepare_with_options,
     source::{
-        CollationResolver, ExternalSourceRequest, ProjectedRow, ResolvedExternalSource, Source,
-        SourceKey, TextCollationId,
+        CollationResolver, ExternalSourceRequest, ResolvedExternalSource, Source, SourceKey,
+        TextCollationId,
     },
 };
 use tablecraft_schema::{Column, ScalarType};

@@ -1,10 +1,10 @@
 //! Independent numerical and resource controls for progressive global aggregates.
 use std::cell::{Cell, RefCell};
 use tablecraft_core::values::{Currency, Decimal, Double, LegacyDateTime, Single, Value};
+use tablecraft_db::ProjectedRow;
 use tablecraft_expressions::EvalError;
 use tablecraft_query::{
-    ExecutionOptions, QueryError, QueryLimits, StreamError, prepare,
-    source::{ProjectedRow, Source},
+    ExecutionOptions, QueryError, QueryLimits, StreamError, prepare, source::Source,
 };
 use tablecraft_schema::{Column, ScalarType};
 use tablecraft_sql::parse_query;

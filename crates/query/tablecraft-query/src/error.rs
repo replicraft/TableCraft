@@ -59,3 +59,9 @@ pub enum QueryError {
     #[error(transparent)]
     Evaluation(#[from] tablecraft_expressions::EvalError),
 }
+
+impl From<tablecraft_db::ProjectionError> for QueryError {
+    fn from(_: tablecraft_db::ProjectionError) -> Self {
+        Self::Source
+    }
+}

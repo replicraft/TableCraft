@@ -12,10 +12,11 @@ use std::cell::{Cell, RefCell};
 use tablecraft_core::values::{
     Currency, Decimal, Double, ExtendedDateTime, Guid, LegacyDateTime, Single, Value,
 };
+use tablecraft_db::ProjectedRow;
 use tablecraft_expressions::{EvalError, functions::conversions::text::NumberFormat};
 use tablecraft_query::{
     ExecutionOptions, QueryError, QueryLimits, StreamError, prepare,
-    source::{ProjectedRow, Source, TextCollationId},
+    source::{Source, TextCollationId},
 };
 use tablecraft_schema::{Column, ScalarType};
 use tablecraft_sql::parse_query;

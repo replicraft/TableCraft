@@ -6,9 +6,10 @@ use std::{
     time::{Duration, Instant, SystemTime, UNIX_EPOCH},
 };
 use tablecraft_core::values::{ExpressionValue, Value};
+use tablecraft_db::ProjectedRow;
 use tablecraft_query::{
     ExecutionOptions, QueryError, QueryLimits, Source, execute_with_schema_discovery, prepare,
-    source::{MemorySource, MemoryTable, ProjectedRow},
+    source::{MemorySource, MemoryTable},
 };
 use tablecraft_schema::{Column, ScalarType};
 use tablecraft_sql::{parse_query, query::Query};

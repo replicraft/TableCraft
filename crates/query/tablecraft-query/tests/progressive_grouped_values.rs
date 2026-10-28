@@ -1,10 +1,11 @@
 //! Independent generated rows and arithmetic models for progressive grouping.
 use std::cell::{Cell, RefCell};
 use tablecraft_core::values::{Decimal, Double, Value};
+use tablecraft_db::{ProjectedRow, validate_projection};
 use tablecraft_expressions::EvalError;
 use tablecraft_query::{
     ExecutionOptions, QueryError, QueryLimits, StreamError, prepare,
-    source::{ProjectedRow, ScanConstraint, Source, validate_projection},
+    source::{ScanConstraint, Source},
 };
 use tablecraft_schema::{Column, ScalarType, TypeDescriptor};
 use tablecraft_sql::parse_query;

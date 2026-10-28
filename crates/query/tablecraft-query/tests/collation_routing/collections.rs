@@ -1,9 +1,10 @@
 //! Collection policy lineage and runtime routing with deliberately divergent policies.
 use super::support::*;
 use std::cell::Cell;
+use tablecraft_db::{MultivalueList, ProjectedRow};
 use tablecraft_query::{
     QueryResult,
-    source::{MultivalueList, MultivalueVisitor, ProjectedRow, TextPolicy},
+    source::{MultivalueVisitor, TextPolicy},
 };
 use tablecraft_schema::{CollectionMember, Column, ScalarType, SchemaName};
 

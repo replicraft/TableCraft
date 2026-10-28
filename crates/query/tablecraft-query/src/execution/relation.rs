@@ -7,9 +7,10 @@ use crate::execution::context::OuterScope;
 use crate::{
     QueryError,
     plan::{Relation, RelationNode},
-    source::{ProjectedRow, ScanConstraint},
+    source::ScanConstraint,
 };
 use tablecraft_core::values::Value;
+use tablecraft_db::ProjectedRow;
 use tablecraft_sql::select::JoinKind;
 
 impl Runtime<'_, '_> {

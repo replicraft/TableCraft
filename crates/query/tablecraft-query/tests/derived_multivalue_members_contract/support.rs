@@ -1,12 +1,13 @@
 #![allow(dead_code)]
 use std::cell::{Cell, RefCell};
 use tablecraft_core::values::{ExpressionValue, Value};
+use tablecraft_db::{MultivalueList, ProjectedRow};
 use tablecraft_query::{
     CollectionQueryResult, ExecutionOptions, PreparationOptions, QueryError, QueryValue, Source,
     prepare_with_options,
     source::{
-        ExternalSourceRequest, MultivalueList, MultivalueVisitor, ProjectedRow,
-        ResolvedExternalSource, SourceKey, TextCollationId,
+        ExternalSourceRequest, MultivalueVisitor, ResolvedExternalSource, SourceKey,
+        TextCollationId,
     },
 };
 use tablecraft_schema::{Column, ScalarType, SchemaName};

@@ -1,10 +1,8 @@
 //! Explicit cursor-backed scalar projections without snapshot cache publication.
 use super::{NativeSource, query_error};
 use tablecraft_ace::{NativeReadSource, NativeTableStorage, TableCursor};
-use tablecraft_query::{
-    QueryError,
-    source::{ProjectedRow, validate_projection},
-};
+use tablecraft_db::{ProjectedRow, validate_projection};
+use tablecraft_query::QueryError;
 
 impl<R: NativeReadSource> NativeSource<'_, R> {
     pub(super) fn progressive_scan(

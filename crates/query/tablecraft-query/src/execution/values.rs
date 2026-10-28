@@ -110,7 +110,7 @@ impl Runtime<'_, '_> {
         &mut self,
         columns: &[tablecraft_schema::Column],
         projection: &[usize],
-        row: crate::source::ProjectedRow<'_>,
+        row: tablecraft_db::ProjectedRow<'_>,
     ) -> Result<Vec<CellValue>, QueryError> {
         if row.len() != projection.len() {
             return Err(tablecraft_schema::SchemaError::Row.into());

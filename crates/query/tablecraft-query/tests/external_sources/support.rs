@@ -1,10 +1,11 @@
 use std::{cell::Cell, rc::Rc};
 use tablecraft_core::values::Value;
+use tablecraft_db::{MultivalueList, ProjectedRow};
 use tablecraft_query::{
     ExecutionOptions, QueryError, Source, prepare,
     source::{
-        ExternalSourceRequest, MemorySource, MemoryTable, MultivalueList, MultivalueVisitor,
-        ProjectedRow, ResolvedExternalSource, ScanConstraint, SourceKey, TextCollationId,
+        ExternalSourceRequest, MemorySource, MemoryTable, MultivalueVisitor,
+        ResolvedExternalSource, ScanConstraint, SourceKey, TextCollationId,
     },
 };
 use tablecraft_schema::{CollectionMember, Column, ScalarType, SchemaName};

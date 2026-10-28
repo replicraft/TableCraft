@@ -4,10 +4,8 @@ use std::cell::OnceCell;
 use tablecraft_ace::{
     MultivalueColumn, inspect_multivalue_declarations, read_multivalue_column_with_limits,
 };
-use tablecraft_query::{
-    QueryError,
-    source::{TextCollationId, validate_projection},
-};
+use tablecraft_db::validate_projection;
+use tablecraft_query::{QueryError, source::TextCollationId};
 use tablecraft_schema::Column;
 
 pub(super) struct CollectionCache {

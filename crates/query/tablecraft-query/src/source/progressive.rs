@@ -1,6 +1,7 @@
 //! Explicit borrowed projection over already validated in-memory rows.
-use super::{MemorySource, ProjectedRow, validate_projection};
+use super::MemorySource;
 use crate::QueryError;
+use tablecraft_db::{ProjectedRow, validate_projection};
 
 impl MemorySource {
     pub(super) fn progressive_projection(

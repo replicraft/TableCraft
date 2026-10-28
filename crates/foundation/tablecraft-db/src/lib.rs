@@ -5,7 +5,9 @@
 mod editing;
 mod error;
 mod snapshot;
+mod views;
 
 pub use editing::{CellUpdate, EditableTable, UpdateProfile};
 pub use error::SnapshotError;
 pub use snapshot::{RowHandle, Snapshot};
+pub use views::{MultivalueList, ProjectedRow, ProjectionError, validate_projection};

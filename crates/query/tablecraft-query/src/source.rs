@@ -10,14 +10,13 @@ mod constraint;
 mod equality;
 pub use equality::TextEqualityKey;
 mod multivalue;
-pub use multivalue::{MultivalueList, MultivalueVisitor};
+pub use multivalue::MultivalueVisitor;
 mod progressive;
-mod projection;
 pub use constraint::ScanConstraint;
-pub use projection::{ProjectedRow, validate_projection};
 
 use crate::{QueryError, profile::SOURCE_SCHEMA_POLICY};
 use tablecraft_core::values::Value;
+use tablecraft_db::{ProjectedRow, validate_projection};
 use tablecraft_schema::{Column, SchemaName, validate_row};
 
 /// Synchronous, borrowed-row source. Scan callbacks must propagate rejection.

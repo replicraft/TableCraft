@@ -1,10 +1,10 @@
 //! Generated progressive inputs expose COUNT behavior without a parent snapshot.
 use std::cell::{Cell, RefCell};
 use tablecraft_core::values::{Decimal, Value};
+use tablecraft_db::ProjectedRow;
 use tablecraft_expressions::EvalError;
 use tablecraft_query::{
-    ExecutionOptions, QueryError, QueryLimits, StreamError, prepare,
-    source::{ProjectedRow, Source},
+    ExecutionOptions, QueryError, QueryLimits, StreamError, prepare, source::Source,
 };
 use tablecraft_schema::{Column, ScalarType};
 use tablecraft_sql::parse_query;

@@ -6,7 +6,8 @@ use tablecraft_ace::{
     read_attachment_metadata_with_limits, read_version_history_column_with_limits,
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
-use tablecraft_query::{QueryError, source::validate_projection};
+use tablecraft_db::validate_projection;
+use tablecraft_query::QueryError;
 
 impl<R: NativeReadSource> NativeSource<'_, R> {
     pub(super) fn load_members(

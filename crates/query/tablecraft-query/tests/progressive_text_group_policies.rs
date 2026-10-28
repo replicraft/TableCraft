@@ -10,12 +10,13 @@ use std::{
     rc::Rc,
 };
 use tablecraft_core::values::Value;
+use tablecraft_db::ProjectedRow;
 use tablecraft_expressions::{
     EvalError, comparison::Collation, functions::conversions::text::NumberFormat,
 };
 use tablecraft_query::{
     ExecutionOptions, QueryError, QueryLimits, StreamError, prepare,
-    source::{CollationResolver, ProjectedRow, Source, TextCollationId},
+    source::{CollationResolver, Source, TextCollationId},
 };
 use tablecraft_schema::{Column, ScalarType};
 use tablecraft_sql::parse_query;

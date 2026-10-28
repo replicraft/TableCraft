@@ -1,9 +1,7 @@
 use std::cell::RefCell;
 use tablecraft_core::values::Value;
-use tablecraft_query::{
-    ExecutionOptions, QueryError, Source, prepare,
-    source::{ProjectedRow, ScanConstraint},
-};
+use tablecraft_db::ProjectedRow;
+use tablecraft_query::{ExecutionOptions, QueryError, Source, prepare, source::ScanConstraint};
 use tablecraft_schema::{Column, ScalarType};
 use tablecraft_sql::{ParseLimits, parse_query};
 

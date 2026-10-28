@@ -2,10 +2,11 @@
 use std::cell::{Cell, RefCell};
 use std::cmp::Ordering;
 use tablecraft_core::values::{Decimal, Value};
+use tablecraft_db::ProjectedRow;
 use tablecraft_expressions::{EvalError, comparison::Collation};
 use tablecraft_query::{
     ExecutionOptions, OutputType, QueryError, QueryLimits, StreamError, prepare,
-    source::{CollationResolver, ProjectedRow, Source, TextCollationId},
+    source::{CollationResolver, Source, TextCollationId},
 };
 use tablecraft_schema::{Column, ScalarType, TypeDescriptor};
 use tablecraft_sql::parse_query;

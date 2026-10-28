@@ -6,10 +6,10 @@ use std::{
     time::{Duration, Instant, SystemTime, UNIX_EPOCH},
 };
 use tablecraft_core::values::{ExpressionValue, Value};
+use tablecraft_db::{MultivalueList, ProjectedRow};
 use tablecraft_query::{
     BindingDepth, CollectionQueryResult, OutputType, PreparationOptions, QueryError, QueryValue,
-    Source, prepare, prepare_with_options,
-    source::{MultivalueList, MultivalueVisitor, ProjectedRow},
+    Source, prepare, prepare_with_options, source::MultivalueVisitor,
 };
 use tablecraft_schema::{Column, ScalarType, SchemaName};
 use tablecraft_sql::{

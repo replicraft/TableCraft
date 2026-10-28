@@ -5,9 +5,9 @@ use crate::{
     execution::cell::CellValue,
     plan::{Relation, RelationNode},
     profile::SOURCE_SCHEMA_POLICY,
-    source::{MultivalueList, ProjectedRow},
 };
 use tablecraft_core::{limits::Resource, values::Value};
+use tablecraft_db::{MultivalueList, ProjectedRow};
 use tablecraft_schema::{CollectionMember, Column, validate_row};
 
 struct Request {
