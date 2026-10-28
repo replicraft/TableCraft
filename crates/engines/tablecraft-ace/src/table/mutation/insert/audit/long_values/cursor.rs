@@ -1,5 +1,6 @@
 //! SOURCE-only LVAL candidate replay and exact append bytes on the shared EOF.
 use super::super::{ImageProof, reserve};
+use super::maps::{Allocation, Authority, Bitmap, Maps};
 use crate::{
     EditError, InspectError, LongValueMapReferences, TableSchema,
     format::{
@@ -33,6 +34,7 @@ struct Column {
     number: usize,
     references: LongValueMapReferences,
     scope: Scope,
+    maps: Maps,
     states: Vec<State>,
 }
 
@@ -42,7 +44,10 @@ struct Touched {
     references: LongValueMapReferences,
 }
 
-pub(super) struct Cursor {
+pub(super) struct Cursor<'a> {
+    schema: &'a TableSchema,
+    inventory: Inventory,
+    bitmaps: Vec<Bitmap>,
     original_eof: u32,
     global: RepresentedMap,
     columns: Vec<Column>,
@@ -54,11 +59,11 @@ pub(super) struct Location {
     pub range: Range<usize>,
 }
 
-impl Cursor {
+impl<'a> Cursor<'a> {
     pub(super) fn capture(
-        schema: &TableSchema,
+        schema: &'a TableSchema,
         selected: &[(usize, LongValueMapReferences)],
-        inventory: &Inventory,
+        inventory: Inventory,
         reader: &mut Reader<'_, std::io::Cursor<&[u8]>>,
     ) -> Result<Self, EditError> {
         let global = RepresentedMap::read(reader, GLOBAL_FREE_REFERENCE, MapRole::GlobalFree)?;
@@ -103,15 +108,20 @@ impl Cursor {
                     hinted,
                 });
             }
+            let maps = Maps::capture(references, reader)?;
             columns.push(Column {
                 position,
                 number: field.number(),
                 references,
                 scope,
+                maps,
                 states,
             });
         }
         Ok(Self {
+            schema,
+            inventory,
+            bitmaps: Vec::new(),
             original_eof: reader.header.page_count(),
             global,
             columns,
@@ -188,62 +198,57 @@ impl Cursor {
                 break Some(position);
             }
             self.columns[column].states[position].hinted = false;
-            change(
-                proof,
-                &self.columns[column].scope.hint,
-                self.original_eof,
+            let mut remaining = Vec::new();
+            reserve(&mut remaining, self.columns[column].states.len(), reader)?;
+            for state in &self.columns[column].states {
+                reader.tick()?;
+                if state.hinted {
+                    remaining.push(state.number);
+                }
+            }
+            let selected = &mut self.columns[column];
+            selected.maps.clear_hint(
                 number,
-                false,
+                &remaining,
+                Allocation {
+                    authority: Authority {
+                        schema: self.schema,
+                        inventory: &self.inventory,
+                        column: selected.number,
+                    },
+                    scope: &selected.scope,
+                    global: &self.global,
+                    members: &[],
+                },
+                proof,
                 reader,
             )?;
         };
         let position = if let Some(position) = destination {
             position
         } else {
-            let number = u32::try_from(proof.bytes.len() / PAGE_BYTES)
-                .map_err(|_| InspectError::StructureLimit)?;
-            require_bit(
+            let mut members = Vec::new();
+            reserve(&mut members, self.columns[column].states.len(), reader)?;
+            for state in &self.columns[column].states {
+                reader.tick()?;
+                members.push(state.number);
+            }
+            let selected = &mut self.columns[column];
+            let number = selected.maps.allocate(
+                Allocation {
+                    authority: Authority {
+                        schema: self.schema,
+                        inventory: &self.inventory,
+                        column: selected.number,
+                    },
+                    scope: &selected.scope,
+                    global: &self.global,
+                    members: &members,
+                },
+                &mut self.bitmaps,
                 proof,
-                &self.columns[column].scope.owned,
-                self.original_eof,
-                number,
-                false,
                 reader,
             )?;
-            require_bit(
-                proof,
-                &self.columns[column].scope.hint,
-                self.original_eof,
-                number,
-                false,
-                reader,
-            )?;
-            require_bit(proof, &self.global, self.original_eof, number, true, reader)?;
-            change(
-                proof,
-                &self.columns[column].scope.owned,
-                self.original_eof,
-                number,
-                true,
-                reader,
-            )?;
-            change(
-                proof,
-                &self.columns[column].scope.hint,
-                self.original_eof,
-                number,
-                true,
-                reader,
-            )?;
-            change(
-                proof,
-                &self.global,
-                self.original_eof,
-                number,
-                false,
-                reader,
-            )?;
-            proof.append(number, reader)?;
             let base = number as usize * PAGE_BYTES;
             proof.bytes[base..base + DATA_SIGNATURE.len()].copy_from_slice(&DATA_SIGNATURE);
             proof.bytes[base + OWNER_OFFSET..base + OWNER_OFFSET + LVAL_OWNER.len()]
@@ -323,6 +328,29 @@ impl Cursor {
         if actual.next().is_some() {
             return Err(EditError::Preservation);
         }
+        let mut metadata = staged.data.append.long_value_owned_bitmaps();
+        for expected in &self.bitmaps {
+            reader.tick()?;
+            let actual = metadata.next().ok_or(EditError::Preservation)?;
+            if actual.number != expected.number
+                || actual.column != expected.column
+                || actual.owned != expected.owned
+                || actual.block != expected.block
+            {
+                return Err(EditError::Preservation);
+            }
+            staged.data.append.require_long_value_owned_bitmap(
+                expected.number,
+                expected.column,
+                expected.owned,
+                expected.block,
+                reader.budget,
+                reader.cancelled,
+            )?;
+        }
+        if metadata.next().is_some() {
+            return Err(EditError::Preservation);
+        }
         Ok(())
     }
 
@@ -332,7 +360,7 @@ impl Cursor {
         proof: &ImageProof<'_>,
         reader: &mut Reader<'_, std::io::Cursor<&[u8]>>,
     ) -> Result<(), EditError> {
-        if self.touched.len() != actual.pages.len() {
+        if self.touched.len() != actual.pages.len() || self.bitmaps.len() != actual.metadata.len() {
             return Err(EditError::Preservation);
         }
         for (expected, actual) in self.touched.iter().zip(&actual.pages) {
@@ -345,6 +373,18 @@ impl Cursor {
                 || actual.candidate != expected.references.candidate()
                 || actual.before != before
                 || actual.after != proof.bytes[base..base + PAGE_BYTES]
+            {
+                return Err(EditError::Preservation);
+            }
+        }
+        for (expected, actual) in self.bitmaps.iter().zip(&actual.metadata) {
+            reader.work(PAGE_BYTES)?;
+            let base = expected.number as usize * PAGE_BYTES;
+            if actual.number != expected.number
+                || actual.column != expected.column
+                || actual.owned != expected.owned
+                || actual.block != expected.block
+                || actual.bytes != proof.bytes[base..base + PAGE_BYTES]
             {
                 return Err(EditError::Preservation);
             }
@@ -387,7 +427,7 @@ fn cell(
     })
 }
 
-fn require_bit(
+pub(super) fn require_bit(
     proof: &ImageProof<'_>,
     map: &RepresentedMap,
     eof: u32,
@@ -406,7 +446,7 @@ fn require_bit(
     Ok(())
 }
 
-fn change(
+pub(super) fn change(
     proof: &mut ImageProof<'_>,
     map: &RepresentedMap,
     eof: u32,

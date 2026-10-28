@@ -1,7 +1,11 @@
 //! Complete long descriptors precede ordinary DATA and INDEX on one cursor.
+mod maps;
 mod placement;
 
-use self::placement::{Builder, Column};
+use self::{
+    maps::Maps,
+    placement::{Builder, Column},
+};
 use super::record::input::{Input, Payload};
 use crate::{
     EditError, InspectError, LongValueCheckStatus, NativeImage, TableCheck, WriteBlocker,
@@ -27,8 +31,17 @@ pub(super) struct Page {
     pub after: Vec<u8>,
 }
 
+pub(super) struct BitmapPage {
+    pub number: u32,
+    pub column: usize,
+    pub owned: u32,
+    pub block: u32,
+    pub bytes: Vec<u8>,
+}
+
 pub(super) struct Plan {
     pub pages: Vec<Page>,
+    pub metadata: Vec<BitmapPage>,
 }
 
 /// All request payloads and row-capacity choices have already been validated.
@@ -71,7 +84,10 @@ pub(super) fn prepare(
         }
     }
     let append = State::new(image, checked.schema().definition_page());
-    let plan = Plan { pages: Vec::new() };
+    let plan = Plan {
+        pages: Vec::new(),
+        metadata: Vec::new(),
+    };
     if selected.is_empty() {
         for input in inputs {
             for payload in &mut input.payloads {
@@ -144,11 +160,13 @@ pub(super) fn prepare(
             position,
             number: field.number(),
             references,
-            scope,
+            maps: Maps::capture(scope, field.number(), references, &mut reader)?,
         });
     }
     let mut builder = Builder {
         image,
+        schema,
+        inventory,
         global,
         columns,
         plan,

@@ -185,7 +185,10 @@ fn prepare(
             records.push(profile.build(request.values(), budget, cancelled)?);
         }
         (
-            long_values::Plan { pages: Vec::new() },
+            long_values::Plan {
+                pages: Vec::new(),
+                metadata: Vec::new(),
+            },
             State::new(image, structural.schema().definition_page()),
         )
     };

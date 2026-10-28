@@ -1,8 +1,8 @@
 //! Closed page purposes advance the same bounded cursor for real consumers.
 use super::Edit;
 use crate::{
-    EditError, InspectError, NativeImage, NativeIndex, format::page::PAGE_BYTES, header::check,
-    limits::MAX_IMAGE_BYTES,
+    EditError, InspectError, LongValueMapReferences, NativeImage, NativeIndex,
+    format::page::PAGE_BYTES, header::check, limits::MAX_IMAGE_BYTES,
 };
 use tablecraft_core::limits::ResourceBudget;
 
@@ -12,6 +12,11 @@ enum Purpose {
         column: usize,
         owned: u32,
         candidate: u32,
+    },
+    LongValueOwnedBitmap {
+        column: usize,
+        owned: u32,
+        block: u32,
     },
     OrdinaryCandidateBitmap {
         definition: u32,
@@ -43,6 +48,13 @@ pub(in crate::table) struct LongValueReservation {
     pub column: usize,
     pub owned: u32,
     pub candidate: u32,
+}
+
+pub(in crate::table) struct LongValueOwnedBitmapReservation {
+    pub number: u32,
+    pub column: usize,
+    pub owned: u32,
+    pub block: u32,
 }
 
 pub(in crate::table) struct State {
@@ -104,6 +116,47 @@ impl State {
             budget,
             cancelled,
         )
+    }
+
+    pub(in crate::table) fn reserve_long_value_with_owned_bitmaps(
+        &mut self,
+        number: u32,
+        column: usize,
+        references: LongValueMapReferences,
+        blocks: &[u32],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        let count = blocks
+            .len()
+            .checked_add(1)
+            .ok_or(InspectError::StructureLimit)?;
+        budget
+            .charge_allocation(count as u64, size_of::<Purpose>() as u64)
+            .map_err(InspectError::from)?;
+        let mut purposes = Vec::new();
+        purposes
+            .try_reserve_exact(count)
+            .map_err(|_| InspectError::Allocation)?;
+        purposes.push(Purpose::LongValue {
+            column,
+            owned: references.owned(),
+            candidate: references.candidate(),
+        });
+        let mut previous = None;
+        for &block in blocks {
+            check(budget, cancelled)?;
+            if previous.is_some_and(|previous| previous >= block) {
+                return Err(EditError::Preservation);
+            }
+            previous = Some(block);
+            purposes.push(Purpose::LongValueOwnedBitmap {
+                column,
+                owned: references.owned(),
+                block,
+            });
+        }
+        self.commit(number, &purposes, budget, cancelled)
     }
 
     pub(in crate::table) fn reserve_index(
@@ -208,6 +261,15 @@ impl State {
                     column: *column,
                     owned: *owned,
                     candidate: *candidate,
+                },
+                Purpose::LongValueOwnedBitmap {
+                    column,
+                    owned,
+                    block,
+                } => Purpose::LongValueOwnedBitmap {
+                    column: *column,
+                    owned: *owned,
+                    block: *block,
                 },
                 Purpose::OrdinaryCandidateBitmap {
                     definition,
@@ -336,6 +398,47 @@ impl State {
             } if actual_definition == definition && actual_reference == reference => Ok(()),
             _ => Err(EditError::Preservation),
         }
+    }
+
+    pub(in crate::table) fn require_long_value_owned_bitmap(
+        &self,
+        number: u32,
+        column: usize,
+        owned: u32,
+        block: u32,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        match self.reservation(number, budget, cancelled)?.purpose {
+            Purpose::LongValueOwnedBitmap {
+                column: actual_column,
+                owned: actual_owned,
+                block: actual_block,
+            } if actual_column == column && actual_owned == owned && actual_block == block => {
+                Ok(())
+            }
+            _ => Err(EditError::Preservation),
+        }
+    }
+
+    pub(in crate::table) fn long_value_owned_bitmaps(
+        &self,
+    ) -> impl Iterator<Item = LongValueOwnedBitmapReservation> + '_ {
+        self.reservations
+            .iter()
+            .filter_map(|reservation| match reservation.purpose {
+                Purpose::LongValueOwnedBitmap {
+                    column,
+                    owned,
+                    block,
+                } => Some(LongValueOwnedBitmapReservation {
+                    number: reservation.number,
+                    column,
+                    owned,
+                    block,
+                }),
+                _ => None,
+            })
     }
 
     pub(in crate::table) fn long_values(&self) -> impl Iterator<Item = LongValueReservation> + '_ {
