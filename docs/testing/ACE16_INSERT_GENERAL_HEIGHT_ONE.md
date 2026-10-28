@@ -127,10 +127,23 @@ each result adds two INDEX pages and no DATA or bitmap. These cases observe
 multiple outer offenders in a tail-present three-child source. All-bounded forms,
 other child counts and repeated splitting retain separate literal coverage.
 
-Four source/request-only complete engineering images are frozen before the
-committed producer build and candidate calls. Those candidate comparisons and
-fresh getter acceptance remain pending. Public compression and scratch remain
-observations, not expected engineering bytes. Earlier [fitting](ACE16_INSERT_HEIGHT_ONE.md) and
+Four source/request-only complete engineering images were frozen before the
+committed producer build and candidate calls. All four first-attempt candidates
+match those complete images. Eight distinct fresh getter/map calls also pass,
+preserving all 4,512 original ROWs and 4,520 final primary key/ROW pairs across
+the four files. Each file adds two INDEX pages, for 32,768 aggregate bytes, with
+no DATA or bitmap allocation. Public compression and scratch remain observations,
+not expected engineering bytes.
+
+The getter controller's first run stopped after four successful calls because a
+copied process ceiling was four rather than eight. A separately frozen continuation
+verified the stopped prefix, every complete image and all original pins, then ran
+only the four unattempted commands. No completed inspection was repeated. The
+original run also used a stricter 8 MiB stream cap than its declared 16 MiB;
+neither cap was hit. The stopped report and continuation remain separate in the
+[evidence record](results/ace16-insert-general-height-one-native-2026-10-28.json)
+and [saved-only verifier](ace16_insert_general_height_one/verify.py).
+Earlier [fitting](ACE16_INSERT_HEIGHT_ONE.md) and
 [one-child split](ACE16_INSERT_CHILD_SPLITS.md) original-file evidence stays
 separate. Windows/native Microsoft Access comparisons remain deferred by the user.
 

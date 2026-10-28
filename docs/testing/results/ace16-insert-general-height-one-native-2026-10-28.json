@@ -1,0 +1,720 @@
+{
+  "date": "2026-10-28",
+  "scope": "Four actual ACE16 general height-one primary INSERT cases on four immutable prepared source copies; two simultaneous overflowing children, five final leaves. Separate engineering candidates only; no normal native save or Microsoft Access qualification.",
+  "compiled_revision": "8107435d2f1c5957702d9325c9c1d62a5801e668",
+  "receipt_revision": "13dc4285a9cb42fe3023fc60b280410eb0e0ca2b",
+  "build_receipt": {
+    "path": "docs/testing/results/ace16-insert-general-height-one-example-build-2026-10-28.json",
+    "bytes": 151616,
+    "sha256": "7c088650ffbb59b3e7d8437efc03235ae820b97689bf30c4b0eead96f4045a54"
+  },
+  "artifact": {
+    "path": ".cache/tablecraft-bin/ace16-insert-general-height-one-20261028",
+    "bytes": 18013992,
+    "sha256": "360426f9c83d1e61bcdc776be0d5d2dad3584b19fee59d6a26c2b590ed6860dc"
+  },
+  "compiled_source_objects": 756,
+  "all_actual_phases_first_attempt": false,
+  "actual_reference_commands": 25,
+  "actual_producer_commands": 4,
+  "actual_fresh_getter_map_commands": 8,
+  "each_distinct_fixture_call_first_attempt_status_zero": true,
+  "completed_fixture_calls_rerun": 0,
+  "raw_reference_report": {
+    "path": ".cache/ace16-insert-general-height-one-reference-first-20261027/report.json",
+    "bytes": 88138,
+    "sha256": "ad3fe53c16072301f53e97bd14e1eb98ed608cc4a47a0e2afe261b536175fe76"
+  },
+  "raw_producer_report": {
+    "path": ".cache/ace16-insert-general-height-one-candidates-first-20261027/report.json",
+    "bytes": 59126,
+    "sha256": "459e60e0f1c674fe98dc3c27832e3827bfb7133b02c50cf2e0080448ad614c2d"
+  },
+  "raw_original_getter_report": {
+    "path": ".cache/ace16-insert-general-height-one-getters-first-20261027/report.json",
+    "bytes": 123654,
+    "sha256": "50c5d202cba0855251867b54b5bc820c166007e9440f5c9e43cea4ff2314eb72"
+  },
+  "raw_continuation_getter_report": {
+    "path": ".cache/ace16-insert-general-height-one-getters-continuation-first-20261028/report.json",
+    "bytes": 257886,
+    "sha256": "4bc1ff18867929413f61402f3f4de52a1efd8449b0a7934543829648128e29ee"
+  },
+  "getter_controller_history": {
+    "original_completed": false,
+    "original_successful_commands": 4,
+    "failure": "Four-process capture ceiling stopped before fifth JVM",
+    "declared_stream_bytes": 16777216,
+    "actual_stream_bytes": 8388608,
+    "stream_limit_hit": false,
+    "continuation_successful_commands": 4,
+    "completed_calls_rerun": 0
+  },
+  "independent_plan": {
+    "path": ".cache/ace16-insert-general-height-one-independent-next-20261027/plan.json",
+    "bytes": 12651,
+    "sha256": "cbb5af7fac36d932f2ec6621e11c8707faf4431dfb0c613e20832c00e1e6c2cb"
+  },
+  "independent_freeze": {
+    "path": ".cache/ace16-insert-general-height-one-independent-next-20261027/freeze.json",
+    "bytes": 21428,
+    "sha256": "628be6c2988fe50d0ab6804b0d99f773f27f88f73b42dc3984c1378217b9b4e5"
+  },
+  "producer_protocol": {
+    "path": ".cache/ace16-insert-general-height-one-candidates-next-20261027/protocol-freeze.json",
+    "bytes": 22451,
+    "sha256": "58914b2c2e2f96c736802436b13cfa5f191a3a1419871964b58076ce02d1b300"
+  },
+  "getter_protocol": {
+    "path": ".cache/ace16-insert-general-height-one-getters-next-20261027/controller-freeze.json",
+    "bytes": 26041,
+    "sha256": "097ef3a00c752cfb59c195e0c87bc44a593b7fcc3a3ba67560f2be68e2468f5a"
+  },
+  "continuation_protocol": {
+    "path": ".cache/ace16-insert-general-height-one-getters-continuation-next-20261028/freeze.json",
+    "bytes": 119268,
+    "sha256": "ec45de4f67dfcc74e28622ed7e7796422b515988e92a4a327dba9d474e1eb86e"
+  },
+  "producer_binding": {
+    "path": ".cache/ace16-insert-general-height-one-candidates-next-20261027/binding-first.json",
+    "bytes": 151041,
+    "sha256": "e75007f41d978d1afc412e3fda196286b7b01dec6ef26b7d931b99571814be3e"
+  },
+  "getter_binding": {
+    "path": ".cache/ace16-insert-general-height-one-getters-next-20261027/binding-first.json",
+    "bytes": 2054,
+    "sha256": "aaedb505e98fc9cd58473bfbf38e00c46f50ee13bdc6dac30b9b44f701c53a4e"
+  },
+  "whole_images_before_all_fresh_getters": true,
+  "sources_requests_goldens_executed_controllers_modified": false,
+  "after_pin_errors": [],
+  "cases": [
+    {
+      "id": "V2016-fitted",
+      "source": {
+        "path": ".cache/ace16-insert-general-height-one-reference-first-20261027/V2016-fitted-source.accdb",
+        "bytes": 413696,
+        "sha256": "7cd85ae31af22fbb1141c36e2094583f41bb9b18fcfcd355951b7ace74abe066"
+      },
+      "source_getter": {
+        "path": ".cache/ace16-insert-general-height-one-reference-first-20261027/V2016-fitted-before-getter.stdout",
+        "bytes": 171292,
+        "sha256": "058ab92e27b62cbf9f5d47fa02ed7f6a8265b4de777daa18eee071018fca2535"
+      },
+      "source_maps": {
+        "path": ".cache/ace16-insert-general-height-one-reference-first-20261027/V2016-fitted-before-maps.stdout",
+        "bytes": 337,
+        "sha256": "8f503f5d395ba8365fa3af9975b0719bf1ade87a4a3386672cbbf528dab037fd"
+      },
+      "request": {
+        "path": ".cache/ace16-insert-general-height-one-independent-next-20261027/requests/V2016-fitted.tsv",
+        "bytes": 37,
+        "sha256": "41aa9b844c58d442564148955bf68540faab63ab43d2e5a698c8419b82f54d57"
+      },
+      "requested_values": [
+        {
+          "ID": -227,
+          "binary_hex": ""
+        },
+        {
+          "ID": 228,
+          "binary_hex": ""
+        }
+      ],
+      "expected_image": {
+        "path": ".cache/ace16-insert-general-height-one-independent-next-20261027/expected/V2016-fitted.expected.bin",
+        "bytes": 421888,
+        "sha256": "3ec4debe00d2bba161895b0ce6d3d373a74cb29202b8ea4c08b7cac2249f27a4"
+      },
+      "actual_candidate": {
+        "path": ".cache/ace16-insert-general-height-one-candidates-first-20261027/V2016-fitted.accdb",
+        "bytes": 421888,
+        "sha256": "3ec4debe00d2bba161895b0ce6d3d373a74cb29202b8ea4c08b7cac2249f27a4"
+      },
+      "source_rows": 1128,
+      "final_rows": 1130,
+      "old_ROW_references_preserved": 1128,
+      "source_leaf_counts": [
+        451,
+        226,
+        451
+      ],
+      "final_leaf_counts": [
+        226,
+        226,
+        226,
+        226,
+        226
+      ],
+      "root": 91,
+      "root_tail": 95,
+      "root_children": [
+        101,
+        96,
+        98,
+        102
+      ],
+      "new_ROWS": [
+        25708,
+        25709
+      ],
+      "new_INDEX_creation_order": [
+        101,
+        102
+      ],
+      "logical_leaves": [
+        101,
+        96,
+        98,
+        102,
+        95
+      ],
+      "new_DATA_pages": [],
+      "new_bitmap_pages": [],
+      "bytes_added": 8192,
+      "map_byte_effects": [
+        {
+          "offset": 8140,
+          "before": 224,
+          "after": 128
+        },
+        {
+          "offset": 372535,
+          "before": 0,
+          "after": 12
+        }
+      ],
+      "table_counter": [
+        1128,
+        1130
+      ],
+      "historical_counter": [
+        1128,
+        1130
+      ],
+      "source_value_scope": {
+        "id": "V2016-fitted",
+        "source_rows": 1128,
+        "source_NULL_Binary": 226,
+        "source_empty_Binary": 902,
+        "source_nonempty_Binary": 0,
+        "source_DATA_pages": 5,
+        "source_index_pages": 4,
+        "root": 91,
+        "source_leaf_counts": [
+          451,
+          226,
+          451
+        ]
+      }
+    },
+    {
+      "id": "V2016-full84",
+      "source": {
+        "path": ".cache/ace16-insert-general-height-one-reference-first-20261027/V2016-full84-source.accdb",
+        "bytes": 507904,
+        "sha256": "a28df061122698ca08b37aa0a43468c90cfb72866f1205bc08fbfc88dcfd5dc1"
+      },
+      "source_getter": {
+        "path": ".cache/ace16-insert-general-height-one-reference-first-20261027/V2016-full84-before-getter.stdout",
+        "bytes": 550853,
+        "sha256": "7baa80c31e79599c6a35b0513365a0cad74951c2c86ecac2cedbab74b81adb9b"
+      },
+      "source_maps": {
+        "path": ".cache/ace16-insert-general-height-one-reference-first-20261027/V2016-full84-before-maps.stdout",
+        "bytes": 839,
+        "sha256": "9df711dc0e93e156cef8f9d22d304fe0e537fb0f8259289f88f940aaeb6163b9"
+      },
+      "request": {
+        "path": ".cache/ace16-insert-general-height-one-independent-next-20261027/requests/V2016-full84.tsv",
+        "bytes": 373,
+        "sha256": "5a8cfe15c4000ef3353124757a389635a0cab2aa6a44515367d48cc0997575ec"
+      },
+      "requested_values": [
+        {
+          "ID": -227,
+          "binary_hex": "1d3c5b7a99b8d7f61534537291b0cfee0d2c4b6a89a8c7e60524436281a0bfdefd1c3b5a7998b7d6f51433527190afceed0c2b4a6988a7c6e504234261809fbeddfc1b3a597897b6d5f4133251708faecdec0b2a"
+        },
+        {
+          "ID": 228,
+          "binary_hex": "e4032241607f9ebddcfb1a39587796b5d4f31231506f8eadcceb0a29486786a5c4e30221405f7e9dbcdbfa1938577695b4d3f211304f6e8daccbea0928476685a4c3e201203f5e7d9cbbdaf91837567594b3d2f1"
+        }
+      ],
+      "expected_image": {
+        "path": ".cache/ace16-insert-general-height-one-independent-next-20261027/expected/V2016-full84.expected.bin",
+        "bytes": 516096,
+        "sha256": "a594793de56f8e2653fca229a0858b73117c065ce3e46ea62fe557962e098ce1"
+      },
+      "actual_candidate": {
+        "path": ".cache/ace16-insert-general-height-one-candidates-first-20261027/V2016-full84.accdb",
+        "bytes": 516096,
+        "sha256": "a594793de56f8e2653fca229a0858b73117c065ce3e46ea62fe557962e098ce1"
+      },
+      "source_rows": 1128,
+      "final_rows": 1130,
+      "old_ROW_references_preserved": 1128,
+      "source_leaf_counts": [
+        451,
+        226,
+        451
+      ],
+      "final_leaf_counts": [
+        226,
+        226,
+        226,
+        226,
+        226
+      ],
+      "root": 91,
+      "root_tail": 105,
+      "root_children": [
+        124,
+        106,
+        112,
+        125
+      ],
+      "new_ROWS": [
+        31509,
+        31510
+      ],
+      "new_INDEX_creation_order": [
+        124,
+        125
+      ],
+      "logical_leaves": [
+        124,
+        106,
+        112,
+        125,
+        105
+      ],
+      "new_DATA_pages": [],
+      "new_bitmap_pages": [],
+      "bytes_added": 8192,
+      "map_byte_effects": [
+        {
+          "offset": 8143,
+          "before": 240,
+          "after": 192
+        },
+        {
+          "offset": 372538,
+          "before": 0,
+          "after": 6
+        }
+      ],
+      "table_counter": [
+        1128,
+        1130
+      ],
+      "historical_counter": [
+        1128,
+        1130
+      ],
+      "source_value_scope": {
+        "id": "V2016-full84",
+        "source_rows": 1128,
+        "source_NULL_Binary": 0,
+        "source_empty_Binary": 0,
+        "source_nonempty_Binary": 1128,
+        "source_DATA_pages": 28,
+        "source_index_pages": 4,
+        "root": 91,
+        "source_leaf_counts": [
+          451,
+          226,
+          451
+        ]
+      }
+    },
+    {
+      "id": "V2019-fitted",
+      "source": {
+        "path": ".cache/ace16-insert-general-height-one-reference-first-20261027/V2019-fitted-source.accdb",
+        "bytes": 487424,
+        "sha256": "70c0e2e1ef4a5fd5f10d2d4b56f82ce2b8497a7a9410aa0ec90599433679beb3"
+      },
+      "source_getter": {
+        "path": ".cache/ace16-insert-general-height-one-reference-first-20261027/V2019-fitted-before-getter.stdout",
+        "bytes": 172314,
+        "sha256": "2846ce430821dc7c42df1f604965b6df5f841f1e3c3703b34794077a56bc4b25"
+      },
+      "source_maps": {
+        "path": ".cache/ace16-insert-general-height-one-reference-first-20261027/V2019-fitted-before-maps.stdout",
+        "bytes": 582,
+        "sha256": "e68a28591641b1c0458a035d7914947ef7a4761fa12481b0f86c04805b3d36d6"
+      },
+      "request": {
+        "path": ".cache/ace16-insert-general-height-one-independent-next-20261027/requests/V2019-fitted.tsv",
+        "bytes": 37,
+        "sha256": "41aa9b844c58d442564148955bf68540faab63ab43d2e5a698c8419b82f54d57"
+      },
+      "requested_values": [
+        {
+          "ID": -227,
+          "binary_hex": ""
+        },
+        {
+          "ID": 228,
+          "binary_hex": ""
+        }
+      ],
+      "expected_image": {
+        "path": ".cache/ace16-insert-general-height-one-independent-next-20261027/expected/V2019-fitted.expected.bin",
+        "bytes": 495616,
+        "sha256": "fdce30f159dbe018fe797a47963c77903ec461a5d1a657bd1febb5a5a7ef1ac1"
+      },
+      "actual_candidate": {
+        "path": ".cache/ace16-insert-general-height-one-candidates-first-20261027/V2019-fitted.accdb",
+        "bytes": 495616,
+        "sha256": "fdce30f159dbe018fe797a47963c77903ec461a5d1a657bd1febb5a5a7ef1ac1"
+      },
+      "source_rows": 1128,
+      "final_rows": 1130,
+      "old_ROW_references_preserved": 1128,
+      "source_leaf_counts": [
+        451,
+        226,
+        451
+      ],
+      "final_leaf_counts": [
+        226,
+        226,
+        226,
+        226,
+        226
+      ],
+      "root": 108,
+      "root_tail": 113,
+      "root_children": [
+        119,
+        114,
+        116,
+        120
+      ],
+      "new_ROWS": [
+        30316,
+        30317
+      ],
+      "new_INDEX_creation_order": [
+        119,
+        120
+      ],
+      "logical_leaves": [
+        119,
+        114,
+        116,
+        120,
+        113
+      ],
+      "new_DATA_pages": [],
+      "new_bitmap_pages": [],
+      "bytes_added": 8192,
+      "map_byte_effects": [
+        {
+          "offset": 8142,
+          "before": 128,
+          "after": 0
+        },
+        {
+          "offset": 8143,
+          "before": 255,
+          "after": 254
+        },
+        {
+          "offset": 442167,
+          "before": 1,
+          "after": 25
+        }
+      ],
+      "table_counter": [
+        1128,
+        1130
+      ],
+      "historical_counter": [
+        1128,
+        1130
+      ],
+      "source_value_scope": {
+        "id": "V2019-fitted",
+        "source_rows": 1128,
+        "source_NULL_Binary": 226,
+        "source_empty_Binary": 902,
+        "source_nonempty_Binary": 0,
+        "source_DATA_pages": 5,
+        "source_index_pages": 4,
+        "root": 108,
+        "source_leaf_counts": [
+          451,
+          226,
+          451
+        ]
+      }
+    },
+    {
+      "id": "V2019-full84",
+      "source": {
+        "path": ".cache/ace16-insert-general-height-one-reference-first-20261027/V2019-full84-source.accdb",
+        "bytes": 581632,
+        "sha256": "9141e4dad794e8f40f40e58a23daa1532ecfb8297a7bdce87f85bef7831b5b6e"
+      },
+      "source_getter": {
+        "path": ".cache/ace16-insert-general-height-one-reference-first-20261027/V2019-full84-before-getter.stdout",
+        "bytes": 551142,
+        "sha256": "c0bc95885f8f45c48561bd0e68ca7a37c34c7f1438ffd443aecad90ac3effced"
+      },
+      "source_maps": {
+        "path": ".cache/ace16-insert-general-height-one-reference-first-20261027/V2019-full84-before-maps.stdout",
+        "bytes": 1087,
+        "sha256": "a34e671c0032a0fbfef7ad47448bc7b2b6f194588795844cabcf74a2f0df5feb"
+      },
+      "request": {
+        "path": ".cache/ace16-insert-general-height-one-independent-next-20261027/requests/V2019-full84.tsv",
+        "bytes": 373,
+        "sha256": "5a8cfe15c4000ef3353124757a389635a0cab2aa6a44515367d48cc0997575ec"
+      },
+      "requested_values": [
+        {
+          "ID": -227,
+          "binary_hex": "1d3c5b7a99b8d7f61534537291b0cfee0d2c4b6a89a8c7e60524436281a0bfdefd1c3b5a7998b7d6f51433527190afceed0c2b4a6988a7c6e504234261809fbeddfc1b3a597897b6d5f4133251708faecdec0b2a"
+        },
+        {
+          "ID": 228,
+          "binary_hex": "e4032241607f9ebddcfb1a39587796b5d4f31231506f8eadcceb0a29486786a5c4e30221405f7e9dbcdbfa1938577695b4d3f211304f6e8daccbea0928476685a4c3e201203f5e7d9cbbdaf91837567594b3d2f1"
+        }
+      ],
+      "expected_image": {
+        "path": ".cache/ace16-insert-general-height-one-independent-next-20261027/expected/V2019-full84.expected.bin",
+        "bytes": 589824,
+        "sha256": "82cfe99a650269b7582483ec9d31f579cc84027f250232985df5d01efef8ff01"
+      },
+      "actual_candidate": {
+        "path": ".cache/ace16-insert-general-height-one-candidates-first-20261027/V2019-full84.accdb",
+        "bytes": 589824,
+        "sha256": "82cfe99a650269b7582483ec9d31f579cc84027f250232985df5d01efef8ff01"
+      },
+      "source_rows": 1128,
+      "final_rows": 1130,
+      "old_ROW_references_preserved": 1128,
+      "source_leaf_counts": [
+        451,
+        226,
+        451
+      ],
+      "final_leaf_counts": [
+        226,
+        226,
+        226,
+        226,
+        226
+      ],
+      "root": 108,
+      "root_tail": 123,
+      "root_children": [
+        142,
+        124,
+        130,
+        143
+      ],
+      "new_ROWS": [
+        36117,
+        36118
+      ],
+      "new_INDEX_creation_order": [
+        142,
+        143
+      ],
+      "logical_leaves": [
+        142,
+        124,
+        130,
+        143,
+        123
+      ],
+      "new_DATA_pages": [],
+      "new_bitmap_pages": [],
+      "bytes_added": 8192,
+      "map_byte_effects": [
+        {
+          "offset": 8145,
+          "before": 192,
+          "after": 0
+        },
+        {
+          "offset": 442170,
+          "before": 0,
+          "after": 12
+        }
+      ],
+      "table_counter": [
+        1128,
+        1130
+      ],
+      "historical_counter": [
+        1128,
+        1130
+      ],
+      "source_value_scope": {
+        "id": "V2019-full84",
+        "source_rows": 1128,
+        "source_NULL_Binary": 0,
+        "source_empty_Binary": 0,
+        "source_nonempty_Binary": 1128,
+        "source_DATA_pages": 28,
+        "source_index_pages": 4,
+        "root": 108,
+        "source_leaf_counts": [
+          451,
+          226,
+          451
+        ]
+      }
+    }
+  ],
+  "totals": {
+    "source_rows_and_old_ROW_references": 4512,
+    "final_typed_rows_and_primary_leaf_key_ROW_pairs": 4520,
+    "new_rows": 8,
+    "final_root_bound_entries": 16,
+    "final_graph_entries_including_root_bounds": 4536,
+    "source_DATA_page_observations": 66,
+    "final_DATA_page_observations": 66,
+    "source_index_page_observations": 16,
+    "final_index_page_observations": 24,
+    "new_INDEX_pages": 8,
+    "new_DATA_pages": 0,
+    "new_bitmap_pages": 0,
+    "bytes_added": 32768,
+    "changed_map_bytes": 9,
+    "global_free_bits_cleared": 8,
+    "index_owned_bits_set": 8,
+    "ordinary_owned_or_hint_map_changes": 0,
+    "table_counter_cells": 4,
+    "historical_counter_cells": 4,
+    "counter_delta_per_cell": 2,
+    "new_empty_Binary_values": 4,
+    "new_84_byte_Binary_values": 4,
+    "new_NULL_Binary_values": 0,
+    "preserved_old_NULL_Binary_values": 452,
+    "preserved_old_empty_Binary_values": 1804,
+    "preserved_old_84_byte_Binary_values": 2256,
+    "zero_fresh_leaf_unused_bytes": 12656,
+    "retained_outer_leaf_inactive_bytes": 14456,
+    "retained_root_inactive_bytes": 14256
+  },
+  "public_reference_diagnostics": {
+    "scope": "Compared only after all source/request engineering images and freeze were written; never an oracle input",
+    "saved_comparison": {
+      "path": ".cache/ace16-insert-general-height-one-independent-next-20261027/reference-diagnostics-first.json",
+      "bytes": 6249,
+      "sha256": "e08774eb9577438b0979f0a6a2261e7db253ffdd270adf1a20300ccf206df547"
+    },
+    "per_case_different_bytes": [
+      9067,
+      9126,
+      9067,
+      9125
+    ],
+    "total_different_bytes": 36385,
+    "outside_affected_index_pages": 0,
+    "policy": "Public retained outer prefix0 and scratch differ from native retained prefix1/source residue and fresh-zero unused bytes; all original ROWs, semantic keys/values, map effects and counters agree."
+  },
+  "saved_verification": {
+    "private_actual_first": {
+      "path": ".cache/ace16-insert-general-height-one-saved-proof-next-20261027/actual-first.json",
+      "bytes": 2748,
+      "sha256": "0f5c35e466bc4c455214aba96b45289574c4170b215b9c3c7f3fd7f1d37efa63"
+    },
+    "maintained_default_first": {
+      "path": ".cache/ace16-insert-general-height-one-saved-proof-next-20261027/public-first.json",
+      "bytes": 2748,
+      "sha256": "0f5c35e466bc4c455214aba96b45289574c4170b215b9c3c7f3fd7f1d37efa63"
+    },
+    "maintained_Git_first": {
+      "path": ".cache/ace16-insert-general-height-one-saved-proof-next-20261027/public-git-first.json",
+      "bytes": 2802,
+      "sha256": "b437635b80613fc3522756ee089da51783b8a26d9bc39f6e7d006e4d13086f5c"
+    },
+    "unavailable_first": {
+      "path": ".cache/ace16-insert-general-height-one-saved-proof-next-20261027/public-unavailable-first.json",
+      "bytes": 211,
+      "sha256": "241dfd8a7e3095ae469407916c27964c3e792186bb984e1a42a01a2f4be3fc13"
+    },
+    "unavailable_exit_code": 2,
+    "pin_occurrences": 4271,
+    "distinct_paths": 1166,
+    "compiled_Git_objects": 756,
+    "receipt_Git_objects": 1,
+    "optional_metadata_child_processes": 1,
+    "new_native_JVM_Cargo_calls": 0
+  },
+  "history": {
+    "unit_compile_first": "Ambiguous integer Cell in test callback counter; no runtime/API executed. Explicit usize only.",
+    "unit_runtime_first": "77 passed; one authored i32 intermediate multiplication overflow before source construction. Computed same mathematical keys in i64 with checked i32 conversion; all78 then passed.",
+    "source_and_goldens_changed_to_match_producer": false,
+    "private_saved_preflight_first": "Root-depth source-copy substitution also altered the expected public-depth literal; retained first assertion/trace, narrowed only private ROOT assignment. Actual full saved proof first passed.",
+    "private_saved_preflight_first_source": {
+      "path": ".cache/ace16-insert-general-height-one-saved-proof-next-20261027/before-private-root-derivative-correction/verify.py",
+      "bytes": 18348,
+      "sha256": "9a2f9cee9c4ae86c508dc44ff0404315eeeb91eae2863d1bfaf4bca69c290c4d"
+    },
+    "private_saved_preflight_first_result": {
+      "path": ".cache/ace16-insert-general-height-one-saved-proof-next-20261027/before-private-root-derivative-correction/preflight-first.json",
+      "bytes": 77,
+      "sha256": "444ad1235e5beee748d1229095691c8c943e0378867ae3c00299d0d3f040798f"
+    },
+    "private_saved_preflight_first_trace": {
+      "path": ".cache/ace16-insert-general-height-one-saved-proof-next-20261027/before-private-root-derivative-correction/preflight-first.traceback",
+      "bytes": 996,
+      "sha256": "30472b451eee81ff440c38d07bb24cc117c92c9756070925970491e23b3fd8e3"
+    },
+    "private_saved_preflight_retry": {
+      "path": ".cache/ace16-insert-general-height-one-saved-proof-next-20261027/preflight-retry.json",
+      "bytes": 301,
+      "sha256": "e5457bcfb0b6ce33a62706e96b22836ada162089c6b82931a04b80c60b0a8af8"
+    },
+    "getter_controller_original": "Completed false after four successful V2016 calls; copied MAX_PROCESSES4 stopped before fifth child. Original four-case before/after pins unchanged; no reruns.",
+    "stream_limit": "Original declared16MiB but actual8MiB stricter; no stream hit. Continuation freezes4processes/8MiB/30s against its exact4-command inventory."
+  },
+  "engineering_validation": {
+    "archive": {
+      "path": ".cache/ace16-insert-general-height-one-verification-20261028/manifest.json",
+      "bytes": 6598,
+      "sha256": "5cc7ad436059c0c154ba8237a096059441e872fc7998f3815d69a71ce2aee4a7"
+    },
+    "focused_final": "78 passed, separately strengthened one parent-capacity control passed; overlapping with broader unit suite",
+    "engine_unit": "373 passed,1 ignored",
+    "public_contract": "4 passed",
+    "docs": "3 passed",
+    "strict_minimal_rustdoc_format": "Final checks passed; first format-only failure retained in archive",
+    "distinct_runtime_sum_claim": false,
+    "qualification_archive": {
+      "path": ".cache/ace16-insert-general-height-one-verification-20261028/qualification-manifest.json",
+      "bytes": 1008,
+      "sha256": "303fc3a80df5331b155aa242677f82fd8555ec3c5ac114455c6ea66d0192e3fa"
+    }
+  },
+  "maintained_sources": {
+    "model.py": {
+      "path": "docs/testing/ace16_insert_general_height_one/model.py",
+      "bytes": 13288,
+      "sha256": "af267fcfe0a11cfc38737969699e9151620c304b098675225d380edebae05052"
+    },
+    "reference.py": {
+      "path": "docs/testing/ace16_insert_general_height_one/reference.py",
+      "bytes": 12088,
+      "sha256": "b0385166cec0eb0a0eb02016f1381c82eadeaa2ca3e7a16740d781188b3d902e"
+    },
+    "verify.py": {
+      "path": "docs/testing/ace16_insert_general_height_one/verify.py",
+      "bytes": 21182,
+      "sha256": "12c638130ee7f2c08e731cf6d42b163d07b19f6904efe1e64fd42783f45c4f7f"
+    },
+    "README.md": {
+      "path": "docs/testing/ace16_insert_general_height_one/README.md",
+      "bytes": 5544,
+      "sha256": "313e7ab635b8bfe1c14db8c7f3089c635e3cbf1f078c422413e07831303ad754"
+    }
+  },
+  "chronology": "Source/request-only four-image freeze preceded committed producer build and actual candidate calls; implementation/literal engineering tests already existed. Public after-image byte comparison was diagnostic after freeze."
+}

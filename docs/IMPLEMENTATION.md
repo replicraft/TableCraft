@@ -57,9 +57,14 @@ pass after proving fitting changes on the same large sources.
 All 25 independent Jackcess reference calls passed on their first attempts:
 four qualified three-leaf sources grow from 1,128 to 1,130 rows, splitting both
 outer leaves into five leaves. Each adds two INDEX pages and no DATA or bitmap.
-Four source/request-only engineering images are frozen; committed-producer and
-fresh-getter qualification remain pending. Public framing is separate from the
-engineering preservation policy and does not supply its expected images.
+Four source/request-only engineering images were frozen before the committed
+producer build. All four candidates match those complete images, and all eight
+distinct fresh getter/map commands pass. The getter controller stopped after
+four successful calls because its process cap was four; a separately frozen
+continuation ran only the four unattempted calls. Both reports remain preserved.
+The [evidence record](testing/results/ace16-insert-general-height-one-native-2026-10-28.json)
+keeps that tooling failure separate from database results. Public framing does
+not supply the engineering expected images.
 Recursive parent growth, deeper trees, broader key/record profiles, required data
 macros and normal native saves remain unfinished; native Access comparisons
 remain deferred.
