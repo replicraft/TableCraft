@@ -241,11 +241,7 @@ fn prove_index(
         0
     };
     let rendered = if source_leaf {
-        if empty {
-            Some((copied(original, reader)?, old_active))
-        } else {
-            render(original, entries, reader)?
-        }
+        render(original, entries, reader)?
     } else {
         None
     };

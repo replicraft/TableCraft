@@ -28,7 +28,7 @@ still rejects the value through normal constraints. Missing declarations are not
 inferred as native defaults.
 
 A unique, required, ascending Int32 primary remains mandatory. Qualified
-[additional integral/Currency physical indexes](ACE16_MULTIPLE_INDEX_INSERTS.md)
+[additional scalar physical indexes](ACE16_MULTIPLE_INDEX_INSERTS.md)
 now compose through the same INSERT service; logical aliases share their actual
 physical owner. An original root leaf
 uses the established [two-fitting-halves path](ACE16_INSERT_ROOT_SPLITS.md)

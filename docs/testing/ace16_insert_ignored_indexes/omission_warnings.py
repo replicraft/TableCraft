@@ -28,5 +28,3 @@ def check_command(command, case, stderr):
         assert not stderr
         return 0
     return check(stderr, sum(row[1] is None for row in rows), database)
-
-

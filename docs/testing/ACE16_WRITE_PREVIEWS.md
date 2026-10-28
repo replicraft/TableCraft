@@ -795,8 +795,9 @@ discrepancies and expressions-disabled reference writes remain separate evidence
 The separate [request-bound INSERT preview](ACE16_INSERT_PREVIEW.md) constructs
 qualified ordinary scalar/Short Text/Binary/Decimal rows and maintains every
 admitted physical owner, including logical aliases. A required Int32 primary
-remains mandatory. [Additional single-key integral/Currency indexes](ACE16_MULTIPLE_INDEX_INSERTS.md)
-now retain nullable keys, direction, constraints and distinct-key counter deltas.
+remains mandatory. [Additional single-key scalar indexes](ACE16_MULTIPLE_INDEX_INSERTS.md)
+now retain qualified Boolean/IEEE/legacy DATE and integral/Currency keys,
+direction, constraints and distinct-key counter deltas.
 DATA-first allocation and recursive index splits use one cursor and independent
 complete-image proof. The [quoted TSV example input](ACE16_INSERT_INPUT.md)
 supplies all values explicitly. Qualified non-Required secondary Ignore-NULL

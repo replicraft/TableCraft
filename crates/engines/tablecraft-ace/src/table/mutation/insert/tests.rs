@@ -12,5 +12,6 @@ pub(in crate::table::mutation::insert) mod multiple_indexes;
 mod multiple_numeric_indexes;
 mod ordinary_rows;
 mod recursive_tree;
+mod secondary_scalar_indexes;
 mod split;
 mod values;

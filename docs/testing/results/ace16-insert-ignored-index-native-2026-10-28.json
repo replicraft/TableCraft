@@ -1316,8 +1316,8 @@
       },
       {
         "path": "docs/testing/ace16_insert_ignored_indexes/omission_warnings.py",
-        "bytes": 1329,
-        "sha256": "856de5edba55af80f060c54c85a562d7ff14dabb47debc9dfe2aeb931243a1bf"
+        "bytes": 1327,
+        "sha256": "8a435b02a22e5376c0324b6df0ec022281f09bdc293ba4c21ba5cd314a5072b4"
       },
       {
         "path": "docs/testing/ace16_insert_ignored_indexes/reference.py",
