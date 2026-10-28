@@ -1,0 +1,41 @@
+{
+  "operation": "Build the INSERT engineering example from an isolated committed-source archive",
+  "commit": "876a888924ee8e05f0c2e763db58695665c669a4",
+  "isolated_source": ".cache/ace16-insert-multiple-index-build-20261028/source",
+  "source_archive": {
+    "path": ".cache/ace16-insert-multiple-index-build-20261028/committed-source.tar",
+    "bytes": 89231360,
+    "sha256": "51571ffd119b5b8f91987dbd0210faa459d8cbf396311e0fcd380c52aed02a0f"
+  },
+  "expected_images_frozen_before_build": {
+    "path": ".cache/ace16-insert-multiple-index-expected-second-20261028/freeze.json",
+    "sha256": "3035a90dd5cf1b4033fd6b9222f3eb0e9613edce51f901e68a6c11829c72bceb"
+  },
+  "command": [
+    "cargo",
+    "build",
+    "-p",
+    "tablecraft-ace",
+    "--features",
+    "ace16-write-preview",
+    "--example",
+    "preview_ace16_insert",
+    "--locked",
+    "--offline",
+    "-j2",
+    "--target-dir",
+    "<repository>/target"
+  ],
+  "shared_cargo_cache": true,
+  "status": 0,
+  "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)",
+  "cargo": "cargo 1.99.0 (5f94df478 2026-08-27)",
+  "artifact": {
+    "path": ".cache/tablecraft-bin/ace16-insert-multiple-index-20261028",
+    "bytes": 18493192,
+    "sha256": "77d86f0fb100529e81930ba130ff16769cb0efa132fbf43e9f59b19855b462aa"
+  },
+  "candidate_processes": 0,
+  "independent_reader_processes": 0,
+  "native_Access_qualification": false
+}
