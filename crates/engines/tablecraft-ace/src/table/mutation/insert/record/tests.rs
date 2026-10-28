@@ -153,7 +153,6 @@ fn complete_arity_exact_carriers_and_declared_binary_width_are_required() {
         vec![],
         vec![Value::Int32(1)],
         vec![Value::Int32(1), Value::Null, Value::Null],
-        vec![Value::Null, Value::Null],
         vec![Value::Int64(1), Value::Null],
         vec![Value::Currency(Currency::from_scaled(1)), Value::Null],
         vec![Value::Int32(1), Value::Text(String::new())],
@@ -231,3 +230,5 @@ fn record_allocation_work_and_late_cancellation_fail_without_a_partial_result() 
     assert_eq!(row.len(), 268);
     assert_eq!(decoded(&bytes, &schema, &row), values);
 }
+
+mod ordinary;

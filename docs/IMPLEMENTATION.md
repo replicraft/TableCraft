@@ -34,6 +34,35 @@ targets; their corrected focused reruns pass. The original failures are retained
 and the corrections add positive coverage while preserving actual refusal/error
 controls. Native Microsoft Access comparisons were not run for this refactor.
 
+## Broader ordinary scalar-row INSERT
+
+The existing [ordinary INSERT preview](testing/ACE16_ORDINARY_INSERTS.md) now
+constructs explicit Byte/Int16/Int32/Int64/Currency/Single/Double/legacy Date/GUID,
+Boolean masks and multiple Short Text/Binary fields. It selects the Int32 primary
+from actual index metadata rather than the first Int32 companion. Current physical
+column coverage, disjoint fixed spans, complete variable ordinals, exact carriers
+and declared widths remain required. All-fixed rows omit the variable footer;
+NULL, empty payloads and Boolean value bits retain distinct semantics. The audit
+independently reconstructs preferred wires and the complete record before the
+existing DATA/index/map/counter proof.
+
+Actual empty Text now requires an explicit AllowZeroLength declaration for that
+field; false remains a field violation, and absence refuses coverage without
+changing shared read/update defaults. The example uses shared exact scalar/bit/GUID
+parsers in its unchanged quoted TSV protocol. Default/generated values, extra
+physical indexes, Decimal/LVAL/extended-date records, data macros and normal saves
+remain outside this profile.
+
+The complete focused INSERT batch passes 108 functions: old 88 plus six builder,
+four record-proof and ten end-to-end functions. An initial 97-pass/one-fixture
+parser failure is preserved and corrected only at the test boundary; production
+library/example compilation and eight example functions pass. The full ACE unit
+batch passes 403 functions with one existing ignored test; the 108-function subset
+is included. Strict all-target/all-feature Clippy, four public preview contracts,
+three compile-fail doctests, minimal compilation, strict rustdoc and formatting
+pass. New authentic wider-schema source/reference and candidate qualification
+have not run; the historical two-field evidence below remains separate.
+
 ## Recursive primary INSERT continuation
 
 The optional [recursive INSERT continuation](testing/ACE16_INSERT_RECURSIVE.md)

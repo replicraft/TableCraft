@@ -5,7 +5,7 @@ mod records;
 #[cfg(test)]
 mod tests;
 
-use super::{RowInsert, Staged};
+use super::{RowInsert, Staged, policies, primary_column};
 use crate::{
     EditError, InspectError, NativeImage,
     format::{page::PAGE_BYTES, reader::Reader},
@@ -84,7 +84,9 @@ pub(super) fn prove(
         return Err(InspectError::StructureLimit.into());
     }
     let schema = checked.schema();
-    let id = records::qualify(schema, budget, cancelled)?;
+    records::qualify(schema, budget, cancelled)?;
+    let id = primary_column::resolve(&checked, budget, cancelled)?;
+    policies::require_text_declarations(image, schema, requests, budget, cancelled)?;
     let metadata = Metadata::capture(image, schema, checked.indexes(), id, budget, cancelled)?;
 
     let mut source = image.reader();

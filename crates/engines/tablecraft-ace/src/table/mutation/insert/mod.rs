@@ -3,6 +3,8 @@ mod audit;
 mod compose;
 mod counters;
 mod placement;
+mod policies;
+mod primary_column;
 mod record;
 #[cfg(test)]
 mod tests;
@@ -11,7 +13,6 @@ use super::{gates, preview};
 use crate::{
     Ace16WritePreview, EditError, IndexCheckStatus, InspectError, NativeImage, TableCheck,
     WriteBlocker, check_table, check_table_constraints,
-    format::data_type::INT32,
     header::check,
     inspect_catalog,
     limits::MAX_LIVE_ROWS,
@@ -51,12 +52,14 @@ struct Staged {
 impl NativeImage {
     /// Construct a separate, non-journalable ACE 16 INSERT engineering candidate.
     ///
-    /// The current profile constructs ordinary Int32/ShortBinary records with
-    /// explicit values and maintains one required unique ascending Int32 primary
-    /// index, including logical aliases. Qualified leaf and branch trees admit
-    /// recursive splits and one retained-root height increase per operation,
-    /// within the existing depth and resource limits. Defaults, generated fields,
-    /// additional indexes and unsupported framing refuse. DATA and index
+    /// The current profile constructs complete explicit ordinary fixed-scalar
+    /// and Short Text/Binary records. Boolean uses its native value mask; other
+    /// fixed fields retain exact carriers and nullable presence bits. The sole
+    /// required unique ascending Int32 primary is selected from index metadata,
+    /// including logical aliases, independently of column order. Leaf and branch
+    /// trees admit recursive splits and one retained-root height increase per
+    /// operation, within existing depth and resource limits. Defaults, generated
+    /// fields, additional indexes and unsupported framing refuse. DATA and index
     /// growth share one qualified EOF cursor and native map allocator.
     ///
     /// This does not enable normal saves or qualify required data macros or
@@ -105,15 +108,6 @@ fn preflight(
     Ok(structural)
 }
 
-fn id_column(checked: &TableCheck) -> Result<usize, EditError> {
-    checked
-        .schema()
-        .columns()
-        .iter()
-        .position(|column| column.native_type() == INT32)
-        .ok_or(EditError::Unsupported(WriteBlocker::Column))
-}
-
 fn prepare(
     image: &NativeImage,
     structural: &TableCheck,
@@ -121,8 +115,9 @@ fn prepare(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Staged, EditError> {
-    let id = id_column(structural)?;
+    let id = primary_column::resolve(structural, budget, cancelled)?;
     let profile = record::Profile::bind(structural.schema(), budget, cancelled)?;
+    policies::require_text_declarations(image, structural.schema(), requests, budget, cancelled)?;
 
     budget
         .charge_allocation(requests.len() as u64, size_of::<Vec<u8>>() as u64)

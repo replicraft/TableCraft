@@ -1,4 +1,6 @@
 //! Bounded, quoted TSV rows captured before any database is opened.
+use super::fixed_values::{self, Kind};
+use clap::ValueEnum;
 use csv::{ByteRecord, ReaderBuilder};
 use std::{error::Error, fs::File, path::Path};
 use tablecraft_ace::RowInsert;
@@ -118,14 +120,6 @@ fn value(
     }
     match kind {
         b"null" if data.is_empty() => Ok(Value::Null),
-        b"int32" => {
-            let text = std::str::from_utf8(data)
-                .map_err(|_| format!("Invalid insert request {number}: Int32 is not UTF-8"))?;
-            let integer = text
-                .parse::<i32>()
-                .map_err(|_| format!("Invalid insert request {number}: invalid Int32"))?;
-            Ok(Value::Int32(integer))
-        }
         b"text" => {
             let text = std::str::from_utf8(data)
                 .map_err(|_| format!("Invalid insert request {number}: Text is not UTF-8"))?;
@@ -151,7 +145,24 @@ fn value(
             }
             Ok(Value::Binary(bytes))
         }
-        _ => Err(format!("Invalid insert request {number}: invalid kind or payload").into()),
+        _ => {
+            let name = std::str::from_utf8(kind)
+                .map_err(|_| format!("Invalid insert request {number}: kind is not UTF-8"))?;
+            let fixed = Kind::from_str(name, false)
+                .map_err(|_| format!("Invalid insert request {number}: invalid kind"))?;
+            // NULL always uses its explicit empty kind/data pair. Decimal
+            // construction belongs to a separately qualified record profile.
+            if matches!(fixed, Kind::Decimal) || data == b"null" {
+                return Err(
+                    format!("Invalid insert request {number}: invalid fixed payload").into(),
+                );
+            }
+            let text = std::str::from_utf8(data)
+                .map_err(|_| format!("Invalid insert request {number}: scalar is not UTF-8"))?;
+            fixed_values::parse(fixed, text).map_err(|_| {
+                format!("Invalid insert request {number}: invalid exact scalar").into()
+            })
+        }
     }
 }
 

@@ -1,10 +1,15 @@
-//! Reconstruct new ordinary records from original field geometry and values.
+//! Reconstruct complete new rows independently from schema and explicit values.
+mod fixed;
+mod layout;
+mod payload;
+#[cfg(test)]
+mod tests;
+
 use super::{Row, reserve};
 use crate::{
     EditError, InspectError, TableSchema, WriteBlocker,
     format::{
-        data_type::{INT32, MAX_SHORT_BINARY_BYTES, SHORT_BINARY},
-        layout::{FIXED_FLAG, UPDATABLE_FLAG},
+        data_type::{BOOLEAN, INT32},
         page::PAGE_BYTES,
         reader::Reader,
         row::{
@@ -12,69 +17,18 @@ use crate::{
             slot_offset,
         },
     },
-    header::check,
-    table::{mutation::insert::RowInsert, record_layout},
+    table::{mutation::insert::RowInsert, record, record_layout},
 };
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
-use tablecraft_schema::ScalarType;
-
-const COLUMN_COUNT: usize = 2;
-const VARIABLE_COUNT: usize = 1;
 
 pub(super) fn qualify(
     schema: &TableSchema,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<usize, EditError> {
-    check(budget, cancelled)?;
-    if schema.columns().len() != COLUMN_COUNT
-        || schema.layout.max_columns != COLUMN_COUNT
-        || schema.layout.variable_slots != VARIABLE_COUNT
-    {
-        return Err(EditError::Unsupported(WriteBlocker::RowLayout));
-    }
-    let id = match (
-        schema.columns()[0].native_type(),
-        schema.columns()[1].native_type(),
-    ) {
-        (INT32, SHORT_BINARY) => 0,
-        (SHORT_BINARY, INT32) => 1,
-        _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
-    };
-    let fixed = &schema.columns()[id];
-    let binary = &schema.columns()[1 - id];
-    for (position, field) in schema.columns().iter().enumerate() {
-        check(budget, cancelled)?;
-        if field.number() != position {
-            return Err(EditError::Unsupported(WriteBlocker::RowLayout));
-        }
-    }
-
-    if !fixed.fixed()
-        || fixed.scalar_type() != Some(ScalarType::Int32)
-        || fixed.storage_length() != size_of::<i32>()
-        || fixed.flags() != (FIXED_FLAG | UPDATABLE_FLAG)
-        || fixed.extended_flags() != 0
-        || fixed.complex_type_id().is_some()
-        || binary.fixed()
-        || binary.flags() != UPDATABLE_FLAG
-        || binary.extended_flags() != 0
-        || binary.complex_type_id().is_some()
-        || binary.storage_length() == 0
-        || binary.storage_length() > MAX_SHORT_BINARY_BYTES
-    {
-        return Err(EditError::Unsupported(WriteBlocker::Column));
-    }
-    let fixed_end = COLUMN_COUNT_BYTES
-        .checked_add(fixed.field.offset)
-        .and_then(|offset| offset.checked_add(size_of::<i32>()))
-        .ok_or(InspectError::StructureLimit)?;
-    if binary.field.variable != 0 || schema.layout.fixed_end != fixed_end {
-        return Err(EditError::Unsupported(WriteBlocker::RowLayout));
-    }
-
-    Ok(id)
+) -> Result<(), EditError> {
+    layout::capture(schema, budget, cancelled)?;
+    Ok(())
 }
 
 pub(super) fn derive(
@@ -83,6 +37,13 @@ pub(super) fn derive(
     requests: &[RowInsert],
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<Vec<Row>, EditError> {
+    let shape = layout::capture(schema, reader.budget, reader.cancelled)?;
+
+    let primary = schema.columns().get(id).ok_or(EditError::Preservation)?;
+    if primary.native_type() != INT32 || !primary.fixed() {
+        return Err(EditError::Preservation);
+    }
+
     let mut rows = Vec::new();
     reserve(&mut rows, requests.len(), reader)?;
     for request in requests {
@@ -91,32 +52,43 @@ pub(super) fn derive(
             .budget
             .charge(tablecraft_core::limits::Resource::Rows, 1)
             .map_err(InspectError::from)?;
-        if request.values().len() != COLUMN_COUNT {
+        if request.values().len() != schema.columns().len() {
             return Err(EditError::Unsupported(WriteBlocker::Column));
         }
         let value = match request.values()[id] {
             Value::Int32(value) => value,
             _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
         };
-        let (payload, present) = match &request.values()[1 - id] {
-            Value::Null => (&[][..], false),
-            Value::Binary(bytes) if bytes.len() <= schema.columns()[1 - id].storage_length() => {
-                (bytes.as_slice(), true)
-            }
-            _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
+
+        let mut payloads = Vec::new();
+        reserve(&mut payloads, shape.variables.len(), reader)?;
+        let mut end = shape.fixed_end;
+        for position in &shape.variables {
+            reader.tick()?;
+            let bytes = payload::encode(
+                &schema.columns()[*position],
+                &request.values()[*position],
+                reader.budget,
+                reader.cancelled,
+            )?;
+            end = end
+                .checked_add(bytes.len())
+                .ok_or(InspectError::StructureLimit)?;
+            payloads.push(bytes);
+        }
+
+        let variable_count = shape.variables.len();
+        let footer = if variable_count == 0 {
+            0
+        } else {
+            VARIABLE_OFFSET_BYTES
+                .checked_mul(variable_count + 1)
+                .and_then(|bytes| bytes.checked_add(VARIABLE_COUNT_BYTES))
+                .ok_or(InspectError::StructureLimit)?
         };
-        let start = schema.layout.fixed_end;
-        let end = start
-            .checked_add(payload.len())
-            .ok_or(InspectError::StructureLimit)?;
-        let mask_bytes = schema.layout.max_columns.div_ceil(MASK_BITS);
-        let footer = VARIABLE_OFFSET_BYTES
-            .checked_mul(VARIABLE_COUNT + 1)
-            .and_then(|length| length.checked_add(VARIABLE_COUNT_BYTES))
-            .and_then(|length| length.checked_add(mask_bytes))
-            .ok_or(InspectError::StructureLimit)?;
         let length = end
             .checked_add(footer)
+            .and_then(|bytes| bytes.checked_add(shape.mask_bytes))
             .ok_or(InspectError::StructureLimit)?;
         if length
             .checked_add(SLOT_BYTES)
@@ -129,29 +101,62 @@ pub(super) fn derive(
         reserve(&mut bytes, length, reader)?;
         reader.work(length)?;
         bytes.resize(length, 0);
-        bytes[..COLUMN_COUNT_BYTES].copy_from_slice(&(COLUMN_COUNT as u16).to_le_bytes());
-        let fixed_start = COLUMN_COUNT_BYTES + schema.columns()[id].field.offset;
-        bytes[fixed_start..fixed_start + size_of::<i32>()].copy_from_slice(&value.to_le_bytes());
-        bytes[start..end].copy_from_slice(payload);
-
-        let mask = length - mask_bytes;
-        let count = mask - VARIABLE_COUNT_BYTES;
-        let first_offset = count - VARIABLE_OFFSET_BYTES;
-        let end_offset = first_offset - VARIABLE_OFFSET_BYTES;
-        let start = u16::try_from(start).map_err(|_| InspectError::StructureLimit)?;
-        let end = u16::try_from(end).map_err(|_| InspectError::StructureLimit)?;
-        bytes[first_offset..count].copy_from_slice(&start.to_le_bytes());
-        bytes[end_offset..first_offset].copy_from_slice(&end.to_le_bytes());
-        bytes[count..mask].copy_from_slice(&(VARIABLE_COUNT as u16).to_le_bytes());
-        let fixed_number = schema.columns()[id].number();
-        bytes[mask + fixed_number / MASK_BITS] |= 1 << (fixed_number % MASK_BITS);
-        if present {
-            let number = schema.columns()[1 - id].number();
-            bytes[mask + number / MASK_BITS] |= 1 << (number % MASK_BITS);
+        let count =
+            u16::try_from(schema.layout.max_columns).map_err(|_| InspectError::StructureLimit)?;
+        bytes[..COLUMN_COUNT_BYTES].copy_from_slice(&count.to_le_bytes());
+        let mask = length - shape.mask_bytes;
+        for (position, column) in schema.columns().iter().enumerate() {
+            reader.tick()?;
+            let present = if column.fixed() {
+                let start = if column.native_type() == BOOLEAN {
+                    0
+                } else {
+                    COLUMN_COUNT_BYTES
+                        .checked_add(column.field.offset)
+                        .ok_or(InspectError::StructureLimit)?
+                };
+                let stop = start
+                    .checked_add(column.storage_length())
+                    .ok_or(InspectError::StructureLimit)?;
+                let target = bytes
+                    .get_mut(start..stop)
+                    .filter(|_| stop <= shape.fixed_end)
+                    .ok_or(EditError::Preservation)?;
+                fixed::write(column, &request.values()[position], target)?
+            } else {
+                !matches!(request.values()[position], Value::Null)
+            };
+            if present {
+                let number = column.number();
+                bytes[mask + number / MASK_BITS] |= 1 << (number % MASK_BITS);
+            }
         }
-        // The reader is a secondary structural check, never the requested-wire
-        // constructor or a source of lengths supplied by the builder.
+
+        if variable_count != 0 {
+            let count_at = mask - VARIABLE_COUNT_BYTES;
+            let count = u16::try_from(variable_count).map_err(|_| InspectError::StructureLimit)?;
+            bytes[count_at..mask].copy_from_slice(&count.to_le_bytes());
+            let mut start = shape.fixed_end;
+            for (ordinal, payload) in payloads.iter().enumerate() {
+                put_offset(&mut bytes, count_at, ordinal, start)?;
+                let stop = start
+                    .checked_add(payload.len())
+                    .ok_or(InspectError::StructureLimit)?;
+                reader.work(payload.len())?;
+                bytes[start..stop].copy_from_slice(payload);
+                start = stop;
+            }
+            put_offset(&mut bytes, count_at, variable_count, start)?;
+            if start != end {
+                return Err(EditError::Preservation);
+            }
+        }
+
         record_layout::parse(&bytes, schema, reader.budget)?;
+        if record::decode(&bytes, schema, reader)? != request.values() {
+            return Err(EditError::Preservation);
+        }
+        reader.tick()?;
         rows.push(Row {
             value,
             bytes,
@@ -161,4 +166,18 @@ pub(super) fn derive(
     }
 
     Ok(rows)
+}
+
+fn put_offset(
+    bytes: &mut [u8],
+    count: usize,
+    ordinal: usize,
+    value: usize,
+) -> Result<(), EditError> {
+    let offset = count
+        .checked_sub((ordinal + 1) * VARIABLE_OFFSET_BYTES)
+        .ok_or(EditError::Preservation)?;
+    let value = u16::try_from(value).map_err(|_| InspectError::StructureLimit)?;
+    bytes[offset..offset + VARIABLE_OFFSET_BYTES].copy_from_slice(&value.to_le_bytes());
+    Ok(())
 }

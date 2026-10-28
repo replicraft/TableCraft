@@ -1,4 +1,5 @@
-//! Replacement bytes for an existing slot; no offset directory is rewritten.
+//! Qualified Short Text/Binary serialization for existing slots and complete rows.
+//! Exact-span and canonical complete-row policies remain separate.
 use super::super::{EditError, WriteBlocker};
 use crate::{
     InspectError, NativeColumn,
@@ -134,4 +135,63 @@ pub(in crate::table::mutation) fn encode_for_span(
     }
     check(budget, cancelled)?;
     Ok(bytes)
+}
+
+/// Serialize an already qualified field with the canonical complete-row policy.
+/// This chooses payload bytes independently of any existing slot capacity; the
+/// caller owns field admission and the surrounding record offsets and masks.
+pub(in crate::table::mutation) fn encode_preferred(
+    field: &NativeColumn,
+    value: &Value,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, EditError> {
+    validate(field, value)?;
+    check(budget, cancelled)?;
+    let length = match value {
+        Value::Null => return Ok(Vec::new()),
+        Value::Binary(bytes) => bytes.len(),
+        Value::Text(value) => {
+            let count = value.encode_utf16().count();
+            let compact = field.extended_flags() & UNICODE_COMPRESSION_FLAG != 0
+                && count > COMPRESSED_MARKER.len()
+                && value
+                    .encode_utf16()
+                    .all(|unit| unit > 0 && unit <= u16::from(u8::MAX));
+            if compact {
+                COMPRESSED_MARKER.len() + count
+            } else {
+                UTF16_BYTES * count
+            }
+        }
+        _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
+    };
+    // The exact-span chooser permits either valid form on equal size. Preferred
+    // row serialization uses raw UTF16 for the two-unit compression tie, as the
+    // independent public update observations establish. Never mask metadata to
+    // borrow a different encoder profile.
+    if field.native_type() == SHORT_TEXT
+        && field.extended_flags() & UNICODE_COMPRESSION_FLAG != 0
+        && let Value::Text(value) = value
+        && value.encode_utf16().count() == COMPRESSED_MARKER.len()
+    {
+        budget
+            .charge_allocation(length as u64, 1)
+            .map_err(InspectError::from)?;
+        budget
+            .charge(Resource::Steps, length as u64)
+            .map_err(InspectError::from)?;
+        let mut bytes = Vec::new();
+        bytes
+            .try_reserve_exact(length)
+            .map_err(|_| InspectError::Allocation)?;
+        for unit in value.encode_utf16() {
+            bytes.extend_from_slice(&unit.to_le_bytes());
+        }
+        if text::decode(&bytes, true, budget)? != *value {
+            return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+        }
+        return Ok(bytes);
+    }
+    encode_for_span(field, value, length, budget, cancelled)
 }
