@@ -101,6 +101,32 @@ impl Wire {
     }
 }
 
+/// Prepay comparisons by actual encoded width, retaining the short-key floor.
+pub(super) fn sort_paid(
+    entries: &mut [Wire],
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<(), EditError> {
+    let mut width = size_of::<Wire>();
+    for entry in entries.iter() {
+        reader.tick()?;
+        width = width.max(entry.len());
+    }
+
+    let levels = entries.len().checked_ilog2().unwrap_or(0) as usize + 1;
+    let work = entries
+        .len()
+        .checked_mul(levels)
+        .and_then(|work| work.checked_mul(width))
+        .ok_or(InspectError::StructureLimit)?;
+    reader.work(work)?;
+    entries.sort_unstable();
+
+    Ok(())
+}
+
+#[cfg(test)]
+mod tests;
+
 impl Deref for Wire {
     type Target = [u8];
     fn deref(&self) -> &Self::Target {

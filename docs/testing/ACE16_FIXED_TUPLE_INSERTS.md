@@ -92,3 +92,22 @@ The [scalar file corpus](ace16_insert_scalar_indexes/README.md) qualifies earlie
 Boolean/IEEE/DATE cases from its recorded producer, not these additional keys.
 Native Microsoft Access save/reopen, data macros, shared-file behavior and
 production write admission remain unqualified.
+
+
+## Actual-width comparison work
+
+Wide audit keys retain their actual encoded length while numeric keys stay
+inline. Sorting and final eligible-membership comparison now charge for that
+actual width, with the existing in-memory wire size as the minimum. This closes
+a conservative-work gap introduced by wider keys without changing encoded bytes,
+ordering or image construction. The paid scan checks cancellation before sorting;
+failed precharge leaves the collection untouched.
+
+The wide-key control uses sixteen valid 194-byte GUID-tuple entries with a long
+common prefix. An allowance sufficient for the former struct-width estimate is
+refused, while the complete width-aware allowance succeeds. A second control
+checks that inline numeric keys still fit their smaller allowance and that
+cancellation refuses explicitly. All 173
+INSERT regression functions pass; the preceding full 468-function ACE batch is
+recorded separately above. Strict ACE library/test Clippy, minimal compilation
+and formatting pass after this work-accounting correction.
