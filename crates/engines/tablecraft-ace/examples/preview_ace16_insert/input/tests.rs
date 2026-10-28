@@ -4,7 +4,7 @@ use crate::{
     tests::{Directory, budget},
 };
 use tablecraft_core::limits::LimitError;
-use tablecraft_core::values::{Currency, Double, Guid, LegacyDateTime, Single};
+use tablecraft_core::values::{Currency, Decimal, Double, Guid, LegacyDateTime, Single};
 
 const VALUE_BYTES: usize = 1024;
 
@@ -38,7 +38,7 @@ fn exact_fixed_carriers_keep_widths_scaled_units_bits_and_guid_order() {
         "int32\t2147483647\tint64\t-9223372036854775808\t",
         "currency-scaled\t-12345\tsingle-bits\t80000000\t",
         "double-bits\t3ff0000000000000\tdate-bits\t8000000000000000\t",
-        "guid\t00112233-4455-6677-8899-aabbccddeeff\tnull\t\n",
+        "guid\t00112233-4455-6677-8899-aabbccddeeff\tdecimal\t-12345:4\tnull\t\n",
     );
     let rows = parse(encoded.as_bytes(), &mut budget(), VALUE_BYTES).unwrap();
 
@@ -59,6 +59,7 @@ fn exact_fixed_carriers_keep_widths_scaled_units_bits_and_guid_order() {
                 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd,
                 0xee, 0xff,
             ])),
+            Value::Decimal(Decimal::new(-12345, 4).unwrap()),
             Value::Null,
         ]
     );
@@ -88,7 +89,9 @@ fn malformed_pairs_arity_values_and_carriers_refuse_the_complete_batch() {
         b"guid\tnot-a-guid\n",
         b"int32\tnull\n",
         b"boolean\tnull\n",
-        b"decimal\t1:0\n",
+        b"decimal\t1:29\n",
+        b"decimal\t1.5:2\n",
+        b"decimal\tnull\n",
     ] {
         assert!(parse(bad, &mut budget(), VALUE_BYTES).is_err());
     }

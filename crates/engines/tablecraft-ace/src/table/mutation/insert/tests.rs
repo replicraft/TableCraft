@@ -2,6 +2,7 @@
 mod authority;
 mod bitmap;
 mod child_split;
+mod decimal;
 mod empty;
 mod general_height_one;
 mod height_one;

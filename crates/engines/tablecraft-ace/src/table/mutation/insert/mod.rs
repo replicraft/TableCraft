@@ -53,13 +53,14 @@ impl NativeImage {
     /// Construct a separate, non-journalable ACE 16 INSERT engineering candidate.
     ///
     /// The current profile constructs complete explicit ordinary fixed-scalar
-    /// and Short Text/Binary records. Boolean uses its native value mask; other
+    /// and Short Text/Binary/Decimal records. Boolean uses its native value mask; other
     /// fixed fields retain exact carriers and nullable presence bits. The sole
     /// required unique ascending Int32 primary is selected from index metadata,
     /// including logical aliases, independently of column order. Leaf and branch
     /// trees admit recursive splits and one retained-root height increase per
     /// operation, within existing depth and resource limits. Defaults, generated
-    /// fields, additional indexes and unsupported framing refuse. DATA and index
+    /// fields, additional indexes and unsupported framing refuse. Decimal requires
+    /// its exact declared scale and precision without conversion or rounding. DATA and index
     /// growth share one qualified EOF cursor and native map allocator.
     ///
     /// This does not enable normal saves or qualify required data macros or

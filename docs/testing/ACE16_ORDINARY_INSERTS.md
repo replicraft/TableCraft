@@ -101,11 +101,12 @@ New fixed padding is zero. No schema or resource ceiling changes.
 | Boolean | Boolean carrier only; value is the physical mask bit, with no payload bytes |
 | Short Text | Text or NULL; positive even declared width up to 510 bytes/255 UTF-16 units |
 | Short Binary | Binary or NULL; positive declared width through the existing 510-byte native ceiling |
+| Decimal | Exact Decimal or NULL; qualified 17-byte variable NUMERIC, declared precision/scale retained |
 
 Existing independent public-builder Binary fixtures declare 255 bytes; they do
 not qualify every larger native declaration. Fixed fields require the supported
 native type, true width, flags and zero extended flags. Text permits only the
-existing Unicode-compression flag; Binary permits no extended flags. Decimal,
+existing Unicode-compression flag; Binary and Decimal permit no extended flags.
 Date/Time Extended, Memo/OLE, complex/calculated fields and unsupported metadata
 remain outside this record profile.
 
@@ -181,7 +182,8 @@ The working `preview_ace16_insert` clap example retains its four positional
 arguments and fresh-output publisher. Its [quoted TSV protocol](ACE16_INSERT_INPUT.md)
 now uses the shared exact fixed-value parsers for Boolean, integer, scaled
 Currency, IEEE/date bits and GUID, alongside Text, Binary and explicit NULL.
-Decimal input remains refused. Complete input is captured before the database
+Decimal uses the existing exact coefficient:scale parser, with no rescaling.
+Complete input is captured before the database
 opens, under the unchanged input and native budgets.
 
 The first focused run retained 97 passes and one new fixture failure before the
@@ -194,7 +196,33 @@ forgeries, explicit/absent/wrong-type empty policies, quotas and cancellation.
 
 Defaults remain refused even with complete values or an empty batch. AutoNumber,
 generated identities, extra physical indexes, wider primary/tuple/foreign profiles,
-LVAL/Decimal/extended-date records, required data macros and production native
+LVAL/extended-date records, required data macros and production native
 saves remain separate work. Public broader-schema INSERT references provide
 separate independent-writer evidence. Windows/native Microsoft Access comparisons remain
 deferred; literal checks and Jackcess evidence do not establish full compatibility.
+
+## Exact Decimal continuation
+
+The separate engineering preview now constructs ordinary nullable Decimal fields
+in their native variable slots. The carrier scale must equal the declared scale,
+and the absolute coefficient must fit the declared precision. No rounding,
+rescaling, Currency/float conversion or default substitution occurs. NULL owns
+an empty variable span with its presence bit clear; present zero keeps the full
+17-byte wire and its presence bit. Fixed/calculated/extended NUMERIC declarations
+remain refused. Existing-slot update admission is unchanged.
+
+The producer reuses the existing NUMERIC serializer. The request audit separately
+derives the sign and four most-significant-first little-endian words by radix
+division, then checks the complete record and final image. Eight synthetic full
+images cover ACE 2016/2019, logical aliases and fitted/EOF placement, with literal
+word-order and exact readback checks. Four new test functions cover complete
+images, invalid declarations/carriers, independent audit reconstruction and
+Decimal allocation/cancellation boundaries. All 84 INSERT unit functions and
+eight example-input/publication functions pass. The example input uses the shared exact Decimal
+parser and retains the fresh-output boundary.
+
+An earlier refusal test still listed Decimal among unsupported fields; it was
+updated for this explicit new capability, retaining the other refused field
+families and adding positive/negative Decimal controls. No native Access or fresh
+independent-writer Decimal INSERT comparison was run. Historical broader-row
+receipts above retain their original scope.

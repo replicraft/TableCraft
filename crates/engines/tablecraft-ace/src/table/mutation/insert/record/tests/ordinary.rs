@@ -1,6 +1,54 @@
 //! Literal complete rows, with fixture metadata independent of builder constants.
 use super::*;
-use tablecraft_core::values::{Double, Guid, LegacyDateTime, Single};
+use tablecraft_core::values::{Decimal, Double, Guid, LegacyDateTime, Single};
+
+#[test]
+fn decimal_payload_charges_exact_width_and_checks_late_cancellation() {
+    let mut bytes = ordinary(
+        6,
+        &[("ID", 4, 0, 4), ("Amount", 16, 0, 17)],
+        &[(1, 0, false)],
+    );
+    bytes[DEFINITION + 88 + 11] = 28;
+    bytes[DEFINITION + 88 + 12] = 4;
+    let metadata = schema(&bytes);
+    let field = &metadata.columns()[1];
+    let value = Value::Decimal(Decimal::new(-1, 4).unwrap());
+    let mut allowance = ResourceBudget::new(17, 1, 100);
+    let encoded = payload::encode(field, &value, &mut allowance, &|| false).unwrap();
+    assert_eq!(
+        encoded,
+        [128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]
+    );
+
+    let mut too_small = ResourceBudget::new(16, 1, 100);
+    assert!(matches!(
+        payload::encode(field, &value, &mut too_small, &|| false),
+        Err(EditError::Inspect(InspectError::Limit(_)))
+    ));
+    let checkpoints = Cell::new(0);
+    let count = || {
+        checkpoints.set(checkpoints.get() + 1);
+        false
+    };
+    payload::encode(field, &value, &mut budget(), &count).unwrap();
+    for stop in 0..checkpoints.get() {
+        let visits = Cell::new(0);
+        let cancelled = || {
+            let position = visits.get();
+            visits.set(position + 1);
+            position == stop
+        };
+        assert!(matches!(
+            payload::encode(field, &value, &mut budget(), &cancelled),
+            Err(EditError::Inspect(InspectError::Cancelled))
+        ));
+    }
+    assert_eq!(
+        payload::encode(field, &value, &mut budget(), &|| false).unwrap(),
+        encoded,
+    );
+}
 
 fn ordinary(
     code: u8,
