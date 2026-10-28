@@ -1,4 +1,6 @@
 //! Host-independent native discovery and stored-value browsing.
+mod automatic;
+pub use automatic::BrowsePage;
 mod cursor;
 mod description;
 pub use cursor::{BrowserCursor, TableBatch};
