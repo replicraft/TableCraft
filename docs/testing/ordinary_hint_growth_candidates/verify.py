@@ -7,9 +7,14 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT / 'scripts'))
+from compat_artifacts import ArtifactStore
+
 sys.path.insert(0, str(ROOT / 'docs/testing'))
 from ordinary_hint_growth_candidates import candidate_model
 from ordinary_hint_growth_references import action_model, reference_proof
+
+STORE = ArtifactStore(ROOT)
 
 PREPARED = '.cache/ace16-hint-transition-acceptance-next-20261027'
 ACTUAL = '.cache/ace16-hint-transition-acceptance-first-20261027'
@@ -19,23 +24,6 @@ NATIVE_SHA = '19ba7d3b97e298e05ca1eec10ca38f5853422434ae195d87bd6256521c57ec96'
 GETTERS_SHA = '5c3789172d2a23325c41267e669c0f05774ee8dabdd3e65c012e9171720b900e'
 COMPILED = '69443c6accdd5b6c3118a5a9a31ba30c0fc4d03b'
 NOTICE = b'Engineering candidate: data-macro semantics and native Access qualification pending.\n'
-
-
-def path(value):
-    result = (ROOT / value).resolve()
-    result.relative_to(ROOT)
-    return result
-
-
-def pin(value):
-    target = path(value)
-    data = target.read_bytes()
-    return {'path': target.relative_to(ROOT).as_posix(), 'bytes': len(data),
-            'sha256': hashlib.sha256(data).hexdigest()}
-
-
-def load(value):
-    return json.loads(path(value).read_text())
 
 
 def normalized(value):
@@ -72,13 +60,13 @@ def verify(verify_git):
     native_path = ACTUAL + '/native/report.json'
     getter_path = ACTUAL + '/getters/report.json'
     for name, sha in [(freeze_path, FREEZE_SHA), (native_path, NATIVE_SHA), (getter_path, GETTERS_SHA)]:
-        assert pin(name)['sha256'] == sha
-    freeze = load(freeze_path)
-    protocol = load(freeze['protocol']['path'])
-    assert pin(freeze['protocol']['path']) == freeze['protocol']
+        assert STORE.pin(name)['sha256'] == sha
+    freeze = STORE.load(freeze_path)
+    protocol = STORE.load(freeze['protocol']['path'])
+    assert STORE.pin(freeze['protocol']['path']) == freeze['protocol']
     assert protocol['compiled_revision'] == COMPILED
-    native = load(native_path)
-    getters = load(getter_path)
+    native = STORE.load(native_path)
+    getters = STORE.load(getter_path)
     pins = {}
     occurrences = 0
 
@@ -86,13 +74,13 @@ def verify(verify_git):
         nonlocal occurrences
         occurrences += 1
         prior = pins.setdefault(item['path'], item)
-        assert prior == item and pin(item['path']) == item
+        assert prior == item and STORE.pin(item['path']) == item
 
     for report, phase, expected in [(native, 'native', protocol['native_argv']),
                                     (getters, 'getters', protocol['getter_argv'])]:
         assert report['phase'] == phase and report['qualified_success']
         assert report['failure'] is None and report['completed'] == 12
-        assert report['freeze'] == pin(freeze_path)
+        assert report['freeze'] == STORE.pin(freeze_path)
         assert report['input_postcheck']['unchanged'] and report['output_postcheck']['unchanged']
         assert all(item['matches'] for item in report['input_postcheck']['checks'])
         assert all(item['matches'] for item in report['output_postcheck']['checks'])
@@ -108,12 +96,12 @@ def verify(verify_git):
             check(item)
     assert native['native_attempts'] == 12 and native['getter_attempts'] == 0
     assert getters['native_attempts'] == 0 and getters['getter_attempts'] == 12
-    assert pin(native_path) in getters['pins_before']
+    assert STORE.pin(native_path) in getters['pins_before']
     for item in freeze['inputs']:
         check(item)
     for name in (freeze_path, native_path, getter_path, PREPARED + '/post-terminal-check.json'):
-        check(pin(name))
-    postcheck = load(PREPARED + '/post-terminal-check.json')
+        check(STORE.pin(name))
+    postcheck = STORE.load(PREPARED + '/post-terminal-check.json')
     assert postcheck['unchanged'] and postcheck['fixture_processes'] == 0
     assert postcheck['raw_getter_report_sha256'] == GETTERS_SHA
     for item in postcheck['checks']:
@@ -121,22 +109,22 @@ def verify(verify_git):
         check(item['expected'])
 
     public = 'docs/testing/ordinary_hint_growth_candidates/'
-    source = path(MODELS + '/candidate_model.py').read_text()
+    source = STORE.path(MODELS + '/candidate_model.py').read_text()
     assert source.count('parents[2]') == 1
     old_import = "'.cache/ace16-hint-transition-model-next-20261027/allocation_model.py'"
     new_import = "'docs/testing/ordinary_hint_growth_candidates/allocation_model.py'"
     assert source.count(old_import) == 1
-    assert path(public + 'candidate_model.py').read_text() == source.replace('parents[2]', 'parents[3]').replace(old_import, new_import)
-    assert path(public + 'allocation_model.py').read_bytes() == path(MODELS + '/allocation_model.py').read_bytes()
+    assert STORE.path(public + 'candidate_model.py').read_text() == source.replace('parents[2]', 'parents[3]').replace(old_import, new_import)
+    assert STORE.path(public + 'allocation_model.py').read_bytes() == STORE.path(MODELS + '/allocation_model.py').read_bytes()
     reference_directory = '.cache/ace16-ordinary-hint-reference-next-20261027/'
     for filename in ('action_model.py', 'reference_proof.py', 'map_proof.py'):
-        raw = path(reference_directory + filename).read_text()
+        raw = STORE.path(reference_directory + filename).read_text()
         maintained = raw.replace('parents[2]', 'parents[3]')
         if filename == 'reference_proof.py':
             maintained = maintained.replace('import map_proof', 'from ordinary_hint_growth_references import map_proof')
-        assert path('docs/testing/ordinary_hint_growth_references/' + filename).read_text() == maintained
+        assert STORE.path('docs/testing/ordinary_hint_growth_references/' + filename).read_text() == maintained
 
-    receipt = load(protocol['build_receipt']['path'])
+    receipt = STORE.load(protocol['build_receipt']['path'])
     assert receipt['compiled_revision'] == COMPILED and receipt['exit_code'] == 0
     assert receipt['frozen_example'] == protocol['artifact']
     assert receipt['source_pins'] == native['compiled_source_pins'] == getters['compiled_source_pins']
@@ -144,7 +132,7 @@ def verify(verify_git):
     git = committed_objects(protocol, receipt) if verify_git else {
         'compiled_Git_objects': 0, 'receipt_Git_objects': 0, 'Git_processes': 0,
     }
-    model_report = load(protocol['model_report']['path'])
+    model_report = STORE.load(protocol['model_report']['path'])
     assert model_report['completed'] and model_report['fixture_calls'] == model_report['native_calls'] == 0
     assert len(model_report['cases']) == 12
     original_bytes = rows = entries = physical_trees = 0
@@ -156,28 +144,28 @@ def verify(verify_git):
     ):
         assert case['id'] == made['id'] == got['id']
         assert made['completed'] and got['completed'] and made['whole_image_match_before_getter']
-        assert path(native_command['stdout']['path']).read_bytes() == b'candidate_changed_rows=1\n'
-        assert path(native_command['stderr']['path']).read_bytes() == NOTICE
-        assert path(getter_command['stderr']['path']).read_bytes() == b''
-        accepted = load(case['facts']['path'])['snapshot']
+        assert STORE.path(native_command['stdout']['path']).read_bytes() == b'candidate_changed_rows=1\n'
+        assert STORE.path(native_command['stderr']['path']).read_bytes() == NOTICE
+        assert STORE.path(getter_command['stderr']['path']).read_bytes() == b''
+        accepted = STORE.load(case['facts']['path'])['snapshot']
         expected, observations = candidate_model.expected_image(
-            path(case['source']['path']).read_bytes(), accepted, case['table'],
+            STORE.path(case['source']['path']).read_bytes(), accepted, case['table'],
         )
-        candidate = pin(case['output'])
+        candidate = STORE.pin(case['output'])
         assert candidate == made['candidate'] == got['candidate']
-        assert expected == path(case['expected']['path']).read_bytes() == path(case['output']).read_bytes()
+        assert expected == STORE.path(case['expected']['path']).read_bytes() == STORE.path(case['output']).read_bytes()
         assert len(expected) == case['expected']['bytes']
         assert hashlib.sha256(expected).hexdigest() == case['expected']['sha256']
         assert observations == frozen['observations']
-        before = action_model.snapshot(path(case['source']['path']), path(case['getter']['path']),
+        before = action_model.snapshot(STORE.path(case['source']['path']), STORE.path(case['getter']['path']),
                                        case['profile'], case['padding'])
         assert normalized(before) == accepted
-        after = action_model.snapshot(path(case['output']), path(getter_command['stdout']['path']),
+        after = action_model.snapshot(STORE.path(case['output']), STORE.path(getter_command['stdout']['path']),
                                       case['profile'], case['padding'], changed=case['table'])
         proof = reference_proof.compare(before, after, case['table'])
-        saved = load(got['facts']['path'])
+        saved = STORE.load(got['facts']['path'])
         assert saved == normalized({'snapshot': after, 'proof': proof})
-        assert pin(case['output']) == candidate
+        assert STORE.pin(case['output']) == candidate
         rows += sum(table['count'] for table in after['tables'].values())
         entries += sum(index['count'] for table in after['tables'].values() for index in table['indexes'].values())
         physical_trees += observations['physical_trees_checked']
