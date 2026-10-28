@@ -121,6 +121,7 @@ impl Runtime<'_, '_> {
             .ok_or(QueryError::StructureLimit)?;
         let rhs = self.joined_collection_relation(input.right, requests, right_base, leaf)?;
         let right_end = *leaf;
+        let equality = self.borrowed_join_equality(input.condition, input.left, input.right)?;
         let mut matched_right = Vec::new();
         if input.kind == Some(JoinKind::Right) {
             self.budget
@@ -136,8 +137,22 @@ impl Runtime<'_, '_> {
             let mut matched_left = false;
             for (position, right) in rhs.iter().enumerate() {
                 self.tick()?;
+                // Both complete populations have already been validated. Only
+                // a whole proven scalar equality can reject a pair here;
+                // compound ON expressions retain their eager evaluator path.
+                if let Some(equality) = &equality
+                    && !self.borrowed_join_matches(
+                        equality,
+                        &left.frame.scalars,
+                        &right.frame.scalars,
+                    )?
+                {
+                    continue;
+                }
                 let scalars = self.join_row(&left.frame.scalars, &right.frame.scalars)?;
-                if let Some(condition) = input.condition {
+                if equality.is_none()
+                    && let Some(condition) = input.condition
+                {
                     let accepted = self.eval_predicate(
                         condition,
                         Environment {

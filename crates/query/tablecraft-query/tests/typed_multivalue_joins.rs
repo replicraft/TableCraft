@@ -9,6 +9,9 @@ use tablecraft_query::{
 use tablecraft_schema::{Column, ScalarType, SchemaName};
 use tablecraft_sql::{parse_query, query::Query};
 
+#[path = "typed_multivalue_joins/borrowed.rs"]
+mod borrowed;
+
 struct Data {
     columns: Vec<Column>,
     unavailable: Vec<SchemaName>,
