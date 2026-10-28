@@ -1,0 +1,3880 @@
+{
+  "date": "2026-10-28",
+  "compiled_revision": "2ed6dc2065f56ddab391bd858bf6bd7547c7761d",
+  "consumer": "preview_ace16_insert",
+  "command": [
+    "cargo",
+    "build",
+    "-p",
+    "tablecraft-ace",
+    "--features",
+    "ace16-write-preview",
+    "--example",
+    "preview_ace16_insert",
+    "--locked",
+    "--offline",
+    "-j2"
+  ],
+  "command_cwd": ".",
+  "profile": "Cargo default dev; incremental setting unchanged",
+  "tracked_worktree_clean_before_and_after_build": true,
+  "exit_code": 0,
+  "expected_images_frozen_before_build": {
+    "path": ".cache/ace16-insert-ordinary-expected-second-20261028/freeze.json",
+    "bytes": 20952,
+    "sha256": "5d0cbb7364aa2e75a7c3eecf616da85a75030aa7d740e7b60d000cc5d41b35af"
+  },
+  "frozen_example": {
+    "path": ".cache/tablecraft-bin/ace16-insert-ordinary-20261028",
+    "bytes": 18270840,
+    "sha256": "4ec057cd991c12e4bc21cd6232bf9ed79d76c5ffce5e84fd354a8d3f5b3ebea1"
+  },
+  "build_log": {
+    "path": ".cache/ace16-insert-ordinary-consumer-20261028/committed-build.log",
+    "bytes": 183,
+    "sha256": "1ab957c7cf4ae2b6433d5b665639239d72ca2b993b890a22091800fc4a15f149"
+  },
+  "dependency_info": {
+    "path": ".cache/ace16-insert-ordinary-consumer-20261028/committed-dependency-info.d",
+    "bytes": 82513,
+    "sha256": "a1fa947305a609adbcca49e89b5279b05b530696284203867715a7d2292b1289"
+  },
+  "source_pins": [
+    {
+      "path": "Cargo.lock",
+      "bytes": 54740,
+      "sha256": "b7b4b43a2ad44f1c6e6a5e1567dc2c397034ab57f4348c0641869faea4013934"
+    },
+    {
+      "path": "Cargo.toml",
+      "bytes": 7443,
+      "sha256": "32d18e2d17f7c550bef73740dcb8adc34ae78d4d13f67ac8709de388dd5e5e54"
+    },
+    {
+      "path": "crates/engineering/tablecraft-testkit/Cargo.toml",
+      "bytes": 281,
+      "sha256": "fda0c95564a2701b63452e8d0b0e10fa82edae0658b7c0c564f5c958833525bc"
+    },
+    {
+      "path": "crates/engineering/tablecraft-testkit/src/access.rs",
+      "bytes": 3955,
+      "sha256": "25f4405d450dba9f63738f25d0b73ff9bebf3be397349fb8802f89ce17540ac4"
+    },
+    {
+      "path": "crates/engineering/tablecraft-testkit/src/lib.rs",
+      "bytes": 305,
+      "sha256": "793ee3ad5376332b6bbc5b3a7b55599a951239600d4222467d61a0ca496b8e27"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/Cargo.toml",
+      "bytes": 2711,
+      "sha256": "445d31c46662707df656ecf405503efb8ab5957586e3bf9a7f67a637d9052f3d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/data/general/general-2010.bin",
+      "bytes": 1119560,
+      "sha256": "13e702d03d2f89a28e59a8b48072463f32073a9606ec023843e872051f3ec8a9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/data/general/general-legacy.bin",
+      "bytes": 765112,
+      "sha256": "7045a80ff0942794345c9ad08fb335637b6c421820ffe7f33cb91ed452238617"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/data/general/kana-vowels.bin",
+      "bytes": 256,
+      "sha256": "0e3d5e0c512fcea8b3a09d6f8ccd11241d35f042f4ff6098d0b2c136f9137ac9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/data/general/like-2010.fst",
+      "bytes": 75954,
+      "sha256": "5a6d7d415a3cb502ea5d23e39e4d5db088019aedde633dcec887a57c759bbe37"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/data/general/like-legacy.fst",
+      "bytes": 33231,
+      "sha256": "5c63462ffb2a5062e53db01610e4e6440909b2ad149241024fa0bf9ea7271bf6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/examples/preview_ace16_insert.rs",
+      "bytes": 1894,
+      "sha256": "7c0db9529df50a0d44f23dfafcb32d6ab798b9f2e240462332537fb816f91810"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/examples/preview_ace16_insert/input.rs",
+      "bytes": 7139,
+      "sha256": "e5f2bdbeaaaccc1a14b0d7bbef57e3161b09df2779ce2876dd5c9c3b327ef60c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/examples/preview_ace16_slot/output.rs",
+      "bytes": 1041,
+      "sha256": "bed6bffa99fb59dafa5eb106236bc57948a7b6fb0d548f5bf7e7c9aa2f1b6d00"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/examples/support/fixed_values.rs",
+      "bytes": 2145,
+      "sha256": "0e0c92c6a5b012e03daeadfd762aa620f9eb0564df950d58b7edf28bec3c4f36"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/catalog/inventory.rs",
+      "bytes": 5068,
+      "sha256": "90375ec58e213c0ed7e8d1a846d22a7306304881f95e029fd19137b5b142af09"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/catalog/linked/fields.rs",
+      "bytes": 3378,
+      "sha256": "2fc3e4f2e4e16ea5b0a01e74030aed462530441f3c228e7229d9f877986903d4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/catalog/linked/metadata.rs",
+      "bytes": 4254,
+      "sha256": "93126c4f66a6dff1e7120708ac7102b22dbd4d799bb3fed60b3a140a0aa4c82d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/catalog/linked/mod.rs",
+      "bytes": 248,
+      "sha256": "bd445ccce18b617cd81985c8717cc90b1fea0e1c967761e7bc34d1ba9aa1b433"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/catalog/linked/read.rs",
+      "bytes": 5006,
+      "sha256": "ca4f6d0b0df9b4330a610ed5132f9934306b0852a8b4b6e017c549eb66bbefce"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/catalog/mod.rs",
+      "bytes": 295,
+      "sha256": "ade1be27fb4cecfa366308a98ef8c1d8bfd45447f52cdbb672bf978577fcfa1f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/catalog/origin.rs",
+      "bytes": 2624,
+      "sha256": "9d80741d3f389363f3b806e5e1d9fb7a0393f1e26dab89f7fd99daebf7e556d4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/catalog/record.rs",
+      "bytes": 3908,
+      "sha256": "4cf35aba0429d0cdcfbf74ee962192a821e5d643d15842b151aae43224a6a30e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/collation/comparison.rs",
+      "bytes": 6728,
+      "sha256": "ed94591ea0f8a5b4d5e4945ca45e23571a373c2c073c0492ffbff2797e4bc6e5"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/collation/french.rs",
+      "bytes": 2581,
+      "sha256": "37df90522ffc1af72b070b4851c269444bc4d383a0007a2d1eefcf7b7961edcf"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/collation/key/buffer.rs",
+      "bytes": 2967,
+      "sha256": "dab7d8edfd2ce30ac6e77192d32cb32a3152f30b90b9cc010ee9125351940bd9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/collation/key/encode.rs",
+      "bytes": 9743,
+      "sha256": "9385e2ca661c86ac513072b5dedab43267fb4adb3a9c3d4c5236dd890381fa26"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/collation/key/french.rs",
+      "bytes": 642,
+      "sha256": "4fde9ba6edb7475f0719d8af8044a4f2a7bce2c2bd119391df08ce79906597f4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/collation/key/mod.rs",
+      "bytes": 2884,
+      "sha256": "17fad95a5985c8aadf12b31362ac45974c5d09aa9685453db9b6692bd624a0da"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/collation/key/tail.rs",
+      "bytes": 4724,
+      "sha256": "9b9e2788839b730a20ce4584fb39edee81356c46d5413a01e77fd3a40a8a3bd4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/collation/key/weights.rs",
+      "bytes": 3054,
+      "sha256": "daa597b62dff467f562c73d3aff53c0667a9cfa147111683fa304263f0331e56"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/collation/like_units.rs",
+      "bytes": 3619,
+      "sha256": "57fd5ba6303dd6e93b8a74f396c64e0c71c80a8bad2131c9a4b3a394d360df9e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/collation/mod.rs",
+      "bytes": 1965,
+      "sha256": "15551f5f95570e25a07bac874c2b009841362b0b17b14ad35cd92af11ceca8a6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/collation/search.rs",
+      "bytes": 7679,
+      "sha256": "67c3619c3302010e0df2fdc325e01593c4af62b768c23b62422443445f79b917"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/collation/search/raw.rs",
+      "bytes": 2560,
+      "sha256": "c681023f2f5166e2024a7265f4ca61a118dcae54512c115526c71252fe4992f2"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/collation/sort_order.rs",
+      "bytes": 3459,
+      "sha256": "e33d6e7e181c253285d38fd648f0c7d5038f718ae451fca0cbd0ad5aaa178e2d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/constraints/error.rs",
+      "bytes": 1274,
+      "sha256": "ef26890d59f4cbec74ff8a7a1393d01818bd33e73b8a96bf583f56125af00e18"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/constraints/fields.rs",
+      "bytes": 3141,
+      "sha256": "58658fa85b58dfda5d1aa8d13c4b9b07bd16a95beaf819304d132ffa30680e52"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/constraints/inspect.rs",
+      "bytes": 2797,
+      "sha256": "f8fe896f7345acefd2638c2d96b86bc71ea5177515bbbf69be8fe4c389c047c1"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/constraints/metadata.rs",
+      "bytes": 3590,
+      "sha256": "1ea02b87458702eb8485fd56d5a916d71bc6e0c528318e1580067d7b2411ba2f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/constraints/mod.rs",
+      "bytes": 277,
+      "sha256": "e92e8991ed858f1fa52d0477ed978cc81ee02c9c6a29c55a1d08d0f74f7c877c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/constraints/relationships.rs",
+      "bytes": 6114,
+      "sha256": "8a9e0ef6869cfc54b95adb93241d10d62f256d53633017822e3a8886636c6c27"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/constraints/relationships/decimal.rs",
+      "bytes": 2551,
+      "sha256": "97c1ec0e114e7fc67cd7c3846eb4a54241a8d9c730aa0081f519a86fd8e27603"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/constraints/relationships/keys.rs",
+      "bytes": 5149,
+      "sha256": "8612b90b1d51d52d860992728ec7fe9630078ec413469ce63c16cd9f634f6002"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/constraints/relationships/membership.rs",
+      "bytes": 1698,
+      "sha256": "c4182c2d6ac54b879a930c1bd3825cffe489591b104a5d37354ca78997ec3d60"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/constraints/rules/bindings.rs",
+      "bytes": 1050,
+      "sha256": "5ebe466e5016c0dfba0f3eb78f192f32de3d36029fcb1aae309040390a669e6d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/constraints/rules/compile.rs",
+      "bytes": 8764,
+      "sha256": "ba70efbfd54d67ef9c873f1877b15d33c101dd3af2f61220c8247f50de582dbc"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/constraints/rules/functions.rs",
+      "bytes": 1754,
+      "sha256": "bca8cd04032d1e3eab58446ce49ba8071c56cdd3d899eeb1238e5f0923ba1cc8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/constraints/rules/mod.rs",
+      "bytes": 2982,
+      "sha256": "752e5864953781f7595e061dbdc64cde726fd1467cfb523ac58b55ef78787272"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/encryption/add.rs",
+      "bytes": 4226,
+      "sha256": "31e78fa26d5e12777b28e61e500d17b429345eeb4ad1e3656eb30111f966c258"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/encryption/agile/create.rs",
+      "bytes": 4428,
+      "sha256": "5e329604d054e7145700a6aeca3f35ff3c1d801f83d5cc7d4277f411ab748ff4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/encryption/agile/crypto.rs",
+      "bytes": 8562,
+      "sha256": "2ed9201683df3a24e90b0a80629725c1c1276910659ba6c68796892ae7969195"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/encryption/agile/descriptor.rs",
+      "bytes": 13564,
+      "sha256": "d0eaeeb5ed531376b6a5bb7daf58e765cbcdf46a53519ac6a2002ef356fc1c2f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/encryption/agile/mod.rs",
+      "bytes": 6487,
+      "sha256": "7cdff49e8da3d9eb2f419725716a968b4d6faff83a58a73f098e1a25831bd7b6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/encryption/agile/rewrite.rs",
+      "bytes": 7013,
+      "sha256": "ec4fd5ae338501b330553790fdbbc642a9700b5cd36d0b8569b7d95edadc28c5"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/encryption/legacy/crypto.rs",
+      "bytes": 10437,
+      "sha256": "c38d8537af56027ed6dd172c5faeecca3f7eff0bfcfc53c959b3e905bfacb3be"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/encryption/legacy/descriptor.rs",
+      "bytes": 7183,
+      "sha256": "ed4da302b0071f5ed8770875aea715fb38daca776615d7b3b8806dcb6cd59b88"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/encryption/legacy/mod.rs",
+      "bytes": 4095,
+      "sha256": "f6f939215fe0b6a112d3592bda9e44dc9f7a19ffd793cb0b3b636df9331d4cbd"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/encryption/mod.rs",
+      "bytes": 8440,
+      "sha256": "c6ecbd08a12c613578e744988e86ca665bc868fbe44a69b49b2ff594f9ee1c49"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/encryption/native_header.rs",
+      "bytes": 5745,
+      "sha256": "a095852756b52ce8515bcc36a3c5e63a410dbc6f57f8ada887ecdec1985cce67"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/encryption/rewrite.rs",
+      "bytes": 9623,
+      "sha256": "04124d8b952bbaf9a657610ede85da7e7acabb435cb667726f70a4f6f96cf662"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/encryption/streaming.rs",
+      "bytes": 9535,
+      "sha256": "45fcb78041a9e5e8d927d3f3d9162abdced4231153bef113658629999b87acc2"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/error.rs",
+      "bytes": 7618,
+      "sha256": "3ee713ecc112677a2509dc4b792b4a34c2d5dd3b70c35ee0d6cb6474204b6d56"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/allocation.rs",
+      "bytes": 4656,
+      "sha256": "937b00f7d5ca8d87a945bbe73393fe22072497e741ee25507c17d6f9f551e03f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/allocation/cursor.rs",
+      "bytes": 6819,
+      "sha256": "4f7bcef80c32a75528bad469028ad3124736c02e3716ad242df6efb09899cb38"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/allocation/cursor/membership.rs",
+      "bytes": 3679,
+      "sha256": "28d0f301e80bb315eb31910dd784d905d201045404d82a343f6803e0cf91c75e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/allocation/qualified_inline.rs",
+      "bytes": 4199,
+      "sha256": "36e1bfa0a3fb0a449c77f702b4b7be10e4473f6fa2a72d7db434ab5cc6707383"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/allocation/represented.rs",
+      "bytes": 12782,
+      "sha256": "071043e057e5037cf33aa4d985b727cda92af1bac4684b463c6dd1d0283b1b20"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/bitmap.rs",
+      "bytes": 1388,
+      "sha256": "0938550fda3f8f23336bb4d015071bbb985a3f50c8e36ce86947c910a48ba512"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/bitmap/kernel.rs",
+      "bytes": 806,
+      "sha256": "3c169ecaee05a42b9da46c6ce527a1f3f2399402c3fe76753f9bd8aea14d869f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/bytes.rs",
+      "bytes": 502,
+      "sha256": "6927888ca93a55bacd280fd9965fc2454970d2d90a3b3032612c12bd14be006e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/data_type.rs",
+      "bytes": 1850,
+      "sha256": "f991b5eec456b7042784d04434f8293497e59dae93f36db6c4ff4429b5dd009e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/definition.rs",
+      "bytes": 3799,
+      "sha256": "039bd5e14735e37ba424ec302b2ad899424a6274dcfd65637ab34be61f4eb842"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/header_mask.rs",
+      "bytes": 630,
+      "sha256": "6e52edfde835c14dfadf0f752affadaea45ab7ff6dc2dead2a6903dba49bb421"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/layout.rs",
+      "bytes": 7790,
+      "sha256": "2915848545cca6e9fb87a3b41a4eafc306a942e7395da3e0562adea4c4a7e258"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/mod.rs",
+      "bytes": 286,
+      "sha256": "29fe36b82068b81d8fd4c72e28ae6fd50e6c7ac0042a4a3f4c01e84e8e691545"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/page.rs",
+      "bytes": 538,
+      "sha256": "b5e4532eb9a200362b587f2fa656e2322f578f2b3296d18db30705a8fe2b7c63"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/profiles/mod.rs",
+      "bytes": 1647,
+      "sha256": "0a69d713fb90d654f70c64d1235d4fd933850a2cdbf4acd608456decbfbb2895"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/reader.rs",
+      "bytes": 6561,
+      "sha256": "5eae33e0139b497fbf6cae3d354a25ff628811305cb50bf295339183a0b0b9b3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/row.rs",
+      "bytes": 1070,
+      "sha256": "2c46ae19f34693940f5c4ae31286d18fb8662c600e418adf5c5a645e3a8d5641"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/text.rs",
+      "bytes": 8348,
+      "sha256": "c9e3185064c7341fb0106df2dc928019868931a8ada2c68c02fef75e1579fd05"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/text/ascii.rs",
+      "bytes": 2921,
+      "sha256": "c7223414f74432d4f51f8cd6db5e5017f7f56e843e3231981beb28dcd5019a61"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/header.rs",
+      "bytes": 9406,
+      "sha256": "f0a3031422b95418064ba35c4ec75af911d5f58957131d5e3e16d65f803452d4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/lib.rs",
+      "bytes": 6161,
+      "sha256": "2edcefc64bfe77b214ed23dc18a565f7cbf86f1226fe666608d1004d41ba9a1a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/limits.rs",
+      "bytes": 964,
+      "sha256": "22a05c995adcff0bf393faf86d0200fbeed5e6c1b7a8dac5d3866c57848efeaf"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/children.rs",
+      "bytes": 1735,
+      "sha256": "96677b6a4e4b1463d9a9f4e8a7e46c0a26e46042f42d65f16a30f03393b20ab1"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/dependencies.rs",
+      "bytes": 1323,
+      "sha256": "cd7d87ad60364d6f016781f95e5a62b7060c95e8d3fd3c3e58e6ac3935a75e2a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/image.rs",
+      "bytes": 3673,
+      "sha256": "e7a4519c907930002556347528590d6dc453131803cf6279dc9d09d593571384"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/mod.rs",
+      "bytes": 332,
+      "sha256": "2ca229159aba8cecde05fbe16546f9dafe8cceac269957f02272811bdfd3be1f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/payload_data/mod.rs",
+      "bytes": 72,
+      "sha256": "bcd3dc3e46a8d1a3d9cd8915974ccd9298331b667fb5496baf70b2c6383c6f0c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/payload_data/model.rs",
+      "bytes": 1708,
+      "sha256": "2e65e90e258bf5fa32511c82094333796e9a27a97c84a5cadbafc85d324abf9e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/payload_data/read.rs",
+      "bytes": 4901,
+      "sha256": "35f4b061ce1ae75ef75f9f83eee1ce3d75c599ac89a3afe30dfb8738213fd133"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/payloads.rs",
+      "bytes": 4130,
+      "sha256": "0f22c30b31b908c31e2da6f5344f69f842449dd164201764d3cccd94b95827d4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/properties/decode.rs",
+      "bytes": 7990,
+      "sha256": "34302fa78891a92735bded6400a7f9588c1da293de1dff75d95639c41722d8b3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/properties/inspect.rs",
+      "bytes": 3077,
+      "sha256": "678f6c989c80caf3c0cc6684e73c6327b41f97beef0359b00af570cdf42e79c9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/properties/metadata.rs",
+      "bytes": 5209,
+      "sha256": "2e15ee7ac46002c6bb77c79b99ec32d0a31b5cd3efac81ae2f7a9f4cdc12c117"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/properties/mod.rs",
+      "bytes": 170,
+      "sha256": "7e98c27b09dfa9a40f3a1aa6d5908694fa773999b9a422d55d0a693df63b6c6b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/queries/attribute.rs",
+      "bytes": 2875,
+      "sha256": "31d683d925a2e7fd72343deb76c9a7e5bac23e5d0802c219a96a0c2dfde2891a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/queries/columns.rs",
+      "bytes": 1666,
+      "sha256": "c9605869dbc50372a6610441cb32ed86062ef6116ecf932a159a297b0388f038"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/queries/metadata.rs",
+      "bytes": 2804,
+      "sha256": "1363e418402cb9a361409ebe4abb140cc8882bfa94534ac13f2ff97334421951"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/queries/mod.rs",
+      "bytes": 199,
+      "sha256": "e48cb2785d7c82e4feafda28ef74f1e433790cb07fe012056c417c06bec6b9d1"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/queries/read.rs",
+      "bytes": 2464,
+      "sha256": "eac6faf8400a129aea23b4f268409df6d218163171ad80e77b32960eb77e8307"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/queries/record.rs",
+      "bytes": 1794,
+      "sha256": "3438384f379bed8e4a4c615100bc1897ec61a749847cfac67e29403e50d2c086"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/relationships/decode.rs",
+      "bytes": 5661,
+      "sha256": "fbaf9d65f0094d524ac3ab50db71588454f8a24813cf66eb645a4633d7bd16ba"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/relationships/flags.rs",
+      "bytes": 1987,
+      "sha256": "73ed062095c3818d8e41ada83dec07e1f678674a8572c8812504a8bef0a892da"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/relationships/inspect.rs",
+      "bytes": 1034,
+      "sha256": "f238f0153f95346ae6e75ffaef5c6e8b5f51f3e8b505acc10360b122ae792a8c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/relationships/metadata.rs",
+      "bytes": 622,
+      "sha256": "0b4039ff6414020fa508687e88bb005adcaebf0beaa05a34c80034a3e42f0a34"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/relationships/mod.rs",
+      "bytes": 129,
+      "sha256": "8f9b638e82d7b159a4f1544d02fd9ce36f9d69a77028a260eadbe349efbb6036"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/source/agile.rs",
+      "bytes": 2789,
+      "sha256": "76326285dd9fdf91843c9b4a5baaa507f6eb301fd1a35e29e6171017097c6801"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/source/encrypted.rs",
+      "bytes": 2378,
+      "sha256": "1d88304a4d4bd1e51af8580ee68dce53113a83c1f9bd94d0e82f9640c630f52f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/source/long_values/limits.rs",
+      "bytes": 1433,
+      "sha256": "199f3b51654f1459ec5ea44cc5930ac43f954a47a1c2145b31a95973dede7833"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/source/long_values/mod.rs",
+      "bytes": 2456,
+      "sha256": "133e6d15075504813c1c82cde1969e303c440ca9ed450f7db9f925444dd003c3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/source/long_values/text.rs",
+      "bytes": 1116,
+      "sha256": "e274c1d729307f969d3ea430413aa6b13aeb61437046f0958596b98a9dc1ae53"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/source/mod.rs",
+      "bytes": 2940,
+      "sha256": "8c9a7aafaaa75174048366fa96140bb2d5a309e164fbfc4f697938116c016f01"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/attachment/decode.rs",
+      "bytes": 4855,
+      "sha256": "2a81fa5b640ba61c72d9b52fb68f0d0f272702b4ac2f95bdb0f16838ca1afc36"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/attachment/inflate.rs",
+      "bytes": 2941,
+      "sha256": "0db9904955a0ec0eee4267fb144bf53bd8b031fd8f2e54a519ad89f1bfacfc38"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/attachment/limits.rs",
+      "bytes": 2121,
+      "sha256": "e0a31da191a139f9b461e1a546489145b6a30357ea9cc8e2107eca88a37a9d2a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/attachment/metadata.rs",
+      "bytes": 1185,
+      "sha256": "1c767234eb25279818a6e34bf3a8b214c28f08a8bf0dc1c231ca16bb8e1e0ead"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/attachment/mod.rs",
+      "bytes": 269,
+      "sha256": "4b38f4c2193e8958a132df9a72e77ddcd04c1a5732d02fef4672ad70f91e5f0d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/attachment/session.rs",
+      "bytes": 2363,
+      "sha256": "c6c3eb5a554acd1bdcbeb1d4ca6efd35b0430e628ff5917b4cdc93c270d66625"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/calculated/decimal.rs",
+      "bytes": 3898,
+      "sha256": "f1a05cb5327aaf62109d38a8d1695db252bedfe72d2a3281ccbc79a570703aac"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/calculated/declaration.rs",
+      "bytes": 2591,
+      "sha256": "0a4d67e97986522f3002b2b15898b9270d66dd634985cff5aa92cb2caadd78db"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/calculated/encoding.rs",
+      "bytes": 5809,
+      "sha256": "7b07218801344bca52f57287ff39d74ed66c28ac900451e9d942c5a67b7591cf"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/calculated/long_text.rs",
+      "bytes": 593,
+      "sha256": "f4fa807bc4e07e5d0da99861a91f80fedeb16cefd0e7477e5b1b92b87f32fbf7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/calculated/mod.rs",
+      "bytes": 583,
+      "sha256": "3f74f2e851084dc75252a561a4d9c01e64049de20e61d7a366ab89bf9ca4d036"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/calculated/page.rs",
+      "bytes": 3786,
+      "sha256": "a68284fa5cd5e9d05a2378efd2e1804c6587834b13bc8305aa50fb1c51a84737"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/calculated/projection.rs",
+      "bytes": 1566,
+      "sha256": "22787aaefe0a4b4b8d4e89865af07af57458093dcdafdbb81b0f9e46b24d1e2f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/calculated/read.rs",
+      "bytes": 4830,
+      "sha256": "b09142ae69bcd66b0ad6f59c66685c2885095a5f1cf7930fc5088ce551056e6c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/calculated/snapshot.rs",
+      "bytes": 2001,
+      "sha256": "500618c433b4ca73ba2fda024db3be64b6403a84a5ef70f2f30a0ab25ace1537"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/calculated/wrapper.rs",
+      "bytes": 1805,
+      "sha256": "755102c38b7254eee2fef1586eb3644094954c4ed9f5ac7bf49a04b3dcbe4bc4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/attachments/declaration.rs",
+      "bytes": 947,
+      "sha256": "f689aebe2f46d77229ad5352e7f1900063d8175dbf3a2958038dec86ce39ec62"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/attachments/discovery.rs",
+      "bytes": 4093,
+      "sha256": "fe2aaf7f830058b2869489ea1ac888a0c285f9dd1ad9bcc32b40b8f1a7a0216f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/attachments/metadata.rs",
+      "bytes": 5533,
+      "sha256": "d5098f2ca2ace6f2f2fc37a83848b27d8d71a13fcdb026d08fdcfa66032d7cc2"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/attachments/metadata_only/mod.rs",
+      "bytes": 149,
+      "sha256": "d62c3764b15c8fc13acf3bd8cb54260c45fab26843c9443c79742ea48b17bb6f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/attachments/metadata_only/read.rs",
+      "bytes": 5507,
+      "sha256": "fb02c4c246d68c7c6203717d1fdac9757bbe8efb978334e7cb9b616e7ade244d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/attachments/metadata_only/snapshot.rs",
+      "bytes": 2505,
+      "sha256": "60df58bbe63b9f33deb3b5760c45916bcc4fb77c78ccc433bac55beae52a41d1"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/attachments/mod.rs",
+      "bytes": 538,
+      "sha256": "0b9de525fe28ff4728fd7cebaea8ff4d62083929033e39c1f1022079f9155cff"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/attachments/read.rs",
+      "bytes": 2401,
+      "sha256": "75098aba8a7687642cd953edb9c7e88015e5d08b3082299247e1aee83ad312ae"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/attachments/record.rs",
+      "bytes": 1544,
+      "sha256": "3c1dba9a3b34a65fe4fb191b097504f1d1a6d09bd080c4a35b7a09ce66001d74"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/attachments/schema.rs",
+      "bytes": 3203,
+      "sha256": "319ba59cbcd7ab100733476f08eaac1c8ebb872ad3dbd32a9bad8d846829426d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/encoding.rs",
+      "bytes": 873,
+      "sha256": "82bcd4573524c41d5d83b785a45a8d3d19c513736ada137f8293c241b25f6a83"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/history/declaration.rs",
+      "bytes": 1122,
+      "sha256": "16d235eb635b6b8d62112b2a3dc021896a0a0049e606a5e467fb972986efe9e3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/history/discovery.rs",
+      "bytes": 4082,
+      "sha256": "94874ff22c2835f3660afc786ae4ccdf41afbe2d3e0282f810f693944755cd68"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/history/metadata.rs",
+      "bytes": 3191,
+      "sha256": "214d9c3484a2f98c1b0f6c5014b16c13a0ee077b7a6e97ef3cc742b5fdf4a384"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/history/mod.rs",
+      "bytes": 437,
+      "sha256": "043a6f7b519c334429bf30efba10d029871cf8bd11803739482d6b88ffb9dfbf"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/history/read.rs",
+      "bytes": 2754,
+      "sha256": "8243e73df2d084f1ce3dc2df0063d5e3c68919a282afddd6fd361dca918a38bc"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/history/record.rs",
+      "bytes": 851,
+      "sha256": "a5104b3f65b8ab334f3cf3166d7af942154ad0b7c1ee4429f394f76a5ddd6ddc"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/history/schema.rs",
+      "bytes": 4845,
+      "sha256": "b85e8f27e4ba7048c82a1b09122fe5abcc6fb4dba0e1693d9203b601c85e08bc"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/links/error.rs",
+      "bytes": 762,
+      "sha256": "a9d5a58e0b99e8752bc7094bb1bf76e5a06654b185c863720e40f355089b7727"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/links/membership.rs",
+      "bytes": 5534,
+      "sha256": "3add03c66a6c6707474aa5c71c15b79e0ee11bacb792b032def049d1ec931139"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/links/metadata.rs",
+      "bytes": 2716,
+      "sha256": "a5fdeccc53f72956d616778f1a60d55a6a85e59850fbb45731463f7e9f603cf1"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/links/mod.rs",
+      "bytes": 373,
+      "sha256": "f9b824ca32a198719bdfd785d145a12872c7d68c08c35b40812c4d83c198f6eb"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/links/read.rs",
+      "bytes": 5082,
+      "sha256": "054f6bd11cee4e0737ed53f94d3c9f548b2990680bdd8d2e40d608d34e25260d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/mod.rs",
+      "bytes": 3345,
+      "sha256": "e4acaaf54aaca23d96af400f8eb39ee9852ed09f0459cdd3eebe05590380fb61"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/multivalue/declaration.rs",
+      "bytes": 898,
+      "sha256": "1f46de6bbc42662f983831179628c9501d16c4f3619be4fdc0a502c885884745"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/multivalue/metadata.rs",
+      "bytes": 2220,
+      "sha256": "33262b98be52c1d9aa2874eac01937f54d36ac128314e690098f9bd8f2198af5"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/multivalue/mod.rs",
+      "bytes": 509,
+      "sha256": "49b0ff3b3cc2f0e2d3012afd09c9160d56f82168fab93a49a64782f530f80706"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/multivalue/page/metadata.rs",
+      "bytes": 3500,
+      "sha256": "125de511ee12a2101cdad9339d576a9001ccd819dfd42ee5a5959f4abf3a779f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/multivalue/page/mod.rs",
+      "bytes": 275,
+      "sha256": "cf120ab1393a4c07cd7022c14e88d2eea6382aa176af4c89d349499c0496973c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/multivalue/page/read.rs",
+      "bytes": 2096,
+      "sha256": "4127e62cb64d1da8e119bed40b0823a79bd60dc9c9aef119227db52612a91fe5"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/multivalue/read.rs",
+      "bytes": 2519,
+      "sha256": "f5efd93a7b2f2d5676fbf3a27db040178734901bba1a2afcd32012e84a19151c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/multivalue/schema.rs",
+      "bytes": 5227,
+      "sha256": "2ebcdf6c8bb9a5ae29ca92eb94cb6feb79d87db818cc9d8f96490dc8f45b2042"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/page/column.rs",
+      "bytes": 3296,
+      "sha256": "6f824460360acccc9e79e5677d2a4ca8c982f218ba6114abe0a49ae077e2df45"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/page/metadata.rs",
+      "bytes": 4402,
+      "sha256": "7731e9456c5064a5b6443e3aab4b2a89413e00b0614882f44ccb8ec399fc5f2e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/page/mod.rs",
+      "bytes": 521,
+      "sha256": "a24f26e459d8f618e9b2c1609d3b45a9ee4f15ab0fe3bd1e522a856e3bc690a9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/page/read.rs",
+      "bytes": 6797,
+      "sha256": "ef0cb5e20003b730caaa64db4a59216d69d4f5d3dcfcaab86edbb500628e4b3a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/page/request.rs",
+      "bytes": 1570,
+      "sha256": "1700654151c23ceb382f86ef352ca1edd59fb95c3f512c40f086c7b077bf69ce"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/resolve.rs",
+      "bytes": 7819,
+      "sha256": "03676b7ec3f79f623570942cb1d81ca755834ea982e988c0e5aa8c4ecdc7a89b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/complex/value_schema.rs",
+      "bytes": 1443,
+      "sha256": "14f30867a0644d74ac77786f71d410d6b5d1fe35c046a9e5d7c29b2af63619a4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/decimal.rs",
+      "bytes": 5011,
+      "sha256": "e1eaa431cb5c0e80371d5bd1ae2733355d7238e9c43b38d70a6a3f57f2a39c5d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/extended_datetime/mod.rs",
+      "bytes": 2405,
+      "sha256": "218f5537c642425fb864d0d7b94fcadc2a9430fa639a76f3a47cccefe3b58a9e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/features/mod.rs",
+      "bytes": 5334,
+      "sha256": "e5925de84667cc9a8c325ebb075786a97034e574f177594d04b1137561d8498a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/binary.rs",
+      "bytes": 7133,
+      "sha256": "1b4d508216710e637d623f3bb83447a306f0a58a784fe6545424d7462460f24f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/binary/selection.rs",
+      "bytes": 4847,
+      "sha256": "48d682d6b17fd60485d1d9dc3b55618c1af378df06ced7a35f7afa0f5109b5ff"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/boolean.rs",
+      "bytes": 950,
+      "sha256": "73199637a75027f891cf37a1a50d99f8c340089650e33c83590fa52571ca105f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/catalog.rs",
+      "bytes": 6760,
+      "sha256": "ccd6222da442a3f8a76af257f0d6f5078b111da88216ffffa0580d6547396d63"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/check.rs",
+      "bytes": 11476,
+      "sha256": "35bb8dc3dec75e37e4549268fe80c61c34fce32a07763d8c023c07cf98837969"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/check/ignored_nulls.rs",
+      "bytes": 2589,
+      "sha256": "63ab30cce8e393c4b6f1c74aafbd88467515b25628197165b661d84bda4f81f7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/check/projection.rs",
+      "bytes": 2788,
+      "sha256": "77cd0de48cca7fca91e87c742ae56b2bdae9aeea417e54e59c948a5629365bf8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/composite/columns.rs",
+      "bytes": 4725,
+      "sha256": "6dd39e8d760f81a79edc6b10eb9bb1be13dcd36ec1e72ae2af7cf85e839fef4f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/composite/decimal_columns.rs",
+      "bytes": 4758,
+      "sha256": "b7f682ed79f01f46b8a73af76d57115f0c005fd96026b604b6fa3f63e25afd0c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/composite/decimal_value.rs",
+      "bytes": 955,
+      "sha256": "698932e8c67a5b518dec0248b4115b35246e2b93f0fb509e9bf8023f6880f44c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/composite/mod.rs",
+      "bytes": 723,
+      "sha256": "bff6f2d98e473821315a6cd40bded55c7f17ddfd24d770c149f8ca9ca98f4c12"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/composite/model.rs",
+      "bytes": 2410,
+      "sha256": "56b5eab54951cc65f13b2a4b9c9e1a2d35347eac90b32d649746e4a3a0c23514"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/composite/policy.rs",
+      "bytes": 634,
+      "sha256": "16f115d2bbae6ad16c57b50d6779e0120f929ad4a44dd49b0889c956042f411c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/composite/profile.rs",
+      "bytes": 3040,
+      "sha256": "330090867bf0acf0d5a1ee8908bc733e9fa37e78778dfed978a6601cc5e0aa06"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/constraints.rs",
+      "bytes": 3428,
+      "sha256": "1ff3171daa1bb4e92aba964caa9a3fccd7a92c67e4bf5e989d8df58c4974f5e0"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/currency.rs",
+      "bytes": 1346,
+      "sha256": "80d7dcd7d51605e20e2fb487a21615b25d4070ef28ec4f3e086edbbed6f4f9b3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/decimal.rs",
+      "bytes": 12630,
+      "sha256": "d09c31e3082996c3b5c9942ce4e63ce4380ef168041eda65da473345aef424f0"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/decimal/selection.rs",
+      "bytes": 2146,
+      "sha256": "adba62e7ae4557cea541a478206045edc8a590638d4e1f7338e015431248a069"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/definition.rs",
+      "bytes": 5612,
+      "sha256": "12ae59f4f5d16f8c34abf09c6110b5ca44e4b31ca770e12be3aad1a02c4836f9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/definition/counters.rs",
+      "bytes": 4066,
+      "sha256": "f76b76ba4c4482ec86937ac2d1477551d2e25f070f37ce7444e5678e3448cd94"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/encoded_tuple/component.rs",
+      "bytes": 3657,
+      "sha256": "f2dcdf73798fd2fa1f1c1ab994e40c4ce0b5e3e9953726052e66fb19cf2c6cad"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/encoded_tuple/mod.rs",
+      "bytes": 6297,
+      "sha256": "089eb9f51bcf91acf3ff2c5a89f91d4cf7fd2d33d858ea9cde92127d5fb201bb"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/entry_digest.rs",
+      "bytes": 1489,
+      "sha256": "da96e3c7e75ba78bf9cbeb21fed3b790c3bf00616beeffd5ddb2a089bc54702e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/floating.rs",
+      "bytes": 1040,
+      "sha256": "0fb94cf0e2f9f40e7f802880a00c06c5fb8f628ca31c2190f0765b1f33907c5b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/guid.rs",
+      "bytes": 4831,
+      "sha256": "b1324af297b15a9dc27ad3de3ca027cb85ffd0392a0f35b6e6ff2f2430c1d08e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/guid/selection.rs",
+      "bytes": 1596,
+      "sha256": "8e80c47b796ebf9a10bbe8c81f4cd3a380e1371027e4f74dafef26fe0b1ef77d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/header.rs",
+      "bytes": 2062,
+      "sha256": "6d143aa03c6d3f13546d53f4ee686070129779397dfb6fef4ec7e32c477d25a5"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/key.rs",
+      "bytes": 7138,
+      "sha256": "aeada8640b289775d5eba701430721f22769092b98dcca9ea7620d328b5cfe11"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/legacy_datetime.rs",
+      "bytes": 613,
+      "sha256": "f5809616e97c56cfe96cabccbab7851a853391fdbfa2c4c644d5c2602d7cdedc"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/legacy_datetime/selection.rs",
+      "bytes": 4300,
+      "sha256": "5d354af75c2cbe03697271cac0da5a9d2dec5d5ad07abab7945fa793141582fd"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/links.rs",
+      "bytes": 7623,
+      "sha256": "e2d4543b619dda22f11b7facb5a9e8390b404a4f7db0a11cb5f25201a87e4695"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/metadata.rs",
+      "bytes": 2904,
+      "sha256": "7c03eaaf2898df05eed65cf642467d047ae6c78a617fb2900036f9dff60fc354"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mod.rs",
+      "bytes": 4801,
+      "sha256": "c609eff77248f570c52687a81622c01b607ec9261967a98c0531cae8de583b1c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/composite.rs",
+      "bytes": 8532,
+      "sha256": "c10a2d2e49ce78ee7ad7f0d8fdb3f82821eb96377a3b47b15a174fa265f2b84f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/delete.rs",
+      "bytes": 5966,
+      "sha256": "4d98ee80d87b57cb589aa7361ab2d634428793233a21d4a08d6451c8863f76f0"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/delete/requests.rs",
+      "bytes": 2277,
+      "sha256": "3554f775ac849c1a651c345f4bcc90c901eff22af4d7e191ce157278ac896281"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/encoding.rs",
+      "bytes": 4186,
+      "sha256": "950e742756c98f204e7a3c3310212e13608f8527fbb69649288f30f26a2005e2"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/insertion.rs",
+      "bytes": 10388,
+      "sha256": "f023818cecf2f0407b28b98b10e8e7fff61355965e4b25109591f9142493234a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/kind.rs",
+      "bytes": 3356,
+      "sha256": "c8bb1e0316f380878fa2141a30dfd37fd3e84917642e14e3d124fcfdaa876fcc"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/mod.rs",
+      "bytes": 2067,
+      "sha256": "e6683f07473df5877573fba80f872e9c5a270cf398221c0dcfab0fa004bcc5ee"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/plan.rs",
+      "bytes": 16473,
+      "sha256": "4158ed3953e92f5fc86663ec92c81ebec4a536fa37b94c3f3ac0e39e7a8cbf0b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/plan/keys.rs",
+      "bytes": 2636,
+      "sha256": "65b837eb3436c9801104f209bd124dc586d717f4e8e73b7d1911e6a9136051f3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/profile.rs",
+      "bytes": 4529,
+      "sha256": "0446b59e22c7bd3968a4d38e2a5a639595c308246854a9dd599237300375c546"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/repack.rs",
+      "bytes": 13959,
+      "sha256": "2749dc62d425aa694e7657f834c46053351a975563c943e2851b2a852d8c3723"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/replacement.rs",
+      "bytes": 6829,
+      "sha256": "bbe1b647b6e0ead8d797c0219dd5bb20dda746be0ea7efac91b87a4ee1aa4c62"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/replacement/keys.rs",
+      "bytes": 2470,
+      "sha256": "9c8fd74d850a31ce93c622d0dd757dc5905ae9c8b7d256c974566d9359b3395b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/replacement/qualification.rs",
+      "bytes": 2879,
+      "sha256": "60aa7c66a455881a4ffec19e4a8d3472cdefddeb5dce4e5ecd1d115d6fa4cb3d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/retained.rs",
+      "bytes": 3911,
+      "sha256": "dd61f27b79eaaad3c592eb00abfcf080d45e55e72c53e11315ad0d25f716b294"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/retirement.rs",
+      "bytes": 3803,
+      "sha256": "e258acfeccb52be880d2f227e536e938f6095f1d51258a7642e9508ff5b454ec"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/retirement/audit.rs",
+      "bytes": 6032,
+      "sha256": "90bbae471c9efa213db23cab47832c17ebed597f39a694184faa1fa3981beb78"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/retirement/global_audit.rs",
+      "bytes": 3493,
+      "sha256": "59e35716a18d1e22ea982827fff2cd70ca50705bc697e22eb396ec71dcccbdda"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/retirement/maps.rs",
+      "bytes": 6601,
+      "sha256": "576b94d287e323e04efc0c687dd207691312f79d77796235eaa5f266f96413b0"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/retirement/ownership.rs",
+      "bytes": 2361,
+      "sha256": "3a8707eac8b3c939b5316c3a2793b8102a9f6eac96267e62db33367e5fbf8bc9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/allocation.rs",
+      "bytes": 14850,
+      "sha256": "40d69df0d13fa0e435d4e07a613c5c74660c320af14d803c4d846704597cb2e3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/fitting.rs",
+      "bytes": 7473,
+      "sha256": "9a4bb8441661e2629d748dd0e9a2af5d4e56deb0546d1999f43ee5b20f780d9b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/framing.rs",
+      "bytes": 5460,
+      "sha256": "ee8f8dc560be86abd481f2d1e0126685e23f2ca05f691aa17f4e02f542041902"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/maps.rs",
+      "bytes": 14353,
+      "sha256": "48518dcab6fe5dd5c5f195b1f5bf183d61a3080315f7ff6d0b526088a68891e4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/maps/inline.rs",
+      "bytes": 7606,
+      "sha256": "1924b4ac14ba24640068953b8d424e9c70b88d2586e36da54917cafa77fa144b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/mod.rs",
+      "bytes": 17083,
+      "sha256": "f0e7f848b7c213b84fa4fb3b588f1cb0fbe0772e8408efa1aef49b24ab711760"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/nonroot.rs",
+      "bytes": 1533,
+      "sha256": "9b077a7473d785fbc2427d7edfacc9e6d832b6b6461d5982b7075c3bcec75269"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/nonroot/framing.rs",
+      "bytes": 7830,
+      "sha256": "cd4b550f205f3c17e8b39b6edf3039e9ac56ba205a26c735821d68dda138ab3a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/nonroot/replay.rs",
+      "bytes": 9037,
+      "sha256": "14dcd3c74b4c350e1228cc48cdf87d4fa416175c70c895c26720d867a846239b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/nonroot/replay/normalize.rs",
+      "bytes": 7659,
+      "sha256": "828eacba42cd2456ed4d58a2d2498e6eac6f0ba8e547279d55b5e8f7522c4823"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/retained.rs",
+      "bytes": 7774,
+      "sha256": "0f09f84dcf8bebc0f41a05750c193200e6becc8094c2c65373e273f02f632559"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/slot.rs",
+      "bytes": 2988,
+      "sha256": "34b5f2f26772dc67f59228f087f2148f411025a207ea5927b1f5f3667c8a0825"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/insert.rs",
+      "bytes": 10732,
+      "sha256": "6348a8d8aecb39e3bb128639ab03f3ba4bf30892ae18a83d65bb1098bfff4446"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/insert/tree.rs",
+      "bytes": 7084,
+      "sha256": "3616ea03539d08dfc1391d204fad4fbe98fea170b20438227850352426071799"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/insert/tree/layout.rs",
+      "bytes": 12593,
+      "sha256": "7b5d583e93c2dd1cb40822f8c774db19b4872e2d7e961c4382db980ad57360ff"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/insert/tree/source.rs",
+      "bytes": 6377,
+      "sha256": "f44e924a294e6da0e70e4aad78f4edf2f56858727e7ff1fb60127687593d14fb"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/insert/tree/write.rs",
+      "bytes": 7507,
+      "sha256": "736afd89fdd86d224b4e95bcba1fa978426f3b7b78da49495429c05dd39603c1"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/maps.rs",
+      "bytes": 1890,
+      "sha256": "80c0d598f3936ec2295d4367f6c8b461a9807db649d0c9597a883bec345ff5ee"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/mod.rs",
+      "bytes": 9838,
+      "sha256": "6d1370c647996daeca3ace32e864c5af161b4823d8443b1ace80ca748ab9005b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/nonroot.rs",
+      "bytes": 903,
+      "sha256": "918c01bad54fa53947b3e6e43fc05dfd7455dd93d2b6e8745ad4f530cdfd1f30"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/nonroot/arena.rs",
+      "bytes": 8790,
+      "sha256": "254b137ffb9ba014e4f488553468ec222641d5c79b65b025807b953619a9ed0c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/nonroot/arena/normalize.rs",
+      "bytes": 5091,
+      "sha256": "42584413473cd632205732bdea24f1713d330a63d3b2efe5ffff5965c6d09e9f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/nonroot/write.rs",
+      "bytes": 7355,
+      "sha256": "ef1ae56242298485fa117e4dff5f5606f42e33a4aaff9a4ff5813c7c1fe94853"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/pages.rs",
+      "bytes": 4503,
+      "sha256": "dd0dbfe22d95cb93836fd14c232563f81428ef319820195fe9030555ccd79905"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/slot.rs",
+      "bytes": 6534,
+      "sha256": "6454089475ef20b69975ad0ff81f357ff0ae222ae0aa7667ffbe01f8c64aad43"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/tree.rs",
+      "bytes": 9423,
+      "sha256": "4b9bfb9cea0a000bdc33ff4bf158f468cfe8b1ca2089c5ede753600240416091"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/tree/contraction.rs",
+      "bytes": 7494,
+      "sha256": "012fb5850714f7d3ae0111f6479d10367855a23f13c4ff0782287a021110c5ba"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/tree/deletion.rs",
+      "bytes": 4142,
+      "sha256": "f461f3a5460b0ce38e45bf122c303b43458ac0b5620139c9a3d56e3bee75f201"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/tree/replacement.rs",
+      "bytes": 2892,
+      "sha256": "855a33fabafaa8fb2226f138265ae41e3ced49d5d959f0d90b818249c5b56db6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/tree/siblings.rs",
+      "bytes": 6764,
+      "sha256": "03d5656ee995d1aceb1dda120bec074ee017a83cefd6c017599b62b6004440b2"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/tree/siblings/audit.rs",
+      "bytes": 4441,
+      "sha256": "729ae7840f1e26761adbd1776157e0f34ab02e4244e4cca73e0e8578405c52ae"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/numeric.rs",
+      "bytes": 7565,
+      "sha256": "958b445c9b2d7c42663c9d8180c56b4eed1bfc033801a6a843b17768b2a2be5e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/page.rs",
+      "bytes": 9645,
+      "sha256": "4a7f7528724f2d489660d66f51a88b5497a6d90b20b5073a01e030509064bfd2"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/profile.rs",
+      "bytes": 10498,
+      "sha256": "93016c3e5a9b5c9bd5cb3f6acc96265a79a0e5270c025a3453d0a890bed79690"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/projection.rs",
+      "bytes": 7250,
+      "sha256": "2726ef1d19726d4c44a4cdff3579d32802d95d768cd8975828cfb30e3b590ce4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/read.rs",
+      "bytes": 26047,
+      "sha256": "0a90bf3991161dbe73d936ebcaa776ff73f1c652f8c490afc5323f6e58fb0253"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/read/membership.rs",
+      "bytes": 1475,
+      "sha256": "8228faf002b1d7be097d67dbf7203dbd043eebcecc062fe4206314aee0ec6b33"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/reference.rs",
+      "bytes": 3372,
+      "sha256": "efc5ea525293a1add23ee4ac2f1cfa8dfcf5da06e29f6855baf921d70ab48730"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/selection.rs",
+      "bytes": 6382,
+      "sha256": "9905919d43de51c89e9d2f62f7ae60384f0e6a352b03255e1df02cfbf514ae3f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/text.rs",
+      "bytes": 8592,
+      "sha256": "54ff3c71cbda987ece2ae29d683ff50a16568054fd9d52f44f71e4c0faad0c1b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/text/equality.rs",
+      "bytes": 3164,
+      "sha256": "b7c2ed0f309c5ca0653f2f42f37ec47ba6923910b391778142eeba5bed13c617"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/text/selection.rs",
+      "bytes": 8777,
+      "sha256": "e11654fe79734efb7620a39e435678139b21eec48cfa4847cd396be286de8f21"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/walk.rs",
+      "bytes": 3908,
+      "sha256": "72361dfeaddd5ccb55a57aa4369490c535cbd8f2156494169af9929c264774f5"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/long_text.rs",
+      "bytes": 7012,
+      "sha256": "899431cb15af2ae4bc029428340e9c440c8930a2f27b938b5a8415eb7f10937e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/long_value.rs",
+      "bytes": 6077,
+      "sha256": "7c50816beba0fa4d874998fa468d003ce651a94e1c272b4ff24de0ae08c51a78"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/long_value/check.rs",
+      "bytes": 12981,
+      "sha256": "73af3612fdc16a1476154c0edc2d38042df977e543ce7c2c7bea1cb7fa680727"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/long_value/definition.rs",
+      "bytes": 1135,
+      "sha256": "bd3f32f46f5a1a2f9d7eb0c16144b2fa15706a4ccd6e4195f1ae48e1d48aa9b9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/long_value/maps.rs",
+      "bytes": 8753,
+      "sha256": "b41b46de891d5ca31b0b6bd8c192ef10d57258f805cd7ef8456b6fed97dd4170"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/long_value/model.rs",
+      "bytes": 5493,
+      "sha256": "f927db6230401b882c93cf66921b70fca385bfd6686e1ce4870141d01be3b624"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/long_value/profile.rs",
+      "bytes": 561,
+      "sha256": "75b163890c4806b9c27cbf6e6ac7ca6b9cdb9e54576d1a0b8d99e497aca5cde8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/long_value/trace.rs",
+      "bytes": 1274,
+      "sha256": "b5d8bf6d4343eb5df232d74b00306efa4b18fce5740070898f0e40286e51384d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/long_value/visited.rs",
+      "bytes": 1802,
+      "sha256": "a44c718e8c339aec930b6e53bf744a98aa6838e997b632574f7e0f70b7b4eec2"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mod.rs",
+      "bytes": 4166,
+      "sha256": "0269baafe84a49ef9f2f671d9aed875a0a457e5246f8ec46847feb0a3c72d1e0"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/append/maps.rs",
+      "bytes": 5231,
+      "sha256": "b7cf83192fcdf2eba2db6cb1655a575429ba19348d4e09622b01552f64a40abb"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/append/mod.rs",
+      "bytes": 272,
+      "sha256": "df924d2b041088684c6353803e92fbd649b11023643aab4d09a824ba158a27fe"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/append/state.rs",
+      "bytes": 8429,
+      "sha256": "60d7604e3fcae601977b08408b6768804bf66c617265bd4fff97bea7ed81bb02"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/apply.rs",
+      "bytes": 4057,
+      "sha256": "ca2bb8af6e26dc2161aadf67be5687b2a8f7702f873eb5a21ed0687eaa01cd32"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete.rs",
+      "bytes": 4796,
+      "sha256": "103811432464e88d39bbcdbc79f7b7739310e692c3e1499a8182e0a443febbb6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/batch.rs",
+      "bytes": 8475,
+      "sha256": "4fa00a5f21a4fb6db42332f90fb1b8b4a50e2e591717548270ec5bb4d180e1e7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/cascade.rs",
+      "bytes": 4367,
+      "sha256": "73574b2de1e6143eab823dbab79e475c62316852f97ae292766f1f857894bb02"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/capture.rs",
+      "bytes": 2771,
+      "sha256": "7ab2bb9969fe0416be368780a4e409d05a89d5f376368ed0d7c4f9ba87ef18b0"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/facts.rs",
+      "bytes": 3840,
+      "sha256": "dfc2201b25b250ad9276ae21a47152e9d67301865e641d07bfb221e32a0fb931"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/graph.rs",
+      "bytes": 8176,
+      "sha256": "8baf76f0613696c7be3e0749f1855eee5aaa458a2e17d4507fc1b2b23f10590d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/state.rs",
+      "bytes": 10608,
+      "sha256": "06d1303dc0374694dfc925f887a42b9232f8cef6dee3144a7b2ffb4240aeaee2"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/patches.rs",
+      "bytes": 3533,
+      "sha256": "bcdcfa7295e52047eb6c9b3e043ed24c9209df440e4c8c40d9603fc731d8a534"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/relationships.rs",
+      "bytes": 1817,
+      "sha256": "2de3bb7918a159214f47d0ec9aab64c812ae2747a8f2f8fbac36d90cd9c3b49a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/error.rs",
+      "bytes": 1828,
+      "sha256": "c72688d51542f6a0b2658545b5a7468ae3dbcd7f16e5824f2e7ef9ea58cde44d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/field.rs",
+      "bytes": 1487,
+      "sha256": "1ae1627f984c534f4b30decc04aec334440447a3031bd063f84b5b07c1bfbd21"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/mod.rs",
+      "bytes": 124,
+      "sha256": "fadef469a2decc78c438bf9a128c8e31aff9cd2b79a6b245f062586fdbcf52aa"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/patches.rs",
+      "bytes": 3546,
+      "sha256": "c8fdd2a48ab57bbbbed5f32a030b36ea427f74f5b40961cf45a8b06a2f636ce7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/plan.rs",
+      "bytes": 9012,
+      "sha256": "a0d4b07154d67307fbeacfa4a73afe5ee34ebba0b623625d30e59ffd090fc5fb"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/request.rs",
+      "bytes": 1154,
+      "sha256": "9e9b01309c396cdc79877e1474c211b1b407800128d5b3d6153a5a20ea5f82d4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/cascade/cells.rs",
+      "bytes": 3247,
+      "sha256": "e8720c1917f50bd14db0f1b2a2b69cc2a67decebbb161fac172cdc183c64e4ef"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/cascade/graph.rs",
+      "bytes": 9112,
+      "sha256": "0dcab5d6435c574d63408e5d818d83691174ec888b775d29f386bcc1976d9205"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/cascade/mod.rs",
+      "bytes": 32,
+      "sha256": "1a34ebbac839f8973531ca795fbb65839822606af7475d59d6a7d5ec8d996d95"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/cascade/plan.rs",
+      "bytes": 8112,
+      "sha256": "a49f9a1a9f3c28549a182e1876e168e8ae17b4a316654616b528d10118f4baec"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/decimal.rs",
+      "bytes": 2475,
+      "sha256": "6c1c0fb56805566da28ea24d3aa152e4297a72740ce94e29ffba16fd4993bce5"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/encoding.rs",
+      "bytes": 1533,
+      "sha256": "d55f15815e4d19b90ecaba0641a3753333abe973392cf45d09f2b9cc59ea9ee8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/masked.rs",
+      "bytes": 9517,
+      "sha256": "5391165b1cee40f458dc1b170b05f3f33bf47cbcf802f472eb98c6a97c73959d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/mod.rs",
+      "bytes": 287,
+      "sha256": "4949d94a12a4ba23ad21bd7bf922f5a76e4a8ae6f8cb2cbc3fdffcba5166987c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preview.rs",
+      "bytes": 5373,
+      "sha256": "08973433f30f75e98da9ded9e03a6caee89cfa9f9aa08cbd73aa97c9d2b7833d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/update.rs",
+      "bytes": 1784,
+      "sha256": "d9e2b7f6907e81c8e3a6b7e2e80381fa25cb10d040244116cfcf7699bf592490"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/gates.rs",
+      "bytes": 10292,
+      "sha256": "2f0da0e3b8886e454fb9a0513cbdc3151bae04ab0985391b78e46f1d1bf53e2d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/index_append.rs",
+      "bytes": 8521,
+      "sha256": "f100803d90eb3e705c973c92bb5d646ac87222e9a65cc43ec85ff20b77e556ba"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/audit.rs",
+      "bytes": 5270,
+      "sha256": "967da2cc2e40a5b9a078db29868413fd0c240ede33cb3ccedac9b1348799408c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/audit/data.rs",
+      "bytes": 12615,
+      "sha256": "1d1ef0c62bc3cea7d3cde595ba6436814bc12b670df5cf804ba0fa25269f68d1"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/audit/primary.rs",
+      "bytes": 17209,
+      "sha256": "635f2a3f0e7c8538f8fd18584cc7e9f2372b9339e1b55785f33dcf8c373766fd"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/audit/primary/split.rs",
+      "bytes": 7589,
+      "sha256": "d95837b01e8638cf35bdc5025d223989c0a0a2aa3afda5ee03bb01b96998e131"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/audit/primary/split/framing.rs",
+      "bytes": 5374,
+      "sha256": "056a20ce47c72e1fa20245ed4a04367ae6ffa657409adf63823ba636a1d06ae6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/audit/primary/split/maps.rs",
+      "bytes": 13946,
+      "sha256": "7d178e1af023a89d366e96ec8579bff339a995426c12f3eebafe12b89c92058e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/audit/primary/tree.rs",
+      "bytes": 2597,
+      "sha256": "440ac3620a247defe30783cef98b5731d8cb6c71ae33db29d3587229df9fd3d3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/audit/primary/tree/frames.rs",
+      "bytes": 6759,
+      "sha256": "162ece6ba8e4d4184ddaf35b6b1dd80b9c106783c488f280f8acd3d734345358"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/audit/primary/tree/normalize.rs",
+      "bytes": 8833,
+      "sha256": "113f1cc352e60ea6b287269f6b4c401f8509be4c5ab4a4dc2ee235c90878985e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/audit/primary/tree/source.rs",
+      "bytes": 8586,
+      "sha256": "4b0efbf4f3a34dd01ab689869a8dd6ca22046f9368b2ab7990531fbccc406d9c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/audit/primary/tree/write.rs",
+      "bytes": 10445,
+      "sha256": "fbbf57075de7919d9d3b1493809b5cb1546429bc64752d64326aacc52cc9d351"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/audit/records.rs",
+      "bytes": 6440,
+      "sha256": "89493b6258d60631aebea0c8c4540f8b29d222d1b1ef4dab6041930404a2fab7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/audit/records/fixed.rs",
+      "bytes": 2979,
+      "sha256": "b5a18dde453cc3e4864cd0b6d414babcff8c2867277d53817afb7115b7236a51"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/audit/records/layout.rs",
+      "bytes": 5120,
+      "sha256": "72b3e5588a6e6518c51111e0a9e88fb7f74517e5ef9b08278c3d2c6103425994"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/audit/records/payload.rs",
+      "bytes": 3145,
+      "sha256": "20676a48af2cfefef7fa101c364295058c8580023b7955a5f974e9de537a45d6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/compose.rs",
+      "bytes": 7605,
+      "sha256": "cda3ab90998cb6adb6a0f474acf3fa3b0f306982278a78e682652bdd25fafb75"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/counters.rs",
+      "bytes": 2919,
+      "sha256": "7e9be9fa052d4b8eaaaecff10b7418c859f4fc1b2311d406ae2e2a3c47b7f199"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/mod.rs",
+      "bytes": 7253,
+      "sha256": "bb01eb7c77fca0f17bdf6aacfc3d08755426b3804f721ce4fd2b9a4d6c4bfad5"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/placement.rs",
+      "bytes": 9669,
+      "sha256": "8197d6349456e27392b4fcd5102fc1a5679195fb5bdcd8aa145768541d7fc7da"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/policies.rs",
+      "bytes": 2950,
+      "sha256": "87ee7008d27382f1201b5d12ff9f185d66e131ac2ccf435db2e6a3c2c37233ba"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/primary_column.rs",
+      "bytes": 1787,
+      "sha256": "af419c9c835e724831381cae1b224993e784492c336fb1e310314d52a3288506"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/record.rs",
+      "bytes": 5918,
+      "sha256": "43ae9c55f54c3f81f703e26ce1b5dcbf00e3d9d4fb925808e6f8e744a4daff46"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/record/field.rs",
+      "bytes": 2801,
+      "sha256": "e7f5e0ce0826e799d3e1871d5d7029e4420589a2c99a90bd1b2f11bb6b2c58a5"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/record/layout.rs",
+      "bytes": 3730,
+      "sha256": "eddc2493c9b84f216863db7be0dce4b28a5748c13ecebb492f3f69ac727f8553"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/admission.rs",
+      "bytes": 2680,
+      "sha256": "c24d7cb0c9deb61de1cbd945de942cdb3552663cb463c1d4e71ab57fb2d3f742"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/audit/chunks.rs",
+      "bytes": 7092,
+      "sha256": "351da140ee0937f9935969aaaee0faa752db7f32cecf353d6c51960531a8e7aa"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/audit/mod.rs",
+      "bytes": 773,
+      "sha256": "6ceede418704bec3f58c7c78b11018d64a04913065cf15549fbcc092478ca5cb"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/audit/pages.rs",
+      "bytes": 10301,
+      "sha256": "e60fab3e25c80fdbc4c489bb4af7af79c57e0c53930eb1c40be363da205d8a36"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/audit/payload.rs",
+      "bytes": 3951,
+      "sha256": "faab800b5873fc244f962452ce9638620b5bf47c33edfe6d72d64243b1b2ce50"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/authority.rs",
+      "bytes": 4164,
+      "sha256": "323c55c95cebce630b40da300b8825663142bef79079c54b9a40dcdecaec9511"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/encode.rs",
+      "bytes": 10298,
+      "sha256": "435beb366e9f6fcc91cb645ca4773bcbe4e23fe71b2421adf78cce79314f90bd"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/finish.rs",
+      "bytes": 5620,
+      "sha256": "4a21a9abe1ebc22dcbc1d27a859b70326daedd2eed331c68ee40947f4148f1f8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/map_audit.rs",
+      "bytes": 10488,
+      "sha256": "35943c6be21086ec136463cce1e06862c9673afe571ed4aab4120c1b9e48eea8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/maps.rs",
+      "bytes": 10561,
+      "sha256": "ca4c0f726bed5e6edd3a208b7d25d788b67ab94fc71d38d6dd4e03c4791d5175"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/mod.rs",
+      "bytes": 2111,
+      "sha256": "51a9d7993ccda2d858f0e1f6447d3a5cf42247b4106b8ab9b960e99b9ad572de"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/ownership.rs",
+      "bytes": 8437,
+      "sha256": "4eea47b775308871e8de811d1721fac21815402d7738cfc976a5fe1d1ac33361"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/ownership/profile.rs",
+      "bytes": 1200,
+      "sha256": "e7f22d7ba9ea466779bb0ee22595098e6697781e6dd3e69d841823538606a440"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/placement.rs",
+      "bytes": 13636,
+      "sha256": "800472bda4cc544dbb0a4b4d308b5143a467a65776bb8f5e2cfe0d3c6733de09"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/stage.rs",
+      "bytes": 7332,
+      "sha256": "b99da019eb4ffa040918aca699f6b655c281b8636f1d72c4c0c90abd17ab29bc"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/value.rs",
+      "bytes": 1156,
+      "sha256": "769ab9cb82ac30ee75a7291353f245ae5a7ae4358c7ee8bb6ed0d3c722c45001"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/map_authority/catalog.rs",
+      "bytes": 4774,
+      "sha256": "c4f3b9a315674fee655c37fd5212a2cc0a0e31eb5e86a7a56914fa4824870ea2"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/map_authority/claims.rs",
+      "bytes": 6885,
+      "sha256": "19ee53983a02883ffab10a4d5bae641bff8af1a91a279f6f68f47bcb54cf027b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/map_authority/mod.rs",
+      "bytes": 1014,
+      "sha256": "9979330772851e66c768dd00e399c3d20509666f10728cae046cadd9ba0cfbcd"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/mod.rs",
+      "bytes": 1530,
+      "sha256": "1c554f7d49c5d28122663efb4bb50b762c157388064f974da434ecccdd482e8c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/page_update/audit.rs",
+      "bytes": 13188,
+      "sha256": "0d7a9b643f1fc85d401a4b3abf5f4f19934a49a17a424b9c8a957d88bfddff2f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/page_update/forward.rs",
+      "bytes": 9263,
+      "sha256": "77e4262b67cfe471c23514e3411f69d77994e480e1bea53ee7834f3af8bb7889"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/page_update/mod.rs",
+      "bytes": 3777,
+      "sha256": "52e9361141e07954fdd39922c0caf1ff2c025485d05ddc52f21de76f3552d485"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/page_update/record.rs",
+      "bytes": 5991,
+      "sha256": "bfa301a84504b3dfa84d387f4b73264dbece4bc6050a0f8956300e2e37e85ef4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/page_update/roots.rs",
+      "bytes": 5600,
+      "sha256": "8b88d582b477320796a5a8e4f909e6f2ffd04f347d54b469f6f3d2db1572d86b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/page_update/space.rs",
+      "bytes": 6113,
+      "sha256": "c9432bcc61875a6c6351b201f31be46db07fe2e52b60e0880eb49ae46720b354"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/page_update/stage.rs",
+      "bytes": 9955,
+      "sha256": "5c2579009e9a606d2fcef5b6a7d6e0c0926393a318043752b822ddd9cefffb84"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/patch.rs",
+      "bytes": 254,
+      "sha256": "ccd1ab1cc63545b8d237eb82fc0bc56a95962496ee82feb3ddaab6593af57e25"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/physical.rs",
+      "bytes": 2929,
+      "sha256": "ee8875bcb573b359d0bbc49a837f5d31a73fa1cf8ff01f2b48cb0db295b2c1eb"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/plan.rs",
+      "bytes": 6083,
+      "sha256": "3382e0f7d011a7787053d5e9ce0727b68c7dfb021c45fa8fead8dc1e445a98c0"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/preservation.rs",
+      "bytes": 1929,
+      "sha256": "4dd07986fe51b252f3ec0934ad1a3382690b8911db729eb86a97ef3bac496201"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/preview.rs",
+      "bytes": 3687,
+      "sha256": "d2923731c72c438ddd0ea4a216d3a5f9a6919771ffd71b8fb2f9eff0a64ce49d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/rows.rs",
+      "bytes": 4611,
+      "sha256": "1a4cc583d82d907e9b7d272dddb246dccb32035102fd0aea343334f6867cc556"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/rows/directory.rs",
+      "bytes": 3426,
+      "sha256": "9b02dffe91a83b6b51c8e6c13e373bdde7f2f9c30cd68a2ced4e86a37b32ae34"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/slot/mod.rs",
+      "bytes": 2999,
+      "sha256": "b70416785a18993c532cd5482efb0df2c83900a9c90dfd1eac586a5bd2b439ce"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/slot/stage.rs",
+      "bytes": 8557,
+      "sha256": "b7d9aec5304ed25b00a7c873d18c134edbbb7e7d8baff1f80070d03dde1fec2e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/slot/storage.rs",
+      "bytes": 7440,
+      "sha256": "7a42fc9d76cf74feee6b5e0691d8376c31f8aa8b73224b57e17aaa6c44b29982"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/slot/update.rs",
+      "bytes": 1155,
+      "sha256": "9425f948b70150deb7799391058e458450029c498a04a18cd10b37e5f5e23513"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/split/authority.rs",
+      "bytes": 3088,
+      "sha256": "d3c8a30a0b294bd48af0cebfcaec35d3240971bad731a665418526e2ef432497"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/split/binding.rs",
+      "bytes": 2072,
+      "sha256": "d262ec2a127382dd71f3e202a5c062bdfee77001005097828c01b9d8a5c8b728"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/split/finish.rs",
+      "bytes": 2579,
+      "sha256": "8d28b5caee7e18b2df9a892f61c0ab27821cc38380c94e34bd8262786f6d0c7f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/split/fixed.rs",
+      "bytes": 5485,
+      "sha256": "95e8431960c5e1f97a256f7d5321845edd6d390a9fdfd20cf409f55f55fe611f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/split/mod.rs",
+      "bytes": 5336,
+      "sha256": "470088aa9cb844127c1b9637e416bb8e84245f36f158605e5758cd2beadbf235"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/split_slot/authority.rs",
+      "bytes": 1870,
+      "sha256": "7dee7f480408fcf267fc2d504ea1a842a8e73f5bdd71ea0f4a23893e785bf2e7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/split_slot/finish.rs",
+      "bytes": 2078,
+      "sha256": "a67c182cfb732f8f25b91dc5f10daf6b085acbb3c10121f828f5e4d8703e0b5d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/split_slot/mod.rs",
+      "bytes": 3579,
+      "sha256": "873f10686b4a6bcf7c0829e988233e01c92f6c9e25ca6d3a2cd38ac91a67b446"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_split/finish.rs",
+      "bytes": 2064,
+      "sha256": "285849958565d6259c580c287dc37df3a62b5d98b2ff36f5c6b87cd6573b17fb"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_split/metadata.rs",
+      "bytes": 6467,
+      "sha256": "f9bd60152641194965c6d5fb1f6495f5e3d5b5ae22eebbef2d7db63ac2a861c7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_split/mod.rs",
+      "bytes": 4621,
+      "sha256": "babce79fa4dc25cf9921e678fa3820b0563fa22529caf1e5dbc3dea3d102d72e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_update/audit.rs",
+      "bytes": 8572,
+      "sha256": "66c93e4c507cd120519ee423eeb138279e74208749ac20f029c230f1f7a6cb00"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_update/authority.rs",
+      "bytes": 7573,
+      "sha256": "56caad00af9f9960431eb95f4fbee97a843e19ec8875b4f478a45e68914af70a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_update/finish.rs",
+      "bytes": 6413,
+      "sha256": "13fb947b4dd25147b814185917dd1eed4ee3c98c5d8a8d4453c040c420ca05b8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_update/map_audit.rs",
+      "bytes": 13996,
+      "sha256": "86c01b62b1c4eecb782f386e999d1a604f318174cd5b4b9de5dfa5b2ebf28698"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_update/map_audit/certified.rs",
+      "bytes": 7715,
+      "sha256": "e3fb616752ccddf045fb30289c0da21538c79f7b8ab7e742da0c8fbdf4d8149f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_update/map_audit/hint.rs",
+      "bytes": 13895,
+      "sha256": "6ce3cef850c3530ca425ff21b486ed5ea8ce9f3de283795369f893dc19039faa"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_update/maps.rs",
+      "bytes": 10823,
+      "sha256": "b66bc4a9b125fbc9fc9cefddc13bbbefa84de0b15f833cd4dc4498e4eb967ef2"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_update/maps/hint.rs",
+      "bytes": 10077,
+      "sha256": "58e830c37fb8d7b66d622c7d5b5ed3123c87a993d82341735bd252bfcb3e44cb"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_update/mod.rs",
+      "bytes": 3812,
+      "sha256": "2a3324d68755b4292bd35b7a6d0c26ba008a660de5862da9a9117334acbc168b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_update/placement.rs",
+      "bytes": 14568,
+      "sha256": "fd89b0b916846946c6b33f71e7952eb1a2b5e9992122415ff18da5c8b6b0f4b3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_update/record_proof/mod.rs",
+      "bytes": 5713,
+      "sha256": "096a0c133e9b58bf675964f2e490498ff43c00ac876d7e1e708bb258450e9012"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_update/record_proof/payload.rs",
+      "bytes": 2728,
+      "sha256": "6696df73d833c852f8b4c9b7724ea52708a0cae687e387548367b387addb1936"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/page.rs",
+      "bytes": 6016,
+      "sha256": "39c18fac7cc81d07df6c3640d2a40173e5f50e08fd648c25731074bedc12a9b1"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/page/cursor.rs",
+      "bytes": 8292,
+      "sha256": "ba29e20e70ebef3b80bfac22d7fde201b3212aa8722ccb0d7c7630fd7f4b50b5"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/page/cursor/limits.rs",
+      "bytes": 1454,
+      "sha256": "b658863c5fff81eaa1512981408715db5b6ba641619bcb80269546a492ea8445"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/page/cursor/materialize.rs",
+      "bytes": 3927,
+      "sha256": "6722e9237aefe10a1b4367e908e0c5c8d3d65b82bb5699ca023967d2a1144ea7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/page/records.rs",
+      "bytes": 1789,
+      "sha256": "b91784750ae4b5c988110dd77db21b7f11d6ddda57f8cbf6e2e97b357886b361"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/page/traversal.rs",
+      "bytes": 3815,
+      "sha256": "7fbb8866e0fe4c081cb0f34693478fea55be74076c0991f45a3107208a8aaed2"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/record.rs",
+      "bytes": 6237,
+      "sha256": "24658b3c29603dc3030e59e53390f83c58b38c9f54b5034e454f9592db7092be"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/record_layout.rs",
+      "bytes": 7622,
+      "sha256": "c2492d94c1b939c7022124c55194fbebb8388fae887d0f89e2bf1686a1bd3ed3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/row_layout.rs",
+      "bytes": 2610,
+      "sha256": "fee7b02d0973e942d4a060aacbd3767362cf11b50b36b1b7f76da978c06fb411"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/schema.rs",
+      "bytes": 11924,
+      "sha256": "d3d9511f623d65832c95d6872ba6550c3dc5936006688948bd88a22b524bfa02"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/security_identifiers.rs",
+      "bytes": 10403,
+      "sha256": "123e8c5e24f1e4c632a7419d8c16c5ad4767722a1b9fc5664c43cc019e1b4549"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/snapshot.rs",
+      "bytes": 7709,
+      "sha256": "ca89112e517081381e91009b6bb2d228b33866d50f73c9eb591ccb5cd00821e1"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/snapshot/projection.rs",
+      "bytes": 1488,
+      "sha256": "8235172338f8037ca96e157cdc0039a6e5ff1ad8aeb70a3f8cd844945fa9a67e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/transaction/mod.rs",
+      "bytes": 3728,
+      "sha256": "00f463007c7304da1cabf8f5379bda3b9f49cef079a56e81c88ac769c6143374"
+    },
+    {
+      "path": "crates/foundation/tablecraft-core/Cargo.toml",
+      "bytes": 533,
+      "sha256": "49600f537c31042b1755be9278df98afc4d248b26ca2fdf9450e129c3b17dc1e"
+    },
+    {
+      "path": "crates/foundation/tablecraft-core/src/ids/cursor.rs",
+      "bytes": 1365,
+      "sha256": "7348fe3c4ace6246793de9ca5e65add81fa127ed0a1fbcfa5e3035950429ca6f"
+    },
+    {
+      "path": "crates/foundation/tablecraft-core/src/ids/identity.rs",
+      "bytes": 2100,
+      "sha256": "5aaf4c864a2b4deba7fd19580ac531fad1ab985d4c326826a1c834c426176a6d"
+    },
+    {
+      "path": "crates/foundation/tablecraft-core/src/ids/mod.rs",
+      "bytes": 1272,
+      "sha256": "88701c0c9092647ef38303a4b2e2226d8a6be4f8fc63fb4746551ca9b556df37"
+    },
+    {
+      "path": "crates/foundation/tablecraft-core/src/ids/record.rs",
+      "bytes": 1560,
+      "sha256": "43378852bf03d6582bc99722a4cf510940c16789110f4ed12b5ce66eda6d882c"
+    },
+    {
+      "path": "crates/foundation/tablecraft-core/src/lib.rs",
+      "bytes": 529,
+      "sha256": "5e07d3d673987566b489359b2e92af3d18ee4a7b7fe2f0162a768b97c31cbfe1"
+    },
+    {
+      "path": "crates/foundation/tablecraft-core/src/limits.rs",
+      "bytes": 5416,
+      "sha256": "b80d31522b7cfbd0cfd7623f4493b417a3e3c0f55185cf3834df73196c00a3ad"
+    },
+    {
+      "path": "crates/foundation/tablecraft-core/src/values/currency.rs",
+      "bytes": 2919,
+      "sha256": "043c03bd0023b91157419bce25fadb9a5652bdf2a933ab77d49ab63edba40388"
+    },
+    {
+      "path": "crates/foundation/tablecraft-core/src/values/datetime/calendar.rs",
+      "bytes": 738,
+      "sha256": "96bb88e46c3c1d8292c1b9f8f5d65029a929d889dcc3c417a628b93d77167191"
+    },
+    {
+      "path": "crates/foundation/tablecraft-core/src/values/datetime/extended.rs",
+      "bytes": 4025,
+      "sha256": "d1a36d5907204eb94d0a1769cada6f4cb73f03915205ad4e2bcd0f0b6facb104"
+    },
+    {
+      "path": "crates/foundation/tablecraft-core/src/values/datetime/legacy.rs",
+      "bytes": 14077,
+      "sha256": "12af28d4f5c9078d8cdb4cdc59dd5c1362f4a06e0aa51c06cdae68843b7ee477"
+    },
+    {
+      "path": "crates/foundation/tablecraft-core/src/values/datetime/mod.rs",
+      "bytes": 185,
+      "sha256": "dc2e03edcae99b760dc3165c1f4551ab79dcc30ec75f27add948891ee92a4d77"
+    },
+    {
+      "path": "crates/foundation/tablecraft-core/src/values/decimal.rs",
+      "bytes": 7781,
+      "sha256": "f69ec7781184ac5790bd112a75e00ca68ce96c1fe797521e2774f6000c09b5f7"
+    },
+    {
+      "path": "crates/foundation/tablecraft-core/src/values/expression.rs",
+      "bytes": 2057,
+      "sha256": "0c9c2ef5187f7c6eaac2cafd2f436945920bbd1f025d95359ad9139be2d6ed64"
+    },
+    {
+      "path": "crates/foundation/tablecraft-core/src/values/expression_string.rs",
+      "bytes": 2489,
+      "sha256": "5edd6696fbfce3a8dd78fab34d207ac7979c1235b361bc7181dba2677b2f450c"
+    },
+    {
+      "path": "crates/foundation/tablecraft-core/src/values/fixed.rs",
+      "bytes": 566,
+      "sha256": "f0c19de97cc505337d984806facc8c208e7f225c2998f575d0c7864bc080705f"
+    },
+    {
+      "path": "crates/foundation/tablecraft-core/src/values/floating_point.rs",
+      "bytes": 2442,
+      "sha256": "4c50db532811859cd432f32a65ae15bf6e55df8c3bb571babec73832f0b190ff"
+    },
+    {
+      "path": "crates/foundation/tablecraft-core/src/values/guid.rs",
+      "bytes": 1349,
+      "sha256": "07b7192da923f88747c2cdbd2e20b016fcdf1f2e2d967508f50dee5263b3def8"
+    },
+    {
+      "path": "crates/foundation/tablecraft-core/src/values/mod.rs",
+      "bytes": 874,
+      "sha256": "64b5d759fdef83dcc309eb9042297fab32f99b23311f18d84a8dbb3a8a802210"
+    },
+    {
+      "path": "crates/foundation/tablecraft-core/src/values/stored.rs",
+      "bytes": 2907,
+      "sha256": "93b6d8156113cf7baae67a64e5f9f3d93dbdce08eaa22b8bd49020ff6a2c5103"
+    },
+    {
+      "path": "crates/foundation/tablecraft-core/src/values/validation.rs",
+      "bytes": 1618,
+      "sha256": "a195c40cbdf369f11916a971640c2f4169d39d3c5325354c915c90db66feb4fe"
+    },
+    {
+      "path": "crates/foundation/tablecraft-model/Cargo.toml",
+      "bytes": 395,
+      "sha256": "5a61adda46c34ac507cfc6e3db1b1533f7b1933b304b4c7c35d69ce8fbc9e28c"
+    },
+    {
+      "path": "crates/foundation/tablecraft-model/src/catalog.rs",
+      "bytes": 5175,
+      "sha256": "3b685e9579278f14c6a4328574c917af4be1788594c2d6583c069a64c8ef6773"
+    },
+    {
+      "path": "crates/foundation/tablecraft-model/src/error.rs",
+      "bytes": 712,
+      "sha256": "4bbe13df822a24ae150468ff1ccf100065db4ad979d3e7f0a7ca7a5114596f8d"
+    },
+    {
+      "path": "crates/foundation/tablecraft-model/src/identity.rs",
+      "bytes": 904,
+      "sha256": "2b98f34738eb5f9c567176b29837b84a1ea0ea0a6fd642fff1fc183eb24e7a0c"
+    },
+    {
+      "path": "crates/foundation/tablecraft-model/src/lib.rs",
+      "bytes": 918,
+      "sha256": "ccc24956c17a94bf19c28eda29fee6c988e212e7085b34899d1d54236bdbc2c5"
+    },
+    {
+      "path": "crates/foundation/tablecraft-model/src/object.rs",
+      "bytes": 2101,
+      "sha256": "40cad50cbc3a88f729c54cb0ae868b8930c921f1375d017dddda5e30666216c2"
+    },
+    {
+      "path": "crates/foundation/tablecraft-schema/Cargo.toml",
+      "bytes": 353,
+      "sha256": "8ffbcc840dc255a87595e806259fd9902dbf5fd7b797b7bffb5bc25e73ebd9f2"
+    },
+    {
+      "path": "crates/foundation/tablecraft-schema/src/collection.rs",
+      "bytes": 1044,
+      "sha256": "7b5341b75e2b5ae8f0fb886595e1713c19f0b11ceeb10bbfcb78b0d8561a5042"
+    },
+    {
+      "path": "crates/foundation/tablecraft-schema/src/column.rs",
+      "bytes": 4400,
+      "sha256": "37de00219e8c617a599a79eec336b118a2ef1a7a0c0aa6b43083eb8b348c6a97"
+    },
+    {
+      "path": "crates/foundation/tablecraft-schema/src/constraints/field.rs",
+      "bytes": 2484,
+      "sha256": "abcb50dae22d6b422c5587e55eb0338ae72255ccdb2be68d9465fea45539a83b"
+    },
+    {
+      "path": "crates/foundation/tablecraft-schema/src/constraints/mod.rs",
+      "bytes": 72,
+      "sha256": "de868c4f91a7c26974971a419f4c44e8b51150cf6cb5000aea32e98361738255"
+    },
+    {
+      "path": "crates/foundation/tablecraft-schema/src/decimal.rs",
+      "bytes": 2932,
+      "sha256": "916c39b763625cdc6cb7967a8669f81dda4d1d9d7b829bb5a7039418c5905cda"
+    },
+    {
+      "path": "crates/foundation/tablecraft-schema/src/error.rs",
+      "bytes": 863,
+      "sha256": "3b7d366b21510c5f6401f91d0c311dcd69904af6ca421ae02b0fd0baddd964b9"
+    },
+    {
+      "path": "crates/foundation/tablecraft-schema/src/lib.rs",
+      "bytes": 1295,
+      "sha256": "37d7546727c2d47f3f256eb14d2e9f2b5c9b3af426c3301fdcb10a43120ae285"
+    },
+    {
+      "path": "crates/foundation/tablecraft-schema/src/name.rs",
+      "bytes": 1936,
+      "sha256": "a69264ad990a9c04e2c9459f828f62bafd551467ccaa3bea69ee2c8a687621fc"
+    },
+    {
+      "path": "crates/foundation/tablecraft-schema/src/policy.rs",
+      "bytes": 2507,
+      "sha256": "43b3684ff25b107fd3728daf6d31c976cfd7a97fcba567e5aeee49958ff10d94"
+    },
+    {
+      "path": "crates/foundation/tablecraft-schema/src/relationship/declaration.rs",
+      "bytes": 4030,
+      "sha256": "9b205469ff4c569304add6c8c8c8236df875dbd947c61e5e182a24987ba50e41"
+    },
+    {
+      "path": "crates/foundation/tablecraft-schema/src/relationship/mod.rs",
+      "bytes": 141,
+      "sha256": "0c4ac00dd9754160522ac86654cd0677bd017c42663c2fbe83b90d47463f689f"
+    },
+    {
+      "path": "crates/foundation/tablecraft-schema/src/relationship/rules.rs",
+      "bytes": 927,
+      "sha256": "83e1ff517984dcbd346471c7ff7751e037b9489e7eaf2f3474dcb7db8aa6e914"
+    },
+    {
+      "path": "crates/foundation/tablecraft-schema/src/scalar.rs",
+      "bytes": 1595,
+      "sha256": "8b05c147053ad05729a4149dd1a913564e725cbb6cc9330fa458807487183cef"
+    },
+    {
+      "path": "crates/foundation/tablecraft-schema/src/type_descriptor.rs",
+      "bytes": 3627,
+      "sha256": "a1746e95175ad930d80096ecd44ee092a2eaf60e10b3ad632247b9ceb6cde466"
+    },
+    {
+      "path": "crates/platform/tablecraft-crypto/Cargo.toml",
+      "bytes": 549,
+      "sha256": "60806f71126120ea3b214081aaa4a4feaf793c3fefc7e8b03e1653cb7322c9a4"
+    },
+    {
+      "path": "crates/platform/tablecraft-crypto/src/aes.rs",
+      "bytes": 3209,
+      "sha256": "e96d24a8a306ed31d689cfedba77735a9d4ecfa101e753b5b51af55bb6a856f2"
+    },
+    {
+      "path": "crates/platform/tablecraft-crypto/src/error.rs",
+      "bytes": 434,
+      "sha256": "c602973f363e383baed8411fcbff8a5459ee7a20d2dcbd3b919eeb0b4498a599"
+    },
+    {
+      "path": "crates/platform/tablecraft-crypto/src/hash.rs",
+      "bytes": 1528,
+      "sha256": "5978cdc04ee2f612c2471f52eecee2bf5dc43f4e9675ed601ea50d263e5725c9"
+    },
+    {
+      "path": "crates/platform/tablecraft-crypto/src/lib.rs",
+      "bytes": 1127,
+      "sha256": "a905572e34743dc1bda2ffa34c5f5753f0bb1f58b39844bf6ef28003c42cb5c2"
+    },
+    {
+      "path": "crates/platform/tablecraft-crypto/src/stream.rs",
+      "bytes": 762,
+      "sha256": "9c3bc6aa2c30259321796d756ee2c0d5c58121871eae556a5c7c892827bcccc5"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/Cargo.toml",
+      "bytes": 531,
+      "sha256": "681f9067567fb90e6f600f4e744e6378777fe31c79a7e0cbff34ed879814bedb"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/error.rs",
+      "bytes": 1225,
+      "sha256": "f65e442405d0fe3a8b8554fdf3cfdfe5f232ba9a8bd3e7777cdc22778d1196a9"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/lib.rs",
+      "bytes": 607,
+      "sha256": "ea99c71289980885e46ffa65c964546b8421836918d8d937b2df6a27a5062dfe"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/lock.rs",
+      "bytes": 4011,
+      "sha256": "4639616e912fec8900fc620778611ff60062bd7c1f8ef87b0650014c3024efe4"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/progress.rs",
+      "bytes": 394,
+      "sha256": "673a8767166f2363893ecf35e7a3c5b8b20159e74ca4eca9b992fc44389fa0ac"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/read.rs",
+      "bytes": 8404,
+      "sha256": "98e43b6a8e6f90135250719686110898bd7a0744b07a0182b301acb5018d1677"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/seek.rs",
+      "bytes": 2338,
+      "sha256": "2ac08982cfb938b2dc70a54bb67241bc43d05e820ab3707d2e2d187ecbe9e0af"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/write.rs",
+      "bytes": 1352,
+      "sha256": "2a1eb6826d5cc1442c7ff2cd2cea60edb391cfc09dac1ec0b3afa18b3a08995f"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/Cargo.toml",
+      "bytes": 1273,
+      "sha256": "914acd09d3001f58fa08775b55364ca6c5dd3b79eb41c768052923d0cc6edc2b"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/arrays/bounds.rs",
+      "bytes": 2935,
+      "sha256": "215363a984fa0facf4e0fca304167ab837f4e04cdb49719a0ef800c57f875149"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/arrays/mod.rs",
+      "bytes": 243,
+      "sha256": "a42dead91f2ce9906032e802f185a3e4377271c97e149443eeecff3841137208"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/arrays/sql_arguments.rs",
+      "bytes": 906,
+      "sha256": "37a2fbf510280b63bf0bc03c9aff03915f003c33de888fbb9636fad849d0aa9f"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/arrays/value.rs",
+      "bytes": 1886,
+      "sha256": "5f878ba2b40513c47cb6b0b72c08ee8ccfc0fa12c91819f01da9797294220249"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/comparison.rs",
+      "bytes": 12469,
+      "sha256": "c9d14afcbfa7a737ea101b3e520dae7bc391581d01a61360a045a31c3b626917"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/comparison/declared.rs",
+      "bytes": 3188,
+      "sha256": "0ee4413bc99fcd0673c5d458af68e55d679d5c6046fe0190ab9f174daca9c16b"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/comparison/like.rs",
+      "bytes": 820,
+      "sha256": "d31f3adfc3edbebcc51e8aa62696267e160710b4732956675a0adad402f40ee7"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/comparison/locale.rs",
+      "bytes": 1376,
+      "sha256": "772842df597bfac222c6a95dc34b632f2dfd432da92a2266d01f34eab864a0ce"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/comparison/search.rs",
+      "bytes": 830,
+      "sha256": "074dd7c6b1ef9a8c77a5f9bd0ada73ef380a0843ea427679b1333698de8469de"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/comparison/string_input.rs",
+      "bytes": 2253,
+      "sha256": "089ddd8673c42f3de992cd7dca9554070dd51577bc76a9135cfdfd550554dd50"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/comparison/strings.rs",
+      "bytes": 2056,
+      "sha256": "ad14595a8d91b76a355843bea5dcd45e399a4c9fd4b0bd4278bc3203ad814115"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/datetime.rs",
+      "bytes": 3758,
+      "sha256": "097512f7cbfef35b556f17cc31a3aa0858848fb5eba65ecb48ee832bc68eb331"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/error.rs",
+      "bytes": 7236,
+      "sha256": "b3b1459415ca748a5dd181c10979a8db2369693530b34e8f3d5f19607ab32b37"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/arithmetic.rs",
+      "bytes": 6644,
+      "sha256": "3a2d402c37bd56a81a93f832da9ce0e1691e32d20e2b47940829746eff2ada37"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/arithmetic/addition.rs",
+      "bytes": 7879,
+      "sha256": "d75aa5bd3f2f952e6567715fd0d054daa5ae61690155a292890814e1c2bd70d8"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/arithmetic/operands.rs",
+      "bytes": 4528,
+      "sha256": "a9c4a44931cbcc8fc03bb9ede4d58996b6896aa7eeb906e47efa7226dab4548a"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/arithmetic/raw.rs",
+      "bytes": 4711,
+      "sha256": "ecf50fa1eaf18d43d7f6170a5677e77a9a8861b922ce6c8dcea266ef5c0a6fac"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/arithmetic/rounded.rs",
+      "bytes": 2067,
+      "sha256": "e7caf83b899a3291fc6cb34b6ee786b4fa578c10eef256f0b7e75a5e5867370a"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/arrays.rs",
+      "bytes": 6989,
+      "sha256": "b5f437dae8b5b228c7442d8d9df6c6c26553dd9e7a99d079cf529e6f26c7db3f"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/bindings.rs",
+      "bytes": 761,
+      "sha256": "a98d2be71e8560d51b1f1c770fc81e7d460dfb90d7213e4f679e33da212ff53c"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/byte_output.rs",
+      "bytes": 1222,
+      "sha256": "f30f15b3eea1b5e99b3e64953890ec624085fbabcbf9a450d3c8b9fb9a44486e"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/byte_search.rs",
+      "bytes": 6354,
+      "sha256": "13784f0fba307ce29ec8a5b7179ca26cfdec39e0f0819506c15596f1aa6beb62"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/byte_strings.rs",
+      "bytes": 18048,
+      "sha256": "6d3a98ef1114b34a184f88559f72a09aa74598d469db9b1a5d18ee5eb61b3ba4"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/byte_strings/reversal.rs",
+      "bytes": 1136,
+      "sha256": "0a986d5219c2c387335120eaaaf6cdceeac03d196cc2f37e9c28b47981b6874d"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/byte_strings/trimming.rs",
+      "bytes": 789,
+      "sha256": "ce5aa766023bad8cd3ae529a58d86dc25002df18724d1e9cb8765af4c9ea7a48"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/byte_strings/unicode.rs",
+      "bytes": 3263,
+      "sha256": "bbb8729f40fae6b72b533ee15919088e7e4772607f437bc327b6cf935ccd13c2"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/calendar_names.rs",
+      "bytes": 2252,
+      "sha256": "e67c015bc777cafa03261e9b32a76eb3cd5441b6e3767d5b530cb73e6e18d312"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/cashflows.rs",
+      "bytes": 6085,
+      "sha256": "14e1645f229592635f78863acad75bba6dd857a6e847e443a17294c9351a6264"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/character_codes.rs",
+      "bytes": 1619,
+      "sha256": "1d36361992c2bba997a6290925e5844960767f8e3eb9b66be3b3565d3a3362bc"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/clock.rs",
+      "bytes": 2067,
+      "sha256": "23a58f64f4b357b07602ba69a6162f3100620e3139f6aef78c02ab8aa3c06194"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/comparison_modes.rs",
+      "bytes": 3584,
+      "sha256": "a12d617064e8bd12455fa260dcca59bab931d36360b8e06ef8ec560fa819d08d"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/comparison_modes/bytes.rs",
+      "bytes": 5980,
+      "sha256": "668e29140c2a1b14bd20a6d86bd498b0096f4a57fcbea82f2a4890f42afe4029"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/comparison_values.rs",
+      "bytes": 5921,
+      "sha256": "44d7e2d91452df406aed90cd95fd83df01d66e9084b05b4e60282410fbc1c5c5"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/comparison_values/dates.rs",
+      "bytes": 754,
+      "sha256": "fe993091fcf2090345da4c471be38d591939b869a4d2e945dd4fac211cf7bdd0"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/comparison_values/declared_strings.rs",
+      "bytes": 4350,
+      "sha256": "64974574ee7eef7e7278752a7bcc9258cb0fe6e23646fa6b8f6192417e6ea061"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/comparison_values/effective.rs",
+      "bytes": 3911,
+      "sha256": "8745067d41cd59868d1630e3112c6b415f3a910b1915c102b44c9afe77de40a1"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/comparison_values/effective/dates.rs",
+      "bytes": 1598,
+      "sha256": "ad4345634900f68d6164ac1938cf9ba9a077ca20ebebaf7cb3329c06850ede39"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/comparison_values/empty.rs",
+      "bytes": 2212,
+      "sha256": "e925043f77ae949f618eafc12acc3abdb8ed44ef8f20c05e4b44b1efc8ef74e0"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/comparison_values/floating.rs",
+      "bytes": 1236,
+      "sha256": "e3e902db2246f276c6adcbf5be4f14bd05092f9178a41120433eae17e1f7a47b"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/comparison_values/guid.rs",
+      "bytes": 5913,
+      "sha256": "763f9cba4db9db7c796784547eade61409513e9c04df1b06668065ca6e3ca0b4"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/comparison_values/strings.rs",
+      "bytes": 1781,
+      "sha256": "a00e2ec9d666341cb32f4253d844ed11e6fb9a812831341839ccdb67587eb4a3"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/concatenation.rs",
+      "bytes": 1692,
+      "sha256": "cd3b11e72520fbc783676a02b56b81d199928095ccd6706df327049fc2bcc6cb"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/concatenation/bytes.rs",
+      "bytes": 3626,
+      "sha256": "d0e111c4081a11c0b097269dcfe10a1e747f31137fc2c211a421dd475020f06d"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/conditional.rs",
+      "bytes": 3998,
+      "sha256": "e82448221999110fa1a2ccf895af785b1c96fd7e2eab0f1b673f3c147a588cd8"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/conditional/strings.rs",
+      "bytes": 2748,
+      "sha256": "432a9cadf844a0124ad6d574d4259f8185f9a255268a3eda670c96d3e186cdaa"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/context.rs",
+      "bytes": 10309,
+      "sha256": "e39f1d11a5f60f6d028fbb38300a0a1c76e0d17931f968c8839534dd35857f68"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/conversions.rs",
+      "bytes": 2639,
+      "sha256": "348569998047d14a3f013c603536247901151920f3adbc85e66d984ec18ce3b7"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/cstr.rs",
+      "bytes": 4481,
+      "sha256": "164f8357b50891609d52da5696d6a66d84cd46243f055ff48187f08e9f4a4ef8"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/date_components.rs",
+      "bytes": 1488,
+      "sha256": "fae55accb562b4585948ef51aa61d47d4b3073e3d461ae0103954f61f6ed53cc"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/date_constructors.rs",
+      "bytes": 2117,
+      "sha256": "8f78a6271d92e4b215f216c939cf0edde145fbc2441f0c5c018d9afcb203ee64"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/date_conversions.rs",
+      "bytes": 4587,
+      "sha256": "4816540bd9bf41a4a76c69af1225cb37c2407a096e86589aec249f5bf201b323"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/date_input.rs",
+      "bytes": 1293,
+      "sha256": "e4107897a29825c23b6acfaf0e51b505fa4e7f027f53f2307721d049b548b779"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/date_intervals.rs",
+      "bytes": 6810,
+      "sha256": "65c93901ce04d70d1be323b5a16778dae74e2caddf088107d3f4b9548c6058d0"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/dynamic/mod.rs",
+      "bytes": 1824,
+      "sha256": "594a9f7a4980f2818272905e64237d10334753faa57dcbca11c78206ee1e9139"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/dynamic/syntax.rs",
+      "bytes": 5153,
+      "sha256": "f2c45b49f2ad1495c4ab6fc5e474c217f2a5175344bcec00ef46cac42e7d0bea"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/error_messages.rs",
+      "bytes": 1992,
+      "sha256": "148dda9f9180e8edab5731e35807a79fe37b2d38e2a8ee5c487fad671c0a46cd"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/financial.rs",
+      "bytes": 3735,
+      "sha256": "9b911d9e69d1ab1fa092e32149471c5179638ae94cbc34fc1070f31655e5cf88"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/formatting_options.rs",
+      "bytes": 4910,
+      "sha256": "c7a9410fdff8e295580c20dc23c9861c1f839489fe1877bb995d57f9a69ad967"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/functions.rs",
+      "bytes": 18635,
+      "sha256": "e777f5ff874f31784b8f7509366bd6a0b922af1af905b0346cc0678d3066d4dc"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/guid.rs",
+      "bytes": 6926,
+      "sha256": "b068e91296cc196948c7e8c70de700648168de6b8b4199ba64ce4e7360ee1cd9"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/hyperlink.rs",
+      "bytes": 1663,
+      "sha256": "34188a30a8572d77165c8b3a9871bfc39760967196ff6e268808b04b66e6c984"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/inspection.rs",
+      "bytes": 5299,
+      "sha256": "631dccf86f07bca76e05234baf1a281f66d22c9e012f308c2160fd4b12b8e0d5"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/like.rs",
+      "bytes": 4441,
+      "sha256": "fd59f77ef088c2eee3d653396d7a75a8891517cb544c1499fa970394cf693225"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/like/preparation.rs",
+      "bytes": 3337,
+      "sha256": "32582f9fc56022c16157955f73df68cfcfce852a93d596c056f8e58bcede0cc3"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/literals/mod.rs",
+      "bytes": 1128,
+      "sha256": "3d43119926e14d518a775738ee88d3f294ab5c40ea72ad734429269b94fd5b41"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/literals/radix.rs",
+      "bytes": 1270,
+      "sha256": "066d70e466871fadf1e0db0558c229504dc72228c7cdae178d2099cbe841fe18"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/logical.rs",
+      "bytes": 2313,
+      "sha256": "bbb5a1a81b4dbc618d8e80846948933730ad40caa02a0f7e7aeded4d06ddc9dd"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/logical/operands.rs",
+      "bytes": 3183,
+      "sha256": "dc89b270febb41cf354fd5efb05acda9dcbcdd7eb9757c127b2096281c9b5160"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/math.rs",
+      "bytes": 3625,
+      "sha256": "59c49d2fb48b959936318ca4a744380bb543230efe929fbd24a224ddc4c055dd"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/mod.rs",
+      "bytes": 2355,
+      "sha256": "efd44b0e185bfa2ad417cce39f2a00f31a78840eac59b21fad4b8c7449d1071d"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/numeric_text.rs",
+      "bytes": 7198,
+      "sha256": "1fdf6b847e99d18decabd5aa12e7866780602e08f353da0bed9f0fceadd29a97"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/operators.rs",
+      "bytes": 7197,
+      "sha256": "fc98d19413fc92ec32d8f976c3ed34d044b667fc87c5ea832f26587df2773e4f"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/partition.rs",
+      "bytes": 5573,
+      "sha256": "5fe3225b4ec0e388abbc2de1ea1499df6970891d1738350c96905bc0db1115c9"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/repetition.rs",
+      "bytes": 2495,
+      "sha256": "58ab695a0db589b748e3c9338f565f7c5999bf28d3391e9e22a589f8e0ae865b"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/repetition/raw.rs",
+      "bytes": 5836,
+      "sha256": "0b42db888133399c51bb940079ca1abc64e54fa1f27f231326f72203f431b467"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/replacement.rs",
+      "bytes": 3850,
+      "sha256": "180473149300204797efb7e67c6ed5fd09b445b075895518f88e2c045ff4d559"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/replacement/raw.rs",
+      "bytes": 6863,
+      "sha256": "618d13698321552ff460046dbaafaa89bfb906185c6cda780bafc61d32bbe9c8"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/search.rs",
+      "bytes": 4962,
+      "sha256": "2165d2a900217aba6c4a365cd3f76bde3eb6dde4ce1ebd8b5363cd8c7a07bc28"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/search/raw.rs",
+      "bytes": 4467,
+      "sha256": "5efb3b13d1e6a0bb547774e1c1f236fd99269014e32b7e10658797c86e61e639"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/session.rs",
+      "bytes": 3891,
+      "sha256": "3ce0e9a1b1cde007b1cb1bd6bcaee6ae19d8458a5f613f04de104d0d496f8915"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/slicing.rs",
+      "bytes": 5151,
+      "sha256": "5d913f53743305acb84a8ca229f33d00bba257941e48a6722d5e2d7c694f35ec"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/strconv.rs",
+      "bytes": 9549,
+      "sha256": "178e7e3f55d3bb6f621648b079fc5c1403569afc2d842f504b34b8af76178c1d"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/strconv/japanese.rs",
+      "bytes": 1100,
+      "sha256": "870ae3fb29f1d2ce73707ccdf87015c055809e6b6ab18ebb4dbfdd1c38049fc4"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/text_arguments.rs",
+      "bytes": 1135,
+      "sha256": "e6da094ae71b6d95caca2791b3889a66215dd173413c6a46812a36bcc916a785"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/text_functions.rs",
+      "bytes": 21216,
+      "sha256": "e8fec8477aab171320ddd9c9a38c8bb401226ba7ab31802053444296e5157d17"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/text_output.rs",
+      "bytes": 1322,
+      "sha256": "184e8eb63763c37353607e1521fc028b19171c562e4a41aa0eeb4082d33e72f4"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/value_inspection.rs",
+      "bytes": 1208,
+      "sha256": "198ae33d35acd5bb1fa4db0dca751968d8d20ef827da66e847d01d094563879e"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/variants.rs",
+      "bytes": 6162,
+      "sha256": "01587e5789772a993f6857ca0b6ce8f53fe3821ca08a854432bed4b9310f6761"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/walk.rs",
+      "bytes": 8082,
+      "sha256": "44eb9967064943fc8986ec142eaac0461d534cbe22c3738cd2d32302448423ac"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/week_options.rs",
+      "bytes": 3348,
+      "sha256": "5c343a9d5655ee6ec8ac80403819d0e4f6815fc0501fb8028e050be97ce360cd"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/evaluation/weekday.rs",
+      "bytes": 3945,
+      "sha256": "820b76deccf1635571086bf71170c7d1f530b735587416679cbc905f7dbbff35"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/conditional/context.rs",
+      "bytes": 1887,
+      "sha256": "05d67067636cdc81187eeef822b2ae4b7ce5651e567adcf17d2885d8bc42772d"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/conditional/expression.rs",
+      "bytes": 1857,
+      "sha256": "aaaeebaefda73fec9ee690db3a4a245aafbc99aec3cd497859bf29214d88b158"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/conditional/index.rs",
+      "bytes": 1314,
+      "sha256": "a6510c613746d4716d3a3fa4a51cadb4f0c86913222f549a94ff57e75ec92c17"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/conditional/mod.rs",
+      "bytes": 2014,
+      "sha256": "8e680f19927a47bd9cdf6e0cf086be2f571788852a41dee1b1f0bd2bb530dbb7"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/conditional/selection.rs",
+      "bytes": 4479,
+      "sha256": "0115a1aa6e0aae824715da522e3cbbce19343ed07271aebaaa0fe2a44c8dd253"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/conversions/currency.rs",
+      "bytes": 1169,
+      "sha256": "3f474a2240370cebbfb8cf4d62ff0ab70b49e6f95547d49a94505887a5bfdfc8"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/conversions/decimal.rs",
+      "bytes": 462,
+      "sha256": "d33d1da1c8fea07ed237d4c5b40c36448663cbcaaae9f56415841138a8db4ee3"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/conversions/errors.rs",
+      "bytes": 7949,
+      "sha256": "e491f2b738d092cd002f30f1de985cec9993ab3776acb69e74bdc5712316a5fd"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/conversions/floating.rs",
+      "bytes": 4134,
+      "sha256": "aad5e648a372017a3fabdd78a0dac8ce7d7592ae422f2045ac9e2471b159160b"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/conversions/guid.rs",
+      "bytes": 4678,
+      "sha256": "126553f5dd4f02d080d09a06be0d161550c17104fdb3604f8736df6da915c453"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/conversions/mod.rs",
+      "bytes": 4155,
+      "sha256": "a668c1dced6cabf2e133defb66a26ec006f08dac1d7bf011539097b972c767d6"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/conversions/text/decimal.rs",
+      "bytes": 1396,
+      "sha256": "c1582059443b59348c223757cf65fc4fdc0096f27b47800430c344c8cf9d95c1"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/conversions/text/mod.rs",
+      "bytes": 2504,
+      "sha256": "8d8b1c4f5335427cc8d529bbd5dc6d6c4098db13f3f507e99b22fa92ab9794d2"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/conversions/text/normalize.rs",
+      "bytes": 3398,
+      "sha256": "a788f55d8ac1bdc933c84590e70879abc648b5d16005bc83550a5639aa66a964"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/conversions/text/policy.rs",
+      "bytes": 1464,
+      "sha256": "208a268a130bd214d8a2aac39569fdbb8301a6e34d6d8878d70b6fc6a17185f8"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/conversions/text/scaled.rs",
+      "bytes": 3058,
+      "sha256": "e8fedef7b4e9149bc9a58586e109e46433b7ae9919e420e4cf9ef5c5c0f69b45"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/conversions/variant.rs",
+      "bytes": 1876,
+      "sha256": "765659d587a97ced869bfdf42d73e895457353c898ec4217121be05b28e0f2f7"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/dates/add.rs",
+      "bytes": 4155,
+      "sha256": "b9354fee957e00254c54068529cc447e0a470ea5e62d7c6ac84e94e95a6780a0"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/dates/arguments.rs",
+      "bytes": 615,
+      "sha256": "aa35d350e550469709995a83ef176cf37fe2fd5e06b57cb0cd4d86dc1537cc07"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/dates/arithmetic.rs",
+      "bytes": 6266,
+      "sha256": "9757c6f5bf25d46f08b7012fbb28505a5a6df5a6429c64b7d3545e4db6913ff6"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/dates/clock/mod.rs",
+      "bytes": 4160,
+      "sha256": "2323cbc4fc6d5ebf13dae3789d4d0e479100b67f2aba81bdcf2907c899b0f14f"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/dates/constructors.rs",
+      "bytes": 6014,
+      "sha256": "7721779bb9543626a74bcab2599f4a2ce95ebd99fc21ddb4b4b13b0ac48d9c24"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/dates/conversion.rs",
+      "bytes": 1786,
+      "sha256": "985f4e48336de6e10d32001828532519a3f63a79dd224c7029c6c9d075117c33"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/dates/difference.rs",
+      "bytes": 6318,
+      "sha256": "5bc4c961834f05a038486c4ab446b1407e9827b644cb8c4b239dff8a86203d79"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/dates/first_week.rs",
+      "bytes": 1159,
+      "sha256": "88b44577ba0253d87817f790b64179332ae0788d53d79eea22f323068787d9fc"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/dates/interval.rs",
+      "bytes": 1104,
+      "sha256": "40366e78b554e2d29cf480f66ed22d48916c4d5f74015738762461d928aa1b37"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/dates/mod.rs",
+      "bytes": 3718,
+      "sha256": "86ecf6c36e15e08b734d7f465d26c8e4a44e84a8466e3880268dfc249c527a74"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/dates/parsing/date.rs",
+      "bytes": 5455,
+      "sha256": "e15c193f881059c5c6e5109820a3196da70c2d28221a078f02f52415d7298fc0"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/dates/parsing/mod.rs",
+      "bytes": 4543,
+      "sha256": "18a8da9229555a58cb371d34aa198a3a6ab4ab113045c50fced9b8620d939f12"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/dates/parsing/numeric.rs",
+      "bytes": 1336,
+      "sha256": "789460f3e1e6eaf412d8112eca8b6026b2521ad64a10f55739b6c4df5b119504"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/dates/parsing/policy.rs",
+      "bytes": 2593,
+      "sha256": "ad0ce99808ee5e8bf6cfda2fcb1b4a860b19a4d9352d6914da2c42813ea3ab25"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/dates/parsing/query_literal.rs",
+      "bytes": 6352,
+      "sha256": "bfbaf9451b319f774290b1df81bd120ae624d35a00c7039ffb81552c6a585cf5"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/dates/parsing/query_literal/date.rs",
+      "bytes": 5000,
+      "sha256": "5b3b54bfed8c2fdd98eae23c11d098586263baa64f131379b20c21e39fd53e27"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/dates/parsing/text.rs",
+      "bytes": 2065,
+      "sha256": "836dd527398cdca9557f6a91a1ab8bf752b3bfda58aa765d80e332be2be768f0"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/dates/parsing/time.rs",
+      "bytes": 3053,
+      "sha256": "e931ba774984086bfd0418cd862277595968f45b16c222beb44adafbf6eb14fc"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/dates/part.rs",
+      "bytes": 3774,
+      "sha256": "08835f254b223dc248655d9e953b654bf8ae543c05373e385b055ddb2cb493e5"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/dates/week_start.rs",
+      "bytes": 1129,
+      "sha256": "ca83d9df8b0cbd94c80ffab8bb4f3eb057b5097057ecd84f419491a9682ecc2a"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/dates/weekday.rs",
+      "bytes": 2539,
+      "sha256": "7f24b1c58b1f93164e9aabc35973067cd65f7636c7e9d0075bb9e6aae73794f5"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/dates/weeks.rs",
+      "bytes": 5334,
+      "sha256": "bed4c87b85c13b43f199fe63eb1a26640acd9b76a9088a9a79e2ae820af40531"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/error_messages/code.rs",
+      "bytes": 1576,
+      "sha256": "b676f4eeb4a734fed1a0a1902bf7a538e186dc90c4d9981684faf8e6b4678c02"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/error_messages/mod.rs",
+      "bytes": 932,
+      "sha256": "4c93516be25f4eb8ad400d5f9d4fdc76d13e692b8aeff46c2af05dd7bffd5d63"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/financial/annuity.rs",
+      "bytes": 3646,
+      "sha256": "b06221d45e4ac70e384c4cc56ffe8d57cbb378ac2579651069d52e8a30e38d4b"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/financial/cashflows/function.rs",
+      "bytes": 6908,
+      "sha256": "72ad17645442f442a372372556421a7ff6c711ab7b7af126c621a8e183aec02f"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/financial/cashflows/irr.rs",
+      "bytes": 3195,
+      "sha256": "f5ddf15effdf9550fdc6b89918934fa06243398e64a3ab8d1b77eb878522f647"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/financial/cashflows/mirr.rs",
+      "bytes": 1645,
+      "sha256": "6891b3f4c8f4a402abc22665cc1fe892a700fe25b4eee0e7a2dd84d8147316f9"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/financial/cashflows/mod.rs",
+      "bytes": 368,
+      "sha256": "8d3e836adf8017610fa741692b88449b1704de45a8a49fcd341591d4082d8f8d"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/financial/cashflows/npv.rs",
+      "bytes": 764,
+      "sha256": "79e4e6e76efc0842ac909755aae0988c07541faad05608c447a5561549465e69"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/financial/cashflows/sql_arguments.rs",
+      "bytes": 1384,
+      "sha256": "bf4ee19eda83136f35db4f087c51681d3694114a6d5a391c525725c1163203c8"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/financial/cashflows/sum.rs",
+      "bytes": 866,
+      "sha256": "da54474cc1b259693bc884533da6579674fcccdbb31e0ea0956e1a72dda50f33"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/financial/cashflows/values.rs",
+      "bytes": 4605,
+      "sha256": "bfb8f5c16dc95de04b83a99f247558b7b9df5da1271e898620ab4b17d55660f3"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/financial/cashflows/work.rs",
+      "bytes": 1123,
+      "sha256": "1a49852c138757ddb6ee7a0ce33ecda67962611ad95329093cc76d98e40ff08b"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/financial/context.rs",
+      "bytes": 4883,
+      "sha256": "4cbafc8b02ffc175871bab992badc7357c4b5bfde1918df4f8606726349d07ce"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/financial/depreciation.rs",
+      "bytes": 2865,
+      "sha256": "94526009ec7f006d567782f0f1ccb9352b2fa0a76a5431d014bd2d11cc517d82"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/financial/euro/mod.rs",
+      "bytes": 3852,
+      "sha256": "645b21e3328d6475bf7c5701a5b535067441b2f754947c8b6dcc8eda4eb0148a"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/financial/euro/rates.rs",
+      "bytes": 1913,
+      "sha256": "b5d34a1ae0fc5c98aad7b1c63b4aa65f7bb2598e754e38f686681aca7c3ad519"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/financial/mod.rs",
+      "bytes": 7737,
+      "sha256": "d9939e026ddbcb4aae29a0e71a15489ec77d3c801c88804aca9c41f66795abab"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/financial/payments.rs",
+      "bytes": 2067,
+      "sha256": "a458b188e31f70106f6ccca7de9ad45fe0b2c93c345cd7a75a16932b863bd582"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/financial/periods.rs",
+      "bytes": 1755,
+      "sha256": "563ed453d53d83b397ae6a1a0a8ad860c927f1768fb94e5b433f0e5489073404"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/financial/rate/equation.rs",
+      "bytes": 4949,
+      "sha256": "1d48236caa86600246c73b5eeda1137171fc68e8f7ac7ed783fdf463f119987b"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/financial/rate/mod.rs",
+      "bytes": 569,
+      "sha256": "51ca599e95fe534ccf72663e38e43380d249bf6c323bcb070e2c5002101b5490"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/financial/solver.rs",
+      "bytes": 2937,
+      "sha256": "92cb140dfc07356d43dc11f266df47036ae05321bb5ee69a35e4e83489123da9"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/financial/sql_arguments.rs",
+      "bytes": 2268,
+      "sha256": "31714bb528311104aad68c4da081e04c0cf8b5ada9164377f7d8e73317a7e019"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/inspection/date.rs",
+      "bytes": 1226,
+      "sha256": "4670af9243b25bf695f3d643d9bdd462861cf06496150b4cfa4b5370677ba004"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/inspection/mod.rs",
+      "bytes": 2274,
+      "sha256": "505cd76225ba99539b0eded96362e5f85dba19285e968f130ff98842398893e5"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/inspection/numeric.rs",
+      "bytes": 1615,
+      "sha256": "021182fffb16e1b15f5bc8651ce3acc8775017e63dcab22a5585f440ca1ec558"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/inspection/types/input.rs",
+      "bytes": 1077,
+      "sha256": "3f4d13661830dec9b032bbbdf8b6f51238e40008bf56f04e63ae6a8bdfd67929"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/inspection/types/kind.rs",
+      "bytes": 3123,
+      "sha256": "6bb9e84d439b17b33a8ef65b27718f60852733d03295e86f6236c223329a66ad"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/inspection/types/mod.rs",
+      "bytes": 2758,
+      "sha256": "e08c46045416d2edbb0eada085a18587c0c3bccfdefd88ee15f585bcb0108779"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/math/colors.rs",
+      "bytes": 8143,
+      "sha256": "6ca03ca8e94255494f634e987c4c61c53e9e7ee69a97b68f84bce674ff64c8fa"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/math/input.rs",
+      "bytes": 3919,
+      "sha256": "0bc6d0abd0127ac6b7c76c636878d9d7af9a39a6a2176807ef97e64d74bb8248"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/math/mod.rs",
+      "bytes": 5755,
+      "sha256": "84bff534fe8326fb7e235570b80567e39bfd529caac09f7db8d3be85f5c3a2e4"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/math/random/mod.rs",
+      "bytes": 2670,
+      "sha256": "418cd0a306582b7e487a6882087f6819cbbae128c7f97479c560801657d58acc"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/math/rounding.rs",
+      "bytes": 3979,
+      "sha256": "6ff47118f015f8ff23145069f9f369270bb45e4056d8ed61456f352177c2b85c"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/math/rounding/precision.rs",
+      "bytes": 1607,
+      "sha256": "06142a5a58eda7195d27852b36089d3581269943b6cbcd473a19173264c449ab"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/math/transcendental.rs",
+      "bytes": 5123,
+      "sha256": "92e01d27cf6a55f56fea901fcc01e7985da58920df7b4df73dddae241c537496"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/math/unary.rs",
+      "bytes": 3956,
+      "sha256": "d18bd6d3b019da15a4314eed72e35586c862c3e2e5a0c8d2226d233c877fc43b"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/mod.rs",
+      "bytes": 7831,
+      "sha256": "cdf52c95983b0d308913213668e2d4110425f5f5615c597221a8d1e8602a0c7c"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/session.rs",
+      "bytes": 2515,
+      "sha256": "b5d38bd69a218b36ac8b0e23a8968578959ff4964708733fe5c5828800b2d1ad"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/byte_string/comparison.rs",
+      "bytes": 1839,
+      "sha256": "c38e840a545313d8c6d2f51897f6ddb65739784c2daed73ec09d968b6862f014"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/byte_string/input.rs",
+      "bytes": 3398,
+      "sha256": "6afe822f2458c40f76f61b3a84236bf3292ec1a6935b9b4cf683345110e8acdc"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/byte_string/mod.rs",
+      "bytes": 939,
+      "sha256": "1336a7bc6b009b496d187257b26beda17dd872e3a2f490c7b60262a537032c8c"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/byte_string/observations.rs",
+      "bytes": 4449,
+      "sha256": "05bd97f91df6b45a568d1192674fff358321a05b0eb82db9cc7fb02b373dbc69"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/byte_string/reversal.rs",
+      "bytes": 941,
+      "sha256": "fa6e6e22f4e7e54fefb3e045bf6e750dde6afcd4cc422bb4eaf89de6b0834cd8"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/byte_string/search.rs",
+      "bytes": 2028,
+      "sha256": "e0b2370d7b0c56d86160b29852c348977e19d2ee679692f44f4ab0cabcba2637"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/byte_string/trimming.rs",
+      "bytes": 1666,
+      "sha256": "4c8134cea8752d4b6b9b4e27cb6c72691c91198c1ac7d9da45d7c189317ee5a7"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/byte_string/value.rs",
+      "bytes": 4252,
+      "sha256": "3502321a1087f3c45ccb26ae2a86190d648c85b8fb85c9886821dafebc67bf37"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/calendar_names/arguments.rs",
+      "bytes": 3296,
+      "sha256": "bb5f083ecf387ef64c651e039820fdd414f5f89f64c18d35982bdc0623b393f3"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/calendar_names/labels.rs",
+      "bytes": 1357,
+      "sha256": "4da9eed9ec7d95a60ea4c6df5721cf4ca69c1b0374d81c5475998d43849112e8"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/calendar_names/mod.rs",
+      "bytes": 2107,
+      "sha256": "cd03db37db4250d74ae702aeee6a55a77ce91fdb35fe0dfafcbf3069a0f0e9ed"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/casing/mod.rs",
+      "bytes": 5658,
+      "sha256": "122d72543e6df574e6e7aaf1e34f8e5da29d86f592063ab1bc13d8162ea71655"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/characters.rs",
+      "bytes": 2507,
+      "sha256": "3b2108153ae3099832ca3d83a722676c1fc48b1f6252f9725dde702feb850a20"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/checked_buffer.rs",
+      "bytes": 885,
+      "sha256": "757765b333f28935a76dd14df770ac01ed6c431cf866a7165353974a61784e5f"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/code_page.rs",
+      "bytes": 3667,
+      "sha256": "185136b005abe9f787f4e88835b88a7a346def66f4b2485ead41e49bbb2a9e41"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/compare.rs",
+      "bytes": 4066,
+      "sha256": "99ed0d5eae3d7de8024068891d18df1f17da408bb9a5665a40893ce66a2166a2"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/construction.rs",
+      "bytes": 4758,
+      "sha256": "e79e2452d9bb10bc05652ceb6f839ae4a1f11d651cb04395c929bd56d77799b6"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/context.rs",
+      "bytes": 1874,
+      "sha256": "bbbab7cca1468c0110e9c3b040a4a902c5427732936e133f14b3e883b1fced03"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/cstr/date.rs",
+      "bytes": 989,
+      "sha256": "df34b582e939c7625b814a3487c78320a5f7fdd42c6a02ff98cf1c4db662df92"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/cstr/errors.rs",
+      "bytes": 996,
+      "sha256": "ea58e17ff709ceedaabd5d65da4fdf857ef02e1e9ceb1ec9e525579278d74d10"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/cstr/mod.rs",
+      "bytes": 1232,
+      "sha256": "99a92e39b3e5e66bd766b601427e3037f69a4e0af35140492b372d0dfb05bb36"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/cstr/numeric.rs",
+      "bytes": 1602,
+      "sha256": "6084ed4e5c36c09e9773e7555007d4134066e7f8ddbe588a3c485c73242a8eca"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/date_format/mod.rs",
+      "bytes": 5949,
+      "sha256": "744d9a0a0b86dffd97944a067b100f2898f9fbc342ffbc93f60f79c532668b55"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/date_format/render.rs",
+      "bytes": 2897,
+      "sha256": "38ed9df652b20220aa9cceaa2edceaca45f10e93d85aca6eb9beeaaaaba95e8c"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/format/date/mod.rs",
+      "bytes": 3033,
+      "sha256": "d51dc768472f1d0e51a4772d945f713a782df42176e903219f9afc87190ea229"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/format/date/render.rs",
+      "bytes": 6535,
+      "sha256": "9e02cecdd002047102669c9a7f1e0e89bfb7cf47e11bdeaac890268e15181f9b"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/format/date/scanner.rs",
+      "bytes": 4396,
+      "sha256": "50f528f71bc8f7c853114ec5962fbbb3dfef8dae2bceac1cd4d46e90f0d6b8e4"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/format/date_sections.rs",
+      "bytes": 1504,
+      "sha256": "762cc807a6d16067babcb142e168fffaf18b87351f945904e6378b8c8bd358e5"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/format/lexer.rs",
+      "bytes": 2641,
+      "sha256": "1312bd208eb6b87a7274bf9e1fc728440a5ffd6099648635998e1e1e1e1c08b0"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/format/mod.rs",
+      "bytes": 10093,
+      "sha256": "bd0dca8574455fda5c5e5108b12008d392da5d40e692e3a6b7babafb8bf10b63"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/format/numeric.rs",
+      "bytes": 6207,
+      "sha256": "15e36ac6edf8c48306afd87c8b5c758ce85cc4cc820813de112a6f998ea7de62"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/format/numeric/render.rs",
+      "bytes": 6496,
+      "sha256": "e74620eab47e17acf403fa4cfd37a1bd4f54f63aa1379dabb4c542456b4260d9"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/format/numeric/scientific.rs",
+      "bytes": 2668,
+      "sha256": "74afb402697f0aeb832b0b809972a68537b80a81e72efbc9f98d5d9a3dfbf8b4"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/format/sections.rs",
+      "bytes": 2769,
+      "sha256": "17752b86929d102f06740ac8125dabbe49c25d3d0ac593b0b9d683bf5b9393a9"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/format/text/mod.rs",
+      "bytes": 3561,
+      "sha256": "6121b461e9baca7e36edc3c9c3b6da5de04948a6d6beb8db37dc8d7e3c732b19"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/format/text/render.rs",
+      "bytes": 3057,
+      "sha256": "060dfeb2e3712bd9bd18d70dbd6797d3d8691ebe0cf171d48d07a856c6583599"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/format_buffer.rs",
+      "bytes": 1233,
+      "sha256": "68c6ca68ef2888d4ecf01a8c2be89add99665a54cf2b07b793f2939ae52bbaf9"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/hyperlink/mod.rs",
+      "bytes": 3980,
+      "sha256": "5d920cd382db08bc6bc4a7f54b3b3db7c68285b9385cb4a0bcb6bc163646a1f5"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/mod.rs",
+      "bytes": 19497,
+      "sha256": "c6310b12bb1887cdf38ac7390ae74bb7941f0edb3a41b01b0d12ed2b437f51d3"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/numeric_format/floating.rs",
+      "bytes": 3183,
+      "sha256": "2e0c80c6329dc3952d4189d1a956d79ba8a8088f44c3df4915d69c288177d34b"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/numeric_format/magnitude.rs",
+      "bytes": 4331,
+      "sha256": "2909bb69016affd01139e7ab9a3ff6c9ed61875d2f2fbc605daf1d972c9f4dd5"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/numeric_format/mod.rs",
+      "bytes": 4288,
+      "sha256": "b56d72329f1415de7ec19d4a9d3d58bff76defcdca5c21a01757dc0cbab6ee96"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/numeric_format/radix.rs",
+      "bytes": 1358,
+      "sha256": "af678309dae64deba15f02867a8db58cd90a1b957590a488389d174766b875c3"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/output.rs",
+      "bytes": 1379,
+      "sha256": "27d959a764b5de95b8533da2cee78413f55693a35f9ade8b99c12c6a0bc0f252"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/partition/mod.rs",
+      "bytes": 3677,
+      "sha256": "eb211f6b417cc9551db16f06f8430c7a78274c4a865678948d892f2f67f264ec"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/replacement.rs",
+      "bytes": 7646,
+      "sha256": "f82b699058856854b3b7667770a6c970c4a8bc48ab6f4581cab25e958b5e1d4a"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/replacement/raw.rs",
+      "bytes": 4092,
+      "sha256": "4e7f173d800f51fe8ae8cbc5fa9c1413efe2b780c9b51e77a5f91822a4011b89"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/search.rs",
+      "bytes": 11935,
+      "sha256": "5b7d41b95d288673d247d82a7ccc2b71bc711a8074dde0bdebe8e44233dabf62"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/search/mode.rs",
+      "bytes": 1135,
+      "sha256": "497e12c3d7a62e77ffb84fb49ecfa5466bf9c3a4bffe914ba0bf45366853325b"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/search/units.rs",
+      "bytes": 1689,
+      "sha256": "b5fb3ddaf5b9551eedccd5d20aefdccebabc8cb7154a13e6c64af2bcff758f63"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/slicing.rs",
+      "bytes": 1735,
+      "sha256": "618a1c10d31326748ccac487add4fff93f7a0dbe3fa9b50bd1e78adb34a00ab8"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/sql_arguments.rs",
+      "bytes": 4581,
+      "sha256": "08921c60d08131271468729f43fae57f9ee66827ae914e7a36a0cfa5680f102f"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/strconv/code_page.rs",
+      "bytes": 5197,
+      "sha256": "c3932dc4cfd5e1d63e893315a78a77badb690e9e3a5fc0524b2b092746d0b6b5"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/strconv/flags.rs",
+      "bytes": 4765,
+      "sha256": "aead8e38c9b211c472d54a9bb3ca95327edd6b3eab0f9cfb93c0e0bbf4c566de"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/strconv/kana.rs",
+      "bytes": 2649,
+      "sha256": "1fe30c7c71001a019b07d5af09f8405500cd03a71c4e3e6ca9282205d8a7d5db"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/strconv/locale.rs",
+      "bytes": 3245,
+      "sha256": "d209a6c23bdd5f72b77806d6c5f7d5eb3f816cd2876c7bcc86400b564887c0ff"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/strconv/mod.rs",
+      "bytes": 1934,
+      "sha256": "0514ffe0c13231c6016ea38c6ba4f92b1ee9d54026757987fb0a52eea4d5ae04"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/strconv/width.rs",
+      "bytes": 5327,
+      "sha256": "3a7424f2176f3dc0fa4bdd1596403aa53d5658d9480fdf701808c5c5e86b97c4"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/styled_number/mod.rs",
+      "bytes": 4197,
+      "sha256": "8f796ca4bb42b5c84fe71569b08891c9ae917b4bb71308055ab56c984ffc2747"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/styled_number/options.rs",
+      "bytes": 2242,
+      "sha256": "895f31fdd1d191d1b2a9d84efa77c4d2d385f9f59869d848dfe085aae9190b09"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/styled_number/render.rs",
+      "bytes": 2428,
+      "sha256": "f46ab99d9abb422f9d5b4e65356b1988b3ffb5eb5feed0806426da510c90e832"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/val/mod.rs",
+      "bytes": 3621,
+      "sha256": "d020baab6f9e2375b3b8619af2786e328b35feec6f7835a0b07a5bb2d7fd831d"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/val/radix.rs",
+      "bytes": 1620,
+      "sha256": "d4c500cd40ac735597eafe8ea25c3328f08b01be994d0eaecd04cd853cf06da8"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/val/scan.rs",
+      "bytes": 649,
+      "sha256": "5a6ea301450ee456bc3cdefa573b69c0e1aa88e9def3f04aed6c200177cd7248"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/text/val/suffix.rs",
+      "bytes": 2537,
+      "sha256": "de4ca00a4c09372c70048debb652af6d5fdb25d2425404c9cd419b616cc981f8"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/guid.rs",
+      "bytes": 1117,
+      "sha256": "37ade9ad27f41cc6fdb530f674cc3b04560f53d9fa12f15c464b430f27596e6e"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/lib.rs",
+      "bytes": 594,
+      "sha256": "1e4e3b7700313eba2b82dc5d8190794a13432f2dd5c0758f3fc256dbb4c139ed"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/logic.rs",
+      "bytes": 4738,
+      "sha256": "0a62a713b673138fc6af2db4a05e39380c4b59d7b7431c0e319f0d6bdda1845c"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/logic/coercion.rs",
+      "bytes": 996,
+      "sha256": "e8ee9124f942cc0ba913ae81d860084d065125cbb3d4124d8d8c08d0a7f9fe3d"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/logic/integer.rs",
+      "bytes": 4525,
+      "sha256": "c62cc097900beb29c5925fc7bbc44132182a323d9be1119d9febf23aee2d3298"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/numeric/admission.rs",
+      "bytes": 1091,
+      "sha256": "9e2bde0e068441f83c5e54aca4d8d4eb2739b0d27f8be75527ffb0e1bed98858"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/numeric/arithmetic.rs",
+      "bytes": 9493,
+      "sha256": "ffa3d0d205a7ec3af926b1977c308da3fe9cbeaa17b506cccae8763d06a88f5c"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/numeric/coercion.rs",
+      "bytes": 3651,
+      "sha256": "5db5bf092d71581e666ff1b3bd22bf1046f4cd372fd349b9547d0d6f1e4eed0d"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/numeric/compare.rs",
+      "bytes": 4227,
+      "sha256": "b27181e2e0c07febeccfb73e4583fccc0df3bb141d440f9acd4abe9e686c339b"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/numeric/decimal.rs",
+      "bytes": 2414,
+      "sha256": "2866100ca79219667d233e49127d7f48b0bcf4dc9a917c30f85eaee287d18213"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/numeric/decimal/arithmetic.rs",
+      "bytes": 1351,
+      "sha256": "929823e22bf6a50c195937e1e6309254921813570c64322a23ca884de37f027c"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/numeric/mod.rs",
+      "bytes": 2170,
+      "sha256": "16ca5a7050ea9e1b2e84751fb85e15e6ae5a5c107e0c218f92d600df2d7f1a87"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/numeric/promotion.rs",
+      "bytes": 6188,
+      "sha256": "904dc5cb26f8e1f809aa1bbdcc26be107c73ee76c66b9c7587a8914e8437413e"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/numeric/promotion/declaration.rs",
+      "bytes": 3380,
+      "sha256": "c233585cf930725a42750792ccdb74ef2fd4ac695f4c086955fade1105fe3068"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/numeric/promotion/declaration/numeric.rs",
+      "bytes": 6980,
+      "sha256": "62c4be457f6cd369e5c360e1ecf1cb6aec53711063040bb4363b76afbbd37807"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/numeric/promotion/division.rs",
+      "bytes": 3188,
+      "sha256": "a27bdf0fb1d845f2be6a09f073fa9512c54d05e698bf92685b09035f0409dc81"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/numeric/promotion/negation.rs",
+      "bytes": 1418,
+      "sha256": "5f82764ce87dea6e8fe8a9d44e849a53501d4bc1cfab702c4aaa6b12dddfa325"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/predicates/like/mod.rs",
+      "bytes": 6464,
+      "sha256": "df9ed27d88484b2e3bfecf98cd8eefbf240717ec609d3643d522a5141d4ad3e5"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/predicates/like/pattern.rs",
+      "bytes": 5024,
+      "sha256": "a162d6c146065c211f63173b766e6fcb20d80afd838eecc334b4fcea28be2efc"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/predicates/like/utf16/classes.rs",
+      "bytes": 2518,
+      "sha256": "12650efa8a5d5b7115d848cd1c43cb74b4156eb6074388c945b19284dc74c482"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/predicates/like/utf16/mod.rs",
+      "bytes": 4724,
+      "sha256": "42fcf803fcc05ca37d6c8ee9a4e0577c5c21889b87b5a1135240fa3501b86295"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/predicates/like/utf16/pattern.rs",
+      "bytes": 3704,
+      "sha256": "d594205c4859661ae18d6c435af1f55042f5d0fd09dd656e48cc1def90e486d5"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/predicates/membership.rs",
+      "bytes": 2636,
+      "sha256": "15217321db4ee0c93b9daf7212b02c41e08f7845d961600723406789489bc7e9"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/predicates/mod.rs",
+      "bytes": 230,
+      "sha256": "1e351bb76e8c91b3362a0673bb98b4968efa983073c44f2b70992977533abe98"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/predicates/range.rs",
+      "bytes": 3183,
+      "sha256": "cf93aff3353a936ef32af78b0972ad5c65c9c2620c43f9189fd53ed4991473c9"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/text.rs",
+      "bytes": 3323,
+      "sha256": "7a852b5412de9015994bf688615eb583d6491a58cae14c74c8cf943c50193699"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/Cargo.toml",
+      "bytes": 435,
+      "sha256": "91e55087b597c364e9f23116b9b9fcb3ab4d4533b5e01a2be28b7135cdb9ca5a"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/lib.rs",
+      "bytes": 821,
+      "sha256": "d97ee0ea000659e299b8235011896dfde91ed8a96c0bc74b936b807fcb4f5980"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/parser/access.rs",
+      "bytes": 10336,
+      "sha256": "19c713be91337c05b70e858320bd71f7a8ebcd4720ef852ea76270697ebb76fe"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/parser/actions.rs",
+      "bytes": 3402,
+      "sha256": "d464da1ae7f2fb5842a858efcb527d82a20fb6d8d5319ff5d6839e8b1773a6a4"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/parser/calls.rs",
+      "bytes": 3868,
+      "sha256": "b6f4aa173c12d927b8cc226e3e7afff59d1d07e73840b90720c1f57a8cfe87d2"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/parser/data_type.rs",
+      "bytes": 3076,
+      "sha256": "ca908a254aefa2656c242da3d3e505278f9e3eec174b1668033a07fde142cc8d"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/parser/definition/constraint.rs",
+      "bytes": 2486,
+      "sha256": "fb3a1f9e94cd0b4be120dcca9b0fbe9ccba995bd22a0e8e874ff2b7e2dd79848"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/parser/definition/index.rs",
+      "bytes": 1267,
+      "sha256": "939eb426df691b721dd4969ed1ceee2019be54414b4cf0139906bfacb1df0fe0"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/parser/definition/mod.rs",
+      "bytes": 2190,
+      "sha256": "51be4a65811537f84d4a61167383bcfe7fd3ff9570b422327fb90f47d0582aae"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/parser/definition/saved.rs",
+      "bytes": 1349,
+      "sha256": "a9f29c5081666267ef8e13b867d02312c0a2f0ee4d79a30d08d2360656f7ba00"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/parser/definition/table.rs",
+      "bytes": 2972,
+      "sha256": "d796ef54830e2b44b8cab97ce1d4bbae169d6b505d28a78efab5ece50b29b072"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/parser/diagnostic.rs",
+      "bytes": 1871,
+      "sha256": "1e8c2333ea4cebb3b82d3e2505377366074ce370ebe9173d9fb73a7a1626f9f8"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/parser/expression.rs",
+      "bytes": 17264,
+      "sha256": "9519655314a0e275163258d0530e01c1bee4e6f2098d3a7831f969664954b4db"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/parser/identifiers.rs",
+      "bytes": 3781,
+      "sha256": "bcd962a0f94f905020ca040c13584ab1bccbbff8e2c1c431aaf873e3fbdc3034"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/parser/lex.rs",
+      "bytes": 6198,
+      "sha256": "7fcde801afa44eee9e6af23e2509097c12c95b0a404865806938de718f71d5ca"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/parser/limits.rs",
+      "bytes": 5700,
+      "sha256": "5d65cc195b4e9f02c0beaf4f1a1c3525e496bb73a652cd0308e3f618a6e177f6"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/parser/mod.rs",
+      "bytes": 4206,
+      "sha256": "51698df57148870587e2325c37c47759e2121741afa462f721dfa7dfe993a35f"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/parser/parameters.rs",
+      "bytes": 1076,
+      "sha256": "2cad040a96349b2915ef7473eb31297caf5710b714eff9bf0313624db5f0f6ff"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/parser/precedence.rs",
+      "bytes": 594,
+      "sha256": "04e878d9bf6277509bd5f53a7026dcb2cb200976c3ec3e32478b7f727096734f"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/parser/queries.rs",
+      "bytes": 6646,
+      "sha256": "e2436a6798ed1c00f3e73793d325b6a6648eabc12c94116fc24cfa07df48a0b2"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/parser/reference_names.rs",
+      "bytes": 975,
+      "sha256": "0d4f5588b4c4d546c17c1d441deebf3a940875aa7d2545d91e400cedaa372c75"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/parser/relations.rs",
+      "bytes": 3568,
+      "sha256": "4d46b72d4bb115cad23543450fac25369ea12c5d8c288003b252fba6a16cde7b"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/parser/scalar.rs",
+      "bytes": 5387,
+      "sha256": "d56dde0a4932ece662f39a53173d1615c04502df08bf1ccee92313c981cb50c4"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/query/actions.rs",
+      "bytes": 1657,
+      "sha256": "47cdc6c04268fd38e64f726d40581b6f35a862f2311a1e7f3788846a7e5a24ce"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/query/data_type.rs",
+      "bytes": 921,
+      "sha256": "834a017546ce50f380d634a0af75554f41df083aed5ea9ef476a7c839efe5a5e"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/query/definition/constraint.rs",
+      "bytes": 1389,
+      "sha256": "aa41f33c10eafcc0b698118aae7c959a873f51553d3e71fca92768e8c586fdc2"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/query/definition/format.rs",
+      "bytes": 6644,
+      "sha256": "6b59fba2479a371f3a90e5aabaebc7068c8994b381fe8654b86aebe308cf7784"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/query/definition/index.rs",
+      "bytes": 847,
+      "sha256": "6ddf5f558b979d520f6f3703194fbca4dce4c40c9a400308cbb52a3c736733d9"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/query/definition/mod.rs",
+      "bytes": 1153,
+      "sha256": "9ea1ce800f6fa38cd52458c16af6629f0589913d2322242c7ab31d52faff2fc0"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/query/definition/saved.rs",
+      "bytes": 945,
+      "sha256": "64748541bd3d368b52ca1e15c8a8f84d039d02d00f598a46058e1ef4fd16d035"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/query/definition/table.rs",
+      "bytes": 1823,
+      "sha256": "28b198a1f85f75f51b7caab8cf9d897939629081d8bd61583c0aab9d05627e59"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/query/format.rs",
+      "bytes": 5650,
+      "sha256": "06db6121d9a22045edd1a7fa42d487ef97f0310b98bd633907b0feefe4c0ef9d"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/query/mod.rs",
+      "bytes": 2401,
+      "sha256": "fbbdc433fdf6b664e70da3b3f14a957bcacf03f368f389c0799251627f5eaed4"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/query/parameters.rs",
+      "bytes": 373,
+      "sha256": "315296b5abafb7ed117c7f1503413cada5681e246c20dfab2accce5ed6866eff"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/query/read.rs",
+      "bytes": 1803,
+      "sha256": "af0c3db9e5205e467456cae4f307a373654c24325e611614654e6dfc39f37d4c"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/select/expression.rs",
+      "bytes": 6067,
+      "sha256": "ad950b8809c1834e5590934f2ca1f35be9b0aa2c6cdce1f1e9eb9d9b23abd7ae"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/select/format.rs",
+      "bytes": 12061,
+      "sha256": "0902f8c4803572af5c1c108e63861744b27e11124c3893ed2d5d8fce555f061a"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/select/mod.rs",
+      "bytes": 4797,
+      "sha256": "e9990e9c5503f9e5fbf39e5047538a0a21f0f79f8f536411476033f2580821d1"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/select/name.rs",
+      "bytes": 2885,
+      "sha256": "aeb476118e90bfa8b3d93bf8231acf7f7e62afb5fa38c8a10fef566d6bccae28"
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/select/source.rs",
+      "bytes": 1256,
+      "sha256": "ac71725794eb60b50de46e35230006a0aba6412382c856d6407e5ec02b4aaa42"
+    },
+    {
+      "path": "rust-toolchain.toml",
+      "bytes": 86,
+      "sha256": "b2c19d86958ed6810741488db5cd352856f303c53bcf0ea774e72f94ee4d201e"
+    }
+  ],
+  "git_blob_binding": {
+    "revision": "2ed6dc2065f56ddab391bd858bf6bd7547c7761d",
+    "all_source_pins_match": true,
+    "count": 766
+  },
+  "qualification": "Build provenance only; no broader-profile candidate or native Access comparison claim."
+}
