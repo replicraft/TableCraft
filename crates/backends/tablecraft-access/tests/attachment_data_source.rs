@@ -14,6 +14,8 @@ mod limits;
 mod links_fixture;
 #[path = "attachment_data_source/metadata.rs"]
 mod metadata;
+#[path = "attachment_data_source/modern.rs"]
+mod modern;
 #[path = "attachment_data_source/raw.rs"]
 mod raw;
 use std::{

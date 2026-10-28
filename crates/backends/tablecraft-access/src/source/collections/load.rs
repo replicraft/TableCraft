@@ -2,12 +2,13 @@
 use super::payload::DecodedFiles;
 use super::{CollectionCache, NativeField, NativeSource, payload, query_error};
 use tablecraft_ace::{
-    NativeColumn, NativeReadSource, NativeSortOrder, read_attachment_column_with_limits,
+    NativeReadSource, NativeSortOrder, read_attachment_column_with_limits,
     read_attachment_metadata_with_limits, read_version_history_column_with_limits,
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_db::validate_projection;
 use tablecraft_query::QueryError;
+use tablecraft_schema::ScalarType;
 
 impl<R: NativeReadSource> NativeSource<'_, R> {
     pub(super) fn load_members(
@@ -88,7 +89,15 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
                     self.validate_named_members(
                         cache,
                         member.collection().as_str(),
-                        snapshot.links().child_snapshot().schema().columns(),
+                        |name| {
+                            snapshot
+                                .links()
+                                .child_snapshot()
+                                .columns()
+                                .iter()
+                                .find(|column| column.name().eq_ignore_ascii_case(name))
+                                .map(|column| column.data_type())
+                        },
                         |name| snapshot.member_text_sort_order(name),
                         &mut budget,
                     )?;
@@ -135,7 +144,7 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
                     self.validate_named_members(
                         cache,
                         member.collection().as_str(),
-                        snapshot.child_snapshot().schema().columns(),
+                        |name| snapshot.member_type(name),
                         |name| snapshot.metadata_text_sort_order(name),
                         &mut budget,
                     )?;
@@ -170,7 +179,7 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
                 self.validate_named_members(
                     cache,
                     member.collection().as_str(),
-                    snapshot.links().child_snapshot().schema().columns(),
+                    |name| snapshot.member_type(name),
                     |name| snapshot.metadata_text_sort_order(name),
                     &mut budget,
                 )?;
@@ -212,7 +221,7 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
         &self,
         cache: &CollectionCache,
         collection: &str,
-        fields: &[NativeColumn],
+        mut kind: impl FnMut(&str) -> Option<ScalarType>,
         mut order: impl FnMut(&str) -> Option<NativeSortOrder>,
         budget: &mut ResourceBudget,
     ) -> Result<(), QueryError> {
@@ -230,11 +239,7 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
             {
                 continue;
             }
-            let field = fields
-                .iter()
-                .find(|field| field.name().eq_ignore_ascii_case(declared.column().name()))
-                .ok_or(QueryError::SchemaChanged)?;
-            if field.scalar_type() != Some(declared.column().data_type())
+            if kind(declared.column().name()) != Some(declared.column().data_type())
                 || order(declared.column().name()).map(crate::collation::identity)
                     != cache.text_collations[position]
             {

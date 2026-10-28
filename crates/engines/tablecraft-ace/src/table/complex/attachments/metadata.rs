@@ -4,6 +4,7 @@ use tablecraft_core::{
     limits::ResourceBudget,
     values::{LegacyDateTime, Value},
 };
+use tablecraft_schema::ScalarType;
 
 /// Complete checked native attachment collections with encoded file data.
 pub struct AttachmentColumn {
@@ -20,6 +21,13 @@ impl AttachmentColumn {
     /// Raw checked schema/identity links; parent keys are snapshot-local.
     pub fn links(&self) -> &ComplexColumnLinks {
         &self.links
+    }
+
+    /// Certified scalar declaration of a named attachment member.
+    /// FileData is Binary; this declaration does not decode or validate its wrapper.
+    /// Reference columns and unknown member names return None.
+    pub fn member_type(&self, member: &str) -> Option<ScalarType> {
+        super::schema::member_type(member)
     }
 
     /// Borrow an exact stored member, including FileData's encoded Binary envelope.

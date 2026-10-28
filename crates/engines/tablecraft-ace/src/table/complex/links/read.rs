@@ -79,12 +79,49 @@ pub(in crate::table::complex) fn read_resolved<R: crate::NativeReadSource>(
     let (position, parents) =
         read_parents(source, &schema, field_position, limits, budget, cancelled)?;
     let flat = schema.columns()[position].flat_table();
-    let children = TableCursor::open(source, scope, flat.name(), budget, cancelled)?
-        .into_snapshot(limits, budget, cancelled)?;
+    let declaration = &schema.columns()[position];
+    let attachment =
+        match super::super::attachments::schema::qualify(declaration, flat, budget, cancelled) {
+            Ok(_) => true,
+            Err(InspectError::Unsupported) => false,
+            Err(error) => return Err(error),
+        };
+    let cursor = if attachment {
+        let observed = crate::inspect_table_schema(source, scope, flat.name(), budget, cancelled)?;
+        if observed.object_id() != flat.object_id()
+            || observed.definition_page() != flat.definition_page()
+            || observed.layout != flat.layout
+        {
+            return Err(InspectError::Malformed);
+        }
+        let (_, columns) = super::super::attachments::schema::projection(
+            declaration,
+            &observed,
+            None,
+            budget,
+            cancelled,
+        )?;
+        TableCursor::from_qualified(source, observed, None, columns, budget, cancelled)?
+    } else {
+        TableCursor::open(source, scope, flat.name(), budget, cancelled)?
+    };
+    let children = cursor.into_snapshot(limits, budget, cancelled)?;
+    let expected = if attachment {
+        super::super::attachments::schema::projection(
+            declaration,
+            children.schema(),
+            None,
+            budget,
+            cancelled,
+        )?
+        .1
+    } else {
+        flat.scalar_columns_with_budget(budget)?
+    };
     if children.schema().object_id() != flat.object_id()
         || children.schema().definition_page() != flat.definition_page()
         || children.schema().declared_rows() != flat.declared_rows()
-        || children.columns() != flat.scalar_columns_with_budget(budget)?
+        || children.columns() != expected
     {
         return Err(InspectError::Malformed);
     }

@@ -1,6 +1,6 @@
 use super::super::schema;
 use super::AttachmentMetadataColumn;
-use crate::table::{complex::links, snapshot};
+use crate::table::complex::links;
 use crate::{
     InspectError, NativeReadSource, ReadProfile, TableCursor, TableSnapshotLimits, header::check,
     inspect_complex_schema,
@@ -92,15 +92,30 @@ pub fn read_attachment_metadata_with_limits<R: NativeReadSource>(
                 .name(),
         );
     }
-    let (_, expected) = snapshot::projected_columns(flat, &names, budget, cancelled)?;
+    let (_, expected) = schema::projection(declaration, flat, Some(&names), budget, cancelled)?;
     let (observed_position, parents) =
         links::read_parents(source, &complex, field_position, limits, budget, cancelled)?;
     if observed_position != position {
         return Err(InspectError::Malformed);
     }
-    let children =
-        TableCursor::open_projection(source, scope, flat.name(), &names, budget, cancelled)?
-            .into_snapshot(limits, budget, cancelled)?;
+    let observed = crate::inspect_table_schema(source, scope, flat.name(), budget, cancelled)?;
+    if observed.object_id() != flat.object_id()
+        || observed.definition_page() != flat.definition_page()
+        || observed.layout != flat.layout
+    {
+        return Err(InspectError::Malformed);
+    }
+    let (positions, columns) =
+        schema::projection(declaration, &observed, Some(&names), budget, cancelled)?;
+    let children = TableCursor::from_qualified(
+        source,
+        observed,
+        Some(positions),
+        columns,
+        budget,
+        cancelled,
+    )?
+    .into_snapshot(limits, budget, cancelled)?;
     if children.schema().object_id() != flat.object_id()
         || children.schema().definition_page() != flat.definition_page()
         || children.schema().declared_rows() != flat.declared_rows()
