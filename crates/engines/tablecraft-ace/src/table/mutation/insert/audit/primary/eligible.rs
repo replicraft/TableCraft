@@ -131,20 +131,10 @@ pub(super) fn original(
             expected.push(wire);
         }
     }
-    let levels = expected.len().checked_ilog2().unwrap_or(0) as usize + 1;
-    let work = expected
-        .len()
-        .checked_mul(levels)
-        .and_then(|work| work.checked_mul(size_of::<Wire>()))
-        .ok_or(InspectError::StructureLimit)?;
-    reader.work(work)?;
-    expected.sort_unstable();
-    reader.work(
-        expected
-            .len()
-            .checked_mul(size_of::<Wire>())
-            .ok_or(InspectError::StructureLimit)?,
-    )?;
+    super::wire::sort_paid(&mut expected, reader)?;
+    for entry in &expected {
+        reader.work(size_of::<Wire>().max(entry.len()))?;
+    }
     if expected != entries {
         return Err(EditError::Preservation);
     }

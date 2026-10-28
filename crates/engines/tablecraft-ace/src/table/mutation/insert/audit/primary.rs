@@ -139,15 +139,7 @@ pub(super) fn prove(
             reader.work(size_of::<Wire>())?;
             entries.push(wire);
         }
-        let levels = entries.len().checked_ilog2().unwrap_or(0) as usize + 1;
-        reader.work(
-            entries
-                .len()
-                .checked_mul(levels)
-                .and_then(|work| work.checked_mul(size_of::<Wire>()))
-                .ok_or(InspectError::StructureLimit)?,
-        )?;
-        entries.sort_unstable();
+        wire::sort_paid(&mut entries, reader)?;
         for pair in entries.windows(2) {
             reader.work(pair[0].len() + pair[1].len())?;
             if pair[0] >= pair[1]

@@ -21,8 +21,10 @@ complete component wires, all/partial NULL rules, source membership and historic
 families. Wider audit bytes and branch copies are explicitly charged; short keys
 retain inline storage. Normal save and required data-macro gates remain intact.
 
-All 171 INSERT regression functions pass, and the full ACE unit batch passes 468
-with one existing ignored generator. New genuine complete-image controls cover
+The fixed-key continuation passes 171 INSERT functions, and its full ACE unit
+batch passes 468 with one existing ignored generator. The subsequent actual-width
+comparison guard passes 173 INSERT functions, including two causal budget controls;
+that cost-only correction does not change image bytes. New genuine complete-image controls cover
 both layouts, reversed/mixed directions, aliases, primary physical swaps, partial
 NULL uniqueness, ignored membership and 198-byte ten-GUID node bounds. An initial
 projection-order defect was corrected without changing source/expected images;
