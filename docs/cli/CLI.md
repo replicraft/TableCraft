@@ -24,7 +24,6 @@ For installation, see the [README](../../README.md#install). From the repository
 
 ```sh
 tablecraft inspect example.accdb
-tablecraft open --wait -- example.accdb
 tablecraft inspect example.accdb --catalog
 tablecraft inspect example.accdb --table Customers --indexes
 tablecraft inspect example.accdb --table Customers --check
@@ -38,13 +37,6 @@ indexes and reports unchecked coverage. `tables --count` shows declared stored
 row counts, not a record-integrity audit. `rows` uses physical encounter order;
 use an SQL `ORDER BY` when ordering matters. `rows --all` emits a separate page
 per local user table and leaves linked targets unopened.
-
-`open` performs the same inert header inspection as plain `inspect`. File-manager
-handlers use `open --wait` to keep the terminal visible until Return, including
-after operation errors. Waiting occurs only with terminal stdin and stdout, after
-output is flushed; redirected invocation does not wait. See
-[file-manager integration](../development/RELEASING.md#file-manager-integration)
-for optional Windows, macOS and Linux registration.
 
 Output uses bordered tables in terminals and TSV when redirected. Select
 `--format table` or `--format tsv` explicitly. TSV uses CSV quoting with a tab

@@ -7,7 +7,6 @@ import io
 import json
 import os
 from pathlib import Path
-import plistlib
 import shutil
 import stat
 import subprocess
@@ -47,7 +46,7 @@ def checksum(path):
     return f"{contract.digest(path)}  {path.name}\n".encode("ascii")
 
 
-def package(version, target, binary, output, macos_app=None):
+def package(version, target, binary, output):
     contract.validate_version(version)
     contract.regular(binary, contract.MAX_EXECUTABLE_BYTES)
     with binary.open("rb") as stream:
@@ -55,13 +54,6 @@ def package(version, target, binary, output, macos_app=None):
     files = contract.legal_payload()
     executable = contract.executable_name(target)
     files[executable] = binary
-    files.update(contract.static_handler_payload(target))
-    if "apple" in target:
-        if macos_app is None:
-            raise ValueError("macOS releases require the native Finder receiver app")
-        for name in contract.handler_names(target):
-            relative = Path(name).relative_to("TableCraft.app")
-            files[name] = contract.regular(macos_app / relative)
     metadata = contract.manifest(version, target, files)
     output.mkdir(parents=True, exist_ok=True)
     standalone = output / LICENSE_BUNDLE
@@ -79,7 +71,7 @@ def package(version, target, binary, output, macos_app=None):
                 for name, path in sorted(files.items()):
                     info = zipfile.ZipInfo(name, date_time=ZIP_EPOCH)
                     info.create_system = 3
-                    mode = EXECUTABLE_MODE if contract.executable_member(name, target) else DATA_MODE
+                    mode = EXECUTABLE_MODE if name == executable else DATA_MODE
                     info.external_attr = (stat.S_IFREG | mode) << 16
                     info.compress_type = zipfile.ZIP_DEFLATED
                     with path.open("rb") as source, stream.open(info, "w", force_zip64=True) as destination:
@@ -91,7 +83,7 @@ def package(version, target, binary, output, macos_app=None):
                     for name, path in sorted(files.items()):
                         info = tarfile.TarInfo(name)
                         info.size = path.stat().st_size
-                        info.mode = EXECUTABLE_MODE if contract.executable_member(name, target) else DATA_MODE
+                        info.mode = EXECUTABLE_MODE if name == executable else DATA_MODE
                         with path.open("rb") as source:
                             stream.addfile(info, source)
                     info = tarfile.TarInfo(MANIFEST)
@@ -128,7 +120,7 @@ def verify_archive(archive, version, target, run_smoke=False):
         raise ValueError("Unexpected archive name")
     executable = contract.executable_name(target)
     legal = contract.legal_payload()
-    expected = {*legal, executable, MANIFEST, *contract.handler_names(target)}
+    expected = {*legal, executable, MANIFEST}
     with tempfile.TemporaryDirectory(prefix="tablecraft-release-verify-") as temporary:
         destination = Path(temporary)
         seen = set()
@@ -138,7 +130,7 @@ def verify_archive(archive, version, target, run_smoke=False):
             if name not in expected or name in seen:
                 raise ValueError(f"Unexpected or duplicate archive member: {name}")
             seen.add(name)
-            maximum = (contract.MAX_EXECUTABLE_BYTES if contract.executable_member(name, target)
+            maximum = (contract.MAX_EXECUTABLE_BYTES if name == executable
                        else MAX_MANIFEST_BYTES if name == MANIFEST else contract.MAX_LEGAL_BYTES)
             if size <= 0 or size > maximum:
                 raise ValueError("Archive member has an invalid size")
@@ -147,7 +139,7 @@ def verify_archive(archive, version, target, run_smoke=False):
             hashes[name] = copy_member(source, path, maximum)
             if path.stat().st_size != size:
                 raise ValueError("Archive member length mismatch")
-            if contract.executable_member(name, target):
+            if name == executable:
                 if mode != EXECUTABLE_MODE:
                     raise ValueError("Executable archive permissions must be 0755")
                 path.chmod(EXECUTABLE_MODE)
@@ -170,11 +162,10 @@ def verify_archive(archive, version, target, run_smoke=False):
         if seen != expected:
             raise ValueError("Archive is missing required binary/license/manifest resources")
         metadata = json.loads((destination / MANIFEST).read_text())
-        fixed = {**legal, **contract.static_handler_payload(target)}
-        expected_hashes = {name: contract.digest(path) for name, path in fixed.items()}
+        expected_hashes = {name: contract.digest(path) for name, path in legal.items()}
         for name, value in expected_hashes.items():
             if hashes[name] != value:
-                raise ValueError(f"Changed release resource: {name}")
+                raise ValueError(f"Changed legal payload: {name}")
         hashes.pop(MANIFEST)
         expected_metadata = {
             "product": "tablecraft-cli", "version": version, "target": target, "files": hashes,
@@ -184,14 +175,6 @@ def verify_archive(archive, version, target, run_smoke=False):
         binary = destination / executable
         with binary.open("rb") as source:
             contract.architecture(source, binary.stat().st_size, target)
-        if "apple" in target:
-            launcher = destination / contract.MACOS_LAUNCHER
-            with launcher.open("rb") as source:
-                contract.architecture(source, launcher.stat().st_size, target)
-            if hashes[contract.MACOS_CLI] != hashes[executable]:
-                raise ValueError("Bundled Finder CLI differs from the portable executable")
-            if plistlib.loads((destination / contract.MACOS_INFO).read_bytes()) != contract.macos_info(version):
-                raise ValueError("Finder association metadata differs from the release contract")
         if run_smoke:
             smoke(binary, version)
 
@@ -234,7 +217,6 @@ def main():
         if command == "package":
             child.add_argument("--binary", type=Path, required=True)
             child.add_argument("--output", type=Path, required=True)
-            child.add_argument("--macos-app", type=Path)
         else:
             child.add_argument("--archive", type=Path, required=True)
             child.add_argument("--smoke", action="store_true")
@@ -253,7 +235,7 @@ def main():
                     stream.write(f"version={version}\n")
             print(version)
         elif args.command == "package":
-            print(package(args.version, args.target, args.binary, args.output, args.macos_app))
+            print(package(args.version, args.target, args.binary, args.output))
         elif args.command == "verify-archive":
             contract.validate_version(args.version)
             verify_archive(args.archive, args.version, args.target, args.smoke)

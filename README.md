@@ -33,8 +33,6 @@ Prebuilt archives will be available from
 [Releases](https://github.com/replicraft/TableCraft/releases) for Windows, macOS
 and Linux. Extract `tablecraft` (`tablecraft.exe` on Windows) onto your `PATH`.
 Archives include license notices and SHA-256 checksums accompany each release.
-Optional [file-handler registration](docs/development/RELEASING.md#file-manager-integration)
-adds TableCraft to Open With for `.mdb` and `.accdb`, opening CLI inspection in a terminal.
 
 To build from source, install the pinned Rust toolchain and run:
 

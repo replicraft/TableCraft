@@ -47,61 +47,6 @@ ELF_ARM64_MACHINE = 183
 ELF_X64_MACHINE = 62
 MAX_EXECUTABLE_BYTES = 512 * 1024 * 1024
 MAX_LEGAL_BYTES = 16 * 1024 * 1024
-MACOS_LAUNCHER = "TableCraft.app/Contents/MacOS/TableCraft"
-MACOS_CLI = "TableCraft.app/Contents/Resources/tablecraft"
-MACOS_INFO = "TableCraft.app/Contents/Info.plist"
-
-
-def macos_info(version):
-    types = [
-        ("Microsoft Access MDB database", "mdb"),
-        ("Microsoft Access ACCDB database", "accdb"),
-    ]
-    return {
-        "CFBundleIdentifier": "org.replicraft.tablecraft",
-        "CFBundleName": "TableCraft",
-        "CFBundleExecutable": "TableCraft",
-        "CFBundlePackageType": "APPL",
-        "CFBundleInfoDictionaryVersion": "6.0",
-        "CFBundleShortVersionString": version.split("-", 1)[0],
-        "CFBundleVersion": version.split("-", 1)[0],
-        "LSMinimumSystemVersion": "13.0",
-        "LSUIElement": True,
-        "CFBundleDocumentTypes": [
-            {
-                "CFBundleTypeName": name,
-                "CFBundleTypeRole": "Viewer",
-                "LSHandlerRank": "Alternate",
-                # Use extension matching until the formats' canonical foreign
-                # UTIs are established. Invented imported UTIs compete with the
-                # identifiers supplied by existing database applications.
-                "CFBundleTypeExtensions": [extension],
-            }
-            for name, extension in types
-        ],
-    }
-
-
-def handler_names(target):
-    if "windows" in target:
-        return {"register-file-associations.ps1"}
-    if "apple" in target:
-        return {MACOS_LAUNCHER, MACOS_CLI, MACOS_INFO}
-    return {"file_associations.py"}
-
-
-def static_handler_payload(target):
-    if "apple" in target:
-        return {}
-    platform = "windows" if "windows" in target else "linux"
-    return {
-        name: regular(ROOT / "packaging" / platform / name, MAX_LEGAL_BYTES)
-        for name in handler_names(target)
-    }
-
-
-def executable_member(name, target):
-    return name in {executable_name(target), MACOS_LAUNCHER, MACOS_CLI}
 
 
 def regular(path, maximum=None):

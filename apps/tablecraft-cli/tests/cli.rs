@@ -31,6 +31,7 @@ fn version_matches_package_metadata() {
 fn unsupported_commands_and_extra_arguments_fail_without_success_output() {
     for args in [
         &["edit", "example.accdb"][..],
+        &["open", "example.accdb"][..],
         &["--unknown"][..],
         &["unexpected", "extra"][..],
     ] {
