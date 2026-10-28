@@ -12,6 +12,30 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Multiple physical indexes during INSERT
+
+The separate ACE 16 engineering preview now maintains every admitted physical
+index through one DATA-first allocator. Logical aliases share a physical owner;
+secondary Byte/Int16/Int32/Int64/Currency single keys retain direction, represented
+NULLs and ordinary/unique constraints. The required Int32 primary may occupy any
+physical slot. Cross-owner source-tree overlap refuses the operation, and each
+historical counter increases only for new key families. Normal save, Ignore-NULL,
+other key families and required data-macro gates remain separate.
+
+The full ACE unit batch passes 426 functions with one existing ignored generator,
+including independent complete-image and forged-stage controls. Strict ACE Clippy
+across all targets/features, minimal compilation, formatting and dependency/link
+guards pass. Four independently frozen source/request images match four
+first-attempt candidates from an isolated committed producer; eight fresh
+Jackcess getter/map calls pass on the unchanged candidates. All 806 old ROWs are
+preserved, and both pressure cases grow DATA plus both physical indexes.
+
+The [current profile](testing/ACE16_MULTIPLE_INDEX_INSERTS.md) separates this
+candidate evidence from four independent public-writer references and native
+Access qualification. The original seven-call source-gate failure, eighteen-call
+continuation and two pre-execution model corrections remain explicit; source or
+candidate bytes were not repaired.
+
 ## Retained String joins and typed query composition
 
 String concatenation and String-selected addition now join exact active bytes,
@@ -153,9 +177,10 @@ existing DATA/index/map/counter proof.
 Actual empty Text now requires an explicit AllowZeroLength declaration for that
 field; false remains a field violation, and absence refuses coverage without
 changing shared read/update defaults. The example uses shared exact scalar/bit/GUID
-parsers in its unchanged quoted TSV protocol. Default/generated values, extra
-physical indexes, Decimal/LVAL/extended-date records, data macros and normal saves
-remain outside this profile.
+parsers in its unchanged quoted TSV protocol. At that checkpoint, additional
+indexes and Decimal records were refused. Their later continuations are recorded
+above; defaults/generated fields, LVAL/extended-date records, required data macros
+and normal saves remain separate work.
 
 The complete focused INSERT batch passes 108 functions: old 88 plus six builder,
 four record-proof and ten end-to-end functions. An initial 97-pass/one-fixture
