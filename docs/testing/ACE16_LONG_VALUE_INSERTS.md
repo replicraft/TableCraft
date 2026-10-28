@@ -177,7 +177,8 @@ page, and reject identical bytes under the wrong canonical map role/reference.
 The later [zero-pair initialization continuation](ACE16_LONG_VALUE_INITIALIZATION.md)
 can add fresh column maps after source emptiness qualification. Other external
 placement still requires existing declared column-map pairs and represented
-global free cells. Missing declarations, legacy external migration, global map
+global free cells. The [missing-declaration continuation](ACE16_MISSING_LONG_VALUE_DECLARATIONS.md)
+now qualifies bounded single-page tails. Wider declaration layouts, legacy external migration, global map
 growth and map-record slot expansion remain unfinished. Other metadata, text-codec/BOM
 cases, Memo/OLE index keys, required unavailable validation/data macros and
 production saves keep their explicit refusals. Literal map-growth checks are not

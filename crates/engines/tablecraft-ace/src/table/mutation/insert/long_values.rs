@@ -56,17 +56,37 @@ pub(super) struct BitmapPage {
     pub bytes: Vec<u8>,
 }
 
+pub(super) enum DeclarationBinding {
+    ZeroPair {
+        offset: usize,
+        before: [u8; 2 * size_of::<u32>()],
+        after: [u8; 2 * size_of::<u32>()],
+    },
+    MissingDeclaration,
+}
+
 pub(super) struct Initialization {
     pub number: u32,
     pub column: usize,
-    pub offset: usize,
-    pub before: [u8; 2 * size_of::<u32>()],
-    pub after: [u8; 2 * size_of::<u32>()],
+    pub binding: DeclarationBinding,
     pub bytes: Vec<u8>,
+}
+
+pub(super) struct DefinitionGrowth {
+    pub definition: u32,
+    pub offset: usize,
+    pub old_length: usize,
+    pub new_length: usize,
+    pub old_free: u16,
+    pub new_free: u16,
+    pub before: Vec<u8>,
+    pub after: Vec<u8>,
 }
 
 pub(super) struct Plan {
     pub qualified_zero_columns: Vec<usize>,
+    pub qualified_missing_columns: Vec<usize>,
+    pub definition_growth: Option<DefinitionGrowth>,
     pub initializations: Vec<Initialization>,
     pub pages: Vec<Page>,
     pub metadata: Vec<BitmapPage>,
@@ -114,6 +134,8 @@ pub(super) fn prepare(
     let mut append = State::new(image, checked.schema().definition_page());
     let mut plan = Plan {
         qualified_zero_columns: Vec::new(),
+        qualified_missing_columns: Vec::new(),
+        definition_growth: None,
         initializations: Vec::new(),
         pages: Vec::new(),
         metadata: Vec::new(),
@@ -134,12 +156,40 @@ pub(super) fn prepare(
             native_columns.push(field.number());
         }
     }
-    let (inventory, zeros) =
-        Inventory::capture_for_initialization(image, schema, &native_columns, budget, cancelled)?;
-    reserve(&mut plan.qualified_zero_columns, zeros.len(), budget)?;
-    for zero in &zeros {
+    let mut external_columns = Vec::new();
+    reserve(&mut external_columns, selected.len(), budget)?;
+    for &position in &selected {
+        check(budget, cancelled)?;
+        external_columns.push(schema.columns()[position].number());
+    }
+    let (inventory, declarations) = Inventory::capture_for_insert(
+        image,
+        schema,
+        &native_columns,
+        &external_columns,
+        budget,
+        cancelled,
+    )?;
+    reserve(
+        &mut plan.qualified_zero_columns,
+        declarations.zeros.len(),
+        budget,
+    )?;
+    for zero in &declarations.zeros {
         check(budget, cancelled)?;
         plan.qualified_zero_columns.push(zero.column);
+    }
+    reserve(
+        &mut plan.qualified_missing_columns,
+        declarations.missing.len(),
+        budget,
+    )?;
+    for missing in &declarations.missing {
+        check(budget, cancelled)?;
+        plan.qualified_missing_columns.push(missing.column);
+    }
+    if let Some(tail) = &declarations.tail {
+        initialization::growth_length(tail, declarations.missing.len())?;
     }
     if selected.is_empty() {
         finish_inline(inputs, budget, cancelled)?;
@@ -181,10 +231,35 @@ pub(super) fn prepare(
             .iter()
             .find(|column| column.column_number() == field.number())
             .ok_or(EditError::Preservation)?;
-        reader.work(zeros.len())?;
-        if let Some(zero) = zeros.iter().find(|zero| zero.column == field.number()) {
+        reader.work(declarations.zeros.len() + declarations.missing.len())?;
+        if let Some(zero) = declarations
+            .zeros
+            .iter()
+            .find(|zero| zero.column == field.number())
+        {
             let initialized =
-                initialization::prepare(schema, zero, &global, &mut append, &mut reader)?;
+                initialization::prepare_zero(schema, zero, &global, &mut append, &mut reader)?;
+            let references = packed_maps(initialized.number)?;
+            reserve(&mut plan.initializations, 1, reader.budget)?;
+            plan.initializations.push(initialized);
+            columns.push(Column {
+                position,
+                number: field.number(),
+                references,
+                maps: Maps::fresh(field.number(), references, &mut reader)?,
+            });
+        } else if let Some(missing) = declarations
+            .missing
+            .iter()
+            .find(|missing| missing.column == field.number())
+        {
+            let initialized = initialization::prepare_missing(
+                schema,
+                missing,
+                &global,
+                &mut append,
+                &mut reader,
+            )?;
             let references = packed_maps(initialized.number)?;
             reserve(&mut plan.initializations, 1, reader.budget)?;
             plan.initializations.push(initialized);
@@ -223,6 +298,14 @@ pub(super) fn prepare(
                 maps: Maps::capture(scope, field.number(), references, &mut reader)?,
             });
         }
+    }
+    if let Some(tail) = &declarations.tail {
+        plan.definition_growth = Some(initialization::definition_growth(
+            image,
+            tail,
+            &plan.initializations,
+            &mut reader,
+        )?);
     }
     let mut builder = Builder {
         image,

@@ -1,6 +1,7 @@
 //! Healthy checked candidates distinguish authority failures from corrupt input.
 mod ignored;
 mod long_values;
+mod lval_declaration;
 mod lval_growth;
 mod lval_initialization;
 mod multiple;

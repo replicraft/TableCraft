@@ -430,8 +430,12 @@ Explicit zero/zero [column-map initialization](testing/ACE16_LONG_VALUE_INITIALI
 now proves source emptiness, adds typed containers before bodies and independently
 replays exact TD pointer patches. Inline-only requests keep zero pairs untouched.
 The combined INSERT batch passes 212 functions and the full ACE library passes
-548 with one existing ignored generator. Missing declarations, legacy external
-storage migration, continued TD initialization, global map growth and pointer-record
+548 with one existing ignored generator. The following [missing-declaration continuation](testing/ACE16_MISSING_LONG_VALUE_DECLARATIONS.md)
+adds certified single-page TD tails and exact header changes, with mixed zero/missing
+bindings, nonzero consumed-spare before-images and an independent complete-image
+audit. Its combined INSERT batch passes 229 functions; the full ACE library passes
+565 with one existing ignored generator. Legacy external storage migration,
+continued TD initialization, global map growth and pointer-record
 expansion remain open; these checkpoints do not qualify normal saves or native
 Access behavior.
 The external-payload profile additionally passes sixteen source/request-only

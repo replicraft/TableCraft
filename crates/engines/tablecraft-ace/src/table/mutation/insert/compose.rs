@@ -1,5 +1,5 @@
 //! Exact-before composition; independent final proof owns insertion authority.
-use super::Staged;
+use super::{Staged, long_values::DeclarationBinding};
 use crate::{
     EditError, InspectError, NativeImage,
     format::page::{PAGE_BYTES, USAGE_SIGNATURE},
@@ -9,6 +9,9 @@ use crate::{
 };
 use std::ops::Range;
 use tablecraft_core::limits::{Resource, ResourceBudget};
+
+const DEFINITION_FREE_OFFSET: usize = 2;
+const DEFINITION_LENGTH_OFFSET: usize = 8;
 
 pub(super) fn compose(
     image: &NativeImage,
@@ -54,6 +57,13 @@ pub(super) fn compose(
         .len()
         .checked_add(staged.long_values.pages.len())
         .and_then(|count| count.checked_add(staged.long_values.initializations.len()))
+        .and_then(|count| {
+            count.checked_add(if staged.long_values.definition_growth.is_some() {
+                3
+            } else {
+                0
+            })
+        })
         .and_then(|count| count.checked_add(data.append.map_edits.len()))
         .and_then(|count| count.checked_add(staged.counters.len()))
         .ok_or(InspectError::StructureLimit)?;
@@ -77,12 +87,53 @@ pub(super) fn compose(
         .map_err(|_| InspectError::Allocation)?;
     for initialization in &staged.long_values.initializations {
         check(budget, cancelled)?;
+        if let DeclarationBinding::ZeroPair {
+            offset,
+            before,
+            after: replacement,
+        } = &initialization.binding
+        {
+            spans.push(write(
+                original,
+                &mut after,
+                *offset,
+                before,
+                replacement,
+                budget,
+                cancelled,
+            )?);
+        }
+    }
+    if let Some(growth) = &staged.long_values.definition_growth {
+        let base = growth.definition as usize * PAGE_BYTES;
+        let old_length =
+            u32::try_from(growth.old_length).map_err(|_| InspectError::StructureLimit)?;
+        let new_length =
+            u32::try_from(growth.new_length).map_err(|_| InspectError::StructureLimit)?;
         spans.push(write(
             original,
             &mut after,
-            initialization.offset,
-            &initialization.before,
-            &initialization.after,
+            base + DEFINITION_FREE_OFFSET,
+            &growth.old_free.to_le_bytes(),
+            &growth.new_free.to_le_bytes(),
+            budget,
+            cancelled,
+        )?);
+        spans.push(write(
+            original,
+            &mut after,
+            base + DEFINITION_LENGTH_OFFSET,
+            &old_length.to_le_bytes(),
+            &new_length.to_le_bytes(),
+            budget,
+            cancelled,
+        )?);
+        spans.push(write(
+            original,
+            &mut after,
+            growth.offset,
+            &growth.before,
+            &growth.after,
             budget,
             cancelled,
         )?);

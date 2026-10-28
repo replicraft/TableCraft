@@ -12,6 +12,31 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Missing Memo/OLE declaration insertion
+
+The separate ACE 16 INSERT preview now appends absent ordinary Memo/OLE map
+declarations to qualified single-page table definitions. It certifies the complete
+two-byte terminal trailer, original logical length and free word, then adds only
+externally needed declarations. Source eligibility excludes existing external
+values under those missing declarations. Inline-only operations retain their
+original tail and allocation behavior.
+
+Typed bindings keep absent declarations separate from explicit zero pairs. One
+definition-growth plan updates the free word, length and exact tail window;
+consumed spare bytes retain exact before-images even when nonzero, and every
+byte past the new logical end remains unchanged. Mixed bindings and multiple
+missing columns share ordinal-ordered containers before request-ordered bodies.
+Independent audit derives the tail, bindings, maps and page purposes from source
+and requests rather than staged patches.
+
+All 229 INSERT functions and the full 565-function ACE library batch pass, with
+one existing ignored fixture generator. Thirty-six shared LVAL UPDATE/map/codec
+checks, strict ACE Clippy across all targets/features, minimal compilation,
+formatting and documentation/dependency guards pass. Literal capacity fixtures
+cover 4,086→4,096-byte growth and 4,088→4,098-byte refusal within bounded index/name
+profiles. These engineering checks do not qualify original Access-file mutation
+or native saves. See the [missing-declaration contract](testing/ACE16_MISSING_LONG_VALUE_DECLARATIONS.md).
+
 ## Empty Memo/OLE map initialization
 
 The separate ACE 16 INSERT preview now initializes explicit zero/zero column-map
@@ -35,9 +60,9 @@ all targets/features, minimal compilation, formatting and documentation/dependen
 guards pass. The 212-function INSERT batch also passes after the final strict
 metadata dispatch adjustment.
 
-Missing declarations, half-zero pairs, legacy external storage under zero pairs,
-continued TD initialization, global map growth and production saves remain
-separate work. These literal engineering checks are not original-file or native
+The later missing-declaration continuation is recorded above. Half-zero pairs,
+legacy external storage under zero pairs, continued TD initialization, global map
+growth and production saves remain separate work. These literal engineering checks are not original-file or native
 Access qualification. See the [initialization contract](testing/ACE16_LONG_VALUE_INITIALIZATION.md).
 
 ## Original-file variable-key INSERT comparisons
@@ -102,8 +127,8 @@ Four public growth functions, three producer controls and seven forgery controls
 bring the combined INSERT batch to 194 passing functions. The full ACE library
 batch passes 530 functions with one existing ignored fixture generator; strict
 ACE Clippy across all targets/features, minimal compilation, formatting and
-documentation/dependency guards pass. Initialization of absent declarations,
-global map growth and pointer-record expansion remain unfinished.
+documentation/dependency guards pass. The later qualified declaration insertion
+is recorded above; global map growth and pointer-record expansion remain unfinished.
 Authentic external-file comparisons, normal saves and native Access qualification
 remain separate. See the [external LVAL contract](testing/ACE16_LONG_VALUE_INSERTS.md).
 

@@ -3,7 +3,7 @@ use super::super::{PAGE, composition, original};
 use crate::{
     check_table,
     table::mutation::insert::{
-        long_values,
+        long_values::{self, DeclarationBinding},
         record::{Profile, input},
     },
 };
@@ -72,7 +72,12 @@ fn every_container_precedes_bodies_even_when_first_request_uses_the_later_ordina
         let containers = plan
             .initializations
             .iter()
-            .map(|entry| (entry.number, entry.column, entry.offset))
+            .map(|entry| {
+                let DeclarationBinding::ZeroPair { offset, .. } = &entry.binding else {
+                    panic!("the source has explicit zero pairs");
+                };
+                (entry.number, entry.column, *offset)
+            })
             .collect::<Vec<_>>();
         assert_eq!(
             containers,

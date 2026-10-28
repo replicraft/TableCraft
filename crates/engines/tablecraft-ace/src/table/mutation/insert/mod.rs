@@ -187,6 +187,8 @@ fn prepare(
         (
             long_values::Plan {
                 qualified_zero_columns: Vec::new(),
+                qualified_missing_columns: Vec::new(),
+                definition_growth: None,
                 initializations: Vec::new(),
                 pages: Vec::new(),
                 metadata: Vec::new(),

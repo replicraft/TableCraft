@@ -2,6 +2,7 @@
 use super::*;
 use crate::table::mutation::{
     append::State,
+    insert::long_values::DeclarationBinding,
     insert::tests::long_value_inserts::{Family, initialization::model as initialization},
 };
 
@@ -59,19 +60,29 @@ fn declaration_before_after_span_and_column_are_source_bound() {
     for code in [5, 6] {
         let (case, image, mut stage, requests) = prepared(code);
         let actual = &stage.long_values.initializations[0];
-        let original = (
-            actual.number,
-            actual.column,
-            actual.offset,
-            actual.before,
-            actual.after,
-        );
+        let DeclarationBinding::ZeroPair {
+            offset,
+            before,
+            after,
+        } = &actual.binding
+        else {
+            panic!("literal source contains an explicit zero pair");
+        };
+        let original = (actual.number, actual.column, *offset, *before, *after);
         for mutation in 0..5 {
             let actual = &mut stage.long_values.initializations[0];
+            let DeclarationBinding::ZeroPair {
+                offset,
+                before,
+                after,
+            } = &mut actual.binding
+            else {
+                unreachable!();
+            };
             match mutation {
-                0 => actual.before[0] = 1,
-                1 => actual.after[0] ^= 1,
-                2 => actual.offset += 1,
+                0 => before[0] = 1,
+                1 => after[0] ^= 1,
+                2 => *offset += 1,
                 3 => actual.column = 1,
                 4 => actual.number = 19,
                 _ => unreachable!(),
@@ -90,13 +101,13 @@ fn declaration_before_after_span_and_column_are_source_bound() {
                 "code {code}, declaration mutation {mutation}",
             );
             let actual = &mut stage.long_values.initializations[0];
-            (
-                actual.number,
-                actual.column,
-                actual.offset,
-                actual.before,
-                actual.after,
-            ) = original;
+            actual.number = original.0;
+            actual.column = original.1;
+            actual.binding = DeclarationBinding::ZeroPair {
+                offset: original.2,
+                before: original.3,
+                after: original.4,
+            };
         }
     }
 }
