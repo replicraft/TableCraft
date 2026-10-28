@@ -1,5 +1,6 @@
 use super::*;
 use crate::{IndexCheckStatus, check_table, check_table_constraints};
+use model::{PAGE, ROOT};
 use tablecraft_core::limits::Resource;
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::access as support;
@@ -203,7 +204,7 @@ fn indirect_promotion_reserves_distinct_bitmap_between_the_two_index_leaves() {
 }
 
 #[test]
-fn fitting_root_and_healthy_height1_source_stay_outside_overflow_continuation() {
+fn fitting_root_refuses_growth_while_height1_uses_the_general_continuation() {
     let (before, original) = model::source(6, 450, false, false);
     let checked_source = checked(&before, 450, 1);
     let image = capture(&before);
@@ -235,7 +236,7 @@ fn fitting_root_and_healthy_height1_source_stay_outside_overflow_continuation() 
         row: (15 << 8) | 197,
     });
     second.sort_by_key(|entry| (entry.key, entry.row));
-    let error = continue_primary(
+    let plan = continue_primary(
         Operation {
             image: &image,
             checked: &checked_source,
@@ -246,9 +247,21 @@ fn fitting_root_and_healthy_height1_source_stay_outside_overflow_continuation() 
         &mut budget(),
         &|| false,
     )
-    .err()
     .unwrap();
-    assert_eq!(error, EditError::Unsupported(WriteBlocker::IndexedColumn));
+    assert!(plan.added.is_empty());
+    assert!(plan.promotions.is_empty());
+    assert!(plan.rebases.is_empty());
+    assert_eq!(plan.append.length, grown.len());
+    assert_eq!(plan.patches.len(), 1);
+    let left = u32::from_be_bytes(
+        grown[ROOT * PAGE + 489..ROOT * PAGE + 493]
+            .try_into()
+            .unwrap(),
+    );
+    let patch = &plan.patches[0];
+    assert_eq!(patch.offset, left as usize * PAGE);
+    assert_eq!(patch.after[2..4], 1573_u16.to_le_bytes());
+    assert_eq!(patch.after[24..26], [0, 0]);
 }
 
 #[test]

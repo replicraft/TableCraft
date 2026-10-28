@@ -1,5 +1,4 @@
 //! Request membership and cardinality growth for one qualified Int32 primary.
-mod height_one;
 use super::split::{
     self, AddedPage,
     allocation::{Promotion, Rebase},
@@ -40,7 +39,7 @@ pub(in crate::table) struct PrimaryInsertion {
     pub added: Vec<AddedPage>,
     pub promotions: Vec<Promotion>,
     pub rebases: Vec<Rebase>,
-    requires_split: bool,
+    requires_continuation: bool,
     physical: u32,
     root: u32,
     usage: u32,
@@ -49,8 +48,8 @@ pub(in crate::table) struct PrimaryInsertion {
 }
 
 impl PrimaryInsertion {
-    /// Transfer the DATA cursor through index allocation and return its sole
-    /// final owner. A fitted leaf retains the exact existing serialization.
+    /// Transfer the DATA cursor through primary maintenance and return its sole
+    /// final owner. Bounded root maxima can change without allocating pages.
     pub(in crate::table) fn continue_with_append(
         mut self,
         image: &NativeImage,
@@ -61,7 +60,7 @@ impl PrimaryInsertion {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(Self, State), EditError> {
         check(budget, cancelled)?;
-        if !self.requires_split {
+        if !self.requires_continuation {
             return Ok((self, append));
         }
 
@@ -80,7 +79,7 @@ impl PrimaryInsertion {
         self.added = plan.added;
         self.promotions = plan.promotions;
         self.rebases = plan.rebases;
-        self.requires_split = false;
+        self.requires_continuation = false;
 
         Ok((self, plan.append))
     }
@@ -125,8 +124,7 @@ pub(in crate::table) fn prepare(
     let header = IndexHeader::read(original)?;
     let source_leaf =
         header.kind == LEAF && header.tail.get() == 0 && header.qualified_for_update(0);
-    let source_height_one =
-        header.kind == NODE && header.tail.get() != 0 && header.qualified_for_update(1);
+    let source_height_one = header.kind == NODE && header.qualified_for_update(1);
     if (!source_leaf && !source_height_one) || header.previous.get() != 0 || header.next.get() != 0
     {
         return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
@@ -213,21 +211,10 @@ pub(in crate::table) fn prepare(
             .map_err(InspectError::from)?;
     }
     let mut patches = Vec::new();
-    let mut requires_split = false;
-    if source_height_one {
-        if let Some(fitting) = height_one::prepare(
-            image,
-            checked,
-            id_column,
-            &expected,
-            reader.budget,
-            cancelled,
-        )? {
-            patches = fitting;
-        } else {
-            requires_split = true;
-        }
-    } else if !requests.is_empty() {
+    // NODE continuation also rebuilds bounded parent maxima when every leaf
+    // fits; all NODE sources use that same owned service.
+    let mut requires_continuation = source_height_one;
+    if !source_height_one && !requests.is_empty() {
         let entries = split::leaf_entries(&expected, reader.budget, cancelled)?;
         if repack::borrowed_fits::<_, ENTRY_BUFFER>(
             original,
@@ -252,7 +239,7 @@ pub(in crate::table) fn prepare(
                 cancelled,
             )?;
         } else {
-            requires_split = true;
+            requires_continuation = true;
         }
     }
     check(reader.budget, cancelled)?;
@@ -261,7 +248,7 @@ pub(in crate::table) fn prepare(
         added: Vec::new(),
         promotions: Vec::new(),
         rebases: Vec::new(),
-        requires_split,
+        requires_continuation,
         physical: index.data_number(),
         root: index.root_page(),
         usage: index.usage_map(),

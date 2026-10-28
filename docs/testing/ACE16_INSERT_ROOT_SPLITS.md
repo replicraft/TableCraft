@@ -74,7 +74,9 @@ the [dedicated retained-tree continuation](ACE16_INSERT_HEIGHT_ONE.md). That
 branch keeps the entire root and original bound unchanged and allocates no index
 pages. [One overflowing child](ACE16_INSERT_CHILD_SPLITS.md) now has a separate
 continuation that adds one left leaf and preserves the original right page and
-root identities. Multiple offenders, oversized halves, arbitrary-tree
-cardinality growth, broader key/row profiles, defaults, generated fields, required data macros and normal
+root identities. The later [general height-one continuation](ACE16_INSERT_GENERAL_HEIGHT_ONE.md)
+also admits multiple offenders, repeated leaf splits and arbitrary leaf-child
+counts when the final root fits. Recursive parent growth, deeper sources,
+arbitrary-tree cardinality growth, broader key/row profiles, defaults, generated fields, required data macros and normal
 native saves remain unfinished. Independent Java results
 do not replace native Microsoft Access comparisons, which the user has deferred.

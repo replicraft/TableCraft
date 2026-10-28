@@ -453,8 +453,55 @@ fn healthy_checked_child_growth_rejects_residue_requests_and_extra_patch_authori
     }
 }
 
+fn bounded_parent_source() -> Vec<u8> {
+    let values = (0..302).collect::<Vec<i32>>();
+    let mut bytes = source(5, &values[..301], &values[301..], 324, 13, false);
+    bytes[17 * PAGE..19 * PAGE].fill(0);
+    let mut root = vec![0xa7; PAGE];
+    root[..480].fill(0);
+    root[..2].copy_from_slice(&[3, 1]);
+    support::put32(&mut root, 4, TABLE as u32);
+    support::put16(&mut root, 24, 2);
+    root[26] = 1;
+    let mut active = 0;
+    for (ordinal, value) in values.iter().enumerate() {
+        let number = 20 + ordinal;
+        let reference = if ordinal < 255 {
+            (12 << 8) | ordinal as u32
+        } else {
+            (15 << 8) | (ordinal - 255) as u32
+        };
+        let entry = wire(*value, reference);
+        let previous = if ordinal == 0 { 0 } else { number - 1 };
+        let next = if ordinal + 1 == values.len() {
+            0
+        } else {
+            number + 1
+        };
+        install(&mut bytes, number, &leaf(&[entry], 0, previous, next, 0xd8));
+
+        let mut bound = [0; 13];
+        bound[..9].copy_from_slice(&entry);
+        bound[9..].copy_from_slice(&(number as u32).to_be_bytes());
+        let suffix = &bound[if ordinal == 0 { 0 } else { 2 }..];
+        root[480 + active..480 + active + suffix.len()].copy_from_slice(suffix);
+        active += suffix.len();
+        root[27 + active / 8] |= 1 << (active % 8);
+    }
+    assert_eq!(active, 3324);
+    support::put16(&mut root, 2, 292);
+    install(&mut bytes, 13, &root);
+    let owned = std::iter::once(13).chain(20..322).collect::<Vec<_>>();
+    install(
+        &mut bytes,
+        14,
+        &support::data_page(0, &[(0, inline(&owned))]),
+    );
+    bytes
+}
+
 #[test]
-fn two_offenders_and_a_still_overflowing_half_refuse_without_a_candidate() {
+fn multiple_and_repeated_offenders_normalize_while_parent_capacity_stays_explicit() {
     let left = (0..451)
         .map(|number| i32::MIN + number * 1_000_000)
         .collect::<Vec<_>>();
@@ -466,10 +513,12 @@ fn two_offenders_and_a_still_overflowing_half_refuse_without_a_candidate() {
     let image = capture(&before);
     let both = requests(&[i32::MIN + 500_000, 500_000]);
     let structural = preflight(&image, "Items", &both, &mut budget(), &|| false).unwrap();
-    assert!(matches!(
-        prepare(&image, &structural, &both, &mut budget(), &|| false),
-        Err(EditError::Unsupported(WriteBlocker::IndexedColumn))
-    ));
+    let staged = prepare(&image, &structural, &both, &mut budget(), &|| false).unwrap();
+    let candidate = finish(image, "Items", &both, &staged, &mut budget(), &|| false).unwrap();
+    checked(candidate.candidate_bytes(), 904);
+    assert_eq!(staged.indexes.added.len(), 2);
+    assert_eq!(candidate.candidate_bytes().len(), 130 * PAGE);
+    assert_eq!(word(candidate.candidate_bytes(), 95, 20), 101);
 
     let before = pressured(5, true, 19, 13, false);
     checked(&before, 452);
@@ -477,10 +526,113 @@ fn two_offenders_and_a_still_overflowing_half_refuse_without_a_candidate() {
     let values = (1..=452)
         .map(|number| -number * 1_000_000)
         .collect::<Vec<_>>();
-    let requests = requests(&values);
-    let structural = preflight(&image, "Items", &requests, &mut budget(), &|| false).unwrap();
+    let repeated = requests(&values);
+    let structural = preflight(&image, "Items", &repeated, &mut budget(), &|| false).unwrap();
+    let staged = prepare(&image, &structural, &repeated, &mut budget(), &|| false).unwrap();
+    let candidate = finish(image, "Items", &repeated, &staged, &mut budget(), &|| false).unwrap();
+    checked(candidate.candidate_bytes(), 904);
+    assert_eq!(staged.indexes.added.len(), 2);
+    assert_eq!(word(candidate.candidate_bytes(), 13, 20), 18);
+
+    // The same all-bounded source accepts a new maximum when its parent fits.
+    // This positive gate prevents the refusal below from passing on tail shape.
+    let before = bounded_parent_source();
+    checked(&before, 302);
+    let image = capture(&before);
+    let fitting = requests(&[302]);
+    let structural = preflight(&image, "Items", &fitting, &mut budget(), &|| false).unwrap();
+    let staged = prepare(&image, &structural, &fitting, &mut budget(), &|| false).unwrap();
+    let candidate = finish(image, "Items", &fitting, &staged, &mut budget(), &|| false).unwrap();
+    checked(candidate.candidate_bytes(), 303);
+    assert_eq!(candidate.candidate_bytes().len(), before.len());
+    assert!(staged.indexes.added.is_empty());
+    assert_eq!(word(candidate.candidate_bytes(), 13, 20), 0);
+
+    // MAX destroys one shared prefix byte: 13 + 301 * 12 = 3625 > 3616.
+    // The last leaf still fits, so only final parent capacity should refuse.
+    let image = capture(&before);
+    let overflow = requests(&[i32::MAX]);
+    let structural = preflight(&image, "Items", &overflow, &mut budget(), &|| false).unwrap();
     assert!(matches!(
-        prepare(&image, &structural, &requests, &mut budget(), &|| false),
+        prepare(&image, &structural, &overflow, &mut budget(), &|| false),
         Err(EditError::Unsupported(WriteBlocker::IndexedColumn))
     ));
+}
+
+#[test]
+fn valid_alternate_fresh_destination_order_cannot_replace_declared_normalization() {
+    let left = (0..451)
+        .map(|number| i32::MIN + number * 1_000_000)
+        .collect::<Vec<_>>();
+    let right = (0..451)
+        .map(|number| number * 1_000_000)
+        .collect::<Vec<_>>();
+    let before = source(5, &left, &right, 128, 95, false);
+    checked(&before, 902);
+    let image = capture(&before);
+    let requested = requests(&[i32::MIN + 500_000, 500_000]);
+    let structural = preflight(&image, "Items", &requested, &mut budget(), &|| false).unwrap();
+    let mut staged = prepare(&image, &structural, &requested, &mut budget(), &|| false).unwrap();
+    let healthy = compose::compose(&image, &staged, &mut budget(), &|| false).unwrap();
+    audit::prove(
+        &image,
+        "Items",
+        &requested,
+        &staged,
+        &healthy,
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(staged.indexes.added.len(), 2);
+    assert_eq!(staged.indexes.added[0].number, 128);
+    assert_eq!(staged.indexes.added[1].number, 129);
+
+    // Preserve every key, ROW, membership cell and counter while exchanging the
+    // destinations of the two new leaves. The graph remains semantically valid.
+    let (first, rest) = staged.indexes.added.split_at_mut(1);
+    std::mem::swap(&mut first[0].bytes, &mut rest[0].bytes);
+    for patch in &mut staged.indexes.patches {
+        if patch.offset == 95 * PAGE {
+            assert_eq!(
+                u16::from_le_bytes(patch.after[24..26].try_into().unwrap()),
+                0
+            );
+            for entry in 0..3 {
+                let offset = 480 + entry * 13 + 9;
+                let child = u32::from_be_bytes(patch.after[offset..offset + 4].try_into().unwrap());
+                let replacement = exchanged(child);
+                patch.after[offset..offset + 4].copy_from_slice(&replacement.to_be_bytes());
+            }
+        } else {
+            for offset in [12, 16] {
+                let child = u32::from_le_bytes(patch.after[offset..offset + 4].try_into().unwrap());
+                let replacement = exchanged(child);
+                patch.after[offset..offset + 4].copy_from_slice(&replacement.to_le_bytes());
+            }
+        }
+    }
+    let forged = compose::compose(&image, &staged, &mut budget(), &|| false).unwrap();
+    checked(&forged, 904);
+    assert_ne!(forged, healthy);
+    assert_eq!(
+        audit::prove(
+            &image,
+            "Items",
+            &requested,
+            &staged,
+            &forged,
+            &mut budget(),
+            &|| false,
+        ),
+        Err(EditError::Preservation),
+    );
+}
+
+fn exchanged(number: u32) -> u32 {
+    match number {
+        128 => 129,
+        129 => 128,
+        _ => number,
+    }
 }

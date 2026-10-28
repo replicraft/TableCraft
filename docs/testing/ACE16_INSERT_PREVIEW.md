@@ -23,14 +23,14 @@ This admission does not establish absence of unknown data macros.
 
 Exactly one physical unique, required, ascending Int32 primary index is admitted.
 Qualified logical aliases share that physical identity. An original root leaf
-may grow into a [retained root and two fresh leaves](ACE16_INSERT_ROOT_SPLITS.md).
-An existing height-one source with exactly two leaves also admits
-[fitted insertions under its original bound](ACE16_INSERT_HEIGHT_ONE.md).
-[One overflowing child](ACE16_INSERT_CHILD_SPLITS.md) of that exact two-leaf
-source can instead split into a fresh left and retained right under the original
-root. Other physical indexes, ignored-NULL profiles, additional key fields,
-broader source trees, multiple overflowing children and splits whose halves
-cannot fit refuse. Original records and their logical ROW references remain intact.
+may grow into a [retained root and two fresh leaves](ACE16_INSERT_ROOT_SPLITS.md)
+when those two halves fit; that root-leaf path retains its existing limit.
+An existing height-one source admits the
+[general routed-leaf continuation](ACE16_INSERT_GENERAL_HEIGHT_ONE.md), with any
+nonempty number of leaf children and either tail-present or all-bounded root
+form. Fitting, multiple and repeated leaf splits share the original root when
+its final framing fits. Other physical indexes, ignored-NULL profiles, additional
+key fields, deeper source trees and final parent overflow refuse. Original records and their logical ROW references remain intact.
 
 ## Placement, index membership and counters
 
@@ -48,11 +48,13 @@ the original map authority and represented global free-page coverage.
 The primary receives the exact new key/ROW pairs, preserving its root identity
 and unrelated residue bytes. Duplicate original or batch primary values retain
 typed uniqueness failures. Root-leaf growth uses a separate cardinality-aware
-continuation; it does not invoke UPDATE key preparation or its audit. Fitted
-height-one insertions preserve the original inclusive separator and both child
-identities; only affected fitting leaves change. A separate one-child overflow
-continuation derives new cardinality-aware ranges and one new left leaf. Larger
-source trees, multiple offenders and oversized halves remain explicit failures.
+continuation; it does not invoke UPDATE key preparation or its audit. Height-one
+insertion routes against the first original child maxima and clamps remaining
+pairs to the last child. Fitting children retain page identity; overflowing
+children normalize to fresh LEFT symbols and retained RIGHT pages, including
+repeated splits. Original source form is preserved, with all-bounded last maxima
+updated as needed. Deeper sources and final parent overflow remain explicit
+failures.
 
 The declared table count increases by the number of inserted rows. The actual
 [historical physical index counter](../access/indexes/NATIVE_INDEXES.md#explicit-historical-counter-inspection)

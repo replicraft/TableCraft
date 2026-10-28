@@ -321,7 +321,7 @@ fn overflow_prepares_no_leaf_patch_before_explicit_split_continuation() {
         value: &value,
     }];
     let pending = prepare(&image, &check, 1, &requests, &mut budget(), &|| false).unwrap();
-    assert!(pending.requires_split);
+    assert!(pending.requires_continuation);
     assert_eq!(pending.expected().len(), 501);
     assert!(pending.patches.is_empty());
     assert!(pending.added.is_empty());

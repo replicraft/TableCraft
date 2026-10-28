@@ -2,8 +2,10 @@
 
 The optional [ordinary-row INSERT preview](ACE16_INSERT_PREVIEW.md) also admits
 an original height-one Int32 primary with exactly one bounded left leaf and one
-right tail leaf. This extends the same `preview_ace16_insert_rows` operation;
-it introduces no separate public API, normal write path or journalable plan.
+right tail leaf. This records the original fitted two-leaf checkpoint. The later
+[general height-one continuation](ACE16_INSERT_GENERAL_HEIGHT_ONE.md) admits any
+qualified leaf-child count and either root form through the same operation,
+without a separate public API, normal write path or journalable plan.
 The existing explicit Int32/Short Binary record profile and all required,
 unique, metadata, property and resource gates still apply.
 
@@ -89,13 +91,13 @@ separate checkpoint. These engineering candidates and Jackcess observations do
 not establish Windows/native Microsoft Access save/reopen compatibility, which
 remains deferred by the user.
 
-## Remaining boundary
+## Current boundary
 
-The fitting source must have exactly the admitted height-one, two-leaf form.
-One overflowing child now uses a [separate cardinality-aware continuation](ACE16_INSERT_CHILD_SPLITS.md),
-which retains the original root and offender while adding one left leaf. That
-branch changes the root's bounds and necessary links; the whole-root preservation
-contract above applies to fitting insertions. Additional source children, deeper
-trees, multiple offenders, oversized halves, broader index families,
-generated/defaulted values, required data macros and normal native saves remain
-separate work. Existing root-leaf fitting and two-fresh-leaf growth is retained.
+The [general height-one continuation](ACE16_INSERT_GENERAL_HEIGHT_ONE.md) now
+admits additional original leaf children, multiple offenders and repeated leaf
+splits when the final parent fits. The unchanged-whole-root guarantee described
+above belongs to this tail-present fitting checkpoint. All-bounded roots may
+need a new last stored maximum even when every leaf fits. Parent overflow,
+deeper sources, broader index/record profiles, generated/defaulted values,
+required data macros and normal native saves remain separate work. Earlier
+original-file results and their frozen images remain unchanged.

@@ -1,9 +1,10 @@
 # INSERT split of one existing primary child
 
 The optional [ordinary-row INSERT preview](ACE16_INSERT_PREVIEW.md) can split
-one overflowing child of its admitted height-one primary. The original source
-must still have exactly one inclusive Int32 key/ROW bound, two nonempty leaves
-and a right tail. The same required ascending unique primary, true physical
+one overflowing child of its admitted height-one primary. The original one-child checkpoint below uses one inclusive Int32 key/ROW bound,
+two nonempty leaves and a right tail. The later
+[general height-one continuation](ACE16_INSERT_GENERAL_HEIGHT_ONE.md) removes
+that arity restriction while retaining the earlier complete-image results. The same required ascending unique primary, true physical
 aliases, complete explicit Int32/Short Binary rows and metadata gates apply.
 This is an engineering candidate under the existing preview API, not a normal
 save, journalable edit plan or native Microsoft Access qualification.
@@ -121,9 +122,12 @@ reference, complete-image and getter phases separately. The earlier
 [root-leaf growth qualification](ACE16_INSERT_ROOT_SPLITS.md) remain separate.
 Windows/native Microsoft Access comparisons remain deferred by the user.
 
-## Remaining work
+## Current boundary
 
-A source with three children, deeper trees, multiple overflowing children,
-repeated splits of a half, broader index/record profiles, generated/defaulted
-values, required data macros and normal native saves remain unfinished. A later
-INSERT into this new three-leaf result is outside the current source profile.
+The [general height-one continuation](ACE16_INSERT_GENERAL_HEIGHT_ONE.md) now
+admits a three-child result as a later source, plus arbitrary original leaf-child
+counts, multiple offenders and repeated leaf splits when the final parent fits.
+Recursive parent splitting/root growth, deeper sources, broader index/record
+profiles, generated/defaulted values, required data macros and normal native
+saves remain unfinished. The original one-child and current general-profile
+evidence scopes remain separate.

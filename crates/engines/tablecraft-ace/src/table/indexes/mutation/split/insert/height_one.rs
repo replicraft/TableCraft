@@ -1,4 +1,6 @@
-//! One cardinality-growing child split under an original height-one primary.
+//! Cardinality-growing height-one INSERT with a preflighted symbolic layout.
+mod layout;
+
 use super::super::{AllocationPolicy, Plan, allocation, leaf_entries, pages, seal};
 use super::{ENTRY_BUFFER, Operation, primary, prior_allocations, retained_members};
 use crate::{
@@ -18,7 +20,7 @@ use crate::{
         },
     },
 };
-use std::io::Cursor;
+use std::{io::Cursor, ops::Range};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_schema::ScalarType;
 
@@ -26,9 +28,9 @@ const PREVIOUS_OFFSET: usize = std::mem::offset_of!(IndexHeader, previous);
 const NEXT_OFFSET: usize = std::mem::offset_of!(IndexHeader, next);
 const TAIL_OFFSET: usize = std::mem::offset_of!(IndexHeader, tail);
 
-/// Split exactly one original child once. DATA placement and counter authority
-/// belong to the INSERT coordinator; no UPDATE cardinality assumptions apply.
-pub(in crate::table::indexes) fn continue_primary(
+/// Reuse fitting children or normalize overflowing routed ranges before any
+/// reservation. The same DATA cursor owns every subsequent INDEX/bitmap page.
+pub(super) fn continue_primary(
     operation: Operation<'_>,
     append: State,
     budget: &mut ResourceBudget,
@@ -64,7 +66,6 @@ pub(in crate::table::indexes) fn continue_primary(
         || !root_header.qualified_for_update(1)
         || root_header.previous.get() != 0
         || root_header.next.get() != 0
-        || root_header.tail.get() == 0
     {
         return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
     }
@@ -87,119 +88,96 @@ pub(in crate::table::indexes) fn continue_primary(
         &mut original,
     )?;
     if tree.height() != 1
-        || tree.count() != 1
-        || tree.children().len() != 2
+        || tree.children().is_empty()
         || tree.children().iter().any(|child| !child.is_leaf())
         || original.len() != checked.rows()
     {
         return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
     }
-    let left = &tree.children()[0];
-    let right = &tree.children()[1];
-    let bound = original
-        .get(left.count().checked_sub(1).ok_or(EditError::Preservation)?)
-        .ok_or(EditError::Preservation)?;
     let decoded = page::read_profile::<_, _, ENTRY_BUFFER>(
         &mut reader,
         index.root_page(),
         definition,
         &profile,
     )?;
-    if decoded.entries.len() != 1
-        || decoded.entries[0].value != *bound
-        || decoded.entries[0].child != left.number()
-        || decoded.tail != right.number()
-    {
+    let tail = decoded.tail != 0;
+    if decoded.entries.len() + usize::from(tail) != tree.children().len() {
         return Err(EditError::Preservation);
     }
-    for (child, previous, next) in [(left, 0, right.number()), (right, left.number(), 0)] {
+    let mut original_end = 0_usize;
+    for (position, child) in tree.children().iter().enumerate() {
+        reader.tick()?;
+        original_end = original_end
+            .checked_add(child.count())
+            .ok_or(InspectError::StructureLimit)?;
+        let bound = original
+            .get(original_end.checked_sub(1).ok_or(EditError::Preservation)?)
+            .ok_or(EditError::Preservation)?;
+        if let Some(entry) = decoded.entries.get(position) {
+            if entry.value != *bound || entry.child != child.number() {
+                return Err(EditError::Preservation);
+            }
+        } else if !tail || decoded.tail != child.number() {
+            return Err(EditError::Preservation);
+        }
         let header = IndexHeader::read(raw(image, child.number())?)?;
+        let previous = position
+            .checked_sub(1)
+            .map(|prior| tree.children()[prior].number())
+            .unwrap_or(0);
+        let next = tree
+            .children()
+            .get(position + 1)
+            .map(Tree::number)
+            .unwrap_or(0);
         if header.previous.get() != previous || header.next.get() != next || header.tail.get() != 0
         {
             return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
         }
     }
-    retained_members(&original, operation.final_keys, &append, &mut reader)?;
-    let mut boundary = 0;
-    for entry in operation.final_keys {
-        reader.tick()?;
-        if !entry.compare_with(bound, &profile).is_gt() {
-            boundary += 1;
+    if operation.final_keys.len() == original.len() {
+        reader.work(original.len())?;
+        if operation.final_keys != original {
+            return Err(EditError::Conflict);
         }
-    }
-    if boundary == 0 || boundary == operation.final_keys.len() {
-        return Err(EditError::Preservation);
-    }
-    let partitions = [
-        &operation.final_keys[..boundary],
-        &operation.final_keys[boundary..],
-    ];
-    let left_entries = leaf_entries(partitions[0], reader.budget, cancelled)?;
-    let right_entries = leaf_entries(partitions[1], reader.budget, cancelled)?;
-    let mut fits = [false; 2];
-    for (position, (child, entries)) in [(left, &left_entries), (right, &right_entries)]
-        .into_iter()
-        .enumerate()
-    {
-        fits[position] = repack::borrowed_fits::<_, ENTRY_BUFFER>(
-            raw(image, child.number())?,
-            entries,
-            &profile,
-            reader.budget,
-            cancelled,
-        )?;
-    }
-    if fits[0] == fits[1] {
-        return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
-    }
-    let target = usize::from(fits[0]);
-    let target_page = if target == 0 {
-        left.number()
     } else {
-        right.number()
-    };
-    let middle = partitions[target].len() / 2;
-    if middle == 0 {
-        return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+        retained_members(&original, operation.final_keys, &append, &mut reader)?;
     }
-    let fresh_entries = leaf_entries(&partitions[target][..middle], reader.budget, cancelled)?;
-    let retained_entries = leaf_entries(&partitions[target][middle..], reader.budget, cancelled)?;
-    if !repack::borrowed_fits_fresh::<_, ENTRY_BUFFER>(
-        &fresh_entries,
+    let mut ranges: Vec<Range<usize>> = Vec::new();
+    layout::reserve(&mut ranges, tree.children().len(), &mut reader)?;
+    let mut start = 0;
+    for position in 0..tree.children().len() {
+        let mut end = start;
+        if position + 1 == tree.children().len() {
+            end = operation.final_keys.len();
+        } else {
+            let bound = decoded
+                .entries
+                .get(position)
+                .ok_or(EditError::Preservation)?
+                .value;
+            while let Some(entry) = operation.final_keys.get(end) {
+                reader.tick()?;
+                if entry.compare_with(&bound, &profile).is_gt() {
+                    break;
+                }
+                end += 1;
+            }
+        }
+        if end == start {
+            return Err(EditError::Preservation);
+        }
+        ranges.push(start..end);
+        start = end;
+    }
+    let layout = layout::prepare(
+        image,
+        &tree,
+        &ranges,
+        operation.final_keys,
         &profile,
-        reader.budget,
-        cancelled,
-    )? || !repack::borrowed_fits::<_, ENTRY_BUFFER>(
-        raw(image, target_page)?,
-        &retained_entries,
-        &profile,
-        reader.budget,
-        cancelled,
-    )? {
-        return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
-    }
-    let new_bound = partitions[target][middle - 1];
-    let final_left_bound = *partitions[0].last().ok_or(EditError::Preservation)?;
-    let root_keys = if target == 0 {
-        [new_bound, final_left_bound]
-    } else {
-        [final_left_bound, new_bound]
-    };
-    let mut root_entries = leaf_entries(&root_keys, reader.budget, cancelled)?;
-    // Child identities occupy a fixed-width field. A nonzero stand-in permits
-    // complete root capacity preflight before any metadata or index reservation.
-    for entry in &mut root_entries {
-        entry.child = target_page;
-    }
-    if !repack::borrowed_fits::<_, ENTRY_BUFFER>(
-        root,
-        &root_entries,
-        &profile,
-        reader.budget,
-        cancelled,
-    )? {
-        return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
-    }
+        &mut reader,
+    )?;
 
     let census =
         map_authority::capture_catalog(image, reader.budget, cancelled, |_, _, _, _| Ok(()))?;
@@ -217,7 +195,18 @@ pub(in crate::table::indexes) fn continue_primary(
         cancelled,
     )?;
     let mut owned = crate::format::allocation::pages(&mut reader, index.usage_map())?;
-    let mut expected_owned = [index.root_page(), left.number(), right.number()];
+    let mut expected_owned = Vec::new();
+    layout::reserve(&mut expected_owned, tree.children().len() + 1, &mut reader)?;
+    expected_owned.push(index.root_page());
+    for child in tree.children() {
+        reader.tick()?;
+        expected_owned.push(child.number());
+    }
+    let work = expected_owned
+        .len()
+        .checked_mul(expected_owned.len())
+        .ok_or(InspectError::StructureLimit)?;
+    reader.work(work)?;
     owned.sort_unstable();
     expected_owned.sort_unstable();
     if owned != expected_owned {
@@ -225,79 +214,105 @@ pub(in crate::table::indexes) fn continue_primary(
     }
     prior_allocations(&append, &mut reader)?;
     let mut plan = Plan::with_policy(append, AllocationPolicy::Qualified);
-    let fresh = allocation::reserve(image, index, &mut plan, &mut reader)?;
-    let order = if target == 0 {
-        [fresh, left.number(), right.number()]
-    } else {
-        [left.number(), fresh, right.number()]
-    };
-    root_entries[0].child = order[0];
-    root_entries[1].child = order[1];
+    let mut numbers = Vec::new();
+    layout::reserve(&mut numbers, layout.leaves.len(), &mut reader)?;
+    numbers.extend(layout.leaves.iter().map(|leaf| match leaf.origin {
+        layout::Origin::Existing(number) => number,
+        layout::Origin::Fresh => 0,
+    }));
+    // Only final surviving Fresh symbols receive real reservations, in creation
+    // order. Repeated symbolic divisions never leave allocated orphan pages.
+    for &fresh in &layout.fresh {
+        reader.tick()?;
+        numbers[fresh] = allocation::reserve(image, index, &mut plan, &mut reader)?;
+    }
+    let entries = layout::bounds(&layout, operation.final_keys, &numbers, &mut reader)?;
     let mut root_after = repack::borrowed_page::<_, ENTRY_BUFFER>(
         root,
-        &root_entries,
+        &entries,
         &profile,
         reader.budget,
         cancelled,
     )?;
-    root_after[TAIL_OFFSET..TAIL_OFFSET + size_of::<u32>()]
-        .copy_from_slice(&order[2].to_le_bytes());
+    let last = *layout.order.last().ok_or(EditError::Preservation)?;
+    let tail = if layout.tail { numbers[last] } else { 0 };
+    root_after[TAIL_OFFSET..TAIL_OFFSET + size_of::<u32>()].copy_from_slice(&tail.to_le_bytes());
     patch(index.root_page(), root, root_after, &mut plan, &mut reader)?;
-    for (position, child) in [left, right].into_iter().enumerate() {
-        let entries = if position == target {
-            &retained_entries
-        } else if position == 0 {
-            &left_entries
-        } else {
-            &right_entries
-        };
-        let before = raw(image, child.number())?;
+    let mut positions = Vec::new();
+    layout::reserve(&mut positions, layout.leaves.len(), &mut reader)?;
+    positions.resize(layout.leaves.len(), usize::MAX);
+    for (position, &leaf) in layout.order.iter().enumerate() {
+        reader.tick()?;
+        let stored = positions.get_mut(leaf).ok_or(EditError::Preservation)?;
+        if *stored != usize::MAX {
+            return Err(EditError::Preservation);
+        }
+        *stored = position;
+    }
+    for &existing in &layout.original {
+        reader.tick()?;
+        let number = numbers[existing];
+        let before = raw(image, number)?;
+        let leaf = &layout.leaves[existing];
+        let keys = operation
+            .final_keys
+            .get(leaf.range.clone())
+            .ok_or(EditError::Preservation)?;
+        let entries = leaf_entries(keys, reader.budget, cancelled)?;
         let mut after = repack::borrowed_page::<_, ENTRY_BUFFER>(
             before,
-            entries,
+            &entries,
             &profile,
             reader.budget,
             cancelled,
         )?;
-        let slot = order
-            .iter()
-            .position(|number| *number == child.number())
-            .ok_or(EditError::Preservation)?;
-        let previous = slot.checked_sub(1).map(|prior| order[prior]).unwrap_or(0);
-        let next = order.get(slot + 1).copied().unwrap_or(0);
+        let position = positions[existing];
+        let previous = position
+            .checked_sub(1)
+            .map(|prior| numbers[layout.order[prior]])
+            .unwrap_or(0);
+        let next = layout
+            .order
+            .get(position + 1)
+            .map(|&next| numbers[next])
+            .unwrap_or(0);
         after[PREVIOUS_OFFSET..PREVIOUS_OFFSET + size_of::<u32>()]
             .copy_from_slice(&previous.to_le_bytes());
         after[NEXT_OFFSET..NEXT_OFFSET + size_of::<u32>()].copy_from_slice(&next.to_le_bytes());
-        patch(child.number(), before, after, &mut plan, &mut reader)?;
+        patch(number, before, after, &mut plan, &mut reader)?;
     }
-    let fresh_slot = order
-        .iter()
-        .position(|number| *number == fresh)
-        .ok_or(EditError::Preservation)?;
-    let previous = fresh_slot
-        .checked_sub(1)
-        .map(|prior| order[prior])
-        .unwrap_or(0);
-    let bytes = pages::leaf::<_, ENTRY_BUFFER>(
-        definition,
-        previous,
-        target_page,
-        &fresh_entries,
-        &profile,
-        reader.budget,
-        cancelled,
-    )?;
-    reader
-        .budget
-        .charge_allocation(1, size_of::<super::super::AddedPage>() as u64)
-        .map_err(InspectError::from)?;
-    plan.added
-        .try_reserve(1)
-        .map_err(|_| InspectError::Allocation)?;
-    plan.added.push(super::super::AddedPage {
-        number: fresh,
-        bytes,
-    });
+    for &fresh in &layout.fresh {
+        reader.tick()?;
+        let position = positions[fresh];
+        let previous = position
+            .checked_sub(1)
+            .map(|prior| numbers[layout.order[prior]])
+            .unwrap_or(0);
+        let next = layout
+            .order
+            .get(position + 1)
+            .map(|&next| numbers[next])
+            .unwrap_or(0);
+        let keys = operation
+            .final_keys
+            .get(layout.leaves[fresh].range.clone())
+            .ok_or(EditError::Preservation)?;
+        let entries = leaf_entries(keys, reader.budget, cancelled)?;
+        let bytes = pages::leaf::<_, ENTRY_BUFFER>(
+            definition,
+            previous,
+            next,
+            &entries,
+            &profile,
+            reader.budget,
+            cancelled,
+        )?;
+        layout::reserve(&mut plan.added, 1, &mut reader)?;
+        plan.added.push(super::super::AddedPage {
+            number: numbers[fresh],
+            bytes,
+        });
+    }
     seal(
         image,
         checked.indexes(),
