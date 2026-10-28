@@ -107,6 +107,39 @@ fn buffered_attachments_are_displayed_without_decoding_or_explicit_flags() {
 }
 
 #[test]
+fn mixed_table_audits_explain_the_scalar_gate_without_partial_output() {
+    for bytes in [
+        attachment_fixture::database(),
+        calculated_fixture::database_with_expression(&[Some(77)], "1/0"),
+    ] {
+        let file = FileCopy::new(bytes);
+        for mode in ["--check", "--constraints"] {
+            let output = file.run("inspect", &["--table", "Items", mode]);
+            assert_eq!(output.status.code(), Some(2));
+            assert!(output.stdout.is_empty());
+            let error = String::from_utf8(output.stderr).unwrap();
+            assert!(error.contains("this audit requires a qualified ordinary scalar table"));
+            assert!(error.contains("calculated fields, collections"));
+            assert!(error.contains("Use rows"));
+            assert!(!error.contains("Items"));
+            assert!(!error.contains(file.path.to_str().unwrap()));
+        }
+    }
+
+    let mut corrupt = fixture::database();
+    corrupt[12 * 4096] = 0;
+    let file = FileCopy::new(corrupt);
+    for mode in ["--check", "--constraints"] {
+        let output = file.run("inspect", &["--table", "Items", mode]);
+        assert_eq!(output.status.code(), Some(2));
+        assert!(output.stdout.is_empty());
+        let error = String::from_utf8(output.stderr).unwrap();
+        assert!(error.contains("malformed database"));
+        assert!(!error.contains("this audit requires"));
+    }
+}
+
+#[test]
 fn jet4_discovery_rows_pagination_and_empty_pages_preserve_source() {
     let file = FileCopy::new(fixture::database());
     let tables = String::from_utf8(success(file.run("tables", &[]))).unwrap();

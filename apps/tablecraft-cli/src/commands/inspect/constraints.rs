@@ -10,7 +10,7 @@ pub(super) fn run<R: tablecraft_ace::NativeReadSource>(
 ) -> Result<(), Error> {
     let report =
         check_table_constraints(source, native::CATALOG_SCOPE, name, &mut budget, &|| false)
-            .map_err(Error::Read)?;
+            .map_err(Error::scalar_audit)?;
     line(output, &["Table", report.name()])?;
     line(output, &["Rows checked", &report.rows().to_string()])?;
     line(

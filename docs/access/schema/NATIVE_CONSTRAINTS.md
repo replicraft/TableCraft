@@ -6,6 +6,12 @@ are buffered; typed failures publish no partial report. No defaults, macros,
 providers or cascades execute. Ordinary reads remain unchanged; structural/index
 checks remain a [separate API](../NATIVE_CHECKS.md).
 
+The selected target must first qualify for a complete ordinary scalar read.
+Buffered browsing of calculated caches or collections can succeed while this
+audit refuses that mixed schema. The CLI explains this prerequisite without
+publishing a partial report. It does not omit advanced fields to manufacture
+checked coverage, and the engine's constraint/write prerequisites remain intact.
+
 ## Field constraints
 
 Shared `FieldConstraints` applies explicit Required/AllowZeroLength policies

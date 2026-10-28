@@ -9,7 +9,7 @@ pub(super) fn run(
     mut budget: tablecraft_core::limits::ResourceBudget,
 ) -> Result<(), Error> {
     let report = check_table(source, native::CATALOG_SCOPE, table, &mut budget, &|| false)
-        .map_err(Error::Read)?;
+        .map_err(Error::scalar_audit)?;
     let checked = report
         .indexes()
         .iter()
