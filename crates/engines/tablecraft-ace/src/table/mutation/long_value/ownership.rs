@@ -87,24 +87,90 @@ fn protect(
     Ok(())
 }
 
+pub(in crate::table::mutation) struct ZeroPair {
+    pub column: usize,
+    pub offset: usize,
+}
+
 impl Inventory {
     pub fn capture(
         image: &NativeImage,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
+        Self::capture_inner(image, None, budget, cancelled).map(|(inventory, _)| inventory)
+    }
+
+    pub(in crate::table::mutation) fn capture_for_initialization(
+        image: &NativeImage,
+        schema: &TableSchema,
+        columns: &[usize],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(Self, Vec<ZeroPair>), EditError> {
+        Self::capture_inner(
+            image,
+            Some((schema.definition_page(), columns)),
+            budget,
+            cancelled,
+        )
+    }
+
+    fn capture_inner(
+        image: &NativeImage,
+        initializing: Option<(u32, &[usize])>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(Self, Vec<ZeroPair>), EditError> {
         let mut result = Self {
             claims: Vec::new(),
             live: Vec::new(),
             protected: Vec::new(),
             maps: None,
         };
-        let maps = map_authority::capture_catalog(
+        let mut zeros = Vec::new();
+        let maps = map_authority::capture_catalog_for_initialization(
             image,
+            initializing,
             budget,
             cancelled,
             |schema, indexes, declarations, reader| {
-                result.table(schema, indexes, declarations, reader)
+                let selected =
+                    initializing.filter(|(definition, _)| *definition == schema.definition_page());
+                let mut empty_columns = Vec::new();
+                for declaration in &declarations.entries {
+                    reader.tick()?;
+                    if declaration.references.owned() != 0
+                        || declaration.references.candidate() != 0
+                    {
+                        continue;
+                    }
+                    let Some((_, columns)) = selected else {
+                        return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+                    };
+                    reader.work(columns.len())?;
+                    if !columns.contains(&declaration.number) {
+                        return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+                    }
+                    reader
+                        .budget
+                        .charge_allocation(1, size_of::<usize>() as u64)
+                        .map_err(InspectError::from)?;
+                    empty_columns
+                        .try_reserve(1)
+                        .map_err(|_| InspectError::Allocation)?;
+                    empty_columns.push(declaration.number);
+                    reader
+                        .budget
+                        .charge_allocation(1, size_of::<ZeroPair>() as u64)
+                        .map_err(InspectError::from)?;
+                    zeros.try_reserve(1).map_err(|_| InspectError::Allocation)?;
+                    zeros.push(ZeroPair {
+                        column: declaration.number,
+                        offset: storage_maps::zero_pair_offset(reader, schema, declaration.number)?,
+                    });
+                }
+                result.table(schema, indexes, declarations, &empty_columns, reader)
             },
         )?;
         let mut source = image.reader();
@@ -116,10 +182,8 @@ impl Inventory {
             reads: 0,
         };
         maps.protect_storage(&mut result.protected, &mut reader)?;
-
         result.maps = Some(maps);
-
-        Ok(result)
+        Ok((result, zeros))
     }
 
     fn table(
@@ -127,6 +191,7 @@ impl Inventory {
         schema: &TableSchema,
         indexes: &[NativeIndex],
         declarations: &storage_maps::Declarations,
+        empty_columns: &[usize],
         reader: &mut Reader<'_, Cursor<&[u8]>>,
     ) -> Result<(), EditError> {
         protect(&mut self.protected, schema.definition_page(), reader)?;
@@ -147,6 +212,10 @@ impl Inventory {
             .any(|field| matches!(field.native_type(), LONG_TEXT | OLE));
         for declaration in &declarations.entries {
             reader.tick()?;
+            reader.work(empty_columns.len())?;
+            if empty_columns.contains(&declaration.number) {
+                continue;
+            }
             for page in allocation::pages(reader, declaration.references.owned())? {
                 append_claim(&mut self.claims, page, schema, declaration.number, reader)?;
             }
@@ -204,6 +273,12 @@ impl Inventory {
                         .ok_or(InspectError::Malformed)?;
                     let descriptor = row.data.get(start..end).ok_or(InspectError::Malformed)?;
                     let traced = trace::read(reader, descriptor)?;
+                    reader.work(empty_columns.len())?;
+                    if empty_columns.contains(&field.number())
+                        && !matches!(traced.kind, trace::Kind::Null | trace::Kind::Inline)
+                    {
+                        return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+                    }
                     for chunk in traced.chunks {
                         append_claim(
                             &mut self.live,

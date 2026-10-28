@@ -1,15 +1,19 @@
 //! Independently resolve full requests into LVAL pages and descriptor authority.
 mod choice;
 mod cursor;
+mod initialization;
 mod maps;
 
 use self::{choice::Storage, cursor::Cursor as Placement};
 use super::records::payload::long_value::Payload;
 use super::{ImageProof, reserve};
 use crate::{
-    EditError, InspectError, LongValueCheckStatus, NativeImage, TableCheck,
-    check_table_long_values,
-    format::reader::Reader,
+    EditError, InspectError, LongValueCheckStatus, LongValueMapReferences, NativeImage, TableCheck,
+    format::{
+        allocation::{GLOBAL_FREE_REFERENCE, MapRole, RepresentedMap},
+        reader::Reader,
+    },
+    table::long_value::{check_table_long_values_for_initialization, maps as source_maps},
     table::mutation::{
         insert::{RowInsert, Staged},
         long_value::ownership::Inventory,
@@ -23,6 +27,12 @@ const SINGLE_TAG: u32 = 0x4000_0000;
 const SINGLE_BYTES: usize = 4076;
 const LINK_BYTES: usize = size_of::<u32>();
 const CHAIN_BYTES: usize = SINGLE_BYTES - LINK_BYTES;
+
+struct Declaration {
+    position: usize,
+    references: LongValueMapReferences,
+    initialized: Option<u32>,
+}
 
 pub(super) struct Resolved {
     pub column: usize,
@@ -50,6 +60,14 @@ pub(super) fn derive(
     }) {
         if !staged.long_values.pages.is_empty()
             || !staged.long_values.metadata.is_empty()
+            || !staged.long_values.initializations.is_empty()
+            || !staged.long_values.qualified_zero_columns.is_empty()
+            || staged
+                .data
+                .append
+                .long_value_map_containers()
+                .next()
+                .is_some()
             || staged.data.append.long_values().next().is_some()
             || staged
                 .data
@@ -76,47 +94,115 @@ pub(super) fn derive(
             }
         }
     }
-    let mut placement = if selected.is_empty() {
-        None
+    let schema = checked.schema();
+    let mut native_columns = Vec::new();
+    reserve(&mut native_columns, schema.columns().len(), reader)?;
+    for field in schema.columns() {
+        reader.tick()?;
+        if matches!(
+            field.native_type(),
+            crate::format::data_type::LONG_TEXT | crate::format::data_type::OLE
+        ) {
+            native_columns.push(field.number());
+        }
+    }
+
+    // Preserve the existing inline-only fast path. A declaration read detects
+    // an actual zero pair before the exceptional source payload census runs.
+    let needs_inventory = if selected.is_empty() {
+        let declarations = source_maps::declarations(reader, schema)?;
+        reader.work(declarations.entries.len())?;
+        declarations
+            .entries
+            .iter()
+            .any(|entry| entry.references.owned() == 0 && entry.references.candidate() == 0)
     } else {
-        let report = check_table_long_values(
-            &mut image.reader(),
-            image.catalog().catalog().scope(),
-            checked.schema().name(),
+        true
+    };
+    let mut initializations = Vec::new();
+    let mut placement = if needs_inventory {
+        let (inventory, zeros) = Inventory::capture_for_initialization(
+            image,
+            schema,
+            &native_columns,
             reader.budget,
             reader.cancelled,
         )?;
-        if !checked.schema().same_definition(report.schema()) {
-            return Err(EditError::Preservation);
+        reserve(&mut proof.qualified_zero_columns, zeros.len(), reader)?;
+        for zero in &zeros {
+            reader.tick()?;
+            proof.qualified_zero_columns.push(zero.column);
         }
-        let inventory = Inventory::capture(image, reader.budget, reader.cancelled)?;
-        let mut declarations = Vec::new();
-        reserve(&mut declarations, selected.len(), reader)?;
-        for column in selected {
-            let field = &checked.schema().columns()[column];
-            let mut matched = None;
-            for stored in report.columns() {
-                reader.tick()?;
-                if stored.column_number() == field.number() {
-                    if matched.is_some()
-                        || stored.status() != LongValueCheckStatus::Checked
-                        || stored.shared_references() != 0
-                        || stored.shared_owned_pages() != 0
-                    {
-                        return Err(EditError::Preservation);
-                    }
-                    matched = Some(stored.maps().ok_or(EditError::Preservation)?);
-                }
+        if selected.is_empty() {
+            None
+        } else {
+            let report = check_table_long_values_for_initialization(
+                &mut image.reader(),
+                image.catalog().catalog().scope(),
+                schema.name(),
+                &native_columns,
+                reader.budget,
+                reader.cancelled,
+            )?;
+            if !schema.same_definition(report.schema()) {
+                return Err(EditError::Preservation);
             }
-            declarations.push((column, matched.ok_or(EditError::Preservation)?));
+            let global = RepresentedMap::read(reader, GLOBAL_FREE_REFERENCE, MapRole::GlobalFree)?;
+            global.require_allocated_storage(reader, &global)?;
+            initializations =
+                initialization::derive(schema, &selected, &zeros, &global, proof, reader)?;
+            let mut declarations = Vec::new();
+            reserve(&mut declarations, selected.len(), reader)?;
+            for position in selected {
+                reader.tick()?;
+                reader.work(initializations.len())?;
+                if let Some(initialized) = initializations
+                    .iter()
+                    .find(|entry| entry.position == position)
+                {
+                    declarations.push(Declaration {
+                        position,
+                        references: initialized.references,
+                        initialized: Some(initialized.number),
+                    });
+                    continue;
+                }
+                let field = &schema.columns()[position];
+                let mut matched = None;
+                for stored in report.columns() {
+                    reader.tick()?;
+                    if stored.column_number() == field.number() {
+                        if matched.is_some()
+                            || stored.status() != LongValueCheckStatus::Checked
+                            || stored.shared_references() != 0
+                            || stored.shared_owned_pages() != 0
+                        {
+                            return Err(EditError::Preservation);
+                        }
+                        matched = Some(stored.maps().ok_or(EditError::Preservation)?);
+                    }
+                }
+                declarations.push(Declaration {
+                    position,
+                    references: matched.ok_or(EditError::Preservation)?,
+                    initialized: None,
+                });
+            }
+            Some(Placement::capture(
+                schema,
+                &declarations,
+                proof,
+                inventory,
+                reader,
+            )?)
         }
-        Some(Placement::capture(
-            checked.schema(),
-            &declarations,
-            inventory,
-            reader,
-        )?)
+    } else {
+        None
     };
+    reader.work(proof.qualified_zero_columns.len())?;
+    if proof.qualified_zero_columns != staged.long_values.qualified_zero_columns {
+        return Err(EditError::Preservation);
+    }
     let mut resolved = Vec::new();
     reserve(&mut resolved, rows.len(), reader)?;
     for row in rows {
@@ -217,5 +303,6 @@ pub(super) fn derive(
     {
         return Err(EditError::Preservation);
     }
+    initialization::compare(&initializations, staged, proof, reader)?;
     Ok(Some(resolved))
 }

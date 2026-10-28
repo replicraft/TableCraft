@@ -53,6 +53,7 @@ pub(super) fn compose(
         .pages
         .len()
         .checked_add(staged.long_values.pages.len())
+        .and_then(|count| count.checked_add(staged.long_values.initializations.len()))
         .and_then(|count| count.checked_add(data.append.map_edits.len()))
         .and_then(|count| count.checked_add(staged.counters.len()))
         .ok_or(InspectError::StructureLimit)?;
@@ -74,6 +75,18 @@ pub(super) fn compose(
     spans
         .try_reserve_exact(count)
         .map_err(|_| InspectError::Allocation)?;
+    for initialization in &staged.long_values.initializations {
+        check(budget, cancelled)?;
+        spans.push(write(
+            original,
+            &mut after,
+            initialization.offset,
+            &initialization.before,
+            &initialization.after,
+            budget,
+            cancelled,
+        )?);
+    }
     for page in &staged.long_values.pages {
         check(budget, cancelled)?;
         if !page.before.is_empty() {
@@ -110,6 +123,7 @@ pub(super) fn compose(
                 (data.pages.len()
                     + staged.long_values.pages.len()
                     + staged.long_values.metadata.len()
+                    + staged.long_values.initializations.len()
                     + added_indexes
                     + PAGE_BYTES) as u64,
             )
@@ -127,6 +141,21 @@ pub(super) fn compose(
                     cancelled,
                 )?;
                 if selected.replace(page.after.as_slice()).is_some() {
+                    return Err(EditError::Preservation);
+                }
+            }
+        }
+        for initialization in &staged.long_values.initializations {
+            check(budget, cancelled)?;
+            if initialization.number == number {
+                data.append.require_long_value_map_container(
+                    number,
+                    data.append.owner,
+                    initialization.column,
+                    budget,
+                    cancelled,
+                )?;
+                if selected.replace(initialization.bytes.as_slice()).is_some() {
                     return Err(EditError::Preservation);
                 }
             }

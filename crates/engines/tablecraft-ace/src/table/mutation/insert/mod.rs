@@ -186,6 +186,8 @@ fn prepare(
         }
         (
             long_values::Plan {
+                qualified_zero_columns: Vec::new(),
+                initializations: Vec::new(),
                 pages: Vec::new(),
                 metadata: Vec::new(),
             },
@@ -193,10 +195,11 @@ fn prepare(
         )
     };
 
-    let metadata = Metadata::capture_for_insert(
+    let metadata = Metadata::capture_for_insert_initialization(
         image,
         structural.schema(),
         structural.indexes(),
+        &long_values.qualified_zero_columns,
         budget,
         cancelled,
     )?;

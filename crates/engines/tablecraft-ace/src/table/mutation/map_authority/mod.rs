@@ -3,7 +3,7 @@ mod catalog;
 mod claims;
 
 use crate::format::allocation::MapRole;
-pub(in crate::table) use catalog::capture_catalog;
+pub(in crate::table) use catalog::{capture_catalog, capture_catalog_for_initialization};
 pub(in crate::table) use claims::{Census, RecordIdentity};
 
 #[derive(Clone, Copy, PartialEq, Eq)]

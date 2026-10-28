@@ -316,6 +316,7 @@ fn index_row_transition_cannot_retire_even_unchanged_certified_data_effects() {
         let mut proof = ImageProof {
             original: image.as_bytes(),
             bytes: before.clone(),
+            qualified_zero_columns: Vec::new(),
             map_edits: vec![ExpectedByte {
                 offset,
                 before: before[offset],

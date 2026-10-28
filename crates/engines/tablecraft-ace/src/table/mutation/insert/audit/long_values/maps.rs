@@ -10,10 +10,7 @@ use crate::{
         row::{reference_page, reference_slot},
     },
     table::mutation::{
-        long_value::{
-            maps::Scope,
-            ownership::{ColumnMapKind, Inventory},
-        },
+        long_value::ownership::{ColumnMapKind, Inventory},
         variable_update::map_audit::ExpectedByte,
     },
 };
@@ -31,7 +28,7 @@ const BITMAP_PAGES: u32 = ((PAGE_BYTES - BITMAP_HEADER.len()) * u8::BITS as usiz
 struct Record {
     reference: u32,
     range: Range<usize>,
-    before: Vec<u8>,
+    before: Option<Vec<u8>>,
     rewritten: bool,
 }
 
@@ -47,9 +44,108 @@ impl Record {
         Ok(Self {
             reference,
             range: row.offset..end,
-            before: row.data,
+            before: Some(row.data),
             rewritten: false,
         })
+    }
+
+    fn initialized(reference: u32, start: usize, end: usize) -> Self {
+        Self {
+            reference,
+            range: start..end,
+            before: None,
+            rewritten: false,
+        }
+    }
+
+    fn cell(
+        &self,
+        number: u32,
+        proof: &ImageProof<'_>,
+        reader: &mut Reader<'_, Cursor<&[u8]>>,
+    ) -> Result<Option<(usize, u8)>, EditError> {
+        reader.tick()?;
+        let bytes = self.current(proof)?;
+        let (offset, relative) = match bytes.first().copied() {
+            Some(INLINE) => {
+                let Some(relative) = number.checked_sub(u32_at(bytes, 1)?) else {
+                    return Ok(None);
+                };
+                let within = INLINE_PREFIX + relative as usize / u8::BITS as usize;
+                if within >= bytes.len() {
+                    return Ok(None);
+                }
+                (self.range.start + within, relative)
+            }
+            Some(INDIRECT) => {
+                let slot = usize::try_from(number / BITMAP_PAGES)
+                    .map_err(|_| InspectError::StructureLimit)?;
+                let at = slot
+                    .checked_mul(POINTER_BYTES)
+                    .and_then(|offset| offset.checked_add(1))
+                    .ok_or(InspectError::StructureLimit)?;
+                let Some(pointer) = bytes.get(at..at + POINTER_BYTES) else {
+                    return Ok(None);
+                };
+                let pointer =
+                    u32::from_le_bytes(pointer.try_into().map_err(|_| EditError::Preservation)?);
+                if pointer == 0 {
+                    return Ok(None);
+                }
+                let base = (pointer as usize)
+                    .checked_mul(PAGE_BYTES)
+                    .ok_or(InspectError::StructureLimit)?;
+                if proof.bytes.get(base..base + BITMAP_HEADER.len())
+                    != Some(BITMAP_HEADER.as_slice())
+                {
+                    return Err(EditError::Preservation);
+                }
+                let relative = number % BITMAP_PAGES;
+                (
+                    base + BITMAP_HEADER.len() + relative as usize / u8::BITS as usize,
+                    relative,
+                )
+            }
+            _ => return Err(EditError::Preservation),
+        };
+        if offset >= proof.bytes.len() {
+            return Err(EditError::Preservation);
+        }
+        Ok(Some((offset, 1 << (relative % u8::BITS))))
+    }
+
+    fn change(
+        &self,
+        number: u32,
+        present: bool,
+        proof: &mut ImageProof<'_>,
+        reader: &mut Reader<'_, Cursor<&[u8]>>,
+    ) -> Result<(), EditError> {
+        let (offset, mask) = self
+            .cell(number, proof, reader)?
+            .ok_or(EditError::Preservation)?;
+        let current = proof.bytes[offset];
+        if (current & mask != 0) == present {
+            return Err(EditError::Preservation);
+        }
+        if let Some(&before) = proof.original.get(offset) {
+            crate::table::mutation::variable_update::map_audit::expect(
+                &mut proof.map_edits,
+                crate::format::allocation::MapCell {
+                    offset,
+                    before,
+                    mask,
+                },
+                present,
+                reader,
+            )?;
+        }
+        proof.bytes[offset] = if present {
+            current | mask
+        } else {
+            current & !mask
+        };
+        Ok(())
     }
 
     fn current<'a>(&self, proof: &'a ImageProof<'_>) -> Result<&'a [u8], EditError> {
@@ -67,9 +163,18 @@ impl Record {
         proof: &mut ImageProof<'_>,
         reader: &mut Reader<'_, Cursor<&[u8]>>,
     ) -> Result<(), EditError> {
-        if bytes.len() != self.before.len() {
+        if bytes.len() != self.range.len() {
             return Err(EditError::Preservation);
         }
+        let Some(before) = self.before.as_deref() else {
+            if self.range.start < proof.original.len() {
+                return Err(EditError::Preservation);
+            }
+            reader.work(bytes.len())?;
+            proof.bytes[self.range.clone()].copy_from_slice(bytes);
+            self.rewritten = true;
+            return Ok(());
+        };
         authority.inventory.require_record_rewrite(
             authority.schema,
             authority.column,
@@ -90,7 +195,7 @@ impl Record {
         for edit in &proof.map_edits {
             reader.tick()?;
             if self.range.contains(&edit.offset)
-                && self.before[edit.offset - self.range.start] != edit.before
+                && before[edit.offset - self.range.start] != edit.before
             {
                 return Err(EditError::Preservation);
             }
@@ -99,7 +204,7 @@ impl Record {
         proof
             .map_edits
             .retain(|edit| !self.range.contains(&edit.offset));
-        for (position, (&before, &after)) in self.before.iter().zip(bytes).enumerate() {
+        for (position, (&before, &after)) in before.iter().zip(bytes).enumerate() {
             reader.tick()?;
             proof.map_edits.push(ExpectedByte {
                 offset: self.range.start + position,
@@ -122,7 +227,6 @@ pub(super) struct Authority<'a> {
 
 pub(super) struct Allocation<'a> {
     pub authority: Authority<'a>,
-    pub scope: &'a Scope,
     pub global: &'a crate::format::allocation::RepresentedMap,
     pub members: &'a [u32],
 }
@@ -150,6 +254,34 @@ impl Maps {
         })
     }
 
+    pub(super) fn initialized(
+        number: u32,
+        references: LongValueMapReferences,
+        proof: &ImageProof<'_>,
+    ) -> Result<Self, EditError> {
+        let base = (number as usize)
+            .checked_mul(PAGE_BYTES)
+            .ok_or(InspectError::StructureLimit)?;
+        let end = base
+            .checked_add(PAGE_BYTES)
+            .ok_or(InspectError::StructureLimit)?;
+        if base < proof.original.len()
+            || end > proof.bytes.len()
+            || references.owned() != crate::format::row::reference(number, 0)
+            || references.candidate() != crate::format::row::reference(number, 1)
+        {
+            return Err(EditError::Preservation);
+        }
+        Ok(Self {
+            owned: Record::initialized(references.owned(), end - INLINE_BYTES, end),
+            candidate: Record::initialized(
+                references.candidate(),
+                end - 2 * INLINE_BYTES,
+                end - INLINE_BYTES,
+            ),
+        })
+    }
+
     pub(super) fn clear_hint(
         &mut self,
         number: u32,
@@ -169,14 +301,7 @@ impl Maps {
                 reader,
             )
         } else {
-            change(
-                proof,
-                &allocation.scope.hint,
-                reader.header.page_count(),
-                number,
-                false,
-                reader,
-            )
+            self.candidate.change(number, false, proof, reader)
         }
     }
 
@@ -204,11 +329,7 @@ impl Maps {
         match owned.first().copied() {
             Some(INLINE) => {
                 if !self.owned.rewritten {
-                    match allocation.scope.owned.future_cell(reader, number) {
-                        Ok(_) => represented = true,
-                        Err(InspectError::Unsupported) => {}
-                        Err(error) => return Err(error.into()),
-                    }
+                    represented = self.owned.cell(number, proof, reader)?.is_some();
                 }
                 if !represented {
                     if owned.len() != INLINE_BYTES {
@@ -324,22 +445,7 @@ impl Maps {
             });
         }
         if represented {
-            require_bit(
-                proof,
-                &allocation.scope.owned,
-                reader.header.page_count(),
-                number,
-                false,
-                reader,
-            )?;
-            change(
-                proof,
-                &allocation.scope.owned,
-                reader.header.page_count(),
-                number,
-                true,
-                reader,
-            )?;
+            self.owned.change(number, true, proof, reader)?;
         }
         if rewrite {
             self.owned.rewrite(
@@ -354,29 +460,10 @@ impl Maps {
         let candidate_represented = if self.candidate.rewritten {
             false
         } else {
-            match allocation.scope.hint.future_cell(reader, number) {
-                Ok(_) => true,
-                Err(InspectError::Unsupported) => false,
-                Err(error) => return Err(error.into()),
-            }
+            self.candidate.cell(number, proof, reader)?.is_some()
         };
         if candidate_represented {
-            require_bit(
-                proof,
-                &allocation.scope.hint,
-                reader.header.page_count(),
-                number,
-                false,
-                reader,
-            )?;
-            change(
-                proof,
-                &allocation.scope.hint,
-                reader.header.page_count(),
-                number,
-                true,
-                reader,
-            )?;
+            self.candidate.change(number, true, proof, reader)?;
         } else {
             if candidate.len() != INLINE_BYTES || candidate[0] != INLINE {
                 return Err(EditError::Preservation);

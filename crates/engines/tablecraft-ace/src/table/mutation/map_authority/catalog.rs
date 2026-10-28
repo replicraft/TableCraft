@@ -21,6 +21,21 @@ pub(in crate::table) fn capture_catalog(
     image: &NativeImage,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
+    payload: impl FnMut(
+        &TableSchema,
+        &[NativeIndex],
+        &storage_maps::Declarations,
+        &mut Reader<'_, Cursor<&[u8]>>,
+    ) -> Result<(), EditError>,
+) -> Result<Census, EditError> {
+    capture_catalog_for_initialization(image, None, budget, cancelled, payload)
+}
+
+pub(in crate::table) fn capture_catalog_for_initialization(
+    image: &NativeImage,
+    initializing: Option<(u32, &[usize])>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
     mut payload: impl FnMut(
         &TableSchema,
         &[NativeIndex],
@@ -107,12 +122,27 @@ pub(in crate::table) fn capture_catalog(
                 &mut reader,
             )?;
         }
-        let declarations = storage_maps::declarations(&mut reader, &schema)?;
+        let selected = initializing.filter(|(number, _)| *number == definition);
+        let declarations = if let Some((_, columns)) = selected {
+            storage_maps::declarations_for_initialization(&mut reader, &schema, columns)?
+        } else {
+            storage_maps::declarations(&mut reader, &schema)?
+        };
         if !declarations.complete {
             return Err(EditError::Unsupported(WriteBlocker::RowLayout));
         }
         for declaration in &declarations.entries {
             reader.tick()?;
+            if declaration.references.owned() == 0 && declaration.references.candidate() == 0 {
+                let Some((_, columns)) = selected else {
+                    return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+                };
+                reader.work(columns.len())?;
+                if !columns.contains(&declaration.number) {
+                    return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+                }
+                continue;
+            }
             census.capture(
                 Owner::ColumnOwned {
                     definition,

@@ -1,5 +1,5 @@
 //! Two column owners compose LVAL, fresh DATA and primary growth without repair.
-mod model;
+pub(super) mod model;
 use super::original;
 use crate::RowInsert;
 
