@@ -1,7 +1,7 @@
 //! Literal record bytes distinguish carriers, physical spans and preferred wires.
 use super::*;
 use crate::{inspect_table_schema, test_support::base};
-use tablecraft_core::values::{Currency, Double, Guid, LegacyDateTime, Single};
+use tablecraft_core::values::{Currency, Decimal, Double, Guid, LegacyDateTime, Single};
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::access as literal;
 
@@ -247,22 +247,54 @@ fn boolean_offsets_cannot_invent_payload_extent_and_invalid_layouts_refuse() {
     ));
     literal::put16(&mut overlap, TABLE + FIELDS + FIELD_BYTES + 21, 4);
     qualify(&schema(&overlap), &mut budget(), &|| false).unwrap();
-    for (kind, length) in [(16, 17), (20, 42), (12, 0), (11, 0)] {
+    for (kind, length) in [(20, 42), (12, 0), (11, 0)] {
         let variables = if kind == 20 {
             Vec::new()
         } else {
             vec![(1, 0, false)]
         };
-        let mut unsupported = source(
+        let unsupported = source(
             &[("ID", 4, 0, 4), ("Unsupported", kind, 4, length)],
             &variables,
         );
-        if kind == 16 {
-            unsupported[TABLE + FIELDS + FIELD_BYTES + 11] = 28;
-            unsupported[TABLE + FIELDS + FIELD_BYTES + 12] = 2;
-        }
         let metadata = schema(&unsupported);
         assert!(metadata.columns()[1].scalar_type().is_some());
         assert!(qualify(&metadata, &mut budget(), &|| false).is_err());
+    }
+}
+
+#[test]
+fn decimal_reconstruction_uses_literal_words_and_rejects_scale_precision_and_carrier_changes() {
+    let mut bytes = source(&[("ID", 4, 0, 4), ("Amount", 16, 0, 17)], &[(1, 0, false)]);
+    bytes[TABLE + FIELDS + FIELD_BYTES + 11] = 28;
+    bytes[TABLE + FIELDS + FIELD_BYTES + 12] = 4;
+    let metadata = schema(&bytes);
+    qualify(&metadata, &mut budget(), &|| false).unwrap();
+
+    let mut expected = vec![2, 0, 7, 0, 0, 0];
+    expected.extend_from_slice(&[128, 0, 0, 0, 0, 4, 3, 2, 1, 8, 7, 6, 5, 12, 11, 10, 9]);
+    expected.extend_from_slice(&[23, 0, 6, 0, 1, 0, 3]);
+    assert_eq!(
+        reconstruct(
+            &bytes,
+            &metadata,
+            0,
+            vec![
+                Value::Int32(7),
+                Value::Decimal(Decimal::new(-311917102708983781990730508, 4).unwrap()),
+            ],
+        )
+        .unwrap(),
+        expected,
+    );
+    for value in [
+        Value::Int32(1),
+        Value::Decimal(Decimal::new(1, 3).unwrap()),
+        Value::Decimal(Decimal::new(10_i128.pow(28), 4).unwrap()),
+    ] {
+        assert_eq!(
+            reconstruct(&bytes, &metadata, 0, vec![Value::Int32(7), value]),
+            Err(EditError::Unsupported(WriteBlocker::Column)),
+        );
     }
 }

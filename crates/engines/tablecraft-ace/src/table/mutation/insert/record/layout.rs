@@ -1,8 +1,8 @@
 //! Complete declared field coverage, fixed-span exclusivity and variable order.
-use super::field;
+use super::{field, payload};
 use crate::{
     EditError, InspectError, TableSchema, WriteBlocker, format::row::COLUMN_COUNT_BYTES,
-    header::check, table::mutation::slot::storage,
+    header::check,
 };
 use tablecraft_core::limits::ResourceBudget;
 
@@ -74,7 +74,7 @@ pub(super) fn variables(
                 }
             }
         } else {
-            storage::qualify(column)?;
+            payload::qualify(column)?;
             if column.storage_length() == 0 || column.complex_type_id().is_some() {
                 return Err(EditError::Unsupported(WriteBlocker::Column));
             }

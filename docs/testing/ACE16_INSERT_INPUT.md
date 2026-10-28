@@ -26,6 +26,7 @@ The accepted kind tokens are lowercase and exact:
 | `boolean` | `true` or `false`; NULL Boolean is not a native stored value |
 | `byte` | Unsigned decimal in 0..255 |
 | `int16`, `int32`, `int64` | Signed decimal within the exact carrier range |
+| `decimal` | Signed coefficient and scale as `COEFFICIENT:SCALE`; must exactly match the table declaration |
 | `currency-scaled` | Signed Int64 coefficient in units of 1/10,000; no decimal/float parsing |
 | `single-bits`, `double-bits` | Unprefixed hexadecimal IEEE bits within 32/64-bit width |
 | `date-bits` | Unprefixed hexadecimal 64-bit legacy Date/Time bits, validated by the carrier |
@@ -34,8 +35,8 @@ The accepted kind tokens are lowercase and exact:
 | `text` | UTF-8; empty means present empty Text |
 | `null` | Empty data only |
 
-The fixed kinds use the actual shared `fixed_values` parser. Decimal remains
-explicitly refused. NULL always uses its own `null`/empty pair; `int32` with data
+The exact scalar kinds use the actual shared `fixed_values` parser. Decimal
+retains its coefficient/scale without rounding or conversion. NULL always uses its own `null`/empty pair; `int32` with data
 `null` is invalid. A `text` pair whose data is the literal `null` remains Text.
 The [ordinary-row profile](ACE16_ORDINARY_INSERTS.md) independently qualifies each
 carrier, field width and constraint, including explicit empty-Text declarations.

@@ -3,7 +3,10 @@ use super::fixed;
 use crate::{
     EditError, InspectError, NativeColumn, TableSchema, WriteBlocker,
     format::{
-        data_type::{MAX_SHORT_BINARY_BYTES, MAX_SHORT_TEXT_BYTES, SHORT_BINARY, SHORT_TEXT},
+        data_type::{
+            MAX_SHORT_BINARY_BYTES, MAX_SHORT_TEXT_BYTES, NUMERIC, NUMERIC_BYTES, SHORT_BINARY,
+            SHORT_TEXT,
+        },
         layout::{FIXED_FLAG, UNICODE_COMPRESSION_FLAG, UPDATABLE_FLAG},
         row::{COLUMN_COUNT_BYTES, MASK_BITS},
     },
@@ -122,6 +125,9 @@ fn variable(field: &NativeColumn) -> Result<(), EditError> {
                 field.storage_length() <= MAX_SHORT_TEXT_BYTES
                     && field.storage_length().is_multiple_of(size_of::<u16>())
                     && field.extended_flags() & !UNICODE_COMPRESSION_FLAG == 0
+            }
+            (NUMERIC, Some(ScalarType::Decimal)) => {
+                field.storage_length() == NUMERIC_BYTES && field.extended_flags() == 0
             }
             (SHORT_BINARY, Some(ScalarType::Binary)) => {
                 field.storage_length() <= MAX_SHORT_BINARY_BYTES && field.extended_flags() == 0

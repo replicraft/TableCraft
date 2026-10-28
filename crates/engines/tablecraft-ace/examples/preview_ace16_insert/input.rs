@@ -150,9 +150,8 @@ fn value(
                 .map_err(|_| format!("Invalid insert request {number}: kind is not UTF-8"))?;
             let fixed = Kind::from_str(name, false)
                 .map_err(|_| format!("Invalid insert request {number}: invalid kind"))?;
-            // NULL always uses its explicit empty kind/data pair. Decimal
-            // construction belongs to a separately qualified record profile.
-            if matches!(fixed, Kind::Decimal) || data == b"null" {
+            // NULL always uses its explicit empty kind/data pair.
+            if data == b"null" {
                 return Err(
                     format!("Invalid insert request {number}: invalid fixed payload").into(),
                 );

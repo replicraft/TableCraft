@@ -1,8 +1,9 @@
-//! Requested preferred short-value wires; no builder serializer supplies proof.
+//! Requested preferred variable wires; no builder serializer supplies proof.
+mod decimal;
 use crate::{
     EditError, InspectError, NativeColumn, WriteBlocker,
     format::{
-        data_type::{SHORT_BINARY, SHORT_TEXT},
+        data_type::{NUMERIC, SHORT_BINARY, SHORT_TEXT},
         layout::UNICODE_COMPRESSION_FLAG,
         text,
     },
@@ -23,6 +24,9 @@ pub(super) fn encode(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, EditError> {
     check(budget, cancelled)?;
+    if field.native_type() == NUMERIC {
+        return decimal::encode(field, value, budget, cancelled);
+    }
     let (length, compressed) = match (field.native_type(), value) {
         (_, Value::Null) => return Ok(Vec::new()),
         (SHORT_BINARY, Value::Binary(bytes)) if bytes.len() <= field.storage_length() => {

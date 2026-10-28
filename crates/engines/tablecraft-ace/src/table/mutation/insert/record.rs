@@ -1,6 +1,7 @@
 //! Construct a complete ordinary row from declared fields and explicit values.
 mod field;
 mod layout;
+mod payload;
 
 use crate::{
     EditError, InspectError, TableSchema, WriteBlocker,
@@ -12,7 +13,7 @@ use crate::{
         },
     },
     header::check,
-    table::{mutation::slot::storage, record_layout},
+    table::record_layout,
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -56,7 +57,7 @@ impl<'a> Profile<'a> {
         let mut payload_end = self.schema.layout.fixed_end;
         for &position in &self.variables {
             check(budget, cancelled)?;
-            let payload = storage::encode_preferred(
+            let payload = payload::encode(
                 &self.schema.columns()[position],
                 &values[position],
                 budget,
