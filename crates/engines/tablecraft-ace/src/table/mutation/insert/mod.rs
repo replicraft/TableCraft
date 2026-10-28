@@ -54,8 +54,10 @@ impl NativeImage {
     /// The current profile constructs ordinary Int32/ShortBinary records with
     /// explicit values and maintains one required unique ascending Int32 primary
     /// index, including logical aliases. An original root leaf may grow into a
-    /// retained root and two fresh leaves. Deeper sources, defaults, generated
-    /// fields, additional indexes and oversized halves refuse. DATA and index
+    /// retained root and two fresh leaves. An existing height-one root with one
+    /// bound and two leaves admits inserts that fit those original leaves.
+    /// Deeper sources, defaults, generated fields, additional indexes and
+    /// oversized target leaves refuse. DATA and index
     /// growth share one qualified EOF cursor and native map allocator.
     ///
     /// This does not enable normal saves or qualify required data macros or

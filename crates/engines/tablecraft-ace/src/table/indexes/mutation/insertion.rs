@@ -1,4 +1,5 @@
 //! Request membership and cardinality growth for one qualified Int32 primary.
+mod height_one;
 use super::split::{
     self, AddedPage,
     allocation::{Promotion, Rebase},
@@ -16,7 +17,7 @@ use crate::{
     table::indexes::{
         constraints::PRIMARY_INDEX,
         header::IndexHeader,
-        page::{KeyRef, LEAF},
+        page::{KeyRef, LEAF, NODE},
     },
     table::mutation::append::State,
 };
@@ -122,11 +123,11 @@ pub(in crate::table) fn prepare(
         .get(root_start..root_start + PAGE_BYTES)
         .ok_or(InspectError::Truncated)?;
     let header = IndexHeader::read(original)?;
-    if header.kind != LEAF
-        || header.previous.get() != 0
-        || header.next.get() != 0
-        || header.tail.get() != 0
-        || !header.qualified_for_update(0)
+    let source_leaf =
+        header.kind == LEAF && header.tail.get() == 0 && header.qualified_for_update(0);
+    let source_height_one =
+        header.kind == NODE && header.tail.get() != 0 && header.qualified_for_update(1);
+    if (!source_leaf && !source_height_one) || header.previous.get() != 0 || header.next.get() != 0
     {
         return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
     }
@@ -153,7 +154,10 @@ pub(in crate::table) fn prepare(
         0,
         &mut expected,
     )?;
-    if !tree.is_leaf() || expected.len() != checked.rows() {
+    if expected.len() != checked.rows()
+        || (source_leaf && !tree.is_leaf())
+        || (source_height_one && tree.height() != 1)
+    {
         return Err(EditError::Preservation);
     }
     let original_count = expected.len();
@@ -210,7 +214,16 @@ pub(in crate::table) fn prepare(
     }
     let mut patches = Vec::new();
     let mut requires_split = false;
-    if !requests.is_empty() {
+    if source_height_one {
+        patches = height_one::prepare(
+            image,
+            checked,
+            id_column,
+            &expected,
+            reader.budget,
+            cancelled,
+        )?;
+    } else if !requests.is_empty() {
         let entries = split::leaf_entries(&expected, reader.budget, cancelled)?;
         if repack::borrowed_fits::<_, ENTRY_BUFFER>(
             original,

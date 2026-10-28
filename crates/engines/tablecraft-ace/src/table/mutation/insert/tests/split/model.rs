@@ -8,7 +8,7 @@ const TABLE: usize = 10;
 const ROOT: usize = 13;
 const MAP_ROW: usize = 4027;
 
-pub(super) struct Source {
+pub(in crate::table::mutation::insert::tests) struct Source {
     pub bytes: Vec<u8>,
     pub rows: Vec<Vec<Value>>,
     keys: Vec<(i32, u32)>,
@@ -71,7 +71,11 @@ fn leaf(keys: &[(i32, u32)], prefix: usize, previous: u32, next: u32, residue: u
     bytes
 }
 
-pub(super) fn source(code: u8, aliases: bool, full: bool) -> Source {
+pub(in crate::table::mutation::insert::tests) fn source(
+    code: u8,
+    aliases: bool,
+    full: bool,
+) -> Source {
     let mut bytes = base::source(code, aliases, false, None);
     bytes.resize(if full { 26 * PAGE } else { 16 * PAGE }, 0);
     let pages = if full {
@@ -146,7 +150,7 @@ pub(super) fn new_values(full: bool) -> Vec<Value> {
     ]
 }
 
-pub(super) fn expected(source: &Source) -> (Vec<u8>, u32) {
+pub(in crate::table::mutation::insert::tests) fn expected(source: &Source) -> (Vec<u8>, u32) {
     let before = &source.bytes;
     let mut after = before.clone();
     let (reference, right, left) = if source.full {

@@ -34,6 +34,28 @@ targets; their corrected focused reruns pass. The original failures are retained
 and the corrections add positive coverage while preserving actual refusal/error
 controls. Native Microsoft Access comparisons were not run for this refactor.
 
+## Fitted INSERT into an existing height-one primary
+
+The optional [retained-tree INSERT continuation](testing/ACE16_INSERT_HEIGHT_ONE.md)
+now admits an existing height-one root with exactly one inclusive full key/ROW
+bound and two leaves for the same required ascending Int32 primary. Final pairs
+retain every old pair and route against the original bound. Both affected leaves
+must fit under their original prefix seeds; the entire root, sibling links,
+untouched leaves and index maps remain unchanged. This branch adds no index
+pages or metadata. DATA placement can still allocate under the existing qualified
+rules, and table/historical counters increase once per inserted row.
+
+The independent audit decodes the original tree and request-bound final pairs,
+rederives both leaf images and checks the exact patch inventory and complete
+image. The focused INSERT batch passes 55 runtime functions, including nine new
+builder, public-preview and audit controls. Thirteen independent reference calls
+also passed on their first attempts. The full-engine rerun is pending at this
+checkpoint; new engineering goldens and original-file candidate/getter acceptance
+for this branch are not yet complete. Existing child overflow, broader trees,
+other key profiles, defaults/generated values, required data macros and normal
+native saves remain unfinished. These results do not establish native Microsoft
+Access qualification.
+
 ## Primary-root growth during INSERT
 
 The optional [INSERT root-leaf continuation](testing/ACE16_INSERT_ROOT_SPLITS.md)
@@ -41,7 +63,9 @@ now retains the original root as a height-one node and allocates two leaves when
 its final key/ROW list no longer fits. DATA and index allocation share one cursor;
 independent replay covers early/late bitmap promotion, source-seeded framing,
 map ownership, exact counter deltas and complete unchanged-byte preservation.
-Existing non-leaf sources and oversized halves remain explicit refusals.
+Fitted insertions into the exact height-one result use the separate continuation
+above. Existing child overflow, broader source trees and oversized halves remain
+explicit refusals.
 
 The scoped batch passes 341 ACE unit functions (one existing ignored test), four
 existing public preview contracts, seven example functions and three compile-fail
