@@ -1,6 +1,8 @@
 """Independent native header/archive fixtures for the portable CLI release gate."""
 import io
 from pathlib import Path
+import plistlib
+import shutil
 import struct
 import sys
 import tarfile
@@ -49,13 +51,29 @@ class PackagingTests(unittest.TestCase):
         resources = self.root / "packaging"
         resources.mkdir()
         (resources / "ThirdPartyLicenses.txt").write_text("Original fixture attribution.\n")
+        for platform, name in [
+            ("windows", "register-file-associations.ps1"),
+            ("linux", "file_associations.py"),
+        ]:
+            destination = resources / platform / name
+            destination.parent.mkdir()
+            shutil.copyfile(PACKAGING.parents[1] / "packaging" / platform / name, destination)
         self.addCleanup(patch.stopall)
         patch.object(contract, "ROOT", self.root).start()
 
     def build_archive(self, target):
         binary = self.root / (target + ".bin")
         binary.write_bytes(native_binary(target))
-        return package.package(VERSION, target, binary, self.root / "dist")
+        app = None
+        if "apple" in target:
+            app = self.root / target / "TableCraft.app"
+            for name in contract.handler_names(target):
+                destination = app / Path(name).relative_to("TableCraft.app")
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                payload = (plistlib.dumps(contract.macos_info(VERSION))
+                           if name == contract.MACOS_INFO else native_binary(target))
+                destination.write_bytes(payload)
+        return package.package(VERSION, target, binary, self.root / "dist", app)
 
     def test_six_independent_headers_and_wrong_architecture_refusals(self):
         for target in contract.TARGETS:
@@ -104,8 +122,33 @@ class PackagingTests(unittest.TestCase):
                     names = source.getnames()
             self.assertEqual(set(names), {
                 contract.executable_name(target), "LICENSE", "ThirdPartyLicenses.txt",
-                "RELEASE.json",
+                "RELEASE.json", *contract.handler_names(target),
             })
+
+    def test_macos_app_cannot_be_missing_or_use_a_different_cli(self):
+        target = "aarch64-apple-darwin"
+        binary = self.root / "native"
+        binary.write_bytes(native_binary(target))
+        with self.assertRaisesRegex(ValueError, "Finder"):
+            package.package(VERSION, target, binary, self.root / "missing")
+        archive = self.build_archive(target)
+        app = self.root / target / "TableCraft.app"
+        bundled = app / "Contents" / "Resources" / "tablecraft"
+        bundled.write_bytes(native_binary(target) + b"different binary")
+        with self.assertRaisesRegex(ValueError, "differs"):
+            package.package(VERSION, target, binary, self.root / "different", app)
+        package.verify_archive(archive, VERSION, target)
+
+    def test_macos_handler_claims_only_requested_extensions_as_alternate_viewer(self):
+        info = contract.macos_info(VERSION)
+        self.assertNotIn("UTImportedTypeDeclarations", info)
+        self.assertNotIn("UTExportedTypeDeclarations", info)
+        types = info["CFBundleDocumentTypes"]
+        self.assertEqual([item["CFBundleTypeExtensions"] for item in types], [["mdb"], ["accdb"]])
+        for item in types:
+            self.assertEqual(item["CFBundleTypeRole"], "Viewer")
+            self.assertEqual(item["LSHandlerRank"], "Alternate")
+            self.assertNotIn("LSItemContentTypes", item)
 
     def test_complete_release_has_six_archives_six_sidecars_shared_licenses_and_complete_manifest(self):
         for target in contract.TARGETS:
