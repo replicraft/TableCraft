@@ -1,6 +1,6 @@
 # Bounded directory checks for integral equijoins
 
-Buffered joins use a bounded candidate directory and borrowed validated key
+Buffered scalar joins use a bounded candidate directory and borrowed validated key
 cells before allocating combined intermediate rows. This applies only when the entire ON
 predicate is a bare equality between depth-zero fields from opposite inputs,
 and both active result descriptors guarantee the same Boolean, Byte, Int16,
@@ -55,6 +55,31 @@ establishes field equality joins and ordinary matching semantics. This slice
 changes TableCraft's candidate materialization, not admitted SQL syntax or native
 Access compatibility claims. Other comparison families retain their existing
 engineering boundaries.
+
+## Whole-list result joins
+
+The [typed whole-list result service](collections/MULTIVALUE_QUERIES.md#typed-joins-and-products)
+now reuses the borrowed scalar equality check for the same whole-ON, opposite-input,
+equal integral-carrier profile. Both populations and their selected lists finish
+validation first. A nonmatching key pair is rejected before allocating or copying
+the combined scalar row; a matching pair then copies its complete list sidecars.
+No list value participates in SQL comparison. Compound ON expressions retain the
+original eager evaluator, including errors in operands after a false equality.
+
+This list path still compares candidate pairs directly; it does not use the scalar
+join's candidate directory. Duplicate match order, NULL Unknown and LEFT/RIGHT
+parent absence remain unchanged. Missing parents retain `AbsentMultivalue`, distinct
+from present empty lists and lists containing NULL. All work and copies remain
+metered and cancellable.
+
+Three focused controls pass within the seven-test typed-list join target. An
+80-by-80 input with one match completes under a 512 KiB byte allowance and retains
+both exact lists, including duplicate and NULL children. A semantically equivalent
+compound condition retains its existing allocated-pair path and reaches that byte
+limit. Additional controls cover nullable keys in both outer directions, invalid
+unmatched children, a failed right suffix with an empty left input and eager ON
+division errors. This is bounded-allocation evidence, not a timing or native Access
+execution claim.
 
 ## Earlier borrowed-pair verification
 

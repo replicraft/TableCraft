@@ -13,7 +13,7 @@ use tablecraft_sql::select::BinaryOperator;
 #[cfg(test)]
 mod tests;
 
-pub(super) struct BorrowedEquality {
+pub(in crate::execution) struct BorrowedEquality {
     first: Field,
     second: Field,
     carrier: ScalarType,
@@ -59,7 +59,7 @@ impl BorrowedEquality {
 }
 
 impl Runtime<'_, '_> {
-    pub(super) fn borrowed_join_equality(
+    pub(in crate::execution) fn borrowed_join_equality(
         &mut self,
         condition: Option<&Expr>,
         left: &Relation,
@@ -146,7 +146,7 @@ impl Runtime<'_, '_> {
         Ok(None)
     }
 
-    pub(super) fn borrowed_join_matches(
+    pub(in crate::execution) fn borrowed_join_matches(
         &mut self,
         equality: &BorrowedEquality,
         left: &[CellValue],
